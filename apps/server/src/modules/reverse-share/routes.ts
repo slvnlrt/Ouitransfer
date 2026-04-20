@@ -386,7 +386,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
     "/reverse-shares/files/:fileId/download",
     {
       preValidation,
-      bodyLimit: 1024 * 1024 * 1024 * 1024 * 1024, // 1PB limit for large video files
+       bodyLimit: 50 * 1024 * 1024, // 50MB limit for API metadata payloads
       schema: {
         tags: ["Reverse Share"],
         operationId: "downloadReverseShareFile",

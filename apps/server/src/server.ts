@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 import fastifyMultipart from "@fastify/multipart";
 
 import { buildApp } from "./app";
+import { env } from "./env";
 import { directoriesConfig } from "./config/directories.config";
 import { appRoutes } from "./modules/app/routes";
 import { authProvidersRoutes } from "./modules/auth-providers/routes";
@@ -43,6 +44,12 @@ async function ensureDirectories() {
 }
 
 async function startServer() {
+  if (env.SECURE_SITE === "false") {
+    console.warn(
+      "[SECURITY WARNING] SECURE_SITE=false — cookies will be sent over plain HTTP. Only use this in development."
+    );
+  }
+
   const app = await buildApp();
 
   await ensureDirectories();
@@ -55,7 +62,7 @@ async function startServer() {
       fieldNameSize: 100,
       fieldSize: 1024 * 1024,
       fields: 10,
-      fileSize: 1024 * 1024 * 1024 * 1024 * 1024, // 1PB (1 petabyte) - practically unlimited
+      fileSize: 50 * 1024 * 1024, // 50MB
       files: 1,
       headerPairs: 2000,
     },

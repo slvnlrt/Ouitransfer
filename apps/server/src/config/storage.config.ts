@@ -1,6 +1,8 @@
 import * as fs from "fs";
+import * as https from "node:https";
 import process from "node:process";
 import { S3Client } from "@aws-sdk/client-s3";
+import { NodeHttpHandler } from "@smithy/node-http-handler";
 
 import { env } from "../env";
 import { StorageConfig } from "../types/storage";
@@ -62,13 +64,12 @@ export const storageConfig: StorageConfig = (internalStorageConfig as StorageCon
   forcePathStyle: env.S3_FORCE_PATH_STYLE === "true",
 };
 
-if (storageConfig.useSSL && env.S3_REJECT_UNAUTHORIZED === "false") {
-  const originalRejectUnauthorized = process.env.NODE_TLS_REJECT_UNAUTHORIZED;
-  if (!originalRejectUnauthorized) {
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-    (global as any).OUITRANSFER_ORIGINAL_TLS_SETTING = originalRejectUnauthorized;
-  }
-}
+/**
+ * Whether to reject self-signed TLS certificates for S3 connections.
+ * Should only be disabled for testing with self-signed certificates.
+ * This is scoped to S3 client only, not globally.
+ */
+export const rejectUnauthorized = env.S3_REJECT_UNAUTHORIZED !== "false";
 
 /**
  * Storage is ALWAYS S3-compatible:
@@ -88,9 +89,12 @@ export const s3Client = hasValidConfig
         secretAccessKey: storageConfig.secretKey,
       },
       forcePathStyle: storageConfig.forcePathStyle,
-      requestHandler: {
+      requestHandler: new NodeHttpHandler({
+        httpsAgent: new https.Agent({
+          rejectUnauthorized: rejectUnauthorized,
+        }),
         requestTimeout: 300000, // 5 minutes timeout for S3 operations
-      },
+      }),
     })
   : null;
 
@@ -142,8 +146,11 @@ export function createPublicS3Client(): S3Client | null {
       secretAccessKey: storageConfig.secretKey,
     },
     forcePathStyle: storageConfig.forcePathStyle,
-    requestHandler: {
+    requestHandler: new NodeHttpHandler({
+      httpsAgent: new https.Agent({
+        rejectUnauthorized: rejectUnauthorized,
+      }),
       requestTimeout: 300000, // 5 minutes timeout for S3 operations
-    },
+    }),
   });
 }

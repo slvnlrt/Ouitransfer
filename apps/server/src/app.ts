@@ -21,20 +21,20 @@ export async function buildApp() {
   const app = fastify({
     ajv: {
       customOptions: {
-        removeAdditional: false,
+        removeAdditional: "all",
       },
     },
     logger: {
       level: "warn",
     },
-    bodyLimit: 1024 * 1024 * 1024 * 1024 * 1024,
+    bodyLimit: 50 * 1024 * 1024,
     connectionTimeout: 0,
     keepAliveTimeout: envTimeoutOverrides.keepAliveTimeout,
     requestTimeout: envTimeoutOverrides.requestTimeout,
     trustProxy: true,
     maxParamLength: 500,
-    onProtoPoisoning: "ignore",
-    onConstructorPoisoning: "ignore",
+    onProtoPoisoning: "error",
+    onConstructorPoisoning: "error",
     ignoreTrailingSlash: true,
     serverFactory: (handler: (req: any, res: any) => void) => {
       const server = http.createServer((req: http.IncomingMessage, res: http.ServerResponse) => {
@@ -68,8 +68,18 @@ export async function buildApp() {
     format: "date-time",
   });
 
+  const allowedOrigins = process.env.CORS_ORIGINS
+    ? process.env.CORS_ORIGINS.split(",").map((o) => o.trim())
+    : ["http://localhost:3000", "http://localhost:5487"];
+
   app.register(fastifyCors, {
-    origin: true,
+    origin: (origin, cb) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        cb(null, true);
+      } else {
+        cb(new Error("Not allowed by CORS"), false);
+      }
+    },
     credentials: true,
   });
 
