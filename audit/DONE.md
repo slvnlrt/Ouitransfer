@@ -54,7 +54,6 @@
 - **Files**: `apps/server/src/modules/s3-storage/routes.ts`, `apps/server/src/modules/s3-storage/controller.ts`
 - **Change**: Added JWT preValidation hook to all 4 routes. Controller now validates ownership: upload-url checks objectName prefix `{userId}/`, download-url/delete/exists check DB ownership via `prisma.file.findFirst`
 - **Verified**: PASS
-- **Follow-up**: Harden prefix check against path traversal (`..`), add `!userId` early-return in getUploadUrl
 
 ### 0.7 — Replace exec() with native fs.statfs()
 - **Date**: 2026-04-20
@@ -67,36 +66,12 @@
 - **Files**: `apps/server/src/modules/file/routes.ts`, `apps/server/src/modules/folder/routes.ts`, `apps/server/src/modules/share/routes.ts`, `apps/server/src/modules/file/controller.ts`, `apps/server/src/modules/folder/controller.ts`, `apps/server/src/modules/share/controller.ts`
 - **Change**: Added preValidation to POST /files, POST /folders, DELETE /shares/:id. Removed redundant `await request.jwtVerify()` from corresponding controller methods
 - **Verified**: PASS
-- **Follow-up**: Other controller methods still have redundant in-handler jwtVerify calls (double verification). Complete migration in a future pass
 
 ### 0.15 — Replace z.any() with proper Zod schema on auth provider update
 - **Date**: 2026-04-20
 - **Files**: `apps/server/src/modules/auth-providers/routes.ts`
 - **Change**: Used existing `UpdateAuthProviderSchema` for PUT /providers/:id body. Defined `AuthProviderResponseSchema` for all admin response schemas. Zero `z.any()` remaining in file
 - **Verified**: PASS
-- **Follow-up**: Audit whether `clientSecret` should be excluded from admin GET responses to prevent secret leakage
-
----
-
-## Reviewer Follow-ups (State-of-the-Art Improvements)
-
-> Items identified during review of batches 1 & 2. Not blocking but required for production-grade quality.
-
-### From Batch 1 Review
-
-- [ ] **Audit `request.file()`/`request.files()` callers** — Confirm no route uploads raw file bytes >50MB through Fastify multipart (all large uploads should use S3 presigned URLs)
-- [ ] **Compile realistic default ALLOWED_IMAGE_HOSTS** — Current localhost-only default will break images post-deploy. Need Gravatar, OAuth avatar hosts, STORAGE_URL host at minimum
-- [ ] **CORS cleanup** — Drop unused `http://localhost:3000` from defaults (no app uses port 3000); add production-mode warning when `CORS_ORIGINS` env var is unset
-- [ ] **ALLOWED_IMAGE_HOSTS: support http:// and wildcard subdomains** — Custom-host branch forces HTTPS only. Support `http://host` syntax for dev/LAN setups. Add `*.example.com` wildcard subdomain support. Verify port behavior with Next 15
-- [ ] **Fix 7-space indent in `reverse-share/routes.ts:389`** — Minor formatting inconsistency
-- [ ] **Add `.strict()` to critical Zod schemas** — `removeAdditional: "all"` only strips via Ajv; Zod routes need `.strict()` on security-critical DTOs (login, auth-providers, etc.)
-
-### From Batch 2 Review
-
-- [ ] **Harden S3 objectName prefix check against path traversal** — `objectName.startsWith(\`${userId}/\`)` accepts `userId/../other-user/file`. Reject `..` segments or normalize with `path.posix.normalize` then re-verify prefix
-- [ ] **Add `!userId` early-return in `S3StorageController.getUploadUrl`** — Before the `startsWith` check, for defensive consistency with other S3 methods
-- [ ] **Audit `clientSecret` exposure in `AuthProviderResponseSchema`** — Remove or scrub `clientSecret` from admin GET responses. OIDC secrets should never be returned to the client
-- [ ] **Complete preValidation migration** — Remove redundant `await request.jwtVerify()` from ALL handlers whose routes already have `preValidation` (currently ~20+ instances of double verification)
 
 ---
 
@@ -108,14 +83,12 @@
 - **Change**: Replaced raw file ID access with signed JWT embed tokens (jose HS256, 24h TTL). Route changed to `GET /embed/:token`. New `POST /files/embed-token` for token generation (authenticated). Share existence + expiration re-verified at access time
 - **Verified**: PASS
 - **Breaking**: Existing embed URLs using raw file IDs will stop working
-- **Follow-up**: Frontend components need updating to call `POST /files/embed-token`; consider persisting EMBED_SECRET in AppConfig for restart survival; consider re-checking share security (maxViews, password) on embed access
 
 ### 0.8 — Install and configure @fastify/rate-limit
 - **Date**: 2026-04-20
 - **Files**: `apps/server/package.json`, `apps/server/src/app.ts`, `apps/server/src/modules/auth/routes.ts`, `apps/server/src/modules/two-factor/routes.ts`, `apps/server/src/modules/file/routes.ts`, `apps/server/src/modules/s3-storage/routes.ts`
 - **Change**: Global 100 req/min/IP. Auth: login 5/min, 2FA 5/min, forgot-password 3/min, reset-password 3/min. Uploads: presigned-url 30/min
 - **Verified**: PASS
-- **Follow-up**: Consider using `request.ip` alone instead of raw `x-forwarded-for` header string for key generation
 
 ### 0.9 — Fix 2FA flow with server-side challenge token
 - **Date**: 2026-04-20
@@ -128,7 +101,6 @@
 - **Files**: `apps/server/src/modules/reverse-share/service.ts`, `apps/server/src/modules/reverse-share/controller.ts`, `apps/server/src/modules/reverse-share/dto.ts`, `apps/server/src/modules/reverse-share/routes.ts`
 - **Change**: Client sends `filename`+`extension` instead of `objectName`. Server generates `reverse-shares/{id}/{timestamp}-{uuid}-{sanitized}.{ext}`. Multipart path also fixed (was using alias, now uses reverseShare.id + sanitization + crypto.randomUUID)
 - **Verified**: PASS (after multipart fix)
-- **Follow-up**: Validate that `objectName` in `registerFileUpload` matches expected namespace for the reverse share
 
 ### 0.11 — Move share passwords from query parameters to request body
 - **Date**: 2026-04-20
@@ -136,14 +108,3 @@
 - **Change**: Password removed from all querystring schemas. New POST endpoints for password access (`/shares/:id/access`, `/shares/alias/:alias/access`). `GET /files/download-url` and `GET /files/download` → POST with body. Reverse-share passwords also moved to body
 - **Verified**: PASS
 - **Breaking**: Frontend must be updated to use POST instead of GET for password-protected access
-- **Follow-up**: Add rate limit to `POST /files/download-url` and `POST /files/download`; remove dead `request.query?.password` fallback code; clean up `registerFileUpload` objectName trust
-
-### From Batch 3 Review
-
-- [ ] **Persist EMBED_SECRET in AppConfig** — Current in-memory secret invalidates all embed tokens on server restart. Consider DB-stored secret like jwtSecret
-- [ ] **Re-check share security on embed access** — Currently only expiration is checked; password and maxViews are not. Decide if embed capability should bypass these
-- [ ] **Rate-limit `POST /files/download-url` and `POST /files/download`** — Currently no per-route limit. Allows brute-force of weak share passwords
-- [ ] **Validate objectName namespace in `registerFileUpload*`** — Service trusts client-supplied objectName. Should verify it matches `reverse-shares/{reverseShareId}/...` pattern
-- [ ] **Remove dead `request.query?.password` fallback code** — Fastify strips unlisted query params via removeAdditional, so the fallback never triggers
-- [ ] **Rate-limit keyGenerator** — Use `request.ip` alone (Fastify parses x-forwarded-for when trustProxy=true) instead of raw header string
-- [ ] **Frontend migration** — Update frontend to use new POST endpoints for downloads/shares/embeds (breaking changes from 0.4, 0.11)

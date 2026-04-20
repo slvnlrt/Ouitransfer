@@ -31,18 +31,35 @@ D:\Code\Ouitransfer\
 ## Current State (Post-Audit)
 A comprehensive 8-dimension audit was completed. Score: 4.3/10. See `audit/` directory for full reports.
 
-### Active Remediation: Phase 0 — Security Emergency
-We are currently fixing critical security vulnerabilities. See `audit/CONSOLIDATED-TODO-LIST.md` for the full roadmap and `audit/DONE.md` for completed items.
+### Phase 0 — Security Emergency: COMPLETE
+All 16 critical security items have been remediated. See `audit/DONE.md` for details.
 
-### Critical Issues Being Fixed
-1. Prototype pollution protection disabled (`app.ts:36-37`)
-2. 1PB body limit (DoS vector)
-3. `/s3/*` routes have zero authentication
-4. `/embed/:id` serves files without auth
-5. CORS allows any origin
-6. No rate limiting
-7. Shell `exec()` in storage service
-8. 2FA bypass (userId from client)
+### Remediation Workflow
+Each phase follows this process:
+1. Execute items from `audit/CONSOLIDATED-TODO-LIST.md`
+2. Reviewer agent verifies each batch
+3. Follow-ups go into `audit/TODO-POST-PHASE-N.md`
+4. Completed items are tracked in `audit/DONE.md`
+
+### Audit Directory Structure
+```
+audit/
+  01-architecture.md          Dimension reports (read-only reference)
+  02-backend.md
+  03-frontend.md
+  04-infrastructure.md
+  05-security.md
+  06-quality.md
+  07-dependencies.md
+  08-synthesis.md
+  CONSOLIDATED-TODO-LIST.md   Master roadmap (117 items, 4 phases)
+  DONE.md                     Completed items log
+  TODO-POST-PHASE-0.md        Reviewer follow-ups from Phase 0
+```
+
+### Next Up
+- `audit/TODO-POST-PHASE-0.md` — 17 reviewer follow-ups (security hardening, rate-limit, config, frontend migration)
+- Phase 1 of CONSOLIDATED-TODO-LIST — Foundations (monorepo, shared packages, CI/CD)
 
 ## Rules for Agents
 1. **Never break existing functionality** — the app must remain functional after each change
