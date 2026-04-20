@@ -3,7 +3,28 @@ import { z } from "zod";
 
 import { prisma } from "../../shared/prisma";
 import { AuthProvidersController } from "./controller";
-import { CreateAuthProviderSchema, UpdateProvidersOrderSchema } from "./dto";
+import { CreateAuthProviderSchema, UpdateAuthProviderSchema, UpdateProvidersOrderSchema } from "./dto";
+
+const AuthProviderResponseSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  displayName: z.string(),
+  type: z.string(),
+  icon: z.string().nullable(),
+  enabled: z.boolean(),
+  autoRegister: z.boolean(),
+  scope: z.string().nullable(),
+  adminEmailDomains: z.string().nullable(),
+  clientId: z.string(),
+  clientSecret: z.string().optional(),
+  issuerUrl: z.string().nullable(),
+  authorizationEndpoint: z.string().nullable(),
+  tokenEndpoint: z.string().nullable(),
+  userInfoEndpoint: z.string().nullable(),
+  sortOrder: z.number(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
 
 export async function authProvidersRoutes(fastify: FastifyInstance) {
   const authProvidersController = new AuthProvidersController();
@@ -75,27 +96,27 @@ export async function authProvidersRoutes(fastify: FastifyInstance) {
         summary: "Get all authentication providers",
         description: "Retrieve all authentication providers for admin configuration",
         response: {
-          200: z.object({
-            success: z.boolean(),
-            data: z.array(z.any()),
-          }),
-          401: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
-          403: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
-          500: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
-        },
-      },
-    },
-    authProvidersController.getAllProviders.bind(authProvidersController)
-  );
+           200: z.object({
+             success: z.boolean(),
+             data: z.array(AuthProviderResponseSchema),
+           }),
+           401: z.object({
+             success: z.boolean(),
+             error: z.string(),
+           }),
+           403: z.object({
+             success: z.boolean(),
+             error: z.string(),
+           }),
+           500: z.object({
+             success: z.boolean(),
+             error: z.string(),
+           }),
+         },
+       },
+     },
+     authProvidersController.getAllProviders.bind(authProvidersController)
+   );
 
   fastify.post(
     "/providers",
@@ -109,31 +130,31 @@ export async function authProvidersRoutes(fastify: FastifyInstance) {
           "Create a new authentication provider. Use either issuerUrl for automatic discovery OR provide all three custom endpoints.",
         body: CreateAuthProviderSchema,
         response: {
-          200: z.object({
-            success: z.boolean(),
-            data: z.any(),
-          }),
-          400: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
-          401: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
-          403: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
-          500: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
-        },
-      },
-    },
-    authProvidersController.createProvider.bind(authProvidersController)
-  );
+           200: z.object({
+             success: z.boolean(),
+             data: AuthProviderResponseSchema,
+           }),
+           400: z.object({
+             success: z.boolean(),
+             error: z.string(),
+           }),
+           401: z.object({
+             success: z.boolean(),
+             error: z.string(),
+           }),
+           403: z.object({
+             success: z.boolean(),
+             error: z.string(),
+           }),
+           500: z.object({
+             success: z.boolean(),
+             error: z.string(),
+           }),
+         },
+       },
+     },
+     authProvidersController.createProvider.bind(authProvidersController)
+   );
 
   fastify.put(
     "/providers/order",
@@ -181,16 +202,16 @@ export async function authProvidersRoutes(fastify: FastifyInstance) {
         operationId: "updateAuthProvider",
         summary: "Update authentication provider",
         description:
-          "Update configuration for a specific authentication provider. Use either issuerUrl for automatic discovery OR provide all three custom endpoints.",
-        params: z.object({
-          id: z.string(),
-        }),
-        body: z.any(),
-        response: {
-          200: z.object({
-            success: z.boolean(),
-            data: z.any(),
-          }),
+           "Update configuration for a specific authentication provider. Use either issuerUrl for automatic discovery OR provide all three custom endpoints.",
+         params: z.object({
+           id: z.string(),
+         }),
+         body: UpdateAuthProviderSchema,
+         response: {
+           200: z.object({
+             success: z.boolean(),
+             data: AuthProviderResponseSchema,
+           }),
           400: z.object({
             success: z.boolean(),
             error: z.string(),

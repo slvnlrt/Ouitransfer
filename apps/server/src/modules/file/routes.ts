@@ -46,6 +46,7 @@ export async function fileRoutes(app: FastifyInstance) {
   app.post(
     "/files",
     {
+      preValidation,
       schema: {
         tags: ["File"],
         operationId: "registerFile",

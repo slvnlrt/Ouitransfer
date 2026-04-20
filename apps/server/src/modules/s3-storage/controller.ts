@@ -13,6 +13,7 @@
 
 import { FastifyReply, FastifyRequest } from "fastify";
 
+import { prisma } from "../../shared/prisma";
 import { S3StorageProvider } from "../../providers/s3-storage.provider";
 
 export class S3StorageController {
@@ -24,10 +25,16 @@ export class S3StorageController {
    */
   async getUploadUrl(request: FastifyRequest, reply: FastifyReply) {
     try {
+      const userId = (request as any).user?.userId;
       const { objectName, expires } = request.body as { objectName: string; expires?: number };
 
       if (!objectName) {
         return reply.status(400).send({ error: "objectName is required" });
+      }
+
+      // Enforce ownership: objectName must be scoped to the authenticated user
+      if (!objectName.startsWith(`${userId}/`)) {
+        return reply.status(403).send({ error: "Access denied: objectName must be prefixed with your user ID." });
       }
 
       const expiresIn = expires || 3600; // 1 hour default
@@ -64,6 +71,7 @@ export class S3StorageController {
    */
   async getDownloadUrl(request: FastifyRequest, reply: FastifyReply) {
     try {
+      const userId = (request as any).user?.userId;
       const { objectName, expires, fileName } = request.query as {
         objectName: string;
         expires?: string;
@@ -74,10 +82,10 @@ export class S3StorageController {
         return reply.status(400).send({ error: "objectName is required" });
       }
 
-      // Check if file exists
-      const exists = await this.storageProvider.fileExists(objectName);
-      if (!exists) {
-        return reply.status(404).send({ error: "File not found" });
+      // Verify the file exists in the DB and belongs to the authenticated user
+      const file = await prisma.file.findFirst({ where: { objectName, userId } });
+      if (!file) {
+        return reply.status(403).send({ error: "Access denied" });
       }
 
       const expiresIn = expires ? parseInt(expires, 10) : 3600;
@@ -131,10 +139,17 @@ export class S3StorageController {
    */
   async deleteObject(request: FastifyRequest, reply: FastifyReply) {
     try {
+      const userId = (request as any).user?.userId;
       const { objectName } = request.params as { objectName: string };
 
       if (!objectName) {
         return reply.status(400).send({ error: "objectName is required" });
+      }
+
+      // Verify the file exists in the DB and belongs to the authenticated user
+      const file = await prisma.file.findFirst({ where: { objectName, userId } });
+      if (!file) {
+        return reply.status(403).send({ error: "Access denied" });
       }
 
       await this.storageProvider.deleteObject(objectName);
@@ -154,10 +169,17 @@ export class S3StorageController {
    */
   async checkExists(request: FastifyRequest, reply: FastifyReply) {
     try {
+      const userId = (request as any).user?.userId;
       const { objectName } = request.query as { objectName: string };
 
       if (!objectName) {
         return reply.status(400).send({ error: "objectName is required" });
+      }
+
+      // Verify the file exists in the DB and belongs to the authenticated user
+      const file = await prisma.file.findFirst({ where: { objectName, userId } });
+      if (!file) {
+        return reply.status(403).send({ error: "Access denied" });
       }
 
       const exists = await this.storageProvider.fileExists(objectName);

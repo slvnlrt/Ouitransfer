@@ -26,6 +26,7 @@ export async function folderRoutes(app: FastifyInstance) {
   app.post(
     "/folders",
     {
+      preValidation,
       schema: {
         tags: ["Folder"],
         operationId: "registerFolder",

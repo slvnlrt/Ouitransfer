@@ -119,6 +119,7 @@ export async function shareRoutes(app: FastifyInstance) {
   app.delete(
     "/shares/:id",
     {
+      preValidation,
       schema: {
         tags: ["Share"],
         operationId: "deleteShare",

@@ -18,7 +18,6 @@ export class FolderController {
 
   async registerFolder(request: FastifyRequest, reply: FastifyReply) {
     try {
-      await request.jwtVerify();
       const userId = (request as any).user?.userId;
       if (!userId) {
         return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
