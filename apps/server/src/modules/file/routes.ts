@@ -19,6 +19,12 @@ export async function fileRoutes(app: FastifyInstance) {
   app.get(
     "/files/presigned-url",
     {
+      config: {
+        rateLimit: {
+          max: 30,
+          timeWindow: "1 minute",
+        },
+      },
       preValidation,
       schema: {
         tags: ["File"],
@@ -106,15 +112,16 @@ export async function fileRoutes(app: FastifyInstance) {
     fileController.checkFile.bind(fileController)
   );
 
-  app.get(
+  app.post(
     "/files/download-url",
     {
       schema: {
         tags: ["File"],
         operationId: "getDownloadUrl",
         summary: "Get Download URL",
-        description: "Generates a pre-signed URL for downloading a file",
-        querystring: z.object({
+        description:
+          "Generates a pre-signed URL for downloading a file. Password must be sent in the request body, never as a query parameter.",
+        body: z.object({
           objectName: z.string().min(1, "The objectName is required"),
           password: z.string().optional().describe("Share password if required"),
         }),
@@ -124,6 +131,7 @@ export async function fileRoutes(app: FastifyInstance) {
             expiresIn: z.number().describe("The expiration time in seconds"),
           }),
           400: z.object({ error: z.string().describe("Error message") }),
+          401: z.object({ error: z.string().describe("Error message") }),
           404: z.object({ error: z.string().describe("Error message") }),
           500: z.object({ error: z.string().describe("Error message") }),
         },
@@ -155,15 +163,16 @@ export async function fileRoutes(app: FastifyInstance) {
     fileController.embedFile.bind(fileController)
   );
 
-  app.get(
+  app.post(
     "/files/download",
     {
       schema: {
         tags: ["File"],
         operationId: "downloadFile",
         summary: "Download File",
-        description: "Downloads a file directly (returns file content)",
-        querystring: z.object({
+        description:
+          "Downloads a file directly (returns file content). Password must be sent in the request body, never as a query parameter.",
+        body: z.object({
           objectName: z.string().min(1, "The objectName is required"),
           password: z.string().optional().describe("Share password if required"),
         }),

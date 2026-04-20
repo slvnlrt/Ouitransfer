@@ -38,7 +38,7 @@ export type ResetPasswordInput = BaseResetPasswordInput & {
 };
 
 export const CompleteTwoFactorLoginSchema = z.object({
-  userId: z.string().min(1, "User ID is required").describe("User ID"),
+  challengeToken: z.string().min(1, "Challenge token is required").describe("Server-issued challenge token from login step"),
   token: z.string().min(6, "Two-factor authentication code must be at least 6 characters").describe("2FA token"),
   rememberDevice: z.boolean().optional().default(false).describe("Remember this device for 30 days"),
 });

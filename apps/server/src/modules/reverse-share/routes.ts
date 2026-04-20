@@ -180,12 +180,38 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         operationId: "getReverseShareForUpload",
         summary: "Get Reverse Share for Upload (Public)",
         description:
-          "Get reverse share information for file upload. This is a public endpoint that allows anyone with the link to view upload requirements and restrictions. If password protected, provide password as query parameter.",
+          "Get reverse share information for file upload. This is a public endpoint for non-password-protected shares. For password-protected shares use POST /reverse-shares/:id/upload/access instead.",
         params: z.object({
           id: z.string().describe("Unique identifier of the reverse share"),
         }),
-        querystring: z.object({
-          password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
+        response: {
+          200: z.object({
+            reverseShare: ReverseSharePublicSchema,
+          }),
+          401: z.object({ error: z.string() }),
+          403: z.object({ error: z.string() }),
+          404: z.object({ error: z.string() }),
+          410: z.object({ error: z.string() }),
+        },
+      },
+    },
+    reverseShareController.getReverseShareForUpload.bind(reverseShareController)
+  );
+
+  app.post(
+    "/reverse-shares/:id/upload/access",
+    {
+      schema: {
+        tags: ["Reverse Share"],
+        operationId: "accessReverseShareForUploadWithPassword",
+        summary: "Access a password-protected reverse share for upload",
+        description:
+          "Get reverse share upload information by providing the password in the request body. Passwords must never be sent as query parameters.",
+        params: z.object({
+          id: z.string().describe("Unique identifier of the reverse share"),
+        }),
+        body: z.object({
+          password: z.string().min(1, "Password is required").describe("Password for the reverse share"),
         }),
         response: {
           200: z.object({
@@ -209,12 +235,38 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         operationId: "getReverseShareForUploadByAlias",
         summary: "Get Reverse Share for Upload by Alias (Public)",
         description:
-          "Get reverse share information for file upload using alias. This is a public endpoint that allows anyone with the alias to view upload requirements and restrictions. If password protected, provide password as query parameter.",
+          "Get reverse share information for file upload using alias. For password-protected shares use POST /reverse-shares/alias/:alias/upload/access instead.",
         params: z.object({
           alias: z.string().describe("Alias of the reverse share"),
         }),
-        querystring: z.object({
-          password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
+        response: {
+          200: z.object({
+            reverseShare: ReverseSharePublicSchema,
+          }),
+          401: z.object({ error: z.string() }),
+          403: z.object({ error: z.string() }),
+          404: z.object({ error: z.string() }),
+          410: z.object({ error: z.string() }),
+        },
+      },
+    },
+    reverseShareController.getReverseShareForUploadByAlias.bind(reverseShareController)
+  );
+
+  app.post(
+    "/reverse-shares/alias/:alias/upload/access",
+    {
+      schema: {
+        tags: ["Reverse Share"],
+        operationId: "accessReverseShareForUploadByAliasWithPassword",
+        summary: "Access a password-protected reverse share for upload by alias",
+        description:
+          "Get reverse share upload information by alias by providing the password in the request body. Passwords must never be sent as query parameters.",
+        params: z.object({
+          alias: z.string().describe("Alias of the reverse share"),
+        }),
+        body: z.object({
+          password: z.string().min(1, "Password is required").describe("Password for the reverse share"),
         }),
         response: {
           200: z.object({
@@ -242,13 +294,13 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         params: z.object({
           id: z.string().describe("Unique identifier of the reverse share"),
         }),
-        querystring: z.object({
+        body: GetPresignedUrlSchema.extend({
           password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
         }),
-        body: GetPresignedUrlSchema,
         response: {
           200: z.object({
             url: z.string().describe("Presigned URL for file upload"),
+            objectName: z.string().describe("Server-generated object name to use when registering the file"),
             expiresIn: z.number().describe("URL expiration time in seconds"),
           }),
           401: z.object({ error: z.string() }),
@@ -273,13 +325,13 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         params: z.object({
           alias: z.string().describe("Alias of the reverse share"),
         }),
-        querystring: z.object({
+        body: GetPresignedUrlSchema.extend({
           password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
         }),
-        body: GetPresignedUrlSchema,
         response: {
           200: z.object({
             url: z.string().describe("Presigned URL for file upload"),
+            objectName: z.string().describe("Server-generated object name to use when registering the file"),
             expiresIn: z.number().describe("URL expiration time in seconds"),
           }),
           401: z.object({ error: z.string() }),
@@ -304,10 +356,9 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         params: z.object({
           id: z.string().describe("Unique identifier of the reverse share"),
         }),
-        querystring: z.object({
+        body: UploadToReverseShareSchema.extend({
           password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
         }),
-        body: UploadToReverseShareSchema,
         response: {
           201: z.object({
             file: ReverseShareFileSchema,
@@ -335,10 +386,9 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         params: z.object({
           alias: z.string().describe("Alias of the reverse share"),
         }),
-        querystring: z.object({
+        body: UploadToReverseShareSchema.extend({
           password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
         }),
-        body: UploadToReverseShareSchema,
         response: {
           201: z.object({
             file: ReverseShareFileSchema,
@@ -606,12 +656,10 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         params: z.object({
           alias: z.string().describe("Alias of the reverse share"),
         }),
-        querystring: z.object({
-          password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
-        }),
         body: z.object({
           filename: z.string().min(1).describe("The filename without extension"),
           extension: z.string().min(1).describe("The file extension"),
+          password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
         }),
         response: {
           200: z.object({
@@ -631,22 +679,23 @@ export async function reverseShareRoutes(app: FastifyInstance) {
     reverseShareController.createMultipartUploadByAlias.bind(reverseShareController)
   );
 
-  app.get(
+  app.post(
     "/reverse-shares/alias/:alias/multipart/part-url",
     {
       schema: {
         tags: ["Reverse Share"],
         operationId: "getMultipartPartUrlByAlias",
         summary: "Get Presigned URL for Part (Public)",
-        description: "Gets a presigned URL for uploading a specific part of a multipart upload to a reverse share",
+        description:
+          "Gets a presigned URL for uploading a specific part of a multipart upload to a reverse share. Changed from GET to POST so that the password is sent in the request body rather than as a query parameter.",
         params: z.object({
           alias: z.string().describe("Alias of the reverse share"),
         }),
-        querystring: z.object({
-          password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
+        body: z.object({
           uploadId: z.string().min(1).describe("The multipart upload ID"),
           objectName: z.string().min(1).describe("The object name"),
           partNumber: z.string().min(1).describe("The part number (1-10000)"),
+          password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
         }),
         response: {
           200: z.object({
@@ -675,9 +724,6 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         params: z.object({
           alias: z.string().describe("Alias of the reverse share"),
         }),
-        querystring: z.object({
-          password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
-        }),
         body: z.object({
           uploadId: z.string().min(1).describe("The multipart upload ID"),
           objectName: z.string().min(1).describe("The object name"),
@@ -689,6 +735,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
               })
             )
             .describe("Array of uploaded parts"),
+          password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
         }),
         response: {
           200: z.object({
@@ -718,12 +765,10 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         params: z.object({
           alias: z.string().describe("Alias of the reverse share"),
         }),
-        querystring: z.object({
-          password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
-        }),
         body: z.object({
           uploadId: z.string().min(1).describe("The multipart upload ID"),
           objectName: z.string().min(1).describe("The object name"),
+          password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
         }),
         response: {
           200: z.object({

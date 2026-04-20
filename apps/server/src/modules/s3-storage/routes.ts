@@ -25,6 +25,12 @@ export async function s3StorageRoutes(app: FastifyInstance) {
   app.post(
     "/s3/upload-url",
     {
+      config: {
+        rateLimit: {
+          max: 30,
+          timeWindow: "1 minute",
+        },
+      },
       preValidation,
       schema: {
         tags: ["S3 Storage"],

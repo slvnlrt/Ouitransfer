@@ -1,3 +1,5 @@
+import crypto from "node:crypto";
+
 import { PrismaClient } from "@prisma/client";
 
 import { env } from "../../env";
@@ -203,7 +205,7 @@ export class ReverseShareService {
     return ReverseShareResponseSchema.parse(this.formatReverseShareResponse(deletedReverseShare));
   }
 
-  async getPresignedUrl(id: string, objectName: string, password?: string) {
+  async getPresignedUrl(id: string, filename: string, extension: string, password?: string) {
     const reverseShare = await this.reverseShareRepository.findById(id);
     if (!reverseShare) {
       throw new Error("Reverse share not found");
@@ -227,6 +229,10 @@ export class ReverseShareService {
       }
     }
 
+    // Generate objectName server-side to prevent path injection / overwrite attacks
+    const sanitizedFilename = filename.replace(/[^a-zA-Z0-9._-]/g, "_").substring(0, 100);
+    const objectName = `reverse-shares/${id}/${Date.now()}-${crypto.randomUUID()}-${sanitizedFilename}.${extension}`;
+
     const expires = parseInt(env.PRESIGNED_URL_EXPIRATION);
 
     // Import storage config to check if using internal or external S3
@@ -237,15 +243,15 @@ export class ReverseShareService {
       // Note: This would need request context, but reverse-shares are typically used by external users
       // For now, we'll use presigned URLs and handle the error on the client side
       const url = await this.fileService.getPresignedPutUrl(objectName, expires);
-      return { url, expiresIn: expires };
+      return { url, objectName, expiresIn: expires };
     } else {
       // External S3: Use presigned URLs directly (more efficient)
       const url = await this.fileService.getPresignedPutUrl(objectName, expires);
-      return { url, expiresIn: expires };
+      return { url, objectName, expiresIn: expires };
     }
   }
 
-  async getPresignedUrlByAlias(alias: string, objectName: string, password?: string) {
+  async getPresignedUrlByAlias(alias: string, filename: string, extension: string, password?: string) {
     const reverseShare = await this.reverseShareRepository.findByAlias(alias);
     if (!reverseShare) {
       throw new Error("Reverse share not found");
@@ -269,6 +275,11 @@ export class ReverseShareService {
       }
     }
 
+    // Generate objectName server-side to prevent path injection / overwrite attacks
+    // Use the resolved reverseShare.id (not the alias) as the namespace
+    const sanitizedFilename = filename.replace(/[^a-zA-Z0-9._-]/g, "_").substring(0, 100);
+    const objectName = `reverse-shares/${reverseShare.id}/${Date.now()}-${crypto.randomUUID()}-${sanitizedFilename}.${extension}`;
+
     const expires = parseInt(env.PRESIGNED_URL_EXPIRATION);
 
     // Import storage config to check if using internal or external S3
@@ -279,11 +290,11 @@ export class ReverseShareService {
       // Note: This would need request context, but reverse-shares are typically used by external users
       // For now, we'll use presigned URLs and handle the error on the client side
       const url = await this.fileService.getPresignedPutUrl(objectName, expires);
-      return { url, expiresIn: expires };
+      return { url, objectName, expiresIn: expires };
     } else {
       // External S3: Use presigned URLs directly (more efficient)
       const url = await this.fileService.getPresignedPutUrl(objectName, expires);
-      return { url, expiresIn: expires };
+      return { url, objectName, expiresIn: expires };
     }
   }
 

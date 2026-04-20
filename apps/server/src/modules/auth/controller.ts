@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 
 import { env } from "../../env";
 import { ConfigService } from "../config/service";
+import { createChallengeToken, verifyChallengeToken } from "./challenge";
 import {
   CompleteTwoFactorLoginSchema,
   createResetPasswordSchema,
@@ -31,7 +32,12 @@ export class AuthController {
       const result = await this.authService.login(input, userAgent, ipAddress);
 
       if ("requiresTwoFactor" in result) {
-        return reply.send(result);
+        const challengeToken = await createChallengeToken(result.userId);
+        return reply.send({
+          requiresTwoFactor: true,
+          challengeToken,
+          message: result.message,
+        });
       }
 
       const user = result;
@@ -56,9 +62,13 @@ export class AuthController {
   async completeTwoFactorLogin(request: FastifyRequest, reply: FastifyReply) {
     try {
       const input = CompleteTwoFactorLoginSchema.parse(request.body);
+
+      // Verify the challenge token instead of trusting a raw userId
+      const userId = await verifyChallengeToken(input.challengeToken);
+
       const { userAgent, ipAddress } = this.getClientInfo(request);
       const user = await this.authService.completeTwoFactorLogin(
-        input.userId,
+        userId,
         input.token,
         input.rememberDevice,
         userAgent,

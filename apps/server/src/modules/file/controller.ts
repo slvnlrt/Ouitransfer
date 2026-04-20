@@ -199,7 +199,8 @@ export class FileController {
 
   async getDownloadUrl(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { objectName, password } = request.query as {
+      // Password moved from query param to request body (security: passwords must not appear in URLs)
+      const { objectName, password } = request.body as {
         objectName: string;
         password?: string;
       };
@@ -270,7 +271,8 @@ export class FileController {
 
   async downloadFile(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { objectName, password } = request.query as {
+      // Password moved from query param to request body (security: passwords must not appear in URLs)
+      const { objectName, password } = request.body as {
         objectName: string;
         password?: string;
       };

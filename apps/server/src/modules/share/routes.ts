@@ -74,12 +74,37 @@ export async function shareRoutes(app: FastifyInstance) {
         tags: ["Share"],
         operationId: "getShare",
         summary: "Get a share by ID",
-        description: "Get a share by ID",
+        description: "Get a share by ID. For password-protected shares use POST /shares/:shareId/access instead.",
         params: z.object({
           shareId: z.string().describe("The share ID"),
         }),
-        querystring: z.object({
-          password: z.string().optional().describe("The share password"),
+        response: {
+          200: z.object({
+            share: ShareResponseSchema,
+          }),
+          400: z.object({ error: z.string().describe("Error message") }),
+          401: z.object({ error: z.string().describe("Error message") }),
+          404: z.object({ error: z.string().describe("Error message") }),
+        },
+      },
+    },
+    shareController.getShare.bind(shareController)
+  );
+
+  app.post(
+    "/shares/:shareId/access",
+    {
+      schema: {
+        tags: ["Share"],
+        operationId: "accessShareWithPassword",
+        summary: "Access a password-protected share",
+        description:
+          "Access a password-protected share by providing the password in the request body. Passwords must never be sent as query parameters.",
+        params: z.object({
+          shareId: z.string().describe("The share ID"),
+        }),
+        body: z.object({
+          password: z.string().min(1, "Password is required").describe("The share password"),
         }),
         response: {
           200: z.object({
@@ -303,16 +328,44 @@ export async function shareRoutes(app: FastifyInstance) {
         tags: ["Share"],
         operationId: "getShareByAlias",
         summary: "Get share by alias",
+        description: "Get a share by alias. For password-protected shares use POST /shares/alias/:alias/access instead.",
         params: z.object({
           alias: z.string().describe("The share alias"),
-        }),
-        querystring: z.object({
-          password: z.string().optional().describe("The share password"),
         }),
         response: {
           200: z.object({
             share: ShareResponseSchema,
           }),
+          400: z.object({ error: z.string() }),
+          401: z.object({ error: z.string() }),
+          404: z.object({ error: z.string() }),
+        },
+      },
+    },
+    shareController.getShareByAlias.bind(shareController)
+  );
+
+  app.post(
+    "/shares/alias/:alias/access",
+    {
+      schema: {
+        tags: ["Share"],
+        operationId: "accessShareByAliasWithPassword",
+        summary: "Access a password-protected share by alias",
+        description:
+          "Access a password-protected share by alias, providing the password in the request body. Passwords must never be sent as query parameters.",
+        params: z.object({
+          alias: z.string().describe("The share alias"),
+        }),
+        body: z.object({
+          password: z.string().min(1, "Password is required").describe("The share password"),
+        }),
+        response: {
+          200: z.object({
+            share: ShareResponseSchema,
+          }),
+          400: z.object({ error: z.string() }),
+          401: z.object({ error: z.string() }),
           404: z.object({ error: z.string() }),
         },
       },

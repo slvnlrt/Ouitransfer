@@ -3,6 +3,7 @@ import * as http from "node:http";
 import fastifyCookie from "@fastify/cookie";
 import { fastifyCors } from "@fastify/cors";
 import fastifyJwt from "@fastify/jwt";
+import rateLimit from "@fastify/rate-limit";
 import { fastifySwaggerUi } from "@fastify/swagger-ui";
 import { fastify } from "fastify";
 import { serializerCompiler, validatorCompiler, ZodTypeProvider } from "fastify-type-provider-zod";
@@ -81,6 +82,20 @@ export async function buildApp() {
       }
     },
     credentials: true,
+  });
+
+  await app.register(rateLimit, {
+    max: 100,
+    timeWindow: "1 minute",
+    // Trust proxy headers for IP detection
+    keyGenerator: (request) => {
+      return (request.headers["x-forwarded-for"] as string) || request.ip;
+    },
+    errorResponseBuilder: (request, context) => ({
+      error: "Too many requests",
+      message: `Rate limit exceeded. Try again in ${Math.ceil(context.ttl / 1000)} seconds.`,
+      retryAfter: Math.ceil(context.ttl / 1000),
+    }),
   });
 
   app.register(fastifyCookie);

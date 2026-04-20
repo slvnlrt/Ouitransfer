@@ -72,7 +72,9 @@ export class ReverseShareController {
   async getReverseShareForUpload(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { id } = request.params as { id: string };
-      const { password } = request.query as { password?: string };
+      // Accept password from body (POST .../upload/access) or query (legacy GET, deprecated)
+      const password =
+        (request.body as any)?.password || (request.query as any)?.password;
 
       const reverseShare = await this.reverseShareService.getReverseShareForUpload(id, password);
       return reply.send({ reverseShare });
@@ -96,7 +98,9 @@ export class ReverseShareController {
   async getReverseShareForUploadByAlias(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { alias } = request.params as { alias: string };
-      const { password } = request.query as { password?: string };
+      // Accept password from body (POST .../upload/access) or query (legacy GET, deprecated)
+      const password =
+        (request.body as any)?.password || (request.query as any)?.password;
 
       const reverseShare = await this.reverseShareService.getReverseShareForUploadByAlias(alias, password);
       return reply.send({ reverseShare });
@@ -190,10 +194,14 @@ export class ReverseShareController {
   async getPresignedUrl(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { id } = request.params as { id: string };
-      const { password } = request.query as { password?: string };
-      const { objectName } = request.body as { objectName: string };
+      // Password moved from query param to request body (security: passwords must not appear in URLs)
+      const { filename, extension, password } = request.body as {
+        filename: string;
+        extension: string;
+        password?: string;
+      };
 
-      const result = await this.reverseShareService.getPresignedUrl(id, objectName, password);
+      const result = await this.reverseShareService.getPresignedUrl(id, filename, extension, password);
       return reply.send(result);
     } catch (error: any) {
       console.error("Get Presigned URL Error:", error);
@@ -216,10 +224,14 @@ export class ReverseShareController {
   async getPresignedUrlByAlias(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { alias } = request.params as { alias: string };
-      const { password } = request.query as { password?: string };
-      const { objectName } = request.body as { objectName: string };
+      // Password moved from query param to request body (security: passwords must not appear in URLs)
+      const { filename, extension, password } = request.body as {
+        filename: string;
+        extension: string;
+        password?: string;
+      };
 
-      const result = await this.reverseShareService.getPresignedUrlByAlias(alias, objectName, password);
+      const result = await this.reverseShareService.getPresignedUrlByAlias(alias, filename, extension, password);
       return reply.send(result);
     } catch (error: any) {
       console.error("Get Presigned URL by Alias Error:", error);
@@ -242,8 +254,9 @@ export class ReverseShareController {
   async registerFileUpload(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { id } = request.params as { id: string };
-      const { password } = request.query as { password?: string };
-      const fileData = UploadToReverseShareSchema.parse(request.body);
+      // Password moved from query param to request body (security: passwords must not appear in URLs)
+      const { password, ...bodyWithoutPassword } = request.body as { password?: string; [key: string]: unknown };
+      const fileData = UploadToReverseShareSchema.parse(bodyWithoutPassword);
 
       const file = await this.reverseShareService.registerFileUpload(id, fileData, password);
       return reply.status(201).send({ file });
@@ -277,8 +290,9 @@ export class ReverseShareController {
   async registerFileUploadByAlias(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { alias } = request.params as { alias: string };
-      const { password } = request.query as { password?: string };
-      const fileData = UploadToReverseShareSchema.parse(request.body);
+      // Password moved from query param to request body (security: passwords must not appear in URLs)
+      const { password, ...bodyWithoutPassword } = request.body as { password?: string; [key: string]: unknown };
+      const fileData = UploadToReverseShareSchema.parse(bodyWithoutPassword);
 
       const file = await this.reverseShareService.registerFileUploadByAlias(alias, fileData, password);
       return reply.status(201).send({ file });
@@ -490,8 +504,12 @@ export class ReverseShareController {
   async createMultipartUploadByAlias(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { alias } = request.params as { alias: string };
-      const { password } = request.query as { password?: string };
-      const { filename, extension } = request.body as { filename: string; extension: string };
+      // Password moved from query param to request body (security: passwords must not appear in URLs)
+      const { filename, extension, password } = request.body as {
+        filename: string;
+        extension: string;
+        password?: string;
+      };
 
       if (!filename || !extension) {
         return reply.status(400).send({ error: "filename and extension are required" });
@@ -524,11 +542,12 @@ export class ReverseShareController {
   async getMultipartPartUrlByAlias(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { alias } = request.params as { alias: string };
-      const { password, uploadId, objectName, partNumber } = request.query as {
-        password?: string;
+      // Moved from query params to request body (route changed GET→POST; passwords must not appear in URLs)
+      const { uploadId, objectName, partNumber, password } = request.body as {
         uploadId: string;
         objectName: string;
         partNumber: string;
+        password?: string;
       };
 
       if (!uploadId || !objectName || !partNumber) {
@@ -569,11 +588,12 @@ export class ReverseShareController {
   async completeMultipartUploadByAlias(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { alias } = request.params as { alias: string };
-      const { password } = request.query as { password?: string };
-      const { uploadId, objectName, parts } = request.body as {
+      // Password moved from query param to request body (security: passwords must not appear in URLs)
+      const { uploadId, objectName, parts, password } = request.body as {
         uploadId: string;
         objectName: string;
         parts: Array<{ PartNumber: number; ETag: string }>;
+        password?: string;
       };
 
       if (!uploadId || !objectName || !parts || !Array.isArray(parts)) {
@@ -609,10 +629,11 @@ export class ReverseShareController {
   async abortMultipartUploadByAlias(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { alias } = request.params as { alias: string };
-      const { password } = request.query as { password?: string };
-      const { uploadId, objectName } = request.body as {
+      // Password moved from query param to request body (security: passwords must not appear in URLs)
+      const { uploadId, objectName, password } = request.body as {
         uploadId: string;
         objectName: string;
+        password?: string;
       };
 
       if (!uploadId || !objectName) {

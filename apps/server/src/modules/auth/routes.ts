@@ -25,6 +25,12 @@ export async function authRoutes(app: FastifyInstance) {
   app.post(
     "/auth/login",
     {
+      config: {
+        rateLimit: {
+          max: 5,
+          timeWindow: "1 minute",
+        },
+      },
       schema: {
         tags: ["Authentication"],
         operationId: "login",
@@ -48,7 +54,7 @@ export async function authRoutes(app: FastifyInstance) {
             }),
             z.object({
               requiresTwoFactor: z.boolean().describe("Whether 2FA is required"),
-              userId: z.string().describe("User ID for 2FA verification"),
+              challengeToken: z.string().describe("Opaque challenge token for 2FA verification"),
               message: z.string().describe("2FA required message"),
             }),
           ]),
@@ -62,6 +68,12 @@ export async function authRoutes(app: FastifyInstance) {
   app.post(
     "/auth/2fa/login",
     {
+      config: {
+        rateLimit: {
+          max: 5,
+          timeWindow: "1 minute",
+        },
+      },
       schema: {
         tags: ["Authentication"],
         operationId: "completeTwoFactorLogin",
@@ -108,6 +120,12 @@ export async function authRoutes(app: FastifyInstance) {
   app.post(
     "/auth/forgot-password",
     {
+      config: {
+        rateLimit: {
+          max: 3,
+          timeWindow: "1 minute",
+        },
+      },
       schema: {
         tags: ["Authentication"],
         operationId: "requestPasswordReset",
@@ -128,6 +146,12 @@ export async function authRoutes(app: FastifyInstance) {
   app.post(
     "/auth/reset-password",
     {
+      config: {
+        rateLimit: {
+          max: 3,
+          timeWindow: "1 minute",
+        },
+      },
       preValidation: validatePasswordMiddleware,
       schema: {
         tags: ["Authentication"],

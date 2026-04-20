@@ -78,6 +78,12 @@ export async function twoFactorRoutes(app: FastifyInstance) {
   app.post(
     "/2fa/verify",
     {
+      config: {
+        rateLimit: {
+          max: 5,
+          timeWindow: "1 minute",
+        },
+      },
       preValidation,
       schema: {
         tags: ["Two-Factor Authentication"],
