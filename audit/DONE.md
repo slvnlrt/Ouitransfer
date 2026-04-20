@@ -48,3 +48,30 @@
 - **Files**: `apps/server/src/app.ts`
 - **Change**: `removeAdditional: false` -> `removeAdditional: "all"`
 - **Verified**: PASS (note: only affects Ajv-validated routes, not Zod-validated ones)
+
+### 0.3 — Add JWT preValidation to all /s3/* routes
+- **Date**: 2026-04-20
+- **Files**: `apps/server/src/modules/s3-storage/routes.ts`, `apps/server/src/modules/s3-storage/controller.ts`
+- **Change**: Added JWT preValidation hook to all 4 routes. Controller now validates ownership: upload-url checks objectName prefix `{userId}/`, download-url/delete/exists check DB ownership via `prisma.file.findFirst`
+- **Verified**: PASS
+- **Follow-up**: Harden prefix check against path traversal (`..`), add `!userId` early-return in getUploadUrl
+
+### 0.7 — Replace exec() with native fs.statfs()
+- **Date**: 2026-04-20
+- **Files**: `apps/server/src/modules/storage/service.ts`
+- **Change**: Removed `child_process` exec entirely (406→177 lines). Replaced with Node.js native `statfs()`. Removed 5 shell-parsing methods. Also fixed rogue PrismaClient instance → shared singleton
+- **Verified**: PASS
+
+### 0.14 — Move auth checks to preValidation hooks
+- **Date**: 2026-04-20
+- **Files**: `apps/server/src/modules/file/routes.ts`, `apps/server/src/modules/folder/routes.ts`, `apps/server/src/modules/share/routes.ts`, `apps/server/src/modules/file/controller.ts`, `apps/server/src/modules/folder/controller.ts`, `apps/server/src/modules/share/controller.ts`
+- **Change**: Added preValidation to POST /files, POST /folders, DELETE /shares/:id. Removed redundant `await request.jwtVerify()` from corresponding controller methods
+- **Verified**: PASS
+- **Follow-up**: Other controller methods still have redundant in-handler jwtVerify calls (double verification). Complete migration in a future pass
+
+### 0.15 — Replace z.any() with proper Zod schema on auth provider update
+- **Date**: 2026-04-20
+- **Files**: `apps/server/src/modules/auth-providers/routes.ts`
+- **Change**: Used existing `UpdateAuthProviderSchema` for PUT /providers/:id body. Defined `AuthProviderResponseSchema` for all admin response schemas. Zero `z.any()` remaining in file
+- **Verified**: PASS
+- **Follow-up**: Audit whether `clientSecret` should be excluded from admin GET responses to prevent secret leakage
