@@ -141,26 +141,55 @@ export async function fileRoutes(app: FastifyInstance) {
   );
 
   app.get(
-    "/embed/:id",
+    "/embed/:token",
     {
       schema: {
         tags: ["File"],
         operationId: "embedFile",
-        summary: "Embed File (Public Access)",
+        summary: "Embed File (Token-Based Access)",
         description:
-          "Returns a media file (image/video/audio) for public embedding without authentication. Only works for media files.",
+          "Returns a media file using a signed embed token. Tokens are generated via POST /files/embed-token.",
         params: z.object({
-          id: z.string().min(1, "File ID is required").describe("The file ID"),
+          token: z.string().min(1, "Embed token is required").describe("Signed embed token"),
         }),
         response: {
           400: z.object({ error: z.string().describe("Error message") }),
+          401: z.object({ error: z.string().describe("Error message - invalid token") }),
           403: z.object({ error: z.string().describe("Error message - not a media file") }),
           404: z.object({ error: z.string().describe("Error message") }),
+          410: z.object({ error: z.string().describe("Error message - share expired") }),
           500: z.object({ error: z.string().describe("Error message") }),
         },
       },
     },
     fileController.embedFile.bind(fileController)
+  );
+
+  app.post(
+    "/files/embed-token",
+    {
+      preValidation,
+      schema: {
+        tags: ["File"],
+        operationId: "generateEmbedToken",
+        summary: "Generate Embed Token",
+        description:
+          "Creates a signed embed token for a file in a share. Only the share owner can generate tokens. Token expires in 24h.",
+        body: z.object({
+          fileId: z.string().min(1, "File ID is required").describe("The file ID"),
+          shareId: z.string().min(1, "Share ID is required").describe("The share ID containing the file"),
+        }),
+        response: {
+          200: z.object({
+            token: z.string().describe("Signed embed token"),
+            embedUrl: z.string().describe("Embed URL path"),
+          }),
+          401: z.object({ error: z.string().describe("Error message") }),
+          403: z.object({ error: z.string().describe("Error message") }),
+        },
+      },
+    },
+    fileController.generateEmbedToken.bind(fileController)
   );
 
   app.post(

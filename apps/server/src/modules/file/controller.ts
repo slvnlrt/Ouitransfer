@@ -22,6 +22,7 @@ import {
   UpdateFileInput,
   UpdateFileSchema,
 } from "./dto";
+import { createEmbedToken, verifyEmbedToken } from "./embed-token";
 import { FileService } from "./service";
 
 export class FileController {
@@ -583,45 +584,97 @@ export class FileController {
 
   async embedFile(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { id } = request.params as { id: string };
+      const { token } = request.params as { token: string };
 
-      if (!id) {
-        return reply.status(400).send({ error: "File ID is required." });
+      if (!token) {
+        return reply.status(400).send({ error: "Embed token is required." });
       }
 
-      const fileRecord = await prisma.file.findUnique({ where: { id } });
+      // Verify the signed embed token
+      let fileId: string, shareId: string;
+      try {
+        ({ fileId, shareId } = await verifyEmbedToken(token));
+      } catch {
+        return reply.status(401).send({ error: "Invalid or expired embed token." });
+      }
 
+      // Verify the share still exists and contains this file
+      const share = await prisma.share.findUnique({
+        where: { id: shareId },
+        include: {
+          files: { where: { id: fileId }, select: { id: true } },
+        },
+      });
+
+      if (!share || share.files.length === 0) {
+        return reply.status(404).send({ error: "File not found or share revoked." });
+      }
+
+      // Check share expiration
+      if (share.expiration && new Date(share.expiration) < new Date()) {
+        return reply.status(410).send({ error: "Share has expired." });
+      }
+
+      // Load the file record
+      const fileRecord = await prisma.file.findUnique({ where: { id: fileId } });
       if (!fileRecord) {
         return reply.status(404).send({ error: "File not found." });
       }
 
+      // Media type check
       const extension = fileRecord.extension.toLowerCase();
       const imageExts = ["jpg", "jpeg", "png", "gif", "webp", "svg", "bmp", "ico", "avif"];
       const videoExts = ["mp4", "webm", "ogg", "mov", "avi", "mkv", "flv", "wmv"];
       const audioExts = ["mp3", "wav", "ogg", "m4a", "flac", "aac", "wma"];
-
       const isMedia = imageExts.includes(extension) || videoExts.includes(extension) || audioExts.includes(extension);
 
       if (!isMedia) {
-        return reply.status(403).send({
-          error: "Embed is only allowed for images, videos, and audio files.",
-        });
+        return reply.status(403).send({ error: "Embed is only allowed for media files." });
       }
 
       // Stream from S3/MinIO
       const stream = await this.fileService.getObjectStream(fileRecord.objectName);
       const contentType = getContentType(fileRecord.name);
-      const fileName = fileRecord.name;
 
       reply.header("Content-Type", contentType);
-      reply.header("Content-Disposition", `inline; filename="${encodeURIComponent(fileName)}"`);
+      reply.header("Content-Disposition", `inline; filename="${encodeURIComponent(fileRecord.name)}"`);
       reply.header("Content-Length", fileRecord.size.toString());
-      reply.header("Cache-Control", "public, max-age=31536000"); // Cache por 1 ano
+      reply.header("Cache-Control", "public, max-age=86400");
 
       return reply.send(stream);
     } catch (error) {
       console.error("Error in embedFile:", error);
       return reply.status(500).send({ error: "Internal server error." });
+    }
+  }
+
+  async generateEmbedToken(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const userId = (request as any).user?.userId;
+      if (!userId) {
+        return reply.status(401).send({ error: "Unauthorized" });
+      }
+
+      const { fileId, shareId } = request.body as { fileId: string; shareId: string };
+
+      // Verify the share exists, belongs to user, and contains this file
+      const share = await prisma.share.findFirst({
+        where: {
+          id: shareId,
+          creatorId: userId,
+          files: { some: { id: fileId } },
+        },
+      });
+
+      if (!share) {
+        return reply.status(403).send({ error: "Access denied: share not found or file not in share." });
+      }
+
+      const token = await createEmbedToken(fileId, shareId);
+      return reply.send({ token, embedUrl: `/embed/${token}` });
+    } catch (error: any) {
+      console.error("Error generating embed token:", error);
+      return reply.status(400).send({ error: error.message });
     }
   }
 
