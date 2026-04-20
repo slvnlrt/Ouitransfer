@@ -75,3 +75,25 @@
 - **Change**: Used existing `UpdateAuthProviderSchema` for PUT /providers/:id body. Defined `AuthProviderResponseSchema` for all admin response schemas. Zero `z.any()` remaining in file
 - **Verified**: PASS
 - **Follow-up**: Audit whether `clientSecret` should be excluded from admin GET responses to prevent secret leakage
+
+---
+
+## Reviewer Follow-ups (State-of-the-Art Improvements)
+
+> Items identified during review of batches 1 & 2. Not blocking but required for production-grade quality.
+
+### From Batch 1 Review
+
+- [ ] **Audit `request.file()`/`request.files()` callers** — Confirm no route uploads raw file bytes >50MB through Fastify multipart (all large uploads should use S3 presigned URLs)
+- [ ] **Compile realistic default ALLOWED_IMAGE_HOSTS** — Current localhost-only default will break images post-deploy. Need Gravatar, OAuth avatar hosts, STORAGE_URL host at minimum
+- [ ] **CORS cleanup** — Drop unused `http://localhost:3000` from defaults (no app uses port 3000); add production-mode warning when `CORS_ORIGINS` env var is unset
+- [ ] **ALLOWED_IMAGE_HOSTS: support http:// and wildcard subdomains** — Custom-host branch forces HTTPS only. Support `http://host` syntax for dev/LAN setups. Add `*.example.com` wildcard subdomain support. Verify port behavior with Next 15
+- [ ] **Fix 7-space indent in `reverse-share/routes.ts:389`** — Minor formatting inconsistency
+- [ ] **Add `.strict()` to critical Zod schemas** — `removeAdditional: "all"` only strips via Ajv; Zod routes need `.strict()` on security-critical DTOs (login, auth-providers, etc.)
+
+### From Batch 2 Review
+
+- [ ] **Harden S3 objectName prefix check against path traversal** — `objectName.startsWith(\`${userId}/\`)` accepts `userId/../other-user/file`. Reject `..` segments or normalize with `path.posix.normalize` then re-verify prefix
+- [ ] **Add `!userId` early-return in `S3StorageController.getUploadUrl`** — Before the `startsWith` check, for defensive consistency with other S3 methods
+- [ ] **Audit `clientSecret` exposure in `AuthProviderResponseSchema`** — Remove or scrub `clientSecret` from admin GET responses. OIDC secrets should never be returned to the client
+- [ ] **Complete preValidation migration** — Remove redundant `await request.jwtVerify()` from ALL handlers whose routes already have `preValidation` (currently ~20+ instances of double verification)
