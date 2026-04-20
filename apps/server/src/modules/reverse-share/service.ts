@@ -826,10 +826,11 @@ export class ReverseShareService {
     extension: string,
     password?: string
   ): Promise<{ uploadId: string; objectName: string }> {
-    await this.validateReverseShareAccessByAlias(alias, password);
+    const reverseShare = await this.validateReverseShareAccessByAlias(alias, password);
 
-    // Generate unique object name using timestamp and random suffix
-    const objectName = `reverse-shares/${alias}/${Date.now()}-${Math.random().toString(36).substring(7)}-${filename}.${extension}`;
+    // Generate objectName server-side with reverseShare.id (not alias), sanitized filename, and crypto UUID
+    const sanitizedFilename = filename.replace(/[^a-zA-Z0-9._-]/g, "_").substring(0, 100);
+    const objectName = `reverse-shares/${reverseShare.id}/${Date.now()}-${crypto.randomUUID()}-${sanitizedFilename}.${extension}`;
 
     const uploadId = await this.fileService.createMultipartUpload(objectName);
 
