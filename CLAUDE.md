@@ -13,20 +13,26 @@ Ouitransfer is a self-hosted file transfer solution (WeTransfer alternative).
 ## Architecture
 ```
 D:\Code\Ouitransfer\
-  apps/server/     Fastify API, port 3333, ~74 TS files
-  apps/web/        Next.js frontend, port 3000 (dev) / 5487 (prod), ~403 TSX files
-  apps/docs/       Fumadocs site, port 3001, ~31 files
-  infra/           Docker, MinIO, deployment scripts
-  audit/           Audit reports and remediation tracking
+  apps/server/        Fastify API (ESM), port 3333, ~74 TS files
+  apps/web/           Next.js frontend, port 3000 (dev) / 5487 (prod), ~300 TSX files
+  apps/docs/          Fumadocs site, port 3001, ~31 files
+  packages/shared/    @ouitransfer/shared — shared utilities (mime-types, etc.)
+  packages/config/    @ouitransfer/config — shared tsconfig presets (base, server, nextjs)
+  infra/              Docker, MinIO, deployment scripts
+  audit/              Audit reports and remediation tracking
 ```
 
 ## Key Conventions
+- **Module system**: ESM throughout (server has `"type": "module"`, all relative imports use `.js` extensions)
 - **File naming**: kebab-case for files, PascalCase for React components
 - **Server modules**: `src/modules/{feature}/` with `controller.ts`, `service.ts`, `routes.ts`, `dto.ts`
+- **Shared code**: `packages/shared` for cross-app utilities — use subpath exports (`./mime-types`) not barrel exports
+- **Proxy layer**: Single catch-all handler at `apps/web/src/app/api/[...proxy]/route.ts` with route table in `proxy-routes.ts`
 - **Validation**: Zod schemas via `fastify-type-provider-zod`
 - **Auth**: JWT in httpOnly cookie, bcrypt, 2FA via otpauth (TOTP, RFC 6238)
 - **i18n**: next-intl, 22 languages, messages in `apps/web/messages/`
 - **UI**: shadcn/ui (new-york style), Radix primitives, lucide-react icons
+- **Dependency versions**: pnpm catalogs in `pnpm-workspace.yaml` for shared deps (2+ apps)
 
 ## Current State (Post-Audit)
 A comprehensive 8-dimension audit was completed. Score: 4.3/10. See `audit/` directory for full reports.
@@ -39,6 +45,12 @@ Frontend migrated to new POST endpoints. See `audit/DONE.md` for full details.
 pnpm workspace, Turborepo, Biome (replaces ESLint+Prettier), Vitest, Playwright, Lefthook,
 commitlint, GitHub Actions CI/CD, Knip, Renovate, Changesets. Dockerfile reworked for workspace.
 Phase 7 security deps also done: speakeasy→otpauth, crypto-js and react-qr-reader removed.
+
+### Phase 2 — Architecture Restructuring: COMPLETE
+`packages/shared` (mime-types), `packages/config` (tsconfig presets), unified TS 5.8.3,
+pnpm catalogs (20 shared deps), 110-route proxy → 3-file catch-all handler, docs build strictness
+enabled, Dockerfile updated for packages/. Server migrated to full ESM (`"type": "module"`).
+Review follow-ups: all critical/warning items fixed. Remaining guidance forwarded to Phases 3/5/6/8.
 
 ### Remediation Workflow
 Each phase follows this process:
@@ -62,10 +74,11 @@ audit/
   DONE.md                     Completed items log
   TODO-POST-PHASE-0.md        Reviewer follow-ups from Phase 0
   TODO-POST-PHASE-1.md        Reviewer follow-ups from Phase 1 (all resolved)
+  TODO-POST-PHASE-2.md        Reviewer follow-ups from Phase 2 (all resolved)
 ```
 
 ### Next Up
-- Phase 2 of CONSOLIDATED-TODO-LIST — Architecture Restructuring (shared packages, config consolidation, proxy rationalization)
+- Phase 3 of CONSOLIDATED-TODO-LIST — Code Quality & Type Safety
 
 ## Important: No Production, No Legacy
 The app is **not in production** and has no existing users. This means:

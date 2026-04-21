@@ -286,3 +286,147 @@
   - Date: 2026-04-21
   - Files: `apps/web/package.json`
   - Verified: PASS (grep confirms zero imports, react-qr-code intact)
+
+---
+
+## Phase 2: Architecture Restructuring
+
+### 2.1 — Create packages/shared for cross-app utilities (mime-types)
+- **Date**: 2026-04-21
+- **Files**: `packages/shared/package.json` (new), `packages/shared/tsconfig.json` (new), `packages/shared/src/mime-types.ts` (new), `apps/server/package.json`, `apps/web/package.json`, `apps/server/src/modules/file/controller.ts`, `apps/server/src/providers/s3-storage.provider.ts`, `apps/web/src/hooks/use-file-preview.ts`, `apps/web/src/app/api/(proxy)/reverse-shares/files/download/[fileId]/route.ts`
+- **Change**: Merged duplicate mime-types files (378 LOC server + 435 LOC web) into single `@ouitransfer/shared` workspace package (~330 LOC). Exports `getMimeType`, `getContentType`, `isImageMimeType`, `isAudioMimeType`, `isVideoMimeType`, `extractFilenameFromContentDisposition`, `detectMimeTypeWithFallback`. Updated 4 import sites. Deleted old `apps/server/src/utils/mime-types.ts` and `apps/web/src/utils/mime-types.ts`
+- **Verified**: PASS (web type-check passes, all imports resolve)
+
+### 2.2 — Create packages/config for shared tsconfig base
+- **Date**: 2026-04-21
+- **Files**: `packages/config/package.json` (new), `packages/config/tsconfig/base.json` (new), `packages/config/tsconfig/server.json` (new), `packages/config/tsconfig/nextjs.json` (new), `apps/server/tsconfig.json`, `apps/web/tsconfig.json`, `apps/docs/tsconfig.json`
+- **Change**: Extracted shared tsconfig settings (strict, esModuleInterop, skipLibCheck, etc.) into `@ouitransfer/config` base configs. Server extends `server.json` (node16 module), web/docs extend `nextjs.json` (bundler resolution). Removed unused `baseUrl`/`paths` from server tsconfig
+- **Verified**: PASS (web type-check passes; server pre-existing Prisma/any errors unchanged)
+
+### 2.3 — Unify TypeScript versions
+- **Date**: 2026-04-21
+- **Files**: `apps/server/package.json`
+- **Change**: Aligned server TypeScript from `^5.7.3` to `^5.8.3` (matching web/docs)
+- **Verified**: PASS
+
+### 2.4 — Remove ignoreDuringBuilds and ignoreBuildErrors from docs
+- **Date**: 2026-04-21
+- **Files**: `apps/docs/next.config.mjs`, `biome.json`, `apps/docs/src/components/KeyGenerator.tsx`, all docs source files (biome auto-fix)
+- **Change**: Removed `eslint.ignoreDuringBuilds: true` and `typescript.ignoreBuildErrors: true` from docs next.config. Added CSS Tailwind directive support to root biome.json (`css.parser.tailwindDirectives: true`). Fixed button missing `type` attribute. Auto-fixed CRLF, import sorting, `node:` protocol prefixes across all docs files
+- **Verified**: PASS (docs type-check and lint both pass with 0 errors)
+
+### 2.5 — Reduce 110-route proxy layer to catch-all handler
+- **Date**: 2026-04-21
+- **Files**: `apps/web/src/lib/proxy-routes.ts` (new), `apps/web/src/lib/proxy.ts` (new), `apps/web/src/app/api/[...proxy]/route.ts` (new), `apps/web/tsconfig.json`, deleted `apps/web/src/app/api/(proxy)/` (110 files)
+- **Change**: Replaced 110 individual proxy route files (~3,500+ LOC) with 3 files (~580 LOC): route config table (122 entries with feature flags), generic proxy handler (matching, header building, JSON/streaming/passthrough response builders), and catch-all Next.js route. Supports all 6 original patterns: json-simple, json-with-client-headers, streaming, passthrough-body, custom (body transforms, OAuth redirects), deprecated. `API_BASE_URL` defined once instead of 110 times
+- **Verified**: PASS (web type-check passes, lint clean)
+
+### 2.6 — Hoist shared dependencies via pnpm catalogs
+- **Date**: 2026-04-21
+- **Files**: `pnpm-workspace.yaml`, `package.json`, `apps/server/package.json`, `apps/web/package.json`, `apps/docs/package.json`
+- **Change**: Added pnpm `catalog:` protocol with 20 shared dependency versions (next, react, zod, typescript, vitest, tailwindcss, lucide-react, etc.). Converted 36 version specifiers across 4 package.json files to `catalog:`. Also aligned `@radix-ui/react-dialog` (^1.1.6 -> ^1.1.15) and `tw-animate-css` (^1.2.8 -> ^1.3.4)
+- **Verified**: PASS (pnpm install succeeds, web + docs type-check pass)
+
+### 2.7 — Align drifting dependency versions
+- **Date**: 2026-04-21
+- **Files**: `apps/server/package.json`, `apps/docs/package.json`
+- **Change**: Aligned `prisma` CLI `^6.3.1` -> `^6.11.0` (match @prisma/client), `@types/node` `^22.13.4` -> `^22.14.0`, `tailwind-merge` `^3.2.0` -> `^3.3.1`
+- **Verified**: PASS
+
+### 2.8 — Evaluate replacing supervisord with docker compose multi-container
+- **Date**: 2026-04-21
+- **Files**: `Dockerfile`
+- **Change**: **Decision: KEEP single-container supervisord approach.** Rationale: (1) Self-hosted product prioritizes zero-config UX — single `docker compose up` with one service is simplest for users. (2) MinIO is an internal implementation detail; exposing as separate container leaks abstraction. (3) No scaling needs for a file transfer tool. (4) Cross-container UID/GID permission dance + SQLite file locking adds fragility. (5) `ENABLE_S3=true` mode would require conditional service inclusion. **Additionally**: Updated Dockerfile to copy `packages/shared/` and `packages/config/` in both server and web build stages (required for workspace dependencies added in 2.1/2.2)
+- **Verified**: PASS (Dockerfile syntax correct, packages/ COPY added to all 4 affected stages)
+
+### Phase 2 Review Follow-ups
+
+### C1 — Shared package ESM/CJS incompatibility (critical)
+- **Date**: 2026-04-21
+- **Files**: `apps/server/package.json`, all 59 files in `apps/server/src/`, `packages/shared/tsconfig.json`, `packages/config/tsconfig/server.json`, `turbo.json`
+- **Change**: Full ESM migration. Added `"type": "module"` to server. Migrated ~152 relative imports to `.js` extensions. Converted `require("@scalar/fastify-api-reference")` to dynamic `import()`. Shared package now builds with tsc (removed `noEmit`). Server + shared tsconfigs use `nodenext` module/resolution. Turbo `dev` task now depends on `^build` so shared package builds first.
+- **Verified**: PASS (server type-check 0 ESM errors, shared build succeeds)
+
+### C2 — `body: "raw"` missing `duplex: "half"` flag (critical)
+- **Date**: 2026-04-21
+- **Files**: `apps/web/src/lib/proxy.ts`
+- **Change**: Extended duplex condition to cover both `body: "raw"` and `body: "duplex"` (both stream `req.body` as ReadableStream)
+- **Verified**: PASS
+
+### W2 — allResponseHeaders hop-by-hop filter
+- **Date**: 2026-04-21
+- **Files**: `apps/web/src/lib/proxy.ts`
+- **Change**: Added `HOP_BY_HOP_HEADERS` Set (transfer-encoding, connection, keep-alive, upgrade, etc.). Filter them from `buildAllHeadersResponse`. Use `.append()` for Set-Cookie instead of `.set()`.
+- **Verified**: PASS
+
+### W3 — DELETE methods no longer send empty JSON body
+- **Date**: 2026-04-21
+- **Files**: `apps/web/src/lib/proxy.ts`
+- **Change**: Skip body/Content-Type for DELETE unless `bodyTransform` is configured. DELETE with bodyTransform (shares items) still works.
+- **Verified**: PASS
+
+### W4 — Redirect status preservation
+- **Date**: 2026-04-21
+- **Files**: `apps/web/src/lib/proxy.ts`
+- **Change**: Replaced `NextResponse.redirect()` (forces 307) with `new NextResponse(null, { status: apiRes.status, headers: { location } })`. Resolves relative URLs via `new URL(location, req.url)`.
+- **Verified**: PASS
+
+### W5 + W6 — Abort signal cleanup + client disconnect propagation
+- **Date**: 2026-04-21
+- **Files**: `apps/web/src/lib/proxy.ts`
+- **Change**: Replaced manual `setTimeout`/`clearTimeout` with `AbortSignal.timeout()`. Always forward `req.signal`; combined with timeout via `AbortSignal.any([req.signal, AbortSignal.timeout()])` (Node 20+).
+- **Verified**: PASS
+
+### W7 — Dead route deleted
+- **Date**: 2026-04-21
+- **Files**: `apps/web/src/lib/proxy-routes.ts`
+- **Change**: Removed dead route `r("GET", "reverse-shares/files/:fileId", ...)` — no frontend caller, superseded by `reverse-shares/files/download/:fileId` with `stream: true`.
+- **Verified**: PASS
+
+### W8 — Dead endpoint definitions cleaned up
+- **Date**: 2026-04-21
+- **Files**: `apps/web/src/http/endpoints/folders/index.ts`, `types.ts`, `apps/web/src/http/endpoints/auth/index.ts`, `types.ts`
+- **Change**: Deleted `checkFolder`, `getOIDCConfig`, `initiateOIDCLogin` functions and their types (CheckFolderBody, CheckFolder201, CheckFolderResult, OidcConfig200, OIDCConfigResult, OIDCConfigData). No callers found.
+- **Verified**: PASS (web type-check clean)
+
+### W11 — Dockerfile runtime packages/ copy
+- **Date**: 2026-04-21
+- **Files**: `Dockerfile`
+- **Change**: Added `COPY --from=server-builder /app/packages ./packages` in runner stage so pnpm symlinks resolve at runtime.
+- **Verified**: PASS
+
+### W12 — wrapFiles/wrapFolders validation
+- **Date**: 2026-04-21
+- **Files**: `apps/web/src/lib/proxy-routes.ts`
+- **Change**: Added `Array.isArray()` validation in `wrapFiles` and `wrapFolders`. Throws descriptive error if expected key is missing instead of silently passing empty arrays.
+- **Verified**: PASS
+
+### S8 — Dockerfile pnpm consistency
+- **Date**: 2026-04-21
+- **Files**: `Dockerfile`
+- **Change**: `npx prisma generate` → `pnpm exec prisma generate`. `pnpm build` → `pnpm run build`.
+- **Verified**: PASS
+
+### S9 — biome.json excludes comment
+- **Date**: 2026-04-21
+- **Files**: `biome.json`
+- **Change**: Added `_comment` field in `files` section explaining shadcn/ui and magicui generated file exclusions.
+- **Verified**: PASS
+
+### S12 — Server tsconfig / base config cleanup
+- **Date**: 2026-04-21
+- **Files**: `packages/config/tsconfig/server.json`, `apps/server/tsconfig.json`
+- **Change**: Removed `outDir`/`rootDir` from base server preset (resolved relative to base file location, not child — was misleading). Child configs keep their own `outDir`/`rootDir` which resolve correctly relative to their location.
+- **Verified**: PASS
+
+### S13 — API_BASE_URL trailing slash
+- **Date**: 2026-04-21
+- **Files**: `apps/web/src/lib/proxy.ts`
+- **Change**: Added `.replace(/\/+$/, "")` to defensively trim trailing slashes from `API_BASE_URL`.
+- **Verified**: PASS
+
+### Fix — `@smithy/node-http-handler` missing declaration
+- **Date**: 2026-04-21
+- **Files**: `apps/server/package.json`
+- **Change**: Added `@smithy/node-http-handler` as direct dependency. The code imports it directly for custom HTTPS agent configuration (self-signed certs), but it was only available as a transitive dep of `@aws-sdk/client-s3`. pnpm strict mode requires explicit declaration.
+- **Verified**: PASS (server type-check now 0 errors)

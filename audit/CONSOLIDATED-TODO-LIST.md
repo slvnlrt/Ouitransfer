@@ -734,6 +734,30 @@ Miscellaneous Quality (2h)
 
 &#x20; Justification: Post-Phase 1 review S6 — MDX entry points removed from knip.json due to unreliable parsing
 
+\- \[ ] 3.15 — Add unit test for proxy route resolution ordering (Phase 2 review S2)
+
+&#x20; File: apps/web/src/lib/\_\_tests\_\_/proxy-routes.test.ts (new)
+
+&#x20; Action: Write a test that verifies each known frontend API call resolves to the correct route config. The route table relies on static-before-dynamic ordering which is easy to break when adding routes.
+
+&#x20; Justification: Phase 2 review S2 — route ordering is a maintenance trap
+
+\- \[ ] 3.16 — Clean up extractFilenameFromContentDisposition regex (Phase 2 review S5)
+
+&#x20; File: packages/shared/src/mime-types.ts
+
+&#x20; Action: The greedy capture `[^";\r\n]*` makes the trailing `["]?` dead. Also only handles UTF-8 per RFC 5987. Tighten the regex and document encoding limitations.
+
+&#x20; Justification: Phase 2 review S5
+
+\- \[ ] 3.17 — Keep subpath export pattern for packages/shared (Phase 2 review W9)
+
+&#x20; File: packages/shared/package.json
+
+&#x20; Action: When adding more utilities to packages/shared, use subpath exports (`"./foo"`, `"./bar"`) rather than a catch-all `"."` barrel export. Subpath imports keep tree-shaking optimal.
+
+&#x20; Justification: Phase 2 review W9 — architectural guidance
+
 \---
 
 Phase 4: Frontend Modernization ⚡
@@ -1026,6 +1050,24 @@ Port Configuration (1h)
 
 &#x20; Justification: Post-Phase 1 review W13 — defense-in-depth for 2FA
 
+\- \[ ] 5.14 — Standardize cookie:false on public proxy routes (Phase 2 review S3)
+
+&#x20; File: apps/web/src/lib/proxy-routes.ts
+
+&#x20; Action: Public endpoints (reverse-shares/alias/\*, shares/access, invite-tokens) should all set `cookie: false`. Some already do, some don't. Audit all routes and standardize based on whether auth is required.
+
+&#x20; Justification: Phase 2 review S3 — inconsistent cookie forwarding
+
+\- \[ ] 5.15 — Validate OAuth redirect URLs against allowlist (Phase 2 review S6)
+
+&#x20; File: apps/web/src/lib/proxy.ts
+
+&#x20; Action: When handling OAuth redirects, validate that the Location URL matches a known OAuth provider hostname or is same-origin. Defense in depth against open redirect.
+
+&#x20; Justification: Phase 2 review S6
+
+Note: S4 (X-Forwarded-For trust without TRUST\_PROXY) is already covered by item 5.7 above.
+
 \---
 
 Phase 6: Infrastructure \& Operations 🐳
@@ -1157,6 +1199,14 @@ Secrets Management (2h)
 &#x20; Action: Remove placeholder SMTP credentials. Use empty/null values that prompt the admin to configure SMTP on first access  
 
 &#x20; Justification: Audit L4 — seed contains placeholder credentials
+
+\- \[ ] 6.15 — Evaluate pnpm deploy for portable Docker runtime (Phase 2 review W10)
+
+&#x20; File: Dockerfile
+
+&#x20; Action: The current Docker build relies on pnpm symlinks created at deps stage pointing to paths resolved later. This works but is fragile. Evaluate using `pnpm deploy` to produce a flat, self-contained runtime directory that doesn't depend on symlink resolution.
+
+&#x20; Justification: Phase 2 review W10 — Dockerfile pnpm symlink chain fragility
 
 \---
 
@@ -1359,6 +1409,20 @@ Final Security Review (4h)
 &#x20; Action: Install @axe-core/playwright. Add accessibility checks to Playwright E2E tests using checkA11y(). Configure rules severity (critical = fail, moderate = warn)  
 
 &#x20; Justification: Audit 03 — no formal a11y testing
+
+\- \[ ] 8.13 — QA validate OAuth flow through proxy (Phase 2 review W1)
+
+&#x20; Action: End-to-end test the OAuth authorize/callback flow through the new catch-all proxy. The proxy now uses `text()` instead of `json()` for non-redirect OAuth responses, which is more correct but untested. Verify error cases where upstream returns non-JSON.
+
+&#x20; Justification: Phase 2 review W1 — OAuth authorize response shape changed
+
+\- \[ ] 8.14 — Evaluate proxy route matcher performance (Phase 2 review S1)
+
+&#x20; File: apps/web/src/lib/proxy.ts
+
+&#x20; Action: The route matcher is O(n) scanning 122 routes per request. Fine at current scale (~microseconds). If route count grows significantly, consider bucketing by method then segment count, or pre-compiling to a trie.
+
+&#x20; Justification: Phase 2 review S1 — performance note
 
 \---
 
