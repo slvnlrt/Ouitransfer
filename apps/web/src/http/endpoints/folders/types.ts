@@ -44,16 +44,13 @@ export interface ListFolders200 {
   folders: FolderItem[];
 }
 
-export type CheckFolderBody = FolderOperationRequest;
 export type RegisterFolderBody = FolderOperationRequest;
 
-export type CheckFolder201 = MessageOnlyResponse;
 export type RegisterFolder201 = FolderOperationResponse;
 export type UpdateFolder200 = FolderOperationResponse;
 export type MoveFolder200 = FolderOperationResponse;
 export type DeleteFolder200 = MessageOnlyResponse;
 
-export type CheckFolderResult = AxiosResponse<CheckFolder201>;
 export type RegisterFolderResult = AxiosResponse<RegisterFolder201>;
 export type ListFoldersResult = AxiosResponse<ListFolders200>;
 export type UpdateFolderResult = AxiosResponse<UpdateFolder200>;

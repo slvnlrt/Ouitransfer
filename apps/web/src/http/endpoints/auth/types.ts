@@ -40,13 +40,6 @@ export interface Login200 {
   user: LoginUser;
 }
 
-export interface OidcConfig200 {
-  enabled: boolean;
-  issuer?: string;
-  authUrl?: string;
-  scopes?: string[];
-}
-
 export interface LoginBody {
   emailOrUsername: string;
   password: string;
@@ -131,5 +124,3 @@ export type LogoutResult = AxiosResponse<Logout200>;
 export type RequestPasswordResetResult = AxiosResponse<RequestPasswordReset200>;
 export type ResetPasswordResult = AxiosResponse<ResetPassword200>;
 export type GetCurrentUserResult = AxiosResponse<GetCurrentUser200>;
-export type OIDCConfigResult = AxiosResponse<OidcConfig200>;
-export type OIDCConfigData = OidcConfig200;
