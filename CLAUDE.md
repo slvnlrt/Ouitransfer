@@ -67,8 +67,18 @@ audit/
 ### Next Up
 - Phase 2 of CONSOLIDATED-TODO-LIST — Architecture Restructuring (shared packages, config consolidation, proxy rationalization)
 
+## Important: No Production, No Legacy
+The app is **not in production** and has no existing users. This means:
+- **No backward compatibility required** — APIs, env vars, DB schemas can be changed freely
+- **No incremental migrations** — Prisma schema can be reset/recreated from scratch
+- **No legacy shims** — dead code, deprecated patterns, and proxy layers can be deleted outright
+- **No gradual rollouts** — breaking changes are fine, no feature flags needed
+- **Clean slate** — prefer the correct solution over the compatible one
+
+This affects implementation strategy: always choose the clean approach over the safe-migration approach.
+
 ## Rules for Agents
-1. **Never break existing functionality** — the app must remain functional after each change
+1. **Consistency over compatibility** — prefer clean implementations, no need to preserve legacy behavior
 2. **One concern per commit** — atomic changes, clear commit messages
 3. **Check for side effects** — search for all callers/importers before changing a function signature
 4. **Preserve i18n** — don't break translation keys
