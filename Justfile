@@ -49,7 +49,7 @@ build:
 # Update version in all package.json files — usage: just update-version 3.4.0
 update-version version:
     @echo "Updating version to {{version}}..."
-    ./infra/update-versions.sh "{{version}}"
+    pnpm version-packages
 
 # Start the application
 start:

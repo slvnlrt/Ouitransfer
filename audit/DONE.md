@@ -178,7 +178,7 @@
 
 ### Replace Makefile with Justfile (1.6)
 
-- **1.6 — Justfile** — Created 126-line Justfile with 18 recipes (Docker, Dev, Quality, Dependencies sections). Makefile kept for backward compat
+- **1.6 — Justfile** — Created 126-line Justfile with 18 recipes (Docker, Dev, Quality, Dependencies sections). Makefile deleted (no production users, no legacy to maintain)
   - Date: 2026-04-21
   - Files: `Justfile` (new)
   - Verified: PASS (`just --list` shows all 18 recipes)
