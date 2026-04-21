@@ -8,25 +8,45 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { generateEmbedToken } from "@/http/endpoints/files";
 
 interface EmbedCodeDisplayProps {
   imageUrl: string;
   fileName: string;
   fileId: string;
+  shareId?: string;
 }
 
-export function EmbedCodeDisplay({ imageUrl, fileName, fileId }: EmbedCodeDisplayProps) {
+export function EmbedCodeDisplay({ imageUrl, fileName, fileId, shareId }: EmbedCodeDisplayProps) {
   const t = useTranslations();
   const [copiedType, setCopiedType] = useState<string | null>(null);
   const [fullUrl, setFullUrl] = useState<string>("");
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const origin = window.location.origin;
-      const embedUrl = `${origin}/e/${fileId}`;
-      setFullUrl(embedUrl);
+    if (typeof window === "undefined" || !fileId) return;
+
+    const origin = window.location.origin;
+
+    if (shareId) {
+      // Use token-based embed URL
+      generateEmbedToken({ fileId, shareId })
+        .then((response) => {
+          const embedUrl = `${origin}/e/${response.data.token}`;
+          setFullUrl(embedUrl);
+        })
+        .catch((error) => {
+          console.error("Failed to generate embed token:", error);
+          // Fallback: don't show any URL
+          setFullUrl("");
+        });
+    } else {
+      // No share context — embed requires a share, so leave empty
+      setFullUrl("");
     }
-  }, [fileId]);
+  }, [fileId, shareId]);
+
+  // If no URL available, don't render
+  if (!fullUrl && !imageUrl) return null;
 
   const directLink = fullUrl || imageUrl;
   const htmlCode = `<img src="${directLink}" alt="${fileName}" />`;
@@ -41,6 +61,8 @@ export function EmbedCodeDisplay({ imageUrl, fileName, fileId }: EmbedCodeDispla
       console.error("Failed to copy:", error);
     }
   };
+
+  if (!fullUrl) return null;
 
   return (
     <Card>

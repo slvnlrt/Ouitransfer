@@ -11,6 +11,8 @@ import type {
   CreateMultipartUploadBody,
   CreateMultipartUploadResult,
   DeleteFileResult,
+  GenerateEmbedTokenBody,
+  GenerateEmbedTokenResult,
   GetDownloadUrlResult,
   GetMultipartPartUrlParams,
   GetMultipartPartUrlResult,
@@ -86,10 +88,14 @@ export const listFiles = <TData = ListFilesResult>(
  */
 export const getDownloadUrl = <TData = GetDownloadUrlResult>(
   objectName: string,
+  password?: string,
   options?: AxiosRequestConfig
 ): Promise<TData> => {
-  const encodedObjectName = encodeURIComponent(objectName);
-  return apiInstance.get(`/api/files/download-url?objectName=${encodedObjectName}`, options);
+  const body: { objectName: string; password?: string } = { objectName };
+  if (password) {
+    body.password = password;
+  }
+  return apiInstance.post(`/api/files/download-url`, body, options);
 };
 
 /**
@@ -169,4 +175,15 @@ export const abortMultipartUpload = <TData = AbortMultipartUploadResult>(
   options?: AxiosRequestConfig
 ): Promise<TData> => {
   return apiInstance.post(`/api/files/multipart/abort`, abortMultipartUploadBody, options);
+};
+
+/**
+ * Generates a signed embed token for a file in a share
+ * @summary Generate Embed Token
+ */
+export const generateEmbedToken = <TData = GenerateEmbedTokenResult>(
+  generateEmbedTokenBody: GenerateEmbedTokenBody,
+  options?: AxiosRequestConfig
+): Promise<TData> => {
+  return apiInstance.post(`/api/files/embed-token`, generateEmbedTokenBody, options);
 };

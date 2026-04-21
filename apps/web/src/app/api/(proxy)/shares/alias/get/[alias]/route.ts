@@ -2,12 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3333";
 
+/**
+ * GET /api/shares/alias/get/:alias
+ * Get share by alias (non-password-protected shares only).
+ * Password-protected shares should use POST /api/shares/alias/:alias/access instead.
+ */
 export async function GET(req: NextRequest, { params }: { params: Promise<{ alias: string }> }) {
   const cookieHeader = req.headers.get("cookie");
-  const url = new URL(req.url);
-  const queryParams = url.search;
   const { alias } = await params;
-  const fetchUrl = `${API_BASE_URL}/shares/alias/${alias}${queryParams}`;
+  const fetchUrl = `${API_BASE_URL}/shares/alias/${alias}`;
 
   const apiRes = await fetch(fetchUrl, {
     method: "GET",
@@ -22,9 +25,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ alia
 
   const res = new NextResponse(resBody, {
     status: apiRes.status,
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
   });
 
   const setCookie = apiRes.headers.getSetCookie?.() || [];

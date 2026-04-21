@@ -7,23 +7,41 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { generateEmbedToken } from "@/http/endpoints/files";
 
 interface MediaEmbedLinkProps {
   fileId: string;
+  shareId?: string;
 }
 
-export function MediaEmbedLink({ fileId }: MediaEmbedLinkProps) {
+export function MediaEmbedLink({ fileId, shareId }: MediaEmbedLinkProps) {
   const t = useTranslations();
   const [copied, setCopied] = useState(false);
   const [embedUrl, setEmbedUrl] = useState<string>("");
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const origin = window.location.origin;
-      const url = `${origin}/e/${fileId}`;
-      setEmbedUrl(url);
+    if (typeof window === "undefined" || !fileId) return;
+
+    const origin = window.location.origin;
+
+    if (shareId) {
+      // Use token-based embed URL
+      generateEmbedToken({ fileId, shareId })
+        .then((response) => {
+          setEmbedUrl(`${origin}/e/${response.data.token}`);
+        })
+        .catch((error) => {
+          console.error("Failed to generate embed token:", error);
+          setEmbedUrl("");
+        });
+    } else {
+      // No share context — embed requires a share
+      setEmbedUrl("");
     }
-  }, [fileId]);
+  }, [fileId, shareId]);
+
+  // Don't render if no embed URL is available
+  if (!embedUrl) return null;
 
   const copyToClipboard = async () => {
     try {

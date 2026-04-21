@@ -31,6 +31,7 @@ interface FilePreviewModalProps {
   };
   isReverseShare?: boolean;
   sharePassword?: string;
+  shareId?: string;
 }
 
 export function FilePreviewModal({
@@ -39,6 +40,7 @@ export function FilePreviewModal({
   file,
   isReverseShare = false,
   sharePassword,
+  shareId,
 }: FilePreviewModalProps) {
   const t = useTranslations();
   const previewState = useFilePreview({ file, isOpen, isReverseShare, sharePassword });
@@ -76,12 +78,12 @@ export function FilePreviewModal({
           />
           {!isReverseShare && isImage && previewState.previewUrl && !previewState.isLoading && file.id && (
             <div className="mt-4 mb-2">
-              <EmbedCodeDisplay imageUrl={previewState.previewUrl} fileName={file.name} fileId={file.id} />
+              <EmbedCodeDisplay imageUrl={previewState.previewUrl} fileName={file.name} fileId={file.id} shareId={shareId} />
             </div>
           )}
           {!isReverseShare && (isVideo || isAudio) && !previewState.isLoading && file.id && (
             <div className="mt-4 mb-2">
-              <MediaEmbedLink fileId={file.id} />
+              <MediaEmbedLink fileId={file.id} shareId={shareId} />
             </div>
           )}
         </div>

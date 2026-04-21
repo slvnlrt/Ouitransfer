@@ -50,9 +50,7 @@ export class ShareController {
   async getShare(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { shareId } = request.params as { shareId: string };
-      // Accept password from body (POST /shares/:shareId/access) or query (legacy GET, deprecated)
-      const password =
-        (request.body as any)?.password || (request.query as any)?.password;
+      const password = (request.body as any)?.password;
 
       let userId: string | undefined;
       try {
@@ -258,9 +256,7 @@ export class ShareController {
   async getShareByAlias(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { alias } = request.params as { alias: string };
-      // Accept password from body (POST /shares/alias/:alias/access) or query (legacy GET, deprecated)
-      const password =
-        (request.body as any)?.password || (request.query as any)?.password;
+      const password = (request.body as any)?.password;
 
       const share = await this.shareService.getShareByAlias(alias, password);
       return reply.send({ share });

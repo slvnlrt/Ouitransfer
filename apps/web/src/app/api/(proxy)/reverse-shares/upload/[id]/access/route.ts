@@ -1,18 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export const dynamic = "force-dynamic";
-
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3333";
 
 /**
- * POST /api/reverse-shares/alias/:alias/register-file
- * Password is now sent in the request body (not as a query parameter).
+ * POST /api/reverse-shares/upload/:id/access
+ * Access a password-protected reverse share for upload by providing the password in the request body.
  */
-export async function POST(req: NextRequest, { params }: { params: Promise<{ alias: string }> }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const body = await req.text();
-  const { alias } = await params;
 
-  const url = `${API_BASE_URL}/reverse-shares/alias/${alias}/register-file`;
+  const url = `${API_BASE_URL}/reverse-shares/${id}/upload/access`;
 
   const apiRes = await fetch(url, {
     method: "POST",

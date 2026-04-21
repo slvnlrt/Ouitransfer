@@ -2,15 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3333";
 
-export async function GET(req: NextRequest) {
+/**
+ * POST /api/files/download
+ * Downloads a file directly (returns file content).
+ * Changed from GET to POST — password is now in the request body.
+ */
+export async function POST(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    const queryString = searchParams.toString();
-    const url = `${API_BASE_URL}/files/download${queryString ? `?${queryString}` : ""}`;
+    const body = await req.text();
+
+    const url = `${API_BASE_URL}/files/download`;
 
     const apiRes = await fetch(url, {
-      method: "GET",
+      method: "POST",
       headers: {
+        "Content-Type": "application/json",
         cookie: req.headers.get("cookie") || "",
         ...Object.fromEntries(
           Array.from(req.headers.entries()).filter(
@@ -22,6 +28,7 @@ export async function GET(req: NextRequest) {
           )
         ),
       },
+      body,
       redirect: "manual",
     });
 

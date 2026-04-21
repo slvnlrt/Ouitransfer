@@ -23,9 +23,6 @@
 - [ ] **Validate objectName namespace in `registerFileUpload*`** — Service trusts client-supplied objectName. Should verify it matches `reverse-shares/{reverseShareId}/...` pattern
   - File: `apps/server/src/modules/reverse-share/service.ts`
 
-- [ ] **Add `.strict()` to critical Zod schemas** — `removeAdditional: "all"` only strips via Ajv; Zod routes need `.strict()` on security-critical DTOs (login, auth-providers, etc.)
-  - Files: `apps/server/src/modules/auth/dto.ts`, `apps/server/src/modules/auth-providers/dto.ts`
-
 ---
 
 ## Rate Limiting
@@ -39,9 +36,6 @@
 ---
 
 ## Auth & Middleware Cleanup
-
-- [ ] **Complete preValidation migration** — Remove redundant `await request.jwtVerify()` from ALL handlers whose routes already have `preValidation` (~20+ instances of double verification)
-  - Files: `apps/server/src/modules/file/controller.ts`, `folder/controller.ts`, `share/controller.ts`
 
 - [ ] **Add `!userId` early-return in `S3StorageController.getUploadUrl`** — Before the `startsWith` check, for defensive consistency with other S3 methods
   - File: `apps/server/src/modules/s3-storage/controller.ts`
@@ -65,9 +59,6 @@
 ---
 
 ## Code Quality
-
-- [ ] **Fix 7-space indent in `reverse-share/routes.ts:389`** — Minor formatting inconsistency
-  - File: `apps/server/src/modules/reverse-share/routes.ts`
 
 - [ ] **Audit `request.file()`/`request.files()` callers** — Confirm no route uploads raw file bytes >50MB through Fastify multipart (all large uploads should use S3 presigned URLs)
   - Scope: `apps/server/src/modules/`

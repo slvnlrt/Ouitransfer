@@ -1,12 +1,43 @@
 import crypto from "node:crypto";
 import * as jose from "jose";
+import { prisma } from "../../shared/prisma";
 
-// Separate secret for embed tokens (not the main JWT secret).
-// Generated once at module load — survives process lifetime.
-// Regenerated on restart, which invalidates existing embed tokens (24h TTL).
-const EMBED_SECRET = new TextEncoder().encode(
-  crypto.randomBytes(32).toString("hex")
-);
+// Module-level cache so the DB is only hit once per process lifetime.
+let cachedEmbedSecret: Uint8Array | null = null;
+
+/**
+ * Retrieve (or lazily create) the persistent embed secret from AppConfig.
+ * On the first call, reads from the DB; subsequent calls return the cached value.
+ * If no secret exists yet, generates one, persists it, then caches it.
+ */
+async function getEmbedSecret(): Promise<Uint8Array> {
+  if (cachedEmbedSecret !== null) {
+    return cachedEmbedSecret;
+  }
+
+  const config = await prisma.appConfig.findUnique({
+    where: { key: "embedSecret" },
+  });
+
+  if (config) {
+    cachedEmbedSecret = new TextEncoder().encode(config.value);
+    return cachedEmbedSecret;
+  }
+
+  // Not found — generate, persist, then cache.
+  const secret = crypto.randomBytes(32).toString("hex");
+  await prisma.appConfig.create({
+    data: {
+      key: "embedSecret",
+      value: secret,
+      type: "string",
+      group: "security",
+    },
+  });
+
+  cachedEmbedSecret = new TextEncoder().encode(secret);
+  return cachedEmbedSecret;
+}
 
 /**
  * Create a signed embed token for a specific file within a share.
@@ -14,11 +45,12 @@ const EMBED_SECRET = new TextEncoder().encode(
  * TTL: 24 hours.
  */
 export async function createEmbedToken(fileId: string, shareId: string): Promise<string> {
+  const secret = await getEmbedSecret();
   return new jose.SignJWT({ fileId, shareId, purpose: "embed" })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("24h")
-    .sign(EMBED_SECRET);
+    .sign(secret);
 }
 
 /**
@@ -26,7 +58,8 @@ export async function createEmbedToken(fileId: string, shareId: string): Promise
  * Throws if expired, tampered, or wrong purpose.
  */
 export async function verifyEmbedToken(token: string): Promise<{ fileId: string; shareId: string }> {
-  const { payload } = await jose.jwtVerify(token, EMBED_SECRET);
+  const secret = await getEmbedSecret();
+  const { payload } = await jose.jwtVerify(token, secret);
   if (payload.purpose !== "embed") {
     throw new Error("Invalid embed token");
   }

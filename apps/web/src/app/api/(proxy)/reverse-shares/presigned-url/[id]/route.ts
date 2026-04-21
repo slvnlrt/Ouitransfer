@@ -2,16 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3333";
 
+/**
+ * POST /api/reverse-shares/presigned-url/:id
+ * Password is now sent in the request body (not as a query parameter).
+ */
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { searchParams } = new URL(req.url);
-  const password = searchParams.get("password");
   const body = await req.text();
   const { id } = await params;
 
-  let url = `${API_BASE_URL}/reverse-shares/${id}/presigned-url`;
-  if (password) {
-    url += `?password=${encodeURIComponent(password)}`;
-  }
+  const url = `${API_BASE_URL}/reverse-shares/${id}/presigned-url`;
 
   const apiRes = await fetch(url, {
     method: "POST",
@@ -24,12 +23,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
   const resBody = await apiRes.text();
 
-  const res = new NextResponse(resBody, {
+  return new NextResponse(resBody, {
     status: apiRes.status,
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
   });
-
-  return res;
 }

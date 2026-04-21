@@ -109,6 +109,16 @@ export interface GetPresignedUrlParams {
   extension: string;
 }
 
+export interface GenerateEmbedTokenBody {
+  fileId: string;
+  shareId: string;
+}
+
+export interface GenerateEmbedToken200 {
+  token: string;
+  embedUrl: string;
+}
+
 export type RegisterFile201 = FileOperationResponse;
 export type UpdateFile200 = FileOperationResponse;
 export type MoveFile200 = FileOperationResponse;
@@ -133,3 +143,4 @@ export type CreateMultipartUploadResult = AxiosResponse<CreateMultipartUpload201
 export type GetMultipartPartUrlResult = AxiosResponse<GetMultipartPartUrl200>;
 export type CompleteMultipartUploadResult = AxiosResponse<CompleteMultipartUpload200>;
 export type AbortMultipartUploadResult = AxiosResponse<AbortMultipartUpload200>;
+export type GenerateEmbedTokenResult = AxiosResponse<GenerateEmbedToken200>;

@@ -101,10 +101,15 @@ export const getReverseShareForUpload = <TData = GetReverseShareForUploadResult>
   params?: GetReverseShareForUploadParams,
   options?: AxiosRequestConfig
 ): Promise<TData> => {
-  return apiInstance.get(`/api/reverse-shares/upload/${id}`, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
+  if (params?.password) {
+    // Password-protected reverse shares use the POST /access endpoint
+    return apiInstance.post(
+      `/api/reverse-shares/upload/${id}/access`,
+      { password: params.password },
+      options
+    );
+  }
+  return apiInstance.get(`/api/reverse-shares/upload/${id}`, options);
 };
 
 /**
@@ -116,10 +121,15 @@ export const getReverseShareForUploadByAlias = <TData = GetReverseShareForUpload
   params?: GetReverseShareForUploadParams,
   options?: AxiosRequestConfig
 ): Promise<TData> => {
-  return apiInstance.get(`/api/reverse-shares/alias/${alias}/upload`, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
+  if (params?.password) {
+    // Password-protected reverse shares use the POST /access endpoint
+    return apiInstance.post(
+      `/api/reverse-shares/alias/${alias}/upload/access`,
+      { password: params.password },
+      options
+    );
+  }
+  return apiInstance.get(`/api/reverse-shares/alias/${alias}/upload`, options);
 };
 
 /**
@@ -132,10 +142,8 @@ export const getPresignedUrlForUpload = <TData = GetPresignedUrlResult>(
   params?: RegisterFileUploadParams,
   options?: AxiosRequestConfig
 ): Promise<TData> => {
-  return apiInstance.post(`/api/reverse-shares/presigned-url/${id}`, getPresignedUrlBody, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
+  const body = { ...getPresignedUrlBody, ...(params?.password ? { password: params.password } : {}) };
+  return apiInstance.post(`/api/reverse-shares/presigned-url/${id}`, body, options);
 };
 
 /**
@@ -148,10 +156,8 @@ export const getPresignedUrlForUploadByAlias = <TData = GetPresignedUrlResult>(
   params?: RegisterFileUploadParams,
   options?: AxiosRequestConfig
 ): Promise<TData> => {
-  return apiInstance.post(`/api/reverse-shares/alias/${alias}/presigned-url`, getPresignedUrlBody, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
+  const body = { ...getPresignedUrlBody, ...(params?.password ? { password: params.password } : {}) };
+  return apiInstance.post(`/api/reverse-shares/alias/${alias}/presigned-url`, body, options);
 };
 
 /**
@@ -164,10 +170,8 @@ export const registerFileUpload = <TData = RegisterFileUploadResult>(
   params?: RegisterFileUploadParams,
   options?: AxiosRequestConfig
 ): Promise<TData> => {
-  return apiInstance.post(`/api/reverse-shares/register-upload/${id}`, registerFileUploadBody, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
+  const body = { ...registerFileUploadBody, ...(params?.password ? { password: params.password } : {}) };
+  return apiInstance.post(`/api/reverse-shares/register-upload/${id}`, body, options);
 };
 
 /**
@@ -180,10 +184,8 @@ export const registerFileUploadByAlias = <TData = RegisterFileUploadResult>(
   params?: RegisterFileUploadParams,
   options?: AxiosRequestConfig
 ): Promise<TData> => {
-  return apiInstance.post(`/api/reverse-shares/alias/${alias}/register-file`, registerFileUploadBody, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
+  const body = { ...registerFileUploadBody, ...(params?.password ? { password: params.password } : {}) };
+  return apiInstance.post(`/api/reverse-shares/alias/${alias}/register-file`, body, options);
 };
 
 /**
@@ -284,14 +286,13 @@ export const createMultipartUploadByAlias = <TData = any>(
   params?: { password?: string },
   options?: AxiosRequestConfig
 ): Promise<TData> => {
-  return apiInstance.post(`/api/reverse-shares/alias/${alias}/multipart/create`, body, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
+  const requestBody = { ...body, ...(params?.password ? { password: params.password } : {}) };
+  return apiInstance.post(`/api/reverse-shares/alias/${alias}/multipart/create`, requestBody, options);
 };
 
 /**
  * Get presigned URL for a multipart upload part for reverse share (public endpoint)
+ * Changed from GET to POST to send password in body instead of query params
  * @summary Get Multipart Part URL for Reverse Share (Public)
  */
 export const getMultipartPartUrlByAlias = <TData = any>(
@@ -299,10 +300,16 @@ export const getMultipartPartUrlByAlias = <TData = any>(
   params: { uploadId: string; objectName: string; partNumber: string; password?: string },
   options?: AxiosRequestConfig
 ): Promise<TData> => {
-  return apiInstance.get(`/api/reverse-shares/alias/${alias}/multipart/part-url`, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
+  const { uploadId, objectName, partNumber, password } = params;
+  const body: { uploadId: string; objectName: string; partNumber: string; password?: string } = {
+    uploadId,
+    objectName,
+    partNumber,
+  };
+  if (password) {
+    body.password = password;
+  }
+  return apiInstance.post(`/api/reverse-shares/alias/${alias}/multipart/part-url`, body, options);
 };
 
 /**
@@ -315,10 +322,8 @@ export const completeMultipartUploadByAlias = <TData = any>(
   params?: { password?: string },
   options?: AxiosRequestConfig
 ): Promise<TData> => {
-  return apiInstance.post(`/api/reverse-shares/alias/${alias}/multipart/complete`, body, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
+  const requestBody = { ...body, ...(params?.password ? { password: params.password } : {}) };
+  return apiInstance.post(`/api/reverse-shares/alias/${alias}/multipart/complete`, requestBody, options);
 };
 
 /**
@@ -331,8 +336,6 @@ export const abortMultipartUploadByAlias = <TData = any>(
   params?: { password?: string },
   options?: AxiosRequestConfig
 ): Promise<TData> => {
-  return apiInstance.post(`/api/reverse-shares/alias/${alias}/multipart/abort`, body, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
+  const requestBody = { ...body, ...(params?.password ? { password: params.password } : {}) };
+  return apiInstance.post(`/api/reverse-shares/alias/${alias}/multipart/abort`, requestBody, options);
 };

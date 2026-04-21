@@ -60,7 +60,9 @@ class DownloadUrlCache {
       return cached.url;
     }
 
-    const response = await getDownloadUrl(objectName, options);
+    // Extract password from x-share-password header and pass it as body param
+    const password = options?.headers?.["x-share-password"];
+    const response = await getDownloadUrl(objectName, password);
     const url = response.data.url;
     const entry: CacheEntry = {
       url,

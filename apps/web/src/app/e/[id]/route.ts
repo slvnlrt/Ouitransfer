@@ -3,21 +3,22 @@ import { NextRequest, NextResponse } from "next/server";
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3333";
 
 /**
- * Short public embed endpoint: /e/{id}
- * No authentication required
- * Only works for media files (images, videos, audio)
+ * Short public embed endpoint: /e/{token}
+ * No authentication required.
+ * The `id` param is now a signed JWT embed token (not a raw file ID).
+ * Only works for media files (images, videos, audio).
  */
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+  const { id: token } = await params;
 
-  if (!id) {
-    return new NextResponse(JSON.stringify({ error: "File ID is required" }), {
+  if (!token) {
+    return new NextResponse(JSON.stringify({ error: "Embed token is required" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
     });
   }
 
-  const url = `${API_BASE_URL}/embed/${id}`;
+  const url = `${API_BASE_URL}/embed/${token}`;
 
   try {
     const apiRes = await fetch(url, {

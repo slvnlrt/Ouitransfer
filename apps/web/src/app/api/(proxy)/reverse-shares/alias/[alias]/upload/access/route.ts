@@ -3,20 +3,21 @@ import { NextRequest, NextResponse } from "next/server";
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3333";
 
 /**
- * GET /api/reverse-shares/alias/:alias/upload
- * Get reverse share info for upload by alias (non-password-protected shares only).
- * Password-protected shares should use POST /api/reverse-shares/alias/:alias/upload/access instead.
+ * POST /api/reverse-shares/alias/:alias/upload/access
+ * Access a password-protected reverse share for upload by alias, providing the password in the request body.
  */
-export async function GET(req: NextRequest, { params }: { params: Promise<{ alias: string }> }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ alias: string }> }) {
   const { alias } = await params;
+  const body = await req.text();
 
-  const url = `${API_BASE_URL}/reverse-shares/alias/${alias}/upload`;
+  const url = `${API_BASE_URL}/reverse-shares/alias/${alias}/upload/access`;
 
   const apiRes = await fetch(url, {
-    method: "GET",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
+    body,
     redirect: "manual",
   });
 

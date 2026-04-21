@@ -71,7 +71,14 @@ export async function buildApp() {
 
   const allowedOrigins = process.env.CORS_ORIGINS
     ? process.env.CORS_ORIGINS.split(",").map((o) => o.trim())
-    : ["http://localhost:3000", "http://localhost:5487"];
+    : ["http://localhost:5487"];
+
+  if (!process.env.CORS_ORIGINS && process.env.NODE_ENV === "production") {
+    console.warn(
+      "[SECURITY] CORS_ORIGINS is not set in production. Defaulting to localhost only. " +
+      "Set CORS_ORIGINS=https://your-domain.com to allow your frontend."
+    );
+  }
 
   app.register(fastifyCors, {
     origin: (origin, cb) => {
@@ -88,9 +95,7 @@ export async function buildApp() {
     max: 100,
     timeWindow: "1 minute",
     // Trust proxy headers for IP detection
-    keyGenerator: (request) => {
-      return (request.headers["x-forwarded-for"] as string) || request.ip;
-    },
+    keyGenerator: (request) => request.ip,
     errorResponseBuilder: (request, context) => ({
       error: "Too many requests",
       message: `Rate limit exceeded. Try again in ${Math.ceil(context.ttl / 1000)} seconds.`,

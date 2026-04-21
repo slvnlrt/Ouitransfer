@@ -2,27 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3333";
 
+/**
+ * POST /api/files/embed-token
+ * Generate a signed embed token for a file in a share (authenticated).
+ */
 export async function POST(req: NextRequest) {
   const cookieHeader = req.headers.get("cookie");
+  const body = await req.text();
 
-  let body: any;
-  try {
-    body = await req.json();
-  } catch {
-    return new NextResponse(JSON.stringify({ error: "Invalid JSON body" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
-  if (!body?.objectName) {
-    return new NextResponse(JSON.stringify({ error: "objectName is required" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
-  const url = `${API_BASE_URL}/files/download-url`;
+  const url = `${API_BASE_URL}/files/embed-token`;
 
   const apiRes = await fetch(url, {
     method: "POST",
@@ -30,7 +18,7 @@ export async function POST(req: NextRequest) {
       "Content-Type": "application/json",
       cookie: cookieHeader || "",
     },
-    body: JSON.stringify(body),
+    body,
   });
 
   const data = await apiRes.json();

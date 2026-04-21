@@ -59,7 +59,7 @@ export const listUserShares = <TData = ListUserSharesResult>(options?: AxiosRequ
 };
 
 /**
- * Get a share by ID
+ * Get a share by ID (no password)
  * @summary Get a share by ID
  */
 export const getShare = <TData = GetShareResult>(
@@ -67,10 +67,15 @@ export const getShare = <TData = GetShareResult>(
   params?: GetShareParams,
   options?: AxiosRequestConfig
 ): Promise<TData> => {
-  return apiInstance.get(`/api/shares/details/${shareId}`, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
+  if (params?.password) {
+    // Password-protected shares use the POST /access endpoint
+    return apiInstance.post(
+      `/api/shares/${shareId}/access`,
+      { password: params.password },
+      options
+    );
+  }
+  return apiInstance.get(`/api/shares/details/${shareId}`, options);
 };
 
 /**
@@ -162,10 +167,15 @@ export const getShareByAlias = <TData = GetShareByAliasResult>(
   params?: GetShareByAliasParams,
   options?: AxiosRequestConfig
 ): Promise<TData> => {
-  return apiInstance.get(`/api/shares/alias/get/${alias}`, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
+  if (params?.password) {
+    // Password-protected shares use the POST /access endpoint
+    return apiInstance.post(
+      `/api/shares/alias/${alias}/access`,
+      { password: params.password },
+      options
+    );
+  }
+  return apiInstance.get(`/api/shares/alias/get/${alias}`, options);
 };
 
 /**
@@ -214,8 +224,8 @@ export const getShareFolderContents = <TData = any>(
   password?: string,
   options?: AxiosRequestConfig
 ): Promise<TData> => {
-  return apiInstance.get(`/api/shares/${shareId}/folders/${folderId}/contents`, {
-    ...options,
-    params: { password, ...options?.params },
-  });
+  if (password) {
+    return apiInstance.post(`/api/shares/${shareId}/folders/${folderId}/contents`, { password }, options);
+  }
+  return apiInstance.get(`/api/shares/${shareId}/folders/${folderId}/contents`, options);
 };

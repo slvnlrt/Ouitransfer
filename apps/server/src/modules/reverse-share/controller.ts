@@ -72,9 +72,7 @@ export class ReverseShareController {
   async getReverseShareForUpload(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { id } = request.params as { id: string };
-      // Accept password from body (POST .../upload/access) or query (legacy GET, deprecated)
-      const password =
-        (request.body as any)?.password || (request.query as any)?.password;
+      const password = (request.body as any)?.password;
 
       const reverseShare = await this.reverseShareService.getReverseShareForUpload(id, password);
       return reply.send({ reverseShare });
@@ -98,9 +96,7 @@ export class ReverseShareController {
   async getReverseShareForUploadByAlias(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { alias } = request.params as { alias: string };
-      // Accept password from body (POST .../upload/access) or query (legacy GET, deprecated)
-      const password =
-        (request.body as any)?.password || (request.query as any)?.password;
+      const password = (request.body as any)?.password;
 
       const reverseShare = await this.reverseShareService.getReverseShareForUploadByAlias(alias, password);
       return reply.send({ reverseShare });

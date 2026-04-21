@@ -16,7 +16,6 @@ const AuthProviderResponseSchema = z.object({
   scope: z.string().nullable(),
   adminEmailDomains: z.string().nullable(),
   clientId: z.string(),
-  clientSecret: z.string().optional(),
   issuerUrl: z.string().nullable(),
   authorizationEndpoint: z.string().nullable(),
   tokenEndpoint: z.string().nullable(),

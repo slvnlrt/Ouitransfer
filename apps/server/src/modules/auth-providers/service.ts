@@ -323,9 +323,30 @@ export class AuthProvidersService {
     });
   }
 
+  private static readonly SAFE_PROVIDER_SELECT = {
+    id: true,
+    name: true,
+    displayName: true,
+    type: true,
+    icon: true,
+    enabled: true,
+    autoRegister: true,
+    scope: true,
+    adminEmailDomains: true,
+    clientId: true,
+    issuerUrl: true,
+    authorizationEndpoint: true,
+    tokenEndpoint: true,
+    userInfoEndpoint: true,
+    sortOrder: true,
+    createdAt: true,
+    updatedAt: true,
+  } as const;
+
   async getAllProviders() {
     const providers = await prisma.authProvider.findMany({
       orderBy: { sortOrder: "asc" },
+      select: AuthProvidersService.SAFE_PROVIDER_SELECT,
     });
 
     return providers.map((provider) => ({
@@ -357,6 +378,7 @@ export class AuthProvidersService {
         type: data.type || DEFAULT_PROVIDER_TYPE,
         displayName: data.displayName || data.name,
       },
+      select: AuthProvidersService.SAFE_PROVIDER_SELECT,
     });
   }
 
@@ -364,6 +386,7 @@ export class AuthProvidersService {
     return await prisma.authProvider.update({
       where: { id },
       data,
+      select: AuthProvidersService.SAFE_PROVIDER_SELECT,
     });
   }
 

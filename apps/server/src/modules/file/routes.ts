@@ -112,33 +112,39 @@ export async function fileRoutes(app: FastifyInstance) {
     fileController.checkFile.bind(fileController)
   );
 
-  app.post(
-    "/files/download-url",
-    {
-      schema: {
-        tags: ["File"],
-        operationId: "getDownloadUrl",
-        summary: "Get Download URL",
-        description:
-          "Generates a pre-signed URL for downloading a file. Password must be sent in the request body, never as a query parameter.",
-        body: z.object({
-          objectName: z.string().min(1, "The objectName is required"),
-          password: z.string().optional().describe("Share password if required"),
-        }),
-        response: {
-          200: z.object({
-            url: z.string().describe("The download URL"),
-            expiresIn: z.number().describe("The expiration time in seconds"),
-          }),
-          400: z.object({ error: z.string().describe("Error message") }),
-          401: z.object({ error: z.string().describe("Error message") }),
-          404: z.object({ error: z.string().describe("Error message") }),
-          500: z.object({ error: z.string().describe("Error message") }),
-        },
-      },
-    },
-    fileController.getDownloadUrl.bind(fileController)
-  );
+   app.post(
+     "/files/download-url",
+     {
+       config: {
+         rateLimit: {
+           max: 20,
+           timeWindow: "1 minute",
+         },
+       },
+       schema: {
+         tags: ["File"],
+         operationId: "getDownloadUrl",
+         summary: "Get Download URL",
+         description:
+           "Generates a pre-signed URL for downloading a file. Password must be sent in the request body, never as a query parameter.",
+         body: z.object({
+           objectName: z.string().min(1, "The objectName is required"),
+           password: z.string().optional().describe("Share password if required"),
+         }),
+         response: {
+           200: z.object({
+             url: z.string().describe("The download URL"),
+             expiresIn: z.number().describe("The expiration time in seconds"),
+           }),
+           400: z.object({ error: z.string().describe("Error message") }),
+           401: z.object({ error: z.string().describe("Error message") }),
+           404: z.object({ error: z.string().describe("Error message") }),
+           500: z.object({ error: z.string().describe("Error message") }),
+         },
+       },
+     },
+     fileController.getDownloadUrl.bind(fileController)
+   );
 
   app.get(
     "/embed/:token",
@@ -192,23 +198,29 @@ export async function fileRoutes(app: FastifyInstance) {
     fileController.generateEmbedToken.bind(fileController)
   );
 
-  app.post(
-    "/files/download",
-    {
-      schema: {
-        tags: ["File"],
-        operationId: "downloadFile",
-        summary: "Download File",
-        description:
-          "Downloads a file directly (returns file content). Password must be sent in the request body, never as a query parameter.",
-        body: z.object({
-          objectName: z.string().min(1, "The objectName is required"),
-          password: z.string().optional().describe("Share password if required"),
-        }),
-      },
-    },
-    fileController.downloadFile.bind(fileController)
-  );
+   app.post(
+     "/files/download",
+     {
+       config: {
+         rateLimit: {
+           max: 20,
+           timeWindow: "1 minute",
+         },
+       },
+       schema: {
+         tags: ["File"],
+         operationId: "downloadFile",
+         summary: "Download File",
+         description:
+           "Downloads a file directly (returns file content). Password must be sent in the request body, never as a query parameter.",
+         body: z.object({
+           objectName: z.string().min(1, "The objectName is required"),
+           password: z.string().optional().describe("Share password if required"),
+         }),
+       },
+     },
+     fileController.downloadFile.bind(fileController)
+   );
 
   app.get(
     "/files",

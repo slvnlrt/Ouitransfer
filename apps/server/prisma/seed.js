@@ -62,6 +62,12 @@ const defaultConfigs = [
     group: "security",
   },
   {
+    key: "embedSecret",
+    value: crypto.randomBytes(32).toString("hex"),
+    type: "string",
+    group: "security",
+  },
+  {
     key: "maxLoginAttempts",
     value: "5",
     type: "number",

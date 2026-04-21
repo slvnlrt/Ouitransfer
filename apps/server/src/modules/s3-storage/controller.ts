@@ -11,6 +11,7 @@
  * Replaces ~800 lines of complex code with ~100 lines of simple code.
  */
 
+import path from "node:path";
 import { FastifyReply, FastifyRequest } from "fastify";
 
 import { prisma } from "../../shared/prisma";
@@ -26,15 +27,24 @@ export class S3StorageController {
   async getUploadUrl(request: FastifyRequest, reply: FastifyReply) {
     try {
       const userId = (request as any).user?.userId;
+      
+      if (!userId) {
+        return reply.status(401).send({ error: "Unauthorized" });
+      }
+
       const { objectName, expires } = request.body as { objectName: string; expires?: number };
 
       if (!objectName) {
         return reply.status(400).send({ error: "objectName is required" });
       }
 
-      // Enforce ownership: objectName must be scoped to the authenticated user
-      if (!objectName.startsWith(`${userId}/`)) {
-        return reply.status(403).send({ error: "Access denied: objectName must be prefixed with your user ID." });
+      // Reject path traversal attempts
+      if (objectName.includes('..') || objectName.includes('\0')) {
+        return reply.status(400).send({ error: "Invalid object name" });
+      }
+      const normalized = path.posix.normalize(objectName);
+      if (!normalized.startsWith(`${userId}/`)) {
+        return reply.status(403).send({ error: "Forbidden: you do not own this file." });
       }
 
       const expiresIn = expires || 3600; // 1 hour default
@@ -72,6 +82,11 @@ export class S3StorageController {
   async getDownloadUrl(request: FastifyRequest, reply: FastifyReply) {
     try {
       const userId = (request as any).user?.userId;
+      
+      if (!userId) {
+        return reply.status(401).send({ error: "Unauthorized" });
+      }
+
       const { objectName, expires, fileName } = request.query as {
         objectName: string;
         expires?: string;
@@ -80,6 +95,15 @@ export class S3StorageController {
 
       if (!objectName) {
         return reply.status(400).send({ error: "objectName is required" });
+      }
+
+      // Reject path traversal attempts
+      if (objectName.includes('..') || objectName.includes('\0')) {
+        return reply.status(400).send({ error: "Invalid object name" });
+      }
+      const normalized = path.posix.normalize(objectName);
+      if (!normalized.startsWith(`${userId}/`)) {
+        return reply.status(403).send({ error: "Forbidden: you do not own this file." });
       }
 
       // Verify the file exists in the DB and belongs to the authenticated user
@@ -140,10 +164,24 @@ export class S3StorageController {
   async deleteObject(request: FastifyRequest, reply: FastifyReply) {
     try {
       const userId = (request as any).user?.userId;
+      
+      if (!userId) {
+        return reply.status(401).send({ error: "Unauthorized" });
+      }
+
       const { objectName } = request.params as { objectName: string };
 
       if (!objectName) {
         return reply.status(400).send({ error: "objectName is required" });
+      }
+
+      // Reject path traversal attempts
+      if (objectName.includes('..') || objectName.includes('\0')) {
+        return reply.status(400).send({ error: "Invalid object name" });
+      }
+      const normalized = path.posix.normalize(objectName);
+      if (!normalized.startsWith(`${userId}/`)) {
+        return reply.status(403).send({ error: "Forbidden: you do not own this file." });
       }
 
       // Verify the file exists in the DB and belongs to the authenticated user
@@ -170,10 +208,24 @@ export class S3StorageController {
   async checkExists(request: FastifyRequest, reply: FastifyReply) {
     try {
       const userId = (request as any).user?.userId;
+      
+      if (!userId) {
+        return reply.status(401).send({ error: "Unauthorized" });
+      }
+
       const { objectName } = request.query as { objectName: string };
 
       if (!objectName) {
         return reply.status(400).send({ error: "objectName is required" });
+      }
+
+      // Reject path traversal attempts
+      if (objectName.includes('..') || objectName.includes('\0')) {
+        return reply.status(400).send({ error: "Invalid object name" });
+      }
+      const normalized = path.posix.normalize(objectName);
+      if (!normalized.startsWith(`${userId}/`)) {
+        return reply.status(403).send({ error: "Forbidden: you do not own this file." });
       }
 
       // Verify the file exists in the DB and belongs to the authenticated user

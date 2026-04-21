@@ -3,20 +3,23 @@ import { NextRequest, NextResponse } from "next/server";
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3333";
 
 /**
- * GET /api/shares/details/:shareId
- * Get share by ID (non-password-protected shares only).
- * Password-protected shares should use POST /api/shares/:shareId/access instead.
+ * POST /api/shares/alias/:alias/access
+ * Access a password-protected share by alias, providing the password in the request body.
  */
-export async function GET(req: NextRequest, { params }: { params: Promise<{ shareId: string }> }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ alias: string }> }) {
   const cookieHeader = req.headers.get("cookie");
-  const { shareId } = await params;
-  const fetchUrl = `${API_BASE_URL}/shares/${shareId}`;
+  const { alias } = await params;
+  const body = await req.text();
+
+  const fetchUrl = `${API_BASE_URL}/shares/alias/${alias}/access`;
 
   const apiRes = await fetch(fetchUrl, {
-    method: "GET",
+    method: "POST",
     headers: {
+      "Content-Type": "application/json",
       cookie: cookieHeader || "",
     },
+    body,
     redirect: "manual",
   });
 

@@ -603,6 +603,7 @@ export class FileController {
         where: { id: shareId },
         include: {
           files: { where: { id: fileId }, select: { id: true } },
+          security: true,
         },
       });
 
@@ -614,6 +615,22 @@ export class FileController {
       if (share.expiration && new Date(share.expiration) < new Date()) {
         return reply.status(410).send({ error: "Share has expired." });
       }
+
+      // Block embed access if the share requires a password
+      if (share.security?.password) {
+        return reply.status(403).send({ error: "This share requires password access." });
+      }
+
+       // Block embed access if the share has reached its view limit
+       if (share.security?.maxViews !== null && share.security?.maxViews !== undefined) {
+         const result = await prisma.share.updateMany({
+           where: { id: share.id, views: { lt: share.security.maxViews } },
+           data: { views: { increment: 1 } },
+         });
+         if (result.count === 0) {
+           return reply.status(410).send({ error: "Share view limit reached." });
+         }
+       }
 
       // Load the file record
       const fileRecord = await prisma.file.findUnique({ where: { id: fileId } });
