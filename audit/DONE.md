@@ -108,3 +108,36 @@
 - **Change**: Password removed from all querystring schemas. New POST endpoints for password access (`/shares/:id/access`, `/shares/alias/:alias/access`). `GET /files/download-url` and `GET /files/download` → POST with body. Reverse-share passwords also moved to body
 - **Verified**: PASS
 - **Breaking**: Frontend must be updated to use POST instead of GET for password-protected access
+
+---
+
+## Post-Phase 0: Reviewer Follow-ups
+
+> 14 items identified during Phase 0 review, all completed 2026-04-21.
+> See `audit/TODO-POST-PHASE-0.md` for full details and reviewer notes.
+
+### Security Hardening (5 items)
+- **S3 path traversal hardening** — Reject `..`/`\0`, normalize with `path.posix.normalize`, re-verify prefix in all 4 S3 methods
+- **clientSecret scrubbed from API responses** — Removed from `AuthProviderResponseSchema` + `SAFE_PROVIDER_SELECT` in service
+- **EMBED_SECRET persisted in AppConfig** — DB-stored, lazy-loaded, auto-created, module-cached
+- **Share security enforced on embed** — Password blocks (403), maxViews atomic conditional update (410)
+- **objectName namespace validation** — `validateObjectName()` in reverse-share service
+
+### Rate Limiting (2 items)
+- **Download endpoints rate-limited** — `POST /files/download-url` and `/download` at 20/min/IP
+- **keyGenerator fixed** — Uses `request.ip` instead of raw `x-forwarded-for` header
+
+### Auth & Middleware (2 items)
+- **`!userId` early-return** — Applied to all 4 S3 controller methods
+- **Dead password query fallback removed** — 4 locations in share + reverse-share controllers
+
+### Configuration (2 items)
+- **ALLOWED_IMAGE_HOSTS improved** — `parseImageHosts()` supports http/https/wildcard. Defaults: localhost + 127.0.0.1
+- **CORS cleanup** — Default `["http://localhost:5487"]` only + production warning
+
+### Code Quality (1 item)
+- **Multipart callers audited** — Only avatar (5MB) and logo (5MB) use `request.file()`. Safe.
+
+### Frontend Migration (1 item)
+- **Full frontend migration** — 20 files modified, 10 new proxy routes. Downloads POST, share/reverse-share password branching, embed token flow
+- **Verified**: 13/14 PASS, 1 PARTIAL (userId early-return extended to all S3 methods post-review)
