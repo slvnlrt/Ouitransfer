@@ -1,11 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
 import { AlertTriangle } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const V3_BETA_MODAL_KEY = "OUITRANSFER-v3-beta-modal-shown";
 
@@ -50,13 +56,14 @@ export function V3BetaModal() {
           <DialogDescription className="text-left space-y-4 pt-2 text-base leading-relaxed">
             <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4 mb-4">
               <p className="text-amber-800 dark:text-amber-200 text-sm font-medium">
-                <strong>Note:</strong> This alert is only relevant if you are upgrading from a version prior to
-                v3.0.0-beta. If you're new to OUITRANSFER, you can safely follow the documentation normally.
+                <strong>Note:</strong> This alert is only relevant if you are upgrading from a
+                version prior to v3.0.0-beta. If you're new to OUITRANSFER, you can safely follow
+                the documentation normally.
               </p>
             </div>
             <p>
-              Major changes have been made starting from version <strong className="text-amber-600">v3.3.0-beta</strong>
-              .
+              Major changes have been made starting from version{" "}
+              <strong className="text-amber-600">v3.3.0-beta</strong>.
             </p>
             <p>
               This has made it necessary to update the{" "}
@@ -65,7 +72,9 @@ export function V3BetaModal() {
               </code>{" "}
               configuration to work perfectly with the new changes.
             </p>
-            <p>For more details, please check the updated documentation in the quick start guide.</p>
+            <p>
+              For more details, please check the updated documentation in the quick start guide.
+            </p>
           </DialogDescription>
         </DialogHeader>
         <div className="flex gap-3 justify-end pt-6">

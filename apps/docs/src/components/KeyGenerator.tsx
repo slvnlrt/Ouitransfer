@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { Copy, X } from "lucide-react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Toast } from "@/components/ui/toast";
@@ -61,6 +61,7 @@ export function KeyGenerator() {
         </code>
         {key && (
           <button
+            type="button"
             onClick={copyToClipboard}
             className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
             title="Copy to clipboard"
@@ -76,7 +77,9 @@ export function KeyGenerator() {
         </p>
       )}
 
-      {showToast && <Toast message="Key copied to clipboard!" onClose={() => setShowToast(false)} />}
+      {showToast && (
+        <Toast message="Key copied to clipboard!" onClose={() => setShowToast(false)} />
+      )}
     </div>
   );
 }

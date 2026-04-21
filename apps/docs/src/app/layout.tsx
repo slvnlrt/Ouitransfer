@@ -2,10 +2,10 @@ import { Banner } from "fumadocs-ui/components/banner";
 
 import "./global.css";
 
-import type { ReactNode } from "react";
-import { Inter } from "next/font/google";
 import Link from "fumadocs-core/link";
 import { RootProvider } from "fumadocs-ui/provider";
+import { Inter } from "next/font/google";
+import type { ReactNode } from "react";
 
 import { LATEST_VERSION, LATEST_VERSION_PATH } from "@/config/constants";
 

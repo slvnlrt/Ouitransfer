@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/page";
+import { redirect } from "next/navigation";
 
 import { source } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
@@ -48,7 +48,7 @@ export async function generateMetadata(props: { params: Promise<{ slug?: string[
   if (!page) redirect("/docs/v3-beta");
 
   return {
-    title: page.data.title + " | OUITRANSFER. Docs",
+    title: `${page.data.title} | OUITRANSFER. Docs`,
     description: page.data.description,
   };
 }

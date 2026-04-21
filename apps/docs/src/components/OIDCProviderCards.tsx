@@ -1,4 +1,14 @@
-import { Chrome, Egg, Github, Key, Lock, MessageSquare, Settings, Shield, Users } from "lucide-react";
+import {
+  Chrome,
+  Egg,
+  Github,
+  Key,
+  Lock,
+  MessageSquare,
+  Settings,
+  Shield,
+  Users,
+} from "lucide-react";
 
 import { Card, CardGrid } from "@/components/ui/card";
 

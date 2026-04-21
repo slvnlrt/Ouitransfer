@@ -1,7 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
-import Link from "next/link";
 import {
   BatteryChargingIcon,
   BookOpenText,
@@ -11,13 +9,15 @@ import {
   KeyboardIcon,
   LayoutIcon,
   LockIcon,
+  type LucideIcon,
   MousePointer,
   RocketIcon,
   SearchIcon,
   TimerIcon,
   UploadIcon,
-  type LucideIcon,
 } from "lucide-react";
+import Link from "next/link";
+import type { ReactNode } from "react";
 
 import { AnimatedGridPattern } from "@/components/magicui/animated-grid-pattern";
 import { PulsatingButton } from "@/components/magicui/pulsating-button";
@@ -36,11 +36,15 @@ function Hero() {
   return (
     <section className="relative z-[2] flex flex-col border-x border-t  px-6 pt-12 pb-10 md:px-12 md:pt-16 max-md:text-center">
       <h1 className="mb-8 text-6xl font-bold">
-        OUITRANSFER. <span className="text-[13px] font-light text-muted-foreground/50 font-mono">v3-beta</span>
+        OUITRANSFER.{" "}
+        <span className="text-[13px] font-light text-muted-foreground/50 font-mono">v3-beta</span>
       </h1>
-      <h1 className="hidden text-4xl font-medium max-w-[600px] md:block mb-4">Modern & efficient file sharing</h1>
+      <h1 className="hidden text-4xl font-medium max-w-[600px] md:block mb-4">
+        Modern & efficient file sharing
+      </h1>
       <p className="mb-8 text-fd-muted-foreground md:max-w-[80%] md:text-xl">
-        OUITRANSFER is a fast and secure platform for sharing files, built with performance and privacy in mind.
+        OUITRANSFER is a fast and secure platform for sharing files, built with performance and
+        privacy in mind.
       </p>
       <div className="hidden h-[10rem] lg:flex items-center justify-center absolute right-0 top-10">
         <TextHoverEffect text="OUITRANSFER." />
@@ -91,7 +95,15 @@ function Feedback() {
   );
 }
 
-function Highlight({ icon: Icon, heading, children }: { icon: LucideIcon; heading: ReactNode; children: ReactNode }) {
+function Highlight({
+  icon: Icon,
+  heading,
+  children,
+}: {
+  icon: LucideIcon;
+  heading: ReactNode;
+  children: ReactNode;
+}) {
   return (
     <div className="border-l border-t px-6 py-12">
       <div className="mb-4 flex items-center gap-2 text-fd-muted-foreground">
@@ -126,7 +138,9 @@ function Features() {
             </div>
             <h3 className="text-2xl font-semibold">Secure & Private</h3>
           </div>
-          <p className="text-muted-foreground">Files are encrypted and protected. You control your data completely.</p>
+          <p className="text-muted-foreground">
+            Files are encrypted and protected. You control your data completely.
+          </p>
         </div>
       </section>
 
@@ -142,7 +156,9 @@ function Features() {
           <p className="mb-4 w-fit bg-fd-primary px-3 py-1 text-sm font-bold font-mono text-fd-primary-foreground mx-auto">
             Open Source & Self-Hosted
           </p>
-          <h2 className="text-center text-2xl font-semibold sm:text-3xl mb-4">Complete File Sharing Solution</h2>
+          <h2 className="text-center text-2xl font-semibold sm:text-3xl mb-4">
+            Complete File Sharing Solution
+          </h2>
           <TypingAnimation className="text-center text-xl text-muted-foreground">
             Built with Next.js, Fastify, and SQLite
           </TypingAnimation>
@@ -153,7 +169,9 @@ function Features() {
       {/* Technical Features Grid */}
       <section className="grid grid-cols-1 border-r md:grid-cols-2 lg:grid-cols-3">
         <div className="col-span-full flex items-start justify-center border-l border-t p-8 pb-2 text-center">
-          <h2 className="bg-fd-primary px-1 text-2xl font-semibold text-fd-primary-foreground">Key Features</h2>
+          <h2 className="bg-fd-primary px-1 text-2xl font-semibold text-fd-primary-foreground">
+            Key Features
+          </h2>
           <MousePointer className="-ml-1 mt-8" />
         </div>
 
@@ -192,8 +210,8 @@ function GetStarted() {
         <div className="text-center mb-6">
           <h2 className="text-4xl font-extrabold font-mono uppercase mb-3">Get Started Today</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Deploy your own secure file sharing platform in minutes. Take control of your data with our self-hosted
-            solution.
+            Deploy your own secure file sharing platform in minutes. Take control of your data with
+            our self-hosted solution.
           </p>
         </div>
 
@@ -229,7 +247,9 @@ function GetStarted() {
               </div>
             </div>
             <h3 className="text-xl font-semibold">Production Ready</h3>
-            <p className="text-muted-foreground">Latest technologies optimized for performance and security</p>
+            <p className="text-muted-foreground">
+              Latest technologies optimized for performance and security
+            </p>
           </div>
         </div>
 
@@ -264,9 +284,7 @@ function FullWidthFooter() {
     <footer className="w-full flex items-center justify-center p-6 border-t font-light container max-w-7xl">
       <div className="flex items-center gap-1 text-sm max-w-7xl">
         <span>Powered by</span>
-        <span className="flex items-center text-green-500 font-light">
-          Burger&amp;Cie ©
-        </span>
+        <span className="flex items-center text-green-500 font-light">Burger&amp;Cie ©</span>
       </div>
     </footer>
   );
