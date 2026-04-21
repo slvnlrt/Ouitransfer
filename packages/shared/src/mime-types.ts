@@ -1,6 +1,8 @@
 /**
- * Utility for detecting MIME types based on file extensions
- * Fallback to application/octet-stream if extension is unknown
+ * Shared MIME type utilities for file extension detection.
+ * Fallback to application/octet-stream if extension is unknown.
+ *
+ * @module @ouitransfer/shared/mime-types
  */
 
 const mimeTypeMap: Record<string, string> = {
@@ -333,7 +335,7 @@ const mimeTypeMap: Record<string, string> = {
 };
 
 /**
- * Get MIME type from file extension
+ * Get MIME type from file extension.
  * @param filename - The filename or extension (with or without leading dot)
  * @returns MIME type string, defaults to 'application/octet-stream' if unknown
  */
@@ -347,7 +349,7 @@ export function getMimeType(filename: string): string {
   if (filename.startsWith(".")) {
     extension = filename.toLowerCase();
   } else if (!filename.includes(".")) {
-    extension = "." + filename.toLowerCase();
+    extension = `.${filename.toLowerCase()}`;
   } else {
     const lastDotIndex = filename.lastIndexOf(".");
     if (lastDotIndex === -1) {
@@ -360,19 +362,70 @@ export function getMimeType(filename: string): string {
 }
 
 /**
- * Check if a MIME type represents an image
- * @param mimeType - The MIME type to check
- * @returns true if the MIME type is an image type
+ * Alias for getMimeType — returns the Content-Type for a file.
+ */
+export const getContentType = getMimeType;
+
+/**
+ * Check if a MIME type represents an image.
  */
 export function isImageMimeType(mimeType: string): boolean {
   return mimeType.startsWith("image/");
 }
 
 /**
- * Get appropriate Content-Type header value for a file
- * @param filename - The filename to detect type for
- * @returns Content-Type header value
+ * Check if a MIME type represents audio.
  */
-export function getContentType(filename: string): string {
-  return getMimeType(filename);
+export function isAudioMimeType(mimeType: string): boolean {
+  return mimeType.startsWith("audio/");
+}
+
+/**
+ * Check if a MIME type represents video.
+ */
+export function isVideoMimeType(mimeType: string): boolean {
+  return mimeType.startsWith("video/");
+}
+
+/**
+ * Extract filename from Content-Disposition header.
+ * @param contentDisposition - The Content-Disposition header value
+ * @returns Extracted filename or null if not found
+ */
+export function extractFilenameFromContentDisposition(
+  contentDisposition: string | null,
+): string | null {
+  if (!contentDisposition) return null;
+
+  const filenameMatch = contentDisposition.match(/filename\*?=(?:UTF-8'')?["]?([^";\r\n]*)["]?/i);
+  return filenameMatch ? decodeURIComponent(filenameMatch[1]) : null;
+}
+
+/**
+ * Detect MIME type with fallback logic for proxy responses.
+ * @param serverContentType - Content-Type from server
+ * @param contentDisposition - Content-Disposition header
+ * @param fallbackFilename - Fallback filename if not in Content-Disposition
+ * @returns Detected MIME type
+ */
+export function detectMimeTypeWithFallback(
+  serverContentType: string | null,
+  contentDisposition: string | null,
+  fallbackFilename?: string,
+): string {
+  if (serverContentType && serverContentType !== "application/octet-stream") {
+    return serverContentType;
+  }
+
+  let filename = extractFilenameFromContentDisposition(contentDisposition);
+
+  if (!filename && fallbackFilename) {
+    filename = fallbackFilename.split("/").pop() || "";
+  }
+
+  if (filename) {
+    return getMimeType(filename);
+  }
+
+  return "application/octet-stream";
 }

@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { getMimeType } from "@ouitransfer/shared/mime-types";
 import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { getCachedDownloadUrl, getCachedReverseShareDownloadUrl } from "@/lib/download-url-cache";
-import { getFileExtension, getFileType, type FileType } from "@/utils/file-types";
-import { getMimeType } from "@/utils/mime-types";
+import { type FileType, getFileExtension, getFileType } from "@/utils/file-types";
 
 interface FilePreviewState {
   previewUrl: string | null;
@@ -29,7 +29,12 @@ interface UseFilePreviewProps {
   sharePassword?: string;
 }
 
-export function useFilePreview({ file, isOpen, isReverseShare = false, sharePassword }: UseFilePreviewProps) {
+export function useFilePreview({
+  file,
+  isOpen,
+  isReverseShare = false,
+  sharePassword,
+}: UseFilePreviewProps) {
   const t = useTranslations();
   const [state, setState] = useState<FilePreviewState>({
     previewUrl: null,
@@ -64,10 +69,10 @@ export function useFilePreview({ file, isOpen, isReverseShare = false, sharePass
 
   const cleanupBlobUrls = useCallback(() => {
     setState((prev) => {
-      if (prev.previewUrl && prev.previewUrl.startsWith("blob:")) {
+      if (prev.previewUrl?.startsWith("blob:")) {
         URL.revokeObjectURL(prev.previewUrl);
       }
-      if (prev.videoBlob && prev.videoBlob.startsWith("blob:")) {
+      if (prev.videoBlob?.startsWith("blob:")) {
         URL.revokeObjectURL(prev.videoBlob);
       }
       return prev;
@@ -93,7 +98,7 @@ export function useFilePreview({ file, isOpen, isReverseShare = false, sharePass
         setState((prev) => ({ ...prev, previewUrl: url }));
       }
     },
-    [file.name]
+    [file.name],
   );
 
   const loadAudioPreview = useCallback(
@@ -115,7 +120,7 @@ export function useFilePreview({ file, isOpen, isReverseShare = false, sharePass
         setState((prev) => ({ ...prev, previewUrl: url }));
       }
     },
-    [file.name]
+    [file.name],
   );
 
   const handlePdfLoadError = useCallback(() => {
@@ -148,7 +153,7 @@ export function useFilePreview({ file, isOpen, isReverseShare = false, sharePass
         }, 4000);
       }
     },
-    [handlePdfLoadError]
+    [handlePdfLoadError],
   );
 
   const loadTextPreview = useCallback(
@@ -177,7 +182,7 @@ export function useFilePreview({ file, isOpen, isReverseShare = false, sharePass
         setState((prev) => ({ ...prev, textContent: null }));
       }
     },
-    [file.name]
+    [file.name],
   );
 
   const loadPreview = useCallback(async () => {
@@ -193,7 +198,9 @@ export function useFilePreview({ file, isOpen, isReverseShare = false, sharePass
       if (isReverseShare) {
         url = await getCachedReverseShareDownloadUrl(file.id!);
       } else {
-        const options = sharePassword ? { headers: { "x-share-password": sharePassword } } : undefined;
+        const options = sharePassword
+          ? { headers: { "x-share-password": sharePassword } }
+          : undefined;
         url = await getCachedDownloadUrl(file.objectName, options);
       }
 
@@ -248,7 +255,9 @@ export function useFilePreview({ file, isOpen, isReverseShare = false, sharePass
       if (isReverseShare) {
         url = await getCachedReverseShareDownloadUrl(file.id!);
       } else {
-        const options = sharePassword ? { headers: { "x-share-password": sharePassword } } : undefined;
+        const options = sharePassword
+          ? { headers: { "x-share-password": sharePassword } }
+          : undefined;
         url = await getCachedDownloadUrl(file.objectName, options);
       }
 

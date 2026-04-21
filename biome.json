@@ -28,6 +28,15 @@
       }
     }
   },
+  "css": {
+    "parser": {
+      "cssModules": false,
+      "tailwindDirectives": true
+    },
+    "linter": {
+      "enabled": true
+    }
+  },
   "javascript": {
     "formatter": {
       "quoteStyle": "double",
@@ -38,9 +47,10 @@
   "files": {
     "includes": [
       "**",
-      "!apps/web/src/components/ui/**",
-      "!apps/docs/src/components/ui/**",
-      "!apps/docs/src/components/magicui/**"
+      "!apps/web/src/components/ui",
+      "!apps/docs/src/components/ui",
+      "!apps/docs/src/components/magicui",
+      "!packages/*/dist"
     ]
   }
 }

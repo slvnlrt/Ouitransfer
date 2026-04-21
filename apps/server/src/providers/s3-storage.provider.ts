@@ -9,10 +9,10 @@ import {
   UploadPartCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { getContentType } from "@ouitransfer/shared/mime-types";
 
-import { bucketName, createPublicS3Client, s3Client } from "../config/storage.config";
-import { StorageProvider } from "../types/storage";
-import { getContentType } from "../utils/mime-types";
+import { bucketName, createPublicS3Client, s3Client } from "../config/storage.config.js";
+import type { StorageProvider } from "../types/storage.js";
 
 export class S3StorageProvider implements StorageProvider {
   private ensureClient() {
@@ -69,7 +69,7 @@ export class S3StorageProvider implements StorageProvider {
       .filter((char) => this.isTokenChar(char))
       .join("");
 
-    if (asciiSafe && asciiSafe.trim()) {
+    if (asciiSafe?.trim()) {
       const encoded = encodeURIComponent(sanitized);
       return `attachment; filename="${asciiSafe}"; filename*=UTF-8''${encoded}`;
     } else {
@@ -96,7 +96,11 @@ export class S3StorageProvider implements StorageProvider {
     });
   }
 
-  async getPresignedGetUrl(objectName: string, expires: number, fileName?: string): Promise<string> {
+  async getPresignedGetUrl(
+    objectName: string,
+    expires: number,
+    fileName?: string,
+  ): Promise<string> {
     // Always use public S3 client for presigned URLs (uses SERVER_IP)
     const client = createPublicS3Client();
     if (!client) {
@@ -205,7 +209,7 @@ export class S3StorageProvider implements StorageProvider {
     objectName: string,
     uploadId: string,
     partNumber: number,
-    expires: number
+    expires: number,
   ): Promise<string> {
     const client = createPublicS3Client();
     if (!client) {
@@ -232,7 +236,7 @@ export class S3StorageProvider implements StorageProvider {
   async completeMultipartUpload(
     objectName: string,
     uploadId: string,
-    parts: Array<{ PartNumber: number; ETag: string }>
+    parts: Array<{ PartNumber: number; ETag: string }>,
   ): Promise<void> {
     const client = this.ensureClient();
 

@@ -1,29 +1,28 @@
+import { getContentType } from "@ouitransfer/shared/mime-types";
 import bcrypt from "bcryptjs";
-import { FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { env } from "../../env";
-import { prisma } from "../../shared/prisma";
+import { env } from "../../env.js";
+import { prisma } from "../../shared/prisma.js";
 import {
   generateUniqueFileName,
   generateUniqueFileNameForRename,
   parseFileName,
-} from "../../utils/file-name-generator";
-import { getContentType } from "../../utils/mime-types";
-import { ConfigService } from "../config/service";
+} from "../../utils/file-name-generator.js";
+import { ConfigService } from "../config/service.js";
 import {
-  CheckFileInput,
+  type CheckFileInput,
   CheckFileSchema,
-  ListFilesInput,
+  type ListFilesInput,
   ListFilesSchema,
-  MoveFileInput,
+  type MoveFileInput,
   MoveFileSchema,
-  RegisterFileInput,
+  type RegisterFileInput,
   RegisterFileSchema,
-  UpdateFileInput,
   UpdateFileSchema,
-} from "./dto";
-import { createEmbedToken, verifyEmbedToken } from "./embed-token";
-import { FileService } from "./service";
+} from "./dto.js";
+import { createEmbedToken, verifyEmbedToken } from "./embed-token.js";
+import { FileService } from "./service.js";
 
 export class FileController {
   private fileService = new FileService();
@@ -45,7 +44,7 @@ export class FileController {
 
       // Generate unique object name
       const objectName = `${userId}/${Date.now()}-${Math.random().toString(36).substring(7)}-${filename}.${extension}`;
-      const expires = parseInt(env.PRESIGNED_URL_EXPIRATION);
+      const expires = parseInt(env.PRESIGNED_URL_EXPIRATION, 10);
 
       const url = await this.fileService.getPresignedPutUrl(objectName, expires);
 
@@ -60,7 +59,9 @@ export class FileController {
     try {
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const input: RegisterFileInput = RegisterFileSchema.parse(request.body);
@@ -251,7 +252,7 @@ export class FileController {
           if (userId && fileRecord.userId === userId) {
             hasAccess = true;
           }
-        } catch (err) {}
+        } catch (_err) {}
       }
 
       if (!hasAccess) {
@@ -259,7 +260,7 @@ export class FileController {
       }
 
       const fileName = fileRecord.name;
-      const expires = parseInt(env.PRESIGNED_URL_EXPIRATION);
+      const expires = parseInt(env.PRESIGNED_URL_EXPIRATION, 10);
 
       // Always use presigned URLs (works for both internal and external storage)
       const url = await this.fileService.getPresignedGetUrl(objectName, expires, fileName);
@@ -304,7 +305,7 @@ export class FileController {
             if (!userId || reverseShareFile.reverseShare.creatorId !== userId) {
               return reply.status(401).send({ error: "Unauthorized access to file." });
             }
-          } catch (err) {
+          } catch (_err) {
             return reply.status(401).send({ error: "Unauthorized access to file." });
           }
 
@@ -358,7 +359,7 @@ export class FileController {
           if (userId && fileRecord.userId === userId) {
             hasAccess = true;
           }
-        } catch (err) {}
+        } catch (_err) {}
       }
 
       if (!hasAccess) {
@@ -386,12 +387,14 @@ export class FileController {
       await request.jwtVerify();
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const input: ListFilesInput = ListFilesSchema.parse(request.query);
       const { folderId, recursive: recursiveStr } = input;
-      const recursive = recursiveStr === "false" ? false : true;
+      const recursive = recursiveStr !== "false";
 
       let files: any[];
 
@@ -493,7 +496,13 @@ export class FileController {
       // If renaming the file, check for duplicates and auto-rename if necessary
       if (updateData.name && updateData.name !== fileRecord.name) {
         const { baseName, extension } = parseFileName(updateData.name);
-        const uniqueName = await generateUniqueFileNameForRename(baseName, extension, userId, fileRecord.folderId, id);
+        const uniqueName = await generateUniqueFileNameForRename(
+          baseName,
+          extension,
+          userId,
+          fileRecord.folderId,
+          id,
+        );
         updateData.name = uniqueName;
       }
 
@@ -531,7 +540,9 @@ export class FileController {
       const userId = (request as any).user?.userId;
 
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const { id } = request.params as { id: string };
@@ -621,16 +632,16 @@ export class FileController {
         return reply.status(403).send({ error: "This share requires password access." });
       }
 
-       // Block embed access if the share has reached its view limit
-       if (share.security?.maxViews !== null && share.security?.maxViews !== undefined) {
-         const result = await prisma.share.updateMany({
-           where: { id: share.id, views: { lt: share.security.maxViews } },
-           data: { views: { increment: 1 } },
-         });
-         if (result.count === 0) {
-           return reply.status(410).send({ error: "Share view limit reached." });
-         }
-       }
+      // Block embed access if the share has reached its view limit
+      if (share.security?.maxViews !== null && share.security?.maxViews !== undefined) {
+        const result = await prisma.share.updateMany({
+          where: { id: share.id, views: { lt: share.security.maxViews } },
+          data: { views: { increment: 1 } },
+        });
+        if (result.count === 0) {
+          return reply.status(410).send({ error: "Share view limit reached." });
+        }
+      }
 
       // Load the file record
       const fileRecord = await prisma.file.findUnique({ where: { id: fileId } });
@@ -643,7 +654,10 @@ export class FileController {
       const imageExts = ["jpg", "jpeg", "png", "gif", "webp", "svg", "bmp", "ico", "avif"];
       const videoExts = ["mp4", "webm", "ogg", "mov", "avi", "mkv", "flv", "wmv"];
       const audioExts = ["mp3", "wav", "ogg", "m4a", "flac", "aac", "wma"];
-      const isMedia = imageExts.includes(extension) || videoExts.includes(extension) || audioExts.includes(extension);
+      const isMedia =
+        imageExts.includes(extension) ||
+        videoExts.includes(extension) ||
+        audioExts.includes(extension);
 
       if (!isMedia) {
         return reply.status(403).send({ error: "Embed is only allowed for media files." });
@@ -654,7 +668,10 @@ export class FileController {
       const contentType = getContentType(fileRecord.name);
 
       reply.header("Content-Type", contentType);
-      reply.header("Content-Disposition", `inline; filename="${encodeURIComponent(fileRecord.name)}"`);
+      reply.header(
+        "Content-Disposition",
+        `inline; filename="${encodeURIComponent(fileRecord.name)}"`,
+      );
       reply.header("Content-Length", fileRecord.size.toString());
       reply.header("Cache-Control", "public, max-age=86400");
 
@@ -684,7 +701,9 @@ export class FileController {
       });
 
       if (!share) {
-        return reply.status(403).send({ error: "Access denied: share not found or file not in share." });
+        return reply
+          .status(403)
+          .send({ error: "Access denied: share not found or file not in share." });
       }
 
       const token = await createEmbedToken(fileId, shareId);
@@ -764,17 +783,24 @@ export class FileController {
       };
 
       if (!uploadId || !objectName || !partNumber) {
-        return reply.status(400).send({ error: "uploadId, objectName, and partNumber are required" });
+        return reply
+          .status(400)
+          .send({ error: "uploadId, objectName, and partNumber are required" });
       }
 
-      const partNum = parseInt(partNumber);
-      if (isNaN(partNum) || partNum < 1 || partNum > 10000) {
+      const partNum = parseInt(partNumber, 10);
+      if (Number.isNaN(partNum) || partNum < 1 || partNum > 10000) {
         return reply.status(400).send({ error: "partNumber must be between 1 and 10000" });
       }
 
-      const expires = parseInt(env.PRESIGNED_URL_EXPIRATION);
+      const expires = parseInt(env.PRESIGNED_URL_EXPIRATION, 10);
 
-      const url = await this.fileService.getPresignedPartUrl(objectName, uploadId, partNum, expires);
+      const url = await this.fileService.getPresignedPartUrl(
+        objectName,
+        uploadId,
+        partNum,
+        expires,
+      );
 
       return reply.status(200).send({ url });
     } catch (error) {

@@ -1,0 +1,25 @@
+{
+  "name": "@ouitransfer/shared",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Shared utilities for the Ouitransfer monorepo",
+  "type": "module",
+  "exports": {
+    "./mime-types": {
+      "types": "./src/mime-types.ts",
+      "default": "./dist/mime-types.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch --preserveWatchOutput",
+    "type-check": "tsc --noEmit"
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "devDependencies": {
+    "typescript": "catalog:"
+  }
+}

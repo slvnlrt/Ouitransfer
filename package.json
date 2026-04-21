@@ -36,6 +36,6 @@
     "knip": "^6.6.0",
     "lefthook": "^2.1.6",
     "turbo": "^2.9.6",
-    "vitest": "^4.1.4"
+    "vitest": "catalog:"
   }
 }
