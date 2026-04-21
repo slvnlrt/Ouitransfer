@@ -1,7 +1,7 @@
 import type { Share, ShareSecurity } from "@prisma/client";
 
-import { prisma } from "../../shared/prisma";
-import type { CreateShareInput } from "./dto";
+import { prisma } from "../../shared/prisma.js";
+import type { CreateShareInput } from "./dto.js";
 
 export interface IShareRepository {
   createShare(data: CreateShareInput & { securityId: string; creatorId: string }): Promise<Share>;
@@ -15,11 +15,13 @@ export interface IShareRepository {
     | null
   >;
   findShareBySecurityId(
-    securityId: string
+    securityId: string,
   ): Promise<(Share & { security: ShareSecurity; files: any[]; folders: any[] }) | null>;
   findShareByAlias(
-    alias: string
-  ): Promise<(Share & { security: ShareSecurity; files: any[]; folders: any[]; recipients: any[] }) | null>;
+    alias: string,
+  ): Promise<
+    (Share & { security: ShareSecurity; files: any[]; folders: any[]; recipients: any[] }) | null
+  >;
   updateShare(id: string, data: Partial<Share>): Promise<Share>;
   updateShareSecurity(id: string, data: Partial<ShareSecurity>): Promise<ShareSecurity>;
   deleteShare(id: string): Promise<Share>;
@@ -32,14 +34,23 @@ export interface IShareRepository {
   findFoldersByIds(folderIds: string[]): Promise<any[]>;
   addRecipients(shareId: string, emails: string[]): Promise<void>;
   removeRecipients(shareId: string, emails: string[]): Promise<void>;
-  findSharesByUserId(
-    userId: string
-  ): Promise<(Share & { security: ShareSecurity; files: any[]; folders: any[]; recipients: any[]; alias: any })[]>;
+  findSharesByUserId(userId: string): Promise<
+    (Share & {
+      security: ShareSecurity;
+      files: any[];
+      folders: any[];
+      recipients: any[];
+      alias: any;
+    })[]
+  >;
 }
 
 export class PrismaShareRepository implements IShareRepository {
   async createShare(
-    data: Omit<CreateShareInput, "password" | "maxViews"> & { securityId: string; creatorId: string }
+    data: Omit<CreateShareInput, "password" | "maxViews"> & {
+      securityId: string;
+      creatorId: string;
+    },
   ): Promise<Share> {
     const { files, folders, recipients, expiration, ...shareData } = data;
 

@@ -1,9 +1,9 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { ConfigService } from "../config/service";
-import { UpdateAuthProviderSchema } from "./dto";
-import { AuthProvidersService } from "./service";
-import {
+import { ConfigService } from "../config/service.js";
+import { UpdateAuthProviderSchema } from "./dto.js";
+import { AuthProvidersService } from "./service.js";
+import type {
   AuthorizeRequest,
   CallbackRequest,
   CreateProviderRequest,
@@ -11,7 +11,7 @@ import {
   RequestContext,
   UpdateProviderRequest,
   UpdateProvidersOrderRequest,
-} from "./types";
+} from "./types.js";
 
 const COOKIE_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
 
@@ -85,8 +85,16 @@ export class AuthProvidersController {
   }
 
   private validateCustomEndpoints(data: any): string | null {
-    const hasAnyCustomEndpoint = !!(data.authorizationEndpoint || data.tokenEndpoint || data.userInfoEndpoint);
-    const hasAllCustomEndpoints = !!(data.authorizationEndpoint && data.tokenEndpoint && data.userInfoEndpoint);
+    const hasAnyCustomEndpoint = !!(
+      data.authorizationEndpoint ||
+      data.tokenEndpoint ||
+      data.userInfoEndpoint
+    );
+    const hasAllCustomEndpoints = !!(
+      data.authorizationEndpoint &&
+      data.tokenEndpoint &&
+      data.userInfoEndpoint
+    );
 
     if (hasAnyCustomEndpoint && !hasAllCustomEndpoints) {
       return ERROR_MESSAGES.ENDPOINTS_INCOMPLETE;
@@ -130,7 +138,10 @@ export class AuthProvidersController {
     });
   }
 
-  private determineCallbackError(error: Error, provider: string): { type: string; message: string } {
+  private determineCallbackError(
+    error: Error,
+    provider: string,
+  ): { type: string; message: string } {
     const errorMessage = error.message;
 
     if (errorMessage.includes("registration via") && errorMessage.includes("disabled")) {
@@ -192,7 +203,7 @@ export class AuthProvidersController {
     }
   }
 
-  async getAllProviders(request: FastifyRequest, reply: FastifyReply) {
+  async getAllProviders(_request: FastifyRequest, reply: FastifyReply) {
     if (reply.sent) return;
 
     try {
@@ -239,7 +250,7 @@ export class AuthProvidersController {
           return this.sendErrorResponse(
             reply,
             400,
-            "Cannot disable the last authentication provider when password authentication is disabled"
+            "Cannot disable the last authentication provider when password authentication is disabled",
           );
         }
       }
@@ -281,7 +292,10 @@ export class AuthProvidersController {
     }
   }
 
-  async updateProvidersOrder(request: FastifyRequest<UpdateProvidersOrderRequest>, reply: FastifyReply) {
+  async updateProvidersOrder(
+    request: FastifyRequest<UpdateProvidersOrderRequest>,
+    reply: FastifyReply,
+  ) {
     if (reply.sent) return;
 
     try {
@@ -320,7 +334,7 @@ export class AuthProvidersController {
           return this.sendErrorResponse(
             reply,
             400,
-            "Cannot delete the last authentication provider when password authentication is disabled"
+            "Cannot delete the last authentication provider when password authentication is disabled",
           );
         }
       }
@@ -342,12 +356,13 @@ export class AuthProvidersController {
         providerName,
         state,
         redirect_uri,
-        requestContext
+        requestContext,
       );
 
       return reply.redirect(authUrl);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : ERROR_MESSAGES.AUTHORIZATION_FAILED;
+      const errorMessage =
+        error instanceof Error ? error.message : ERROR_MESSAGES.AUTHORIZATION_FAILED;
       return this.sendErrorResponse(reply, 400, errorMessage);
     }
   }
@@ -372,7 +387,12 @@ export class AuthProvidersController {
         return reply.redirect(`${baseUrl}/login?error=missing_parameters&provider=${providerName}`);
       }
 
-      const result = await this.authProvidersService.handleCallback(providerName, code, state, requestContext);
+      const result = await this.authProvidersService.handleCallback(
+        providerName,
+        code,
+        state,
+        requestContext,
+      );
 
       const jwt = await request.jwtSign({
         userId: result.user.id,
@@ -382,7 +402,9 @@ export class AuthProvidersController {
       this.setAuthCookie(reply, jwt, request.protocol === "https");
 
       const redirectUrl = result.redirectUrl || "/dashboard";
-      const fullRedirectUrl = redirectUrl.startsWith("http") ? redirectUrl : `${baseUrl}${redirectUrl}`;
+      const fullRedirectUrl = redirectUrl.startsWith("http")
+        ? redirectUrl
+        : `${baseUrl}${redirectUrl}`;
 
       return reply.redirect(fullRedirectUrl);
     } catch (error) {
@@ -390,7 +412,11 @@ export class AuthProvidersController {
     }
   }
 
-  private handleCallbackError(request: FastifyRequest<CallbackRequest>, reply: FastifyReply, error: unknown) {
+  private handleCallbackError(
+    request: FastifyRequest<CallbackRequest>,
+    reply: FastifyReply,
+    error: unknown,
+  ) {
     // Log error for debugging
     console.error("Auth callback error for provider:", request.params.provider, error);
 
@@ -404,7 +430,7 @@ export class AuthProvidersController {
     const encodedMessage = encodeURIComponent(errorMessage);
 
     return reply.redirect(
-      `${baseUrl}/login?error=${errorType}&provider=${request.params.provider}&message=${encodedMessage}`
+      `${baseUrl}/login?error=${errorType}&provider=${request.params.provider}&message=${encodedMessage}`,
     );
   }
 }

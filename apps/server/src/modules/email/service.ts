@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-import { ConfigService } from "../config/service";
+import { ConfigService } from "../config/service.js";
 
 interface SmtpConfig {
   smtpEnabled: string;
@@ -54,7 +54,7 @@ export class EmailService {
 
     if (smtpSecure !== "none") {
       transportConfig.tls = {
-        rejectUnauthorized: smtpTrustSelfSigned === "true" ? false : true,
+        rejectUnauthorized: smtpTrustSelfSigned !== "true",
       };
     }
 
@@ -121,7 +121,7 @@ export class EmailService {
 
     if (smtpSecure !== "none") {
       transportConfig.tls = {
-        rejectUnauthorized: smtpConfig.smtpTrustSelfSigned === "true" ? false : true,
+        rejectUnauthorized: smtpConfig.smtpTrustSelfSigned !== "true",
       };
     }
 
@@ -167,7 +167,12 @@ export class EmailService {
     });
   }
 
-  async sendShareNotification(to: string, shareLink: string, shareName?: string, senderName?: string) {
+  async sendShareNotification(
+    to: string,
+    shareLink: string,
+    shareName?: string,
+    senderName?: string,
+  ) {
     const transporter = await this.createTransporter();
     if (!transporter) {
       throw new Error("SMTP is not enabled");
@@ -248,7 +253,7 @@ export class EmailService {
     reverseShareName: string,
     fileCount: number,
     fileList: string,
-    uploaderName: string
+    uploaderName: string,
   ) {
     const transporter = await this.createTransporter();
     if (!transporter) {

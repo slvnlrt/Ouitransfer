@@ -1,11 +1,11 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
-import { prisma } from "../../shared/prisma";
-import { createPasswordSchema } from "../auth/dto";
-import { UserController } from "./controller";
-import { UpdateUserSchema, UserResponseSchema } from "./dto";
-import { validatePasswordMiddleware } from "./middleware";
+import { prisma } from "../../shared/prisma.js";
+import { createPasswordSchema } from "../auth/dto.js";
+import { UserController } from "./controller.js";
+import { UpdateUserSchema, UserResponseSchema } from "./dto.js";
+import { validatePasswordMiddleware } from "./middleware.js";
 
 export async function userRoutes(app: FastifyInstance) {
   const userController = new UserController();
@@ -33,7 +33,10 @@ export async function userRoutes(app: FastifyInstance) {
       }
     } catch (err) {
       console.error(err);
-      return reply.status(500).send({ error: "Internal server error" }).description("Internal server error");
+      return reply
+        .status(500)
+        .send({ error: "Internal server error" })
+        .description("Internal server error");
     }
   };
 
@@ -88,7 +91,7 @@ export async function userRoutes(app: FastifyInstance) {
         },
       },
     },
-    userController.register.bind(userController)
+    userController.register.bind(userController),
   );
 
   app.get(
@@ -113,7 +116,7 @@ export async function userRoutes(app: FastifyInstance) {
               isActive: z.boolean().describe("User is active"),
               createdAt: z.date().describe("User creation date"),
               updatedAt: z.date().describe("User last update date"),
-            })
+            }),
           ),
           400: z.object({ error: z.string().describe("Error message") }),
           401: z.object({ error: z.string().describe("Error message") }),
@@ -121,7 +124,7 @@ export async function userRoutes(app: FastifyInstance) {
         },
       },
     },
-    userController.listUsers.bind(userController)
+    userController.listUsers.bind(userController),
   );
 
   app.get(
@@ -154,7 +157,7 @@ export async function userRoutes(app: FastifyInstance) {
         },
       },
     },
-    userController.getUserById.bind(userController)
+    userController.getUserById.bind(userController),
   );
 
   app.put(
@@ -186,7 +189,7 @@ export async function userRoutes(app: FastifyInstance) {
         },
       },
     },
-    userController.updateUser.bind(userController)
+    userController.updateUser.bind(userController),
   );
 
   app.patch(
@@ -218,7 +221,7 @@ export async function userRoutes(app: FastifyInstance) {
         },
       },
     },
-    userController.activateUser.bind(userController)
+    userController.activateUser.bind(userController),
   );
 
   app.patch(
@@ -250,7 +253,7 @@ export async function userRoutes(app: FastifyInstance) {
         },
       },
     },
-    userController.deactivateUser.bind(userController)
+    userController.deactivateUser.bind(userController),
   );
 
   app.delete(
@@ -282,7 +285,7 @@ export async function userRoutes(app: FastifyInstance) {
         },
       },
     },
-    userController.deleteUser.bind(userController)
+    userController.deleteUser.bind(userController),
   );
 
   app.patch(
@@ -317,7 +320,7 @@ export async function userRoutes(app: FastifyInstance) {
         },
       },
     },
-    userController.updateUserImage.bind(userController)
+    userController.updateUserImage.bind(userController),
   );
 
   app.post(
@@ -344,7 +347,7 @@ export async function userRoutes(app: FastifyInstance) {
         },
       },
     },
-    userController.uploadAvatar.bind(userController)
+    userController.uploadAvatar.bind(userController),
   );
 
   app.delete(
@@ -369,6 +372,6 @@ export async function userRoutes(app: FastifyInstance) {
         },
       },
     },
-    userController.removeAvatar.bind(userController)
+    userController.removeAvatar.bind(userController),
   );
 }

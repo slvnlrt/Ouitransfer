@@ -1,4 +1,4 @@
-import { prisma } from "../../shared/prisma";
+import { prisma } from "../../shared/prisma.js";
 
 export class ConfigService {
   async getValue(key: string): Promise<string> {

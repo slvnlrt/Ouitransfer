@@ -1,7 +1,7 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
-import { ShareController } from "./controller";
+import { ShareController } from "./controller.js";
 import {
   CreateShareSchema,
   ShareAliasResponseSchema,
@@ -10,7 +10,7 @@ import {
   UpdateSharePasswordSchema,
   UpdateShareRecipientsSchema,
   UpdateShareSchema,
-} from "./dto";
+} from "./dto.js";
 
 export async function shareRoutes(app: FastifyInstance) {
   const shareController = new ShareController();
@@ -43,7 +43,7 @@ export async function shareRoutes(app: FastifyInstance) {
         },
       },
     },
-    shareController.createShare.bind(shareController)
+    shareController.createShare.bind(shareController),
   );
 
   app.get(
@@ -64,7 +64,7 @@ export async function shareRoutes(app: FastifyInstance) {
         },
       },
     },
-    shareController.listUserShares.bind(shareController)
+    shareController.listUserShares.bind(shareController),
   );
 
   app.get(
@@ -74,7 +74,8 @@ export async function shareRoutes(app: FastifyInstance) {
         tags: ["Share"],
         operationId: "getShare",
         summary: "Get a share by ID",
-        description: "Get a share by ID. For password-protected shares use POST /shares/:shareId/access instead.",
+        description:
+          "Get a share by ID. For password-protected shares use POST /shares/:shareId/access instead.",
         params: z.object({
           shareId: z.string().describe("The share ID"),
         }),
@@ -88,7 +89,7 @@ export async function shareRoutes(app: FastifyInstance) {
         },
       },
     },
-    shareController.getShare.bind(shareController)
+    shareController.getShare.bind(shareController),
   );
 
   app.post(
@@ -116,7 +117,7 @@ export async function shareRoutes(app: FastifyInstance) {
         },
       },
     },
-    shareController.getShare.bind(shareController)
+    shareController.getShare.bind(shareController),
   );
 
   app.put(
@@ -138,7 +139,7 @@ export async function shareRoutes(app: FastifyInstance) {
         },
       },
     },
-    shareController.updateShare.bind(shareController)
+    shareController.updateShare.bind(shareController),
   );
 
   app.delete(
@@ -161,7 +162,7 @@ export async function shareRoutes(app: FastifyInstance) {
         },
       },
     },
-    shareController.deleteShare.bind(shareController)
+    shareController.deleteShare.bind(shareController),
   );
 
   app.patch(
@@ -186,7 +187,7 @@ export async function shareRoutes(app: FastifyInstance) {
         },
       },
     },
-    shareController.updatePassword.bind(shareController)
+    shareController.updatePassword.bind(shareController),
   );
 
   app.post(
@@ -211,7 +212,7 @@ export async function shareRoutes(app: FastifyInstance) {
         },
       },
     },
-    shareController.addItems.bind(shareController)
+    shareController.addItems.bind(shareController),
   );
 
   app.delete(
@@ -236,7 +237,7 @@ export async function shareRoutes(app: FastifyInstance) {
         },
       },
     },
-    shareController.removeItems.bind(shareController)
+    shareController.removeItems.bind(shareController),
   );
 
   app.post(
@@ -261,7 +262,7 @@ export async function shareRoutes(app: FastifyInstance) {
         },
       },
     },
-    shareController.addRecipients.bind(shareController)
+    shareController.addRecipients.bind(shareController),
   );
 
   app.delete(
@@ -287,7 +288,7 @@ export async function shareRoutes(app: FastifyInstance) {
         },
       },
     },
-    shareController.removeRecipients.bind(shareController)
+    shareController.removeRecipients.bind(shareController),
   );
 
   app.post(
@@ -318,7 +319,7 @@ export async function shareRoutes(app: FastifyInstance) {
         },
       },
     },
-    shareController.createOrUpdateAlias.bind(shareController)
+    shareController.createOrUpdateAlias.bind(shareController),
   );
 
   app.get(
@@ -328,7 +329,8 @@ export async function shareRoutes(app: FastifyInstance) {
         tags: ["Share"],
         operationId: "getShareByAlias",
         summary: "Get share by alias",
-        description: "Get a share by alias. For password-protected shares use POST /shares/alias/:alias/access instead.",
+        description:
+          "Get a share by alias. For password-protected shares use POST /shares/alias/:alias/access instead.",
         params: z.object({
           alias: z.string().describe("The share alias"),
         }),
@@ -342,7 +344,7 @@ export async function shareRoutes(app: FastifyInstance) {
         },
       },
     },
-    shareController.getShareByAlias.bind(shareController)
+    shareController.getShareByAlias.bind(shareController),
   );
 
   app.post(
@@ -370,7 +372,7 @@ export async function shareRoutes(app: FastifyInstance) {
         },
       },
     },
-    shareController.getShareByAlias.bind(shareController)
+    shareController.getShareByAlias.bind(shareController),
   );
 
   app.post(
@@ -399,7 +401,7 @@ export async function shareRoutes(app: FastifyInstance) {
         },
       },
     },
-    shareController.notifyRecipients.bind(shareController)
+    shareController.notifyRecipients.bind(shareController),
   );
 
   app.get(
@@ -409,7 +411,8 @@ export async function shareRoutes(app: FastifyInstance) {
         tags: ["Share"],
         operationId: "getShareMetadataByAlias",
         summary: "Get share metadata by alias for Open Graph",
-        description: "Get lightweight metadata for a share by alias, used for social media previews",
+        description:
+          "Get lightweight metadata for a share by alias, used for social media previews",
         params: z.object({
           alias: z.string().describe("The share alias"),
         }),
@@ -427,6 +430,6 @@ export async function shareRoutes(app: FastifyInstance) {
         },
       },
     },
-    shareController.getShareMetadataByAlias.bind(shareController)
+    shareController.getShareMetadataByAlias.bind(shareController),
   );
 }

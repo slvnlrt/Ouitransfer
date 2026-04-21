@@ -6,11 +6,15 @@ import fastifyJwt from "@fastify/jwt";
 import rateLimit from "@fastify/rate-limit";
 import { fastifySwaggerUi } from "@fastify/swagger-ui";
 import { fastify } from "fastify";
-import { serializerCompiler, validatorCompiler, ZodTypeProvider } from "fastify-type-provider-zod";
+import {
+  serializerCompiler,
+  validatorCompiler,
+  type ZodTypeProvider,
+} from "fastify-type-provider-zod";
 
-import { registerSwagger } from "./config/swagger.config";
-import { envTimeoutOverrides } from "./config/timeout.config";
-import { prisma } from "./shared/prisma";
+import { registerSwagger } from "./config/swagger.config.js";
+import { envTimeoutOverrides } from "./config/timeout.config.js";
+import { prisma } from "./shared/prisma.js";
 
 export async function buildApp() {
   const jwtConfig = await prisma.appConfig.findUnique({
@@ -76,7 +80,7 @@ export async function buildApp() {
   if (!process.env.CORS_ORIGINS && process.env.NODE_ENV === "production") {
     console.warn(
       "[SECURITY] CORS_ORIGINS is not set in production. Defaulting to localhost only. " +
-      "Set CORS_ORIGINS=https://your-domain.com to allow your frontend."
+        "Set CORS_ORIGINS=https://your-domain.com to allow your frontend.",
     );
   }
 
@@ -96,7 +100,7 @@ export async function buildApp() {
     timeWindow: "1 minute",
     // Trust proxy headers for IP detection
     keyGenerator: (request) => request.ip,
-    errorResponseBuilder: (request, context) => ({
+    errorResponseBuilder: (_request, context) => ({
       error: "Too many requests",
       message: `Rate limit exceeded. Try again in ${Math.ceil(context.ttl / 1000)} seconds.`,
       retryAfter: Math.ceil(context.ttl / 1000),
@@ -124,7 +128,8 @@ export async function buildApp() {
     routePrefix: "/swagger",
   });
 
-  app.register(require("@scalar/fastify-api-reference"), {
+  const { default: scalarFastify } = await import("@scalar/fastify-api-reference");
+  app.register(scalarFastify, {
     routePrefix: "/docs",
     configuration: {
       theme: "deepSpace",

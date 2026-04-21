@@ -2,17 +2,17 @@ import crypto from "node:crypto";
 
 import { PrismaClient } from "@prisma/client";
 
-import { env } from "../../env";
-import { EmailService } from "../email/service";
-import { FileService } from "../file/service";
-import { UserService } from "../user/service";
+import { env } from "../../env.js";
+import { EmailService } from "../email/service.js";
+import { FileService } from "../file/service.js";
+import { UserService } from "../user/service.js";
 import {
-  CreateReverseShareInput,
+  type CreateReverseShareInput,
   ReverseShareResponseSchema,
-  UpdateReverseShareInput,
-  UploadToReverseShareInput,
-} from "./dto";
-import { ReverseShareRepository } from "./repository";
+  type UpdateReverseShareInput,
+  type UploadToReverseShareInput,
+} from "./dto.js";
+import { ReverseShareRepository } from "./repository.js";
 
 interface ReverseShareData {
   id: string;
@@ -68,7 +68,7 @@ export class ReverseShareService {
     const reverseShares = await this.reverseShareRepository.findByCreatorId(creatorId);
 
     const formatted = reverseShares.map((reverseShare: ReverseShareData) =>
-      ReverseShareResponseSchema.parse(this.formatReverseShareResponse(reverseShare))
+      ReverseShareResponseSchema.parse(this.formatReverseShareResponse(reverseShare)),
     );
 
     return formatted;
@@ -105,7 +105,10 @@ export class ReverseShareService {
       if (!password) {
         throw new Error("Password required");
       }
-      const isValidPassword = await this.reverseShareRepository.comparePassword(password, reverseShare.password);
+      const isValidPassword = await this.reverseShareRepository.comparePassword(
+        password,
+        reverseShare.password,
+      );
       if (!isValidPassword) {
         throw new Error("Invalid password");
       }
@@ -146,13 +149,18 @@ export class ReverseShareService {
       if (!password) {
         throw new Error("Password required");
       }
-      const isValidPassword = await this.reverseShareRepository.comparePassword(password, reverseShare.password);
+      const isValidPassword = await this.reverseShareRepository.comparePassword(
+        password,
+        reverseShare.password,
+      );
       if (!isValidPassword) {
         throw new Error("Invalid password");
       }
     }
 
-    const currentFileCount = await this.reverseShareRepository.countFilesByReverseShareId(reverseShare.id);
+    const currentFileCount = await this.reverseShareRepository.countFilesByReverseShareId(
+      reverseShare.id,
+    );
 
     return {
       id: reverseShare.id,
@@ -223,7 +231,10 @@ export class ReverseShareService {
       if (!password) {
         throw new Error("Password required");
       }
-      const isValidPassword = await this.reverseShareRepository.comparePassword(password, reverseShare.password);
+      const isValidPassword = await this.reverseShareRepository.comparePassword(
+        password,
+        reverseShare.password,
+      );
       if (!isValidPassword) {
         throw new Error("Invalid password");
       }
@@ -233,7 +244,7 @@ export class ReverseShareService {
     const sanitizedFilename = filename.replace(/[^a-zA-Z0-9._-]/g, "_").substring(0, 100);
     const objectName = `reverse-shares/${id}/${Date.now()}-${crypto.randomUUID()}-${sanitizedFilename}.${extension}`;
 
-    const expires = parseInt(env.PRESIGNED_URL_EXPIRATION);
+    const expires = parseInt(env.PRESIGNED_URL_EXPIRATION, 10);
 
     // Import storage config to check if using internal or external S3
     const { isInternalStorage } = await import("../../config/storage.config.js");
@@ -251,7 +262,12 @@ export class ReverseShareService {
     }
   }
 
-  async getPresignedUrlByAlias(alias: string, filename: string, extension: string, password?: string) {
+  async getPresignedUrlByAlias(
+    alias: string,
+    filename: string,
+    extension: string,
+    password?: string,
+  ) {
     const reverseShare = await this.reverseShareRepository.findByAlias(alias);
     if (!reverseShare) {
       throw new Error("Reverse share not found");
@@ -269,7 +285,10 @@ export class ReverseShareService {
       if (!password) {
         throw new Error("Password required");
       }
-      const isValidPassword = await this.reverseShareRepository.comparePassword(password, reverseShare.password);
+      const isValidPassword = await this.reverseShareRepository.comparePassword(
+        password,
+        reverseShare.password,
+      );
       if (!isValidPassword) {
         throw new Error("Invalid password");
       }
@@ -280,7 +299,7 @@ export class ReverseShareService {
     const sanitizedFilename = filename.replace(/[^a-zA-Z0-9._-]/g, "_").substring(0, 100);
     const objectName = `reverse-shares/${reverseShare.id}/${Date.now()}-${crypto.randomUUID()}-${sanitizedFilename}.${extension}`;
 
-    const expires = parseInt(env.PRESIGNED_URL_EXPIRATION);
+    const expires = parseInt(env.PRESIGNED_URL_EXPIRATION, 10);
 
     // Import storage config to check if using internal or external S3
     const { isInternalStorage } = await import("../../config/storage.config.js");
@@ -298,7 +317,11 @@ export class ReverseShareService {
     }
   }
 
-  async registerFileUpload(reverseShareId: string, fileData: UploadToReverseShareInput, password?: string) {
+  async registerFileUpload(
+    reverseShareId: string,
+    fileData: UploadToReverseShareInput,
+    password?: string,
+  ) {
     const reverseShare = await this.reverseShareRepository.findById(reverseShareId);
     if (!reverseShare) {
       throw new Error("Reverse share not found");
@@ -316,7 +339,10 @@ export class ReverseShareService {
       if (!password) {
         throw new Error("Password required");
       }
-      const isValidPassword = await this.reverseShareRepository.comparePassword(password, reverseShare.password);
+      const isValidPassword = await this.reverseShareRepository.comparePassword(
+        password,
+        reverseShare.password,
+      );
       if (!isValidPassword) {
         throw new Error("Invalid password");
       }
@@ -326,7 +352,8 @@ export class ReverseShareService {
     this.validateObjectName(fileData.objectName, reverseShareId);
 
     if (reverseShare.maxFiles) {
-      const currentFileCount = await this.reverseShareRepository.countFilesByReverseShareId(reverseShareId);
+      const currentFileCount =
+        await this.reverseShareRepository.countFilesByReverseShareId(reverseShareId);
       if (currentFileCount >= reverseShare.maxFiles) {
         throw new Error("Maximum number of files reached");
       }
@@ -337,7 +364,9 @@ export class ReverseShareService {
     }
 
     if (reverseShare.allowedFileTypes) {
-      const allowedTypes = reverseShare.allowedFileTypes.split(",").map((type) => type.trim().toLowerCase());
+      const allowedTypes = reverseShare.allowedFileTypes
+        .split(",")
+        .map((type) => type.trim().toLowerCase());
       if (!allowedTypes.includes(fileData.extension.toLowerCase())) {
         throw new Error("File type not allowed");
       }
@@ -353,7 +382,11 @@ export class ReverseShareService {
     return this.formatFileResponse(file);
   }
 
-  async registerFileUploadByAlias(alias: string, fileData: UploadToReverseShareInput, password?: string) {
+  async registerFileUploadByAlias(
+    alias: string,
+    fileData: UploadToReverseShareInput,
+    password?: string,
+  ) {
     const reverseShare = await this.reverseShareRepository.findByAlias(alias);
     if (!reverseShare) {
       throw new Error("Reverse share not found");
@@ -371,7 +404,10 @@ export class ReverseShareService {
       if (!password) {
         throw new Error("Password required");
       }
-      const isValidPassword = await this.reverseShareRepository.comparePassword(password, reverseShare.password);
+      const isValidPassword = await this.reverseShareRepository.comparePassword(
+        password,
+        reverseShare.password,
+      );
       if (!isValidPassword) {
         throw new Error("Invalid password");
       }
@@ -381,7 +417,9 @@ export class ReverseShareService {
     this.validateObjectName(fileData.objectName, reverseShare.id);
 
     if (reverseShare.maxFiles) {
-      const currentFileCount = await this.reverseShareRepository.countFilesByReverseShareId(reverseShare.id);
+      const currentFileCount = await this.reverseShareRepository.countFilesByReverseShareId(
+        reverseShare.id,
+      );
       if (currentFileCount >= reverseShare.maxFiles) {
         throw new Error("Maximum number of files reached");
       }
@@ -392,7 +430,9 @@ export class ReverseShareService {
     }
 
     if (reverseShare.allowedFileTypes) {
-      const allowedTypes = reverseShare.allowedFileTypes.split(",").map((type) => type.trim().toLowerCase());
+      const allowedTypes = reverseShare.allowedFileTypes
+        .split(",")
+        .map((type) => type.trim().toLowerCase());
       if (!allowedTypes.includes(fileData.extension.toLowerCase())) {
         throw new Error("File type not allowed");
       }
@@ -430,7 +470,7 @@ export class ReverseShareService {
   async downloadReverseShareFile(
     fileId: string,
     creatorId: string,
-    requestContext?: { protocol: string; host: string }
+    _requestContext?: { protocol: string; host: string },
   ) {
     const file = await this.reverseShareRepository.findFileById(fileId);
     if (!file) {
@@ -442,7 +482,7 @@ export class ReverseShareService {
     }
 
     const fileName = file.name;
-    const expires = parseInt(env.PRESIGNED_URL_EXPIRATION);
+    const expires = parseInt(env.PRESIGNED_URL_EXPIRATION, 10);
 
     // Import storage config to check if using internal or external S3
     const { isInternalStorage } = await import("../../config/storage.config.js");
@@ -484,7 +524,10 @@ export class ReverseShareService {
       return { valid: true };
     }
 
-    const isValid = await this.reverseShareRepository.comparePassword(password, reverseShare.password);
+    const isValid = await this.reverseShareRepository.comparePassword(
+      password,
+      reverseShare.password,
+    );
     return { valid: isValid };
   }
 
@@ -565,7 +608,7 @@ export class ReverseShareService {
   async updateReverseShareFile(
     fileId: string,
     data: { name?: string; description?: string | null },
-    creatorId: string
+    creatorId: string,
   ) {
     const file = await this.reverseShareRepository.findFileById(fileId);
     if (!file) {
@@ -580,7 +623,9 @@ export class ReverseShareService {
     if (data.name) {
       const originalExtension = file.extension;
       const nameWithoutExtension = data.name.replace(/\.[^/.]+$/, "");
-      const extensionWithDot = originalExtension.startsWith(".") ? originalExtension : `.${originalExtension}`;
+      const extensionWithDot = originalExtension.startsWith(".")
+        ? originalExtension
+        : `.${originalExtension}`;
       updateData.name = `${nameWithoutExtension}${extensionWithDot}`;
     }
 
@@ -615,18 +660,23 @@ export class ReverseShareService {
       select: { size: true },
     });
 
-    const currentStorage = userFiles.reduce((acc: bigint, userFile: any) => acc + userFile.size, BigInt(0));
+    const currentStorage = userFiles.reduce(
+      (acc: bigint, userFile: any) => acc + userFile.size,
+      BigInt(0),
+    );
 
     if (currentStorage + file.size > maxTotalStorage) {
       const availableSpace = Number(maxTotalStorage - currentStorage) / (1024 * 1024);
-      throw new Error(`Insufficient storage space. You have ${availableSpace.toFixed(2)}MB available`);
+      throw new Error(
+        `Insufficient storage space. You have ${availableSpace.toFixed(2)}MB available`,
+      );
     }
 
     const newObjectName = `${creatorId}/${Date.now()}-${file.name}`;
 
     // Copy file using S3 presigned URLs
     const fileSizeMB = Number(file.size) / (1024 * 1024);
-    const needsStreaming = fileSizeMB > 100;
+    const _needsStreaming = fileSizeMB > 100;
 
     const downloadUrl = await this.fileService.getPresignedGetUrl(file.objectName, 300);
     const uploadUrl = await this.fileService.getPresignedPutUrl(newObjectName, 300);
@@ -675,7 +725,7 @@ export class ReverseShareService {
           throw new Error(`Failed to copy file after ${maxRetries} attempts: ${error.message}`);
         }
 
-        const delay = Math.min(1000 * Math.pow(2, retries - 1), 10000);
+        const delay = Math.min(1000 * 2 ** (retries - 1), 10000);
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
@@ -726,7 +776,11 @@ export class ReverseShareService {
     return `${reverseShareId}-${uploaderIdentifier}`;
   }
 
-  private async sendBatchFileUploadNotification(reverseShare: any, uploaderName: string, fileNames: string[]) {
+  private async sendBatchFileUploadNotification(
+    reverseShare: any,
+    uploaderName: string,
+    fileNames: string[],
+  ) {
     try {
       const creator = await this.userService.getUserById(reverseShare.creatorId);
       const reverseShareName = reverseShare.name || "Unnamed Reverse Share";
@@ -738,7 +792,7 @@ export class ReverseShareService {
         reverseShareName,
         fileCount,
         fileList,
-        uploaderName
+        uploaderName,
       );
     } catch (error) {
       console.error("Failed to send reverse share batch file notification:", error);
@@ -834,7 +888,10 @@ export class ReverseShareService {
       if (!password) {
         throw new Error("Password required");
       }
-      const isValidPassword = await this.reverseShareRepository.comparePassword(password, reverseShare.password);
+      const isValidPassword = await this.reverseShareRepository.comparePassword(
+        password,
+        reverseShare.password,
+      );
       if (!isValidPassword) {
         throw new Error("Invalid password");
       }
@@ -848,7 +905,7 @@ export class ReverseShareService {
     alias: string,
     filename: string,
     extension: string,
-    password?: string
+    password?: string,
   ): Promise<{ uploadId: string; objectName: string }> {
     const reverseShare = await this.validateReverseShareAccessByAlias(alias, password);
 
@@ -869,12 +926,17 @@ export class ReverseShareService {
     uploadId: string,
     objectName: string,
     partNumber: number,
-    password?: string
+    password?: string,
   ): Promise<{ url: string }> {
     await this.validateReverseShareAccessByAlias(alias, password);
 
-    const expires = parseInt(env.PRESIGNED_URL_EXPIRATION);
-    const url = await this.fileService.getPresignedPartUrl(objectName, uploadId, partNumber, expires);
+    const expires = parseInt(env.PRESIGNED_URL_EXPIRATION, 10);
+    const url = await this.fileService.getPresignedPartUrl(
+      objectName,
+      uploadId,
+      partNumber,
+      expires,
+    );
 
     return { url };
   }
@@ -884,7 +946,7 @@ export class ReverseShareService {
     uploadId: string,
     objectName: string,
     parts: Array<{ PartNumber: number; ETag: string }>,
-    password?: string
+    password?: string,
   ): Promise<{ message: string; objectName: string }> {
     await this.validateReverseShareAccessByAlias(alias, password);
 
@@ -900,7 +962,7 @@ export class ReverseShareService {
     alias: string,
     uploadId: string,
     objectName: string,
-    password?: string
+    password?: string,
   ): Promise<{ message: string }> {
     await this.validateReverseShareAccessByAlias(alias, password);
 
@@ -934,7 +996,9 @@ export class ReverseShareService {
     }
 
     // Check if reverse share is expired
-    const isExpired = reverseShare.expiration ? new Date(reverseShare.expiration) < new Date() : false;
+    const isExpired = reverseShare.expiration
+      ? new Date(reverseShare.expiration) < new Date()
+      : false;
 
     // Check if inactive
     const isInactive = !reverseShare.isActive;

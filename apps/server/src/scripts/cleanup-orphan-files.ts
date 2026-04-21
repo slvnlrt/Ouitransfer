@@ -1,6 +1,6 @@
-import { S3StorageProvider } from "../providers/s3-storage.provider";
-import { prisma } from "../shared/prisma";
-import { StorageProvider } from "../types/storage";
+import { S3StorageProvider } from "../providers/s3-storage.provider.js";
+import { prisma } from "../shared/prisma.js";
+import type { StorageProvider } from "../types/storage.js";
 
 /**
  * Script to clean up orphan file records in the database

@@ -1,7 +1,7 @@
-import { randomBytes } from "crypto";
+import { randomBytes } from "node:crypto";
 import bcrypt from "bcryptjs";
 
-import { prisma } from "../../shared/prisma";
+import { prisma } from "../../shared/prisma.js";
 
 export class InviteService {
   async generateInviteToken(adminUserId: string): Promise<{ token: string; expiresAt: Date }> {
@@ -20,7 +20,9 @@ export class InviteService {
     return { token, expiresAt };
   }
 
-  async validateInviteToken(token: string): Promise<{ valid: boolean; used?: boolean; expired?: boolean }> {
+  async validateInviteToken(
+    token: string,
+  ): Promise<{ valid: boolean; used?: boolean; expired?: boolean }> {
     const inviteToken = await prisma.inviteToken.findUnique({
       where: { token },
     });

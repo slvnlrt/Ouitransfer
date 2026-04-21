@@ -1,8 +1,14 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
-import { FileController } from "./controller";
-import { CheckFileSchema, ListFilesSchema, MoveFileSchema, RegisterFileSchema, UpdateFileSchema } from "./dto";
+import { FileController } from "./controller.js";
+import {
+  CheckFileSchema,
+  ListFilesSchema,
+  MoveFileSchema,
+  RegisterFileSchema,
+  UpdateFileSchema,
+} from "./dto.js";
 
 export async function fileRoutes(app: FastifyInstance) {
   const fileController = new FileController();
@@ -30,10 +36,17 @@ export async function fileRoutes(app: FastifyInstance) {
         tags: ["File"],
         operationId: "getPresignedUrl",
         summary: "Get Presigned URL",
-        description: "Generates a pre-signed URL for direct upload to S3-compatible storage or local filesystem",
+        description:
+          "Generates a pre-signed URL for direct upload to S3-compatible storage or local filesystem",
         querystring: z.object({
-          filename: z.string().min(1, "The filename is required").describe("The filename of the file"),
-          extension: z.string().min(1, "The extension is required").describe("The extension of the file"),
+          filename: z
+            .string()
+            .min(1, "The filename is required")
+            .describe("The filename of the file"),
+          extension: z
+            .string()
+            .min(1, "The extension is required")
+            .describe("The extension of the file"),
         }),
         response: {
           200: z.object({
@@ -46,7 +59,7 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    fileController.getPresignedUrl.bind(fileController)
+    fileController.getPresignedUrl.bind(fileController),
   );
 
   app.post(
@@ -80,7 +93,7 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    fileController.registerFile.bind(fileController)
+    fileController.registerFile.bind(fileController),
   );
 
   app.post(
@@ -109,42 +122,42 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    fileController.checkFile.bind(fileController)
+    fileController.checkFile.bind(fileController),
   );
 
-   app.post(
-     "/files/download-url",
-     {
-       config: {
-         rateLimit: {
-           max: 20,
-           timeWindow: "1 minute",
-         },
-       },
-       schema: {
-         tags: ["File"],
-         operationId: "getDownloadUrl",
-         summary: "Get Download URL",
-         description:
-           "Generates a pre-signed URL for downloading a file. Password must be sent in the request body, never as a query parameter.",
-         body: z.object({
-           objectName: z.string().min(1, "The objectName is required"),
-           password: z.string().optional().describe("Share password if required"),
-         }),
-         response: {
-           200: z.object({
-             url: z.string().describe("The download URL"),
-             expiresIn: z.number().describe("The expiration time in seconds"),
-           }),
-           400: z.object({ error: z.string().describe("Error message") }),
-           401: z.object({ error: z.string().describe("Error message") }),
-           404: z.object({ error: z.string().describe("Error message") }),
-           500: z.object({ error: z.string().describe("Error message") }),
-         },
-       },
-     },
-     fileController.getDownloadUrl.bind(fileController)
-   );
+  app.post(
+    "/files/download-url",
+    {
+      config: {
+        rateLimit: {
+          max: 20,
+          timeWindow: "1 minute",
+        },
+      },
+      schema: {
+        tags: ["File"],
+        operationId: "getDownloadUrl",
+        summary: "Get Download URL",
+        description:
+          "Generates a pre-signed URL for downloading a file. Password must be sent in the request body, never as a query parameter.",
+        body: z.object({
+          objectName: z.string().min(1, "The objectName is required"),
+          password: z.string().optional().describe("Share password if required"),
+        }),
+        response: {
+          200: z.object({
+            url: z.string().describe("The download URL"),
+            expiresIn: z.number().describe("The expiration time in seconds"),
+          }),
+          400: z.object({ error: z.string().describe("Error message") }),
+          401: z.object({ error: z.string().describe("Error message") }),
+          404: z.object({ error: z.string().describe("Error message") }),
+          500: z.object({ error: z.string().describe("Error message") }),
+        },
+      },
+    },
+    fileController.getDownloadUrl.bind(fileController),
+  );
 
   app.get(
     "/embed/:token",
@@ -168,7 +181,7 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    fileController.embedFile.bind(fileController)
+    fileController.embedFile.bind(fileController),
   );
 
   app.post(
@@ -183,7 +196,10 @@ export async function fileRoutes(app: FastifyInstance) {
           "Creates a signed embed token for a file in a share. Only the share owner can generate tokens. Token expires in 24h.",
         body: z.object({
           fileId: z.string().min(1, "File ID is required").describe("The file ID"),
-          shareId: z.string().min(1, "Share ID is required").describe("The share ID containing the file"),
+          shareId: z
+            .string()
+            .min(1, "Share ID is required")
+            .describe("The share ID containing the file"),
         }),
         response: {
           200: z.object({
@@ -195,32 +211,32 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    fileController.generateEmbedToken.bind(fileController)
+    fileController.generateEmbedToken.bind(fileController),
   );
 
-   app.post(
-     "/files/download",
-     {
-       config: {
-         rateLimit: {
-           max: 20,
-           timeWindow: "1 minute",
-         },
-       },
-       schema: {
-         tags: ["File"],
-         operationId: "downloadFile",
-         summary: "Download File",
-         description:
-           "Downloads a file directly (returns file content). Password must be sent in the request body, never as a query parameter.",
-         body: z.object({
-           objectName: z.string().min(1, "The objectName is required"),
-           password: z.string().optional().describe("Share password if required"),
-         }),
-       },
-     },
-     fileController.downloadFile.bind(fileController)
-   );
+  app.post(
+    "/files/download",
+    {
+      config: {
+        rateLimit: {
+          max: 20,
+          timeWindow: "1 minute",
+        },
+      },
+      schema: {
+        tags: ["File"],
+        operationId: "downloadFile",
+        summary: "Download File",
+        description:
+          "Downloads a file directly (returns file content). Password must be sent in the request body, never as a query parameter.",
+        body: z.object({
+          objectName: z.string().min(1, "The objectName is required"),
+          password: z.string().optional().describe("Share password if required"),
+        }),
+      },
+    },
+    fileController.downloadFile.bind(fileController),
+  );
 
   app.get(
     "/files",
@@ -244,17 +260,20 @@ export async function fileRoutes(app: FastifyInstance) {
                 objectName: z.string().describe("The object name of the file"),
                 userId: z.string().describe("The user ID"),
                 folderId: z.string().nullable().describe("The folder ID"),
-                relativePath: z.string().nullable().describe("The relative path (only for recursive listing)"),
+                relativePath: z
+                  .string()
+                  .nullable()
+                  .describe("The relative path (only for recursive listing)"),
                 createdAt: z.date().describe("The file creation date"),
                 updatedAt: z.date().describe("The file last update date"),
-              })
+              }),
             ),
           }),
           500: z.object({ error: z.string().describe("Error message") }),
         },
       },
     },
-    fileController.listFiles.bind(fileController)
+    fileController.listFiles.bind(fileController),
   );
 
   app.patch(
@@ -293,7 +312,7 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    fileController.updateFile.bind(fileController)
+    fileController.updateFile.bind(fileController),
   );
 
   app.put(
@@ -332,7 +351,7 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    fileController.moveFile.bind(fileController)
+    fileController.moveFile.bind(fileController),
   );
 
   app.delete(
@@ -358,7 +377,7 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    fileController.deleteFile.bind(fileController)
+    fileController.deleteFile.bind(fileController),
   );
 
   // Multipart upload routes
@@ -388,7 +407,7 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    fileController.createMultipartUpload.bind(fileController)
+    fileController.createMultipartUpload.bind(fileController),
   );
 
   app.get(
@@ -415,7 +434,7 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    fileController.getMultipartPartUrl.bind(fileController)
+    fileController.getMultipartPartUrl.bind(fileController),
   );
 
   app.post(
@@ -435,7 +454,7 @@ export async function fileRoutes(app: FastifyInstance) {
               z.object({
                 PartNumber: z.number().min(1).max(10000).describe("The part number"),
                 ETag: z.string().min(1).describe("The ETag returned from uploading the part"),
-              })
+              }),
             )
             .describe("Array of uploaded parts"),
         }),
@@ -450,7 +469,7 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    fileController.completeMultipartUpload.bind(fileController)
+    fileController.completeMultipartUpload.bind(fileController),
   );
 
   app.post(
@@ -476,6 +495,6 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    fileController.abortMultipartUpload.bind(fileController)
+    fileController.abortMultipartUpload.bind(fileController),
   );
 }

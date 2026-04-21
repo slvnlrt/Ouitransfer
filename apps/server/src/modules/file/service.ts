@@ -1,5 +1,5 @@
-import { S3StorageProvider } from "../../providers/s3-storage.provider";
-import { StorageProvider } from "../../types/storage";
+import { S3StorageProvider } from "../../providers/s3-storage.provider.js";
+import type { StorageProvider } from "../../types/storage.js";
 
 export class FileService {
   private storageProvider: StorageProvider;
@@ -13,7 +13,11 @@ export class FileService {
     return await this.storageProvider.getPresignedPutUrl(objectName, expires);
   }
 
-  async getPresignedGetUrl(objectName: string, expires: number = 3600, fileName?: string): Promise<string> {
+  async getPresignedGetUrl(
+    objectName: string,
+    expires: number = 3600,
+    fileName?: string,
+  ): Promise<string> {
     return await this.storageProvider.getPresignedGetUrl(objectName, expires, fileName);
   }
 
@@ -44,15 +48,20 @@ export class FileService {
     objectName: string,
     uploadId: string,
     partNumber: number,
-    expires: number = 3600
+    expires: number = 3600,
   ): Promise<string> {
-    return await this.storageProvider.getPresignedPartUrl(objectName, uploadId, partNumber, expires);
+    return await this.storageProvider.getPresignedPartUrl(
+      objectName,
+      uploadId,
+      partNumber,
+      expires,
+    );
   }
 
   async completeMultipartUpload(
     objectName: string,
     uploadId: string,
-    parts: Array<{ PartNumber: number; ETag: string }>
+    parts: Array<{ PartNumber: number; ETag: string }>,
   ): Promise<void> {
     await this.storageProvider.completeMultipartUpload(objectName, uploadId, parts);
   }

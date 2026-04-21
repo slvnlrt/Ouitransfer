@@ -1,4 +1,4 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
 import {
   CreateReverseShareSchema,
@@ -6,8 +6,8 @@ import {
   UpdateReverseSharePasswordSchema,
   UpdateReverseShareSchema,
   UploadToReverseShareSchema,
-} from "./dto";
-import { ReverseShareService } from "./service";
+} from "./dto.js";
+import { ReverseShareService } from "./service.js";
 
 export class ReverseShareController {
   private reverseShareService = new ReverseShareService();
@@ -17,7 +17,9 @@ export class ReverseShareController {
       await request.jwtVerify();
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const input = CreateReverseShareSchema.parse(request.body);
@@ -37,7 +39,9 @@ export class ReverseShareController {
       await request.jwtVerify();
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const reverseShares = await this.reverseShareService.listUserReverseShares(userId);
@@ -52,7 +56,9 @@ export class ReverseShareController {
       await request.jwtVerify();
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const { id } = request.params as { id: string };
@@ -98,7 +104,10 @@ export class ReverseShareController {
       const { alias } = request.params as { alias: string };
       const password = (request.body as any)?.password;
 
-      const reverseShare = await this.reverseShareService.getReverseShareForUploadByAlias(alias, password);
+      const reverseShare = await this.reverseShareService.getReverseShareForUploadByAlias(
+        alias,
+        password,
+      );
       return reply.send({ reverseShare });
     } catch (error: any) {
       if (error.message === "Reverse share not found") {
@@ -122,11 +131,17 @@ export class ReverseShareController {
       await request.jwtVerify();
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const { id, ...updateData } = UpdateReverseShareSchema.parse(request.body);
-      const reverseShare = await this.reverseShareService.updateReverseShare(id, updateData, userId);
+      const reverseShare = await this.reverseShareService.updateReverseShare(
+        id,
+        updateData,
+        userId,
+      );
       return reply.send({ reverseShare });
     } catch (error: any) {
       console.error("Update Reverse Share Error:", error);
@@ -145,14 +160,20 @@ export class ReverseShareController {
       await request.jwtVerify();
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const { id } = request.params as { id: string };
       const { password } = UpdateReverseSharePasswordSchema.parse(request.body);
 
       const updateData: { password?: string | null } = { password };
-      const reverseShare = await this.reverseShareService.updateReverseShare(id, updateData, userId);
+      const reverseShare = await this.reverseShareService.updateReverseShare(
+        id,
+        updateData,
+        userId,
+      );
       return reply.send({ reverseShare });
     } catch (error: any) {
       if (error.message === "Reverse share not found") {
@@ -170,7 +191,9 @@ export class ReverseShareController {
       await request.jwtVerify();
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const { id } = request.params as { id: string };
@@ -197,7 +220,12 @@ export class ReverseShareController {
         password?: string;
       };
 
-      const result = await this.reverseShareService.getPresignedUrl(id, filename, extension, password);
+      const result = await this.reverseShareService.getPresignedUrl(
+        id,
+        filename,
+        extension,
+        password,
+      );
       return reply.send(result);
     } catch (error: any) {
       console.error("Get Presigned URL Error:", error);
@@ -227,7 +255,12 @@ export class ReverseShareController {
         password?: string;
       };
 
-      const result = await this.reverseShareService.getPresignedUrlByAlias(alias, filename, extension, password);
+      const result = await this.reverseShareService.getPresignedUrlByAlias(
+        alias,
+        filename,
+        extension,
+        password,
+      );
       return reply.send(result);
     } catch (error: any) {
       console.error("Get Presigned URL by Alias Error:", error);
@@ -251,7 +284,10 @@ export class ReverseShareController {
     try {
       const { id } = request.params as { id: string };
       // Password moved from query param to request body (security: passwords must not appear in URLs)
-      const { password, ...bodyWithoutPassword } = request.body as { password?: string; [key: string]: unknown };
+      const { password, ...bodyWithoutPassword } = request.body as {
+        password?: string;
+        [key: string]: unknown;
+      };
       const fileData = UploadToReverseShareSchema.parse(bodyWithoutPassword);
 
       const file = await this.reverseShareService.registerFileUpload(id, fileData, password);
@@ -287,10 +323,17 @@ export class ReverseShareController {
     try {
       const { alias } = request.params as { alias: string };
       // Password moved from query param to request body (security: passwords must not appear in URLs)
-      const { password, ...bodyWithoutPassword } = request.body as { password?: string; [key: string]: unknown };
+      const { password, ...bodyWithoutPassword } = request.body as {
+        password?: string;
+        [key: string]: unknown;
+      };
       const fileData = UploadToReverseShareSchema.parse(bodyWithoutPassword);
 
-      const file = await this.reverseShareService.registerFileUploadByAlias(alias, fileData, password);
+      const file = await this.reverseShareService.registerFileUploadByAlias(
+        alias,
+        fileData,
+        password,
+      );
       return reply.status(201).send({ file });
     } catch (error: any) {
       console.error("Register File Upload by Alias Error:", error);
@@ -324,7 +367,9 @@ export class ReverseShareController {
       await request.jwtVerify();
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const { fileId } = request.params as { fileId: string };
@@ -332,7 +377,11 @@ export class ReverseShareController {
       // Pass request context for internal storage proxy URLs
       const requestContext = { protocol: "https", host: "localhost" }; // Simplified - frontend will handle the real URL
 
-      const result = await this.reverseShareService.downloadReverseShareFile(fileId, userId, requestContext);
+      const result = await this.reverseShareService.downloadReverseShareFile(
+        fileId,
+        userId,
+        requestContext,
+      );
 
       return reply.send(result);
     } catch (error: any) {
@@ -351,7 +400,9 @@ export class ReverseShareController {
       await request.jwtVerify();
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const { fileId } = request.params as { fileId: string };
@@ -388,7 +439,9 @@ export class ReverseShareController {
       await request.jwtVerify();
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const { id } = request.params as { id: string };
@@ -410,7 +463,9 @@ export class ReverseShareController {
       await request.jwtVerify();
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const { id } = request.params as { id: string };
@@ -433,7 +488,11 @@ export class ReverseShareController {
       const { alias } = request.body as { alias: string };
       const userId = (request as any).user.userId;
 
-      const result = await this.reverseShareService.createOrUpdateAlias(reverseShareId, alias, userId);
+      const result = await this.reverseShareService.createOrUpdateAlias(
+        reverseShareId,
+        alias,
+        userId,
+      );
       return reply.send({ alias: result });
     } catch (error: any) {
       return reply.status(400).send({ error: error.message });
@@ -488,7 +547,10 @@ export class ReverseShareController {
       if (error.message === "Unauthorized to copy this file") {
         return reply.status(403).send({ error: "Unauthorized to copy this file" });
       }
-      if (error.message.includes("File size exceeds") || error.message.includes("Insufficient storage")) {
+      if (
+        error.message.includes("File size exceeds") ||
+        error.message.includes("Insufficient storage")
+      ) {
         return reply.status(400).send({ error: error.message });
       }
       console.error("Error in copyFileToUserFiles:", error);
@@ -511,7 +573,12 @@ export class ReverseShareController {
         return reply.status(400).send({ error: "filename and extension are required" });
       }
 
-      const result = await this.reverseShareService.createMultipartUploadByAlias(alias, filename, extension, password);
+      const result = await this.reverseShareService.createMultipartUploadByAlias(
+        alias,
+        filename,
+        extension,
+        password,
+      );
       return reply.status(200).send({
         uploadId: result.uploadId,
         objectName: result.objectName,
@@ -547,11 +614,13 @@ export class ReverseShareController {
       };
 
       if (!uploadId || !objectName || !partNumber) {
-        return reply.status(400).send({ error: "uploadId, objectName, and partNumber are required" });
+        return reply
+          .status(400)
+          .send({ error: "uploadId, objectName, and partNumber are required" });
       }
 
-      const partNum = parseInt(partNumber);
-      if (isNaN(partNum) || partNum < 1 || partNum > 10000) {
+      const partNum = parseInt(partNumber, 10);
+      if (Number.isNaN(partNum) || partNum < 1 || partNum > 10000) {
         return reply.status(400).send({ error: "partNumber must be between 1 and 10000" });
       }
 
@@ -560,7 +629,7 @@ export class ReverseShareController {
         uploadId,
         objectName,
         partNum,
-        password
+        password,
       );
       return reply.status(200).send({ url: result.url });
     } catch (error: any) {
@@ -601,7 +670,7 @@ export class ReverseShareController {
         uploadId,
         objectName,
         parts,
-        password
+        password,
       );
       return reply.status(200).send(result);
     } catch (error: any) {
@@ -636,7 +705,12 @@ export class ReverseShareController {
         return reply.status(400).send({ error: "uploadId and objectName are required" });
       }
 
-      const result = await this.reverseShareService.abortMultipartUploadByAlias(alias, uploadId, objectName, password);
+      const result = await this.reverseShareService.abortMultipartUploadByAlias(
+        alias,
+        uploadId,
+        objectName,
+        password,
+      );
       return reply.status(200).send(result);
     } catch (error: any) {
       console.error("[Multipart] Abort multipart upload error:", error);

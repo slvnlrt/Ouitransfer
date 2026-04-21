@@ -1,6 +1,6 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { InviteService } from "./service";
+import { InviteService } from "./service.js";
 
 export class InviteController {
   private inviteService = new InviteService();
@@ -9,11 +9,13 @@ export class InviteController {
     try {
       const user = request.user as any;
 
-      if (!user || !user.isAdmin) {
+      if (!user?.isAdmin) {
         return reply.status(403).send({ error: "Forbidden: admin access required" });
       }
 
-      const { token, expiresAt } = await this.inviteService.generateInviteToken(user.userId || user.id);
+      const { token, expiresAt } = await this.inviteService.generateInviteToken(
+        user.userId || user.id,
+      );
       return reply.send({ token, expiresAt });
     } catch (error) {
       console.error("[Invite Controller] Error generating invite token:", error);
@@ -21,7 +23,10 @@ export class InviteController {
     }
   }
 
-  async validateInviteToken(request: FastifyRequest<{ Params: { token: string } }>, reply: FastifyReply) {
+  async validateInviteToken(
+    request: FastifyRequest<{ Params: { token: string } }>,
+    reply: FastifyReply,
+  ) {
     try {
       const { token } = request.params;
       const validation = await this.inviteService.validateInviteToken(token);
@@ -44,7 +49,7 @@ export class InviteController {
         password: string;
       };
     }>,
-    reply: FastifyReply
+    reply: FastifyReply,
   ) {
     try {
       const { token, firstName, lastName, username, email, password } = request.body;

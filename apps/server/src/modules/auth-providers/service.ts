@@ -1,22 +1,22 @@
-import crypto from "crypto";
+import crypto from "node:crypto";
 
-import { prisma } from "../../shared/prisma";
+import { prisma } from "../../shared/prisma.js";
 import {
-  detectProviderType,
   DISCOVERY_PATHS,
+  detectProviderType,
   getFallbackEndpoints,
   getProviderScopes,
   providersConfig,
   shouldSupportDiscovery,
-} from "./providers.config";
-import {
+} from "./providers.config.js";
+import type {
   PendingState,
   ProviderConfig,
   ProviderEndpoints,
   ProviderUserInfo,
   RequestContextService,
   TokenResponse,
-} from "./types";
+} from "./types.js";
 
 const DEFAULT_BASE_URL = "http://localhost:3000";
 const STATE_EXPIRY_TIME = 600000; // 10 minutes
@@ -43,7 +43,9 @@ export class AuthProvidersService {
   }
 
   private buildBaseUrl(requestContext?: RequestContextService): string {
-    return requestContext ? `${requestContext.protocol}://${requestContext.host}` : DEFAULT_BASE_URL;
+    return requestContext
+      ? `${requestContext.protocol}://${requestContext.host}`
+      : DEFAULT_BASE_URL;
   }
 
   private generateState(): string {
@@ -58,7 +60,11 @@ export class AuthProvidersService {
     return crypto.createHash("sha256").update(codeVerifier).digest("base64url");
   }
 
-  private createPendingState(providerId: string, codeVerifier: string, redirectUrl: string): PendingState {
+  private createPendingState(
+    providerId: string,
+    codeVerifier: string,
+    redirectUrl: string,
+  ): PendingState {
     return {
       codeVerifier,
       redirectUrl,
@@ -68,7 +74,7 @@ export class AuthProvidersService {
   }
 
   private validateProvider(provider: any, providerName: string): void {
-    if (!provider || !provider.enabled) {
+    if (!provider?.enabled) {
       throw new Error(`${ERROR_MESSAGES.PROVIDER_NOT_FOUND}: ${providerName}`);
     }
   }
@@ -110,10 +116,16 @@ export class AuthProvidersService {
     };
   }
 
-  private async resolveEndpoints(provider: any, config: ProviderConfig): Promise<ProviderEndpoints> {
+  private async resolveEndpoints(
+    provider: any,
+    config: ProviderConfig,
+  ): Promise<ProviderEndpoints> {
     if (provider.authorizationEndpoint && provider.tokenEndpoint && provider.userInfoEndpoint) {
       return {
-        authorizationEndpoint: this.resolveEndpointUrl(provider.authorizationEndpoint, provider.issuerUrl),
+        authorizationEndpoint: this.resolveEndpointUrl(
+          provider.authorizationEndpoint,
+          provider.issuerUrl,
+        ),
         tokenEndpoint: this.resolveEndpointUrl(provider.tokenEndpoint, provider.issuerUrl),
         userInfoEndpoint: this.resolveEndpointUrl(provider.userInfoEndpoint, provider.issuerUrl),
       };
@@ -173,9 +185,7 @@ export class AuthProvidersService {
         if (endpoints.authorizationEndpoint && endpoints.tokenEndpoint) {
           return endpoints;
         }
-      } catch {
-        continue;
-      }
+      } catch {}
     }
     return null;
   }
@@ -236,7 +246,7 @@ export class AuthProvidersService {
     callbackUrl: string,
     state: string,
     codeChallenge?: string,
-    providerName?: string
+    providerName?: string,
   ): Promise<string> {
     this.validateClientId(provider, providerName || provider.name);
 
@@ -271,14 +281,14 @@ export class AuthProvidersService {
     config: ProviderConfig,
     code: string,
     pendingState: PendingState,
-    requestContext?: RequestContextService
+    requestContext?: RequestContextService,
   ) {
     const authResult = await this.performTokenExchange(
       provider,
       config,
       code,
       pendingState.codeVerifier,
-      requestContext
+      requestContext,
     );
 
     const userInfo = await this.processUserInfo(authResult.userInfo, authResult.tokens, config);
@@ -405,7 +415,7 @@ export class AuthProvidersService {
     providerName: string,
     state?: string,
     redirectUri?: string,
-    requestContext?: RequestContextService
+    requestContext?: RequestContextService,
   ) {
     const provider = await this.getProviderByName(providerName);
     this.validateProvider(provider, providerName);
@@ -424,7 +434,7 @@ export class AuthProvidersService {
     const pendingState = this.createPendingState(
       validatedProvider.id,
       codeVerifier || "",
-      redirectUri || `${baseUrl}/dashboard`
+      redirectUri || `${baseUrl}/dashboard`,
     );
     this.pendingStates.set(finalState, pendingState);
 
@@ -436,13 +446,18 @@ export class AuthProvidersService {
       callbackUrl,
       finalState,
       codeChallenge,
-      providerName
+      providerName,
     );
 
     return finalAuthUrl;
   }
 
-  async handleCallback(providerName: string, code: string, state: string, requestContext?: RequestContextService) {
+  async handleCallback(
+    providerName: string,
+    code: string,
+    state: string,
+    requestContext?: RequestContextService,
+  ) {
     try {
       const pendingState = this.validateAndGetPendingState(state);
 
@@ -459,7 +474,7 @@ export class AuthProvidersService {
         validatedConfig,
         code,
         pendingState,
-        requestContext
+        requestContext,
       );
     } catch (error) {
       console.error("Error in handleCallback:", error);
@@ -472,15 +487,23 @@ export class AuthProvidersService {
     config: ProviderConfig,
     code: string,
     codeVerifier: string,
-    requestContext?: RequestContextService
+    requestContext?: RequestContextService,
   ) {
     const endpoints = await this.resolveEndpoints(provider, config);
     const authMethod = this.getAuthMethod(config);
 
     const baseUrl = this.buildBaseUrl(requestContext);
-    const callbackUrl = provider.redirectUri || `${baseUrl}/api/auth/providers/${provider.name}/callback`;
+    const callbackUrl =
+      provider.redirectUri || `${baseUrl}/api/auth/providers/${provider.name}/callback`;
 
-    const tokens = await this.executeTokenRequest(provider, code, callbackUrl, codeVerifier, authMethod, endpoints);
+    const tokens = await this.executeTokenRequest(
+      provider,
+      code,
+      callbackUrl,
+      codeVerifier,
+      authMethod,
+      endpoints,
+    );
     const rawUserInfo = await this.fetchUserInfo(tokens, endpoints);
 
     return {
@@ -495,7 +518,7 @@ export class AuthProvidersService {
     callbackUrl: string,
     codeVerifier: string,
     authMethod: string,
-    endpoints: any
+    endpoints: any,
   ): Promise<TokenResponse> {
     const body = new URLSearchParams();
     body.append("client_id", provider.clientId);
@@ -518,7 +541,7 @@ export class AuthProvidersService {
 
     if (authMethod === "basic" && provider.clientSecret) {
       const auth = Buffer.from(`${provider.clientId}:${provider.clientSecret}`).toString("base64");
-      headers["Authorization"] = `Basic ${auth}`;
+      headers.Authorization = `Basic ${auth}`;
     }
 
     const tokenResponse = await fetch(endpoints.tokenEndpoint, {
@@ -529,7 +552,9 @@ export class AuthProvidersService {
 
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text();
-      throw new Error(`${ERROR_MESSAGES.TOKEN_EXCHANGE_FAILED}: ${tokenResponse.status} - ${errorText}`);
+      throw new Error(
+        `${ERROR_MESSAGES.TOKEN_EXCHANGE_FAILED}: ${tokenResponse.status} - ${errorText}`,
+      );
     }
 
     const tokens = (await tokenResponse.json()) as TokenResponse;
@@ -551,7 +576,9 @@ export class AuthProvidersService {
 
     if (!userInfoResponse.ok) {
       const errorText = await userInfoResponse.text();
-      throw new Error(`${ERROR_MESSAGES.USERINFO_FAILED}: ${userInfoResponse.status} - ${errorText}`);
+      throw new Error(
+        `${ERROR_MESSAGES.USERINFO_FAILED}: ${userInfoResponse.status} - ${errorText}`,
+      );
     }
 
     return await userInfoResponse.json();
@@ -560,7 +587,7 @@ export class AuthProvidersService {
   private async processUserInfo(
     rawUserInfo: any,
     tokens: TokenResponse,
-    config: ProviderConfig
+    config: ProviderConfig,
   ): Promise<ProviderUserInfo> {
     const userInfo = this.extractUserInfo(rawUserInfo, config);
 
@@ -581,7 +608,10 @@ export class AuthProvidersService {
     return userInfo;
   }
 
-  private async fetchEmailFromEndpoint(endpoint: string, accessToken: string): Promise<string | null> {
+  private async fetchEmailFromEndpoint(
+    endpoint: string,
+    accessToken: string,
+  ): Promise<string | null> {
     try {
       const response = await fetch(endpoint, {
         headers: {
@@ -619,7 +649,10 @@ export class AuthProvidersService {
       throw new Error(ERROR_MESSAGES.MISSING_USER_INFO);
     }
 
-    const existingAuthProvider = await this.findExistingAuthProvider(provider.id, String(externalId));
+    const existingAuthProvider = await this.findExistingAuthProvider(
+      provider.id,
+      String(externalId),
+    );
     if (existingAuthProvider) {
       return await this.updateExistingUserFromProvider(existingAuthProvider.user, userInfo);
     }
@@ -637,7 +670,12 @@ export class AuthProvidersService {
         return await this.updateExistingUserFromProvider(existingUser, userInfo);
       }
 
-      return await this.linkProviderToExistingUser(existingUser, provider.id, String(externalId), userInfo);
+      return await this.linkProviderToExistingUser(
+        existingUser,
+        provider.id,
+        String(externalId),
+        userInfo,
+      );
     }
 
     // Check if auto-registration is disabled
@@ -703,7 +741,7 @@ export class AuthProvidersService {
     existingUser: any,
     providerId: string,
     externalId: string,
-    userInfo: ProviderUserInfo
+    userInfo: ProviderUserInfo,
   ) {
     await prisma.userAuthProvider.create({
       data: {
@@ -718,14 +756,20 @@ export class AuthProvidersService {
 
   private generateUserNames(userInfo: ProviderUserInfo) {
     const displayName = userInfo.name || userInfo.email.split("@")[0];
-    const firstName = userInfo.firstName || displayName.split(" ")[0] || userInfo.email.split("@")[0];
+    const firstName =
+      userInfo.firstName || displayName.split(" ")[0] || userInfo.email.split("@")[0];
     const lastName =
-      userInfo.lastName || (displayName.split(" ").length > 1 ? displayName.split(" ").slice(1).join(" ") : "");
+      userInfo.lastName ||
+      (displayName.split(" ").length > 1 ? displayName.split(" ").slice(1).join(" ") : "");
 
     return { firstName, lastName };
   }
 
-  private async createNewUserWithProvider(userInfo: ProviderUserInfo, providerId: string, externalId: string) {
+  private async createNewUserWithProvider(
+    userInfo: ProviderUserInfo,
+    providerId: string,
+    externalId: string,
+  ) {
     const { firstName, lastName } = this.generateUserNames(userInfo);
 
     return await prisma.user.create({
@@ -760,7 +804,7 @@ export class AuthProvidersService {
       prisma.authProvider.update({
         where: { id: provider.id },
         data: { sortOrder: provider.sortOrder },
-      })
+      }),
     );
 
     await prisma.$transaction(updatePromises);

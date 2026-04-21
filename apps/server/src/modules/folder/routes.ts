@@ -1,15 +1,14 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
-import { FolderController } from "./controller";
+import { FolderController } from "./controller.js";
 import {
   CheckFolderSchema,
-  FolderResponseSchema,
   ListFoldersSchema,
   MoveFolderSchema,
   RegisterFolderSchema,
   UpdateFolderSchema,
-} from "./dto";
+} from "./dto.js";
 
 export async function folderRoutes(app: FastifyInstance) {
   const folderController = new FolderController();
@@ -59,7 +58,7 @@ export async function folderRoutes(app: FastifyInstance) {
         },
       },
     },
-    folderController.registerFolder.bind(folderController)
+    folderController.registerFolder.bind(folderController),
   );
 
   app.post(
@@ -88,7 +87,7 @@ export async function folderRoutes(app: FastifyInstance) {
         },
       },
     },
-    folderController.checkFolder.bind(folderController)
+    folderController.checkFolder.bind(folderController),
   );
 
   app.get(
@@ -120,14 +119,14 @@ export async function folderRoutes(app: FastifyInstance) {
                   })
                   .optional()
                   .describe("Count statistics"),
-              })
+              }),
             ),
           }),
           500: z.object({ error: z.string().describe("Error message") }),
         },
       },
     },
-    folderController.listFolders.bind(folderController)
+    folderController.listFolders.bind(folderController),
   );
 
   app.patch(
@@ -171,7 +170,7 @@ export async function folderRoutes(app: FastifyInstance) {
         },
       },
     },
-    folderController.updateFolder.bind(folderController)
+    folderController.updateFolder.bind(folderController),
   );
 
   app.put(
@@ -215,7 +214,7 @@ export async function folderRoutes(app: FastifyInstance) {
         },
       },
     },
-    folderController.moveFolder.bind(folderController)
+    folderController.moveFolder.bind(folderController),
   );
 
   app.delete(
@@ -241,6 +240,6 @@ export async function folderRoutes(app: FastifyInstance) {
         },
       },
     },
-    folderController.deleteFolder.bind(folderController)
+    folderController.deleteFolder.bind(folderController),
   );
 }

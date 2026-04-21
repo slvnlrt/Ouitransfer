@@ -1,16 +1,22 @@
 import { z } from "zod";
 
-import { ConfigService } from "../config/service";
+import { ConfigService } from "../config/service.js";
 
 const configService = new ConfigService();
 
 export const createPasswordSchema = async () => {
   const minLength = Number(await configService.getValue("passwordMinLength"));
-  return z.string().min(minLength, `Password must be at least ${minLength} characters`).describe("User password");
+  return z
+    .string()
+    .min(minLength, `Password must be at least ${minLength} characters`)
+    .describe("User password");
 };
 
 export const LoginSchema = z.object({
-  emailOrUsername: z.string().min(1, "Email or username is required").describe("User email or username"),
+  emailOrUsername: z
+    .string()
+    .min(1, "Email or username is required")
+    .describe("User email or username"),
   password: z.string().min(6, "Password must be at least 6 characters").describe("User password"),
 });
 export type LoginInput = z.infer<typeof LoginSchema>;
@@ -29,7 +35,10 @@ export type BaseResetPasswordInput = z.infer<typeof BaseResetPasswordSchema>;
 export const createResetPasswordSchema = async () => {
   const minLength = Number(await configService.getValue("passwordMinLength"));
   return BaseResetPasswordSchema.extend({
-    password: z.string().min(minLength, `Password must be at least ${minLength} characters`).describe("User password"),
+    password: z
+      .string()
+      .min(minLength, `Password must be at least ${minLength} characters`)
+      .describe("User password"),
   });
 };
 
@@ -38,9 +47,19 @@ export type ResetPasswordInput = BaseResetPasswordInput & {
 };
 
 export const CompleteTwoFactorLoginSchema = z.object({
-  challengeToken: z.string().min(1, "Challenge token is required").describe("Server-issued challenge token from login step"),
-  token: z.string().min(6, "Two-factor authentication code must be at least 6 characters").describe("2FA token"),
-  rememberDevice: z.boolean().optional().default(false).describe("Remember this device for 30 days"),
+  challengeToken: z
+    .string()
+    .min(1, "Challenge token is required")
+    .describe("Server-issued challenge token from login step"),
+  token: z
+    .string()
+    .min(6, "Two-factor authentication code must be at least 6 characters")
+    .describe("2FA token"),
+  rememberDevice: z
+    .boolean()
+    .optional()
+    .default(false)
+    .describe("Remember this device for 30 days"),
 });
 
 export type CompleteTwoFactorLoginInput = z.infer<typeof CompleteTwoFactorLoginSchema>;

@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
-import { RegisterUserInput, UserResponseSchema } from "./dto";
-import { IUserRepository, PrismaUserRepository } from "./repository";
+import { type RegisterUserInput, UserResponseSchema } from "./dto.js";
+import { type IUserRepository, PrismaUserRepository } from "./repository.js";
 
 type UserWithPassword = {
   id: string;

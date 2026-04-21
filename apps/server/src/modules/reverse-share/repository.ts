@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 
-import { prisma } from "../../shared/prisma";
-import { CreateReverseShareInput, UpdateReverseShareInput } from "./dto";
+import { prisma } from "../../shared/prisma.js";
+import type { CreateReverseShareInput, UpdateReverseShareInput } from "./dto.js";
 
 export class ReverseShareRepository {
   async create(data: CreateReverseShareInput, creatorId: string) {
@@ -147,7 +147,7 @@ export class ReverseShareRepository {
       objectName: string;
       uploaderEmail?: string;
       uploaderName?: string;
-    }
+    },
   ) {
     return prisma.reverseShareFile.create({
       data: {

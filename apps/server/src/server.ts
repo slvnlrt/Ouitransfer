@@ -1,23 +1,23 @@
-import * as fs from "fs/promises";
 import crypto from "node:crypto";
+import * as fs from "node:fs/promises";
 import fastifyMultipart from "@fastify/multipart";
 
-import { buildApp } from "./app";
-import { env } from "./env";
-import { directoriesConfig } from "./config/directories.config";
-import { appRoutes } from "./modules/app/routes";
-import { authProvidersRoutes } from "./modules/auth-providers/routes";
-import { authRoutes } from "./modules/auth/routes";
-import { fileRoutes } from "./modules/file/routes";
-import { folderRoutes } from "./modules/folder/routes";
-import { healthRoutes } from "./modules/health/routes";
-import { inviteRoutes } from "./modules/invite/routes";
-import { reverseShareRoutes } from "./modules/reverse-share/routes";
-import { s3StorageRoutes } from "./modules/s3-storage/routes";
-import { shareRoutes } from "./modules/share/routes";
-import { storageRoutes } from "./modules/storage/routes";
-import { twoFactorRoutes } from "./modules/two-factor/routes";
-import { userRoutes } from "./modules/user/routes";
+import { buildApp } from "./app.js";
+import { directoriesConfig } from "./config/directories.config.js";
+import { env } from "./env.js";
+import { appRoutes } from "./modules/app/routes.js";
+import { authRoutes } from "./modules/auth/routes.js";
+import { authProvidersRoutes } from "./modules/auth-providers/routes.js";
+import { fileRoutes } from "./modules/file/routes.js";
+import { folderRoutes } from "./modules/folder/routes.js";
+import { healthRoutes } from "./modules/health/routes.js";
+import { inviteRoutes } from "./modules/invite/routes.js";
+import { reverseShareRoutes } from "./modules/reverse-share/routes.js";
+import { s3StorageRoutes } from "./modules/s3-storage/routes.js";
+import { shareRoutes } from "./modules/share/routes.js";
+import { storageRoutes } from "./modules/storage/routes.js";
+import { twoFactorRoutes } from "./modules/two-factor/routes.js";
+import { userRoutes } from "./modules/user/routes.js";
 
 if (typeof globalThis.crypto === "undefined") {
   globalThis.crypto = crypto.webcrypto as any;
@@ -46,7 +46,7 @@ async function ensureDirectories() {
 async function startServer() {
   if (env.SECURE_SITE === "false") {
     console.warn(
-      "[SECURITY WARNING] SECURE_SITE=false — cookies will be sent over plain HTTP. Only use this in development."
+      "[SECURITY WARNING] SECURE_SITE=false — cookies will be sent over plain HTTP. Only use this in development.",
     );
   }
 

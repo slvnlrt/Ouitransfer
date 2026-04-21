@@ -1,8 +1,8 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { EmailService } from "../email/service";
-import { LogoService } from "./logo.service";
-import { AppService } from "./service";
+import { EmailService } from "../email/service.js";
+import { LogoService } from "./logo.service.js";
+import { AppService } from "./service.js";
 
 export class AppController {
   private appService = new AppService();

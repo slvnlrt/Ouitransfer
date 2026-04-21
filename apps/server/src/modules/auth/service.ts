@@ -1,14 +1,14 @@
 import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
 
-import { prisma } from "../../shared/prisma";
-import { ConfigService } from "../config/service";
-import { EmailService } from "../email/service";
-import { TwoFactorService } from "../two-factor/service";
-import { UserResponseSchema } from "../user/dto";
-import { PrismaUserRepository } from "../user/repository";
-import { LoginInput } from "./dto";
-import { TrustedDeviceService } from "./trusted-device.service";
+import { prisma } from "../../shared/prisma.js";
+import { ConfigService } from "../config/service.js";
+import { EmailService } from "../email/service.js";
+import { TwoFactorService } from "../two-factor/service.js";
+import { UserResponseSchema } from "../user/dto.js";
+import { PrismaUserRepository } from "../user/repository.js";
+import type { LoginInput } from "./dto.js";
+import { TrustedDeviceService } from "./trusted-device.service.js";
 
 export class AuthService {
   private userRepository = new PrismaUserRepository();
@@ -20,7 +20,9 @@ export class AuthService {
   async login(data: LoginInput, userAgent?: string, ipAddress?: string) {
     const passwordAuthEnabled = await this.configService.getValue("passwordAuthEnabled");
     if (passwordAuthEnabled === "false") {
-      throw new Error("Password authentication is disabled. Please use an external authentication provider.");
+      throw new Error(
+        "Password authentication is disabled. Please use an external authentication provider.",
+      );
     }
 
     const user = await this.userRepository.findUserByEmailOrUsername(data.emailOrUsername);
@@ -41,9 +43,12 @@ export class AuthService {
     });
 
     if (loginAttempt) {
-      if (loginAttempt.attempts >= maxAttempts && Date.now() - loginAttempt.lastAttempt.getTime() < blockDuration) {
+      if (
+        loginAttempt.attempts >= maxAttempts &&
+        Date.now() - loginAttempt.lastAttempt.getTime() < blockDuration
+      ) {
         const remainingTime = Math.ceil(
-          (blockDuration - (Date.now() - loginAttempt.lastAttempt.getTime())) / 1000 / 60
+          (blockDuration - (Date.now() - loginAttempt.lastAttempt.getTime())) / 1000 / 60,
         );
         throw new Error(`Too many failed attempts. Please try again in ${remainingTime} minutes.`);
       }
@@ -56,7 +61,9 @@ export class AuthService {
     }
 
     if (!user.password) {
-      throw new Error("This account uses external authentication. Please use the appropriate login method.");
+      throw new Error(
+        "This account uses external authentication. Please use the appropriate login method.",
+      );
     }
 
     const isValid = await bcrypt.compare(data.password, user.password);
@@ -90,7 +97,11 @@ export class AuthService {
 
     if (has2FA) {
       if (userAgent && ipAddress) {
-        const isDeviceTrusted = await this.trustedDeviceService.isDeviceTrusted(user.id, userAgent, ipAddress);
+        const isDeviceTrusted = await this.trustedDeviceService.isDeviceTrusted(
+          user.id,
+          userAgent,
+          ipAddress,
+        );
         if (isDeviceTrusted) {
           // Update last used timestamp for trusted device
           await this.trustedDeviceService.updateLastUsed(user.id, userAgent, ipAddress);
@@ -113,7 +124,7 @@ export class AuthService {
     token: string,
     rememberDevice: boolean = false,
     userAgent?: string,
-    ipAddress?: string
+    ipAddress?: string,
   ) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -141,7 +152,11 @@ export class AuthService {
       await this.trustedDeviceService.addTrustedDevice(userId, userAgent, ipAddress);
     } else if (userAgent && ipAddress) {
       // Update last used timestamp if this is already a trusted device
-      const isDeviceTrusted = await this.trustedDeviceService.isDeviceTrusted(userId, userAgent, ipAddress);
+      const isDeviceTrusted = await this.trustedDeviceService.isDeviceTrusted(
+        userId,
+        userAgent,
+        ipAddress,
+      );
       if (isDeviceTrusted) {
         await this.trustedDeviceService.updateLastUsed(userId, userAgent, ipAddress);
       }
@@ -162,7 +177,9 @@ export class AuthService {
     }
 
     const token = crypto.randomBytes(128).toString("hex");
-    const expirationSeconds = Number(await this.configService.getValue("passwordResetTokenExpiration"));
+    const expirationSeconds = Number(
+      await this.configService.getValue("passwordResetTokenExpiration"),
+    );
 
     await prisma.passwordReset.create({
       data: {

@@ -1,15 +1,15 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { env } from "../../env";
-import { ConfigService } from "../config/service";
-import { createChallengeToken, verifyChallengeToken } from "./challenge";
+import { env } from "../../env.js";
+import { ConfigService } from "../config/service.js";
+import { createChallengeToken, verifyChallengeToken } from "./challenge.js";
 import {
   CompleteTwoFactorLoginSchema,
   createResetPasswordSchema,
   LoginSchema,
   RequestPasswordResetSchema,
-} from "./dto";
-import { AuthService } from "./service";
+} from "./dto.js";
+import { AuthService } from "./service.js";
 
 export class AuthController {
   private authService = new AuthService();
@@ -49,7 +49,7 @@ export class AuthController {
       reply.setCookie("token", token, {
         httpOnly: true,
         path: "/",
-        secure: env.SECURE_SITE === "true" ? true : false,
+        secure: env.SECURE_SITE === "true",
         sameSite: env.SECURE_SITE === "true" ? "lax" : "strict",
       });
 
@@ -72,7 +72,7 @@ export class AuthController {
         input.token,
         input.rememberDevice,
         userAgent,
-        ipAddress
+        ipAddress,
       );
 
       const token = await request.jwtSign({
@@ -83,7 +83,7 @@ export class AuthController {
       reply.setCookie("token", token, {
         httpOnly: true,
         path: "/",
-        secure: env.SECURE_SITE === "true" ? true : false,
+        secure: env.SECURE_SITE === "true",
         sameSite: env.SECURE_SITE === "true" ? "lax" : "strict",
       });
 
@@ -93,7 +93,7 @@ export class AuthController {
     }
   }
 
-  async logout(request: FastifyRequest, reply: FastifyReply) {
+  async logout(_request: FastifyRequest, reply: FastifyReply) {
     reply.clearCookie("token", { path: "/" });
     return reply.send({ message: "Logout successful" });
   }
@@ -127,7 +127,7 @@ export class AuthController {
       try {
         await request.jwtVerify();
         userId = (request as any).user?.userId;
-      } catch (err) {
+      } catch (_err) {
         return reply.send({ user: null });
       }
 
@@ -150,7 +150,9 @@ export class AuthController {
     try {
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const devices = await this.authService.getTrustedDevices(userId);
@@ -164,7 +166,9 @@ export class AuthController {
     try {
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const { id } = request.params as { id: string };
@@ -179,7 +183,9 @@ export class AuthController {
     try {
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const result = await this.authService.removeAllTrustedDevices(userId);
@@ -189,7 +195,7 @@ export class AuthController {
     }
   }
 
-  async getAuthConfig(request: FastifyRequest, reply: FastifyReply) {
+  async getAuthConfig(_request: FastifyRequest, reply: FastifyReply) {
     try {
       const passwordAuthEnabled = await this.configService.getValue("passwordAuthEnabled");
       return reply.send({

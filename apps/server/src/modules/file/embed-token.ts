@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import * as jose from "jose";
-import { prisma } from "../../shared/prisma";
+import { prisma } from "../../shared/prisma.js";
 
 // Module-level cache so the DB is only hit once per process lifetime.
 let cachedEmbedSecret: Uint8Array | null = null;
@@ -57,7 +57,9 @@ export async function createEmbedToken(fileId: string, shareId: string): Promise
  * Verify an embed token and extract the fileId + shareId.
  * Throws if expired, tampered, or wrong purpose.
  */
-export async function verifyEmbedToken(token: string): Promise<{ fileId: string; shareId: string }> {
+export async function verifyEmbedToken(
+  token: string,
+): Promise<{ fileId: string; shareId: string }> {
   const secret = await getEmbedSecret();
   const { payload } = await jose.jwtVerify(token, secret);
   if (payload.purpose !== "embed") {

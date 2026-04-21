@@ -1,4 +1,4 @@
-import { prisma } from "../shared/prisma";
+import { prisma } from "../shared/prisma.js";
 
 /**
  * Generates a unique filename by checking for duplicates in the database
@@ -14,7 +14,7 @@ export async function generateUniqueFileName(
   baseName: string,
   extension: string,
   userId: string,
-  folderId: string | null | undefined
+  folderId: string | null | undefined,
 ): Promise<string> {
   const fullName = `${baseName}.${extension}`;
   const targetFolderId = folderId || null;
@@ -71,7 +71,7 @@ export async function generateUniqueFileNameForRename(
   extension: string,
   userId: string,
   folderId: string | null | undefined,
-  excludeFileId: string
+  excludeFileId: string,
 ): Promise<string> {
   const fullName = `${baseName}.${extension}`;
   const targetFolderId = folderId || null;
@@ -128,7 +128,7 @@ export async function generateUniqueFolderName(
   name: string,
   userId: string,
   parentId: string | null | undefined,
-  excludeFolderId?: string
+  excludeFolderId?: string,
 ): Promise<string> {
   const targetParentId = parentId || null;
 

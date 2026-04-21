@@ -1,7 +1,7 @@
-import { FastifyInstance } from "fastify";
+import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 
-import { StorageController } from "./controller";
+import { StorageController } from "./controller.js";
 
 export async function storageRoutes(app: FastifyInstance) {
   const storageController = new StorageController();
@@ -25,7 +25,7 @@ export async function storageRoutes(app: FastifyInstance) {
         },
       },
     },
-    storageController.getDiskSpace.bind(storageController)
+    storageController.getDiskSpace.bind(storageController),
   );
 
   app.get(
@@ -57,6 +57,6 @@ export async function storageRoutes(app: FastifyInstance) {
         },
       },
     },
-    storageController.checkUploadAllowed.bind(storageController)
+    storageController.checkUploadAllowed.bind(storageController),
   );
 }

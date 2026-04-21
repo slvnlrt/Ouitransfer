@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import * as OTPAuth from "otpauth";
 import QRCode from "qrcode";
 
-import { prisma } from "../../shared/prisma";
+import { prisma } from "../../shared/prisma.js";
 
 interface BackupCode {
   code: string;

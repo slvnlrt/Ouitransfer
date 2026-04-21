@@ -1,10 +1,10 @@
 import fs from "node:fs";
 import { statfs } from "node:fs/promises";
 
-import { env } from "../../env";
-import { prisma } from "../../shared/prisma";
-import { IS_RUNNING_IN_CONTAINER } from "../../utils/container-detection";
-import { ConfigService } from "../config/service";
+import { env } from "../../env.js";
+import { prisma } from "../../shared/prisma.js";
+import { IS_RUNNING_IN_CONTAINER } from "../../utils/container-detection.js";
+import { ConfigService } from "../config/service.js";
 
 export class StorageService {
   private configService = new ConfigService();
@@ -14,7 +14,7 @@ export class StorageService {
   }
 
   private async _getFileSystemInfo(
-    path: string
+    path: string,
   ): Promise<{ total: number; available: number } | null> {
     try {
       const stats = await statfs(path);
@@ -55,7 +55,14 @@ export class StorageService {
 
   private async _getDiskSpaceMultiplePaths(): Promise<{ total: number; available: number } | null> {
     const basePaths = IS_RUNNING_IN_CONTAINER
-      ? ["/app/server/uploads", "/app/server/temp-uploads", "/app/server/temp-chunks", "/app/server", "/app", "/"]
+      ? [
+          "/app/server/uploads",
+          "/app/server/temp-uploads",
+          "/app/server/temp-chunks",
+          "/app/server",
+          "/app",
+          "/",
+        ]
       : [env.CUSTOM_PATH || ".", "./uploads", process.cwd()];
 
     const synologyPaths = await this._detectSynologyVolumes();
@@ -87,7 +94,7 @@ export class StorageService {
 
   async getDiskSpace(
     userId?: string,
-    isAdmin?: boolean
+    isAdmin?: boolean,
   ): Promise<{
     diskSizeGB: number;
     diskUsedGB: number;
@@ -125,7 +132,10 @@ export class StorageService {
         });
 
         const totalUsedStorage = userFiles.reduce((acc, file) => acc + file.size, BigInt(0));
-        const usedStorageGB = this._ensureNumber(Number(totalUsedStorage) / (1024 * 1024 * 1024), 0);
+        const usedStorageGB = this._ensureNumber(
+          Number(totalUsedStorage) / (1024 * 1024 * 1024),
+          0,
+        );
         const availableStorageGB = this._ensureNumber(maxStorageGB - usedStorageGB, 0);
 
         return {
@@ -140,14 +150,14 @@ export class StorageService {
     } catch (error) {
       console.error("Error getting disk space:", error);
       throw new Error(
-        `Failed to get disk space information: ${error instanceof Error ? error.message : String(error)}`
+        `Failed to get disk space information: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   }
 
   async checkUploadAllowed(
     fileSize: number,
-    userId?: string
+    userId?: string,
   ): Promise<{
     diskSizeGB: number;
     diskUsedGB: number;

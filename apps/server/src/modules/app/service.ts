@@ -1,5 +1,5 @@
-import { prisma } from "../../shared/prisma";
-import { ConfigService } from "../config/service";
+import { prisma } from "../../shared/prisma.js";
+import { ConfigService } from "../config/service.js";
 
 export class AppService {
   private configService = new ConfigService();
@@ -74,7 +74,7 @@ export class AppService {
         const canDisable = await this.configService.validatePasswordAuthDisable();
         if (!canDisable) {
           throw new Error(
-            "Password authentication cannot be disabled. At least one authentication provider must be active."
+            "Password authentication cannot be disabled. At least one authentication provider must be active.",
           );
         }
       }
@@ -103,7 +103,7 @@ export class AppService {
       const canDisable = await this.configService.validatePasswordAuthDisable();
       if (!canDisable) {
         throw new Error(
-          "Password authentication cannot be disabled. At least one authentication provider must be active."
+          "Password authentication cannot be disabled. At least one authentication provider must be active.",
         );
       }
     }
@@ -124,8 +124,8 @@ export class AppService {
         prisma.appConfig.update({
           where: { key: update.key },
           data: { value: update.value },
-        })
-      )
+        }),
+      ),
     );
   }
 }

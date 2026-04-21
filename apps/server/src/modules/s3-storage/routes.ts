@@ -5,10 +5,10 @@
  * Much simpler than filesystem routes - no chunk management, no streaming.
  */
 
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
-import { S3StorageController } from "./controller";
+import { S3StorageController } from "./controller.js";
 
 export async function s3StorageRoutes(app: FastifyInstance) {
   const controller = new S3StorageController();
@@ -16,7 +16,7 @@ export async function s3StorageRoutes(app: FastifyInstance) {
   const preValidation = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       await request.jwtVerify();
-    } catch (err) {
+    } catch (_err) {
       reply.status(401).send({ error: "Unauthorized: a valid token is required." });
     }
   };
@@ -51,7 +51,7 @@ export async function s3StorageRoutes(app: FastifyInstance) {
         },
       },
     },
-    controller.getUploadUrl.bind(controller)
+    controller.getUploadUrl.bind(controller),
   );
 
   // Get presigned download URL
@@ -79,7 +79,7 @@ export async function s3StorageRoutes(app: FastifyInstance) {
         },
       },
     },
-    controller.getDownloadUrl.bind(controller)
+    controller.getDownloadUrl.bind(controller),
   );
 
   // Delete object
@@ -102,7 +102,7 @@ export async function s3StorageRoutes(app: FastifyInstance) {
         },
       },
     },
-    controller.deleteObject.bind(controller)
+    controller.deleteObject.bind(controller),
   );
 
   // Check if object exists
@@ -125,6 +125,6 @@ export async function s3StorageRoutes(app: FastifyInstance) {
         },
       },
     },
-    controller.checkExists.bind(controller)
+    controller.checkExists.bind(controller),
   );
 }

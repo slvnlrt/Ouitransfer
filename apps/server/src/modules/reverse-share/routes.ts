@@ -1,7 +1,7 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
-import { ReverseShareController } from "./controller";
+import { ReverseShareController } from "./controller.js";
 import {
   CreateReverseShareSchema,
   GetPresignedUrlSchema,
@@ -13,7 +13,7 @@ import {
   UpdateReverseSharePasswordSchema,
   UpdateReverseShareSchema,
   UploadToReverseShareSchema,
-} from "./dto";
+} from "./dto.js";
 
 export async function reverseShareRoutes(app: FastifyInstance) {
   const reverseShareController = new ReverseShareController();
@@ -47,7 +47,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.createReverseShare.bind(reverseShareController)
+    reverseShareController.createReverseShare.bind(reverseShareController),
   );
 
   app.get(
@@ -68,7 +68,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.listUserReverseShares.bind(reverseShareController)
+    reverseShareController.listUserReverseShares.bind(reverseShareController),
   );
 
   app.get(
@@ -93,7 +93,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.getReverseShare.bind(reverseShareController)
+    reverseShareController.getReverseShare.bind(reverseShareController),
   );
 
   app.put(
@@ -117,7 +117,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.updateReverseShare.bind(reverseShareController)
+    reverseShareController.updateReverseShare.bind(reverseShareController),
   );
 
   app.put(
@@ -144,7 +144,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.updatePassword.bind(reverseShareController)
+    reverseShareController.updatePassword.bind(reverseShareController),
   );
 
   app.delete(
@@ -169,7 +169,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.deleteReverseShare.bind(reverseShareController)
+    reverseShareController.deleteReverseShare.bind(reverseShareController),
   );
 
   app.get(
@@ -195,7 +195,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.getReverseShareForUpload.bind(reverseShareController)
+    reverseShareController.getReverseShareForUpload.bind(reverseShareController),
   );
 
   app.post(
@@ -211,7 +211,10 @@ export async function reverseShareRoutes(app: FastifyInstance) {
           id: z.string().describe("Unique identifier of the reverse share"),
         }),
         body: z.object({
-          password: z.string().min(1, "Password is required").describe("Password for the reverse share"),
+          password: z
+            .string()
+            .min(1, "Password is required")
+            .describe("Password for the reverse share"),
         }),
         response: {
           200: z.object({
@@ -224,7 +227,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.getReverseShareForUpload.bind(reverseShareController)
+    reverseShareController.getReverseShareForUpload.bind(reverseShareController),
   );
 
   app.get(
@@ -250,7 +253,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.getReverseShareForUploadByAlias.bind(reverseShareController)
+    reverseShareController.getReverseShareForUploadByAlias.bind(reverseShareController),
   );
 
   app.post(
@@ -266,7 +269,10 @@ export async function reverseShareRoutes(app: FastifyInstance) {
           alias: z.string().describe("Alias of the reverse share"),
         }),
         body: z.object({
-          password: z.string().min(1, "Password is required").describe("Password for the reverse share"),
+          password: z
+            .string()
+            .min(1, "Password is required")
+            .describe("Password for the reverse share"),
         }),
         response: {
           200: z.object({
@@ -279,7 +285,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.getReverseShareForUploadByAlias.bind(reverseShareController)
+    reverseShareController.getReverseShareForUploadByAlias.bind(reverseShareController),
   );
 
   app.post(
@@ -295,12 +301,17 @@ export async function reverseShareRoutes(app: FastifyInstance) {
           id: z.string().describe("Unique identifier of the reverse share"),
         }),
         body: GetPresignedUrlSchema.extend({
-          password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
+          password: z
+            .string()
+            .optional()
+            .describe("Password for accessing password-protected reverse shares"),
         }),
         response: {
           200: z.object({
             url: z.string().describe("Presigned URL for file upload"),
-            objectName: z.string().describe("Server-generated object name to use when registering the file"),
+            objectName: z
+              .string()
+              .describe("Server-generated object name to use when registering the file"),
             expiresIn: z.number().describe("URL expiration time in seconds"),
           }),
           401: z.object({ error: z.string() }),
@@ -310,7 +321,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.getPresignedUrl.bind(reverseShareController)
+    reverseShareController.getPresignedUrl.bind(reverseShareController),
   );
 
   app.post(
@@ -326,12 +337,17 @@ export async function reverseShareRoutes(app: FastifyInstance) {
           alias: z.string().describe("Alias of the reverse share"),
         }),
         body: GetPresignedUrlSchema.extend({
-          password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
+          password: z
+            .string()
+            .optional()
+            .describe("Password for accessing password-protected reverse shares"),
         }),
         response: {
           200: z.object({
             url: z.string().describe("Presigned URL for file upload"),
-            objectName: z.string().describe("Server-generated object name to use when registering the file"),
+            objectName: z
+              .string()
+              .describe("Server-generated object name to use when registering the file"),
             expiresIn: z.number().describe("URL expiration time in seconds"),
           }),
           401: z.object({ error: z.string() }),
@@ -341,7 +357,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.getPresignedUrlByAlias.bind(reverseShareController)
+    reverseShareController.getPresignedUrlByAlias.bind(reverseShareController),
   );
 
   app.post(
@@ -357,7 +373,10 @@ export async function reverseShareRoutes(app: FastifyInstance) {
           id: z.string().describe("Unique identifier of the reverse share"),
         }),
         body: UploadToReverseShareSchema.extend({
-          password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
+          password: z
+            .string()
+            .optional()
+            .describe("Password for accessing password-protected reverse shares"),
         }),
         response: {
           201: z.object({
@@ -371,7 +390,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.registerFileUpload.bind(reverseShareController)
+    reverseShareController.registerFileUpload.bind(reverseShareController),
   );
 
   app.post(
@@ -387,7 +406,10 @@ export async function reverseShareRoutes(app: FastifyInstance) {
           alias: z.string().describe("Alias of the reverse share"),
         }),
         body: UploadToReverseShareSchema.extend({
-          password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
+          password: z
+            .string()
+            .optional()
+            .describe("Password for accessing password-protected reverse shares"),
         }),
         response: {
           201: z.object({
@@ -401,7 +423,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.registerFileUploadByAlias.bind(reverseShareController)
+    reverseShareController.registerFileUploadByAlias.bind(reverseShareController),
   );
 
   app.post(
@@ -429,14 +451,14 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.checkPassword.bind(reverseShareController)
+    reverseShareController.checkPassword.bind(reverseShareController),
   );
 
   app.get(
     "/reverse-shares/files/:fileId/download",
     {
       preValidation,
-       bodyLimit: 50 * 1024 * 1024, // 50MB limit for API metadata payloads
+      bodyLimit: 50 * 1024 * 1024, // 50MB limit for API metadata payloads
       schema: {
         tags: ["Reverse Share"],
         operationId: "downloadReverseShareFile",
@@ -462,7 +484,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.downloadFile.bind(reverseShareController)
+    reverseShareController.downloadFile.bind(reverseShareController),
   );
 
   app.delete(
@@ -487,7 +509,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.deleteFile.bind(reverseShareController)
+    reverseShareController.deleteFile.bind(reverseShareController),
   );
 
   app.post(
@@ -498,7 +520,8 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         tags: ["Reverse Share"],
         operationId: "createReverseShareAlias",
         summary: "Create or update reverse share alias",
-        description: "Create or update a custom alias for a reverse share to make it easier to share and remember.",
+        description:
+          "Create or update a custom alias for a reverse share to make it easier to share and remember.",
         params: z.object({
           reverseShareId: z.string().describe("The reverse share ID"),
         }),
@@ -525,7 +548,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.createOrUpdateAlias.bind(reverseShareController)
+    reverseShareController.createOrUpdateAlias.bind(reverseShareController),
   );
 
   app.patch(
@@ -550,7 +573,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.activateReverseShare.bind(reverseShareController)
+    reverseShareController.activateReverseShare.bind(reverseShareController),
   );
 
   app.patch(
@@ -575,7 +598,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.deactivateReverseShare.bind(reverseShareController)
+    reverseShareController.deactivateReverseShare.bind(reverseShareController),
   );
 
   app.put(
@@ -602,7 +625,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.updateFile.bind(reverseShareController)
+    reverseShareController.updateFile.bind(reverseShareController),
   );
 
   app.post(
@@ -640,7 +663,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.copyFileToUserFiles.bind(reverseShareController)
+    reverseShareController.copyFileToUserFiles.bind(reverseShareController),
   );
 
   // Multipart upload routes for reverse shares (public - no auth required)
@@ -659,7 +682,10 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         body: z.object({
           filename: z.string().min(1).describe("The filename without extension"),
           extension: z.string().min(1).describe("The file extension"),
-          password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
+          password: z
+            .string()
+            .optional()
+            .describe("Password for accessing password-protected reverse shares"),
         }),
         response: {
           200: z.object({
@@ -676,7 +702,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.createMultipartUploadByAlias.bind(reverseShareController)
+    reverseShareController.createMultipartUploadByAlias.bind(reverseShareController),
   );
 
   app.post(
@@ -695,7 +721,10 @@ export async function reverseShareRoutes(app: FastifyInstance) {
           uploadId: z.string().min(1).describe("The multipart upload ID"),
           objectName: z.string().min(1).describe("The object name"),
           partNumber: z.string().min(1).describe("The part number (1-10000)"),
-          password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
+          password: z
+            .string()
+            .optional()
+            .describe("Password for accessing password-protected reverse shares"),
         }),
         response: {
           200: z.object({
@@ -710,7 +739,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.getMultipartPartUrlByAlias.bind(reverseShareController)
+    reverseShareController.getMultipartPartUrlByAlias.bind(reverseShareController),
   );
 
   app.post(
@@ -720,7 +749,8 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         tags: ["Reverse Share"],
         operationId: "completeMultipartUploadByAlias",
         summary: "Complete Multipart Upload (Public)",
-        description: "Completes a multipart upload to a reverse share by combining all uploaded parts",
+        description:
+          "Completes a multipart upload to a reverse share by combining all uploaded parts",
         params: z.object({
           alias: z.string().describe("Alias of the reverse share"),
         }),
@@ -732,10 +762,13 @@ export async function reverseShareRoutes(app: FastifyInstance) {
               z.object({
                 PartNumber: z.number().min(1).max(10000).describe("The part number"),
                 ETag: z.string().min(1).describe("The ETag returned from uploading the part"),
-              })
+              }),
             )
             .describe("Array of uploaded parts"),
-          password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
+          password: z
+            .string()
+            .optional()
+            .describe("Password for accessing password-protected reverse shares"),
         }),
         response: {
           200: z.object({
@@ -751,7 +784,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.completeMultipartUploadByAlias.bind(reverseShareController)
+    reverseShareController.completeMultipartUploadByAlias.bind(reverseShareController),
   );
 
   app.post(
@@ -761,14 +794,18 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         tags: ["Reverse Share"],
         operationId: "abortMultipartUploadByAlias",
         summary: "Abort Multipart Upload (Public)",
-        description: "Aborts a multipart upload to a reverse share and cleans up all uploaded parts",
+        description:
+          "Aborts a multipart upload to a reverse share and cleans up all uploaded parts",
         params: z.object({
           alias: z.string().describe("Alias of the reverse share"),
         }),
         body: z.object({
           uploadId: z.string().min(1).describe("The multipart upload ID"),
           objectName: z.string().min(1).describe("The object name"),
-          password: z.string().optional().describe("Password for accessing password-protected reverse shares"),
+          password: z
+            .string()
+            .optional()
+            .describe("Password for accessing password-protected reverse shares"),
         }),
         response: {
           200: z.object({
@@ -783,7 +820,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.abortMultipartUploadByAlias.bind(reverseShareController)
+    reverseShareController.abortMultipartUploadByAlias.bind(reverseShareController),
   );
 
   app.get(
@@ -793,7 +830,8 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         tags: ["Reverse Share"],
         operationId: "getReverseShareMetadataByAlias",
         summary: "Get reverse share metadata by alias for Open Graph",
-        description: "Get lightweight metadata for a reverse share by alias, used for social media previews",
+        description:
+          "Get lightweight metadata for a reverse share by alias, used for social media previews",
         params: z.object({
           alias: z.string().describe("Alias of the reverse share"),
         }),
@@ -811,6 +849,6 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.getReverseShareMetadataByAlias.bind(reverseShareController)
+    reverseShareController.getReverseShareMetadataByAlias.bind(reverseShareController),
   );
 }

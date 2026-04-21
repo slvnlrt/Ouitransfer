@@ -1,9 +1,9 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
-import { prisma } from "../../shared/prisma";
-import { ConfigService } from "../config/service";
-import { TwoFactorService } from "./service";
+import { prisma } from "../../shared/prisma.js";
+import { ConfigService } from "../config/service.js";
+import { TwoFactorService } from "./service.js";
 
 const SetupSchema = z
   .object({
@@ -50,7 +50,8 @@ export class TwoFactorController {
         return reply.status(404).send({ error: "User not found" });
       }
 
-      const appName = body?.appName || (await this.configService.getValue("appName")) || "OUITRANSFER";
+      const appName =
+        body?.appName || (await this.configService.getValue("appName")) || "OUITRANSFER";
 
       const setupData = await this.twoFactorService.generateSetup(userId, user.email, appName);
 

@@ -1,11 +1,11 @@
 import bcrypt from "bcryptjs";
 
-import { prisma } from "../../shared/prisma";
-import { EmailService } from "../email/service";
-import { FolderService } from "../folder/service";
-import { UserService } from "../user/service";
-import { CreateShareInput, ShareResponseSchema, UpdateShareInput } from "./dto";
-import { IShareRepository, PrismaShareRepository } from "./repository";
+import { prisma } from "../../shared/prisma.js";
+import { EmailService } from "../email/service.js";
+import { FolderService } from "../folder/service.js";
+import { UserService } from "../user/service.js";
+import { type CreateShareInput, ShareResponseSchema, type UpdateShareInput } from "./dto.js";
+import { type IShareRepository, PrismaShareRepository } from "./repository.js";
 
 export class ShareService {
   constructor(private readonly shareRepository: IShareRepository = new PrismaShareRepository()) {}
@@ -42,14 +42,17 @@ export class ShareService {
         share.folders && share.folders.length > 0
           ? await Promise.all(
               share.folders.map(async (folder: any) => {
-                const totalSize = await this.folderService.calculateFolderSize(folder.id, folder.userId);
+                const totalSize = await this.folderService.calculateFolderSize(
+                  folder.id,
+                  folder.userId,
+                );
                 return {
                   ...folder,
                   totalSize: totalSize.toString(),
                   createdAt: folder.createdAt.toISOString(),
                   updatedAt: folder.updatedAt.toISOString(),
                 };
-              })
+              }),
             )
           : [],
       recipients:
@@ -84,7 +87,9 @@ export class ShareService {
           userId: userId,
         },
       });
-      const notFoundFolders = folders.filter((id) => !existingFolders.some((folder) => folder.id === id));
+      const notFoundFolders = folders.filter(
+        (id) => !existingFolders.some((folder) => folder.id === id),
+      );
       if (notFoundFolders.length > 0) {
         throw new Error(`Folders not found or access denied: ${notFoundFolders.join(", ")}`);
       }
@@ -171,7 +176,7 @@ export class ShareService {
     if (recipients) {
       await this.shareRepository.removeRecipients(
         shareId,
-        share.recipients.map((r) => r.email)
+        share.recipients.map((r) => r.email),
       );
       if (recipients.length > 0) {
         await this.shareRepository.addRecipients(shareId, recipients);
@@ -269,7 +274,9 @@ export class ShareService {
 
     if (folderIds.length > 0) {
       const existingFolders = await this.shareRepository.findFoldersByIds(folderIds);
-      const notFoundFolders = folderIds.filter((id) => !existingFolders.some((folder) => folder.id === id));
+      const notFoundFolders = folderIds.filter(
+        (id) => !existingFolders.some((folder) => folder.id === id),
+      );
 
       if (notFoundFolders.length > 0) {
         throw new Error(`Folders not found: ${notFoundFolders.join(", ")}`);
@@ -282,7 +289,12 @@ export class ShareService {
     return ShareResponseSchema.parse(await this.formatShareResponse(updated));
   }
 
-  async removeItemsFromShare(shareId: string, userId: string, fileIds: string[], folderIds: string[]) {
+  async removeItemsFromShare(
+    shareId: string,
+    userId: string,
+    fileIds: string[],
+    folderIds: string[],
+  ) {
     const share = await this.shareRepository.findShareById(shareId);
     if (!share) {
       throw new Error("Share not found");
@@ -428,7 +440,12 @@ export class ShareService {
 
     for (const recipient of share.recipients) {
       try {
-        await this.emailService.sendShareNotification(recipient.email, shareLink, share.name || undefined, senderName);
+        await this.emailService.sendShareNotification(
+          recipient.email,
+          shareLink,
+          share.name || undefined,
+          senderName,
+        );
         notifiedRecipients.push(recipient.email);
       } catch (error) {
         console.error(`Failed to send email to ${recipient.email}:`, error);
@@ -451,7 +468,8 @@ export class ShareService {
     const isExpired = share.expiration ? new Date(share.expiration) < new Date() : false;
 
     // Check if max views reached
-    const isMaxViewsReached = share.security.maxViews !== null ? share.views >= share.security.maxViews : false;
+    const isMaxViewsReached =
+      share.security.maxViews !== null ? share.views >= share.security.maxViews : false;
 
     const totalFiles = share.files?.length || 0;
     const totalFolders = share.folders?.length || 0;

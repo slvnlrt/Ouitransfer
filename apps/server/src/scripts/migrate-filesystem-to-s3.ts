@@ -9,14 +9,13 @@
  * 5. Zero downtime, zero user intervention
  */
 
-import { createReadStream } from "fs";
-import * as fs from "fs/promises";
-import * as path from "path";
+import { createReadStream } from "node:fs";
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 
-import { directoriesConfig } from "../config/directories.config";
-import { bucketName, s3Client } from "../config/storage.config";
-import { prisma } from "../shared/prisma";
+import { directoriesConfig } from "../config/directories.config.js";
+import { bucketName, s3Client } from "../config/storage.config.js";
 
 interface MigrationStats {
   totalFiles: number;
@@ -115,8 +114,8 @@ export class FilesystemToS3Migrator {
             this.migrateFile(file).catch((error) => {
               console.error(`[MIGRATION] Failed to migrate ${file}:`, error);
               this.stats.failedFiles++;
-            })
-          )
+            }),
+          ),
         );
 
         // Save progress
@@ -129,7 +128,9 @@ export class FilesystemToS3Migrator {
 
         // Log progress
         const progress = Math.round(((i + batch.length) / files.length) * 100);
-        console.log(`[MIGRATION] Progress: ${progress}% (${this.stats.migratedFiles}/${files.length})`);
+        console.log(
+          `[MIGRATION] Progress: ${progress}% (${this.stats.migratedFiles}/${files.length})`,
+        );
       }
 
       this.stats.endTime = Date.now();
@@ -212,7 +213,7 @@ export class FilesystemToS3Migrator {
             new HeadObjectCommand({
               Bucket: bucketName,
               Key: objectName,
-            })
+            }),
           );
 
           // Already exists in S3, skip
@@ -236,7 +237,7 @@ export class FilesystemToS3Migrator {
             Bucket: bucketName,
             Key: objectName,
             Body: fileStream,
-          })
+          }),
         );
 
         this.stats.migratedFiles++;
@@ -264,7 +265,10 @@ export class FilesystemToS3Migrator {
    */
   private async saveState(): Promise<void> {
     try {
-      await fs.writeFile(MIGRATION_STATE_FILE, JSON.stringify({ ...this.stats, completed: false }, null, 2));
+      await fs.writeFile(
+        MIGRATION_STATE_FILE,
+        JSON.stringify({ ...this.stats, completed: false }, null, 2),
+      );
     } catch (error) {
       console.warn("[MIGRATION] Could not save state:", error);
     }
@@ -275,7 +279,10 @@ export class FilesystemToS3Migrator {
    */
   private async markMigrationComplete(): Promise<void> {
     try {
-      await fs.writeFile(MIGRATION_STATE_FILE, JSON.stringify({ ...this.stats, completed: true }, null, 2));
+      await fs.writeFile(
+        MIGRATION_STATE_FILE,
+        JSON.stringify({ ...this.stats, completed: true }, null, 2),
+      );
       console.log("[MIGRATION] Migration marked as complete");
     } catch (error) {
       console.warn("[MIGRATION] Could not mark migration complete:", error);

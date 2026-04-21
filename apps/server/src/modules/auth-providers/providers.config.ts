@@ -1,4 +1,4 @@
-import { ProviderConfig, ProvidersConfigFile } from "./types";
+import type { ProviderConfig, ProvidersConfigFile } from "./types.js";
 
 export const PROVIDER_PATTERNS = [
   { pattern: "frontegg.com", type: "frontegg" },
@@ -285,7 +285,15 @@ const genericProviderTemplate: ProviderConfig = {
   fieldMappings: {
     id: ["sub", "id", "user_id", "uid", "userid", "account_id"],
     email: ["email", "mail", "email_address", "preferred_email", "primary_email"],
-    name: ["name", "display_name", "full_name", "username", "login", "first_name last_name", "given_name family_name"],
+    name: [
+      "name",
+      "display_name",
+      "full_name",
+      "username",
+      "login",
+      "first_name last_name",
+      "given_name family_name",
+    ],
     firstName: ["given_name", "first_name", "firstname", "first", "name"],
     lastName: ["family_name", "last_name", "lastname", "last", "surname"],
     avatar: ["picture", "avatar", "avatar_url", "profile_picture", "photo", "image", "thumbnail"],
@@ -315,15 +323,15 @@ export const providersConfig: ProvidersConfigFile = {
  * Exportações individuais para facilitar importação
  */
 export {
-  discordConfig,
-  googleConfig,
-  githubConfig,
   auth0Config,
-  kindeConfig,
-  zitadelConfig,
   authentikConfig,
+  discordConfig,
   fronteggConfig,
   genericProviderTemplate,
+  githubConfig,
+  googleConfig,
+  kindeConfig,
+  zitadelConfig,
 };
 
 export function detectProviderType(issuerUrl: string): string {
@@ -349,7 +357,8 @@ export function getProviderScopes(provider: any): string[] {
 
   const detectedType = detectProviderType(provider.issuerUrl || "");
   return (
-    DEFAULT_SCOPES_BY_TYPE[detectedType] || DEFAULT_SCOPES_BY_TYPE[provider.type] || ["openid", "profile", "email"]
+    DEFAULT_SCOPES_BY_TYPE[detectedType] ||
+    DEFAULT_SCOPES_BY_TYPE[provider.type] || ["openid", "profile", "email"]
   );
 }
 

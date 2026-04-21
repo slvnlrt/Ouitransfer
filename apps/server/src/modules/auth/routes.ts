@@ -1,16 +1,23 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
-import { ConfigService } from "../config/service";
-import { validatePasswordMiddleware } from "../user/middleware";
-import { AuthController } from "./controller";
-import { CompleteTwoFactorLoginSchema, createResetPasswordSchema, RequestPasswordResetSchema } from "./dto";
+import { ConfigService } from "../config/service.js";
+import { validatePasswordMiddleware } from "../user/middleware.js";
+import { AuthController } from "./controller.js";
+import {
+  CompleteTwoFactorLoginSchema,
+  createResetPasswordSchema,
+  RequestPasswordResetSchema,
+} from "./dto.js";
 
 const configService = new ConfigService();
 
 const createPasswordSchema = async () => {
   const minLength = Number(await configService.getValue("passwordMinLength"));
-  return z.string().min(minLength, `Password must be at least ${minLength} characters`).describe("User password");
+  return z
+    .string()
+    .min(minLength, `Password must be at least ${minLength} characters`)
+    .describe("User password");
 };
 
 export async function authRoutes(app: FastifyInstance) {
@@ -18,7 +25,10 @@ export async function authRoutes(app: FastifyInstance) {
 
   const passwordSchema = await createPasswordSchema();
   const loginSchema = z.object({
-    emailOrUsername: z.string().min(1, "Email or username is required").describe("User email or username"),
+    emailOrUsername: z
+      .string()
+      .min(1, "Email or username is required")
+      .describe("User email or username"),
     password: passwordSchema,
   });
 
@@ -62,7 +72,7 @@ export async function authRoutes(app: FastifyInstance) {
         },
       },
     },
-    authController.login.bind(authController)
+    authController.login.bind(authController),
   );
 
   app.post(
@@ -98,7 +108,7 @@ export async function authRoutes(app: FastifyInstance) {
         },
       },
     },
-    authController.completeTwoFactorLogin.bind(authController)
+    authController.completeTwoFactorLogin.bind(authController),
   );
 
   app.post(
@@ -114,7 +124,7 @@ export async function authRoutes(app: FastifyInstance) {
         },
       },
     },
-    authController.logout.bind(authController)
+    authController.logout.bind(authController),
   );
 
   app.post(
@@ -140,7 +150,7 @@ export async function authRoutes(app: FastifyInstance) {
         },
       },
     },
-    authController.requestPasswordReset.bind(authController)
+    authController.requestPasswordReset.bind(authController),
   );
 
   app.post(
@@ -167,7 +177,7 @@ export async function authRoutes(app: FastifyInstance) {
         },
       },
     },
-    authController.resetPassword.bind(authController)
+    authController.resetPassword.bind(authController),
   );
 
   app.get(
@@ -177,7 +187,8 @@ export async function authRoutes(app: FastifyInstance) {
         tags: ["Authentication"],
         operationId: "getCurrentUser",
         summary: "Get Current User",
-        description: "Returns the current authenticated user's information or null if not authenticated",
+        description:
+          "Returns the current authenticated user's information or null if not authenticated",
         response: {
           200: z.union([
             z.object({
@@ -201,7 +212,7 @@ export async function authRoutes(app: FastifyInstance) {
         },
       },
     },
-    authController.getCurrentUser.bind(authController)
+    authController.getCurrentUser.bind(authController),
   );
 
   app.get(
@@ -223,7 +234,7 @@ export async function authRoutes(app: FastifyInstance) {
                 createdAt: z.date().describe("Creation date"),
                 lastUsedAt: z.date().describe("Last used date"),
                 expiresAt: z.date().describe("Expiration date"),
-              })
+              }),
             ),
           }),
           401: z.object({ error: z.string().describe("Error message") }),
@@ -234,11 +245,13 @@ export async function authRoutes(app: FastifyInstance) {
           await request.jwtVerify();
         } catch (err) {
           console.error(err);
-          reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+          reply
+            .status(401)
+            .send({ error: "Unauthorized: a valid token is required to access this resource." });
         }
       },
     },
-    authController.getTrustedDevices.bind(authController)
+    authController.getTrustedDevices.bind(authController),
   );
 
   app.delete(
@@ -265,11 +278,13 @@ export async function authRoutes(app: FastifyInstance) {
           await request.jwtVerify();
         } catch (err) {
           console.error(err);
-          reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+          reply
+            .status(401)
+            .send({ error: "Unauthorized: a valid token is required to access this resource." });
         }
       },
     },
-    authController.removeTrustedDevice.bind(authController)
+    authController.removeTrustedDevice.bind(authController),
   );
 
   app.delete(
@@ -294,11 +309,13 @@ export async function authRoutes(app: FastifyInstance) {
           await request.jwtVerify();
         } catch (err) {
           console.error(err);
-          reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+          reply
+            .status(401)
+            .send({ error: "Unauthorized: a valid token is required to access this resource." });
         }
       },
     },
-    authController.removeAllTrustedDevices.bind(authController)
+    authController.removeAllTrustedDevices.bind(authController),
   );
 
   app.get(
@@ -317,6 +334,6 @@ export async function authRoutes(app: FastifyInstance) {
         },
       },
     },
-    authController.getAuthConfig.bind(authController)
+    authController.getAuthConfig.bind(authController),
   );
 }

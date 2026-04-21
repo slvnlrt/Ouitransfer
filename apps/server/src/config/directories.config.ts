@@ -1,6 +1,6 @@
-import * as path from "path";
+import * as path from "node:path";
 
-import { IS_RUNNING_IN_CONTAINER } from "../utils/container-detection";
+import { IS_RUNNING_IN_CONTAINER } from "../utils/container-detection.js";
 
 /**
  * Directory Configuration for OUITRANSFER Server

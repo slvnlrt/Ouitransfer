@@ -1,13 +1,13 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
-import { InviteController } from "./controller";
+import { InviteController } from "./controller.js";
 import {
   CreateInviteTokenResponseSchema,
   RegisterWithInviteResponseSchema,
   RegisterWithInviteSchema,
   ValidateInviteTokenResponseSchema,
-} from "./dto";
+} from "./dto.js";
 
 export async function inviteRoutes(app: FastifyInstance) {
   const inviteController = new InviteController();
@@ -31,11 +31,13 @@ export async function inviteRoutes(app: FastifyInstance) {
           await request.jwtVerify();
         } catch (err) {
           console.error(err);
-          reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+          reply
+            .status(401)
+            .send({ error: "Unauthorized: a valid token is required to access this resource." });
         }
       },
     },
-    inviteController.generateInviteToken.bind(inviteController)
+    inviteController.generateInviteToken.bind(inviteController),
   );
 
   app.get(
@@ -55,7 +57,7 @@ export async function inviteRoutes(app: FastifyInstance) {
         },
       },
     },
-    inviteController.validateInviteToken.bind(inviteController)
+    inviteController.validateInviteToken.bind(inviteController),
   );
 
   app.post(
@@ -74,6 +76,6 @@ export async function inviteRoutes(app: FastifyInstance) {
         },
       },
     },
-    inviteController.registerWithInvite.bind(inviteController)
+    inviteController.registerWithInvite.bind(inviteController),
   );
 }

@@ -1,6 +1,6 @@
-import { S3StorageProvider } from "../../providers/s3-storage.provider";
-import { prisma } from "../../shared/prisma";
-import { StorageProvider } from "../../types/storage";
+import { S3StorageProvider } from "../../providers/s3-storage.provider.js";
+import { prisma } from "../../shared/prisma.js";
+import type { StorageProvider } from "../../types/storage.js";
 
 export class FolderService {
   private storageProvider: StorageProvider;
@@ -19,7 +19,11 @@ export class FolderService {
     }
   }
 
-  async getPresignedGetUrl(objectName: string, expires: number, folderName?: string): Promise<string> {
+  async getPresignedGetUrl(
+    objectName: string,
+    expires: number,
+    folderName?: string,
+  ): Promise<string> {
     try {
       return await this.storageProvider.getPresignedGetUrl(objectName, expires, folderName);
     } catch (err) {
@@ -37,7 +41,11 @@ export class FolderService {
     }
   }
 
-  async getAllFilesInFolder(folderId: string, userId: string, basePath: string = ""): Promise<any[]> {
+  async getAllFilesInFolder(
+    folderId: string,
+    userId: string,
+    basePath: string = "",
+  ): Promise<any[]> {
     const files = await prisma.file.findMany({
       where: { folderId, userId },
     });
@@ -53,7 +61,7 @@ export class FolderService {
     }));
 
     for (const subfolder of subfolders) {
-      const subfolderPath = basePath + subfolder.name + "/";
+      const subfolderPath = `${basePath + subfolder.name}/`;
       const subfolderFiles = await this.getAllFilesInFolder(subfolder.id, userId, subfolderPath);
       allFiles = [...allFiles, ...subfolderFiles];
     }

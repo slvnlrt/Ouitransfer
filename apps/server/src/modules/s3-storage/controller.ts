@@ -12,10 +12,9 @@
  */
 
 import path from "node:path";
-import { FastifyReply, FastifyRequest } from "fastify";
-
-import { prisma } from "../../shared/prisma";
-import { S3StorageProvider } from "../../providers/s3-storage.provider";
+import type { FastifyReply, FastifyRequest } from "fastify";
+import { S3StorageProvider } from "../../providers/s3-storage.provider.js";
+import { prisma } from "../../shared/prisma.js";
 
 export class S3StorageController {
   private storageProvider = new S3StorageProvider();
@@ -27,7 +26,7 @@ export class S3StorageController {
   async getUploadUrl(request: FastifyRequest, reply: FastifyReply) {
     try {
       const userId = (request as any).user?.userId;
-      
+
       if (!userId) {
         return reply.status(401).send({ error: "Unauthorized" });
       }
@@ -39,7 +38,7 @@ export class S3StorageController {
       }
 
       // Reject path traversal attempts
-      if (objectName.includes('..') || objectName.includes('\0')) {
+      if (objectName.includes("..") || objectName.includes("\0")) {
         return reply.status(400).send({ error: "Invalid object name" });
       }
       const normalized = path.posix.normalize(objectName);
@@ -66,7 +65,9 @@ export class S3StorageController {
         uploadUrl,
         objectName,
         expiresIn,
-        message: isInternalStorage ? "Upload via backend proxy" : "Upload directly to this URL using PUT request",
+        message: isInternalStorage
+          ? "Upload via backend proxy"
+          : "Upload directly to this URL using PUT request",
       });
     } catch (error) {
       console.error("[S3] Error generating upload URL:", error);
@@ -82,7 +83,7 @@ export class S3StorageController {
   async getDownloadUrl(request: FastifyRequest, reply: FastifyReply) {
     try {
       const userId = (request as any).user?.userId;
-      
+
       if (!userId) {
         return reply.status(401).send({ error: "Unauthorized" });
       }
@@ -98,7 +99,7 @@ export class S3StorageController {
       }
 
       // Reject path traversal attempts
-      if (objectName.includes('..') || objectName.includes('\0')) {
+      if (objectName.includes("..") || objectName.includes("\0")) {
         return reply.status(400).send({ error: "Invalid object name" });
       }
       const normalized = path.posix.normalize(objectName);
@@ -124,14 +125,20 @@ export class S3StorageController {
         downloadUrl = `/api/files/download?objectName=${encodeURIComponent(objectName)}`;
       } else {
         // External S3: Use presigned URLs directly (more efficient)
-        downloadUrl = await this.storageProvider.getPresignedGetUrl(objectName, expiresIn, fileName);
+        downloadUrl = await this.storageProvider.getPresignedGetUrl(
+          objectName,
+          expiresIn,
+          fileName,
+        );
       }
 
       return reply.status(200).send({
         downloadUrl,
         objectName,
         expiresIn,
-        message: isInternalStorage ? "Download via backend proxy" : "Download directly from this URL",
+        message: isInternalStorage
+          ? "Download via backend proxy"
+          : "Download directly from this URL",
       });
     } catch (error) {
       console.error("[S3] Error generating download URL:", error);
@@ -143,7 +150,7 @@ export class S3StorageController {
    * Upload directly (for small files)
    * Receives file and uploads to S3
    */
-  async upload(request: FastifyRequest, reply: FastifyReply) {
+  async upload(_request: FastifyRequest, reply: FastifyReply) {
     try {
       // For large files, clients should use presigned URLs
       // This is just for backward compatibility or small files
@@ -164,7 +171,7 @@ export class S3StorageController {
   async deleteObject(request: FastifyRequest, reply: FastifyReply) {
     try {
       const userId = (request as any).user?.userId;
-      
+
       if (!userId) {
         return reply.status(401).send({ error: "Unauthorized" });
       }
@@ -176,7 +183,7 @@ export class S3StorageController {
       }
 
       // Reject path traversal attempts
-      if (objectName.includes('..') || objectName.includes('\0')) {
+      if (objectName.includes("..") || objectName.includes("\0")) {
         return reply.status(400).send({ error: "Invalid object name" });
       }
       const normalized = path.posix.normalize(objectName);
@@ -208,7 +215,7 @@ export class S3StorageController {
   async checkExists(request: FastifyRequest, reply: FastifyReply) {
     try {
       const userId = (request as any).user?.userId;
-      
+
       if (!userId) {
         return reply.status(401).send({ error: "Unauthorized" });
       }
@@ -220,7 +227,7 @@ export class S3StorageController {
       }
 
       // Reject path traversal attempts
-      if (objectName.includes('..') || objectName.includes('\0')) {
+      if (objectName.includes("..") || objectName.includes("\0")) {
         return reply.status(400).send({ error: "Invalid object name" });
       }
       const normalized = path.posix.normalize(objectName);

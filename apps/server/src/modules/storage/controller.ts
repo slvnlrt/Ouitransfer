@@ -1,6 +1,6 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { StorageService } from "./service";
+import { StorageService } from "./service.js";
 
 export class StorageController {
   private storageService = new StorageService();
@@ -14,7 +14,7 @@ export class StorageController {
         await request.jwtVerify();
         userId = (request as any).user?.userId;
         isAdmin = (request as any).user?.isAdmin || false;
-      } catch (err) {
+      } catch (_err) {
         return reply.status(401).send({
           error: "Unauthorized: a valid token is required to access this resource.",
         });
@@ -48,7 +48,7 @@ export class StorageController {
       try {
         await request.jwtVerify();
         userId = (request as any).user?.userId;
-      } catch (err) {
+      } catch (_err) {
         return reply.status(401).send({
           error: "Unauthorized: a valid token is required to access this resource.",
         });

@@ -1,11 +1,10 @@
-import * as fs from "fs";
+import * as fs from "node:fs";
 import * as https from "node:https";
-import process from "node:process";
 import { S3Client } from "@aws-sdk/client-s3";
 import { NodeHttpHandler } from "@smithy/node-http-handler";
 
-import { env } from "../env";
-import { StorageConfig } from "../types/storage";
+import { env } from "../env.js";
+import type { StorageConfig } from "../types/storage.js";
 
 /**
  * Load internal storage credentials if they exist
@@ -127,7 +126,7 @@ export function createPublicS3Client(): S3Client | null {
     if (!env.STORAGE_URL) {
       throw new Error(
         "[STORAGE] STORAGE_URL environment variable is required when using internal storage (ENABLE_S3=false). " +
-          "Set STORAGE_URL to your public storage URL with protocol (e.g., https://syrg.OUITRANSFER.com or http://192.168.1.100:9379)"
+          "Set STORAGE_URL to your public storage URL with protocol (e.g., https://syrg.OUITRANSFER.com or http://192.168.1.100:9379)",
       );
     }
     publicEndpoint = env.STORAGE_URL;

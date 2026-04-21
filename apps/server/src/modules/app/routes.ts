@@ -1,9 +1,9 @@
-import { FastifyInstance } from "fastify";
+import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 
-import { prisma } from "../../shared/prisma";
-import { AppController } from "./controller";
-import { BulkUpdateConfigSchema, ConfigResponseSchema } from "./dto";
+import { prisma } from "../../shared/prisma.js";
+import { AppController } from "./controller.js";
+import { BulkUpdateConfigSchema, ConfigResponseSchema } from "./dto.js";
 
 export async function appRoutes(app: FastifyInstance) {
   const appController = new AppController();
@@ -50,7 +50,7 @@ export async function appRoutes(app: FastifyInstance) {
         },
       },
     },
-    appController.getAppInfo.bind(appController)
+    appController.getAppInfo.bind(appController),
   );
 
   app.get(
@@ -70,7 +70,7 @@ export async function appRoutes(app: FastifyInstance) {
         },
       },
     },
-    appController.getSystemInfo.bind(appController)
+    appController.getSystemInfo.bind(appController),
   );
 
   app.patch(
@@ -99,7 +99,7 @@ export async function appRoutes(app: FastifyInstance) {
         },
       },
     },
-    appController.updateConfig.bind(appController)
+    appController.updateConfig.bind(appController),
   );
 
   app.get(
@@ -118,7 +118,7 @@ export async function appRoutes(app: FastifyInstance) {
         },
       },
     },
-    appController.getPublicConfigs.bind(appController)
+    appController.getPublicConfigs.bind(appController),
   );
 
   app.get(
@@ -140,7 +140,7 @@ export async function appRoutes(app: FastifyInstance) {
         },
       },
     },
-    appController.getAllConfigs.bind(appController)
+    appController.getAllConfigs.bind(appController),
   );
 
   app.patch(
@@ -163,7 +163,7 @@ export async function appRoutes(app: FastifyInstance) {
         },
       },
     },
-    appController.bulkUpdateConfigs.bind(appController)
+    appController.bulkUpdateConfigs.bind(appController),
   );
 
   app.post(
@@ -181,28 +181,41 @@ export async function appRoutes(app: FastifyInstance) {
             smtpConfig: z
               .object({
                 smtpEnabled: z.string().describe("Whether SMTP is enabled ('true' or 'false')"),
-                smtpHost: z.string().describe("SMTP server hostname or IP address (e.g., 'smtp.gmail.com')"),
+                smtpHost: z
+                  .string()
+                  .describe("SMTP server hostname or IP address (e.g., 'smtp.gmail.com')"),
                 smtpPort: z
                   .union([z.string(), z.number()])
                   .transform(String)
                   .describe("SMTP server port (typically 587 for TLS, 25 for non-secure)"),
-                smtpUser: z.string().describe("Username for SMTP authentication (e.g., email address)"),
-                smtpPass: z.string().describe("Password for SMTP authentication (for Gmail, use App Password)"),
+                smtpUser: z
+                  .string()
+                  .describe("Username for SMTP authentication (e.g., email address)"),
+                smtpPass: z
+                  .string()
+                  .describe("Password for SMTP authentication (for Gmail, use App Password)"),
                 smtpSecure: z
                   .string()
                   .optional()
                   .describe("Connection security method ('auto', 'ssl', 'tls', or 'none')"),
-                smtpNoAuth: z.string().optional().describe("Disable SMTP authentication ('true' or 'false')"),
+                smtpNoAuth: z
+                  .string()
+                  .optional()
+                  .describe("Disable SMTP authentication ('true' or 'false')"),
                 smtpTrustSelfSigned: z
                   .string()
                   .optional()
                   .describe("Trust self-signed certificates ('true' or 'false')"),
               })
               .optional()
-              .describe("SMTP configuration to test. If not provided, uses currently saved configuration"),
+              .describe(
+                "SMTP configuration to test. If not provided, uses currently saved configuration",
+              ),
           })
           .optional()
-          .describe("Request body containing SMTP configuration to test. Send empty body to test saved configuration"),
+          .describe(
+            "Request body containing SMTP configuration to test. Send empty body to test saved configuration",
+          ),
         response: {
           200: z.object({
             success: z.boolean().describe("Whether the SMTP connection test was successful"),
@@ -220,7 +233,7 @@ export async function appRoutes(app: FastifyInstance) {
         },
       },
     },
-    appController.testSmtpConnection.bind(appController)
+    appController.testSmtpConnection.bind(appController),
   );
 
   app.post(
@@ -242,7 +255,7 @@ export async function appRoutes(app: FastifyInstance) {
         },
       },
     },
-    appController.uploadLogo.bind(appController)
+    appController.uploadLogo.bind(appController),
   );
 
   app.delete(
@@ -264,6 +277,6 @@ export async function appRoutes(app: FastifyInstance) {
         },
       },
     },
-    appController.removeLogo.bind(appController)
+    appController.removeLogo.bind(appController),
   );
 }

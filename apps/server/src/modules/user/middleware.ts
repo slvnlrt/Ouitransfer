@@ -1,6 +1,6 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { ConfigService } from "../config/service";
+import { ConfigService } from "../config/service.js";
 
 const configService = new ConfigService();
 

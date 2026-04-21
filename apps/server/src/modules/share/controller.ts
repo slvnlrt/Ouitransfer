@@ -1,4 +1,4 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
 import {
   CreateShareSchema,
@@ -6,8 +6,8 @@ import {
   UpdateSharePasswordSchema,
   UpdateShareRecipientsSchema,
   UpdateShareSchema,
-} from "./dto";
-import { ShareService } from "./service";
+} from "./dto.js";
+import { ShareService } from "./service.js";
 
 export class ShareController {
   private shareService = new ShareService();
@@ -17,7 +17,9 @@ export class ShareController {
       await request.jwtVerify();
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const input = CreateShareSchema.parse(request.body);
@@ -37,7 +39,9 @@ export class ShareController {
       await request.jwtVerify();
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const shares = await this.shareService.listUserShares(userId);
@@ -97,7 +101,9 @@ export class ShareController {
       await request.jwtVerify();
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const { shareId } = request.params as { shareId: string };
@@ -121,13 +127,20 @@ export class ShareController {
       await request.jwtVerify();
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const { shareId } = request.params as { shareId: string };
       const { files, folders } = UpdateShareItemsSchema.parse(request.body);
 
-      const share = await this.shareService.addItemsToShare(shareId, userId, files || [], folders || []);
+      const share = await this.shareService.addItemsToShare(
+        shareId,
+        userId,
+        files || [],
+        folders || [],
+      );
       return reply.send({ share });
     } catch (error: any) {
       if (error.message === "Share not found") {
@@ -136,7 +149,10 @@ export class ShareController {
       if (error.message === "Unauthorized to update this share") {
         return reply.status(401).send({ error: error.message });
       }
-      if (error.message.startsWith("Files not found:") || error.message.startsWith("Folders not found:")) {
+      if (
+        error.message.startsWith("Files not found:") ||
+        error.message.startsWith("Folders not found:")
+      ) {
         return reply.status(404).send({ error: error.message });
       }
       return reply.status(400).send({ error: error.message });
@@ -148,13 +164,20 @@ export class ShareController {
       await request.jwtVerify();
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const { shareId } = request.params as { shareId: string };
       const { files, folders } = UpdateShareItemsSchema.parse(request.body);
 
-      const share = await this.shareService.removeItemsFromShare(shareId, userId, files || [], folders || []);
+      const share = await this.shareService.removeItemsFromShare(
+        shareId,
+        userId,
+        files || [],
+        folders || [],
+      );
       return reply.send({ share });
     } catch (error: any) {
       if (error.message === "Share not found") {
@@ -171,7 +194,9 @@ export class ShareController {
     try {
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const { id } = request.params as { id: string };
@@ -197,7 +222,9 @@ export class ShareController {
       await request.jwtVerify();
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const { shareId } = request.params as { shareId: string };
@@ -221,7 +248,9 @@ export class ShareController {
       await request.jwtVerify();
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const { shareId } = request.params as { shareId: string };
@@ -273,7 +302,9 @@ export class ShareController {
       await request.jwtVerify();
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const { shareId } = request.params as { shareId: string };

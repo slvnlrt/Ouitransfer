@@ -1,7 +1,7 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
-import { TwoFactorController } from "./controller";
+import { TwoFactorController } from "./controller.js";
 
 export async function twoFactorRoutes(app: FastifyInstance) {
   const twoFactorController = new TwoFactorController();
@@ -11,7 +11,9 @@ export async function twoFactorRoutes(app: FastifyInstance) {
       await request.jwtVerify();
     } catch (err) {
       console.error(err);
-      reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+      reply
+        .status(401)
+        .send({ error: "Unauthorized: a valid token is required to access this resource." });
     }
   };
 
@@ -37,7 +39,7 @@ export async function twoFactorRoutes(app: FastifyInstance) {
                 z.object({
                   code: z.string().describe("Backup code"),
                   used: z.boolean().describe("Whether backup code is used"),
-                })
+                }),
               )
               .describe("Backup codes"),
           }),
@@ -46,7 +48,7 @@ export async function twoFactorRoutes(app: FastifyInstance) {
         },
       },
     },
-    twoFactorController.generateSetup.bind(twoFactorController)
+    twoFactorController.generateSetup.bind(twoFactorController),
   );
 
   app.post(
@@ -72,7 +74,7 @@ export async function twoFactorRoutes(app: FastifyInstance) {
         },
       },
     },
-    twoFactorController.verifySetup.bind(twoFactorController)
+    twoFactorController.verifySetup.bind(twoFactorController),
   );
 
   app.post(
@@ -103,7 +105,7 @@ export async function twoFactorRoutes(app: FastifyInstance) {
         },
       },
     },
-    twoFactorController.verifyToken.bind(twoFactorController)
+    twoFactorController.verifyToken.bind(twoFactorController),
   );
 
   app.post(
@@ -127,7 +129,7 @@ export async function twoFactorRoutes(app: FastifyInstance) {
         },
       },
     },
-    twoFactorController.disable2FA.bind(twoFactorController)
+    twoFactorController.disable2FA.bind(twoFactorController),
   );
 
   app.post(
@@ -148,7 +150,7 @@ export async function twoFactorRoutes(app: FastifyInstance) {
         },
       },
     },
-    twoFactorController.generateBackupCodes.bind(twoFactorController)
+    twoFactorController.generateBackupCodes.bind(twoFactorController),
   );
 
   app.get(
@@ -171,6 +173,6 @@ export async function twoFactorRoutes(app: FastifyInstance) {
         },
       },
     },
-    twoFactorController.getStatus.bind(twoFactorController)
+    twoFactorController.getStatus.bind(twoFactorController),
   );
 }

@@ -1,26 +1,24 @@
-import { FastifyReply, FastifyRequest } from "fastify";
-
-import { env } from "../../env";
-import { prisma } from "../../shared/prisma";
-import { ConfigService } from "../config/service";
+import type { FastifyReply, FastifyRequest } from "fastify";
+import { prisma } from "../../shared/prisma.js";
 import {
   CheckFolderSchema,
   ListFoldersSchema,
   MoveFolderSchema,
   RegisterFolderSchema,
   UpdateFolderSchema,
-} from "./dto";
-import { FolderService } from "./service";
+} from "./dto.js";
+import { FolderService } from "./service.js";
 
 export class FolderController {
   private folderService = new FolderService();
-  private configService = new ConfigService();
 
   async registerFolder(request: FastifyRequest, reply: FastifyReply) {
     try {
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const input = RegisterFolderSchema.parse(request.body);
@@ -131,12 +129,14 @@ export class FolderController {
       await request.jwtVerify();
       const userId = (request as any).user?.userId;
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const input = ListFoldersSchema.parse(request.query);
       const { parentId, recursive: recursiveStr } = input;
-      const recursive = recursiveStr === "false" ? false : true;
+      const recursive = recursiveStr !== "false";
 
       let folders: any[];
 
@@ -155,7 +155,8 @@ export class FolderController {
         });
       } else {
         // Get only direct children of specified parent
-        const targetParentId = parentId === "null" || parentId === "" || !parentId ? null : parentId;
+        const targetParentId =
+          parentId === "null" || parentId === "" || !parentId ? null : parentId;
         folders = await prisma.folder.findMany({
           where: {
             userId,
@@ -188,7 +189,7 @@ export class FolderController {
             totalSize: totalSize.toString(),
             _count: folder._count,
           };
-        })
+        }),
       );
 
       return reply.send({ folders: foldersResponse });
@@ -225,7 +226,12 @@ export class FolderController {
       // If renaming the folder, check for duplicates and auto-rename if necessary
       if (updateData.name && updateData.name !== folderRecord.name) {
         const { generateUniqueFolderName } = await import("../../utils/file-name-generator.js");
-        const uniqueName = await generateUniqueFolderName(updateData.name, userId, folderRecord.parentId, id);
+        const uniqueName = await generateUniqueFolderName(
+          updateData.name,
+          userId,
+          folderRecord.parentId,
+          id,
+        );
         updateData.name = uniqueName;
       }
 
@@ -273,7 +279,9 @@ export class FolderController {
       const userId = (request as any).user?.userId;
 
       if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized: a valid token is required to access this resource." });
+        return reply
+          .status(401)
+          .send({ error: "Unauthorized: a valid token is required to access this resource." });
       }
 
       const { id } = request.params as { id: string };
@@ -302,7 +310,9 @@ export class FolderController {
         }
 
         if (await this.isDescendantOf(validatedInput.parentId, id, userId)) {
-          return reply.status(400).send({ error: "Cannot move a folder into itself or its subfolders" });
+          return reply
+            .status(400)
+            .send({ error: "Cannot move a folder into itself or its subfolders" });
         }
       }
 
@@ -374,7 +384,11 @@ export class FolderController {
     }
   }
 
-  private async isDescendantOf(potentialDescendantId: string, ancestorId: string, userId: string): Promise<boolean> {
+  private async isDescendantOf(
+    potentialDescendantId: string,
+    ancestorId: string,
+    userId: string,
+  ): Promise<boolean> {
     let currentId: string | null = potentialDescendantId;
 
     while (currentId) {

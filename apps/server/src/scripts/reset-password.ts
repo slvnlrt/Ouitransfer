@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import * as readline from "readline";
+import * as readline from "node:readline";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
@@ -31,7 +31,9 @@ async function resetUserPassword() {
   try {
     console.log("\n🔐 OUITRANSFER Password Reset Tool");
     console.log("===============================");
-    console.log("This script allows you to reset a user's password directly from the Docker terminal.");
+    console.log(
+      "This script allows you to reset a user's password directly from the Docker terminal.",
+    );
     console.log("⚠️  WARNING: This bypasses normal security checks. Use only when necessary!\n");
 
     let email: string;
@@ -137,7 +139,9 @@ async function resetUserPassword() {
     console.log("\n✅ Password reset successful!");
     console.log(`   User: ${user.firstName} ${user.lastName} (${user.email})`);
     console.log("   The user can now login with the new password.");
-    console.log("\n🔐 Security Note: The password has been encrypted using bcrypt with salt rounds of 10.");
+    console.log(
+      "\n🔐 Security Note: The password has been encrypted using bcrypt with salt rounds of 10.",
+    );
   } catch (error) {
     console.error("\n❌ Error resetting password:", error);
     process.exit(1);
@@ -199,7 +203,9 @@ async function main() {
     console.log("\nExamples:");
     console.log("  ./reset-password.sh");
     console.log("  ./reset-password.sh --list");
-    console.log("\nNote: This script must be run inside the Docker container with database access.");
+    console.log(
+      "\nNote: This script must be run inside the Docker container with database access.",
+    );
     console.log("⚠️  For security, all password resets require interactive confirmation.");
     return;
   }
@@ -224,6 +230,4 @@ process.on("SIGTERM", async () => {
   process.exit(0);
 });
 
-if (require.main === module) {
-  main().catch(console.error);
-}
+main().catch(console.error);

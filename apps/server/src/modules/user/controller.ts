@@ -1,8 +1,8 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { AvatarService } from "./avatar.service";
-import { createRegisterUserSchema, UpdateUserSchema } from "./dto";
-import { UserService } from "./service";
+import { AvatarService } from "./avatar.service.js";
+import { createRegisterUserSchema, UpdateUserSchema } from "./dto.js";
+import { UserService } from "./service.js";
 
 export class UserController {
   private userService = new UserService();
@@ -19,7 +19,7 @@ export class UserController {
     }
   }
 
-  async listUsers(request: FastifyRequest, reply: FastifyReply) {
+  async listUsers(_request: FastifyRequest, reply: FastifyReply) {
     try {
       const users = await this.userService.listUsers();
       return reply.send(users);
