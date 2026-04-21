@@ -532,6 +532,16 @@ Proxy Layer Rationalization (8h)
 
 &#x20; Justification: Audit 01/03/06 — 101 boilerplate proxy files, massive maintenance burden
 
+Docker Architecture (2h)
+
+\- \[ ] 2.8 — Evaluate replacing supervisord with docker compose multi-container  
+
+&#x20; Files: infra/supervisord.conf, Dockerfile, docker-compose.yaml  
+
+&#x20; Action: The current Docker image runs 4 processes (minio, minio-setup, server, web) via supervisord in a single container. Evaluate splitting into separate containers orchestrated by docker compose (one per service). If splitting, delete infra/supervisord.conf and simplify the Dockerfile to single-process. No backward compatibility needed — no production users  
+
+&#x20; Justification: Audit 04/01 — multi-process container is an anti-pattern, complicates scaling and debugging
+
 Dependency Deduplication (4h)
 
 \- \[ ] 2.6 — Hoist shared dependencies to workspace root  
@@ -1102,15 +1112,15 @@ Binary Verification (2h)
 
 &#x20; Justification: Audit 04 — no integrity verification on downloaded binaries, mc version not pinned
 
-Build Script (2h)
+Build Script (1h)
 
-\- \[ ] 6.10 — Make Docker build script non-interactive and CI-friendly  
+\- \[ ] 6.10 — Delete infra/build-docker.sh (superseded by CI)  
 
 &#x20; File: infra/build-docker.sh  
 
-&#x20; Action: Remove read -p interactive prompt. Accept version as argument. Add --local flag (default) vs --push flag. Support --platform override. Make it callable from CI without human interaction  
+&#x20; Action: Delete the interactive build script entirely. Docker builds are now handled by .github/workflows/docker.yml (triggered on v* tags). No production users, no legacy to maintain. For local builds, use `docker compose build` or `just build`  
 
-&#x20; Justification: Audit 04 — interactive script with forced --push, unusable in CI
+&#x20; Justification: Audit 04 — interactive script with forced --push, now fully replaced by GitHub Actions CI
 
 Monitoring (4h)
 
