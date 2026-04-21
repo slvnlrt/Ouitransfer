@@ -32,7 +32,8 @@ D:\Code\Ouitransfer\
 A comprehensive 8-dimension audit was completed. Score: 4.3/10. See `audit/` directory for full reports.
 
 ### Phase 0 — Security Emergency: COMPLETE
-All 16 critical security items have been remediated. See `audit/DONE.md` for details.
+All 16 critical security items have been remediated, plus 14 reviewer follow-up items.
+Frontend migrated to new POST endpoints. See `audit/DONE.md` for full details.
 
 ### Remediation Workflow
 Each phase follows this process:
@@ -58,7 +59,6 @@ audit/
 ```
 
 ### Next Up
-- `audit/TODO-POST-PHASE-0.md` — 17 reviewer follow-ups (security hardening, rate-limit, config, frontend migration)
 - Phase 1 of CONSOLIDATED-TODO-LIST — Foundations (monorepo, shared packages, CI/CD)
 
 ## Rules for Agents
