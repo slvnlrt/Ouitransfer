@@ -708,6 +708,22 @@ Miscellaneous Quality (2h)
 
 &#x20; Justification: Audit 02 — no migration history, only schema push, no rollback capability
 
+\- \[ ] 3.13 — Replace trivial smoke tests with real integration tests  
+
+&#x20; Files: apps/server/src/__tests__/health.test.ts, apps/web/src/__tests__/smoke.test.tsx  
+
+&#x20; Action: Server: use Fastify inject() to boot the app and test /health endpoint. Web: render a component with next-intl provider and assert i18n works. Replace current tests that only verify imports  
+
+&#x20; Justification: Post-Phase 1 review S5 — current smoke tests only verify that modules are importable, not that the app works
+
+\- \[ ] 3.14 — Review and fix Knip configuration for docs MDX  
+
+&#x20; File: knip.json  
+
+&#x20; Action: Evaluate if Knip can reliably parse MDX imports in apps/docs. If not, add docs-specific ignoreDependencies for packages only consumed via MDX content files. Run knip and verify false positive rate is acceptable  
+
+&#x20; Justification: Post-Phase 1 review S6 — MDX entry points removed from knip.json due to unreliable parsing
+
 \---
 
 Phase 4: Frontend Modernization ⚡

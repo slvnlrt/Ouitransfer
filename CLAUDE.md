@@ -2,7 +2,7 @@
 
 ## Project Overview
 Ouitransfer is a self-hosted file transfer solution (WeTransfer alternative).
-- **Monorepo** (currently fake — no `pnpm-workspace.yaml` yet): `apps/server`, `apps/web`, `apps/docs`
+- **Monorepo**: `apps/server`, `apps/web`, `apps/docs` (pnpm workspace + Turborepo)
 - **Server**: Fastify 5 + Prisma (SQLite) + S3-compatible storage (MinIO or external)
 - **Web**: Next.js 15 (App Router) + React 19 + Tailwind CSS 4 + shadcn/ui
 - **Docs**: Fumadocs (Next.js)
@@ -35,6 +35,11 @@ A comprehensive 8-dimension audit was completed. Score: 4.3/10. See `audit/` dir
 All 16 critical security items have been remediated, plus 14 reviewer follow-up items.
 Frontend migrated to new POST endpoints. See `audit/DONE.md` for full details.
 
+### Phase 1 — Tooling & DX Foundation: COMPLETE
+pnpm workspace, Turborepo, Biome (replaces ESLint+Prettier), Vitest, Playwright, Lefthook,
+commitlint, GitHub Actions CI/CD, Knip, Renovate, Changesets. Dockerfile reworked for workspace.
+Phase 7 security deps also done: speakeasy→otpauth, crypto-js and react-qr-reader removed.
+
 ### Remediation Workflow
 Each phase follows this process:
 1. Execute items from `audit/CONSOLIDATED-TODO-LIST.md`
@@ -53,13 +58,14 @@ audit/
   06-quality.md
   07-dependencies.md
   08-synthesis.md
-  CONSOLIDATED-TODO-LIST.md   Master roadmap (117 items, 4 phases)
+  CONSOLIDATED-TODO-LIST.md   Master roadmap (~120 items, 9 phases)
   DONE.md                     Completed items log
   TODO-POST-PHASE-0.md        Reviewer follow-ups from Phase 0
+  TODO-POST-PHASE-1.md        Reviewer follow-ups from Phase 1 (all resolved)
 ```
 
 ### Next Up
-- Phase 1 of CONSOLIDATED-TODO-LIST — Foundations (monorepo, shared packages, CI/CD)
+- Phase 2 of CONSOLIDATED-TODO-LIST — Architecture Restructuring (shared packages, config consolidation, proxy rationalization)
 
 ## Rules for Agents
 1. **Never break existing functionality** — the app must remain functional after each change
