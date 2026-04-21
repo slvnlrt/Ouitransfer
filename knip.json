@@ -1,0 +1,27 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "workspaces": {
+    "apps/server": {
+      "entry": ["src/server.ts"],
+      "project": ["src/**/*.ts"],
+      "ignoreDependencies": ["tsx", "ts-node"]
+    },
+    "apps/web": {
+      "entry": ["src/app/**/{layout,page,loading,error,not-found}.{ts,tsx}", "src/middleware.ts"],
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignoreDependencies": ["sharp"]
+    },
+    "apps/docs": {
+      "entry": ["src/app/**/{layout,page}.{ts,tsx}", "source.config.ts", "content/**/*.{md,mdx}"],
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignoreDependencies": ["fumadocs-mdx"]
+    }
+  },
+  "ignore": ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}", "e2e/**"],
+  "ignoreDependencies": [
+    "@biomejs/biome",
+    "lefthook",
+    "@commitlint/cli",
+    "@commitlint/config-conventional"
+  ]
+}

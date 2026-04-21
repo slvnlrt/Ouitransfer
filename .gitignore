@@ -40,3 +40,10 @@ data/
 node_modules/
 screenshots/
 *.tsbuildinfo
+
+# Turbo
+.turbo
+
+# Playwright
+playwright-report/
+test-results/

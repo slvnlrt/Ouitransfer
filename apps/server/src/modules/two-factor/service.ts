@@ -1,10 +1,9 @@
 import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
+import * as OTPAuth from "otpauth";
 import QRCode from "qrcode";
-import speakeasy from "speakeasy";
 
 import { prisma } from "../../shared/prisma";
-import { ConfigService } from "../config/service";
 
 interface BackupCode {
   code: string;
@@ -12,8 +11,6 @@ interface BackupCode {
 }
 
 export class TwoFactorService {
-  private configService = new ConfigService();
-
   /**
    * Generate a new 2FA secret and QR code for setup
    */
@@ -31,13 +28,17 @@ export class TwoFactorService {
       throw new Error("Two-factor authentication is already enabled");
     }
 
-    const secret = speakeasy.generateSecret({
-      name: `${appName || "OUITRANSFER"}:${userEmail}`,
+    const secret = new OTPAuth.Secret({ size: 20 });
+    const totp = new OTPAuth.TOTP({
       issuer: appName || "OUITRANSFER",
-      length: 32,
+      label: userEmail,
+      algorithm: "SHA1",
+      digits: 6,
+      period: 30,
+      secret: secret,
     });
 
-    const qrCodeUrl = await QRCode.toDataURL(secret.otpauth_url || "");
+    const qrCodeUrl = await QRCode.toDataURL(totp.toString());
 
     return {
       secret: secret.base32,
@@ -64,12 +65,13 @@ export class TwoFactorService {
       throw new Error("Two-factor authentication is already enabled");
     }
 
-    const verified = speakeasy.totp.verify({
-      secret: secret,
-      encoding: "base32",
-      token: token,
-      window: 1,
+    const setupTotp = new OTPAuth.TOTP({
+      algorithm: "SHA1",
+      digits: 6,
+      period: 30,
+      secret: OTPAuth.Secret.fromBase32(secret),
     });
+    const verified = setupTotp.validate({ token: token, window: 1 }) !== null;
 
     if (!verified) {
       throw new Error("Invalid verification code");
@@ -115,12 +117,13 @@ export class TwoFactorService {
       throw new Error("Two-factor authentication is not enabled");
     }
 
-    const verified = speakeasy.totp.verify({
-      secret: user.twoFactorSecret,
-      encoding: "base32",
-      token: token,
-      window: 1,
+    const loginTotp = new OTPAuth.TOTP({
+      algorithm: "SHA1",
+      digits: 6,
+      period: 30,
+      secret: OTPAuth.Secret.fromBase32(user.twoFactorSecret),
     });
+    const verified = loginTotp.validate({ token: token, window: 1 }) !== null;
 
     if (verified) {
       return { success: true, method: "totp" };
