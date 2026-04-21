@@ -30,8 +30,10 @@ WORKDIR /app
 # Copy workspace config and root lockfile
 COPY pnpm-workspace.yaml .npmrc package.json pnpm-lock.yaml ./
 
-# Copy server package.json (pnpm needs workspace member manifests for filtering)
+# Copy workspace member manifests (pnpm needs them for filtering)
 COPY apps/server/package.json apps/server/
+COPY packages/shared/package.json packages/shared/
+COPY packages/config/package.json packages/config/
 
 # Install only server dependencies using workspace filtering
 RUN pnpm install --frozen-lockfile --filter ouitransfer-api
@@ -43,16 +45,19 @@ WORKDIR /app
 COPY --from=server-deps /app/node_modules ./node_modules
 COPY --from=server-deps /app/apps/server/node_modules ./apps/server/node_modules
 
+# Copy shared packages (tsconfig extends + runtime imports)
+COPY packages/ ./packages/
+
 # Copy server source code
 COPY apps/server/ ./apps/server/
 
 WORKDIR /app/apps/server
 
 # Generate Prisma client
-RUN npx prisma generate
+RUN pnpm exec prisma generate
 
 # Build server
-RUN pnpm build
+RUN pnpm run build
 
 # === WEB BUILD STAGE ===
 FROM base AS web-deps
@@ -61,8 +66,10 @@ WORKDIR /app
 # Copy workspace config and root lockfile
 COPY pnpm-workspace.yaml .npmrc package.json pnpm-lock.yaml ./
 
-# Copy web package.json
+# Copy workspace member manifests (pnpm needs them for filtering)
 COPY apps/web/package.json apps/web/
+COPY packages/shared/package.json packages/shared/
+COPY packages/config/package.json packages/config/
 
 # Install only web dependencies
 RUN pnpm install --frozen-lockfile --filter ouitransfer-web
@@ -73,6 +80,9 @@ WORKDIR /app
 # Copy installed dependencies from deps stage
 COPY --from=web-deps /app/node_modules ./node_modules
 COPY --from=web-deps /app/apps/web/node_modules ./apps/web/node_modules
+
+# Copy shared packages (tsconfig extends + runtime imports)
+COPY packages/ ./packages/
 
 # Copy web source code
 COPY apps/web/ ./apps/web/
@@ -114,6 +124,9 @@ COPY --from=server-builder --chown=OUITRANSFER:nodejs /app/apps/server/dist ./di
 COPY --from=server-builder --chown=OUITRANSFER:nodejs /app/apps/server/node_modules ./node_modules
 COPY --from=server-builder --chown=OUITRANSFER:nodejs /app/apps/server/prisma ./prisma
 COPY --from=server-builder --chown=OUITRANSFER:nodejs /app/apps/server/package.json ./
+
+# Copy shared packages (pnpm symlinks point to ../../packages/shared)
+COPY --from=server-builder --chown=OUITRANSFER:nodejs /app/packages ./../../packages
 
 # Copy password reset script and make it executable
 COPY --from=server-builder --chown=OUITRANSFER:nodejs /app/apps/server/reset-password.sh ./
