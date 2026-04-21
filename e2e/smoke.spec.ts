@@ -7,7 +7,7 @@ test.describe("Smoke tests", () => {
   });
 
   test("API health endpoint responds", async ({ request }) => {
-    const response = await request.get("http://localhost:3333/api/health");
+    const response = await request.get("http://localhost:3333/health");
     expect(response.ok()).toBeTruthy();
   });
 });

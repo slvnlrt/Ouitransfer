@@ -23,7 +23,7 @@
     "lint:fix": "biome check --write .",
     "format": "biome check --write .",
     "format:check": "biome check .",
-    "type-check": "npx tsc --noEmit",
+    "type-check": "tsc --noEmit",
     "validate": "pnpm lint && pnpm type-check",
     "db:seed": "ts-node prisma/seed.js",
     "cleanup:orphan-files": "tsx src/scripts/cleanup-orphan-files.ts",

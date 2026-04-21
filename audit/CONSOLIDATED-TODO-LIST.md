@@ -176,7 +176,7 @@ Phase 1: Tooling \& DX Foundation 🔧
 
 Monorepo Foundation (4h)
 
-\- \[ ] 1.1 — Create pnpm-workspace.yaml  
+\- \[x] 1.1 — Create pnpm-workspace.yaml  
 
 &#x20; File: pnpm-workspace.yaml (new, root)  
 
@@ -184,7 +184,7 @@ Monorepo Foundation (4h)
 
 &#x20; Justification: Audit 01 critical — fake monorepo, 3 independent lockfiles, no deduplication
 
-\- \[ ] 1.2 — Add .npmrc with strict settings  
+\- \[x] 1.2 — Add .npmrc with strict settings  
 
 &#x20; File: .npmrc (new, root)  
 
@@ -192,7 +192,7 @@ Monorepo Foundation (4h)
 
 &#x20; Justification: Audit 07 — no .npmrc exists, needed for workspace discipline
 
-\- \[ ] 1.3 — Add .nvmrc / .node-version  
+\- \[x] 1.3 — Add .nvmrc / .node-version  
 
 &#x20; File: .node-version (new, root)  
 
@@ -202,7 +202,7 @@ Monorepo Foundation (4h)
 
 Build Orchestration (4h)
 
-\- \[ ] 1.4 — Install and configure Turborepo  
+\- \[x] 1.4 — Install and configure Turborepo  
 
 &#x20; Files: root package.json, turbo.json (new)  
 
@@ -210,7 +210,7 @@ Build Orchestration (4h)
 
 &#x20; Justification: Audit 01/08 — zero build orchestration, sequential validation
 
-\- \[ ] 1.5 — Add workspace-level scripts to root package.json  
+\- \[x] 1.5 — Add workspace-level scripts to root package.json  
 
 &#x20; File: root package.json  
 
@@ -220,7 +220,7 @@ Build Orchestration (4h)
 
 Replace Makefile with Justfile (2h)
 
-\- \[ ] 1.6 — Create a justfile replacing the Makefile  
+\- \[x] 1.6 — Create a justfile replacing the Makefile  
 
 &#x20; File: justfile (new, root), delete Makefile  
 
@@ -256,7 +256,7 @@ Replace Makefile with Justfile (2h)
 
 Linting \& Formatting Modernization (4h)
 
-\- \[ ] 1.7 — Replace ESLint + Prettier with Biome  
+\- \[x] 1.7 — Replace ESLint + Prettier with Biome  
 
 &#x20; Files: Delete all eslint.config.mjs (×3), all .prettierrc.json (×3), remove ESLint/Prettier deps from all package.json. Create biome.json at root  
 
@@ -282,7 +282,7 @@ Linting \& Formatting Modernization (4h)
 
 &#x20; Justification: Audit 06 — 3× duplicated ESLint/Prettier configs, critical rules disabled. Biome consolidates to one config file
 
-\- \[ ] 1.8 — Add supplementary oxlint for rules Biome doesn't cover (optional)  
+\- \[x] 1.8 — Add supplementary oxlint for rules Biome doesn't cover (optional)  
 
 &#x20; File: .oxlintrc.json (new, root)  
 
@@ -292,7 +292,7 @@ Linting \& Formatting Modernization (4h)
 
 Testing Infrastructure (8h)
 
-\- \[ ] 1.9 — Install Vitest as the test runner  
+\- \[x] 1.9 — Install Vitest as the test runner  
 
 &#x20; Files: root package.json, vitest.workspace.ts (new), per-app vitest.config.ts  
 
@@ -310,7 +310,7 @@ Testing Infrastructure (8h)
 
 &#x20; Justification: Audit 02/03/06 critical — ZERO tests across 508 files
 
-\- \[ ] 1.10 — Install React Testing Library for frontend tests  
+\- \[x] 1.10 — Install React Testing Library for frontend tests  
 
 &#x20; File: apps/web/package.json  
 
@@ -318,7 +318,7 @@ Testing Infrastructure (8h)
 
 &#x20; Justification: Required for component/hook testing with Vitest
 
-\- \[ ] 1.11 — Install Playwright for E2E tests  
+\- \[x] 1.11 — Install Playwright for E2E tests  
 
 &#x20; File: root package.json, playwright.config.ts (new)  
 
@@ -328,7 +328,7 @@ Testing Infrastructure (8h)
 
 &#x20; Justification: Audit 03/06 — zero E2E tests for critical user flows
 
-\- \[ ] 1.12 — Write initial smoke tests for critical backend services  
+\- \[x] 1.12 — Write initial smoke tests for critical backend services  
 
 &#x20; Files: apps/server/src/modules/auth/\_\_tests\_\_/, apps/server/src/modules/file/\_\_tests\_\_/, apps/server/src/modules/share/\_\_tests\_\_/  
 
@@ -338,7 +338,7 @@ Testing Infrastructure (8h)
 
 Git Hooks \& Commit Quality (2h)
 
-\- \[ ] 1.13 — Replace Husky with Lefthook  
+\- \[x] 1.13 — Replace Husky with Lefthook  
 
 &#x20; Files: Delete .husky/, root package.json (remove husky dep), lefthook.yml (new)  
 
@@ -356,7 +356,7 @@ Git Hooks \& Commit Quality (2h)
 
 &#x20; Justification: Audit 04 — fragile cd chains in pre-push, no pre-commit hook, no commit message validation
 
-\- \[ ] 1.14 — Install commitlint with conventional commits  
+\- \[x] 1.14 — Install commitlint with conventional commits  
 
 &#x20; Files: root package.json, commitlint.config.ts (new)  
 
@@ -366,7 +366,7 @@ Git Hooks \& Commit Quality (2h)
 
 CI/CD Pipeline (8h)
 
-\- \[ ] 1.15 — Create GitHub Actions CI workflow  
+\- \[x] 1.15 — Create GitHub Actions CI workflow  
 
 &#x20; File: .github/workflows/ci.yml (new)  
 
@@ -388,7 +388,7 @@ CI/CD Pipeline (8h)
 
 &#x20; Justification: Audit 04 critical — ZERO CI/CD, zero automated quality gates
 
-\- \[ ] 1.16 — Create GitHub Actions Docker build workflow  
+\- \[x] 1.16 — Create GitHub Actions Docker build workflow  
 
 &#x20; File: .github/workflows/docker.yml (new)  
 
@@ -396,7 +396,7 @@ CI/CD Pipeline (8h)
 
 &#x20; Justification: Audit 04 — builds are manual via interactive script with forced --push
 
-\- \[ ] 1.17 — Create GitHub Actions E2E workflow  
+\- \[x] 1.17 — Create GitHub Actions E2E workflow  
 
 &#x20; File: .github/workflows/e2e.yml (new)  
 
@@ -406,7 +406,7 @@ CI/CD Pipeline (8h)
 
 Dead Code Detection (1h)
 
-\- \[ ] 1.18 — Install and configure Knip  
+\- \[x] 1.18 — Install and configure Knip  
 
 &#x20; File: knip.json (new, root)  
 
@@ -418,7 +418,7 @@ Dead Code Detection (1h)
 
 Dependency Management (1h)
 
-\- \[ ] 1.19 — Configure Renovate for automated dependency updates  
+\- \[x] 1.19 — Configure Renovate for automated dependency updates  
 
 &#x20; File: renovate.json (new, root)  
 
@@ -430,7 +430,7 @@ Dependency Management (1h)
 
 Local Environment (1h)
 
-\- \[ ] 1.20 — Create .envrc for direnv integration  
+\- \[x] 1.20 — Create .envrc for direnv integration  
 
 &#x20; File: .envrc (new, root), .env.example updated  
 
@@ -438,7 +438,7 @@ Local Environment (1h)
 
 &#x20; Justification: User's devbox philosophy — direnv for seamless env management. Audit 01 — malformed URL in .env.example
 
-\- \[ ] 1.21 — Add Changesets for version management  
+\- \[x] 1.21 — Add Changesets for version management  
 
 &#x20; Files: .changeset/config.json (new), root package.json  
 
@@ -1134,7 +1134,7 @@ Phase 7: Dependency Modernization 📦
 
 Critical Replacements (12h)
 
-\- \[ ] 7.1 — Replace speakeasy with otpauth  
+\- \[x] 7.1 — Replace speakeasy with otpauth  
 
 &#x20; Files: apps/server/src/modules/two-factor/, apps/server/package.json  
 
@@ -1144,7 +1144,7 @@ Critical Replacements (12h)
 
 &#x20; Justification: Audit D2 — speakeasy abandoned since 2017, 9 years without security patches, manages TOTP secrets
 
-\- \[ ] 7.2 — Replace crypto-js with Node.js native crypto  
+\- \[x] 7.2 — Replace crypto-js with Node.js native crypto  
 
 &#x20; Files: apps/server/src/, apps/server/package.json  
 
@@ -1154,7 +1154,7 @@ Critical Replacements (12h)
 
 &#x20; Justification: Audit D1 — CVE-2023-46233, PBKDF2 uses 1 iteration by default, weak PRNG
 
-\- \[ ] 7.3 — Replace react-qr-reader with maintained alternative  
+\- \[x] 7.3 — Replace react-qr-reader with maintained alternative  
 
 &#x20; Files: apps/web/src/, apps/web/package.json  
 

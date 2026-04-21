@@ -21,7 +21,7 @@
     "lint:fix": "biome check --write .",
     "format": "biome check --write .",
     "format:check": "biome check .",
-    "type-check": "npx tsc --noEmit --skipLibCheck",
+    "type-check": "tsc --noEmit --skipLibCheck",
     "validate": "pnpm lint && pnpm type-check",
     "translations": "python3 scripts/run_translations.py all",
     "translations:check": "python3 scripts/run_translations.py check",

@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
-  "rangeStrategy": "pin",
+  "rangeStrategy": "bump",
   "schedule": ["before 7am on monday"],
   "automerge": true,
   "automergeType": "pr",
@@ -21,16 +21,15 @@
       "automerge": false
     },
     {
-      "matchPackagePatterns": ["@types/*"],
+      "matchPackageNames": ["@types/**"],
       "rangeStrategy": "pin",
       "groupName": "TypeScript type definitions"
     },
     {
-      "matchManagers": ["npm"],
-      "matchPackagePatterns": ["*"],
+      "matchPackageNames": ["*"],
+      "matchUpdateTypes": ["minor", "patch"],
       "groupName": "all non-major dependencies",
-      "groupSlug": "all-minor-patch",
-      "matchUpdateTypes": ["minor", "patch"]
+      "groupSlug": "all-minor-patch"
     }
   ]
 }

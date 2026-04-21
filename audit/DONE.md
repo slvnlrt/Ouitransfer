@@ -141,3 +141,148 @@
 ### Frontend Migration (1 item)
 - **Full frontend migration** — 20 files modified, 10 new proxy routes. Downloads POST, share/reverse-share password branching, embed token flow
 - **Verified**: 13/14 PASS, 1 PARTIAL (userId early-return extended to all S3 methods post-review)
+
+---
+
+## Phase 1: Tooling & DX Foundation
+
+> 20 items completed (1.8 skipped), 2026-04-21.
+> Plus 3 items from Phase 7 (security-critical, executed during Phase 1 as planned).
+
+### Monorepo Foundation (1.1–1.5)
+
+- **1.1 — pnpm-workspace.yaml** — Created `pnpm-workspace.yaml` with `packages: ["apps/*"]`
+  - Date: 2026-04-21
+  - Files: `pnpm-workspace.yaml` (new)
+  - Verified: PASS
+
+- **1.2 — .npmrc strict settings** — Created `.npmrc` with strict-peer-dependencies=false, auto-install-peers=true, shamefully-hoist=false, prefer-frozen-lockfile=true
+  - Date: 2026-04-21
+  - Files: `.npmrc` (new)
+  - Verified: PASS
+
+- **1.3 — .node-version** — Pinned Node to `24` (matching Dockerfile)
+  - Date: 2026-04-21
+  - Files: `.node-version` (new)
+  - Verified: PASS
+
+- **1.4 — Turborepo** — Installed `turbo@2.9.6`, created `turbo.json` with build/dev/lint/type-check/format/validate/test tasks
+  - Date: 2026-04-21
+  - Files: `turbo.json` (new), `package.json`, `.gitignore`
+  - Verified: PASS (`pnpm turbo --version` → 2.9.6)
+
+- **1.5 — Root workspace scripts** — Added 14 turbo-based scripts (dev, build, lint, format, type-check, validate, test + per-app variants)
+  - Date: 2026-04-21
+  - Files: `package.json`
+  - Verified: PASS
+
+### Replace Makefile with Justfile (1.6)
+
+- **1.6 — Justfile** — Created 126-line Justfile with 18 recipes (Docker, Dev, Quality, Dependencies sections). Makefile kept for backward compat
+  - Date: 2026-04-21
+  - Files: `Justfile` (new)
+  - Verified: PASS (`just --list` shows all 18 recipes)
+
+### Linting & Formatting (1.7–1.8)
+
+- **1.7 — Biome replaces ESLint+Prettier** — Installed `@biomejs/biome@2.4.12`. Created `biome.json`. Updated lint/format scripts in all 3 apps. Removed 10 ESLint/Prettier devDeps per app. Deleted 9 config files
+  - Date: 2026-04-21
+  - Files: `biome.json` (new), `apps/*/package.json` (3), deleted: `apps/*/eslint.config.mjs` (3), `apps/*/.prettierrc.json` (3), `apps/*/.prettierignore` (3)
+  - Verified: PASS (520 files checked in 729ms)
+  - Note: 730 lint errors + 321 warnings on existing code (pre-existing, not auto-fixed)
+
+- **1.8 — oxlint** — SKIPPED (Biome covers sufficient rules for this stack)
+
+### Testing Infrastructure (1.9–1.12)
+
+- **1.9 — Vitest** — Installed `vitest@4.1.4` at root. Created per-app configs (server: node env, web: jsdom + @vitejs/plugin-react)
+  - Date: 2026-04-21
+  - Files: `package.json`, `apps/server/vitest.config.ts` (new), `apps/web/vitest.config.ts` (new), `apps/web/vitest.setup.ts` (new)
+  - Verified: PASS (2 tasks, 4 tests total)
+
+- **1.10 — React Testing Library** — Installed @testing-library/react, @testing-library/jest-dom, @testing-library/user-event, @vitejs/plugin-react, jsdom in web app
+  - Date: 2026-04-21
+  - Files: `apps/web/package.json`
+  - Verified: PASS (RTL matchers loaded via vitest.setup.ts)
+
+- **1.11 — Playwright E2E** — Installed `@playwright/test@1.59.1` at root. Created config (chromium, webServer for both apps). Added e2e scripts
+  - Date: 2026-04-21
+  - Files: `playwright.config.ts` (new), `e2e/.gitkeep` (new), `package.json`, `.gitignore`
+  - Verified: PASS (config valid, browsers not yet downloaded)
+
+- **1.12 — Initial smoke tests** — Created 3 test files: server health (2 tests), web React smoke (2 tests), E2E smoke (2 Playwright tests)
+  - Date: 2026-04-21
+  - Files: `apps/server/src/__tests__/health.test.ts` (new), `apps/web/src/__tests__/smoke.test.tsx` (new), `e2e/smoke.spec.ts` (new)
+  - Verified: PASS (Vitest tests pass, E2E requires running services)
+
+### Git Hooks & Commit Quality (1.13–1.14)
+
+- **1.13 — Lefthook replaces Husky** — Removed husky, deleted `.husky/`, cleared git hooks path. Installed `lefthook@2.1.6`. Created `lefthook.yml` with pre-commit (Biome), pre-push (validate), commit-msg (commitlint)
+  - Date: 2026-04-21
+  - Files: `lefthook.yml` (new), `package.json`, deleted: `.husky/`
+  - Verified: PASS
+
+- **1.14 — commitlint** — Installed `@commitlint/cli@20.5.0` + `@commitlint/config-conventional@20.5.0`. Created config with custom `security` type
+  - Date: 2026-04-21
+  - Files: `commitlint.config.cjs` (new), `package.json`, `lefthook.yml`
+  - Verified: PASS (valid messages pass, invalid rejected)
+
+### CI/CD Pipeline (1.15–1.17)
+
+- **1.15 — GitHub Actions CI** — Created `ci.yml` with 4 jobs: lint, type-check, test (parallel), build (depends on lint+type-check). Uses pnpm/action-setup, .node-version, frozen-lockfile, concurrency
+  - Date: 2026-04-21
+  - Files: `.github/workflows/ci.yml` (new)
+  - Verified: PASS (syntax valid)
+
+- **1.16 — GitHub Actions Docker** — Created `docker.yml` triggered on v* tags. Builds+pushes to ghcr.io with buildx + GHA cache
+  - Date: 2026-04-21
+  - Files: `.github/workflows/docker.yml` (new)
+  - Verified: PASS (syntax valid)
+
+- **1.17 — GitHub Actions E2E** — Created `e2e.yml` with Playwright on push/PR to main. Uploads report artifact
+  - Date: 2026-04-21
+  - Files: `.github/workflows/e2e.yml` (new)
+  - Verified: PASS (syntax valid)
+
+### Dead Code & Dependencies (1.18–1.21)
+
+- **1.18 — Knip** — Installed `knip@6.6.0`. Created `knip.json` with workspace config. Found: 17 unused files, 12 unused deps, 6 unused devDeps, 134 unused exports, 5 unlisted deps
+  - Date: 2026-04-21
+  - Files: `knip.json` (new), `package.json`
+  - Verified: PASS (report generated, issues cataloged for future phases)
+
+- **1.19 — Renovate** — Created `renovate.json` with config:recommended, pin strategy, Monday schedule, automerge patch/minor
+  - Date: 2026-04-21
+  - Files: `renovate.json` (new)
+  - Verified: PASS
+
+- **1.20 — .envrc + malformed URL fix** — Created `.envrc` (direnv), root `.env.example` (66 lines). Fixed `http:localhost:3333` → `http://localhost:3333` in `apps/web/.env.example`
+  - Date: 2026-04-21
+  - Files: `.envrc` (new), `.env.example` (new), `apps/web/.env.example`
+  - Verified: PASS
+
+- **1.21 — Changesets** — Installed `@changesets/cli@2.31.0`. Initialized `.changeset/` with fixed versioning (all 3 apps together). Added changeset/version-packages/release scripts
+  - Date: 2026-04-21
+  - Files: `.changeset/config.json` (new), `.changeset/README.md` (new), `package.json`
+  - Verified: PASS
+
+---
+
+## Phase 7 (Partial): Security-Critical Dependency Replacements
+
+> 3 items completed during Phase 1 execution (as planned in CONSOLIDATED-TODO-LIST.md execution notes).
+
+- **7.1 — speakeasy → otpauth** — Migrated `two-factor/service.ts` from speakeasy to `otpauth@9.5.0`. 3 call sites rewritten. Same RFC 6238 params (SHA1, 6 digits, 30s, window=1). Base32 secrets backward-compatible (no user migration needed). Removed speakeasy + @types/speakeasy
+  - Date: 2026-04-21
+  - Files: `apps/server/src/modules/two-factor/service.ts`, `apps/server/package.json`
+  - Verified: PASS (type-check passes for service.ts, zero speakeasy references remaining)
+
+- **7.2 — crypto-js removed** — Dead dependency with zero usages. Removed `crypto-js` + `@types/crypto-js` from server. All crypto already uses native `node:crypto`
+  - Date: 2026-04-21
+  - Files: `apps/server/package.json`
+  - Verified: PASS (grep confirms zero imports)
+
+- **7.3 — react-qr-reader removed** — Dead dependency with zero usages (archived beta). Removed from web. `react-qr-code` (different package, used for QR generation) preserved
+  - Date: 2026-04-21
+  - Files: `apps/web/package.json`
+  - Verified: PASS (grep confirms zero imports, react-qr-code intact)

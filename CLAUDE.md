@@ -14,7 +14,7 @@ Ouitransfer is a self-hosted file transfer solution (WeTransfer alternative).
 ```
 D:\Code\Ouitransfer\
   apps/server/     Fastify API, port 3333, ~74 TS files
-  apps/web/        Next.js frontend, port 5487, ~403 TSX files
+  apps/web/        Next.js frontend, port 3000 (dev) / 5487 (prod), ~403 TSX files
   apps/docs/       Fumadocs site, port 3001, ~31 files
   infra/           Docker, MinIO, deployment scripts
   audit/           Audit reports and remediation tracking
@@ -24,7 +24,7 @@ D:\Code\Ouitransfer\
 - **File naming**: kebab-case for files, PascalCase for React components
 - **Server modules**: `src/modules/{feature}/` with `controller.ts`, `service.ts`, `routes.ts`, `dto.ts`
 - **Validation**: Zod schemas via `fastify-type-provider-zod`
-- **Auth**: JWT in httpOnly cookie, bcrypt, 2FA via speakeasy (to be replaced)
+- **Auth**: JWT in httpOnly cookie, bcrypt, 2FA via otpauth (TOTP, RFC 6238)
 - **i18n**: next-intl, 22 languages, messages in `apps/web/messages/`
 - **UI**: shadcn/ui (new-york style), Radix primitives, lucide-react icons
 
