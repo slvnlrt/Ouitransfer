@@ -322,6 +322,9 @@ export class ReverseShareService {
       }
     }
 
+    // Validate objectName belongs to this reverse share's namespace
+    this.validateObjectName(fileData.objectName, reverseShareId);
+
     if (reverseShare.maxFiles) {
       const currentFileCount = await this.reverseShareRepository.countFilesByReverseShareId(reverseShareId);
       if (currentFileCount >= reverseShare.maxFiles) {
@@ -373,6 +376,9 @@ export class ReverseShareService {
         throw new Error("Invalid password");
       }
     }
+
+    // Validate objectName belongs to this reverse share's namespace (use reverseShare.id, not alias)
+    this.validateObjectName(fileData.objectName, reverseShare.id);
 
     if (reverseShare.maxFiles) {
       const currentFileCount = await this.reverseShareRepository.countFilesByReverseShareId(reverseShare.id);
@@ -696,6 +702,24 @@ export class ReverseShareService {
       createdAt: newFileRecord.createdAt.toISOString(),
       updatedAt: newFileRecord.updatedAt.toISOString(),
     };
+  }
+
+  private validateObjectName(objectName: string, reverseShareId: string): void {
+    // Reject null bytes (path injection protection)
+    if (objectName.includes("\0")) {
+      throw new Error("Invalid object name: contains null bytes");
+    }
+
+    // Reject path traversal attempts
+    if (objectName.includes("..")) {
+      throw new Error("Invalid object name: contains path traversal sequences");
+    }
+
+    // Validate that objectName starts with the expected namespace
+    const expectedPrefix = `reverse-shares/${reverseShareId}/`;
+    if (!objectName.startsWith(expectedPrefix)) {
+      throw new Error("Invalid object name: does not belong to this reverse share");
+    }
   }
 
   private generateSessionKey(reverseShareId: string, uploaderIdentifier: string): string {
