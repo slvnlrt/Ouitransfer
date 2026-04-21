@@ -1,8 +1,11 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["biome.json", ".node-version"],
+  "globalEnv": ["NODE_ENV", "CI"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
+      "inputs": ["src/**", "package.json", "tsconfig.json", "tsconfig*.json"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
       "env": ["NODE_ENV"]
     },
@@ -11,10 +14,10 @@
       "persistent": true
     },
     "lint": {
-      "dependsOn": ["^build"]
+      "inputs": ["src/**/*.{ts,tsx,js,jsx}", "biome.json", "package.json"]
     },
     "type-check": {
-      "dependsOn": ["^build"]
+      "inputs": ["src/**/*.{ts,tsx}", "tsconfig.json", "tsconfig*.json", "package.json"]
     },
     "format": {
       "cache": false
@@ -23,7 +26,8 @@
       "dependsOn": ["lint", "type-check"]
     },
     "test": {
-      "dependsOn": ["^build"]
+      "inputs": ["src/**/*.{ts,tsx}", "vitest.config.*", "package.json"],
+      "outputs": ["coverage/**"]
     }
   }
 }

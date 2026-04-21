@@ -992,6 +992,14 @@ Port Configuration (1h)
 
 &#x20; Justification: Audit 02 — port hardcoded, not configurable
 
+\- \[ ] 5.13 — Require 2FA code (or backup code) to disable 2FA  
+
+&#x20; Files: apps/server/src/modules/two-factor/service.ts, apps/server/src/modules/two-factor/controller.ts, apps/server/src/modules/two-factor/routes.ts  
+
+&#x20; Action: Currently disabling 2FA only requires the user password. An attacker with the password can bypass 2FA by disabling it. Require a valid TOTP code or backup code in addition to the password when disabling 2FA  
+
+&#x20; Justification: Post-Phase 1 review W13 — defense-in-depth for 2FA
+
 \---
 
 Phase 6: Infrastructure \& Operations 🐳

@@ -71,7 +71,8 @@ export class TwoFactorService {
       period: 30,
       secret: OTPAuth.Secret.fromBase32(secret),
     });
-    const verified = setupTotp.validate({ token: token, window: 1 }) !== null;
+    const normalizedToken = token.replace(/[\s-]/g, "");
+    const verified = setupTotp.validate({ token: normalizedToken, window: 1 }) !== null;
 
     if (!verified) {
       throw new Error("Invalid verification code");
@@ -123,7 +124,8 @@ export class TwoFactorService {
       period: 30,
       secret: OTPAuth.Secret.fromBase32(user.twoFactorSecret),
     });
-    const verified = loginTotp.validate({ token: token, window: 1 }) !== null;
+    const normalizedToken = token.replace(/[\s-]/g, "");
+    const verified = loginTotp.validate({ token: normalizedToken, window: 1 }) !== null;
 
     if (verified) {
       return { success: true, method: "totp" };

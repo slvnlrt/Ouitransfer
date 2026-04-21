@@ -12,7 +12,7 @@ apps/web/dist
 apps/web/dist-ssr
 apps/web/*.local
 
-apps/web/# Editor directories and files
+# Editor directories and files
 apps/web/.vscode/*
 apps/web/!.vscode/extensions.json
 apps/web/.idea

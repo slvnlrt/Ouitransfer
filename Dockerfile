@@ -9,8 +9,8 @@ RUN apk add --no-cache \
   openssl \
   su-exec
 
-# Enable pnpm
-RUN corepack enable pnpm
+# Enable pnpm and pin version
+RUN corepack enable && corepack prepare pnpm@10.6.0 --activate
 
 # Install storage system for S3-compatible storage
 COPY infra/install-minio.sh /tmp/install-minio.sh
@@ -25,23 +25,28 @@ WORKDIR /app
 
 # === SERVER BUILD STAGE ===
 FROM base AS server-deps
-WORKDIR /app/server
+WORKDIR /app
 
-# Copy server package files
-COPY apps/server/package*.json ./
-COPY apps/server/pnpm-lock.yaml ./
+# Copy workspace config and root lockfile
+COPY pnpm-workspace.yaml .npmrc package.json pnpm-lock.yaml ./
 
-# Install server dependencies
-RUN pnpm install --frozen-lockfile
+# Copy server package.json (pnpm needs workspace member manifests for filtering)
+COPY apps/server/package.json apps/server/
+
+# Install only server dependencies using workspace filtering
+RUN pnpm install --frozen-lockfile --filter ouitransfer-api
 
 FROM base AS server-builder
-WORKDIR /app/server
+WORKDIR /app
 
-# Copy server dependencies
-COPY --from=server-deps /app/server/node_modules ./node_modules
+# Copy installed dependencies from deps stage
+COPY --from=server-deps /app/node_modules ./node_modules
+COPY --from=server-deps /app/apps/server/node_modules ./apps/server/node_modules
 
 # Copy server source code
-COPY apps/server/ ./
+COPY apps/server/ ./apps/server/
+
+WORKDIR /app/apps/server
 
 # Generate Prisma client
 RUN npx prisma generate
@@ -51,22 +56,28 @@ RUN pnpm build
 
 # === WEB BUILD STAGE ===
 FROM base AS web-deps
-WORKDIR /app/web
+WORKDIR /app
 
-# Copy web package files
-COPY apps/web/package.json apps/web/pnpm-lock.yaml ./
+# Copy workspace config and root lockfile
+COPY pnpm-workspace.yaml .npmrc package.json pnpm-lock.yaml ./
 
-# Install web dependencies
-RUN pnpm install --frozen-lockfile
+# Copy web package.json
+COPY apps/web/package.json apps/web/
+
+# Install only web dependencies
+RUN pnpm install --frozen-lockfile --filter ouitransfer-web
 
 FROM base AS web-builder
-WORKDIR /app/web
+WORKDIR /app
 
-# Copy web dependencies
-COPY --from=web-deps /app/web/node_modules ./node_modules
+# Copy installed dependencies from deps stage
+COPY --from=web-deps /app/node_modules ./node_modules
+COPY --from=web-deps /app/apps/web/node_modules ./apps/web/node_modules
 
 # Copy web source code
-COPY apps/web/ ./
+COPY apps/web/ ./apps/web/
+
+WORKDIR /app/apps/web
 
 # Set environment variables for build
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -99,27 +110,27 @@ RUN chown -R OUITRANSFER:nodejs /app /home/ouitransfer
 WORKDIR /app/ouitransfer-app
 
 # Copy server production files
-COPY --from=server-builder --chown=OUITRANSFER:nodejs /app/server/dist ./dist
-COPY --from=server-builder --chown=OUITRANSFER:nodejs /app/server/node_modules ./node_modules
-COPY --from=server-builder --chown=OUITRANSFER:nodejs /app/server/prisma ./prisma
-COPY --from=server-builder --chown=OUITRANSFER:nodejs /app/server/package.json ./
+COPY --from=server-builder --chown=OUITRANSFER:nodejs /app/apps/server/dist ./dist
+COPY --from=server-builder --chown=OUITRANSFER:nodejs /app/apps/server/node_modules ./node_modules
+COPY --from=server-builder --chown=OUITRANSFER:nodejs /app/apps/server/prisma ./prisma
+COPY --from=server-builder --chown=OUITRANSFER:nodejs /app/apps/server/package.json ./
 
 # Copy password reset script and make it executable
-COPY --from=server-builder --chown=OUITRANSFER:nodejs /app/server/reset-password.sh ./
-COPY --from=server-builder --chown=OUITRANSFER:nodejs /app/server/src/scripts/ ./src/scripts/
+COPY --from=server-builder --chown=OUITRANSFER:nodejs /app/apps/server/reset-password.sh ./
+COPY --from=server-builder --chown=OUITRANSFER:nodejs /app/apps/server/src/scripts/ ./src/scripts/
 RUN chmod +x ./reset-password.sh
 
 # Copy seed file to the shared location for bind mounts
 RUN mkdir -p /app/server/prisma
-COPY --from=server-builder --chown=OUITRANSFER:nodejs /app/server/prisma/seed.js /app/server/prisma/seed.js
+COPY --from=server-builder --chown=OUITRANSFER:nodejs /app/apps/server/prisma/seed.js /app/server/prisma/seed.js
 
 # === Copy Web Files ===
 WORKDIR /app/web
 
 # Copy web production files
-COPY --from=web-builder --chown=OUITRANSFER:nodejs /app/web/public ./public
-COPY --from=web-builder --chown=OUITRANSFER:nodejs /app/web/.next/standalone ./
-COPY --from=web-builder --chown=OUITRANSFER:nodejs /app/web/.next/static ./.next/static
+COPY --from=web-builder --chown=OUITRANSFER:nodejs /app/apps/web/public ./public
+COPY --from=web-builder --chown=OUITRANSFER:nodejs /app/apps/web/.next/standalone ./
+COPY --from=web-builder --chown=OUITRANSFER:nodejs /app/apps/web/.next/static ./.next/static
 
 # === Setup Supervisor ===
 WORKDIR /app

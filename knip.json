@@ -12,7 +12,7 @@
       "ignoreDependencies": ["sharp"]
     },
     "apps/docs": {
-      "entry": ["src/app/**/{layout,page}.{ts,tsx}", "source.config.ts", "content/**/*.{md,mdx}"],
+      "entry": ["src/app/**/{layout,page}.{ts,tsx}", "source.config.ts"],
       "project": ["src/**/*.{ts,tsx}"],
       "ignoreDependencies": ["fumadocs-mdx"]
     }
@@ -20,8 +20,13 @@
   "ignore": ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}", "e2e/**"],
   "ignoreDependencies": [
     "@biomejs/biome",
-    "lefthook",
+    "@changesets/cli",
     "@commitlint/cli",
-    "@commitlint/config-conventional"
+    "@commitlint/config-conventional",
+    "@playwright/test",
+    "knip",
+    "lefthook",
+    "turbo",
+    "vitest"
   ]
 }

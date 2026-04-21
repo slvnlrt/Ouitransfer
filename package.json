@@ -25,7 +25,7 @@
     "knip": "knip",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "changeset publish"
+    "release": "changeset tag"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.12",

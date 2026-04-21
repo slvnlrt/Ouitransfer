@@ -13,12 +13,12 @@ const SetupSchema = z
   .default({});
 
 const VerifySetupSchema = z.object({
-  token: z.string().min(6, "Token must be at least 6 characters"),
+  token: z.string().trim().min(6, "Token must be at least 6 characters"),
   secret: z.string().min(1, "Secret is required"),
 });
 
 const VerifyTokenSchema = z.object({
-  token: z.string().min(6, "Token must be at least 6 characters"),
+  token: z.string().trim().min(6, "Token must be at least 6 characters"),
 });
 
 const DisableSchema = z.object({

@@ -43,15 +43,12 @@ default: help
 build:
     @echo "Building OUITRANSFER Docker image..."
     @echo "This will update version numbers in all package.json files before building."
-    chmod +x ./infra/update-versions.sh
-    chmod +x ./infra/build-docker.sh
     @echo "Starting build process..."
     ./infra/build-docker.sh
 
 # Update version in all package.json files — usage: just update-version 3.4.0
 update-version version:
     @echo "Updating version to {{version}}..."
-    chmod +x ./infra/update-versions.sh
     ./infra/update-versions.sh "{{version}}"
 
 # Start the application
