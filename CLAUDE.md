@@ -56,12 +56,13 @@ Review follow-ups: all critical/warning items fixed. Remaining guidance forwarde
 17 items completed. `noExplicitAny` + `noImplicitAnyLet` enforced as errors in Biome (~355 any types
 eliminated). Fastify request typing via `@fastify/jwt` augmentation (66 casts removed). Centralized
 error handler (`globalErrorHandler` — catches Zod, JWT, Prisma, generic errors; controllers still
-have own try/catch — migration deferred). Pino logger replaces console.* on server (~87 calls),
-frontend structured logger for hooks (54 calls; component migration deferred). 9 large files split
-(4 server modules, 5 web components). PrismaClient singleton unified. Initial Prisma migration
-committed. Real tests: health endpoint inject test, Button component tests, 62 proxy route tests.
-Knip config fixed for docs MDX. `__DELETE__` sentinel typed. eslint-disable comments removed.
-Review follow-ups: I-3/I-4/I-5/I-7/I-8 fixed; I-1/I-2/I-6 deferred to future phases.
+have own try/catch — migration deferred to Phase 5 item 5.16). Pino logger replaces console.* on
+server (~87 calls), frontend structured logger for all hooks + components (54 + 57 calls). 9 large
+files split (4 server modules, 5 web components). PrismaClient singleton unified. Initial Prisma
+migration committed. Real tests: health endpoint inject test, Button component tests, 62 proxy route
+tests, 29 error handler tests. Knip config fixed for docs MDX. `__DELETE__` sentinel typed.
+eslint-disable comments removed. 13 pre-existing a11y lint errors fixed.
+Review follow-ups: I-1/I-3/I-4/I-5/I-6/I-7/I-8 fixed; I-2 deferred to Phase 5.
 
 ### Remediation Workflow
 Each phase follows this process:

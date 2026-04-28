@@ -63,7 +63,7 @@
 
 ---
 
-## Known Infrastructure Issue
+## Known Infrastructure Issue (Fixed)
 
-- [ ] **Lefthook pre-commit hook fails on large commits (Windows)** — When >100 files are staged, `{staged_files}` expansion exceeds Windows' ~8191 char command-line limit. Error: "La ligne de commande est trop longue". Fix: use `--stdin` mode or batch the files in `lefthook.yml`. Not a Phase 3 issue — affects any large commit on Windows.
-  - **Suggested phase**: Phase 6 (Infrastructure & Operations)
+- [x] **Lefthook pre-commit hook fails on large commits (Windows)** — When >100 files are staged, `{staged_files}` expansion exceeds Windows' ~8191 char command-line limit. Fixed by replacing `{staged_files}` with biome's native `--staged` flag in `lefthook.yml`. Biome queries git directly, avoiding command-line length limits.
+  - Commit: `8323a60 fix(ci): use biome --staged flag instead of {staged_files} in lefthook`

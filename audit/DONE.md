@@ -580,3 +580,27 @@
 - **Files**: ~140 files across server, web, docs
 - **Change**: Ran biome auto-fix for import organization across entire codebase.
 - **Verified**: PASS (type-check 5/5 clean)
+
+### I-1 — Error handler unit tests
+- **Date**: 2026-04-28
+- **Files**: `apps/server/src/__tests__/error-handler.test.ts` (new), `apps/server/src/utils/error-handler.ts`
+- **Change**: 29 unit tests for `globalErrorHandler()` covering all 6 error categories (Zod, serialization, JWT, Prisma, Fastify 4xx/5xx, unknown). Also found and fixed a real bug: `isResponseSerializationError()` crashed on primitive throws (added `typeof error === "object"` guard).
+- **Verified**: PASS (29/29 tests green)
+
+### I-6 — Frontend logger component migration
+- **Date**: 2026-04-28
+- **Files**: 34 .tsx component files
+- **Change**: Migrated remaining 57 console.* calls in .tsx component files to structured logger. Zero console.* calls remain in .tsx files.
+- **Verified**: PASS (type-check clean, 0 console.* in .tsx)
+
+### Pre-existing a11y lint errors fixed
+- **Date**: 2026-04-28
+- **Files**: 8 web component files
+- **Change**: Fixed 13 pre-existing biome a11y errors surfaced when lefthook ran on touched files: replaced `<div onClick>` with `<button>` for keyboard accessibility (navbar, QR thumbnails, drop zone), added `htmlFor` to label, `biome-ignore` for audio caption (no captions for uploaded audio), fixed forEach return value.
+- **Verified**: PASS (biome check clean on all 8 files)
+
+### Lefthook --staged fix
+- **Date**: 2026-04-28
+- **Files**: `lefthook.yml`
+- **Change**: Replaced `{staged_files}` expansion (breaks on Windows with >100 files) with biome's native `--staged` flag. Biome queries git directly, avoiding command-line length limits.
+- **Verified**: PASS (commit with 39 staged files succeeds through lefthook)
