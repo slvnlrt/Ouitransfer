@@ -7,6 +7,5 @@ pre-commit:
   parallel: true
   commands:
     lint:
-      glob: "*.{ts,tsx,js,jsx,json,css,yml,yaml,md,mdx}"
-      run: pnpm exec biome check --write --unsafe --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+      run: pnpm exec biome check --write --unsafe --no-errors-on-unmatched --files-ignore-unknown=true --staged
       stage_fixed: true
