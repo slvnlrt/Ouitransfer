@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { IconCheck, IconCopy } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { generateEmbedToken } from "@/http/endpoints/files";
+import { logger } from "@/lib/logger";
 
 interface EmbedCodeDisplayProps {
   imageUrl: string;
@@ -35,7 +35,9 @@ export function EmbedCodeDisplay({ imageUrl, fileName, fileId, shareId }: EmbedC
           setFullUrl(embedUrl);
         })
         .catch((error) => {
-          console.error("Failed to generate embed token:", error);
+          logger.error("Failed to generate embed token:", {
+            err: error instanceof Error ? error.message : String(error),
+          });
           // Fallback: don't show any URL
           setFullUrl("");
         });
@@ -58,7 +60,9 @@ export function EmbedCodeDisplay({ imageUrl, fileName, fileId, shareId }: EmbedC
       setCopiedType(type);
       setTimeout(() => setCopiedType(null), 2000);
     } catch (error) {
-      console.error("Failed to copy:", error);
+      logger.error("Failed to copy:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
     }
   };
 
@@ -113,7 +117,9 @@ export function EmbedCodeDisplay({ imageUrl, fileName, fileId, shareId }: EmbedC
                   )}
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground">{t("embedCode.directLinkDescription")}</p>
+              <p className="text-xs text-muted-foreground">
+                {t("embedCode.directLinkDescription")}
+              </p>
             </TabsContent>
 
             <TabsContent value="html" className="space-y-2">
@@ -124,7 +130,11 @@ export function EmbedCodeDisplay({ imageUrl, fileName, fileId, shareId }: EmbedC
                   value={htmlCode}
                   className="flex-1 px-3 py-2 text-sm border rounded-md bg-muted/50 font-mono"
                 />
-                <Button variant="outline" onClick={() => copyToClipboard(htmlCode, "html")} className="shrink-0 h-full">
+                <Button
+                  variant="outline"
+                  onClick={() => copyToClipboard(htmlCode, "html")}
+                  className="shrink-0 h-full"
+                >
                   {copiedType === "html" ? (
                     <>
                       <IconCheck className="h-4 w-4 mr-1" />
@@ -149,7 +159,11 @@ export function EmbedCodeDisplay({ imageUrl, fileName, fileId, shareId }: EmbedC
                   value={bbCode}
                   className="flex-1 px-3 py-2 text-sm border rounded-md bg-muted/50 font-mono"
                 />
-                <Button variant="outline" onClick={() => copyToClipboard(bbCode, "bbcode")} className="shrink-0 h-full">
+                <Button
+                  variant="outline"
+                  onClick={() => copyToClipboard(bbCode, "bbcode")}
+                  className="shrink-0 h-full"
+                >
                   {copiedType === "bbcode" ? (
                     <>
                       <IconCheck className="h-4 w-4 mr-1" />

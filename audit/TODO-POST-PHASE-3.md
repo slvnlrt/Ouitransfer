@@ -1,12 +1,15 @@
 # Phase 3 — Post-Review Follow-ups
 
 > Items identified by reviewer during Phase 3 Code Quality & Type Safety verification.
-> I-3, I-4, I-5, I-7, I-8, M-2, M-7 fixed immediately after review.
-> Remaining items forwarded to relevant future phases or documented as known limitations.
+> I-1, I-3, I-4, I-5, I-6, I-7, I-8, M-2, M-7 fixed immediately or in follow-up batch.
+> I-2 explicitly deferred to Phase 5 (Backend Hardening — controller error migration).
 
 ---
 
 ## Fixed Immediately
+
+- [x] **I-1 — Error handler has zero tests** — Added unit tests for `globalErrorHandler()` covering all 6 error categories.
+  - File: `apps/server/src/__tests__/error-handler.test.ts`
 
 - [x] **I-3 — AuthProviderModel duplicated Prisma type** — Replaced manual 22-line interface with `import type { AuthProvider } from "@prisma/client"; export type AuthProviderModel = AuthProvider;`
   - File: `apps/server/src/modules/auth-providers/types.ts`
@@ -16,6 +19,9 @@
 
 - [x] **I-5 — noImplicitAnyLet violations** — Fixed 3 implicit-any-let violations: `useUppyUpload.ts` (2 `let response;`), `color-picker-form.tsx` (1 `let r,g,b;`). Enabled `noImplicitAnyLet: "error"` in biome.json.
   - Files: `biome.json`, `apps/web/src/hooks/useUppyUpload.ts`, `apps/web/src/app/profile/components/color-picker-form.tsx`
+
+- [x] **I-6 — 57 console.* calls in .tsx components** — Migrated all remaining console.* calls in .tsx component files to use the structured logger.
+  - Files: ~35 .tsx component files
 
 - [x] **I-7 — Inconsistent silent catch in download.controller.ts** — Added `request.log.debug({ err }, "JWT verification failed for reverse-share download")` to the silent catch block.
   - File: `apps/server/src/modules/file/download.controller.ts`
@@ -30,24 +36,12 @@
 
 ---
 
-## Deferred — Error Handler Coverage (Phase 3 / Phase 8)
-
-- [ ] **I-1 — Error handler has zero tests** — `globalErrorHandler()` in `apps/server/src/utils/error-handler.ts` routes 6 error categories with conditional logic, but has no unit tests. Should add tests for: Zod validation, Prisma P2002/P2025/P2003/P2014/unknown, JWT expired/invalid, Fastify 4xx/5xx, unknown fallback. The handler is a pure function — easy to test with mock reply.
-  - **Impact**: High — most important new abstraction
-  - **Suggested phase**: Phase 8 (testing maturity) or standalone task
+## Deferred — Controller Error Migration → Phase 5 (item 5.16)
 
 - [ ] **I-2 — Error handler bypassed by existing controllers** — Controllers still wrap handler bodies in try/catch returning `{ error: "..." }` while the global handler returns `{ error, code, statusCode, details? }`. Clients face two distinct error formats. Prisma errors inside catch blocks get swallowed into generic 500 instead of being mapped by the global handler. The handler primarily catches Zod schema validation errors.
-  - **Impact**: Medium — controller migration is a separate task
-  - **Suggested phase**: Phase 4 (backend refinement) — migrate controllers to let errors propagate, or adopt `AppError` pattern
-  - **Note**: Acknowledged in `error-handler.ts:9-11`
-
----
-
-## Deferred — Frontend Logger Component Migration
-
-- [ ] **I-6 — 57 console.* calls remain in .tsx component files** — Phase 3.8 migrated all hooks/lib files (54 calls). Components still use raw `console.error` which won't respect `NEXT_PUBLIC_LOG_LEVEL`. Honest scoping: hooks-only migration was intentional, component migration deferred.
-  - **Impact**: Low — components mostly use `console.error` in error boundaries
-  - **Suggested phase**: Phase 4 (frontend refinement)
+  - **Why deferred**: Phase 5 (Backend Hardening) will touch these same controller files for validation/auth improvements. Migrating try/catch now then re-refactoring in Phase 5 = double work on the same files.
+  - **Impact**: Medium — two concurrent error response shapes until migration
+  - **Added to**: `CONSOLIDATED-TODO-LIST.md` Phase 5 as item 5.16
 
 ---
 
@@ -66,3 +60,10 @@
 
 - [ ] **M-6 — Web smoke test tests shadcn Button, not app code** — Useful as test-infrastructure validation but doesn't cover Phase 3 changes.
   - **Suggested phase**: Phase 8 (testing maturity)
+
+---
+
+## Known Infrastructure Issue
+
+- [ ] **Lefthook pre-commit hook fails on large commits (Windows)** — When >100 files are staged, `{staged_files}` expansion exceeds Windows' ~8191 char command-line limit. Error: "La ligne de commande est trop longue". Fix: use `--stdin` mode or batch the files in `lefthook.yml`. Not a Phase 3 issue — affects any large commit on Windows.
+  - **Suggested phase**: Phase 6 (Infrastructure & Operations)

@@ -152,13 +152,16 @@ export function globalErrorHandler(
 
   // 1. Zod validation errors (from fastify-type-provider-zod)
   if (hasZodFastifySchemaValidationErrors(error)) {
-    response = handleZodValidationError(error as unknown as Parameters<typeof handleZodValidationError>[0]);
+    response = handleZodValidationError(
+      error as unknown as Parameters<typeof handleZodValidationError>[0],
+    );
     reply.status(response.statusCode).send(response);
     return;
   }
 
   // 2. Response serialization errors (schema mismatch in response)
-  if (isResponseSerializationError(error)) {
+  // Guard: isResponseSerializationError uses `'method' in value` which throws on primitives
+  if (typeof error === "object" && error !== null && isResponseSerializationError(error)) {
     // This is a server-side bug — don't expose details to client
     response = {
       error: "Internal Server Error",

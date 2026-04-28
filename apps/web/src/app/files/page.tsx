@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { IconFolderOpen } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { toast } from "sonner";
-
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { GlobalDropZone } from "@/components/general/global-drop-zone";
 import { FileManagerLayout } from "@/components/layout/file-manager-layout";
@@ -21,6 +20,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { moveFile } from "@/http/endpoints/files";
 import { listFolders, moveFolder } from "@/http/endpoints/folders";
 import { getCachedDownloadUrl } from "@/lib/download-url-cache";
+import { logger } from "@/lib/logger";
 import { FilesViewManager } from "./components/files-view-manager";
 import { Header } from "./components/header";
 import { useFileBrowser } from "./hooks/use-file-browser";
@@ -99,11 +99,15 @@ export default function FilesPage() {
 
     try {
       if (itemsToMove.files.length > 0) {
-        await Promise.all(itemsToMove.files.map((file) => moveFile(file.id, { folderId: targetFolderId })));
+        await Promise.all(
+          itemsToMove.files.map((file) => moveFile(file.id, { folderId: targetFolderId })),
+        );
       }
 
       if (itemsToMove.folders.length > 0) {
-        await Promise.all(itemsToMove.folders.map((folder) => moveFolder(folder.id, { parentId: targetFolderId })));
+        await Promise.all(
+          itemsToMove.folders.map((folder) => moveFolder(folder.id, { parentId: targetFolderId })),
+        );
       }
 
       const itemCount = itemsToMove.files.length + itemsToMove.folders.length;
@@ -112,7 +116,9 @@ export default function FilesPage() {
       await loadFiles();
       setItemsToMove(null);
     } catch (error) {
-      console.error("Error moving items:", error);
+      logger.error("Error moving items:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("files.errors.moveItemsFailed"));
     }
   };
@@ -127,7 +133,7 @@ export default function FilesPage() {
       // Get all files in this folder and subfolders recursively with their paths
       const getFolderFilesWithPath = (
         targetFolderId: string,
-        currentPath: string = ""
+        currentPath: string = "",
       ): Array<{ file: File; path: string }> => {
         const filesWithPath: Array<{ file: File; path: string }> = [];
 
@@ -165,7 +171,7 @@ export default function FilesPage() {
               url,
               name: path ? `${path}/${file.name}` : file.name,
             };
-          })
+          }),
         );
 
         // Create ZIP with all files
@@ -181,7 +187,9 @@ export default function FilesPage() {
         throw error;
       }
     } catch (error) {
-      console.error("Error downloading folder:", error);
+      logger.error("Error downloading folder:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("share.errors.downloadFailed"));
     }
   };
@@ -190,7 +198,9 @@ export default function FilesPage() {
     <ProtectedRoute>
       <GlobalDropZone
         onSuccess={loadFiles}
-        currentFolderId={currentPath.length > 0 ? currentPath[currentPath.length - 1].id : undefined}
+        currentFolderId={
+          currentPath.length > 0 ? currentPath[currentPath.length - 1].id : undefined
+        }
       >
         <FileManagerLayout
           breadcrumbLabel={t("files.breadcrumb")}
@@ -257,13 +267,15 @@ export default function FilesPage() {
 
                                 if (items.length === 1) {
                                   toast.success(
-                                    `${items[0].type === "folder" ? "Folder" : "File"} "${items[0].name}" moved to root folder`
+                                    `${items[0].type === "folder" ? "Folder" : "File"} "${items[0].name}" moved to root folder`,
                                   );
                                 } else {
                                   toast.success(`${items.length} items moved to root folder`);
                                 }
                               } catch (error) {
-                                console.error("Error moving items:", error);
+                                logger.error("Error moving items:", {
+                                  err: error instanceof Error ? error.message : String(error),
+                                });
                                 toast.error(t("files.errors.moveItemsFailed"));
                                 await loadFiles();
                               }
@@ -293,12 +305,18 @@ export default function FilesPage() {
                                     e.currentTarget.classList.add("bg-primary/10", "text-primary");
                                   }}
                                   onDragLeave={(e) => {
-                                    e.currentTarget.classList.remove("bg-primary/10", "text-primary");
+                                    e.currentTarget.classList.remove(
+                                      "bg-primary/10",
+                                      "text-primary",
+                                    );
                                   }}
                                   onDrop={async (e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    e.currentTarget.classList.remove("bg-primary/10", "text-primary");
+                                    e.currentTarget.classList.remove(
+                                      "bg-primary/10",
+                                      "text-primary",
+                                    );
 
                                     try {
                                       const itemData = e.dataTransfer.getData("text/plain");
@@ -307,7 +325,8 @@ export default function FilesPage() {
                                       // Filter out invalid moves
                                       const validItems = items.filter((item) => {
                                         if (item.id === folder.id) return false;
-                                        if (item.type === "folder" && item.id === folder.id) return false;
+                                        if (item.type === "folder" && item.id === folder.id)
+                                          return false;
                                         return true;
                                       });
 
@@ -335,13 +354,17 @@ export default function FilesPage() {
 
                                       if (validItems.length === 1) {
                                         toast.success(
-                                          `${validItems[0].type === "folder" ? "Folder" : "File"} "${validItems[0].name}" moved to "${folder.name}"`
+                                          `${validItems[0].type === "folder" ? "Folder" : "File"} "${validItems[0].name}" moved to "${folder.name}"`,
                                         );
                                       } else {
-                                        toast.success(`${validItems.length} items moved to "${folder.name}"`);
+                                        toast.success(
+                                          `${validItems.length} items moved to "${folder.name}"`,
+                                        );
                                       }
                                     } catch (error) {
-                                      console.error("Error moving items:", error);
+                                      logger.error("Error moving items:", {
+                                        err: error instanceof Error ? error.message : String(error),
+                                      });
                                       toast.error(t("files.errors.moveItemsFailed"));
                                       await loadFiles();
                                     }

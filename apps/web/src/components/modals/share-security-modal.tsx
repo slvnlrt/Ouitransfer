@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { IconEye, IconEyeOff, IconLock, IconLockOpen } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +20,7 @@ import { Loader } from "@/components/ui/loader";
 import { Switch } from "@/components/ui/switch";
 import { updateSharePassword } from "@/http/endpoints";
 import type { Share } from "@/http/endpoints/shares/types";
+import { logger } from "@/lib/logger";
 
 interface ShareSecurityModalProps {
   shareId: string | null;
@@ -29,7 +29,12 @@ interface ShareSecurityModalProps {
   onSuccess?: () => void;
 }
 
-export function ShareSecurityModal({ shareId, share, onClose, onSuccess }: ShareSecurityModalProps) {
+export function ShareSecurityModal({
+  shareId,
+  share,
+  onClose,
+  onSuccess,
+}: ShareSecurityModalProps) {
   const t = useTranslations();
   const [isLoading, setIsLoading] = useState(false);
   const [hasPassword, setHasPassword] = useState(false);
@@ -77,7 +82,9 @@ export function ShareSecurityModal({ shareId, share, onClose, onSuccess }: Share
       }
       onClose();
     } catch (error) {
-      console.error("Failed to update share security:", error);
+      logger.error("Failed to update share security:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("shareSecurity.error.updateFailed"));
     } finally {
       setIsLoading(false);
@@ -118,7 +125,9 @@ export function ShareSecurityModal({ shareId, share, onClose, onSuccess }: Share
 
         <div className="py-4 space-y-6">
           <div className="space-y-3">
-            <h3 className="text-sm font-medium text-foreground">{t("shareSecurity.currentStatus")}</h3>
+            <h3 className="text-sm font-medium text-foreground">
+              {t("shareSecurity.currentStatus")}
+            </h3>
             <div className="flex gap-2">
               {share?.security?.hasPassword ? (
                 <Badge
@@ -142,7 +151,11 @@ export function ShareSecurityModal({ shareId, share, onClose, onSuccess }: Share
 
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <Switch id="password-protection" checked={hasPassword} onCheckedChange={handlePasswordToggle} />
+              <Switch
+                id="password-protection"
+                checked={hasPassword}
+                onCheckedChange={handlePasswordToggle}
+              />
               <Label htmlFor="password-protection" className="flex items-center gap-2">
                 <IconLock size={16} />
                 {t("shareSecurity.passwordProtection")}
@@ -153,13 +166,17 @@ export function ShareSecurityModal({ shareId, share, onClose, onSuccess }: Share
               <div className="space-y-4 pl-6 border-l-2 border-muted">
                 {share?.security?.hasPassword && (
                   <div className="bg-muted/50 border border-border rounded-lg p-3">
-                    <p className="text-sm text-muted-foreground">{t("shareSecurity.existingPasswordMessage")}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {t("shareSecurity.existingPasswordMessage")}
+                    </p>
                   </div>
                 )}
 
                 <div className="space-y-2">
                   <Label htmlFor="password">
-                    {share?.security?.hasPassword ? t("shareSecurity.newPassword") : t("shareSecurity.password")}
+                    {share?.security?.hasPassword
+                      ? t("shareSecurity.newPassword")
+                      : t("shareSecurity.password")}
                   </Label>
                   <div className="relative">
                     <Input
@@ -200,7 +217,9 @@ export function ShareSecurityModal({ shareId, share, onClose, onSuccess }: Share
             <div className="text-sm space-y-1">
               <p className="font-medium text-muted-foreground">{t("shareSecurity.info.title")}</p>
               <p className="text-muted-foreground">
-                {hasPassword ? t("shareSecurity.info.withPassword") : t("shareSecurity.info.withoutPassword")}
+                {hasPassword
+                  ? t("shareSecurity.info.withPassword")
+                  : t("shareSecurity.info.withoutPassword")}
               </p>
             </div>
           </div>

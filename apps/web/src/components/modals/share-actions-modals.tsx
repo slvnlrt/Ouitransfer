@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-
 import { RecipientSelector } from "@/components/general/recipient-selector";
-import { FileTree, TreeFile, TreeFolder } from "@/components/tables/files-tree";
+import { FileTree, type TreeFile, type TreeFolder } from "@/components/tables/files-tree";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -18,11 +17,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { addFiles, addFolders, removeFiles, removeFolders, updateSharePassword } from "@/http/endpoints";
+import {
+  addFiles,
+  addFolders,
+  removeFiles,
+  removeFolders,
+  updateSharePassword,
+} from "@/http/endpoints";
 import type { FileItem } from "@/http/endpoints/files/types";
 import { listFolders } from "@/http/endpoints/folders";
 import type { FolderItem } from "@/http/endpoints/folders/types";
 import type { Share } from "@/http/endpoints/shares/types";
+import { logger } from "@/lib/logger";
 
 export interface UpdateShareData {
   name?: string;
@@ -84,7 +90,9 @@ export function ShareActionsModals({
         setAllFolders(allFoldersResponse.data.folders || []);
         setAllFiles(allFilesResponse.files || []);
       } catch (error) {
-        console.error("Error loading all files and folders:", error);
+        logger.error("Error loading all files and folders:", {
+          err: error instanceof Error ? error.message : String(error),
+        });
         setAllFolders([]);
         setAllFiles([]);
       }
@@ -107,7 +115,9 @@ export function ShareActionsModals({
       setEditForm({
         name: shareToEdit.name || "",
         description: shareToEdit.description || "",
-        expiresAt: shareToEdit.expiration ? new Date(shareToEdit.expiration).toISOString().slice(0, 16) : "",
+        expiresAt: shareToEdit.expiration
+          ? new Date(shareToEdit.expiration).toISOString().slice(0, 16)
+          : "",
         isPasswordProtected: Boolean(shareToEdit.security?.hasPassword),
         password: "",
         maxViews: shareToEdit.security?.maxViews?.toString() || "",
@@ -138,7 +148,9 @@ export function ShareActionsModals({
       setManageFilesTreeFiles(treeFiles);
       setManageFilesTreeFolders(treeFolders);
     } catch (error) {
-      console.error("Error loading files and folders:", error);
+      logger.error("Error loading files and folders:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
     } finally {
       setIsManageFilesLoading(false);
     }
@@ -170,7 +182,7 @@ export function ShareActionsModals({
         name: editForm.name,
         description: editForm.description,
         expiration: editForm.expiresAt ? new Date(editForm.expiresAt).toISOString() : undefined,
-        maxViews: editForm.maxViews ? parseInt(editForm.maxViews) : null,
+        maxViews: editForm.maxViews ? parseInt(editForm.maxViews, 10) : null,
       };
 
       await onEdit(shareToEdit.id, updateData);
@@ -198,10 +210,10 @@ export function ShareActionsModals({
       setIsManageFilesSaving(true);
 
       const selectedFiles = manageFilesSelectedItems.filter((id) =>
-        manageFilesTreeFiles.some((file) => file.id === id)
+        manageFilesTreeFiles.some((file) => file.id === id),
       );
       const selectedFolders = manageFilesSelectedItems.filter((id) =>
-        manageFilesTreeFolders.some((folder) => folder.id === id)
+        manageFilesTreeFolders.some((folder) => folder.id === id),
       );
 
       const currentFileIds = shareToManageFiles.files?.map((f) => f.id) || [];
@@ -211,7 +223,9 @@ export function ShareActionsModals({
       const filesToRemove = currentFileIds.filter((id: string) => !selectedFiles.includes(id));
 
       const foldersToAdd = selectedFolders.filter((id: string) => !currentFolderIds.includes(id));
-      const foldersToRemove = currentFolderIds.filter((id: string) => !selectedFolders.includes(id));
+      const foldersToRemove = currentFolderIds.filter(
+        (id: string) => !selectedFolders.includes(id),
+      );
 
       const promises = [];
 
@@ -233,7 +247,9 @@ export function ShareActionsModals({
       onCloseManageFiles();
       toast.success(t("shareActions.editSuccess"));
     } catch (error) {
-      console.error("Error updating share files:", error);
+      logger.error("Error updating share files:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("shareActions.editError"));
       throw error;
     } finally {
@@ -276,7 +292,10 @@ export function ShareActionsModals({
           <div className="flex flex-col gap-4">
             <div className="grid w-full items-center gap-1.5">
               <Label>{t("createShare.nameLabel")}</Label>
-              <Input value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} />
+              <Input
+                value={editForm.name}
+                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+              />
             </div>
             <div className="grid w-full items-center gap-1.5">
               <Label>{t("createShare.descriptionLabel")}</Label>
@@ -373,7 +392,9 @@ export function ShareActionsModals({
             {/* Selection Count */}
             <div className="text-sm text-muted-foreground">
               {manageFilesSelectedItems.length > 0 && (
-                <span>{t("shareActions.itemsSelected", { count: manageFilesSelectedItems.length })}</span>
+                <span>
+                  {t("shareActions.itemsSelected", { count: manageFilesSelectedItems.length })}
+                </span>
               )}
             </div>
 
@@ -419,12 +440,18 @@ export function ShareActionsModals({
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={handleManageFilesClose} disabled={isManageFilesSaving}>
+            <Button
+              variant="outline"
+              onClick={handleManageFilesClose}
+              disabled={isManageFilesSaving}
+            >
               {t("common.cancel")}
             </Button>
             <Button
               onClick={handleManageFilesSave}
-              disabled={isManageFilesLoading || isManageFilesSaving || manageFilesSelectedItems.length === 0}
+              disabled={
+                isManageFilesLoading || isManageFilesSaving || manageFilesSelectedItems.length === 0
+              }
             >
               {isManageFilesSaving ? t("common.saving") : t("common.save")}
             </Button>
@@ -435,7 +462,9 @@ export function ShareActionsModals({
       <Dialog open={!!shareToManageRecipients} onOpenChange={() => onCloseManageRecipients()}>
         <DialogContent className="sm:max-w-[500px] md:max-w-[650px] max-h-[85vh] overflow-hidden">
           <DialogHeader className="space-y-3">
-            <DialogTitle className="text-xl font-semibold">{t("shareActions.manageRecipientsTitle")}</DialogTitle>
+            <DialogTitle className="text-xl font-semibold">
+              {t("shareActions.manageRecipientsTitle")}
+            </DialogTitle>
             <DialogDescription className="text-muted-foreground">
               {t("recipientSelector.modalDescription")}
             </DialogDescription>

@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { IconLogout, IconPalette, IconSettings, IconUser, IconUsers } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { IconLogout, IconPalette, IconSettings, IconUser, IconUsers } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-
+import { useState } from "react";
 import { LanguageSwitcher } from "@/components/general/language-switcher";
 import { ModeToggle } from "@/components/general/mode-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -18,6 +17,7 @@ import {
 import { useAppInfo } from "@/contexts/app-info-context";
 import { useAuth } from "@/contexts/auth-context";
 import { logout as logoutAPI } from "@/http/endpoints";
+import { logger } from "@/lib/logger";
 
 export function Navbar() {
   const t = useTranslations();
@@ -33,7 +33,9 @@ export function Navbar() {
       setIsNavigating(true);
       router.replace("/dashboard");
     } catch (err) {
-      console.error("Error navigating to dashboard:", err);
+      logger.error("Error navigating to dashboard:", {
+        err: err instanceof Error ? err.message : String(err),
+      });
     } finally {
       setTimeout(() => setIsNavigating(false), 500);
     }
@@ -45,7 +47,7 @@ export function Navbar() {
       logout();
       router.push("/login");
     } catch (err) {
-      console.error("Error logging out:", err);
+      logger.error("Error logging out:", { err: err instanceof Error ? err.message : String(err) });
     }
   };
 
@@ -54,15 +56,22 @@ export function Navbar() {
       <div className="container flex h-16 max-w-screen-xl items-center mx-auto lg:px-6">
         <div className="flex flex-1 items-center justify-between">
           <div className="flex items-center gap-3">
-            <div
+            <button
+              type="button"
               onClick={handleLogoClick}
-              className={`flex items-center gap-2 cursor-pointer transition-opacity ${
+              className={`flex items-center gap-2 cursor-pointer transition-opacity bg-transparent border-0 p-0 ${
                 isNavigating ? "opacity-50" : "opacity-100"
               }`}
             >
-              {appLogo && <img alt={t("navbar.logoAlt")} className="h-8 w-8 object-contain rounded" src={appLogo} />}
+              {appLogo && (
+                <img
+                  alt={t("navbar.logoAlt")}
+                  className="h-8 w-8 object-contain rounded"
+                  src={appLogo}
+                />
+              )}
               <p className="font-bold text-2xl">{appName}</p>
-            </div>
+            </button>
           </div>
 
           <div className="flex items-center gap-2 cursor-pointer">
@@ -103,7 +112,10 @@ export function Navbar() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/users-management" className="flex items-center gap-2 cursor-pointer">
+                      <Link
+                        href="/users-management"
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
                         <IconUsers className="h-4 w-4" />
                         {t("navbar.usersManagement")}
                       </Link>

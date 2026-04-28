@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
 import { getAppInfo } from "@/http/endpoints";
+import { logger } from "@/lib/logger";
 
 interface AppInfoStore {
   appName: string;
@@ -36,7 +37,9 @@ export const useAppInfo = create<AppInfoStore>((set) => {
         });
         updateTitle(response.data.appName);
       } catch (error) {
-        console.error("Failed to fetch app info:", error);
+        logger.error("Failed to fetch app info:", {
+          err: error instanceof Error ? error.message : String(error),
+        });
         set({ isLoading: false });
       }
     }
@@ -65,7 +68,9 @@ export const useAppInfo = create<AppInfoStore>((set) => {
         });
         updateTitle(response.data.appName);
       } catch (error) {
-        console.error("Failed to fetch app info:", error);
+        logger.error("Failed to fetch app info:", {
+          err: error instanceof Error ? error.message : String(error),
+        });
         set({ isLoading: false });
       }
     },

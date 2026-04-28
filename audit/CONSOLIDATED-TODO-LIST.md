@@ -1068,6 +1068,14 @@ Port Configuration (1h)
 
 Note: S4 (X-Forwarded-For trust without TRUST\_PROXY) is already covered by item 5.7 above.
 
+\- \[ ] 5.16 — Migrate controllers to use the centralized error handler (Phase 3 review I-2)
+
+&#x20; Files: All server controller files (~15 files)
+
+&#x20; Action: Remove try/catch wrappers from controller handlers. Let errors propagate to globalErrorHandler (registered in app.ts). This unifies the error response shape to `{ error, code, statusCode, details? }` instead of the current mix of global handler + per-controller `{ error: "..." }`. Consider adopting an AppError class for domain-specific errors.
+
+&#x20; Justification: Phase 3 review I-2 — globalErrorHandler exists but is mostly bypassed by controller-level catch blocks, creating two inconsistent error response shapes.
+
 \---
 
 Phase 6: Infrastructure \& Operations 🐳
@@ -1207,6 +1215,14 @@ Secrets Management (2h)
 &#x20; Action: The current Docker build relies on pnpm symlinks created at deps stage pointing to paths resolved later. This works but is fragile. Evaluate using `pnpm deploy` to produce a flat, self-contained runtime directory that doesn't depend on symlink resolution.
 
 &#x20; Justification: Phase 2 review W10 — Dockerfile pnpm symlink chain fragility
+
+\- \[ ] 6.16 — Fix lefthook pre-commit hook for large commits on Windows (Phase 3 review)
+
+&#x20; File: lefthook.yml
+
+&#x20; Action: The `{staged_files}` expansion exceeds Windows ~8191 char command-line limit when >100 files are staged. Switch to `--stdin` mode or use `run: pnpm exec biome check --write --unsafe --changed --since=HEAD` instead of passing individual file paths.
+
+&#x20; Justification: Phase 3 review — commit with 167 files failed with "La ligne de commande est trop longue"
 
 \---
 

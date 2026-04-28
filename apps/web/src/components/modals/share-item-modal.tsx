@@ -1,17 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { IconCalendar, IconCopy, IconDownload, IconEye, IconLink, IconLock, IconShare } from "@tabler/icons-react";
+import {
+  IconCalendar,
+  IconCopy,
+  IconDownload,
+  IconEye,
+  IconLink,
+  IconLock,
+  IconShare,
+} from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { createShare, createShareAlias, listFiles, listFolders } from "@/http/endpoints";
+import { logger } from "@/lib/logger";
 import { customNanoid } from "@/lib/utils";
 
 interface File {
@@ -43,7 +57,8 @@ interface ShareItemModalProps {
   onSuccess: () => void;
 }
 
-const generateCustomId = () => customNanoid(10, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+const generateCustomId = () =>
+  customNanoid(10, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
 export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: ShareItemModalProps) {
   const t = useTranslations();
@@ -82,7 +97,9 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
     }
   }, [isOpen, item, file, folder]);
 
-  const getAllFolderContents = async (folderId: string): Promise<{ files: string[]; folders: string[] }> => {
+  const getAllFolderContents = async (
+    folderId: string,
+  ): Promise<{ files: string[]; folders: string[] }> => {
     try {
       const [filesResponse, foldersResponse] = await Promise.all([listFiles(), listFolders()]);
 
@@ -109,7 +126,9 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
 
       return collectContents(folderId);
     } catch (error) {
-      console.error("Error getting folder contents:", error);
+      logger.error("Error getting folder contents:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       return { files: [], folders: [] };
     }
   };
@@ -136,7 +155,7 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
         description: formData.description || undefined,
         password: formData.isPasswordProtected ? formData.password : undefined,
         expiration: formData.expiresAt ? new Date(formData.expiresAt).toISOString() : undefined,
-        maxViews: formData.maxViews ? parseInt(formData.maxViews) : undefined,
+        maxViews: formData.maxViews ? parseInt(formData.maxViews, 10) : undefined,
         files: filesToShare,
         folders: foldersToShare,
       });
@@ -351,7 +370,12 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
                 <p className="text-sm text-muted-foreground">{t("shareActions.linkReady")}</p>
                 <div className="flex gap-2">
                   <Input readOnly value={generatedLink} className="flex-1" />
-                  <Button size="icon" variant="outline" onClick={handleCopyLink} title={t("shareActions.copyLink")}>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={handleCopyLink}
+                    title={t("shareActions.copyLink")}
+                  >
                     <IconCopy className="h-4 w-4" />
                   </Button>
                 </div>

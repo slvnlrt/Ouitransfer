@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { IconEye, IconEyeOff, IconLock, IconLockOpen } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -15,10 +14,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { ReverseShare } from "../hooks/use-reverse-shares";
+import { logger } from "@/lib/logger";
+import type { ReverseShare } from "../hooks/use-reverse-shares";
 
 interface EditPasswordFormData {
   hasPassword: boolean;
@@ -29,7 +37,10 @@ interface EditPasswordModalProps {
   reverseShare: ReverseShare | null;
   isOpen: boolean;
   onClose: () => void;
-  onUpdatePassword: (id: string, data: { hasPassword: boolean; password?: string }) => Promise<void>;
+  onUpdatePassword: (
+    id: string,
+    data: { hasPassword: boolean; password?: string },
+  ) => Promise<void>;
   isUpdating?: boolean;
 }
 
@@ -75,13 +86,15 @@ export function EditPasswordModal({
       toast.success(
         data.hasPassword
           ? t("reverseShares.messages.passwordProtectionEnabled")
-          : t("reverseShares.messages.passwordProtectionDisabled")
+          : t("reverseShares.messages.passwordProtectionDisabled"),
       );
 
       onClose();
       form.reset();
     } catch (error) {
-      console.error("Failed to update password:", error);
+      logger.error("Failed to update password:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("reverseShares.errors.passwordUpdateFailed"));
     }
   };
@@ -166,11 +179,17 @@ export function EditPasswordModal({
                             className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                             onClick={() => setShowPassword(!showPassword)}
                           >
-                            {showPassword ? <IconEyeOff className="h-4 w-4" /> : <IconEye className="h-4 w-4" />}
+                            {showPassword ? (
+                              <IconEyeOff className="h-4 w-4" />
+                            ) : (
+                              <IconEye className="h-4 w-4" />
+                            )}
                           </Button>
                         </div>
                       </FormControl>
-                      <FormDescription>{t("reverseShares.form.password.passwordHelp")}</FormDescription>
+                      <FormDescription>
+                        {t("reverseShares.form.password.passwordHelp")}
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}

@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import { getAppInfo, getCurrentUser } from "@/http/endpoints";
 import type { User } from "@/http/endpoints/auth/types";
+import { logger } from "@/lib/logger";
 
 type AuthUser = Omit<User, "isAdmin">;
 
@@ -74,7 +75,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch (err) {
         if (!isMounted) return;
 
-        console.error(err);
+        logger.error("Auth check failed:", {
+          err: err instanceof Error ? err.message : String(err),
+        });
         setUser(null);
         setIsAdmin(false);
         setIsAuthenticated(false);

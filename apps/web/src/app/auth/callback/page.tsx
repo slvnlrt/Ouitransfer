@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
 import { toast } from "sonner";
 
 import { useAuth } from "@/contexts/auth-context";
 import { getCurrentUser } from "@/http/endpoints";
+import { logger } from "@/lib/logger";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -50,6 +51,7 @@ export default function AuthCallbackPage() {
     }
 
     if (token) {
+      // biome-ignore lint/suspicious/noDocumentCookie: Cookie Store API has poor browser support; direct assignment is the only cross-browser option here
       document.cookie = `token=${token}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=lax`;
 
       // Buscar dados do usuário após definir o cookie
@@ -67,7 +69,9 @@ export default function AuthCallbackPage() {
             throw new Error("No user data received");
           }
         } catch (error) {
-          console.error("Error fetching user data:", error);
+          logger.error("Error fetching user data:", {
+            err: error instanceof Error ? error.message : String(error),
+          });
           toast.error(t("auth.authenticationFailed"));
           router.push("/login");
         }

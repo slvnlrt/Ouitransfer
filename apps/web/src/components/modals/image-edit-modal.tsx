@@ -1,14 +1,27 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { IconCheck, IconRotateClockwise, IconX, IconZoomIn, IconZoomOut } from "@tabler/icons-react";
+import {
+  IconCheck,
+  IconRotateClockwise,
+  IconX,
+  IconZoomIn,
+  IconZoomOut,
+} from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import ReactCrop, { centerCrop, Crop, makeAspectCrop, PixelCrop } from "react-image-crop";
+import { useCallback, useEffect, useRef, useState } from "react";
+import ReactCrop, { type Crop, centerCrop, makeAspectCrop, type PixelCrop } from "react-image-crop";
+import { logger } from "@/lib/logger";
 
 import "react-image-crop/dist/ReactCrop.css";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Slider } from "@/components/ui/slider";
 
@@ -28,10 +41,10 @@ function centerAspectCrop(mediaWidth: number, mediaHeight: number, aspect: numbe
       },
       aspect,
       mediaWidth,
-      mediaHeight
+      mediaHeight,
     ),
     mediaWidth,
-    mediaHeight
+    mediaHeight,
   );
 }
 
@@ -71,7 +84,7 @@ export function ImageEditModal({ isOpen, onClose, onSave, imageFile }: ImageEdit
         setCrop(centerAspectCrop(width, height, aspect));
       }
     },
-    [aspect]
+    [aspect],
   );
 
   const handleRotate = () => {
@@ -142,7 +155,7 @@ export function ImageEditModal({ isOpen, onClose, onSave, imageFile }: ImageEdit
           }
         },
         "image/png",
-        1
+        1,
       );
     });
   }, [completedCrop, scale, rotate]);
@@ -155,7 +168,9 @@ export function ImageEditModal({ isOpen, onClose, onSave, imageFile }: ImageEdit
         onSave(croppedImageFile);
       }
     } catch (error) {
-      console.error("Error cropping image:", error);
+      logger.error("Error cropping image:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
     } finally {
       setIsLoading(false);
     }
@@ -204,18 +219,32 @@ export function ImageEditModal({ isOpen, onClose, onSave, imageFile }: ImageEdit
                     <IconRotateClockwise className="h-4 w-4" />
                     {t("imageEdit.rotate")}
                   </Button>
-                  <Button variant="outline" size="sm" onClick={handleZoomOut} disabled={isLoading || scale <= 0.5}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleZoomOut}
+                    disabled={isLoading || scale <= 0.5}
+                  >
                     <IconZoomOut className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="sm" onClick={handleZoomIn} disabled={isLoading || scale >= 3}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleZoomIn}
+                    disabled={isLoading || scale >= 3}
+                  >
                     <IconZoomIn className="h-4 w-4" />
                   </Button>
                 </div>
                 <div className="flex-1 max-w-xs">
-                  <label className="text-sm font-medium mb-2 block">
+                  <label
+                    htmlFor="image-edit-zoom-slider"
+                    className="text-sm font-medium mb-2 block"
+                  >
                     {t("imageEdit.zoom")}: {Math.round(scale * 100)}%
                   </label>
                   <Slider
+                    id="image-edit-zoom-slider"
                     value={[scale]}
                     onValueChange={handleScaleChange}
                     max={3}

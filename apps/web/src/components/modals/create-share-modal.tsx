@@ -1,11 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import { IconCalendar, IconEye, IconLock, IconShare } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-
-import { FileTree, TreeFile, TreeFolder } from "@/components/tables/files-tree";
+import { FileTree, type TreeFile, type TreeFolder } from "@/components/tables/files-tree";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -16,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { createShare } from "@/http/endpoints";
 import type { FileItem } from "@/http/endpoints/files/types";
 import type { FolderItem } from "@/http/endpoints/folders/types";
+import { logger } from "@/lib/logger";
 
 interface CreateShareModalProps {
   isOpen: boolean;
@@ -24,7 +24,12 @@ interface CreateShareModalProps {
   getAllFilesAndFolders: () => Promise<{ files: FileItem[]; folders: FolderItem[] }>;
 }
 
-export function CreateShareModal({ isOpen, onClose, onSuccess, getAllFilesAndFolders }: CreateShareModalProps) {
+export function CreateShareModal({
+  isOpen,
+  onClose,
+  onSuccess,
+  getAllFilesAndFolders,
+}: CreateShareModalProps) {
   const t = useTranslations();
   const [currentTab, setCurrentTab] = useState("details");
 
@@ -69,7 +74,9 @@ export function CreateShareModal({ isOpen, onClose, onSuccess, getAllFilesAndFol
       setFiles(treeFiles);
       setFolders(treeFolders);
     } catch (error) {
-      console.error("Error loading files and folders:", error);
+      logger.error("Error loading files and folders:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
     } finally {
       setIsLoadingData(false);
     }
@@ -106,7 +113,9 @@ export function CreateShareModal({ isOpen, onClose, onSuccess, getAllFilesAndFol
       setIsLoading(true);
 
       const selectedFiles = selectedItems.filter((id) => files.some((file) => file.id === id));
-      const selectedFolders = selectedItems.filter((id) => folders.some((folder) => folder.id === id));
+      const selectedFolders = selectedItems.filter((id) =>
+        folders.some((folder) => folder.id === id),
+      );
 
       await createShare({
         name: formData.name,
@@ -116,12 +125,12 @@ export function CreateShareModal({ isOpen, onClose, onSuccess, getAllFilesAndFol
           ? (() => {
               const dateValue = formData.expiresAt;
               if (dateValue.length === 10) {
-                return new Date(dateValue + "T23:59:59").toISOString();
+                return new Date(`${dateValue}T23:59:59`).toISOString();
               }
               return new Date(dateValue).toISOString();
             })()
           : undefined,
-        maxViews: formData.maxViews ? parseInt(formData.maxViews) : undefined,
+        maxViews: formData.maxViews ? parseInt(formData.maxViews, 10) : undefined,
         files: selectedFiles,
         folders: selectedFolders,
       });
@@ -130,7 +139,9 @@ export function CreateShareModal({ isOpen, onClose, onSuccess, getAllFilesAndFol
       onSuccess();
       onClose();
     } catch (error) {
-      console.error("Error creating share:", error);
+      logger.error("Error creating share:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("createShare.error"));
     } finally {
       setIsLoading(false);

@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { IconAlertTriangle, IconCheck, IconClock, IconInfoCircle } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-
+import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "@/components/general/language-switcher";
 import { ModeToggle } from "@/components/general/mode-toggle";
+import { logger } from "@/lib/logger";
 import { BACKGROUND_IMAGES, MESSAGE_TYPES } from "../constants";
-import { WeTransferLayoutProps } from "../types";
+import type { WeTransferLayoutProps } from "../types";
 import { FileUploadSection } from "./file-upload-section";
 import { WeTransferStatusMessage } from "./shared/status-message";
 import { TransparentFooter } from "./transparent-footer";
@@ -31,7 +31,7 @@ const useBackgroundImage = () => {
     const img = new Image();
     img.onload = () => setImageLoaded(true);
     img.onerror = () => {
-      console.error("Error loading background image:", selectedImage);
+      logger.error("Error loading background image:", { err: selectedImage });
       setImageLoaded(true);
     };
     img.src = selectedImage;
@@ -51,7 +51,13 @@ const HeaderControls = () => (
   </div>
 );
 
-const BackgroundLayer = ({ selectedImage, imageLoaded }: { selectedImage: string; imageLoaded: boolean }) => (
+const BackgroundLayer = ({
+  selectedImage,
+  imageLoaded,
+}: {
+  selectedImage: string;
+  imageLoaded: boolean;
+}) => (
   <>
     <div className="absolute inset-0 z-0 bg-background" />
     {imageLoaded && selectedImage && (
@@ -160,7 +166,9 @@ export function WeTransferLayout({
 
       {!imageLoaded && (
         <div className="absolute inset-0 z-30 flex items-center justify-center">
-          <div className="animate-pulse text-white/70 text-sm">{t("reverseShares.upload.layout.loading")}</div>
+          <div className="animate-pulse text-white/70 text-sm">
+            {t("reverseShares.upload.layout.loading")}
+          </div>
         </div>
       )}
 
@@ -172,7 +180,9 @@ export function WeTransferLayout({
                 {reverseShare?.name || t("reverseShares.upload.layout.defaultTitle")}
               </h1>
               {reverseShare?.description && (
-                <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">{reverseShare.description}</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
+                  {reverseShare.description}
+                </p>
               )}
             </div>
 

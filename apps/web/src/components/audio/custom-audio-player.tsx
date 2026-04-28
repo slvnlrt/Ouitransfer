@@ -1,8 +1,14 @@
+import {
+  IconPlayerPause,
+  IconPlayerPlay,
+  IconVolume,
+  IconVolume3,
+  IconVolumeOff,
+} from "@tabler/icons-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { IconPlayerPause, IconPlayerPlay, IconVolume, IconVolume3, IconVolumeOff } from "@tabler/icons-react";
-
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { logger } from "@/lib/logger";
 import { formatTime } from "@/utils/format-time";
 import WaveformVisualizer from "./waveform-visualizer";
 
@@ -45,7 +51,9 @@ export function CustomAudioPlayer({ src }: CustomAudioPlayerProps) {
 
       setAudioData(downsampledData);
     } catch (error) {
-      console.error("Failed to load audio data:", error);
+      logger.error("Failed to load audio data:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       setAudioData(null);
     }
   }, [src]);
@@ -124,13 +132,29 @@ export function CustomAudioPlayer({ src }: CustomAudioPlayerProps) {
 
   return (
     <div className="flex flex-col gap-2 w-full">
+      {/* biome-ignore lint/a11y/useMediaCaption: audio file preview for user-uploaded files, no caption track available */}
       <audio ref={audioRef} src={src} preload="metadata" />
 
-      <WaveformVisualizer progress={progress} onSeek={handleSeek} audioData={audioData} isLoading={isLoading} />
+      <WaveformVisualizer
+        progress={progress}
+        onSeek={handleSeek}
+        audioData={audioData}
+        isLoading={isLoading}
+      />
 
       <div className="flex items-center gap-4">
-        <Button variant="outline" size="icon" onClick={togglePlayPause} disabled={isLoading} className="h-8 w-8">
-          {isPlaying ? <IconPlayerPause className="h-4 w-4" /> : <IconPlayerPlay className="h-4 w-4" />}
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={togglePlayPause}
+          disabled={isLoading}
+          className="h-8 w-8"
+        >
+          {isPlaying ? (
+            <IconPlayerPause className="h-4 w-4" />
+          ) : (
+            <IconPlayerPlay className="h-4 w-4" />
+          )}
         </Button>
 
         <div className="text-sm text-muted-foreground space-x-1">
@@ -143,7 +167,13 @@ export function CustomAudioPlayer({ src }: CustomAudioPlayerProps) {
           <Button variant="outline" size="icon" onClick={toggleMute} className="h-8 w-8">
             <VolumeIcon className="h-4 w-4" />
           </Button>
-          <Slider value={[volume]} max={1} step={0.01} onValueChange={handleVolumeChange} className="w-24" />
+          <Slider
+            value={[volume]}
+            max={1}
+            step={0.01}
+            onValueChange={handleVolumeChange}
+            className="w-24"
+          />
         </div>
       </div>
     </div>

@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
 import { renderIconByName } from "@/components/ui/icon-picker";
 import { useAppInfo } from "@/contexts/app-info-context";
 import { getEnabledProviders } from "@/http/endpoints";
 import type { EnabledAuthProvider } from "@/http/endpoints/auth/types";
+import { logger } from "@/lib/logger";
 
 interface MultiProviderButtonsProps {
   showSeparator?: boolean;
@@ -27,10 +27,12 @@ export function MultiProviderButtons({ showSeparator = true }: MultiProviderButt
       if (data.success) {
         setProviders(data.data || []);
       } else {
-        console.error("Failed to load providers");
+        logger.error("Failed to load providers");
       }
     } catch (error) {
-      console.error("Error loading providers:", error);
+      logger.error("Error loading providers:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
     } finally {
       setLoading(false);
     }

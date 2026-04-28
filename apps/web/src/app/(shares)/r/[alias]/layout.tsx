@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { getTranslations } from "next-intl/server";
 
+import { logger } from "@/lib/logger";
+
 async function getReverseShareMetadata(alias: string) {
   try {
     const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3333";
@@ -15,7 +17,9 @@ async function getReverseShareMetadata(alias: string) {
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching reverse share metadata:", error);
+    logger.error("Error fetching reverse share metadata:", {
+      err: error instanceof Error ? error.message : String(error),
+    });
     return null;
   }
 }
@@ -33,7 +37,9 @@ async function getAppInfo() {
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching app info:", error);
+    logger.error("Error fetching app info:", {
+      err: error instanceof Error ? error.message : String(error),
+    });
     return { appName: "OUITRANSFER", appDescription: "File sharing platform", appLogo: null };
   }
 }
@@ -45,7 +51,11 @@ async function getBaseUrl(): Promise<string> {
   return `${protocol}://${host}`;
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ alias: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ alias: string }>;
+}): Promise<Metadata> {
   const t = await getTranslations();
   const resolvedParams = await params;
   const metadata = await getReverseShareMetadata(resolvedParams.alias);

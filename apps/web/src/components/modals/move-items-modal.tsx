@@ -1,10 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { IconFolder } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-
-import { FileTree, TreeFolder } from "@/components/tables/files-tree";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { FileTree, type TreeFolder } from "@/components/tables/files-tree";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { logger } from "@/lib/logger";
 import { getFileIcon } from "@/utils/file-icons";
 
 interface MoveItemFile {
@@ -82,7 +82,9 @@ export function MoveItemsModal({
 
       setFolders(treeFolders);
     } catch (error) {
-      console.error("Error loading folders:", error);
+      logger.error("Error loading folders:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
     } finally {
       setIsLoading(false);
     }
@@ -121,12 +123,15 @@ export function MoveItemsModal({
     try {
       setIsMoving(true);
 
-      const targetFolderId = selectedItems.length > 0 && selectedItems[0] !== "root" ? selectedItems[0] : null;
+      const targetFolderId =
+        selectedItems.length > 0 && selectedItems[0] !== "root" ? selectedItems[0] : null;
 
       await onMove(targetFolderId);
       onClose();
     } catch (error) {
-      console.error("Error moving items:", error);
+      logger.error("Error moving items:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
     } finally {
       setIsMoving(false);
     }
@@ -156,7 +161,9 @@ export function MoveItemsModal({
       <DialogContent className="max-w-2xl max-h-[80vh] w-full">
         <DialogHeader>
           <DialogTitle>{title || t("moveItems.title", { count: itemCount })}</DialogTitle>
-          <DialogDescription>{description || t("moveItems.description", { count: itemCount })}</DialogDescription>
+          <DialogDescription>
+            {description || t("moveItems.description", { count: itemCount })}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-4 flex-1 min-h-0 w-full overflow-hidden">
@@ -250,7 +257,7 @@ export function MoveItemsModal({
             {t("common.cancel")}
           </Button>
           <Button onClick={handleMove} disabled={isLoading || isMoving}>
-            {isMoving ? t("common.move") + "..." : t("common.move")}
+            {isMoving ? `${t("common.move")}...` : t("common.move")}
           </Button>
         </DialogFooter>
       </DialogContent>

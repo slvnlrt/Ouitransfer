@@ -1,10 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { IconChevronDown, IconClipboardCopy, IconDownload, IconFile, IconTrash } from "@tabler/icons-react";
+import {
+  IconChevronDown,
+  IconClipboardCopy,
+  IconDownload,
+  IconFile,
+  IconTrash,
+} from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -31,19 +36,20 @@ import {
   updateReverseShareFile,
 } from "@/http/endpoints/reverse-shares";
 import type { ReverseShareFile } from "@/http/endpoints/reverse-shares/types";
+import { logger } from "@/lib/logger";
 import { getFileIcon } from "@/utils/file-icons";
 import { truncateFileName } from "@/utils/file-utils";
-import { ReverseShare } from "../hooks/use-reverse-shares";
-import { FileRow, useFileEdit, type HoverState } from "./received-files-file-row";
+import type { ReverseShare } from "../hooks/use-reverse-shares";
+import { FileRow, type HoverState, useFileEdit } from "./received-files-file-row";
 import { ReverseShareFilePreviewModal } from "./reverse-share-file-preview-modal";
 
 const formatFileSize = (sizeString: string) => {
-  const sizeInBytes = parseInt(sizeString);
+  const sizeInBytes = parseInt(sizeString, 10);
   if (sizeInBytes === 0) return "0 B";
   const units = ["B", "KB", "MB", "GB"];
   const k = 1024;
   const i = Math.floor(Math.log(sizeInBytes) / Math.log(k));
-  return `${parseFloat((sizeInBytes / Math.pow(k, i)).toFixed(1))} ${units[i]}`;
+  return `${parseFloat((sizeInBytes / k ** i).toFixed(1))} ${units[i]}`;
 };
 
 interface ReceivedFilesModalProps {
@@ -79,13 +85,15 @@ export function ReceivedFilesModal({
 
   const getTotalSize = () => {
     if (!reverseShare?.files) return "0 B";
-    const totalBytes = reverseShare.files.reduce((acc, file) => acc + parseInt(file.size), 0);
+    const totalBytes = reverseShare.files.reduce((acc, file) => acc + parseInt(file.size, 10), 0);
     return formatFileSize(totalBytes.toString());
   };
 
   const handleDownload = async (file: ReverseShareFile) => {
     try {
-      const loadingToast = toast.loading(t("reverseShares.modals.receivedFiles.downloading") || "Downloading...");
+      const loadingToast = toast.loading(
+        t("reverseShares.modals.receivedFiles.downloading") || "Downloading...",
+      );
       const response = await downloadReverseShareFile(file.id);
 
       const link = document.createElement("a");
@@ -98,7 +106,9 @@ export function ReceivedFilesModal({
       toast.dismiss(loadingToast);
       toast.success(t("reverseShares.modals.receivedFiles.downloadSuccess"));
     } catch (error) {
-      console.error("Download error:", error);
+      logger.error("Download error:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("reverseShares.modals.receivedFiles.downloadError"));
     }
   };
@@ -129,7 +139,9 @@ export function ReceivedFilesModal({
 
       toast.success(t("reverseShares.modals.receivedFiles.editSuccess"));
     } catch (error) {
-      console.error("Error updating file:", error);
+      logger.error("Error updating file:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("reverseShares.modals.receivedFiles.editError"));
     } finally {
       cancelEdit();
@@ -148,7 +160,9 @@ export function ReceivedFilesModal({
 
       toast.success(t("reverseShares.modals.receivedFiles.deleteSuccess"));
     } catch (error) {
-      console.error("Error deleting file:", error);
+      logger.error("Error deleting file:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("reverseShares.modals.receivedFiles.deleteError"));
     }
   };
@@ -159,16 +173,26 @@ export function ReceivedFilesModal({
       await copyReverseShareFileToUserFiles(file.id);
       toast.success(t("reverseShares.modals.receivedFiles.copySuccess"));
     } catch (error: unknown) {
-      console.error("Error copying file:", error);
+      logger.error("Error copying file:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
 
       let errorMessage = t("reverseShares.modals.receivedFiles.copyError");
 
-      const err = error as { message?: string; code?: string; response?: { data?: { error?: string } }; name?: string } | null;
+      const err = error as {
+        message?: string;
+        code?: string;
+        response?: { data?: { error?: string } };
+        name?: string;
+      } | null;
       if (err?.message?.includes("timeout") || err?.code === "UND_ERR_SOCKET") {
         errorMessage = t("reverseShares.modals.receivedFiles.copyErrors.timeout");
       } else if (err?.response?.data?.error) {
         const serverError = err.response.data.error;
-        if (serverError.includes("File size exceeds") || serverError.includes("Insufficient storage")) {
+        if (
+          serverError.includes("File size exceeds") ||
+          serverError.includes("Insufficient storage")
+        ) {
           errorMessage = serverError;
         } else if (serverError.includes("Copy operation failed")) {
           errorMessage = t("reverseShares.modals.receivedFiles.copyErrors.failed");
@@ -245,7 +269,9 @@ export function ReceivedFilesModal({
         throw error;
       }
     } catch (error) {
-      console.error("Error creating ZIP:", error);
+      logger.error("Error creating ZIP:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
     }
   };
 
@@ -261,9 +287,16 @@ export function ReceivedFilesModal({
             try {
               await copyReverseShareFileToUserFiles(file.id);
             } catch (error: unknown) {
-              console.error(`Error copying file ${file.name}:`, error);
-              const err = error as { response?: { data?: { error?: string } }; message?: string } | null;
-              throw new Error(`Failed to copy ${file.name}: ${err?.response?.data?.error ?? err?.message ?? String(error)}`);
+              logger.error(`Error copying file ${file.name}:`, {
+                err: error instanceof Error ? error.message : String(error),
+              });
+              const err = error as {
+                response?: { data?: { error?: string } };
+                message?: string;
+              } | null;
+              throw new Error(
+                `Failed to copy ${file.name}: ${err?.response?.data?.error ?? err?.message ?? String(error)}`,
+              );
             }
           });
 
@@ -274,8 +307,12 @@ export function ReceivedFilesModal({
         }
       })(),
       {
-        loading: t("reverseShares.modals.receivedFiles.bulkCopyProgress", { count: selectedFileObjects.length }),
-        success: t("reverseShares.modals.receivedFiles.bulkCopySuccess", { count: selectedFileObjects.length }),
+        loading: t("reverseShares.modals.receivedFiles.bulkCopyProgress", {
+          count: selectedFileObjects.length,
+        }),
+        success: t("reverseShares.modals.receivedFiles.bulkCopySuccess", {
+          count: selectedFileObjects.length,
+        }),
         error: (error: unknown) => {
           const msg = error instanceof Error ? error.message : String(error);
           if (msg.includes("File size exceeds") || msg.includes("Insufficient storage")) {
@@ -284,7 +321,7 @@ export function ReceivedFilesModal({
             return t("reverseShares.modals.receivedFiles.copyError");
           }
         },
-      }
+      },
     );
   };
 
@@ -309,7 +346,9 @@ export function ReceivedFilesModal({
             try {
               await deleteReverseShareFile(file.id);
             } catch (error) {
-              console.error(`Error deleting file ${file.name}:`, error);
+              logger.error(`Error deleting file ${file.name}:`, {
+                err: error instanceof Error ? error.message : String(error),
+              });
               throw new Error(`Failed to delete ${file.name}`);
             }
           });
@@ -329,10 +368,14 @@ export function ReceivedFilesModal({
         }
       })(),
       {
-        loading: t("reverseShares.modals.receivedFiles.bulkDeleteProgress", { count: filesToDeleteBulk.length }),
-        success: t("reverseShares.modals.receivedFiles.bulkDeleteSuccess", { count: filesToDeleteBulk.length }),
+        loading: t("reverseShares.modals.receivedFiles.bulkDeleteProgress", {
+          count: filesToDeleteBulk.length,
+        }),
+        success: t("reverseShares.modals.receivedFiles.bulkDeleteSuccess", {
+          count: filesToDeleteBulk.length,
+        }),
         error: "Error deleting selected files",
-      }
+      },
     );
   };
 
@@ -347,7 +390,9 @@ export function ReceivedFilesModal({
               <IconFile size={20} />
               {t("reverseShares.modals.receivedFiles.title")}
             </DialogTitle>
-            <DialogDescription>{t("reverseShares.modals.receivedFiles.description")}</DialogDescription>
+            <DialogDescription>
+              {t("reverseShares.modals.receivedFiles.description")}
+            </DialogDescription>
           </DialogHeader>
 
           <div className="flex flex-col gap-4 flex-1 min-h-0">
@@ -368,7 +413,9 @@ export function ReceivedFilesModal({
               <div className="flex items-center justify-between p-4 bg-muted/30 border rounded-lg">
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-medium text-foreground">
-                    {t("reverseShares.modals.receivedFiles.bulkActions.selected", { count: selectedFiles.size })}
+                    {t("reverseShares.modals.receivedFiles.bulkActions.selected", {
+                      count: selectedFiles.size,
+                    })}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -380,7 +427,10 @@ export function ReceivedFilesModal({
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-[200px]">
-                      <DropdownMenuItem className="cursor-pointer py-2" onClick={handleBulkDownload}>
+                      <DropdownMenuItem
+                        className="cursor-pointer py-2"
+                        onClick={handleBulkDownload}
+                      >
                         <IconDownload className="h-4 w-4" />
                         {t("reverseShares.modals.receivedFiles.bulkActions.download")}
                       </DropdownMenuItem>
@@ -423,7 +473,9 @@ export function ReceivedFilesModal({
                   <IconFile className="h-8 w-8 text-muted-foreground" />
                 </div>
                 <div className="text-center space-y-2">
-                  <h3 className="text-lg font-medium">{t("reverseShares.modals.receivedFiles.noFiles")}</h3>
+                  <h3 className="text-lg font-medium">
+                    {t("reverseShares.modals.receivedFiles.noFiles")}
+                  </h3>
                   <p className="text-muted-foreground max-w-md">
                     {t("reverseShares.modals.receivedFiles.noFilesDescription")}
                   </p>
@@ -442,10 +494,18 @@ export function ReceivedFilesModal({
                             aria-label={t("reverseShares.modals.receivedFiles.selectAll")}
                           />
                         </TableHead>
-                        <TableHead>{t("reverseShares.modals.receivedFiles.columns.file")}</TableHead>
-                        <TableHead>{t("reverseShares.modals.receivedFiles.columns.size")}</TableHead>
-                        <TableHead>{t("reverseShares.modals.receivedFiles.columns.sender")}</TableHead>
-                        <TableHead>{t("reverseShares.modals.receivedFiles.columns.date")}</TableHead>
+                        <TableHead>
+                          {t("reverseShares.modals.receivedFiles.columns.file")}
+                        </TableHead>
+                        <TableHead>
+                          {t("reverseShares.modals.receivedFiles.columns.size")}
+                        </TableHead>
+                        <TableHead>
+                          {t("reverseShares.modals.receivedFiles.columns.sender")}
+                        </TableHead>
+                        <TableHead>
+                          {t("reverseShares.modals.receivedFiles.columns.date")}
+                        </TableHead>
                         <TableHead className="text-right">
                           {t("reverseShares.modals.receivedFiles.columns.actions")}
                         </TableHead>
@@ -488,9 +548,13 @@ export function ReceivedFilesModal({
       <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{t("reverseShares.modals.receivedFiles.bulkDeleteConfirmTitle")}</DialogTitle>
+            <DialogTitle>
+              {t("reverseShares.modals.receivedFiles.bulkDeleteConfirmTitle")}
+            </DialogTitle>
             <DialogDescription>
-              {t("reverseShares.modals.receivedFiles.bulkDeleteConfirmMessage", { count: filesToDeleteBulk.length })}
+              {t("reverseShares.modals.receivedFiles.bulkDeleteConfirmMessage", {
+                count: filesToDeleteBulk.length,
+              })}
             </DialogDescription>
           </DialogHeader>
 
@@ -500,7 +564,10 @@ export function ReceivedFilesModal({
                 const { icon: FileIcon, color } = getFileIcon(file.name);
                 const displayName = truncateFileName(file.name);
                 return (
-                  <div key={file.id} className="flex items-center gap-2 p-2 bg-muted/20 rounded text-sm min-w-0">
+                  <div
+                    key={file.id}
+                    className="flex items-center gap-2 p-2 bg-muted/20 rounded text-sm min-w-0"
+                  >
                     <FileIcon className={`h-4 w-4 ${color} flex-shrink-0`} />
                     <span className="flex-1 break-all" title={file.name}>
                       {displayName}
@@ -519,14 +586,20 @@ export function ReceivedFilesModal({
               {bulkDeleting ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
               ) : null}
-              {t("reverseShares.modals.receivedFiles.bulkDeleteConfirmButton", { count: filesToDeleteBulk.length })}
+              {t("reverseShares.modals.receivedFiles.bulkDeleteConfirmButton", {
+                count: filesToDeleteBulk.length,
+              })}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {previewFile && (
-        <ReverseShareFilePreviewModal isOpen={!!previewFile} onClose={() => setPreviewFile(null)} file={previewFile} />
+        <ReverseShareFilePreviewModal
+          isOpen={!!previewFile}
+          onClose={() => setPreviewFile(null)}
+          file={previewFile}
+        />
       )}
     </>
   );

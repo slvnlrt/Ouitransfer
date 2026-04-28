@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
   IconCalendar,
   IconCopy,
@@ -12,16 +11,23 @@ import {
   IconShare,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
 import { createShare, createShareAlias, listFiles, listFolders } from "@/http/endpoints";
+import { logger } from "@/lib/logger";
 import { customNanoid } from "@/lib/utils";
 import { getFileIcon } from "@/utils/file-icons";
 
@@ -69,9 +75,16 @@ interface ShareMultipleItemsModalProps {
   onSuccess: () => void;
 }
 
-const generateCustomId = () => customNanoid(10, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+const generateCustomId = () =>
+  customNanoid(10, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
-export function ShareMultipleItemsModal({ files, folders, isOpen, onClose, onSuccess }: ShareMultipleItemsModalProps) {
+export function ShareMultipleItemsModal({
+  files,
+  folders,
+  isOpen,
+  onClose,
+  onSuccess,
+}: ShareMultipleItemsModalProps) {
   const t = useTranslations();
   const [step, setStep] = useState<"create" | "link">("create");
   const [shareId, setShareId] = useState<string | null>(null);
@@ -122,7 +135,9 @@ export function ShareMultipleItemsModal({ files, folders, isOpen, onClose, onSuc
     }
   }, [isOpen, files, folders]);
 
-  const getAllFolderContents = async (folderId: string): Promise<{ files: string[]; folders: string[] }> => {
+  const getAllFolderContents = async (
+    folderId: string,
+  ): Promise<{ files: string[]; folders: string[] }> => {
     try {
       const [filesResponse, foldersResponse] = await Promise.all([listFiles(), listFolders()]);
 
@@ -149,7 +164,9 @@ export function ShareMultipleItemsModal({ files, folders, isOpen, onClose, onSuc
 
       return collectContents(folderId);
     } catch (error) {
-      console.error("Error getting folder contents:", error);
+      logger.error("Error getting folder contents:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       return { files: [], folders: [] };
     }
   };
@@ -179,7 +196,7 @@ export function ShareMultipleItemsModal({ files, folders, isOpen, onClose, onSuc
         description: formData.description || undefined,
         password: formData.isPasswordProtected ? formData.password : undefined,
         expiration: formData.expiresAt ? new Date(formData.expiresAt).toISOString() : undefined,
-        maxViews: formData.maxViews ? parseInt(formData.maxViews) : undefined,
+        maxViews: formData.maxViews ? parseInt(formData.maxViews, 10) : undefined,
         files: allFilesToShare,
         folders: allFoldersToShare,
       });
@@ -270,7 +287,7 @@ export function ShareMultipleItemsModal({ files, folders, isOpen, onClose, onSuc
       id: folder.id,
       name: folder.name,
       description: folder.description,
-      size: folder.totalSize ? parseInt(folder.totalSize) : undefined,
+      size: folder.totalSize ? parseInt(folder.totalSize, 10) : undefined,
       type: "folder" as const,
       createdAt: folder.createdAt,
       updatedAt: folder.updatedAt,
@@ -279,12 +296,15 @@ export function ShareMultipleItemsModal({ files, folders, isOpen, onClose, onSuc
 
   const totalSize =
     filesList.reduce((sum, file) => sum + file.size, 0) +
-    foldersList.reduce((sum, folder) => sum + (folder.totalSize ? parseInt(folder.totalSize) : 0), 0);
+    foldersList.reduce(
+      (sum, folder) => sum + (folder.totalSize ? parseInt(folder.totalSize, 10) : 0),
+      0,
+    );
   const formatFileSize = (bytes: number) => {
     const sizes = ["B", "KB", "MB", "GB"];
     if (bytes === 0) return "0 B";
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return `${Math.round((bytes / Math.pow(1024, i)) * 100) / 100} ${sizes[i]}`;
+    return `${Math.round((bytes / 1024 ** i) * 100) / 100} ${sizes[i]}`;
   };
 
   return (
@@ -410,7 +430,8 @@ export function ShareMultipleItemsModal({ files, folders, isOpen, onClose, onSuc
                   </div>
                 </ScrollArea>
                 <p className="text-xs text-muted-foreground">
-                  Total size: {formatFileSize(totalSize)} ({filesList.length} files, {foldersList.length} folders)
+                  Total size: {formatFileSize(totalSize)} ({filesList.length} files,{" "}
+                  {foldersList.length} folders)
                 </p>
               </div>
             </div>
@@ -420,7 +441,9 @@ export function ShareMultipleItemsModal({ files, folders, isOpen, onClose, onSuc
             <div className="space-y-4">
               {!generatedLink ? (
                 <>
-                  <p className="text-sm text-muted-foreground">{t("shareActions.linkDescriptionFile")}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {t("shareActions.linkDescriptionFile")}
+                  </p>
                   <div className="space-y-2">
                     <Label>{t("shareActions.aliasLabel")}</Label>
                     <Input
@@ -448,7 +471,12 @@ export function ShareMultipleItemsModal({ files, folders, isOpen, onClose, onSuc
                   <p className="text-sm text-muted-foreground">{t("shareActions.linkReady")}</p>
                   <div className="flex gap-2">
                     <Input readOnly value={generatedLink} className="flex-1" />
-                    <Button variant="outline" size="icon" onClick={handleCopyLink} title={t("shareActions.copyLink")}>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={handleCopyLink}
+                      title={t("shareActions.copyLink")}
+                    >
                       <IconCopy className="h-4 w-4" />
                     </Button>
                   </div>
@@ -466,7 +494,9 @@ export function ShareMultipleItemsModal({ files, folders, isOpen, onClose, onSuc
               </Button>
               <Button
                 disabled={
-                  isLoading || !formData.name.trim() || (formData.isPasswordProtected && !formData.password.trim())
+                  isLoading ||
+                  !formData.name.trim() ||
+                  (formData.isPasswordProtected && !formData.password.trim())
                 }
                 onClick={handleCreateShare}
               >

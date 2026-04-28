@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import { IconDownload, IconEye, IconTrash } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
 import { deleteReverseShareFile, downloadReverseShareFile } from "@/http/endpoints/reverse-shares";
 import type { ReverseShareFile } from "@/http/endpoints/reverse-shares/types";
+import { logger } from "@/lib/logger";
 import { getFileIcon } from "@/utils/file-icons";
 import { ReverseShareFilePreviewModal } from "./reverse-share-file-preview-modal";
 
@@ -31,12 +31,12 @@ export function ReceivedFilesSection({ files, onFileDeleted }: ReceivedFilesSect
 
   const formatFileSize = (size: string | number | null) => {
     if (!size) return "0 B";
-    const sizeInBytes = typeof size === "string" ? parseInt(size) : size;
+    const sizeInBytes = typeof size === "string" ? parseInt(size, 10) : size;
     if (sizeInBytes === 0) return "0 B";
     const units = ["B", "KB", "MB", "GB"];
     const k = 1024;
     const i = Math.floor(Math.log(sizeInBytes) / Math.log(k));
-    return `${parseFloat((sizeInBytes / Math.pow(k, i)).toFixed(1))} ${units[i]}`;
+    return `${parseFloat((sizeInBytes / k ** i).toFixed(1))} ${units[i]}`;
   };
 
   const formatDate = (dateString: string) => {
@@ -55,7 +55,9 @@ export function ReceivedFilesSection({ files, onFileDeleted }: ReceivedFilesSect
 
   const handleDownload = async (file: ReverseShareFile) => {
     try {
-      const loadingToast = toast.loading(t("reverseShares.modals.details.downloading") || "Downloading...");
+      const loadingToast = toast.loading(
+        t("reverseShares.modals.details.downloading") || "Downloading...",
+      );
       const response = await downloadReverseShareFile(file.id);
 
       const link = document.createElement("a");
@@ -68,7 +70,9 @@ export function ReceivedFilesSection({ files, onFileDeleted }: ReceivedFilesSect
       toast.dismiss(loadingToast);
       toast.success(t("reverseShares.modals.details.downloadSuccess"));
     } catch (error) {
-      console.error("Download error:", error);
+      logger.error("Download error:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("reverseShares.modals.details.downloadError"));
     }
   };
@@ -79,7 +83,9 @@ export function ReceivedFilesSection({ files, onFileDeleted }: ReceivedFilesSect
       toast.success(t("fileManager.deleteSuccess"));
       onFileDeleted?.();
     } catch (error) {
-      console.error("Error deleting file:", error);
+      logger.error("Error deleting file:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("fileManager.deleteError"));
     }
   };
@@ -99,7 +105,10 @@ export function ReceivedFilesSection({ files, onFileDeleted }: ReceivedFilesSect
             {files.map((file) => {
               const { icon: FileIcon, color } = getFileIcon(file.name);
               return (
-                <div key={file.id} className="flex items-center gap-2 p-2 bg-background rounded border mr-2 group">
+                <div
+                  key={file.id}
+                  className="flex items-center gap-2 p-2 bg-background rounded border mr-2 group"
+                >
                   <FileIcon className={`h-3.5 w-3.5 ${color} flex-shrink-0`} />
                   <div className="flex-1 min-w-0">
                     <div className="text-xs font-medium truncate max-w-[200px]" title={file.name}>
@@ -154,7 +163,11 @@ export function ReceivedFilesSection({ files, onFileDeleted }: ReceivedFilesSect
       </div>
 
       {previewFile && (
-        <ReverseShareFilePreviewModal isOpen={!!previewFile} onClose={() => setPreviewFile(null)} file={previewFile} />
+        <ReverseShareFilePreviewModal
+          isOpen={!!previewFile}
+          onClose={() => setPreviewFile(null)}
+          file={previewFile}
+        />
       )}
     </>
   );

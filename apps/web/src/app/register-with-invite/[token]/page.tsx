@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import { motion } from "framer-motion";
+import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-
 import { StaticBackgroundLights } from "@/app/login/components/static-background-lights";
 import { LanguageSwitcher } from "@/components/general/language-switcher";
 import { LoadingScreen } from "@/components/layout/loading-screen";
@@ -16,6 +15,7 @@ import { DefaultFooter } from "@/components/ui/default-footer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { registerWithInvite, validateInviteToken } from "@/http/endpoints/invite";
+import { logger } from "@/lib/logger";
 
 interface RegisterFormData {
   firstName: string;
@@ -66,7 +66,9 @@ export default function RegisterWithInvitePage() {
           setTokenValid(true);
         }
       } catch (error) {
-        console.error("Error validating token:", error);
+        logger.error("Error validating token:", {
+          err: error instanceof Error ? error.message : String(error),
+        });
         setTokenError(t("registerWithInvite.errors.invalidToken"));
         setTokenValid(false);
       } finally {
@@ -103,9 +105,12 @@ export default function RegisterWithInvitePage() {
         router.push("/login");
       }, 2000);
     } catch (error: unknown) {
-      console.error("Error registering:", error);
+      logger.error("Error registering:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
 
-      const errorMessage = (error as { response?: { data?: { error?: string } } } | null)?.response?.data?.error;
+      const errorMessage = (error as { response?: { data?: { error?: string } } } | null)?.response
+        ?.data?.error;
       if (errorMessage?.includes("already been used")) {
         toast.error(t("registerWithInvite.errors.tokenUsed"));
       } else if (errorMessage?.includes("expired")) {
@@ -142,9 +147,13 @@ export default function RegisterWithInvitePage() {
               transition={{ duration: 0.5 }}
             >
               <div className="text-center">
-                <h1 className="text-2xl font-bold mb-2">{t("registerWithInvite.errors.invalidToken")}</h1>
+                <h1 className="text-2xl font-bold mb-2">
+                  {t("registerWithInvite.errors.invalidToken")}
+                </h1>
                 <p className="text-muted-foreground mb-4">{tokenError}</p>
-                <Button onClick={() => router.push("/login")}>{t("forgotPassword.backToLogin")}</Button>
+                <Button onClick={() => router.push("/login")}>
+                  {t("forgotPassword.backToLogin")}
+                </Button>
               </div>
             </motion.div>
           </div>
@@ -171,7 +180,9 @@ export default function RegisterWithInvitePage() {
           >
             <div className="text-center">
               <h1 className="text-2xl font-bold">{t("registerWithInvite.title")}</h1>
-              <p className="text-muted-foreground text-sm mt-2">{t("registerWithInvite.description")}</p>
+              <p className="text-muted-foreground text-sm mt-2">
+                {t("registerWithInvite.description")}
+              </p>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -185,7 +196,9 @@ export default function RegisterWithInvitePage() {
                       required: t("registerWithInvite.validation.firstNameRequired"),
                     })}
                   />
-                  {errors.firstName && <p className="text-destructive text-sm">{errors.firstName.message}</p>}
+                  {errors.firstName && (
+                    <p className="text-destructive text-sm">{errors.firstName.message}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -197,7 +210,9 @@ export default function RegisterWithInvitePage() {
                       required: t("registerWithInvite.validation.lastNameRequired"),
                     })}
                   />
-                  {errors.lastName && <p className="text-destructive text-sm">{errors.lastName.message}</p>}
+                  {errors.lastName && (
+                    <p className="text-destructive text-sm">{errors.lastName.message}</p>
+                  )}
                 </div>
               </div>
 
@@ -214,7 +229,9 @@ export default function RegisterWithInvitePage() {
                     },
                   })}
                 />
-                {errors.username && <p className="text-destructive text-sm">{errors.username.message}</p>}
+                {errors.username && (
+                  <p className="text-destructive text-sm">{errors.username.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -257,11 +274,15 @@ export default function RegisterWithInvitePage() {
                     {showPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
                   </button>
                 </div>
-                {errors.password && <p className="text-destructive text-sm">{errors.password.message}</p>}
+                {errors.password && (
+                  <p className="text-destructive text-sm">{errors.password.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">{t("registerWithInvite.labels.confirmPassword")}</Label>
+                <Label htmlFor="confirmPassword">
+                  {t("registerWithInvite.labels.confirmPassword")}
+                </Label>
                 <div className="relative">
                   <Input
                     id="confirmPassword"
@@ -269,7 +290,8 @@ export default function RegisterWithInvitePage() {
                     placeholder={t("registerWithInvite.labels.confirmPasswordPlaceholder")}
                     {...register("confirmPassword", {
                       required: t("registerWithInvite.validation.passwordsMatch"),
-                      validate: (value) => value === password || t("registerWithInvite.validation.passwordsMatch"),
+                      validate: (value) =>
+                        value === password || t("registerWithInvite.validation.passwordsMatch"),
                     })}
                   />
                   <button
@@ -280,7 +302,9 @@ export default function RegisterWithInvitePage() {
                     {showConfirmPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
                   </button>
                 </div>
-                {errors.confirmPassword && <p className="text-destructive text-sm">{errors.confirmPassword.message}</p>}
+                {errors.confirmPassword && (
+                  <p className="text-destructive text-sm">{errors.confirmPassword.message}</p>
+                )}
               </div>
 
               <Button type="submit" className="w-full" disabled={isSubmitting}>

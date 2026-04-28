@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { IconCalendar, IconClock, IconClockOff } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,6 +19,7 @@ import { Loader } from "@/components/ui/loader";
 import { Switch } from "@/components/ui/switch";
 import { updateShare } from "@/http/endpoints";
 import type { Share } from "@/http/endpoints/shares/types";
+import { logger } from "@/lib/logger";
 
 interface ShareExpirationModalProps {
   shareId: string | null;
@@ -28,7 +28,12 @@ interface ShareExpirationModalProps {
   onSuccess?: () => void;
 }
 
-export function ShareExpirationModal({ shareId, share, onClose, onSuccess }: ShareExpirationModalProps) {
+export function ShareExpirationModal({
+  shareId,
+  share,
+  onClose,
+  onSuccess,
+}: ShareExpirationModalProps) {
   const t = useTranslations();
   const [isLoading, setIsLoading] = useState(false);
   const [hasExpiration, setHasExpiration] = useState(false);
@@ -86,7 +91,9 @@ export function ShareExpirationModal({ shareId, share, onClose, onSuccess }: Sha
       }
       onClose();
     } catch (error) {
-      console.error("Failed to update share expiration:", error);
+      logger.error("Failed to update share expiration:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("shareExpiration.error.updateFailed"));
     } finally {
       setIsLoading(false);
@@ -126,7 +133,9 @@ export function ShareExpirationModal({ shareId, share, onClose, onSuccess }: Sha
 
         <div className="py-4 space-y-6">
           <div className="space-y-3">
-            <h3 className="text-sm font-medium text-foreground">{t("shareExpiration.currentStatus")}</h3>
+            <h3 className="text-sm font-medium text-foreground">
+              {t("shareExpiration.currentStatus")}
+            </h3>
             <div className="flex gap-2">
               {share?.expiration ? (
                 <div className="bg-yellow-500/20 text-yellow-800 border border-yellow-300 dark:bg-yellow-500/10 dark:text-yellow-400 dark:border-yellow-500/20 rounded-md px-2 py-1 text-xs font-medium flex items-center gap-1">
@@ -144,7 +153,11 @@ export function ShareExpirationModal({ shareId, share, onClose, onSuccess }: Sha
 
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <Switch id="expiration-enabled" checked={hasExpiration} onCheckedChange={handleExpirationToggle} />
+              <Switch
+                id="expiration-enabled"
+                checked={hasExpiration}
+                onCheckedChange={handleExpirationToggle}
+              />
               <Label htmlFor="expiration-enabled" className="flex items-center gap-2">
                 <IconCalendar size={16} />
                 {t("shareExpiration.enableExpiration")}
@@ -177,7 +190,9 @@ export function ShareExpirationModal({ shareId, share, onClose, onSuccess }: Sha
             {!hasExpiration && (
               <div className="pl-6 border-l-2 border-muted">
                 <div className="bg-muted/50 border border-border rounded-lg p-3">
-                  <p className="text-sm text-muted-foreground">{t("shareExpiration.info.noExpiration")}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {t("shareExpiration.info.noExpiration")}
+                  </p>
                 </div>
               </div>
             )}

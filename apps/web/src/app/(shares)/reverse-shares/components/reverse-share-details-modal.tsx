@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
   IconCopy,
   IconDownload,
@@ -12,8 +11,8 @@ import {
   IconToggleRight,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,8 +24,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { logger } from "@/lib/logger";
 import { useReverseShareDetails } from "../hooks/use-reverse-share-details";
-import { ReverseShare } from "../hooks/use-reverse-shares";
+import type { ReverseShare } from "../hooks/use-reverse-shares";
 import { EditPasswordModal } from "./edit-password-modal";
 import { EditableField } from "./editable-field";
 import { FileSizeInput } from "./file-size-input";
@@ -43,7 +43,10 @@ interface ReverseShareDetailsModalProps {
   onCreateAlias?: (reverseShareId: string, alias: string) => Promise<void>;
   onCopyLink?: (reverseShare: ReverseShare) => void;
   onToggleActive?: (id: string, isActive: boolean) => Promise<unknown>;
-  onUpdatePassword?: (id: string, data: { hasPassword: boolean; password?: string }) => Promise<unknown>;
+  onUpdatePassword?: (
+    id: string,
+    data: { hasPassword: boolean; password?: string },
+  ) => Promise<unknown>;
   onViewQrCode?: (reverseShare: ReverseShare) => void;
   refreshTrigger?: number;
   onSuccess?: () => void;
@@ -62,7 +65,9 @@ export function ReverseShareDetailsModal({
   onSuccess,
 }: ReverseShareDetailsModalProps) {
   const t = useTranslations();
-  const [pendingChanges, setPendingChanges] = useState<Record<string, string | number | null | undefined>>({});
+  const [pendingChanges, setPendingChanges] = useState<
+    Record<string, string | number | null | undefined>
+  >({});
   const [isDownloading, setIsDownloading] = useState(false);
 
   const {
@@ -78,7 +83,12 @@ export function ReverseShareDetailsModal({
 
   useEffect(() => {
     setPendingChanges({});
-  }, [reverseShare?.id, reverseShare?.hasPassword, reverseShare?.isActive, reverseShare?.alias?.alias]);
+  }, [
+    reverseShare?.id,
+    reverseShare?.hasPassword,
+    reverseShare?.isActive,
+    reverseShare?.alias?.alias,
+  ]);
 
   const handleUpdateField = async (field: string, value: string | number | null) => {
     if (!reverseShare || !onUpdateReverseShare) return;
@@ -89,7 +99,9 @@ export function ReverseShareDetailsModal({
       await onUpdateReverseShare(reverseShare.id, { [field]: value });
       onSuccess?.();
     } catch (error) {
-      console.error("Failed to update:", error);
+      logger.error("Failed to update:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       setPendingChanges((prev) => {
         const newState = { ...prev };
         delete newState[field];
@@ -175,11 +187,17 @@ export function ReverseShareDetailsModal({
                   type="select"
                   options={[
                     { value: "DEFAULT", label: t("reverseShares.labels.layoutOptions.default") },
-                    { value: "WETRANSFER", label: t("reverseShares.labels.layoutOptions.wetransfer") },
+                    {
+                      value: "WETRANSFER",
+                      label: t("reverseShares.labels.layoutOptions.wetransfer"),
+                    },
                   ]}
                   disabled={!onUpdateReverseShare}
                   renderValue={(value) => (
-                    <Badge variant="secondary" className="bg-purple-500/20 text-purple-700 border-purple-200">
+                    <Badge
+                      variant="secondary"
+                      className="bg-purple-500/20 text-purple-700 border-purple-200"
+                    >
                       {value === "WETRANSFER"
                         ? t("reverseShares.labels.layoutOptions.wetransfer")
                         : t("reverseShares.labels.layoutOptions.default")}
@@ -192,12 +210,13 @@ export function ReverseShareDetailsModal({
               {reverseShareLink && (
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 border-b pb-2">
-                    <h3
-                      className="text-base font-medium text-foreground cursor-pointer"
-                      onClick={() => onViewQrCode && onViewQrCode(reverseShare)}
+                    <button
+                      type="button"
+                      className="text-base font-medium text-foreground cursor-pointer bg-transparent border-0 p-0"
+                      onClick={() => onViewQrCode?.(reverseShare)}
                     >
                       {t("qrCodeModal.title")}
-                    </h3>
+                    </button>
                     <Button
                       size="icon"
                       variant="ghost"
@@ -241,9 +260,10 @@ export function ReverseShareDetailsModal({
                     </Button>
                   </div>
                   <div className="flex flex-col items-start justify-start">
-                    <div
-                      className="p-2 bg-white rounded-lg cursor-pointer hover:opacity-80 transition-opacity duration-300"
-                      onClick={() => onViewQrCode && onViewQrCode(reverseShare)}
+                    <button
+                      type="button"
+                      className="p-2 bg-white rounded-lg cursor-pointer hover:opacity-80 transition-opacity duration-300 border-0"
+                      onClick={() => onViewQrCode?.(reverseShare)}
                       title={t("reverseShares.actions.viewQrCode")}
                     >
                       <QRCode
@@ -254,7 +274,7 @@ export function ReverseShareDetailsModal({
                         fgColor="#000000"
                         bgColor="#FFFFFF"
                       />
-                    </div>
+                    </button>
                   </div>
                 </div>
               )}
@@ -285,7 +305,11 @@ export function ReverseShareDetailsModal({
 
               {reverseShareLink ? (
                 <div className="flex gap-2">
-                  <Input value={reverseShareLink} readOnly className="flex-1 bg-muted/30 text-sm h-8" />
+                  <Input
+                    value={reverseShareLink}
+                    readOnly
+                    className="flex-1 bg-muted/30 text-sm h-8"
+                  />
                   <Button
                     variant="outline"
                     size="icon"
@@ -307,7 +331,9 @@ export function ReverseShareDetailsModal({
                 </div>
               ) : (
                 <div className="flex items-center justify-between p-2 bg-muted/20 rounded-lg">
-                  <p className="text-sm text-muted-foreground">{t("reverseShares.labels.noLinkCreated")}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {t("reverseShares.labels.noLinkCreated")}
+                  </p>
                 </div>
               )}
             </div>
@@ -353,7 +379,9 @@ export function ReverseShareDetailsModal({
                   onSave={(value) => handleUpdateField("allowedFileTypes", value)}
                   disabled={!onUpdateReverseShare}
                   checkboxLabel={t("reverseShares.labels.allFileTypes")}
-                  checkboxCondition={(value) => !value || (typeof value === "string" && value.trim() === "")}
+                  checkboxCondition={(value) =>
+                    !value || (typeof value === "string" && value.trim() === "")
+                  }
                   onCheckboxChange={(checked, setValue) => {
                     if (checked) setValue("");
                   }}
@@ -393,12 +421,18 @@ export function ReverseShareDetailsModal({
                   </div>
                   <div className="mt-1">
                     {reverseShare.hasPassword ? (
-                      <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-700 border-yellow-200">
+                      <Badge
+                        variant="secondary"
+                        className="bg-yellow-500/20 text-yellow-700 border-yellow-200"
+                      >
                         <IconLock className="h-3 w-3 mr-1" />
                         {t("reverseShares.modals.details.protectedByPassword")}
                       </Badge>
                     ) : (
-                      <Badge variant="secondary" className="bg-green-500/20 text-green-700 border-green-200">
+                      <Badge
+                        variant="secondary"
+                        className="bg-green-500/20 text-green-700 border-green-200"
+                      >
                         <IconLockOpen className="h-3 w-3 mr-1" />
                         {t("reverseShares.modals.details.publicAccess")}
                       </Badge>
@@ -412,18 +446,29 @@ export function ReverseShareDetailsModal({
                   </div>
                   <div className="flex items-center gap-2 mt-1">
                     {reverseShare.isActive ? (
-                      <Badge variant="secondary" className="bg-green-500/20 text-green-700 border-green-200">
+                      <Badge
+                        variant="secondary"
+                        className="bg-green-500/20 text-green-700 border-green-200"
+                      >
                         <IconToggleRight className="h-3 w-3 mr-1" />
                         {t("reverseShares.status.active")}
                       </Badge>
                     ) : (
-                      <Badge variant="secondary" className="bg-red-500/20 text-red-700 border-red-200">
+                      <Badge
+                        variant="secondary"
+                        className="bg-red-500/20 text-red-700 border-red-200"
+                      >
                         <IconToggleLeft className="h-3 w-3 mr-1" />
                         {t("reverseShares.status.inactive")}
                       </Badge>
                     )}
                     {onToggleActive && (
-                      <Button size="sm" variant="outline" onClick={handleToggleActive} className="h-6 text-xs">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleToggleActive}
+                        className="h-6 text-xs"
+                      >
                         {reverseShare.isActive
                           ? t("reverseShares.modals.details.deactivate")
                           : t("reverseShares.modals.details.activate")}
@@ -438,7 +483,11 @@ export function ReverseShareDetailsModal({
                   onSave={(value) => handleUpdateField("expiration", value)}
                   type="datetime-local"
                   disabled={!onUpdateReverseShare}
-                  renderValue={(value) => (value ? formatDate(typeof value === "string" ? value : String(value)) : t("shareDetails.never"))}
+                  renderValue={(value) =>
+                    value
+                      ? formatDate(typeof value === "string" ? value : String(value))
+                      : t("shareDetails.never")
+                  }
                 />
               </div>
             </div>
@@ -489,7 +538,10 @@ export function ReverseShareDetailsModal({
           reverseShare={reverseShare}
           isOpen={showPasswordModal}
           onClose={() => setShowPasswordModal(false)}
-          onUpdatePassword={async (id: string, data: { hasPassword: boolean; password?: string }) => {
+          onUpdatePassword={async (
+            id: string,
+            data: { hasPassword: boolean; password?: string },
+          ) => {
             await onUpdatePassword(id, data);
             handleModalSuccess();
           }}

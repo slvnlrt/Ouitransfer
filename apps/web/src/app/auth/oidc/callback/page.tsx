@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
 
 import { LoadingScreen } from "@/components/layout/loading-screen";
 import { useAuth } from "@/contexts/auth-context";
 import { getCurrentUser } from "@/http/endpoints";
+import { logger } from "@/lib/logger";
 
 export default function OIDCCallbackPage() {
   const router = useRouter();
@@ -27,7 +28,9 @@ export default function OIDCCallbackPage() {
 
         router.push("/dashboard");
       } catch (error) {
-        console.error("OIDC callback error:", error);
+        logger.error("OIDC callback error:", {
+          err: error instanceof Error ? error.message : String(error),
+        });
         router.push("/login?error=authentication_failed");
       }
     };

@@ -1,13 +1,20 @@
-import { useEffect, useState } from "react";
-import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { getEnabledProviders } from "@/http/endpoints";
+import { logger } from "@/lib/logger";
 import { createLoginSchema, type LoginFormValues } from "../schemas/schema";
 import { MultiProviderButtons } from "./multi-provider-buttons";
 import { PasswordVisibilityToggle } from "./password-visibility-toggle";
@@ -51,7 +58,9 @@ export function LoginForm({
         const data = response.data;
         setHasEnabledProviders(data.success && data.data && data.data.length > 0);
       } catch (error) {
-        console.error("Error checking providers:", error);
+        logger.error("Error checking providers:", {
+          err: error instanceof Error ? error.message : String(error),
+        });
         setHasEnabledProviders(false);
       } finally {
         setProvidersLoading(false);
@@ -160,7 +169,10 @@ export function LoginForm({
 
       {passwordAuthEnabled && (
         <div className="flex w-full items-center justify-center px-1 mt-2">
-          <Link className="text-muted-foreground hover:text-primary text-sm" href="/forgot-password">
+          <Link
+            className="text-muted-foreground hover:text-primary text-sm"
+            href="/forgot-password"
+          >
             {t("login.forgotPassword")}
           </Link>
         </div>

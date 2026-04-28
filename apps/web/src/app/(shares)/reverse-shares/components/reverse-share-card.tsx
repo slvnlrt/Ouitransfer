@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from "react";
 import {
   IconCheck,
   IconCopy,
@@ -18,7 +17,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -28,7 +27,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { ReverseShare } from "../hooks/use-reverse-shares";
+import { logger } from "@/lib/logger";
+import type { ReverseShare } from "../hooks/use-reverse-shares";
 import { EditPasswordModal } from "./edit-password-modal";
 
 interface ReverseShareCardProps {
@@ -42,7 +42,10 @@ interface ReverseShareCardProps {
   onViewQrCode?: (reverseShare: ReverseShare) => void;
   onUpdateReverseShare?: (id: string, data: Record<string, unknown>) => Promise<unknown>;
   onToggleActive?: (id: string, isActive: boolean) => Promise<unknown>;
-  onUpdatePassword?: (id: string, data: { hasPassword: boolean; password?: string }) => Promise<unknown>;
+  onUpdatePassword?: (
+    id: string,
+    data: { hasPassword: boolean; password?: string },
+  ) => Promise<unknown>;
 }
 
 export function ReverseShareCard({
@@ -79,7 +82,9 @@ export function ReverseShareCard({
 
   const fileCount = reverseShare.files?.length || 0;
   const hasAlias = Boolean(reverseShare.alias?.alias);
-  const isExpired = reverseShare.expiration ? new Date(reverseShare.expiration) < new Date() : false;
+  const isExpired = reverseShare.expiration
+    ? new Date(reverseShare.expiration) < new Date()
+    : false;
   const hasPassword = reverseShare.hasPassword;
 
   const formatFileSize = (sizeInBytes: number) => {
@@ -87,10 +92,11 @@ export function ReverseShareCard({
     const units = ["B", "KB", "MB", "GB"];
     const k = 1024;
     const i = Math.floor(Math.log(sizeInBytes) / Math.log(k));
-    return `${parseFloat((sizeInBytes / Math.pow(k, i)).toFixed(1))} ${units[i]}`;
+    return `${parseFloat((sizeInBytes / k ** i).toFixed(1))} ${units[i]}`;
   };
 
-  const totalSize = reverseShare.files?.reduce((acc, file) => acc + parseInt(file.size), 0) || 0;
+  const totalSize =
+    reverseShare.files?.reduce((acc, file) => acc + parseInt(file.size, 10), 0) || 0;
 
   const startEdit = (field: string, currentValue: unknown) => {
     setEditingField({ field });
@@ -115,7 +121,9 @@ export function ReverseShareCard({
     try {
       await onUpdateReverseShare(reverseShare.id, { [field]: processedValue });
     } catch (error) {
-      console.error("Failed to update:", error);
+      logger.error("Failed to update:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       setPendingChanges((prev) => {
         const newState = { ...prev };
         delete newState[field];
@@ -206,7 +214,11 @@ export function ReverseShareCard({
                   {/* Bolinha de status */}
                   <div
                     className={`w-2 h-2 rounded-full shrink-0 shadow-sm ${
-                      isExpired ? "bg-red-500" : reverseShare.isActive ? "bg-green-500" : "bg-red-500"
+                      isExpired
+                        ? "bg-red-500"
+                        : reverseShare.isActive
+                          ? "bg-green-500"
+                          : "bg-red-500"
                     }`}
                     title={
                       isExpired
@@ -267,7 +279,11 @@ export function ReverseShareCard({
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-6 w-6 p-0 hover:bg-background/80 rounded-sm">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-6 w-6 p-0 hover:bg-background/80 rounded-sm"
+                  >
                     <IconDotsVertical className="h-3 w-3" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -292,7 +308,9 @@ export function ReverseShareCard({
                   {hasAlias && (
                     <DropdownMenuItem onClick={() => onGenerateLink(reverseShare)}>
                       <IconLink className="h-4 w-4" />
-                      {hasAlias ? t("reverseShares.card.editLink") : t("reverseShares.card.createLink")}
+                      {hasAlias
+                        ? t("reverseShares.card.editLink")
+                        : t("reverseShares.card.createLink")}
                     </DropdownMenuItem>
                   )}
 
@@ -313,7 +331,10 @@ export function ReverseShareCard({
                     </DropdownMenuItem>
                   )}
 
-                  <DropdownMenuItem className="text-destructive" onClick={() => onDelete(reverseShare)}>
+                  <DropdownMenuItem
+                    className="text-destructive"
+                    onClick={() => onDelete(reverseShare)}
+                  >
                     <IconTrash className="h-4 w-4" />
                     {t("reverseShares.card.delete")}
                   </DropdownMenuItem>
@@ -430,7 +451,9 @@ export function ReverseShareCard({
               <div className="flex items-center justify-center mb-2">
                 <IconFileUnknown className="h-4 w-4 text-green-600" />
               </div>
-              <p className="text-xs font-medium text-foreground leading-none">{formatFileSize(totalSize)}</p>
+              <p className="text-xs font-medium text-foreground leading-none">
+                {formatFileSize(totalSize)}
+              </p>
               <p className="text-xs text-muted-foreground">{t("reverseShares.labels.size")}</p>
             </div>
 
@@ -450,9 +473,13 @@ export function ReverseShareCard({
                       <IconToggleLeft className="h-4 w-4 text-red-600" />
                     )}
                     <p className="text-xs font-medium leading-none">
-                      {reverseShare.isActive ? t("reverseShares.status.active") : t("reverseShares.status.inactive")}
+                      {reverseShare.isActive
+                        ? t("reverseShares.status.active")
+                        : t("reverseShares.status.inactive")}
                     </p>
-                    <p className="text-xs text-muted-foreground">{t("reverseShares.labels.status")}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {t("reverseShares.labels.status")}
+                    </p>
                   </div>
                 </Button>
               ) : (
@@ -464,9 +491,13 @@ export function ReverseShareCard({
                       <IconToggleLeft className="h-4 w-4 text-red-600" />
                     )}
                     <p className="text-xs font-medium leading-none">
-                      {reverseShare.isActive ? t("reverseShares.status.active") : t("reverseShares.status.inactive")}
+                      {reverseShare.isActive
+                        ? t("reverseShares.status.active")
+                        : t("reverseShares.status.inactive")}
                     </p>
-                    <p className="text-xs text-muted-foreground">{t("reverseShares.labels.status")}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {t("reverseShares.labels.status")}
+                    </p>
                   </div>
                 </div>
               )}
@@ -488,9 +519,13 @@ export function ReverseShareCard({
                       <IconLockOpen className="h-4 w-4 text-green-600" />
                     )}
                     <p className="text-xs font-medium leading-none">
-                      {hasPassword ? t("reverseShares.status.protected") : t("reverseShares.status.public")}
+                      {hasPassword
+                        ? t("reverseShares.status.protected")
+                        : t("reverseShares.status.public")}
                     </p>
-                    <p className="text-xs text-muted-foreground">{t("reverseShares.labels.access")}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {t("reverseShares.labels.access")}
+                    </p>
                   </div>
                 </Button>
               ) : (
@@ -502,9 +537,13 @@ export function ReverseShareCard({
                       <IconLockOpen className="h-4 w-4 text-green-600" />
                     )}
                     <p className="text-xs font-medium leading-none">
-                      {hasPassword ? t("reverseShares.status.protected") : t("reverseShares.status.public")}
+                      {hasPassword
+                        ? t("reverseShares.status.protected")
+                        : t("reverseShares.status.public")}
                     </p>
-                    <p className="text-xs text-muted-foreground">{t("reverseShares.labels.access")}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {t("reverseShares.labels.access")}
+                    </p>
                   </div>
                 </div>
               )}
@@ -532,7 +571,10 @@ export function ReverseShareCard({
           reverseShare={reverseShare}
           isOpen={showPasswordModal}
           onClose={() => setShowPasswordModal(false)}
-          onUpdatePassword={async (id: string, data: { hasPassword: boolean; password?: string }) => {
+          onUpdatePassword={async (
+            id: string,
+            data: { hasPassword: boolean; password?: string },
+          ) => {
             await onUpdatePassword(id, data);
             setShowPasswordModal(false);
           }}

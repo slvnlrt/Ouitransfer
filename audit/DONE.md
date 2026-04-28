@@ -453,10 +453,11 @@
 - **Change**: Extended `handleImmediateUpdate` parameter type to include `"__DELETE__"` literal. Removed all 5 `as any` casts. Added proper type guard branching for delete vs move paths.
 - **Verified**: PASS
 
-### 3.4 — Implement centralized Fastify error handler
+### 3.4 — Implement centralized Fastify error handler (PARTIAL)
 - **Date**: 2026-04-28
 - **Files**: `apps/server/src/utils/error-handler.ts` (new), `apps/server/src/app.ts`
 - **Change**: Created `globalErrorHandler()` covering Zod validation (400), JWT auth (401), Prisma errors (P2002→409, P2025→404, P2003/P2014→409), Fastify 4xx/5xx, unknown→500. Consistent response shape `{ error, code, statusCode, details? }`. Registered with `app.setErrorHandler()` + `app.setNotFoundHandler()`.
+- **Limitation**: Controllers still have their own try/catch blocks returning `{ error: "..." }` — the global handler is only reached for errors that escape controller code (Zod validation, unhandled throws). Two error shapes coexist. Controller migration deferred to Phase 5 item 5.16.
 - **Verified**: PASS
 
 ### 3.5 — Fix silent catch blocks
@@ -479,8 +480,8 @@
 
 ### 3.8 — Add structured frontend logging
 - **Date**: 2026-04-28
-- **Files**: `apps/web/src/lib/logger.ts` (new), 17 hook/utility files
-- **Change**: Created level-filtered logger (`NEXT_PUBLIC_LOG_LEVEL`). Replaced 54 console.* calls in hooks/utilities. Left 57 in .tsx components for future cleanup.
+- **Files**: `apps/web/src/lib/logger.ts` (new), 17 hook/utility files, ~35 .tsx component files
+- **Change**: Created level-filtered logger (`NEXT_PUBLIC_LOG_LEVEL`). Replaced 54 console.* calls in hooks/utilities initially, then completed the remaining 57 console.* calls in .tsx component files in the review follow-up.
 - **Verified**: PASS
 
 ### 3.9 — Break up files exceeding 500 lines

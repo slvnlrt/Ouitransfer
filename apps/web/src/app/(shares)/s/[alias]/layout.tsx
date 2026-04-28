@@ -1,6 +1,8 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { getTranslations } from "next-intl/server";
+
+import { logger } from "@/lib/logger";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -20,7 +22,9 @@ async function getShareMetadata(alias: string) {
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching share metadata:", error);
+    logger.error("Error fetching share metadata:", {
+      err: error instanceof Error ? error.message : String(error),
+    });
     return null;
   }
 }
@@ -38,7 +42,9 @@ async function getAppInfo() {
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching app info:", error);
+    logger.error("Error fetching app info:", {
+      err: error instanceof Error ? error.message : String(error),
+    });
     return { appName: "OUITRANSFER", appDescription: "File sharing platform", appLogo: null };
   }
 }
@@ -50,7 +56,11 @@ async function getBaseUrl(): Promise<string> {
   return `${protocol}://${host}`;
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ alias: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ alias: string }>;
+}): Promise<Metadata> {
   const t = await getTranslations();
   const resolvedParams = await params;
   const metadata = await getShareMetadata(resolvedParams.alias);
@@ -60,7 +70,9 @@ export async function generateMetadata({ params }: { params: Promise<{ alias: st
   const description =
     metadata?.description ||
     (metadata?.totalFiles
-      ? t("share.metadata.filesShared", { count: metadata.totalFiles + (metadata.totalFolders || 0) })
+      ? t("share.metadata.filesShared", {
+          count: metadata.totalFiles + (metadata.totalFolders || 0),
+        })
       : appInfo.appDescription || t("share.metadata.defaultDescription"));
 
   const baseUrl = await getBaseUrl();

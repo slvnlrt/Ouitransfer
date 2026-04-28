@@ -1,15 +1,20 @@
-import { useEffect, useMemo, useRef, useState } from "react";
 import { IconCloudUpload, IconFolderPlus } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { useDragDrop } from "@/hooks/use-drag-drop";
 import { getCachedDownloadUrl } from "@/lib/download-url-cache";
-import { FilesTableBulkActions } from "./files-table-bulk-actions";
-import type { FileItem, FolderItem } from "./files-table-types";
+import { logger } from "@/lib/logger";
 import { FileCard } from "./files-grid-file-card";
 import { FolderCard } from "./files-grid-folder-card";
+import { FilesTableBulkActions } from "./files-table-bulk-actions";
+import type { FileItem, FolderItem } from "./files-table-types";
 
 const urlCache: Record<string, { url: string; timestamp: number }> = {};
 const CACHE_DURATION = 1000 * 60;
@@ -37,7 +42,11 @@ interface FilesGridProps {
   onMoveFolder?: (folder: FolderItem) => void;
   onMoveFile?: (file: FileItem) => void;
   onRefresh?: () => Promise<void>;
-  onImmediateUpdate?: (itemId: string, itemType: "file" | "folder", newParentId: string | null) => void;
+  onImmediateUpdate?: (
+    itemId: string,
+    itemType: "file" | "folder",
+    newParentId: string | null,
+  ) => void;
   showBulkActions?: boolean;
   isShareMode?: boolean;
 }
@@ -103,7 +112,9 @@ export function FilesGrid({
     componentMounted.current = true;
     return () => {
       componentMounted.current = false;
-      Object.keys(urlCache).forEach((key) => delete urlCache[key]);
+      Object.keys(urlCache).forEach((key) => {
+        delete urlCache[key];
+      });
     };
   }, []);
 
@@ -157,7 +168,9 @@ export function FilesGrid({
           loadedFileIds.current.add(file.id);
           setFilePreviewUrls((prev) => ({ ...prev, [file.id]: url }));
         } catch (error) {
-          console.error(`Failed to load preview for ${file.name}:`, error);
+          logger.error(`Failed to load preview for ${file.name}:`, {
+            err: error instanceof Error ? error.message : String(error),
+          });
         } finally {
           loadingUrls.current.delete(file.objectName);
         }
@@ -268,7 +281,11 @@ export function FilesGrid({
       )}
 
       <div className="flex items-center gap-2 px-2">
-        <Checkbox checked={isAllSelected} onCheckedChange={handleSelectAll} aria-label={t("filesTable.selectAll")} />
+        <Checkbox
+          checked={isAllSelected}
+          onCheckedChange={handleSelectAll}
+          aria-label={t("filesTable.selectAll")}
+        />
         <span className="text-sm text-muted-foreground">{t("filesTable.selectAll")}</span>
       </div>
 

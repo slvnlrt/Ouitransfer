@@ -1,14 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import { IconCloudUpload, IconLoader, IconX } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useUppyUpload } from "@/hooks/useUppyUpload";
 import { checkFile, getFilePresignedUrl, registerFile } from "@/http/endpoints";
+import { logger } from "@/lib/logger";
 import { getFileIcon } from "@/utils/file-icons";
 import { generateSafeFileName } from "@/utils/file-utils";
 import { formatFileSize } from "@/utils/format-file-size";
@@ -39,14 +39,18 @@ export function GlobalDropZone({ onSuccess, children, currentFolderId }: GlobalD
           folderId: currentFolderId,
         });
       } catch (error) {
-        console.error("File check failed:", error);
+        logger.error("File check failed:", {
+          err: error instanceof Error ? error.message : String(error),
+        });
         const errorData = getErrorData(error);
         let errorMessage = t("uploadFile.error");
 
         if (errorData.code === "fileSizeExceeded") {
           errorMessage = t(`uploadFile.${errorData.code}`, { maxsizemb: errorData.details || "0" });
         } else if (errorData.code === "insufficientStorage") {
-          errorMessage = t(`uploadFile.${errorData.code}`, { availablespace: errorData.details || "0" });
+          errorMessage = t(`uploadFile.${errorData.code}`, {
+            availablespace: errorData.details || "0",
+          });
         } else if (errorData.code) {
           errorMessage = t(`uploadFile.${errorData.code}`);
         }
@@ -71,7 +75,7 @@ export function GlobalDropZone({ onSuccess, children, currentFolderId }: GlobalD
 
       return { url: response.data.url, method: "PUT", actualObjectName };
     },
-    onAfterUpload: async (fileId, file, objectName) => {
+    onAfterUpload: async (_fileId, file, objectName) => {
       const fileName = file.name;
       const extension = fileName.split(".").pop() || "";
 
@@ -92,14 +96,16 @@ export function GlobalDropZone({ onSuccess, children, currentFolderId }: GlobalD
 
     const successCount = fileUploads.filter((u) => u.status === "success").length;
     const errorCount = fileUploads.filter((u) => u.status === "error").length;
-    const pendingCount = fileUploads.filter((u) => u.status === "pending" || u.status === "uploading").length;
+    const pendingCount = fileUploads.filter(
+      (u) => u.status === "pending" || u.status === "uploading",
+    ).length;
 
     // All uploads are done (no pending/uploading)
     if (pendingCount === 0 && successCount > 0) {
       toast.success(
         errorCount > 0
           ? t("uploadFile.partialSuccess", { success: successCount, error: errorCount })
-          : t("uploadFile.allSuccess", { count: successCount })
+          : t("uploadFile.allSuccess", { count: successCount }),
       );
 
       onSuccess?.();
@@ -158,14 +164,15 @@ export function GlobalDropZone({ onSuccess, children, currentFolderId }: GlobalD
       addFiles(filesArray);
       toast.info(t("uploadFile.filesQueued", { count: filesArray.length }));
     },
-    [addFiles, t]
+    [addFiles, t],
   );
 
   const handlePaste = useCallback(
     (event: ClipboardEvent) => {
       const target = event.target as HTMLElement;
       const isInput = target.tagName === "INPUT" || target.tagName === "TEXTAREA";
-      const isPasswordInput = target.tagName === "INPUT" && (target as HTMLInputElement).type === "password";
+      const isPasswordInput =
+        target.tagName === "INPUT" && (target as HTMLInputElement).type === "password";
 
       if (isInput && !isPasswordInput) {
         return;
@@ -200,7 +207,7 @@ export function GlobalDropZone({ onSuccess, children, currentFolderId }: GlobalD
         toast.success(t("uploadFile.pasteSuccess", { count: newFiles.length }));
       }
     },
-    [addFiles, t]
+    [addFiles, t],
   );
 
   // Auto-start uploads when files are added
@@ -255,8 +262,12 @@ export function GlobalDropZone({ onSuccess, children, currentFolderId }: GlobalD
         <div className="fixed inset-0 z-50 dark:bg-black/80 bg-white/90 border-2 border-dashed dark:border-primary/50 border-primary/90 rounded-lg m-1 flex items-center justify-center">
           <div className="text-center">
             <IconCloudUpload size={64} className="text-primary mx-auto mb-4" />
-            <h3 className="text-2xl font-bold text-primary mb-2">{t("uploadFile.globalDrop.title")}</h3>
-            <p className="text-lg dark:text-muted-foreground text-black">{t("uploadFile.globalDrop.description")}</p>
+            <h3 className="text-2xl font-bold text-primary mb-2">
+              {t("uploadFile.globalDrop.title")}
+            </h3>
+            <p className="text-lg dark:text-muted-foreground text-black">
+              {t("uploadFile.globalDrop.description")}
+            </p>
           </div>
         </div>
       )}
@@ -264,7 +275,10 @@ export function GlobalDropZone({ onSuccess, children, currentFolderId }: GlobalD
       {fileUploads.length > 0 && (
         <div className="fixed bottom-4 right-4 z-50 max-w-sm w-full space-y-2">
           {fileUploads.map((upload) => (
-            <div key={upload.id} className="bg-background border rounded-lg shadow-lg p-3 flex items-center gap-3">
+            <div
+              key={upload.id}
+              className="bg-background border rounded-lg shadow-lg p-3 flex items-center gap-3"
+            >
               <div className="flex-shrink-0">{renderFileIcon(upload.file.name)}</div>
 
               <div className="flex-1 min-w-0">
@@ -298,12 +312,22 @@ export function GlobalDropZone({ onSuccess, children, currentFolderId }: GlobalD
                     >
                       <IconLoader size={12} />
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => removeFile(upload.id)} className="h-6 w-6 p-0">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeFile(upload.id)}
+                      className="h-6 w-6 p-0"
+                    >
                       <IconX size={12} />
                     </Button>
                   </div>
                 ) : upload.status === "success" ? null : (
-                  <Button variant="ghost" size="sm" onClick={() => removeFile(upload.id)} className="h-6 w-6 p-0">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeFile(upload.id)}
+                    className="h-6 w-6 p-0"
+                  >
                     <IconX size={12} />
                   </Button>
                 )}
