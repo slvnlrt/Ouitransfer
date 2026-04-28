@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { ErrorDisplay } from "@/components/error-display";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -145,9 +146,7 @@ export function LoginForm({
     return (
       <>
         {renderErrorMessage()}
-        <div className="text-center py-8">
-          <p className="text-destructive text-sm">{t("login.noAuthMethodsAvailable")}</p>
-        </div>
+        <ErrorDisplay variant="minimal" title={t("login.noAuthMethodsAvailable")} />
       </>
     );
   }

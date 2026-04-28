@@ -1,7 +1,7 @@
-import { IconAlertCircle, IconDatabaseCog, IconRefresh } from "@tabler/icons-react";
+import { IconAlertCircle, IconDatabaseCog } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
-import { Button } from "@/components/ui/button";
+import { ErrorDisplay } from "@/components/error-display";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import type { StorageUsageProps } from "../types";
@@ -33,19 +33,17 @@ export function StorageUsage({ diskSpace, diskSpaceError, onRetry }: StorageUsag
               </h2>
               <span className="text-sm text-muted-foreground">{t("storageUsage.total")}: --</span>
             </div>
-            <div className="flex flex-col gap-3 py-4">
-              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
-                <IconAlertCircle size={20} />
-                <span className="text-sm font-medium">{t("storageUsage.errors.title")}</span>
-              </div>
-              <p className="text-sm text-muted-foreground">{getErrorMessage(diskSpaceError)}</p>
-              {onRetry && (
-                <Button variant="outline" size="sm" onClick={onRetry} className="w-fit">
-                  <IconRefresh size={16} />
-                  {t("storageUsage.retry")}
-                </Button>
-              )}
-            </div>
+            <ErrorDisplay
+              variant="minimal"
+              title={t("storageUsage.errors.title")}
+              message={getErrorMessage(diskSpaceError)}
+              icon={<IconAlertCircle className="h-8 w-8 text-amber-600 dark:text-amber-400" />}
+              actions={
+                onRetry
+                  ? [{ label: t("storageUsage.retry"), onClick: onRetry, variant: "outline" }]
+                  : undefined
+              }
+            />
           </div>
         </CardContent>
       </Card>
