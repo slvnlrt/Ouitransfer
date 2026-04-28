@@ -102,7 +102,10 @@ Batch 1 complete: 4.14 (shared UI primitives extracted — EditableField, ItemAc
 useSelectionManager, formatDateTime; 6 consumer files reduced by 797 lines), 4.15 (29 duplicate
 File/Folder type interfaces consolidated — 10 exact duplicates replaced with imports, 13 subsets
 converted to Pick<>, 4 dead types removed, 1 kept separate for API null boundary).
-Next: Batch 2 — error boundaries (4.1) + loading states (4.2).
+Batch 2 complete: 4.1 (error boundaries — ErrorDisplay component with 3 variants, reportError utility,
+global-error.tsx, error.tsx, not-found.tsx, share-specific error.tsx files, settings refactored;
+25 tests), 4.2 (loading.tsx — self-contained CSS spinner, no provider dependency).
+Next: Batch 3 — TanStack Query (4.3) + Axios 401 interceptor (4.4).
 
 ## Important: No Production, No Legacy
 The app is **not in production** and has no existing users. This means:

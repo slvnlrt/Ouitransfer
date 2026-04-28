@@ -671,6 +671,18 @@
 - **Change**: 10 exact duplicate interfaces replaced with imports from canonical `files-table-types.ts`. 13 subset interfaces converted to `Pick<FileItem/FolderItem, ...>` aliases (FileToDelete, FileToRename, FileToShare, etc.). 4 unused dead types removed from share types/index.tsx. 1 genuinely divergent type (`MoveItemFolder`) kept separate with JSDoc explaining API null boundary. 1 widened type (`BulkFolder`) simplified to direct `FolderItem` alias after verifying callers always pass full objects. 4 API-layer types in `http/endpoints/*/types.ts` correctly left untouched (already bridged by `api-mappers.ts`).
 - **Verified**: PASS (web + API type-check clean, 31/31 tests green)
 
+### 4.1 — Error boundaries (error.tsx, global-error.tsx, not-found.tsx)
+- **Date**: 2026-04-28
+- **Files**: 9 new files created, 2 modified (`settings/page.tsx`, `en-US.json`)
+- **Change**: Created `ErrorDisplay` component (3 variants: page/inline/minimal) with configurable actions (Link for href, Button for onClick). Created `reportError` utility for centralized error reporting with `ErrorContext` interface. Added `global-error.tsx` (self-contained, own html/body, inline SVG), `error.tsx` (catch-all with dev-only error.message), `not-found.tsx` (server component, i18n), share-specific `error.tsx` files (minimal variant), `loading.tsx` (self-contained CSS spinner — no useTranslations dependency). Refactored settings page 2 inline Card errors to use ErrorDisplay (112→84 lines). Added 14 i18n keys in `errors` namespace. 25 tests (17 ErrorDisplay, 8 reportError).
+- **Verified**: PASS (web type-check clean, API type-check clean, 90/90 web tests, 31/31 API tests)
+
+### 4.2 — Loading states (loading.tsx)
+- **Date**: 2026-04-28
+- **Files**: `apps/web/src/app/loading.tsx`
+- **Change**: Root-level `loading.tsx` with self-contained CSS spinner (no hooks, no providers). Per-page `if (isLoading) return <LoadingScreen />` pattern preserved — `loading.tsx` handles route transitions only. Note: per-segment loading.tsx files deferred until TanStack Query migration (4.3) which will change data-fetching patterns.
+- **Verified**: PASS (included in 4.1 verification)
+
 ### QA-3 — JWT error detection made future-proof
 - **Date**: 2026-04-28
 - **Files**: `apps/server/src/utils/error-handler.ts`, `apps/server/src/__tests__/error-handler.test.ts`

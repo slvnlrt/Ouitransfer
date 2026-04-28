@@ -768,7 +768,7 @@ Phase 4: Frontend Modernization ⚡
 
 Error Recovery (4h)
 
-\- \[ ] 4.1 — Add error.tsx boundaries on every route segment  
+\- \[x] 4.1 — Add error.tsx boundaries on every route segment  
 
 &#x20; Files: apps/web/src/app/error.tsx (root), plus per-segment: dashboard/error.tsx, files/error.tsx, (shares)/error.tsx, settings/error.tsx, profile/error.tsx, etc.  
 
@@ -788,7 +788,7 @@ Error Recovery (4h)
 
 &#x20; Justification: Audit 03 critical — ZERO error boundaries, any unhandled error crashes the entire app to white screen
 
-\- \[ ] 4.2 — Add loading.tsx streaming boundaries  
+\- \[x] 4.2 — Add loading.tsx streaming boundaries  
 
 &#x20; Files: apps/web/src/app/loading.tsx (root), plus per-segment: dashboard/loading.tsx, files/loading.tsx, (shares)/loading.tsx  
 
