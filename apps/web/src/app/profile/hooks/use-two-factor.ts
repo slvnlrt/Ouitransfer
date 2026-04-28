@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { useAppInfo } from "@/contexts/app-info-context";
+import { logger } from "@/lib/logger";
 import {
   disableTwoFactor,
   generate2FASetup,
@@ -37,7 +38,7 @@ export function useTwoFactor() {
       const response = await getTwoFactorStatus();
       setStatus(response.data);
     } catch (error) {
-      console.error("Failed to load 2FA status:", error);
+      logger.error("Failed to load 2FA status", { err: error instanceof Error ? error.message : String(error) });
       toast.error(t("twoFactor.messages.statusLoadFailed"));
     } finally {
       setIsLoading(false);
@@ -50,10 +51,11 @@ export function useTwoFactor() {
       const response = await generate2FASetup({ appName });
       setSetupData(response.data);
       setIsSetupModalOpen(true);
-    } catch (error: any) {
-      console.error("Failed to generate 2FA setup:", error);
-      if (error.response?.data?.error) {
-        toast.error(error.response.data.error);
+    } catch (error: unknown) {
+      logger.error("Failed to generate 2FA setup", { err: error instanceof Error ? error.message : String(error) });
+      const axiosError = error as { response?: { data?: { error?: string } } };
+      if (axiosError.response?.data?.error) {
+        toast.error(axiosError.response.data.error);
       } else {
         toast.error(t("twoFactor.messages.setupFailed"));
       }
@@ -83,10 +85,11 @@ export function useTwoFactor() {
         toast.success(t("twoFactor.messages.enabledSuccess"));
         await loadStatus();
       }
-    } catch (error: any) {
-      console.error("Failed to verify 2FA setup:", error);
-      if (error.response?.data?.error) {
-        toast.error(error.response.data.error);
+    } catch (error: unknown) {
+      logger.error("Failed to verify 2FA setup", { err: error instanceof Error ? error.message : String(error) });
+      const axiosError = error as { response?: { data?: { error?: string } } };
+      if (axiosError.response?.data?.error) {
+        toast.error(axiosError.response.data.error);
       } else {
         toast.error(t("twoFactor.messages.verificationFailed"));
       }
@@ -113,10 +116,11 @@ export function useTwoFactor() {
         toast.success(t("twoFactor.messages.disabledSuccess"));
         await loadStatus();
       }
-    } catch (error: any) {
-      console.error("Failed to disable 2FA:", error);
-      if (error.response?.data?.error) {
-        toast.error(error.response.data.error);
+    } catch (error: unknown) {
+      logger.error("Failed to disable 2FA", { err: error instanceof Error ? error.message : String(error) });
+      const axiosError = error as { response?: { data?: { error?: string } } };
+      if (axiosError.response?.data?.error) {
+        toast.error(axiosError.response.data.error);
       } else {
         toast.error(t("twoFactor.messages.disableFailed"));
       }
@@ -133,10 +137,11 @@ export function useTwoFactor() {
       setIsBackupCodesModalOpen(true);
       toast.success(t("twoFactor.messages.backupCodesGenerated"));
       await loadStatus();
-    } catch (error: any) {
-      console.error("Failed to generate backup codes:", error);
-      if (error.response?.data?.error) {
-        toast.error(error.response.data.error);
+    } catch (error: unknown) {
+      logger.error("Failed to generate backup codes", { err: error instanceof Error ? error.message : String(error) });
+      const axiosError = error as { response?: { data?: { error?: string } } };
+      if (axiosError.response?.data?.error) {
+        toast.error(axiosError.response.data.error);
       } else {
         toast.error(t("twoFactor.messages.backupCodesFailed"));
       }

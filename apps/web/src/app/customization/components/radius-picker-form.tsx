@@ -34,8 +34,7 @@ export function RadiusPickerForm() {
       setSelectedRadius(savedRadius);
       applyRadius(savedRadius);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [applyRadius]);
 
   const handleRadiusSelect = (radiusValue: string) => {
     setSelectedRadius(radiusValue);

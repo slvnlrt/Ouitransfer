@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { getReverseShareForUploadByAlias } from "@/http/endpoints";
+import { logger } from "@/lib/logger";
 import { ERROR_MESSAGES, HTTP_STATUS, type ErrorType } from "../constants";
 import type { ReverseShareInfo } from "../types";
 
@@ -32,9 +33,10 @@ export function useReverseShareUpload({ alias }: UseReverseShareUploadProps) {
   };
 
   const handleErrorResponse = useCallback(
-    (responseError: any) => {
-      const status = responseError.response?.status;
-      const errorMessage = responseError.response?.data?.error;
+    (responseError: unknown) => {
+      const axiosError = responseError as { response?: { status?: number; data?: { error?: string } } };
+      const status = axiosError.response?.status;
+      const errorMessage = axiosError.response?.data?.error;
 
       switch (status) {
         case HTTP_STATUS.UNAUTHORIZED:
@@ -81,8 +83,8 @@ export function useReverseShareUpload({ alias }: UseReverseShareUploadProps) {
         setReverseShare(response.data.reverseShare);
         setIsPasswordModalOpen(false);
         setCurrentPassword(passwordAttempt || "");
-      } catch (responseError: any) {
-        console.error("Failed to load reverse share:", responseError);
+      } catch (responseError: unknown) {
+        logger.error("Failed to load reverse share", { alias, err: responseError instanceof Error ? responseError.message : String(responseError) });
         handleErrorResponse(responseError);
       } finally {
         setIsLoading(false);

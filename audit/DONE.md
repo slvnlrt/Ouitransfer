@@ -430,3 +430,152 @@
 - **Files**: `apps/server/package.json`
 - **Change**: Added `@smithy/node-http-handler` as direct dependency. The code imports it directly for custom HTTPS agent configuration (self-signed certs), but it was only available as a transitive dep of `@aws-sdk/client-s3`. pnpm strict mode requires explicit declaration.
 - **Verified**: PASS (server type-check now 0 errors)
+
+---
+
+## Phase 3: Code Quality & Type Safety
+
+### 3.1 — Type Fastify request decoration properly
+- **Date**: 2026-04-28
+- **Files**: `apps/server/src/types/fastify.d.ts`, 12 controller files
+- **Change**: Added `declare module "@fastify/jwt" { interface FastifyJWT { user: { userId: string; isAdmin: boolean } } }`. Removed all 66 `(request as any).user` casts across controllers.
+- **Verified**: PASS (server type-check clean)
+
+### 3.2 — Escalate noExplicitAny to error + fix all any types
+- **Date**: 2026-04-28
+- **Files**: `biome.json`, 40+ server modules, 30+ web components, 13 web hooks, endpoint types
+- **Change**: Changed `noExplicitAny` from `"off"` to `"error"` in biome.json. Eliminated ~355 explicit `: any` annotations (168 server, 187 web). Created proper interfaces: `AuthProviderModel`, `FileBrowserFile`/`FileBrowserFolder`, `ShareViewFile`/`ShareViewFolder`, `DashboardFile`, `UppyProgressEvent`/`UppyUploadResult`, `DragDropItem`, `TraversalFolder`, `UpdateShareData`, `MoveItemFile`/`MoveItemFolder`, etc. All catch blocks migrated to `catch (error: unknown)` with type narrowing. ~22 justified `biome-ignore` suppressions for genuinely unavoidable cases (WebCrypto polyfills, react-hook-form generics, vendor prefixes).
+- **Verified**: PASS (0 biome violations on 372 files, type-check 4/4 clean)
+
+### 3.3 — Fix __DELETE__ sentinel pattern
+- **Date**: 2026-04-28
+- **Files**: `apps/web/src/hooks/use-enhanced-file-manager.ts`, `apps/web/src/app/files/hooks/use-file-browser.ts`
+- **Change**: Extended `handleImmediateUpdate` parameter type to include `"__DELETE__"` literal. Removed all 5 `as any` casts. Added proper type guard branching for delete vs move paths.
+- **Verified**: PASS
+
+### 3.4 — Implement centralized Fastify error handler
+- **Date**: 2026-04-28
+- **Files**: `apps/server/src/utils/error-handler.ts` (new), `apps/server/src/app.ts`
+- **Change**: Created `globalErrorHandler()` covering Zod validation (400), JWT auth (401), Prisma errors (P2002→409, P2025→404, P2003/P2014→409), Fastify 4xx/5xx, unknown→500. Consistent response shape `{ error, code, statusCode, details? }`. Registered with `app.setErrorHandler()` + `app.setNotFoundHandler()`.
+- **Verified**: PASS
+
+### 3.5 — Fix silent catch blocks
+- **Date**: 2026-04-28
+- **Files**: `apps/server/src/modules/file/controller.ts`
+- **Change**: Added `request.log.debug("Optional JWT verification skipped — anonymous access")` to both empty catch blocks (expected failures for public share access).
+- **Verified**: PASS
+
+### 3.6 — Fix exhaustive-deps suppressions
+- **Date**: 2026-04-28
+- **Files**: 8 web files (5 customization forms, files-grid, use-file-browser, use-public-share)
+- **Change**: Fixed all 8 `eslint-disable-next-line react-hooks/exhaustive-deps` comments. Customization forms: added stable `useCallback` deps. files-grid: introduced `loadedFileIds` ref to avoid infinite loop. use-file-browser: used existing `loadFilesRef.current` pattern. use-public-share: added memoized `loadShare` to deps.
+- **Verified**: PASS
+
+### 3.7 — Replace console.* with Pino logger on server
+- **Date**: 2026-04-28
+- **Files**: `apps/server/src/utils/logger.ts` (new), `apps/server/src/app.ts`, 31 module files
+- **Change**: Created `setLogger`/`getLogger` singleton pattern. Changed log level from `"warn"` to `process.env.LOG_LEVEL || "info"`. Replaced ~87 console.* calls with `request.log.*` (controllers) or `getLogger().*` (services). Structured logging with metadata objects.
+- **Verified**: PASS
+
+### 3.8 — Add structured frontend logging
+- **Date**: 2026-04-28
+- **Files**: `apps/web/src/lib/logger.ts` (new), 17 hook/utility files
+- **Change**: Created level-filtered logger (`NEXT_PUBLIC_LOG_LEVEL`). Replaced 54 console.* calls in hooks/utilities. Left 57 in .tsx components for future cleanup.
+- **Verified**: PASS
+
+### 3.9 — Break up files exceeding 500 lines
+- **Date**: 2026-04-28
+- **Files**: 4 server modules split, 5 web components split, 11 new files created
+- **Change**: Server: `reverse-share/service.ts` 1017→399L (+upload.service.ts +multipart.service.ts), `reverse-share/controller.ts` 744→513L (+multipart.controller.ts), `file/controller.ts` 873→365L (+download/embed/multipart controllers), `auth-providers/service.ts` 814→263L (+oauth-flow.service.ts +user-linking.service.ts). Web: `files-table.tsx` 972→464L, `files-grid.tsx` 919→367L, `received-files-modal.tsx` 918→530L, `shares-table.tsx` 652→538L, `share-details-modal.tsx` 682→543L. Left 3 web files intact (already internally decomposed).
+- **Verified**: PASS
+
+### 3.10 — Fix typo in filename
+- **Date**: 2026-04-28
+- **Files**: `apps/web/src/components/auth/paths/unauthenticated-only-paths.ts` (renamed from `unahthenticated-only-paths.ts`), `redirect-handler.tsx`
+- **Verified**: PASS
+
+### 3.11 — Unify PrismaClient to singleton
+- **Date**: 2026-04-28
+- **Files**: `apps/server/src/modules/reverse-share/service.ts`, `apps/server/src/modules/user/service.ts`
+- **Change**: Replaced `new PrismaClient()` with import from `../../shared/prisma.js` in both files.
+- **Verified**: PASS
+
+### 3.12 — Use Prisma migrations instead of schema push
+- **Date**: 2026-04-28
+- **Files**: `apps/server/prisma/migrations/20260428082804_init/migration.sql` (new), `migration_lock.toml` (new), `prisma/seed.js`, `package.json`
+- **Change**: Created initial migration (317L, 16 tables). Fixed seed CJS→ESM. Added `db:migrate` and `db:migrate:dev` scripts.
+- **Verified**: PASS
+
+### 3.13 — Real integration tests
+- **Date**: 2026-04-28
+- **Files**: `apps/server/src/__tests__/health.test.ts`, `apps/web/src/__tests__/smoke.test.tsx`
+- **Change**: Server: Fastify inject() health endpoint test. Web: 3 Button component rendering tests with @testing-library/react.
+- **Verified**: PASS (all tests green)
+
+### 3.14 — Knip configuration for docs MDX
+- **Date**: 2026-04-28
+- **Files**: `knip.json`
+- **Change**: Added `src/app/layout.config.tsx` and `content/**/*.mdx` to docs entry/project patterns.
+- **Verified**: PASS
+
+### 3.15 — Proxy route resolution test
+- **Date**: 2026-04-28
+- **Files**: `apps/web/src/lib/__tests__/proxy-routes.test.ts` (new)
+- **Change**: 62 tests covering static vs dynamic ordering, multi-segment paths, parameter extraction, route table invariants.
+- **Verified**: PASS (62/62 green)
+
+### 3.16 — Clean up regex in extractFilenameFromContentDisposition
+- **Date**: 2026-04-28
+- **Files**: `packages/shared/src/mime-types.ts`
+- **Change**: Replaced greedy single-capture regex with two-group pattern for quoted/unquoted filenames. Added JSDoc for RFC 5987 UTF-8 limitation.
+- **Verified**: PASS (build + type-check)
+
+### 3.17 — Subpath export guidance
+- **Date**: 2026-04-28
+- **Files**: `packages/shared/package.json`
+- **Change**: Added `_exportGuide` field documenting subpath export pattern for future utilities.
+- **Verified**: PASS
+
+### Phase 3 Review Follow-ups (Fixed)
+
+### I-3 — AuthProviderModel replaced with Prisma import
+- **Date**: 2026-04-28
+- **Files**: `apps/server/src/modules/auth-providers/types.ts`
+- **Change**: Replaced 22-line manual interface with `import type { AuthProvider } from "@prisma/client"; export type AuthProviderModel = AuthProvider;`
+- **Verified**: PASS
+
+### I-4 — Export matchRoute for real test coverage
+- **Date**: 2026-04-28
+- **Files**: `apps/web/src/lib/proxy.ts`, `apps/web/src/lib/__tests__/proxy-routes.test.ts`
+- **Change**: Exported `matchRoute`, removed inline copy in test, 62 tests now verify production code.
+- **Verified**: PASS (62/62 tests green)
+
+### I-5 — Fix noImplicitAnyLet violations + enable rule
+- **Date**: 2026-04-28
+- **Files**: `biome.json`, `apps/web/src/hooks/useUppyUpload.ts`, `apps/web/src/app/profile/components/color-picker-form.tsx`
+- **Change**: Fixed 3 implicit-any-let violations, enabled `noImplicitAnyLet: "error"` in biome.
+- **Verified**: PASS
+
+### I-7 — Debug logging for silent catch in download controller
+- **Date**: 2026-04-28
+- **Files**: `apps/server/src/modules/file/download.controller.ts`
+- **Change**: Added `request.log.debug({ err }, "JWT verification failed for reverse-share download")` to previously silent catch block.
+- **Verified**: PASS
+
+### I-8 — Replace console.warn with Pino in app.ts
+- **Date**: 2026-04-28
+- **Files**: `apps/server/src/app.ts`
+- **Change**: CORS security warning now uses `app.log.warn(...)` instead of `console.warn(...)`.
+- **Verified**: PASS
+
+### M-2 — seed.js crypto import protocol
+- **Date**: 2026-04-28
+- **Files**: `apps/server/prisma/seed.js`
+- **Change**: `import crypto from "crypto"` → `import crypto from "node:crypto"`
+- **Verified**: PASS
+
+### M-7 — Import organization cleanup
+- **Date**: 2026-04-28
+- **Files**: ~140 files across server, web, docs
+- **Change**: Ran biome auto-fix for import organization across entire codebase.
+- **Verified**: PASS (type-check 5/5 clean)

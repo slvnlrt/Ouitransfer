@@ -10,7 +10,7 @@ import { validatePasswordMiddleware } from "./middleware.js";
 export async function userRoutes(app: FastifyInstance) {
   const userController = new UserController();
 
-  const preValidation = async (request: any, reply: any) => {
+  const preValidation = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const usersCount = await prisma.user.count();
 
@@ -20,23 +20,20 @@ export async function userRoutes(app: FastifyInstance) {
           if (!request.user.isAdmin) {
             return reply
               .status(403)
-              .send({ error: "Access restricted to administrators" })
-              .description("Access restricted to administrators");
+              .send({ error: "Access restricted to administrators" });
           }
         } catch (authErr) {
-          console.error(authErr);
+          request.log.error({ err: authErr }, "JWT verification failed");
           return reply
             .status(401)
-            .send({ error: "Unauthorized: a valid token is required to access this resource." })
-            .description("Unauthorized: a valid token is required to access this resource.");
+            .send({ error: "Unauthorized: a valid token is required to access this resource." });
         }
       }
     } catch (err) {
-      console.error(err);
+      request.log.error({ err }, "Error in register preValidation");
       return reply
         .status(500)
-        .send({ error: "Internal server error" })
-        .description("Internal server error");
+        .send({ error: "Internal server error" });
     }
   };
 
@@ -330,7 +327,7 @@ export async function userRoutes(app: FastifyInstance) {
         try {
           await request.jwtVerify();
         } catch (err) {
-          console.error(err);
+          request.log.error({ err }, "JWT verification failed");
           return reply.status(401).send({ error: "Unauthorized" });
         }
       },
@@ -357,7 +354,7 @@ export async function userRoutes(app: FastifyInstance) {
         try {
           await request.jwtVerify();
         } catch (err) {
-          console.error(err);
+          request.log.error({ err }, "JWT verification failed");
           reply.status(401).send({ error: "Unauthorized" });
         }
       },

@@ -9,6 +9,7 @@ import { z } from "zod";
 
 import { useAuth } from "@/contexts/auth-context";
 import { getCurrentUser, removeAvatar, updateUser, uploadAvatar } from "@/http/endpoints";
+import type { User } from "@/http/endpoints/auth/types";
 
 const createSchemas = (t: (key: string) => string) => ({
   profileSchema: z.object({
@@ -41,7 +42,7 @@ export function useProfile() {
 
   const { setUser } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState<User | null>(null);
   const [isNewPasswordVisible, setIsNewPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
 
@@ -72,7 +73,9 @@ export function useProfile() {
   }, [t, profileForm]);
 
   const onProfileSubmit = async (data: z.infer<typeof profileSchema>) => {
-    const hasChanges = Object.keys(data).some((key) => data[key as keyof typeof data] !== userData[key]);
+    const hasChanges =
+      !userData ||
+      Object.keys(data).some((key) => data[key as keyof typeof data] !== userData[key as keyof User]);
 
     if (!hasChanges) {
       toast.info(t("profile.messages.noChanges"));
@@ -82,7 +85,7 @@ export function useProfile() {
 
     try {
       await updateUser({
-        id: userData.id,
+        id: userData!.id,
         ...data,
       });
       toast.success(t("profile.messages.updateSuccess"));
@@ -101,7 +104,7 @@ export function useProfile() {
 
     try {
       await updateUser({
-        id: userData.id,
+        id: userData!.id,
         password: data.newPassword,
       });
       toast.success(t("profile.messages.passwordSuccess"));

@@ -6,8 +6,9 @@ import { toast } from "sonner";
 
 import { addRecipients, createShareAlias, deleteShare, notifyRecipients, updateShare } from "@/http/endpoints";
 import { updateFolder } from "@/http/endpoints/folders";
-import type { Share } from "@/http/endpoints/shares/types";
+import type { Share, UpdateShareBody } from "@/http/endpoints/shares/types";
 import { getCachedDownloadUrl } from "@/lib/download-url-cache";
+import { logger } from "@/lib/logger";
 
 export interface ShareManagerHook {
   shareToDelete: Share | null;
@@ -36,13 +37,13 @@ export interface ShareManagerHook {
   handleDownloadShareFiles: (share: Share) => Promise<void>;
   handleBulkDownloadWithZip: (shares: Share[], zipName: string) => Promise<void>;
   handleDeleteBulk: () => Promise<void>;
-  handleEdit: (shareId: string, data: any) => Promise<void>;
+  handleEdit: (shareId: string, data: Omit<UpdateShareBody, "id">) => Promise<void>;
   handleUpdateName: (shareId: string, newName: string) => Promise<void>;
   handleUpdateDescription: (shareId: string, newDescription: string) => Promise<void>;
   handleUpdateSecurity: (share: Share) => Promise<void>;
   handleUpdateExpiration: (share: Share) => Promise<void>;
   handleManageFiles: () => Promise<void>;
-  handleManageRecipients: (shareId: string, recipients: any[]) => Promise<void>;
+  handleManageRecipients: (shareId: string, recipients: string[]) => Promise<void>;
   handleGenerateLink: (shareId: string, alias: string) => Promise<void>;
   handleNotifyRecipients: (share: Share) => Promise<void>;
   setClearSelectionCallback?: (callback: () => void) => void;
@@ -103,7 +104,7 @@ export function useShareManager(onSuccess: () => void) {
     }
   };
 
-  const handleEdit = async (shareId: string, data: any) => {
+  const handleEdit = async (shareId: string, data: Omit<UpdateShareBody, "id">) => {
     try {
       await updateShare({ id: shareId, ...data });
       toast.success(t("shareManager.updateSuccess"));
@@ -271,7 +272,7 @@ export function useShareManager(onSuccess: () => void) {
         toast.error(t("shareManager.errors.multipleDownloadNotSupported"));
       }
     } catch (error) {
-      console.error("Error creating ZIP:", error);
+      logger.error("Error creating ZIP", { err: error instanceof Error ? error.message : String(error) });
     }
   };
 
@@ -308,7 +309,7 @@ export function useShareManager(onSuccess: () => void) {
         toast.dismiss(loadingToast);
         toast.success(t("shareManager.downloadSuccess"));
       } catch (error) {
-        console.error("Download error:", error);
+        logger.error("Download error", { err: error instanceof Error ? error.message : String(error) });
         toast.error(t("shareManager.downloadError"));
       }
     } else {

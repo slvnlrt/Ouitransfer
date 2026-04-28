@@ -12,9 +12,9 @@ interface ReverseSharesCardsContainerProps {
   onViewFiles: (reverseShare: ReverseShare) => void;
   onViewQrCode?: (reverseShare: ReverseShare) => void;
   onCreateReverseShare: () => void;
-  onUpdateReverseShare?: (id: string, data: any) => Promise<any>;
-  onToggleActive?: (id: string, isActive: boolean) => Promise<any>;
-  onUpdatePassword?: (id: string, data: { hasPassword: boolean; password?: string }) => Promise<any>;
+  onUpdateReverseShare?: (id: string, data: Record<string, unknown>) => Promise<unknown>;
+  onToggleActive?: (id: string, isActive: boolean) => Promise<unknown>;
+  onUpdatePassword?: (id: string, data: { hasPassword: boolean; password?: string }) => Promise<unknown>;
 }
 
 export function ReverseSharesCardsContainer({

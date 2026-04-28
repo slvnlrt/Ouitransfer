@@ -38,21 +38,21 @@ export class ConfigService {
       where: { group },
     });
 
-    return configs.reduce((acc, curr) => {
-      let value: any = curr.value;
+    return configs.reduce<Record<string, unknown>>((acc, curr) => {
+      let value: unknown = curr.value;
 
       switch (curr.type) {
         case "number":
-          value = Number(value);
+          value = Number(curr.value);
           break;
         case "boolean":
-          value = value === "true";
+          value = curr.value === "true";
           break;
         case "json":
-          value = JSON.parse(value);
+          value = JSON.parse(curr.value);
           break;
         case "bigint":
-          value = BigInt(value);
+          value = BigInt(curr.value);
           break;
       }
 

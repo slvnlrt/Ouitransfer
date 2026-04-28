@@ -7,18 +7,16 @@ export class InviteController {
 
   async generateInviteToken(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const user = request.user as any;
-
-      if (!user?.isAdmin) {
+      if (!request.user?.isAdmin) {
         return reply.status(403).send({ error: "Forbidden: admin access required" });
       }
 
       const { token, expiresAt } = await this.inviteService.generateInviteToken(
-        user.userId || user.id,
+        request.user.userId,
       );
       return reply.send({ token, expiresAt });
     } catch (error) {
-      console.error("[Invite Controller] Error generating invite token:", error);
+      request.log.error({ err: error }, "[Invite Controller] Error generating invite token");
       return reply.status(500).send({ error: "Failed to generate invite token" });
     }
   }
@@ -33,7 +31,7 @@ export class InviteController {
 
       return reply.send(validation);
     } catch (error) {
-      console.error("Error validating invite token:", error);
+      request.log.error({ err: error }, "Error validating invite token");
       return reply.status(500).send({ error: "Failed to validate invite token" });
     }
   }
@@ -67,22 +65,23 @@ export class InviteController {
         message: "User registered successfully",
         user,
       });
-    } catch (error: any) {
-      console.error("Error registering with invite:", error);
+    } catch (error: unknown) {
+      request.log.error({ err: error }, "Error registering with invite");
+      const message = error instanceof Error ? error.message : String(error);
 
-      if (error.message.includes("already been used")) {
+      if (message.includes("already been used")) {
         return reply.status(400).send({ error: "This invite link has already been used" });
       }
-      if (error.message.includes("expired")) {
+      if (message.includes("expired")) {
         return reply.status(400).send({ error: "This invite link has expired" });
       }
-      if (error.message.includes("Invalid invite")) {
+      if (message.includes("Invalid invite")) {
         return reply.status(400).send({ error: "Invalid invite link" });
       }
-      if (error.message.includes("Username already exists")) {
+      if (message.includes("Username already exists")) {
         return reply.status(400).send({ error: "Username already exists" });
       }
-      if (error.message.includes("Email already exists")) {
+      if (message.includes("Email already exists")) {
         return reply.status(400).send({ error: "Email already exists" });
       }
 

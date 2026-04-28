@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 import { publicPaths } from "@/components/auth/paths/public-paths";
-import { unauthenticatedOnlyPaths } from "@/components/auth/paths/unahthenticated-only-paths";
+import { unauthenticatedOnlyPaths } from "@/components/auth/paths/unauthenticated-only-paths";
 import { LoadingScreen } from "@/components/layout/loading-screen";
 import { useAuth } from "@/contexts/auth-context";
 

@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "description": "Shared utilities for the Ouitransfer monorepo",
+  "_exportGuide": "When adding utilities, use subpath exports (./foo, ./bar) — do NOT add a catch-all '.' barrel export. Subpath imports keep tree-shaking optimal.",
   "type": "module",
   "exports": {
     "./mime-types": {

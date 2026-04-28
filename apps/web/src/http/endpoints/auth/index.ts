@@ -6,6 +6,7 @@ import type {
   CreateProviderResult,
   DeleteProviderResult,
   GetAllProvidersResult,
+  GetAuthConfigResult,
   GetCurrentUserResult,
   GetEnabledProvidersResult,
   LoginBody,
@@ -93,7 +94,7 @@ export const updateProvidersOrder = <TData = UpdateProvidersOrderResult>(
   return apiInstance.put(`/api/auth/providers/order`, updateProvidersOrderBody, options);
 };
 
-export const getAuthConfig = <TData = { passwordAuthEnabled: boolean }>(
+export const getAuthConfig = <TData = GetAuthConfigResult>(
   options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.get(`/api/auth/config`, options);

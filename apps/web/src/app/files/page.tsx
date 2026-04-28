@@ -55,6 +55,12 @@ interface Folder {
   };
 }
 
+interface DragItem {
+  id: string;
+  name: string;
+  type: "file" | "folder";
+}
+
 export default function FilesPage() {
   const t = useTranslations();
   const [itemsToMove, setItemsToMove] = useState<{ files: File[]; folders: Folder[] } | null>(null);
@@ -76,11 +82,11 @@ export default function FilesPage() {
     allFolders,
   } = useFileBrowser();
 
-  const handleMoveFile = (file: any) => {
+  const handleMoveFile = (file: File) => {
     setItemsToMove({ files: [file], folders: [] });
   };
 
-  const handleMoveFolder = (folder: any) => {
+  const handleMoveFolder = (folder: Folder) => {
     setItemsToMove({ files: [], folders: [folder] });
   };
 
@@ -184,7 +190,7 @@ export default function FilesPage() {
     <ProtectedRoute>
       <GlobalDropZone
         onSuccess={loadFiles}
-        currentFolderId={currentPath.length > 0 ? currentPath[currentPath.length - 1].id : null}
+        currentFolderId={currentPath.length > 0 ? currentPath[currentPath.length - 1].id : undefined}
       >
         <FileManagerLayout
           breadcrumbLabel={t("files.breadcrumb")}
@@ -230,15 +236,15 @@ export default function FilesPage() {
 
                               try {
                                 const itemData = e.dataTransfer.getData("text/plain");
-                                const items = JSON.parse(itemData);
+                                const items = JSON.parse(itemData) as DragItem[];
 
                                 // Update UI immediately
-                                items.forEach((item: any) => {
+                                items.forEach((item) => {
                                   handleImmediateUpdate(item.id, item.type, null);
                                 });
 
                                 // Move all items in parallel
-                                const movePromises = items.map((item: any) => {
+                                const movePromises = items.map((item) => {
                                   if (item.type === "file") {
                                     return moveFile(item.id, { folderId: null });
                                   } else if (item.type === "folder") {
@@ -296,10 +302,10 @@ export default function FilesPage() {
 
                                     try {
                                       const itemData = e.dataTransfer.getData("text/plain");
-                                      const items = JSON.parse(itemData);
+                                      const items = JSON.parse(itemData) as DragItem[];
 
                                       // Filter out invalid moves
-                                      const validItems = items.filter((item: any) => {
+                                      const validItems = items.filter((item) => {
                                         if (item.id === folder.id) return false;
                                         if (item.type === "folder" && item.id === folder.id) return false;
                                         return true;
@@ -311,12 +317,12 @@ export default function FilesPage() {
                                       }
 
                                       // Update UI immediately
-                                      validItems.forEach((item: any) => {
+                                      validItems.forEach((item) => {
                                         handleImmediateUpdate(item.id, item.type, folder.id);
                                       });
 
                                       // Move all items in parallel
-                                      const movePromises = validItems.map((item: any) => {
+                                      const movePromises = validItems.map((item) => {
                                         if (item.type === "file") {
                                           return moveFile(item.id, { folderId: folder.id });
                                         } else if (item.type === "folder") {

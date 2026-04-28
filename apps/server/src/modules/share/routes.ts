@@ -19,7 +19,7 @@ export async function shareRoutes(app: FastifyInstance) {
     try {
       await request.jwtVerify();
     } catch (err) {
-      console.error(err);
+      request.log.error({ err }, "JWT verification failed");
       reply.status(401).send({ error: "Token inválido ou ausente." });
     }
   };

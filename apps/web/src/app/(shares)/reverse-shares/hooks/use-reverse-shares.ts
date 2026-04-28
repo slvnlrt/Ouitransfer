@@ -18,6 +18,8 @@ import type {
   UpdateReverseShareBody,
 } from "@/http/endpoints/reverse-shares/types";
 
+
+
 export type ReverseShare = ListUserReverseSharesResult["data"]["reverseShares"][0];
 
 export function useReverseShares() {
@@ -76,7 +78,7 @@ export function useReverseShares() {
     }
   };
 
-  const handleCreateReverseShare = async (data: CreateReverseShareBody) => {
+  const handleCreateReverseShare = async (data: CreateReverseShareBody): Promise<void> => {
     setIsCreating(true);
     try {
       const response = await createReverseShare(data);
@@ -88,8 +90,6 @@ export function useReverseShares() {
       setIsCreateModalOpen(false);
 
       setReverseShareToGenerateLink(newReverseShare as ReverseShare);
-
-      return newReverseShare;
     } catch {
       toast.error(t("reverseShares.errors.createFailed"));
     } finally {
@@ -149,7 +149,7 @@ export function useReverseShares() {
     }
   };
 
-  const handleUpdateReverseShare = async (data: UpdateReverseShareBody) => {
+  const handleUpdateReverseShare = async (data: UpdateReverseShareBody): Promise<void> => {
     setIsUpdating(true);
     try {
       const response = await updateReverseShare(data);
@@ -161,8 +161,6 @@ export function useReverseShares() {
 
       toast.success(t("reverseShares.messages.updateSuccess"));
       setReverseShareToEdit(null);
-
-      return updatedReverseShare;
     } catch {
       toast.error(t("reverseShares.errors.updateFailed"));
     } finally {
@@ -183,14 +181,12 @@ export function useReverseShares() {
       if (reverseShareToViewDetails && reverseShareToViewDetails.id === id) {
         setReverseShareToViewDetails({ ...reverseShareToViewDetails, ...updatedReverseShare } as ReverseShare);
       }
-
-      return updatedReverseShare;
     } catch {
       toast.error(t("reverseShares.errors.updateFailed"));
     }
   };
 
-  const handleUpdateReverseShareData = async (id: string, data: any) => {
+  const handleUpdateReverseShareData = async (id: string, data: Omit<UpdateReverseShareBody, "id">): Promise<void> => {
     try {
       const payload: UpdateReverseShareBody = { id, ...data };
       const response = await updateReverseShare(payload);
@@ -205,7 +201,6 @@ export function useReverseShares() {
       }
 
       toast.success(t("reverseShares.messages.updateSuccess"));
-      return updatedReverseShare;
     } catch {
       toast.error(t("reverseShares.errors.updateFailed"));
     }
@@ -228,7 +223,6 @@ export function useReverseShares() {
       toast.success(
         isActive ? t("reverseShares.messages.activateSuccess") : t("reverseShares.messages.deactivateSuccess")
       );
-      return updatedReverseShare;
     } catch {
       toast.error(t("reverseShares.errors.updateFailed"));
     }

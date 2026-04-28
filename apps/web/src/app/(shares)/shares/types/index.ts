@@ -1,3 +1,9 @@
+import type { Share } from "@/http/endpoints/shares/types";
+import type { EnhancedFileManagerHook } from "@/hooks/use-enhanced-file-manager";
+import type { ShareManagerHook } from "@/hooks/use-share-manager";
+
+export type { Share };
+
 export interface SharesSearchProps {
   searchQuery: string;
   onSearchChange: (value: string) => void;
@@ -7,19 +13,19 @@ export interface SharesSearchProps {
 }
 
 export interface SharesTableContainerProps {
-  shares: any[];
-  onCopyLink: (share: any) => void;
+  shares: Share[];
+  onCopyLink: (share: Share) => void;
   onCreateShare: () => void;
-  shareManager: any;
+  shareManager: ShareManagerHook;
 }
 
 export interface SharesModalsProps {
   isCreateModalOpen: boolean;
   onCloseCreateModal: () => void;
-  shareToViewDetails: any;
-  shareToGenerateLink: any;
-  shareManager: any;
-  fileManager: any;
+  shareToViewDetails: Share | null;
+  shareToGenerateLink: Share | null;
+  shareManager: ShareManagerHook;
+  fileManager: EnhancedFileManagerHook;
   onSuccess: () => void;
   onCloseViewDetails: () => void;
   onCloseGenerateLink: () => void;

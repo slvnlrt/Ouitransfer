@@ -12,8 +12,8 @@ export class StorageController {
 
       try {
         await request.jwtVerify();
-        userId = (request as any).user?.userId;
-        isAdmin = (request as any).user?.isAdmin || false;
+        userId = request.user?.userId;
+        isAdmin = request.user?.isAdmin || false;
       } catch (_err) {
         return reply.status(401).send({
           error: "Unauthorized: a valid token is required to access this resource.",
@@ -22,10 +22,11 @@ export class StorageController {
 
       const diskSpace = await this.storageService.getDiskSpace(userId, isAdmin);
       return reply.send(diskSpace);
-    } catch (error: any) {
-      console.error("Controller error in getDiskSpace:", error);
+    } catch (error: unknown) {
+      request.log.error({ err: error }, "Controller error in getDiskSpace");
+      const message = error instanceof Error ? error.message : undefined;
 
-      if (error.message?.includes("Unable to determine actual disk space")) {
+      if (message?.includes("Unable to determine actual disk space")) {
         return reply.status(503).send({
           error: "Disk space detection unavailable - system configuration issue",
           details: "Please check system permissions and available disk utilities",
@@ -35,7 +36,7 @@ export class StorageController {
 
       return reply.status(500).send({
         error: "Failed to retrieve disk space information",
-        details: error.message || "Unknown error occurred",
+        details: message ?? "Unknown error occurred",
       });
     }
   }
@@ -47,7 +48,7 @@ export class StorageController {
 
       try {
         await request.jwtVerify();
-        userId = (request as any).user?.userId;
+        userId = request.user?.userId;
       } catch (_err) {
         return reply.status(401).send({
           error: "Unauthorized: a valid token is required to access this resource.",
@@ -62,8 +63,9 @@ export class StorageController {
 
       const result = await this.storageService.checkUploadAllowed(Number(fileSize), userId);
       return reply.send(result);
-    } catch (error: any) {
-      return reply.status(500).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(500).send({ error: message });
     }
   }
 }

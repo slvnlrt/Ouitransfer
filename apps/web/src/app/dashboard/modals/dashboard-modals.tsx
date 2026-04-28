@@ -16,6 +16,7 @@ import { ShareMultipleItemsModal } from "@/components/modals/share-multiple-item
 import { ShareSecurityModal } from "@/components/modals/share-security-modal";
 import { UploadFileModal } from "@/components/modals/upload-file-modal";
 import { listFiles, listFolders } from "@/http/endpoints";
+import type { Share } from "@/http/endpoints/shares/types";
 import { DashboardModalsProps } from "../types";
 
 export function DashboardModals({ modals, fileManager, shareManager, onSuccess }: DashboardModalsProps) {
@@ -27,7 +28,7 @@ export function DashboardModals({ modals, fileManager, shareManager, onSuccess }
     onSuccess();
   };
 
-  const getShareLink = (share: any) => {
+  const getShareLink = (share: Share | null) => {
     if (!share?.alias?.alias) return "";
     return `${window.location.origin}/s/${share.alias.alias}`;
   };
@@ -101,7 +102,7 @@ export function DashboardModals({ modals, fileManager, shareManager, onSuccess }
         onConfirm={shareManager.handleDeleteBulk}
         title={t("shareActions.bulkDeleteTitle")}
         description={t("shareActions.bulkDeleteConfirmation", { count: shareManager.sharesToDelete?.length || 0 })}
-        files={shareManager.sharesToDelete?.map((share: any) => share.name) || []}
+        files={shareManager.sharesToDelete?.map((share) => share.name ?? "") || []}
         itemType="shares"
       />
 

@@ -14,12 +14,14 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { createShare } from "@/http/endpoints";
+import type { FileItem } from "@/http/endpoints/files/types";
+import type { FolderItem } from "@/http/endpoints/folders/types";
 
 interface CreateShareModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  getAllFilesAndFolders: () => Promise<{ files: any[]; folders: any[] }>;
+  getAllFilesAndFolders: () => Promise<{ files: FileItem[]; folders: FolderItem[] }>;
 }
 
 export function CreateShareModal({ isOpen, onClose, onSuccess, getAllFilesAndFolders }: CreateShareModalProps) {
@@ -52,7 +54,7 @@ export function CreateShareModal({ isOpen, onClose, onSuccess, getAllFilesAndFol
         id: file.id,
         name: file.name,
         type: "file" as const,
-        size: file.size,
+        size: Number(file.size),
         parentId: file.folderId || null,
       }));
 

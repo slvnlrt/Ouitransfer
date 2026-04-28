@@ -19,10 +19,11 @@ import { Label } from "@/components/ui/label";
 import { Loader } from "@/components/ui/loader";
 import { Switch } from "@/components/ui/switch";
 import { updateShare } from "@/http/endpoints";
+import type { Share } from "@/http/endpoints/shares/types";
 
 interface ShareExpirationModalProps {
   shareId: string | null;
-  share: any;
+  share: Share | null;
   onClose: () => void;
   onSuccess?: () => void;
 }
@@ -38,7 +39,7 @@ export function ShareExpirationModal({ shareId, share, onClose, onSuccess }: Sha
       const hasCurrentExpiration = !!share.expiration;
       setHasExpiration(hasCurrentExpiration);
 
-      if (hasCurrentExpiration) {
+      if (hasCurrentExpiration && share.expiration) {
         const date = new Date(share.expiration);
         setExpirationDate(date.toISOString().slice(0, 16));
       } else {

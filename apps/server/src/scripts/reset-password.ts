@@ -37,7 +37,7 @@ async function resetUserPassword() {
     console.log("⚠️  WARNING: This bypasses normal security checks. Use only when necessary!\n");
 
     let email: string;
-    let user: any;
+    let user: { id: string; firstName: string; lastName: string; email: string; username: string; isActive: boolean; isAdmin: boolean } | null = null;
 
     while (true) {
       email = await question(rl, "Enter user email: ");

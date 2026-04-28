@@ -60,7 +60,7 @@ export function RecentFiles({ files, fileManager, onOpenUploadModal }: RecentFil
             onUpdateName={(fileId, newName) => {
               const file = files.find((f) => f.id === fileId);
               if (file) {
-                fileManager.handleRename(fileId, newName, file.description);
+                fileManager.handleRename(fileId, newName, file.description ?? undefined);
               }
             }}
             onUpdateDescription={(fileId, newDescription) => {

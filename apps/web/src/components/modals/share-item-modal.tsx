@@ -90,15 +90,15 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
       const allFolders = foldersResponse.data.folders || [];
 
       const collectContents = (parentId: string): { files: string[]; folders: string[] } => {
-        const folderFiles = allFiles.filter((f: any) => f.folderId === parentId).map((f: any) => f.id);
+        const folderFiles = allFiles.filter((f) => f.folderId === parentId).map((f) => f.id);
 
-        const subFolders = allFolders.filter((f: any) => f.parentId === parentId);
-        const subFolderIds = subFolders.map((f: any) => f.id);
+        const subFolders = allFolders.filter((f) => f.parentId === parentId);
+        const subFolderIds = subFolders.map((f) => f.id);
 
         let allSubFiles: string[] = [...folderFiles];
         let allSubFolders: string[] = [...subFolderIds];
 
-        subFolders.forEach((subFolder: any) => {
+        subFolders.forEach((subFolder) => {
           const subContents = collectContents(subFolder.id);
           allSubFiles = [...allSubFiles, ...subContents.files];
           allSubFolders = [...allSubFolders, ...subContents.folders];

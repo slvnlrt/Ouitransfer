@@ -331,7 +331,7 @@ export function getMimeType(filename) {
         extension = filename.toLowerCase();
     }
     else if (!filename.includes(".")) {
-        extension = "." + filename.toLowerCase();
+        extension = `.${filename.toLowerCase()}`;
     }
     else {
         const lastDotIndex = filename.lastIndexOf(".");
@@ -366,14 +366,21 @@ export function isVideoMimeType(mimeType) {
 }
 /**
  * Extract filename from Content-Disposition header.
+ *
+ * Supports RFC 5987 `filename*=` with UTF-8 encoding only.
+ * Handles both quoted (`filename="foo.txt"`) and unquoted (`filename=foo.txt`) values.
+ *
  * @param contentDisposition - The Content-Disposition header value
  * @returns Extracted filename or null if not found
  */
 export function extractFilenameFromContentDisposition(contentDisposition) {
     if (!contentDisposition)
         return null;
-    const filenameMatch = contentDisposition.match(/filename\*?=(?:UTF-8'')?["]?([^";\r\n]*)["]?/i);
-    return filenameMatch ? decodeURIComponent(filenameMatch[1]) : null;
+    // Match filename="value" (quoted) or filename*=UTF-8''value (RFC 5987)
+    // Captures: group 1 = quoted filename, group 2 = unquoted filename
+    const filenameMatch = contentDisposition.match(/filename\*?=(?:UTF-8'')?(?:"([^"]*)"|([^;\s]*))/i);
+    const filename = filenameMatch ? filenameMatch[1] || filenameMatch[2] : null;
+    return filename ? decodeURIComponent(filename) : null;
 }
 /**
  * Detect MIME type with fallback logic for proxy responses.

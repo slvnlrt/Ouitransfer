@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { getTrustedDevices, removeAllTrustedDevices, removeTrustedDevice } from "@/http/endpoints";
+import { logger } from "@/lib/logger";
 import type { TrustedDevice } from "@/http/endpoints/auth/trusted-devices/types";
 
 export function useTrustedDevices() {
@@ -23,7 +24,7 @@ export function useTrustedDevices() {
       setDevices(response.devices);
     } catch (error) {
       toast.error(t("twoFactor.trustedDevices.loadFailed"));
-      console.error("Failed to load trusted devices:", error);
+      logger.error("Failed to load trusted devices", { err: error instanceof Error ? error.message : String(error) });
     } finally {
       setIsLoading(false);
     }
@@ -46,7 +47,7 @@ export function useTrustedDevices() {
       setDeviceToRemove(null);
     } catch (error) {
       toast.error(t("twoFactor.trustedDevices.removeFailed"));
-      console.error("Failed to remove trusted device:", error);
+      logger.error("Failed to remove trusted device", { deviceId: deviceToRemove.id, err: error instanceof Error ? error.message : String(error) });
     } finally {
       setIsRemoving(false);
     }
@@ -65,7 +66,7 @@ export function useTrustedDevices() {
       setIsRemoveAllModalOpen(false);
     } catch (error) {
       toast.error(t("twoFactor.trustedDevices.removeAllFailed"));
-      console.error("Failed to remove all trusted devices:", error);
+      logger.error("Failed to remove all trusted devices", { err: error instanceof Error ? error.message : String(error) });
     } finally {
       setIsRemoving(false);
     }

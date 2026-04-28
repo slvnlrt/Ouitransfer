@@ -80,7 +80,7 @@ export function ProfilePicture({ userData, onImageChange, onImageRemove }: Profi
             <Skeleton className="w-25 h-25 rounded-full" />
           ) : (
             <Avatar className="w-25 h-25">
-              <AvatarImage src={userData?.image} />
+              <AvatarImage src={userData?.image ?? undefined} />
               <AvatarFallback className="absolute inset-0 rounded-full border text-4xl font-bold">
                 {userData?.firstName
                   ? userData.firstName

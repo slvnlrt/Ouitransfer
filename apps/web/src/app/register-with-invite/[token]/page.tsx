@@ -102,10 +102,10 @@ export default function RegisterWithInvitePage() {
       setTimeout(() => {
         router.push("/login");
       }, 2000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error registering:", error);
 
-      const errorMessage = error.response?.data?.error;
+      const errorMessage = (error as { response?: { data?: { error?: string } } } | null)?.response?.data?.error;
       if (errorMessage?.includes("already been used")) {
         toast.error(t("registerWithInvite.errors.tokenUsed"));
       } else if (errorMessage?.includes("expired")) {

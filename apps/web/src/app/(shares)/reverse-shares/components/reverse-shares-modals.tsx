@@ -11,11 +11,11 @@ import { ReverseShareDetailsModal } from "./reverse-share-details-modal";
 interface ReverseSharesModalsProps {
   isCreateModalOpen: boolean;
   onCloseCreateModal: () => void;
-  onCreateReverseShare: (data: CreateReverseShareBody) => Promise<any>;
+  onCreateReverseShare: (data: CreateReverseShareBody) => Promise<void>;
   isCreating: boolean;
   reverseShareToEdit: ReverseShare | null;
   onCloseEditModal: () => void;
-  onUpdateReverseShare: (data: UpdateReverseShareBody) => Promise<any>;
+  onUpdateReverseShare: (data: UpdateReverseShareBody) => Promise<unknown>;
   isUpdating: boolean;
   reverseShareToViewDetails: ReverseShare | null;
   reverseShareToGenerateLink: ReverseShare | null;
@@ -32,9 +32,9 @@ interface ReverseSharesModalsProps {
   onCreateAlias: (reverseShareId: string, alias: string) => Promise<void>;
   onCopyLink: (reverseShare: ReverseShare) => void;
   onViewQrCode: (reverseShare: ReverseShare) => void;
-  onUpdateReverseShareData?: (id: string, data: any) => Promise<any>;
-  onUpdatePassword?: (id: string, data: { hasPassword: boolean; password?: string }) => Promise<any>;
-  onToggleActive?: (id: string, isActive: boolean) => Promise<any>;
+  onUpdateReverseShareData?: (id: string, data: Record<string, unknown>) => Promise<unknown>;
+  onUpdatePassword?: (id: string, data: { hasPassword: boolean; password?: string }) => Promise<unknown>;
+  onToggleActive?: (id: string, isActive: boolean) => Promise<unknown>;
   onRefreshData?: () => Promise<void>;
   refreshReverseShare?: (id: string) => Promise<void>;
 }

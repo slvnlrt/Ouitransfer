@@ -20,10 +20,12 @@ import { twoFactorRoutes } from "./modules/two-factor/routes.js";
 import { userRoutes } from "./modules/user/routes.js";
 
 if (typeof globalThis.crypto === "undefined") {
+  // biome-ignore lint/suspicious/noExplicitAny: polyfill requires type cast — webcrypto is compatible with Crypto at runtime
   globalThis.crypto = crypto.webcrypto as any;
 }
 
 if (typeof global.crypto === "undefined") {
+  // biome-ignore lint/suspicious/noExplicitAny: polyfill requires type cast — webcrypto is compatible with Crypto at runtime
   (global as any).crypto = crypto.webcrypto;
 }
 

@@ -2,13 +2,20 @@ import type { AxiosRequestConfig } from "axios";
 
 import apiInstance from "@/config/api";
 import type {
+  AbortMultipartUploadByAliasResult,
   ActivateReverseShareResult,
   CheckReverseSharePasswordBody,
   CheckReverseSharePasswordResult,
+  CompleteMultipartUploadByAliasResult,
+  CopyReverseShareFileResult,
+  CreateMultipartUploadByAliasResult,
+  CreateReverseShareAliasResult,
   CreateReverseShareBody,
   CreateReverseShareResult,
   DeactivateReverseShareResult,
+  DeleteReverseShareFileByIdResult,
   DeleteReverseShareResult,
+  GetMultipartPartUrlByAliasResult,
   GetPresignedUrlBody,
   GetPresignedUrlResult,
   GetReverseShareForUploadParams,
@@ -215,7 +222,7 @@ export const downloadReverseShareFile = <TData = GetPresignedUrlResult>(
  * Delete file from reverse share
  * @summary Delete File from Reverse Share
  */
-export const deleteReverseShareFile = <TData = any>(fileId: string, options?: AxiosRequestConfig): Promise<TData> => {
+export const deleteReverseShareFile = <TData = DeleteReverseShareFileByIdResult>(fileId: string, options?: AxiosRequestConfig): Promise<TData> => {
   return apiInstance.delete(`/api/reverse-shares/files/${fileId}`, options);
 };
 
@@ -223,7 +230,7 @@ export const deleteReverseShareFile = <TData = any>(fileId: string, options?: Ax
  * Create or update reverse share alias
  * @summary Create or update reverse share alias
  */
-export const createReverseShareAlias = <TData = any>(
+export const createReverseShareAlias = <TData = CreateReverseShareAliasResult>(
   reverseShareId: string,
   createAliasBody: { alias: string },
   options?: AxiosRequestConfig
@@ -269,7 +276,7 @@ export const updateReverseShareFile = <TData = UpdateReverseShareFileResult>(
  * Copy file from reverse share to user files
  * @summary Copy File from Reverse Share to User Files
  */
-export const copyReverseShareFileToUserFiles = <TData = any>(
+export const copyReverseShareFileToUserFiles = <TData = CopyReverseShareFileResult>(
   fileId: string,
   options?: AxiosRequestConfig
 ): Promise<TData> => {
@@ -280,7 +287,7 @@ export const copyReverseShareFileToUserFiles = <TData = any>(
  * Create a multipart upload for reverse share (public endpoint)
  * @summary Create Multipart Upload for Reverse Share (Public)
  */
-export const createMultipartUploadByAlias = <TData = any>(
+export const createMultipartUploadByAlias = <TData = CreateMultipartUploadByAliasResult>(
   alias: string,
   body: { filename: string; extension: string },
   params?: { password?: string },
@@ -295,7 +302,7 @@ export const createMultipartUploadByAlias = <TData = any>(
  * Changed from GET to POST to send password in body instead of query params
  * @summary Get Multipart Part URL for Reverse Share (Public)
  */
-export const getMultipartPartUrlByAlias = <TData = any>(
+export const getMultipartPartUrlByAlias = <TData = GetMultipartPartUrlByAliasResult>(
   alias: string,
   params: { uploadId: string; objectName: string; partNumber: string; password?: string },
   options?: AxiosRequestConfig
@@ -316,7 +323,7 @@ export const getMultipartPartUrlByAlias = <TData = any>(
  * Complete a multipart upload for reverse share (public endpoint)
  * @summary Complete Multipart Upload for Reverse Share (Public)
  */
-export const completeMultipartUploadByAlias = <TData = any>(
+export const completeMultipartUploadByAlias = <TData = CompleteMultipartUploadByAliasResult>(
   alias: string,
   body: { uploadId: string; objectName: string; parts: Array<{ PartNumber: number; ETag: string }> },
   params?: { password?: string },
@@ -330,7 +337,7 @@ export const completeMultipartUploadByAlias = <TData = any>(
  * Abort a multipart upload for reverse share (public endpoint)
  * @summary Abort Multipart Upload for Reverse Share (Public)
  */
-export const abortMultipartUploadByAlias = <TData = any>(
+export const abortMultipartUploadByAlias = <TData = AbortMultipartUploadByAliasResult>(
   alias: string,
   body: { uploadId: string; objectName: string },
   params?: { password?: string },

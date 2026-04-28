@@ -193,7 +193,7 @@ export const notifyRecipients = <TData = NotifyRecipientsResult>(
 /**
  * @summary Add folders to share
  */
-export const addFolders = <TData = any>(
+export const addFolders = <TData = unknown>(
   shareId: string,
   addFoldersBody: { folders: string[] },
   options?: AxiosRequestConfig
@@ -204,7 +204,7 @@ export const addFolders = <TData = any>(
 /**
  * @summary Remove folders from share
  */
-export const removeFolders = <TData = any>(
+export const removeFolders = <TData = unknown>(
   shareId: string,
   removeFoldersBody: { folders: string[] },
   options?: AxiosRequestConfig
@@ -218,7 +218,7 @@ export const removeFolders = <TData = any>(
 /**
  * @summary Get folder contents within a share
  */
-export const getShareFolderContents = <TData = any>(
+export const getShareFolderContents = <TData = unknown>(
   shareId: string,
   folderId: string,
   password?: string,

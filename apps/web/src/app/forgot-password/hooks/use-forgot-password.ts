@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { getAuthConfig, requestPasswordReset } from "@/http/endpoints";
+import { logger } from "@/lib/logger";
 
 export type ForgotPasswordFormData = {
   email: string;
@@ -29,9 +30,9 @@ export function useForgotPassword() {
     const fetchAuthConfig = async () => {
       try {
         const response = await getAuthConfig();
-        setPasswordAuthEnabled((response as any).data.passwordAuthEnabled);
+        setPasswordAuthEnabled(response.data.passwordAuthEnabled);
       } catch (error) {
-        console.error("Failed to fetch auth config:", error);
+        logger.error("Failed to fetch auth config", { err: error instanceof Error ? error.message : String(error) });
         setPasswordAuthEnabled(true);
       } finally {
         setAuthConfigLoading(false);

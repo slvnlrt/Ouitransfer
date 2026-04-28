@@ -44,8 +44,7 @@ export function FontPickerForm() {
       setSelectedFont(savedFont);
       applyFont(savedFont);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [applyFont]);
 
   const handleFontSelect = (fontValue: string) => {
     setSelectedFont(fontValue);

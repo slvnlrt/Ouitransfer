@@ -12,8 +12,13 @@
       "ignoreDependencies": ["sharp"]
     },
     "apps/docs": {
-      "entry": ["src/app/**/{layout,page}.{ts,tsx}", "source.config.ts"],
-      "project": ["src/**/*.{ts,tsx}"],
+      "entry": [
+        "src/app/**/{layout,page}.{ts,tsx}",
+        "src/app/layout.config.tsx",
+        "source.config.ts",
+        "content/**/*.mdx"
+      ],
+      "project": ["src/**/*.{ts,tsx}", "content/**/*.mdx"],
       "ignoreDependencies": ["fumadocs-mdx"]
     }
   },

@@ -25,6 +25,7 @@ export function CustomAudioPlayer({ src }: CustomAudioPlayerProps) {
     try {
       const response = await fetch(src);
       const arrayBuffer = await response.arrayBuffer();
+      // biome-ignore lint/suspicious/noExplicitAny: webkitAudioContext vendor prefix not in TS types
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
 

@@ -8,6 +8,37 @@ import { toast } from "sonner";
 import { getShareByAlias } from "@/http/endpoints/index";
 import type { Share } from "@/http/endpoints/shares/types";
 import { getCachedDownloadUrl } from "@/lib/download-url-cache";
+import { logger } from "@/lib/logger";
+
+// View-model types matching the shape components expect (description?: string, size: number)
+interface ShareViewFile {
+  id: string;
+  name: string;
+  description?: string;
+  extension: string;
+  size: number;
+  objectName: string;
+  userId: string;
+  folderId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface ShareViewFolder {
+  id: string;
+  name: string;
+  description?: string;
+  objectName: string;
+  parentId?: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+  totalSize?: string;
+  _count?: {
+    files: number;
+    children: number;
+  };
+}
 
 const createSlug = (name: string): string => {
   return name
@@ -18,7 +49,7 @@ const createSlug = (name: string): string => {
     .replace(/^-+|-+$/g, "");
 };
 
-const createFolderPathSlug = (allFolders: any[], folderId: string): string => {
+const createFolderPathSlug = (allFolders: ShareViewFolder[], folderId: string): string => {
   const path: string[] = [];
   let currentId: string | null = folderId;
 
@@ -27,7 +58,7 @@ const createFolderPathSlug = (allFolders: any[], folderId: string): string => {
     if (folder) {
       const slug = createSlug(folder.name);
       path.unshift(slug || folder.id);
-      currentId = folder.parentId;
+      currentId = folder.parentId ?? null;
     } else {
       break;
     }
@@ -36,28 +67,28 @@ const createFolderPathSlug = (allFolders: any[], folderId: string): string => {
   return path.join("/");
 };
 
-const findFolderByPathSlug = (folders: any[], pathSlug: string): any | null => {
+const findFolderByPathSlug = (folders: ShareViewFolder[], pathSlug: string): ShareViewFolder | null => {
   const pathParts = pathSlug.split("/");
   let currentFolders = folders.filter((f) => !f.parentId);
-  let currentFolder: any = null;
+  let currentFolder: ShareViewFolder | null = null;
 
   for (const slugPart of pathParts) {
     currentFolder = currentFolders.find((folder) => {
       const slug = createSlug(folder.name);
       return slug === slugPart || folder.id === slugPart;
-    });
+    }) ?? null;
 
     if (!currentFolder) return null;
-    currentFolders = folders.filter((f) => f.parentId === currentFolder.id);
+    currentFolders = folders.filter((f) => f.parentId === currentFolder!.id);
   }
 
   return currentFolder;
 };
 
 interface ShareBrowseState {
-  folders: any[];
-  files: any[];
-  path: any[];
+  folders: ShareViewFolder[];
+  files: ShareViewFile[];
+  path: ShareViewFolder[];
   isLoading: boolean;
   error: string | null;
 }
@@ -85,13 +116,13 @@ export function usePublicShare() {
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const getFolderIdFromPathSlug = useCallback((pathSlug: string | null, folders: any[]): string | null => {
+  const getFolderIdFromPathSlug = useCallback((pathSlug: string | null, folders: ShareViewFolder[]): string | null => {
     if (!pathSlug) return null;
     const folder = findFolderByPathSlug(folders, pathSlug);
     return folder ? folder.id : null;
   }, []);
 
-  const getFolderPathSlugFromId = useCallback((folderId: string | null, folders: any[]): string | null => {
+  const getFolderPathSlugFromId = useCallback((folderId: string | null, folders: ShareViewFolder[]): string | null => {
     if (!folderId) return null;
     return createFolderPathSlug(folders, folderId);
   }, []);
@@ -100,11 +131,12 @@ export function usePublicShare() {
     async (sharePassword?: string) => {
       if (!alias) return;
 
-      const handleShareError = (error: any) => {
-        if (error.response?.data?.error === "Password required") {
+      const handleShareError = (error: unknown) => {
+        const axiosError = error as { response?: { data?: { error?: string } } };
+        if (axiosError.response?.data?.error === "Password required") {
           setIsPasswordModalOpen(true);
           setShare(null);
-        } else if (error.response?.data?.error === "Invalid password") {
+        } else if (axiosError.response?.data?.error === "Invalid password") {
           setIsPasswordError(true);
           toast.error(t("share.errors.invalidPassword"));
         } else {
@@ -119,7 +151,7 @@ export function usePublicShare() {
         setShare(response.data.share);
         setIsPasswordModalOpen(false);
         setIsPasswordError(false);
-      } catch (error: any) {
+      } catch (error: unknown) {
         handleShareError(error);
       } finally {
         setIsLoading(false);
@@ -142,28 +174,29 @@ export function usePublicShare() {
           return;
         }
 
-        const allFiles = share.files || [];
-        const allFolders = share.folders || [];
+        // Cast API types to view-model types (API uses string|null; components expect undefined)
+        const allFiles = (share.files || []) as unknown as ShareViewFile[];
+        const allFolders = (share.folders || []) as unknown as ShareViewFolder[];
 
         const shareFolderIds = new Set(allFolders.map((f) => f.id));
 
-        const folders = allFolders.filter((folder: any) => {
+        const folders = allFolders.filter((folder) => {
           if (folderId === null) {
             return !folder.parentId || !shareFolderIds.has(folder.parentId);
           } else {
             return folder.parentId === folderId;
           }
         });
-        const files = allFiles.filter((file: any) => (file.folderId || null) === folderId);
+        const files = allFiles.filter((file) => (file.folderId || null) === folderId);
 
-        const path = [];
+        const path: ShareViewFolder[] = [];
         if (folderId) {
-          let currentId = folderId;
+          let currentId: string | null = folderId;
           while (currentId) {
-            const folder = allFolders.find((f: any) => f.id === currentId);
+            const folder = allFolders.find((f) => f.id === currentId);
             if (folder) {
               path.unshift(folder);
-              currentId = (folder as any).parentId;
+              currentId = (folder.parentId as string | undefined) ?? null;
             } else {
               break;
             }
@@ -177,8 +210,8 @@ export function usePublicShare() {
           isLoading: false,
           error: null,
         });
-      } catch (error: any) {
-        console.error("Error loading folder contents:", error);
+      } catch (error: unknown) {
+        logger.error("Error loading folder contents", { err: error instanceof Error ? error.message : String(error) });
         setBrowseState((prev) => ({
           ...prev,
           isLoading: false,
@@ -197,7 +230,7 @@ export function usePublicShare() {
 
       const params = new URLSearchParams(searchParams);
       if (targetFolderId && share?.folders) {
-        const folderPathSlug = getFolderPathSlugFromId(targetFolderId, share.folders);
+        const folderPathSlug = getFolderPathSlugFromId(targetFolderId, (share.folders || []) as unknown as ShareViewFolder[]);
         if (folderPathSlug) {
           params.set("folder", folderPathSlug);
         } else {
@@ -225,21 +258,25 @@ export function usePublicShare() {
         throw new Error("Share data not available");
       }
 
+      // Cast share data to view-model types (API uses string|null; components expect undefined)
+      const shareFolderFiles = (share.files || []) as unknown as ShareViewFile[];
+      const shareFolderFolders = (share.folders || []) as unknown as ShareViewFolder[];
+
       // Get all files in this folder and subfolders with their paths
       const getFolderFilesWithPath = (
         targetFolderId: string,
         currentPath: string = ""
-      ): Array<{ file: any; path: string }> => {
-        const filesWithPath: Array<{ file: any; path: string }> = [];
+      ): Array<{ file: ShareViewFile; path: string }> => {
+        const filesWithPath: Array<{ file: ShareViewFile; path: string }> = [];
 
         // Get direct files in this folder
-        const directFiles = share.files?.filter((f) => f.folderId === targetFolderId) || [];
+        const directFiles = shareFolderFiles.filter((f) => f.folderId === targetFolderId);
         directFiles.forEach((file) => {
           filesWithPath.push({ file, path: currentPath });
         });
 
         // Get subfolders and process them recursively
-        const subfolders = share.folders?.filter((f) => f.parentId === targetFolderId) || [];
+        const subfolders = shareFolderFolders.filter((f) => f.parentId === targetFolderId);
         for (const subfolder of subfolders) {
           const subfolderPath = currentPath ? `${currentPath}/${subfolder.name}` : subfolder.name;
           filesWithPath.push(...getFolderFilesWithPath(subfolder.id, subfolderPath));
@@ -285,7 +322,7 @@ export function usePublicShare() {
         throw error;
       }
     } catch (error) {
-      console.error("Error downloading folder:", error);
+      logger.error("Error downloading folder", { err: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   };
@@ -315,7 +352,7 @@ export function usePublicShare() {
       toast.dismiss(loadingToast);
       toast.success(t("shareManager.downloadSuccess"));
     } catch (error) {
-      console.error("Error downloading file:", error);
+      logger.error("Error downloading file", { err: error instanceof Error ? error.message : String(error) });
       toast.error(t("share.errors.downloadFailed"));
     }
   };
@@ -338,21 +375,25 @@ export function usePublicShare() {
       const loadingToast = toast.loading(t("shareManager.creatingZip"));
 
       try {
+        // Cast share data to view-model types
+        const bulkFiles = (share.files || []) as unknown as ShareViewFile[];
+        const bulkFolders = (share.folders || []) as unknown as ShareViewFolder[];
+
         // Helper function to get all files in a folder recursively with paths
         const getFolderFilesWithPath = (
           targetFolderId: string,
           currentPath: string = ""
-        ): Array<{ file: any; path: string }> => {
-          const filesWithPath: Array<{ file: any; path: string }> = [];
+        ): Array<{ file: ShareViewFile; path: string }> => {
+          const filesWithPath: Array<{ file: ShareViewFile; path: string }> = [];
 
           // Get direct files in this folder
-          const directFiles = share.files?.filter((f) => f.folderId === targetFolderId) || [];
+          const directFiles = bulkFiles.filter((f) => f.folderId === targetFolderId);
           directFiles.forEach((file) => {
             filesWithPath.push({ file, path: currentPath });
           });
 
           // Get subfolders and process them recursively
-          const subfolders = share.folders?.filter((f) => f.parentId === targetFolderId) || [];
+          const subfolders = bulkFolders.filter((f) => f.parentId === targetFolderId);
           for (const subfolder of subfolders) {
             const subfolderPath = currentPath ? `${currentPath}/${subfolder.name}` : subfolder.name;
             filesWithPath.push(...getFolderFilesWithPath(subfolder.id, subfolderPath));
@@ -364,7 +405,7 @@ export function usePublicShare() {
         const allFilesToDownload: Array<{ url: string; name: string }> = [];
 
         // Get presigned URLs for root level files (not in any folder)
-        const rootFiles = share.files?.filter((f) => !f.folderId) || [];
+        const rootFiles = bulkFiles.filter((f) => !f.folderId);
         const rootFileItems = await Promise.all(
           rootFiles.map(async (file) => {
             const url = await getCachedDownloadUrl(
@@ -380,7 +421,7 @@ export function usePublicShare() {
         allFilesToDownload.push(...rootFileItems);
 
         // Get presigned URLs for files in root level folders
-        const rootFolders = share.folders?.filter((f) => !f.parentId) || [];
+        const rootFolders = bulkFolders.filter((f) => !f.parentId);
         for (const folder of rootFolders) {
           const folderFilesWithPath = getFolderFilesWithPath(folder.id, folder.name);
 
@@ -418,11 +459,11 @@ export function usePublicShare() {
         throw error;
       }
     } catch (error) {
-      console.error("Error creating ZIP:", error);
+      logger.error("Error creating ZIP", { err: error instanceof Error ? error.message : String(error) });
     }
   };
 
-  const handleSelectedItemsBulkDownload = async (files: any[], folders: any[]) => {
+  const handleSelectedItemsBulkDownload = async (files: ShareViewFile[], folders: ShareViewFolder[]) => {
     if (files.length === 0 && folders.length === 0) {
       toast.error(t("shareManager.noFilesToDownload"));
       return;
@@ -437,21 +478,25 @@ export function usePublicShare() {
       const loadingToast = toast.loading(t("shareManager.creatingZip"));
 
       try {
+        // Cast share data to view-model types
+        const selBulkFiles = (share.files || []) as unknown as ShareViewFile[];
+        const selBulkFolders = (share.folders || []) as unknown as ShareViewFolder[];
+
         // Helper function to get all files in a folder recursively with paths
         const getFolderFilesWithPath = (
           targetFolderId: string,
           currentPath: string = ""
-        ): Array<{ file: any; path: string }> => {
-          const filesWithPath: Array<{ file: any; path: string }> = [];
+        ): Array<{ file: ShareViewFile; path: string }> => {
+          const filesWithPath: Array<{ file: ShareViewFile; path: string }> = [];
 
           // Get direct files in this folder
-          const directFiles = share.files?.filter((f) => f.folderId === targetFolderId) || [];
+          const directFiles = selBulkFiles.filter((f) => f.folderId === targetFolderId);
           directFiles.forEach((file) => {
             filesWithPath.push({ file, path: currentPath });
           });
 
           // Get subfolders and process them recursively
-          const subfolders = share.folders?.filter((f) => f.parentId === targetFolderId) || [];
+          const subfolders = selBulkFolders.filter((f) => f.parentId === targetFolderId);
           for (const subfolder of subfolders) {
             const subfolderPath = currentPath ? `${currentPath}/${subfolder.name}` : subfolder.name;
             filesWithPath.push(...getFolderFilesWithPath(subfolder.id, subfolderPath));
@@ -515,7 +560,7 @@ export function usePublicShare() {
         throw error;
       }
     } catch (error) {
-      console.error("Error creating ZIP:", error);
+      logger.error("Error creating ZIP", { err: error instanceof Error ? error.message : String(error) });
       toast.error(t("shareManager.zipDownloadError"));
     }
   };
@@ -533,12 +578,11 @@ export function usePublicShare() {
     if (alias) {
       loadShare();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [alias]);
+  }, [alias, loadShare]);
 
   useEffect(() => {
     if (share) {
-      const resolvedFolderId = getFolderIdFromPathSlug(urlFolderSlug, share.folders || []);
+      const resolvedFolderId = getFolderIdFromPathSlug(urlFolderSlug, (share.folders || []) as unknown as ShareViewFolder[]);
       setCurrentFolderId(resolvedFolderId);
       loadFolderContents(resolvedFolderId);
     }

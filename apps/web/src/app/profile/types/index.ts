@@ -1,5 +1,6 @@
 import { UseFormReturn } from "react-hook-form";
 
+import type { User } from "@/http/endpoints/auth/types";
 import { PasswordFormData, ProfileFormData } from "../hooks/use-profile";
 
 export interface PasswordFormProps {
@@ -17,10 +18,7 @@ export interface ProfileFormProps {
 }
 
 export interface ProfilePictureProps {
-  userData: {
-    firstName: string;
-    image?: string;
-  };
+  userData: User | null;
   onImageChange: (file: File) => Promise<void>;
   onImageRemove: () => Promise<void>;
 }

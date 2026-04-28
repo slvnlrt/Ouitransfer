@@ -151,8 +151,14 @@ export class S3StorageProvider implements StorageProvider {
 
       await client.send(command);
       return true;
-    } catch (error: any) {
-      if (error.name === "NotFound" || error.$metadata?.httpStatusCode === 404) {
+    } catch (error: unknown) {
+      const isNotFound =
+        error instanceof Error &&
+        (error.name === "NotFound" ||
+          ("$metadata" in error &&
+            (error as { $metadata?: { httpStatusCode?: number } }).$metadata?.httpStatusCode ===
+              404));
+      if (isNotFound) {
         return false;
       }
       throw error;

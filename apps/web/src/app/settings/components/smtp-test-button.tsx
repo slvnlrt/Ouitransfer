@@ -64,8 +64,9 @@ export function SmtpTestButton({ smtpEnabled, getFormValues }: SmtpTestButtonPro
       } else {
         toast.error(t("settings.messages.smtpTestGenericError"));
       }
-    } catch (error: any) {
-      const errorMessage = error?.response?.data?.error || error?.message || t("common.unexpectedError");
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { error?: string } }; message?: string } | null;
+      const errorMessage = err?.response?.data?.error ?? err?.message ?? t("common.unexpectedError");
       toast.error(t("settings.messages.smtpTestFailed", { error: errorMessage }));
     } finally {
       setIsLoading(false);

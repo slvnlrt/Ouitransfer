@@ -1,14 +1,36 @@
-import { describe, expect, it } from "vitest";
+import { fastify } from "fastify";
+import {
+  serializerCompiler,
+  validatorCompiler,
+} from "fastify-type-provider-zod";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-describe("Server smoke test", () => {
-  it("should have NODE_ENV defined or default to test", () => {
-    const env = process.env.NODE_ENV ?? "test";
-    expect(env).toBeTruthy();
+import { healthRoutes } from "../modules/health/routes.js";
+
+describe("Health endpoint", () => {
+  const app = fastify({ logger: false });
+
+  beforeAll(async () => {
+    app.setValidatorCompiler(validatorCompiler);
+    app.setSerializerCompiler(serializerCompiler);
+    app.register(healthRoutes);
+    await app.ready();
   });
 
-  it("should be able to import fastify", async () => {
-    const { default: Fastify } = await import("fastify");
-    expect(Fastify).toBeDefined();
-    expect(typeof Fastify).toBe("function");
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it("GET /health returns 200 with healthy status", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/health",
+    });
+
+    expect(response.statusCode).toBe(200);
+
+    const body = response.json<{ status: string; timestamp: string }>();
+    expect(body.status).toBe("healthy");
+    expect(typeof body.timestamp).toBe("string");
   });
 });

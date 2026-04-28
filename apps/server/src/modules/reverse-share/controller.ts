@@ -8,14 +8,16 @@ import {
   UploadToReverseShareSchema,
 } from "./dto.js";
 import { ReverseShareService } from "./service.js";
+import { ReverseShareUploadService } from "./upload.service.js";
 
 export class ReverseShareController {
   private reverseShareService = new ReverseShareService();
+  private uploadService = new ReverseShareUploadService();
 
   async createReverseShare(request: FastifyRequest, reply: FastifyReply) {
     try {
       await request.jwtVerify();
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply
           .status(401)
@@ -25,19 +27,20 @@ export class ReverseShareController {
       const input = CreateReverseShareSchema.parse(request.body);
       const reverseShare = await this.reverseShareService.createReverseShare(input, userId);
       return reply.status(201).send({ reverseShare });
-    } catch (error: any) {
-      console.error("Create Reverse Share Error:", error);
-      if (error.errors) {
-        return reply.status(400).send({ error: error.errors });
+    } catch (error: unknown) {
+      request.log.error({ err: error }, "Create Reverse Share Error");
+      if (error instanceof Error && "errors" in error) {
+        return reply.status(400).send({ error: (error as { errors: unknown }).errors });
       }
-      return reply.status(400).send({ error: error.message || "Unknown error occurred" });
+      const message = error instanceof Error ? error.message : "Unknown error occurred";
+      return reply.status(400).send({ error: message });
     }
   }
 
   async listUserReverseShares(request: FastifyRequest, reply: FastifyReply) {
     try {
       await request.jwtVerify();
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply
           .status(401)
@@ -46,15 +49,16 @@ export class ReverseShareController {
 
       const reverseShares = await this.reverseShareService.listUserReverseShares(userId);
       return reply.send({ reverseShares });
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
   async getReverseShare(request: FastifyRequest, reply: FastifyReply) {
     try {
       await request.jwtVerify();
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply
           .status(401)
@@ -64,72 +68,75 @@ export class ReverseShareController {
       const { id } = request.params as { id: string };
       const reverseShare = await this.reverseShareService.getReverseShareById(id, userId);
       return reply.send({ reverseShare });
-    } catch (error: any) {
-      if (error.message === "Reverse share not found") {
-        return reply.status(404).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (message === "Reverse share not found") {
+        return reply.status(404).send({ error: message });
       }
-      if (error.message === "Unauthorized to access this reverse share") {
-        return reply.status(401).send({ error: error.message });
+      if (message === "Unauthorized to access this reverse share") {
+        return reply.status(401).send({ error: message });
       }
-      return reply.status(400).send({ error: error.message });
+      return reply.status(400).send({ error: message });
     }
   }
 
   async getReverseShareForUpload(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { id } = request.params as { id: string };
-      const password = (request.body as any)?.password;
+      const password = (request.body as { password?: string } | null)?.password;
 
       const reverseShare = await this.reverseShareService.getReverseShareForUpload(id, password);
       return reply.send({ reverseShare });
-    } catch (error: any) {
-      if (error.message === "Reverse share not found") {
-        return reply.status(404).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (message === "Reverse share not found") {
+        return reply.status(404).send({ error: message });
       }
-      if (error.message === "Reverse share is inactive") {
-        return reply.status(403).send({ error: error.message });
+      if (message === "Reverse share is inactive") {
+        return reply.status(403).send({ error: message });
       }
-      if (error.message === "Reverse share has expired") {
-        return reply.status(410).send({ error: error.message });
+      if (message === "Reverse share has expired") {
+        return reply.status(410).send({ error: message });
       }
-      if (error.message === "Password required" || error.message === "Invalid password") {
-        return reply.status(401).send({ error: error.message });
+      if (message === "Password required" || message === "Invalid password") {
+        return reply.status(401).send({ error: message });
       }
-      return reply.status(400).send({ error: error.message });
+      return reply.status(400).send({ error: message });
     }
   }
 
   async getReverseShareForUploadByAlias(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { alias } = request.params as { alias: string };
-      const password = (request.body as any)?.password;
+      const password = (request.body as { password?: string } | null)?.password;
 
       const reverseShare = await this.reverseShareService.getReverseShareForUploadByAlias(
         alias,
         password,
       );
       return reply.send({ reverseShare });
-    } catch (error: any) {
-      if (error.message === "Reverse share not found") {
-        return reply.status(404).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (message === "Reverse share not found") {
+        return reply.status(404).send({ error: message });
       }
-      if (error.message === "Reverse share is inactive") {
-        return reply.status(403).send({ error: error.message });
+      if (message === "Reverse share is inactive") {
+        return reply.status(403).send({ error: message });
       }
-      if (error.message === "Reverse share has expired") {
-        return reply.status(410).send({ error: error.message });
+      if (message === "Reverse share has expired") {
+        return reply.status(410).send({ error: message });
       }
-      if (error.message === "Password required" || error.message === "Invalid password") {
-        return reply.status(401).send({ error: error.message });
+      if (message === "Password required" || message === "Invalid password") {
+        return reply.status(401).send({ error: message });
       }
-      return reply.status(400).send({ error: error.message });
+      return reply.status(400).send({ error: message });
     }
   }
 
   async updateReverseShare(request: FastifyRequest, reply: FastifyReply) {
     try {
       await request.jwtVerify();
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply
           .status(401)
@@ -143,22 +150,23 @@ export class ReverseShareController {
         userId,
       );
       return reply.send({ reverseShare });
-    } catch (error: any) {
-      console.error("Update Reverse Share Error:", error);
-      if (error.message === "Reverse share not found") {
-        return reply.status(404).send({ error: error.message });
+    } catch (error: unknown) {
+      request.log.error({ err: error }, "Update Reverse Share Error");
+      const message = error instanceof Error ? error.message : String(error);
+      if (message === "Reverse share not found") {
+        return reply.status(404).send({ error: message });
       }
-      if (error.message === "Unauthorized to update this reverse share") {
-        return reply.status(401).send({ error: error.message });
+      if (message === "Unauthorized to update this reverse share") {
+        return reply.status(401).send({ error: message });
       }
-      return reply.status(400).send({ error: error.message });
+      return reply.status(400).send({ error: message });
     }
   }
 
   async updatePassword(request: FastifyRequest, reply: FastifyReply) {
     try {
       await request.jwtVerify();
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply
           .status(401)
@@ -175,21 +183,22 @@ export class ReverseShareController {
         userId,
       );
       return reply.send({ reverseShare });
-    } catch (error: any) {
-      if (error.message === "Reverse share not found") {
-        return reply.status(404).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (message === "Reverse share not found") {
+        return reply.status(404).send({ error: message });
       }
-      if (error.message === "Unauthorized to update this reverse share") {
-        return reply.status(401).send({ error: error.message });
+      if (message === "Unauthorized to update this reverse share") {
+        return reply.status(401).send({ error: message });
       }
-      return reply.status(400).send({ error: error.message });
+      return reply.status(400).send({ error: message });
     }
   }
 
   async deleteReverseShare(request: FastifyRequest, reply: FastifyReply) {
     try {
       await request.jwtVerify();
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply
           .status(401)
@@ -199,14 +208,15 @@ export class ReverseShareController {
       const { id } = request.params as { id: string };
       const reverseShare = await this.reverseShareService.deleteReverseShare(id, userId);
       return reply.send({ reverseShare });
-    } catch (error: any) {
-      if (error.message === "Reverse share not found") {
-        return reply.status(404).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (message === "Reverse share not found") {
+        return reply.status(404).send({ error: message });
       }
-      if (error.message === "Unauthorized to delete this reverse share") {
-        return reply.status(401).send({ error: error.message });
+      if (message === "Unauthorized to delete this reverse share") {
+        return reply.status(401).send({ error: message });
       }
-      return reply.status(400).send({ error: error.message });
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -220,28 +230,24 @@ export class ReverseShareController {
         password?: string;
       };
 
-      const result = await this.reverseShareService.getPresignedUrl(
-        id,
-        filename,
-        extension,
-        password,
-      );
+      const result = await this.uploadService.getPresignedUrl(id, filename, extension, password);
       return reply.send(result);
-    } catch (error: any) {
-      console.error("Get Presigned URL Error:", error);
-      if (error.message === "Reverse share not found") {
-        return reply.status(404).send({ error: error.message });
+    } catch (error: unknown) {
+      request.log.error({ err: error }, "Get Presigned URL Error");
+      const message = error instanceof Error ? error.message : String(error);
+      if (message === "Reverse share not found") {
+        return reply.status(404).send({ error: message });
       }
-      if (error.message === "Reverse share is inactive") {
-        return reply.status(403).send({ error: error.message });
+      if (message === "Reverse share is inactive") {
+        return reply.status(403).send({ error: message });
       }
-      if (error.message === "Reverse share has expired") {
-        return reply.status(410).send({ error: error.message });
+      if (message === "Reverse share has expired") {
+        return reply.status(410).send({ error: message });
       }
-      if (error.message === "Password required" || error.message === "Invalid password") {
-        return reply.status(401).send({ error: error.message });
+      if (message === "Password required" || message === "Invalid password") {
+        return reply.status(401).send({ error: message });
       }
-      return reply.status(400).send({ error: error.message });
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -255,28 +261,29 @@ export class ReverseShareController {
         password?: string;
       };
 
-      const result = await this.reverseShareService.getPresignedUrlByAlias(
+      const result = await this.uploadService.getPresignedUrlByAlias(
         alias,
         filename,
         extension,
         password,
       );
       return reply.send(result);
-    } catch (error: any) {
-      console.error("Get Presigned URL by Alias Error:", error);
-      if (error.message === "Reverse share not found") {
-        return reply.status(404).send({ error: error.message });
+    } catch (error: unknown) {
+      request.log.error({ err: error }, "Get Presigned URL by Alias Error");
+      const message = error instanceof Error ? error.message : String(error);
+      if (message === "Reverse share not found") {
+        return reply.status(404).send({ error: message });
       }
-      if (error.message === "Reverse share is inactive") {
-        return reply.status(403).send({ error: error.message });
+      if (message === "Reverse share is inactive") {
+        return reply.status(403).send({ error: message });
       }
-      if (error.message === "Reverse share has expired") {
-        return reply.status(410).send({ error: error.message });
+      if (message === "Reverse share has expired") {
+        return reply.status(410).send({ error: message });
       }
-      if (error.message === "Password required" || error.message === "Invalid password") {
-        return reply.status(401).send({ error: error.message });
+      if (message === "Password required" || message === "Invalid password") {
+        return reply.status(401).send({ error: message });
       }
-      return reply.status(400).send({ error: error.message });
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -290,32 +297,33 @@ export class ReverseShareController {
       };
       const fileData = UploadToReverseShareSchema.parse(bodyWithoutPassword);
 
-      const file = await this.reverseShareService.registerFileUpload(id, fileData, password);
+      const file = await this.uploadService.registerFileUpload(id, fileData, password);
       return reply.status(201).send({ file });
-    } catch (error: any) {
-      console.error("Register File Upload Error:", error);
-      if (error.message === "Reverse share not found") {
-        return reply.status(404).send({ error: error.message });
+    } catch (error: unknown) {
+      request.log.error({ err: error }, "Register File Upload Error");
+      const message = error instanceof Error ? error.message : String(error);
+      if (message === "Reverse share not found") {
+        return reply.status(404).send({ error: message });
       }
-      if (error.message === "Reverse share is inactive") {
-        return reply.status(403).send({ error: error.message });
+      if (message === "Reverse share is inactive") {
+        return reply.status(403).send({ error: message });
       }
-      if (error.message === "Reverse share has expired") {
-        return reply.status(410).send({ error: error.message });
+      if (message === "Reverse share has expired") {
+        return reply.status(410).send({ error: message });
       }
-      if (error.message === "Password required" || error.message === "Invalid password") {
-        return reply.status(401).send({ error: error.message });
+      if (message === "Password required" || message === "Invalid password") {
+        return reply.status(401).send({ error: message });
       }
-      if (error.message === "Maximum number of files reached") {
-        return reply.status(403).send({ error: error.message });
+      if (message === "Maximum number of files reached") {
+        return reply.status(403).send({ error: message });
       }
-      if (error.message.includes("File type") && error.message.includes("not allowed")) {
-        return reply.status(400).send({ error: error.message });
+      if (message.includes("File type") && message.includes("not allowed")) {
+        return reply.status(400).send({ error: message });
       }
-      if (error.message === "File size exceeds limit") {
-        return reply.status(400).send({ error: error.message });
+      if (message === "File size exceeds limit") {
+        return reply.status(400).send({ error: message });
       }
-      return reply.status(400).send({ error: error.message });
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -329,43 +337,40 @@ export class ReverseShareController {
       };
       const fileData = UploadToReverseShareSchema.parse(bodyWithoutPassword);
 
-      const file = await this.reverseShareService.registerFileUploadByAlias(
-        alias,
-        fileData,
-        password,
-      );
+      const file = await this.uploadService.registerFileUploadByAlias(alias, fileData, password);
       return reply.status(201).send({ file });
-    } catch (error: any) {
-      console.error("Register File Upload by Alias Error:", error);
-      if (error.message === "Reverse share not found") {
-        return reply.status(404).send({ error: error.message });
+    } catch (error: unknown) {
+      request.log.error({ err: error }, "Register File Upload by Alias Error");
+      const message = error instanceof Error ? error.message : String(error);
+      if (message === "Reverse share not found") {
+        return reply.status(404).send({ error: message });
       }
-      if (error.message === "Reverse share is inactive") {
-        return reply.status(403).send({ error: error.message });
+      if (message === "Reverse share is inactive") {
+        return reply.status(403).send({ error: message });
       }
-      if (error.message === "Reverse share has expired") {
-        return reply.status(410).send({ error: error.message });
+      if (message === "Reverse share has expired") {
+        return reply.status(410).send({ error: message });
       }
-      if (error.message === "Password required" || error.message === "Invalid password") {
-        return reply.status(401).send({ error: error.message });
+      if (message === "Password required" || message === "Invalid password") {
+        return reply.status(401).send({ error: message });
       }
-      if (error.message === "Maximum number of files reached") {
-        return reply.status(403).send({ error: error.message });
+      if (message === "Maximum number of files reached") {
+        return reply.status(403).send({ error: message });
       }
-      if (error.message.includes("File type") && error.message.includes("not allowed")) {
-        return reply.status(400).send({ error: error.message });
+      if (message.includes("File type") && message.includes("not allowed")) {
+        return reply.status(400).send({ error: message });
       }
-      if (error.message === "File size exceeds limit") {
-        return reply.status(400).send({ error: error.message });
+      if (message === "File size exceeds limit") {
+        return reply.status(400).send({ error: message });
       }
-      return reply.status(400).send({ error: error.message });
+      return reply.status(400).send({ error: message });
     }
   }
 
   async downloadFile(request: FastifyRequest, reply: FastifyReply) {
     try {
       await request.jwtVerify();
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply
           .status(401)
@@ -384,21 +389,22 @@ export class ReverseShareController {
       );
 
       return reply.send(result);
-    } catch (error: any) {
-      if (error.message === "File not found") {
-        return reply.status(404).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (message === "File not found") {
+        return reply.status(404).send({ error: message });
       }
-      if (error.message === "Unauthorized to download this file") {
-        return reply.status(401).send({ error: error.message });
+      if (message === "Unauthorized to download this file") {
+        return reply.status(401).send({ error: message });
       }
-      return reply.status(400).send({ error: error.message });
+      return reply.status(400).send({ error: message });
     }
   }
 
   async deleteFile(request: FastifyRequest, reply: FastifyReply) {
     try {
       await request.jwtVerify();
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply
           .status(401)
@@ -408,14 +414,15 @@ export class ReverseShareController {
       const { fileId } = request.params as { fileId: string };
       const file = await this.reverseShareService.deleteReverseShareFile(fileId, userId);
       return reply.send({ file });
-    } catch (error: any) {
-      if (error.message === "File not found") {
-        return reply.status(404).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (message === "File not found") {
+        return reply.status(404).send({ error: message });
       }
-      if (error.message === "Unauthorized to delete this file") {
-        return reply.status(401).send({ error: error.message });
+      if (message === "Unauthorized to delete this file") {
+        return reply.status(401).send({ error: message });
       }
-      return reply.status(400).send({ error: error.message });
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -426,18 +433,19 @@ export class ReverseShareController {
 
       const result = await this.reverseShareService.checkPassword(id, password);
       return reply.send(result);
-    } catch (error: any) {
-      if (error.message === "Reverse share not found") {
-        return reply.status(404).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (message === "Reverse share not found") {
+        return reply.status(404).send({ error: message });
       }
-      return reply.status(400).send({ error: error.message });
+      return reply.status(400).send({ error: message });
     }
   }
 
   async activateReverseShare(request: FastifyRequest, reply: FastifyReply) {
     try {
       await request.jwtVerify();
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply
           .status(401)
@@ -447,21 +455,22 @@ export class ReverseShareController {
       const { id } = request.params as { id: string };
       const reverseShare = await this.reverseShareService.activateReverseShare(id, userId);
       return reply.send({ reverseShare });
-    } catch (error: any) {
-      if (error.message === "Reverse share not found") {
-        return reply.status(404).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (message === "Reverse share not found") {
+        return reply.status(404).send({ error: message });
       }
-      if (error.message === "Unauthorized to activate this reverse share") {
-        return reply.status(401).send({ error: error.message });
+      if (message === "Unauthorized to activate this reverse share") {
+        return reply.status(401).send({ error: message });
       }
-      return reply.status(400).send({ error: error.message });
+      return reply.status(400).send({ error: message });
     }
   }
 
   async deactivateReverseShare(request: FastifyRequest, reply: FastifyReply) {
     try {
       await request.jwtVerify();
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply
           .status(401)
@@ -471,14 +480,15 @@ export class ReverseShareController {
       const { id } = request.params as { id: string };
       const reverseShare = await this.reverseShareService.deactivateReverseShare(id, userId);
       return reply.send({ reverseShare });
-    } catch (error: any) {
-      if (error.message === "Reverse share not found") {
-        return reply.status(404).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (message === "Reverse share not found") {
+        return reply.status(404).send({ error: message });
       }
-      if (error.message === "Unauthorized to deactivate this reverse share") {
-        return reply.status(401).send({ error: error.message });
+      if (message === "Unauthorized to deactivate this reverse share") {
+        return reply.status(401).send({ error: message });
       }
-      return reply.status(400).send({ error: error.message });
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -486,7 +496,7 @@ export class ReverseShareController {
     try {
       const { reverseShareId } = request.params as { reverseShareId: string };
       const { alias } = request.body as { alias: string };
-      const userId = (request as any).user.userId;
+      const userId = request.user?.userId;
 
       const result = await this.reverseShareService.createOrUpdateAlias(
         reverseShareId,
@@ -494,8 +504,9 @@ export class ReverseShareController {
         userId,
       );
       return reply.send({ alias: result });
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -504,7 +515,7 @@ export class ReverseShareController {
       await request.jwtVerify();
       const { fileId } = request.params as { fileId: string };
       const body = request.body as { name?: string; description?: string | null };
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
 
       if (!userId) {
         return reply.status(401).send({ error: "Unauthorized" });
@@ -512,14 +523,15 @@ export class ReverseShareController {
 
       const file = await this.reverseShareService.updateReverseShareFile(fileId, body, userId);
       return reply.send({ file });
-    } catch (error: any) {
-      if (error.message === "File not found") {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (message === "File not found") {
         return reply.status(404).send({ error: "File not found" });
       }
-      if (error.message === "Unauthorized to edit this file") {
+      if (message === "Unauthorized to edit this file") {
         return reply.status(403).send({ error: "Unauthorized to edit this file" });
       }
-      console.error("Error in updateFile:", error);
+      request.log.error({ err: error }, "Error in updateFile");
       return reply.status(500).send({ error: "Internal server error" });
     }
   }
@@ -529,204 +541,28 @@ export class ReverseShareController {
       await request.jwtVerify();
 
       const { fileId } = request.params as { fileId: string };
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
 
       if (!userId) {
         return reply.status(401).send({ error: "Unauthorized" });
       }
 
-      const file = await this.reverseShareService.copyReverseShareFileToUserFiles(fileId, userId);
+      const file = await this.uploadService.copyReverseShareFileToUserFiles(fileId, userId);
 
       return reply.send({ file, message: "File copied to your files successfully" });
-    } catch (error: any) {
-      console.error(`Copy to my files: Error:`, error.message);
-
-      if (error.message === "File not found") {
+    } catch (error: unknown) {
+      request.log.error({ err: error }, "Copy to my files: Error");
+      const message = error instanceof Error ? error.message : String(error);
+      if (message === "File not found") {
         return reply.status(404).send({ error: "File not found" });
       }
-      if (error.message === "Unauthorized to copy this file") {
+      if (message === "Unauthorized to copy this file") {
         return reply.status(403).send({ error: "Unauthorized to copy this file" });
       }
-      if (
-        error.message.includes("File size exceeds") ||
-        error.message.includes("Insufficient storage")
-      ) {
-        return reply.status(400).send({ error: error.message });
+      if (message.includes("File size exceeds") || message.includes("Insufficient storage")) {
+        return reply.status(400).send({ error: message });
       }
-      console.error("Error in copyFileToUserFiles:", error);
       return reply.status(500).send({ error: "Internal server error" });
-    }
-  }
-
-  // Multipart upload endpoints for reverse shares
-  async createMultipartUploadByAlias(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const { alias } = request.params as { alias: string };
-      // Password moved from query param to request body (security: passwords must not appear in URLs)
-      const { filename, extension, password } = request.body as {
-        filename: string;
-        extension: string;
-        password?: string;
-      };
-
-      if (!filename || !extension) {
-        return reply.status(400).send({ error: "filename and extension are required" });
-      }
-
-      const result = await this.reverseShareService.createMultipartUploadByAlias(
-        alias,
-        filename,
-        extension,
-        password,
-      );
-      return reply.status(200).send({
-        uploadId: result.uploadId,
-        objectName: result.objectName,
-        message: "Multipart upload initialized",
-      });
-    } catch (error: any) {
-      console.error("[Multipart] Create multipart upload error:", error);
-      if (error.message === "Reverse share not found") {
-        return reply.status(404).send({ error: error.message });
-      }
-      if (error.message === "Reverse share is inactive") {
-        return reply.status(403).send({ error: error.message });
-      }
-      if (error.message === "Reverse share has expired") {
-        return reply.status(410).send({ error: error.message });
-      }
-      if (error.message === "Password required" || error.message === "Invalid password") {
-        return reply.status(401).send({ error: error.message });
-      }
-      return reply.status(500).send({ error: "Failed to create multipart upload" });
-    }
-  }
-
-  async getMultipartPartUrlByAlias(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const { alias } = request.params as { alias: string };
-      // Moved from query params to request body (route changed GET→POST; passwords must not appear in URLs)
-      const { uploadId, objectName, partNumber, password } = request.body as {
-        uploadId: string;
-        objectName: string;
-        partNumber: string;
-        password?: string;
-      };
-
-      if (!uploadId || !objectName || !partNumber) {
-        return reply
-          .status(400)
-          .send({ error: "uploadId, objectName, and partNumber are required" });
-      }
-
-      const partNum = parseInt(partNumber, 10);
-      if (Number.isNaN(partNum) || partNum < 1 || partNum > 10000) {
-        return reply.status(400).send({ error: "partNumber must be between 1 and 10000" });
-      }
-
-      const result = await this.reverseShareService.getMultipartPartUrlByAlias(
-        alias,
-        uploadId,
-        objectName,
-        partNum,
-        password,
-      );
-      return reply.status(200).send({ url: result.url });
-    } catch (error: any) {
-      console.error("[Multipart] Get part URL error:", error);
-      if (error.message === "Reverse share not found") {
-        return reply.status(404).send({ error: error.message });
-      }
-      if (error.message === "Reverse share is inactive") {
-        return reply.status(403).send({ error: error.message });
-      }
-      if (error.message === "Reverse share has expired") {
-        return reply.status(410).send({ error: error.message });
-      }
-      if (error.message === "Password required" || error.message === "Invalid password") {
-        return reply.status(401).send({ error: error.message });
-      }
-      return reply.status(500).send({ error: "Failed to get presigned URL for part" });
-    }
-  }
-
-  async completeMultipartUploadByAlias(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const { alias } = request.params as { alias: string };
-      // Password moved from query param to request body (security: passwords must not appear in URLs)
-      const { uploadId, objectName, parts, password } = request.body as {
-        uploadId: string;
-        objectName: string;
-        parts: Array<{ PartNumber: number; ETag: string }>;
-        password?: string;
-      };
-
-      if (!uploadId || !objectName || !parts || !Array.isArray(parts)) {
-        return reply.status(400).send({ error: "uploadId, objectName, and parts are required" });
-      }
-
-      const result = await this.reverseShareService.completeMultipartUploadByAlias(
-        alias,
-        uploadId,
-        objectName,
-        parts,
-        password,
-      );
-      return reply.status(200).send(result);
-    } catch (error: any) {
-      console.error("[Multipart] Complete multipart upload error:", error);
-      if (error.message === "Reverse share not found") {
-        return reply.status(404).send({ error: error.message });
-      }
-      if (error.message === "Reverse share is inactive") {
-        return reply.status(403).send({ error: error.message });
-      }
-      if (error.message === "Reverse share has expired") {
-        return reply.status(410).send({ error: error.message });
-      }
-      if (error.message === "Password required" || error.message === "Invalid password") {
-        return reply.status(401).send({ error: error.message });
-      }
-      return reply.status(500).send({ error: "Failed to complete multipart upload" });
-    }
-  }
-
-  async abortMultipartUploadByAlias(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const { alias } = request.params as { alias: string };
-      // Password moved from query param to request body (security: passwords must not appear in URLs)
-      const { uploadId, objectName, password } = request.body as {
-        uploadId: string;
-        objectName: string;
-        password?: string;
-      };
-
-      if (!uploadId || !objectName) {
-        return reply.status(400).send({ error: "uploadId and objectName are required" });
-      }
-
-      const result = await this.reverseShareService.abortMultipartUploadByAlias(
-        alias,
-        uploadId,
-        objectName,
-        password,
-      );
-      return reply.status(200).send(result);
-    } catch (error: any) {
-      console.error("[Multipart] Abort multipart upload error:", error);
-      if (error.message === "Reverse share not found") {
-        return reply.status(404).send({ error: error.message });
-      }
-      if (error.message === "Reverse share is inactive") {
-        return reply.status(403).send({ error: error.message });
-      }
-      if (error.message === "Reverse share has expired") {
-        return reply.status(410).send({ error: error.message });
-      }
-      if (error.message === "Password required" || error.message === "Invalid password") {
-        return reply.status(401).send({ error: error.message });
-      }
-      return reply.status(500).send({ error: "Failed to abort multipart upload" });
     }
   }
 
@@ -735,11 +571,12 @@ export class ReverseShareController {
       const { alias } = request.params as { alias: string };
       const metadata = await this.reverseShareService.getReverseShareMetadataByAlias(alias);
       return reply.send(metadata);
-    } catch (error: any) {
-      if (error.message === "Reverse share not found") {
-        return reply.status(404).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (message === "Reverse share not found") {
+        return reply.status(404).send({ error: message });
       }
-      return reply.status(400).send({ error: error.message });
+      return reply.status(400).send({ error: message });
     }
   }
 }

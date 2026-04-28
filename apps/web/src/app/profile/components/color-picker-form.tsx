@@ -57,7 +57,7 @@ function oklchToHex(oklch: string): string {
   const x = c * (1 - Math.abs(((hue / 60) % 2) - 1));
   const m = 0.5 - c / 2;
 
-  let r, g, b;
+  let r: number, g: number, b: number;
 
   if (hue >= 0 && hue < 60) {
     [r, g, b] = [c, x, 0];
@@ -99,8 +99,7 @@ export function ColorPickerForm() {
       setCustomColor(oklchToHex(savedColor));
       applyColor(savedColor);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [applyColor]);
 
   const handlePresetColorSelect = (colorValue: string) => {
     setSelectedColor(colorValue);

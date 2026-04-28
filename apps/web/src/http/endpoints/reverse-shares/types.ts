@@ -201,3 +201,56 @@ export type DeleteReverseShareFileResult = AxiosResponse<DeleteReverseShareFile2
 export type ActivateReverseShareResult = AxiosResponse<ActivateReverseShare200>;
 export type DeactivateReverseShareResult = AxiosResponse<DeactivateReverseShare200>;
 export type UpdateReverseShareFileResult = AxiosResponse<UpdateReverseShareFile200>;
+
+export interface CopyReverseShareFile200 {
+  file: {
+    id: string;
+    name: string;
+    description: string | null;
+    extension: string;
+    size: string;
+    objectName: string;
+    userId: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+  message: string;
+}
+export type CopyReverseShareFileResult = AxiosResponse<CopyReverseShareFile200>;
+
+export interface CreateReverseShareAlias200 {
+  id: string;
+  alias: string;
+  reverseShareId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+export type CreateReverseShareAliasResult = AxiosResponse<CreateReverseShareAlias200>;
+
+export interface DeleteReverseShareFileResult200 {
+  message: string;
+}
+export type DeleteReverseShareFileByIdResult = AxiosResponse<DeleteReverseShareFileResult200>;
+
+export interface CreateMultipartUpload200 {
+  uploadId: string;
+  objectName: string;
+  message: string;
+}
+export type CreateMultipartUploadByAliasResult = AxiosResponse<CreateMultipartUpload200>;
+
+export interface GetMultipartPartUrl200 {
+  url: string;
+}
+export type GetMultipartPartUrlByAliasResult = AxiosResponse<GetMultipartPartUrl200>;
+
+export interface CompleteMultipartUpload200 {
+  message: string;
+  objectName: string;
+}
+export type CompleteMultipartUploadByAliasResult = AxiosResponse<CompleteMultipartUpload200>;
+
+export interface AbortMultipartUpload200 {
+  message: string;
+}
+export type AbortMultipartUploadByAliasResult = AxiosResponse<AbortMultipartUpload200>;

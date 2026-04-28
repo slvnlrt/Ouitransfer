@@ -124,3 +124,8 @@ export type LogoutResult = AxiosResponse<Logout200>;
 export type RequestPasswordResetResult = AxiosResponse<RequestPasswordReset200>;
 export type ResetPasswordResult = AxiosResponse<ResetPassword200>;
 export type GetCurrentUserResult = AxiosResponse<GetCurrentUser200>;
+
+export interface AuthConfig {
+  passwordAuthEnabled: boolean;
+}
+export type GetAuthConfigResult = AxiosResponse<AuthConfig>;

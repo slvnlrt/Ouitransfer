@@ -15,7 +15,7 @@ import { Config, ConfigType, GroupFormData } from "../types";
 
 const createSchemas = () => ({
   settingsSchema: z.object({
-    configs: z.record(z.union([z.string(), z.number()]).transform((val) => String(val))),
+    configs: z.record(z.string()),
   }),
 });
 
@@ -172,8 +172,9 @@ export function useSettings() {
       }
 
       await refreshAppInfo();
-    } catch (error: any) {
-      const errorMessage = error?.response?.data?.error || error?.message || "";
+    } catch (error: unknown) {
+      const axiosError = error as { response?: { data?: { error?: string } }; message?: string };
+      const errorMessage = axiosError?.response?.data?.error || axiosError?.message || "";
 
       if (
         errorMessage.includes("autenticação por senha") ||

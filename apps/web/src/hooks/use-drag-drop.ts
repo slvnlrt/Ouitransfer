@@ -4,6 +4,7 @@ import { toast } from "sonner";
 
 import { moveFile } from "@/http/endpoints/files";
 import { moveFolder } from "@/http/endpoints/folders";
+import { logger } from "@/lib/logger";
 
 interface DragItem {
   id: string;
@@ -17,13 +18,18 @@ interface DropTarget {
   name: string;
 }
 
+interface DragDropItem {
+  id: string;
+  name: string;
+}
+
 interface UseDragDropProps {
   onRefresh?: () => Promise<void>;
   onImmediateUpdate?: (itemId: string, itemType: "file" | "folder", newParentId: string | null) => void;
   selectedFiles?: Set<string>;
   selectedFolders?: Set<string>;
-  files?: any[];
-  folders?: any[];
+  files?: DragDropItem[];
+  folders?: DragDropItem[];
 }
 
 export function useDragDrop({
@@ -233,7 +239,7 @@ export function useDragDrop({
           toast.success(`${validItems.length} items moved to "${target.name}"`);
         }
       } catch (error) {
-        console.error("Error moving items:", error);
+        logger.error("Error moving items", { err: error instanceof Error ? error.message : String(error) });
         toast.error(t("files.errors.moveItemsFailed"));
         // Refresh to restore state on error
         if (onRefresh) {

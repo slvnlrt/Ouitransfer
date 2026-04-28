@@ -1,4 +1,4 @@
-import type { FastifyInstance } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
 import { prisma } from "../../shared/prisma.js";
@@ -32,7 +32,7 @@ const AuthProviderResponseSchema = z.object({
 export async function authProvidersRoutes(fastify: FastifyInstance) {
   const authProvidersController = new AuthProvidersController();
 
-  const adminPreValidation = async (request: any, reply: any) => {
+  const adminPreValidation = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const usersCount = await prisma.user.count();
 
@@ -49,7 +49,7 @@ export async function authProvidersRoutes(fastify: FastifyInstance) {
         });
       }
     } catch (err) {
-      console.error("Admin validation error:", err);
+      request.log.error({ err }, "Admin validation error");
       return reply.status(401).send({
         success: false,
         error: "Unauthorized: a valid token is required to access this resource.",

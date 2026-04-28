@@ -1,5 +1,6 @@
 import sharp from "sharp";
 
+import { getLogger } from "../../utils/logger.js";
 import { prisma } from "../../shared/prisma.js";
 
 export class LogoService {
@@ -26,7 +27,7 @@ export class LogoService {
 
       return `data:image/webp;base64,${webpBuffer.toString("base64")}`;
     } catch (error) {
-      console.error("Error processing logo:", error);
+      getLogger().error({ err: error }, "Error processing logo");
       throw error;
     }
   }
@@ -41,7 +42,7 @@ export class LogoService {
         },
       });
     } catch (error) {
-      console.error("Error deleting logo from database:", error);
+      getLogger().error({ err: error }, "Error deleting logo from database");
       throw error;
     }
   }

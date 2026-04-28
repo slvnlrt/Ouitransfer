@@ -244,7 +244,7 @@ export async function authRoutes(app: FastifyInstance) {
         try {
           await request.jwtVerify();
         } catch (err) {
-          console.error(err);
+          request.log.error({ err }, "JWT verification failed");
           reply
             .status(401)
             .send({ error: "Unauthorized: a valid token is required to access this resource." });
@@ -277,7 +277,7 @@ export async function authRoutes(app: FastifyInstance) {
         try {
           await request.jwtVerify();
         } catch (err) {
-          console.error(err);
+          request.log.error({ err }, "JWT verification failed");
           reply
             .status(401)
             .send({ error: "Unauthorized: a valid token is required to access this resource." });
@@ -308,7 +308,7 @@ export async function authRoutes(app: FastifyInstance) {
         try {
           await request.jwtVerify();
         } catch (err) {
-          console.error(err);
+          request.log.error({ err }, "JWT verification failed");
           reply
             .status(401)
             .send({ error: "Unauthorized: a valid token is required to access this resource." });

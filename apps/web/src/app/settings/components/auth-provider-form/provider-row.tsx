@@ -18,9 +18,12 @@ interface ProviderRowProps {
   editingProvider: AuthProvider | null;
   editProvider: (data: Partial<AuthProvider>) => void;
   onCancelEdit: () => void;
+  // biome-ignore lint/suspicious/noExplicitAny: form data from react-hook-form uses dynamic keys
   editingFormData: Record<string, any>;
+  // biome-ignore lint/suspicious/noExplicitAny: form data from react-hook-form uses dynamic keys
   setEditingFormData: (data: Record<string, any>) => void;
-  dragHandleProps: any;
+  // biome-ignore lint/suspicious/noExplicitAny: drag handle props from @hello-pangea/dnd can be null or untyped
+  dragHandleProps: Record<string, any> | null;
   isDragging: boolean;
   isDragDisabled: boolean;
 }

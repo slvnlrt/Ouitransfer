@@ -15,6 +15,8 @@ import {
 import { registerSwagger } from "./config/swagger.config.js";
 import { envTimeoutOverrides } from "./config/timeout.config.js";
 import { prisma } from "./shared/prisma.js";
+import { setLogger } from "./utils/logger.js";
+import { globalErrorHandler, globalNotFoundHandler } from "./utils/error-handler.js";
 
 export async function buildApp() {
   const jwtConfig = await prisma.appConfig.findUnique({
@@ -30,7 +32,7 @@ export async function buildApp() {
       },
     },
     logger: {
-      level: "warn",
+      level: process.env.LOG_LEVEL || "info",
     },
     bodyLimit: 50 * 1024 * 1024,
     connectionTimeout: 0,
@@ -41,7 +43,7 @@ export async function buildApp() {
     onProtoPoisoning: "error",
     onConstructorPoisoning: "error",
     ignoreTrailingSlash: true,
-    serverFactory: (handler: (req: any, res: any) => void) => {
+    serverFactory: (handler: (req: http.IncomingMessage, res: http.ServerResponse) => void) => {
       const server = http.createServer((req: http.IncomingMessage, res: http.ServerResponse) => {
         res.setTimeout(0);
         req.setTimeout(0);
@@ -64,8 +66,12 @@ export async function buildApp() {
     },
   }).withTypeProvider<ZodTypeProvider>();
 
+  setLogger(app.log);
+
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
+  app.setErrorHandler(globalErrorHandler);
+  app.setNotFoundHandler(globalNotFoundHandler);
 
   app.addSchema({
     $id: "dateFormat",
@@ -78,7 +84,7 @@ export async function buildApp() {
     : ["http://localhost:5487"];
 
   if (!process.env.CORS_ORIGINS && process.env.NODE_ENV === "production") {
-    console.warn(
+    app.log.warn(
       "[SECURITY] CORS_ORIGINS is not set in production. Defaulting to localhost only. " +
         "Set CORS_ORIGINS=https://your-domain.com to allow your frontend.",
     );
@@ -119,7 +125,7 @@ export async function buildApp() {
     },
   });
 
-  app.decorateRequest("jwtSign", function (this: any, payload: object, options?: object) {
+  app.decorateRequest("jwtSign", function (this: { server: { jwt: { sign: (payload: object, options?: object) => string } } }, payload: object, options?: object) {
     return this.server.jwt.sign(payload, options);
   });
 

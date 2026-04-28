@@ -12,6 +12,7 @@ import { ShareMultipleItemsModal } from "@/components/modals/share-multiple-item
 import { ShareSecurityModal } from "@/components/modals/share-security-modal";
 import { listFiles } from "@/http/endpoints";
 import { listFolders } from "@/http/endpoints/folders";
+import type { Share } from "@/http/endpoints/shares/types";
 import { SharesModalsProps } from "../types";
 
 export function SharesModals({
@@ -33,7 +34,7 @@ export function SharesModals({
     onSuccess();
   };
 
-  const getShareLink = (share: any) => {
+  const getShareLink = (share: Share | null) => {
     if (!share?.alias?.alias) return "";
     return `${window.location.origin}/s/${share.alias.alias}`;
   };
@@ -84,7 +85,7 @@ export function SharesModals({
         onConfirm={shareManager.handleDeleteBulk}
         title={t("shareActions.bulkDeleteTitle")}
         description={t("shareActions.bulkDeleteConfirmation", { count: shareManager.sharesToDelete?.length || 0 })}
-        files={shareManager.sharesToDelete?.map((share: any) => share.name) || []}
+        files={shareManager.sharesToDelete?.map((share) => share.name ?? "") || []}
         itemType="shares"
       />
 
@@ -93,8 +94,8 @@ export function SharesModals({
         onClose={onCloseViewDetails}
         onUpdateName={shareManager.handleUpdateName}
         onUpdateDescription={shareManager.handleUpdateDescription}
-        onUpdateSecurity={shareManager.handleUpdateSecurity}
-        onUpdateExpiration={shareManager.handleUpdateExpiration}
+        onUpdateSecurity={shareToViewDetails ? async () => shareManager.handleUpdateSecurity(shareToViewDetails) : undefined}
+        onUpdateExpiration={shareToViewDetails ? async () => shareManager.handleUpdateExpiration(shareToViewDetails) : undefined}
         onGenerateLink={shareManager.handleGenerateLink}
         onManageFiles={shareManager.setShareToManageFiles}
         refreshTrigger={shareDetailsRefresh}

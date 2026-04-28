@@ -22,7 +22,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { addFiles, addFolders, listFiles, removeFiles, removeFolders } from "@/http/endpoints";
+import type { FileItem } from "@/http/endpoints/files/types";
 import { listFolders } from "@/http/endpoints/folders";
+import type { FolderItem } from "@/http/endpoints/folders/types";
 import { getFileIcon } from "@/utils/file-icons";
 
 interface FileSelectorProps {
@@ -43,16 +45,16 @@ export function FileSelector({
   onEditFolder,
 }: FileSelectorProps) {
   const t = useTranslations();
-  const [availableFiles, setAvailableFiles] = useState<any[]>([]);
-  const [shareFiles, setShareFiles] = useState<any[]>([]);
-  const [availableFolders, setAvailableFolders] = useState<any[]>([]);
-  const [shareFolders, setShareFolders] = useState<any[]>([]);
+  const [availableFiles, setAvailableFiles] = useState<FileItem[]>([]);
+  const [shareFiles, setShareFiles] = useState<FileItem[]>([]);
+  const [availableFolders, setAvailableFolders] = useState<FolderItem[]>([]);
+  const [shareFolders, setShareFolders] = useState<FolderItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchFilter, setSearchFilter] = useState("");
   const [shareSearchFilter, setShareSearchFilter] = useState("");
-  const [previewFile, setPreviewFile] = useState<any>(null);
-  const [fileToEdit, setFileToEdit] = useState<any>(null);
-  const [folderToEdit, setFolderToEdit] = useState<any>(null);
+  const [previewFile, setPreviewFile] = useState<FileItem | null>(null);
+  const [fileToEdit, setFileToEdit] = useState<{ id: string; name: string; description?: string } | null>(null);
+  const [folderToEdit, setFolderToEdit] = useState<{ id: string; name: string; description?: string } | null>(null);
 
   const loadFiles = useCallback(async () => {
     try {
@@ -187,7 +189,7 @@ export function FileSelector({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
   };
 
-  const FileCard = ({ file, isInShare }: { file: any; isInShare: boolean }) => {
+  const FileCard = ({ file, isInShare }: { file: FileItem; isInShare: boolean }) => {
     const { icon: FileIcon, color } = getFileIcon(file.name);
 
     return (
@@ -202,7 +204,7 @@ export function FileSelector({
               {file.description}
             </div>
           )}
-          <div className="text-xs text-muted-foreground">{formatFileSize(file.size)}</div>
+          <div className="text-xs text-muted-foreground">{formatFileSize(Number(file.size))}</div>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex gap-1">
@@ -211,7 +213,7 @@ export function FileSelector({
                 size="icon"
                 variant="ghost"
                 className="h-7 w-7 hover:bg-muted transition-colors"
-                onClick={() => setFileToEdit(file)}
+                onClick={() => setFileToEdit({ id: file.id, name: file.name, description: file.description ?? undefined })}
                 title={t("fileSelector.editFile")}
               >
                 <IconEdit className="h-4 w-4" />
@@ -244,7 +246,7 @@ export function FileSelector({
     );
   };
 
-  const FolderCard = ({ folder, isInShare }: { folder: any; isInShare: boolean }) => {
+  const FolderCard = ({ folder, isInShare }: { folder: FolderItem; isInShare: boolean }) => {
     const formatFileSize = (bytes: string | number) => {
       const numBytes = typeof bytes === "string" ? parseInt(bytes) : bytes;
       if (numBytes === 0) return "0 B";
@@ -277,7 +279,7 @@ export function FileSelector({
                 size="icon"
                 variant="ghost"
                 className="h-7 w-7 hover:bg-muted transition-colors"
-                onClick={() => setFolderToEdit(folder)}
+                onClick={() => setFolderToEdit({ id: folder.id, name: folder.name, description: folder.description ?? undefined })}
                 title={t("fileSelector.editFolder")}
               >
                 <IconEdit className="h-4 w-4" />
@@ -417,7 +419,9 @@ export function FileSelector({
       <FilePreviewModal
         isOpen={!!previewFile}
         onClose={() => setPreviewFile(null)}
-        file={previewFile || { name: "", objectName: "" }}
+        file={previewFile
+          ? { id: previewFile.id, name: previewFile.name, objectName: previewFile.objectName, description: previewFile.description ?? undefined }
+          : { name: "", objectName: "" }}
       />
 
       <FileActionsModals

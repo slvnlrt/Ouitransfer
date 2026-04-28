@@ -1,11 +1,29 @@
 import bcrypt from "bcryptjs";
 
+import type { Prisma } from "@prisma/client";
+import { getLogger } from "../../utils/logger.js";
 import { prisma } from "../../shared/prisma.js";
 import { EmailService } from "../email/service.js";
 import { FolderService } from "../folder/service.js";
 import { UserService } from "../user/service.js";
 import { type CreateShareInput, ShareResponseSchema, type UpdateShareInput } from "./dto.js";
 import { type IShareRepository, PrismaShareRepository } from "./repository.js";
+
+type ShareWithRelations = Prisma.ShareGetPayload<{
+  include: {
+    security: true;
+    files: true;
+    folders: {
+      select: {
+        id: true; name: true; description: true; objectName: true;
+        parentId: true; userId: true; createdAt: true; updatedAt: true;
+        _count: { select: { files: true; children: true } };
+      };
+    };
+    recipients: true;
+    alias: true;
+  };
+}>;
 
 export class ShareService {
   constructor(private readonly shareRepository: IShareRepository = new PrismaShareRepository()) {}
@@ -14,7 +32,9 @@ export class ShareService {
   private userService = new UserService();
   private folderService = new FolderService();
 
-  private async formatShareResponse(share: any) {
+  private async formatShareResponse(share: ShareWithRelations | null) {
+    if (!share) throw new Error("Share not found");
+
     return {
       ...share,
       createdAt: share.createdAt.toISOString(),
@@ -32,7 +52,7 @@ export class ShareService {
         hasPassword: !!share.security.password,
       },
       files:
-        share.files?.map((file: any) => ({
+        share.files?.map((file) => ({
           ...file,
           size: file.size.toString(),
           createdAt: file.createdAt.toISOString(),
@@ -41,7 +61,7 @@ export class ShareService {
       folders:
         share.folders && share.folders.length > 0
           ? await Promise.all(
-              share.folders.map(async (folder: any) => {
+              share.folders.map(async (folder) => {
                 const totalSize = await this.folderService.calculateFolderSize(
                   folder.id,
                   folder.userId,
@@ -56,7 +76,7 @@ export class ShareService {
             )
           : [],
       recipients:
-        share.recipients?.map((recipient: any) => ({
+        share.recipients?.map((recipient) => ({
           ...recipient,
           createdAt: recipient.createdAt.toISOString(),
           updatedAt: recipient.updatedAt.toISOString(),
@@ -198,7 +218,7 @@ export class ShareService {
       throw new Error("Share not found");
     }
 
-    const deleted = await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx) => {
       await tx.share.update({
         where: { id },
         data: {
@@ -221,11 +241,10 @@ export class ShareService {
           where: { id: deletedShare.security.id },
         });
       }
-
-      return deletedShare;
     });
 
-    return ShareResponseSchema.parse(await this.formatShareResponse(deleted));
+    // Return the pre-deletion share data (already fetched with all relations)
+    return ShareResponseSchema.parse(await this.formatShareResponse(share));
   }
 
   async listUserShares(userId: string) {
@@ -433,7 +452,7 @@ export class ShareService {
         senderName = sender.username;
       }
     } catch (error) {
-      console.error(`Failed to get sender information for user ${userId}:`, error);
+      getLogger().error({ err: error, userId }, "Failed to get sender information");
     }
 
     const notifiedRecipients: string[] = [];
@@ -448,7 +467,7 @@ export class ShareService {
         );
         notifiedRecipients.push(recipient.email);
       } catch (error) {
-        console.error(`Failed to send email to ${recipient.email}:`, error);
+        getLogger().error({ err: error, email: recipient.email }, "Failed to send email");
       }
     }
 

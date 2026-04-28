@@ -16,7 +16,7 @@ function loadInternalStorageCredentials(): Partial<StorageConfig> | null {
   try {
     if (fs.existsSync(credentialsPath)) {
       const content = fs.readFileSync(credentialsPath, "utf-8");
-      const credentials: any = {};
+      const credentials: Record<string, string> = {};
 
       content.split("\n").forEach((line) => {
         const [key, value] = line.split("=");

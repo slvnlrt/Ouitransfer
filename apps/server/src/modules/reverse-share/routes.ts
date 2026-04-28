@@ -2,6 +2,7 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
 import { ReverseShareController } from "./controller.js";
+import { ReverseShareMultipartController } from "./multipart.controller.js";
 import {
   CreateReverseShareSchema,
   GetPresignedUrlSchema,
@@ -17,12 +18,13 @@ import {
 
 export async function reverseShareRoutes(app: FastifyInstance) {
   const reverseShareController = new ReverseShareController();
+  const multipartController = new ReverseShareMultipartController();
 
   const preValidation = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       await request.jwtVerify();
     } catch (err) {
-      console.error(err);
+      request.log.error({ err }, "JWT verification failed");
       reply.status(401).send({ error: "Token inválido ou ausente." });
     }
   };
@@ -702,7 +704,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.createMultipartUploadByAlias.bind(reverseShareController),
+    multipartController.createMultipartUploadByAlias.bind(multipartController),
   );
 
   app.post(
@@ -739,7 +741,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.getMultipartPartUrlByAlias.bind(reverseShareController),
+    multipartController.getMultipartPartUrlByAlias.bind(multipartController),
   );
 
   app.post(
@@ -784,7 +786,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.completeMultipartUploadByAlias.bind(reverseShareController),
+    multipartController.completeMultipartUploadByAlias.bind(multipartController),
   );
 
   app.post(
@@ -820,7 +822,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
         },
       },
     },
-    reverseShareController.abortMultipartUploadByAlias.bind(reverseShareController),
+    multipartController.abortMultipartUploadByAlias.bind(multipartController),
   );
 
   app.get(

@@ -37,7 +37,9 @@ interface EditProviderFormProps {
   onSave: (data: Partial<AuthProvider>) => void;
   onCancel: () => void;
   saving: boolean;
+  // biome-ignore lint/suspicious/noExplicitAny: form data from react-hook-form uses dynamic keys
   editingFormData: Record<string, any>;
+  // biome-ignore lint/suspicious/noExplicitAny: form data from react-hook-form uses dynamic keys
   setEditingFormData: (data: Record<string, any>) => void;
 }
 

@@ -1,5 +1,6 @@
 import sharp from "sharp";
 
+import { getLogger } from "../../utils/logger.js";
 import { prisma } from "../../shared/prisma.js";
 
 export class AvatarService {
@@ -26,7 +27,7 @@ export class AvatarService {
 
       return `data:image/webp;base64,${webpBuffer.toString("base64")}`;
     } catch (error) {
-      console.error("Error processing avatar:", error);
+      getLogger().error({ err: error }, "Error processing avatar");
       throw error;
     }
   }
@@ -41,7 +42,7 @@ export class AvatarService {
         },
       });
     } catch (error) {
-      console.error("Error deleting avatar from database:", error);
+      getLogger().error({ err: error }, "Error deleting avatar from database");
       throw error;
     }
   }

@@ -1,23 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import {
-  IconCheck,
-  IconChevronDown,
-  IconClipboardCopy,
-  IconDownload,
-  IconEdit,
-  IconEye,
-  IconFile,
-  IconTrash,
-  IconX,
-} from "@tabler/icons-react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { useEffect, useState } from "react";
+import { IconChevronDown, IconClipboardCopy, IconDownload, IconFile, IconTrash } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -35,9 +22,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   copyReverseShareFileToUserFiles,
   deleteReverseShareFile,
@@ -48,58 +34,8 @@ import type { ReverseShareFile } from "@/http/endpoints/reverse-shares/types";
 import { getFileIcon } from "@/utils/file-icons";
 import { truncateFileName } from "@/utils/file-utils";
 import { ReverseShare } from "../hooks/use-reverse-shares";
+import { FileRow, useFileEdit, type HoverState } from "./received-files-file-row";
 import { ReverseShareFilePreviewModal } from "./reverse-share-file-preview-modal";
-
-interface EditingState {
-  fileId: string;
-  field: string;
-}
-
-interface HoverState {
-  fileId: string;
-  field: string;
-}
-
-const getFileNameWithoutExtension = (fileName: string) => {
-  return fileName.replace(/\.[^/.]+$/, "");
-};
-
-function useFileEdit() {
-  const [editingFile, setEditingFile] = useState<EditingState | null>(null);
-  const [editValue, setEditValue] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (editingFile && inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.select();
-    }
-  }, [editingFile]);
-
-  const startEdit = (fileId: string, field: string, currentValue: string) => {
-    setEditingFile({ fileId, field });
-    if (field === "name") {
-      const nameWithoutExtension = getFileNameWithoutExtension(currentValue);
-      setEditValue(nameWithoutExtension);
-    } else {
-      setEditValue(currentValue);
-    }
-  };
-
-  const cancelEdit = () => {
-    setEditingFile(null);
-    setEditValue("");
-  };
-
-  return {
-    editingFile,
-    editValue,
-    setEditValue,
-    inputRef,
-    startEdit,
-    cancelEdit,
-  };
-}
 
 const formatFileSize = (sizeString: string) => {
   const sizeInBytes = parseInt(sizeString);
@@ -109,328 +45,6 @@ const formatFileSize = (sizeString: string) => {
   const i = Math.floor(Math.log(sizeInBytes) / Math.log(k));
   return `${parseFloat((sizeInBytes / Math.pow(k, i)).toFixed(1))} ${units[i]}`;
 };
-
-const formatDate = (dateString: string, t: any) => {
-  try {
-    return format(new Date(dateString), "dd/MM/yyyy HH:mm", { locale: ptBR });
-  } catch {
-    return t("reverseShares.modals.receivedFiles.invalidDate");
-  }
-};
-
-const getFileExtension = (fileName: string) => {
-  const match = fileName.match(/\.[^/.]+$/);
-  return match ? match[0] : "";
-};
-
-const getSenderDisplay = (file: ReverseShareFile, t: any) => {
-  if (file.uploaderName && file.uploaderEmail) {
-    return `${file.uploaderName} (${file.uploaderEmail})`;
-  }
-  if (file.uploaderName) return file.uploaderName;
-  if (file.uploaderEmail) return file.uploaderEmail;
-  return t("reverseShares.components.fileRow.anonymous");
-};
-
-const getSenderInitials = (file: ReverseShareFile) => {
-  if (file.uploaderName) {
-    return file.uploaderName
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  }
-  if (file.uploaderEmail) {
-    return file.uploaderEmail[0].toUpperCase();
-  }
-  return "?";
-};
-
-interface EditableFieldProps {
-  file: ReverseShareFile;
-  field: "name" | "description";
-  isEditing: boolean;
-  editValue: string;
-  inputRef: React.RefObject<HTMLInputElement | null>;
-  isHovered: boolean;
-  onStartEdit: (fileId: string, field: string, currentValue: string) => void;
-  onSaveEdit: () => void;
-  onCancelEdit: () => void;
-  onEditValueChange: (value: string) => void;
-  onKeyDown: (e: React.KeyboardEvent) => void;
-}
-
-function EditableField({
-  file,
-  field,
-  isEditing,
-  editValue,
-  inputRef,
-  isHovered,
-  onStartEdit,
-  onSaveEdit,
-  onCancelEdit,
-  onEditValueChange,
-  onKeyDown,
-}: EditableFieldProps) {
-  const t = useTranslations();
-
-  if (isEditing) {
-    return (
-      <div className="flex items-center gap-1 flex-1">
-        {field === "name" ? (
-          <div className="flex items-center">
-            <Input
-              ref={inputRef}
-              value={editValue}
-              onChange={(e) => onEditValueChange(e.target.value)}
-              onKeyDown={onKeyDown}
-              className="h-8 text-sm font-medium rounded-r-none border-r-0"
-              onClick={(e) => e.stopPropagation()}
-            />
-            <div className="h-8 px-2 bg-muted border border-l-0 rounded-r text-sm font-medium flex items-center text-muted-foreground">
-              {getFileExtension(file.name)}
-            </div>
-          </div>
-        ) : (
-          <Input
-            ref={inputRef}
-            value={editValue}
-            onChange={(e) => onEditValueChange(e.target.value)}
-            onKeyDown={onKeyDown}
-            className="h-6 text-xs"
-            placeholder={t("reverseShares.components.fileRow.addDescription")}
-            onClick={(e) => e.stopPropagation()}
-          />
-        )}
-        <Button
-          size="icon"
-          variant="ghost"
-          className="h-5 w-5 text-green-600 hover:text-green-700 flex-shrink-0"
-          onClick={(e) => {
-            e.stopPropagation();
-            onSaveEdit();
-          }}
-          title={t("reverseShares.components.editField.saveChanges")}
-        >
-          <IconCheck className="h-3 w-3" />
-        </Button>
-        <Button
-          size="icon"
-          variant="ghost"
-          className="h-5 w-5 text-red-600 hover:text-red-700 flex-shrink-0"
-          onClick={(e) => {
-            e.stopPropagation();
-            onCancelEdit();
-          }}
-          title={t("reverseShares.components.editField.cancelEdit")}
-        >
-          <IconX className="h-3 w-3" />
-        </Button>
-      </div>
-    );
-  }
-
-  const currentValue = field === "name" ? file.name : file.description;
-  const displayValue = field === "name" ? getFileNameWithoutExtension(file.name) : currentValue;
-
-  return (
-    <div className="flex items-center gap-1 flex-1 min-w-0">
-      <div
-        className={`${field === "name" ? "font-medium" : "text-sm text-muted-foreground"} truncate max-w-[200px]`}
-        title={currentValue || ""}
-      >
-        {field === "name" ? (
-          <>
-            <span className="text-foreground">{displayValue}</span>
-            <span className="text-muted-foreground">{getFileExtension(file.name)}</span>
-          </>
-        ) : (
-          displayValue || ""
-        )}
-      </div>
-      <div className="w-6 flex justify-center flex-shrink-0">
-        <Button
-          size="icon"
-          variant="ghost"
-          className={`h-5 w-5 text-muted-foreground hover:text-foreground hidden sm:block transition-opacity ${
-            isHovered ? "opacity-100" : "opacity-0"
-          }`}
-          onClick={(e) => {
-            e.stopPropagation();
-            onStartEdit(file.id, field, currentValue || "");
-          }}
-          title={t("reverseShares.components.fileActions.edit")}
-        >
-          <IconEdit className="h-3 w-3" />
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-interface FileRowProps {
-  file: ReverseShareFile;
-  editingFile: EditingState | null;
-  editValue: string;
-  inputRef: React.RefObject<HTMLInputElement | null>;
-  hoveredFile: HoverState | null;
-  copyingFile: string | null;
-  isSelected: boolean;
-  onStartEdit: (fileId: string, field: string, currentValue: string) => void;
-  onSaveEdit: () => void;
-  onCancelEdit: () => void;
-  onEditValueChange: (value: string) => void;
-  onKeyDown: (e: React.KeyboardEvent) => void;
-  onSetHoveredFile: (hover: HoverState | null) => void;
-  onPreview: (file: ReverseShareFile) => void;
-  onDownload: (file: ReverseShareFile) => void;
-  onDelete: (file: ReverseShareFile) => void;
-  onCopy: (file: ReverseShareFile) => void;
-  onSelectFile: (fileId: string, checked: boolean) => void;
-}
-
-function FileRow({
-  file,
-  editingFile,
-  editValue,
-  inputRef,
-  hoveredFile,
-  copyingFile,
-  isSelected,
-  onStartEdit,
-  onSaveEdit,
-  onCancelEdit,
-  onEditValueChange,
-  onKeyDown,
-  onSetHoveredFile,
-  onPreview,
-  onDownload,
-  onDelete,
-  onCopy,
-  onSelectFile,
-}: FileRowProps) {
-  const t = useTranslations();
-  const { icon: FileIcon, color } = getFileIcon(file.name);
-
-  return (
-    <TableRow key={file.id}>
-      <TableCell>
-        <Checkbox
-          checked={isSelected}
-          onCheckedChange={(checked: boolean) => onSelectFile(file.id, checked)}
-          aria-label={t("reverseShares.modals.receivedFiles.selectFile", { fileName: file.name })}
-        />
-      </TableCell>
-      <TableCell>
-        <div className="flex items-center gap-3">
-          <FileIcon className={`h-8 w-8 ${color} flex-shrink-0`} />
-          <div className="min-w-0 flex-1">
-            <div
-              onMouseEnter={() => onSetHoveredFile({ fileId: file.id, field: "name" })}
-              onMouseLeave={() => onSetHoveredFile(null)}
-            >
-              <EditableField
-                file={file}
-                field="name"
-                isEditing={editingFile?.fileId === file.id && editingFile?.field === "name"}
-                editValue={editValue}
-                inputRef={inputRef}
-                isHovered={hoveredFile?.fileId === file.id && hoveredFile?.field === "name"}
-                onStartEdit={onStartEdit}
-                onSaveEdit={onSaveEdit}
-                onCancelEdit={onCancelEdit}
-                onEditValueChange={onEditValueChange}
-                onKeyDown={onKeyDown}
-              />
-            </div>
-            {file.description && (
-              <div
-                className="mt-1"
-                onMouseEnter={() => onSetHoveredFile({ fileId: file.id, field: "description" })}
-                onMouseLeave={() => onSetHoveredFile(null)}
-              >
-                <EditableField
-                  file={file}
-                  field="description"
-                  isEditing={editingFile?.fileId === file.id && editingFile?.field === "description"}
-                  editValue={editValue}
-                  inputRef={inputRef}
-                  isHovered={hoveredFile?.fileId === file.id && hoveredFile?.field === "description"}
-                  onStartEdit={onStartEdit}
-                  onSaveEdit={onSaveEdit}
-                  onCancelEdit={onCancelEdit}
-                  onEditValueChange={onEditValueChange}
-                  onKeyDown={onKeyDown}
-                />
-              </div>
-            )}
-          </div>
-        </div>
-      </TableCell>
-      <TableCell className="font-mono text-sm">{formatFileSize(file.size)}</TableCell>
-      <TableCell className="max-w-[200px]">
-        <div className="flex items-center gap-2 min-w-0">
-          <Avatar className="h-6 w-6 flex-shrink-0">
-            <AvatarFallback className="text-xs">{getSenderInitials(file)}</AvatarFallback>
-          </Avatar>
-          <span className="text-sm truncate min-w-0" title={getSenderDisplay(file, t)}>
-            {getSenderDisplay(file, t)}
-          </span>
-        </div>
-      </TableCell>
-      <TableCell className="text-sm text-muted-foreground">{formatDate(file.createdAt, t)}</TableCell>
-      <TableCell className="text-right">
-        <div className="flex items-center justify-end gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onPreview(file)}
-            title={t("reverseShares.components.fileActions.preview")}
-          >
-            <IconEye className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onCopy(file)}
-            disabled={copyingFile === file.id}
-            title={
-              copyingFile === file.id
-                ? t("reverseShares.components.fileActions.copying")
-                : t("reverseShares.components.fileActions.copyToMyFiles")
-            }
-            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 disabled:opacity-50"
-          >
-            {copyingFile === file.id ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
-            ) : (
-              <IconClipboardCopy className="h-4 w-4" />
-            )}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onDownload(file)}
-            title={t("reverseShares.components.fileActions.download")}
-          >
-            <IconDownload className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onDelete(file)}
-            title={t("reverseShares.components.fileActions.delete")}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-          >
-            <IconTrash className="h-4 w-4" />
-          </Button>
-        </div>
-      </TableCell>
-    </TableRow>
-  );
-}
 
 interface ReceivedFilesModalProps {
   reverseShare: ReverseShare | null;
@@ -544,21 +158,22 @@ export function ReceivedFilesModal({
       setCopyingFile(file.id);
       await copyReverseShareFileToUserFiles(file.id);
       toast.success(t("reverseShares.modals.receivedFiles.copySuccess"));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error copying file:", error);
 
       let errorMessage = t("reverseShares.modals.receivedFiles.copyError");
 
-      if (error.message?.includes("timeout") || error.code === "UND_ERR_SOCKET") {
+      const err = error as { message?: string; code?: string; response?: { data?: { error?: string } }; name?: string } | null;
+      if (err?.message?.includes("timeout") || err?.code === "UND_ERR_SOCKET") {
         errorMessage = t("reverseShares.modals.receivedFiles.copyErrors.timeout");
-      } else if (error.response?.data?.error) {
-        const serverError = error.response.data.error;
+      } else if (err?.response?.data?.error) {
+        const serverError = err.response.data.error;
         if (serverError.includes("File size exceeds") || serverError.includes("Insufficient storage")) {
           errorMessage = serverError;
         } else if (serverError.includes("Copy operation failed")) {
           errorMessage = t("reverseShares.modals.receivedFiles.copyErrors.failed");
         }
-      } else if (error.name === "AbortError") {
+      } else if (err?.name === "AbortError") {
         errorMessage = t("reverseShares.modals.receivedFiles.copyErrors.aborted");
       }
       toast.error(errorMessage);
@@ -611,7 +226,6 @@ export function ReceivedFilesModal({
       const loadingToast = toast.loading(t("shareManager.creatingZip"));
 
       try {
-        // Download files individually
         for (const file of selectedFileObjects) {
           const response = await downloadReverseShareFile(file.id);
           const link = document.createElement("a");
@@ -646,14 +260,14 @@ export function ReceivedFilesModal({
           const copyPromises = selectedFileObjects.map(async (file) => {
             try {
               await copyReverseShareFileToUserFiles(file.id);
-            } catch (error: any) {
+            } catch (error: unknown) {
               console.error(`Error copying file ${file.name}:`, error);
-              throw new Error(`Failed to copy ${file.name}: ${error.response?.data?.error || error.message}`);
+              const err = error as { response?: { data?: { error?: string } }; message?: string } | null;
+              throw new Error(`Failed to copy ${file.name}: ${err?.response?.data?.error ?? err?.message ?? String(error)}`);
             }
           });
 
           await Promise.all(copyPromises);
-
           setSelectedFiles(new Set());
         } finally {
           setBulkCopying(false);
@@ -662,9 +276,10 @@ export function ReceivedFilesModal({
       {
         loading: t("reverseShares.modals.receivedFiles.bulkCopyProgress", { count: selectedFileObjects.length }),
         success: t("reverseShares.modals.receivedFiles.bulkCopySuccess", { count: selectedFileObjects.length }),
-        error: (error: any) => {
-          if (error.message.includes("File size exceeds") || error.message.includes("Insufficient storage")) {
-            return error.message;
+        error: (error: unknown) => {
+          const msg = error instanceof Error ? error.message : String(error);
+          if (msg.includes("File size exceeds") || msg.includes("Insufficient storage")) {
+            return msg;
           } else {
             return t("reverseShares.modals.receivedFiles.copyError");
           }

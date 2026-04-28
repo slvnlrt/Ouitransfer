@@ -1,5 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
+import { getLogger } from "../../utils/logger.js";
 import { ConfigService } from "../config/service.js";
 import { UpdateAuthProviderSchema } from "./dto.js";
 import { AuthProvidersService } from "./service.js";
@@ -59,12 +60,11 @@ export class AuthProvidersController {
     return `${requestContext.protocol}://${requestContext.host}`;
   }
 
-  private sendSuccessResponse(reply: FastifyReply, data?: any, message?: string) {
-    return reply.send({
-      success: true,
-      ...(data && { data }),
-      ...(message && { message }),
-    });
+  private sendSuccessResponse(reply: FastifyReply, data?: unknown, message?: string) {
+    const responseBody: Record<string, unknown> = { success: true };
+    if (data !== undefined) responseBody.data = data;
+    if (message) responseBody.message = message;
+    return reply.send(responseBody);
   }
 
   private sendErrorResponse(reply: FastifyReply, status: number, error: string) {
@@ -75,7 +75,7 @@ export class AuthProvidersController {
   }
 
   private async handleControllerError(reply: FastifyReply, error: unknown, defaultMessage: string) {
-    console.error(`Controller error: ${defaultMessage}`, error);
+    getLogger().error({ err: error }, `Controller error: ${defaultMessage}`);
 
     if (error instanceof Error && error.message.includes("Either provide issuerUrl")) {
       return this.sendErrorResponse(reply, 400, error.message);
@@ -84,7 +84,7 @@ export class AuthProvidersController {
     return this.sendErrorResponse(reply, 500, defaultMessage);
   }
 
-  private validateCustomEndpoints(data: any): string | null {
+  private validateCustomEndpoints(data: Record<string, unknown>): string | null {
     const hasAnyCustomEndpoint = !!(
       data.authorizationEndpoint ||
       data.tokenEndpoint ||
@@ -116,8 +116,8 @@ export class AuthProvidersController {
     }
   }
 
-  private sanitizeOfficialProviderData(data: any): any {
-    const sanitizedData: any = {};
+  private sanitizeOfficialProviderData(data: Record<string, unknown>): Record<string, unknown> {
+    const sanitizedData: Record<string, unknown> = {};
 
     for (const field of OFFICIAL_PROVIDER_ALLOWED_FIELDS) {
       if (data[field] !== undefined) {
@@ -214,30 +214,30 @@ export class AuthProvidersController {
     }
   }
 
-  async createProvider(request: FastifyRequest<CreateProviderRequest>, reply: FastifyReply) {
+  async createProvider(request: FastifyRequest, reply: FastifyReply) {
     if (reply.sent) return;
 
     try {
-      const data = request.body;
+      const data = request.body as CreateProviderRequest["Body"];
 
       const validationError = this.validateCustomEndpoints(data);
       if (validationError) {
         return this.sendErrorResponse(reply, 400, validationError);
       }
 
-      const provider = await this.authProvidersService.createProvider(data);
+      const provider = await this.authProvidersService.createProvider(data as unknown as import("@prisma/client").Prisma.AuthProviderCreateInput);
       return this.sendSuccessResponse(reply, provider);
     } catch (error) {
       return this.handleControllerError(reply, error, "Failed to create provider");
     }
   }
 
-  async updateProvider(request: FastifyRequest<UpdateProviderRequest>, reply: FastifyReply) {
+  async updateProvider(request: FastifyRequest, reply: FastifyReply) {
     if (reply.sent) return;
 
     try {
-      const { id } = request.params;
-      const data = request.body as any;
+      const { id } = request.params as UpdateProviderRequest["Params"];
+      const data = request.body as Record<string, unknown>;
 
       const existingProvider = await this.authProvidersService.getProviderById(id);
       if (!existingProvider) {
@@ -267,7 +267,7 @@ export class AuthProvidersController {
     }
   }
 
-  private async updateOfficialProvider(reply: FastifyReply, id: string, data: any) {
+  private async updateOfficialProvider(reply: FastifyReply, id: string, data: Record<string, unknown>) {
     const sanitizedData = this.sanitizeOfficialProviderData(data);
 
     if (sanitizedData.issuerUrl && typeof sanitizedData.issuerUrl === "string") {
@@ -276,30 +276,29 @@ export class AuthProvidersController {
       }
     }
 
-    const provider = await this.authProvidersService.updateProvider(id, sanitizedData);
+    const provider = await this.authProvidersService.updateProvider(id, sanitizedData as import("@prisma/client").Prisma.AuthProviderUpdateInput);
     return this.sendSuccessResponse(reply, provider);
   }
 
-  private async updateCustomProvider(reply: FastifyReply, id: string, data: any) {
+  private async updateCustomProvider(reply: FastifyReply, id: string, data: Record<string, unknown>) {
     try {
       const validatedData = UpdateAuthProviderSchema.parse(data);
-      const provider = await this.authProvidersService.updateProvider(id, validatedData);
+      const provider = await this.authProvidersService.updateProvider(id, validatedData as import("@prisma/client").Prisma.AuthProviderUpdateInput);
       return this.sendSuccessResponse(reply, provider);
     } catch (validationError) {
-      console.error("Validation error for custom provider:", validationError);
-      console.error("Raw data that failed validation:", data);
+      getLogger().error({ err: validationError, data }, "Validation error for custom provider");
       return this.sendErrorResponse(reply, 400, ERROR_MESSAGES.INVALID_DATA);
     }
   }
 
   async updateProvidersOrder(
-    request: FastifyRequest<UpdateProvidersOrderRequest>,
+    request: FastifyRequest,
     reply: FastifyReply,
   ) {
     if (reply.sent) return;
 
     try {
-      const { providers } = request.body;
+      const { providers } = request.body as UpdateProvidersOrderRequest["Body"];
 
       if (!Array.isArray(providers)) {
         return this.sendErrorResponse(reply, 400, ERROR_MESSAGES.INVALID_PROVIDERS_ARRAY);
@@ -312,11 +311,11 @@ export class AuthProvidersController {
     }
   }
 
-  async deleteProvider(request: FastifyRequest<DeleteProviderRequest>, reply: FastifyReply) {
+  async deleteProvider(request: FastifyRequest, reply: FastifyReply) {
     if (reply.sent) return;
 
     try {
-      const { id } = request.params;
+      const { id } = request.params as DeleteProviderRequest["Params"];
 
       const provider = await this.authProvidersService.getProviderById(id);
       if (!provider) {
@@ -346,10 +345,10 @@ export class AuthProvidersController {
     }
   }
 
-  async authorize(request: FastifyRequest<AuthorizeRequest>, reply: FastifyReply) {
+  async authorize(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { provider: providerName } = request.params;
-      const { state, redirect_uri } = request.query;
+      const { provider: providerName } = request.params as AuthorizeRequest["Params"];
+      const { state, redirect_uri } = (request.query as AuthorizeRequest["Querystring"]) || {};
 
       const requestContext = this.buildRequestContext(request);
       const authUrl = await this.authProvidersService.getAuthorizationUrl(
@@ -418,7 +417,7 @@ export class AuthProvidersController {
     error: unknown,
   ) {
     // Log error for debugging
-    console.error("Auth callback error for provider:", request.params.provider, error);
+    request.log.error({ err: error, provider: request.params.provider }, "Auth callback error");
 
     const { type: errorType, message: errorMessage } =
       error instanceof Error

@@ -43,8 +43,7 @@ export function BackgroundPickerForm() {
       setSelectedBackground(parsed);
       applyBackground(parsed);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [applyBackground]);
 
   const handleBackgroundSelect = (mode: "light" | "dark", backgroundValue: string) => {
     const newBackground = {

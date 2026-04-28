@@ -1,56 +1,36 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  IconCheck,
-  IconChevronDown,
-  IconCopy,
-  IconDotsVertical,
-  IconDownload,
-  IconEdit,
-  IconEye,
-  IconFolder,
-  IconLink,
-  IconLock,
-  IconLockOpen,
-  IconMail,
-  IconQrcode,
-  IconTrash,
-  IconUsers,
-  IconX,
-} from "@tabler/icons-react";
+import { IconCheck, IconEdit, IconLock, IconLockOpen, IconX } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import type { Share } from "@/http/endpoints/shares/types";
 import { useShareContext } from "../../contexts/share-context";
+import { SharesTableBulkActions } from "./shares-table-bulk-actions";
+import { ShareRowActions } from "./shares-table-row-actions";
 
 export interface SharesTableProps {
-  shares: any[];
-  onDelete: (share: any) => void;
-  onEdit: (share: any) => void;
+  shares: Share[];
+  onDelete: (share: Share) => void;
+  onEdit: (share: Share) => void;
   onUpdateName: (shareId: string, newName: string) => void;
   onUpdateDescription: (shareId: string, newDescription: string) => void;
-  onUpdateSecurity?: (share: any) => void;
-  onUpdateExpiration?: (share: any) => void;
-  onManageFiles: (share: any) => void;
-  onManageRecipients: (share: any) => void;
-  onViewDetails: (share: any) => void;
-  onGenerateLink: (share: any) => void;
-  onCopyLink: (share: any) => void;
-  onNotifyRecipients: (share: any) => void;
-  onViewQrCode?: (share: any) => void;
-  onDownloadShareFiles?: (share: any) => void;
-  onBulkDelete?: (shares: any[]) => void;
-  onBulkDownload?: (shares: any[]) => void;
+  onUpdateSecurity?: (share: Share) => void;
+  onUpdateExpiration?: (share: Share) => void;
+  onManageFiles: (share: Share) => void;
+  onManageRecipients: (share: Share) => void;
+  onViewDetails: (share: Share) => void;
+  onGenerateLink: (share: Share) => void;
+  onCopyLink: (share: Share) => void;
+  onNotifyRecipients: (share: Share) => void;
+  onViewQrCode?: (share: Share) => void;
+  onDownloadShareFiles?: (share: Share) => void;
+  onBulkDelete?: (shares: Share[]) => void;
+  onBulkDownload?: (shares: Share[]) => void;
   setClearSelectionCallback?: (callback: () => void) => void;
 }
 
@@ -146,7 +126,7 @@ export function SharesTable({
     }
   };
 
-  const getDisplayValue = (share: any, field: "name" | "description") => {
+  const getDisplayValue = (share: Share, field: "name" | "description"): string | null | undefined => {
     const pendingChange = pendingChanges[share.id];
     if (pendingChange && pendingChange[field] !== undefined) {
       return pendingChange[field];
@@ -172,30 +152,20 @@ export function SharesTable({
     setSelectedShares(newSelected);
   };
 
-  const getSelectedShares = () => {
-    return shares.filter((share) => selectedShares.has(share.id));
-  };
+  const getSelectedShares = () => shares.filter((share) => selectedShares.has(share.id));
 
   const isAllSelected = shares.length > 0 && selectedShares.size === shares.length;
 
   const handleBulkDelete = () => {
     const selectedShareObjects = getSelectedShares();
-
     if (selectedShareObjects.length === 0) return;
-
-    if (onBulkDelete) {
-      onBulkDelete(selectedShareObjects);
-    }
+    onBulkDelete?.(selectedShareObjects);
   };
 
   const handleBulkDownload = () => {
     const selectedShareObjects = getSelectedShares();
-
     if (selectedShareObjects.length === 0) return;
-
-    if (onBulkDownload) {
-      onBulkDownload(selectedShareObjects);
-    }
+    onBulkDownload?.(selectedShareObjects);
   };
 
   const showBulkActions = selectedShares.size > 0 && (onBulkDelete || onBulkDownload);
@@ -203,43 +173,12 @@ export function SharesTable({
   return (
     <div className="space-y-4">
       {showBulkActions && (
-        <div className="flex items-center justify-between p-4 bg-muted/30 border rounded-lg">
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-foreground">
-              {t("sharesTable.bulkActions.selected", { count: selectedShares.size })}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="default" size="sm" className="gap-2">
-                  {t("sharesTable.bulkActions.actions")}
-                  <IconChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[200px]">
-                {onBulkDownload && (
-                  <DropdownMenuItem className="cursor-pointer py-2" onClick={handleBulkDownload}>
-                    <IconDownload className="h-4 w-4" />
-                    {t("sharesTable.bulkActions.download")}
-                  </DropdownMenuItem>
-                )}
-                {onBulkDelete && (
-                  <DropdownMenuItem
-                    onClick={handleBulkDelete}
-                    className="cursor-pointer py-2 text-destructive focus:text-destructive"
-                  >
-                    <IconTrash className="h-4 w-4" />
-                    {t("sharesTable.bulkActions.delete")}
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Button variant="outline" size="sm" onClick={() => setSelectedShares(new Set())}>
-              {t("common.cancel")}
-            </Button>
-          </div>
-        </div>
+        <SharesTableBulkActions
+          selectedCount={selectedShares.size}
+          onBulkDelete={onBulkDelete ? handleBulkDelete : undefined}
+          onBulkDownload={onBulkDownload ? handleBulkDownload : undefined}
+          onClearSelection={() => setSelectedShares(new Set())}
+        />
       )}
 
       <div className="rounded-lg shadow-sm overflow-hidden border">
@@ -302,7 +241,7 @@ export function SharesTable({
                     <Checkbox
                       checked={isSelected}
                       onCheckedChange={(checked: boolean) => handleSelectShare(share.id, checked)}
-                      aria-label={t("sharesTable.selectShare", { shareName: share.name })}
+                      aria-label={t("sharesTable.selectShare", { shareName: share.name ?? "" })}
                     />
                   </TableCell>
                   <TableCell className="h-12 px-4 border-0">
@@ -346,19 +285,19 @@ export function SharesTable({
                         </div>
                       ) : (
                         <div className="flex items-center gap-1 flex-1 min-w-0">
-                          <span className="truncate max-w-[120px] font-medium" title={displayName}>
-                            {displayName}
-                          </span>
-                          <div className="w-6 flex justify-center flex-shrink-0">
-                            {isHoveringName && (
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                className="h-6 w-6 text-muted-foreground hover:text-foreground hidden sm:block"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  startEdit(share.id, "name", displayName);
-                                }}
+                           <span className="truncate max-w-[120px] font-medium" title={displayName ?? undefined}>
+                             {displayName}
+                           </span>
+                           <div className="w-6 flex justify-center flex-shrink-0">
+                             {isHoveringName && (
+                               <Button
+                                 size="icon"
+                                 variant="ghost"
+                                 className="h-6 w-6 text-muted-foreground hover:text-foreground hidden sm:block"
+                                 onClick={(e) => {
+                                   e.stopPropagation();
+                                   startEdit(share.id, "name", displayName ?? "");
+                                 }}
                               >
                                 <IconEdit className="h-3 w-3" />
                               </Button>
@@ -574,72 +513,20 @@ export function SharesTable({
                     </div>
                   </TableCell>
                   <TableCell className="h-12 px-4 text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted cursor-pointer">
-                          <IconDotsVertical className="h-4 w-4" />
-                          <span className="sr-only">{t("sharesTable.actions.menu")}</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-[200px]">
-                        <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onEdit(share)}>
-                          <IconEdit className="h-4 w-4" />
-                          {t("sharesTable.actions.edit")}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onManageFiles(share)}>
-                          <IconFolder className="h-4 w-4" />
-                          {t("sharesTable.actions.manageFiles")}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onManageRecipients(share)}>
-                          <IconUsers className="h-4 w-4" />
-                          {t("sharesTable.actions.manageRecipients")}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onViewDetails(share)}>
-                          <IconEye className="h-4 w-4" />
-                          {t("sharesTable.actions.viewDetails")}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onGenerateLink(share)}>
-                          <IconLink className="h-4 w-4" />
-                          {share.alias ? t("sharesTable.actions.editLink") : t("sharesTable.actions.generateLink")}
-                        </DropdownMenuItem>
-                        {share.alias && (
-                          <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onCopyLink(share)}>
-                            <IconCopy className="h-4 w-4" />
-                            {t("sharesTable.actions.copyLink")}
-                          </DropdownMenuItem>
-                        )}
-                        {share.alias && onViewQrCode && (
-                          <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onViewQrCode(share)}>
-                            <IconQrcode className="h-4 w-4" />
-                            {t("sharesTable.actions.viewQrCode", { defaultValue: "View QR Code" })}
-                          </DropdownMenuItem>
-                        )}
-                        {share.recipients?.length > 0 && share.alias && smtpEnabled === "true" && (
-                          <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onNotifyRecipients(share)}>
-                            <IconMail className="h-4 w-4" />
-                            {t("sharesTable.actions.notifyRecipients")}
-                          </DropdownMenuItem>
-                        )}
-                        {onDownloadShareFiles && share.files && share.files.length > 0 && (
-                          <DropdownMenuItem
-                            className="cursor-pointer py-2"
-                            onClick={() => {
-                              onDownloadShareFiles(share);
-                            }}
-                          >
-                            <IconDownload className="h-4 w-4" />
-                            {t("sharesTable.actions.downloadShareFiles")}
-                          </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem
-                          onClick={() => onDelete(share)}
-                          className="cursor-pointer py-2 text-destructive focus:text-destructive"
-                        >
-                          <IconTrash className="h-4 w-4" />
-                          {t("sharesTable.actions.delete")}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <ShareRowActions
+                      share={share}
+                      smtpEnabled={smtpEnabled}
+                      onDelete={onDelete}
+                      onEdit={onEdit}
+                      onManageFiles={onManageFiles}
+                      onManageRecipients={onManageRecipients}
+                      onViewDetails={onViewDetails}
+                      onGenerateLink={onGenerateLink}
+                      onCopyLink={onCopyLink}
+                      onNotifyRecipients={onNotifyRecipients}
+                      onViewQrCode={onViewQrCode}
+                      onDownloadShareFiles={onDownloadShareFiles}
+                    />
                   </TableCell>
                 </TableRow>
               );

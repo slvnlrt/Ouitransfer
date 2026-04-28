@@ -40,8 +40,9 @@ export function LogoInput({ value, onChange, isDisabled }: LogoInputProps) {
       onChange(newLogoUrl);
       await refreshAppInfo();
       toast.success(t("logo.messages.uploadSuccess"));
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || t("logo.errors.uploadFailed"));
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { error?: string } } } | null;
+      toast.error(err?.response?.data?.error ?? t("logo.errors.uploadFailed"));
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {
@@ -58,8 +59,9 @@ export function LogoInput({ value, onChange, isDisabled }: LogoInputProps) {
       onChange("");
       await refreshAppInfo();
       toast.success(t("logo.messages.removeSuccess"));
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || t("logo.errors.removeFailed"));
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { error?: string } } } | null;
+      toast.error(err?.response?.data?.error ?? t("logo.errors.removeFailed"));
     } finally {
       setIsUploading(false);
     }

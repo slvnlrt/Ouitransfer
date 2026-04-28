@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
 
+import { getLogger } from "../../utils/logger.js";
 import { prisma } from "../../shared/prisma.js";
 import { ConfigService } from "../config/service.js";
 import { EmailService } from "../email/service.js";
@@ -192,7 +193,7 @@ export class AuthService {
     try {
       await this.emailService.sendPasswordResetEmail(email, token, origin);
     } catch (error) {
-      console.error("Failed to send password reset email:", error);
+      getLogger().error({ err: error }, "Failed to send password reset email");
       throw new Error("Failed to send password reset email");
     }
   }

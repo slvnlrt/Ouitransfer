@@ -71,8 +71,7 @@ export function ColorPickerForm() {
       setSelectedColor(savedColor);
       applyColor(savedColor);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [applyColor]);
 
   const handlePresetColorSelect = (colorValue: string) => {
     setSelectedColor(colorValue);

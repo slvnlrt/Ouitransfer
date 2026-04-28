@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { logger } from "@/lib/logger";
+
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3333";
 
 /**
@@ -61,7 +63,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
     return res;
   } catch (error) {
-    console.error("Error proxying embed request:", error);
+    logger.error("Error proxying embed request", { err: error instanceof Error ? error.message : String(error) });
     return new NextResponse(JSON.stringify({ error: "Failed to fetch file" }), {
       status: 500,
       headers: {

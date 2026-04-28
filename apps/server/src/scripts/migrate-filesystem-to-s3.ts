@@ -220,9 +220,13 @@ export class FilesystemToS3Migrator {
           console.log(`[MIGRATION] Already in S3: ${objectName}`);
           this.stats.skippedFiles++;
           return;
-        } catch (error: any) {
+        } catch (error: unknown) {
           // Not found, proceed with migration
-          if (error.$metadata?.httpStatusCode !== 404) {
+          const httpStatus =
+            error instanceof Error && "$metadata" in error
+              ? (error as { $metadata?: { httpStatusCode?: number } }).$metadata?.httpStatusCode
+              : undefined;
+          if (httpStatus !== 404) {
             throw error;
           }
         }

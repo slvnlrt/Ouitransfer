@@ -1,3 +1,4 @@
+import { getLogger } from "../../utils/logger.js";
 import { S3StorageProvider } from "../../providers/s3-storage.provider.js";
 import { prisma } from "../../shared/prisma.js";
 import type { StorageProvider } from "../../types/storage.js";
@@ -14,7 +15,7 @@ export class FolderService {
     try {
       return await this.storageProvider.getPresignedPutUrl(objectName, expires);
     } catch (err) {
-      console.error("Erro no presignedPutObject:", err);
+      getLogger().error({ err }, "Erro no presignedPutObject");
       throw err;
     }
   }
@@ -27,7 +28,7 @@ export class FolderService {
     try {
       return await this.storageProvider.getPresignedGetUrl(objectName, expires, folderName);
     } catch (err) {
-      console.error("Erro no presignedGetObject:", err);
+      getLogger().error({ err }, "Erro no presignedGetObject");
       throw err;
     }
   }
@@ -36,7 +37,7 @@ export class FolderService {
     try {
       await this.storageProvider.deleteObject(objectName);
     } catch (err) {
-      console.error("Erro no removeObject:", err);
+      getLogger().error({ err }, "Erro no removeObject");
       throw err;
     }
   }
@@ -45,7 +46,19 @@ export class FolderService {
     folderId: string,
     userId: string,
     basePath: string = "",
-  ): Promise<any[]> {
+  ): Promise<Array<{
+    id: string;
+    name: string;
+    description: string | null;
+    extension: string;
+    size: bigint;
+    objectName: string;
+    userId: string;
+    folderId: string | null;
+    relativePath: string;
+    createdAt: Date;
+    updatedAt: Date;
+  }>> {
     const files = await prisma.file.findMany({
       where: { folderId, userId },
     });
@@ -55,7 +68,7 @@ export class FolderService {
       select: { id: true, name: true },
     });
 
-    let allFiles = files.map((file: any) => ({
+    let allFiles = files.map((file) => ({
       ...file,
       relativePath: basePath + file.name,
     }));

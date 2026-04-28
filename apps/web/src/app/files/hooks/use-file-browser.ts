@@ -9,6 +9,38 @@ import { useEnhancedFileManager } from "@/hooks/use-enhanced-file-manager";
 import { listFiles } from "@/http/endpoints";
 import { listFolders } from "@/http/endpoints/folders";
 
+// These mirror the component-side File/Folder interfaces used throughout the files UI.
+// Note: API returns description as string|null and size as string, but component types expect
+// description as string|undefined and size as number. We use optional/union to bridge both.
+interface FileBrowserFile {
+  id: string;
+  name: string;
+  description?: string;
+  extension: string;
+  size: number;
+  objectName: string;
+  userId: string;
+  folderId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface FileBrowserFolder {
+  id: string;
+  name: string;
+  description?: string;
+  objectName: string;
+  parentId?: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+  totalSize?: string;
+  _count?: {
+    files: number;
+    children: number;
+  };
+}
+
 const createSlug = (name: string): string => {
   return name
     .toLowerCase()
@@ -18,7 +50,7 @@ const createSlug = (name: string): string => {
     .replace(/^-+|-+$/g, "");
 };
 
-const createFolderPathSlug = (allFolders: any[], folderId: string): string => {
+const createFolderPathSlug = (allFolders: FileBrowserFolder[], folderId: string): string => {
   const path: string[] = [];
   let currentId: string | null = folderId;
 
@@ -27,7 +59,7 @@ const createFolderPathSlug = (allFolders: any[], folderId: string): string => {
     if (folder) {
       const slug = createSlug(folder.name);
       path.unshift(slug || folder.id);
-      currentId = folder.parentId;
+      currentId = folder.parentId ?? null;
     } else {
       break;
     }
@@ -36,19 +68,19 @@ const createFolderPathSlug = (allFolders: any[], folderId: string): string => {
   return path.join("/");
 };
 
-const findFolderByPathSlug = (folders: any[], pathSlug: string): any | null => {
+const findFolderByPathSlug = (folders: FileBrowserFolder[], pathSlug: string): FileBrowserFolder | null => {
   const pathParts = pathSlug.split("/");
   let currentFolders = folders.filter((f) => !f.parentId);
-  let currentFolder: any = null;
+  let currentFolder: FileBrowserFolder | null = null;
 
   for (const slugPart of pathParts) {
     currentFolder = currentFolders.find((folder) => {
       const slug = createSlug(folder.name);
       return slug === slugPart || folder.id === slugPart;
-    });
+    }) ?? null;
 
     if (!currentFolder) return null;
-    currentFolders = folders.filter((f) => f.parentId === currentFolder.id);
+    currentFolders = folders.filter((f) => f.parentId === currentFolder!.id);
   }
 
   return currentFolder;
@@ -59,11 +91,11 @@ export function useFileBrowser() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [files, setFiles] = useState<any[]>([]);
-  const [folders, setFolders] = useState<any[]>([]);
-  const [allFiles, setAllFiles] = useState<any[]>([]);
-  const [allFolders, setAllFolders] = useState<any[]>([]);
-  const [currentPath, setCurrentPath] = useState<any[]>([]);
+  const [files, setFiles] = useState<FileBrowserFile[]>([]);
+  const [folders, setFolders] = useState<FileBrowserFolder[]>([]);
+  const [allFiles, setAllFiles] = useState<FileBrowserFile[]>([]);
+  const [allFolders, setAllFolders] = useState<FileBrowserFolder[]>([]);
+  const [currentPath, setCurrentPath] = useState<FileBrowserFolder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -80,26 +112,26 @@ export function useFileBrowser() {
     setClearSelectionCallbackState(() => callback);
   }, []);
 
-  const getFolderIdFromPathSlug = useCallback((pathSlug: string | null, folders: any[]): string | null => {
+  const getFolderIdFromPathSlug = useCallback((pathSlug: string | null, folders: FileBrowserFolder[]): string | null => {
     if (!pathSlug) return null;
     const folder = findFolderByPathSlug(folders, pathSlug);
     return folder ? folder.id : null;
   }, []);
 
-  const getFolderPathSlugFromId = useCallback((folderId: string | null, folders: any[]): string | null => {
+  const getFolderPathSlugFromId = useCallback((folderId: string | null, folders: FileBrowserFolder[]): string | null => {
     if (!folderId) return null;
     return createFolderPathSlug(folders, folderId);
   }, []);
 
-  const buildBreadcrumbPath = useCallback((allFolders: any[], folderId: string): any[] => {
-    const path: any[] = [];
+  const buildBreadcrumbPath = useCallback((allFolders: FileBrowserFolder[], folderId: string): FileBrowserFolder[] => {
+    const path: FileBrowserFolder[] = [];
     let currentId: string | null = folderId;
 
     while (currentId) {
       const folder = allFolders.find((f) => f.id === currentId);
       if (folder) {
         path.unshift(folder);
-        currentId = folder.parentId;
+        currentId = folder.parentId ?? null;
       } else {
         break;
       }
@@ -108,7 +140,7 @@ export function useFileBrowser() {
     return path;
   }, []);
 
-  const buildFolderPath = useCallback((allFolders: any[], folderId: string | null): string => {
+  const buildFolderPath = useCallback((allFolders: FileBrowserFolder[], folderId: string | null): string => {
     if (!folderId) return "";
 
     const pathParts: string[] = [];
@@ -118,7 +150,7 @@ export function useFileBrowser() {
       const folder = allFolders.find((f) => f.id === currentId);
       if (folder) {
         pathParts.unshift(folder.name);
-        currentId = folder.parentId;
+        currentId = folder.parentId ?? null;
       } else {
         break;
       }
@@ -129,8 +161,8 @@ export function useFileBrowser() {
 
   const navigateToFolderDirect = useCallback(
     (targetFolderId: string | null) => {
-      const currentFiles = allFiles.filter((file: any) => (file.folderId || null) === targetFolderId);
-      const currentFolders = allFolders.filter((folder: any) => (folder.parentId || null) === targetFolderId);
+      const currentFiles = allFiles.filter((file) => (file.folderId || null) === targetFolderId);
+      const currentFolders = allFolders.filter((folder) => (folder.parentId || null) === targetFolderId);
 
       const sortedFiles = [...currentFiles].sort(
         (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -208,8 +240,9 @@ export function useFileBrowser() {
 
       const [filesResponse, foldersResponse] = await Promise.all([listFiles(), listFolders()]);
 
-      const fetchedFiles = filesResponse.data.files || [];
-      const fetchedFolders = foldersResponse.data.folders || [];
+      // Cast API types to view-model types (API uses string|null; components expect undefined)
+      const fetchedFiles = (filesResponse.data.files || []) as unknown as FileBrowserFile[];
+      const fetchedFolders = (foldersResponse.data.folders || []) as unknown as FileBrowserFolder[];
 
       setAllFiles(fetchedFiles);
       setAllFolders(fetchedFolders);
@@ -218,8 +251,8 @@ export function useFileBrowser() {
       const resolvedFolderId = getFolderIdFromPathSlug(urlFolderSlug, fetchedFolders);
       setCurrentFolderId(resolvedFolderId);
 
-      const currentFiles = fetchedFiles.filter((file: any) => (file.folderId || null) === resolvedFolderId);
-      const currentFolders = fetchedFolders.filter((folder: any) => (folder.parentId || null) === resolvedFolderId);
+      const currentFiles = fetchedFiles.filter((file) => (file.folderId || null) === resolvedFolderId);
+      const currentFolders = fetchedFolders.filter((folder) => (folder.parentId || null) === resolvedFolderId);
 
       const sortedFiles = [...currentFiles].sort(
         (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -246,38 +279,32 @@ export function useFileBrowser() {
   }, [urlFolderSlug, buildBreadcrumbPath, t, getFolderIdFromPathSlug]);
 
   const handleImmediateUpdate = useCallback(
-    (itemId: string, itemType: "file" | "folder", newParentId: string | null) => {
+    (itemId: string, itemType: "file" | "folder", newParentId: string | null | "__DELETE__") => {
       // Use requestAnimationFrame for smoother updates
       requestAnimationFrame(() => {
         // Check if this is a delete operation
-        const isDelete = newParentId === ("__DELETE__" as any);
-
-        if (itemType === "file") {
-          setFiles((prevFiles) => {
-            return prevFiles.filter((file) => file.id !== itemId);
-          });
-
-          // Update allFiles to keep state consistent
-          setAllFiles((prevAllFiles) => {
-            if (isDelete) {
-              return prevAllFiles.filter((file) => file.id !== itemId);
-            }
-            return prevAllFiles.map((file) => (file.id === itemId ? { ...file, folderId: newParentId } : file));
-          });
-        } else if (itemType === "folder") {
-          setFolders((prevFolders) => {
-            return prevFolders.filter((folder) => folder.id !== itemId);
-          });
-
-          // Update allFolders to keep state consistent
-          setAllFolders((prevAllFolders) => {
-            if (isDelete) {
-              return prevAllFolders.filter((folder) => folder.id !== itemId);
-            }
-            return prevAllFolders.map((folder) =>
-              folder.id === itemId ? { ...folder, parentId: newParentId } : folder
+        if (newParentId === "__DELETE__") {
+          // Remove the item from all state collections
+          if (itemType === "file") {
+            setFiles((prevFiles) => prevFiles.filter((file) => file.id !== itemId));
+            setAllFiles((prevAllFiles) => prevAllFiles.filter((file) => file.id !== itemId));
+          } else if (itemType === "folder") {
+            setFolders((prevFolders) => prevFolders.filter((folder) => folder.id !== itemId));
+            setAllFolders((prevAllFolders) => prevAllFolders.filter((folder) => folder.id !== itemId));
+          }
+        } else {
+          // Move operation: newParentId is string | null here (TypeScript narrows correctly)
+          if (itemType === "file") {
+            setFiles((prevFiles) => prevFiles.filter((file) => file.id !== itemId));
+            setAllFiles((prevAllFiles) =>
+              prevAllFiles.map((file) => (file.id === itemId ? { ...file, folderId: newParentId ?? undefined } : file))
             );
-          });
+          } else if (itemType === "folder") {
+            setFolders((prevFolders) => prevFolders.filter((folder) => folder.id !== itemId));
+            setAllFolders((prevAllFolders) =>
+              prevAllFolders.map((folder) => (folder.id === itemId ? { ...folder, parentId: newParentId ?? undefined } : folder))
+            );
+          }
         }
       });
     },
@@ -298,18 +325,18 @@ export function useFileBrowser() {
     const matchingItems = new Set<string>();
 
     allFiles
-      .filter((file: any) => file.name.toLowerCase().includes(searchQuery.toLowerCase()))
-      .forEach((file: any) => {
+      .filter((file) => file.name.toLowerCase().includes(searchQuery.toLowerCase()))
+      .forEach((file) => {
         if (file.folderId) {
-          let currentId = file.folderId;
+          let currentId: string | null = file.folderId;
           while (currentId) {
-            const folder = allFolders.find((f: any) => f.id === currentId);
+            const folder = allFolders.find((f) => f.id === currentId);
             if (folder) {
               if ((folder.parentId || null) === currentFolderId) {
                 matchingItems.add(folder.id);
                 break;
               }
-              currentId = folder.parentId;
+              currentId = folder.parentId ?? null;
             } else {
               break;
             }
@@ -318,17 +345,17 @@ export function useFileBrowser() {
       });
 
     allFolders
-      .filter((folder: any) => folder.name.toLowerCase().includes(searchQuery.toLowerCase()))
-      .forEach((folder: any) => {
-        let currentId = folder.id;
+      .filter((folder) => folder.name.toLowerCase().includes(searchQuery.toLowerCase()))
+      .forEach((folder) => {
+        let currentId: string | null = folder.id;
         while (currentId) {
-          const folderInPath = allFolders.find((f: any) => f.id === currentId);
+          const folderInPath = allFolders.find((f) => f.id === currentId);
           if (folderInPath) {
             if ((folderInPath.parentId || null) === currentFolderId) {
               matchingItems.add(folderInPath.id);
               break;
             }
-            currentId = folderInPath.parentId;
+            currentId = folderInPath.parentId ?? null;
           } else {
             break;
           }
@@ -336,14 +363,14 @@ export function useFileBrowser() {
       });
 
     return allFolders
-      .filter((folder: any) => matchingItems.has(folder.id))
+      .filter((folder) => matchingItems.has(folder.id))
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }, [searchQuery, allFiles, allFolders, currentFolderId]);
 
   const filteredFiles = searchQuery
     ? allFiles
         .filter(
-          (file: any) =>
+          (file) =>
             file.name.toLowerCase().includes(searchQuery.toLowerCase()) && (file.folderId || null) === currentFolderId
         )
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -358,8 +385,7 @@ export function useFileBrowser() {
 
   // Load files only on mount or when explicitly called
   useEffect(() => {
-    loadFiles();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    loadFilesRef.current?.();
   }, []); // Empty dependency array - load only on mount
 
   return {

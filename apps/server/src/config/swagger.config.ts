@@ -1,7 +1,8 @@
 import { fastifySwagger } from "@fastify/swagger";
+import type { FastifyInstance } from "fastify";
 import { jsonSchemaTransform } from "fastify-type-provider-zod";
 
-export function registerSwagger(app: any) {
+export function registerSwagger(app: FastifyInstance) {
   app.register(fastifySwagger, {
     openapi: {
       info: {

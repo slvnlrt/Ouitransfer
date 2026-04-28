@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
+import { prisma } from "../../shared/prisma.js";
 import { type RegisterUserInput, UserResponseSchema } from "./dto.js";
 import { type IUserRepository, PrismaUserRepository } from "./repository.js";
 
@@ -12,8 +12,6 @@ type UserWithPassword = {
   username?: string;
   password?: string;
 };
-
-const prisma = new PrismaClient();
 
 export class UserService {
   constructor(private readonly userRepository: IUserRepository = new PrismaUserRepository()) {}
@@ -59,7 +57,7 @@ export class UserService {
   async updateUser(userId: string, data: Partial<UserWithPassword>) {
     const { password, ...rest } = data;
 
-    const updateData: any = { ...rest };
+    const updateData: Omit<Partial<UserWithPassword>, "password"> & { password?: string } = { ...rest };
 
     if (password) {
       updateData.password = await bcrypt.hash(password, 10);

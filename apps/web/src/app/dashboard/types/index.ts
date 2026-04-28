@@ -3,6 +3,7 @@ import { ShareManagerHook } from "@/hooks/use-share-manager";
 import { Share } from "@/http/endpoints/shares/types";
 
 export interface RecentFilesProps {
+  // biome-ignore lint/suspicious/noExplicitAny: hook return types use internal FileBrowserFile type
   files: any[];
   fileManager: EnhancedFileManagerHook;
   isUploadModalOpen: boolean;

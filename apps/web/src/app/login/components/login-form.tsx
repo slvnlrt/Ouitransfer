@@ -48,7 +48,7 @@ export function LoginForm({
     const checkProviders = async () => {
       try {
         const response = await getEnabledProviders();
-        const data = response.data as any;
+        const data = response.data;
         setHasEnabledProviders(data.success && data.data && data.data.length > 0);
       } catch (error) {
         console.error("Error checking providers:", error);

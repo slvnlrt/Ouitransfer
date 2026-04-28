@@ -14,7 +14,7 @@ export class FolderController {
 
   async registerFolder(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply
           .status(401)
@@ -73,16 +73,17 @@ export class FolderController {
         folder: folderResponse,
         message: "Folder registered successfully.",
       });
-    } catch (error: any) {
-      console.error("Error in registerFolder:", error);
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      request.log.error({ err: error }, "Error in registerFolder");
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
   async checkFolder(request: FastifyRequest, reply: FastifyReply) {
     try {
       await request.jwtVerify();
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply.status(401).send({
           error: "Unauthorized: a valid token is required to access this resource.",
@@ -118,16 +119,17 @@ export class FolderController {
       return reply.status(201).send({
         message: "Folder checks succeeded.",
       });
-    } catch (error: any) {
-      console.error("Error in checkFolder:", error);
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      request.log.error({ err: error }, "Error in checkFolder");
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
   async listFolders(request: FastifyRequest, reply: FastifyReply) {
     try {
       await request.jwtVerify();
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply
           .status(401)
@@ -138,7 +140,17 @@ export class FolderController {
       const { parentId, recursive: recursiveStr } = input;
       const recursive = recursiveStr !== "false";
 
-      let folders: any[];
+      let folders: Array<{
+        id: string;
+        name: string;
+        description: string | null;
+        objectName: string;
+        parentId: string | null;
+        userId: string;
+        createdAt: Date;
+        updatedAt: Date;
+        _count: { files: number; children: number };
+      }>;
 
       if (recursive) {
         folders = await prisma.folder.findMany({
@@ -193,9 +205,10 @@ export class FolderController {
       );
 
       return reply.send({ folders: foldersResponse });
-    } catch (error: any) {
-      console.error("Error in listFolders:", error);
-      return reply.status(500).send({ error: error.message });
+    } catch (error: unknown) {
+      request.log.error({ err: error }, "Error in listFolders");
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(500).send({ error: message });
     }
   }
 
@@ -203,7 +216,7 @@ export class FolderController {
     try {
       await request.jwtVerify();
       const { id } = request.params as { id: string };
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
 
       if (!userId) {
         return reply.status(401).send({
@@ -267,16 +280,17 @@ export class FolderController {
         folder: folderResponse,
         message: "Folder updated successfully.",
       });
-    } catch (error: any) {
-      console.error("Error in updateFolder:", error);
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      request.log.error({ err: error }, "Error in updateFolder");
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
   async moveFolder(request: FastifyRequest, reply: FastifyReply) {
     try {
       await request.jwtVerify();
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
 
       if (!userId) {
         return reply
@@ -285,7 +299,7 @@ export class FolderController {
       }
 
       const { id } = request.params as { id: string };
-      const body = request.body as any;
+      const body = request.body as { parentId?: string | null };
 
       const input = {
         parentId: body.parentId === undefined ? null : body.parentId,
@@ -348,10 +362,11 @@ export class FolderController {
         folder: folderResponse,
         message: "Folder moved successfully.",
       });
-    } catch (error: any) {
-      console.error("Error in moveFolder:", error);
-      const statusCode = error.message === "Folder not found" ? 404 : 400;
-      return reply.status(statusCode).send({ error: error.message });
+    } catch (error: unknown) {
+      request.log.error({ err: error }, "Error in moveFolder");
+      const message = error instanceof Error ? error.message : String(error);
+      const statusCode = message === "Folder not found" ? 404 : 400;
+      return reply.status(statusCode).send({ error: message });
     }
   }
 
@@ -368,7 +383,7 @@ export class FolderController {
         return reply.status(404).send({ error: "Folder not found." });
       }
 
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (folderRecord.userId !== userId) {
         return reply.status(403).send({ error: "Access denied." });
       }
@@ -379,7 +394,7 @@ export class FolderController {
 
       return reply.send({ message: "Folder deleted successfully." });
     } catch (error) {
-      console.error("Error in deleteFolder:", error);
+      request.log.error({ err: error }, "Error in deleteFolder");
       return reply.status(500).send({ error: "Internal server error." });
     }
   }

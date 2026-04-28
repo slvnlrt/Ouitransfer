@@ -31,12 +31,25 @@ export function useReverseShareDetails() {
     return `${parseFloat((sizeInBytes / Math.pow(k, i)).toFixed(1))} ${units[i]}`;
   };
 
-  const getDisplayValue = (reverseShare: any, field: string, pendingChanges: Record<string, any>) => {
+  const getDisplayValue = (
+    reverseShare: object | null | undefined,
+    field: string,
+    pendingChanges: Record<string, unknown>
+  ): string | number | null | undefined => {
     const pendingChange = pendingChanges[field];
     if (pendingChange !== undefined) {
-      return pendingChange;
+      const pv = pendingChange;
+      if (pv === null || typeof pv === "string" || typeof pv === "number") {
+        return pv;
+      }
+      return String(pv);
     }
-    return reverseShare?.[field];
+    if (!reverseShare) return undefined;
+    const val = (reverseShare as Record<string, unknown>)[field];
+    if (val === null || val === undefined || typeof val === "string" || typeof val === "number") {
+      return val as string | number | null | undefined;
+    }
+    return String(val);
   };
 
   const generateReverseShareLink = (alias?: string) => {

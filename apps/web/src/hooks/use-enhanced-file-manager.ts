@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { deleteFile, updateFile } from "@/http/endpoints";
 import { deleteFolder, registerFolder, updateFolder } from "@/http/endpoints/folders";
 import { getCachedDownloadUrl } from "@/lib/download-url-cache";
+import { logger } from "@/lib/logger";
 
 interface FileToRename {
   id: string;
@@ -85,8 +86,8 @@ interface BulkFolder {
 
 export interface EnhancedFileManagerHook {
   previewFile: PreviewFile | null;
-  fileToDelete: any;
-  fileToRename: any;
+  fileToDelete: FileToDelete | null;
+  fileToRename: FileToRename | null;
   fileToShare: FileToShare | null;
   filesToDelete: BulkFile[] | null;
   filesToShare: BulkFile[] | null;
@@ -102,9 +103,11 @@ export interface EnhancedFileManagerHook {
   foldersToShare: BulkFolder[] | null;
   foldersToDownload: BulkFolder[] | null;
 
-  setFileToDelete: (file: any) => void;
-  setFileToRename: (file: any) => void;
-  setPreviewFile: (file: PreviewFile | null) => void;
+  // These setters accept any object with at least {id, name} to be callable from
+  // components that have their own local File/Folder types
+  setFileToDelete: (file: { id: string; name: string } | null) => void;
+  setFileToRename: (file: { id: string; name: string; description?: string } | null) => void;
+  setPreviewFile: (file: { name: string; objectName: string; description?: string } | null) => void;
   setFileToShare: (file: FileToShare | null) => void;
   setFilesToDelete: (files: BulkFile[] | null) => void;
   setFilesToShare: (files: BulkFile[] | null) => void;
@@ -137,12 +140,19 @@ export interface EnhancedFileManagerHook {
   setClearSelectionCallback?: (callback: () => void) => void;
 }
 
+/** Minimal folder shape needed for recursive subfolder traversal in bulk download */
+interface TraversalFolder {
+  id: string;
+  name: string;
+  parentId?: string | null;
+}
+
 export function useEnhancedFileManager(
   onRefresh: () => Promise<void>,
   clearSelection?: () => void,
-  handleImmediateUpdate?: (itemId: string, itemType: "file" | "folder", newParentId: string | null) => void,
+  handleImmediateUpdate?: (itemId: string, itemType: "file" | "folder", newParentId: string | null | "__DELETE__") => void,
   allFiles?: BulkFile[],
-  allFolders?: BulkFolder[]
+  allFolders?: TraversalFolder[]
 ) {
   const t = useTranslations();
 
@@ -183,7 +193,7 @@ export function useEnhancedFileManager(
       toast.dismiss(loadingToast);
       toast.success(t("shareManager.downloadSuccess"));
     } catch (error) {
-      console.error(`[FileManager] ❌ Download failed for ${fileName}:`, error);
+      logger.error("[FileManager] Download failed", { fileName, err: error instanceof Error ? error.message : String(error) });
       toast.error(t("share.errors.downloadFailed"));
     }
   };
@@ -197,7 +207,7 @@ export function useEnhancedFileManager(
       toast.success(t("files.updateSuccess"));
       setFileToRename(null);
     } catch (error) {
-      console.error("Failed to update file:", error);
+      logger.error("Failed to update file", { fileId, err: error instanceof Error ? error.message : String(error) });
       toast.error(t("files.updateError"));
     }
   };
@@ -206,14 +216,14 @@ export function useEnhancedFileManager(
     try {
       // Optimistic update - remove from UI immediately
       if (handleImmediateUpdate) {
-        handleImmediateUpdate(fileId, "file", "__DELETE__" as any);
+        handleImmediateUpdate(fileId, "file", "__DELETE__");
       }
 
       await deleteFile(fileId);
       toast.success(t("files.deleteSuccess"));
       setFileToDelete(null);
     } catch (error) {
-      console.error("Failed to delete file:", error);
+      logger.error("Failed to delete file", { fileId, err: error instanceof Error ? error.message : String(error) });
       toast.error(t("files.deleteError"));
     }
   };
@@ -339,7 +349,7 @@ export function useEnhancedFileManager(
         clearSelectionCallback();
       }
     } catch (error) {
-      console.error("Error in bulk download:", error);
+      logger.error("Error in bulk download", { err: error instanceof Error ? error.message : String(error) });
       setBulkDownloadModalOpen(false);
       setFilesToDownload(null);
       setFoldersToDownload(null);
@@ -353,10 +363,10 @@ export function useEnhancedFileManager(
       // Optimistic update - remove all items from UI immediately
       if (handleImmediateUpdate) {
         filesToDelete?.forEach((file) => {
-          handleImmediateUpdate(file.id, "file", "__DELETE__" as any);
+          handleImmediateUpdate(file.id, "file", "__DELETE__");
         });
         foldersToDelete?.forEach((folder) => {
-          handleImmediateUpdate(folder.id, "folder", "__DELETE__" as any);
+          handleImmediateUpdate(folder.id, "folder", "__DELETE__");
         });
       }
 
@@ -377,7 +387,7 @@ export function useEnhancedFileManager(
       setFilesToDelete(null);
       setFoldersToDelete(null);
     } catch (error) {
-      console.error("Failed to delete items:", error);
+      logger.error("Failed to delete items", { err: error instanceof Error ? error.message : String(error) });
       toast.error(t("files.bulkDeleteError"));
     }
   };
@@ -396,7 +406,7 @@ export function useEnhancedFileManager(
       setCreateFolderModalOpen(false);
       await onRefresh();
     } catch (error) {
-      console.error("Error creating folder:", error);
+      logger.error("Error creating folder", { name: data.name, err: error instanceof Error ? error.message : String(error) });
       toast.error(t("folderActions.createFolderError"));
       throw error;
     }
@@ -409,7 +419,7 @@ export function useEnhancedFileManager(
       setFolderToRename(null);
       await onRefresh();
     } catch (error) {
-      console.error("Error renaming folder:", error);
+      logger.error("Error renaming folder", { folderId, err: error instanceof Error ? error.message : String(error) });
       toast.error(t("folderActions.renameFolderError"));
     }
   };
@@ -417,7 +427,7 @@ export function useEnhancedFileManager(
   const handleFolderDelete = async (folderId: string) => {
     try {
       if (handleImmediateUpdate) {
-        handleImmediateUpdate(folderId, "folder", "__DELETE__" as any);
+        handleImmediateUpdate(folderId, "folder", "__DELETE__");
       }
 
       await deleteFolder(folderId);
@@ -427,7 +437,7 @@ export function useEnhancedFileManager(
         clearSelectionCallback();
       }
     } catch (error) {
-      console.error("Error deleting folder:", error);
+      logger.error("Error deleting folder", { folderId, err: error instanceof Error ? error.message : String(error) });
       toast.error(t("folderActions.deleteFolderError"));
     }
   };

@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
-import { useUppyUpload } from "@/hooks/useUppyUpload";
+import { useUppyUpload, type FileUploadState } from "@/hooks/useUppyUpload";
 import {
   abortMultipartUploadByAlias,
   completeMultipartUploadByAlias,
@@ -128,20 +128,18 @@ export function FileUploadSection({ reverseShare, password, alias, onUploadSucce
         objectName: string,
         parts: Array<{ PartNumber: number; ETag: string }>
       ) => {
-        const response = await completeMultipartUploadByAlias(
+        await completeMultipartUploadByAlias(
           alias,
           { uploadId, objectName, parts },
           password ? { password } : undefined
         );
-        return response.data;
       },
       abortMultipartUpload: async (uploadId: string, objectName: string) => {
-        const response = await abortMultipartUploadByAlias(
+        await abortMultipartUploadByAlias(
           alias,
           { uploadId, objectName },
           password ? { password } : undefined
         );
-        return response.data;
       },
     },
   });
@@ -275,7 +273,7 @@ export function FileUploadSection({ reverseShare, password, alias, onUploadSucce
     return null;
   };
 
-  const renderFileItem = (upload: any) => (
+  const renderFileItem = (upload: FileUploadState) => (
     <div key={upload.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
       <IconFile className="h-5 w-5 text-gray-500 flex-shrink-0" />
       <div className="flex-1 min-w-0">

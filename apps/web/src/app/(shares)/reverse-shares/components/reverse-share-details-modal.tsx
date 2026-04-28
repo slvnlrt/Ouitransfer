@@ -39,11 +39,11 @@ interface ReverseShareDetailsModalProps {
   reverseShare: ReverseShare | null;
   isOpen: boolean;
   onClose: () => void;
-  onUpdateReverseShare?: (id: string, data: any) => Promise<void>;
+  onUpdateReverseShare?: (id: string, data: Record<string, unknown>) => Promise<unknown>;
   onCreateAlias?: (reverseShareId: string, alias: string) => Promise<void>;
   onCopyLink?: (reverseShare: ReverseShare) => void;
-  onToggleActive?: (id: string, isActive: boolean) => Promise<void>;
-  onUpdatePassword?: (id: string, data: { hasPassword: boolean; password?: string }) => Promise<void>;
+  onToggleActive?: (id: string, isActive: boolean) => Promise<unknown>;
+  onUpdatePassword?: (id: string, data: { hasPassword: boolean; password?: string }) => Promise<unknown>;
   onViewQrCode?: (reverseShare: ReverseShare) => void;
   refreshTrigger?: number;
   onSuccess?: () => void;
@@ -62,7 +62,7 @@ export function ReverseShareDetailsModal({
   onSuccess,
 }: ReverseShareDetailsModalProps) {
   const t = useTranslations();
-  const [pendingChanges, setPendingChanges] = useState<Record<string, any>>({});
+  const [pendingChanges, setPendingChanges] = useState<Record<string, string | number | null | undefined>>({});
   const [isDownloading, setIsDownloading] = useState(false);
 
   const {
@@ -80,7 +80,7 @@ export function ReverseShareDetailsModal({
     setPendingChanges({});
   }, [reverseShare?.id, reverseShare?.hasPassword, reverseShare?.isActive, reverseShare?.alias?.alias]);
 
-  const handleUpdateField = async (field: string, value: any) => {
+  const handleUpdateField = async (field: string, value: string | number | null) => {
     if (!reverseShare || !onUpdateReverseShare) return;
 
     setPendingChanges((prev) => ({ ...prev, [field]: value }));
@@ -343,7 +343,7 @@ export function ReverseShareDetailsModal({
                   onCheckboxChange={(checked, setValue) => {
                     if (checked) setValue("0");
                   }}
-                  renderValue={(value) => formatFileSize(value)}
+                  renderValue={(value) => formatFileSize(value ?? null)}
                   customEditor={(props) => <FileSizeInput {...props} />}
                 />
 
@@ -353,7 +353,7 @@ export function ReverseShareDetailsModal({
                   onSave={(value) => handleUpdateField("allowedFileTypes", value)}
                   disabled={!onUpdateReverseShare}
                   checkboxLabel={t("reverseShares.labels.allFileTypes")}
-                  checkboxCondition={(value) => !value || value.trim() === ""}
+                  checkboxCondition={(value) => !value || (typeof value === "string" && value.trim() === "")}
                   onCheckboxChange={(checked, setValue) => {
                     if (checked) setValue("");
                   }}
@@ -438,7 +438,7 @@ export function ReverseShareDetailsModal({
                   onSave={(value) => handleUpdateField("expiration", value)}
                   type="datetime-local"
                   disabled={!onUpdateReverseShare}
-                  renderValue={(value) => (value ? formatDate(value) : t("shareDetails.never"))}
+                  renderValue={(value) => (value ? formatDate(typeof value === "string" ? value : String(value)) : t("shareDetails.never"))}
                 />
               </div>
             </div>

@@ -20,10 +20,11 @@ import { Label } from "@/components/ui/label";
 import { Loader } from "@/components/ui/loader";
 import { Switch } from "@/components/ui/switch";
 import { updateSharePassword } from "@/http/endpoints";
+import type { Share } from "@/http/endpoints/shares/types";
 
 interface ShareSecurityModalProps {
   shareId: string | null;
-  share: any;
+  share: Share | null;
   onClose: () => void;
   onSuccess?: () => void;
 }

@@ -1,26 +1,31 @@
-import type { Share, ShareSecurity } from "@prisma/client";
+import type { File, Folder, Share, ShareAlias, ShareRecipient, ShareSecurity } from "@prisma/client";
 
 import { prisma } from "../../shared/prisma.js";
 import type { CreateShareInput } from "./dto.js";
+
+type FolderWithCount = Folder & {
+  _count: { files: number; children: number };
+};
 
 export interface IShareRepository {
   createShare(data: CreateShareInput & { securityId: string; creatorId: string }): Promise<Share>;
   findShareById(id: string): Promise<
     | (Share & {
         security: ShareSecurity;
-        files: any[];
-        folders: any[];
-        recipients: { email: string }[];
+        files: File[];
+        folders: FolderWithCount[];
+        recipients: ShareRecipient[];
+        alias: ShareAlias | null;
       })
     | null
   >;
   findShareBySecurityId(
     securityId: string,
-  ): Promise<(Share & { security: ShareSecurity; files: any[]; folders: any[] }) | null>;
+  ): Promise<(Share & { security: ShareSecurity; files: File[]; folders: FolderWithCount[] }) | null>;
   findShareByAlias(
     alias: string,
   ): Promise<
-    (Share & { security: ShareSecurity; files: any[]; folders: any[]; recipients: any[] }) | null
+    (Share & { security: ShareSecurity; files: File[]; folders: FolderWithCount[]; recipients: ShareRecipient[] }) | null
   >;
   updateShare(id: string, data: Partial<Share>): Promise<Share>;
   updateShareSecurity(id: string, data: Partial<ShareSecurity>): Promise<ShareSecurity>;
@@ -30,17 +35,17 @@ export interface IShareRepository {
   removeFilesFromShare(shareId: string, fileIds: string[]): Promise<void>;
   addFoldersToShare(shareId: string, folderIds: string[]): Promise<void>;
   removeFoldersFromShare(shareId: string, folderIds: string[]): Promise<void>;
-  findFilesByIds(fileIds: string[]): Promise<any[]>;
-  findFoldersByIds(folderIds: string[]): Promise<any[]>;
+  findFilesByIds(fileIds: string[]): Promise<File[]>;
+  findFoldersByIds(folderIds: string[]): Promise<Folder[]>;
   addRecipients(shareId: string, emails: string[]): Promise<void>;
   removeRecipients(shareId: string, emails: string[]): Promise<void>;
   findSharesByUserId(userId: string): Promise<
     (Share & {
       security: ShareSecurity;
-      files: any[];
-      folders: any[];
-      recipients: any[];
-      alias: any;
+      files: File[];
+      folders: FolderWithCount[];
+      recipients: ShareRecipient[];
+      alias: ShareAlias | null;
     })[]
   >;
 }
@@ -254,7 +259,7 @@ export class PrismaShareRepository implements IShareRepository {
     });
   }
 
-  async findFilesByIds(fileIds: string[]): Promise<any[]> {
+  async findFilesByIds(fileIds: string[]): Promise<File[]> {
     return prisma.file.findMany({
       where: {
         id: {
@@ -264,7 +269,7 @@ export class PrismaShareRepository implements IShareRepository {
     });
   }
 
-  async findFoldersByIds(folderIds: string[]): Promise<any[]> {
+  async findFoldersByIds(folderIds: string[]): Promise<Folder[]> {
     return prisma.folder.findMany({
       where: {
         id: {

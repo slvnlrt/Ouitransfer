@@ -1,4 +1,4 @@
-import type { FastifyInstance } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
 import { prisma } from "../../shared/prisma.js";
@@ -8,7 +8,7 @@ import { BulkUpdateConfigSchema, ConfigResponseSchema } from "./dto.js";
 export async function appRoutes(app: FastifyInstance) {
   const appController = new AppController();
 
-  const adminPreValidation = async (request: any, reply: any) => {
+  const adminPreValidation = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const usersCount = await prisma.user.count();
 
@@ -24,7 +24,7 @@ export async function appRoutes(app: FastifyInstance) {
         });
       }
     } catch (err) {
-      console.error(err);
+      request.log.error({ err }, "JWT verification failed");
       return reply.status(401).send({
         error: ".",
       });

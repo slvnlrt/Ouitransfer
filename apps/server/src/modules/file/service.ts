@@ -1,3 +1,4 @@
+import { getLogger } from "../../utils/logger.js";
 import { S3StorageProvider } from "../../providers/s3-storage.provider.js";
 import type { StorageProvider } from "../../types/storage.js";
 
@@ -25,7 +26,7 @@ export class FileService {
     try {
       await this.storageProvider.deleteObject(objectName);
     } catch (err) {
-      console.error("Erro no removeObject:", err);
+      getLogger().error({ err }, "Erro no removeObject");
       throw err;
     }
   }
@@ -34,7 +35,7 @@ export class FileService {
     try {
       return await this.storageProvider.getObjectStream(objectName);
     } catch (err) {
-      console.error("Error getting object stream:", err);
+      getLogger().error({ err }, "Error getting object stream");
       throw err;
     }
   }

@@ -1,3 +1,5 @@
+import type { AuthProvider } from "@prisma/client";
+
 export interface ProviderConfig {
   name?: string;
   issuerUrl?: string;
@@ -45,7 +47,7 @@ export interface ProviderUserInfo {
   firstName?: string;
   lastName?: string;
   avatar?: string;
-  [key: string]: any;
+  [key: string]: string | undefined;
 }
 
 export interface TokenResponse {
@@ -65,8 +67,14 @@ export interface AuthResult {
 export interface RequestContext {
   protocol: string;
   host: string;
-  headers: any;
+  headers: Record<string, string | string[] | undefined>;
 }
+
+/**
+ * Alias for the Prisma-generated AuthProvider type.
+ * Kept for backward compatibility with existing imports.
+ */
+export type AuthProviderModel = AuthProvider;
 
 export interface CreateProviderRequest {
   Body: {
@@ -74,13 +82,13 @@ export interface CreateProviderRequest {
     tokenEndpoint?: string;
     userInfoEndpoint?: string;
     issuerUrl?: string;
-    [key: string]: any;
+    [key: string]: string | boolean | number | undefined;
   };
 }
 
 export interface UpdateProviderRequest {
   Params: { id: string };
-  Body: any;
+  Body: Record<string, string | boolean | number | null | undefined>;
 }
 
 export interface UpdateProvidersOrderRequest {

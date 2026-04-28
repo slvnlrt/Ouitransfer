@@ -25,7 +25,7 @@ export class S3StorageController {
    */
   async getUploadUrl(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
 
       if (!userId) {
         return reply.status(401).send({ error: "Unauthorized" });
@@ -70,7 +70,7 @@ export class S3StorageController {
           : "Upload directly to this URL using PUT request",
       });
     } catch (error) {
-      console.error("[S3] Error generating upload URL:", error);
+      request.log.error({ err: error }, "[S3] Error generating upload URL");
       return reply.status(500).send({ error: "Failed to generate upload URL" });
     }
   }
@@ -82,7 +82,7 @@ export class S3StorageController {
    */
   async getDownloadUrl(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
 
       if (!userId) {
         return reply.status(401).send({ error: "Unauthorized" });
@@ -141,7 +141,7 @@ export class S3StorageController {
           : "Download directly from this URL",
       });
     } catch (error) {
-      console.error("[S3] Error generating download URL:", error);
+      request.log.error({ err: error }, "[S3] Error generating download URL");
       return reply.status(500).send({ error: "Failed to generate download URL" });
     }
   }
@@ -160,7 +160,7 @@ export class S3StorageController {
         message: "Use getUploadUrl endpoint for efficient uploads",
       });
     } catch (error) {
-      console.error("[S3] Error in upload:", error);
+      _request.log.error({ err: error }, "[S3] Error in upload");
       return reply.status(500).send({ error: "Upload failed" });
     }
   }
@@ -170,7 +170,7 @@ export class S3StorageController {
    */
   async deleteObject(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
 
       if (!userId) {
         return reply.status(401).send({ error: "Unauthorized" });
@@ -204,7 +204,7 @@ export class S3StorageController {
         objectName,
       });
     } catch (error) {
-      console.error("[S3] Error deleting object:", error);
+      request.log.error({ err: error }, "[S3] Error deleting object");
       return reply.status(500).send({ error: "Failed to delete object" });
     }
   }
@@ -214,7 +214,7 @@ export class S3StorageController {
    */
   async checkExists(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
 
       if (!userId) {
         return reply.status(401).send({ error: "Unauthorized" });
@@ -248,7 +248,7 @@ export class S3StorageController {
         objectName,
       });
     } catch (error) {
-      console.error("[S3] Error checking existence:", error);
+      request.log.error({ err: error }, "[S3] Error checking existence");
       return reply.status(500).send({ error: "Failed to check existence" });
     }
   }

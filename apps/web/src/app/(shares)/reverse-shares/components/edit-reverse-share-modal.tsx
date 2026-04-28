@@ -14,7 +14,7 @@ import {
   IconUser,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import { useForm } from "react-hook-form";
+import { useForm, type UseFormReturn } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -69,7 +69,7 @@ interface EditReverseShareModalProps {
   reverseShare: ReverseShare | null;
   isOpen: boolean;
   onClose: () => void;
-  onUpdateReverseShare: (data: UpdateReverseShareBody) => Promise<any>;
+  onUpdateReverseShare: (data: UpdateReverseShareBody) => Promise<unknown>;
   isUpdating: boolean;
 }
 
@@ -197,7 +197,9 @@ function createLimitCheckbox(id: string, checked: boolean, onChange: (checked: b
   );
 }
 
-function BasicInfoSection({ form, t }: { form: any; t: any }) {
+type T = ReturnType<typeof useTranslations>;
+
+function BasicInfoSection({ form, t }: { form: UseFormReturn<EditReverseShareFormData>; t: T }) {
   return (
     <div className="space-y-4">
       <FormField
@@ -275,7 +277,7 @@ function BasicInfoSection({ form, t }: { form: any; t: any }) {
   );
 }
 
-function ExpirationSection({ form, t, hasExpiration }: { form: any; t: any; hasExpiration: boolean }) {
+function ExpirationSection({ form, t, hasExpiration }: { form: UseFormReturn<EditReverseShareFormData>; t: T; hasExpiration: boolean }) {
   const toggleExpiration = () => {
     const newValue = !hasExpiration;
     form.setValue("hasExpiration", newValue);
@@ -321,8 +323,8 @@ function FileLimitsSection({
   noSizeLimit,
   allFileTypes,
 }: {
-  form: any;
-  t: any;
+  form: UseFormReturn<EditReverseShareFormData>;
+  t: T;
   hasFileLimits: boolean;
   noFilesLimit: boolean;
   noSizeLimit: boolean;
@@ -457,7 +459,7 @@ function FileLimitsSection({
   );
 }
 
-function PasswordSection({ form, t, hasPassword }: { form: any; t: any; hasPassword: boolean }) {
+function PasswordSection({ form, t, hasPassword }: { form: UseFormReturn<EditReverseShareFormData>; t: T; hasPassword: boolean }) {
   const togglePassword = () => {
     const newValue = !hasPassword;
     form.setValue("hasPassword", newValue);
@@ -500,8 +502,8 @@ function FieldRequirementsSection({
   t,
   hasFieldRequirements,
 }: {
-  form: any;
-  t: any;
+  form: UseFormReturn<EditReverseShareFormData>;
+  t: T;
   hasFieldRequirements: boolean;
 }) {
   const toggleFieldRequirements = () => {

@@ -9,6 +9,7 @@ import { z } from "zod";
 
 import { useAuth } from "@/contexts/auth-context";
 import { getAuthConfig, getCurrentUser, login } from "@/http/endpoints";
+import { logger } from "@/lib/logger";
 import { completeTwoFactorLogin } from "@/http/endpoints/auth/two-factor";
 import type { LoginResponse } from "@/http/endpoints/auth/two-factor/types";
 import { LoginFormValues } from "../schemas/schema";
@@ -72,9 +73,9 @@ export function useLogin() {
     const fetchAuthConfig = async () => {
       try {
         const response = await getAuthConfig();
-        setPasswordAuthEnabled((response as any).data.passwordAuthEnabled);
+        setPasswordAuthEnabled(response.data.passwordAuthEnabled);
       } catch (error) {
-        console.error("Failed to fetch auth config:", error);
+        logger.error("Failed to fetch auth config", { err: error instanceof Error ? error.message : String(error) });
         setPasswordAuthEnabled(true);
       } finally {
         setAuthConfigLoading(false);
@@ -96,6 +97,7 @@ export function useLogin() {
         return;
       }
 
+      // biome-ignore lint/suspicious/noExplicitAny: LoginFormValues.password is optional but validated before this call
       const response = await login(data as any);
       const loginData = response.data as LoginResponse;
 
@@ -117,7 +119,7 @@ export function useLogin() {
             return;
           }
         } catch (userErr) {
-          console.warn("Failed to fetch complete user data, using login data:", userErr);
+          logger.warn("Failed to fetch complete user data, using login data", { err: userErr instanceof Error ? userErr.message : String(userErr) });
         }
 
         const { isAdmin, ...userData } = loginData.user;
@@ -167,7 +169,7 @@ export function useLogin() {
           return;
         }
       } catch (userErr) {
-        console.warn("Failed to fetch complete user data after 2FA, using response data:", userErr);
+          logger.warn("Failed to fetch complete user data after 2FA, using response data", { err: userErr instanceof Error ? userErr.message : String(userErr) });
       }
 
       const { isAdmin, ...userData } = response.data.user;

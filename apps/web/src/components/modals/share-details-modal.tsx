@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  IconCheck,
   IconCopy,
   IconDownload,
   IconEdit,
@@ -10,7 +9,6 @@ import {
   IconLock,
   IconLockOpen,
   IconMail,
-  IconX,
 } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
@@ -30,7 +28,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Loader } from "@/components/ui/loader";
 import { getShare } from "@/http/endpoints";
-import { getFileIcon } from "@/utils/file-icons";
+import type { Share } from "@/http/endpoints/shares/types";
+import { ShareDetailsFilesList } from "./share-details-files-list";
+import { ShareDetailsInfoSection } from "./share-details-info-section";
 import { GenerateShareLinkModal } from "./generate-share-link-modal";
 import { QrCodeModal } from "./qr-code-modal";
 import { ShareExpirationModal } from "./share-expiration-modal";
@@ -42,23 +42,11 @@ interface ShareDetailsModalProps {
   onUpdateName?: (shareId: string, newName: string) => Promise<void>;
   onUpdateDescription?: (shareId: string, newDescription: string) => Promise<void>;
   onGenerateLink?: (shareId: string, alias: string) => Promise<void>;
-  onManageFiles?: (share: any) => void;
+  onManageFiles?: (share: Share) => void;
   onUpdateSecurity?: (shareId: string) => Promise<void>;
   onUpdateExpiration?: (shareId: string) => Promise<void>;
   refreshTrigger?: number;
   onSuccess?: () => void;
-}
-
-interface ShareFile {
-  id: string;
-  name: string;
-  description: string | null;
-  extension: string;
-  size: number;
-  objectName: string;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
 }
 
 interface ShareRecipient {
@@ -81,7 +69,7 @@ export function ShareDetailsModal({
   onSuccess,
 }: ShareDetailsModalProps) {
   const t = useTranslations();
-  const [share, setShare] = useState<any>(null);
+  const [share, setShare] = useState<Share | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [editingField, setEditingField] = useState<{ field: "name" | "description" } | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -317,109 +305,22 @@ export function ShareDetailsModal({
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  {/* Basic Information */}
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 border-b pb-2">
-                      <h3 className="text-base font-medium text-foreground">{t("shareDetails.basicInfo")}</h3>
-                    </div>
+                   <ShareDetailsInfoSection
+                    displayName={displayName ?? ""}
+                    displayDescription={displayDescription ?? ""}
+                    isEditingName={isEditingName}
+                    isEditingDescription={isEditingDescription}
+                    editValue={editValue}
+                    inputRef={inputRef}
+                    onUpdateName={onUpdateName}
+                    onUpdateDescription={onUpdateDescription}
+                    onStartEdit={startEdit}
+                    onSaveEdit={saveEdit}
+                    onCancelEdit={cancelEdit}
+                    onEditValueChange={setEditValue}
+                    onKeyDown={handleKeyDown}
+                  />
 
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <label className="text-sm font-medium text-muted-foreground">{t("shareDetails.name")}</label>
-                        {onUpdateName && !isEditingName && (
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-5 w-5 text-muted-foreground hover:text-foreground"
-                            onClick={() => startEdit("name", displayName || "")}
-                          >
-                            <IconEdit className="h-3 w-3" />
-                          </Button>
-                        )}
-                      </div>
-                      {isEditingName ? (
-                        <div className="flex items-center gap-2">
-                          <Input
-                            ref={inputRef}
-                            value={editValue}
-                            onChange={(e) => setEditValue(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            className="h-8 flex-1 text-sm"
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-6 w-6 text-green-600 hover:text-green-700"
-                            onClick={saveEdit}
-                          >
-                            <IconCheck className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-6 w-6 text-red-600 hover:text-red-700"
-                            onClick={cancelEdit}
-                          >
-                            <IconX className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      ) : (
-                        <span className="text-sm font-medium block">{displayName || t("shareDetails.untitled")}</span>
-                      )}
-                    </div>
-
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <label className="text-sm font-medium text-muted-foreground">
-                          {t("shareDetails.description")}
-                        </label>
-                        {onUpdateDescription && !isEditingDescription && (
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-5 w-5 text-muted-foreground hover:text-foreground"
-                            onClick={() => startEdit("description", displayDescription || "")}
-                          >
-                            <IconEdit className="h-3 w-3" />
-                          </Button>
-                        )}
-                      </div>
-                      {isEditingDescription ? (
-                        <div className="flex items-center gap-2">
-                          <Input
-                            ref={inputRef}
-                            value={editValue}
-                            onChange={(e) => setEditValue(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            className="h-8 flex-1 text-sm"
-                            placeholder={t("shareDetails.noDescription")}
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-6 w-6 text-green-600 hover:text-green-700"
-                            onClick={saveEdit}
-                          >
-                            <IconCheck className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-6 w-6 text-red-600 hover:text-red-700"
-                            onClick={cancelEdit}
-                          >
-                            <IconX className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      ) : (
-                        <span className="text-sm block">{displayDescription || t("shareDetails.noDescription")}</span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* QR Code */}
                   {shareLink && (
                     <div className="space-y-3">
                       <div className="flex items-center gap-2 border-b pb-2">
@@ -571,50 +472,11 @@ export function ShareDetailsModal({
                 </div>
 
                 {share.files && share.files.length > 0 && (
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 border-b pb-2">
-                      <h3 className="text-base font-medium text-foreground">{t("shareDetails.files")}</h3>
-                      {onManageFiles && (
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-5 w-5 text-muted-foreground hover:text-foreground"
-                          onClick={() => onManageFiles(share)}
-                          title={t("sharesTable.actions.manageFiles")}
-                        >
-                          <IconEdit className="h-3 w-3" />
-                        </Button>
-                      )}
-                    </div>
-                    <div className="border rounded-lg bg-muted/10 p-2">
-                      <div className="grid gap-1 max-h-32 overflow-y-auto">
-                        {share.files.map((file: ShareFile) => {
-                          const { icon: FileIcon, color } = getFileIcon(file.name);
-                          return (
-                            <div
-                              key={file.id}
-                              className="flex items-center gap-2 p-2 bg-background rounded border mr-2"
-                            >
-                              <FileIcon className={`h-3.5 w-3.5 ${color} flex-shrink-0`} />
-                              <div className="flex-1 min-w-0">
-                                <div className="text-xs font-medium truncate max-w-[280px]" title={file.name}>
-                                  {file.name}
-                                </div>
-                                {file.description && (
-                                  <div
-                                    className="text-xs text-muted-foreground truncate max-w-[280px]"
-                                    title={file.description}
-                                  >
-                                    {file.description}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
+                  <ShareDetailsFilesList
+                    files={share.files}
+                    onManageFiles={onManageFiles}
+                    share={share}
+                  />
                 )}
 
                 {share.recipients && share.recipients.length > 0 && (

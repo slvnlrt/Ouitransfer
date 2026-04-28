@@ -7,7 +7,7 @@ export interface FileSizeInputProps {
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
-  error?: any;
+  error?: { message?: string };
   placeholder?: string;
 }
 

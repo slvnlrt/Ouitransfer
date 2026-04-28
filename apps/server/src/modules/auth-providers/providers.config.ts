@@ -52,7 +52,7 @@ export const DISCOVERY_PATHS = [
   "/.well-known/oauth-authorization-server",
 ] as const;
 
-export const FALLBACK_ENDPOINTS: Record<string, any> = {
+export const FALLBACK_ENDPOINTS: Record<string, { authorizationEndpoint: string; tokenEndpoint: string; userInfoEndpoint: string }> = {
   frontegg: {
     authorizationEndpoint: "/oauth/authorize",
     tokenEndpoint: "/oauth/token",
@@ -350,7 +350,7 @@ export function detectProviderType(issuerUrl: string): string {
   }
 }
 
-export function getProviderScopes(provider: any): string[] {
+export function getProviderScopes(provider: Pick<{ scope?: string | null; issuerUrl?: string | null; type?: string }, "scope" | "issuerUrl" | "type">): string[] {
   if (provider.scope) {
     return provider.scope.split(" ").filter((s: string) => s.trim());
   }
@@ -358,14 +358,14 @@ export function getProviderScopes(provider: any): string[] {
   const detectedType = detectProviderType(provider.issuerUrl || "");
   return (
     DEFAULT_SCOPES_BY_TYPE[detectedType] ||
-    DEFAULT_SCOPES_BY_TYPE[provider.type] || ["openid", "profile", "email"]
+    (provider.type ? DEFAULT_SCOPES_BY_TYPE[provider.type] : undefined) || ["openid", "profile", "email"]
   );
 }
 
 export function shouldSupportDiscovery(providerType: string): boolean {
-  return DISCOVERY_SUPPORTED_PROVIDERS.includes(providerType as any);
+  return DISCOVERY_SUPPORTED_PROVIDERS.includes(providerType as (typeof DISCOVERY_SUPPORTED_PROVIDERS)[number]);
 }
 
-export function getFallbackEndpoints(providerType: string): any {
+export function getFallbackEndpoints(providerType: string): { authorizationEndpoint: string; tokenEndpoint: string; userInfoEndpoint: string } {
   return FALLBACK_ENDPOINTS[providerType] || FALLBACK_ENDPOINTS.oidc;
 }

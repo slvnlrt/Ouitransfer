@@ -13,8 +13,9 @@ export class AppController {
     try {
       const appInfo = await this.appService.getAppInfo();
       return reply.send(appInfo);
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -22,8 +23,9 @@ export class AppController {
     try {
       const systemInfo = await this.appService.getSystemInfo();
       return reply.send(systemInfo);
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -31,8 +33,9 @@ export class AppController {
     try {
       const configs = await this.appService.getAllConfigs();
       return reply.send({ configs });
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -40,8 +43,9 @@ export class AppController {
     try {
       const configs = await this.appService.getPublicConfigs();
       return reply.send({ configs });
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -52,11 +56,12 @@ export class AppController {
 
       const config = await this.appService.updateConfig(key, value);
       return reply.send({ config });
-    } catch (error: any) {
-      if (error.message === "Configuration not found") {
-        return reply.status(404).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (message === "Configuration not found") {
+        return reply.status(404).send({ error: message });
       }
-      return reply.status(400).send({ error: error.message });
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -65,8 +70,9 @@ export class AppController {
       const updates = request.body as Array<{ key: string; value: string }>;
       const configs = await this.appService.bulkUpdateConfigs(updates);
       return reply.send({ configs });
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -74,17 +80,29 @@ export class AppController {
     try {
       await request.jwtVerify();
 
-      if (!(request as any).user?.isAdmin) {
+      if (!request.user?.isAdmin) {
         return reply.status(403).send({ error: "Access restricted to administrators" });
       }
 
-      const body = request.body as any;
+      const body = request.body as {
+        smtpConfig?: {
+          smtpEnabled: string;
+          smtpHost: string;
+          smtpPort: string;
+          smtpUser: string;
+          smtpPass: string;
+          smtpSecure?: string;
+          smtpNoAuth?: string;
+          smtpTrustSelfSigned?: string;
+        };
+      };
       const smtpConfig = body.smtpConfig || undefined;
 
       const result = await this.emailService.testConnection(smtpConfig);
       return reply.send(result);
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -116,19 +134,21 @@ export class AppController {
       await this.appService.updateConfig("appLogo", base64Logo);
 
       return reply.send({ logo: base64Logo });
-    } catch (error: any) {
-      console.error("Upload error:", error);
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      request.log.error({ err: error }, "Upload error");
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
-  async removeLogo(_request: FastifyRequest, reply: FastifyReply) {
+  async removeLogo(request: FastifyRequest, reply: FastifyReply) {
     try {
       await this.logoService.deleteLogo();
       return reply.send({ message: "Logo removed successfully" });
-    } catch (error: any) {
-      console.error("Logo removal error:", error);
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      request.log.error({ err: error }, "Logo removal error");
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 }

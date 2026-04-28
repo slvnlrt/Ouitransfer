@@ -1,5 +1,7 @@
 import JSZip from "jszip";
 
+import { logger } from "@/lib/logger";
+
 interface DownloadItem {
   url: string;
   name: string;
@@ -23,7 +25,7 @@ export async function downloadFilesAsZip(items: DownloadItem[], zipName: string)
       const blob = await response.blob();
       zip.file(item.name, blob);
     } catch (error) {
-      console.error(`Error downloading ${item.name}:`, error);
+      logger.error("Error downloading file for ZIP", { name: item.name, err: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   });

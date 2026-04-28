@@ -8,18 +8,20 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+type FieldValue = string | number | null | undefined;
+
 interface EditableFieldProps {
   label: string;
-  value: any;
-  onSave: (value: any) => void;
+  value: FieldValue;
+  onSave: (value: string | number | null) => void;
   type?: "text" | "select" | "datetime-local" | "number";
   placeholder?: string;
   options?: { value: string; label: string }[];
   disabled?: boolean;
-  renderValue?: (value: any) => React.ReactNode;
+  renderValue?: (value: FieldValue) => React.ReactNode;
   checkboxLabel?: string;
-  checkboxCondition?: (value: any) => boolean;
-  onCheckboxChange?: (checked: boolean, setValue: (value: any) => void) => void;
+  checkboxCondition?: (value: FieldValue) => boolean;
+  onCheckboxChange?: (checked: boolean, setValue: (value: string) => void) => void;
   customEditor?: (props: {
     value: string;
     onChange: (value: string) => void;
@@ -69,7 +71,7 @@ export function EditableField({
   };
 
   const handleSave = async () => {
-    let processedValue: any = editValue;
+    let processedValue: string | number | null = editValue;
 
     if (type === "number") {
       processedValue = editValue ? parseInt(editValue) : null;

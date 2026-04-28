@@ -39,11 +39,11 @@ interface BulkFolder {
   id: string;
   name: string;
   description?: string;
-  objectName: string;
+  objectName?: string;
   parentId?: string;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
+  userId?: string;
+  createdAt?: string;
+  updatedAt?: string;
   totalSize?: string;
   _count?: {
     files: number;
@@ -57,8 +57,8 @@ interface BulkItem {
   description?: string;
   size?: number;
   type: "file" | "folder";
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface ShareMultipleItemsModalProps {
@@ -130,15 +130,15 @@ export function ShareMultipleItemsModal({ files, folders, isOpen, onClose, onSuc
       const allFolders = foldersResponse.data.folders || [];
 
       const collectContents = (parentId: string): { files: string[]; folders: string[] } => {
-        const folderFiles = allFiles.filter((f: any) => f.folderId === parentId).map((f: any) => f.id);
+        const folderFiles = allFiles.filter((f) => f.folderId === parentId).map((f) => f.id);
 
-        const subFolders = allFolders.filter((f: any) => f.parentId === parentId);
-        const subFolderIds = subFolders.map((f: any) => f.id);
+        const subFolders = allFolders.filter((f) => f.parentId === parentId);
+        const subFolderIds = subFolders.map((f) => f.id);
 
         let allSubFiles: string[] = [...folderFiles];
         let allSubFolders: string[] = [...subFolderIds];
 
-        subFolders.forEach((subFolder: any) => {
+        subFolders.forEach((subFolder) => {
           const subContents = collectContents(subFolder.id);
           allSubFiles = [...allSubFiles, ...subContents.files];
           allSubFolders = [...allSubFolders, ...subContents.folders];

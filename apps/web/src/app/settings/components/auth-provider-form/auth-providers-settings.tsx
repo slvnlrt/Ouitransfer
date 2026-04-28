@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useAuthProviders } from "../../hooks/use-auth-providers";
 import { AddProviderForm } from "./add-provider-form";
+import type { AuthProvider } from "./edit-provider-form";
 import { AuthProviderDeleteModal } from "./auth-provider-delete-modal";
 import { ProviderList } from "./provider-list";
 
@@ -45,7 +46,7 @@ export function AuthProvidersSettings() {
     setProviderToDelete,
   } = useAuthProviders();
 
-  const getProviderIcon = (provider: any) => {
+  const getProviderIcon = (provider: AuthProvider) => {
     const iconName = provider.icon || "FaCog";
     return renderIconByName(iconName, "w-5 h-5");
   };

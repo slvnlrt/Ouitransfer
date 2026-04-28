@@ -8,6 +8,8 @@
 import { detectMimeTypeWithFallback } from "@ouitransfer/shared/mime-types";
 import { type NextRequest, NextResponse } from "next/server";
 
+import { logger } from "@/lib/logger";
+
 import { type RouteConfig, routes } from "./proxy-routes";
 import { getClientHeaders } from "./proxy-utils";
 
@@ -22,7 +24,7 @@ interface MatchResult {
  * Match URL path segments and HTTP method against the route table.
  * Returns the first match with extracted :param values, or null.
  */
-function matchRoute(segments: string[], method: string): MatchResult | null {
+export function matchRoute(segments: string[], method: string): MatchResult | null {
   for (const config of routes) {
     if (config.method !== method) continue;
 
@@ -344,7 +346,7 @@ export async function handleProxyRequest(
     return buildJsonResponse(apiRes);
   } catch (error: unknown) {
     const err = error as Error & { name?: string };
-    console.error(`Proxy error [${method} /${segments.join("/")}]:`, err.message ?? error);
+    logger.error(`Proxy error [${method} /${segments.join("/")}]`, { err: err.message ?? String(error) });
 
     if (err.name === "AbortError") {
       return NextResponse.json(

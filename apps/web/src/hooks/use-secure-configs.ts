@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { getAllConfigs, getPublicConfigs } from "@/http/endpoints";
+import { logger } from "@/lib/logger";
 
 interface Config {
   key: string;
@@ -29,7 +30,7 @@ export function useSecureConfigs() {
       setConfigs(response.data.configs);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
-      console.error("Error loading secure configs:", err);
+      logger.error("Error loading secure configs", { err: err instanceof Error ? err.message : String(err) });
     } finally {
       setIsLoading(false);
     }
@@ -65,17 +66,18 @@ export function useAdminConfigs() {
 
       const response = await getAllConfigs();
       setConfigs(response.data.configs);
-    } catch (err: any) {
-      const errorMessage = err?.response?.data?.error || err?.message || "Unknown error";
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { status?: number; data?: { error?: string } }; message?: string };
+      const errorMessage = axiosErr?.response?.data?.error || axiosErr?.message || "Unknown error";
 
-      if (err?.response?.status === 401 || err?.response?.status === 403) {
+      if (axiosErr?.response?.status === 401 || axiosErr?.response?.status === 403) {
         setIsUnauthorized(true);
         setError("Access denied: Administrator privileges required");
       } else {
         setError(errorMessage);
       }
 
-      console.error("Error loading admin configs:", err);
+      logger.error("Error loading admin configs", { err: err instanceof Error ? (err as Error).message : String(err) });
     } finally {
       setIsLoading(false);
     }
@@ -112,7 +114,7 @@ export function useSecureConfigValue(key: string) {
       setValue(config?.value || null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
-      console.error(`Error loading config value for ${key}:`, err);
+      logger.error("Error loading config value", { key, err: err instanceof Error ? err.message : String(err) });
     } finally {
       setIsLoading(false);
     }

@@ -19,19 +19,29 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { addFiles, addFolders, removeFiles, removeFolders, updateSharePassword } from "@/http/endpoints";
+import type { FileItem } from "@/http/endpoints/files/types";
 import { listFolders } from "@/http/endpoints/folders";
+import type { FolderItem } from "@/http/endpoints/folders/types";
+import type { Share } from "@/http/endpoints/shares/types";
+
+export interface UpdateShareData {
+  name?: string;
+  description?: string;
+  expiration?: string;
+  maxViews?: number | null;
+}
 
 export interface ShareActionsModalsProps {
-  shareToDelete: any;
-  shareToEdit: any;
-  shareToManageFiles: any;
-  shareToManageRecipients: any;
+  shareToDelete: Share | null;
+  shareToEdit: Share | null;
+  shareToManageFiles: Share | null;
+  shareToManageRecipients: Share | null;
   onCloseDelete: () => void;
   onCloseEdit: () => void;
   onCloseManageFiles: () => void;
   onCloseManageRecipients: () => void;
   onDelete: (shareId: string) => Promise<void>;
-  onEdit: (shareId: string, data: any) => Promise<void>;
+  onEdit: (shareId: string, data: UpdateShareData) => Promise<void>;
   onManageFiles: (shareId: string, files: string[], folders: string[]) => Promise<void>;
   onManageRecipients: (shareId: string, recipients: string[]) => Promise<void>;
   onEditFile?: (fileId: string, newName: string, description?: string) => Promise<void>;
@@ -54,8 +64,8 @@ export function ShareActionsModals({
 }: ShareActionsModalsProps) {
   const t = useTranslations();
   const [isLoading, setIsLoading] = useState(false);
-  const [allFiles, setAllFiles] = useState<any[]>([]);
-  const [allFolders, setAllFolders] = useState<any[]>([]);
+  const [allFiles, setAllFiles] = useState<FileItem[]>([]);
+  const [allFolders, setAllFolders] = useState<FolderItem[]>([]);
 
   const [manageFilesSelectedItems, setManageFilesSelectedItems] = useState<string[]>([]);
   const [manageFilesTreeFiles, setManageFilesTreeFiles] = useState<TreeFile[]>([]);
@@ -113,7 +123,7 @@ export function ShareActionsModals({
         id: file.id,
         name: file.name,
         type: "file" as const,
-        size: file.size,
+        size: Number(file.size),
         parentId: file.folderId || null,
       }));
 
@@ -138,8 +148,8 @@ export function ShareActionsModals({
     if (shareToManageFiles) {
       loadManageFilesData();
 
-      const initialSelectedFiles = shareToManageFiles?.files?.map((f: any) => f.id) || [];
-      const initialSelectedFolders = shareToManageFiles?.folders?.map((f: any) => f.id) || [];
+      const initialSelectedFiles = shareToManageFiles?.files?.map((f) => f.id) || [];
+      const initialSelectedFolders = shareToManageFiles?.folders?.map((f) => f.id) || [];
       setManageFilesSelectedItems([...initialSelectedFiles, ...initialSelectedFolders]);
     }
   }, [shareToManageFiles, loadManageFilesData]);
@@ -194,8 +204,8 @@ export function ShareActionsModals({
         manageFilesTreeFolders.some((folder) => folder.id === id)
       );
 
-      const currentFileIds = shareToManageFiles.files?.map((f: any) => f.id) || [];
-      const currentFolderIds = shareToManageFiles.folders?.map((f: any) => f.id) || [];
+      const currentFileIds = shareToManageFiles.files?.map((f) => f.id) || [];
+      const currentFolderIds = shareToManageFiles.folders?.map((f) => f.id) || [];
 
       const filesToAdd = selectedFiles.filter((id: string) => !currentFileIds.includes(id));
       const filesToRemove = currentFileIds.filter((id: string) => !selectedFiles.includes(id));
@@ -434,7 +444,7 @@ export function ShareActionsModals({
             <RecipientSelector
               selectedRecipients={shareToManageRecipients?.recipients || []}
               shareAlias={shareToManageRecipients?.alias?.alias}
-              shareId={shareToManageRecipients?.id}
+              shareId={shareToManageRecipients?.id ?? ""}
               onSuccess={onSuccess}
             />
           </div>

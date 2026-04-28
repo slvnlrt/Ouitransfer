@@ -40,9 +40,9 @@ interface ReverseShareCardProps {
   onViewDetails: (reverseShare: ReverseShare) => void;
   onViewFiles: (reverseShare: ReverseShare) => void;
   onViewQrCode?: (reverseShare: ReverseShare) => void;
-  onUpdateReverseShare?: (id: string, data: any) => Promise<any>;
-  onToggleActive?: (id: string, isActive: boolean) => Promise<any>;
-  onUpdatePassword?: (id: string, data: { hasPassword: boolean; password?: string }) => Promise<any>;
+  onUpdateReverseShare?: (id: string, data: Record<string, unknown>) => Promise<unknown>;
+  onToggleActive?: (id: string, isActive: boolean) => Promise<unknown>;
+  onUpdatePassword?: (id: string, data: { hasPassword: boolean; password?: string }) => Promise<unknown>;
 }
 
 export function ReverseShareCard({
@@ -62,7 +62,7 @@ export function ReverseShareCard({
   const [origin, setOrigin] = useState("");
   const [editingField, setEditingField] = useState<{ field: string } | null>(null);
   const [editValue, setEditValue] = useState("");
-  const [pendingChanges, setPendingChanges] = useState<Record<string, any>>({});
+  const [pendingChanges, setPendingChanges] = useState<Record<string, unknown>>({});
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -92,7 +92,7 @@ export function ReverseShareCard({
 
   const totalSize = reverseShare.files?.reduce((acc, file) => acc + parseInt(file.size), 0) || 0;
 
-  const startEdit = (field: string, currentValue: any) => {
+  const startEdit = (field: string, currentValue: unknown) => {
     setEditingField({ field });
     setEditValue(currentValue?.toString() || "");
   };
@@ -140,12 +140,13 @@ export function ReverseShareCard({
     }
   };
 
-  const getDisplayValue = (field: string) => {
+  const getDisplayValue = (field: string): string | undefined => {
     const pendingChange = pendingChanges[field];
     if (pendingChange !== undefined) {
-      return pendingChange;
+      return pendingChange != null ? String(pendingChange) : undefined;
     }
-    return (reverseShare as any)?.[field];
+    const val = (reverseShare as unknown as Record<string, unknown>)?.[field];
+    return val != null ? String(val) : undefined;
   };
 
   const handleToggleActive = async () => {

@@ -28,12 +28,14 @@ export declare function isAudioMimeType(mimeType: string): boolean;
 export declare function isVideoMimeType(mimeType: string): boolean;
 /**
  * Extract filename from Content-Disposition header.
+ *
+ * Supports RFC 5987 `filename*=` with UTF-8 encoding only.
+ * Handles both quoted (`filename="foo.txt"`) and unquoted (`filename=foo.txt`) values.
+ *
  * @param contentDisposition - The Content-Disposition header value
  * @returns Extracted filename or null if not found
  */
-export declare function extractFilenameFromContentDisposition(
-  contentDisposition: string | null,
-): string | null;
+export declare function extractFilenameFromContentDisposition(contentDisposition: string | null): string | null;
 /**
  * Detect MIME type with fallback logic for proxy responses.
  * @param serverContentType - Content-Type from server
@@ -41,9 +43,5 @@ export declare function extractFilenameFromContentDisposition(
  * @param fallbackFilename - Fallback filename if not in Content-Disposition
  * @returns Detected MIME type
  */
-export declare function detectMimeTypeWithFallback(
-  serverContentType: string | null,
-  contentDisposition: string | null,
-  fallbackFilename?: string,
-): string;
+export declare function detectMimeTypeWithFallback(serverContentType: string | null, contentDisposition: string | null, fallbackFilename?: string): string;
 //# sourceMappingURL=mime-types.d.ts.map

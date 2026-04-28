@@ -5,7 +5,7 @@ import { ConfigService } from "../config/service.js";
 const configService = new ConfigService();
 
 export async function validatePasswordMiddleware(request: FastifyRequest, reply: FastifyReply) {
-  const body = request.body as any;
+  const body = request.body as { password?: string };
   if (!body.password) return;
 
   const minLength = Number(await configService.getValue("passwordMinLength"));

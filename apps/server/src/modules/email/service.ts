@@ -45,7 +45,14 @@ export class EmailService {
       }
     }
 
-    const transportConfig: any = {
+    const transportConfig: nodemailer.TransportOptions & {
+      host: string;
+      port: number;
+      secure: boolean;
+      requireTLS: boolean;
+      tls?: { rejectUnauthorized: boolean };
+      auth?: { user: string; pass: string };
+    } = {
       host: await this.configService.getValue("smtpHost"),
       port: port,
       secure: secure,
@@ -112,7 +119,14 @@ export class EmailService {
       }
     }
 
-    const transportConfig: any = {
+    const transportConfig: nodemailer.TransportOptions & {
+      host: string;
+      port: number;
+      secure: boolean;
+      requireTLS: boolean;
+      tls?: { rejectUnauthorized: boolean };
+      auth?: { user: string; pass: string };
+    } = {
       host: smtpConfig.smtpHost,
       port: port,
       secure: secure,
@@ -137,8 +151,9 @@ export class EmailService {
     try {
       await transporter.verify();
       return { success: true, message: "SMTP connection successful" };
-    } catch (error: any) {
-      throw new Error(`SMTP connection failed: ${error.message}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(`SMTP connection failed: ${message}`);
     }
   }
 

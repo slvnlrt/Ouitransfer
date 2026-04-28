@@ -70,7 +70,7 @@ interface CreateReverseShareFormData {
 interface CreateReverseShareModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreateReverseShare: (data: CreateReverseShareBody) => Promise<any>;
+  onCreateReverseShare: (data: CreateReverseShareBody) => Promise<void>;
   isCreating: boolean;
 }
 
@@ -179,6 +179,7 @@ export function CreateReverseShareModal({
 
       if (!newValue && resetFields) {
         resetFields.forEach((field) => {
+          // biome-ignore lint/suspicious/noExplicitAny: mixed form field types require type cast for reset
           form.setValue(field as keyof CreateReverseShareFormData, "" as any);
         });
       }

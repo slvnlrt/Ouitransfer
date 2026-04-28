@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import * as OTPAuth from "otpauth";
 import QRCode from "qrcode";
 
+import { getLogger } from "../../utils/logger.js";
 import { prisma } from "../../shared/prisma.js";
 
 interface BackupCode {
@@ -181,7 +182,7 @@ export class TwoFactorService {
     try {
       isValidPassword = await bcrypt.compare(password, user.password);
     } catch (error) {
-      console.error("bcrypt.compare error:", error);
+      getLogger().error({ err: error }, "bcrypt.compare error");
       throw new Error("Password verification failed");
     }
     if (!isValidPassword) {

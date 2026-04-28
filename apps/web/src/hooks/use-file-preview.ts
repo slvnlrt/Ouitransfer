@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { getCachedDownloadUrl, getCachedReverseShareDownloadUrl } from "@/lib/download-url-cache";
+import { logger } from "@/lib/logger";
 import { type FileType, getFileExtension, getFileType } from "@/utils/file-types";
 
 interface FilePreviewState {
@@ -271,7 +272,7 @@ export function useFilePreview({
       toast.dismiss(loadingToast);
       toast.success(t("filePreview.downloadSuccess") || "Download started");
     } catch (error) {
-      console.error("Download error:", error);
+      logger.error("Download error", { err: error instanceof Error ? error.message : String(error) });
       toast.error(t("filePreview.downloadError"));
     }
   }, [isReverseShare, file.id, file.objectName, file.name, sharePassword, t]);

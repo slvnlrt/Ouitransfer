@@ -34,7 +34,7 @@ export class TwoFactorController {
    */
   async generateSetup(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply.status(401).send({ error: "Unauthorized" });
       }
@@ -56,8 +56,9 @@ export class TwoFactorController {
       const setupData = await this.twoFactorService.generateSetup(userId, user.email, appName);
 
       return reply.send(setupData);
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -66,7 +67,7 @@ export class TwoFactorController {
    */
   async verifySetup(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply.status(401).send({ error: "Unauthorized" });
       }
@@ -76,8 +77,9 @@ export class TwoFactorController {
       const result = await this.twoFactorService.verifySetup(userId, body.token, body.secret);
 
       return reply.send(result);
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -86,7 +88,7 @@ export class TwoFactorController {
    */
   async verifyToken(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply.status(401).send({ error: "Unauthorized" });
       }
@@ -96,8 +98,9 @@ export class TwoFactorController {
       const result = await this.twoFactorService.verifyToken(userId, body.token);
 
       return reply.send(result);
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -106,7 +109,7 @@ export class TwoFactorController {
    */
   async disable2FA(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply.status(401).send({ error: "Unauthorized" });
       }
@@ -116,9 +119,10 @@ export class TwoFactorController {
       const result = await this.twoFactorService.disable2FA(userId, body.password);
 
       return reply.send(result);
-    } catch (error: any) {
-      console.error("2FA Disable Error:", error.message);
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      request.log.error({ err: error }, "2FA Disable Error");
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -127,7 +131,7 @@ export class TwoFactorController {
    */
   async generateBackupCodes(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply.status(401).send({ error: "Unauthorized" });
       }
@@ -135,8 +139,9 @@ export class TwoFactorController {
       const codes = await this.twoFactorService.generateNewBackupCodes(userId);
 
       return reply.send({ backupCodes: codes });
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -145,7 +150,7 @@ export class TwoFactorController {
    */
   async getStatus(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply.status(401).send({ error: "Unauthorized" });
       }
@@ -153,8 +158,9 @@ export class TwoFactorController {
       const status = await this.twoFactorService.getStatus(userId);
 
       return reply.send(status);
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 }

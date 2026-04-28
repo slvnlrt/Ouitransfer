@@ -20,10 +20,13 @@ export function isFieldHidden(fieldKey: string): boolean {
 
 export interface ConfigInputProps {
   config: Config;
+  // biome-ignore lint/suspicious/noExplicitAny: react-hook-form uses generic form values that require any for dynamic config keys
   register: UseFormRegister<any>;
+  // biome-ignore lint/suspicious/noExplicitAny: react-hook-form uses generic form values that require any for dynamic config keys
   setValue: UseFormSetValue<any>;
+  // biome-ignore lint/suspicious/noExplicitAny: react-hook-form uses generic form values that require any for dynamic config keys
   watch: UseFormWatch<any>;
-  error?: any;
+  error?: { message?: string };
   smtpEnabled?: string;
   authProvidersEnabled?: string;
 }

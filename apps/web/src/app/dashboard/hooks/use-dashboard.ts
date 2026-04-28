@@ -5,10 +5,25 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { useEnhancedFileManager } from "@/hooks/use-enhanced-file-manager";
+import { logger } from "@/lib/logger";
 import { useSecureConfigValue } from "@/hooks/use-secure-configs";
 import { useShareManager } from "@/hooks/use-share-manager";
 import { getDiskSpace, listFiles, listUserShares } from "@/http/endpoints";
-import { Share } from "@/http/endpoints/shares/types";
+import type { Share } from "@/http/endpoints/shares/types";
+
+// View-model file type matching what dashboard components expect
+interface DashboardFile {
+  id: string;
+  name: string;
+  description?: string;
+  extension: string;
+  size: number;
+  objectName: string;
+  userId: string;
+  folderId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export function useDashboard() {
   const t = useTranslations();
@@ -19,8 +34,8 @@ export function useDashboard() {
     uploadAllowed: boolean;
   } | null>(null);
   const [diskSpaceError, setDiskSpaceError] = useState<string | null>(null);
-  const [recentFiles, setRecentFiles] = useState<any[]>([]);
-  const [recentShares, setRecentShares] = useState<any[]>([]);
+  const [recentFiles, setRecentFiles] = useState<DashboardFile[]>([]);
+  const [recentShares, setRecentShares] = useState<Share[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const { value: smtpEnabled } = useSecureConfigValue("smtpEnabled");
@@ -40,13 +55,14 @@ export function useDashboard() {
           const diskSpaceRes = await getDiskSpace();
           setDiskSpace(diskSpaceRes.data);
           setDiskSpaceError(null);
-        } catch (error: any) {
-          console.warn("Failed to load disk space:", error);
+        } catch (error: unknown) {
+          logger.warn("Failed to load disk space", { err: error instanceof Error ? error.message : String(error) });
           setDiskSpace(null);
 
-          if (error.response?.status === 503 && error.response?.data?.code === "DISK_SPACE_DETECTION_FAILED") {
+          const axiosError = error as { response?: { status?: number; data?: { code?: string } } };
+          if (axiosError.response?.status === 503 && axiosError.response?.data?.code === "DISK_SPACE_DETECTION_FAILED") {
             setDiskSpaceError("disk_detection_failed");
-          } else if (error.response?.status >= 500) {
+          } else if (axiosError.response?.status !== undefined && axiosError.response.status >= 500) {
             setDiskSpaceError("server_error");
           } else {
             setDiskSpaceError("unknown_error");
@@ -57,7 +73,8 @@ export function useDashboard() {
       const loadFilesAndShares = async () => {
         const [filesRes, sharesRes] = await Promise.all([listFiles(), listUserShares()]);
 
-        const allFiles = filesRes.data.files || [];
+        // Cast API types to view-model types (API uses string|null; components expect undefined)
+        const allFiles = (filesRes.data.files || []) as unknown as DashboardFile[];
         const sortedFiles = [...allFiles].sort(
           (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
@@ -72,7 +89,7 @@ export function useDashboard() {
 
       await Promise.allSettled([loadDiskSpace(), loadFilesAndShares()]);
     } catch (error) {
-      console.error("Critical dashboard error:", error);
+      logger.error("Critical dashboard error", { err: error instanceof Error ? error.message : String(error) });
       toast.error(t("dashboard.loadError"));
     } finally {
       setIsLoading(false);

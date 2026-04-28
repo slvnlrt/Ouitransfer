@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import { prisma } from "../shared/prisma.js";
 
 /**
@@ -133,7 +134,7 @@ export async function generateUniqueFolderName(
   const targetParentId = parentId || null;
 
   // Build the where clause
-  const whereClause: any = {
+  const whereClause: Prisma.FolderWhereInput = {
     name,
     userId,
     parentId: targetParentId,
@@ -159,7 +160,7 @@ export async function generateUniqueFolderName(
   let uniqueName = `${name} (${suffix})`;
 
   while (true) {
-    const whereClauseForSuffix: any = {
+    const whereClauseForSuffix: Prisma.FolderWhereInput = {
       name: uniqueName,
       userId,
       parentId: targetParentId,

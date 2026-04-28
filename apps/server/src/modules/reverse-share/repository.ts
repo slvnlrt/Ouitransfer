@@ -91,14 +91,21 @@ export class ReverseShareRepository {
   }
 
   async update(id: string, data: Partial<UpdateReverseShareInput>) {
-    const updateData: any = { ...data };
+    // We need to transform number values to their DB types (password → hash, maxFileSize → bigint)
+    const { password, maxFileSize, ...rest } = data;
 
-    if (data.password !== undefined) {
-      updateData.password = data.password ? await this.hashPassword(data.password) : null;
+    type UpdatePayload = Omit<Partial<UpdateReverseShareInput>, "password" | "maxFileSize"> & {
+      password?: string | null;
+      maxFileSize?: bigint | null;
+    };
+    const updateData: UpdatePayload = { ...rest };
+
+    if (password !== undefined) {
+      updateData.password = password ? await this.hashPassword(password) : null;
     }
 
-    if (data.maxFileSize !== undefined) {
-      updateData.maxFileSize = data.maxFileSize ? BigInt(data.maxFileSize) : null;
+    if (maxFileSize !== undefined) {
+      updateData.maxFileSize = maxFileSize ? BigInt(maxFileSize) : null;
     }
 
     return prisma.reverseShare.update({

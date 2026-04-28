@@ -18,14 +18,31 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getFileIcon } from "@/utils/file-icons";
 
+interface MoveItemFile {
+  id: string;
+  name: string;
+}
+
+interface MoveItemFolder {
+  id: string;
+  name: string;
+  description?: string | null;
+  parentId?: string | null;
+  userId?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  totalSize?: string | null;
+  _count?: { files: number; children: number };
+}
+
 interface MoveItemsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onMove: (targetFolderId: string | null) => Promise<void>;
-  itemsToMove: { files: any[]; folders: any[] } | null;
+  itemsToMove: { files: MoveItemFile[]; folders: MoveItemFile[] } | null;
   title?: string;
   description?: string;
-  getAllFolders: () => Promise<any[]>;
+  getAllFolders: () => Promise<MoveItemFolder[]>;
   currentFolderId?: string | null;
 }
 
@@ -59,8 +76,8 @@ export function MoveItemsModal({
           id: folder.id,
           name: folder.name,
           type: "folder" as const,
-          parentId: folder.parentId || null,
-          totalSize: folder.totalSize,
+          parentId: folder.parentId ?? null,
+          totalSize: folder.totalSize ?? undefined,
         }));
 
       setFolders(treeFolders);

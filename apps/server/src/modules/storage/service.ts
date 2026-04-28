@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import { statfs } from "node:fs/promises";
 
+import { getLogger } from "../../utils/logger.js";
 import { env } from "../../env.js";
 import { prisma } from "../../shared/prisma.js";
 import { IS_RUNNING_IN_CONTAINER } from "../../utils/container-detection.js";
@@ -148,7 +149,7 @@ export class StorageService {
 
       throw new Error("User ID is required for non-admin users");
     } catch (error) {
-      console.error("Error getting disk space:", error);
+      getLogger().error({ err: error }, "Error getting disk space");
       throw new Error(
         `Failed to get disk space information: ${error instanceof Error ? error.message : String(error)}`,
       );

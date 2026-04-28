@@ -54,8 +54,9 @@ export class AuthController {
       });
 
       return reply.send({ user });
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -88,8 +89,9 @@ export class AuthController {
       });
 
       return reply.send({ user });
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -105,8 +107,9 @@ export class AuthController {
       return reply.send({
         message: "If an account exists with this email, a password reset link will be sent.",
       });
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -116,8 +119,9 @@ export class AuthController {
       const input = schema.parse(request.body);
       await this.authService.resetPassword(input.token, input.password);
       return reply.send({ message: "Password reset successfully" });
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -126,7 +130,7 @@ export class AuthController {
       let userId: string | null = null;
       try {
         await request.jwtVerify();
-        userId = (request as any).user?.userId;
+        userId = request.user?.userId;
       } catch (_err) {
         return reply.send({ user: null });
       }
@@ -141,14 +145,15 @@ export class AuthController {
       }
 
       return reply.send({ user });
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
   async getTrustedDevices(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply
           .status(401)
@@ -157,14 +162,15 @@ export class AuthController {
 
       const devices = await this.authService.getTrustedDevices(userId);
       return reply.send({ devices });
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
   async removeTrustedDevice(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply
           .status(401)
@@ -174,14 +180,15 @@ export class AuthController {
       const { id } = request.params as { id: string };
       await this.authService.removeTrustedDevice(userId, id);
       return reply.send({ success: true, message: "Trusted device removed successfully" });
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
   async removeAllTrustedDevices(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const userId = (request as any).user?.userId;
+      const userId = request.user?.userId;
       if (!userId) {
         return reply
           .status(401)
@@ -190,8 +197,9 @@ export class AuthController {
 
       const result = await this.authService.removeAllTrustedDevices(userId);
       return reply.send(result);
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 
@@ -201,8 +209,9 @@ export class AuthController {
       return reply.send({
         passwordAuthEnabled: passwordAuthEnabled === "true",
       });
-    } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.status(400).send({ error: message });
     }
   }
 }

@@ -2,6 +2,9 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
 import { FileController } from "./controller.js";
+import { FileDownloadController } from "./download.controller.js";
+import { FileEmbedController } from "./embed.controller.js";
+import { FileMultipartController } from "./multipart.controller.js";
 import {
   CheckFileSchema,
   ListFilesSchema,
@@ -12,12 +15,15 @@ import {
 
 export async function fileRoutes(app: FastifyInstance) {
   const fileController = new FileController();
+  const downloadController = new FileDownloadController();
+  const embedController = new FileEmbedController();
+  const multipartController = new FileMultipartController();
 
   const preValidation = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       await request.jwtVerify();
     } catch (err) {
-      console.error(err);
+      request.log.error({ err }, "JWT verification failed");
       reply.status(401).send({ error: "Token inválido ou ausente." });
     }
   };
@@ -156,7 +162,7 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    fileController.getDownloadUrl.bind(fileController),
+    downloadController.getDownloadUrl.bind(downloadController),
   );
 
   app.get(
@@ -181,7 +187,7 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    fileController.embedFile.bind(fileController),
+    embedController.embedFile.bind(embedController),
   );
 
   app.post(
@@ -211,7 +217,7 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    fileController.generateEmbedToken.bind(fileController),
+    embedController.generateEmbedToken.bind(embedController),
   );
 
   app.post(
@@ -235,7 +241,7 @@ export async function fileRoutes(app: FastifyInstance) {
         }),
       },
     },
-    fileController.downloadFile.bind(fileController),
+    downloadController.downloadFile.bind(downloadController),
   );
 
   app.get(
@@ -407,7 +413,7 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    fileController.createMultipartUpload.bind(fileController),
+    multipartController.createMultipartUpload.bind(multipartController),
   );
 
   app.get(
@@ -434,7 +440,7 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    fileController.getMultipartPartUrl.bind(fileController),
+    multipartController.getMultipartPartUrl.bind(multipartController),
   );
 
   app.post(
@@ -469,7 +475,7 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    fileController.completeMultipartUpload.bind(fileController),
+    multipartController.completeMultipartUpload.bind(multipartController),
   );
 
   app.post(
@@ -495,6 +501,6 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    fileController.abortMultipartUpload.bind(fileController),
+    multipartController.abortMultipartUpload.bind(multipartController),
   );
 }
