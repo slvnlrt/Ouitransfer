@@ -1,6 +1,5 @@
 import {
   IconArrowsMove,
-  IconDotsVertical,
   IconDownload,
   IconEdit,
   IconFolder,
@@ -9,17 +8,11 @@ import {
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { ContextMenu, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { formatFileSize } from "@/utils/format-file-size";
 import type { FolderItem } from "./files-table-types";
+import { type ActionItem, ItemContextMenuActions, ItemDropdownMenu } from "./item-actions";
 
 interface FolderCardProps {
   folder: FolderItem;
@@ -38,7 +31,10 @@ interface FolderCardProps {
   onShareFolder?: (folder: FolderItem) => void;
   onDownloadFolder?: (folderId: string, folderName: string) => Promise<void>;
   onMoveFolder?: (folder: FolderItem) => void;
-  onDragStart: (e: React.DragEvent, item: { id: string; type: "file" | "folder"; name: string }) => void;
+  onDragStart: (
+    e: React.DragEvent,
+    item: { id: string; type: "file" | "folder"; name: string },
+  ) => void;
   onDragEnd: (e: React.DragEvent) => void;
   onDragOver: (e: React.DragEvent, target: { id: string; type: "folder"; name: string }) => void;
   onDragLeave: (e: React.DragEvent) => void;
@@ -70,77 +66,70 @@ export function FolderCard({
 }: FolderCardProps) {
   const t = useTranslations();
 
-  const folderContextMenu = !isShareMode && (
-    <ContextMenuContent className="w-[200px]">
-      {onRenameFolder && (
-        <ContextMenuItem
-          className="cursor-pointer py-2"
-          onClick={(e) => {
-            e.stopPropagation();
-            onRenameFolder(folder);
-          }}
-        >
-          <IconEdit className="h-4 w-4" />
-          {t("filesTable.actions.edit")}
-        </ContextMenuItem>
-      )}
-      {onMoveFolder && (
-        <ContextMenuItem
-          className="cursor-pointer py-2"
-          onClick={(e) => {
-            e.stopPropagation();
-            onMoveFolder(folder);
-          }}
-        >
-          <IconArrowsMove className="h-4 w-4" />
-          {t("common.move")}
-        </ContextMenuItem>
-      )}
-      {onShareFolder && (
-        <ContextMenuItem
-          className="cursor-pointer py-2"
-          onClick={(e) => {
-            e.stopPropagation();
-            onShareFolder(folder);
-          }}
-        >
-          <IconShare className="h-4 w-4" />
-          {t("filesTable.actions.share")}
-        </ContextMenuItem>
-      )}
-      {onDownloadFolder && (
-        <ContextMenuItem
-          className="cursor-pointer py-2"
-          onClick={(e) => {
-            e.stopPropagation();
-            onDownloadFolder(folder.id, folder.name);
-          }}
-        >
-          <IconDownload className="h-4 w-4" />
-          {t("filesTable.actions.download")}
-        </ContextMenuItem>
-      )}
-      {onDeleteFolder && (
-        <ContextMenuItem
-          onClick={(e) => {
-            e.stopPropagation();
-            onDeleteFolder(folder);
-          }}
-          className="cursor-pointer py-2 text-destructive focus:text-destructive"
-          variant="destructive"
-        >
-          <IconTrash className="h-4 w-4" />
-          {t("filesTable.actions.delete")}
-        </ContextMenuItem>
-      )}
-    </ContextMenuContent>
-  );
+  const actions: ActionItem[] = [
+    ...(onRenameFolder
+      ? [
+          {
+            key: "edit",
+            icon: IconEdit,
+            label: t("filesTable.actions.edit"),
+            onClick: () => onRenameFolder(folder),
+          },
+        ]
+      : []),
+    ...(onMoveFolder
+      ? [
+          {
+            key: "move",
+            icon: IconArrowsMove,
+            label: t("common.move"),
+            onClick: () => onMoveFolder(folder),
+          },
+        ]
+      : []),
+    ...(onShareFolder
+      ? [
+          {
+            key: "share",
+            icon: IconShare,
+            label: t("filesTable.actions.share"),
+            onClick: () => onShareFolder(folder),
+          },
+        ]
+      : []),
+    ...(onDownloadFolder
+      ? [
+          {
+            key: "download",
+            icon: IconDownload,
+            label: t("filesTable.actions.download"),
+            onClick: () => onDownloadFolder(folder.id, folder.name),
+          },
+        ]
+      : []),
+    ...(onDeleteFolder
+      ? [
+          {
+            key: "delete",
+            icon: IconTrash,
+            label: t("filesTable.actions.delete"),
+            onClick: () => onDeleteFolder(folder),
+            variant: "destructive" as const,
+          },
+        ]
+      : []),
+  ];
+
+  const folderContextMenu = !isShareMode && <ItemContextMenuActions actions={actions} />;
 
   return (
     <ContextMenu modal={false}>
       <ContextMenuTrigger asChild>
+        {/* biome-ignore lint/a11y/useSemanticElements: container has nested interactive elements (Checkbox, DropdownMenu); HTML forbids nested buttons */}
         <div
           data-card="true"
+          role="button"
+          tabIndex={0}
           className={`relative group border rounded-lg p-3 hover:bg-muted/50 transition-all duration-200 cursor-pointer ${
             isSelected ? "ring-2 ring-primary bg-muted/50" : ""
           } ${isDragOver && !isBeingDragged ? "ring-2 ring-primary bg-primary/10 scale-105" : ""} ${
@@ -155,6 +144,12 @@ export function FolderCard({
             willChange: isDragging ? "transform, opacity" : "auto",
           }}
           onClick={() => onNavigateToFolder?.(folder.id)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onNavigateToFolder?.(folder.id);
+            }
+          }}
           draggable
           onDragStart={(e) => {
             e.stopPropagation();
@@ -185,98 +180,14 @@ export function FolderCard({
           </div>
 
           <div className="absolute top-2 right-2 z-10">
-            {isShareMode ? (
-              onDownloadFolder && (
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-8 w-8 hover:bg-background/80"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDownloadFolder(folder.id, folder.name);
-                  }}
-                >
-                  <IconDownload className="h-4 w-4" />
-                  <span className="sr-only">{t("filesTable.actions.download")}</span>
-                </Button>
-              )
-            ) : (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <IconDotsVertical className="h-4 w-4" />
-                    <span className="sr-only">{t("filesTable.actions.menu")}</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[200px]">
-                  {onRenameFolder && (
-                    <DropdownMenuItem
-                      className="cursor-pointer py-2"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onRenameFolder(folder);
-                      }}
-                    >
-                      <IconEdit className="h-4 w-4" />
-                      {t("filesTable.actions.edit")}
-                    </DropdownMenuItem>
-                  )}
-                  {onMoveFolder && (
-                    <DropdownMenuItem
-                      className="cursor-pointer py-2"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onMoveFolder(folder);
-                      }}
-                    >
-                      <IconArrowsMove className="h-4 w-4" />
-                      {t("common.move")}
-                    </DropdownMenuItem>
-                  )}
-                  {onShareFolder && (
-                    <DropdownMenuItem
-                      className="cursor-pointer py-2"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onShareFolder(folder);
-                      }}
-                    >
-                      <IconShare className="h-4 w-4" />
-                      {t("filesTable.actions.share")}
-                    </DropdownMenuItem>
-                  )}
-                  {onDownloadFolder && (
-                    <DropdownMenuItem
-                      className="cursor-pointer py-2"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDownloadFolder(folder.id, folder.name);
-                      }}
-                    >
-                      <IconDownload className="h-4 w-4" />
-                      {t("filesTable.actions.download")}
-                    </DropdownMenuItem>
-                  )}
-                  {onDeleteFolder && (
-                    <DropdownMenuItem
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDeleteFolder(folder);
-                      }}
-                      className="cursor-pointer py-2 text-destructive focus:text-destructive"
-                    >
-                      <IconTrash className="h-4 w-4" />
-                      {t("filesTable.actions.delete")}
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
+            <ItemDropdownMenu
+              actions={actions}
+              isShareMode={isShareMode}
+              onShareModeDownload={
+                onDownloadFolder ? () => onDownloadFolder(folder.id, folder.name) : undefined
+              }
+              triggerClassName="h-8 w-8"
+            />
           </div>
 
           <div className="flex flex-col items-center space-y-3">
@@ -288,7 +199,10 @@ export function FolderCard({
                 {folder.name}
               </p>
               {folder.description && (
-                <p className="text-xs text-muted-foreground truncate text-left" title={folder.description}>
+                <p
+                  className="text-xs text-muted-foreground truncate text-left"
+                  title={folder.description}
+                >
                   {folder.description}
                 </p>
               )}

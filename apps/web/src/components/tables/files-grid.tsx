@@ -10,11 +10,13 @@ import {
 } from "@/components/ui/context-menu";
 import { useDragDrop } from "@/hooks/use-drag-drop";
 import { getCachedDownloadUrl } from "@/lib/download-url-cache";
+import { formatDateTime } from "@/lib/format-date-time";
 import { logger } from "@/lib/logger";
 import { FileCard } from "./files-grid-file-card";
 import { FolderCard } from "./files-grid-folder-card";
 import { FilesTableBulkActions } from "./files-table-bulk-actions";
 import type { FileItem, FolderItem } from "./files-table-types";
+import { useSelectionManager } from "./use-selection-manager";
 
 const urlCache: Record<string, { url: string; timestamp: number }> = {};
 const CACHE_DURATION = 1000 * 60;
@@ -80,8 +82,24 @@ export function FilesGrid({
 }: FilesGridProps) {
   const t = useTranslations();
 
-  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
-  const [selectedFolders, setSelectedFolders] = useState<Set<string>>(new Set());
+  const selection = useSelectionManager({
+    files,
+    folders,
+    onBulkDelete,
+    onBulkShare,
+    onBulkDownload,
+    onBulkMove,
+    setClearSelectionCallback,
+    showBulkActions,
+    isShareMode,
+  });
+
+  const handleSelectFile = (e: React.MouseEvent, fileId: string, checked: boolean) => {
+    e.stopPropagation();
+    selection.selectFile(fileId, checked);
+  };
+
+  const formatDate = (dateString: string) => formatDateTime(dateString, "compact");
 
   const {
     draggedItem,
@@ -96,8 +114,8 @@ export function FilesGrid({
   } = useDragDrop({
     onRefresh,
     onImmediateUpdate,
-    selectedFiles,
-    selectedFolders,
+    selectedFiles: selection.selectedFiles,
+    selectedFolders: selection.selectedFolders,
     files,
     folders,
   });
@@ -117,20 +135,6 @@ export function FilesGrid({
       });
     };
   }, []);
-
-  useEffect(() => {
-    const clearSelection = () => {
-      setSelectedFiles(new Set());
-      setSelectedFolders(new Set());
-    };
-    setClearSelectionCallback?.(clearSelection);
-  }, [setClearSelectionCallback]);
-
-  const folderIds = folders?.map((f) => f.id).join(",");
-
-  useEffect(() => {
-    setSelectedFolders(new Set());
-  }, [folderIds]);
 
   const isImageFile = (fileName: string) => {
     const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
@@ -182,108 +186,29 @@ export function FilesGrid({
     }
   }, [files]);
 
-  const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    }).format(date);
-  };
-
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedFiles(new Set(files.map((file) => file.id)));
-      setSelectedFolders(new Set(folders.map((folder) => folder.id)));
-    } else {
-      setSelectedFiles(new Set());
-      setSelectedFolders(new Set());
-    }
-  };
-
-  const handleSelectFile = (e: React.MouseEvent, fileId: string, checked: boolean) => {
-    e.stopPropagation();
-    const newSelected = new Set(selectedFiles);
-    if (checked) {
-      newSelected.add(fileId);
-    } else {
-      newSelected.delete(fileId);
-    }
-    setSelectedFiles(newSelected);
-  };
-
-  const handleSelectFolder = (folderId: string, checked: boolean) => {
-    const newSelected = new Set(selectedFolders);
-    if (checked) {
-      newSelected.add(folderId);
-    } else {
-      newSelected.delete(folderId);
-    }
-    setSelectedFolders(newSelected);
-  };
-
-  const getSelectedFiles = () => files.filter((file) => selectedFiles.has(file.id));
-  const getSelectedFolders = () => folders.filter((folder) => selectedFolders.has(folder.id));
-
-  const totalItems = files.length + folders.length;
-  const selectedItems = selectedFiles.size + selectedFolders.size;
-  const isAllSelected = totalItems > 0 && selectedItems === totalItems;
-
   const draggedItemIds = useMemo(() => {
     return new Set(draggedItems.map((item) => item.id));
   }, [draggedItems]);
 
-  const handleBulkAction = (action: "delete" | "share" | "download" | "move") => {
-    const selectedFileObjects = getSelectedFiles();
-    const selectedFolderObjects = getSelectedFolders();
-
-    if (selectedFileObjects.length === 0 && selectedFolderObjects.length === 0) return;
-
-    switch (action) {
-      case "delete":
-        onBulkDelete?.(selectedFileObjects, selectedFolderObjects);
-        break;
-      case "share":
-        onBulkShare?.(selectedFileObjects, selectedFolderObjects);
-        break;
-      case "download":
-        onBulkDownload?.(selectedFileObjects, selectedFolderObjects);
-        break;
-      case "move":
-        onBulkMove?.(selectedFileObjects, selectedFolderObjects);
-        break;
-    }
-  };
-
-  const clearSelection = () => {
-    setSelectedFiles(new Set());
-    setSelectedFolders(new Set());
-  };
-
-  const shouldShowBulkActions =
-    showBulkActions &&
-    (selectedFiles.size > 0 || selectedFolders.size > 0) &&
-    (isShareMode ? onBulkDownload : onBulkDelete || onBulkShare || onBulkDownload || onBulkMove);
-
   return (
     <div className="space-y-4">
-      {shouldShowBulkActions && (
+      {selection.shouldShowBulkActions && (
         <FilesTableBulkActions
-          selectedCount={selectedItems}
+          selectedCount={selection.selectedCount}
           isShareMode={isShareMode}
           onBulkDelete={onBulkDelete}
           onBulkShare={onBulkShare}
           onBulkDownload={onBulkDownload}
           onBulkMove={onBulkMove}
-          onAction={handleBulkAction}
-          onClearSelection={clearSelection}
+          onAction={selection.handleBulkAction}
+          onClearSelection={selection.clearSelection}
         />
       )}
 
       <div className="flex items-center gap-2 px-2">
         <Checkbox
-          checked={isAllSelected}
-          onCheckedChange={handleSelectAll}
+          checked={selection.isAllSelected}
+          onCheckedChange={selection.handleSelectAll}
           aria-label={t("filesTable.selectAll")}
         />
         <span className="text-sm text-muted-foreground">{t("filesTable.selectAll")}</span>
@@ -293,7 +218,7 @@ export function FilesGrid({
         <ContextMenuTrigger asChild>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 ">
             {folders.map((folder) => {
-              const isSelected = selectedFolders.has(folder.id);
+              const isSelected = selection.selectedFolders.has(folder.id);
               const isDragOver = dragOverTarget?.id === folder.id;
               const isDraggedOver = draggedItem?.id === folder.id;
               const isBeingDragged = draggedItemIds.has(folder.id);
@@ -310,8 +235,8 @@ export function FilesGrid({
                   isAnySelectedItemDragged={isAnySelectedItemDragged}
                   isDragging={isDragging}
                   isShareMode={isShareMode}
-                  formatDateTime={formatDateTime}
-                  onSelectFolder={handleSelectFolder}
+                  formatDateTime={formatDate}
+                  onSelectFolder={selection.selectFolder}
                   onNavigateToFolder={onNavigateToFolder}
                   onRenameFolder={onRenameFolder}
                   onDeleteFolder={onDeleteFolder}
@@ -328,7 +253,7 @@ export function FilesGrid({
             })}
 
             {files.map((file) => {
-              const isSelected = selectedFiles.has(file.id);
+              const isSelected = selection.selectedFiles.has(file.id);
               const isImage = isImageFile(file.name);
               const previewUrl = filePreviewUrls[file.id];
               const isDraggedOver = draggedItem?.id === file.id;
@@ -347,7 +272,7 @@ export function FilesGrid({
                   isShareMode={isShareMode}
                   previewUrl={previewUrl}
                   isImage={isImage}
-                  formatDateTime={formatDateTime}
+                  formatDateTime={formatDate}
                   onSelectFile={handleSelectFile}
                   onPreview={onPreview}
                   onRename={onRename}

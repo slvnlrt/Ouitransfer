@@ -3,6 +3,7 @@
 import { IconFolder } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import type { FileItem } from "@/components/tables/files-table-types";
 import { FileTree, type TreeFolder } from "@/components/tables/files-tree";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,11 +19,13 @@ import { Label } from "@/components/ui/label";
 import { logger } from "@/lib/logger";
 import { getFileIcon } from "@/utils/file-icons";
 
-interface MoveItemFile {
-  id: string;
-  name: string;
-}
+type MoveItemFile = Pick<FileItem, "id" | "name">;
 
+/**
+ * Folder shape accepted by MoveItemsModal. Callers pass raw API folder data
+ * (where `description` and `parentId` are `string | null`), so this type
+ * widens the canonical FolderItem's optional fields to also accept `null`.
+ */
 interface MoveItemFolder {
   id: string;
   name: string;

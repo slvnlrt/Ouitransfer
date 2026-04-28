@@ -1,27 +1,22 @@
-import { useState } from "react";
 import { IconDownload, IconEye, IconFolder, IconFolderOpen } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-
+import { useState } from "react";
 import { FilePreviewModal } from "@/components/modals/file-preview-modal";
+import type { FileItem, FolderItem } from "@/components/tables/files-table-types";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { getFileIcon } from "@/utils/file-icons";
 import { formatFileSize } from "@/utils/format-file-size";
 
-interface ShareFile {
-  id: string;
-  name: string;
-  size: string | number;
-  objectName: string;
-  createdAt: string;
-}
-
-interface ShareFolder {
-  id: string;
-  name: string;
-  totalSize?: string | number | null;
-  createdAt: string;
-}
+type ShareFile = Pick<FileItem, "id" | "name" | "size" | "objectName" | "createdAt">;
+type ShareFolder = Pick<FolderItem, "id" | "name" | "totalSize" | "createdAt">;
 
 interface ShareFilesTableProps {
   files?: ShareFile[];
@@ -44,7 +39,11 @@ export function ShareFilesTable({
 }: ShareFilesTableProps) {
   const t = useTranslations();
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<{ name: string; objectName: string; type?: string } | null>(null);
+  const [selectedFile, setSelectedFile] = useState<{
+    name: string;
+    objectName: string;
+    type?: string;
+  } | null>(null);
 
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -116,7 +115,9 @@ export function ShareFilesTable({
                     <p className="font-medium">
                       {enableNavigation ? "No files or folders" : "No files or folders shared"}
                     </p>
-                    <p className="text-sm">{enableNavigation ? "This location is empty" : "This share is empty"}</p>
+                    <p className="text-sm">
+                      {enableNavigation ? "This location is empty" : "This share is empty"}
+                    </p>
                   </div>
                 </TableCell>
               </TableRow>
@@ -124,12 +125,16 @@ export function ShareFilesTable({
               allItems.map((item) => {
                 if (item.type === "folder") {
                   return (
-                    <TableRow key={`folder-${item.id}`} className="hover:bg-muted/50 transition-colors border-0">
+                    <TableRow
+                      key={`folder-${item.id}`}
+                      className="hover:bg-muted/50 transition-colors border-0"
+                    >
                       <TableCell className="h-12 px-4 border-0">
                         <div className="flex items-center gap-2">
                           <IconFolder className="h-5 w-5 text-blue-600" />
                           {enableNavigation ? (
                             <button
+                              type="button"
                               className="truncate max-w-[250px] font-medium text-left hover:underline"
                               onClick={() => handleFolderClick(item.id)}
                             >
@@ -175,14 +180,19 @@ export function ShareFilesTable({
                 } else {
                   const { icon: FileIcon, color } = getFileIcon(item.name);
                   return (
-                    <TableRow key={`file-${item.id}`} className="hover:bg-muted/50 transition-colors border-0">
+                    <TableRow
+                      key={`file-${item.id}`}
+                      className="hover:bg-muted/50 transition-colors border-0"
+                    >
                       <TableCell className="h-12 px-4 border-0">
                         <div className="flex items-center gap-2">
                           <FileIcon className={`h-5 w-5 ${color}`} />
                           <span className="truncate max-w-[250px] font-medium">{item.name}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="h-12 px-4">{formatFileSize(Number(item.size))}</TableCell>
+                      <TableCell className="h-12 px-4">
+                        {formatFileSize(Number(item.size))}
+                      </TableCell>
                       <TableCell className="h-12 px-4">{formatDateTime(item.createdAt)}</TableCell>
                       <TableCell className="h-12 px-4">
                         <div className="flex items-center gap-1">
@@ -190,7 +200,9 @@ export function ShareFilesTable({
                             size="icon"
                             variant="ghost"
                             className="h-8 w-8 hover:bg-muted"
-                            onClick={() => handlePreview({ name: item.name, objectName: item.objectName })}
+                            onClick={() =>
+                              handlePreview({ name: item.name, objectName: item.objectName })
+                            }
                           >
                             <IconEye className="h-4 w-4" />
                             <span className="sr-only">{t("filesTable.actions.preview")}</span>

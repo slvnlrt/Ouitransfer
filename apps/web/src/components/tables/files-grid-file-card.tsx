@@ -1,6 +1,5 @@
 import {
   IconArrowsMove,
-  IconDotsVertical,
   IconDownload,
   IconEdit,
   IconEye,
@@ -9,18 +8,12 @@ import {
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { ContextMenu, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { getFileIcon } from "@/utils/file-icons";
 import { formatFileSize } from "@/utils/format-file-size";
 import type { FileItem } from "./files-table-types";
+import { type ActionItem, ItemContextMenuActions, ItemDropdownMenu } from "./item-actions";
 
 interface FileCardProps {
   file: FileItem;
@@ -40,7 +33,10 @@ interface FileCardProps {
   onShare?: (file: FileItem) => void;
   onDelete?: (file: FileItem) => void;
   onMoveFile?: (file: FileItem) => void;
-  onDragStart: (e: React.DragEvent, item: { id: string; type: "file" | "folder"; name: string }) => void;
+  onDragStart: (
+    e: React.DragEvent,
+    item: { id: string; type: "file" | "folder"; name: string },
+  ) => void;
   onDragEnd: (e: React.DragEvent) => void;
 }
 
@@ -68,85 +64,76 @@ export function FileCard({
   const t = useTranslations();
   const { icon: FileIcon, color } = getFileIcon(file.name);
 
-  const fileContextMenu = !isShareMode && (
-    <ContextMenuContent className="w-[200px]">
-      <ContextMenuItem
-        className="cursor-pointer py-2"
-        onClick={(e) => {
-          e.stopPropagation();
-          onPreview?.(file);
-        }}
-      >
-        <IconEye className="h-4 w-4" />
-        {t("filesTable.actions.preview")}
-      </ContextMenuItem>
-      {onRename && (
-        <ContextMenuItem
-          className="cursor-pointer py-2"
-          onClick={(e) => {
-            e.stopPropagation();
-            onRename?.(file);
-          }}
-        >
-          <IconEdit className="h-4 w-4" />
-          {t("filesTable.actions.edit")}
-        </ContextMenuItem>
-      )}
-      <ContextMenuItem
-        className="cursor-pointer py-2"
-        onClick={(e) => {
-          e.stopPropagation();
-          onDownload(file.objectName, file.name);
-        }}
-      >
-        <IconDownload className="h-4 w-4" />
-        {t("filesTable.actions.download")}
-      </ContextMenuItem>
-      {onShare && (
-        <ContextMenuItem
-          className="cursor-pointer py-2"
-          onClick={(e) => {
-            e.stopPropagation();
-            onShare?.(file);
-          }}
-        >
-          <IconShare className="h-4 w-4" />
-          {t("filesTable.actions.share")}
-        </ContextMenuItem>
-      )}
-      {onMoveFile && (
-        <ContextMenuItem
-          className="cursor-pointer py-2"
-          onClick={(e) => {
-            e.stopPropagation();
-            onMoveFile?.(file);
-          }}
-        >
-          <IconArrowsMove className="h-4 w-4" />
-          {t("common.move")}
-        </ContextMenuItem>
-      )}
-      {onDelete && (
-        <ContextMenuItem
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete?.(file);
-          }}
-          className="cursor-pointer py-2 text-destructive focus:text-destructive"
-          variant="destructive"
-        >
-          <IconTrash className="h-4 w-4" />
-          {t("filesTable.actions.delete")}
-        </ContextMenuItem>
-      )}
-    </ContextMenuContent>
-  );
+  const actions: ActionItem[] = [
+    ...(onPreview
+      ? [
+          {
+            key: "preview",
+            icon: IconEye,
+            label: t("filesTable.actions.preview"),
+            onClick: () => onPreview(file),
+          },
+        ]
+      : []),
+    ...(onRename
+      ? [
+          {
+            key: "edit",
+            icon: IconEdit,
+            label: t("filesTable.actions.edit"),
+            onClick: () => onRename(file),
+          },
+        ]
+      : []),
+    {
+      key: "download",
+      icon: IconDownload,
+      label: t("filesTable.actions.download"),
+      onClick: () => onDownload(file.objectName, file.name),
+    },
+    ...(onShare
+      ? [
+          {
+            key: "share",
+            icon: IconShare,
+            label: t("filesTable.actions.share"),
+            onClick: () => onShare(file),
+          },
+        ]
+      : []),
+    ...(onMoveFile
+      ? [
+          {
+            key: "move",
+            icon: IconArrowsMove,
+            label: t("common.move"),
+            onClick: () => onMoveFile(file),
+          },
+        ]
+      : []),
+    ...(onDelete
+      ? [
+          {
+            key: "delete",
+            icon: IconTrash,
+            label: t("filesTable.actions.delete"),
+            onClick: () => onDelete(file),
+            variant: "destructive" as const,
+          },
+        ]
+      : []),
+  ];
+
+  const fileContextMenu = !isShareMode && <ItemContextMenuActions actions={actions} />;
 
   return (
     <ContextMenu modal={false}>
       <ContextMenuTrigger asChild>
+        {/* biome-ignore lint/a11y/useSemanticElements: container has nested interactive elements (Checkbox, DropdownMenu); HTML forbids nested buttons */}
         <div
           data-card="true"
+          role="button"
+          tabIndex={0}
           className={`relative group border rounded-lg p-3 hover:bg-muted/50 transition-all duration-200 cursor-pointer ${
             isSelected ? "ring-2 ring-primary bg-muted/50" : ""
           } ${isDraggedOver ? "opacity-50 scale-95" : ""} ${
@@ -168,6 +155,14 @@ export function FileCard({
             }
             if (onPreview) {
               onPreview(file);
+            }
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              if (onPreview) {
+                onPreview(file);
+              }
             }
           }}
           draggable
@@ -192,104 +187,12 @@ export function FileCard({
           </div>
 
           <div className="absolute top-2 right-2 z-10">
-            {isShareMode ? (
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-8 w-8 hover:bg-background/80"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDownload(file.objectName, file.name);
-                }}
-              >
-                <IconDownload className="h-4 w-4" />
-                <span className="sr-only">{t("filesTable.actions.download")}</span>
-              </Button>
-            ) : (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <IconDotsVertical className="h-4 w-4" />
-                    <span className="sr-only">{t("filesTable.actions.menu")}</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[200px]">
-                  <DropdownMenuItem
-                    className="cursor-pointer py-2"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onPreview?.(file);
-                    }}
-                  >
-                    <IconEye className="h-4 w-4" />
-                    {t("filesTable.actions.preview")}
-                  </DropdownMenuItem>
-                  {onRename && (
-                    <DropdownMenuItem
-                      className="cursor-pointer py-2"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onRename?.(file);
-                      }}
-                    >
-                      <IconEdit className="h-4 w-4" />
-                      {t("filesTable.actions.edit")}
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuItem
-                    className="cursor-pointer py-2"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDownload(file.objectName, file.name);
-                    }}
-                  >
-                    <IconDownload className="h-4 w-4" />
-                    {t("filesTable.actions.download")}
-                  </DropdownMenuItem>
-                  {onShare && (
-                    <DropdownMenuItem
-                      className="cursor-pointer py-2"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onShare?.(file);
-                      }}
-                    >
-                      <IconShare className="h-4 w-4" />
-                      {t("filesTable.actions.share")}
-                    </DropdownMenuItem>
-                  )}
-                  {onMoveFile && (
-                    <DropdownMenuItem
-                      className="cursor-pointer py-2"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onMoveFile?.(file);
-                      }}
-                    >
-                      <IconArrowsMove className="h-4 w-4" />
-                      {t("common.move")}
-                    </DropdownMenuItem>
-                  )}
-                  {onDelete && (
-                    <DropdownMenuItem
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDelete?.(file);
-                      }}
-                      className="cursor-pointer py-2 text-destructive focus:text-destructive"
-                    >
-                      <IconTrash className="h-4 w-4" />
-                      {t("filesTable.actions.delete")}
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
+            <ItemDropdownMenu
+              actions={actions}
+              isShareMode={isShareMode}
+              onShareModeDownload={() => onDownload(file.objectName, file.name)}
+              triggerClassName="h-8 w-8"
+            />
           </div>
 
           <div className="flex flex-col items-center space-y-3">
@@ -306,7 +209,10 @@ export function FileCard({
                 {file.name}
               </p>
               {file.description && (
-                <p className="text-xs text-muted-foreground truncate text-left" title={file.description}>
+                <p
+                  className="text-xs text-muted-foreground truncate text-left"
+                  title={file.description}
+                >
                   {file.description}
                 </p>
               )}

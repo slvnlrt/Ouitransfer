@@ -8,6 +8,7 @@ import { ProtectedRoute } from "@/components/auth/protected-route";
 import { GlobalDropZone } from "@/components/general/global-drop-zone";
 import { FileManagerLayout } from "@/components/layout/file-manager-layout";
 import { MoveItemsModal } from "@/components/modals/move-items-modal";
+import type { FileItem, FolderItem } from "@/components/tables/files-table-types";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -26,35 +27,6 @@ import { Header } from "./components/header";
 import { useFileBrowser } from "./hooks/use-file-browser";
 import { FilesModals } from "./modals/files-modals";
 
-interface File {
-  id: string;
-  name: string;
-  description?: string;
-  extension: string;
-  size: number;
-  objectName: string;
-  userId: string;
-  folderId?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Folder {
-  id: string;
-  name: string;
-  description?: string;
-  objectName: string;
-  parentId?: string;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
-  totalSize?: string;
-  _count?: {
-    files: number;
-    children: number;
-  };
-}
-
 interface DragItem {
   id: string;
   name: string;
@@ -63,7 +35,10 @@ interface DragItem {
 
 export default function FilesPage() {
   const t = useTranslations();
-  const [itemsToMove, setItemsToMove] = useState<{ files: File[]; folders: Folder[] } | null>(null);
+  const [itemsToMove, setItemsToMove] = useState<{
+    files: FileItem[];
+    folders: FolderItem[];
+  } | null>(null);
 
   const {
     isLoading,
@@ -82,15 +57,15 @@ export default function FilesPage() {
     allFolders,
   } = useFileBrowser();
 
-  const handleMoveFile = (file: File) => {
+  const handleMoveFile = (file: FileItem) => {
     setItemsToMove({ files: [file], folders: [] });
   };
 
-  const handleMoveFolder = (folder: Folder) => {
+  const handleMoveFolder = (folder: FolderItem) => {
     setItemsToMove({ files: [], folders: [folder] });
   };
 
-  const handleBulkMove = (files: File[], folders: Folder[]) => {
+  const handleBulkMove = (files: FileItem[], folders: FolderItem[]) => {
     setItemsToMove({ files, folders });
   };
 
@@ -134,8 +109,8 @@ export default function FilesPage() {
       const getFolderFilesWithPath = (
         targetFolderId: string,
         currentPath: string = "",
-      ): Array<{ file: File; path: string }> => {
-        const filesWithPath: Array<{ file: File; path: string }> = [];
+      ): Array<{ file: FileItem; path: string }> => {
+        const filesWithPath: Array<{ file: FileItem; path: string }> = [];
 
         // Get direct files in this folder
         const directFiles = allFiles.filter((f) => f.folderId === targetFolderId);

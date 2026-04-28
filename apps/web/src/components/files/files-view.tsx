@@ -1,53 +1,24 @@
-import { useState } from "react";
 import { IconLayoutGrid, IconTable } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-
+import { useState } from "react";
 import { FilesGrid } from "@/components/tables/files-grid";
 import { FilesTable } from "@/components/tables/files-table";
+import type { FileItem, FolderItem } from "@/components/tables/files-table-types";
 import { Button } from "@/components/ui/button";
 
-interface File {
-  id: string;
-  name: string;
-  description?: string;
-  extension: string;
-  size: number;
-  objectName: string;
-  userId: string;
-  folderId?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Folder {
-  id: string;
-  name: string;
-  description?: string;
-  objectName: string;
-  parentId?: string;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
-  totalSize?: string;
-  _count?: {
-    files: number;
-    children: number;
-  };
-}
-
 interface FilesViewProps {
-  files: File[];
-  folders?: Folder[];
-  onPreview?: (file: File) => void;
-  onRename: (file: File) => void;
+  files: FileItem[];
+  folders?: FolderItem[];
+  onPreview?: (file: FileItem) => void;
+  onRename: (file: FileItem) => void;
   onUpdateName: (fileId: string, newName: string) => void;
   onUpdateDescription: (fileId: string, newDescription: string) => void;
   onDownload: (objectName: string, fileName: string) => void;
-  onShare: (file: File) => void;
-  onDelete: (file: File) => void;
-  onBulkDelete?: (files: File[], folders: Folder[]) => void;
-  onBulkShare?: (files: File[], folders: Folder[]) => void;
-  onBulkDownload?: (files: File[], folders: Folder[]) => void;
+  onShare: (file: FileItem) => void;
+  onDelete: (file: FileItem) => void;
+  onBulkDelete?: (files: FileItem[], folders: FolderItem[]) => void;
+  onBulkShare?: (files: FileItem[], folders: FolderItem[]) => void;
+  onBulkDownload?: (files: FileItem[], folders: FolderItem[]) => void;
   setClearSelectionCallback?: (callback: () => void) => void;
 }
 
@@ -78,9 +49,9 @@ export function FilesView({
     onDownload,
     onShare,
     onDelete,
-    onBulkDelete: (files: File[], folders: Folder[]) => onBulkDelete?.(files, folders),
-    onBulkShare: (files: File[], folders: Folder[]) => onBulkShare?.(files, folders),
-    onBulkDownload: (files: File[], folders: Folder[]) => onBulkDownload?.(files, folders),
+    onBulkDelete: (files: FileItem[], folders: FolderItem[]) => onBulkDelete?.(files, folders),
+    onBulkShare: (files: FileItem[], folders: FolderItem[]) => onBulkShare?.(files, folders),
+    onBulkDownload: (files: FileItem[], folders: FolderItem[]) => onBulkDownload?.(files, folders),
     setClearSelectionCallback,
   };
 
@@ -96,7 +67,9 @@ export function FilesView({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-muted-foreground">{t("files.viewMode.label")}:</span>
+          <span className="text-sm font-medium text-muted-foreground">
+            {t("files.viewMode.label")}:
+          </span>
           <div className="flex items-center border rounded-lg p-1">
             <Button
               variant={viewMode === "table" ? "default" : "ghost"}
@@ -119,7 +92,9 @@ export function FilesView({
           </div>
         </div>
 
-        <div className="text-sm text-muted-foreground">{t("files.totalFiles", { count: files.length })}</div>
+        <div className="text-sm text-muted-foreground">
+          {t("files.totalFiles", { count: files.length })}
+        </div>
       </div>
 
       {viewMode === "table" ? <FilesTable {...tableProps} /> : <FilesGrid {...gridProps} />}

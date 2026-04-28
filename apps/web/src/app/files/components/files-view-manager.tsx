@@ -1,45 +1,16 @@
-import { useEffect, useState } from "react";
 import { IconLayoutGrid, IconSearch, IconTable } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-
+import { useEffect, useState } from "react";
 import { FilesGridSkeleton, FilesTableSkeleton } from "@/components/skeletons";
 import { FilesGrid } from "@/components/tables/files-grid";
 import { FilesTable } from "@/components/tables/files-table";
+import type { FileItem, FolderItem } from "@/components/tables/files-table-types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-interface File {
-  id: string;
-  name: string;
-  description?: string;
-  extension: string;
-  size: number;
-  objectName: string;
-  userId: string;
-  folderId?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Folder {
-  id: string;
-  name: string;
-  description?: string;
-  objectName: string;
-  parentId?: string;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
-  totalSize?: string;
-  _count?: {
-    files: number;
-    children: number;
-  };
-}
-
 interface FilesViewManagerProps {
-  files: File[];
-  folders?: Folder[];
+  files: FileItem[];
+  folders?: FolderItem[];
   searchQuery: string;
   onSearch: (query: string) => void;
   onNavigateToFolder?: (folderId: string) => void;
@@ -50,24 +21,28 @@ interface FilesViewManagerProps {
   isShareMode?: boolean;
   onCreateFolder?: () => void;
   onUpload?: () => void;
-  onDeleteFolder?: (folder: Folder) => void;
-  onImmediateUpdate?: (itemId: string, itemType: "file" | "folder", newParentId: string | null) => void;
+  onDeleteFolder?: (folder: FolderItem) => void;
+  onImmediateUpdate?: (
+    itemId: string,
+    itemType: "file" | "folder",
+    newParentId: string | null,
+  ) => void;
   onRefresh?: () => Promise<void>;
-  onRenameFolder?: (folder: Folder) => void;
-  onMoveFolder?: (folder: Folder) => void;
-  onMoveFile?: (file: File) => void;
-  onShareFolder?: (folder: Folder) => void;
+  onRenameFolder?: (folder: FolderItem) => void;
+  onMoveFolder?: (folder: FolderItem) => void;
+  onMoveFile?: (file: FileItem) => void;
+  onShareFolder?: (folder: FolderItem) => void;
   onDownloadFolder?: (folderId: string, folderName: string) => Promise<void>;
-  onPreview?: (file: File) => void;
-  onRename?: (file: File) => void;
+  onPreview?: (file: FileItem) => void;
+  onRename?: (file: FileItem) => void;
   onUpdateName?: (fileId: string, newName: string) => void;
   onUpdateDescription?: (fileId: string, newDescription: string) => void;
-  onShare?: (file: File) => void;
-  onDelete?: (file: File) => void;
-  onBulkDelete?: (files: File[], folders: Folder[]) => void;
-  onBulkShare?: (files: File[], folders: Folder[]) => void;
-  onBulkDownload?: (files: File[], folders: Folder[]) => void;
-  onBulkMove?: (files: File[], folders: Folder[]) => void;
+  onShare?: (file: FileItem) => void;
+  onDelete?: (file: FileItem) => void;
+  onBulkDelete?: (files: FileItem[], folders: FolderItem[]) => void;
+  onBulkShare?: (files: FileItem[], folders: FolderItem[]) => void;
+  onBulkDownload?: (files: FileItem[], folders: FolderItem[]) => void;
+  onBulkMove?: (files: FileItem[], folders: FolderItem[]) => void;
   setClearSelectionCallback?: (callback: () => void) => void;
   onUpdateFolderName?: (folderId: string, newName: string) => void;
   onUpdateFolderDescription?: (folderId: string, newDescription: string) => void;
@@ -227,7 +202,9 @@ export function FilesViewManager({
           {/* No results message */}
           {searchQuery && !hasContent && (
             <div className="text-center py-8">
-              <p className="text-muted-foreground">{t("searchBar.noResults", { query: searchQuery })}</p>
+              <p className="text-muted-foreground">
+                {t("searchBar.noResults", { query: searchQuery })}
+              </p>
             </div>
           )}
         </div>

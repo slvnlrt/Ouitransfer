@@ -1,28 +1,20 @@
 import {
   IconArrowsMove,
-  IconCheck,
-  IconDotsVertical,
   IconDownload,
   IconEdit,
   IconFolder,
   IconShare,
   IconTrash,
-  IconX,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { formatFileSize } from "@/utils/format-file-size";
+import { EditableField } from "./editable-field";
 import type { FolderItem } from "./files-table-types";
+import type { ActionItem } from "./item-actions";
+import { ItemDropdownMenu } from "./item-actions";
 
 interface FolderRowProps {
   folder: FolderItem;
@@ -39,8 +31,14 @@ interface FolderRowProps {
   isShareMode: boolean;
   onSelectFolder: (folderId: string, checked: boolean) => void;
   onNavigateToFolder?: (folderId: string) => void;
-  onSetHoveredFolderField: (value: { folderId: string; field: "name" | "description" } | null) => void;
-  onStartEditFolder: (folderId: string, field: "name" | "description", currentValue: string) => void;
+  onSetHoveredFolderField: (
+    value: { folderId: string; field: "name" | "description" } | null,
+  ) => void;
+  onStartEditFolder: (
+    folderId: string,
+    field: "name" | "description",
+    currentValue: string,
+  ) => void;
   onSaveEditFolder: () => void;
   onCancelEditFolder: () => void;
   onEditValueChange: (value: string) => void;
@@ -83,6 +81,53 @@ export function FolderRow({
 }: FolderRowProps) {
   const t = useTranslations();
 
+  const actions: ActionItem[] = [
+    ...(onRenameFolder
+      ? [
+          {
+            key: "edit",
+            icon: IconEdit,
+            label: t("filesTable.actions.edit"),
+            onClick: () => onRenameFolder(folder),
+          },
+        ]
+      : []),
+    ...(onMoveFolder
+      ? [{ key: "move", icon: IconArrowsMove, label: "Move", onClick: () => onMoveFolder(folder) }]
+      : []),
+    ...(onDownloadFolder
+      ? [
+          {
+            key: "download",
+            icon: IconDownload,
+            label: t("filesTable.actions.download"),
+            onClick: () => onDownloadFolder(folder.id, folder.name),
+          },
+        ]
+      : []),
+    ...(onShareFolder
+      ? [
+          {
+            key: "share",
+            icon: IconShare,
+            label: t("filesTable.actions.share"),
+            onClick: () => onShareFolder(folder),
+          },
+        ]
+      : []),
+    ...(onDeleteFolder
+      ? [
+          {
+            key: "delete",
+            icon: IconTrash,
+            label: t("filesTable.actions.delete"),
+            onClick: () => onDeleteFolder(folder),
+            variant: "destructive" as const,
+          },
+        ]
+      : []),
+  ];
+
   return (
     <TableRow className="group hover:bg-muted/50 transition-colors border-0">
       {showBulkActions && (
@@ -96,75 +141,42 @@ export function FolderRow({
       )}
       <TableCell className="h-12 px-4 border-0">
         <div className="flex items-center gap-2">
+          {/* biome-ignore lint/a11y/useSemanticElements: contains nested interactive EditableField (Input + Buttons); HTML forbids nested buttons */}
           <div
+            role="button"
+            tabIndex={0}
             className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
             onClick={(e) => {
               e.stopPropagation();
               onNavigateToFolder?.(folder.id);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                e.stopPropagation();
+                onNavigateToFolder?.(folder.id);
+              }
             }}
             onMouseEnter={() => onSetHoveredFolderField({ folderId: folder.id, field: "name" })}
             onMouseLeave={() => onSetHoveredFolderField(null)}
           >
             <IconFolder className="h-5.5 w-5.5 text-primary" />
             <div className="flex items-center gap-1 min-w-0 flex-1">
-              {isEditingName ? (
-                <div className="flex items-center gap-1 flex-1">
-                  <Input
-                    ref={inputRef}
-                    value={editValue}
-                    onChange={(e) => onEditValueChange(e.target.value)}
-                    onKeyDown={onKeyDown}
-                    className="h-8 text-sm font-medium"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-6 w-6 text-green-600 hover:text-green-700 flex-shrink-0"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onSaveEditFolder();
-                    }}
-                  >
-                    <IconCheck className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-6 w-6 text-red-600 hover:text-red-700 flex-shrink-0"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onCancelEditFolder();
-                    }}
-                  >
-                    <IconX className="h-3 w-3" />
-                  </Button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-1 flex-1">
-                  <span
-                    className="font-medium text-sm text-foreground/90 truncate max-w-[150px]"
-                    title={displayName}
-                  >
-                    {displayName}
-                  </span>
-                  <div className="w-6 flex justify-center flex-shrink-0">
-                    {isHoveringName && !isShareMode && (
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-6 w-6 text-muted-foreground hover:text-foreground hidden sm:block"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onStartEditFolder(folder.id, "name", folder.name);
-                        }}
-                      >
-                        <IconEdit className="h-3 w-3" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              )}
+              <EditableField
+                isEditing={isEditingName}
+                isHovering={isHoveringName}
+                displayValue={displayName}
+                editValue={editValue}
+                isShareMode={isShareMode}
+                inputRef={inputRef}
+                displayClassName="font-medium text-sm text-foreground/90 truncate"
+                maxWidth="150px"
+                onStartEdit={() => onStartEditFolder(folder.id, "name", folder.name)}
+                onSaveEdit={onSaveEditFolder}
+                onCancelEdit={onCancelEditFolder}
+                onEditValueChange={onEditValueChange}
+                onKeyDown={onKeyDown}
+              />
             </div>
           </div>
         </div>
@@ -175,64 +187,23 @@ export function FolderRow({
         onMouseLeave={() => onSetHoveredFolderField(null)}
       >
         <div className="flex items-center gap-1">
-          {isEditingDescription ? (
-            <div className="flex items-center gap-1 flex-1">
-              <Input
-                ref={inputRef}
-                value={editValue}
-                onChange={(e) => onEditValueChange(e.target.value)}
-                onKeyDown={onKeyDown}
-                className="h-8 text-sm"
-                onClick={(e) => e.stopPropagation()}
-              />
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-6 w-6 text-green-600 hover:text-green-700 flex-shrink-0"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSaveEditFolder();
-                }}
-              >
-                <IconCheck className="h-3 w-3" />
-              </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-6 w-6 text-red-600 hover:text-red-700 flex-shrink-0"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onCancelEditFolder();
-                }}
-              >
-                <IconX className="h-3 w-3" />
-              </Button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1 flex-1 min-w-0">
-              <span
-                className="text-muted-foreground truncate max-w-[150px]"
-                title={displayDescription || "-"}
-              >
-                {displayDescription || "-"}
-              </span>
-              <div className="w-6 flex justify-center flex-shrink-0">
-                {isHoveringDescription && !isShareMode && (
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-6 w-6 text-muted-foreground hover:text-foreground hidden sm:block"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onStartEditFolder(folder.id, "description", folder.description || "");
-                    }}
-                  >
-                    <IconEdit className="h-3 w-3" />
-                  </Button>
-                )}
-              </div>
-            </div>
-          )}
+          <EditableField
+            isEditing={isEditingDescription}
+            isHovering={isHoveringDescription}
+            displayValue={displayDescription || ""}
+            editValue={editValue}
+            isShareMode={isShareMode}
+            inputRef={inputRef}
+            displayClassName="text-muted-foreground truncate"
+            maxWidth="150px"
+            onStartEdit={() =>
+              onStartEditFolder(folder.id, "description", folder.description || "")
+            }
+            onSaveEdit={onSaveEditFolder}
+            onCancelEdit={onCancelEditFolder}
+            onEditValueChange={onEditValueChange}
+            onKeyDown={onKeyDown}
+          />
         </div>
       </TableCell>
       <TableCell className="h-12 px-4">
@@ -241,66 +212,14 @@ export function FolderRow({
       <TableCell className="h-12 px-4">{formatDateTime(folder.createdAt)}</TableCell>
       <TableCell className="h-12 px-4">{formatDateTime(folder.updatedAt)}</TableCell>
       <TableCell className="h-12 px-4 text-right">
-        {isShareMode ? (
-          onDownloadFolder && (
-            <Button
-              size="icon"
-              variant="ghost"
-              className="h-8 w-8 hover:bg-muted"
-              onClick={() => onDownloadFolder(folder.id, folder.name)}
-            >
-              <IconDownload className="h-4 w-4" />
-              <span className="sr-only">{t("filesTable.actions.download")}</span>
-            </Button>
-          )
-        ) : (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted cursor-pointer">
-                <IconDotsVertical className="h-4 w-4" />
-                <span className="sr-only">Folder actions menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[200px]">
-              {onRenameFolder && (
-                <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onRenameFolder(folder)}>
-                  <IconEdit className="h-4 w-4" />
-                  {t("filesTable.actions.edit")}
-                </DropdownMenuItem>
-              )}
-              {onMoveFolder && (
-                <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onMoveFolder(folder)}>
-                  <IconArrowsMove className="h-4 w-4" />
-                  Move
-                </DropdownMenuItem>
-              )}
-              {onDownloadFolder && (
-                <DropdownMenuItem
-                  className="cursor-pointer py-2"
-                  onClick={() => onDownloadFolder(folder.id, folder.name)}
-                >
-                  <IconDownload className="h-4 w-4" />
-                  {t("filesTable.actions.download")}
-                </DropdownMenuItem>
-              )}
-              {onShareFolder && (
-                <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onShareFolder(folder)}>
-                  <IconShare className="h-4 w-4" />
-                  {t("filesTable.actions.share")}
-                </DropdownMenuItem>
-              )}
-              {onDeleteFolder && (
-                <DropdownMenuItem
-                  onClick={() => onDeleteFolder(folder)}
-                  className="cursor-pointer py-2 text-destructive focus:text-destructive"
-                >
-                  <IconTrash className="h-4 w-4" />
-                  {t("filesTable.actions.delete")}
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+        <ItemDropdownMenu
+          actions={actions}
+          isShareMode={isShareMode}
+          onShareModeDownload={
+            onDownloadFolder ? () => onDownloadFolder(folder.id, folder.name) : undefined
+          }
+          menuSrLabel="Folder actions menu"
+        />
       </TableCell>
     </TableRow>
   );

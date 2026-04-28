@@ -1,30 +1,4 @@
-import { Share } from "@/http/endpoints/shares/types";
-
-export interface ShareFile {
-  id: string;
-  name: string;
-  size: string;
-  objectName: string;
-  createdAt: string;
-}
-
-export interface ShareFolder {
-  id: string;
-  name: string;
-  totalSize: string | null;
-  createdAt: string;
-}
-
-export interface ShareFilesTableProps {
-  files?: ShareFile[];
-  folders?: ShareFolder[];
-  onDownload: (objectName: string, fileName: string) => Promise<void>;
-  onDownloadFolder?: (folderId: string, folderName: string) => Promise<void>;
-  onNavigateToFolder?: (folderId: string) => void;
-  enableNavigation?: boolean;
-}
-
-export type ShareContentTableProps = ShareFilesTableProps;
+import type { Share } from "@/http/endpoints/shares/types";
 
 export interface PasswordModalProps {
   isOpen: boolean;

@@ -13,6 +13,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 import { toast } from "sonner";
+import type { FileItem, FolderItem } from "@/components/tables/files-table-types";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -28,31 +29,19 @@ import { createShare, createShareAlias, listFiles, listFolders } from "@/http/en
 import { logger } from "@/lib/logger";
 import { customNanoid } from "@/lib/utils";
 
-interface File {
-  id: string;
-  name: string;
-  description?: string;
-  size: number;
-  objectName: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Folder {
-  id: string;
-  name: string;
-  description?: string;
-  objectName: string;
-  parentId?: string;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
-}
+type ShareFile = Pick<
+  FileItem,
+  "id" | "name" | "description" | "size" | "objectName" | "createdAt" | "updatedAt"
+>;
+type ShareFolder = Pick<
+  FolderItem,
+  "id" | "name" | "description" | "objectName" | "parentId" | "userId" | "createdAt" | "updatedAt"
+>;
 
 interface ShareItemModalProps {
   isOpen: boolean;
-  file?: File | null;
-  folder?: Folder | null;
+  file?: ShareFile | null;
+  folder?: ShareFolder | null;
   onClose: () => void;
   onSuccess: () => void;
 }

@@ -1,30 +1,18 @@
 import { FilesTable } from "@/components/tables/files-table";
-
-interface File {
-  id: string;
-  name: string;
-  description?: string;
-  extension: string;
-  size: number;
-  objectName: string;
-  userId: string;
-  folderId?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import type { FileItem } from "@/components/tables/files-table-types";
 
 interface DashboardFilesViewProps {
-  files: File[];
-  onPreview: (file: File) => void;
-  onRename: (file: File) => void;
+  files: FileItem[];
+  onPreview: (file: FileItem) => void;
+  onRename: (file: FileItem) => void;
   onUpdateName: (fileId: string, newName: string) => void;
   onUpdateDescription: (fileId: string, newDescription: string) => void;
   onDownload: (objectName: string, fileName: string) => void;
-  onShare: (file: File) => void;
-  onDelete: (file: File) => void;
-  onBulkDelete?: (files: File[]) => void;
-  onBulkShare?: (files: File[]) => void;
-  onBulkDownload?: (files: File[]) => void;
+  onShare: (file: FileItem) => void;
+  onDelete: (file: FileItem) => void;
+  onBulkDelete?: (files: FileItem[]) => void;
+  onBulkShare?: (files: FileItem[]) => void;
+  onBulkDownload?: (files: FileItem[]) => void;
   setClearSelectionCallback?: (callback: () => void) => void;
 }
 

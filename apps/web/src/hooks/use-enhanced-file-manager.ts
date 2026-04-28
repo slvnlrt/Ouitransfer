@@ -1,22 +1,14 @@
-import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
-
+import type { FileItem, FolderItem } from "@/components/tables/files-table-types";
 import { deleteFile, updateFile } from "@/http/endpoints";
 import { deleteFolder, registerFolder, updateFolder } from "@/http/endpoints/folders";
 import { getCachedDownloadUrl } from "@/lib/download-url-cache";
 import { logger } from "@/lib/logger";
 
-interface FileToRename {
-  id: string;
-  name: string;
-  description?: string;
-}
-
-interface FileToDelete {
-  id: string;
-  name: string;
-}
+type FileToRename = Pick<FileItem, "id" | "name" | "description">;
+type FileToDelete = Pick<FileItem, "id" | "name">;
 
 interface PreviewFile {
   name: string;
@@ -24,65 +16,21 @@ interface PreviewFile {
   description?: string;
 }
 
-interface FileToShare {
-  id: string;
-  name: string;
-  description?: string;
-  size: number;
-  objectName: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface FolderToRename {
-  id: string;
-  name: string;
-  description?: string;
-}
-
-interface FolderToDelete {
-  id: string;
-  name: string;
-}
-
-interface FolderToShare {
-  id: string;
-  name: string;
-  description?: string;
-  objectName: string;
-  parentId?: string;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface BulkFile {
-  id: string;
-  name: string;
-  description?: string;
-  size: number;
-  objectName: string;
-  folderId?: string;
-  createdAt: string;
-  updatedAt: string;
-  relativePath?: string;
-}
-
-interface BulkFolder {
-  id: string;
-  name: string;
-  description?: string;
-  objectName: string;
-  parentId?: string;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
-  totalSize?: string;
-  _count?: {
-    files: number;
-    children: number;
-  };
-}
+type FileToShare = Pick<
+  FileItem,
+  "id" | "name" | "description" | "size" | "objectName" | "createdAt" | "updatedAt"
+>;
+type FolderToRename = Pick<FolderItem, "id" | "name" | "description">;
+type FolderToDelete = Pick<FolderItem, "id" | "name">;
+type FolderToShare = Pick<
+  FolderItem,
+  "id" | "name" | "description" | "objectName" | "parentId" | "userId" | "createdAt" | "updatedAt"
+>;
+type BulkFile = Pick<
+  FileItem,
+  "id" | "name" | "description" | "size" | "objectName" | "folderId" | "createdAt" | "updatedAt"
+> & { relativePath?: string };
+type BulkFolder = FolderItem;
 
 export interface EnhancedFileManagerHook {
   previewFile: PreviewFile | null;
@@ -132,7 +80,10 @@ export interface EnhancedFileManagerHook {
   handleDeleteBulk: () => Promise<void>;
   handleShareBulkSuccess: () => void;
 
-  handleCreateFolder: (data: { name: string; description?: string }, parentId?: string) => Promise<void>;
+  handleCreateFolder: (
+    data: { name: string; description?: string },
+    parentId?: string,
+  ) => Promise<void>;
   handleFolderDelete: (folderId: string) => Promise<void>;
   handleFolderRename: (folderId: string, newName: string, description?: string) => Promise<void>;
 
@@ -150,9 +101,13 @@ interface TraversalFolder {
 export function useEnhancedFileManager(
   onRefresh: () => Promise<void>,
   clearSelection?: () => void,
-  handleImmediateUpdate?: (itemId: string, itemType: "file" | "folder", newParentId: string | null | "__DELETE__") => void,
+  handleImmediateUpdate?: (
+    itemId: string,
+    itemType: "file" | "folder",
+    newParentId: string | null | "__DELETE__",
+  ) => void,
   allFiles?: BulkFile[],
-  allFolders?: TraversalFolder[]
+  allFolders?: TraversalFolder[],
 ) {
   const t = useTranslations();
 
@@ -170,7 +125,9 @@ export function useEnhancedFileManager(
   const [folderToShare, setFolderToShare] = useState<FolderToShare | null>(null);
   const [isCreateFolderModalOpen, setCreateFolderModalOpen] = useState(false);
   const [isBulkDownloadModalOpen, setBulkDownloadModalOpen] = useState(false);
-  const [clearSelectionCallback, setClearSelectionCallbackState] = useState<(() => void) | null>(null);
+  const [clearSelectionCallback, setClearSelectionCallbackState] = useState<(() => void) | null>(
+    null,
+  );
 
   const [foldersToShare, setFoldersToShare] = useState<BulkFolder[] | null>(null);
   const [foldersToDownload, setFoldersToDownload] = useState<BulkFolder[] | null>(null);
@@ -193,7 +150,10 @@ export function useEnhancedFileManager(
       toast.dismiss(loadingToast);
       toast.success(t("shareManager.downloadSuccess"));
     } catch (error) {
-      logger.error("[FileManager] Download failed", { fileName, err: error instanceof Error ? error.message : String(error) });
+      logger.error("[FileManager] Download failed", {
+        fileName,
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("share.errors.downloadFailed"));
     }
   };
@@ -207,7 +167,10 @@ export function useEnhancedFileManager(
       toast.success(t("files.updateSuccess"));
       setFileToRename(null);
     } catch (error) {
-      logger.error("Failed to update file", { fileId, err: error instanceof Error ? error.message : String(error) });
+      logger.error("Failed to update file", {
+        fileId,
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("files.updateError"));
     }
   };
@@ -223,7 +186,10 @@ export function useEnhancedFileManager(
       toast.success(t("files.deleteSuccess"));
       setFileToDelete(null);
     } catch (error) {
-      logger.error("Failed to delete file", { fileId, err: error instanceof Error ? error.message : String(error) });
+      logger.error("Failed to delete file", {
+        fileId,
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("files.deleteError"));
     }
   };
@@ -274,7 +240,7 @@ export function useEnhancedFileManager(
         // Helper function to get all files in a folder recursively with paths
         const getFolderFilesWithPath = (
           targetFolderId: string,
-          currentPath: string = ""
+          currentPath: string = "",
         ): Array<{ file: BulkFile; path: string }> => {
           if (!allFiles || !allFolders) return [];
 
@@ -304,7 +270,7 @@ export function useEnhancedFileManager(
               url,
               name: file.name,
             };
-          })
+          }),
         );
         allFilesToDownload.push(...directFileItems);
 
@@ -319,7 +285,7 @@ export function useEnhancedFileManager(
                 url,
                 name: path ? `${path}/${file.name}` : file.name,
               };
-            })
+            }),
           );
           allFilesToDownload.push(...folderFileItems);
         }
@@ -332,7 +298,10 @@ export function useEnhancedFileManager(
 
         // Create ZIP with all files
         const { downloadFilesAsZip } = await import("@/utils/zip-download");
-        await downloadFilesAsZip(allFilesToDownload, zipName.endsWith(".zip") ? zipName : `${zipName}.zip`);
+        await downloadFilesAsZip(
+          allFilesToDownload,
+          zipName.endsWith(".zip") ? zipName : `${zipName}.zip`,
+        );
 
         toast.dismiss(loadingToast);
         toast.success(t("shareManager.zipDownloadSuccess"));
@@ -349,7 +318,9 @@ export function useEnhancedFileManager(
         clearSelectionCallback();
       }
     } catch (error) {
-      logger.error("Error in bulk download", { err: error instanceof Error ? error.message : String(error) });
+      logger.error("Error in bulk download", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       setBulkDownloadModalOpen(false);
       setFilesToDownload(null);
       setFoldersToDownload(null);
@@ -387,12 +358,17 @@ export function useEnhancedFileManager(
       setFilesToDelete(null);
       setFoldersToDelete(null);
     } catch (error) {
-      logger.error("Failed to delete items", { err: error instanceof Error ? error.message : String(error) });
+      logger.error("Failed to delete items", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("files.bulkDeleteError"));
     }
   };
 
-  const handleCreateFolder = async (data: { name: string; description?: string }, parentId?: string) => {
+  const handleCreateFolder = async (
+    data: { name: string; description?: string },
+    parentId?: string,
+  ) => {
     try {
       const folderData = {
         name: data.name,
@@ -406,7 +382,10 @@ export function useEnhancedFileManager(
       setCreateFolderModalOpen(false);
       await onRefresh();
     } catch (error) {
-      logger.error("Error creating folder", { name: data.name, err: error instanceof Error ? error.message : String(error) });
+      logger.error("Error creating folder", {
+        name: data.name,
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("folderActions.createFolderError"));
       throw error;
     }
@@ -419,7 +398,10 @@ export function useEnhancedFileManager(
       setFolderToRename(null);
       await onRefresh();
     } catch (error) {
-      logger.error("Error renaming folder", { folderId, err: error instanceof Error ? error.message : String(error) });
+      logger.error("Error renaming folder", {
+        folderId,
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("folderActions.renameFolderError"));
     }
   };
@@ -437,7 +419,10 @@ export function useEnhancedFileManager(
         clearSelectionCallback();
       }
     } catch (error) {
-      logger.error("Error deleting folder", { folderId, err: error instanceof Error ? error.message : String(error) });
+      logger.error("Error deleting folder", {
+        folderId,
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("folderActions.deleteFolderError"));
     }
   };

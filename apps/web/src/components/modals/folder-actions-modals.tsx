@@ -1,6 +1,7 @@
 import { IconEdit, IconFolderPlus, IconTrash } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
+import type { FolderItem } from "@/components/tables/files-table-types";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,16 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-interface FolderToEdit {
-  id: string;
-  name: string;
-  description?: string | null;
-}
-
-interface FolderToDelete {
-  id: string;
-  name: string;
-}
+type FolderToEdit = Pick<FolderItem, "id" | "name" | "description">;
+type FolderToDelete = Pick<FolderItem, "id" | "name">;
 
 interface FolderActionsModalsProps {
   folderToCreate: boolean;
@@ -68,7 +61,7 @@ export function FolderActionsModals({
                 if (e.key === "Enter") {
                   const nameInput = e.currentTarget;
                   const descInput = document.querySelector(
-                    `textarea[placeholder="${t("folderActions.folderDescriptionPlaceholder")}"]`
+                    `textarea[placeholder="${t("folderActions.folderDescriptionPlaceholder")}"]`,
                   ) as HTMLTextAreaElement;
 
                   if (nameInput.value.trim()) {
@@ -86,13 +79,13 @@ export function FolderActionsModals({
             <Button
               onClick={() => {
                 const nameInput = document.querySelector(
-                  `input[placeholder="${t("folderActions.folderNamePlaceholder")}"]`
+                  `input[placeholder="${t("folderActions.folderNamePlaceholder")}"]`,
                 ) as HTMLInputElement;
                 const descInput = document.querySelector(
-                  `textarea[placeholder="${t("folderActions.folderDescriptionPlaceholder")}"]`
+                  `textarea[placeholder="${t("folderActions.folderDescriptionPlaceholder")}"]`,
                 ) as HTMLTextAreaElement;
 
-                if (nameInput && nameInput.value.trim()) {
+                if (nameInput?.value.trim()) {
                   onCreateFolder(nameInput.value.trim(), descInput?.value.trim() || undefined);
                 }
               }}
@@ -120,11 +113,15 @@ export function FolderActionsModals({
                   if (e.key === "Enter" && folderToEdit) {
                     const nameInput = e.currentTarget;
                     const descInput = document.querySelector(
-                      `textarea[placeholder="${t("folderActions.folderDescriptionPlaceholder")}"]`
+                      `textarea[placeholder="${t("folderActions.folderDescriptionPlaceholder")}"]`,
                     ) as HTMLTextAreaElement;
 
                     if (nameInput.value.trim()) {
-                      onEditFolder(folderToEdit.id, nameInput.value.trim(), descInput?.value.trim() || undefined);
+                      onEditFolder(
+                        folderToEdit.id,
+                        nameInput.value.trim(),
+                        descInput?.value.trim() || undefined,
+                      );
                     }
                   }
                 }}
@@ -142,14 +139,18 @@ export function FolderActionsModals({
             <Button
               onClick={() => {
                 const nameInput = document.querySelector(
-                  `input[placeholder="${t("folderActions.folderNamePlaceholder")}"]`
+                  `input[placeholder="${t("folderActions.folderNamePlaceholder")}"]`,
                 ) as HTMLInputElement;
                 const descInput = document.querySelector(
-                  `textarea[placeholder="${t("folderActions.folderDescriptionPlaceholder")}"]`
+                  `textarea[placeholder="${t("folderActions.folderDescriptionPlaceholder")}"]`,
                 ) as HTMLTextAreaElement;
 
-                if (folderToEdit && nameInput && nameInput.value.trim()) {
-                  onEditFolder(folderToEdit.id, nameInput.value.trim(), descInput?.value.trim() || undefined);
+                if (folderToEdit && nameInput?.value.trim()) {
+                  onEditFolder(
+                    folderToEdit.id,
+                    nameInput.value.trim(),
+                    descInput?.value.trim() || undefined,
+                  );
                 }
               }}
             >
@@ -168,11 +169,13 @@ export function FolderActionsModals({
             </DialogTitle>
           </DialogHeader>
           <DialogDescription>
-            <p className="text-base font-semibold mb-2 text-foreground">{t("folderActions.deleteConfirmation")}</p>
+            <p className="text-base font-semibold mb-2 text-foreground">
+              {t("folderActions.deleteConfirmation")}
+            </p>
             <p>
               {(folderToDelete?.name &&
                 (folderToDelete.name.length > 50
-                  ? folderToDelete.name.substring(0, 50) + "..."
+                  ? `${folderToDelete.name.substring(0, 50)}...`
                   : folderToDelete.name)) ||
                 ""}
             </p>
@@ -182,7 +185,10 @@ export function FolderActionsModals({
             <Button variant="outline" onClick={onCloseDelete}>
               {t("common.cancel")}
             </Button>
-            <Button variant="destructive" onClick={() => folderToDelete && onDeleteFolder(folderToDelete.id)}>
+            <Button
+              variant="destructive"
+              onClick={() => folderToDelete && onDeleteFolder(folderToDelete.id)}
+            >
               {t("common.delete")}
             </Button>
           </DialogFooter>

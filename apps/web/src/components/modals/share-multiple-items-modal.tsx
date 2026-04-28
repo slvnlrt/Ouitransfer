@@ -14,6 +14,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 import { toast } from "sonner";
+import type { FileItem, FolderItem } from "@/components/tables/files-table-types";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -31,31 +32,11 @@ import { logger } from "@/lib/logger";
 import { customNanoid } from "@/lib/utils";
 import { getFileIcon } from "@/utils/file-icons";
 
-interface BulkFile {
-  id: string;
-  name: string;
-  description?: string;
-  size: number;
-  objectName: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface BulkFolder {
-  id: string;
-  name: string;
-  description?: string;
-  objectName?: string;
-  parentId?: string;
-  userId?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  totalSize?: string;
-  _count?: {
-    files: number;
-    children: number;
-  };
-}
+type BulkFile = Pick<
+  FileItem,
+  "id" | "name" | "description" | "size" | "objectName" | "createdAt" | "updatedAt"
+>;
+type BulkFolder = FolderItem;
 
 interface BulkItem {
   id: string;

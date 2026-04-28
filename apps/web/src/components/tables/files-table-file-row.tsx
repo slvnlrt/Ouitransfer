@@ -1,29 +1,21 @@
 import {
   IconArrowsMove,
-  IconCheck,
-  IconDotsVertical,
   IconDownload,
   IconEdit,
   IconEye,
   IconShare,
   IconTrash,
-  IconX,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { getFileIcon } from "@/utils/file-icons";
 import { formatFileSize } from "@/utils/format-file-size";
+import { EditableField } from "./editable-field";
 import type { FileItem } from "./files-table-types";
+import type { ActionItem } from "./item-actions";
+import { ItemDropdownMenu } from "./item-actions";
 
 interface FileRowProps {
   file: FileItem;
@@ -85,6 +77,66 @@ export function FileRow({
   const t = useTranslations();
   const { icon: FileIcon, color } = getFileIcon(file.name);
 
+  const actions: ActionItem[] = [
+    ...(onPreview
+      ? [
+          {
+            key: "preview",
+            icon: IconEye,
+            label: t("filesTable.actions.preview"),
+            onClick: () => onPreview(file),
+          },
+        ]
+      : []),
+    ...(onRename
+      ? [
+          {
+            key: "edit",
+            icon: IconEdit,
+            label: t("filesTable.actions.edit"),
+            onClick: () => onRename(file),
+          },
+        ]
+      : []),
+    ...(onMoveFile
+      ? [
+          {
+            key: "move",
+            icon: IconArrowsMove,
+            label: t("common.move"),
+            onClick: () => onMoveFile(file),
+          },
+        ]
+      : []),
+    {
+      key: "download",
+      icon: IconDownload,
+      label: t("filesTable.actions.download"),
+      onClick: () => onDownload(file.objectName, file.name),
+    },
+    ...(onShare
+      ? [
+          {
+            key: "share",
+            icon: IconShare,
+            label: t("filesTable.actions.share"),
+            onClick: () => onShare(file),
+          },
+        ]
+      : []),
+    ...(onDelete
+      ? [
+          {
+            key: "delete",
+            icon: IconTrash,
+            label: t("filesTable.actions.delete"),
+            onClick: () => onDelete(file),
+            variant: "destructive" as const,
+          },
+        ]
+      : []),
+  ];
+
   return (
     <TableRow
       className="group hover:bg-muted/50 transition-colors border-0 cursor-pointer"
@@ -114,209 +166,81 @@ export function FileRow({
       )}
       <TableCell className="h-12 px-4 border-0">
         <div className="flex items-center gap-2">
+          {/* biome-ignore lint/a11y/useSemanticElements: contains nested interactive EditableField (Input + Buttons); HTML forbids nested buttons */}
           <div
+            role="button"
+            tabIndex={0}
             className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
             onClick={(e) => {
               e.stopPropagation();
               onPreview?.(file);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                e.stopPropagation();
+                onPreview?.(file);
+              }
             }}
             onMouseEnter={() => onSetHoveredField({ fileId: file.id, field: "name" })}
             onMouseLeave={() => onSetHoveredField(null)}
           >
             <FileIcon className={`h-5.5 w-5.5 ${color}`} />
             <div className="flex items-center gap-1 min-w-0 flex-1">
-              {isEditingName ? (
-                <div className="flex items-center gap-1 flex-1">
-                  <Input
-                    ref={inputRef}
-                    value={editValue}
-                    onChange={(e) => onEditValueChange(e.target.value)}
-                    onKeyDown={onKeyDown}
-                    className="h-8 text-sm font-medium"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-6 w-6 text-green-600 hover:text-green-700 flex-shrink-0"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onSaveEdit();
-                    }}
-                  >
-                    <IconCheck className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-6 w-6 text-red-600 hover:text-red-700 flex-shrink-0"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onCancelEdit();
-                    }}
-                  >
-                    <IconX className="h-3 w-3" />
-                  </Button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-1 flex-1 min-w-0">
-                  <span className="truncate max-w-[200px] font-medium" title={displayName}>
-                    {displayName}
-                  </span>
-                  <div className="w-6 flex justify-center flex-shrink-0">
-                    {isHoveringName && !isShareMode && (
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-6 w-6 text-muted-foreground hover:text-foreground hidden sm:block"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onStartEdit(file.id, "name", displayName);
-                        }}
-                      >
-                        <IconEdit className="h-3 w-3" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              )}
+              <EditableField
+                isEditing={isEditingName}
+                isHovering={isHoveringName}
+                displayValue={displayName}
+                editValue={editValue}
+                isShareMode={isShareMode}
+                inputRef={inputRef}
+                displayClassName="truncate font-medium"
+                maxWidth="200px"
+                onStartEdit={() => onStartEdit(file.id, "name", displayName)}
+                onSaveEdit={onSaveEdit}
+                onCancelEdit={onCancelEdit}
+                onEditValueChange={onEditValueChange}
+                onKeyDown={onKeyDown}
+              />
             </div>
           </div>
         </div>
       </TableCell>
-      <TableCell className="h-12 px-4">
-        <div
-          className="flex items-center gap-1"
-          onMouseEnter={() => onSetHoveredField({ fileId: file.id, field: "description" })}
-          onMouseLeave={() => onSetHoveredField(null)}
-        >
-          {isEditingDescription ? (
-            <div className="flex items-center gap-1 flex-1">
-              <Input
-                ref={inputRef}
-                value={editValue}
-                onChange={(e) => onEditValueChange(e.target.value)}
-                onKeyDown={onKeyDown}
-                placeholder={t("fileActions.addDescriptionPlaceholder")}
-                className="h-8 text-sm"
-                onClick={(e) => e.stopPropagation()}
-              />
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-6 w-6 text-green-600 hover:text-green-700 flex-shrink-0"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSaveEdit();
-                }}
-              >
-                <IconCheck className="h-3 w-3" />
-              </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-6 w-6 text-red-600 hover:text-red-700 flex-shrink-0"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onCancelEdit();
-                }}
-              >
-                <IconX className="h-3 w-3" />
-              </Button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1 flex-1 min-w-0">
-              <span
-                className="text-muted-foreground truncate max-w-[150px]"
-                title={displayDescription || "-"}
-              >
-                {displayDescription || "-"}
-              </span>
-              <div className="w-6 flex justify-center flex-shrink-0">
-                {isHoveringDescription && !isShareMode && (
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-6 w-6 text-muted-foreground hover:text-foreground hidden sm:block"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onStartEdit(file.id, "description", displayDescription || "");
-                    }}
-                  >
-                    <IconEdit className="h-3 w-3" />
-                  </Button>
-                )}
-              </div>
-            </div>
-          )}
+      <TableCell
+        className="h-12 px-4"
+        onMouseEnter={() => onSetHoveredField({ fileId: file.id, field: "description" })}
+        onMouseLeave={() => onSetHoveredField(null)}
+      >
+        <div className="flex items-center gap-1">
+          <EditableField
+            isEditing={isEditingDescription}
+            isHovering={isHoveringDescription}
+            displayValue={displayDescription || ""}
+            editValue={editValue}
+            placeholder={t("fileActions.addDescriptionPlaceholder")}
+            isShareMode={isShareMode}
+            inputRef={inputRef}
+            displayClassName="text-muted-foreground truncate"
+            maxWidth="150px"
+            onStartEdit={() => onStartEdit(file.id, "description", displayDescription || "")}
+            onSaveEdit={onSaveEdit}
+            onCancelEdit={onCancelEdit}
+            onEditValueChange={onEditValueChange}
+            onKeyDown={onKeyDown}
+          />
         </div>
       </TableCell>
       <TableCell className="h-12 px-4">{formatFileSize(file.size)}</TableCell>
       <TableCell className="h-12 px-4">{formatDateTime(file.createdAt)}</TableCell>
-      <TableCell className="h-12 px-4">{formatDateTime(file.updatedAt || file.createdAt)}</TableCell>
+      <TableCell className="h-12 px-4">
+        {formatDateTime(file.updatedAt || file.createdAt)}
+      </TableCell>
       <TableCell className="h-12 px-4 text-right">
-        {isShareMode ? (
-          <Button
-            size="icon"
-            variant="ghost"
-            className="h-8 w-8 hover:bg-muted"
-            onClick={() => onDownload(file.objectName, file.name)}
-          >
-            <IconDownload className="h-4 w-4" />
-            <span className="sr-only">{t("filesTable.actions.download")}</span>
-          </Button>
-        ) : (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted cursor-pointer">
-                <IconDotsVertical className="h-4 w-4" />
-                <span className="sr-only">{t("filesTable.actions.menu")}</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[200px]">
-              {onPreview && (
-                <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onPreview(file)}>
-                  <IconEye className="h-4 w-4" />
-                  {t("filesTable.actions.preview")}
-                </DropdownMenuItem>
-              )}
-              {onRename && (
-                <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onRename(file)}>
-                  <IconEdit className="h-4 w-4" />
-                  {t("filesTable.actions.edit")}
-                </DropdownMenuItem>
-              )}
-              {onMoveFile && (
-                <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onMoveFile(file)}>
-                  <IconArrowsMove className="h-4 w-4" />
-                  {t("common.move")}
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuItem
-                className="cursor-pointer py-2"
-                onClick={() => onDownload(file.objectName, file.name)}
-              >
-                <IconDownload className="h-4 w-4" />
-                {t("filesTable.actions.download")}
-              </DropdownMenuItem>
-              {onShare && (
-                <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onShare(file)}>
-                  <IconShare className="h-4 w-4" />
-                  {t("filesTable.actions.share")}
-                </DropdownMenuItem>
-              )}
-              {onDelete && (
-                <DropdownMenuItem
-                  onClick={() => onDelete(file)}
-                  className="cursor-pointer py-2 text-destructive focus:text-destructive"
-                >
-                  <IconTrash className="h-4 w-4" />
-                  {t("filesTable.actions.delete")}
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+        <ItemDropdownMenu
+          actions={actions}
+          isShareMode={isShareMode}
+          onShareModeDownload={() => onDownload(file.objectName, file.name)}
+        />
       </TableCell>
     </TableRow>
   );
