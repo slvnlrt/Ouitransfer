@@ -1068,6 +1068,14 @@ Port Configuration (1h)
 
 Note: S4 (X-Forwarded-For trust without TRUST\_PROXY) is already covered by item 5.7 above.
 
+\- \[ ] 5.17 — Prefer `filename*` over `filename` in Content-Disposition parsing (Phase 3 review M-3)
+
+&#x20; File: packages/shared/src/mime-types.ts
+
+&#x20; Action: Per RFC 6266, when both `filename*` and `filename` are present in a Content-Disposition header, `filename*` should be preferred (it supports full UTF-8 encoding). Current regex returns whichever appears first. Implement two-pass: first scan for `filename*=`, fall back to `filename=`.
+
+&#x20; Justification: Phase 3 review M-3 — pre-existing, not introduced by Phase 3
+
 \- \[ ] 5.16 — Migrate controllers to use the centralized error handler (Phase 3 review I-2)
 
 &#x20; Files: All server controller files (~15 files)
@@ -1437,6 +1445,30 @@ Final Security Review (4h)
 &#x20; File: apps/web/src/lib/proxy.ts
 
 &#x20; Action: The route matcher is O(n) scanning 122 routes per request. Fine at current scale (~microseconds). If route count grows significantly, consider bucketing by method then segment count, or pre-compiling to a trie.
+
+\- \[ ] 8.15 — PrismaClient singleton: add globalThis memoization for HMR/test reloads (Phase 3 review M-1)
+
+&#x20; File: apps/server/src/shared/prisma.ts
+
+&#x20; Action: Current `const prisma = new PrismaClient()` creates a fresh instance on module reload (Vitest watch mode, HMR). Adopt the standard `globalThis` memoization pattern to prevent connection-pool leaks during development.
+
+&#x20; Justification: Phase 3 review M-1
+
+\- \[ ] 8.16 — Expand health test and web smoke test to cover real app logic (Phase 3 review M-5/M-6)
+
+&#x20; Files: apps/server/src/\_\_tests\_\_/health.test.ts, apps/web/src/\_\_tests\_\_/smoke.test.tsx
+
+&#x20; Action: Health test currently has a single 200-status assertion — expand to exercise the global error handler, auth middleware, or at minimum test error paths. Web smoke test tests the shadcn Button (third-party) — replace with tests for actual app components or hooks. Consider renaming health.test.ts to health.smoke.test.ts if it stays minimal.
+
+&#x20; Justification: Phase 3 review M-5/M-6
+
+\- \[ ] 8.17 — Add JSDoc comment to frontend logger about module-load env capture (Phase 3 review M-4)
+
+&#x20; File: apps/web/src/lib/logger.ts
+
+&#x20; Action: `NEXT_PUBLIC_LOG_LEVEL` is captured once at module evaluation time. Runtime overrides won't work. Add a JSDoc comment documenting this intentional design constraint.
+
+&#x20; Justification: Phase 3 review M-4 — trivial but worth documenting for future developers
 
 &#x20; Justification: Phase 2 review S1 — performance note
 
