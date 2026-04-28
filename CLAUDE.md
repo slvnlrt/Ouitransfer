@@ -97,8 +97,12 @@ audit/
   TODO-POST-PHASE-3.md        Reviewer follow-ups from Phase 3
 ```
 
-### Next Up
-- Phase 4 of CONSOLIDATED-TODO-LIST — Frontend Modernization
+### Phase 4 — Frontend Modernization: IN PROGRESS
+Batch 1 complete: 4.14 (shared UI primitives extracted — EditableField, ItemActions, useEditableItem,
+useSelectionManager, formatDateTime; 6 consumer files reduced by 797 lines), 4.15 (29 duplicate
+File/Folder type interfaces consolidated — 10 exact duplicates replaced with imports, 13 subsets
+converted to Pick<>, 4 dead types removed, 1 kept separate for API null boundary).
+Next: Batch 2 — error boundaries (4.1) + loading states (4.2).
 
 ## Important: No Production, No Legacy
 The app is **not in production** and has no existing users. This means:

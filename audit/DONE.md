@@ -655,6 +655,22 @@
 - **Change**: Deleted `globalThis.crypto` and `global.crypto` polyfill block (lines 22-30) + the `import crypto from "node:crypto"` import. Node 19+ has `globalThis.crypto` natively; this project targets Node 24 — the polyfill was dead code (condition never true). This also eliminated the last 2 `biome-ignore lint/suspicious/noExplicitAny` suppressions in the server, bringing the entire codebase to 0 noExplicitAny suppressions.
 - **Verified**: PASS (server type-check clean, 31/31 tests green)
 
+---
+
+## Phase 4 — Frontend Modernization
+
+### 4.14 — Extract shared UI primitives from duplicated file/folder rows/cards
+- **Date**: 2026-04-28
+- **Files**: Created 5 new shared files (`editable-field.tsx`, `item-actions.tsx`, `use-editable-item.ts`, `use-selection-manager.ts`, `format-date-time.ts`). Modified 6 consumer files (`files-table.tsx`, `files-table-file-row.tsx`, `files-table-folder-row.tsx`, `files-grid.tsx`, `files-grid-file-card.tsx`, `files-grid-folder-card.tsx`).
+- **Change**: Extracted `EditableField` component (inline-edit input + confirm/cancel buttons + hover-reveal edit pencil), `ItemDropdownMenu` + `ItemContextMenuActions` (configurable action lists for dropdown/context menus), `useEditableItem` hook (unified edit state with transform callbacks), `useSelectionManager` hook (selection state + bulk actions), and `formatDateTime` utility. Consumer files reduced from 2108L → 1311L (-797L). Also fixed 10 pre-existing a11y lint errors: added `role="button"` + `tabIndex={0}` + keyboard handlers to interactive card/row divs, moved hover handlers from `<div>` to `<TableCell>`, added `type="button"` to share table button.
+- **Verified**: PASS (web + API type-check clean, 31/31 tests green)
+
+### 4.15 — Consolidate 29 duplicate File/Folder type interfaces
+- **Date**: 2026-04-28
+- **Files**: 12 files modified across `apps/web/src/` (5 exact-duplicate files, 7 subset/divergent files)
+- **Change**: 10 exact duplicate interfaces replaced with imports from canonical `files-table-types.ts`. 13 subset interfaces converted to `Pick<FileItem/FolderItem, ...>` aliases (FileToDelete, FileToRename, FileToShare, etc.). 4 unused dead types removed from share types/index.tsx. 1 genuinely divergent type (`MoveItemFolder`) kept separate with JSDoc explaining API null boundary. 1 widened type (`BulkFolder`) simplified to direct `FolderItem` alias after verifying callers always pass full objects. 4 API-layer types in `http/endpoints/*/types.ts` correctly left untouched (already bridged by `api-mappers.ts`).
+- **Verified**: PASS (web + API type-check clean, 31/31 tests green)
+
 ### QA-3 — JWT error detection made future-proof
 - **Date**: 2026-04-28
 - **Files**: `apps/server/src/utils/error-handler.ts`, `apps/server/src/__tests__/error-handler.test.ts`

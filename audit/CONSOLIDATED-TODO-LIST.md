@@ -922,7 +922,7 @@ Accessibility (4h)
 
 Component Deduplication (2h)
 
-\- \[ ] 4.14 — Extract shared UI primitives from duplicated file/folder row splits (Phase 3 QA-8)
+\- \[x] 4.14 — Extract shared UI primitives from duplicated file/folder row splits (Phase 3 QA-8)
 
 &#x20; Files: apps/web/src/app/files/components/files-table-file-row.tsx, files-table-folder-row.tsx, files-grid-file-card.tsx, files-grid-folder-card.tsx
 
@@ -930,7 +930,7 @@ Component Deduplication (2h)
 
 &#x20; Justification: Phase 3 quality audit QA-8 — mechanical splits increased file count but created maintenance burden
 
-\- \[ ] 4.15 — Consolidate duplicated File/Folder type interfaces into canonical imports
+\- \[x] 4.15 — Consolidate duplicated File/Folder type interfaces into canonical imports
 
 &#x20; Files: 11 files across apps/web/src/ define local File/Folder interfaces duplicating files-table-types.ts
 
