@@ -683,6 +683,12 @@
 - **Change**: Root-level `loading.tsx` with self-contained CSS spinner (no hooks, no providers). Per-page `if (isLoading) return <LoadingScreen />` pattern preserved — `loading.tsx` handles route transitions only. Note: per-segment loading.tsx files deferred until TanStack Query migration (4.3) which will change data-fetching patterns.
 - **Verified**: PASS (included in 4.1 verification)
 
+### 4.1/4.2 Cleanup — Replace 3 ad-hoc error UIs with ErrorDisplay
+- **Date**: 2026-04-28
+- **Files**: 3 modified, 1 deleted
+- **Change**: Replaced `ShareNotFound` component (Card + IconLock + title/desc) with `ErrorDisplay variant="inline"` in share page — deleted `share-not-found.tsx`. Replaced login "no auth methods" raw `<div><p>` with `ErrorDisplay variant="minimal"`. Replaced storage-usage error state (manual warning icon + title + message + retry Button) with `ErrorDisplay variant="minimal"` embedded in existing Card layout — removed unused `Button` and `IconRefresh` imports.
+- **Verified**: PASS (web type-check clean, 90/90 tests)
+
 ### QA-3 — JWT error detection made future-proof
 - **Date**: 2026-04-28
 - **Files**: `apps/server/src/utils/error-handler.ts`, `apps/server/src/__tests__/error-handler.test.ts`

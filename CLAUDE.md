@@ -105,6 +105,8 @@ converted to Pick<>, 4 dead types removed, 1 kept separate for API null boundary
 Batch 2 complete: 4.1 (error boundaries — ErrorDisplay component with 3 variants, reportError utility,
 global-error.tsx, error.tsx, not-found.tsx, share-specific error.tsx files, settings refactored;
 25 tests), 4.2 (loading.tsx — self-contained CSS spinner, no provider dependency).
+Batch 2 cleanup: 3 ad-hoc error UIs replaced with ErrorDisplay (ShareNotFound deleted, login
+"no auth methods", storage-usage error state).
 Next: Batch 3 — TanStack Query (4.3) + Axios 401 interceptor (4.4).
 
 ## Important: No Production, No Legacy
