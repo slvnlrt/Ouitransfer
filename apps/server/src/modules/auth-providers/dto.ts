@@ -26,8 +26,14 @@ export const ManualEndpointsSchema = BaseAuthProviderSchema.extend({
     .string()
     .min(1, "Authorization endpoint is required")
     .describe("Authorization endpoint URL or path"),
-  tokenEndpoint: z.string().min(1, "Token endpoint is required").describe("Token endpoint URL or path"),
-  userInfoEndpoint: z.string().min(1, "User info endpoint is required").describe("User info endpoint URL or path"),
+  tokenEndpoint: z
+    .string()
+    .min(1, "Token endpoint is required")
+    .describe("Token endpoint URL or path"),
+  userInfoEndpoint: z
+    .string()
+    .min(1, "User info endpoint is required")
+    .describe("User info endpoint URL or path"),
 });
 
 export const CreateAuthProviderSchema = BaseAuthProviderSchema.extend({
@@ -60,7 +66,7 @@ export const CreateAuthProviderSchema = BaseAuthProviderSchema.extend({
   {
     message:
       "Either provide issuerUrl for automatic discovery OR all three custom endpoints (authorization, token, userInfo).",
-  }
+  },
 );
 
 export const UpdateAuthProviderSchema = z
@@ -105,8 +111,9 @@ export const UpdateAuthProviderSchema = z
       return true;
     },
     {
-      message: "When providing custom endpoints, all three endpoints (authorization, token, userInfo) are required.",
-    }
+      message:
+        "When providing custom endpoints, all three endpoints (authorization, token, userInfo) are required.",
+    },
   );
 
 export const UpdateOfficialProviderSchema = z.object({
@@ -116,6 +123,7 @@ export const UpdateOfficialProviderSchema = z.object({
   enabled: z.boolean().optional(),
   autoRegister: z.boolean().optional(),
   adminEmailDomains: z.string().optional(),
+  icon: z.string().optional(),
 });
 
 export const UpdateProvidersOrderSchema = z.object({
@@ -123,6 +131,24 @@ export const UpdateProvidersOrderSchema = z.object({
     z.object({
       id: z.string(),
       sortOrder: z.number(),
-    })
+    }),
   ),
 });
+
+// --- Inferred DTO types ---
+
+/**
+ * The input type for creating an auth provider (Zod-validated body).
+ * Uses z.input to capture the pre-transform shape (before .refine()).
+ */
+export type CreateAuthProviderInput = z.input<typeof CreateAuthProviderSchema>;
+
+/**
+ * The input type for updating a custom auth provider (Zod-validated body).
+ */
+export type UpdateAuthProviderInput = z.input<typeof UpdateAuthProviderSchema>;
+
+/**
+ * The input type for updating an official auth provider (Zod-validated body).
+ */
+export type UpdateOfficialProviderInput = z.input<typeof UpdateOfficialProviderSchema>;

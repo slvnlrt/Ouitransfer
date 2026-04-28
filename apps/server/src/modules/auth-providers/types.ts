@@ -76,16 +76,6 @@ export interface RequestContext {
  */
 export type AuthProviderModel = AuthProvider;
 
-export interface CreateProviderRequest {
-  Body: {
-    authorizationEndpoint?: string;
-    tokenEndpoint?: string;
-    userInfoEndpoint?: string;
-    issuerUrl?: string;
-    [key: string]: string | boolean | number | undefined;
-  };
-}
-
 export interface UpdateProviderRequest {
   Params: { id: string };
   Body: Record<string, string | boolean | number | null | undefined>;

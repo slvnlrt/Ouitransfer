@@ -1,14 +1,20 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
+import type { UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Config } from "../types";
+import type { Config, GroupFormData } from "../types";
 import { FileSizeInput } from "./file-size-input";
 import { LogoInput } from "./logo-input";
 
@@ -20,12 +26,9 @@ export function isFieldHidden(fieldKey: string): boolean {
 
 export interface ConfigInputProps {
   config: Config;
-  // biome-ignore lint/suspicious/noExplicitAny: react-hook-form uses generic form values that require any for dynamic config keys
-  register: UseFormRegister<any>;
-  // biome-ignore lint/suspicious/noExplicitAny: react-hook-form uses generic form values that require any for dynamic config keys
-  setValue: UseFormSetValue<any>;
-  // biome-ignore lint/suspicious/noExplicitAny: react-hook-form uses generic form values that require any for dynamic config keys
-  watch: UseFormWatch<any>;
+  register: UseFormRegister<GroupFormData>;
+  setValue: UseFormSetValue<GroupFormData>;
+  watch: UseFormWatch<GroupFormData>;
   error?: { message?: string };
   smtpEnabled?: string;
   authProvidersEnabled?: string;
@@ -43,9 +46,11 @@ export function SettingsInput({
   const t = useTranslations();
 
   const isSmtpField = config.group === "email" && config.key !== "smtpEnabled";
-  const isAuthProvidersField = config.group === "auth-providers" && config.key !== "authProvidersEnabled";
+  const isAuthProvidersField =
+    config.group === "auth-providers" && config.key !== "authProvidersEnabled";
   const isDisabled =
-    (isSmtpField && smtpEnabled === "false") || (isAuthProvidersField && authProvidersEnabled === "false");
+    (isSmtpField && smtpEnabled === "false") ||
+    (isAuthProvidersField && authProvidersEnabled === "false");
 
   const renderInput = () => {
     if (config.key === "appLogo") {
@@ -63,7 +68,9 @@ export function SettingsInput({
         <Switch
           id={config.key}
           checked={watch(`configs.${config.key}`) === "true"}
-          onCheckedChange={(checked) => setValue(`configs.${config.key}`, checked ? "true" : "false")}
+          onCheckedChange={(checked) =>
+            setValue(`configs.${config.key}`, checked ? "true" : "false")
+          }
           disabled={isDisabled}
         />
       );
@@ -130,7 +137,8 @@ export function SettingsInput({
       <Input
         id={config.key}
         type={
-          config.key.toLowerCase().includes("password") || config.key.toLowerCase().includes("secret")
+          config.key.toLowerCase().includes("password") ||
+          config.key.toLowerCase().includes("secret")
             ? "password"
             : "text"
         }

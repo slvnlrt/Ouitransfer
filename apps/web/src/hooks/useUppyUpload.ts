@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import AwsS3, { type AwsS3UploadParameters, type AwsS3Part } from "@uppy/aws-s3";
+import AwsS3, { type AwsS3Part, type AwsS3UploadParameters } from "@uppy/aws-s3";
 import Uppy, { type Body, type Meta, type UppyFile } from "@uppy/core";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /** Minimal progress shape provided by Uppy's upload-progress event */
 type UppyProgressEvent = {
@@ -8,12 +8,19 @@ type UppyProgressEvent = {
   bytesTotal: number | null;
 };
 
+/** Extract the objectName we store in Uppy's file metadata via `setFileMeta`. */
+function getUppyObjectName(file: UppyFile<Meta, Body>): string | undefined {
+  const value = file.meta.objectName;
+  return typeof value === "string" ? value : undefined;
+}
+
 /** Matches Uppy's UploadResultWithSignal (key may be undefined for non-multipart) */
 type UppyUploadResult = {
   uploadId?: string;
   key: string;
   signal?: AbortSignal;
 };
+
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
@@ -30,12 +37,19 @@ import { logger } from "@/lib/logger";
  * Custom multipart upload functions for non-authenticated uploads (e.g., reverse shares)
  */
 export interface CustomMultipartFunctions {
-  createMultipartUpload: (filename: string, extension: string) => Promise<{ uploadId: string; objectName: string }>;
-  getMultipartPartUrl: (uploadId: string, objectName: string, partNumber: string) => Promise<{ url: string }>;
+  createMultipartUpload: (
+    filename: string,
+    extension: string,
+  ) => Promise<{ uploadId: string; objectName: string }>;
+  getMultipartPartUrl: (
+    uploadId: string,
+    objectName: string,
+    partNumber: string,
+  ) => Promise<{ url: string }>;
   completeMultipartUpload: (
     uploadId: string,
     objectName: string,
-    parts: Array<{ PartNumber: number; ETag: string }>
+    parts: Array<{ PartNumber: number; ETag: string }>,
   ) => Promise<void>;
   abortMultipartUpload: (uploadId: string, objectName: string) => Promise<void>;
 }
@@ -65,7 +79,7 @@ export interface UseUppyUploadOptions {
    */
   getPresignedUrl: (
     objectName: string,
-    extension: string
+    extension: string,
   ) => Promise<{ url: string; method: string; actualObjectName?: string }>;
 
   /**
@@ -162,7 +176,9 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
             } catch (error: unknown) {
               const errorMessage = error instanceof Error ? error.message : "Validation failed";
               setFileUploads((prev) =>
-                prev.map((f) => (f.id === file.id ? { ...f, status: "error", error: errorMessage } : f))
+                prev.map((f) =>
+                  f.id === file.id ? { ...f, status: "error", error: errorMessage } : f,
+                ),
               );
               throw error;
             }
@@ -194,7 +210,9 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
             },
           };
         } catch (error) {
-          logger.error("[Upload] Failed to get upload parameters", { err: error instanceof Error ? error.message : String(error) });
+          logger.error("[Upload] Failed to get upload parameters", {
+            err: error instanceof Error ? error.message : String(error),
+          });
           throw error;
         }
       },
@@ -246,7 +264,9 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
             key: actualObjectName,
           };
         } catch (error) {
-          logger.error("[Upload:Multipart] Failed to create multipart upload", { err: error instanceof Error ? error.message : String(error) });
+          logger.error("[Upload:Multipart] Failed to create multipart upload", {
+            err: error instanceof Error ? error.message : String(error),
+          });
           throw error;
         }
       },
@@ -260,14 +280,27 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
       },
 
       // Sign individual parts for multipart upload
-      async signPart(file: UppyFile<Meta, Body>, partData: { uploadId: string; key: string; partNumber: number; body: Blob; signal?: AbortSignal }) {
+      async signPart(
+        _file: UppyFile<Meta, Body>,
+        partData: {
+          uploadId: string;
+          key: string;
+          partNumber: number;
+          body: Blob;
+          signal?: AbortSignal;
+        },
+      ) {
         const { uploadId, key, partNumber } = partData;
 
         try {
           let response: { url: string };
           if (customMultipartRef.current) {
             // Use custom multipart functions (e.g., for reverse shares)
-            response = await customMultipartRef.current.getMultipartPartUrl(uploadId, key, partNumber.toString());
+            response = await customMultipartRef.current.getMultipartPartUrl(
+              uploadId,
+              key,
+              partNumber.toString(),
+            );
           } else {
             // Use default authenticated multipart upload
             response = (
@@ -285,60 +318,77 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
             headers: {},
           };
         } catch (error) {
-          logger.error("[Upload:Multipart] Failed to sign part", { partNumber, err: error instanceof Error ? error.message : String(error) });
+          logger.error("[Upload:Multipart] Failed to sign part", {
+            partNumber,
+            err: error instanceof Error ? error.message : String(error),
+          });
           throw error;
         }
       },
 
       // Complete multipart upload
-      async completeMultipartUpload(file: UppyFile<Meta, Body>, data: { uploadId: string; key: string; parts: AwsS3Part[]; signal: AbortSignal }) {
+      async completeMultipartUpload(
+        file: UppyFile<Meta, Body>,
+        data: { uploadId: string; key: string; parts: AwsS3Part[]; signal: AbortSignal },
+      ) {
         const { uploadId, key, parts } = data;
-        const meta = file.meta as unknown as { objectName?: string };
+        const objectName = getUppyObjectName(file);
 
         try {
           // Filter out parts without required fields (AwsS3Part has them as optional)
-          const completedParts = parts
-            .filter((p): p is { PartNumber: number; ETag: string; Size?: number } =>
-              p.PartNumber !== undefined && p.ETag !== undefined
-            );
+          const completedParts = parts.filter(
+            (p): p is { PartNumber: number; ETag: string; Size?: number } =>
+              p.PartNumber !== undefined && p.ETag !== undefined,
+          );
 
           if (customMultipartRef.current) {
             // Use custom multipart functions (e.g., for reverse shares)
-            await customMultipartRef.current.completeMultipartUpload(uploadId, meta.objectName || key, completedParts);
+            await customMultipartRef.current.completeMultipartUpload(
+              uploadId,
+              objectName || key,
+              completedParts,
+            );
           } else {
             // Use default authenticated multipart upload
             await completeMultipartUpload({
               uploadId,
-              objectName: meta.objectName || key,
+              objectName: objectName || key,
               parts: completedParts,
             });
           }
 
           return {};
         } catch (error) {
-          logger.error("[Upload:Multipart] Failed to complete multipart upload", { err: error instanceof Error ? error.message : String(error) });
+          logger.error("[Upload:Multipart] Failed to complete multipart upload", {
+            err: error instanceof Error ? error.message : String(error),
+          });
           throw error;
         }
       },
 
       async abortMultipartUpload(file: UppyFile<Meta, Body>, data: UppyUploadResult) {
         const { uploadId, key } = data;
-        const meta = file.meta as unknown as { objectName?: string };
+        const objectName = getUppyObjectName(file);
 
         const resolvedUploadId = uploadId ?? "";
         try {
           if (customMultipartRef.current) {
             // Use custom multipart functions (e.g., for reverse shares)
-            await customMultipartRef.current.abortMultipartUpload(resolvedUploadId, meta.objectName || key);
+            await customMultipartRef.current.abortMultipartUpload(
+              resolvedUploadId,
+              objectName || key,
+            );
           } else {
             // Use default authenticated multipart upload
             await abortMultipartUpload({
               uploadId: resolvedUploadId,
-              objectName: meta.objectName || key,
+              objectName: objectName || key,
             });
           }
         } catch (error) {
-          logger.error("[Upload:Multipart] Failed to abort multipart upload", { err: error instanceof Error ? error.message : String(error) });
+          logger.error("[Upload:Multipart] Failed to abort multipart upload", {
+            err: error instanceof Error ? error.message : String(error),
+          });
           // Don't throw - abort is cleanup, shouldn't fail the operation
         }
       },
@@ -370,25 +420,31 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
           file: fileData as File,
           status: "pending",
           progress: 0,
-          previewUrl: fileData && fileData.type.startsWith("image/") ? URL.createObjectURL(fileData) : undefined,
+          previewUrl: fileData?.type.startsWith("image/")
+            ? URL.createObjectURL(fileData)
+            : undefined,
         },
       ]);
     };
 
     // Upload progress updates
-    const handleProgress = (file: UppyFile<Meta, Body> | undefined, progress: UppyProgressEvent) => {
+    const handleProgress = (
+      file: UppyFile<Meta, Body> | undefined,
+      progress: UppyProgressEvent,
+    ) => {
       if (!file) return;
       const percent = (progress.bytesUploaded / (progress.bytesTotal ?? 1)) * 100;
       setFileUploads((prev) =>
-        prev.map((f) => (f.id === file.id ? { ...f, status: "uploading", progress: Math.round(percent) } : f))
+        prev.map((f) =>
+          f.id === file.id ? { ...f, status: "uploading", progress: Math.round(percent) } : f,
+        ),
       );
     };
 
     // Upload success
     const handleSuccess = async (file: UppyFile<Meta, Body> | undefined) => {
       if (!file) return;
-      const meta = file.meta as { objectName?: string };
-      const objectName = meta.objectName;
+      const objectName = getUppyObjectName(file);
 
       try {
         // Call registration callback
@@ -396,24 +452,33 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
           await onAfterUploadRef.current(file.id, file.data as File, objectName ?? "");
         }
 
-        setFileUploads((prev) => prev.map((f) => (f.id === file.id ? { ...f, status: "success", progress: 100 } : f)));
+        setFileUploads((prev) =>
+          prev.map((f) => (f.id === file.id ? { ...f, status: "success", progress: 100 } : f)),
+        );
       } catch (error: unknown) {
-        logger.error("[Upload] Registration failed", { err: error instanceof Error ? error.message : String(error) });
+        logger.error("[Upload] Registration failed", {
+          err: error instanceof Error ? error.message : String(error),
+        });
         // Handle registration error
         const errorMessage = error instanceof Error ? error.message : "Failed to register file";
         setFileUploads((prev) =>
-          prev.map((f) => (f.id === file.id ? { ...f, status: "error", error: errorMessage } : f))
+          prev.map((f) => (f.id === file.id ? { ...f, status: "error", error: errorMessage } : f)),
         );
       }
     };
 
     // Upload error
-    const handleError = (file: UppyFile<Meta, Body> | undefined, error: { name: string; message: string; details?: string }) => {
+    const handleError = (
+      file: UppyFile<Meta, Body> | undefined,
+      error: { name: string; message: string; details?: string },
+    ) => {
       logger.error("[Upload] Upload failed", { fileName: file?.name, err: error.message });
       setFileUploads((prev) =>
         prev.map((f) =>
-          f.id === file?.id ? { ...f, status: "error", error: error.message || t("uploadFile.errors.uploadFailed") } : f
-        )
+          f.id === file?.id
+            ? { ...f, status: "error", error: error.message || t("uploadFile.errors.uploadFailed") }
+            : f,
+        ),
       );
     };
 
@@ -451,12 +516,18 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
           type: file.type,
           data: file,
           meta: {
-            relativePath: (file as File & { webkitRelativePath?: string }).webkitRelativePath || null,
+            relativePath:
+              (file as File & { webkitRelativePath?: string }).webkitRelativePath || null,
           },
         });
       } catch (error: unknown) {
-        logger.error("[Upload] Error adding file", { fileName: file.name, err: error instanceof Error ? error.message : String(error) });
-        toast.error(`Failed to add ${file.name}: ${error instanceof Error ? error.message : String(error)}`);
+        logger.error("[Upload] Error adding file", {
+          fileName: file.name,
+          err: error instanceof Error ? error.message : String(error),
+        });
+        toast.error(
+          `Failed to add ${file.name}: ${error instanceof Error ? error.message : String(error)}`,
+        );
       }
     });
   }, []);
@@ -480,7 +551,9 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
     if (!uppy) return;
 
     uppy.removeFile(fileId);
-    setFileUploads((prev) => prev.map((f) => (f.id === fileId ? { ...f, status: "cancelled" } : f)));
+    setFileUploads((prev) =>
+      prev.map((f) => (f.id === fileId ? { ...f, status: "cancelled" } : f)),
+    );
   }, []);
 
   /**
@@ -495,12 +568,14 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
       if (!file) return;
 
       // Reset status to pending
-      setFileUploads((prev) => prev.map((f) => (f.id === fileId ? { ...f, status: "pending", error: undefined } : f)));
+      setFileUploads((prev) =>
+        prev.map((f) => (f.id === fileId ? { ...f, status: "pending", error: undefined } : f)),
+      );
 
       // Retry the upload
       uppy.retryUpload(fileId);
     },
-    [fileUploads]
+    [fileUploads],
   );
 
   /**
@@ -520,7 +595,7 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
       uppy.removeFile(fileId);
       setFileUploads((prev) => prev.filter((f) => f.id !== fileId));
     },
-    [fileUploads]
+    [fileUploads],
   );
 
   /**

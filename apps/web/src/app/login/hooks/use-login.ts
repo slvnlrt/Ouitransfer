@@ -1,18 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { useAuth } from "@/contexts/auth-context";
 import { getAuthConfig, getCurrentUser, login } from "@/http/endpoints";
-import { logger } from "@/lib/logger";
 import { completeTwoFactorLogin } from "@/http/endpoints/auth/two-factor";
 import type { LoginResponse } from "@/http/endpoints/auth/two-factor/types";
-import { LoginFormValues } from "../schemas/schema";
+import { logger } from "@/lib/logger";
+import type { LoginFormValues } from "../schemas/schema";
 
 export const loginSchema = z.object({
   emailOrUsername: z.string(),
@@ -75,7 +75,9 @@ export function useLogin() {
         const response = await getAuthConfig();
         setPasswordAuthEnabled(response.data.passwordAuthEnabled);
       } catch (error) {
-        logger.error("Failed to fetch auth config", { err: error instanceof Error ? error.message : String(error) });
+        logger.error("Failed to fetch auth config", {
+          err: error instanceof Error ? error.message : String(error),
+        });
         setPasswordAuthEnabled(true);
       } finally {
         setAuthConfigLoading(false);
@@ -97,8 +99,10 @@ export function useLogin() {
         return;
       }
 
-      // biome-ignore lint/suspicious/noExplicitAny: LoginFormValues.password is optional but validated before this call
-      const response = await login(data as any);
+      const response = await login({
+        emailOrUsername: data.emailOrUsername,
+        password: data.password as string,
+      });
       const loginData = response.data as LoginResponse;
 
       if (loginData.requiresTwoFactor && loginData.challengeToken) {
@@ -119,7 +123,9 @@ export function useLogin() {
             return;
           }
         } catch (userErr) {
-          logger.warn("Failed to fetch complete user data, using login data", { err: userErr instanceof Error ? userErr.message : String(userErr) });
+          logger.warn("Failed to fetch complete user data, using login data", {
+            err: userErr instanceof Error ? userErr.message : String(userErr),
+          });
         }
 
         const { isAdmin, ...userData } = loginData.user;
@@ -169,7 +175,9 @@ export function useLogin() {
           return;
         }
       } catch (userErr) {
-          logger.warn("Failed to fetch complete user data after 2FA, using response data", { err: userErr instanceof Error ? userErr.message : String(userErr) });
+        logger.warn("Failed to fetch complete user data after 2FA, using response data", {
+          err: userErr instanceof Error ? userErr.message : String(userErr),
+        });
       }
 
       const { isAdmin, ...userData } = response.data.user;

@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
 import { IconEye, IconEyeOff, IconInfoCircle } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { IconPicker } from "@/components/ui/icon-picker";
@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { TagsInput } from "@/components/ui/tags-input";
 import { CallbackUrlDisplay } from "./callback-url-display";
+import type { ProviderFormData, ProviderFormDataMap } from "./types";
 
 export interface AuthProvider {
   id: string;
@@ -37,10 +38,8 @@ interface EditProviderFormProps {
   onSave: (data: Partial<AuthProvider>) => void;
   onCancel: () => void;
   saving: boolean;
-  // biome-ignore lint/suspicious/noExplicitAny: form data from react-hook-form uses dynamic keys
-  editingFormData: Record<string, any>;
-  // biome-ignore lint/suspicious/noExplicitAny: form data from react-hook-form uses dynamic keys
-  setEditingFormData: (data: Record<string, any>) => void;
+  editingFormData: ProviderFormDataMap;
+  setEditingFormData: (data: ProviderFormDataMap) => void;
 }
 
 export function EditProviderForm({
@@ -52,21 +51,22 @@ export function EditProviderForm({
   setEditingFormData,
 }: EditProviderFormProps) {
   const t = useTranslations();
-  const savedData = editingFormData[provider.id] || {};
-  const [formData, setFormData] = useState({
-    name: savedData.name || provider.name || "",
-    displayName: savedData.displayName || provider.displayName || "",
-    type: (savedData.type || provider.type) as "oidc" | "oauth2",
-    icon: savedData.icon || provider.icon || "FaCog",
-    issuerUrl: savedData.issuerUrl || provider.issuerUrl || "",
-    clientId: savedData.clientId || provider.clientId || "",
-    clientSecret: savedData.clientSecret || provider.clientSecret || "",
-    scope: savedData.scope || provider.scope || "",
-    autoRegister: savedData.autoRegister !== undefined ? savedData.autoRegister : provider.autoRegister,
-    adminEmailDomains: savedData.adminEmailDomains || provider.adminEmailDomains || "",
-    authorizationEndpoint: savedData.authorizationEndpoint || provider.authorizationEndpoint || "",
-    tokenEndpoint: savedData.tokenEndpoint || provider.tokenEndpoint || "",
-    userInfoEndpoint: savedData.userInfoEndpoint || provider.userInfoEndpoint || "",
+  const savedData = editingFormData[provider.id] as ProviderFormData | undefined;
+  const [formData, setFormData] = useState<ProviderFormData>({
+    name: savedData?.name || provider.name || "",
+    displayName: savedData?.displayName || provider.displayName || "",
+    type: (savedData?.type || provider.type) as "oidc" | "oauth2",
+    icon: savedData?.icon || provider.icon || "FaCog",
+    issuerUrl: savedData?.issuerUrl || provider.issuerUrl || "",
+    clientId: savedData?.clientId || provider.clientId || "",
+    clientSecret: savedData?.clientSecret || provider.clientSecret || "",
+    scope: savedData?.scope || provider.scope || "",
+    autoRegister:
+      savedData?.autoRegister !== undefined ? savedData.autoRegister : provider.autoRegister,
+    adminEmailDomains: savedData?.adminEmailDomains || provider.adminEmailDomains || "",
+    authorizationEndpoint: savedData?.authorizationEndpoint || provider.authorizationEndpoint || "",
+    tokenEndpoint: savedData?.tokenEndpoint || provider.tokenEndpoint || "",
+    userInfoEndpoint: savedData?.userInfoEndpoint || provider.userInfoEndpoint || "",
   });
 
   const [showClientSecret, setShowClientSecret] = useState(false);
@@ -134,7 +134,9 @@ export function EditProviderForm({
 
     const suggestedScopes = detectProviderTypeAndSuggestScopesEdit(url, formData.type);
     const shouldUpdateScopes =
-      !formData.scope || formData.scope === "openid profile email" || formData.scope === "profile email";
+      !formData.scope ||
+      formData.scope === "openid profile email" ||
+      formData.scope === "profile email";
 
     if (shouldUpdateScopes) {
       updateFormData({
@@ -147,7 +149,11 @@ export function EditProviderForm({
     onSave(formData);
   };
 
-  const isManualMode = !!(formData.authorizationEndpoint || formData.tokenEndpoint || formData.userInfoEndpoint);
+  const isManualMode = !!(
+    formData.authorizationEndpoint ||
+    formData.tokenEndpoint ||
+    formData.userInfoEndpoint
+  );
 
   return (
     <div className="space-y-4">
@@ -215,7 +221,9 @@ export function EditProviderForm({
       {!isOfficial && (
         <div className="space-y-4">
           <div className="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-lg p-4">
-            <h4 className="text-sm font-medium mb-3">{t("authProviders.form.configurationMethod")}</h4>
+            <h4 className="text-sm font-medium mb-3">
+              {t("authProviders.form.configurationMethod")}
+            </h4>
             <div className="space-y-3">
               <div className="flex items-center space-x-2">
                 <input
@@ -275,7 +283,9 @@ export function EditProviderForm({
                 onChange={(e) => updateFormData({ issuerUrl: e.target.value })}
                 onBlur={(e) => updateProviderUrlEdit(e.target.value)}
               />
-              <p className="text-xs text-muted-foreground mt-1">{t("authProviders.form.autoDiscoveryHelp")}</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {t("authProviders.form.autoDiscoveryHelp")}
+              </p>
             </div>
           )}
 
@@ -289,10 +299,14 @@ export function EditProviderForm({
                   onChange={(e) => updateFormData({ issuerUrl: e.target.value })}
                   onBlur={(e) => updateProviderUrlEdit(e.target.value)}
                 />
-                <p className="text-xs text-muted-foreground mt-1">{t("authProviders.form.manualConfigurationHelp")}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {t("authProviders.form.manualConfigurationHelp")}
+                </p>
               </div>
               <div>
-                <Label className="mb-2 block">{t("authProviders.form.authorizationEndpoint")} *</Label>
+                <Label className="mb-2 block">
+                  {t("authProviders.form.authorizationEndpoint")} *
+                </Label>
                 <Input
                   placeholder={t("authProviders.form.authorizationEndpointPlaceholder")}
                   value={formData.authorizationEndpoint}
@@ -342,7 +356,9 @@ export function EditProviderForm({
                 onChange={(e) => updateFormData({ issuerUrl: e.target.value })}
                 onBlur={(e) => updateProviderUrlEdit(e.target.value)}
               />
-              <p className="text-xs text-muted-foreground mt-1">{t("authProviders.form.officialProviderHelp")}</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {t("authProviders.form.officialProviderHelp")}
+              </p>
             </div>
           ) : null}
           <div>
@@ -352,7 +368,9 @@ export function EditProviderForm({
               onChange={(icon) => updateFormData({ icon })}
               placeholder={t("authProviders.form.iconPlaceholder")}
             />
-            <p className="text-xs text-muted-foreground mt-1">{t("authProviders.form.officialProviderIconHelp")}</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {t("authProviders.form.officialProviderIconHelp")}
+            </p>
           </div>
         </div>
       )}
@@ -401,18 +419,24 @@ export function EditProviderForm({
           placeholder={t("authProviders.form.scopesPlaceholder")}
         />
         <p className="text-xs text-muted-foreground mt-1">
-          {formData.type === "oidc" ? t("authProviders.form.scopesHelpOidc") : t("authProviders.form.scopesHelpOauth2")}
+          {formData.type === "oidc"
+            ? t("authProviders.form.scopesHelpOidc")
+            : t("authProviders.form.scopesHelpOauth2")}
         </p>
       </div>
 
       <div>
         <Label className="mb-2 block">{t("authProviders.form.adminEmailDomains")}</Label>
         <TagsInput
-          value={formData.adminEmailDomains ? formData.adminEmailDomains.split(",").filter(Boolean) : []}
+          value={
+            formData.adminEmailDomains ? formData.adminEmailDomains.split(",").filter(Boolean) : []
+          }
           onChange={(tags) => updateFormData({ adminEmailDomains: tags.join(",") })}
           placeholder={t("authProviders.form.adminEmailDomainsPlaceholder")}
         />
-        <p className="text-xs text-muted-foreground mt-1">{t("authProviders.form.adminEmailDomainsHelp")}</p>
+        <p className="text-xs text-muted-foreground mt-1">
+          {t("authProviders.form.adminEmailDomainsHelp")}
+        </p>
       </div>
 
       <div className="flex items-center gap-2">

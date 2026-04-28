@@ -15,8 +15,8 @@ import {
 import { registerSwagger } from "./config/swagger.config.js";
 import { envTimeoutOverrides } from "./config/timeout.config.js";
 import { prisma } from "./shared/prisma.js";
-import { setLogger } from "./utils/logger.js";
 import { globalErrorHandler, globalNotFoundHandler } from "./utils/error-handler.js";
+import { setLogger } from "./utils/logger.js";
 
 export async function buildApp() {
   const jwtConfig = await prisma.appConfig.findUnique({
@@ -123,10 +123,6 @@ export async function buildApp() {
     sign: {
       expiresIn: "1d",
     },
-  });
-
-  app.decorateRequest("jwtSign", function (this: { server: { jwt: { sign: (payload: object, options?: object) => string } } }, payload: object, options?: object) {
-    return this.server.jwt.sign(payload, options);
   });
 
   registerSwagger(app);

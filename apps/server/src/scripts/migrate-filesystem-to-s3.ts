@@ -13,9 +13,11 @@ import { createReadStream } from "node:fs";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
+import type { FastifyBaseLogger } from "fastify";
 
 import { directoriesConfig } from "../config/directories.config.js";
 import { bucketName, s3Client } from "../config/storage.config.js";
+import { getLogger } from "../utils/logger.js";
 
 interface MigrationStats {
   totalFiles: number;
@@ -32,6 +34,7 @@ const MIGRATION_BATCH_SIZE = 10; // Migrate 10 files at a time
 const MIGRATION_DELAY_MS = 100; // Small delay between batches to avoid overwhelming
 
 export class FilesystemToS3Migrator {
+  private readonly log: FastifyBaseLogger;
   private stats: MigrationStats = {
     totalFiles: 0,
     migratedFiles: 0,
@@ -41,13 +44,17 @@ export class FilesystemToS3Migrator {
     startTime: Date.now(),
   };
 
+  constructor(logger?: FastifyBaseLogger) {
+    this.log = logger ?? getLogger();
+  }
+
   /**
    * Check if migration is needed and should run
    */
   async shouldMigrate(): Promise<boolean> {
     // Only migrate if S3 client is available
     if (!s3Client) {
-      console.log("[MIGRATION] S3 not configured, skipping migration");
+      this.log.info("[MIGRATION] S3 not configured, skipping migration");
       return false;
     }
 
@@ -62,16 +69,16 @@ export class FilesystemToS3Migrator {
         const state = JSON.parse(await fs.readFile(MIGRATION_STATE_FILE, "utf-8"));
 
         if (state.completed) {
-          console.log("[MIGRATION] Migration already completed");
+          this.log.info("[MIGRATION] Migration already completed");
           return false;
         }
 
-        console.log("[MIGRATION] Previous migration incomplete, resuming...");
+        this.log.info("[MIGRATION] Previous migration incomplete, resuming...");
         this.stats = { ...state, startTime: Date.now() };
         return true;
       }
     } catch (error) {
-      console.warn("[MIGRATION] Could not read migration state:", error);
+      this.log.warn({ err: error }, "[MIGRATION] Could not read migration state");
     }
 
     // Check if there are files to migrate
@@ -80,16 +87,16 @@ export class FilesystemToS3Migrator {
       const files = await this.scanDirectory(uploadsDir);
 
       if (files.length === 0) {
-        console.log("[MIGRATION] No filesystem files found, nothing to migrate");
+        this.log.info("[MIGRATION] No filesystem files found, nothing to migrate");
         await this.markMigrationComplete();
         return false;
       }
 
-      console.log(`[MIGRATION] Found ${files.length} files to migrate`);
+      this.log.info({ fileCount: files.length }, "[MIGRATION] Found files to migrate");
       this.stats.totalFiles = files.length;
       return true;
     } catch (error) {
-      console.error("[MIGRATION] Error scanning files:", error);
+      this.log.error({ err: error }, "[MIGRATION] Error scanning files");
       return false;
     }
   }
@@ -98,8 +105,8 @@ export class FilesystemToS3Migrator {
    * Run the migration process
    */
   async migrate(): Promise<void> {
-    console.log("[MIGRATION] Starting automatic filesystem → S3 migration");
-    console.log("[MIGRATION] This runs in background, zero downtime");
+    this.log.info("[MIGRATION] Starting automatic filesystem → S3 migration");
+    this.log.info("[MIGRATION] This runs in background, zero downtime");
 
     try {
       const uploadsDir = directoriesConfig.uploads;
@@ -112,7 +119,7 @@ export class FilesystemToS3Migrator {
         await Promise.all(
           batch.map((file) =>
             this.migrateFile(file).catch((error) => {
-              console.error(`[MIGRATION] Failed to migrate ${file}:`, error);
+              this.log.error({ err: error, file }, "[MIGRATION] Failed to migrate file");
               this.stats.failedFiles++;
             }),
           ),
@@ -128,8 +135,9 @@ export class FilesystemToS3Migrator {
 
         // Log progress
         const progress = Math.round(((i + batch.length) / files.length) * 100);
-        console.log(
-          `[MIGRATION] Progress: ${progress}% (${this.stats.migratedFiles}/${files.length})`,
+        this.log.info(
+          { progress, migratedFiles: this.stats.migratedFiles, totalFiles: files.length },
+          "[MIGRATION] Migration progress",
         );
       }
 
@@ -139,16 +147,19 @@ export class FilesystemToS3Migrator {
       const durationSeconds = Math.round((this.stats.endTime - this.stats.startTime) / 1000);
       const sizeMB = Math.round(this.stats.totalSizeBytes / 1024 / 1024);
 
-      console.log("[MIGRATION] ✓✓✓ Migration completed successfully!");
-      console.log(`[MIGRATION] Stats:`);
-      console.log(`  - Total files: ${this.stats.totalFiles}`);
-      console.log(`  - Migrated: ${this.stats.migratedFiles}`);
-      console.log(`  - Failed: ${this.stats.failedFiles}`);
-      console.log(`  - Skipped: ${this.stats.skippedFiles}`);
-      console.log(`  - Total size: ${sizeMB}MB`);
-      console.log(`  - Duration: ${durationSeconds}s`);
+      this.log.info(
+        {
+          totalFiles: this.stats.totalFiles,
+          migratedFiles: this.stats.migratedFiles,
+          failedFiles: this.stats.failedFiles,
+          skippedFiles: this.stats.skippedFiles,
+          totalSizeMB: sizeMB,
+          durationSeconds,
+        },
+        "[MIGRATION] Migration completed successfully",
+      );
     } catch (error) {
-      console.error("[MIGRATION] Migration failed:", error);
+      this.log.error({ err: error }, "[MIGRATION] Migration failed");
       await this.saveState();
       throw error;
     }
@@ -181,7 +192,7 @@ export class FilesystemToS3Migrator {
         }
       }
     } catch (error) {
-      console.warn(`[MIGRATION] Could not scan directory ${dir}:`, error);
+      this.log.warn({ err: error, dir }, "[MIGRATION] Could not scan directory");
     }
 
     return files;
@@ -217,7 +228,7 @@ export class FilesystemToS3Migrator {
           );
 
           // Already exists in S3, skip
-          console.log(`[MIGRATION] Already in S3: ${objectName}`);
+          this.log.info({ objectName }, "[MIGRATION] Already in S3, skipping");
           this.stats.skippedFiles++;
           return;
         } catch (error: unknown) {
@@ -247,18 +258,24 @@ export class FilesystemToS3Migrator {
         this.stats.migratedFiles++;
         this.stats.totalSizeBytes += stats.size;
 
-        console.log(`[MIGRATION] ✓ Migrated: ${objectName} (${Math.round(stats.size / 1024)}KB)`);
+        this.log.info(
+          { objectName, sizeKB: Math.round(stats.size / 1024) },
+          "[MIGRATION] Migrated file",
+        );
 
         // Delete filesystem file after successful migration to free up space
         try {
           await fs.unlink(fullPath);
-          console.log(`[MIGRATION] 🗑️  Deleted from filesystem: ${relativeFilePath}`);
+          this.log.info({ file: relativeFilePath }, "[MIGRATION] Deleted from filesystem");
         } catch (unlinkError) {
-          console.warn(`[MIGRATION] Warning: Could not delete ${relativeFilePath}:`, unlinkError);
+          this.log.warn(
+            { err: unlinkError, file: relativeFilePath },
+            "[MIGRATION] Could not delete file from filesystem",
+          );
         }
       }
     } catch (error) {
-      console.error(`[MIGRATION] Failed to migrate ${relativeFilePath}:`, error);
+      this.log.error({ err: error, file: relativeFilePath }, "[MIGRATION] Failed to migrate file");
       this.stats.failedFiles++;
       throw error;
     }
@@ -274,7 +291,7 @@ export class FilesystemToS3Migrator {
         JSON.stringify({ ...this.stats, completed: false }, null, 2),
       );
     } catch (error) {
-      console.warn("[MIGRATION] Could not save state:", error);
+      this.log.warn({ err: error }, "[MIGRATION] Could not save state");
     }
   }
 
@@ -287,18 +304,20 @@ export class FilesystemToS3Migrator {
         MIGRATION_STATE_FILE,
         JSON.stringify({ ...this.stats, completed: true }, null, 2),
       );
-      console.log("[MIGRATION] Migration marked as complete");
+      this.log.info("[MIGRATION] Migration marked as complete");
     } catch (error) {
-      console.warn("[MIGRATION] Could not mark migration complete:", error);
+      this.log.warn({ err: error }, "[MIGRATION] Could not mark migration complete");
     }
   }
 }
 
 /**
- * Auto-run migration on import (called by server.ts)
+ * Auto-run migration on import (called by server.ts after buildApp,
+ * so the Pino logger is available via getLogger()).
  */
 export async function runAutoMigration(): Promise<void> {
-  const migrator = new FilesystemToS3Migrator();
+  const log = getLogger();
+  const migrator = new FilesystemToS3Migrator(log);
 
   if (await migrator.shouldMigrate()) {
     // Run in background, don't block server start
@@ -306,11 +325,11 @@ export async function runAutoMigration(): Promise<void> {
       try {
         await migrator.migrate();
       } catch (error) {
-        console.error("[MIGRATION] Auto-migration failed:", error);
-        console.log("[MIGRATION] Will retry on next server restart");
+        log.error({ err: error }, "[MIGRATION] Auto-migration failed");
+        log.info("[MIGRATION] Will retry on next server restart");
       }
     }, 5000); // Start after 5 seconds
 
-    console.log("[MIGRATION] Background migration scheduled");
+    log.info("[MIGRATION] Background migration scheduled");
   }
 }

@@ -41,7 +41,7 @@ export class AuthController {
       }
 
       const user = result;
-      const token = await request.jwtSign({
+      const token = await reply.jwtSign({
         userId: user.id,
         isAdmin: user.isAdmin,
       });
@@ -76,7 +76,7 @@ export class AuthController {
         ipAddress,
       );
 
-      const token = await request.jwtSign({
+      const token = await reply.jwtSign({
         userId: user.id,
         isAdmin: user.isAdmin,
       });

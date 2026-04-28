@@ -1,17 +1,3 @@
-import type { FastifyRequest } from "fastify";
-
-declare module "fastify" {
-  interface FastifyRequest {
-    /**
-     * Método decorado para assinar um payload JWT.
-     * @param payload - Objeto que será assinado.
-     * @param options - Opções adicionais para a assinatura.
-     * @returns O token JWT assinado.
-     */
-    jwtSign(payload: object, options?: object): string;
-  }
-}
-
 /**
  * Augment @fastify/jwt's FastifyJWT interface so that request.user is typed
  * with the application-specific JWT payload shape.
@@ -24,7 +10,7 @@ declare module "@fastify/jwt" {
   interface FastifyJWT {
     /**
      * The decoded JWT payload set by jwtVerify(). Only application-specific
-     * claims are typed here; standard JWT claims (iat, exp, …) are handled
+     * claims are typed here; standard JWT claims (iat, exp, ...) are handled
      * transparently by the library.
      */
     user: {
@@ -33,3 +19,7 @@ declare module "@fastify/jwt" {
     };
   }
 }
+
+// Required: makes this file an ES module so `declare module` performs
+// augmentation (merging) rather than ambient module declaration.
+export {};

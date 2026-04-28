@@ -920,6 +920,24 @@ Accessibility (4h)
 
 &#x20; Justification: Audit 03 — Persian and Hebrew are RTL languages but only Arabic triggers RTL
 
+Component Deduplication (2h)
+
+\- \[ ] 4.14 — Extract shared UI primitives from duplicated file/folder row splits (Phase 3 QA-8)
+
+&#x20; Files: apps/web/src/app/files/components/files-table-file-row.tsx, files-table-folder-row.tsx, files-grid-file-card.tsx, files-grid-folder-card.tsx
+
+&#x20; Action: The Phase 3 file splits created ~100-120 lines of cross-file duplication: identical inline-edit UI (input + confirm/cancel buttons), checkbox selection blocks, and icon imports duplicated across file-row vs folder-row (and file-card vs folder-card). Extract `<EditableField>` and `<SelectionCheckbox>` components. Do a broader scan across all split components for other duplicated patterns. Goal: modifying inline-edit UX should require editing 1 file, not 4.
+
+&#x20; Justification: Phase 3 quality audit QA-8 — mechanical splits increased file count but created maintenance burden
+
+\- \[ ] 4.15 — Consolidate duplicated File/Folder type interfaces into canonical imports
+
+&#x20; Files: 11 files across apps/web/src/ define local File/Folder interfaces duplicating files-table-types.ts
+
+&#x20; Action: 21 local type interfaces found duplicating the canonical FileItem/FolderItem types. 7 are exact duplicates (files-view-manager.tsx, share-details.tsx, files/page.tsx, dashboard-files-view.tsx, use-enhanced-file-manager.ts BulkFolder) — replace with imports. 10 are subsets — replace with Pick<FileItem, ...> or Pick<FolderItem, ...>. 4 are API-layer variants in http/endpoints/*/types.ts with meaningful null vs undefined and size type differences — these represent the real API/UI type boundary and should be kept as distinct types but renamed for clarity (e.g. ApiFileItem vs FileItem). The api-mappers.ts module (QA-4) already bridges this gap at runtime; the types should reflect that architecture.
+
+&#x20; Justification: Phase 3 quality audit follow-up — QA-4 agent flagged type duplication beyond its scope
+
 Middleware (2h)
 
 \- \[ ] 4.13 — Add Next.js middleware for route protection  
@@ -1446,13 +1464,9 @@ Final Security Review (4h)
 
 &#x20; Action: The route matcher is O(n) scanning 122 routes per request. Fine at current scale (~microseconds). If route count grows significantly, consider bucketing by method then segment count, or pre-compiling to a trie.
 
-\- \[ ] 8.15 — PrismaClient singleton: add globalThis memoization for HMR/test reloads (Phase 3 review M-1)
+&#x20; Justification: Phase 2 review S1 — performance note
 
-&#x20; File: apps/server/src/shared/prisma.ts
-
-&#x20; Action: Current `const prisma = new PrismaClient()` creates a fresh instance on module reload (Vitest watch mode, HMR). Adopt the standard `globalThis` memoization pattern to prevent connection-pool leaks during development.
-
-&#x20; Justification: Phase 3 review M-1
+\- \[x] 8.15 — ~~PrismaClient singleton: add globalThis memoization for HMR/test reloads (Phase 3 review M-1)~~ — **CLOSED: not applicable**. Server uses `tsx watch` which restarts the process on file changes (no HMR). The `globalThis` memoization pattern is a Next.js-specific concern. Prisma is not used in the Next.js app (proxies to Fastify). If Prisma usage is ever added to `apps/web/` server components, revisit then.
 
 \- \[ ] 8.16 — Expand health test and web smoke test to cover real app logic (Phase 3 review M-5/M-6)
 
@@ -1470,7 +1484,13 @@ Final Security Review (4h)
 
 &#x20; Justification: Phase 3 review M-4 — trivial but worth documenting for future developers
 
-&#x20; Justification: Phase 2 review S1 — performance note
+\- \[ ] 8.18 — Honest frontend logger: rename or upgrade (Phase 3 QA-9)
+
+&#x20; File: apps/web/src/lib/logger.ts
+
+&#x20; Action: The frontend "structured logger" is a 37-line console wrapper with level filtering — no JSON serialization, no transports, no redaction, no correlation IDs. Either (a) rename references in docs/code comments to "client logger" / "level-filtered logger" to avoid misleading claims, or (b) back it with a real transport (Sentry breadcrumbs, OpenTelemetry browser SDK, etc.) for production builds. Also: ~54% of call sites pass only `{ err }` with no real context — review and enrich where meaningful.
+
+&#x20; Justification: Phase 3 quality audit QA-9
 
 \---
 

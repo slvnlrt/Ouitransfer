@@ -3,6 +3,9 @@
 > Items identified by reviewer during Phase 3 Code Quality & Type Safety verification.
 > I-1, I-3, I-4, I-5, I-6, I-7, I-8, M-2, M-7 fixed immediately or in follow-up batch.
 > I-2 explicitly deferred to Phase 5 (Backend Hardening — controller error migration).
+>
+> **Second pass (quality audit)**: QA-1 through QA-9 identified by cross-review of Phase 3
+> deliverables. Verified by independent agents. See "Quality Audit" section below.
 
 ---
 
@@ -60,6 +63,55 @@
 
 - [ ] **M-6 — Web smoke test tests shadcn Button, not app code** — Useful as test-infrastructure validation but doesn't cover Phase 3 changes.
   - **Suggested phase**: Phase 8 (testing maturity)
+
+---
+
+## Quality Audit — Phase 3 Rework Items
+
+> Identified by cross-review audit of Phase 3 deliverables (session 2).
+> Each item was verified by an independent agent, but verifications were fast/shallow —
+> implementers MUST do a thorough scan for additional occurrences before closing each item.
+
+### Critical (fix before Phase 4)
+
+- [x] **QA-1 — `error-handler.test.ts` breaks type-check** — FIXED. Extracted typed invocation helpers (`invokeErrorHandler`, `invokeNotFoundHandler`) that encapsulate all type casts. Uses real Fastify types instead of `Parameters<>` indexing. Replaced all 24 inline cast sites. File reduced from 614→~530 lines. Type-check passes clean.
+  - File: `apps/server/src/__tests__/error-handler.test.ts`
+
+- [x] **QA-2 — `jwtSign` augmentation returns `string` instead of `Promise<string>`** — FIXED. Root cause: custom `app.decorateRequest("jwtSign", ...)` in `app.ts` was entirely redundant — `@fastify/jwt` already provides `reply.jwtSign()` natively with proper types. Removed the custom decorator, switched 3 callers from `request.jwtSign()` to `reply.jwtSign()`, rewrote `fastify.d.ts` to only contain the `FastifyJWT.user` augmentation.
+  - Files: `apps/server/src/app.ts`, `apps/server/src/types/fastify.d.ts`, `apps/server/src/modules/auth/controller.ts`, `apps/server/src/modules/auth-providers/controller.ts`
+
+- [x] **QA-3 — JWT detection by message string is fragile** — FIXED. Replaced explicit code list + message-based fallback with prefix-based detection: `code.startsWith("FST_JWT_") || code.startsWith("FAST_JWT_")`. Catches all current AND future `@fastify/jwt` error codes automatically. Removed fragile message string matching entirely. Added 3 new tests (prefix detection, future code, negative case). Test count: 30→31.
+  - File: `apps/server/src/utils/error-handler.ts`, `apps/server/src/__tests__/error-handler.test.ts`
+
+### Important (fix during or before Phase 4)
+
+- [x] **QA-4 — 16 `as unknown as ViewModel[]` double-casts replaced with mapper module** — FIXED. Created `apps/web/src/lib/api-mappers.ts` (150 lines) with 8 mapper functions + `getUppyObjectName` helper. Eliminated 5 redundant hook-local type interfaces in favor of canonical `files-table-types.ts` exports. 16 double-casts removed (not 15 — thorough scan found one more). Remaining `as unknown as` in web: 2 legitimate (browser API, dynamic field).
+  - Files: `apps/web/src/lib/api-mappers.ts` (new), `use-file-browser.ts`, `use-dashboard.ts`, `use-public-share.ts`, `useUppyUpload.ts`
+
+- [x] **QA-5 — biome-ignore suppressions audited: 23 found, 21 removed, 2 rewritten** — FIXED. Full audit of all `biome-ignore lint/suspicious/noExplicitAny` across both apps. 21 suppressions replaced with proper types (FileItem[], UseFormRegister<GroupFormData>, DraggableProvidedDragHandleProps, ProviderFormDataMap, StringFields conditional type, etc.). 2 kept with honest justifications (server.ts crypto polyfill — no `Crypto` type without DOM lib). Created `auth-provider-form/types.ts` for shared `ProviderFormData`/`ProviderFormDataMap` types.
+  - Files: 12 files across `apps/web/src/` and `apps/server/src/`, plus new `auth-provider-form/types.ts`
+
+- [x] **QA-6 — auth-providers Prisma casts eliminated via Zod-derived types** — FIXED. Service methods now accept Zod-derived types (`CreateAuthProviderInput`, `UpdateAuthProviderInput`) instead of `Prisma.*` types. Explicit field mapping inside service ensures only validated fields reach Prisma. Removed `as unknown as Prisma.AuthProviderCreateInput` + 2 `as Prisma.AuthProviderUpdateInput` casts. Removed dead code (`OFFICIAL_PROVIDER_ALLOWED_FIELDS`, `sanitizeOfficialProviderData`). Replaced manual allowlist with `UpdateOfficialProviderSchema.parse()`. No other dangerous `as unknown as` casts found in server modules. Broader `request.body as X` pattern remains for Phase 5/5.16.
+  - Files: `auth-providers/dto.ts`, `service.ts`, `controller.ts`, `types.ts`
+
+- [x] **QA-7 — 37 console.* calls migrated to structured Pino logging** — FIXED. Thorough scan found 115 total console.* in server src (not 33). Migrated 37: 32 in `migrate-filesystem-to-s3.ts` (class now accepts `FastifyBaseLogger` via constructor), 4 in `server.ts` post-buildApp, 1 in `ensureDirectories`. All migrated calls use structured logging with context objects. 5 remaining console.* are all pre-logger bootstrap with explanatory comments (server.ts:51 pre-buildApp, server.ts:111 startup catch, storage.config.ts module-level ×2, container-detection.ts module-level). CLI scripts (reset-password, cleanup-orphan-files) left as-is — true standalone scripts.
+  - Files: `migrate-filesystem-to-s3.ts`, `server.ts`, `storage.config.ts`, `container-detection.ts`
+
+### Minor / Deferred
+
+- [ ] **QA-8 — Web component splits created ~100-120 lines of cross-file duplication** — `files-table-file-row.tsx` and `files-table-folder-row.tsx` share identical inline-edit UI (input + confirm/cancel buttons), checkbox blocks, and icon imports. Same pattern in `files-grid-file-card.tsx` vs `files-grid-folder-card.tsx`. The fast agent noted callbacks and menus do differ, so it's not a full clone — but the inline-edit widget is copy-pasted 4x.
+  - **Fix**: Extract `<EditableField>` and `<SelectionCheckbox>` components. This naturally fits Phase 4 (Frontend Modernization) scope. Do a broader scan for other duplicated UI patterns across the split files — the fast agent only checked the file/folder pairs.
+  - **Suggested phase**: Phase 4 (item to add)
+  - Files: `apps/web/src/app/files/components/files-table-file-row.tsx`, `files-table-folder-row.tsx`, `files-grid-file-card.tsx`, `files-grid-folder-card.tsx`
+
+- [ ] **QA-9 — Frontend "structured logger" is a console wrapper** — `apps/web/src/lib/logger.ts` is 37 lines that filter by level then call `console[method]()`. No JSON serialization, no transports, no redaction, no correlation IDs. The migration itself is complete (zero console.* in web code), but calling it "structured" is misleading.
+  - **Fix**: Either (a) rename references in docs to "level-filtered logger" / "client logger", or (b) back it with a real transport in Phase 8 (Sentry breadcrumbs, OTel browser, etc.). Not blocking — but don't claim structured logging on the frontend until it actually is.
+  - **Suggested phase**: Phase 8 (polish)
+
+### Reclassified from Minor
+
+- [ ] **M-1 — PrismaClient HMR memoization — NOT APPLICABLE** — Audit found `apps/server/src/shared/prisma.ts` uses plain `const prisma = new PrismaClient()` which is correct for this codebase. The server uses `tsx watch` which restarts the process on changes (no HMR). The `globalThis` memoization pattern is a Next.js-specific concern that doesn't apply here. Recommend closing this item.
+  - **Action**: Close in CONSOLIDATED-TODO-LIST.md (item 8.15) with "not applicable — tsx watch restarts process" justification.
 
 ---
 

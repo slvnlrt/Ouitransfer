@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { DropResult } from "@hello-pangea/dnd";
+import type { DropResult } from "@hello-pangea/dnd";
 import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -14,6 +14,7 @@ import {
 } from "@/http/endpoints";
 import type { AuthProvider, NewProvider } from "@/http/endpoints/auth/types";
 import { logger } from "@/lib/logger";
+import type { ProviderFormDataMap } from "../components/auth-provider-form/types";
 
 export function useAuthProviders() {
   const t = useTranslations();
@@ -21,8 +22,7 @@ export function useAuthProviders() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
   const [editingProvider, setEditingProvider] = useState<AuthProvider | null>(null);
-  // biome-ignore lint/suspicious/noExplicitAny: provider form data uses dynamic keys from auth provider config
-  const [editingFormData, setEditingFormData] = useState<Record<string, any>>({});
+  const [editingFormData, setEditingFormData] = useState<ProviderFormDataMap>({});
   const [hideDisabledProviders, setHideDisabledProviders] = useState<boolean>(false);
   const [providerToDelete, setProviderToDelete] = useState<{
     id: string;
@@ -45,12 +45,16 @@ export function useAuthProviders() {
       const data = response.data;
 
       if (data.success) {
-        setProviders(data.data.sort((a: AuthProvider, b: AuthProvider) => a.sortOrder - b.sortOrder));
+        setProviders(
+          data.data.sort((a: AuthProvider, b: AuthProvider) => a.sortOrder - b.sortOrder),
+        );
       } else {
         toast.error(t("authProviders.messages.loadFailed"));
       }
     } catch (error) {
-      logger.error("Error loading providers", { err: error instanceof Error ? error.message : String(error) });
+      logger.error("Error loading providers", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("authProviders.messages.loadFailed"));
     } finally {
       setLoading(false);
@@ -74,7 +78,10 @@ export function useAuthProviders() {
         toast.error(t("authProviders.messages.updateFailed"));
       }
     } catch (error) {
-      logger.error("Error updating provider", { id, err: error instanceof Error ? error.message : String(error) });
+      logger.error("Error updating provider", {
+        id,
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("authProviders.messages.updateFailed"));
     } finally {
       setSaving(null);
@@ -91,9 +98,13 @@ export function useAuthProviders() {
         icon: newProvider.icon,
         clientId: newProvider.clientId,
         clientSecret: newProvider.clientSecret,
-        scope: newProvider.scope || (newProvider.type === "oidc" ? "openid profile email" : "user:email"),
+        scope:
+          newProvider.scope ||
+          (newProvider.type === "oidc" ? "openid profile email" : "user:email"),
         ...(newProvider.issuerUrl ? { issuerUrl: newProvider.issuerUrl } : {}),
-        ...(newProvider.authorizationEndpoint ? { authorizationEndpoint: newProvider.authorizationEndpoint } : {}),
+        ...(newProvider.authorizationEndpoint
+          ? { authorizationEndpoint: newProvider.authorizationEndpoint }
+          : {}),
         ...(newProvider.tokenEndpoint ? { tokenEndpoint: newProvider.tokenEndpoint } : {}),
         ...(newProvider.userInfoEndpoint ? { userInfoEndpoint: newProvider.userInfoEndpoint } : {}),
       });
@@ -107,7 +118,9 @@ export function useAuthProviders() {
         toast.error(t("authProviders.messages.addFailed"));
       }
     } catch (error) {
-      logger.error("Error adding provider", { err: error instanceof Error ? error.message : String(error) });
+      logger.error("Error adding provider", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("authProviders.messages.addFailed"));
     } finally {
       setSaving(null);
@@ -137,7 +150,9 @@ export function useAuthProviders() {
         toast.error(t("authProviders.messages.updateFailed"));
       }
     } catch (error) {
-      logger.error("Error updating provider", { err: error instanceof Error ? error.message : String(error) });
+      logger.error("Error updating provider", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("authProviders.messages.updateFailed"));
     } finally {
       setSaving(null);
@@ -158,7 +173,10 @@ export function useAuthProviders() {
         toast.error(t("authProviders.messages.deleteFailed"));
       }
     } catch (error) {
-      logger.error("Error deleting provider", { id, err: error instanceof Error ? error.message : String(error) });
+      logger.error("Error deleting provider", {
+        id,
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("authProviders.messages.deleteFailed"));
     } finally {
       setIsDeleting(false);
@@ -194,7 +212,9 @@ export function useAuthProviders() {
         await loadProviders();
       }
     } catch (error) {
-      logger.error("Error updating provider order", { err: error instanceof Error ? error.message : String(error) });
+      logger.error("Error updating provider order", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("authProviders.messages.orderUpdateFailed"));
       await loadProviders();
     }

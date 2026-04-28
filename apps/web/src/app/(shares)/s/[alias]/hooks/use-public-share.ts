@@ -1,44 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-
+import type { FileItem, FolderItem } from "@/components/tables/files-table-types";
 import { getShareByAlias } from "@/http/endpoints/index";
 import type { Share } from "@/http/endpoints/shares/types";
+import { mapShareFiles, mapShareFolders } from "@/lib/api-mappers";
 import { getCachedDownloadUrl } from "@/lib/download-url-cache";
 import { logger } from "@/lib/logger";
-
-// View-model types matching the shape components expect (description?: string, size: number)
-interface ShareViewFile {
-  id: string;
-  name: string;
-  description?: string;
-  extension: string;
-  size: number;
-  objectName: string;
-  userId: string;
-  folderId?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface ShareViewFolder {
-  id: string;
-  name: string;
-  description?: string;
-  objectName: string;
-  parentId?: string;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
-  totalSize?: string;
-  _count?: {
-    files: number;
-    children: number;
-  };
-}
 
 const createSlug = (name: string): string => {
   return name
@@ -49,7 +20,7 @@ const createSlug = (name: string): string => {
     .replace(/^-+|-+$/g, "");
 };
 
-const createFolderPathSlug = (allFolders: ShareViewFolder[], folderId: string): string => {
+const createFolderPathSlug = (allFolders: FolderItem[], folderId: string): string => {
   const path: string[] = [];
   let currentId: string | null = folderId;
 
@@ -67,16 +38,17 @@ const createFolderPathSlug = (allFolders: ShareViewFolder[], folderId: string): 
   return path.join("/");
 };
 
-const findFolderByPathSlug = (folders: ShareViewFolder[], pathSlug: string): ShareViewFolder | null => {
+const findFolderByPathSlug = (folders: FolderItem[], pathSlug: string): FolderItem | null => {
   const pathParts = pathSlug.split("/");
   let currentFolders = folders.filter((f) => !f.parentId);
-  let currentFolder: ShareViewFolder | null = null;
+  let currentFolder: FolderItem | null = null;
 
   for (const slugPart of pathParts) {
-    currentFolder = currentFolders.find((folder) => {
-      const slug = createSlug(folder.name);
-      return slug === slugPart || folder.id === slugPart;
-    }) ?? null;
+    currentFolder =
+      currentFolders.find((folder) => {
+        const slug = createSlug(folder.name);
+        return slug === slugPart || folder.id === slugPart;
+      }) ?? null;
 
     if (!currentFolder) return null;
     currentFolders = folders.filter((f) => f.parentId === currentFolder!.id);
@@ -86,9 +58,9 @@ const findFolderByPathSlug = (folders: ShareViewFolder[], pathSlug: string): Sha
 };
 
 interface ShareBrowseState {
-  folders: ShareViewFolder[];
-  files: ShareViewFile[];
-  path: ShareViewFolder[];
+  folders: FolderItem[];
+  files: FileItem[];
+  path: FolderItem[];
   isLoading: boolean;
   error: string | null;
 }
@@ -116,16 +88,22 @@ export function usePublicShare() {
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const getFolderIdFromPathSlug = useCallback((pathSlug: string | null, folders: ShareViewFolder[]): string | null => {
-    if (!pathSlug) return null;
-    const folder = findFolderByPathSlug(folders, pathSlug);
-    return folder ? folder.id : null;
-  }, []);
+  const getFolderIdFromPathSlug = useCallback(
+    (pathSlug: string | null, folders: FolderItem[]): string | null => {
+      if (!pathSlug) return null;
+      const folder = findFolderByPathSlug(folders, pathSlug);
+      return folder ? folder.id : null;
+    },
+    [],
+  );
 
-  const getFolderPathSlugFromId = useCallback((folderId: string | null, folders: ShareViewFolder[]): string | null => {
-    if (!folderId) return null;
-    return createFolderPathSlug(folders, folderId);
-  }, []);
+  const getFolderPathSlugFromId = useCallback(
+    (folderId: string | null, folders: FolderItem[]): string | null => {
+      if (!folderId) return null;
+      return createFolderPathSlug(folders, folderId);
+    },
+    [],
+  );
 
   const loadShare = useCallback(
     async (sharePassword?: string) => {
@@ -146,7 +124,10 @@ export function usePublicShare() {
 
       try {
         setIsLoading(true);
-        const response = await getShareByAlias(alias, sharePassword ? { password: sharePassword } : undefined);
+        const response = await getShareByAlias(
+          alias,
+          sharePassword ? { password: sharePassword } : undefined,
+        );
 
         setShare(response.data.share);
         setIsPasswordModalOpen(false);
@@ -157,7 +138,7 @@ export function usePublicShare() {
         setIsLoading(false);
       }
     },
-    [alias, t]
+    [alias, t],
   );
 
   const loadFolderContents = useCallback(
@@ -174,9 +155,8 @@ export function usePublicShare() {
           return;
         }
 
-        // Cast API types to view-model types (API uses string|null; components expect undefined)
-        const allFiles = (share.files || []) as unknown as ShareViewFile[];
-        const allFolders = (share.folders || []) as unknown as ShareViewFolder[];
+        const allFiles = mapShareFiles(share.files || []);
+        const allFolders = mapShareFolders(share.folders || []);
 
         const shareFolderIds = new Set(allFolders.map((f) => f.id));
 
@@ -189,7 +169,7 @@ export function usePublicShare() {
         });
         const files = allFiles.filter((file) => (file.folderId || null) === folderId);
 
-        const path: ShareViewFolder[] = [];
+        const path: FolderItem[] = [];
         if (folderId) {
           let currentId: string | null = folderId;
           while (currentId) {
@@ -211,7 +191,9 @@ export function usePublicShare() {
           error: null,
         });
       } catch (error: unknown) {
-        logger.error("Error loading folder contents", { err: error instanceof Error ? error.message : String(error) });
+        logger.error("Error loading folder contents", {
+          err: error instanceof Error ? error.message : String(error),
+        });
         setBrowseState((prev) => ({
           ...prev,
           isLoading: false,
@@ -219,7 +201,7 @@ export function usePublicShare() {
         }));
       }
     },
-    [share]
+    [share],
   );
 
   const navigateToFolder = useCallback(
@@ -230,7 +212,10 @@ export function usePublicShare() {
 
       const params = new URLSearchParams(searchParams);
       if (targetFolderId && share?.folders) {
-        const folderPathSlug = getFolderPathSlugFromId(targetFolderId, (share.folders || []) as unknown as ShareViewFolder[]);
+        const folderPathSlug = getFolderPathSlugFromId(
+          targetFolderId,
+          mapShareFolders(share.folders || []),
+        );
         if (folderPathSlug) {
           params.set("folder", folderPathSlug);
         } else {
@@ -241,7 +226,7 @@ export function usePublicShare() {
       }
       router.push(`/s/${alias}?${params.toString()}`);
     },
-    [loadFolderContents, searchParams, router, alias, share?.folders, getFolderPathSlugFromId]
+    [loadFolderContents, searchParams, router, alias, share?.folders, getFolderPathSlugFromId],
   );
 
   const handleSearch = useCallback((query: string) => {
@@ -258,16 +243,15 @@ export function usePublicShare() {
         throw new Error("Share data not available");
       }
 
-      // Cast share data to view-model types (API uses string|null; components expect undefined)
-      const shareFolderFiles = (share.files || []) as unknown as ShareViewFile[];
-      const shareFolderFolders = (share.folders || []) as unknown as ShareViewFolder[];
+      const shareFolderFiles = mapShareFiles(share.files || []);
+      const shareFolderFolders = mapShareFolders(share.folders || []);
 
       // Get all files in this folder and subfolders with their paths
       const getFolderFilesWithPath = (
         targetFolderId: string,
-        currentPath: string = ""
-      ): Array<{ file: ShareViewFile; path: string }> => {
-        const filesWithPath: Array<{ file: ShareViewFile; path: string }> = [];
+        currentPath: string = "",
+      ): Array<{ file: FileItem; path: string }> => {
+        const filesWithPath: Array<{ file: FileItem; path: string }> = [];
 
         // Get direct files in this folder
         const directFiles = shareFolderFiles.filter((f) => f.folderId === targetFolderId);
@@ -300,13 +284,13 @@ export function usePublicShare() {
           folderFilesWithPath.map(async ({ file, path }) => {
             const url = await getCachedDownloadUrl(
               file.objectName,
-              password ? { headers: { "x-share-password": password } } : undefined
+              password ? { headers: { "x-share-password": password } } : undefined,
             );
             return {
               url,
               name: path ? `${path}/${file.name}` : file.name,
             };
-          })
+          }),
         );
 
         // Create ZIP with all files
@@ -322,7 +306,9 @@ export function usePublicShare() {
         throw error;
       }
     } catch (error) {
-      logger.error("Error downloading folder", { err: error instanceof Error ? error.message : String(error) });
+      logger.error("Error downloading folder", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       throw error;
     }
   };
@@ -339,7 +325,7 @@ export function usePublicShare() {
 
       const url = await getCachedDownloadUrl(
         objectName,
-        password ? { headers: { "x-share-password": password } } : undefined
+        password ? { headers: { "x-share-password": password } } : undefined,
       );
 
       const link = document.createElement("a");
@@ -352,7 +338,9 @@ export function usePublicShare() {
       toast.dismiss(loadingToast);
       toast.success(t("shareManager.downloadSuccess"));
     } catch (error) {
-      logger.error("Error downloading file", { err: error instanceof Error ? error.message : String(error) });
+      logger.error("Error downloading file", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("share.errors.downloadFailed"));
     }
   };
@@ -375,16 +363,15 @@ export function usePublicShare() {
       const loadingToast = toast.loading(t("shareManager.creatingZip"));
 
       try {
-        // Cast share data to view-model types
-        const bulkFiles = (share.files || []) as unknown as ShareViewFile[];
-        const bulkFolders = (share.folders || []) as unknown as ShareViewFolder[];
+        const bulkFiles = mapShareFiles(share.files || []);
+        const bulkFolders = mapShareFolders(share.folders || []);
 
         // Helper function to get all files in a folder recursively with paths
         const getFolderFilesWithPath = (
           targetFolderId: string,
-          currentPath: string = ""
-        ): Array<{ file: ShareViewFile; path: string }> => {
-          const filesWithPath: Array<{ file: ShareViewFile; path: string }> = [];
+          currentPath: string = "",
+        ): Array<{ file: FileItem; path: string }> => {
+          const filesWithPath: Array<{ file: FileItem; path: string }> = [];
 
           // Get direct files in this folder
           const directFiles = bulkFiles.filter((f) => f.folderId === targetFolderId);
@@ -410,13 +397,13 @@ export function usePublicShare() {
           rootFiles.map(async (file) => {
             const url = await getCachedDownloadUrl(
               file.objectName,
-              password ? { headers: { "x-share-password": password } } : undefined
+              password ? { headers: { "x-share-password": password } } : undefined,
             );
             return {
               url,
               name: file.name,
             };
-          })
+          }),
         );
         allFilesToDownload.push(...rootFileItems);
 
@@ -429,13 +416,13 @@ export function usePublicShare() {
             folderFilesWithPath.map(async ({ file, path }) => {
               const url = await getCachedDownloadUrl(
                 file.objectName,
-                password ? { headers: { "x-share-password": password } } : undefined
+                password ? { headers: { "x-share-password": password } } : undefined,
               );
               return {
                 url,
                 name: path ? `${path}/${file.name}` : file.name,
               };
-            })
+            }),
           );
           allFilesToDownload.push(...folderFileItems);
         }
@@ -459,11 +446,13 @@ export function usePublicShare() {
         throw error;
       }
     } catch (error) {
-      logger.error("Error creating ZIP", { err: error instanceof Error ? error.message : String(error) });
+      logger.error("Error creating ZIP", {
+        err: error instanceof Error ? error.message : String(error),
+      });
     }
   };
 
-  const handleSelectedItemsBulkDownload = async (files: ShareViewFile[], folders: ShareViewFolder[]) => {
+  const handleSelectedItemsBulkDownload = async (files: FileItem[], folders: FolderItem[]) => {
     if (files.length === 0 && folders.length === 0) {
       toast.error(t("shareManager.noFilesToDownload"));
       return;
@@ -478,16 +467,15 @@ export function usePublicShare() {
       const loadingToast = toast.loading(t("shareManager.creatingZip"));
 
       try {
-        // Cast share data to view-model types
-        const selBulkFiles = (share.files || []) as unknown as ShareViewFile[];
-        const selBulkFolders = (share.folders || []) as unknown as ShareViewFolder[];
+        const selBulkFiles = mapShareFiles(share.files || []);
+        const selBulkFolders = mapShareFolders(share.folders || []);
 
         // Helper function to get all files in a folder recursively with paths
         const getFolderFilesWithPath = (
           targetFolderId: string,
-          currentPath: string = ""
-        ): Array<{ file: ShareViewFile; path: string }> => {
-          const filesWithPath: Array<{ file: ShareViewFile; path: string }> = [];
+          currentPath: string = "",
+        ): Array<{ file: FileItem; path: string }> => {
+          const filesWithPath: Array<{ file: FileItem; path: string }> = [];
 
           // Get direct files in this folder
           const directFiles = selBulkFiles.filter((f) => f.folderId === targetFolderId);
@@ -512,13 +500,13 @@ export function usePublicShare() {
           files.map(async (file) => {
             const url = await getCachedDownloadUrl(
               file.objectName,
-              password ? { headers: { "x-share-password": password } } : undefined
+              password ? { headers: { "x-share-password": password } } : undefined,
             );
             return {
               url,
               name: file.name,
             };
-          })
+          }),
         );
         allFilesToDownload.push(...directFileItems);
 
@@ -530,13 +518,13 @@ export function usePublicShare() {
             folderFilesWithPath.map(async ({ file, path }) => {
               const url = await getCachedDownloadUrl(
                 file.objectName,
-                password ? { headers: { "x-share-password": password } } : undefined
+                password ? { headers: { "x-share-password": password } } : undefined,
               );
               return {
                 url,
                 name: path ? `${path}/${file.name}` : file.name,
               };
-            })
+            }),
           );
           allFilesToDownload.push(...folderFileItems);
         }
@@ -560,18 +548,20 @@ export function usePublicShare() {
         throw error;
       }
     } catch (error) {
-      logger.error("Error creating ZIP", { err: error instanceof Error ? error.message : String(error) });
+      logger.error("Error creating ZIP", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("shareManager.zipDownloadError"));
     }
   };
 
   // Filter content based on search query
   const filteredFolders = browseState.folders.filter((folder) =>
-    folder.name?.toLowerCase().includes(searchQuery.toLowerCase())
+    folder.name?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const filteredFiles = browseState.files.filter((file) =>
-    file.name?.toLowerCase().includes(searchQuery.toLowerCase())
+    file.name?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   useEffect(() => {
@@ -582,7 +572,10 @@ export function usePublicShare() {
 
   useEffect(() => {
     if (share) {
-      const resolvedFolderId = getFolderIdFromPathSlug(urlFolderSlug, (share.folders || []) as unknown as ShareViewFolder[]);
+      const resolvedFolderId = getFolderIdFromPathSlug(
+        urlFolderSlug,
+        mapShareFolders(share.folders || []),
+      );
       setCurrentFolderId(resolvedFolderId);
       loadFolderContents(resolvedFolderId);
     }

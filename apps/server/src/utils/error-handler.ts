@@ -115,18 +115,11 @@ function handleZodValidationError(
 function isJwtError(error: unknown): boolean {
   if (typeof error !== "object" || error === null) return false;
   const code = (error as { code?: string }).code;
-  // @fastify/jwt error codes
-  return (
-    code === "FST_JWT_NO_AUTHORIZATION_IN_HEADER" ||
-    code === "FST_JWT_NO_AUTHORIZATION_IN_COOKIE" ||
-    code === "FST_JWT_AUTHORIZATION_TOKEN_EXPIRED" ||
-    code === "FST_JWT_AUTHORIZATION_TOKEN_INVALID" ||
-    code === "FST_JWT_BAD_REQUEST" ||
-    code === "FST_JWT_BAD_COOKIE_REQUEST" ||
-    // Generic JWT message patterns
-    (error as { message?: string }).message === "Authorization token expired" ||
-    (error as { message?: string }).message === "Authorization token is invalid"
-  );
+  if (typeof code !== "string") return false;
+  // @fastify/jwt errors use FST_JWT_ prefix (e.g. FST_JWT_AUTHORIZATION_TOKEN_EXPIRED).
+  // fast-jwt (underlying library) uses FAST_JWT_ prefix (e.g. FAST_JWT_MISSING_SIGNATURE).
+  // Prefix-based detection is future-proof: new error codes are caught automatically.
+  return code.startsWith("FST_JWT_") || code.startsWith("FAST_JWT_");
 }
 
 // ---------------------------------------------------------------------------

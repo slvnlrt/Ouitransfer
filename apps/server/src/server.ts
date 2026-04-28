@@ -1,4 +1,3 @@
-import crypto from "node:crypto";
 import * as fs from "node:fs/promises";
 import fastifyMultipart from "@fastify/multipart";
 
@@ -19,17 +18,7 @@ import { storageRoutes } from "./modules/storage/routes.js";
 import { twoFactorRoutes } from "./modules/two-factor/routes.js";
 import { userRoutes } from "./modules/user/routes.js";
 
-if (typeof globalThis.crypto === "undefined") {
-  // biome-ignore lint/suspicious/noExplicitAny: polyfill requires type cast — webcrypto is compatible with Crypto at runtime
-  globalThis.crypto = crypto.webcrypto as any;
-}
-
-if (typeof global.crypto === "undefined") {
-  // biome-ignore lint/suspicious/noExplicitAny: polyfill requires type cast — webcrypto is compatible with Crypto at runtime
-  (global as any).crypto = crypto.webcrypto;
-}
-
-async function ensureDirectories() {
+async function ensureDirectories(log: import("fastify").FastifyBaseLogger) {
   const dirsToCreate = [
     { path: directoriesConfig.uploads, name: "uploads" },
     { path: directoriesConfig.tempUploads, name: "temp-uploads" },
@@ -40,12 +29,13 @@ async function ensureDirectories() {
       await fs.access(dir.path);
     } catch {
       await fs.mkdir(dir.path, { recursive: true });
-      console.log(`📁 Created ${dir.name} directory: ${dir.path}`);
+      log.info({ dirName: dir.name, dirPath: dir.path }, "Created directory");
     }
   }
 }
 
 async function startServer() {
+  // console.warn used here because the Pino logger is not yet initialized (buildApp has not run).
   if (env.SECURE_SITE === "false") {
     console.warn(
       "[SECURITY WARNING] SECURE_SITE=false — cookies will be sent over plain HTTP. Only use this in development.",
@@ -54,7 +44,7 @@ async function startServer() {
 
   const app = await buildApp();
 
-  await ensureDirectories();
+  await ensureDirectories(app.log);
   const { isInternalStorage, isExternalS3 } = await import("./config/storage.config.js");
   const { runAutoMigration } = await import("./scripts/migrate-filesystem-to-s3.js");
   await runAutoMigration();
@@ -85,11 +75,11 @@ async function startServer() {
   app.register(s3StorageRoutes);
 
   if (isInternalStorage) {
-    console.log("📦 Using internal storage (auto-configured)");
+    app.log.info("Using internal storage (auto-configured)");
   } else if (isExternalS3) {
-    console.log("📦 Using external S3 storage (AWS/S3-compatible)");
+    app.log.info("Using external S3 storage (AWS/S3-compatible)");
   } else {
-    console.log("⚠️  WARNING: Storage not configured! Storage may not work.");
+    app.log.warn("Storage not configured — storage may not work");
   }
 
   await app.listen({
@@ -97,7 +87,7 @@ async function startServer() {
     host: "0.0.0.0",
   });
 
-  console.log(`🌴 OUITRANSFER server running on port 3333`);
+  app.log.info({ port: 3333 }, "OUITRANSFER server running");
 
   // Cleanup on shutdown
   process.on("SIGINT", () => process.exit(0));
@@ -105,6 +95,8 @@ async function startServer() {
 }
 
 startServer().catch((err) => {
+  // console.error used here because this catch handles failures that may occur
+  // before the Pino logger is initialized (e.g., buildApp itself failing).
   console.error("Error starting server:", err);
   process.exit(1);
 });

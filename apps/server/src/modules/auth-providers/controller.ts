@@ -2,12 +2,12 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 
 import { getLogger } from "../../utils/logger.js";
 import { ConfigService } from "../config/service.js";
-import { UpdateAuthProviderSchema } from "./dto.js";
+import type { CreateAuthProviderInput } from "./dto.js";
+import { UpdateAuthProviderSchema, UpdateOfficialProviderSchema } from "./dto.js";
 import { AuthProvidersService } from "./service.js";
 import type {
   AuthorizeRequest,
   CallbackRequest,
-  CreateProviderRequest,
   DeleteProviderRequest,
   RequestContext,
   UpdateProviderRequest,
@@ -15,16 +15,6 @@ import type {
 } from "./types.js";
 
 const COOKIE_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
-
-const OFFICIAL_PROVIDER_ALLOWED_FIELDS = [
-  "issuerUrl",
-  "clientId",
-  "clientSecret",
-  "enabled",
-  "autoRegister",
-  "adminEmailDomains",
-  "icon",
-];
 
 const ERROR_MESSAGES = {
   ENDPOINTS_INCOMPLETE:
@@ -84,7 +74,12 @@ export class AuthProvidersController {
     return this.sendErrorResponse(reply, 500, defaultMessage);
   }
 
-  private validateCustomEndpoints(data: Record<string, unknown>): string | null {
+  private validateCustomEndpoints(data: {
+    issuerUrl?: string;
+    authorizationEndpoint?: string;
+    tokenEndpoint?: string;
+    userInfoEndpoint?: string;
+  }): string | null {
     const hasAnyCustomEndpoint = !!(
       data.authorizationEndpoint ||
       data.tokenEndpoint ||
@@ -114,18 +109,6 @@ export class AuthProvidersController {
     } catch {
       return false;
     }
-  }
-
-  private sanitizeOfficialProviderData(data: Record<string, unknown>): Record<string, unknown> {
-    const sanitizedData: Record<string, unknown> = {};
-
-    for (const field of OFFICIAL_PROVIDER_ALLOWED_FIELDS) {
-      if (data[field] !== undefined) {
-        sanitizedData[field] = data[field];
-      }
-    }
-
-    return sanitizedData;
   }
 
   private setAuthCookie(reply: FastifyReply, token: string, isSecure: boolean) {
@@ -218,14 +201,15 @@ export class AuthProvidersController {
     if (reply.sent) return;
 
     try {
-      const data = request.body as CreateProviderRequest["Body"];
+      // Body is validated by Fastify's schema (CreateAuthProviderSchema in routes.ts)
+      const data = request.body as CreateAuthProviderInput;
 
       const validationError = this.validateCustomEndpoints(data);
       if (validationError) {
         return this.sendErrorResponse(reply, 400, validationError);
       }
 
-      const provider = await this.authProvidersService.createProvider(data as unknown as import("@prisma/client").Prisma.AuthProviderCreateInput);
+      const provider = await this.authProvidersService.createProvider(data);
       return this.sendSuccessResponse(reply, provider);
     } catch (error) {
       return this.handleControllerError(reply, error, "Failed to create provider");
@@ -267,23 +251,36 @@ export class AuthProvidersController {
     }
   }
 
-  private async updateOfficialProvider(reply: FastifyReply, id: string, data: Record<string, unknown>) {
-    const sanitizedData = this.sanitizeOfficialProviderData(data);
+  private async updateOfficialProvider(
+    reply: FastifyReply,
+    id: string,
+    data: Record<string, unknown>,
+  ) {
+    try {
+      // Parse with the official provider schema — this both validates and
+      // strips any fields that aren't allowed for official providers.
+      const validatedData = UpdateOfficialProviderSchema.parse(data);
 
-    if (sanitizedData.issuerUrl && typeof sanitizedData.issuerUrl === "string") {
-      if (!this.validateIssuerUrl(sanitizedData.issuerUrl)) {
+      if (validatedData.issuerUrl && !this.validateIssuerUrl(validatedData.issuerUrl)) {
         return this.sendErrorResponse(reply, 400, ERROR_MESSAGES.INVALID_URL);
       }
-    }
 
-    const provider = await this.authProvidersService.updateProvider(id, sanitizedData as import("@prisma/client").Prisma.AuthProviderUpdateInput);
-    return this.sendSuccessResponse(reply, provider);
+      const provider = await this.authProvidersService.updateProvider(id, validatedData);
+      return this.sendSuccessResponse(reply, provider);
+    } catch (validationError) {
+      getLogger().error({ err: validationError, data }, "Validation error for official provider");
+      return this.sendErrorResponse(reply, 400, ERROR_MESSAGES.INVALID_DATA);
+    }
   }
 
-  private async updateCustomProvider(reply: FastifyReply, id: string, data: Record<string, unknown>) {
+  private async updateCustomProvider(
+    reply: FastifyReply,
+    id: string,
+    data: Record<string, unknown>,
+  ) {
     try {
       const validatedData = UpdateAuthProviderSchema.parse(data);
-      const provider = await this.authProvidersService.updateProvider(id, validatedData as import("@prisma/client").Prisma.AuthProviderUpdateInput);
+      const provider = await this.authProvidersService.updateProvider(id, validatedData);
       return this.sendSuccessResponse(reply, provider);
     } catch (validationError) {
       getLogger().error({ err: validationError, data }, "Validation error for custom provider");
@@ -291,10 +288,7 @@ export class AuthProvidersController {
     }
   }
 
-  async updateProvidersOrder(
-    request: FastifyRequest,
-    reply: FastifyReply,
-  ) {
+  async updateProvidersOrder(request: FastifyRequest, reply: FastifyReply) {
     if (reply.sent) return;
 
     try {
@@ -393,7 +387,7 @@ export class AuthProvidersController {
         requestContext,
       );
 
-      const jwt = await request.jwtSign({
+      const jwt = await reply.jwtSign({
         userId: result.user.id,
         isAdmin: result.user.isAdmin,
       });

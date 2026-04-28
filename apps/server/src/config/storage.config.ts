@@ -25,6 +25,8 @@ function loadInternalStorageCredentials(): Partial<StorageConfig> | null {
         }
       });
 
+      // console.log used here because this module is evaluated at import time
+      // (before Fastify app and Pino logger are initialized via buildApp).
       console.log("[STORAGE] Using internal storage system");
 
       return {
@@ -39,6 +41,7 @@ function loadInternalStorageCredentials(): Partial<StorageConfig> | null {
       };
     }
   } catch (error) {
+    // console.warn used here — module-level code runs before Pino logger is available.
     console.warn("[STORAGE] Could not load internal storage credentials:", error);
   }
 

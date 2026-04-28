@@ -1,15 +1,19 @@
-import { getLogger } from "../../utils/logger.js";
 import { prisma } from "../../shared/prisma.js";
-import { providersConfig } from "./providers.config.js";
+import { getLogger } from "../../utils/logger.js";
+import type {
+  CreateAuthProviderInput,
+  UpdateAuthProviderInput,
+  UpdateOfficialProviderInput,
+} from "./dto.js";
 import { OAuthFlowService } from "./oauth-flow.service.js";
-import { UserLinkingService } from "./user-linking.service.js";
-import type { Prisma } from "@prisma/client";
+import { providersConfig } from "./providers.config.js";
 import type {
   AuthProviderModel,
   PendingState,
   ProviderConfig,
   RequestContextService,
 } from "./types.js";
+import { UserLinkingService } from "./user-linking.service.js";
 
 const STATE_EXPIRY_TIME = 600000; // 10 minutes
 const CLEANUP_INTERVAL = 5 * 60 * 1000; // 5 minutes
@@ -149,20 +153,29 @@ export class AuthProvidersService {
     return this.isOfficial(providerName);
   }
 
-  async createProvider(data: Prisma.AuthProviderCreateInput) {
+  async createProvider(data: CreateAuthProviderInput) {
     return await prisma.authProvider.create({
       data: {
-        ...data,
-        type: (typeof data.type === "string" && data.type) ? data.type : DEFAULT_PROVIDER_TYPE,
-        displayName: (typeof data.displayName === "string" && data.displayName)
-          ? data.displayName
-          : (typeof data.name === "string" ? data.name : ""),
+        name: data.name,
+        displayName: data.displayName || data.name,
+        type: data.type || DEFAULT_PROVIDER_TYPE,
+        icon: data.icon,
+        enabled: data.enabled ?? false,
+        autoRegister: data.autoRegister ?? true,
+        scope: data.scope,
+        adminEmailDomains: data.adminEmailDomains,
+        clientId: data.clientId,
+        clientSecret: data.clientSecret,
+        issuerUrl: data.issuerUrl,
+        authorizationEndpoint: data.authorizationEndpoint,
+        tokenEndpoint: data.tokenEndpoint,
+        userInfoEndpoint: data.userInfoEndpoint,
       },
       select: AuthProvidersService.SAFE_PROVIDER_SELECT,
     });
   }
 
-  async updateProvider(id: string, data: Prisma.AuthProviderUpdateInput) {
+  async updateProvider(id: string, data: UpdateAuthProviderInput | UpdateOfficialProviderInput) {
     return await prisma.authProvider.update({
       where: { id },
       data,
@@ -176,7 +189,10 @@ export class AuthProvidersService {
     });
   }
 
-  private generateAuthUrl(provider: Pick<AuthProviderModel, "name">, requestContext?: RequestContextService) {
+  private generateAuthUrl(
+    provider: Pick<AuthProviderModel, "name">,
+    requestContext?: RequestContextService,
+  ) {
     const baseUrl = this.oauthFlow.buildBaseUrl(requestContext);
     return `${baseUrl}/api/auth/providers/${provider.name}/authorize`;
   }

@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
-import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
+import { DragDropContext, Draggable, Droppable, type DropResult } from "@hello-pangea/dnd";
 import { IconSettings } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import type React from "react";
 
-import { AuthProvider } from "./edit-provider-form";
+import type { AuthProvider } from "./edit-provider-form";
 import { ProviderRow } from "./provider-row";
+import type { ProviderFormDataMap } from "./types";
 
 interface ProviderListProps {
   providers: AuthProvider[];
@@ -21,10 +22,8 @@ interface ProviderListProps {
   editingProvider: AuthProvider | null;
   editProvider: (data: Partial<AuthProvider>) => void;
   onCancelEdit: () => void;
-  // biome-ignore lint/suspicious/noExplicitAny: form data from react-hook-form uses dynamic keys
-  editingFormData: Record<string, any>;
-  // biome-ignore lint/suspicious/noExplicitAny: form data from react-hook-form uses dynamic keys
-  setEditingFormData: (data: Record<string, any>) => void;
+  editingFormData: ProviderFormDataMap;
+  setEditingFormData: (data: ProviderFormDataMap) => void;
 }
 
 export function ProviderList({
@@ -49,7 +48,9 @@ export function ProviderList({
       <div className="text-center py-8 text-muted-foreground">
         <IconSettings className="h-12 w-12 mx-auto mb-4 opacity-50" />
         <p>
-          {hideDisabledProviders ? t("authProviders.noProvidersEnabled") : t("authProviders.noProvidersConfigured")}
+          {hideDisabledProviders
+            ? t("authProviders.noProvidersEnabled")
+            : t("authProviders.noProvidersConfigured")}
         </p>
       </div>
     );
@@ -59,7 +60,9 @@ export function ProviderList({
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          {hideDisabledProviders ? t("authProviders.dragDisabledMessage") : t("authProviders.dragEnabledMessage")}
+          {hideDisabledProviders
+            ? t("authProviders.dragDisabledMessage")
+            : t("authProviders.dragEnabledMessage")}
         </p>
       </div>
 

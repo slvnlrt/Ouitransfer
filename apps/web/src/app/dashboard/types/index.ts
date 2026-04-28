@@ -1,10 +1,10 @@
-import { EnhancedFileManagerHook } from "@/hooks/use-enhanced-file-manager";
-import { ShareManagerHook } from "@/hooks/use-share-manager";
-import { Share } from "@/http/endpoints/shares/types";
+import type { FileItem } from "@/components/tables/files-table-types";
+import type { EnhancedFileManagerHook } from "@/hooks/use-enhanced-file-manager";
+import type { ShareManagerHook } from "@/hooks/use-share-manager";
+import type { Share } from "@/http/endpoints/shares/types";
 
 export interface RecentFilesProps {
-  // biome-ignore lint/suspicious/noExplicitAny: hook return types use internal FileBrowserFile type
-  files: any[];
+  files: FileItem[];
   fileManager: EnhancedFileManagerHook;
   isUploadModalOpen: boolean;
   onOpenUploadModal: () => void;

@@ -1,12 +1,14 @@
 "use client";
 
-import React from "react";
+import type { DraggableProvidedDragHandleProps } from "@hello-pangea/dnd";
 import { IconEdit, IconGripVertical, IconTrash } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import type React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { AuthProvider, EditProviderForm } from "./edit-provider-form";
+import { type AuthProvider, EditProviderForm } from "./edit-provider-form";
+import type { ProviderFormDataMap } from "./types";
 
 interface ProviderRowProps {
   provider: AuthProvider;
@@ -18,12 +20,9 @@ interface ProviderRowProps {
   editingProvider: AuthProvider | null;
   editProvider: (data: Partial<AuthProvider>) => void;
   onCancelEdit: () => void;
-  // biome-ignore lint/suspicious/noExplicitAny: form data from react-hook-form uses dynamic keys
-  editingFormData: Record<string, any>;
-  // biome-ignore lint/suspicious/noExplicitAny: form data from react-hook-form uses dynamic keys
-  setEditingFormData: (data: Record<string, any>) => void;
-  // biome-ignore lint/suspicious/noExplicitAny: drag handle props from @hello-pangea/dnd can be null or untyped
-  dragHandleProps: Record<string, any> | null;
+  editingFormData: ProviderFormDataMap;
+  setEditingFormData: (data: ProviderFormDataMap) => void;
+  dragHandleProps: DraggableProvidedDragHandleProps | null;
   isDragging: boolean;
   isDragDisabled: boolean;
 }
@@ -48,7 +47,9 @@ export function ProviderRow({
   const isEditing = editingProvider?.id === provider.id;
 
   return (
-    <div className={`border rounded-lg ${isDragging ? "border-blue-300 bg-blue-50 dark:bg-blue-950/20" : ""}`}>
+    <div
+      className={`border rounded-lg ${isDragging ? "border-blue-300 bg-blue-50 dark:bg-blue-950/20" : ""}`}
+    >
       <div className="flex items-center justify-between p-3">
         <div className="flex items-center gap-3">
           {!isDragDisabled ? (
@@ -73,14 +74,27 @@ export function ProviderRow({
             <div className="text-xs text-muted-foreground">
               {provider.type.toUpperCase()} • {provider.name}
               {provider.isOfficial && (
-                <span className="text-blue-600 dark:text-blue-400"> • {t("authProviders.officialProvider")}</span>
+                <span className="text-blue-600 dark:text-blue-400">
+                  {" "}
+                  • {t("authProviders.officialProvider")}
+                </span>
               )}
             </div>
           </div>
         </div>
         <div className="flex items-center gap-1">
-          <Switch checked={provider.enabled} onCheckedChange={(enabled) => onUpdate({ enabled })} disabled={saving} />
-          <Button variant="ghost" size="sm" onClick={onEdit} disabled={saving} title={t("authProviders.editProvider")}>
+          <Switch
+            checked={provider.enabled}
+            onCheckedChange={(enabled) => onUpdate({ enabled })}
+            disabled={saving}
+          />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onEdit}
+            disabled={saving}
+            title={t("authProviders.editProvider")}
+          >
             <IconEdit className="h-3 w-3" />
           </Button>
           {!provider.isOfficial && (
@@ -101,7 +115,9 @@ export function ProviderRow({
       {isEditing && (
         <div className="border-t border-border dark:border-border p-4 space-y-4 bg-muted/50 dark:bg-muted/20">
           <div className="flex items-center justify-between">
-            <h3 className="font-medium text-foreground dark:text-foreground">{provider.displayName}</h3>
+            <h3 className="font-medium text-foreground dark:text-foreground">
+              {provider.displayName}
+            </h3>
           </div>
           <EditProviderForm
             key={provider.id}

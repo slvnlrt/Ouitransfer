@@ -25,10 +25,24 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import type { CreateReverseShareBody } from "@/http/endpoints/reverse-shares/types";
@@ -137,8 +151,8 @@ export function CreateReverseShareModal({
     }
 
     if (formData.hasFileLimits) {
-      const maxFiles = parseInt(formData.maxFiles || "0");
-      const maxFileSize = parseInt(formData.maxFileSize || "0");
+      const maxFiles = parseInt(formData.maxFiles || "0", 10);
+      const maxFileSize = parseInt(formData.maxFileSize || "0", 10);
 
       if (maxFiles > 0) {
         payload.maxFiles = maxFiles;
@@ -171,7 +185,21 @@ export function CreateReverseShareModal({
     onClose();
   };
 
-  const toggleSection = (sectionKey: keyof CreateReverseShareFormData, resetFields?: string[]) => {
+  type StringFields = Exclude<
+    {
+      [K in keyof CreateReverseShareFormData]: CreateReverseShareFormData[K] extends
+        | string
+        | undefined
+        ? K
+        : never;
+    }[keyof CreateReverseShareFormData],
+    undefined
+  >;
+
+  const toggleSection = (
+    sectionKey: keyof CreateReverseShareFormData,
+    resetFields?: StringFields[],
+  ) => {
     return () => {
       const currentValue = form.getValues(sectionKey) as boolean;
       const newValue = !currentValue;
@@ -179,21 +207,29 @@ export function CreateReverseShareModal({
 
       if (!newValue && resetFields) {
         resetFields.forEach((field) => {
-          // biome-ignore lint/suspicious/noExplicitAny: mixed form field types require type cast for reset
-          form.setValue(field as keyof CreateReverseShareFormData, "" as any);
+          form.setValue(field, "");
         });
       }
     };
   };
 
-  const renderSectionToggle = (isExpanded: boolean, icon: React.ReactNode, label: string, onToggle: () => void) => (
+  const renderSectionToggle = (
+    isExpanded: boolean,
+    icon: React.ReactNode,
+    label: string,
+    onToggle: () => void,
+  ) => (
     <div className="flex items-center gap-1">
       <Label className="flex items-center gap-2">
         {icon}
         {label}
       </Label>
       <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={onToggle}>
-        {isExpanded ? <IconChevronUp size={ICON_SIZES.small} /> : <IconChevronDown size={ICON_SIZES.small} />}
+        {isExpanded ? (
+          <IconChevronUp size={ICON_SIZES.small} />
+        ) : (
+          <IconChevronDown size={ICON_SIZES.small} />
+        )}
       </Button>
     </div>
   );
@@ -202,7 +238,7 @@ export function CreateReverseShareModal({
     id: string,
     checked: boolean,
     onCheckedChange: (checked: boolean) => void,
-    label: string
+    label: string,
   ) => (
     <div className="flex items-center gap-2">
       <Checkbox id={id} checked={checked} onCheckedChange={onCheckedChange} />
@@ -214,7 +250,9 @@ export function CreateReverseShareModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className={`${DIALOG_CONFIG.maxWidth} ${DIALOG_CONFIG.maxHeight} overflow-hidden`}>
+      <DialogContent
+        className={`${DIALOG_CONFIG.maxWidth} ${DIALOG_CONFIG.maxHeight} overflow-hidden`}
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <IconUpload size={ICON_SIZES.large} />
@@ -250,9 +288,15 @@ export function CreateReverseShareModal({
                     <FormItem>
                       <FormLabel>{t("reverseShares.form.description.label")}</FormLabel>
                       <FormControl>
-                        <Textarea placeholder={t("reverseShares.form.description.placeholder")} rows={3} {...field} />
+                        <Textarea
+                          placeholder={t("reverseShares.form.description.placeholder")}
+                          rows={3}
+                          {...field}
+                        />
                       </FormControl>
-                      <FormDescription>{t("reverseShares.form.description.description")}</FormDescription>
+                      <FormDescription>
+                        {t("reverseShares.form.description.description")}
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -270,17 +314,23 @@ export function CreateReverseShareModal({
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder={t("reverseShares.form.pageLayout.placeholder")} />
+                            <SelectValue
+                              placeholder={t("reverseShares.form.pageLayout.placeholder")}
+                            />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="DEFAULT">{t("reverseShares.form.pageLayout.options.default")}</SelectItem>
+                          <SelectItem value="DEFAULT">
+                            {t("reverseShares.form.pageLayout.options.default")}
+                          </SelectItem>
                           <SelectItem value="WETRANSFER">
                             {t("reverseShares.form.pageLayout.options.wetransfer")}
                           </SelectItem>
                         </SelectContent>
                       </Select>
-                      <FormDescription>{t("reverseShares.form.pageLayout.description")}</FormDescription>
+                      <FormDescription>
+                        {t("reverseShares.form.pageLayout.description")}
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -295,7 +345,7 @@ export function CreateReverseShareModal({
                   watchedValues.hasExpiration,
                   <IconCalendar size={ICON_SIZES.medium} />,
                   t("reverseShares.labels.configureExpiration"),
-                  toggleSection("hasExpiration")
+                  toggleSection("hasExpiration"),
                 )}
 
                 {watchedValues.hasExpiration && (
@@ -308,7 +358,9 @@ export function CreateReverseShareModal({
                         <FormControl>
                           <Input type="datetime-local" {...field} />
                         </FormControl>
-                        <FormDescription>{t("reverseShares.form.expiration.description")}</FormDescription>
+                        <FormDescription>
+                          {t("reverseShares.form.expiration.description")}
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -324,7 +376,7 @@ export function CreateReverseShareModal({
                   watchedValues.isPasswordProtected,
                   <IconLock size={ICON_SIZES.medium} />,
                   t("reverseShares.labels.protectWithPassword"),
-                  toggleSection("isPasswordProtected", ["password"])
+                  toggleSection("isPasswordProtected", ["password"]),
                 )}
 
                 {watchedValues.isPasswordProtected && (
@@ -332,7 +384,9 @@ export function CreateReverseShareModal({
                     control={form.control}
                     name="password"
                     rules={{
-                      required: watchedValues.isPasswordProtected ? t("validation.passwordRequired") : false,
+                      required: watchedValues.isPasswordProtected
+                        ? t("validation.passwordRequired")
+                        : false,
                     }}
                     render={({ field }) => (
                       <FormItem>
@@ -344,7 +398,9 @@ export function CreateReverseShareModal({
                             {...field}
                           />
                         </FormControl>
-                        <FormDescription>{t("reverseShares.form.password.description")}</FormDescription>
+                        <FormDescription>
+                          {t("reverseShares.form.password.description")}
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -360,7 +416,7 @@ export function CreateReverseShareModal({
                   watchedValues.hasFileLimits,
                   <IconFile size={ICON_SIZES.medium} />,
                   t("reverseShares.labels.configureLimits"),
-                  toggleSection("hasFileLimits", ["maxFiles", "maxFileSize", "allowedFileTypes"])
+                  toggleSection("hasFileLimits", ["maxFiles", "maxFileSize", "allowedFileTypes"]),
                 )}
 
                 {watchedValues.hasFileLimits && (
@@ -382,7 +438,7 @@ export function CreateReverseShareModal({
                                 form.setValue("noFilesLimit", !!checked);
                                 if (checked) field.onChange("0");
                               },
-                              t("reverseShares.form.maxFiles.noLimit")
+                              t("reverseShares.form.maxFiles.noLimit"),
                             )}
                             {!watchedValues.noFilesLimit && (
                               <FormControl>
@@ -420,7 +476,7 @@ export function CreateReverseShareModal({
                                 form.setValue("noSizeLimit", !!checked);
                                 if (checked) field.onChange("0");
                               },
-                              t("reverseShares.form.maxFileSize.noLimit")
+                              t("reverseShares.form.maxFileSize.noLimit"),
                             )}
                             {!watchedValues.noSizeLimit && (
                               <FormControl>
@@ -454,7 +510,7 @@ export function CreateReverseShareModal({
                                 form.setValue("allFileTypes", !!checked);
                                 if (checked) field.onChange("");
                               },
-                              t("reverseShares.form.allowedFileTypes.allTypes")
+                              t("reverseShares.form.allowedFileTypes.allTypes"),
                             )}
                             {!watchedValues.allFileTypes && (
                               <FormControl>
@@ -485,7 +541,7 @@ export function CreateReverseShareModal({
                   watchedValues.hasFieldRequirements,
                   <IconUser size={ICON_SIZES.medium} />,
                   t("reverseShares.form.fieldRequirements.title"),
-                  toggleSection("hasFieldRequirements")
+                  toggleSection("hasFieldRequirements"),
                 )}
 
                 {watchedValues.hasFieldRequirements && (
@@ -576,9 +632,14 @@ export function CreateReverseShareModal({
 
                     <div className="text-xs text-muted-foreground bg-blue-50 dark:bg-blue-950/20 p-3 rounded-md border border-blue-200 dark:border-blue-800">
                       <div className="flex items-start gap-2">
-                        <IconSettings size={12} className="mt-0.5 text-blue-600 dark:text-blue-400" />
+                        <IconSettings
+                          size={12}
+                          className="mt-0.5 text-blue-600 dark:text-blue-400"
+                        />
                         <div className="space-y-1">
-                          <p className="font-medium text-blue-900 dark:text-blue-100">Field Configuration:</p>
+                          <p className="font-medium text-blue-900 dark:text-blue-100">
+                            Field Configuration:
+                          </p>
                           <ul className="space-y-0.5 text-blue-800 dark:text-blue-200">
                             <li>
                               • <strong>Hidden:</strong> Field won't appear in the upload form

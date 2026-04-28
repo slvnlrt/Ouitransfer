@@ -604,3 +604,59 @@
 - **Files**: `lefthook.yml`
 - **Change**: Replaced `{staged_files}` expansion (breaks on Windows with >100 files) with biome's native `--staged` flag. Biome queries git directly, avoiding command-line length limits.
 - **Verified**: PASS (commit with 39 staged files succeeds through lefthook)
+
+---
+
+## Phase 3 — Quality Audit Rework (QA Critical Items)
+
+> Cross-review of Phase 3 deliverables identified 9 QA items (3 critical, 4 important, 2 minor).
+> Criticals fixed immediately; important/minor tracked in TODO-POST-PHASE-3.md.
+
+### QA-1 — error-handler.test.ts type errors fixed
+- **Date**: 2026-04-28
+- **Files**: `apps/server/src/__tests__/error-handler.test.ts`
+- **Change**: `globalNotFoundHandler` takes 2 params but test used `Parameters<>[2]` instead of `[1]` (copy-paste from 3-arg `globalErrorHandler`). Extracted two typed invocation helpers (`invokeErrorHandler`, `invokeNotFoundHandler`) that encapsulate all type casts in one place using real Fastify types (`FastifyError | Error`, `FastifyRequest`, `FastifyReply`). Replaced all 24 inline cast sites. File reduced from 614→~530 lines.
+- **Verified**: PASS (`pnpm --filter ouitransfer-api type-check` clean, 31/31 tests green)
+
+### QA-2 — jwtSign augmentation removed (redundant decorator)
+- **Date**: 2026-04-28
+- **Files**: `apps/server/src/app.ts`, `apps/server/src/types/fastify.d.ts`, `apps/server/src/modules/auth/controller.ts`, `apps/server/src/modules/auth-providers/controller.ts`
+- **Change**: Custom `app.decorateRequest("jwtSign", ...)` was redundant — `@fastify/jwt` already provides `reply.jwtSign()` natively with proper types (`Promise<string>`, `SignPayloadType`, overloads). The custom decorator returned `string` (sync) with weak `object` parameter types. Removed the decorator, switched 3 callers from `request.jwtSign()` to `reply.jwtSign()`, rewrote `fastify.d.ts` to only contain the `FastifyJWT.user` augmentation.
+- **Verified**: PASS (type-check clean, 31/31 tests green)
+
+### QA-4 — API-to-view mapper module replaces 16 double-casts
+- **Date**: 2026-04-28
+- **Files**: `apps/web/src/lib/api-mappers.ts` (new), `apps/web/src/app/files/hooks/use-file-browser.ts`, `apps/web/src/app/dashboard/hooks/use-dashboard.ts`, `apps/web/src/app/(shares)/s/[alias]/hooks/use-public-share.ts`, `apps/web/src/hooks/useUppyUpload.ts`
+- **Change**: Created mapper module (150 lines) with 8 typed mapper functions (`mapApiFile`, `mapApiFiles`, `mapApiFolder`, `mapApiFolders`, `mapShareFile`, `mapShareFiles`, `mapShareFolder`, `mapShareFolders`) + `getUppyObjectName` helper. Replaced 16 `as unknown as` double-casts across 4 hook files. Also eliminated 5 redundant hook-local type interfaces (`FileBrowserFile`, `DashboardFile`, `ShareViewFile`, `FileBrowserFolder`, `ShareViewFolder`) in favor of canonical `files-table-types.ts` exports. Remaining `as unknown as` in web: 2 legitimate (browser API boundary, dynamic field access).
+- **Verified**: PASS (web type-check clean)
+- **Follow-up tracked**: 21 additional type duplicates across 11 files → Phase 4 item 4.15
+
+### QA-5 — biome-ignore suppressions audited: 23→0 in server, 23→0 in web (noExplicitAny)
+- **Date**: 2026-04-28
+- **Files**: 12 files across `apps/web/src/` + new `apps/web/src/app/settings/components/auth-provider-form/types.ts`
+- **Change**: Audited all 23 `biome-ignore lint/suspicious/noExplicitAny` suppressions. 21 removed (replaced with proper types: `FileItem[]`, `FolderItem[]`, `UseFormRegister<GroupFormData>`, `DraggableProvidedDragHandleProps`, `ProviderFormDataMap`, `StringFields` conditional type, explicit `LoginBody` construction). 2 remaining were for crypto polyfill in `server.ts` — subsequently deleted entirely (see crypto polyfill entry below). Created `ProviderFormData`/`ProviderFormDataMap` types for auth-provider forms.
+- **Verified**: PASS (web + server type-check clean, 0 `noExplicitAny` suppressions remaining in entire codebase)
+
+### QA-6 — auth-providers Prisma casts eliminated via Zod-derived types
+- **Date**: 2026-04-28
+- **Files**: `apps/server/src/modules/auth-providers/dto.ts`, `service.ts`, `controller.ts`, `types.ts`
+- **Change**: Service methods now accept Zod-derived types (`CreateAuthProviderInput`, `UpdateAuthProviderInput`) instead of `Prisma.*` types directly. Explicit field mapping inside service ensures only validated fields reach Prisma. Removed `as unknown as Prisma.AuthProviderCreateInput` + 2 `as Prisma.AuthProviderUpdateInput` casts. Removed dead code (`OFFICIAL_PROVIDER_ALLOWED_FIELDS`, `sanitizeOfficialProviderData`). Replaced manual allowlist with `UpdateOfficialProviderSchema.parse()`. No other dangerous `as unknown as` casts found in server modules.
+- **Verified**: PASS (server type-check clean, 31/31 tests green)
+
+### QA-7 — Runtime console.* migrated to structured Pino logging
+- **Date**: 2026-04-28
+- **Files**: `apps/server/src/scripts/migrate-filesystem-to-s3.ts`, `apps/server/src/server.ts`, `apps/server/src/config/storage.config.ts`, `apps/server/src/utils/container-detection.ts`
+- **Change**: Migrated 37 `console.*` calls to structured Pino logging. `FilesystemToS3Migrator` class now accepts `FastifyBaseLogger` via constructor (obtained from `getLogger()` in `runAutoMigration()`). All migrated calls use structured logging with context objects. 5 remaining `console.*` are all pre-logger bootstrap with explanatory comments (server.ts pre-buildApp warning + startup catch, storage.config.ts module-level ×2, container-detection.ts module-level).
+- **Verified**: PASS (server type-check clean, 31/31 tests green)
+
+### Dead crypto polyfill removed
+- **Date**: 2026-04-28
+- **Files**: `apps/server/src/server.ts`
+- **Change**: Deleted `globalThis.crypto` and `global.crypto` polyfill block (lines 22-30) + the `import crypto from "node:crypto"` import. Node 19+ has `globalThis.crypto` natively; this project targets Node 24 — the polyfill was dead code (condition never true). This also eliminated the last 2 `biome-ignore lint/suspicious/noExplicitAny` suppressions in the server, bringing the entire codebase to 0 noExplicitAny suppressions.
+- **Verified**: PASS (server type-check clean, 31/31 tests green)
+
+### QA-3 — JWT error detection made future-proof
+- **Date**: 2026-04-28
+- **Files**: `apps/server/src/utils/error-handler.ts`, `apps/server/src/__tests__/error-handler.test.ts`
+- **Change**: `isJwtError()` used an explicit 6-code list + fragile message-based fallback (`"Authorization token expired"`, `"Authorization token is invalid"` — configurable strings from `@fastify/jwt`). Replaced with prefix-based detection: `code.startsWith("FST_JWT_") || code.startsWith("FAST_JWT_")`. Catches all current AND future error codes automatically. Removed message-based fallback. Added 3 tests (prefix detection, future code, negative case), removed 2 obsolete message-based tests. Net: 30→31 tests.
+- **Verified**: PASS (type-check clean, 31/31 tests green)

@@ -1,4 +1,4 @@
-import * as fsSync from "fs";
+import * as fsSync from "node:fs";
 
 /**
  * Determines if the application is running inside a container environment.
@@ -36,6 +36,7 @@ function isRunningInContainer(): boolean {
     }
   } catch (e: unknown) {
     if (e instanceof Error) {
+      // console.warn used here — this runs at module-load time before Pino logger is available.
       console.warn("Could not perform full container detection:", e.message);
     }
   }

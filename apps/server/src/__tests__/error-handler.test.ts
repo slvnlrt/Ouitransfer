@@ -5,6 +5,7 @@
  * functions (no mocking of fastify-type-provider-zod) so the tests verify the
  * real branching logic.
  */
+import type { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 import { describe, expect, it, vi } from "vitest";
 
 import {
@@ -35,6 +36,35 @@ function makeReply() {
   // .status() returns the same reply object so .send() can be chained
   reply.status.mockReturnValue(reply);
   return reply;
+}
+
+/**
+ * Invoke globalErrorHandler with test mocks, encapsulating the type casts once.
+ *
+ * The casts are necessary because test mocks are structural subsets of the
+ * real Fastify types. Centralising them here avoids 22+ inline cast sites
+ * and prevents index-mismatch bugs (e.g. `Parameters<...>[2]` on a 2-param fn).
+ */
+function invokeErrorHandler(
+  error: unknown,
+  request: ReturnType<typeof makeRequest>,
+  reply: ReturnType<typeof makeReply>,
+): void {
+  globalErrorHandler(
+    error as FastifyError | Error,
+    request as unknown as FastifyRequest,
+    reply as unknown as FastifyReply,
+  );
+}
+
+/**
+ * Invoke globalNotFoundHandler with test mocks.
+ */
+function invokeNotFoundHandler(
+  request: ReturnType<typeof makeRequest>,
+  reply: ReturnType<typeof makeReply>,
+): void {
+  globalNotFoundHandler(request as unknown as FastifyRequest, reply as unknown as FastifyReply);
 }
 
 /** The Symbol used internally by fastify-type-provider-zod to tag validation items. */
@@ -92,11 +122,7 @@ describe("globalErrorHandler — Zod validation errors", () => {
       { path: ["body", "name"], message: "Required" },
     ]);
 
-    globalErrorHandler(
-      error as unknown as Parameters<typeof globalErrorHandler>[0],
-      request as unknown as Parameters<typeof globalErrorHandler>[1],
-      reply as unknown as Parameters<typeof globalErrorHandler>[2],
-    );
+    invokeErrorHandler(error, request, reply);
 
     expect(reply.status).toHaveBeenCalledWith(400);
 
@@ -115,11 +141,7 @@ describe("globalErrorHandler — Zod validation errors", () => {
     const reply = makeReply();
     const error = makeZodValidationError([{ path: ["x"], message: "bad" }]);
 
-    globalErrorHandler(
-      error as unknown as Parameters<typeof globalErrorHandler>[0],
-      request as unknown as Parameters<typeof globalErrorHandler>[1],
-      reply as unknown as Parameters<typeof globalErrorHandler>[2],
-    );
+    invokeErrorHandler(error, request, reply);
 
     expect(request.log.error).toHaveBeenCalledOnce();
   });
@@ -141,11 +163,7 @@ describe("globalErrorHandler — response serialization errors", () => {
       message: "Response doesn't match the schema",
     };
 
-    globalErrorHandler(
-      error as unknown as Parameters<typeof globalErrorHandler>[0],
-      request as unknown as Parameters<typeof globalErrorHandler>[1],
-      reply as unknown as Parameters<typeof globalErrorHandler>[2],
-    );
+    invokeErrorHandler(error, request, reply);
 
     expect(reply.status).toHaveBeenCalledWith(500);
 
@@ -177,11 +195,7 @@ describe("globalErrorHandler — JWT errors", () => {
       const reply = makeReply();
       const error = { code, message: "JWT error" };
 
-      globalErrorHandler(
-        error as unknown as Parameters<typeof globalErrorHandler>[0],
-        request as unknown as Parameters<typeof globalErrorHandler>[1],
-        reply as unknown as Parameters<typeof globalErrorHandler>[2],
-      );
+      invokeErrorHandler(error, request, reply);
 
       expect(reply.status).toHaveBeenCalledWith(401);
 
@@ -192,16 +206,12 @@ describe("globalErrorHandler — JWT errors", () => {
     });
   }
 
-  it("returns 401 for generic 'Authorization token expired' message", () => {
+  it("returns 401 for fast-jwt FAST_JWT_ prefixed codes", () => {
     const request = makeRequest();
     const reply = makeReply();
-    const error = { message: "Authorization token expired" };
+    const error = { code: "FAST_JWT_MISSING_SIGNATURE", message: "Unsigned token" };
 
-    globalErrorHandler(
-      error as unknown as Parameters<typeof globalErrorHandler>[0],
-      request as unknown as Parameters<typeof globalErrorHandler>[1],
-      reply as unknown as Parameters<typeof globalErrorHandler>[2],
-    );
+    invokeErrorHandler(error, request, reply);
 
     expect(reply.status).toHaveBeenCalledWith(401);
 
@@ -210,21 +220,32 @@ describe("globalErrorHandler — JWT errors", () => {
     expect(sent.code).toBe("AUTHENTICATION_ERROR");
   });
 
-  it("returns 401 for generic 'Authorization token is invalid' message", () => {
+  it("returns 401 for unknown future FST_JWT_ codes (prefix-based)", () => {
     const request = makeRequest();
     const reply = makeReply();
-    const error = { message: "Authorization token is invalid" };
+    const error = { code: "FST_JWT_SOME_FUTURE_ERROR", message: "New JWT error" };
 
-    globalErrorHandler(
-      error as unknown as Parameters<typeof globalErrorHandler>[0],
-      request as unknown as Parameters<typeof globalErrorHandler>[1],
-      reply as unknown as Parameters<typeof globalErrorHandler>[2],
-    );
+    invokeErrorHandler(error, request, reply);
 
     expect(reply.status).toHaveBeenCalledWith(401);
 
     const sent = reply.send.mock.calls[0][0] as ErrorResponse;
     expect(sent.statusCode).toBe(401);
+    expect(sent.code).toBe("AUTHENTICATION_ERROR");
+  });
+
+  it("does NOT match errors with JWT-like messages but no FST_JWT_/FAST_JWT_ code", () => {
+    const request = makeRequest();
+    const reply = makeReply();
+    const error = new Error("Authorization token expired");
+
+    invokeErrorHandler(error, request, reply);
+
+    // Should fall through to the "unknown error" branch (500), not JWT (401)
+    expect(reply.status).toHaveBeenCalledWith(500);
+
+    const sent = reply.send.mock.calls[0][0] as ErrorResponse;
+    expect(sent.code).toBe("INTERNAL_ERROR");
   });
 });
 
@@ -238,11 +259,7 @@ describe("globalErrorHandler — Prisma P2002 (unique constraint)", () => {
     const reply = makeReply();
     const error = makePrismaError("P2002", { target: ["email"] });
 
-    globalErrorHandler(
-      error as unknown as Parameters<typeof globalErrorHandler>[0],
-      request as unknown as Parameters<typeof globalErrorHandler>[1],
-      reply as unknown as Parameters<typeof globalErrorHandler>[2],
-    );
+    invokeErrorHandler(error, request, reply);
 
     expect(reply.status).toHaveBeenCalledWith(409);
 
@@ -258,11 +275,7 @@ describe("globalErrorHandler — Prisma P2002 (unique constraint)", () => {
     const reply = makeReply();
     const error = makePrismaError("P2002"); // no meta
 
-    globalErrorHandler(
-      error as unknown as Parameters<typeof globalErrorHandler>[0],
-      request as unknown as Parameters<typeof globalErrorHandler>[1],
-      reply as unknown as Parameters<typeof globalErrorHandler>[2],
-    );
+    invokeErrorHandler(error, request, reply);
 
     expect(reply.status).toHaveBeenCalledWith(409);
 
@@ -275,11 +288,7 @@ describe("globalErrorHandler — Prisma P2002 (unique constraint)", () => {
     const reply = makeReply();
     const error = makePrismaError("P2002", { target: ["firstName", "lastName"] });
 
-    globalErrorHandler(
-      error as unknown as Parameters<typeof globalErrorHandler>[0],
-      request as unknown as Parameters<typeof globalErrorHandler>[1],
-      reply as unknown as Parameters<typeof globalErrorHandler>[2],
-    );
+    invokeErrorHandler(error, request, reply);
 
     const sent = reply.send.mock.calls[0][0] as ErrorResponse;
     expect(sent.details?.target).toBe("firstName, lastName");
@@ -292,11 +301,7 @@ describe("globalErrorHandler — Prisma P2025 (record not found)", () => {
     const reply = makeReply();
     const error = makePrismaError("P2025");
 
-    globalErrorHandler(
-      error as unknown as Parameters<typeof globalErrorHandler>[0],
-      request as unknown as Parameters<typeof globalErrorHandler>[1],
-      reply as unknown as Parameters<typeof globalErrorHandler>[2],
-    );
+    invokeErrorHandler(error, request, reply);
 
     expect(reply.status).toHaveBeenCalledWith(404);
 
@@ -314,11 +319,7 @@ describe("globalErrorHandler — Prisma P2003 (foreign key constraint)", () => {
     const reply = makeReply();
     const error = makePrismaError("P2003");
 
-    globalErrorHandler(
-      error as unknown as Parameters<typeof globalErrorHandler>[0],
-      request as unknown as Parameters<typeof globalErrorHandler>[1],
-      reply as unknown as Parameters<typeof globalErrorHandler>[2],
-    );
+    invokeErrorHandler(error, request, reply);
 
     expect(reply.status).toHaveBeenCalledWith(409);
 
@@ -335,11 +336,7 @@ describe("globalErrorHandler — Prisma P2014 (relation violation)", () => {
     const reply = makeReply();
     const error = makePrismaError("P2014");
 
-    globalErrorHandler(
-      error as unknown as Parameters<typeof globalErrorHandler>[0],
-      request as unknown as Parameters<typeof globalErrorHandler>[1],
-      reply as unknown as Parameters<typeof globalErrorHandler>[2],
-    );
+    invokeErrorHandler(error, request, reply);
 
     expect(reply.status).toHaveBeenCalledWith(409);
 
@@ -355,11 +352,7 @@ describe("globalErrorHandler — Prisma unknown code (e.g. P9999)", () => {
     const reply = makeReply();
     const error = makePrismaError("P9999", { someInternalField: "secret" });
 
-    globalErrorHandler(
-      error as unknown as Parameters<typeof globalErrorHandler>[0],
-      request as unknown as Parameters<typeof globalErrorHandler>[1],
-      reply as unknown as Parameters<typeof globalErrorHandler>[2],
-    );
+    invokeErrorHandler(error, request, reply);
 
     expect(reply.status).toHaveBeenCalledWith(500);
 
@@ -386,11 +379,7 @@ describe("globalErrorHandler — Fastify 4xx errors", () => {
       code: "FST_ERR_VALIDATION",
     };
 
-    globalErrorHandler(
-      error as unknown as Parameters<typeof globalErrorHandler>[0],
-      request as unknown as Parameters<typeof globalErrorHandler>[1],
-      reply as unknown as Parameters<typeof globalErrorHandler>[2],
-    );
+    invokeErrorHandler(error, request, reply);
 
     expect(reply.status).toHaveBeenCalledWith(400);
 
@@ -409,11 +398,7 @@ describe("globalErrorHandler — Fastify 4xx errors", () => {
       code: "FST_ERR_FORBIDDEN",
     };
 
-    globalErrorHandler(
-      error as unknown as Parameters<typeof globalErrorHandler>[0],
-      request as unknown as Parameters<typeof globalErrorHandler>[1],
-      reply as unknown as Parameters<typeof globalErrorHandler>[2],
-    );
+    invokeErrorHandler(error, request, reply);
 
     expect(reply.status).toHaveBeenCalledWith(403);
 
@@ -431,11 +416,7 @@ describe("globalErrorHandler — Fastify 4xx errors", () => {
       code: "FST_RATE_LIMIT_EXCEEDED",
     };
 
-    globalErrorHandler(
-      error as unknown as Parameters<typeof globalErrorHandler>[0],
-      request as unknown as Parameters<typeof globalErrorHandler>[1],
-      reply as unknown as Parameters<typeof globalErrorHandler>[2],
-    );
+    invokeErrorHandler(error, request, reply);
 
     expect(reply.status).toHaveBeenCalledWith(429);
 
@@ -449,11 +430,7 @@ describe("globalErrorHandler — Fastify 4xx errors", () => {
     const reply = makeReply();
     const error = { statusCode: 400, message: "Bad Request", code: "FST_ERR" };
 
-    globalErrorHandler(
-      error as unknown as Parameters<typeof globalErrorHandler>[0],
-      request as unknown as Parameters<typeof globalErrorHandler>[1],
-      reply as unknown as Parameters<typeof globalErrorHandler>[2],
-    );
+    invokeErrorHandler(error, request, reply);
 
     expect(request.log.error).toHaveBeenCalledOnce();
   });
@@ -473,11 +450,7 @@ describe("globalErrorHandler — Fastify 5xx errors", () => {
       code: "FST_ERR_SERVICE_UNAVAILABLE",
     };
 
-    globalErrorHandler(
-      error as unknown as Parameters<typeof globalErrorHandler>[0],
-      request as unknown as Parameters<typeof globalErrorHandler>[1],
-      reply as unknown as Parameters<typeof globalErrorHandler>[2],
-    );
+    invokeErrorHandler(error, request, reply);
 
     expect(reply.status).toHaveBeenCalledWith(503);
 
@@ -498,11 +471,7 @@ describe("globalErrorHandler — Fastify 5xx errors", () => {
       code: "FST_ERR_INTERNAL",
     };
 
-    globalErrorHandler(
-      internalError as unknown as Parameters<typeof globalErrorHandler>[0],
-      request as unknown as Parameters<typeof globalErrorHandler>[1],
-      reply as unknown as Parameters<typeof globalErrorHandler>[2],
-    );
+    invokeErrorHandler(internalError, request, reply);
 
     expect(reply.status).toHaveBeenCalledWith(500);
 
@@ -524,11 +493,7 @@ describe("globalErrorHandler — unknown errors", () => {
     const reply = makeReply();
     const error = new Error("something broke internally");
 
-    globalErrorHandler(
-      error as unknown as Parameters<typeof globalErrorHandler>[0],
-      request as unknown as Parameters<typeof globalErrorHandler>[1],
-      reply as unknown as Parameters<typeof globalErrorHandler>[2],
-    );
+    invokeErrorHandler(error, request, reply);
 
     expect(reply.status).toHaveBeenCalledWith(500);
 
@@ -546,11 +511,7 @@ describe("globalErrorHandler — unknown errors", () => {
     const reply = makeReply();
     const error = new Error("unexpected");
 
-    globalErrorHandler(
-      error as unknown as Parameters<typeof globalErrorHandler>[0],
-      request as unknown as Parameters<typeof globalErrorHandler>[1],
-      reply as unknown as Parameters<typeof globalErrorHandler>[2],
-    );
+    invokeErrorHandler(error, request, reply);
 
     expect(request.log.error).toHaveBeenCalledOnce();
     // Ensure the actual error object is passed so Pino can serialize it
@@ -561,13 +522,9 @@ describe("globalErrorHandler — unknown errors", () => {
     const request = makeRequest();
     const reply = makeReply();
     // In some rare cases a non-Error value is thrown
-    const error = "some string error" as unknown as Error;
+    const error = "some string error";
 
-    globalErrorHandler(
-      error as unknown as Parameters<typeof globalErrorHandler>[0],
-      request as unknown as Parameters<typeof globalErrorHandler>[1],
-      reply as unknown as Parameters<typeof globalErrorHandler>[2],
-    );
+    invokeErrorHandler(error, request, reply);
 
     expect(reply.status).toHaveBeenCalledWith(500);
 
@@ -586,10 +543,7 @@ describe("globalNotFoundHandler", () => {
     const request = makeRequest();
     const reply = makeReply();
 
-    globalNotFoundHandler(
-      request as unknown as Parameters<typeof globalNotFoundHandler>[0],
-      reply as unknown as Parameters<typeof globalNotFoundHandler>[2],
-    );
+    invokeNotFoundHandler(request, reply);
 
     expect(reply.status).toHaveBeenCalledWith(404);
 
@@ -604,10 +558,7 @@ describe("globalNotFoundHandler", () => {
     const request = makeRequest();
     const reply = makeReply();
 
-    globalNotFoundHandler(
-      request as unknown as Parameters<typeof globalNotFoundHandler>[0],
-      reply as unknown as Parameters<typeof globalNotFoundHandler>[2],
-    );
+    invokeNotFoundHandler(request, reply);
 
     expect(request.log.error).not.toHaveBeenCalled();
   });

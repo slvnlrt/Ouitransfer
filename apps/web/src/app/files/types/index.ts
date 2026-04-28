@@ -1,5 +1,5 @@
-import { EnhancedFileManagerHook } from "@/hooks/use-enhanced-file-manager";
 import type { FileItem, FolderItem } from "@/components/tables/files-table-types";
+import type { EnhancedFileManagerHook } from "@/hooks/use-enhanced-file-manager";
 
 export type { FileItem, FolderItem };
 
@@ -8,16 +8,11 @@ export interface HeaderProps {
   onCreateFolder?: () => void;
 }
 
-// Files and folders come from the use-file-browser hook which returns API types
 export interface FileListProps {
-  // biome-ignore lint/suspicious/noExplicitAny: hook return types are not strongly typed
-  files: any[];
-  // biome-ignore lint/suspicious/noExplicitAny: hook return types are not strongly typed
-  filteredFiles: any[];
-  // biome-ignore lint/suspicious/noExplicitAny: hook return types are not strongly typed
-  folders?: any[];
-  // biome-ignore lint/suspicious/noExplicitAny: hook return types are not strongly typed
-  filteredFolders?: any[];
+  files: FileItem[];
+  filteredFiles: FileItem[];
+  folders?: FolderItem[];
+  filteredFolders?: FolderItem[];
   fileManager: EnhancedFileManagerHook;
   searchQuery: string;
   onSearch: (query: string) => void;

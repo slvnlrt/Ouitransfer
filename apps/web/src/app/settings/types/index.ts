@@ -1,4 +1,4 @@
-import { UseFormReturn } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
 
 export type ValidGroup = "security" | "email" | "general" | "storage";
 
@@ -6,9 +6,7 @@ export type GroupFormData = {
   configs: Record<string, string>;
 };
 
-// biome-ignore lint/suspicious/noExplicitAny: react-hook-form uses `any` as default context generic
-// biome-ignore lint/suspicious/noExplicitAny: third generic left as FieldValues to match useForm inference
-type GroupForm = UseFormReturn<GroupFormData, any, any>;
+type GroupForm = UseFormReturn<GroupFormData, undefined, GroupFormData>;
 
 export interface SettingsFormProps {
   groupedConfigs: Record<string, Config[]>;
