@@ -7,12 +7,8 @@
     "firstUserAccess",
     "serverUrl"
   ],
-  "storage": [
-    "maxFileSize",
-    "maxTotalStoragePerUser"
-  ],
+  "storage": ["maxFileSize", "maxTotalStoragePerUser"],
   "security": [
-    "jwtSecret",
     "maxLoginAttempts",
     "loginBlockDuration",
     "passwordMinLength",
@@ -31,7 +27,5 @@
     "smtpNoAuth",
     "smtpTrustSelfSigned"
   ],
-  "auth-providers": [
-    "authProvidersEnabled"
-  ]
+  "auth-providers": ["authProvidersEnabled"]
 }

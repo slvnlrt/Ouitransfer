@@ -23,6 +23,9 @@ const envSchema = z.object({
   STORAGE_URL: z.string().optional(), // Storage URL for internal storage presigned URLs (required when ENABLE_S3=false, e.g., https://syrg.OUITRANSFER.com or http://192.168.1.100:9379)
   DATABASE_URL: z.string().optional().default("file:/app/server/prisma/ouitransfer.db"),
   CUSTOM_PATH: z.string().optional(),
+
+  // Security
+  JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 characters"),
 });
 
 export const env = envSchema.parse(process.env);

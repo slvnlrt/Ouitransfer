@@ -1,4 +1,3 @@
-import crypto from "node:crypto";
 import * as http from "node:http";
 import fastifyCookie from "@fastify/cookie";
 import { fastifyCors } from "@fastify/cors";
@@ -11,20 +10,14 @@ import {
   validatorCompiler,
   type ZodTypeProvider,
 } from "fastify-type-provider-zod";
-
 import { registerSwagger } from "./config/swagger.config.js";
 import { envTimeoutOverrides } from "./config/timeout.config.js";
-import { prisma } from "./shared/prisma.js";
+import { env } from "./env.js";
 import { globalErrorHandler, globalNotFoundHandler } from "./utils/error-handler.js";
 import { setLogger } from "./utils/logger.js";
 
 export async function buildApp() {
-  const jwtConfig = await prisma.appConfig.findUnique({
-    where: { key: "jwtSecret" },
-  });
-
-  const JWT_SECRET = jwtConfig?.value || crypto.randomBytes(64).toString("hex");
-
+  // JWT_SECRET removed from DB — now in env.ts
   const app = fastify({
     ajv: {
       customOptions: {
@@ -115,7 +108,7 @@ export async function buildApp() {
 
   app.register(fastifyCookie);
   app.register(fastifyJwt, {
-    secret: JWT_SECRET,
+    secret: env.JWT_SECRET,
     cookie: {
       cookieName: "token",
       signed: false,

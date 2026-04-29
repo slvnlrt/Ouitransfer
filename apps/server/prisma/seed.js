@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import crypto from "node:crypto";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -55,12 +55,6 @@ const defaultConfigs = [
     group: "storage",
   },
   // Security Configurations
-  {
-    key: "jwtSecret",
-    value: crypto.randomBytes(64).toString("hex"),
-    type: "string",
-    group: "security",
-  },
   {
     key: "embedSecret",
     value: crypto.randomBytes(32).toString("hex"),

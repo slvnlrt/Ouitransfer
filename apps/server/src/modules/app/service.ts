@@ -29,11 +29,6 @@ export class AppService {
 
   async getAllConfigs() {
     return prisma.appConfig.findMany({
-      where: {
-        key: {
-          not: "jwtSecret",
-        },
-      },
       orderBy: {
         group: "asc",
       },
@@ -49,7 +44,6 @@ export class AppService {
       "smtpSecure",
       "smtpNoAuth",
       "smtpTrustSelfSigned",
-      "jwtSecret",
     ];
 
     return prisma.appConfig.findMany({
@@ -65,10 +59,6 @@ export class AppService {
   }
 
   async updateConfig(key: string, value: string) {
-    if (key === "jwtSecret") {
-      throw new Error("JWT Secret cannot be updated through this endpoint");
-    }
-
     if (key === "passwordAuthEnabled") {
       if (value === "false") {
         const canDisable = await this.configService.validatePasswordAuthDisable();
@@ -95,9 +85,6 @@ export class AppService {
   }
 
   async bulkUpdateConfigs(updates: Array<{ key: string; value: string }>) {
-    if (updates.some((update) => update.key === "jwtSecret")) {
-      throw new Error("JWT Secret cannot be updated through this endpoint");
-    }
     const passwordAuthUpdate = updates.find((update) => update.key === "passwordAuthEnabled");
     if (passwordAuthUpdate && passwordAuthUpdate.value === "false") {
       const canDisable = await this.configService.validatePasswordAuthDisable();
