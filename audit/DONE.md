@@ -745,3 +745,26 @@
 - **Files**: `files-grid-file-card.tsx` (fill), `logo-input.tsx` (200×200), `image-preview.tsx` (fill for both thumbnail and fullscreen), `two-factor-form.tsx` (192×192), `share-header.tsx` (32×32), `default-layout.tsx` (32×32), `navbar.tsx` (32×32)
 - **Skipped**: `embed-code-display.tsx` (string literal, not JSX)
 - **Verified**: PASS
+
+### 4.9 — Skip-to-content link
+- **Date**: 2026-04-29
+- **Files**: `apps/web/src/components/skip-to-content.tsx` (NEW), `apps/web/src/app/layout.tsx`, `apps/web/src/app/(shares)/s/[alias]/layout.tsx`, `apps/web/src/app/(shares)/r/[id]/layout.tsx`, `apps/web/messages/en-US.json`
+- **Change**: Created `skip-to-content.tsx` (16L) as first focusable element. Added `<main id="main-content" tabIndex={-1}>` to root layout wrapping children. Fixed 2 existing `<main>` elements on share pages to include `id="main-content"`. i18n keys in `a11y` namespace.
+- **Verified**: PASS
+
+### 4.10 — Route announcer
+- **Date**: 2026-04-29
+- **Files**: `apps/web/src/components/route-announcer.tsx` (NEW), `apps/web/src/app/layout.tsx`
+- **Change**: Created `route-announcer.tsx` (34L) — listens to `usePathname()`, announces page title via `aria-live="assertive"` region after 100ms delay. Wired into root layout.
+- **Verified**: PASS
+
+### 4.11 — Keyboard DnD alternative
+- **Date**: 2026-04-29
+- **Assessment**: Already implemented — bulk move via checkbox selection + "Move" button in bulk actions dropdown was built during 4.14 (use-selection-manager). Auth provider reordering uses @hello-pangea/dnd which has built-in keyboard support. No additional work needed.
+- **Verified**: PASS
+
+### 4.12 — RTL fix
+- **Date**: 2026-04-29
+- **Files**: `apps/web/src/lib/rtl-languages.ts` (NEW), `apps/web/src/app/layout.tsx`, `apps/web/src/components/language-switcher.tsx`, 73 files with directional Tailwind replacements
+- **Change**: Created shared `rtl-languages.ts` constant (`["ar-SA", "fa-IR", "he-IL"]`). Fixed server-side detection in `layout.tsx` (was only `ar-SA`, now includes all 3). Replaced 191 directional Tailwind classes across 73 files with logical property equivalents: `ml-`→`ms-`, `mr-`→`me-`, `pl-`→`ps-`, `pr-`→`pe-`, `left-`→`start-`, `right-`→`end-`, `text-left`→`text-start`, `text-right`→`text-end`. Fixed inline style `marginRight` → `marginInlineEnd` in language-switcher.
+- **Verified**: PASS

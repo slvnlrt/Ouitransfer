@@ -116,7 +116,10 @@ Batch 4 complete: 4.6 (lazy fonts — `preload: false` on 10 non-default fonts, 
 4.7 (code splitting — DynamicIcon replaces catastrophic 31-pack react-icons import on login page,
 IconPicker wrapped with next/dynamic, LazyQRCode + LazyReactCrop wrappers for modal-only libraries),
 4.8 (next/image — 7 `<img>` → `<Image>` with `unoptimized` for presigned/proxy URLs).
-Next: Batch 5 — Accessibility (4.9 skip-to-content, 4.10 focus management, 4.11 keyboard DnD, 4.12 RTL).
+Batch 5 complete: 4.9 (skip-to-content link), 4.10 (route announcer for focus management),
+4.11 (keyboard DnD — already implemented via bulk actions), 4.12 (RTL fix — shared constant,
+server detection for fa-IR/he-IL, 191 Tailwind directional→logical replacements across 73 files).
+Next: Batch 6 — Middleware route protection (4.13).
 
 ## Important: No Production, No Legacy
 The app is **not in production** and has no existing users. This means:

@@ -888,7 +888,7 @@ Performance (8h)
 
 Accessibility (4h)
 
-\- \[ ] 4.9 — Add skip-to-content link  
+\- \[x] 4.9 — Add skip-to-content link  
 
 &#x20; File: apps/web/src/app/layout.tsx or main layout component  
 
@@ -896,7 +896,7 @@ Accessibility (4h)
 
 &#x20; Justification: Audit 03 — no skip-to-content link
 
-\- \[ ] 4.10 — Add focus management on route changes  
+\- \[x] 4.10 — Add focus management on route changes  
 
 &#x20; File: apps/web/src/components/layout/ or root layout  
 
@@ -904,7 +904,7 @@ Accessibility (4h)
 
 &#x20; Justification: Audit 03 — no focus management on route change
 
-\- \[ ] 4.11 — Add keyboard alternative for drag \& drop  
+\- \[x] 4.11 — Add keyboard alternative for drag \& drop  
 
 &#x20; File: File manager components, upload components  
 
@@ -912,7 +912,7 @@ Accessibility (4h)
 
 &#x20; Justification: Audit 03 — custom DnD is mouse-only
 
-\- \[ ] 4.12 — Fix RTL support for Persian and Hebrew  
+\- \[x] 4.12 — Fix RTL support for Persian and Hebrew  
 
 &#x20; File: apps/web/src/app/layout.tsx:104  
 
