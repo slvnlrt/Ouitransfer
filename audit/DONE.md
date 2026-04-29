@@ -694,3 +694,28 @@
 - **Files**: `apps/server/src/utils/error-handler.ts`, `apps/server/src/__tests__/error-handler.test.ts`
 - **Change**: `isJwtError()` used an explicit 6-code list + fragile message-based fallback (`"Authorization token expired"`, `"Authorization token is invalid"` — configurable strings from `@fastify/jwt`). Replaced with prefix-based detection: `code.startsWith("FST_JWT_") || code.startsWith("FAST_JWT_")`. Catches all current AND future error codes automatically. Removed message-based fallback. Added 3 tests (prefix detection, future code, negative case), removed 2 obsolete message-based tests. Net: 30→31 tests.
 - **Verified**: PASS (type-check clean, 31/31 tests green)
+
+---
+
+## Phase 4: Frontend Modernization — Batch 3
+
+### 4.3 — TanStack Query migration
+- **Date**: 2026-04-29
+- **Created files**: `query-client.ts` (smart retry, staleTime: 30s, gcTime: 5min), `query-keys.ts` (hierarchical key factory, 10 domains), `query-provider.tsx` (client wrapper + devtools), `use-enabled-providers.ts` (shared hook)
+- **Migrated 13 hooks**: useShares, useTrustedDevices, useProfile, useUserManagement, useReverseShares, useAuthProviders, useSecureConfigs/useAdminConfigs/useSecureConfigValue, useDashboard, useTwoFactor, useReverseShareUpload, useLogin, useForgotPassword, useFileBrowser, usePublicShare
+- **Migrated 6 components**: login-form, multi-provider-buttons (→ shared useEnabledProviders), share-details-modal, media-embed-link, embed-code-display, register-with-invite page
+- **Pattern**: reads → useQuery (auto-fetch, caching, smart retry), mutations → useMutation (cache invalidation). Optimistic updates via setQueryData for drag reorder, avatar upload, file browser.
+- **Tests added**: 28 new tests across 5 test files
+- **Verified**: PASS (web type-check clean, 116/116 tests, API 31/31 tests)
+
+### 4.4 — Axios 401 response interceptor
+- **Date**: 2026-04-29
+- **File**: `apps/web/src/config/api.ts`
+- **Change**: Axios response interceptor. 401 → hard-nav to `/login`. Skips auth endpoints + public pages. `isRedirecting` flag prevents cascading.
+- **Verified**: PASS
+
+### 4.5 — State management unification
+- **Date**: 2026-04-29
+- **Changes**: useAppInfo zustand → TQ hook (staleTime: 60s). AuthContext → backed by 2 TQ queries. ShareContext → eliminated (consumers use useSecureConfigValue directly). useHomeStore zustand → eliminated (derived state).
+- **File deleted**: `apps/web/src/contexts/share-context.tsx`
+- **Verified**: PASS (web 116/116, API 31/31)

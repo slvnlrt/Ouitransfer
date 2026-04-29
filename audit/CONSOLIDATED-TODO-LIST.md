@@ -798,7 +798,7 @@ Error Recovery (4h)
 
 Server-State Management (16h)
 
-\- \[ ] 4.3 — Integrate TanStack Query (React Query v5)  
+\- \[x] 4.3 — Integrate TanStack Query (React Query v5)  
 
 &#x20; Files: apps/web/package.json, apps/web/src/providers/query-provider.tsx (new), all data-fetching hooks  
 
@@ -824,7 +824,7 @@ Server-State Management (16h)
 
 &#x20; Justification: Audit 03 critical — no server-state library, every component calls axios directly, no cache/dedup/SWR
 
-\- \[ ] 4.4 — Add Axios response interceptor for 401 handling  
+\- \[x] 4.4 — Add Axios response interceptor for 401 handling  
 
 &#x20; File: apps/web/src/http/client.ts or equivalent  
 
@@ -832,7 +832,7 @@ Server-State Management (16h)
 
 &#x20; Justification: Audit 03 — no centralized 401 handling, auth expiration only detected at initial check
 
-\- \[ ] 4.5 — Unify state management paradigm  
+\- \[x] 4.5 — Unify state management paradigm  
 
 &#x20; Files: apps/web/src/contexts/app-info-context.tsx, apps/web/src/contexts/auth-context.tsx  
 

@@ -107,7 +107,12 @@ global-error.tsx, error.tsx, not-found.tsx, share-specific error.tsx files, sett
 25 tests), 4.2 (loading.tsx — self-contained CSS spinner, no provider dependency).
 Batch 2 cleanup: 3 ad-hoc error UIs replaced with ErrorDisplay (ShareNotFound deleted, login
 "no auth methods", storage-usage error state).
-Next: Batch 3 — TanStack Query (4.3) + Axios 401 interceptor (4.4).
+Batch 3 complete: 4.3 (TanStack Query v5 — query-client with smart retry, hierarchical query-keys,
+QueryProvider. 13 hooks + 6 components migrated to useQuery/useMutation. 28 new tests. Zustand
+useAppInfo + useHomeStore eliminated, ShareContext eliminated, AuthContext backed by TQ queries),
+4.4 (Axios 401 interceptor — hard-nav to /login, skips auth+public pages, anti-cascade flag),
+4.5 (state unification — 2 zustand stores and 1 context eliminated, all data from TQ cache).
+Next: Batch 4 — Performance (4.6 lazy fonts, 4.7 code splitting, 4.8 next/image).
 
 ## Important: No Production, No Legacy
 The app is **not in production** and has no existing users. This means:
