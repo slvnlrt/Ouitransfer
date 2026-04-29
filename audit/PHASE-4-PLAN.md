@@ -25,11 +25,11 @@
 - **4.7** — Code splitting — DynamicIcon (lazy per-pack react-icons, eliminated critical login bundle issue), IconPicker via next/dynamic, LazyQRCode + LazyReactCrop wrappers
 - **4.8** — next/image — 7 `<img>` → `<Image>` with `unoptimized` for presigned/proxy URLs
 
-### Batch 5 — Accessibility (4h)
-- **4.9** — Skip-to-content link
-- **4.10** — Focus management on route changes
-- **4.11** — Keyboard alternative for DnD
-- **4.12** — Fix RTL for Persian/Hebrew
+### Batch 5 — Accessibility (4h) ✅ DONE
+- **4.9** — Skip-to-content link (`skip-to-content.tsx`) + `<main id="main-content">` in root layout
+- **4.10** — Route announcer (`route-announcer.tsx`) — `aria-live="assertive"` region for screen readers
+- **4.11** — Keyboard DnD alternative — already implemented via bulk actions (checkbox + Move in dropdown)
+- **4.12** — RTL fix — shared `rtl-languages.ts` constant, server detection for fa-IR/he-IL, 191 Tailwind directional→logical replacements across 73 files
 
 ### Batch 6 — Middleware (2h) ✅ DONE
 - **4.13** — Next.js middleware route protection (99L) — jose JWT verification, Edge Runtime, cookie-based auth gating. Also pulled forward 6.13 (JWT_SECRET mandatory env var)
