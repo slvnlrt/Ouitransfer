@@ -12,7 +12,6 @@ import {
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import QRCode from "react-qr-code";
 import { toast } from "sonner";
 import type { FileItem, FolderItem } from "@/components/tables/files-table-types";
 import { Button } from "@/components/ui/button";
@@ -25,6 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LazyQRCode } from "@/components/ui/lazy-qr-code";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
 import { createShare, createShareAlias, listFiles, listFolders } from "@/http/endpoints";
@@ -439,7 +439,7 @@ export function ShareMultipleItemsModal({
                   <div className="flex flex-col items-center justify-center">
                     <div className="p-4 bg-white rounded-lg">
                       <svg style={{ display: "none" }} /> {/* For SSR safety */}
-                      <QRCode
+                      <LazyQRCode
                         id="share-multiple-files-qr-code"
                         value={generatedLink}
                         size={250}

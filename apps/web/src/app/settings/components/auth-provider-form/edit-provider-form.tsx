@@ -1,12 +1,18 @@
 "use client";
 
 import { IconEye, IconEyeOff, IconInfoCircle } from "@tabler/icons-react";
+import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { IconPicker } from "@/components/ui/icon-picker";
 import { Input } from "@/components/ui/input";
+
+const IconPicker = dynamic(
+  () => import("@/components/ui/icon-picker").then((mod) => ({ default: mod.IconPicker })),
+  { ssr: false, loading: () => <div className="h-10 bg-muted animate-pulse rounded-md" /> },
+);
+
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { TagsInput } from "@/components/ui/tags-input";

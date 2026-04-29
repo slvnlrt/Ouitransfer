@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { IconCloudUpload, IconTrash } from "@tabler/icons-react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -81,7 +82,14 @@ export function LogoInput({ value, onChange, isDisabled }: LogoInputProps) {
       {currentLogo ? (
         <div className="flex flex-col items-center gap-4">
           <div className="relative max-w-[200px] max-h-[200px] flex">
-            <img alt={t("logo.labels.appLogo")} className="rounded-lg" src={currentLogo} sizes="200px" />
+            <Image
+              alt={t("logo.labels.appLogo")}
+              className="rounded-lg"
+              src={currentLogo}
+              width={200}
+              height={200}
+              unoptimized
+            />
           </div>
           <Button variant="destructive" disabled={isDisabled} onClick={handleRemoveLogo}>
             {!isUploading && <IconTrash className="h-4 w-4" />}

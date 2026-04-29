@@ -13,7 +13,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
-import QRCode from "react-qr-code";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,6 +25,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { LazyQRCode } from "@/components/ui/lazy-qr-code";
 import { Loader } from "@/components/ui/loader";
 import { getShare } from "@/http/endpoints";
 import type { Share } from "@/http/endpoints/shares/types";
@@ -358,7 +358,7 @@ export function ShareDetailsModal({
                             defaultValue: "Click to enlarge QR Code",
                           })}
                         >
-                          <QRCode
+                          <LazyQRCode
                             id="share-details-qr-code"
                             value={shareLink}
                             size={100}

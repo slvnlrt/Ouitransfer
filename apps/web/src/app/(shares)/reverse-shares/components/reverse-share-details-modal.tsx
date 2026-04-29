@@ -12,7 +12,6 @@ import {
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import QRCode from "react-qr-code";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +23,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { LazyQRCode } from "@/components/ui/lazy-qr-code";
 import { logger } from "@/lib/logger";
 import { useReverseShareDetails } from "../hooks/use-reverse-share-details";
 import type { ReverseShare } from "../hooks/use-reverse-shares";
@@ -266,7 +266,7 @@ export function ReverseShareDetailsModal({
                       onClick={() => onViewQrCode?.(reverseShare)}
                       title={t("reverseShares.actions.viewQrCode")}
                     >
-                      <QRCode
+                      <LazyQRCode
                         id="reverse-share-details-qr-code"
                         value={reverseShareLink}
                         size={100}

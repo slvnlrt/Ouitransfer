@@ -6,6 +6,7 @@ import {
   IconShare,
   IconTrash,
 } from "@tabler/icons-react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -198,7 +199,15 @@ export function FileCard({
           <div className="flex flex-col items-center space-y-3">
             <div className="w-16 h-16 flex items-center justify-center bg-muted/30 rounded-lg overflow-hidden">
               {isImage && previewUrl ? (
-                <img src={previewUrl} alt={file.name} className="object-cover w-full h-full" />
+                <div className="relative w-full h-full">
+                  <Image
+                    src={previewUrl}
+                    alt={file.name}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                </div>
               ) : (
                 <FileIcon className={`h-10 w-10 ${color}`} />
               )}

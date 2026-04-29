@@ -9,7 +9,8 @@ import {
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
-import ReactCrop, { type Crop, centerCrop, makeAspectCrop, type PixelCrop } from "react-image-crop";
+import { type Crop, centerCrop, makeAspectCrop, type PixelCrop } from "react-image-crop";
+import { LazyReactCrop } from "@/components/ui/lazy-image-crop";
 import { logger } from "@/lib/logger";
 
 import "react-image-crop/dist/ReactCrop.css";
@@ -257,7 +258,7 @@ export function ImageEditModal({ isOpen, onClose, onSave, imageFile }: ImageEdit
               </div>
 
               <div className="flex justify-center">
-                <ReactCrop
+                <LazyReactCrop
                   crop={crop}
                   onChange={(c) => setCrop(c)}
                   onComplete={(c) => setCompletedCrop(c)}
@@ -278,7 +279,7 @@ export function ImageEditModal({ isOpen, onClose, onSave, imageFile }: ImageEdit
                     }}
                     onLoad={onImageLoad}
                   />
-                </ReactCrop>
+                </LazyReactCrop>
               </div>
             </div>
           ) : null}

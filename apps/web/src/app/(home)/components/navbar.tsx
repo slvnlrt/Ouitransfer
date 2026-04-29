@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
 import { IconHeart, IconMenu2 } from "@tabler/icons-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { LanguageSwitcher } from "@/components/general/language-switcher";
 import { ModeToggle } from "@/components/general/mode-toggle";
@@ -26,7 +27,16 @@ export function Navbar() {
         <div className="flex flex-1 items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-2">
-              {appLogo && <img alt="App Logo" className="h-8 w-8 object-contain rounded" src={appLogo} />}
+              {appLogo && (
+                <Image
+                  alt="App Logo"
+                  className="object-contain rounded"
+                  src={appLogo}
+                  width={32}
+                  height={32}
+                  unoptimized
+                />
+              )}
               <p className="font-bold text-2xl">{appName}</p>
             </Link>
             <nav className="hidden md:flex ml-2 gap-4">
@@ -36,7 +46,7 @@ export function Navbar() {
                   href={item.href}
                   className={cn(
                     "text-sm font-medium transition-colors hover:text-foreground/80",
-                    "data-[active=true]:text-primary data-[active=true]:font-medium"
+                    "data-[active=true]:text-primary data-[active=true]:font-medium",
                   )}
                 >
                   {item.label}

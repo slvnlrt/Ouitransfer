@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   IconAlertTriangle,
   IconCalendar,
@@ -17,7 +16,9 @@ import {
   IconShieldCheck,
   IconTrash,
 } from "@tabler/icons-react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,7 +35,14 @@ import { Input } from "@/components/ui/input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useTrustedDevices } from "../hooks/use-trusted-devices";
 import { useTwoFactor } from "../hooks/use-two-factor";
 
@@ -85,7 +93,11 @@ export function TwoFactorForm() {
   const getDeviceIcon = (userAgent: string) => {
     if (!userAgent) return IconDevices;
 
-    if (userAgent.includes("iPhone") || userAgent.includes("Android") || userAgent.includes("Mobile")) {
+    if (
+      userAgent.includes("iPhone") ||
+      userAgent.includes("Android") ||
+      userAgent.includes("Mobile")
+    ) {
       return IconDeviceMobile;
     }
 
@@ -118,7 +130,9 @@ export function TwoFactorForm() {
             )}
             {t("twoFactor.title")}
           </CardTitle>
-          <CardDescription>{status.enabled ? t("twoFactor.enabled") : t("twoFactor.description")}</CardDescription>
+          <CardDescription>
+            {status.enabled ? t("twoFactor.enabled") : t("twoFactor.description")}
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
@@ -187,7 +201,9 @@ export function TwoFactorForm() {
                     </Button>
                   )}
                 </div>
-                <p className="text-sm text-muted-foreground">{t("twoFactor.trustedDevices.description")}</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("twoFactor.trustedDevices.description")}
+                </p>
 
                 {devicesLoading ? (
                   <div className="text-center py-8">
@@ -196,7 +212,9 @@ export function TwoFactorForm() {
                 ) : devices.length === 0 ? (
                   <div className="text-center py-12">
                     <IconDevices className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                    <p className="text-muted-foreground text-sm">{t("twoFactor.trustedDevices.noDevices")}</p>
+                    <p className="text-muted-foreground text-sm">
+                      {t("twoFactor.trustedDevices.noDevices")}
+                    </p>
                     <p className="text-xs text-muted-foreground/70 mt-2">
                       {t("twoFactor.trustedDevices.noDevicesDescription")}
                     </p>
@@ -239,7 +257,9 @@ export function TwoFactorForm() {
                               </TableCell>
                               <TableCell>
                                 <div className="flex items-center gap-2">
-                                  <span className={`font-medium ${isExpired ? "text-muted-foreground" : ""}`}>
+                                  <span
+                                    className={`font-medium ${isExpired ? "text-muted-foreground" : ""}`}
+                                  >
                                     {formatDeviceName(device)}
                                   </span>
                                   {isExpired && (
@@ -276,7 +296,9 @@ export function TwoFactorForm() {
                                 )}
                               </TableCell>
                               <TableCell>
-                                <span className="text-sm text-muted-foreground font-mono">{device.ipAddress}</span>
+                                <span className="text-sm text-muted-foreground font-mono">
+                                  {device.ipAddress}
+                                </span>
                               </TableCell>
                               <TableCell className="text-center">
                                 <Button
@@ -314,7 +336,14 @@ export function TwoFactorForm() {
             <div className="space-y-4">
               {/* QR Code */}
               <div className="flex justify-center">
-                <img src={setupData.qrCode} alt="2FA QR Code" className="w-48 h-48 border rounded-lg" />
+                <Image
+                  src={setupData.qrCode}
+                  alt="2FA QR Code"
+                  width={192}
+                  height={192}
+                  className="border rounded-lg"
+                  unoptimized
+                />
               </div>
 
               {/* Manual Entry */}
@@ -357,10 +386,17 @@ export function TwoFactorForm() {
           )}
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsSetupModalOpen(false)} disabled={isLoading}>
+            <Button
+              variant="outline"
+              onClick={() => setIsSetupModalOpen(false)}
+              disabled={isLoading}
+            >
               {t("twoFactor.setup.cancel")}
             </Button>
-            <Button onClick={verifySetup} disabled={isLoading || !verificationCode || verificationCode.length !== 6}>
+            <Button
+              onClick={verifySetup}
+              disabled={isLoading || !verificationCode || verificationCode.length !== 6}
+            >
               {t("twoFactor.setup.verifyAndEnable")}
             </Button>
           </DialogFooter>
@@ -406,10 +442,18 @@ export function TwoFactorForm() {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDisableModalOpen(false)} disabled={isLoading}>
+            <Button
+              variant="outline"
+              onClick={() => setIsDisableModalOpen(false)}
+              disabled={isLoading}
+            >
               {t("twoFactor.disable.cancel")}
             </Button>
-            <Button variant="destructive" onClick={disable2FA} disabled={isLoading || !disablePassword}>
+            <Button
+              variant="destructive"
+              onClick={disable2FA}
+              disabled={isLoading || !disablePassword}
+            >
               {t("twoFactor.disable.confirm")}
             </Button>
           </DialogFooter>
@@ -447,14 +491,18 @@ export function TwoFactorForm() {
             </div>
 
             <div className="text-sm text-muted-foreground">
-              {t.raw("twoFactor.backupCodes.instructions").map((instruction: string, index: number) => (
-                <p key={index}>{instruction}</p>
-              ))}
+              {t
+                .raw("twoFactor.backupCodes.instructions")
+                .map((instruction: string, index: number) => (
+                  <p key={index}>{instruction}</p>
+                ))}
             </div>
           </div>
 
           <DialogFooter>
-            <Button onClick={() => setIsBackupCodesModalOpen(false)}>{t("twoFactor.backupCodes.savedMessage")}</Button>
+            <Button onClick={() => setIsBackupCodesModalOpen(false)}>
+              {t("twoFactor.backupCodes.savedMessage")}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -474,7 +522,8 @@ export function TwoFactorForm() {
             <div className="p-4 bg-muted rounded-lg">
               <p className="font-medium">{formatDeviceName(deviceToRemove)}</p>
               <p className="text-sm text-muted-foreground">
-                {t("twoFactor.trustedDevices.modals.removeDevice.added")} {formatDate(deviceToRemove.createdAt)}
+                {t("twoFactor.trustedDevices.modals.removeDevice.added")}{" "}
+                {formatDate(deviceToRemove.createdAt)}
               </p>
               <p className="text-xs text-muted-foreground">
                 {t("twoFactor.trustedDevices.modals.removeDevice.ip")} {deviceToRemove.ipAddress}
@@ -483,7 +532,11 @@ export function TwoFactorForm() {
           )}
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsRemoveModalOpen(false)} disabled={isRemoving}>
+            <Button
+              variant="outline"
+              onClick={() => setIsRemoveModalOpen(false)}
+              disabled={isRemoving}
+            >
               {t("twoFactor.trustedDevices.modals.buttons.cancel")}
             </Button>
             <Button variant="destructive" onClick={confirmRemoveDevice} disabled={isRemoving}>
@@ -508,12 +561,18 @@ export function TwoFactorForm() {
 
           <div className="p-4 bg-muted rounded-lg">
             <p className="text-sm">
-              {t("twoFactor.trustedDevices.modals.removeAllDevices.description", { count: devices.length })}
+              {t("twoFactor.trustedDevices.modals.removeAllDevices.description", {
+                count: devices.length,
+              })}
             </p>
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsRemoveAllModalOpen(false)} disabled={isRemoving}>
+            <Button
+              variant="outline"
+              onClick={() => setIsRemoveAllModalOpen(false)}
+              disabled={isRemoving}
+            >
               {t("twoFactor.trustedDevices.modals.buttons.cancel")}
             </Button>
             <Button variant="destructive" onClick={confirmRemoveAllDevices} disabled={isRemoving}>

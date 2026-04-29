@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -13,7 +14,16 @@ export function ShareHeader() {
     <header className="w-full px-6 border-b border-default-200/50 bg-background/70 backdrop-blur-sm">
       <div className="mx-auto max-w-5xl sm:p-0 h-16 flex items-center justify-between">
         <Link className="flex items-center gap-2" href="/">
-          {appLogo && <img alt={t("logo.labels.appLogo")} className="h-8 w-8 object-contain rounded" src={appLogo} />}
+          {appLogo && (
+            <Image
+              alt={t("logo.labels.appLogo")}
+              className="object-contain rounded"
+              src={appLogo}
+              width={32}
+              height={32}
+              unoptimized
+            />
+          )}
           <p className="font-bold text-2xl text-foreground">{appName}</p>
         </Link>
         <div className="flex items-center gap-2">

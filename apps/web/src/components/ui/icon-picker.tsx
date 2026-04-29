@@ -478,47 +478,4 @@ export function IconPicker({ value, onChange, placeholder }: IconPickerProps) {
   );
 }
 
-export function renderIconByName(iconName: string, className = "w-5 h-5") {
-  const iconSets = [
-    AiIcons,
-    BiIcons,
-    BsIcons,
-    CgIcons,
-    CiIcons,
-    DiIcons,
-    FaIcons,
-    Fa6Icons,
-    FcIcons,
-    FiIcons,
-    GiIcons,
-    GoIcons,
-    GrIcons,
-    HiIcons,
-    Hi2Icons,
-    ImIcons,
-    IoIcons,
-    Io5Icons,
-    LiaIcons,
-    LuIcons,
-    MdIcons,
-    PiIcons,
-    RiIcons,
-    RxIcons,
-    SiIcons,
-    SlIcons,
-    TbIcons,
-    TfiIcons,
-    TiIcons,
-    VscIcons,
-    WiIcons,
-  ];
 
-  for (const iconSet of iconSets) {
-    const IconComponent = (iconSet as any)[iconName];
-    if (IconComponent && typeof IconComponent === "function") {
-      return React.createElement(IconComponent, { className });
-    }
-  }
-
-  return React.createElement(FaIcons.FaCog, { className });
-}

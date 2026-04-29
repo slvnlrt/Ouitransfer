@@ -1,8 +1,6 @@
-import { useState } from "react";
 import { IconDownload } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import QRCode from "react-qr-code";
-
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { LazyQRCode } from "@/components/ui/lazy-qr-code";
 
 interface QrCodeModalProps {
   isOpen: boolean;
@@ -77,15 +76,26 @@ export function QrCodeModal({ isOpen, onClose, shareLink, shareName }: QrCodeMod
         <DialogHeader>
           <DialogTitle>{t("qrCodeModal.title", { defaultValue: "Share QR Code" })}</DialogTitle>
           <DialogDescription>
-            {t("qrCodeModal.description", { defaultValue: "Scan this QR code to access the shared files." })}
+            {t("qrCodeModal.description", {
+              defaultValue: "Scan this QR code to access the shared files.",
+            })}
           </DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col items-center justify-center">
           <div className="p-4 bg-white rounded-lg">
-            <QRCode id="share-qr-code" value={shareLink} size={256} level="H" fgColor="#000000" bgColor="#FFFFFF" />
+            <LazyQRCode
+              id="share-qr-code"
+              value={shareLink}
+              size={256}
+              level="H"
+              fgColor="#000000"
+              bgColor="#FFFFFF"
+            />
           </div>
-          <p className="mt-4 text-sm text-muted-foreground text-center max-w-full break-all">{shareLink}</p>
+          <p className="mt-4 text-sm text-muted-foreground text-center max-w-full break-all">
+            {shareLink}
+          </p>
         </div>
 
         <DialogFooter className="sm:justify-between flex-row">

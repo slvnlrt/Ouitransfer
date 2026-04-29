@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { IconAlertTriangle, IconCheck, IconClock, IconInfoCircle } from "@tabler/icons-react";
+import Image from "next/image";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { LanguageSwitcher } from "@/components/general/language-switcher";
@@ -124,7 +125,16 @@ export function DefaultLayout({
       <header className="w-full px-6 border-b border-border/50 bg-background/70 backdrop-blur-sm">
         <div className="mx-auto max-w-5xl sm:p-0 h-16 flex items-center justify-between">
           <Link className="flex items-center gap-2" href="/">
-            {appLogo && <img alt="App Logo" className="h-8 w-8 object-contain rounded" src={appLogo} />}
+            {appLogo && (
+              <Image
+                alt="App Logo"
+                className="object-contain rounded"
+                src={appLogo}
+                width={32}
+                height={32}
+                unoptimized
+              />
+            )}
             <p className="font-bold text-2xl text-foreground">{appName}</p>
           </Link>
           <div className="flex items-center gap-2">
@@ -157,16 +167,30 @@ export function DefaultLayout({
           {/* Informações adicionais */}
           {showUploadLimits && (
             <div className="bg-muted/30 rounded-lg p-4 space-y-2">
-              <h3 className="text-sm font-medium text-foreground">{t("reverseShares.upload.layout.importantInfo")}</h3>
+              <h3 className="text-sm font-medium text-foreground">
+                {t("reverseShares.upload.layout.importantInfo")}
+              </h3>
               <div className="text-xs text-muted-foreground space-y-1">
                 {reverseShare?.maxFiles && (
-                  <p>• {t("reverseShares.upload.layout.maxFiles", { count: reverseShare.maxFiles })}</p>
+                  <p>
+                    • {t("reverseShares.upload.layout.maxFiles", { count: reverseShare.maxFiles })}
+                  </p>
                 )}
                 {reverseShare?.maxFileSize && (
-                  <p>• {t("reverseShares.upload.layout.maxFileSize", { size: reverseShare.maxFileSize })}</p>
+                  <p>
+                    •{" "}
+                    {t("reverseShares.upload.layout.maxFileSize", {
+                      size: reverseShare.maxFileSize,
+                    })}
+                  </p>
                 )}
                 {reverseShare?.allowedFileTypes && (
-                  <p>• {t("reverseShares.upload.layout.allowedTypes", { types: reverseShare.allowedFileTypes })}</p>
+                  <p>
+                    •{" "}
+                    {t("reverseShares.upload.layout.allowedTypes", {
+                      types: reverseShare.allowedFileTypes,
+                    })}
+                  </p>
                 )}
               </div>
             </div>

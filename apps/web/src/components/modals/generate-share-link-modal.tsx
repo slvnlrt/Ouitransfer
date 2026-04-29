@@ -1,15 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { IconCopy, IconDownload } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import QRCode from "react-qr-code";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Share } from "@/http/endpoints/shares/types";
+import { LazyQRCode } from "@/components/ui/lazy-qr-code";
+import type { Share } from "@/http/endpoints/shares/types";
 import { customNanoid } from "@/lib/utils";
 
 interface GenerateShareLinkModalProps {
@@ -20,7 +25,8 @@ interface GenerateShareLinkModalProps {
   onGenerate: (shareId: string, alias: string) => Promise<void>;
 }
 
-const generateCustomId = () => customNanoid(10, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+const generateCustomId = () =>
+  customNanoid(10, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
 export function GenerateShareLinkModal({
   shareId,
@@ -128,7 +134,9 @@ export function GenerateShareLinkModal({
         {!generatedLink ? (
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              {isEdit ? t("generateShareLink.updateDescription") : t("generateShareLink.generateDescription")}
+              {isEdit
+                ? t("generateShareLink.updateDescription")
+                : t("generateShareLink.generateDescription")}
             </p>
             <Input
               placeholder={t("generateShareLink.aliasPlaceholder")}
@@ -146,7 +154,7 @@ export function GenerateShareLinkModal({
             </p>
             <div className="flex flex-col items-center justify-center">
               <div className="p-4 bg-white rounded-lg">
-                <QRCode
+                <LazyQRCode
                   id="share-link-qr-code"
                   value={generatedLink}
                   size={200}

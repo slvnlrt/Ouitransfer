@@ -22,9 +22,9 @@ vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
 }));
 
-// react-qr-code isn't needed in unit tests
-vi.mock("react-qr-code", () => ({
-  default: () => <div data-testid="qr-code" />,
+// LazyQRCode isn't needed in unit tests
+vi.mock("@/components/ui/lazy-qr-code", () => ({
+  LazyQRCode: () => <div data-testid="qr-code" />,
 }));
 
 // Sub-modals aren't under test here

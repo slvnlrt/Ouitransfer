@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { IconDownload, IconMaximize, IconX } from "@tabler/icons-react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { AspectRatio } from "@/components/ui/aspect-ratio";
@@ -66,11 +67,13 @@ export function ImagePreview({ src, alt, description, onDownload }: ImagePreview
     <>
       <AspectRatio ratio={16 / 9} className="bg-muted">
         <div className="relative group w-full h-full">
-          <img
+          <Image
             src={src}
             alt={alt}
-            className="object-contain w-full h-full rounded-md cursor-pointer"
+            fill
+            className="object-contain rounded-md cursor-pointer"
             onClick={handleExpandClick}
+            unoptimized
           />
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 rounded-md">
             <Button
@@ -90,7 +93,11 @@ export function ImagePreview({ src, alt, description, onDownload }: ImagePreview
         createPortal(
           <div
             className="fixed inset-0 z-[99999] bg-black/95 backdrop-blur-sm"
+            aria-hidden="true"
             onClick={handleBackdropClick}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") handleCloseFullscreen();
+            }}
             style={{ margin: 0, padding: 0 }}
           >
             <div className="fixed top-0 left-0 right-0 bg-transparent h-24 z-[100000] pointer-events-none">
@@ -120,27 +127,33 @@ export function ImagePreview({ src, alt, description, onDownload }: ImagePreview
               </div>
             </div>
 
-            <div className="fixed inset-0 flex items-center justify-center pt-6">
-              <div className="relative max-w-full max-h-full">
-                <img
+            <div className="fixed inset-0 flex items-center justify-center pt-6 pb-12">
+              <div className="relative w-full h-full">
+                <Image
                   src={src}
                   alt={alt}
-                  className="max-w-full max-h-screen w-auto h-screen object-contain pb-12"
+                  fill
+                  className="object-contain"
                   onClick={(e) => e.stopPropagation()}
+                  unoptimized
                 />
               </div>
             </div>
 
             <div className="fixed bottom-0 left-0 right-0 z-[100000] pointer-events-none">
+              (
               <div className="absolute bottom-0 left-0 right-0 p-6">
                 <div className="text-white/30">
                   <span className=" font-semibold mb-2 truncate">{alt}</span>
-                  {description && <p className="text-sm text-gray-200/20 line-clamp-2">{description}</p>}
+                  {description && (
+                    <p className="text-sm text-gray-200/20 line-clamp-2">{description}</p>
+                  )}
                 </div>
               </div>
+              );
             </div>
           </div>,
-          document.body
+          document.body,
         )}
     </>
   );

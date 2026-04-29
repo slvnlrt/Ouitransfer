@@ -2,7 +2,7 @@
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { renderIconByName } from "@/components/ui/icon-picker";
+import { DynamicIcon } from "@/components/ui/dynamic-icon";
 import { useAppInfo } from "@/contexts/app-info-context";
 import type { EnabledAuthProvider } from "@/http/endpoints/auth/types";
 import { useEnabledProviders } from "../hooks/use-enabled-providers";
@@ -65,7 +65,7 @@ export function MultiProviderButtons({ showSeparator = true }: MultiProviderButt
             type="button"
           >
             <div className="flex items-center gap-2">
-              {provider.icon && <span className="text-lg">{renderIconByName(provider.icon)}</span>}
+              {provider.icon && <DynamicIcon name={provider.icon} className="w-5 h-5" />}
               <span>Continue with {provider.displayName}</span>
             </div>
           </Button>

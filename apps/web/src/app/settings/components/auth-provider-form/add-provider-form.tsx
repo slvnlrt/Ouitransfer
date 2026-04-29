@@ -1,13 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
 import { IconInfoCircle, IconPlus } from "@tabler/icons-react";
+import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { IconPicker } from "@/components/ui/icon-picker";
 import { Input } from "@/components/ui/input";
+
+const IconPicker = dynamic(
+  () => import("@/components/ui/icon-picker").then((mod) => ({ default: mod.IconPicker })),
+  { ssr: false, loading: () => <div className="h-10 bg-muted animate-pulse rounded-md" /> },
+);
+
 import { Label } from "@/components/ui/label";
 import { TagsInput } from "@/components/ui/tags-input";
 import type { NewProvider } from "@/http/endpoints/auth/types";
@@ -21,7 +27,12 @@ interface AddProviderFormProps {
   saving: boolean;
 }
 
-export function AddProviderForm({ showAddForm, onToggleForm, onAddProvider, saving }: AddProviderFormProps) {
+export function AddProviderForm({
+  showAddForm,
+  onToggleForm,
+  onAddProvider,
+  saving,
+}: AddProviderFormProps) {
   const t = useTranslations();
   const [newProvider, setNewProvider] = useState<NewProvider>({
     name: "",
@@ -106,7 +117,8 @@ export function AddProviderForm({ showAddForm, onToggleForm, onAddProvider, savi
     const suggestedScopes = detectProviderTypeAndSuggestScopes(url);
 
     setNewProvider((prev) => {
-      const shouldUpdateScopes = !prev.scope || prev.scope === "openid profile email" || prev.scope === "profile email";
+      const shouldUpdateScopes =
+        !prev.scope || prev.scope === "openid profile email" || prev.scope === "profile email";
 
       return {
         ...prev,
@@ -116,7 +128,12 @@ export function AddProviderForm({ showAddForm, onToggleForm, onAddProvider, savi
   };
 
   const handleSubmit = async () => {
-    if (!newProvider.name || !newProvider.displayName || !newProvider.clientId || !newProvider.clientSecret) {
+    if (
+      !newProvider.name ||
+      !newProvider.displayName ||
+      !newProvider.clientId ||
+      !newProvider.clientSecret
+    ) {
       toast.error(t("authProviders.messages.fillRequiredFields"));
       return;
     }
@@ -171,7 +188,9 @@ export function AddProviderForm({ showAddForm, onToggleForm, onAddProvider, savi
   return (
     <div className="border border-dashed rounded-lg p-4 space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-medium text-foreground dark:text-foreground">{t("authProviders.addProviderTitle")}</h3>
+        <h3 className="font-medium text-foreground dark:text-foreground">
+          {t("authProviders.addProviderTitle")}
+        </h3>
       </div>
 
       <div className="bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
@@ -235,7 +254,11 @@ export function AddProviderForm({ showAddForm, onToggleForm, onAddProvider, savi
         </div>
       </div>
 
-      <ConfigurationMethodSelector provider={newProvider} onUpdate={updateProvider} onUrlUpdate={updateProviderUrl} />
+      <ConfigurationMethodSelector
+        provider={newProvider}
+        onUpdate={updateProvider}
+        onUrlUpdate={updateProviderUrl}
+      />
 
       <div className="grid grid-cols-2 gap-4">
         <div>

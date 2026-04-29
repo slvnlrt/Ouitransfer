@@ -1,19 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
 import { IconChevronDown, IconChevronUp, IconSettings } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { renderIconByName } from "@/components/ui/icon-picker";
+import { DynamicIcon } from "@/components/ui/dynamic-icon";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useAuthProviders } from "../../hooks/use-auth-providers";
 import { AddProviderForm } from "./add-provider-form";
-import type { AuthProvider } from "./edit-provider-form";
 import { AuthProviderDeleteModal } from "./auth-provider-delete-modal";
+import type { AuthProvider } from "./edit-provider-form";
 import { ProviderList } from "./provider-list";
 
 export function AuthProvidersSettings() {
@@ -48,7 +48,7 @@ export function AuthProvidersSettings() {
 
   const getProviderIcon = (provider: AuthProvider) => {
     const iconName = provider.icon || "FaCog";
-    return renderIconByName(iconName, "w-5 h-5");
+    return <DynamicIcon name={iconName} className="w-5 h-5" />;
   };
 
   const handleToggleAddForm = () => {
@@ -101,7 +101,10 @@ export function AuthProvidersSettings() {
             <div className={showAddForm ? "space-y-4" : "flex justify-between items-center"}>
               <div className="text-sm text-muted-foreground">
                 {hideDisabledProviders
-                  ? t("authProviders.enabledOfTotal", { enabled: filteredProviders.length, total: providers.length })
+                  ? t("authProviders.enabledOfTotal", {
+                      enabled: filteredProviders.length,
+                      total: providers.length,
+                    })
                   : t("authProviders.providersConfigured", { count: providers.length })}
               </div>
 

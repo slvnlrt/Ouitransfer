@@ -36,6 +36,7 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
+  preload: false,
 });
 
 const roboto = Roboto({
@@ -43,12 +44,14 @@ const roboto = Roboto({
   variable: "--font-roboto",
   weight: ["100", "300", "400", "500", "700", "900"],
   display: "swap",
+  preload: false,
 });
 
 const openSans = Open_Sans({
   subsets: ["latin"],
   variable: "--font-open-sans",
   display: "swap",
+  preload: false,
 });
 
 const poppins = Poppins({
@@ -56,12 +59,14 @@ const poppins = Poppins({
   variable: "--font-poppins",
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   display: "swap",
+  preload: false,
 });
 
 const nunito = Nunito({
   subsets: ["latin"],
   variable: "--font-nunito",
   display: "swap",
+  preload: false,
 });
 
 const lato = Lato({
@@ -69,30 +74,35 @@ const lato = Lato({
   variable: "--font-lato",
   weight: ["100", "300", "400", "700", "900"],
   display: "swap",
+  preload: false,
 });
 
 const montserrat = Montserrat({
   subsets: ["latin"],
   variable: "--font-montserrat",
   display: "swap",
+  preload: false,
 });
 
 const sourceSans = Source_Sans_3({
   subsets: ["latin"],
   variable: "--font-source-sans",
   display: "swap",
+  preload: false,
 });
 
 const raleway = Raleway({
   subsets: ["latin"],
   variable: "--font-raleway",
   display: "swap",
+  preload: false,
 });
 
 const workSans = Work_Sans({
   subsets: ["latin"],
   variable: "--font-work-sans",
   display: "swap",
+  preload: false,
 });
 
 export default async function RootLayout({
