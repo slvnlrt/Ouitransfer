@@ -5,4 +5,4 @@ export const unauthenticatedOnlyPaths = [
   "/auth/callback",
   "/auth/oidc/callback",
   "/register-with-invite",
-];
+] as const;

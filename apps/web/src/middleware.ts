@@ -1,36 +1,30 @@
-import { decodeJwt, jwtVerify } from "jose";
+import { jwtVerify } from "jose";
 import { type NextRequest, NextResponse } from "next/server";
 
+import { adminPaths } from "@/components/auth/paths/admin-paths";
+import { matchesPath } from "@/components/auth/paths/match-path";
 import { publicPaths } from "@/components/auth/paths/public-paths";
 import { unauthenticatedOnlyPaths } from "@/components/auth/paths/unauthenticated-only-paths";
+import { env } from "@/env";
 
 interface TokenPayload {
   userId: string;
   isAdmin: boolean;
 }
 
-const ADMIN_PATHS = ["/settings", "/users-management"];
+// Encode the secret once at module level — env.JWT_SECRET is guaranteed
+// present by Zod validation in env.ts (min 32 chars, fail-fast at import).
+const JWT_SECRET_KEY = new TextEncoder().encode(env.JWT_SECRET);
 
 async function getTokenPayload(token: string): Promise<TokenPayload | null> {
   try {
-    const secret = process.env.JWT_SECRET;
+    const { payload } = await jwtVerify(token, JWT_SECRET_KEY, {
+      algorithms: ["HS256"],
+    });
 
-    if (secret) {
-      const { payload } = await jwtVerify(token, new TextEncoder().encode(secret));
-      const userId = payload.userId as string | undefined;
-      const isAdmin = payload.isAdmin as boolean | undefined;
-      if (!userId) return null;
-      return { userId, isAdmin: isAdmin === true };
-    }
-
-    // Fallback: decode without verification (no secret configured)
-    const payload = decodeJwt(token);
-    if (typeof payload.exp === "number" && payload.exp * 1000 < Date.now()) {
-      return null;
-    }
     const userId = payload.userId as string | undefined;
-    if (!userId) return null;
     const isAdmin = payload.isAdmin as boolean | undefined;
+    if (!userId) return null;
     return { userId, isAdmin: isAdmin === true };
   } catch {
     return null;
@@ -51,10 +45,10 @@ export async function middleware(request: NextRequest) {
   }
 
   // Public paths
-  const isPublic = publicPaths.some((p) => pathname.startsWith(p));
+  const isPublic = matchesPath(pathname, publicPaths);
   if (isPublic) {
     // Unauthenticated-only paths redirect logged-in users to dashboard
-    const isUnauthOnly = unauthenticatedOnlyPaths.some((p) => pathname.startsWith(p));
+    const isUnauthOnly = matchesPath(pathname, unauthenticatedOnlyPaths);
     if (isUnauthOnly && payload) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
@@ -74,7 +68,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Admin-only paths
-  const isAdminPath = ADMIN_PATHS.some((p) => pathname.startsWith(p));
+  const isAdminPath = matchesPath(pathname, adminPaths);
   if (isAdminPath && !payload.isAdmin) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }

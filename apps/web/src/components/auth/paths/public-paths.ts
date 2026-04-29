@@ -7,4 +7,4 @@ export const publicPaths = [
   "/register-with-invite",
   "/s/",
   "/r/",
-];
+] as const;
