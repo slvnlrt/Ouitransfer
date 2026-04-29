@@ -1,4 +1,8 @@
 {
+  "a11y": {
+    "skipToContent": "Skip to content",
+    "routeChanged": "Navigated to {title}"
+  },
   "auth": {
     "errors": {
       "account_inactive": "Konto nieaktywne. Skontaktuj się z administratorem.",
@@ -290,7 +294,20 @@
     "Two-factor authentication is already enabled": "Uwierzytelnianie dwuskładnikowe jest już włączone",
     "Two-factor authentication is not enabled": "Uwierzytelnianie dwuskładnikowe nie jest włączone",
     "Two-factor authentication required": "Wymagane uwierzytelnianie dwuskładnikowe",
-    "noUserData": "Brak danych użytkownika"
+    "noUserData": "Brak danych użytkownika",
+    "somethingWentWrong": "Something went wrong",
+    "tryAgain": "Try again",
+    "goHome": "Go home",
+    "pageNotFound": "Page not found",
+    "pageNotFoundMessage": "The page you're looking for doesn't exist or has been moved.",
+    "shareUnavailable": "Share unavailable",
+    "shareErrorMessage": "An error occurred while loading this share.",
+    "uploadUnavailable": "Upload unavailable",
+    "uploadErrorMessage": "An error occurred while loading this upload page.",
+    "accessDenied": "Access denied",
+    "accessDeniedMessage": "You don't have administrator privileges to access this page.",
+    "errorLoadingSettings": "Error loading settings",
+    "refreshPage": "Refresh page"
   },
   "fileActions": {
     "editFile": "Edytuj plik",

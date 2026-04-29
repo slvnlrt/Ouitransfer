@@ -1,4 +1,8 @@
 {
+  "a11y": {
+    "skipToContent": "Skip to content",
+    "routeChanged": "Navigated to {title}"
+  },
   "auth": {
     "errors": {
       "account_inactive": "खाता निष्क्रिय है। कृपया व्यवस्थापक से संपर्क करें।",
@@ -290,7 +294,20 @@
     "Two-factor authentication is already enabled": "दो-कारक प्रमाणीकरण पहले से सक्षम है",
     "Two-factor authentication is not enabled": "दो-कारक प्रमाणीकरण सक्षम नहीं है",
     "Two-factor authentication required": "दो-कारक प्रमाणीकरण आवश्यक है",
-    "noUserData": "उपयोगकर्ता डेटा नहीं मिला"
+    "noUserData": "उपयोगकर्ता डेटा नहीं मिला",
+    "somethingWentWrong": "Something went wrong",
+    "tryAgain": "Try again",
+    "goHome": "Go home",
+    "pageNotFound": "Page not found",
+    "pageNotFoundMessage": "The page you're looking for doesn't exist or has been moved.",
+    "shareUnavailable": "Share unavailable",
+    "shareErrorMessage": "An error occurred while loading this share.",
+    "uploadUnavailable": "Upload unavailable",
+    "uploadErrorMessage": "An error occurred while loading this upload page.",
+    "accessDenied": "Access denied",
+    "accessDeniedMessage": "You don't have administrator privileges to access this page.",
+    "errorLoadingSettings": "Error loading settings",
+    "refreshPage": "Refresh page"
   },
   "fileActions": {
     "editFile": "फाइल संपादित करें",

@@ -1,4 +1,8 @@
 {
+  "a11y": {
+    "skipToContent": "Skip to content",
+    "routeChanged": "Navigated to {title}"
+  },
   "auth": {
     "errors": {
       "account_inactive": "Account inattivo. Contatta l'amministratore.",
@@ -290,7 +294,20 @@
     "Two-factor authentication is already enabled": "L'autenticazione a due fattori è già abilitata",
     "Two-factor authentication is not enabled": "L'autenticazione a due fattori non è abilitata",
     "Two-factor authentication required": "Autenticazione a due fattori richiesta",
-    "noUserData": "Nessun dato utente"
+    "noUserData": "Nessun dato utente",
+    "somethingWentWrong": "Something went wrong",
+    "tryAgain": "Try again",
+    "goHome": "Go home",
+    "pageNotFound": "Page not found",
+    "pageNotFoundMessage": "The page you're looking for doesn't exist or has been moved.",
+    "shareUnavailable": "Share unavailable",
+    "shareErrorMessage": "An error occurred while loading this share.",
+    "uploadUnavailable": "Upload unavailable",
+    "uploadErrorMessage": "An error occurred while loading this upload page.",
+    "accessDenied": "Access denied",
+    "accessDeniedMessage": "You don't have administrator privileges to access this page.",
+    "errorLoadingSettings": "Error loading settings",
+    "refreshPage": "Refresh page"
   },
   "fileActions": {
     "editFile": "Modifica File",

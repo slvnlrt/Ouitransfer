@@ -1,4 +1,8 @@
 {
+  "a11y": {
+    "skipToContent": "Skip to content",
+    "routeChanged": "Navigated to {title}"
+  },
   "auth": {
     "errors": {
       "account_inactive": "Compte inactif. Veuillez contacter l'administrateur.",
@@ -290,7 +294,20 @@
     "Two-factor authentication is already enabled": "L'authentification à deux facteurs est déjà activée",
     "Two-factor authentication is not enabled": "L'authentification à deux facteurs n'est pas activée",
     "Two-factor authentication required": "L'authentification à deux facteurs est requise",
-    "noUserData": "Aucune donnée utilisateur"
+    "noUserData": "Aucune donnée utilisateur",
+    "somethingWentWrong": "Something went wrong",
+    "tryAgain": "Try again",
+    "goHome": "Go home",
+    "pageNotFound": "Page not found",
+    "pageNotFoundMessage": "The page you're looking for doesn't exist or has been moved.",
+    "shareUnavailable": "Share unavailable",
+    "shareErrorMessage": "An error occurred while loading this share.",
+    "uploadUnavailable": "Upload unavailable",
+    "uploadErrorMessage": "An error occurred while loading this upload page.",
+    "accessDenied": "Access denied",
+    "accessDeniedMessage": "You don't have administrator privileges to access this page.",
+    "errorLoadingSettings": "Error loading settings",
+    "refreshPage": "Refresh page"
   },
   "fileActions": {
     "editFile": "Modifier le Fichier",

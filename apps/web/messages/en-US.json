@@ -1,4 +1,8 @@
 {
+  "a11y": {
+    "skipToContent": "Skip to content",
+    "routeChanged": "Navigated to {title}"
+  },
   "auth": {
     "successfullyAuthenticated": "Successfully authenticated!",
     "authenticationFailed": "Authentication failed",
@@ -963,10 +967,6 @@
         "updating": "Updating...",
         "create": "Create Alias",
         "update": "Update Alias",
-        "a11y": {
-          "skipToContent": "Skip to content",
-          "routeChanged": "Navigated to {title}"
-        },
         "validation": {
           "required": "Alias is required",
           "minLength": "Alias must be at least 3 characters",
