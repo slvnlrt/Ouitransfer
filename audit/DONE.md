@@ -768,3 +768,18 @@
 - **Files**: `apps/web/src/lib/rtl-languages.ts` (NEW), `apps/web/src/app/layout.tsx`, `apps/web/src/components/language-switcher.tsx`, 73 files with directional Tailwind replacements
 - **Change**: Created shared `rtl-languages.ts` constant (`["ar-SA", "fa-IR", "he-IL"]`). Fixed server-side detection in `layout.tsx` (was only `ar-SA`, now includes all 3). Replaced 191 directional Tailwind classes across 73 files with logical property equivalents: `ml-`→`ms-`, `mr-`→`me-`, `pl-`→`ps-`, `pr-`→`pe-`, `left-`→`start-`, `right-`→`end-`, `text-left`→`text-start`, `text-right`→`text-end`. Fixed inline style `marginRight` → `marginInlineEnd` in language-switcher.
 - **Verified**: PASS
+
+### 6.13 — JWT_SECRET environment variable (pulled forward from Phase 6)
+- Made `JWT_SECRET` a mandatory env var in server's `env.ts` (min 32 chars)
+- Removed DB-stored jwtSecret from `app.ts` (no more `prisma.appConfig.findUnique`), `seed.js`, and `infra/configs.json`
+- Removed 4 jwtSecret guards from `app/service.ts` (no longer in DB = no need to filter/protect)
+- Updated `.env.example` files for both server and web
+
+### 4.13 — Next.js middleware route protection
+- Created `apps/web/src/middleware.ts` (99 lines) using `jose` library (Edge Runtime compatible)
+- Full JWT verification when `JWT_SECRET` env var is set (`jwtVerify`), graceful fallback to decode-only when not (`decodeJwt`)
+- Route classification: home (auth → dashboard), public paths (always allow), unauthenticated-only (auth → dashboard), admin paths (non-admin → dashboard), protected (no auth → login)
+- Invalid/expired tokens: cookie cleared + redirect to /login
+- Matcher excludes: `_next/*`, `api/*`, `e/*`, static files
+- Imports path lists from existing `public-paths.ts` and `unauthenticated-only-paths.ts` (single source of truth)
+- `RedirectHandler` and `ProtectedRoute` kept as defense-in-depth safety nets

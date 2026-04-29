@@ -31,8 +31,8 @@
 - **4.11** — Keyboard alternative for DnD
 - **4.12** — Fix RTL for Persian/Hebrew
 
-### Batch 6 — Middleware (2h)
-- **4.13** — Next.js middleware for route protection
+### Batch 6 — Middleware (2h) ✅ DONE
+- **4.13** — Next.js middleware route protection (99L) — jose JWT verification, Edge Runtime, cookie-based auth gating. Also pulled forward 6.13 (JWT_SECRET mandatory env var)
 
 ## Workflow (per CLAUDE.md)
 1. Execute items

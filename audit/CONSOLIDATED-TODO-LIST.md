@@ -940,7 +940,7 @@ Component Deduplication (2h)
 
 Middleware (2h)
 
-\- \[ ] 4.13 — Add Next.js middleware for route protection  
+\- \[x] 4.13 — Add Next.js middleware for route protection  
 
 &#x20; File: apps/web/src/middleware.ts (new)  
 
@@ -1218,7 +1218,7 @@ Monitoring (4h)
 
 Secrets Management (2h)
 
-\- \[ ] 6.13 — Stabilize JWT secret generation  
+\- \[x] 6.13 — Stabilize JWT secret generation  
 
 &#x20; File: apps/server/src/app.ts:15-19  
 

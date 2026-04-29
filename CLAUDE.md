@@ -119,7 +119,8 @@ IconPicker wrapped with next/dynamic, LazyQRCode + LazyReactCrop wrappers for mo
 Batch 5 complete: 4.9 (skip-to-content link), 4.10 (route announcer for focus management),
 4.11 (keyboard DnD — already implemented via bulk actions), 4.12 (RTL fix — shared constant,
 server detection for fa-IR/he-IL, 191 Tailwind directional→logical replacements across 73 files).
-Next: Batch 6 — Middleware route protection (4.13).
+Batch 6 complete: 4.13 (middleware route protection — JWT verification via jose, cookie-based auth at Edge, admin gating). Also pulled forward 6.13 (JWT_SECRET mandatory env var, removed DB-stored secret).
+Phase 4 COMPLETE — all 15 items done.
 
 ## Important: No Production, No Legacy
 The app is **not in production** and has no existing users. This means:
