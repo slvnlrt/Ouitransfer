@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   IconCalendar,
@@ -402,7 +402,7 @@ export function ShareMultipleItemsModal({
                             <FileIcon className={`h-4 w-4 ${color} flex-shrink-0`} />
                             <span className="truncate">{item.name}</span>
                           </div>
-                          <span className="text-muted-foreground ml-2">
+                          <span className="text-muted-foreground ms-2">
                             {item.size ? formatFileSize(item.size) : "—"}
                           </span>
                         </div>

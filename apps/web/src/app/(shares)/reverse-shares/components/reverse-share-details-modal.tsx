@@ -425,7 +425,7 @@ export function ReverseShareDetailsModal({
                         variant="secondary"
                         className="bg-yellow-500/20 text-yellow-700 border-yellow-200"
                       >
-                        <IconLock className="h-3 w-3 mr-1" />
+                        <IconLock className="h-3 w-3 me-1" />
                         {t("reverseShares.modals.details.protectedByPassword")}
                       </Badge>
                     ) : (
@@ -433,7 +433,7 @@ export function ReverseShareDetailsModal({
                         variant="secondary"
                         className="bg-green-500/20 text-green-700 border-green-200"
                       >
-                        <IconLockOpen className="h-3 w-3 mr-1" />
+                        <IconLockOpen className="h-3 w-3 me-1" />
                         {t("reverseShares.modals.details.publicAccess")}
                       </Badge>
                     )}
@@ -450,7 +450,7 @@ export function ReverseShareDetailsModal({
                         variant="secondary"
                         className="bg-green-500/20 text-green-700 border-green-200"
                       >
-                        <IconToggleRight className="h-3 w-3 mr-1" />
+                        <IconToggleRight className="h-3 w-3 me-1" />
                         {t("reverseShares.status.active")}
                       </Badge>
                     ) : (
@@ -458,7 +458,7 @@ export function ReverseShareDetailsModal({
                         variant="secondary"
                         className="bg-red-500/20 text-red-700 border-red-200"
                       >
-                        <IconToggleLeft className="h-3 w-3 mr-1" />
+                        <IconToggleLeft className="h-3 w-3 me-1" />
                         {t("reverseShares.status.inactive")}
                       </Badge>
                     )}

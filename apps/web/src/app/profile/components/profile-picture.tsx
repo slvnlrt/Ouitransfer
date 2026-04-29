@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
-import { useRef, useState } from "react";
 import { IconCamera, IconTrash } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useRef, useState } from "react";
 
 import { ImageEditModal } from "@/components/modals/image-edit-modal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -96,7 +96,7 @@ export function ProfilePicture({ userData, onImageChange, onImageRemove }: Profi
             <DropdownMenuTrigger asChild>
               <Button
                 size="icon"
-                className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full cursor-pointer"
+                className="absolute bottom-0 end-0 bg-primary text-primary-foreground rounded-full cursor-pointer"
                 variant="default"
                 disabled={isLoading}
               >
@@ -104,8 +104,12 @@ export function ProfilePicture({ userData, onImageChange, onImageRemove }: Profi
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              {!!userData?.image ? (
-                <DropdownMenuItem className="text-destructive" onClick={handleImageRemove} disabled={isLoading}>
+              {userData?.image ? (
+                <DropdownMenuItem
+                  className="text-destructive"
+                  onClick={handleImageRemove}
+                  disabled={isLoading}
+                >
                   <IconTrash className="h-4 w-4" />
                   {t("profile.picture.removePhoto")}
                 </DropdownMenuItem>
@@ -117,7 +121,13 @@ export function ProfilePicture({ userData, onImageChange, onImageRemove }: Profi
               )}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Input ref={fileInputRef} accept="image/*" className="hidden" type="file" onChange={handleFileChange} />
+          <Input
+            ref={fileInputRef}
+            accept="image/*"
+            className="hidden"
+            type="file"
+            onChange={handleFileChange}
+          />
         </div>
         <div>
           <h2 className="text-lg font-semibold">{t("profile.picture.title")}</h2>

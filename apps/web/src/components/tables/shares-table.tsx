@@ -1,4 +1,4 @@
-import { IconCheck, IconEdit, IconLock, IconLockOpen, IconX } from "@tabler/icons-react";
+﻿import { IconCheck, IconEdit, IconLock, IconLockOpen, IconX } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
@@ -540,7 +540,7 @@ export function SharesTable({
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="h-12 px-4 text-right">
+                  <TableCell className="h-12 px-4 text-end">
                     <ShareRowActions
                       share={share}
                       smtpEnabled={smtpEnabled}

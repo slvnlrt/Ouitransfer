@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { IconCopy, IconDownload } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
@@ -146,7 +146,7 @@ export function GenerateShareLinkModal({
           </div>
         ) : (
           <div className="space-y-6">
-            <p className="text-sm text-muted-foreground text-left">
+            <p className="text-sm text-muted-foreground text-start">
               {t("generateShareLink.readyDescription", {
                 defaultValue:
                   "Your share link is ready. You can scan the QR code directly, download it for later use, or copy the link below.",

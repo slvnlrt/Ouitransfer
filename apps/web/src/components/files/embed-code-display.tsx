@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { IconCheck, IconCopy } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
@@ -90,12 +90,12 @@ export function EmbedCodeDisplay({ imageUrl, fileName, fileId, shareId }: EmbedC
                 >
                   {copiedType === "direct" ? (
                     <>
-                      <IconCheck className="h-4 w-4 mr-1" />
+                      <IconCheck className="h-4 w-4 me-1" />
                       {t("common.copied")}
                     </>
                   ) : (
                     <>
-                      <IconCopy className="h-4 w-4 mr-1" />
+                      <IconCopy className="h-4 w-4 me-1" />
                       {t("common.copy")}
                     </>
                   )}
@@ -121,12 +121,12 @@ export function EmbedCodeDisplay({ imageUrl, fileName, fileId, shareId }: EmbedC
                 >
                   {copiedType === "html" ? (
                     <>
-                      <IconCheck className="h-4 w-4 mr-1" />
+                      <IconCheck className="h-4 w-4 me-1" />
                       {t("common.copied")}
                     </>
                   ) : (
                     <>
-                      <IconCopy className="h-4 w-4 mr-1" />
+                      <IconCopy className="h-4 w-4 me-1" />
                       {t("common.copy")}
                     </>
                   )}
@@ -150,12 +150,12 @@ export function EmbedCodeDisplay({ imageUrl, fileName, fileId, shareId }: EmbedC
                 >
                   {copiedType === "bbcode" ? (
                     <>
-                      <IconCheck className="h-4 w-4 mr-1" />
+                      <IconCheck className="h-4 w-4 me-1" />
                       {t("common.copied")}
                     </>
                   ) : (
                     <>
-                      <IconCopy className="h-4 w-4 mr-1" />
+                      <IconCopy className="h-4 w-4 me-1" />
                       {t("common.copy")}
                     </>
                   )}

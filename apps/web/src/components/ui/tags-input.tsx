@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useState } from "react";
+﻿import React, { KeyboardEvent, useState } from "react";
 import { IconX } from "@tabler/icons-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -65,7 +65,7 @@ export function TagsInput({ value = [], onChange, placeholder, disabled, classNa
           key={index}
           variant="outline"
           className={cn(
-            "flex items-center gap-1 pl-2 pr-1 h-6 text-xs mt-[1px] rounded-[6px]",
+            "flex items-center gap-1 ps-2 pe-1 h-6 text-xs mt-[1px] rounded-[6px]",
             "bg-slate-300 text-gray-800 border-slate-200  hover:text-gray-800",
             "dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700",
             "hover:cursor-default"
@@ -76,7 +76,7 @@ export function TagsInput({ value = [], onChange, placeholder, disabled, classNa
             <button
               type="button"
               onClick={() => removeTag(index)}
-              className="ml-1 rounded-sm hover:bg-background/50 dark:hover:bg-background/20 flex items-center justify-center transition-colors hover:cursor-pointer"
+              className="ms-1 rounded-sm hover:bg-background/50 dark:hover:bg-background/20 flex items-center justify-center transition-colors hover:cursor-pointer"
             >
               <IconX className="h-2.5 w-2.5" />
             </button>
@@ -96,3 +96,4 @@ export function TagsInput({ value = [], onChange, placeholder, disabled, classNa
     </div>
   );
 }
+

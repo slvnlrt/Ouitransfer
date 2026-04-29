@@ -12,16 +12,18 @@
 ### Batch 2 — Error/Loading boundaries (4h) ✅ DONE
 - **4.1** — error.tsx boundaries (ErrorDisplay component, reportError utility, global-error.tsx, error.tsx, not-found.tsx, share-specific errors, settings refactored; 25 tests)
 - **4.2** — loading.tsx (self-contained CSS spinner, no provider dependency)
+- **Cleanup** — 3 ad-hoc error UIs replaced with ErrorDisplay (ShareNotFound deleted, login "no auth methods", storage-usage error state)
 
-### Batch 3 — Server-state management (16h)
-- **4.3** — TanStack Query integration (the big one)
-- **4.4** — Axios 401 interceptor (depends on 4.3)
-- **4.5** — Unify state management (depends on 4.3)
+### Batch 3 — Server-state management (16h) ✅ DONE
+- **4.3** — TanStack Query v5 integration — query-client (smart retry), query-keys (hierarchical, 10 domains), QueryProvider. 13 hooks + 6 components migrated to useQuery/useMutation. 28 new tests.
+- **4.4** — Axios 401 interceptor — hard-nav to /login, skips auth+public pages, anti-cascade flag
+- **4.5** — State unification — 2 zustand stores eliminated (useAppInfo, useHomeStore), ShareContext eliminated, AuthContext backed by TQ queries
+- **Not migrated (by design)**: upload workflows (imperative), auth callbacks (one-shot), download-url-cache (own TTL), component-level modal mutations (already work via invalidateQueries)
 
-### Batch 4 — Performance (8h)
-- **4.6** — Lazy-load Google Fonts
-- **4.7** — `next/dynamic` for heavy components
-- **4.8** — Replace `<img>` with `next/image`
+### Batch 4 — Performance (8h) ✅ DONE
+- **4.6** — Lazy fonts — `preload: false` on 10 non-default fonts, only Outfit preloaded
+- **4.7** — Code splitting — DynamicIcon (lazy per-pack react-icons, eliminated critical login bundle issue), IconPicker via next/dynamic, LazyQRCode + LazyReactCrop wrappers
+- **4.8** — next/image — 7 `<img>` → `<Image>` with `unoptimized` for presigned/proxy URLs
 
 ### Batch 5 — Accessibility (4h)
 - **4.9** — Skip-to-content link

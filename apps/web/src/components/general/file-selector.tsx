@@ -1,6 +1,5 @@
-"use client";
+﻿"use client";
 
-import { useCallback, useEffect, useState } from "react";
 import {
   IconCheck,
   IconEdit,
@@ -13,6 +12,7 @@ import {
   IconSearch,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { FileActionsModals } from "@/components/modals/file-actions-modals";
@@ -53,8 +53,16 @@ export function FileSelector({
   const [searchFilter, setSearchFilter] = useState("");
   const [shareSearchFilter, setShareSearchFilter] = useState("");
   const [previewFile, setPreviewFile] = useState<FileItem | null>(null);
-  const [fileToEdit, setFileToEdit] = useState<{ id: string; name: string; description?: string } | null>(null);
-  const [folderToEdit, setFolderToEdit] = useState<{ id: string; name: string; description?: string } | null>(null);
+  const [fileToEdit, setFileToEdit] = useState<{
+    id: string;
+    name: string;
+    description?: string;
+  } | null>(null);
+  const [folderToEdit, setFolderToEdit] = useState<{
+    id: string;
+    name: string;
+    description?: string;
+  } | null>(null);
 
   const loadFiles = useCallback(async () => {
     try {
@@ -114,13 +122,19 @@ export function FileSelector({
     try {
       setIsLoading(true);
 
-      const filesToAdd = shareFiles.filter((file) => !selectedFiles.includes(file.id)).map((file) => file.id);
-      const filesToRemove = selectedFiles.filter((fileId) => !shareFiles.find((f) => f.id === fileId));
+      const filesToAdd = shareFiles
+        .filter((file) => !selectedFiles.includes(file.id))
+        .map((file) => file.id);
+      const filesToRemove = selectedFiles.filter(
+        (fileId) => !shareFiles.find((f) => f.id === fileId),
+      );
 
       const foldersToAdd = shareFolders
         .filter((folder) => !selectedFolders.includes(folder.id))
         .map((folder) => folder.id);
-      const foldersToRemove = selectedFolders.filter((folderId) => !shareFolders.find((f) => f.id === folderId));
+      const foldersToRemove = selectedFolders.filter(
+        (folderId) => !shareFolders.find((f) => f.id === folderId),
+      );
 
       if (filesToAdd.length > 0) {
         await addFiles(shareId, { files: filesToAdd });
@@ -140,7 +154,7 @@ export function FileSelector({
 
       await onSave(
         shareFiles.map((f) => f.id),
-        shareFolders.map((f) => f.id)
+        shareFolders.map((f) => f.id),
       );
     } catch {
       toast.error(t("shareManager.filesUpdateError"));
@@ -166,19 +180,19 @@ export function FileSelector({
   };
 
   const filteredAvailableFiles = availableFiles.filter((file) =>
-    file.name.toLowerCase().includes(searchFilter.toLowerCase())
+    file.name.toLowerCase().includes(searchFilter.toLowerCase()),
   );
 
   const filteredShareFiles = shareFiles.filter((file) =>
-    file.name.toLowerCase().includes(shareSearchFilter.toLowerCase())
+    file.name.toLowerCase().includes(shareSearchFilter.toLowerCase()),
   );
 
   const filteredAvailableFolders = availableFolders.filter((folder) =>
-    folder.name.toLowerCase().includes(searchFilter.toLowerCase())
+    folder.name.toLowerCase().includes(searchFilter.toLowerCase()),
   );
 
   const filteredShareFolders = shareFolders.filter((folder) =>
-    folder.name.toLowerCase().includes(shareSearchFilter.toLowerCase())
+    folder.name.toLowerCase().includes(shareSearchFilter.toLowerCase()),
   );
 
   const formatFileSize = (bytes: number) => {
@@ -186,7 +200,7 @@ export function FileSelector({
     const k = 1024;
     const sizes = ["B", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+    return `${parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`;
   };
 
   const FileCard = ({ file, isInShare }: { file: FileItem; isInShare: boolean }) => {
@@ -200,7 +214,10 @@ export function FileSelector({
             {file.name}
           </div>
           {file.description && (
-            <div className="text-xs text-muted-foreground truncate max-w-[260px]" title={file.description}>
+            <div
+              className="text-xs text-muted-foreground truncate max-w-[260px]"
+              title={file.description}
+            >
               {file.description}
             </div>
           )}
@@ -213,7 +230,13 @@ export function FileSelector({
                 size="icon"
                 variant="ghost"
                 className="h-7 w-7 hover:bg-muted transition-colors"
-                onClick={() => setFileToEdit({ id: file.id, name: file.name, description: file.description ?? undefined })}
+                onClick={() =>
+                  setFileToEdit({
+                    id: file.id,
+                    name: file.name,
+                    description: file.description ?? undefined,
+                  })
+                }
                 title={t("fileSelector.editFile")}
               >
                 <IconEdit className="h-4 w-4" />
@@ -230,7 +253,7 @@ export function FileSelector({
             </Button>
           </div>
 
-          <div className="ml-1">
+          <div className="ms-1">
             <Button
               size="icon"
               variant={isInShare ? "destructive" : "default"}
@@ -248,12 +271,12 @@ export function FileSelector({
 
   const FolderCard = ({ folder, isInShare }: { folder: FolderItem; isInShare: boolean }) => {
     const formatFileSize = (bytes: string | number) => {
-      const numBytes = typeof bytes === "string" ? parseInt(bytes) : bytes;
+      const numBytes = typeof bytes === "string" ? parseInt(bytes, 10) : bytes;
       if (numBytes === 0) return "0 B";
       const k = 1024;
       const sizes = ["B", "KB", "MB", "GB"];
       const i = Math.floor(Math.log(numBytes) / Math.log(k));
-      return parseFloat((numBytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+      return `${parseFloat((numBytes / k ** i).toFixed(1))} ${sizes[i]}`;
     };
 
     return (
@@ -264,12 +287,16 @@ export function FileSelector({
             {folder.name}
           </div>
           {folder.description && (
-            <div className="text-xs text-muted-foreground truncate max-w-[260px]" title={folder.description}>
+            <div
+              className="text-xs text-muted-foreground truncate max-w-[260px]"
+              title={folder.description}
+            >
               {folder.description}
             </div>
           )}
           <div className="text-xs text-muted-foreground">
-            {folder.totalSize ? formatFileSize(folder.totalSize) : "—"} • {folder._count?.files || 0} files
+            {folder.totalSize ? formatFileSize(folder.totalSize) : "—"} •{" "}
+            {folder._count?.files || 0} files
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -279,7 +306,13 @@ export function FileSelector({
                 size="icon"
                 variant="ghost"
                 className="h-7 w-7 hover:bg-muted transition-colors"
-                onClick={() => setFolderToEdit({ id: folder.id, name: folder.name, description: folder.description ?? undefined })}
+                onClick={() =>
+                  setFolderToEdit({
+                    id: folder.id,
+                    name: folder.name,
+                    description: folder.description ?? undefined,
+                  })
+                }
                 title={t("fileSelector.editFolder")}
               >
                 <IconEdit className="h-4 w-4" />
@@ -287,12 +320,14 @@ export function FileSelector({
             )}
           </div>
 
-          <div className="ml-1">
+          <div className="ms-1">
             <Button
               size="icon"
               variant={isInShare ? "destructive" : "default"}
               className="h-8 w-8 transition-all"
-              onClick={() => (isInShare ? removeFolderFromShare(folder.id) : addFolderToShare(folder.id))}
+              onClick={() =>
+                isInShare ? removeFolderFromShare(folder.id) : addFolderToShare(folder.id)
+              }
               title={isInShare ? "Remove from share" : "Add to share"}
             >
               {isInShare ? <IconMinus className="h-4 w-4" /> : <IconPlus className="h-4 w-4" />}
@@ -309,7 +344,9 @@ export function FileSelector({
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-medium">Share Contents ({shareFiles.length + shareFolders.length} items)</h3>
+              <h3 className="text-lg font-medium">
+                Share Contents ({shareFiles.length + shareFolders.length} items)
+              </h3>
               <p className="text-sm text-muted-foreground">Files and folders that will be shared</p>
             </div>
             <Badge variant="secondary" className="bg-blue-500/20 text-blue-700">
@@ -319,12 +356,12 @@ export function FileSelector({
 
           {(shareFiles.length > 0 || shareFolders.length > 0) && (
             <div className="relative">
-              <IconSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <IconSearch className="absolute start-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder={t("searchBar.placeholder")}
                 value={shareSearchFilter}
                 onChange={(e) => setShareSearchFilter(e.target.value)}
-                className="pl-10"
+                className="ps-10"
               />
             </div>
           )}
@@ -337,11 +374,13 @@ export function FileSelector({
               {filteredShareFiles.map((file) => (
                 <FileCard key={`file-${file.id}`} file={file} isInShare={true} />
               ))}
-              {filteredShareFiles.length === 0 && filteredShareFolders.length === 0 && shareSearchFilter && (
-                <div className="text-center py-4 text-muted-foreground">
-                  <p className="text-sm">No items found with "{shareSearchFilter}"</p>
-                </div>
-              )}
+              {filteredShareFiles.length === 0 &&
+                filteredShareFolders.length === 0 &&
+                shareSearchFilter && (
+                  <div className="text-center py-4 text-muted-foreground">
+                    <p className="text-sm">No items found with "{shareSearchFilter}"</p>
+                  </div>
+                )}
             </div>
           ) : (
             <div className="text-center py-8 text-muted-foreground border rounded-lg bg-muted/20">
@@ -358,17 +397,19 @@ export function FileSelector({
               <h3 className="text-lg font-medium">
                 Available Items ({filteredAvailableFiles.length + filteredAvailableFolders.length})
               </h3>
-              <p className="text-sm text-muted-foreground">Files and folders you can add to the share</p>
+              <p className="text-sm text-muted-foreground">
+                Files and folders you can add to the share
+              </p>
             </div>
           </div>
 
           <div className="relative">
-            <IconSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <IconSearch className="absolute start-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder={t("fileSelector.searchPlaceholder")}
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
-              className="pl-10"
+              className="ps-10"
             />
           </div>
 
@@ -419,9 +460,16 @@ export function FileSelector({
       <FilePreviewModal
         isOpen={!!previewFile}
         onClose={() => setPreviewFile(null)}
-        file={previewFile
-          ? { id: previewFile.id, name: previewFile.name, objectName: previewFile.objectName, description: previewFile.description ?? undefined }
-          : { name: "", objectName: "" }}
+        file={
+          previewFile
+            ? {
+                id: previewFile.id,
+                name: previewFile.name,
+                objectName: previewFile.objectName,
+                description: previewFile.description ?? undefined,
+              }
+            : { name: "", objectName: "" }
+        }
       />
 
       <FileActionsModals

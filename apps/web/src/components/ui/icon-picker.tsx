@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, Search, X } from "lucide-react";
@@ -141,7 +141,7 @@ function VirtualizedIconGrid({ icons, onIconSelect, renderIcon, showCategories =
 
   if (showCategories) {
     return (
-      <div ref={scrollRef} className="max-h-[600px] overflow-y-auto overflow-x-hidden pr-2">
+      <div ref={scrollRef} className="max-h-[600px] overflow-y-auto overflow-x-hidden pe-2">
         <div className="space-y-6">
           {iconsByCategory.map(([category, categoryIcons]) => (
             <div key={category}>
@@ -181,7 +181,7 @@ function VirtualizedIconGrid({ icons, onIconSelect, renderIcon, showCategories =
   }
 
   return (
-    <div ref={scrollRef} className="max-h-[600px] overflow-y-auto overflow-x-hidden pr-2">
+    <div ref={scrollRef} className="max-h-[600px] overflow-y-auto overflow-x-hidden pe-2">
       <div className="grid grid-cols-8 sm:grid-cols-12 lg:grid-cols-16 xl:grid-cols-20 gap-2 sm:gap-3">
         {visibleIcons.map((icon) => (
           <button
@@ -379,7 +379,7 @@ export function IconPicker({ value, onChange, placeholder }: IconPickerProps) {
               <span className="text-muted-foreground">{displayPlaceholder}</span>
             )}
           </div>
-          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronDown className="ms-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-5xl xl:max-w-6xl max-h-[90vh] overflow-hidden">
@@ -396,18 +396,18 @@ export function IconPicker({ value, onChange, placeholder }: IconPickerProps) {
 
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute start-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder={t("iconPicker.searchPlaceholder")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-8"
+              className="ps-8"
             />
             {search && (
               <Button
                 variant="ghost"
                 size="sm"
-                className="absolute right-1 top-1 h-6 w-6 p-0"
+                className="absolute end-1 top-1 h-6 w-6 p-0"
                 onClick={() => setSearch("")}
               >
                 <X className="h-3 w-3" />
@@ -477,5 +477,6 @@ export function IconPicker({ value, onChange, placeholder }: IconPickerProps) {
     </Dialog>
   );
 }
+
 
 

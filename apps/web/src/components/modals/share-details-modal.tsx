@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   IconCopy,
@@ -485,7 +485,7 @@ export function ShareDetailsModal({
                           variant="secondary"
                           className="bg-yellow-500/20 text-yellow-700 border-yellow-200 w-fit"
                         >
-                          <IconLock className="h-3 w-3 mr-1" />
+                          <IconLock className="h-3 w-3 me-1" />
                           {t("shareDetails.passwordProtected")}
                         </Badge>
                       ) : (
@@ -493,7 +493,7 @@ export function ShareDetailsModal({
                           variant="secondary"
                           className="bg-green-500/20 text-green-700 border-green-200 w-fit"
                         >
-                          <IconLockOpen className="h-3 w-3 mr-1" />
+                          <IconLockOpen className="h-3 w-3 me-1" />
                           {t("shareDetails.publicAccess")}
                         </Badge>
                       )}
@@ -529,7 +529,7 @@ export function ShareDetailsModal({
                           variant="secondary"
                           className="bg-blue-500/20 text-blue-700 border-blue-200 text-xs"
                         >
-                          <IconMail className="h-3 w-3 mr-1" />
+                          <IconMail className="h-3 w-3 me-1" />
                           {recipient.email}
                         </Badge>
                       ))}

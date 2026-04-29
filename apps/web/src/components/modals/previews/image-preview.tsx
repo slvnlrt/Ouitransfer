@@ -79,7 +79,7 @@ export function ImagePreview({ src, alt, description, onDownload }: ImagePreview
             <Button
               variant="outline"
               size="icon"
-              className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 hover:bg-white text-black shadow-lg h-8 w-8"
+              className="absolute bottom-2 end-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 hover:bg-white text-black shadow-lg h-8 w-8"
               onClick={handleExpandClick}
             >
               <IconMaximize className="h-4 w-4" />
@@ -100,8 +100,8 @@ export function ImagePreview({ src, alt, description, onDownload }: ImagePreview
             }}
             style={{ margin: 0, padding: 0 }}
           >
-            <div className="fixed top-0 left-0 right-0 bg-transparent h-24 z-[100000] pointer-events-none">
-              <div className="absolute top-6 right-6 flex gap-2 pointer-events-auto">
+            <div className="fixed top-0 start-0 end-0 bg-transparent h-24 z-[100000] pointer-events-none">
+              <div className="absolute top-6 end-6 flex gap-2 pointer-events-auto">
                 <Button
                   variant="outline"
                   size="icon"
@@ -140,9 +140,9 @@ export function ImagePreview({ src, alt, description, onDownload }: ImagePreview
               </div>
             </div>
 
-            <div className="fixed bottom-0 left-0 right-0 z-[100000] pointer-events-none">
+            <div className="fixed bottom-0 start-0 end-0 z-[100000] pointer-events-none">
               (
-              <div className="absolute bottom-0 left-0 right-0 p-6">
+              <div className="absolute bottom-0 start-0 end-0 p-6">
                 <div className="text-white/30">
                   <span className=" font-semibold mb-2 truncate">{alt}</span>
                   {description && (

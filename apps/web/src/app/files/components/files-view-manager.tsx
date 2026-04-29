@@ -1,4 +1,4 @@
-import { IconLayoutGrid, IconSearch, IconTable } from "@tabler/icons-react";
+﻿import { IconLayoutGrid, IconSearch, IconTable } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { FilesGridSkeleton, FilesTableSkeleton } from "@/components/skeletons";
@@ -150,13 +150,13 @@ export function FilesViewManager({
 
         <div className="flex items-center gap-4">
           <div className="relative">
-            <IconSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <IconSearch className="absolute start-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
               placeholder={t("searchBar.placeholder")}
               value={searchQuery}
               onChange={(e) => onSearch(e.target.value)}
-              className="max-w-sm pl-10"
+              className="max-w-sm ps-10"
             />
           </div>
 

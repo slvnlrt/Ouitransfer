@@ -1,15 +1,34 @@
-import { IconDeviceFloppy, IconUserPlus } from "@tabler/icons-react";
+﻿import { IconDeviceFloppy, IconUserPlus } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UserFormModalProps } from "../types";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type { UserFormModalProps } from "../types";
 
-export function UserFormModal({ isOpen, onClose, modalMode, selectedUser, formMethods, onSubmit }: UserFormModalProps) {
+export function UserFormModal({
+  isOpen,
+  onClose,
+  modalMode,
+  selectedUser,
+  formMethods,
+  onSubmit,
+}: UserFormModalProps) {
   const t = useTranslations();
   const {
     register,
@@ -24,7 +43,7 @@ export function UserFormModal({ isOpen, onClose, modalMode, selectedUser, formMe
           <form onSubmit={formMethods.handleSubmit(onSubmit)}>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 mb-2">
-                <IconUserPlus size={24} className="mr-1" />
+                <IconUserPlus size={24} className="me-1" />
                 {modalMode === "create" ? t("users.form.titleCreate") : t("users.form.titleEdit")}
               </DialogTitle>
             </DialogHeader>
@@ -37,7 +56,10 @@ export function UserFormModal({ isOpen, onClose, modalMode, selectedUser, formMe
                     render={({ field }) => (
                       <FormItem>
                         <Label>{t("users.form.firstName")}</Label>
-                        <Input {...field} className={errors.firstName ? "border-destructive" : ""} />
+                        <Input
+                          {...field}
+                          className={errors.firstName ? "border-destructive" : ""}
+                        />
                         {errors.firstName && <FormMessage>{errors.firstName.message}</FormMessage>}
                       </FormItem>
                     )}
@@ -57,23 +79,36 @@ export function UserFormModal({ isOpen, onClose, modalMode, selectedUser, formMe
 
                 <div className="space-y-2">
                   <Label>{t("users.form.username")}</Label>
-                  <Input {...register("username")} className={errors.username ? "border-destructive" : ""} />
+                  <Input
+                    {...register("username")}
+                    className={errors.username ? "border-destructive" : ""}
+                  />
                   {errors.username && <FormMessage>{errors.username.message}</FormMessage>}
                 </div>
 
                 <div className="space-y-2">
                   <Label>{t("users.form.email")}</Label>
-                  <Input {...register("email")} type="email" className={errors.email ? "border-destructive" : ""} />
+                  <Input
+                    {...register("email")}
+                    type="email"
+                    className={errors.email ? "border-destructive" : ""}
+                  />
                   {errors.email && <FormMessage>{errors.email.message}</FormMessage>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label>{modalMode === "create" ? t("users.form.password") : t("users.form.newPassword")}</Label>
+                  <Label>
+                    {modalMode === "create"
+                      ? t("users.form.password")
+                      : t("users.form.newPassword")}
+                  </Label>
                   <Input
                     {...register("password")}
                     type="password"
                     className={errors.password ? "border-destructive" : ""}
-                    placeholder={modalMode === "edit" ? t("users.form.passwordPlaceholder") : undefined}
+                    placeholder={
+                      modalMode === "edit" ? t("users.form.passwordPlaceholder") : undefined
+                    }
                   />
                   {errors.password && <FormMessage>{errors.password.message}</FormMessage>}
                 </div>

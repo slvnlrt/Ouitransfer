@@ -1,11 +1,18 @@
+﻿import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import Link from "next/link";
-import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ResetPasswordFormProps } from "../types";
+import type { ResetPasswordFormProps } from "../types";
 
 export function ResetPasswordForm({
   form,
@@ -34,12 +41,12 @@ export function ResetPasswordForm({
                     type={isPasswordVisible ? "text" : "password"}
                     placeholder={t("resetPassword.form.newPasswordPlaceholder")}
                     disabled={isSubmitting}
-                    className="bg-transparent backdrop-blur-md pr-10"
+                    className="bg-transparent backdrop-blur-md pe-10"
                   />
                   <button
                     type="button"
                     onClick={onTogglePassword}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
                     {isPasswordVisible ? <IconEye size={20} /> : <IconEyeOff size={20} />}
                   </button>
@@ -63,12 +70,12 @@ export function ResetPasswordForm({
                     type={isConfirmPasswordVisible ? "text" : "password"}
                     placeholder={t("resetPassword.form.confirmPasswordPlaceholder")}
                     disabled={isSubmitting}
-                    className="bg-transparent backdrop-blur-md pr-10"
+                    className="bg-transparent backdrop-blur-md pe-10"
                   />
                   <button
                     type="button"
                     onClick={onToggleConfirmPassword}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
                     {isConfirmPasswordVisible ? <IconEye size={20} /> : <IconEyeOff size={20} />}
                   </button>

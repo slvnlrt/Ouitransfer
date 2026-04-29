@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { IconEdit } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
@@ -41,7 +41,7 @@ export function ShareDetailsFilesList({ files, onManageFiles, share }: ShareDeta
             return (
               <div
                 key={file.id}
-                className="flex items-center gap-2 p-2 bg-background rounded border mr-2"
+                className="flex items-center gap-2 p-2 bg-background rounded border me-2"
               >
                 <FileIcon className={`h-3.5 w-3.5 ${color} flex-shrink-0`} />
                 <div className="flex-1 min-w-0">

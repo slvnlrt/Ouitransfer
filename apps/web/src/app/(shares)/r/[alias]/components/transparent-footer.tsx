@@ -15,7 +15,7 @@ export function TransparentFooter() {
   const shouldHideVersion = hideVersion === "true";
 
   return (
-    <footer className="absolute bottom-0 left-0 right-0 z-50 w-full flex items-center justify-center py-3 h-16 pointer-events-none">
+    <footer className="absolute bottom-0 start-0 end-0 z-50 w-full flex items-center justify-center py-3 h-16 pointer-events-none">
       <div className="flex flex-col items-center pointer-events-auto">
         <Link
           target="_blank"

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { IconHeart, IconMenu2 } from "@tabler/icons-react";
 import Image from "next/image";
@@ -39,7 +39,7 @@ export function Navbar() {
               )}
               <p className="font-bold text-2xl">{appName}</p>
             </Link>
-            <nav className="hidden md:flex ml-2 gap-4">
+            <nav className="hidden md:flex ms-2 gap-4">
               {siteConfig.navItems.map((item) => (
                 <Link
                   key={item.href}

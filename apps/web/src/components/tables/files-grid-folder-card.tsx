@@ -1,4 +1,4 @@
-import {
+﻿import {
   IconArrowsMove,
   IconDownload,
   IconEdit,
@@ -169,7 +169,7 @@ export function FolderCard({
             e.stopPropagation();
           }}
         >
-          <div className="absolute top-2 left-2 z-10 checkbox-wrapper">
+          <div className="absolute top-2 start-2 z-10 checkbox-wrapper">
             <Checkbox
               checked={isSelected}
               onCheckedChange={(checked: boolean) => onSelectFolder(folder.id, checked)}
@@ -179,7 +179,7 @@ export function FolderCard({
             />
           </div>
 
-          <div className="absolute top-2 right-2 z-10">
+          <div className="absolute top-2 end-2 z-10">
             <ItemDropdownMenu
               actions={actions}
               isShareMode={isShareMode}
@@ -195,18 +195,18 @@ export function FolderCard({
               <IconFolder className="h-10 w-10 text-primary" />
             </div>
             <div className="w-full space-y-1">
-              <p className="text-sm font-medium truncate text-left" title={folder.name}>
+              <p className="text-sm font-medium truncate text-start" title={folder.name}>
                 {folder.name}
               </p>
               {folder.description && (
                 <p
-                  className="text-xs text-muted-foreground truncate text-left"
+                  className="text-xs text-muted-foreground truncate text-start"
                   title={folder.description}
                 >
                   {folder.description}
                 </p>
               )}
-              <div className="text-xs text-muted-foreground space-y-1 text-left">
+              <div className="text-xs text-muted-foreground space-y-1 text-start">
                 <p>{folder.totalSize ? formatFileSize(Number(folder.totalSize)) : "—"}</p>
                 <p>{formatDateTime(folder.createdAt)}</p>
               </div>

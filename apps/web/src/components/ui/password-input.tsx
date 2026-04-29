@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
@@ -18,12 +18,12 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(({ 
 
   return (
     <div className="relative">
-      <Input type={showPassword ? "text" : "password"} className={cn("pr-10", className)} ref={ref} {...props} />
+      <Input type={showPassword ? "text" : "password"} className={cn("pe-10", className)} ref={ref} {...props} />
       <Button
         type="button"
         variant="ghost"
         size="icon"
-        className="absolute right-0 top-0 h-full w-10 hover:bg-transparent"
+        className="absolute end-0 top-0 h-full w-10 hover:bg-transparent"
         onClick={togglePasswordVisibility}
         disabled={props.disabled}
       >
@@ -41,3 +41,4 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(({ 
 PasswordInput.displayName = "PasswordInput";
 
 export { PasswordInput };
+

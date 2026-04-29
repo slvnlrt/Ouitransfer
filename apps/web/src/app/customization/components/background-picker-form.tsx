@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
-import { useCallback, useEffect, useState } from "react";
 import { IconChevronDown, IconChevronUp, IconDeviceLaptop } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -75,7 +75,9 @@ export function BackgroundPickerForm() {
           <IconDeviceLaptop className="text-xl text-muted-foreground" />
           <div className="flex flex-col gap-1">
             <h2 className="text-xl font-semibold">{t("customization.background.title")}</h2>
-            <p className="text-sm text-muted-foreground">{t("customization.background.description")}</p>
+            <p className="text-sm text-muted-foreground">
+              {t("customization.background.description")}
+            </p>
           </div>
         </div>
         {isCollapsed ? (
@@ -88,7 +90,9 @@ export function BackgroundPickerForm() {
         <Separator className="my-6" />
         <div className="flex flex-col gap-6">
           <div className="space-y-2 mb-3">
-            <Label className="text-sm font-medium mb-6">{t("customization.background.lightMode")}</Label>
+            <Label className="text-sm font-medium mb-6">
+              {t("customization.background.lightMode")}
+            </Label>
             <div className="grid grid-cols-3 gap-4">
               {BACKGROUND_OPTIONS.light.map((bg) => (
                 <button
@@ -117,7 +121,9 @@ export function BackgroundPickerForm() {
           </div>
 
           <div className="space-y-2 mb-3">
-            <Label className="text-sm font-medium mb-6">{t("customization.background.darkMode")}</Label>
+            <Label className="text-sm font-medium mb-6">
+              {t("customization.background.darkMode")}
+            </Label>
             <div className="grid grid-cols-3 gap-4">
               {BACKGROUND_OPTIONS.dark.map((bg) => (
                 <button
@@ -145,7 +151,9 @@ export function BackgroundPickerForm() {
             </div>
           </div>
 
-          <p className="text-xs text-muted-foreground ml-1">{t("customization.background.availableDescription")}</p>
+          <p className="text-xs text-muted-foreground ms-1">
+            {t("customization.background.availableDescription")}
+          </p>
         </div>
         <div className="flex justify-between items-center mt-4">
           <div className="flex"></div>

@@ -1,5 +1,5 @@
+﻿import { useTranslations } from "next-intl";
 import { forwardRef } from "react";
-import { useTranslations } from "next-intl";
 
 import { Input } from "@/components/ui/input";
 
@@ -45,9 +45,9 @@ export const RedirectUriInput = forwardRef<HTMLInputElement, RedirectUriInputPro
             placeholder={placeholder || t("settings.redirectUri.placeholder")}
             disabled={disabled}
             aria-invalid={!!error}
-            className="pr-32"
+            className="pe-32"
           />
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+          <div className="absolute inset-y-0 end-0 flex items-center pe-3">
             <span className="text-xs text-muted-foreground font-mono bg-muted px-2 py-1 rounded border">
               {CALLBACK_PATH}
             </span>
@@ -56,13 +56,15 @@ export const RedirectUriInput = forwardRef<HTMLInputElement, RedirectUriInputPro
 
         {baseUrl && (
           <div className="text-xs text-muted-foreground bg-muted/30 border border-muted rounded-md p-3">
-            <div className="font-medium mb-1 text-foreground">{t("settings.redirectUri.previewLabel")}</div>
+            <div className="font-medium mb-1 text-foreground">
+              {t("settings.redirectUri.previewLabel")}
+            </div>
             <code className="text-foreground break-all font-mono">{buildFullUrl(baseUrl)}</code>
           </div>
         )}
       </div>
     );
-  }
+  },
 );
 
 RedirectUriInput.displayName = "RedirectUriInput";

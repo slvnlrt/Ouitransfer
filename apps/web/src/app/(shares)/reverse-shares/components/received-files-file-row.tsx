@@ -1,6 +1,5 @@
-"use client";
+﻿"use client";
 
-import { useEffect, useRef, useState } from "react";
 import {
   IconCheck,
   IconClipboardCopy,
@@ -13,6 +12,7 @@ import {
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useTranslations } from "next-intl";
+import { useEffect, useRef, useState } from "react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -34,12 +34,12 @@ const getFileExtension = (fileName: string) => {
 };
 
 const formatFileSize = (sizeString: string) => {
-  const sizeInBytes = parseInt(sizeString);
+  const sizeInBytes = parseInt(sizeString, 10);
   if (sizeInBytes === 0) return "0 B";
   const units = ["B", "KB", "MB", "GB"];
   const k = 1024;
   const i = Math.floor(Math.log(sizeInBytes) / Math.log(k));
-  return `${parseFloat((sizeInBytes / Math.pow(k, i)).toFixed(1))} ${units[i]}`;
+  return `${parseFloat((sizeInBytes / k ** i).toFixed(1))} ${units[i]}`;
 };
 
 type TranslateFunction = ReturnType<typeof useTranslations>;
@@ -166,10 +166,10 @@ function EditableField({
               value={editValue}
               onChange={(e) => onEditValueChange(e.target.value)}
               onKeyDown={onKeyDown}
-              className="h-8 text-sm font-medium rounded-r-none border-r-0"
+              className="h-8 text-sm font-medium rounded-e-none border-e-0"
               onClick={(e) => e.stopPropagation()}
             />
-            <div className="h-8 px-2 bg-muted border border-l-0 rounded-r text-sm font-medium flex items-center text-muted-foreground">
+            <div className="h-8 px-2 bg-muted border border-s-0 rounded-r text-sm font-medium flex items-center text-muted-foreground">
               {getFileExtension(file.name)}
             </div>
           </div>
@@ -309,7 +309,9 @@ export function FileRow({
         <div className="flex items-center gap-3">
           <FileIcon className={`h-8 w-8 ${color} flex-shrink-0`} />
           <div className="min-w-0 flex-1">
+            {/* biome-ignore lint/a11y/useSemanticElements: hover-tracking wrapper for editable field, <fieldset> would add unwanted visual/layout effects */}
             <div
+              role="group"
               onMouseEnter={() => onSetHoveredFile({ fileId: file.id, field: "name" })}
               onMouseLeave={() => onSetHoveredFile(null)}
             >
@@ -328,7 +330,9 @@ export function FileRow({
               />
             </div>
             {file.description && (
+              // biome-ignore lint/a11y/useSemanticElements: hover-tracking wrapper for editable field, <fieldset> would add unwanted visual/layout effects
               <div
+                role="group"
                 className="mt-1"
                 onMouseEnter={() => onSetHoveredFile({ fileId: file.id, field: "description" })}
                 onMouseLeave={() => onSetHoveredFile(null)}
@@ -336,10 +340,14 @@ export function FileRow({
                 <EditableField
                   file={file}
                   field="description"
-                  isEditing={editingFile?.fileId === file.id && editingFile?.field === "description"}
+                  isEditing={
+                    editingFile?.fileId === file.id && editingFile?.field === "description"
+                  }
                   editValue={editValue}
                   inputRef={inputRef}
-                  isHovered={hoveredFile?.fileId === file.id && hoveredFile?.field === "description"}
+                  isHovered={
+                    hoveredFile?.fileId === file.id && hoveredFile?.field === "description"
+                  }
                   onStartEdit={onStartEdit}
                   onSaveEdit={onSaveEdit}
                   onCancelEdit={onCancelEdit}
@@ -362,8 +370,10 @@ export function FileRow({
           </span>
         </div>
       </TableCell>
-      <TableCell className="text-sm text-muted-foreground">{formatDate(file.createdAt, t)}</TableCell>
-      <TableCell className="text-right">
+      <TableCell className="text-sm text-muted-foreground">
+        {formatDate(file.createdAt, t)}
+      </TableCell>
+      <TableCell className="text-end">
         <div className="flex items-center justify-end gap-1">
           <Button
             variant="ghost"

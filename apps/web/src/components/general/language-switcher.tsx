@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
-import { useRouter } from "next/navigation";
 import { IconLanguage } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { setCookie } from "nookies";
 import ReactCountryFlag from "react-country-flag";
@@ -13,6 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { RTL_LANGUAGES } from "@/lib/rtl-languages";
 
 const languages = {
   "en-US": "English",
@@ -22,7 +23,7 @@ const languages = {
   "de-DE": "Deutsch",
   "it-IT": "Italiano",
   "nl-NL": "Nederlands",
-  "pl-PL": "Polski",
+  "ps-PL": "Polski",
   "tr-TR": "Türkçe (Turkish)",
   "ru-RU": "Русский (Russian)",
   "hi-IN": "हिन्दी (Hindi)",
@@ -43,14 +44,12 @@ const languages = {
 const COOKIE_LANG_KEY = "NEXT_LOCALE";
 const COOKIE_MAX_AGE = 365 * 24 * 60 * 60;
 
-const RTL_LANGUAGES = ["ar-SA", "fa-IR", "he-IL"];
-
 export function LanguageSwitcher() {
   const locale = useLocale();
   const router = useRouter();
 
   const changeLanguage = (fullLocale: string) => {
-    const isRTL = RTL_LANGUAGES.includes(fullLocale);
+    const isRTL = RTL_LANGUAGES.includes(fullLocale as (typeof RTL_LANGUAGES)[number]);
     document.documentElement.dir = isRTL ? "rtl" : "ltr";
 
     setCookie(null, COOKIE_LANG_KEY, fullLocale, {
@@ -85,7 +84,7 @@ export function LanguageSwitcher() {
                 svg
                 countryCode={code.split("-")[1]}
                 style={{
-                  marginRight: "8px",
+                  marginInlineEnd: "8px",
                   width: "1em",
                   height: "1em",
                 }}

@@ -1,4 +1,4 @@
-import { zodResolver } from "@hookform/resolvers/zod";
+﻿import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
@@ -93,7 +93,7 @@ export function LoginForm({
                 type={isVisible ? "text" : "password"}
                 placeholder={t("login.passwordPlaceholder")}
                 disabled={isSubmitting}
-                className="bg-transparent backdrop-blur-md pr-10"
+                className="bg-transparent backdrop-blur-md pe-10"
               />
               <PasswordVisibilityToggle isVisible={isVisible} onToggle={onToggleVisibility} />
             </div>

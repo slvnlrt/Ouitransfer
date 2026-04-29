@@ -130,7 +130,7 @@ export default function RegisterWithInvitePage() {
   if (!tokenValid) {
     return (
       <div className="relative flex flex-col h-screen">
-        <div className="fixed top-4 right-4 z-50">
+        <div className="fixed top-4 end-4 z-50">
           <LanguageSwitcher />
         </div>
         <div className="container mx-auto max-w-7xl px-6 flex-grow">
@@ -161,7 +161,7 @@ export default function RegisterWithInvitePage() {
 
   return (
     <div className="relative flex flex-col h-screen">
-      <div className="fixed top-4 right-4 z-50">
+      <div className="fixed top-4 end-4 z-50">
         <LanguageSwitcher />
       </div>
 
@@ -265,7 +265,7 @@ export default function RegisterWithInvitePage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
                     {showPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
                   </button>
@@ -293,7 +293,7 @@ export default function RegisterWithInvitePage() {
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
                     {showConfirmPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
                   </button>

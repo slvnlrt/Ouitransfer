@@ -135,7 +135,7 @@ export function ShareFilesTable({
                           {enableNavigation ? (
                             <button
                               type="button"
-                              className="truncate max-w-[250px] font-medium text-left hover:underline"
+                              className="truncate max-w-[250px] font-medium text-start hover:underline"
                               onClick={() => handleFolderClick(item.id)}
                             >
                               {item.name}

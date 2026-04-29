@@ -1,4 +1,4 @@
-import { IconAlertTriangle, IconTrash } from "@tabler/icons-react";
+﻿import { IconAlertTriangle, IconTrash } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ReverseShare } from "../hooks/use-reverse-shares";
+import type { ReverseShare } from "../hooks/use-reverse-shares";
 
 interface DeleteReverseShareModalProps {
   reverseShare: ReverseShare | null;
@@ -42,17 +42,21 @@ export function DeleteReverseShareModal({
               <IconAlertTriangle className="h-5 w-5 text-destructive" />
             </div>
             <div>
-              <DialogTitle className="text-left">{t("reverseShares.delete.title")}</DialogTitle>
+              <DialogTitle className="text-start">{t("reverseShares.delete.title")}</DialogTitle>
             </div>
           </div>
-          <DialogDescription className="text-left pt-2">{t("reverseShares.delete.description")}</DialogDescription>
+          <DialogDescription className="text-start pt-2">
+            {t("reverseShares.delete.description")}
+          </DialogDescription>
         </DialogHeader>
 
         {/* Informações do reverse-share a ser excluído */}
         <div className="rounded-lg border p-4 bg-muted/30">
           <div className="space-y-2">
             <h4 className="font-medium">{reverseShare.name || t("reverseShares.card.untitled")}</h4>
-            {reverseShare.description && <p className="text-sm text-muted-foreground">{reverseShare.description}</p>}
+            {reverseShare.description && (
+              <p className="text-sm text-muted-foreground">{reverseShare.description}</p>
+            )}
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
               <span>
                 {reverseShare.files?.length || 0} {t("reverseShares.labels.filesReceived")}

@@ -1,4 +1,4 @@
-import {
+﻿import {
   IconPlayerPause,
   IconPlayerPlay,
   IconVolume,
@@ -165,7 +165,7 @@ export function CustomAudioPlayer({ src }: CustomAudioPlayerProps) {
           <span>{formatTime(duration)}</span>
         </div>
 
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="flex items-center gap-2 ms-auto">
           <Button variant="outline" size="icon" onClick={toggleMute} className="h-8 w-8">
             <VolumeIcon className="h-4 w-4" />
           </Button>

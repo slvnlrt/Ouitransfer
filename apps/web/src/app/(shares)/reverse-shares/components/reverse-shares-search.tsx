@@ -1,4 +1,4 @@
-import { IconPlus, IconRefresh, IconSearch } from "@tabler/icons-react";
+﻿import { IconPlus, IconRefresh, IconSearch } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -42,9 +42,9 @@ export function ReverseSharesSearch({
 
       <div className="flex items-center gap-2">
         <div className="relative max-w-md">
-          <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <IconSearch className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            className="pl-9"
+            className="ps-9"
             placeholder={t("reverseShares.search.placeholder")}
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}

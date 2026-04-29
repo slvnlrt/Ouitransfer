@@ -1,14 +1,21 @@
-"use client";
+﻿"use client";
 
-import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAppInfo } from "@/contexts/app-info-context";
 import { registerUser, updateConfig } from "@/http/endpoints";
@@ -160,7 +167,7 @@ export function RegisterForm({ isVisible, onToggleVisibility }: RegisterFormProp
                     type={isVisible ? "text" : "password"}
                     placeholder={t("register.labels.password")}
                     disabled={form.formState.isSubmitting}
-                    className="bg-transparent backdrop-blur-md pr-10"
+                    className="bg-transparent backdrop-blur-md pe-10"
                   />
                   <PasswordVisibilityToggle isVisible={isVisible} onToggle={onToggleVisibility} />
                 </div>
@@ -171,7 +178,9 @@ export function RegisterForm({ isVisible, onToggleVisibility }: RegisterFormProp
         />
 
         <Button className="w-full mt-4 cursor-pointer" variant="default" size="lg" type="submit">
-          {form.formState.isSubmitting ? t("register.buttons.creating") : t("register.buttons.createAdmin")}
+          {form.formState.isSubmitting
+            ? t("register.buttons.creating")
+            : t("register.buttons.createAdmin")}
         </Button>
       </form>
     </Form>

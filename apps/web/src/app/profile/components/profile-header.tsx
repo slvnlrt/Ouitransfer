@@ -1,5 +1,5 @@
+﻿import { IconLayoutDashboard, IconUser } from "@tabler/icons-react";
 import Link from "next/link";
-import { IconLayoutDashboard, IconUser } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
 import {
@@ -26,7 +26,7 @@ export function ProfileHeader() {
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
               <Link href="/dashboard" className="flex items-center">
-                <IconLayoutDashboard size={20} className="mr-1" />
+                <IconLayoutDashboard size={20} className="me-1" />
                 {t("navigation.dashboard")}
               </Link>
             </BreadcrumbLink>

@@ -16,11 +16,14 @@ import { getLocale } from "next-intl/server";
 
 import "./globals.css";
 
+import { RouteAnnouncer } from "@/components/a11y/route-announcer";
+import { SkipToContent } from "@/components/a11y/skip-to-content";
 import { RedirectHandler } from "@/components/auth/redirect-handler";
 import { Favicon } from "@/components/layout/favicon";
 import { DynamicToaster } from "@/components/ui/dynamic-toaster";
 import { useAppInfo } from "@/contexts/app-info-context";
 import { AuthProvider } from "@/contexts/auth-context";
+import { RTL_LANGUAGES } from "@/lib/rtl-languages";
 import { QueryProvider } from "../providers/query-provider";
 import { ThemeColorProvider } from "../providers/theme-color-provider";
 import { ThemeProvider } from "../providers/theme-provider";
@@ -111,7 +114,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
-  const isRTL = locale === "ar-SA";
+  const isRTL = RTL_LANGUAGES.includes(locale as (typeof RTL_LANGUAGES)[number]);
 
   if (typeof window !== "undefined") {
     useAppInfo.getState().refreshAppInfo();
@@ -125,6 +128,7 @@ export default async function RootLayout({
       <body
         className={`${outfit.variable} ${inter.variable} ${roboto.variable} ${openSans.variable} ${poppins.variable} ${nunito.variable} ${lato.variable} ${montserrat.variable} ${sourceSans.variable} ${raleway.variable} ${workSans.variable} font-sans antialiased`}
       >
+        <SkipToContent />
         <NextIntlClientProvider>
           <QueryProvider>
             <ThemeProvider
@@ -134,8 +138,13 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               <ThemeColorProvider>
+                <RouteAnnouncer />
                 <AuthProvider>
-                  <RedirectHandler>{children}</RedirectHandler>
+                  <RedirectHandler>
+                    <main id="main-content" tabIndex={-1} className="outline-none">
+                      {children}
+                    </main>
+                  </RedirectHandler>
                 </AuthProvider>
                 <DynamicToaster />
               </ThemeColorProvider>

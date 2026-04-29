@@ -1,10 +1,10 @@
-import { DialogTitle } from "@radix-ui/react-dialog";
+﻿import { DialogTitle } from "@radix-ui/react-dialog";
 import { IconUser } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader } from "@/components/ui/dialog";
-import { UserStatusModalProps } from "../types";
+import type { UserStatusModalProps } from "../types";
 
 export function UserStatusModal({ isOpen, onClose, user, onConfirm }: UserStatusModalProps) {
   const t = useTranslations();
@@ -14,7 +14,7 @@ export function UserStatusModal({ isOpen, onClose, user, onConfirm }: UserStatus
       <DialogContent>
         <DialogHeader className="flex flex-col gap-1">
           <DialogTitle className="flex items-center gap-2 font-semibold">
-            <IconUser size={24} className="mr-1" />
+            <IconUser size={24} className="me-1" />
             {t("users.status.title")}
           </DialogTitle>
         </DialogHeader>
@@ -34,7 +34,8 @@ export function UserStatusModal({ isOpen, onClose, user, onConfirm }: UserStatus
             {t("common.cancel")}
           </Button>
           <Button variant={user?.isActive ? "destructive" : "default"} onClick={onConfirm}>
-            {user?.isActive ? t("users.status.deactivate") : t("users.status.activate")} {t("users.status.user")}
+            {user?.isActive ? t("users.status.deactivate") : t("users.status.activate")}{" "}
+            {t("users.status.user")}
           </Button>
         </DialogFooter>
       </DialogContent>

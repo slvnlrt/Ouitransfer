@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { IconChevronDown, IconChevronUp, IconSettings } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
@@ -74,7 +74,7 @@ export function AuthProvidersSettings() {
             <p className="text-sm text-muted-foreground">
               {t("authProviders.description")}
               {enabledCount > 0 && (
-                <Badge variant="secondary" className="ml-2">
+                <Badge variant="secondary" className="ms-2">
                   {t("authProviders.enabledCount", { count: enabledCount })}
                 </Badge>
               )}

@@ -1,4 +1,4 @@
-import {
+﻿import {
   IconArrowsMove,
   IconDownload,
   IconEdit,
@@ -176,7 +176,7 @@ export function FileCard({
             e.stopPropagation();
           }}
         >
-          <div className="absolute top-2 left-2 z-10 checkbox-wrapper">
+          <div className="absolute top-2 start-2 z-10 checkbox-wrapper">
             <Checkbox
               checked={isSelected}
               onCheckedChange={(checked: boolean) => {
@@ -187,7 +187,7 @@ export function FileCard({
             />
           </div>
 
-          <div className="absolute top-2 right-2 z-10">
+          <div className="absolute top-2 end-2 z-10">
             <ItemDropdownMenu
               actions={actions}
               isShareMode={isShareMode}
@@ -214,18 +214,18 @@ export function FileCard({
             </div>
 
             <div className="w-full space-y-1">
-              <p className="text-sm font-medium truncate text-left" title={file.name}>
+              <p className="text-sm font-medium truncate text-start" title={file.name}>
                 {file.name}
               </p>
               {file.description && (
                 <p
-                  className="text-xs text-muted-foreground truncate text-left"
+                  className="text-xs text-muted-foreground truncate text-start"
                   title={file.description}
                 >
                   {file.description}
                 </p>
               )}
-              <div className="text-xs text-muted-foreground space-y-1 text-left">
+              <div className="text-xs text-muted-foreground space-y-1 text-start">
                 <p>{formatFileSize(file.size)}</p>
                 <p>{formatDateTime(file.createdAt)}</p>
               </div>

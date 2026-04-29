@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { IconEye, IconEyeOff, IconLock, IconLockOpen } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
@@ -134,7 +134,7 @@ export function ShareSecurityModal({
                   variant="secondary"
                   className="bg-yellow-500/20 text-yellow-800 border-yellow-300 dark:bg-yellow-500/10 dark:text-yellow-400 dark:border-yellow-500/20"
                 >
-                  <IconLock className="h-3 w-3 mr-1" />
+                  <IconLock className="h-3 w-3 me-1" />
                   {t("shareDetails.passwordProtected")}
                 </Badge>
               ) : (
@@ -142,7 +142,7 @@ export function ShareSecurityModal({
                   variant="secondary"
                   className="bg-green-500/20 text-green-800 border-green-300 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20"
                 >
-                  <IconLockOpen className="h-3 w-3 mr-1" />
+                  <IconLockOpen className="h-3 w-3 me-1" />
                   {t("shareDetails.publicAccess")}
                 </Badge>
               )}
@@ -163,7 +163,7 @@ export function ShareSecurityModal({
             </div>
 
             {hasPassword && (
-              <div className="space-y-4 pl-6 border-l-2 border-muted">
+              <div className="space-y-4 ps-6 border-s-2 border-muted">
                 {share?.security?.hasPassword && (
                   <div className="bg-muted/50 border border-border rounded-lg p-3">
                     <p className="text-sm text-muted-foreground">
@@ -185,13 +185,13 @@ export function ShareSecurityModal({
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder={t("shareSecurity.passwordPlaceholder")}
-                      className="pr-10"
+                      className="pe-10"
                     />
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="absolute right-0 top-0 h-full w-10 hover:bg-transparent"
+                      className="absolute end-0 top-0 h-full w-10 hover:bg-transparent"
                       onClick={togglePasswordVisibility}
                     >
                       {showPassword ? (
@@ -205,7 +205,7 @@ export function ShareSecurityModal({
 
                 <div className="text-xs text-muted-foreground space-y-1">
                   <p>{t("shareSecurity.passwordRequirements.title")}</p>
-                  <ul className="list-disc list-inside space-y-1 ml-2">
+                  <ul className="list-disc list-inside space-y-1 ms-2">
                     <li>{t("shareSecurity.passwordRequirements.minLength")}</li>
                   </ul>
                 </div>

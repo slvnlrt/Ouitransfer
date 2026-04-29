@@ -1,6 +1,5 @@
-"use client";
+﻿"use client";
 
-import React from "react";
 import { IconInfoCircle } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
@@ -14,9 +13,17 @@ interface ConfigurationMethodSelectorProps {
   onUrlUpdate: (url: string) => void;
 }
 
-export function ConfigurationMethodSelector({ provider, onUpdate, onUrlUpdate }: ConfigurationMethodSelectorProps) {
+export function ConfigurationMethodSelector({
+  provider,
+  onUpdate,
+  onUrlUpdate,
+}: ConfigurationMethodSelectorProps) {
   const t = useTranslations();
-  const isManualMode = !!(provider.authorizationEndpoint || provider.tokenEndpoint || provider.userInfoEndpoint);
+  const isManualMode = !!(
+    provider.authorizationEndpoint ||
+    provider.tokenEndpoint ||
+    provider.userInfoEndpoint
+  );
 
   return (
     <div className="space-y-4">
@@ -40,7 +47,9 @@ export function ConfigurationMethodSelector({ provider, onUpdate, onUrlUpdate }:
             />
             <label htmlFor="add-auto-discovery" className="text-sm">
               <span className="font-medium">{t("authProviders.form.autoDiscovery")}</span>
-              <span className="text-muted-foreground ml-2">({t("authProviders.form.autoDiscoveryDescription")})</span>
+              <span className="text-muted-foreground ms-2">
+                ({t("authProviders.form.autoDiscoveryDescription")})
+              </span>
             </label>
           </div>
           <div className="flex items-center space-x-2">
@@ -63,7 +72,9 @@ export function ConfigurationMethodSelector({ provider, onUpdate, onUrlUpdate }:
             />
             <label htmlFor="add-manual-endpoints" className="text-sm">
               <span className="font-medium">{t("authProviders.form.manualEndpoints")}</span>
-              <span className="text-muted-foreground ml-2">({t("authProviders.form.manualEndpointsDescription")})</span>
+              <span className="text-muted-foreground ms-2">
+                ({t("authProviders.form.manualEndpointsDescription")})
+              </span>
             </label>
           </div>
         </div>
@@ -78,7 +89,9 @@ export function ConfigurationMethodSelector({ provider, onUpdate, onUrlUpdate }:
             onChange={(e) => onUpdate({ issuerUrl: e.target.value })}
             onBlur={(e) => onUrlUpdate(e.target.value)}
           />
-          <p className="text-xs text-muted-foreground mt-1">{t("authProviders.form.autoDiscoveryHelp")}</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            {t("authProviders.form.autoDiscoveryHelp")}
+          </p>
         </div>
       )}
 
@@ -92,7 +105,9 @@ export function ConfigurationMethodSelector({ provider, onUpdate, onUrlUpdate }:
               onChange={(e) => onUpdate({ issuerUrl: e.target.value })}
               onBlur={(e) => onUrlUpdate(e.target.value)}
             />
-            <p className="text-xs text-muted-foreground mt-1">{t("authProviders.form.manualConfigurationHelp")}</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {t("authProviders.form.manualConfigurationHelp")}
+            </p>
           </div>
           <div>
             <Label className="mb-2 block">{t("authProviders.form.authorizationEndpoint")} *</Label>

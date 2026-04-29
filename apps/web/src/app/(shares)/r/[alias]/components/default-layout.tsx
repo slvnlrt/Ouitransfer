@@ -145,7 +145,7 @@ export function DefaultLayout({
       </header>
 
       {/* Conteúdo principal */}
-      <main className="flex-1 container mx-auto px-6 py-8 md:py-12">
+      <main id="main-content" className="flex-1 container mx-auto px-6 py-8 md:py-12">
         <div className="max-w-2xl mx-auto space-y-8 ">
           {/* Header da página */}
           <div className="text-center space-y-4">

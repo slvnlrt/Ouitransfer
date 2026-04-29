@@ -41,7 +41,7 @@ const useBackgroundImage = () => {
 };
 
 const HeaderControls = () => (
-  <div className="absolute top-4 right-4 md:top-6 md:right-6 z-40 flex items-center gap-2">
+  <div className="absolute top-4 end-4 md:top-6 md:end-6 z-40 flex items-center gap-2">
     <div className="bg-white/10 dark:bg-black/20 backdrop-blur-xs border border-white/20 dark:border-white/10 rounded-lg p-1">
       <LanguageSwitcher />
     </div>
@@ -175,7 +175,7 @@ export function WeTransferLayout({
       <div className="relative z-30 min-h-screen flex items-center justify-start p-4 md:p-8 lg:p-12 xl:p-16">
         <div className="w-full max-w-md lg:max-w-lg xl:max-w-xl">
           <div className="bg-white dark:bg-black rounded-2xl shadow-2xl p-6 md:p-8 backdrop-blur-sm border border-white/20">
-            <div className="text-left mb-6 md:mb-8">
+            <div className="text-start mb-6 md:mb-8">
               <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                 {reverseShare?.name || t("reverseShares.upload.layout.defaultTitle")}
               </h1>

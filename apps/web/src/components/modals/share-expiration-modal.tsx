@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { IconCalendar, IconClock, IconClockOff } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
@@ -165,7 +165,7 @@ export function ShareExpirationModal({
             </div>
 
             {hasExpiration && (
-              <div className="space-y-4 pl-6 border-l-2 border-muted">
+              <div className="space-y-4 ps-6 border-s-2 border-muted">
                 <div className="space-y-2">
                   <Label htmlFor="expiration-date">{t("shareExpiration.expirationDate")}</Label>
                   <Input
@@ -179,7 +179,7 @@ export function ShareExpirationModal({
 
                 <div className="text-xs text-muted-foreground space-y-1">
                   <p>{t("shareExpiration.info.title")}</p>
-                  <ul className="list-disc list-inside space-y-1 ml-2">
+                  <ul className="list-disc list-inside space-y-1 ms-2">
                     <li>{t("shareExpiration.info.willBeInaccessible")}</li>
                     <li>{t("shareExpiration.info.canBeChanged")}</li>
                   </ul>
@@ -188,7 +188,7 @@ export function ShareExpirationModal({
             )}
 
             {!hasExpiration && (
-              <div className="pl-6 border-l-2 border-muted">
+              <div className="ps-6 border-s-2 border-muted">
                 <div className="bg-muted/50 border border-border rounded-lg p-3">
                   <p className="text-sm text-muted-foreground">
                     {t("shareExpiration.info.noExpiration")}

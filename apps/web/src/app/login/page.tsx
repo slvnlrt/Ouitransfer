@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 
@@ -23,7 +23,7 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex flex-col h-screen">
-      <div className="fixed top-4 right-4 z-50">
+      <div className="fixed top-4 end-4 z-50">
         <LanguageSwitcher />
       </div>
 
@@ -38,7 +38,10 @@ export default function LoginPage() {
           >
             <LoginHeader firstAccess={firstAccess as boolean} />
             {firstAccess ? (
-              <RegisterForm isVisible={login.isVisible} onToggleVisibility={login.toggleVisibility} />
+              <RegisterForm
+                isVisible={login.isVisible}
+                onToggleVisibility={login.toggleVisibility}
+              />
             ) : login.requiresTwoFactor ? (
               <TwoFactorVerification
                 twoFactorCode={login.twoFactorCode}

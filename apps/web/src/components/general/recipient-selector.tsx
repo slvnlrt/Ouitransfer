@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   IconBell,
@@ -179,9 +179,9 @@ export function RecipientSelector({
         </div>
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <IconMail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <IconMail className="absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              className="pl-9 h-10"
+              className="ps-9 h-10"
               placeholder={t("recipientSelector.emailPlaceholder")}
               value={newRecipient}
               onChange={(e) => setNewRecipient(e.target.value)}

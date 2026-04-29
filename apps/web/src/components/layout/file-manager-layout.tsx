@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
+﻿import { IconLayoutDashboard } from "@tabler/icons-react";
 import Link from "next/link";
-import { IconLayoutDashboard } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 
 import { Navbar } from "@/components/layout/navbar";
 import {
@@ -48,7 +48,7 @@ export function FileManagerLayout({
                   <BreadcrumbItem>
                     <BreadcrumbLink asChild>
                       <Link href="/dashboard" className="flex items-center">
-                        <IconLayoutDashboard size={20} className="mr-2" />
+                        <IconLayoutDashboard size={20} className="me-2" />
                         {t("navigation.dashboard")}
                       </Link>
                     </BreadcrumbLink>

@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
-import { useCallback, useEffect, useState } from "react";
 import { IconBorderRadius, IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -71,7 +71,9 @@ export function RadiusPickerForm() {
         <Separator className="my-6" />
         <div className="flex flex-col gap-4">
           <div className="space-y-2 mb-3">
-            <Label className="text-sm font-medium mb-6">{t("customization.radius.available")}</Label>
+            <Label className="text-sm font-medium mb-6">
+              {t("customization.radius.available")}
+            </Label>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
               {PREDEFINED_RADIUS.map((radius) => (
                 <button
@@ -97,7 +99,9 @@ export function RadiusPickerForm() {
                 </button>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground ml-1 mt-6">{t("customization.radius.availableDescription")}</p>
+            <p className="text-xs text-muted-foreground ms-1 mt-6">
+              {t("customization.radius.availableDescription")}
+            </p>
           </div>
         </div>
         <div className="flex justify-between items-center mt-4">

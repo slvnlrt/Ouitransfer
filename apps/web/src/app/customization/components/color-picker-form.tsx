@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
-import { useCallback, useEffect, useState } from "react";
 import { IconChevronDown, IconChevronUp, IconPalette } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -131,11 +131,15 @@ export function ColorPickerForm() {
                       </div>
                     )}
                   </button>
-                  <span className="text-xs text-muted-foreground text-center leading-tight">{color.name}</span>
+                  <span className="text-xs text-muted-foreground text-center leading-tight">
+                    {color.name}
+                  </span>
                 </div>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground ml-1 mt-6">{t("customization.colors.presetsDescription")}</p>
+            <p className="text-xs text-muted-foreground ms-1 mt-6">
+              {t("customization.colors.presetsDescription")}
+            </p>
           </div>
         </div>
         <div className="flex justify-between items-center mt-4">

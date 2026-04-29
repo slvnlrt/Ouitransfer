@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { IconCalendar, IconEye, IconLock, IconShare } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
@@ -179,7 +179,7 @@ export function CreateShareModal({
               <TabsTrigger value="files" disabled={!canProceedToFiles}>
                 {t("createShare.tabs.selectFiles")}
                 {selectedCount > 0 && (
-                  <span className="ml-1 text-xs bg-primary text-primary-foreground rounded-full px-2 py-0.5">
+                  <span className="ms-1 text-xs bg-primary text-primary-foreground rounded-full px-2 py-0.5">
                     {selectedCount}
                   </span>
                 )}

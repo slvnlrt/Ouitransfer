@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { IconEye, IconEyeOff, IconInfoCircle } from "@tabler/icons-react";
 import dynamic from "next/dynamic";
@@ -248,7 +248,7 @@ export function EditProviderForm({
                 />
                 <label htmlFor="auto-discovery" className="text-sm">
                   <span className="font-medium">{t("authProviders.form.autoDiscovery")}</span>
-                  <span className="text-muted-foreground ml-2">
+                  <span className="text-muted-foreground ms-2">
                     ({t("authProviders.form.autoDiscoveryDescription")})
                   </span>
                 </label>
@@ -272,7 +272,7 @@ export function EditProviderForm({
                 />
                 <label htmlFor="manual-endpoints" className="text-sm">
                   <span className="font-medium">{t("authProviders.form.manualEndpoints")}</span>
-                  <span className="text-muted-foreground ml-2">
+                  <span className="text-muted-foreground ms-2">
                     ({t("authProviders.form.manualEndpointsDescription")})
                   </span>
                 </label>
@@ -398,13 +398,13 @@ export function EditProviderForm({
               placeholder={t("authProviders.form.clientSecretPlaceholder")}
               value={formData.clientSecret}
               onChange={(e) => updateFormData({ clientSecret: e.target.value })}
-              className="pr-10"
+              className="pe-10"
             />
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+              className="absolute end-0 top-0 h-full px-3 py-2 hover:bg-transparent"
               onClick={() => setShowClientSecret(!showClientSecret)}
             >
               {showClientSecret ? (

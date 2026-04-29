@@ -1,9 +1,16 @@
-"use client";
+﻿"use client";
 
-import { useState } from "react";
-import { IconChevronDown, IconChevronUp, IconDeviceLaptop, IconMoon, IconSun, IconSunMoon } from "@tabler/icons-react";
+import {
+  IconChevronDown,
+  IconChevronUp,
+  IconDeviceLaptop,
+  IconMoon,
+  IconSun,
+  IconSunMoon,
+} from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -11,7 +18,12 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 
 const THEME_OPTIONS = [
-  { name: "System", value: "system", icon: IconDeviceLaptop, description: "Follow system preference" },
+  {
+    name: "System",
+    value: "system",
+    icon: IconDeviceLaptop,
+    description: "Follow system preference",
+  },
   { name: "Light", value: "light", icon: IconSun, description: "Always light mode" },
   { name: "Dark", value: "dark", icon: IconMoon, description: "Always dark mode" },
 ];
@@ -52,7 +64,9 @@ export function ThemePickerForm() {
         <Separator className="my-6" />
         <div className="flex flex-col gap-6">
           <div className="space-y-2 mb-3">
-            <Label className="text-sm font-medium mb-6">{t("customization.theme.selectTheme")}</Label>
+            <Label className="text-sm font-medium mb-6">
+              {t("customization.theme.selectTheme")}
+            </Label>
             <div className="grid grid-cols-3 gap-4">
               {THEME_OPTIONS.map((themeOption) => {
                 const IconComponent = themeOption.icon;
@@ -71,7 +85,9 @@ export function ThemePickerForm() {
                       <div className="flex flex-col items-center gap-2">
                         <IconComponent className="w-6 h-6 text-muted-foreground" />
                         <span className="font-medium text-base">{themeOption.name}</span>
-                        <span className="text-xs text-muted-foreground">{themeOption.description}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {themeOption.description}
+                        </span>
                       </div>
                     </div>
                   </button>
@@ -80,7 +96,9 @@ export function ThemePickerForm() {
             </div>
           </div>
 
-          <p className="text-xs text-muted-foreground ml-1 mt-6">{t("customization.theme.availableDescription")}</p>
+          <p className="text-xs text-muted-foreground ms-1 mt-6">
+            {t("customization.theme.availableDescription")}
+          </p>
         </div>
         <div className="flex justify-between items-center mt-4">
           <div className="flex"></div>

@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+﻿import { cookies } from "next/headers";
 import { getRequestConfig } from "next-intl/server";
 
 const supportedLocales = [
@@ -9,7 +9,7 @@ const supportedLocales = [
   "de-DE",
   "it-IT",
   "nl-NL",
-  "pl-PL",
+  "ps-PL",
   "tr-TR",
   "ru-RU",
   "hi-IN",

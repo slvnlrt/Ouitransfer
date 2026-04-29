@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useState } from "react";
 import { IconCheck, IconFile, IconMail, IconUpload, IconUser, IconX } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 
@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
-import { useUppyUpload, type FileUploadState } from "@/hooks/useUppyUpload";
+import { type FileUploadState, useUppyUpload } from "@/hooks/useUppyUpload";
 import {
   abortMultipartUploadByAlias,
   completeMultipartUploadByAlias,
@@ -23,132 +23,145 @@ import {
 } from "@/http/endpoints";
 import { formatFileSize } from "@/utils/format-file-size";
 import { UPLOAD_CONFIG } from "../constants";
-import { FileUploadSectionProps } from "../types";
+import type { FileUploadSectionProps } from "../types";
 
-export function FileUploadSection({ reverseShare, password, alias, onUploadSuccess }: FileUploadSectionProps) {
+export function FileUploadSection({
+  reverseShare,
+  password,
+  alias,
+  onUploadSuccess,
+}: FileUploadSectionProps) {
   const [uploaderName, setUploaderName] = useState("");
   const [uploaderEmail, setUploaderEmail] = useState("");
   const [description, setDescription] = useState("");
 
   const t = useTranslations();
 
-  const { addFiles, startUpload, removeFile, retryUpload, fileUploads, isUploading } = useUppyUpload({
-    onValidate: async (file) => {
-      // Client-side validations
-      if (reverseShare.maxFileSize && file.size > reverseShare.maxFileSize) {
-        const error = t("reverseShares.upload.errors.fileTooLarge", {
-          maxSize: formatFileSize(reverseShare.maxFileSize),
-        });
-        toast.error(error);
-        throw new Error(error);
-      }
-
-      if (reverseShare.allowedFileTypes) {
-        const extension = file.name.split(".").pop()?.toLowerCase();
-        const allowed = reverseShare.allowedFileTypes.split(",").map((t) => t.trim().toLowerCase());
-        if (extension && !allowed.includes(extension)) {
-          const error = t("reverseShares.upload.errors.fileTypeNotAllowed", {
-            allowedTypes: reverseShare.allowedFileTypes,
+  const { addFiles, startUpload, removeFile, retryUpload, fileUploads, isUploading } =
+    useUppyUpload({
+      onValidate: async (file) => {
+        // Client-side validations
+        if (reverseShare.maxFileSize && file.size > reverseShare.maxFileSize) {
+          const error = t("reverseShares.upload.errors.fileTooLarge", {
+            maxSize: formatFileSize(reverseShare.maxFileSize),
           });
           toast.error(error);
           throw new Error(error);
         }
-      }
 
-      if (reverseShare.maxFiles) {
-        const totalFiles = fileUploads.length + 1 + reverseShare.currentFileCount;
-        if (totalFiles > reverseShare.maxFiles) {
-          const error = t("reverseShares.upload.errors.maxFilesExceeded", {
-            maxFiles: reverseShare.maxFiles,
-          });
-          toast.error(error);
-          throw new Error(error);
+        if (reverseShare.allowedFileTypes) {
+          const extension = file.name.split(".").pop()?.toLowerCase();
+          const allowed = reverseShare.allowedFileTypes
+            .split(",")
+            .map((t) => t.trim().toLowerCase());
+          if (extension && !allowed.includes(extension)) {
+            const error = t("reverseShares.upload.errors.fileTypeNotAllowed", {
+              allowedTypes: reverseShare.allowedFileTypes,
+            });
+            toast.error(error);
+            throw new Error(error);
+          }
         }
-      }
-    },
-    onBeforeUpload: async (file) => {
-      const timestamp = Date.now();
-      const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-      return `reverse-shares/${alias}/${timestamp}-${sanitizedFileName}`;
-    },
-    getPresignedUrl: async (objectName) => {
-      const response = await getPresignedUrlForUploadByAlias(
-        alias,
-        { objectName },
-        password ? { password } : undefined
-      );
-      return { url: response.data.url, method: "PUT" };
-    },
-    onAfterUpload: async (fileId, file, objectName) => {
-      const fileExtension = file.name.split(".").pop() || "";
 
-      await registerFileUploadByAlias(
-        alias,
-        {
-          name: file.name,
-          description: description || undefined,
-          extension: fileExtension,
-          size: file.size,
-          objectName,
-          uploaderEmail: uploaderEmail || undefined,
-          uploaderName: uploaderName || undefined,
+        if (reverseShare.maxFiles) {
+          const totalFiles = fileUploads.length + 1 + reverseShare.currentFileCount;
+          if (totalFiles > reverseShare.maxFiles) {
+            const error = t("reverseShares.upload.errors.maxFilesExceeded", {
+              maxFiles: reverseShare.maxFiles,
+            });
+            toast.error(error);
+            throw new Error(error);
+          }
+        }
+      },
+      onBeforeUpload: async (file) => {
+        const timestamp = Date.now();
+        const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
+        return `reverse-shares/${alias}/${timestamp}-${sanitizedFileName}`;
+      },
+      getPresignedUrl: async (objectName) => {
+        const response = await getPresignedUrlForUploadByAlias(
+          alias,
+          { objectName },
+          password ? { password } : undefined,
+        );
+        return { url: response.data.url, method: "PUT" };
+      },
+      onAfterUpload: async (_fileId, file, objectName) => {
+        const fileExtension = file.name.split(".").pop() || "";
+
+        await registerFileUploadByAlias(
+          alias,
+          {
+            name: file.name,
+            description: description || undefined,
+            extension: fileExtension,
+            size: file.size,
+            objectName,
+            uploaderEmail: uploaderEmail || undefined,
+            uploaderName: uploaderName || undefined,
+          },
+          password ? { password } : undefined,
+        );
+      },
+      onSuccess: () => {
+        const successCount = fileUploads.filter((u) => u.status === "success").length;
+
+        if (successCount > 0) {
+          toast.success(
+            t("reverseShares.upload.success.countMessage", {
+              count: successCount,
+            }),
+          );
+
+          onUploadSuccess?.();
+        }
+      },
+      // Custom multipart functions for reverse share uploads (no auth required)
+      customMultipartFunctions: {
+        createMultipartUpload: async (filename: string, extension: string) => {
+          const response = await createMultipartUploadByAlias(
+            alias,
+            { filename, extension },
+            password ? { password } : undefined,
+          );
+          return response.data;
         },
-        password ? { password } : undefined
-      );
-    },
-    onSuccess: () => {
-      const successCount = fileUploads.filter((u) => u.status === "success").length;
-
-      if (successCount > 0) {
-        toast.success(
-          t("reverseShares.upload.success.countMessage", {
-            count: successCount,
-          })
-        );
-
-        onUploadSuccess?.();
-      }
-    },
-    // Custom multipart functions for reverse share uploads (no auth required)
-    customMultipartFunctions: {
-      createMultipartUpload: async (filename: string, extension: string) => {
-        const response = await createMultipartUploadByAlias(
-          alias,
-          { filename, extension },
-          password ? { password } : undefined
-        );
-        return response.data;
+        getMultipartPartUrl: async (uploadId: string, objectName: string, partNumber: string) => {
+          const response = await getMultipartPartUrlByAlias(alias, {
+            uploadId,
+            objectName,
+            partNumber,
+            password,
+          });
+          return response.data;
+        },
+        completeMultipartUpload: async (
+          uploadId: string,
+          objectName: string,
+          parts: Array<{ PartNumber: number; ETag: string }>,
+        ) => {
+          await completeMultipartUploadByAlias(
+            alias,
+            { uploadId, objectName, parts },
+            password ? { password } : undefined,
+          );
+        },
+        abortMultipartUpload: async (uploadId: string, objectName: string) => {
+          await abortMultipartUploadByAlias(
+            alias,
+            { uploadId, objectName },
+            password ? { password } : undefined,
+          );
+        },
       },
-      getMultipartPartUrl: async (uploadId: string, objectName: string, partNumber: string) => {
-        const response = await getMultipartPartUrlByAlias(alias, { uploadId, objectName, partNumber, password });
-        return response.data;
-      },
-      completeMultipartUpload: async (
-        uploadId: string,
-        objectName: string,
-        parts: Array<{ PartNumber: number; ETag: string }>
-      ) => {
-        await completeMultipartUploadByAlias(
-          alias,
-          { uploadId, objectName, parts },
-          password ? { password } : undefined
-        );
-      },
-      abortMultipartUpload: async (uploadId: string, objectName: string) => {
-        await abortMultipartUploadByAlias(
-          alias,
-          { uploadId, objectName },
-          password ? { password } : undefined
-        );
-      },
-    },
-  });
+    });
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       addFiles(acceptedFiles);
     },
-    [addFiles]
+    [addFiles],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -202,7 +215,9 @@ export function FileUploadSection({ reverseShare, password, alias, onUploadSucce
   };
 
   const canUpload = getCanUpload();
-  const allFilesProcessed = fileUploads.every((file) => file.status === "success" || file.status === "error");
+  const allFilesProcessed = fileUploads.every(
+    (file) => file.status === "success" || file.status === "error",
+  );
   const hasSuccessfulUploads = fileUploads.some((file) => file.status === "success");
 
   const getDragActiveStyles = () => {
@@ -213,7 +228,8 @@ export function FileUploadSection({ reverseShare, password, alias, onUploadSucce
   };
 
   const getDropzoneStyles = () => {
-    const baseStyles = "border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors";
+    const baseStyles =
+      "border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors";
     const dragStyles = getDragActiveStyles();
     const disabledStyles = isUploading ? "opacity-50 cursor-not-allowed" : "";
 
@@ -234,24 +250,25 @@ export function FileUploadSection({ reverseShare, password, alias, onUploadSucce
       <p className="text-sm text-gray-500 dark:text-gray-400">
         {reverseShare.allowedFileTypes && (
           <>
-            {t("reverseShares.upload.fileDropzone.acceptedTypes", { types: reverseShare.allowedFileTypes })}
+            {t("reverseShares.upload.fileDropzone.acceptedTypes", {
+              types: reverseShare.allowedFileTypes,
+            })}
             <br />
           </>
         )}
         {reverseShare.maxFileSize && (
           <>
-            {t("reverseShares.upload.fileDropzone.maxFileSize", { size: formatFileSize(reverseShare.maxFileSize) })}
+            {t("reverseShares.upload.fileDropzone.maxFileSize", {
+              size: formatFileSize(reverseShare.maxFileSize),
+            })}
             <br />
           </>
         )}
-        {reverseShare.maxFiles && (
-          <>
-            {t("reverseShares.upload.fileDropzone.remainingFiles", {
-              remaining: remainingFiles,
-              max: reverseShare.maxFiles,
-            })}
-          </>
-        )}
+        {reverseShare.maxFiles &&
+          t("reverseShares.upload.fileDropzone.remainingFiles", {
+            remaining: remainingFiles,
+            max: reverseShare.maxFiles,
+          })}
       </p>
     );
   };
@@ -259,8 +276,11 @@ export function FileUploadSection({ reverseShare, password, alias, onUploadSucce
   const renderFileStatusBadge = (fileStatus: string) => {
     if (fileStatus === "success") {
       return (
-        <Badge variant="default" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-          <IconCheck className="h-3 w-3 mr-1" />
+        <Badge
+          variant="default"
+          className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+        >
+          <IconCheck className="h-3 w-3 me-1" />
           {t("reverseShares.upload.fileList.statusUploaded")}
         </Badge>
       );
@@ -274,18 +294,30 @@ export function FileUploadSection({ reverseShare, password, alias, onUploadSucce
   };
 
   const renderFileItem = (upload: FileUploadState) => (
-    <div key={upload.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+    <div
+      key={upload.id}
+      className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+    >
       <IconFile className="h-5 w-5 text-gray-500 flex-shrink-0" />
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{upload.file.name}</p>
+        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+          {upload.file.name}
+        </p>
         <p className="text-xs text-gray-500">{formatFileSize(upload.file.size)}</p>
         {upload.status === "uploading" && <Progress value={upload.progress} className="mt-2 h-2" />}
-        {upload.status === "error" && upload.error && <p className="text-xs text-red-500 mt-1">{upload.error}</p>}
+        {upload.status === "error" && upload.error && (
+          <p className="text-xs text-red-500 mt-1">{upload.error}</p>
+        )}
       </div>
       <div className="flex items-center gap-2">
         {renderFileStatusBadge(upload.status)}
         {upload.status === "pending" && (
-          <Button size="sm" variant="ghost" onClick={() => removeFile(upload.id)} disabled={isUploading}>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => removeFile(upload.id)}
+            disabled={isUploading}
+          >
             <IconX className="h-4 w-4" />
           </Button>
         )}
@@ -300,7 +332,12 @@ export function FileUploadSection({ reverseShare, password, alias, onUploadSucce
             >
               <IconUpload className="h-4 w-4" />
             </Button>
-            <Button size="sm" variant="ghost" onClick={() => removeFile(upload.id)} disabled={isUploading}>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => removeFile(upload.id)}
+              disabled={isUploading}
+            >
               <IconX className="h-4 w-4" />
             </Button>
           </div>
@@ -324,7 +361,9 @@ export function FileUploadSection({ reverseShare, password, alias, onUploadSucce
 
       {fileUploads.length > 0 && (
         <div className="space-y-2">
-          <h4 className="font-medium text-gray-900 dark:text-white">{t("reverseShares.upload.fileList.title")}</h4>
+          <h4 className="font-medium text-gray-900 dark:text-white">
+            {t("reverseShares.upload.fileList.title")}
+          </h4>
           {fileUploads.map(renderFileItem)}
         </div>
       )}
@@ -338,7 +377,9 @@ export function FileUploadSection({ reverseShare, password, alias, onUploadSucce
                 {reverseShare.nameFieldRequired === "OPTIONAL"
                   ? t("reverseShares.upload.form.nameLabelOptional")
                   : t("reverseShares.upload.form.nameLabel")}
-                {reverseShare.nameFieldRequired === "REQUIRED" && <span className="text-red-500 ml-1">*</span>}
+                {reverseShare.nameFieldRequired === "REQUIRED" && (
+                  <span className="text-red-500 ms-1">*</span>
+                )}
               </Label>
               <Input
                 id="name"
@@ -357,7 +398,9 @@ export function FileUploadSection({ reverseShare, password, alias, onUploadSucce
                 {reverseShare.emailFieldRequired === "OPTIONAL"
                   ? t("reverseShares.upload.form.emailLabelOptional")
                   : t("reverseShares.upload.form.emailLabel")}
-                {reverseShare.emailFieldRequired === "REQUIRED" && <span className="text-red-500 ml-1">*</span>}
+                {reverseShare.emailFieldRequired === "REQUIRED" && (
+                  <span className="text-red-500 ms-1">*</span>
+                )}
               </Label>
               <Input
                 id="email"
@@ -384,7 +427,13 @@ export function FileUploadSection({ reverseShare, password, alias, onUploadSucce
         </div>
       </div>
 
-      <Button onClick={handleUpload} disabled={!canUpload} className="w-full text-white" size="lg" variant="default">
+      <Button
+        onClick={handleUpload}
+        disabled={!canUpload}
+        className="w-full text-white"
+        size="lg"
+        variant="default"
+      >
         {isUploading
           ? t("reverseShares.upload.form.uploading")
           : t("reverseShares.upload.form.uploadButton", { count: fileUploads.length })}
@@ -392,7 +441,9 @@ export function FileUploadSection({ reverseShare, password, alias, onUploadSucce
 
       {allFilesProcessed && hasSuccessfulUploads && (
         <div className="text-center p-4 bg-green-50 dark:bg-green-950/20 rounded-lg">
-          <p className="text-green-800 dark:text-green-200 font-medium">{t("reverseShares.upload.success.title")}</p>
+          <p className="text-green-800 dark:text-green-200 font-medium">
+            {t("reverseShares.upload.success.title")}
+          </p>
           <p className="text-sm text-green-600 dark:text-green-300 mt-1">
             {t("reverseShares.upload.success.description")}
           </p>

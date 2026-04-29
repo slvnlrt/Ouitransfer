@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { IconEye, IconEyeOff, IconLock, IconLockOpen } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
@@ -176,7 +176,7 @@ export function EditPasswordModal({
                             type="button"
                             variant="ghost"
                             size="sm"
-                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                            className="absolute end-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                             onClick={() => setShowPassword(!showPassword)}
                           >
                             {showPassword ? (

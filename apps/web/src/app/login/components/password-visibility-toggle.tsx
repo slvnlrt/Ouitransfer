@@ -1,4 +1,4 @@
-import { IconEye, IconEyeClosed } from "@tabler/icons-react";
+﻿import { IconEye, IconEyeClosed } from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -13,7 +13,7 @@ export function PasswordVisibilityToggle({ isVisible, onToggle }: PasswordVisibi
       type="button"
       variant="link"
       onClick={onToggle}
-      className="absolute right-0 top-1/2 -translate-y-1/2 cursor-pointer"
+      className="absolute end-0 top-1/2 -translate-y-1/2 cursor-pointer"
     >
       {isVisible ? (
         <IconEye className="h-5 w-5 text-muted-foreground" />

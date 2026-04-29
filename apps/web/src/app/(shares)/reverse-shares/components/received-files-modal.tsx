@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   IconChevronDown,
@@ -506,7 +506,7 @@ export function ReceivedFilesModal({
                         <TableHead>
                           {t("reverseShares.modals.receivedFiles.columns.date")}
                         </TableHead>
-                        <TableHead className="text-right">
+                        <TableHead className="text-end">
                           {t("reverseShares.modals.receivedFiles.columns.actions")}
                         </TableHead>
                       </TableRow>
@@ -584,7 +584,7 @@ export function ReceivedFilesModal({
             </Button>
             <Button variant="destructive" onClick={confirmBulkDelete} disabled={bulkDeleting}>
               {bulkDeleting ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent me-2" />
               ) : null}
               {t("reverseShares.modals.receivedFiles.bulkDeleteConfirmButton", {
                 count: filesToDeleteBulk.length,

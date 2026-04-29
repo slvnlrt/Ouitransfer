@@ -1,4 +1,4 @@
-import {
+﻿import {
   IconArrowsMove,
   IconDownload,
   IconEdit,
@@ -235,7 +235,7 @@ export function FileRow({
       <TableCell className="h-12 px-4">
         {formatDateTime(file.updatedAt || file.createdAt)}
       </TableCell>
-      <TableCell className="h-12 px-4 text-right">
+      <TableCell className="h-12 px-4 text-end">
         <ItemDropdownMenu
           actions={actions}
           isShareMode={isShareMode}

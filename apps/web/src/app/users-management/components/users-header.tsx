@@ -1,5 +1,5 @@
+﻿import { IconLayoutDashboard, IconLink, IconUserPlus, IconUsers } from "@tabler/icons-react";
 import Link from "next/link";
-import { IconLayoutDashboard, IconLink, IconUserPlus, IconUsers } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
 import {
@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { UsersHeaderProps } from "../types";
+import type { UsersHeaderProps } from "../types";
 
 export function UsersHeader({ onCreateUser, onGenerateInvite }: UsersHeaderProps) {
   const t = useTranslations();
@@ -40,7 +40,7 @@ export function UsersHeader({ onCreateUser, onGenerateInvite }: UsersHeaderProps
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
               <Link href="/dashboard" className="flex items-center">
-                <IconLayoutDashboard size={20} className="mr-2" />
+                <IconLayoutDashboard size={20} className="me-2" />
                 {t("common.dashboard")}
               </Link>
             </BreadcrumbLink>

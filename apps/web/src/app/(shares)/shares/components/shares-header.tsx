@@ -1,5 +1,5 @@
+﻿import { IconLayoutDashboard, IconShare } from "@tabler/icons-react";
 import Link from "next/link";
-import { IconLayoutDashboard, IconShare } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
 import {
@@ -26,7 +26,7 @@ export function SharesHeader() {
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
               <Link href="/dashboard" className="flex items-center">
-                <IconLayoutDashboard size={20} className="mr-2" />
+                <IconLayoutDashboard size={20} className="me-2" />
                 {t("common.dashboard")}
               </Link>
             </BreadcrumbLink>
