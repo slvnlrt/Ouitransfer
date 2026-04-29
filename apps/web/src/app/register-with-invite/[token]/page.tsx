@@ -1,10 +1,11 @@
 "use client";
 
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { StaticBackgroundLights } from "@/app/login/components/static-background-lights";
@@ -16,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { registerWithInvite, validateInviteToken } from "@/http/endpoints/invite";
 import { logger } from "@/lib/logger";
+import { queryKeys } from "@/lib/query-keys";
 
 interface RegisterFormData {
   firstName: string;
@@ -26,15 +28,42 @@ interface RegisterFormData {
   confirmPassword: string;
 }
 
+interface TokenValidation {
+  valid: boolean;
+  error: string | null;
+}
+
 export default function RegisterWithInvitePage() {
   const t = useTranslations();
   const router = useRouter();
   const params = useParams();
   const token = params.token as string;
 
-  const [isValidating, setIsValidating] = useState(true);
-  const [tokenValid, setTokenValid] = useState(false);
-  const [tokenError, setTokenError] = useState<string | null>(null);
+  const tokenQuery = useQuery<TokenValidation>({
+    queryKey: queryKeys.invite.validate(token),
+    queryFn: async () => {
+      const response = await validateInviteToken(token);
+      if (!response.valid) {
+        if (response.used) {
+          return { valid: false, error: t("registerWithInvite.errors.tokenUsed") };
+        }
+        if (response.expired) {
+          return { valid: false, error: t("registerWithInvite.errors.tokenExpired") };
+        }
+        return { valid: false, error: t("registerWithInvite.errors.invalidToken") };
+      }
+      return { valid: true, error: null };
+    },
+    enabled: !!token,
+    retry: false,
+  });
+
+  const isValidating = tokenQuery.isLoading;
+  const tokenValid = tokenQuery.data?.valid ?? false;
+  const tokenError =
+    tokenQuery.data?.error ??
+    (tokenQuery.error ? t("registerWithInvite.errors.invalidToken") : null);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -47,39 +76,6 @@ export default function RegisterWithInvitePage() {
   } = useForm<RegisterFormData>();
 
   const password = watch("password");
-
-  useEffect(() => {
-    const checkToken = async () => {
-      try {
-        const response = await validateInviteToken(token);
-
-        if (!response.valid) {
-          if (response.used) {
-            setTokenError(t("registerWithInvite.errors.tokenUsed"));
-          } else if (response.expired) {
-            setTokenError(t("registerWithInvite.errors.tokenExpired"));
-          } else {
-            setTokenError(t("registerWithInvite.errors.invalidToken"));
-          }
-          setTokenValid(false);
-        } else {
-          setTokenValid(true);
-        }
-      } catch (error) {
-        logger.error("Error validating token:", {
-          err: error instanceof Error ? error.message : String(error),
-        });
-        setTokenError(t("registerWithInvite.errors.invalidToken"));
-        setTokenValid(false);
-      } finally {
-        setIsValidating(false);
-      }
-    };
-
-    if (token) {
-      checkToken();
-    }
-  }, [token, t]);
 
   const onSubmit = async (data: RegisterFormData) => {
     if (data.password !== data.confirmPassword) {

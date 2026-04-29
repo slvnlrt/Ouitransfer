@@ -1,76 +1,83 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
 import { getTrustedDevices, removeAllTrustedDevices, removeTrustedDevice } from "@/http/endpoints";
-import { logger } from "@/lib/logger";
 import type { TrustedDevice } from "@/http/endpoints/auth/trusted-devices/types";
+import { logger } from "@/lib/logger";
+import { queryKeys } from "@/lib/query-keys";
 
 export function useTrustedDevices() {
   const t = useTranslations();
-  const [isLoading, setIsLoading] = useState(true);
-  const [devices, setDevices] = useState<TrustedDevice[]>([]);
+  const queryClient = useQueryClient();
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const [isRemoveAllModalOpen, setIsRemoveAllModalOpen] = useState(false);
   const [deviceToRemove, setDeviceToRemove] = useState<TrustedDevice | null>(null);
-  const [isRemoving, setIsRemoving] = useState(false);
 
-  const loadDevices = useCallback(async () => {
-    try {
-      setIsLoading(true);
+  const devicesQuery = useQuery({
+    queryKey: queryKeys.auth.trustedDevices(),
+    queryFn: async () => {
       const response = await getTrustedDevices();
-      setDevices(response.devices);
-    } catch (error) {
-      toast.error(t("twoFactor.trustedDevices.loadFailed"));
-      logger.error("Failed to load trusted devices", { err: error instanceof Error ? error.message : String(error) });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [t]);
+      return response.devices;
+    },
+  });
 
-  const handleRemoveDevice = useCallback(async (device: TrustedDevice) => {
+  const removeDeviceMutation = useMutation({
+    mutationFn: async (device: TrustedDevice) => {
+      await removeTrustedDevice({ deviceId: device.id });
+    },
+    onSuccess: () => {
+      toast.success(t("twoFactor.trustedDevices.deviceRemoved"));
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.trustedDevices() });
+      setIsRemoveModalOpen(false);
+      setDeviceToRemove(null);
+    },
+    onError: (_error, device) => {
+      toast.error(t("twoFactor.trustedDevices.removeFailed"));
+      logger.error("Failed to remove trusted device", {
+        deviceId: device.id,
+        err: _error instanceof Error ? _error.message : String(_error),
+      });
+    },
+  });
+
+  const removeAllDevicesMutation = useMutation({
+    mutationFn: async () => {
+      await removeAllTrustedDevices();
+    },
+    onSuccess: () => {
+      toast.success(t("twoFactor.trustedDevices.allDevicesRemoved"));
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.trustedDevices() });
+      setIsRemoveAllModalOpen(false);
+    },
+    onError: (error) => {
+      toast.error(t("twoFactor.trustedDevices.removeAllFailed"));
+      logger.error("Failed to remove all trusted devices", {
+        err: error instanceof Error ? error.message : String(error),
+      });
+    },
+  });
+
+  const handleRemoveDevice = useCallback((device: TrustedDevice) => {
     setDeviceToRemove(device);
     setIsRemoveModalOpen(true);
   }, []);
 
-  const confirmRemoveDevice = useCallback(async () => {
+  const confirmRemoveDevice = async () => {
     if (!deviceToRemove) return;
-
-    try {
-      setIsRemoving(true);
-      await removeTrustedDevice({ deviceId: deviceToRemove.id });
-      toast.success(t("twoFactor.trustedDevices.deviceRemoved"));
-      await loadDevices();
-      setIsRemoveModalOpen(false);
-      setDeviceToRemove(null);
-    } catch (error) {
-      toast.error(t("twoFactor.trustedDevices.removeFailed"));
-      logger.error("Failed to remove trusted device", { deviceId: deviceToRemove.id, err: error instanceof Error ? error.message : String(error) });
-    } finally {
-      setIsRemoving(false);
-    }
-  }, [deviceToRemove, t, loadDevices]);
+    await removeDeviceMutation.mutateAsync(deviceToRemove);
+  };
 
   const handleRemoveAllDevices = useCallback(() => {
     setIsRemoveAllModalOpen(true);
   }, []);
 
-  const confirmRemoveAllDevices = useCallback(async () => {
-    try {
-      setIsRemoving(true);
-      await removeAllTrustedDevices();
-      toast.success(t("twoFactor.trustedDevices.allDevicesRemoved"));
-      await loadDevices();
-      setIsRemoveAllModalOpen(false);
-    } catch (error) {
-      toast.error(t("twoFactor.trustedDevices.removeAllFailed"));
-      logger.error("Failed to remove all trusted devices", { err: error instanceof Error ? error.message : String(error) });
-    } finally {
-      setIsRemoving(false);
-    }
-  }, [t, loadDevices]);
+  const confirmRemoveAllDevices = async () => {
+    await removeAllDevicesMutation.mutateAsync();
+  };
 
   const formatDeviceName = useCallback(
     (device: TrustedDevice) => {
@@ -106,7 +113,7 @@ export function useTrustedDevices() {
 
       return deviceInfo;
     },
-    [t]
+    [t],
   );
 
   const formatDate = useCallback((dateString: string) => {
@@ -119,17 +126,17 @@ export function useTrustedDevices() {
     });
   }, []);
 
-  useEffect(() => {
-    loadDevices();
-  }, [loadDevices]);
+  const loadDevices = async () => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.auth.trustedDevices() });
+  };
 
   return {
-    isLoading,
-    devices,
+    isLoading: devicesQuery.isLoading,
+    devices: devicesQuery.data ?? [],
     isRemoveModalOpen,
     isRemoveAllModalOpen,
     deviceToRemove,
-    isRemoving,
+    isRemoving: removeDeviceMutation.isPending || removeAllDevicesMutation.isPending,
     setIsRemoveModalOpen,
     setIsRemoveAllModalOpen,
     handleRemoveDevice,

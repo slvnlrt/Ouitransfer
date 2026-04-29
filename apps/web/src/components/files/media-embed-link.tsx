@@ -1,13 +1,14 @@
 "use client";
 
 import { IconCheck, IconCopy } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { generateEmbedToken } from "@/http/endpoints/files";
-import { logger } from "@/lib/logger";
+import { queryKeys } from "@/lib/query-keys";
 
 interface MediaEmbedLinkProps {
   fileId: string;
@@ -17,30 +18,17 @@ interface MediaEmbedLinkProps {
 export function MediaEmbedLink({ fileId, shareId }: MediaEmbedLinkProps) {
   const t = useTranslations();
   const [copied, setCopied] = useState(false);
-  const [embedUrl, setEmbedUrl] = useState<string>("");
 
-  useEffect(() => {
-    if (typeof window === "undefined" || !fileId) return;
+  const embedQuery = useQuery({
+    queryKey: queryKeys.files.embedToken(fileId, shareId ?? ""),
+    queryFn: async () => {
+      const response = await generateEmbedToken({ fileId, shareId: shareId! });
+      return `${window.location.origin}/e/${response.data.token}`;
+    },
+    enabled: !!fileId && !!shareId && typeof window !== "undefined",
+  });
 
-    const origin = window.location.origin;
-
-    if (shareId) {
-      // Use token-based embed URL
-      generateEmbedToken({ fileId, shareId })
-        .then((response) => {
-          setEmbedUrl(`${origin}/e/${response.data.token}`);
-        })
-        .catch((error) => {
-          logger.error("Failed to generate embed token:", {
-            err: error instanceof Error ? error.message : String(error),
-          });
-          setEmbedUrl("");
-        });
-    } else {
-      // No share context — embed requires a share
-      setEmbedUrl("");
-    }
-  }, [fileId, shareId]);
+  const embedUrl = embedQuery.data ?? "";
 
   // Don't render if no embed URL is available
   if (!embedUrl) return null;
@@ -50,10 +38,8 @@ export function MediaEmbedLink({ fileId, shareId }: MediaEmbedLinkProps) {
       await navigator.clipboard.writeText(embedUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      logger.error("Failed to copy:", {
-        err: error instanceof Error ? error.message : String(error),
-      });
+    } catch {
+      // clipboard write failed — silently ignore
     }
   };
 

@@ -1,15 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { IconBell, IconCheck, IconMail, IconPlus, IconTrash, IconUsers, IconX } from "@tabler/icons-react";
+import {
+  IconBell,
+  IconCheck,
+  IconMail,
+  IconPlus,
+  IconTrash,
+  IconUsers,
+  IconX,
+} from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { useShareContext } from "@/contexts/share-context";
+import { useSecureConfigValue } from "@/hooks/use-secure-configs";
 import { addRecipients, notifyRecipients, removeRecipients } from "@/http/endpoints";
 
 interface Recipient {
@@ -26,10 +34,17 @@ interface RecipientSelectorProps {
   onSuccess: () => void;
 }
 
-export function RecipientSelector({ shareId, selectedRecipients, shareAlias, onSuccess }: RecipientSelectorProps) {
+export function RecipientSelector({
+  shareId,
+  selectedRecipients,
+  shareAlias,
+  onSuccess,
+}: RecipientSelectorProps) {
   const t = useTranslations();
-  const { smtpEnabled } = useShareContext();
-  const [recipients, setRecipients] = useState<string[]>(selectedRecipients?.map((recipient) => recipient.email) || []);
+  const { value: smtpEnabled } = useSecureConfigValue("smtpEnabled");
+  const [recipients, setRecipients] = useState<string[]>(
+    selectedRecipients?.map((recipient) => recipient.email) || [],
+  );
   const [newRecipient, setNewRecipient] = useState("");
   const [selectedForAction, setSelectedForAction] = useState<Set<string>>(new Set());
   const [isAddingRecipient, setIsAddingRecipient] = useState(false);
@@ -200,11 +215,18 @@ export function RecipientSelector({ shareId, selectedRecipients, shareAlias, onS
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center gap-2">
             <IconUsers className="h-5 w-5 text-primary" />
-            <h3 className="text-lg font-medium">{t("recipientSelector.recipients", { count: recipients.length })}</h3>
+            <h3 className="text-lg font-medium">
+              {t("recipientSelector.recipients", { count: recipients.length })}
+            </h3>
           </div>
 
           {recipients.length > 0 && shareAlias && smtpEnabled === "true" && (
-            <Button variant="outline" size="sm" onClick={handleNotifyAll} className="sm:w-auto w-full">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleNotifyAll}
+              className="sm:w-auto w-full"
+            >
               <IconBell className="h-4 w-4" />
               {t("recipientSelector.notifyAll")}
             </Button>
@@ -221,12 +243,22 @@ export function RecipientSelector({ shareId, selectedRecipients, shareAlias, onS
             </div>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
               {smtpEnabled === "true" && shareAlias && (
-                <Button variant="outline" size="sm" onClick={handleNotifySelected} className="sm:w-auto w-full">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleNotifySelected}
+                  className="sm:w-auto w-full"
+                >
                   <IconBell className="h-4 w-4" />
                   {t("recipientSelector.notifySelected")}
                 </Button>
               )}
-              <Button variant="destructive" size="sm" onClick={handleRemoveSelected} className="sm:w-auto w-full">
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleRemoveSelected}
+                className="sm:w-auto w-full"
+              >
                 <IconTrash className="h-4 w-4" />
                 {t("recipientSelector.removeSelected")}
               </Button>
@@ -250,7 +282,9 @@ export function RecipientSelector({ shareId, selectedRecipients, shareAlias, onS
                 <IconUsers className="h-8 w-8 text-muted-foreground" />
               </div>
               <h4 className="text-lg font-medium mb-2">{t("recipientSelector.noRecipients")}</h4>
-              <p className="text-sm text-muted-foreground mb-4">{t("recipientSelector.noRecipientsDescription")}</p>
+              <p className="text-sm text-muted-foreground mb-4">
+                {t("recipientSelector.noRecipientsDescription")}
+              </p>
             </div>
           ) : (
             <>
@@ -260,7 +294,9 @@ export function RecipientSelector({ shareId, selectedRecipients, shareAlias, onS
                   onCheckedChange={handleSelectAll}
                   aria-label={t("recipientSelector.selectAll")}
                 />
-                <span className="text-sm font-medium text-muted-foreground">{t("recipientSelector.selectAll")}</span>
+                <span className="text-sm font-medium text-muted-foreground">
+                  {t("recipientSelector.selectAll")}
+                </span>
               </div>
 
               <div className="divide-y max-h-80 overflow-y-auto">
@@ -275,7 +311,9 @@ export function RecipientSelector({ shareId, selectedRecipients, shareAlias, onS
                     >
                       <Checkbox
                         checked={isSelected}
-                        onCheckedChange={(checked) => handleSelectRecipient(email, checked as boolean)}
+                        onCheckedChange={(checked) =>
+                          handleSelectRecipient(email, checked as boolean)
+                        }
                         aria-label={t("recipientSelector.selectRecipient", { email })}
                       />
 
@@ -294,12 +332,16 @@ export function RecipientSelector({ shareId, selectedRecipients, shareAlias, onS
                             className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/30"
                             onClick={async () => {
                               const link = `${window.location.origin}/s/${shareAlias}`;
-                              const loadingToast = toast.loading(t("recipientSelector.sendingNotifications"));
+                              const loadingToast = toast.loading(
+                                t("recipientSelector.sendingNotifications"),
+                              );
 
                               try {
                                 await notifyRecipients(shareId, { shareLink: link });
                                 toast.dismiss(loadingToast);
-                                toast.success(t("recipientSelector.singleNotifySuccess", { email }));
+                                toast.success(
+                                  t("recipientSelector.singleNotifySuccess", { email }),
+                                );
                               } catch {
                                 toast.dismiss(loadingToast);
                                 toast.error(t("recipientSelector.singleNotifyError"));

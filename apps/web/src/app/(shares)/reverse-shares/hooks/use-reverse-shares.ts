@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -17,90 +18,82 @@ import type {
   ListUserReverseSharesResult,
   UpdateReverseShareBody,
 } from "@/http/endpoints/reverse-shares/types";
-
-
+import { queryKeys } from "@/lib/query-keys";
 
 export type ReverseShare = ListUserReverseSharesResult["data"]["reverseShares"][0];
 
 export function useReverseShares() {
   const t = useTranslations();
-  const [reverseShares, setReverseShares] = useState<ReverseShare[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
+
+  // --- UI state (not server state) ---
   const [searchQuery, setSearchQuery] = useState("");
-  const [reverseShareToViewDetails, setReverseShareToViewDetails] = useState<ReverseShare | null>(null);
-  const [reverseShareToGenerateLink, setReverseShareToGenerateLink] = useState<ReverseShare | null>(null);
+  const [reverseShareToViewDetails, setReverseShareToViewDetails] = useState<ReverseShare | null>(
+    null,
+  );
+  const [reverseShareToGenerateLink, setReverseShareToGenerateLink] = useState<ReverseShare | null>(
+    null,
+  );
   const [reverseShareToDelete, setReverseShareToDelete] = useState<ReverseShare | null>(null);
   const [reverseShareToEdit, setReverseShareToEdit] = useState<ReverseShare | null>(null);
   const [reverseShareToViewFiles, setReverseShareToViewFiles] = useState<ReverseShare | null>(null);
-  const [reverseShareToViewQrCode, setReverseShareToViewQrCode] = useState<ReverseShare | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [reverseShareToViewQrCode, setReverseShareToViewQrCode] = useState<ReverseShare | null>(
+    null,
+  );
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
 
-  const loadReverseShares = useCallback(async () => {
-    try {
+  // --- Server state via TanStack Query ---
+  const reverseSharesQuery = useQuery({
+    queryKey: queryKeys.reverseShares.list(),
+    queryFn: async () => {
       const response = await listUserReverseShares();
       const allReverseShares = response.data.reverseShares || [];
-      const sortedReverseShares = [...allReverseShares].sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      return [...allReverseShares].sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
+    },
+  });
 
-      setReverseShares(sortedReverseShares);
-    } catch {
-      toast.error(t("reverseShares.errors.loadFailed"));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [t]);
+  const reverseShares = reverseSharesQuery.data ?? [];
+  const isLoading = reverseSharesQuery.isLoading;
 
-  const refreshReverseShare = async (id: string) => {
-    try {
-      const response = await listUserReverseShares();
-      const allReverseShares = response.data.reverseShares || [];
-      const sortedReverseShares = [...allReverseShares].sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
+  // Keep detail/files view state in sync with the list data.
+  // When query data changes, the selected items are refreshed from the list.
+  const syncedReverseShareToViewDetails = useMemo(() => {
+    if (!reverseShareToViewDetails) return null;
+    return (
+      reverseShares.find((rs) => rs.id === reverseShareToViewDetails.id) ??
+      reverseShareToViewDetails
+    );
+  }, [reverseShares, reverseShareToViewDetails]);
 
-      setReverseShares(sortedReverseShares);
+  const syncedReverseShareToViewFiles = useMemo(() => {
+    if (!reverseShareToViewFiles) return null;
+    return (
+      reverseShares.find((rs) => rs.id === reverseShareToViewFiles.id) ?? reverseShareToViewFiles
+    );
+  }, [reverseShares, reverseShareToViewFiles]);
 
-      const updatedReverseShare = allReverseShares.find((rs) => rs.id === id);
-      if (updatedReverseShare) {
-        if (reverseShareToViewFiles && reverseShareToViewFiles.id === id) {
-          setReverseShareToViewFiles(updatedReverseShare as ReverseShare);
-        }
-        if (reverseShareToViewDetails && reverseShareToViewDetails.id === id) {
-          setReverseShareToViewDetails(updatedReverseShare as ReverseShare);
-        }
-      }
-    } catch {
-      toast.error(t("reverseShares.errors.loadFailed"));
-    }
-  };
+  // --- Mutations ---
 
-  const handleCreateReverseShare = async (data: CreateReverseShareBody): Promise<void> => {
-    setIsCreating(true);
-    try {
-      const response = await createReverseShare(data);
+  const createMutation = useMutation({
+    mutationFn: (data: CreateReverseShareBody) => createReverseShare(data),
+    onSuccess: (response) => {
       const newReverseShare = response.data.reverseShare;
-
-      setReverseShares((prev) => [newReverseShare as ReverseShare, ...prev]);
-
       toast.success(t("reverseShares.messages.createSuccess"));
       setIsCreateModalOpen(false);
-
       setReverseShareToGenerateLink(newReverseShare as ReverseShare);
-    } catch {
+      queryClient.invalidateQueries({ queryKey: queryKeys.reverseShares.list() });
+    },
+    onError: () => {
       toast.error(t("reverseShares.errors.createFailed"));
-    } finally {
-      setIsCreating(false);
-    }
-  };
+    },
+  });
 
-  const handleCreateAlias = async (reverseShareId: string, alias: string) => {
-    try {
-      await createReverseShareAlias(reverseShareId, { alias });
-
+  const createAliasMutation = useMutation({
+    mutationFn: ({ reverseShareId, alias }: { reverseShareId: string; alias: string }) =>
+      createReverseShareAlias(reverseShareId, { alias }),
+    onSuccess: (_response, { reverseShareId, alias }) => {
       const newAlias = {
         id: "",
         alias,
@@ -109,17 +102,7 @@ export function useReverseShares() {
         updatedAt: new Date().toISOString(),
       };
 
-      setReverseShares((prev) =>
-        prev.map((rs) =>
-          rs.id === reverseShareId
-            ? {
-                ...rs,
-                alias: newAlias,
-              }
-            : rs
-        )
-      );
-
+      // Update the detail view immediately if it's for this reverse share
       if (reverseShareToViewDetails && reverseShareToViewDetails.id === reverseShareId) {
         setReverseShareToViewDetails({
           ...reverseShareToViewDetails,
@@ -128,130 +111,136 @@ export function useReverseShares() {
       }
 
       toast.success(t("reverseShares.messages.aliasCreated"));
-    } catch {
+      queryClient.invalidateQueries({ queryKey: queryKeys.reverseShares.list() });
+    },
+    onError: () => {
       toast.error(t("reverseShares.errors.aliasCreateFailed"));
-    }
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (reverseShare: ReverseShare) => deleteReverseShare(reverseShare.id),
+    onSuccess: () => {
+      toast.success(t("reverseShares.messages.deleteSuccess"));
+      setReverseShareToDelete(null);
+      queryClient.invalidateQueries({ queryKey: queryKeys.reverseShares.list() });
+    },
+    onError: () => {
+      toast.error(t("reverseShares.errors.deleteFailed"));
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (data: UpdateReverseShareBody) => updateReverseShare(data),
+    onSuccess: () => {
+      toast.success(t("reverseShares.messages.updateSuccess"));
+      setReverseShareToEdit(null);
+      queryClient.invalidateQueries({ queryKey: queryKeys.reverseShares.list() });
+    },
+    onError: () => {
+      toast.error(t("reverseShares.errors.updateFailed"));
+    },
+  });
+
+  const updatePasswordMutation = useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: { hasPassword: boolean; password?: string };
+    }) => {
+      const payload = { password: data.hasPassword ? data.password! : null };
+      return updateReverseSharePassword(id, payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.reverseShares.list() });
+    },
+    onError: () => {
+      toast.error(t("reverseShares.errors.updateFailed"));
+    },
+  });
+
+  const updateDataMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Omit<UpdateReverseShareBody, "id"> }) => {
+      const payload: UpdateReverseShareBody = { id, ...data };
+      return updateReverseShare(payload);
+    },
+    onSuccess: () => {
+      toast.success(t("reverseShares.messages.updateSuccess"));
+      queryClient.invalidateQueries({ queryKey: queryKeys.reverseShares.list() });
+    },
+    onError: () => {
+      toast.error(t("reverseShares.errors.updateFailed"));
+    },
+  });
+
+  const toggleActiveMutation = useMutation({
+    mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) => {
+      const payload: UpdateReverseShareBody = { id, isActive };
+      return updateReverseShare(payload);
+    },
+    onSuccess: (_response, { isActive }) => {
+      toast.success(
+        isActive
+          ? t("reverseShares.messages.activateSuccess")
+          : t("reverseShares.messages.deactivateSuccess"),
+      );
+      queryClient.invalidateQueries({ queryKey: queryKeys.reverseShares.list() });
+    },
+    onError: () => {
+      toast.error(t("reverseShares.errors.updateFailed"));
+    },
+  });
+
+  // --- Wrapper functions (preserve the original function signatures for consumers) ---
+
+  const handleCreateReverseShare = async (data: CreateReverseShareBody): Promise<void> => {
+    await createMutation.mutateAsync(data);
+  };
+
+  const handleCreateAlias = async (reverseShareId: string, alias: string) => {
+    await createAliasMutation.mutateAsync({ reverseShareId, alias });
   };
 
   const handleDeleteReverseShare = async (reverseShare: ReverseShare) => {
-    setIsDeleting(true);
-    try {
-      await deleteReverseShare(reverseShare.id);
-
-      setReverseShares((prev) => prev.filter((rs) => rs.id !== reverseShare.id));
-
-      toast.success(t("reverseShares.messages.deleteSuccess"));
-      setReverseShareToDelete(null);
-    } catch {
-      toast.error(t("reverseShares.errors.deleteFailed"));
-    } finally {
-      setIsDeleting(false);
-    }
+    await deleteMutation.mutateAsync(reverseShare);
   };
 
   const handleUpdateReverseShare = async (data: UpdateReverseShareBody): Promise<void> => {
-    setIsUpdating(true);
-    try {
-      const response = await updateReverseShare(data);
-      const updatedReverseShare = response.data.reverseShare;
-
-      setReverseShares((prev) =>
-        prev.map((rs) => (rs.id === data.id ? ({ ...rs, ...updatedReverseShare } as ReverseShare) : rs))
-      );
-
-      toast.success(t("reverseShares.messages.updateSuccess"));
-      setReverseShareToEdit(null);
-    } catch {
-      toast.error(t("reverseShares.errors.updateFailed"));
-    } finally {
-      setIsUpdating(false);
-    }
+    await updateMutation.mutateAsync(data);
   };
 
-  const handleUpdatePassword = async (id: string, data: { hasPassword: boolean; password?: string }) => {
-    try {
-      const payload = { password: data.hasPassword ? data.password! : null };
-      const response = await updateReverseSharePassword(id, payload);
-      const updatedReverseShare = response.data.reverseShare;
-
-      setReverseShares((prev) =>
-        prev.map((rs) => (rs.id === id ? ({ ...rs, ...updatedReverseShare } as ReverseShare) : rs))
-      );
-
-      if (reverseShareToViewDetails && reverseShareToViewDetails.id === id) {
-        setReverseShareToViewDetails({ ...reverseShareToViewDetails, ...updatedReverseShare } as ReverseShare);
-      }
-    } catch {
-      toast.error(t("reverseShares.errors.updateFailed"));
-    }
+  const handleUpdatePassword = async (
+    id: string,
+    data: { hasPassword: boolean; password?: string },
+  ) => {
+    await updatePasswordMutation.mutateAsync({ id, data });
   };
 
-  const handleUpdateReverseShareData = async (id: string, data: Omit<UpdateReverseShareBody, "id">): Promise<void> => {
-    try {
-      const payload: UpdateReverseShareBody = { id, ...data };
-      const response = await updateReverseShare(payload);
-      const updatedReverseShare = response.data.reverseShare;
-
-      setReverseShares((prev) =>
-        prev.map((rs) => (rs.id === id ? ({ ...rs, ...updatedReverseShare } as ReverseShare) : rs))
-      );
-
-      if (reverseShareToViewDetails && reverseShareToViewDetails.id === id) {
-        setReverseShareToViewDetails({ ...reverseShareToViewDetails, ...updatedReverseShare } as ReverseShare);
-      }
-
-      toast.success(t("reverseShares.messages.updateSuccess"));
-    } catch {
-      toast.error(t("reverseShares.errors.updateFailed"));
-    }
+  const handleUpdateReverseShareData = async (
+    id: string,
+    data: Omit<UpdateReverseShareBody, "id">,
+  ): Promise<void> => {
+    await updateDataMutation.mutateAsync({ id, data });
   };
 
   const handleToggleActive = async (id: string, isActive: boolean) => {
-    try {
-      const payload: UpdateReverseShareBody = { id, isActive };
-      const response = await updateReverseShare(payload);
-      const updatedReverseShare = response.data.reverseShare;
-
-      setReverseShares((prev) =>
-        prev.map((rs) => (rs.id === id ? ({ ...rs, ...updatedReverseShare } as ReverseShare) : rs))
-      );
-
-      if (reverseShareToViewDetails && reverseShareToViewDetails.id === id) {
-        setReverseShareToViewDetails({ ...reverseShareToViewDetails, ...updatedReverseShare } as ReverseShare);
-      }
-
-      toast.success(
-        isActive ? t("reverseShares.messages.activateSuccess") : t("reverseShares.messages.deactivateSuccess")
-      );
-    } catch {
-      toast.error(t("reverseShares.errors.updateFailed"));
-    }
+    await toggleActiveMutation.mutateAsync({ id, isActive });
   };
 
-  useEffect(() => {
-    loadReverseShares();
-  }, [loadReverseShares]);
+  const loadReverseShares = async (): Promise<void> => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.reverseShares.list() });
+  };
 
-  useEffect(() => {
-    if (reverseShareToViewDetails) {
-      const updatedReverseShare = reverseShares.find((rs) => rs.id === reverseShareToViewDetails.id);
-      if (updatedReverseShare) {
-        setReverseShareToViewDetails(updatedReverseShare);
-      }
-    }
-  }, [reverseShares, reverseShareToViewDetails]);
+  const refreshReverseShare = async (_id: string): Promise<void> => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.reverseShares.list() });
+  };
 
-  useEffect(() => {
-    if (reverseShareToViewFiles) {
-      const updatedReverseShare = reverseShares.find((rs) => rs.id === reverseShareToViewFiles.id);
-      if (updatedReverseShare) {
-        setReverseShareToViewFiles(updatedReverseShare);
-      }
-    }
-  }, [reverseShares, reverseShareToViewFiles]);
+  // --- Computed ---
 
   const filteredReverseShares = reverseShares.filter(
-    (reverseShare) => reverseShare.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false
+    (reverseShare) => reverseShare.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false,
   );
 
   const handleCopyLink = (reverseShare: ReverseShare) => {
@@ -267,16 +256,16 @@ export function useReverseShares() {
     reverseShares,
     isLoading,
     searchQuery,
-    reverseShareToViewDetails,
+    reverseShareToViewDetails: syncedReverseShareToViewDetails,
     reverseShareToGenerateLink,
     reverseShareToDelete,
     reverseShareToEdit,
-    reverseShareToViewFiles,
+    reverseShareToViewFiles: syncedReverseShareToViewFiles,
     reverseShareToViewQrCode,
-    isDeleting,
+    isDeleting: deleteMutation.isPending,
     isCreateModalOpen,
-    isCreating,
-    isUpdating,
+    isCreating: createMutation.isPending,
+    isUpdating: updateMutation.isPending,
     filteredReverseShares,
     setSearchQuery,
     setReverseShareToViewDetails,

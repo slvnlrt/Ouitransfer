@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { getAuthConfig, requestPasswordReset } from "@/http/endpoints";
-import { logger } from "@/lib/logger";
+import { queryKeys } from "@/lib/query-keys";
 
 export type ForgotPasswordFormData = {
   email: string;
@@ -19,28 +19,21 @@ export type ForgotPasswordFormData = {
 export function useForgotPassword() {
   const t = useTranslations();
   const router = useRouter();
-  const [passwordAuthEnabled, setPasswordAuthEnabled] = useState(true);
-  const [authConfigLoading, setAuthConfigLoading] = useState(true);
 
   const forgotPasswordSchema = z.object({
     email: z.string().email(t("validation.invalidEmail")),
   });
 
-  useEffect(() => {
-    const fetchAuthConfig = async () => {
-      try {
-        const response = await getAuthConfig();
-        setPasswordAuthEnabled(response.data.passwordAuthEnabled);
-      } catch (error) {
-        logger.error("Failed to fetch auth config", { err: error instanceof Error ? error.message : String(error) });
-        setPasswordAuthEnabled(true);
-      } finally {
-        setAuthConfigLoading(false);
-      }
-    };
+  const authConfigQuery = useQuery({
+    queryKey: queryKeys.auth.config(),
+    queryFn: async () => {
+      const response = await getAuthConfig();
+      return response.data;
+    },
+  });
 
-    fetchAuthConfig();
-  }, []);
+  const passwordAuthEnabled = authConfigQuery.data?.passwordAuthEnabled ?? true;
+  const authConfigLoading = authConfigQuery.isLoading;
 
   const form = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),

@@ -1,17 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { useAppInfo } from "@/contexts/app-info-context";
-import { useShareContext } from "@/contexts/share-context";
 import { useAdminConfigs } from "@/hooks/use-secure-configs";
 import { bulkUpdateConfigs } from "@/http/endpoints";
-import { Config, ConfigType, GroupFormData } from "../types";
+import { queryKeys } from "@/lib/query-keys";
+import type { Config, ConfigType, GroupFormData } from "../types";
 
 const createSchemas = () => ({
   settingsSchema: z.object({
@@ -32,7 +33,7 @@ export function useSettings() {
     storage: true,
   });
   const { refreshAppInfo } = useAppInfo();
-  const { refreshShareContext } = useShareContext();
+  const queryClient = useQueryClient();
 
   const {
     configs: adminConfigsList,
@@ -54,7 +55,7 @@ export function useSettings() {
       security: securityForm,
       storage: storageForm,
     }),
-    [generalForm, emailForm, securityForm, storageForm]
+    [generalForm, emailForm, securityForm, storageForm],
   );
 
   type ValidGroup = keyof typeof groupForms;
@@ -124,14 +125,19 @@ export function useSettings() {
           return;
         }
 
-        if (groupName === "general" || groupName === "email" || groupName === "security" || groupName === "storage") {
+        if (
+          groupName === "general" ||
+          groupName === "email" ||
+          groupName === "security" ||
+          groupName === "storage"
+        ) {
           const group = groupName as ValidGroup;
           const groupConfigData = groupConfigs.reduce(
             (acc, config) => {
               acc[config.key] = configsData[config.key];
               return acc;
             },
-            {} as Record<string, string>
+            {} as Record<string, string>,
           );
 
           groupForms[group].reset({ configs: groupConfigData });
@@ -163,12 +169,14 @@ export function useSettings() {
       }
 
       await bulkUpdateConfigs(configsToUpdate);
-      toast.success(t("settings.messages.updateSuccess", { group: t(`settings.groups.${group}.title`) }));
+      toast.success(
+        t("settings.messages.updateSuccess", { group: t(`settings.groups.${group}.title`) }),
+      );
 
       await reloadConfigs();
 
       if (group === "email") {
-        await refreshShareContext();
+        await queryClient.invalidateQueries({ queryKey: queryKeys.config.all });
       }
 
       await refreshAppInfo();

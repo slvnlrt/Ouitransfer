@@ -1,54 +1,35 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { create } from "zustand";
+import { useEffect } from "react";
 
 import { useAuth } from "@/contexts/auth-context";
 import { useSecureConfigValue } from "@/hooks/use-secure-configs";
 
-interface HomeStore {
-  isLoading: boolean;
-  shouldShowHomePage: boolean;
-  setIsLoading: (loading: boolean) => void;
-  setShouldShowHomePage: (show: boolean) => void;
-}
-
-const useHomeStore = create<HomeStore>((set) => ({
-  isLoading: true,
-  shouldShowHomePage: false,
-  setIsLoading: (loading: boolean) => set({ isLoading: loading }),
-  setShouldShowHomePage: (show: boolean) => set({ shouldShowHomePage: show }),
-}));
-
 export function useHome() {
   const router = useRouter();
-  const { isLoading, shouldShowHomePage, setIsLoading, setShouldShowHomePage } = useHomeStore();
   const { isAuthenticated } = useAuth();
   const { value: showHomePage, isLoading: configLoading } = useSecureConfigValue("showHomePage");
 
+  // Loading until both auth check and config fetch are done
+  const isLoading = isAuthenticated === null || configLoading;
+
+  // Show home page only when: config says yes + user is not authenticated
+  const shouldShowHomePage = !isLoading && showHomePage === "true" && isAuthenticated === false;
+
+  // Redirect authenticated users to dashboard
   useEffect(() => {
     if (isAuthenticated === true) {
       router.replace("/dashboard");
-      return;
     }
   }, [isAuthenticated, router]);
 
+  // Redirect to login if home page is disabled
   useEffect(() => {
-    if (!configLoading && isAuthenticated !== null) {
-      setIsLoading(false);
-
-      if (showHomePage !== "true") {
-        router.push("/login");
-        setShouldShowHomePage(false);
-      } else if (isAuthenticated === false) {
-        setShouldShowHomePage(true);
-      }
+    if (!isLoading && showHomePage !== "true") {
+      router.push("/login");
     }
-  }, [router, showHomePage, configLoading, isAuthenticated, setIsLoading, setShouldShowHomePage]);
+  }, [isLoading, showHomePage, router]);
 
-  return {
-    isLoading,
-    shouldShowHomePage,
-  };
+  return { isLoading, shouldShowHomePage };
 }

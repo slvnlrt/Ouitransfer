@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
@@ -10,6 +11,7 @@ import type { Share } from "@/http/endpoints/shares/types";
 import { mapShareFiles, mapShareFolders } from "@/lib/api-mappers";
 import { getCachedDownloadUrl } from "@/lib/download-url-cache";
 import { logger } from "@/lib/logger";
+import { queryKeys } from "@/lib/query-keys";
 
 const createSlug = (name: string): string => {
   return name
@@ -57,6 +59,22 @@ const findFolderByPathSlug = (folders: FolderItem[], pathSlug: string): FolderIt
   return currentFolder;
 };
 
+/**
+ * Checks whether an axios error is a "Password required" 401.
+ */
+function isPasswordRequired(error: unknown): boolean {
+  const axiosError = error as { response?: { data?: { error?: string } } };
+  return axiosError.response?.data?.error === "Password required";
+}
+
+/**
+ * Checks whether an axios error is an "Invalid password" 401.
+ */
+function isInvalidPassword(error: unknown): boolean {
+  const axiosError = error as { response?: { data?: { error?: string } } };
+  return axiosError.response?.data?.error === "Invalid password";
+}
+
 interface ShareBrowseState {
   folders: FolderItem[];
   files: FileItem[];
@@ -70,9 +88,10 @@ export function usePublicShare() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const alias = params?.alias as string;
-  const [share, setShare] = useState<Share | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+
+  // --- UI-only state (not server-derived) ---
   const [password, setPassword] = useState("");
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [isPasswordError, setIsPasswordError] = useState(false);
@@ -105,41 +124,63 @@ export function usePublicShare() {
     [],
   );
 
-  const loadShare = useCallback(
-    async (sharePassword?: string) => {
-      if (!alias) return;
-
-      const handleShareError = (error: unknown) => {
-        const axiosError = error as { response?: { data?: { error?: string } } };
-        if (axiosError.response?.data?.error === "Password required") {
-          setIsPasswordModalOpen(true);
-          setShare(null);
-        } else if (axiosError.response?.data?.error === "Invalid password") {
-          setIsPasswordError(true);
-          toast.error(t("share.errors.invalidPassword"));
-        } else {
-          toast.error(t("share.errors.loadFailed"));
-        }
-      };
-
-      try {
-        setIsLoading(true);
-        const response = await getShareByAlias(
-          alias,
-          sharePassword ? { password: sharePassword } : undefined,
-        );
-
-        setShare(response.data.share);
-        setIsPasswordModalOpen(false);
-        setIsPasswordError(false);
-      } catch (error: unknown) {
-        handleShareError(error);
-      } finally {
-        setIsLoading(false);
-      }
+  // --- Initial share fetch via useQuery ---
+  const shareQuery = useQuery({
+    queryKey: queryKeys.shares.byAlias(alias),
+    queryFn: async () => {
+      const response = await getShareByAlias(alias);
+      return response.data.share;
     },
-    [alias, t],
-  );
+    enabled: !!alias,
+    retry: false, // 401 (password required) should not retry
+  });
+
+  // --- React to query errors: open password modal or show toast ---
+  useEffect(() => {
+    if (!shareQuery.error) return;
+
+    if (isPasswordRequired(shareQuery.error)) {
+      setIsPasswordModalOpen(true);
+    } else {
+      toast.error(t("share.errors.loadFailed"));
+    }
+  }, [shareQuery.error, t]);
+
+  // --- Password submit mutation ---
+  const passwordMutation = useMutation({
+    mutationFn: async (submittedPassword: string) => {
+      const response = await getShareByAlias(alias, { password: submittedPassword });
+      return response.data.share;
+    },
+    onSuccess: (shareData: Share) => {
+      // Inject the fetched data into the query cache
+      queryClient.setQueryData(queryKeys.shares.byAlias(alias), shareData);
+      setIsPasswordModalOpen(false);
+      setIsPasswordError(false);
+    },
+    onError: (error: unknown) => {
+      if (isInvalidPassword(error)) {
+        setIsPasswordError(true);
+        toast.error(t("share.errors.invalidPassword"));
+      } else {
+        toast.error(t("share.errors.loadFailed"));
+      }
+
+      logger.error("Failed to load share with password", {
+        alias,
+        err: error instanceof Error ? error.message : String(error),
+      });
+    },
+  });
+
+  // --- Derived state from TQ cache ---
+  const share: Share | null = shareQuery.data ?? null;
+  const isLoading = shareQuery.isLoading || passwordMutation.isPending;
+
+  // --- Password submit handler (reads password from state, matches original signature) ---
+  const handlePasswordSubmit = async () => {
+    passwordMutation.mutate(password);
+  };
 
   const loadFolderContents = useCallback(
     (folderId: string | null) => {
@@ -232,10 +273,6 @@ export function usePublicShare() {
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
   }, []);
-
-  const handlePasswordSubmit = async () => {
-    await loadShare(password);
-  };
 
   const handleFolderDownload = async (folderId: string, folderName: string) => {
     try {
@@ -564,12 +601,7 @@ export function usePublicShare() {
     file.name?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  useEffect(() => {
-    if (alias) {
-      loadShare();
-    }
-  }, [alias, loadShare]);
-
+  // Browse state: update when share data changes or URL folder slug changes
   useEffect(() => {
     if (share) {
       const resolvedFolderId = getFolderIdFromPathSlug(

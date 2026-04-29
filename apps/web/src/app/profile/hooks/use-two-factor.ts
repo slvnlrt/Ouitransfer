@@ -1,11 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { useAppInfo } from "@/contexts/app-info-context";
-import { logger } from "@/lib/logger";
 import {
   disableTwoFactor,
   generate2FASetup,
@@ -13,17 +13,25 @@ import {
   getTwoFactorStatus,
   verifyTwoFactorSetup,
 } from "@/http/endpoints/auth/two-factor";
-import type { TwoFactorSetupResponse, TwoFactorStatus } from "@/http/endpoints/auth/two-factor/types";
+import type { TwoFactorSetupResponse } from "@/http/endpoints/auth/two-factor/types";
+import { logger } from "@/lib/logger";
+import { queryKeys } from "@/lib/query-keys";
+
+/**
+ * Extract a user-facing error message from an Axios error, or return `undefined`
+ * so the caller can fall back to a generic i18n message.
+ */
+function extractServerError(error: unknown): string | undefined {
+  const axiosError = error as { response?: { data?: { error?: string } } };
+  return axiosError.response?.data?.error || undefined;
+}
 
 export function useTwoFactor() {
   const t = useTranslations();
   const { appName } = useAppInfo();
-  const [isLoading, setIsLoading] = useState(true);
-  const [status, setStatus] = useState<TwoFactorStatus>({
-    enabled: false,
-    verified: false,
-    availableBackupCodes: 0,
-  });
+  const queryClient = useQueryClient();
+
+  // ── Local UI state (modals, form inputs, transient data) ────────────
   const [setupData, setSetupData] = useState<TwoFactorSetupResponse | null>(null);
   const [isSetupModalOpen, setIsSetupModalOpen] = useState(false);
   const [isDisableModalOpen, setIsDisableModalOpen] = useState(false);
@@ -32,124 +40,121 @@ export function useTwoFactor() {
   const [verificationCode, setVerificationCode] = useState("");
   const [disablePassword, setDisablePassword] = useState("");
 
-  const loadStatus = useCallback(async () => {
-    try {
-      setIsLoading(true);
+  // ── Query: 2FA status ───────────────────────────────────────────────
+  const statusQuery = useQuery({
+    queryKey: queryKeys.auth.twoFactor.status(),
+    queryFn: async () => {
       const response = await getTwoFactorStatus();
-      setStatus(response.data);
-    } catch (error) {
-      logger.error("Failed to load 2FA status", { err: error instanceof Error ? error.message : String(error) });
-      toast.error(t("twoFactor.messages.statusLoadFailed"));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [t]);
+      return response.data;
+    },
+  });
 
-  const startSetup = async () => {
-    try {
-      setIsLoading(true);
+  // ── Mutation: start setup (generate QR / secret) ────────────────────
+  const startSetupMutation = useMutation({
+    mutationFn: async () => {
       const response = await generate2FASetup({ appName });
-      setSetupData(response.data);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      setSetupData(data);
       setIsSetupModalOpen(true);
-    } catch (error: unknown) {
-      logger.error("Failed to generate 2FA setup", { err: error instanceof Error ? error.message : String(error) });
-      const axiosError = error as { response?: { data?: { error?: string } } };
-      if (axiosError.response?.data?.error) {
-        toast.error(axiosError.response.data.error);
-      } else {
-        toast.error(t("twoFactor.messages.setupFailed"));
+    },
+    onError: (error: unknown) => {
+      logger.error("Failed to generate 2FA setup", {
+        err: error instanceof Error ? error.message : String(error),
+      });
+      const serverMsg = extractServerError(error);
+      toast.error(serverMsg ?? t("twoFactor.messages.setupFailed"));
+    },
+  });
+
+  // ── Mutation: verify setup (enable 2FA) ─────────────────────────────
+  const verifyMutation = useMutation({
+    mutationFn: async () => {
+      if (!setupData || !verificationCode) {
+        throw new Error("missing_input");
       }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const verifySetup = async () => {
-    if (!setupData || !verificationCode) {
-      toast.error(t("twoFactor.messages.enterVerificationCode"));
-      return;
-    }
-
-    try {
-      setIsLoading(true);
       const response = await verifyTwoFactorSetup({
         token: verificationCode,
         secret: setupData.secret,
       });
-
-      if (response.data.success) {
-        setBackupCodes(response.data.backupCodes);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      if (data.success) {
+        setBackupCodes(data.backupCodes);
         setIsSetupModalOpen(false);
         setIsBackupCodesModalOpen(true);
         setVerificationCode("");
         toast.success(t("twoFactor.messages.enabledSuccess"));
-        await loadStatus();
+        queryClient.invalidateQueries({ queryKey: queryKeys.auth.twoFactor.status() });
       }
-    } catch (error: unknown) {
-      logger.error("Failed to verify 2FA setup", { err: error instanceof Error ? error.message : String(error) });
-      const axiosError = error as { response?: { data?: { error?: string } } };
-      if (axiosError.response?.data?.error) {
-        toast.error(axiosError.response.data.error);
-      } else {
-        toast.error(t("twoFactor.messages.verificationFailed"));
+    },
+    onError: (error: unknown) => {
+      if (error instanceof Error && error.message === "missing_input") {
+        toast.error(t("twoFactor.messages.enterVerificationCode"));
+        return;
       }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const disable2FA = async () => {
-    if (!disablePassword) {
-      toast.error(t("twoFactor.messages.enterPassword"));
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      const response = await disableTwoFactor({
-        password: disablePassword,
+      logger.error("Failed to verify 2FA setup", {
+        err: error instanceof Error ? error.message : String(error),
       });
+      const serverMsg = extractServerError(error);
+      toast.error(serverMsg ?? t("twoFactor.messages.verificationFailed"));
+    },
+  });
 
-      if (response.data.success) {
+  // ── Mutation: disable 2FA ───────────────────────────────────────────
+  const disableMutation = useMutation({
+    mutationFn: async () => {
+      if (!disablePassword) {
+        throw new Error("missing_password");
+      }
+      const response = await disableTwoFactor({ password: disablePassword });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      if (data.success) {
         setIsDisableModalOpen(false);
         setDisablePassword("");
         toast.success(t("twoFactor.messages.disabledSuccess"));
-        await loadStatus();
+        queryClient.invalidateQueries({ queryKey: queryKeys.auth.twoFactor.status() });
       }
-    } catch (error: unknown) {
-      logger.error("Failed to disable 2FA", { err: error instanceof Error ? error.message : String(error) });
-      const axiosError = error as { response?: { data?: { error?: string } } };
-      if (axiosError.response?.data?.error) {
-        toast.error(axiosError.response.data.error);
-      } else {
-        toast.error(t("twoFactor.messages.disableFailed"));
+    },
+    onError: (error: unknown) => {
+      if (error instanceof Error && error.message === "missing_password") {
+        toast.error(t("twoFactor.messages.enterPassword"));
+        return;
       }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      logger.error("Failed to disable 2FA", {
+        err: error instanceof Error ? error.message : String(error),
+      });
+      const serverMsg = extractServerError(error);
+      toast.error(serverMsg ?? t("twoFactor.messages.disableFailed"));
+    },
+  });
 
-  const generateNewBackupCodes = async () => {
-    try {
-      setIsLoading(true);
+  // ── Mutation: generate new backup codes ─────────────────────────────
+  const generateCodesMutation = useMutation({
+    mutationFn: async () => {
       const response = await generateBackupCodes();
-      setBackupCodes(response.data.backupCodes);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      setBackupCodes(data.backupCodes);
       setIsBackupCodesModalOpen(true);
       toast.success(t("twoFactor.messages.backupCodesGenerated"));
-      await loadStatus();
-    } catch (error: unknown) {
-      logger.error("Failed to generate backup codes", { err: error instanceof Error ? error.message : String(error) });
-      const axiosError = error as { response?: { data?: { error?: string } } };
-      if (axiosError.response?.data?.error) {
-        toast.error(axiosError.response.data.error);
-      } else {
-        toast.error(t("twoFactor.messages.backupCodesFailed"));
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.twoFactor.status() });
+    },
+    onError: (error: unknown) => {
+      logger.error("Failed to generate backup codes", {
+        err: error instanceof Error ? error.message : String(error),
+      });
+      const serverMsg = extractServerError(error);
+      toast.error(serverMsg ?? t("twoFactor.messages.backupCodesFailed"));
+    },
+  });
 
+  // ── Pure client helpers (no fetch) ──────────────────────────────────
   const downloadBackupCodes = () => {
     const content = backupCodes.join("\n");
     const blob = new Blob([content], { type: "text/plain" });
@@ -172,13 +177,27 @@ export function useTwoFactor() {
     }
   };
 
-  useEffect(() => {
-    loadStatus();
-  }, [loadStatus]);
+  // ── Derived loading state (preserves original unified isLoading) ────
+  const isLoading =
+    statusQuery.isLoading ||
+    startSetupMutation.isPending ||
+    verifyMutation.isPending ||
+    disableMutation.isPending ||
+    generateCodesMutation.isPending;
+
+  // ── Public API wrappers (preserve original function signatures) ─────
+  const startSetup = () => startSetupMutation.mutate();
+  const verifySetup = () => verifyMutation.mutate();
+  const disable2FA = () => disableMutation.mutate();
+  const generateNewBackupCodes = () => generateCodesMutation.mutate();
+
+  const loadStatus = async () => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.auth.twoFactor.status() });
+  };
 
   return {
     isLoading,
-    status,
+    status: statusQuery.data ?? { enabled: false, verified: false, availableBackupCodes: 0 },
     setupData,
     backupCodes,
     verificationCode,

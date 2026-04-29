@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ErrorDisplay } from "@/components/error-display";
 import { Button } from "@/components/ui/button";
@@ -14,8 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { getEnabledProviders } from "@/http/endpoints";
-import { logger } from "@/lib/logger";
+import { useEnabledProviders } from "../hooks/use-enabled-providers";
 import { createLoginSchema, type LoginFormValues } from "../schemas/schema";
 import { MultiProviderButtons } from "./multi-provider-buttons";
 import { PasswordVisibilityToggle } from "./password-visibility-toggle";
@@ -38,8 +36,8 @@ export function LoginForm({
   authConfigLoading,
 }: LoginFormProps) {
   const t = useTranslations();
-  const [hasEnabledProviders, setHasEnabledProviders] = useState(false);
-  const [providersLoading, setProvidersLoading] = useState(true);
+  const { data: providers = [], isLoading: providersLoading } = useEnabledProviders();
+  const hasEnabledProviders = providers.length > 0;
 
   const loginSchema = createLoginSchema(t, passwordAuthEnabled);
   const form = useForm<LoginFormValues>({
@@ -51,25 +49,6 @@ export function LoginForm({
   });
 
   const isSubmitting = form.formState.isSubmitting;
-
-  useEffect(() => {
-    const checkProviders = async () => {
-      try {
-        const response = await getEnabledProviders();
-        const data = response.data;
-        setHasEnabledProviders(data.success && data.data && data.data.length > 0);
-      } catch (error) {
-        logger.error("Error checking providers:", {
-          err: error instanceof Error ? error.message : String(error),
-        });
-        setHasEnabledProviders(false);
-      } finally {
-        setProvidersLoading(false);
-      }
-    };
-
-    checkProviders();
-  }, []);
 
   const renderErrorMessage = () =>
     error && (

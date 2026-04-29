@@ -1,7 +1,9 @@
 "use client";
 
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import type { FileItem } from "@/components/tables/files-table-types";
 import { useEnhancedFileManager } from "@/hooks/use-enhanced-file-manager";
@@ -10,23 +12,15 @@ import { useShareManager } from "@/hooks/use-share-manager";
 import { getDiskSpace, listFiles, listUserShares } from "@/http/endpoints";
 import type { Share } from "@/http/endpoints/shares/types";
 import { mapApiFiles } from "@/lib/api-mappers";
-import { logger } from "@/lib/logger";
+import { queryKeys } from "@/lib/query-keys";
 
 export function useDashboard() {
   const t = useTranslations();
-  const [diskSpace, setDiskSpace] = useState<{
-    diskSizeGB: number;
-    diskUsedGB: number;
-    diskAvailableGB: number;
-    uploadAllowed: boolean;
-  } | null>(null);
-  const [diskSpaceError, setDiskSpaceError] = useState<string | null>(null);
-  const [recentFiles, setRecentFiles] = useState<FileItem[]>([]);
-  const [recentShares, setRecentShares] = useState<Share[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
 
   const { value: smtpEnabled } = useSecureConfigValue("smtpEnabled");
 
+  // ── Modal state (pure UI, not server-derived) ──────────────────────
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
@@ -35,63 +29,86 @@ export function useDashboard() {
   const onOpenCreateModal = () => setIsCreateModalOpen(true);
   const onCloseCreateModal = () => setIsCreateModalOpen(false);
 
-  const loadDashboardData = useCallback(async () => {
-    try {
-      const loadDiskSpace = async () => {
-        try {
-          const diskSpaceRes = await getDiskSpace();
-          setDiskSpace(diskSpaceRes.data);
-          setDiskSpaceError(null);
-        } catch (error: unknown) {
-          logger.warn("Failed to load disk space", {
-            err: error instanceof Error ? error.message : String(error),
-          });
-          setDiskSpace(null);
+  // ── Disk space query ───────────────────────────────────────────────
+  const diskSpaceQuery = useQuery({
+    queryKey: queryKeys.app.diskSpace(),
+    queryFn: async () => {
+      const res = await getDiskSpace();
+      return res.data;
+    },
+  });
 
-          const axiosError = error as { response?: { status?: number; data?: { code?: string } } };
-          if (
-            axiosError.response?.status === 503 &&
-            axiosError.response?.data?.code === "DISK_SPACE_DETECTION_FAILED"
-          ) {
-            setDiskSpaceError("disk_detection_failed");
-          } else if (
-            axiosError.response?.status !== undefined &&
-            axiosError.response.status >= 500
-          ) {
-            setDiskSpaceError("server_error");
-          } else {
-            setDiskSpaceError("unknown_error");
-          }
-        }
-      };
+  const diskSpace = diskSpaceQuery.data ?? null;
 
-      const loadFilesAndShares = async () => {
-        const [filesRes, sharesRes] = await Promise.all([listFiles(), listUserShares()]);
+  const diskSpaceError = useMemo<string | null>(() => {
+    const error = diskSpaceQuery.error;
+    if (!error) return null;
 
-        const allFiles = mapApiFiles(filesRes.data.files || []);
-        const sortedFiles = [...allFiles].sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-        );
-        setRecentFiles(sortedFiles.slice(0, 5));
-
-        const allShares = sharesRes.data.shares || [];
-        const sortedShares = [...allShares].sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-        );
-        setRecentShares(sortedShares.slice(0, 5));
-      };
-
-      await Promise.allSettled([loadDiskSpace(), loadFilesAndShares()]);
-    } catch (error) {
-      logger.error("Critical dashboard error", {
-        err: error instanceof Error ? error.message : String(error),
-      });
-      toast.error(t("dashboard.loadError"));
-    } finally {
-      setIsLoading(false);
+    if (axios.isAxiosError(error)) {
+      if (
+        error.response?.status === 503 &&
+        error.response?.data?.code === "DISK_SPACE_DETECTION_FAILED"
+      ) {
+        return "disk_detection_failed";
+      }
+      if (error.response?.status !== undefined && error.response.status >= 500) {
+        return "server_error";
+      }
     }
-  }, [t]);
+    return "unknown_error";
+  }, [diskSpaceQuery.error]);
 
+  // ── Files query ────────────────────────────────────────────────────
+  const filesQuery = useQuery({
+    queryKey: queryKeys.files.list(),
+    queryFn: async () => {
+      const res = await listFiles();
+      return mapApiFiles(res.data.files || []);
+    },
+  });
+
+  const recentFiles = useMemo<FileItem[]>(() => {
+    const files = filesQuery.data;
+    if (!files) return [];
+    return [...files]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 5);
+  }, [filesQuery.data]);
+
+  // ── Shares query ───────────────────────────────────────────────────
+  const sharesQuery = useQuery({
+    queryKey: queryKeys.shares.list(),
+    queryFn: async () => {
+      const res = await listUserShares();
+      return (res.data.shares || []) as Share[];
+    },
+  });
+
+  const recentShares = useMemo<Share[]>(() => {
+    const shares = sharesQuery.data;
+    if (!shares) return [];
+    return [...shares]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 5);
+  }, [sharesQuery.data]);
+
+  // ── Derived loading state ──────────────────────────────────────────
+  const isLoading = diskSpaceQuery.isLoading || filesQuery.isLoading || sharesQuery.isLoading;
+
+  // ── Refresh via query invalidation ─────────────────────────────────
+  const loadDashboardData = async () => {
+    try {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.app.diskSpace() }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.files.list() }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.shares.list() }),
+      ]);
+    } catch (_error) {
+      toast.error(t("dashboard.loadError"));
+    }
+  };
+
+  // ── Dependent hooks ────────────────────────────────────────────────
   const fileManager = useEnhancedFileManager(loadDashboardData);
   const shareManager = useShareManager(loadDashboardData);
 
@@ -102,10 +119,6 @@ export function useDashboard() {
     navigator.clipboard.writeText(link);
     toast.success(t("dashboard.linkCopied"));
   };
-
-  useEffect(() => {
-    loadDashboardData();
-  }, [loadDashboardData]);
 
   return {
     isLoading,

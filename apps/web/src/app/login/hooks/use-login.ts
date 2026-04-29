@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -12,6 +13,7 @@ import { getAuthConfig, getCurrentUser, login } from "@/http/endpoints";
 import { completeTwoFactorLogin } from "@/http/endpoints/auth/two-factor";
 import type { LoginResponse } from "@/http/endpoints/auth/two-factor/types";
 import { logger } from "@/lib/logger";
+import { queryKeys } from "@/lib/query-keys";
 import type { LoginFormValues } from "../schemas/schema";
 
 export const loginSchema = z.object({
@@ -32,8 +34,17 @@ export function useLogin() {
   const [twoFactorChallengeToken, setTwoFactorChallengeToken] = useState<string | null>(null);
   const [twoFactorCode, setTwoFactorCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [passwordAuthEnabled, setPasswordAuthEnabled] = useState(true);
-  const [authConfigLoading, setAuthConfigLoading] = useState(true);
+
+  // Auth config: replaces manual useEffect + useState with useQuery
+  const authConfigQuery = useQuery({
+    queryKey: queryKeys.auth.config(),
+    queryFn: async () => {
+      const response = await getAuthConfig();
+      return response.data;
+    },
+  });
+  const passwordAuthEnabled = authConfigQuery.data?.passwordAuthEnabled ?? true;
+  const authConfigLoading = authConfigQuery.isLoading;
 
   useEffect(() => {
     if (isAuthenticated === true) {
@@ -68,24 +79,6 @@ export function useLogin() {
       }, 1000);
     }
   }, [searchParams, t]);
-
-  useEffect(() => {
-    const fetchAuthConfig = async () => {
-      try {
-        const response = await getAuthConfig();
-        setPasswordAuthEnabled(response.data.passwordAuthEnabled);
-      } catch (error) {
-        logger.error("Failed to fetch auth config", {
-          err: error instanceof Error ? error.message : String(error),
-        });
-        setPasswordAuthEnabled(true);
-      } finally {
-        setAuthConfigLoading(false);
-      }
-    };
-
-    fetchAuthConfig();
-  }, []);
 
   const toggleVisibility = () => setIsVisible(!isVisible);
 

@@ -1,127 +1,220 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { getReverseShareForUploadByAlias } from "@/http/endpoints";
 import { logger } from "@/lib/logger";
-import { ERROR_MESSAGES, HTTP_STATUS, type ErrorType } from "../constants";
+import { queryKeys } from "@/lib/query-keys";
+import { ERROR_MESSAGES, type ErrorType, HTTP_STATUS } from "../constants";
 import type { ReverseShareInfo } from "../types";
 
 interface UseReverseShareUploadProps {
   alias: string;
 }
 
+/**
+ * Extracts an ErrorType from an axios error response.
+ * Returns null for 401 errors (handled separately via password modal).
+ */
+function deriveErrorType(error: unknown): ErrorType {
+  if (!axios.isAxiosError(error)) return "generic";
+
+  const status = error.response?.status;
+  switch (status) {
+    case HTTP_STATUS.UNAUTHORIZED:
+      // 401 is handled by the password modal flow, not as a page-level error
+      return null;
+    case HTTP_STATUS.NOT_FOUND:
+      return "notFound";
+    case HTTP_STATUS.FORBIDDEN:
+      return "inactive";
+    case HTTP_STATUS.GONE:
+      return "expired";
+    default:
+      return "generic";
+  }
+}
+
+/**
+ * Checks whether an axios error is a 401 requiring a password.
+ */
+function isPasswordRequired(error: unknown): boolean {
+  if (!axios.isAxiosError(error)) return false;
+  return (
+    error.response?.status === HTTP_STATUS.UNAUTHORIZED &&
+    error.response?.data?.error === ERROR_MESSAGES.PASSWORD_REQUIRED
+  );
+}
+
+/**
+ * Checks whether an axios error is a 401 with an invalid password.
+ */
+function isInvalidPassword(error: unknown): boolean {
+  if (!axios.isAxiosError(error)) return false;
+  return (
+    error.response?.status === HTTP_STATUS.UNAUTHORIZED &&
+    error.response?.data?.error === ERROR_MESSAGES.INVALID_PASSWORD
+  );
+}
+
 export function useReverseShareUpload({ alias }: UseReverseShareUploadProps) {
   const router = useRouter();
   const t = useTranslations();
+  const queryClient = useQueryClient();
 
-  const [reverseShare, setReverseShare] = useState<ReverseShareInfo | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // --- UI-only state (not server-derived) ---
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [hasUploadedSuccessfully, setHasUploadedSuccessfully] = useState(false);
-  const [error, setError] = useState<{ type: ErrorType }>({ type: null });
 
-  const redirectToHome = () => router.push("/");
+  const redirectToHome = useCallback(() => router.push("/"), [router]);
 
-  const checkIfMaxFilesReached = (reverseShareData: ReverseShareInfo): boolean => {
-    if (!reverseShareData.maxFiles) return false;
-    return reverseShareData.currentFileCount >= reverseShareData.maxFiles;
-  };
-
-  const handleErrorResponse = useCallback(
-    (responseError: unknown) => {
-      const axiosError = responseError as { response?: { status?: number; data?: { error?: string } } };
-      const status = axiosError.response?.status;
-      const errorMessage = axiosError.response?.data?.error;
-
-      switch (status) {
-        case HTTP_STATUS.UNAUTHORIZED:
-          if (errorMessage === ERROR_MESSAGES.PASSWORD_REQUIRED) {
-            setIsPasswordModalOpen(true);
-          } else if (errorMessage === ERROR_MESSAGES.INVALID_PASSWORD) {
-            setIsPasswordModalOpen(true);
-            toast.error(t("reverseShares.upload.errors.passwordIncorrect"));
-          }
-          break;
-
-        case HTTP_STATUS.NOT_FOUND:
-          setError({ type: "notFound" });
-          break;
-
-        case HTTP_STATUS.FORBIDDEN:
-          setError({ type: "inactive" });
-          break;
-
-        case HTTP_STATUS.GONE:
-          setError({ type: "expired" });
-          break;
-
-        default:
-          setError({ type: "generic" });
-          toast.error(t("reverseShares.upload.errors.loadFailed"));
-          break;
-      }
+  // --- Initial fetch (without password) via useQuery ---
+  const query = useQuery({
+    queryKey: queryKeys.reverseShares.forUpload(alias),
+    queryFn: async () => {
+      const response = await getReverseShareForUploadByAlias(alias);
+      return response.data.reverseShare;
     },
-    [t]
+    enabled: !!alias,
+    // The global retry config already skips 401/403/404.
+    // We also want to skip 410 (GONE) since it's a permanent error.
+    retry: false,
+  });
+
+  // --- React to query errors: open password modal or show toast ---
+  useEffect(() => {
+    if (!query.error) return;
+
+    if (isPasswordRequired(query.error)) {
+      setIsPasswordModalOpen(true);
+    } else if (deriveErrorType(query.error) === "generic") {
+      toast.error(t("reverseShares.upload.errors.loadFailed"));
+    }
+
+    if (query.error) {
+      logger.error("Failed to load reverse share", {
+        alias,
+        err: query.error instanceof Error ? query.error.message : String(query.error),
+      });
+    }
+  }, [query.error, alias, t]);
+
+  // --- Password submit mutation ---
+  const passwordMutation = useMutation({
+    mutationFn: async (password: string) => {
+      const response = await getReverseShareForUploadByAlias(alias, { password });
+      return response.data.reverseShare;
+    },
+    onSuccess: (reverseShareData, password) => {
+      // Inject the fetched data into the query cache
+      queryClient.setQueryData(queryKeys.reverseShares.forUpload(alias), reverseShareData);
+      setIsPasswordModalOpen(false);
+      setCurrentPassword(password);
+    },
+    onError: (error: unknown) => {
+      if (isInvalidPassword(error)) {
+        setIsPasswordModalOpen(true);
+        toast.error(t("reverseShares.upload.errors.passwordIncorrect"));
+      } else if (isPasswordRequired(error)) {
+        // Shouldn't happen on a password-authenticated request, but keep modal open
+        setIsPasswordModalOpen(true);
+      } else {
+        // Non-auth error during password submission — close modal, show error
+        setIsPasswordModalOpen(false);
+        const errorType = deriveErrorType(error);
+        if (errorType === "generic") {
+          toast.error(t("reverseShares.upload.errors.loadFailed"));
+        }
+        // Force the query into an error state by invalidating
+        queryClient.invalidateQueries({ queryKey: queryKeys.reverseShares.forUpload(alias) });
+      }
+
+      logger.error("Failed to load reverse share with password", {
+        alias,
+        err: error instanceof Error ? error.message : String(error),
+      });
+    },
+  });
+
+  // --- Public API functions (preserve signatures for consumers) ---
+
+  const handlePasswordSubmit = useCallback(
+    (passwordValue: string) => {
+      passwordMutation.mutate(passwordValue);
+    },
+    [passwordMutation],
   );
 
+  const handlePasswordModalClose = useCallback(() => {
+    redirectToHome();
+  }, [redirectToHome]);
+
+  const handleUploadSuccess = useCallback(() => {
+    setHasUploadedSuccessfully(true);
+  }, []);
+
+  const resetUploadSuccess = useCallback(() => {
+    setHasUploadedSuccessfully(false);
+  }, []);
+
+  /**
+   * Backward-compatible reload function.
+   * Without password: invalidates the query (re-fetches).
+   * With password: triggers the password mutation.
+   */
   const loadReverseShare = useCallback(
     async (passwordAttempt?: string) => {
-      try {
-        setIsLoading(true);
-        setError({ type: null });
-
-        const response = await getReverseShareForUploadByAlias(
-          alias,
-          passwordAttempt ? { password: passwordAttempt } : undefined
-        );
-
-        setReverseShare(response.data.reverseShare);
-        setIsPasswordModalOpen(false);
-        setCurrentPassword(passwordAttempt || "");
-      } catch (responseError: unknown) {
-        logger.error("Failed to load reverse share", { alias, err: responseError instanceof Error ? responseError.message : String(responseError) });
-        handleErrorResponse(responseError);
-      } finally {
-        setIsLoading(false);
+      if (passwordAttempt) {
+        await passwordMutation.mutateAsync(passwordAttempt);
+      } else {
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.reverseShares.forUpload(alias),
+        });
       }
     },
-    [alias, handleErrorResponse]
+    [alias, passwordMutation, queryClient],
   );
 
-  const handlePasswordSubmit = (passwordValue: string) => {
-    loadReverseShare(passwordValue);
-  };
+  // --- Derived state ---
 
-  const handlePasswordModalClose = () => {
-    redirectToHome();
-  };
+  // The query data is the reverseShare object (or null if not yet loaded)
+  const reverseShare: ReverseShareInfo | null = query.data ?? null;
 
-  const handleUploadSuccess = () => {
-    setHasUploadedSuccessfully(true);
-  };
+  // Loading: either the initial query is loading or the password mutation is pending
+  const isLoading = query.isLoading || passwordMutation.isPending;
 
-  const resetUploadSuccess = () => {
-    setHasUploadedSuccessfully(false);
-  };
+  // Error type derived from either the query error or the mutation error (for non-auth errors)
+  const errorType: ErrorType = useMemo(() => {
+    // If query succeeded (we have data), there's no error
+    if (query.data) return null;
 
-  useEffect(() => {
-    if (alias) {
-      loadReverseShare();
+    // If the query has an error, derive from it
+    if (query.error) {
+      return deriveErrorType(query.error);
     }
-  }, [alias, loadReverseShare]);
 
-  const isMaxFilesReached = reverseShare ? checkIfMaxFilesReached(reverseShare) : false;
+    return null;
+  }, [query.data, query.error]);
+
+  const isMaxFilesReached = reverseShare
+    ? reverseShare.maxFiles !== null &&
+      reverseShare.maxFiles !== undefined &&
+      reverseShare.currentFileCount >= reverseShare.maxFiles
+    : false;
+
   const isWeTransferLayout = reverseShare?.pageLayout === "WETRANSFER";
-  const hasError = error.type !== null || (!reverseShare && !isLoading && !isPasswordModalOpen);
+  const hasError = errorType !== null || (!reverseShare && !isLoading && !isPasswordModalOpen);
 
-  const isLinkInactive = error.type === "inactive";
-  const isLinkNotFound = error.type === "notFound" || (!reverseShare && !isLoading && !isPasswordModalOpen);
-  const isLinkExpired = error.type === "expired";
+  const isLinkInactive = errorType === "inactive";
+  const isLinkNotFound =
+    errorType === "notFound" || (!reverseShare && !isLoading && !isPasswordModalOpen);
+  const isLinkExpired = errorType === "expired";
 
   return {
     reverseShare,
@@ -131,7 +224,7 @@ export function useReverseShareUpload({ alias }: UseReverseShareUploadProps) {
     isLoading,
     isPasswordModalOpen,
     hasUploadedSuccessfully,
-    error: error.type,
+    error: errorType,
     isMaxFilesReached,
     isWeTransferLayout,
     hasError,

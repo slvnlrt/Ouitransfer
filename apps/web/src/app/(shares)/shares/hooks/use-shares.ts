@@ -1,44 +1,42 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { useSecureConfigValue } from "@/hooks/use-secure-configs";
 import { listUserShares, notifyRecipients } from "@/http/endpoints";
-import { Share } from "@/http/endpoints/shares/types";
+import type { Share } from "@/http/endpoints/shares/types";
+import { queryKeys } from "@/lib/query-keys";
 
 export function useShares() {
   const t = useTranslations();
-  const [shares, setShares] = useState<Share[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [shareToGenerateLink, setShareToGenerateLink] = useState<Share | null>(null);
 
   const { value: smtpEnabled } = useSecureConfigValue("smtpEnabled");
 
-  const loadShares = useCallback(async () => {
-    try {
+  const sharesQuery = useQuery({
+    queryKey: queryKeys.shares.list(),
+    queryFn: async () => {
       const response = await listUserShares();
       const allShares = response.data.shares || [];
-      const sortedShares = [...allShares].sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      return [...allShares].sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
+    },
+  });
 
-      setShares(sortedShares);
-    } catch {
-      toast.error(t("shares.errors.loadFailed"));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [t]);
+  const shares = sharesQuery.data ?? [];
 
-  useEffect(() => {
-    loadShares();
-  }, [loadShares]);
-
-  const filteredShares = shares.filter(
-    (share) => share.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false
+  const filteredShares = useMemo(
+    () =>
+      shares.filter(
+        (share) => share.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false,
+      ),
+    [shares, searchQuery],
   );
 
   const handleCopyLink = (share: Share) => {
@@ -50,22 +48,32 @@ export function useShares() {
     toast.success(t("shares.messages.linkCopied"));
   };
 
-  const handleNotifyRecipients = async (share: Share) => {
-    if (!share.alias?.alias) return;
+  const notifyMutation = useMutation({
+    mutationFn: async (share: Share) => {
+      if (!share.alias?.alias) return;
 
-    const link = `${window.location.origin}/s/${share.alias.alias}`;
-
-    try {
+      const link = `${window.location.origin}/s/${share.alias.alias}`;
       await notifyRecipients(share.id, { shareLink: link });
+    },
+    onSuccess: () => {
       toast.success(t("shares.messages.recipientsNotified"));
-    } catch {
+    },
+    onError: () => {
       toast.error(t("shares.errors.notifyFailed"));
-    }
+    },
+  });
+
+  const handleNotifyRecipients = async (share: Share) => {
+    await notifyMutation.mutateAsync(share);
+  };
+
+  const loadShares = async () => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.shares.all });
   };
 
   return {
     shares,
-    isLoading,
+    isLoading: sharesQuery.isLoading,
     searchQuery,
     shareToGenerateLink,
     filteredShares,

@@ -9,9 +9,10 @@ import {
   IconLockOpen,
   IconMail,
 } from "@tabler/icons-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import QRCode from "react-qr-code";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +30,7 @@ import { Loader } from "@/components/ui/loader";
 import { getShare } from "@/http/endpoints";
 import type { Share } from "@/http/endpoints/shares/types";
 import { logger } from "@/lib/logger";
+import { queryKeys } from "@/lib/query-keys";
 import { GenerateShareLinkModal } from "./generate-share-link-modal";
 import { QrCodeModal } from "./qr-code-modal";
 import { ShareDetailsFilesList } from "./share-details-files-list";
@@ -69,8 +71,7 @@ export function ShareDetailsModal({
   onSuccess,
 }: ShareDetailsModalProps) {
   const t = useTranslations();
-  const [share, setShare] = useState<Share | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
   const [editingField, setEditingField] = useState<{ field: "name" | "description" } | null>(null);
   const [editValue, setEditValue] = useState("");
   const [pendingChanges, setPendingChanges] = useState<{ name?: string; description?: string }>({});
@@ -81,24 +82,30 @@ export function ShareDetailsModal({
   const [isDownloading, setIsDownloading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const loadShareDetails = useCallback(async () => {
-    if (!shareId) return;
-    setIsLoading(true);
-    try {
-      const response = await getShare(shareId);
-      setShare(response.data.share);
-    } catch {
-      toast.error(t("shareDetails.loadError"));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [shareId, t]);
+  const shareQuery = useQuery({
+    queryKey: queryKeys.shares.detail(shareId!),
+    queryFn: async () => {
+      const response = await getShare(shareId!);
+      return response.data.share;
+    },
+    enabled: !!shareId,
+  });
 
+  const share = shareQuery.data ?? null;
+  const isLoading = shareQuery.isLoading;
+
+  const invalidateShare = () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.shares.detail(shareId!) });
+    queryClient.invalidateQueries({ queryKey: queryKeys.shares.all });
+  };
+
+  // Trigger a refetch when the parent signals a refresh via refreshTrigger
   useEffect(() => {
-    if (shareId) {
-      loadShareDetails();
+    if (refreshTrigger) {
+      invalidateShare();
     }
-  }, [shareId, loadShareDetails]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refreshTrigger]);
 
   useEffect(() => {
     if (editingField && inputRef.current) {
@@ -110,12 +117,6 @@ export function ShareDetailsModal({
   useEffect(() => {
     setPendingChanges({});
   }, [share]);
-
-  useEffect(() => {
-    if (refreshTrigger) {
-      loadShareDetails();
-    }
-  }, [refreshTrigger, loadShareDetails]);
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return t("shareDetails.notAvailable");
@@ -148,7 +149,7 @@ export function ShareDetailsModal({
         await onUpdateDescription(shareId, editValue);
       }
 
-      await loadShareDetails();
+      invalidateShare();
       if (onSuccess) {
         onSuccess();
       }
@@ -244,25 +245,25 @@ export function ShareDetailsModal({
     }
   };
 
-  const handleLinkGenerated = async () => {
+  const handleLinkGenerated = () => {
     setShowLinkModal(false);
-    await loadShareDetails();
+    invalidateShare();
     if (onSuccess) {
       onSuccess();
     }
   };
 
-  const handleSecurityUpdated = async () => {
+  const handleSecurityUpdated = () => {
     setShowSecurityModal(false);
-    await loadShareDetails();
+    invalidateShare();
     if (onSuccess) {
       onSuccess();
     }
   };
 
-  const handleExpirationUpdated = async () => {
+  const handleExpirationUpdated = () => {
     setShowExpirationModal(false);
-    await loadShareDetails();
+    invalidateShare();
     if (onSuccess) {
       onSuccess();
     }

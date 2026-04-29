@@ -1,78 +1,82 @@
-import { create } from "zustand";
+"use client";
+
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 import { getAppInfo } from "@/http/endpoints";
-import { logger } from "@/lib/logger";
-
-interface AppInfoStore {
-  appName: string;
-  appLogo: string;
-  firstAccess: boolean | null;
-  isLoading: boolean;
-  setAppName: (name: string) => void;
-  setAppLogo: (logo: string) => void;
-  refreshAppInfo: () => Promise<void>;
-}
+import type { GetAppInfo200 } from "@/http/endpoints/app/types";
+import { getQueryClient } from "@/lib/query-client";
+import { queryKeys } from "@/lib/query-keys";
 
 const updateTitle = (name: string) => {
-  document.title = name;
+  if (typeof window !== "undefined" && name) {
+    document.title = name;
+  }
 };
 
-export const useAppInfo = create<AppInfoStore>((set) => {
-  const initialState = {
-    appName: "",
-    appLogo: "",
-    firstAccess: null,
-    isLoading: true,
-  };
+/**
+ * TanStack Query–based hook that replaces the former Zustand store.
+ *
+ * Return shape is intentionally identical so all 13 consumers work unchanged.
+ */
+function useAppInfo() {
+  const queryClient = useQueryClient();
 
-  const loadAppInfo = async () => {
-    if (typeof window !== "undefined") {
-      try {
-        const response = await getAppInfo();
-        set({
-          appName: response.data.appName,
-          appLogo: response.data.appLogo,
-          firstAccess: response.data.firstUserAccess,
-          isLoading: false,
-        });
-        updateTitle(response.data.appName);
-      } catch (error) {
-        logger.error("Failed to fetch app info:", {
-          err: error instanceof Error ? error.message : String(error),
-        });
-        set({ isLoading: false });
-      }
+  const { data, isLoading } = useQuery({
+    queryKey: queryKeys.app.info(),
+    queryFn: async () => {
+      const response = await getAppInfo();
+      return response.data;
+    },
+    staleTime: 60_000, // app info rarely changes
+  });
+
+  // Side effect: keep document.title in sync with appName
+  useEffect(() => {
+    if (data?.appName) {
+      updateTitle(data.appName);
     }
-  };
-
-  loadAppInfo();
+  }, [data?.appName]);
 
   return {
-    ...initialState,
+    appName: data?.appName ?? "",
+    appLogo: data?.appLogo ?? "",
+    firstAccess: (data?.firstUserAccess as boolean | undefined) ?? null,
+    isLoading,
     setAppName: (name: string) => {
-      set({ appName: name });
+      queryClient.setQueryData<GetAppInfo200>(queryKeys.app.info(), (old) =>
+        old ? { ...old, appName: name } : undefined,
+      );
       updateTitle(name);
     },
     setAppLogo: (logo: string) => {
-      set({ appLogo: logo });
+      queryClient.setQueryData<GetAppInfo200>(queryKeys.app.info(), (old) =>
+        old ? { ...old, appLogo: logo } : undefined,
+      );
     },
     refreshAppInfo: async () => {
-      set({ isLoading: true });
-      try {
-        const response = await getAppInfo();
-        set({
-          appName: response.data.appName,
-          appLogo: response.data.appLogo,
-          firstAccess: response.data.firstUserAccess,
-          isLoading: false,
-        });
-        updateTitle(response.data.appName);
-      } catch (error) {
-        logger.error("Failed to fetch app info:", {
-          err: error instanceof Error ? error.message : String(error),
-        });
-        set({ isLoading: false });
-      }
+      await queryClient.invalidateQueries({ queryKey: queryKeys.app.info() });
     },
   };
+}
+
+/**
+ * Standalone refresh for non-hook contexts.
+ * Uses the browser singleton QueryClient directly.
+ */
+async function refreshAppInfoOutsideReact(): Promise<void> {
+  const qc = getQueryClient();
+  await qc.invalidateQueries({ queryKey: queryKeys.app.info() });
+}
+
+/**
+ * Backward-compat shim: layout.tsx calls `useAppInfo.getState().refreshAppInfo()`.
+ * That's a Zustand-specific API; we emulate just enough of it here so the import
+ * keeps compiling. (The call site is inside `typeof window !== "undefined"` in a
+ * Server Component, so it never actually executes at runtime.)
+ */
+useAppInfo.getState = () => ({
+  refreshAppInfo: refreshAppInfoOutsideReact,
 });
+
+export { useAppInfo };

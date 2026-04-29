@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 
 import { getAllConfigs, getPublicConfigs } from "@/http/endpoints";
-import { logger } from "@/lib/logger";
+import { queryKeys } from "@/lib/query-keys";
 
 interface Config {
   key: string;
@@ -13,38 +14,47 @@ interface Config {
   updatedAt: string;
 }
 
+/** Extract a human-readable error message from an unknown thrown value. */
+function extractErrorMessage(error: unknown): string {
+  if (axios.isAxiosError(error)) {
+    return error.response?.data?.error ?? error.message;
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return "Unknown error";
+}
+
 /**
  * Hook to fetch public configurations (excludes sensitive SMTP data)
  * Safe to use without authentication
  */
 export function useSecureConfigs() {
-  const [configs, setConfigs] = useState<Config[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  const loadConfigs = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
+  const {
+    data: configs = [],
+    isLoading,
+    error: queryError,
+  } = useQuery({
+    queryKey: queryKeys.config.public(),
+    queryFn: async (): Promise<Config[]> => {
       const response = await getPublicConfigs();
-      setConfigs(response.data.configs);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error");
-      logger.error("Error loading secure configs", { err: err instanceof Error ? err.message : String(err) });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      return response.data.configs;
+    },
+  });
 
-  useEffect(() => {
-    loadConfigs();
-  }, []);
+  const error: string | null = queryError ? extractErrorMessage(queryError) : null;
+
+  const reload = () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.config.public() });
+  };
 
   return {
     configs,
     isLoading,
     error,
-    reload: loadConfigs,
+    reload,
   };
 }
 
@@ -53,46 +63,41 @@ export function useSecureConfigs() {
  * REQUIRES ADMIN PERMISSIONS - returns error if user is not admin
  */
 export function useAdminConfigs() {
-  const [configs, setConfigs] = useState<Config[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isUnauthorized, setIsUnauthorized] = useState(false);
+  const queryClient = useQueryClient();
 
-  const loadConfigs = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      setIsUnauthorized(false);
-
+  const {
+    data: configs = [],
+    isLoading,
+    error: queryError,
+  } = useQuery({
+    queryKey: queryKeys.config.admin(),
+    queryFn: async (): Promise<Config[]> => {
       const response = await getAllConfigs();
-      setConfigs(response.data.configs);
-    } catch (err: unknown) {
-      const axiosErr = err as { response?: { status?: number; data?: { error?: string } }; message?: string };
-      const errorMessage = axiosErr?.response?.data?.error || axiosErr?.message || "Unknown error";
+      return response.data.configs;
+    },
+  });
 
-      if (axiosErr?.response?.status === 401 || axiosErr?.response?.status === 403) {
-        setIsUnauthorized(true);
-        setError("Access denied: Administrator privileges required");
-      } else {
-        setError(errorMessage);
-      }
+  const isUnauthorized =
+    queryError != null &&
+    axios.isAxiosError(queryError) &&
+    (queryError.response?.status === 401 || queryError.response?.status === 403);
 
-      logger.error("Error loading admin configs", { err: err instanceof Error ? (err as Error).message : String(err) });
-    } finally {
-      setIsLoading(false);
-    }
+  const error: string | null = queryError
+    ? isUnauthorized
+      ? "Access denied: Administrator privileges required"
+      : extractErrorMessage(queryError)
+    : null;
+
+  const reload = () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.config.admin() });
   };
-
-  useEffect(() => {
-    loadConfigs();
-  }, []);
 
   return {
     configs,
     isLoading,
     error,
     isUnauthorized,
-    reload: loadConfigs,
+    reload,
   };
 }
 
@@ -101,33 +106,31 @@ export function useAdminConfigs() {
  * Only returns non-sensitive config values (excludes SMTP credentials)
  */
 export function useSecureConfigValue(key: string) {
-  const [value, setValue] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  const loadConfigValue = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
+  const {
+    data: value = null,
+    isLoading,
+    error: queryError,
+  } = useQuery({
+    queryKey: queryKeys.config.public(),
+    queryFn: async (): Promise<Config[]> => {
       const response = await getPublicConfigs();
-      const config = response.data.configs.find((c) => c.key === key);
-      setValue(config?.value || null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error");
-      logger.error("Error loading config value", { key, err: err instanceof Error ? err.message : String(err) });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [key]);
+      return response.data.configs;
+    },
+    select: (configs: Config[]): string | null => configs.find((c) => c.key === key)?.value ?? null,
+  });
 
-  useEffect(() => {
-    loadConfigValue();
-  }, [key, loadConfigValue]);
+  const error: string | null = queryError ? extractErrorMessage(queryError) : null;
+
+  const reload = () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.config.public() });
+  };
 
   return {
     value,
     isLoading,
     error,
-    reload: loadConfigValue,
+    reload,
   };
 }

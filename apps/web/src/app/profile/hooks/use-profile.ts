@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -10,6 +11,7 @@ import { z } from "zod";
 import { useAuth } from "@/contexts/auth-context";
 import { getCurrentUser, removeAvatar, updateUser, uploadAvatar } from "@/http/endpoints";
 import type { User } from "@/http/endpoints/auth/types";
+import { queryKeys } from "@/lib/query-keys";
 
 const createSchemas = (t: (key: string) => string) => ({
   profileSchema: z.object({
@@ -38,11 +40,10 @@ export type ProfileFormData = z.infer<ReturnType<typeof createSchemas>["profileS
 
 export function useProfile() {
   const t = useTranslations();
+  const queryClient = useQueryClient();
   const { profileSchema, passwordSchema } = createSchemas(t);
 
   const { setUser } = useAuth();
-  const [isLoading, setIsLoading] = useState(true);
-  const [userData, setUserData] = useState<User | null>(null);
   const [isNewPasswordVisible, setIsNewPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
 
@@ -54,99 +55,129 @@ export function useProfile() {
     resolver: zodResolver(passwordSchema),
   });
 
-  const loadUserData = useCallback(async () => {
-    try {
+  // ── Query: load current user ──────────────────────────────────────
+  const userQuery = useQuery({
+    queryKey: queryKeys.auth.currentUser(),
+    queryFn: async () => {
       const response = await getCurrentUser();
+      return response.data.user;
+    },
+  });
 
-      setUserData(response.data.user);
+  const userData = userQuery.data ?? null;
+  const isLoading = userQuery.isLoading;
+
+  // Reset form when user data loads or changes
+  useEffect(() => {
+    if (userQuery.data) {
       profileForm.reset({
-        firstName: response.data.user.firstName,
-        lastName: response.data.user.lastName,
-        username: response.data.user.username,
-        email: response.data.user.email,
+        firstName: userQuery.data.firstName,
+        lastName: userQuery.data.lastName,
+        username: userQuery.data.username,
+        email: userQuery.data.email,
       });
-    } catch {
-      toast.error(t("profile.errors.loadFailed"));
-    } finally {
-      setIsLoading(false);
     }
-  }, [t, profileForm]);
+  }, [userQuery.data, profileForm]);
 
-  const onProfileSubmit = async (data: z.infer<typeof profileSchema>) => {
-    const hasChanges =
-      !userData ||
-      Object.keys(data).some((key) => data[key as keyof typeof data] !== userData[key as keyof User]);
-
-    if (!hasChanges) {
-      toast.info(t("profile.messages.noChanges"));
-
-      return;
-    }
-
-    try {
+  // ── Mutation: update profile ──────────────────────────────────────
+  const profileMutation = useMutation({
+    mutationFn: async (data: z.infer<typeof profileSchema>) => {
       await updateUser({
         id: userData!.id,
         ...data,
       });
+    },
+    onSuccess: () => {
       toast.success(t("profile.messages.updateSuccess"));
-      await loadUserData();
-    } catch {
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.currentUser() });
+    },
+    onError: () => {
       toast.error(t("profile.errors.updateFailed"));
-    }
-  };
+    },
+  });
 
-  const onPasswordSubmit = async (data: z.infer<typeof passwordSchema>) => {
-    if (!data.newPassword || !data.confirmPassword) {
-      toast.info(t("profile.messages.fillPasswords"));
+  const onProfileSubmit = async (data: z.infer<typeof profileSchema>) => {
+    const hasChanges =
+      !userData ||
+      Object.keys(data).some(
+        (key) => data[key as keyof typeof data] !== userData[key as keyof User],
+      );
 
+    if (!hasChanges) {
+      toast.info(t("profile.messages.noChanges"));
       return;
     }
 
-    try {
+    profileMutation.mutate(data);
+  };
+
+  // ── Mutation: update password ─────────────────────────────────────
+  const passwordMutation = useMutation({
+    mutationFn: async (data: z.infer<typeof passwordSchema>) => {
       await updateUser({
         id: userData!.id,
         password: data.newPassword,
       });
+    },
+    onSuccess: () => {
       toast.success(t("profile.messages.passwordSuccess"));
       passwordForm.reset();
-    } catch {
+    },
+    onError: () => {
       toast.error(t("profile.errors.passwordFailed"));
+    },
+  });
+
+  const onPasswordSubmit = async (data: z.infer<typeof passwordSchema>) => {
+    if (!data.newPassword || !data.confirmPassword) {
+      toast.info(t("profile.messages.fillPasswords"));
+      return;
     }
+
+    passwordMutation.mutate(data);
   };
+
+  // ── Mutation: upload avatar ───────────────────────────────────────
+  const uploadAvatarMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const response = await uploadAvatar({ file });
+      return response.data;
+    },
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(queryKeys.auth.currentUser(), updatedUser);
+      setUser(updatedUser);
+      toast.success(t("profile.messages.imageSuccess"));
+    },
+    onError: () => {
+      toast.error(t("profile.errors.imageFailed"));
+    },
+  });
 
   const handleImageChange = async (file: File) => {
     if (!file || !userData?.id) return;
-
-    try {
-      const response = await uploadAvatar({ file });
-      const updatedUser = response.data;
-
-      setUserData(updatedUser);
-      setUser(updatedUser);
-      toast.success(t("profile.messages.imageSuccess"));
-    } catch {
-      toast.error(t("profile.errors.imageFailed"));
-    }
+    uploadAvatarMutation.mutate(file);
   };
+
+  // ── Mutation: remove avatar ───────────────────────────────────────
+  const removeAvatarMutation = useMutation({
+    mutationFn: async () => {
+      const response = await removeAvatar();
+      return response.data;
+    },
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(queryKeys.auth.currentUser(), updatedUser);
+      setUser(updatedUser);
+      toast.success(t("profile.messages.imageRemoved"));
+    },
+    onError: () => {
+      toast.error(t("profile.errors.imageRemoveFailed"));
+    },
+  });
 
   const handleImageRemove = async () => {
     if (!userData?.id) return;
-
-    try {
-      const response = await removeAvatar();
-      const updatedUser = response.data;
-
-      setUserData(updatedUser);
-      setUser(updatedUser);
-      toast.success(t("profile.messages.imageRemoved"));
-    } catch {
-      toast.error(t("profile.errors.imageRemoveFailed"));
-    }
+    removeAvatarMutation.mutate();
   };
-
-  useEffect(() => {
-    loadUserData();
-  }, [loadUserData]);
 
   return {
     isLoading,

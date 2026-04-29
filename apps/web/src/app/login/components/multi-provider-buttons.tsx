@@ -1,50 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { renderIconByName } from "@/components/ui/icon-picker";
 import { useAppInfo } from "@/contexts/app-info-context";
-import { getEnabledProviders } from "@/http/endpoints";
 import type { EnabledAuthProvider } from "@/http/endpoints/auth/types";
-import { logger } from "@/lib/logger";
+import { useEnabledProviders } from "../hooks/use-enabled-providers";
 
 interface MultiProviderButtonsProps {
   showSeparator?: boolean;
 }
 
 export function MultiProviderButtons({ showSeparator = true }: MultiProviderButtonsProps) {
-  const [providers, setProviders] = useState<EnabledAuthProvider[]>([]);
-  const [loading, setLoading] = useState(true);
   const { firstAccess } = useAppInfo();
-
-  const loadProviders = async () => {
-    try {
-      setLoading(true);
-      const response = await getEnabledProviders();
-      const data = response.data;
-
-      if (data.success) {
-        setProviders(data.data || []);
-      } else {
-        logger.error("Failed to load providers");
-      }
-    } catch (error) {
-      logger.error("Error loading providers:", {
-        err: error instanceof Error ? error.message : String(error),
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    if (firstAccess) {
-      setLoading(false);
-      return;
-    }
-
-    loadProviders();
-  }, [firstAccess]);
+  const { data: providers = [], isLoading: loading } = useEnabledProviders({
+    enabled: !firstAccess,
+  });
 
   const handleProviderLogin = (provider: EnabledAuthProvider) => {
     if (!provider.authUrl) {

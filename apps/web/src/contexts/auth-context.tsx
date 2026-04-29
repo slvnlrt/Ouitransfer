@@ -1,10 +1,11 @@
 "use client";
 
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useState } from "react";
 
 import { getAppInfo, getCurrentUser } from "@/http/endpoints";
 import type { User } from "@/http/endpoints/auth/types";
-import { logger } from "@/lib/logger";
+import { queryKeys } from "@/lib/query-keys";
 
 type AuthUser = Omit<User, "isAdmin">;
 
@@ -32,64 +33,82 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const queryClient = useQueryClient();
 
   const logout = () => {
     setUser(null);
     setIsAdmin(false);
     setIsAuthenticated(false);
+    queryClient.removeQueries({ queryKey: queryKeys.auth.currentUser() });
   };
 
+  // Shares cache with useAppInfo hook (both use queryKeys.app.info()) — no duplicate fetch
+  const appInfoQuery = useQuery({
+    queryKey: queryKeys.app.info(),
+    queryFn: async () => {
+      const response = await getAppInfo();
+      return response.data;
+    },
+    staleTime: 60_000,
+  });
+
+  // Fetch current user only when app info is loaded and it's not first-user setup
+  const currentUserQuery = useQuery({
+    queryKey: queryKeys.auth.currentUser(),
+    queryFn: async () => {
+      const response = await getCurrentUser();
+      return response.data;
+    },
+    enabled: appInfoQuery.isSuccess && !appInfoQuery.data?.firstUserAccess,
+    retry: false, // Don't retry auth checks — if it fails, user is not authenticated
+  });
+
+  // Derive auth state from queries
   useEffect(() => {
-    let isMounted = true;
+    // Still loading app info
+    if (appInfoQuery.isLoading) return;
 
-    const checkAuth = async () => {
-      try {
-        const appInfoResponse = await getAppInfo();
-        const appInfo = appInfoResponse.data;
+    // First user access — no auth needed
+    if (appInfoQuery.data?.firstUserAccess) {
+      setUser(null);
+      setIsAdmin(false);
+      setIsAuthenticated(false);
+      return;
+    }
 
-        if (!isMounted) return;
+    // App info error — treat as unauthenticated
+    if (appInfoQuery.isError) {
+      setUser(null);
+      setIsAdmin(false);
+      setIsAuthenticated(false);
+      return;
+    }
 
-        if (appInfo.firstUserAccess) {
-          setUser(null);
-          setIsAdmin(false);
-          setIsAuthenticated(false);
-          return;
-        }
+    // Current user query still loading
+    if (currentUserQuery.isLoading) return;
 
-        const response = await getCurrentUser();
+    // Current user success
+    if (currentUserQuery.data?.user) {
+      const { isAdmin: isAdminFlag, ...userData } = currentUserQuery.data.user;
+      setUser(userData);
+      setIsAdmin(isAdminFlag);
+      setIsAuthenticated(true);
+      return;
+    }
 
-        if (!isMounted) return;
-
-        if (!response?.data?.user) {
-          setUser(null);
-          setIsAdmin(false);
-          setIsAuthenticated(false);
-          return;
-        }
-
-        const { isAdmin, ...userData } = response.data.user;
-
-        setUser(userData);
-        setIsAdmin(isAdmin);
-        setIsAuthenticated(true);
-      } catch (err) {
-        if (!isMounted) return;
-
-        logger.error("Auth check failed:", {
-          err: err instanceof Error ? err.message : String(err),
-        });
-        setUser(null);
-        setIsAdmin(false);
-        setIsAuthenticated(false);
-      }
-    };
-
-    checkAuth();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+    // Current user error or no data — unauthenticated
+    setUser(null);
+    setIsAdmin(false);
+    setIsAuthenticated(false);
+  }, [
+    appInfoQuery.isLoading,
+    appInfoQuery.isSuccess,
+    appInfoQuery.isError,
+    appInfoQuery.data,
+    currentUserQuery.isLoading,
+    currentUserQuery.data,
+    currentUserQuery.isError,
+  ]);
 
   return (
     <AuthContext.Provider

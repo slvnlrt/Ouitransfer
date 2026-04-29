@@ -1,14 +1,20 @@
 "use client";
 
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { FileItem, FolderItem } from "@/components/tables/files-table-types";
 import { useEnhancedFileManager } from "@/hooks/use-enhanced-file-manager";
 import { listFiles } from "@/http/endpoints";
 import { listFolders } from "@/http/endpoints/folders";
 import { mapApiFiles, mapApiFolders } from "@/lib/api-mappers";
+import { queryKeys } from "@/lib/query-keys";
+
+// ---------------------------------------------------------------------------
+// Pure utilities (no hooks / no state)
+// ---------------------------------------------------------------------------
 
 const createSlug = (name: string): string => {
   return name
@@ -56,118 +62,153 @@ const findFolderByPathSlug = (folders: FolderItem[], pathSlug: string): FolderIt
   return currentFolder;
 };
 
+/** Resolve a URL path-slug to a folder ID. */
+const getFolderIdFromPathSlug = (pathSlug: string | null, folders: FolderItem[]): string | null => {
+  if (!pathSlug) return null;
+  const folder = findFolderByPathSlug(folders, pathSlug);
+  return folder ? folder.id : null;
+};
+
+/** Build breadcrumb path by walking parent chain. */
+const buildBreadcrumbPath = (allFolders: FolderItem[], folderId: string): FolderItem[] => {
+  const path: FolderItem[] = [];
+  let currentId: string | null = folderId;
+
+  while (currentId) {
+    const folder = allFolders.find((f) => f.id === currentId);
+    if (folder) {
+      path.unshift(folder);
+      currentId = folder.parentId ?? null;
+    } else {
+      break;
+    }
+  }
+
+  return path;
+};
+
+/** Build human-readable folder path string. */
+const buildFolderPath = (allFolders: FolderItem[], folderId: string | null): string => {
+  if (!folderId) return "";
+
+  const pathParts: string[] = [];
+  let currentId: string | null = folderId;
+
+  while (currentId) {
+    const folder = allFolders.find((f) => f.id === currentId);
+    if (folder) {
+      pathParts.unshift(folder.name);
+      currentId = folder.parentId ?? null;
+    } else {
+      break;
+    }
+  }
+
+  return pathParts.join(" / ");
+};
+
+/** Sort items by createdAt descending (newest first). */
+const sortByCreatedAtDesc = <T extends { createdAt: string }>(items: T[]): T[] =>
+  [...items].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+// ---------------------------------------------------------------------------
+// Query data type
+// ---------------------------------------------------------------------------
+
+interface FileBrowserData {
+  files: FileItem[];
+  folders: FolderItem[];
+}
+
+// ---------------------------------------------------------------------------
+// Hook
+// ---------------------------------------------------------------------------
+
 export function useFileBrowser() {
   const t = useTranslations();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
 
-  const [files, setFiles] = useState<FileItem[]>([]);
-  const [folders, setFolders] = useState<FolderItem[]>([]);
-  const [allFiles, setAllFiles] = useState<FileItem[]>([]);
-  const [allFolders, setAllFolders] = useState<FolderItem[]>([]);
-  const [currentPath, setCurrentPath] = useState<FolderItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // ── Kept state ───────────────────────────────────────────────────────
+  const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [clearSelectionCallback, setClearSelectionCallbackState] = useState<
     (() => void) | undefined
   >();
-  const [dataLoaded, setDataLoaded] = useState(false);
-  const [forceUpdate] = useState(0);
+
+  /** Track whether the initial folder sync from URL has happened. */
+  const hasSyncedUrlRef = useRef(false);
   const isNavigatingRef = useRef(false);
-  const loadFilesRef = useRef<(() => Promise<void>) | null>(null);
 
   const urlFolderSlug = searchParams.get("folder") || null;
-  const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
 
   const setClearSelectionCallback = useCallback((callback: () => void) => {
     setClearSelectionCallbackState(() => callback);
   }, []);
 
-  const getFolderIdFromPathSlug = useCallback(
-    (pathSlug: string | null, folders: FolderItem[]): string | null => {
-      if (!pathSlug) return null;
-      const folder = findFolderByPathSlug(folders, pathSlug);
-      return folder ? folder.id : null;
+  // ── TanStack Query: fetch ALL files + folders ────────────────────────
+  const allDataQuery = useQuery({
+    queryKey: queryKeys.fileBrowser.data(),
+    queryFn: async () => {
+      const [filesRes, foldersRes] = await Promise.all([listFiles(), listFolders()]);
+      return {
+        files: mapApiFiles(filesRes.data.files || []),
+        folders: mapApiFolders(foldersRes.data.folders || []),
+      } satisfies FileBrowserData;
     },
-    [],
+  });
+
+  const allFiles = allDataQuery.data?.files ?? [];
+  const allFolders = allDataQuery.data?.folders ?? [];
+  const isLoading = allDataQuery.isLoading;
+  const dataLoaded = allDataQuery.isSuccess;
+
+  // ── URL → currentFolderId sync ───────────────────────────────────────
+  // Once data loads, resolve the URL slug to a folder ID (once).
+  // On subsequent navigations, currentFolderId is set directly.
+  if (dataLoaded && !hasSyncedUrlRef.current) {
+    hasSyncedUrlRef.current = true;
+    const resolved = getFolderIdFromPathSlug(urlFolderSlug, allFolders);
+    // Only call setState if the value actually differs to avoid re-render loops
+    if (resolved !== currentFolderId) {
+      setCurrentFolderId(resolved);
+    }
+  }
+
+  // ── Derived: current folder contents (filtered from cache) ───────────
+  const files = useMemo(
+    () => sortByCreatedAtDesc(allFiles.filter((f) => (f.folderId || null) === currentFolderId)),
+    [allFiles, currentFolderId],
   );
+
+  const folders = useMemo(
+    () => sortByCreatedAtDesc(allFolders.filter((f) => (f.parentId || null) === currentFolderId)),
+    [allFolders, currentFolderId],
+  );
+
+  // ── Derived: breadcrumb path ─────────────────────────────────────────
+  const currentPath = useMemo(
+    () => (currentFolderId ? buildBreadcrumbPath(allFolders, currentFolderId) : []),
+    [allFolders, currentFolderId],
+  );
+
+  // ── Navigation ───────────────────────────────────────────────────────
 
   const getFolderPathSlugFromId = useCallback(
-    (folderId: string | null, folders: FolderItem[]): string | null => {
+    (folderId: string | null, foldersArr: FolderItem[]): string | null => {
       if (!folderId) return null;
-      return createFolderPathSlug(folders, folderId);
-    },
-    [],
-  );
-
-  const buildBreadcrumbPath = useCallback(
-    (allFolders: FolderItem[], folderId: string): FolderItem[] => {
-      const path: FolderItem[] = [];
-      let currentId: string | null = folderId;
-
-      while (currentId) {
-        const folder = allFolders.find((f) => f.id === currentId);
-        if (folder) {
-          path.unshift(folder);
-          currentId = folder.parentId ?? null;
-        } else {
-          break;
-        }
-      }
-
-      return path;
-    },
-    [],
-  );
-
-  const buildFolderPath = useCallback(
-    (allFolders: FolderItem[], folderId: string | null): string => {
-      if (!folderId) return "";
-
-      const pathParts: string[] = [];
-      let currentId: string | null = folderId;
-
-      while (currentId) {
-        const folder = allFolders.find((f) => f.id === currentId);
-        if (folder) {
-          pathParts.unshift(folder.name);
-          currentId = folder.parentId ?? null;
-        } else {
-          break;
-        }
-      }
-
-      return pathParts.join(" / ");
+      return createFolderPathSlug(foldersArr, folderId);
     },
     [],
   );
 
   const navigateToFolderDirect = useCallback(
     (targetFolderId: string | null) => {
-      const currentFiles = allFiles.filter((file) => (file.folderId || null) === targetFolderId);
-      const currentFolders = allFolders.filter(
-        (folder) => (folder.parentId || null) === targetFolderId,
-      );
+      setCurrentFolderId(targetFolderId);
 
-      const sortedFiles = [...currentFiles].sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      );
-
-      const sortedFolders = [...currentFolders].sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      );
-
-      setFiles(sortedFiles);
-      setFolders(sortedFolders);
-
-      if (targetFolderId) {
-        const path = buildBreadcrumbPath(allFolders, targetFolderId);
-        setCurrentPath(path);
-      } else {
-        setCurrentPath([]);
-      }
-
+      // Update URL without full navigation
       const params = new URLSearchParams(searchParams);
       if (targetFolderId) {
         const folderPathSlug = getFolderPathSlugFromId(targetFolderId, allFolders);
@@ -181,24 +222,20 @@ export function useFileBrowser() {
       }
       window.history.pushState({}, "", `/files?${params.toString()}`);
     },
-    [allFiles, allFolders, buildBreadcrumbPath, searchParams, getFolderPathSlugFromId],
+    [allFolders, searchParams, getFolderPathSlugFromId],
   );
 
   const navigateToFolder = useCallback(
     (folderId?: string) => {
       const targetFolderId = folderId || null;
 
-      if (dataLoaded && allFiles.length > 0) {
+      if (dataLoaded) {
         isNavigatingRef.current = true;
         navigateToFolderDirect(targetFolderId);
-        // Refresh data when navigating to ensure we have latest state
-        setTimeout(async () => {
-          if (loadFilesRef.current) {
-            await loadFilesRef.current();
-          }
-          isNavigatingRef.current = false;
-        }, 0);
+        isNavigatingRef.current = false;
       } else {
+        // Data not loaded yet — do a full route push so URL changes and
+        // the query will sync on the next render
         const params = new URLSearchParams(searchParams);
         if (folderId) {
           const folderPathSlug = getFolderPathSlugFromId(folderId, allFolders);
@@ -213,107 +250,61 @@ export function useFileBrowser() {
         router.push(`/files?${params.toString()}`);
       }
     },
-    [
-      dataLoaded,
-      allFiles.length,
-      navigateToFolderDirect,
-      searchParams,
-      router,
-      getFolderPathSlugFromId,
-      allFolders,
-    ],
+    [dataLoaded, navigateToFolderDirect, searchParams, router, getFolderPathSlugFromId, allFolders],
   );
 
   const navigateToRoot = useCallback(() => {
     navigateToFolder();
   }, [navigateToFolder]);
 
+  // ── loadFiles: now wraps query invalidation ──────────────────────────
   const loadFiles = useCallback(async () => {
     try {
-      setIsLoading(true);
-
-      const [filesResponse, foldersResponse] = await Promise.all([listFiles(), listFolders()]);
-
-      const fetchedFiles = mapApiFiles(filesResponse.data.files || []);
-      const fetchedFolders = mapApiFolders(foldersResponse.data.folders || []);
-
-      setAllFiles(fetchedFiles);
-      setAllFolders(fetchedFolders);
-      setDataLoaded(true);
-
-      const resolvedFolderId = getFolderIdFromPathSlug(urlFolderSlug, fetchedFolders);
-      setCurrentFolderId(resolvedFolderId);
-
-      const currentFiles = fetchedFiles.filter(
-        (file) => (file.folderId || null) === resolvedFolderId,
-      );
-      const currentFolders = fetchedFolders.filter(
-        (folder) => (folder.parentId || null) === resolvedFolderId,
-      );
-
-      const sortedFiles = [...currentFiles].sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      );
-
-      const sortedFolders = [...currentFolders].sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      );
-
-      setFiles(sortedFiles);
-      setFolders(sortedFolders);
-
-      if (resolvedFolderId) {
-        const path = buildBreadcrumbPath(fetchedFolders, resolvedFolderId);
-        setCurrentPath(path);
-      } else {
-        setCurrentPath([]);
-      }
+      await queryClient.invalidateQueries({ queryKey: queryKeys.fileBrowser.data() });
     } catch {
       toast.error(t("files.loadError"));
-    } finally {
-      setIsLoading(false);
     }
-  }, [urlFolderSlug, buildBreadcrumbPath, t, getFolderIdFromPathSlug]);
+  }, [queryClient, t]);
 
+  // ── Optimistic updates via setQueryData ──────────────────────────────
   const handleImmediateUpdate = useCallback(
     (itemId: string, itemType: "file" | "folder", newParentId: string | null | "__DELETE__") => {
-      // Use requestAnimationFrame for smoother updates
       requestAnimationFrame(() => {
-        // Check if this is a delete operation
-        if (newParentId === "__DELETE__") {
-          // Remove the item from all state collections
-          if (itemType === "file") {
-            setFiles((prevFiles) => prevFiles.filter((file) => file.id !== itemId));
-            setAllFiles((prevAllFiles) => prevAllFiles.filter((file) => file.id !== itemId));
-          } else if (itemType === "folder") {
-            setFolders((prevFolders) => prevFolders.filter((folder) => folder.id !== itemId));
-            setAllFolders((prevAllFolders) =>
-              prevAllFolders.filter((folder) => folder.id !== itemId),
-            );
+        queryClient.setQueryData<FileBrowserData>(queryKeys.fileBrowser.data(), (old) => {
+          if (!old) return old;
+
+          if (newParentId === "__DELETE__") {
+            // Delete operation
+            return {
+              files: itemType === "file" ? old.files.filter((f) => f.id !== itemId) : old.files,
+              folders:
+                itemType === "folder" ? old.folders.filter((f) => f.id !== itemId) : old.folders,
+            };
           }
-        } else {
-          // Move operation: newParentId is string | null here (TypeScript narrows correctly)
+
+          // Move operation
           if (itemType === "file") {
-            setFiles((prevFiles) => prevFiles.filter((file) => file.id !== itemId));
-            setAllFiles((prevAllFiles) =>
-              prevAllFiles.map((file) =>
-                file.id === itemId ? { ...file, folderId: newParentId ?? undefined } : file,
+            return {
+              files: old.files.map((f) =>
+                f.id === itemId ? { ...f, folderId: newParentId ?? undefined } : f,
               ),
-            );
-          } else if (itemType === "folder") {
-            setFolders((prevFolders) => prevFolders.filter((folder) => folder.id !== itemId));
-            setAllFolders((prevAllFolders) =>
-              prevAllFolders.map((folder) =>
-                folder.id === itemId ? { ...folder, parentId: newParentId ?? undefined } : folder,
-              ),
-            );
+              folders: old.folders,
+            };
           }
-        }
+          // itemType === "folder"
+          return {
+            files: old.files,
+            folders: old.folders.map((f) =>
+              f.id === itemId ? { ...f, parentId: newParentId ?? undefined } : f,
+            ),
+          };
+        });
       });
     },
-    [],
+    [queryClient],
   );
 
+  // ── Enhanced file manager ────────────────────────────────────────────
   const fileManager = useEnhancedFileManager(
     loadFiles,
     clearSelectionCallback,
@@ -321,6 +312,8 @@ export function useFileBrowser() {
     allFiles,
     allFolders,
   );
+
+  // ── Search filtering ─────────────────────────────────────────────────
 
   const getImmediateChildFoldersWithMatches = useCallback(() => {
     if (!searchQuery) return [];
@@ -331,15 +324,15 @@ export function useFileBrowser() {
       .filter((file) => file.name.toLowerCase().includes(searchQuery.toLowerCase()))
       .forEach((file) => {
         if (file.folderId) {
-          let currentId: string | null = file.folderId;
-          while (currentId) {
-            const folder = allFolders.find((f) => f.id === currentId);
+          let curId: string | null = file.folderId;
+          while (curId) {
+            const folder = allFolders.find((f) => f.id === curId);
             if (folder) {
               if ((folder.parentId || null) === currentFolderId) {
                 matchingItems.add(folder.id);
                 break;
               }
-              currentId = folder.parentId ?? null;
+              curId = folder.parentId ?? null;
             } else {
               break;
             }
@@ -350,48 +343,37 @@ export function useFileBrowser() {
     allFolders
       .filter((folder) => folder.name.toLowerCase().includes(searchQuery.toLowerCase()))
       .forEach((folder) => {
-        let currentId: string | null = folder.id;
-        while (currentId) {
-          const folderInPath = allFolders.find((f) => f.id === currentId);
+        let curId: string | null = folder.id;
+        while (curId) {
+          const folderInPath = allFolders.find((f) => f.id === curId);
           if (folderInPath) {
             if ((folderInPath.parentId || null) === currentFolderId) {
               matchingItems.add(folderInPath.id);
               break;
             }
-            currentId = folderInPath.parentId ?? null;
+            curId = folderInPath.parentId ?? null;
           } else {
             break;
           }
         }
       });
 
-    return allFolders
-      .filter((folder) => matchingItems.has(folder.id))
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return sortByCreatedAtDesc(allFolders.filter((folder) => matchingItems.has(folder.id)));
   }, [searchQuery, allFiles, allFolders, currentFolderId]);
 
   const filteredFiles = searchQuery
-    ? allFiles
-        .filter(
+    ? sortByCreatedAtDesc(
+        allFiles.filter(
           (file) =>
             file.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
             (file.folderId || null) === currentFolderId,
-        )
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        ),
+      )
     : files;
 
   const filteredFolders = searchQuery ? getImmediateChildFoldersWithMatches() : folders;
 
-  // Update loadFilesRef whenever loadFiles changes
-  useEffect(() => {
-    loadFilesRef.current = loadFiles;
-  }, [loadFiles]);
-
-  // Load files only on mount or when explicitly called
-  useEffect(() => {
-    loadFilesRef.current?.();
-  }, []); // Empty dependency array - load only on mount
-
+  // ── Return (interface identical to the pre-migration version) ────────
   return {
     isLoading,
     files,
@@ -420,7 +402,7 @@ export function useFileBrowser() {
     handleSearch: setSearchQuery,
     loadFiles,
     handleImmediateUpdate,
-    forceUpdate,
+    forceUpdate: 0,
 
     allFiles,
     allFolders,

@@ -1,8 +1,9 @@
 "use client";
 
 import type { DropResult } from "@hello-pangea/dnd";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -14,12 +15,14 @@ import {
 } from "@/http/endpoints";
 import type { AuthProvider, NewProvider } from "@/http/endpoints/auth/types";
 import { logger } from "@/lib/logger";
+import { queryKeys } from "@/lib/query-keys";
 import type { ProviderFormDataMap } from "../components/auth-provider-form/types";
 
 export function useAuthProviders() {
   const t = useTranslations();
-  const [providers, setProviders] = useState<AuthProvider[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+
+  // --- UI state ---
   const [saving, setSaving] = useState<string | null>(null);
   const [editingProvider, setEditingProvider] = useState<AuthProvider | null>(null);
   const [editingFormData, setEditingFormData] = useState<ProviderFormDataMap>({});
@@ -29,7 +32,6 @@ export function useAuthProviders() {
     name: string;
     displayName: string;
   } | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const savedState = localStorage.getItem("hideDisabledProviders");
@@ -38,59 +40,54 @@ export function useAuthProviders() {
     }
   }, []);
 
-  const loadProviders = useCallback(async () => {
-    try {
-      setLoading(true);
+  // --- Server state via TanStack Query ---
+  const providersQuery = useQuery({
+    queryKey: queryKeys.auth.providers.all(),
+    queryFn: async () => {
       const response = await getAllProviders();
       const data = response.data;
 
       if (data.success) {
-        setProviders(
-          data.data.sort((a: AuthProvider, b: AuthProvider) => a.sortOrder - b.sortOrder),
-        );
-      } else {
-        toast.error(t("authProviders.messages.loadFailed"));
+        return data.data.sort((a: AuthProvider, b: AuthProvider) => a.sortOrder - b.sortOrder);
       }
-    } catch (error) {
-      logger.error("Error loading providers", {
-        err: error instanceof Error ? error.message : String(error),
-      });
-      toast.error(t("authProviders.messages.loadFailed"));
-    } finally {
-      setLoading(false);
-    }
-  }, [t]);
+      throw new Error("Failed to load providers");
+    },
+  });
 
-  useEffect(() => {
-    loadProviders();
-  }, [loadProviders]);
+  const providers = providersQuery.data ?? [];
+  const loading = providersQuery.isLoading;
 
-  const updateProvider = async (id: string, updates: Partial<AuthProvider>) => {
-    try {
-      setSaving(id);
+  // --- Mutations ---
+
+  const updateProviderMutation = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<AuthProvider> }) => {
       const response = await updateProviderEndpoint(id, updates);
       const data = response.data;
-
-      if (data.success) {
-        setProviders((prev) => prev.map((p) => (p.id === id ? { ...p, ...updates } : p)));
-        toast.success(t("authProviders.messages.providerUpdated"));
-      } else {
-        toast.error(t("authProviders.messages.updateFailed"));
+      if (!data.success) {
+        throw new Error("Update failed");
       }
-    } catch (error) {
+      return data;
+    },
+    onMutate: ({ id }) => {
+      setSaving(id);
+    },
+    onSuccess: () => {
+      toast.success(t("authProviders.messages.providerUpdated"));
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.providers.all() });
+    },
+    onError: (error) => {
       logger.error("Error updating provider", {
-        id,
         err: error instanceof Error ? error.message : String(error),
       });
       toast.error(t("authProviders.messages.updateFailed"));
-    } finally {
+    },
+    onSettled: () => {
       setSaving(null);
-    }
-  };
+    },
+  });
 
-  const addProvider = async (newProvider: NewProvider) => {
-    try {
-      setSaving("new");
+  const addProviderMutation = useMutation({
+    mutationFn: async (newProvider: NewProvider) => {
       const response = await createProvider({
         name: newProvider.name.toLowerCase().replace(/\s+/g, "-"),
         displayName: newProvider.displayName,
@@ -108,23 +105,119 @@ export function useAuthProviders() {
         ...(newProvider.tokenEndpoint ? { tokenEndpoint: newProvider.tokenEndpoint } : {}),
         ...(newProvider.userInfoEndpoint ? { userInfoEndpoint: newProvider.userInfoEndpoint } : {}),
       });
-
       const data = response.data;
-
-      if (data.success) {
-        await loadProviders();
-        toast.success(t("authProviders.messages.providerAdded"));
-      } else {
-        toast.error(t("authProviders.messages.addFailed"));
+      if (!data.success) {
+        throw new Error("Add failed");
       }
-    } catch (error) {
+      return data;
+    },
+    onMutate: () => {
+      setSaving("new");
+    },
+    onSuccess: () => {
+      toast.success(t("authProviders.messages.providerAdded"));
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.providers.all() });
+    },
+    onError: (error) => {
       logger.error("Error adding provider", {
         err: error instanceof Error ? error.message : String(error),
       });
       toast.error(t("authProviders.messages.addFailed"));
-    } finally {
+    },
+    onSettled: () => {
       setSaving(null);
-    }
+    },
+  });
+
+  const editProviderMutation = useMutation({
+    mutationFn: async ({
+      providerId,
+      providerData,
+    }: {
+      providerId: string;
+      providerData: Partial<AuthProvider>;
+    }) => {
+      const response = await updateProviderEndpoint(providerId, {
+        ...providerData,
+        name: providerData.name?.toLowerCase().replace(/\s+/g, "-"),
+      });
+      const data = response.data;
+      if (!data.success) {
+        throw new Error("Edit failed");
+      }
+      return data;
+    },
+    onMutate: ({ providerId }) => {
+      setSaving(providerId);
+    },
+    onSuccess: () => {
+      setEditingProvider(null);
+      toast.success(t("authProviders.messages.providerUpdated"));
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.providers.all() });
+    },
+    onError: (error) => {
+      logger.error("Error updating provider", {
+        err: error instanceof Error ? error.message : String(error),
+      });
+      toast.error(t("authProviders.messages.updateFailed"));
+    },
+    onSettled: () => {
+      setSaving(null);
+    },
+  });
+
+  const deleteProviderMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await deleteProviderEndpoint(id);
+      const data = response.data;
+      if (!data.success) {
+        throw new Error("Delete failed");
+      }
+      return data;
+    },
+    onSuccess: () => {
+      toast.success(t("authProviders.messages.providerDeleted"));
+      setProviderToDelete(null);
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.providers.all() });
+    },
+    onError: (error) => {
+      logger.error("Error deleting provider", {
+        err: error instanceof Error ? error.message : String(error),
+      });
+      toast.error(t("authProviders.messages.deleteFailed"));
+    },
+  });
+
+  const reorderMutation = useMutation({
+    mutationFn: async (updatedProviders: Array<{ id: string; sortOrder: number }>) => {
+      const response = await updateProvidersOrderEndpoint({ providers: updatedProviders });
+      const data = response.data;
+      if (!data.success) {
+        throw new Error("Order update failed");
+      }
+      return data;
+    },
+    onSuccess: () => {
+      toast.success(t("authProviders.messages.providerOrderUpdated"));
+    },
+    onError: (error) => {
+      logger.error("Error updating provider order", {
+        err: error instanceof Error ? error.message : String(error),
+      });
+      toast.error(t("authProviders.messages.orderUpdateFailed"));
+      // Rollback by refetching from server
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.providers.all() });
+    },
+  });
+
+  // --- Wrapper functions (preserve the original function signatures for consumers) ---
+
+  const updateProvider = async (id: string, updates: Partial<AuthProvider>) => {
+    await updateProviderMutation.mutateAsync({ id, updates });
+  };
+
+  const addProvider = async (newProvider: NewProvider) => {
+    await addProviderMutation.mutateAsync(newProvider);
   };
 
   const editProvider = async (providerData: Partial<AuthProvider>) => {
@@ -133,54 +226,14 @@ export function useAuthProviders() {
       return;
     }
 
-    try {
-      setSaving(editingProvider.id);
-      const response = await updateProviderEndpoint(editingProvider.id, {
-        ...providerData,
-        name: providerData.name?.toLowerCase().replace(/\s+/g, "-"),
-      });
-
-      const data = response.data;
-
-      if (data.success) {
-        await loadProviders();
-        setEditingProvider(null);
-        toast.success(t("authProviders.messages.providerUpdated"));
-      } else {
-        toast.error(t("authProviders.messages.updateFailed"));
-      }
-    } catch (error) {
-      logger.error("Error updating provider", {
-        err: error instanceof Error ? error.message : String(error),
-      });
-      toast.error(t("authProviders.messages.updateFailed"));
-    } finally {
-      setSaving(null);
-    }
+    await editProviderMutation.mutateAsync({
+      providerId: editingProvider.id,
+      providerData,
+    });
   };
 
   const deleteProvider = async (id: string) => {
-    try {
-      setIsDeleting(true);
-      const response = await deleteProviderEndpoint(id);
-      const data = response.data;
-
-      if (data.success) {
-        setProviders((prev) => prev.filter((p) => p.id !== id));
-        toast.success(t("authProviders.messages.providerDeleted"));
-        setProviderToDelete(null);
-      } else {
-        toast.error(t("authProviders.messages.deleteFailed"));
-      }
-    } catch (error) {
-      logger.error("Error deleting provider", {
-        id,
-        err: error instanceof Error ? error.message : String(error),
-      });
-      toast.error(t("authProviders.messages.deleteFailed"));
-    } finally {
-      setIsDeleting(false);
-    }
+    await deleteProviderMutation.mutateAsync(id);
   };
 
   const handleDragEnd = async (result: DropResult) => {
@@ -194,30 +247,22 @@ export function useAuthProviders() {
       ...provider,
       sortOrder: index + 1,
     }));
-    setProviders(updatedItems);
+
+    // Optimistic update: set the cache immediately for instant drag feedback
+    queryClient.setQueryData(queryKeys.auth.providers.all(), updatedItems);
 
     const updatedProviders = updatedItems.map((provider) => ({
       id: provider.id,
       sortOrder: provider.sortOrder,
     }));
 
-    try {
-      const response = await updateProvidersOrderEndpoint({ providers: updatedProviders });
-      const data = response.data;
+    reorderMutation.mutate(updatedProviders);
+  };
 
-      if (data.success) {
-        toast.success(t("authProviders.messages.providerOrderUpdated"));
-      } else {
-        toast.error(t("authProviders.messages.orderUpdateFailed"));
-        await loadProviders();
-      }
-    } catch (error) {
-      logger.error("Error updating provider order", {
-        err: error instanceof Error ? error.message : String(error),
-      });
-      toast.error(t("authProviders.messages.orderUpdateFailed"));
-      await loadProviders();
-    }
+  // --- Pure UI handlers ---
+
+  const loadProviders = () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.auth.providers.all() });
   };
 
   const handleHideDisabledProvidersChange = (checked: boolean) => {
@@ -246,6 +291,7 @@ export function useAuthProviders() {
     setEditingFormData({});
   };
 
+  // --- Computed ---
   const enabledCount = providers.filter((p) => p.enabled).length;
   const filteredProviders = hideDisabledProviders ? providers.filter((p) => p.enabled) : providers;
 
@@ -258,7 +304,7 @@ export function useAuthProviders() {
     editingFormData,
     hideDisabledProviders,
     providerToDelete,
-    isDeleting,
+    isDeleting: deleteProviderMutation.isPending,
 
     // Computed
     enabledCount,
