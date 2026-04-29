@@ -112,7 +112,11 @@ QueryProvider. 13 hooks + 6 components migrated to useQuery/useMutation. 28 new 
 useAppInfo + useHomeStore eliminated, ShareContext eliminated, AuthContext backed by TQ queries),
 4.4 (Axios 401 interceptor — hard-nav to /login, skips auth+public pages, anti-cascade flag),
 4.5 (state unification — 2 zustand stores and 1 context eliminated, all data from TQ cache).
-Next: Batch 4 — Performance (4.6 lazy fonts, 4.7 code splitting, 4.8 next/image).
+Batch 4 complete: 4.6 (lazy fonts — `preload: false` on 10 non-default fonts, only Outfit preloaded),
+4.7 (code splitting — DynamicIcon replaces catastrophic 31-pack react-icons import on login page,
+IconPicker wrapped with next/dynamic, LazyQRCode + LazyReactCrop wrappers for modal-only libraries),
+4.8 (next/image — 7 `<img>` → `<Image>` with `unoptimized` for presigned/proxy URLs).
+Next: Batch 5 — Accessibility (4.9 skip-to-content, 4.10 focus management, 4.11 keyboard DnD, 4.12 RTL).
 
 ## Important: No Production, No Legacy
 The app is **not in production** and has no existing users. This means:

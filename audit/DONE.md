@@ -719,3 +719,29 @@
 - **Changes**: useAppInfo zustand → TQ hook (staleTime: 60s). AuthContext → backed by 2 TQ queries. ShareContext → eliminated (consumers use useSecureConfigValue directly). useHomeStore zustand → eliminated (derived state).
 - **File deleted**: `apps/web/src/contexts/share-context.tsx`
 - **Verified**: PASS (web 116/116, API 31/31)
+
+### 4.6 — Lazy-load Google Fonts
+- **Date**: 2026-04-29
+- **File**: `apps/web/src/app/layout.tsx`
+- **Change**: Added `preload: false` to all 10 non-default font declarations (Inter, Roboto, Open Sans, Poppins, Nunito, Lato, Montserrat, Source Sans 3, Raleway, Work Sans). Default font (Outfit) keeps `preload: true`. Fonts remain self-hosted via `next/font/google` but browsers only download the one actually used by `--custom-font-family`.
+- **Verified**: PASS
+
+### 4.7 — Dynamic imports for heavy components
+- **Date**: 2026-04-29
+- **Changes**:
+  - **Critical fix**: `icon-picker.tsx` imported ALL 31 react-icons packs at module scope (~40k icons). Created `DynamicIcon` component (`dynamic-icon.tsx`, 115L) that lazily loads single icons by pack prefix via explicit `switch`-based `import()`. Prefix-to-pack mapping handles tricky prefixes (Fa6, Hi2, Io5, Lia, Tfi, Vsc). Module-level cache avoids re-imports.
+  - `renderIconByName` removed from `icon-picker.tsx`. Consumers (`multi-provider-buttons.tsx`, `auth-providers-settings.tsx`) migrated to `<DynamicIcon>`.
+  - `IconPicker` wrapped with `next/dynamic` (`ssr: false`) in `edit-provider-form.tsx` and `add-provider-form.tsx` — 31-pack import is now a lazy chunk only loaded when admin opens the icon picker dialog.
+  - Created `lazy-qr-code.tsx` — `next/dynamic` wrapper for `react-qr-code`. 6 modal files migrated from `QRCodeSVG` to `LazyQRCode`.
+  - Created `lazy-image-crop.tsx` — `next/dynamic` wrapper for `react-image-crop`. `image-edit-modal.tsx` migrated.
+- **Files created**: `dynamic-icon.tsx`, `lazy-qr-code.tsx`, `lazy-image-crop.tsx`
+- **Files modified**: 13 consumer files
+- **Bundle impact**: Login page no longer pulls in ANY react-icons pack. QR code library only loads when modal opens.
+- **Verified**: PASS (web type-check exit 0, 116/116 tests)
+
+### 4.8 — Replace `<img>` with `next/image`
+- **Date**: 2026-04-29
+- **Changes**: Replaced raw `<img>` tags with `<Image>` from `next/image` in 7 files. All use `unoptimized` prop (presigned URLs, blob URLs, `/api/` proxied URLs, data URIs cannot be optimized by Next.js image optimizer).
+- **Files**: `files-grid-file-card.tsx` (fill), `logo-input.tsx` (200×200), `image-preview.tsx` (fill for both thumbnail and fullscreen), `two-factor-form.tsx` (192×192), `share-header.tsx` (32×32), `default-layout.tsx` (32×32), `navbar.tsx` (32×32)
+- **Skipped**: `embed-code-display.tsx` (string literal, not JSX)
+- **Verified**: PASS

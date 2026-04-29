@@ -848,7 +848,7 @@ Server-State Management (16h)
 
 Performance (8h)
 
-\- \[ ] 4.6 — Lazy-load Google Fonts based on user selection  
+\- \[x] 4.6 — Lazy-load Google Fonts based on user selection  
 
 &#x20; File: apps/web/src/app/layout.tsx  
 
@@ -856,7 +856,7 @@ Performance (8h)
 
 &#x20; Justification: Audit 01/03 — 11 Google Fonts loaded on every page regardless of selection, significant LCP impact
 
-\- \[ ] 4.7 — Add React.lazy / next/dynamic for heavy components  
+\- \[x] 4.7 — Add React.lazy / next/dynamic for heavy components  
 
 &#x20; Files: Large modals, table components, upload components  
 
@@ -878,7 +878,7 @@ Performance (8h)
 
 &#x20; Justification: Audit 03 — zero lazy loading, only 1 dynamic import in entire app
 
-\- \[ ] 4.8 — Replace <img> with next/image  
+\- \[x] 4.8 — Replace <img> with next/image  
 
 &#x20; Files: All components using raw <img> tags  
 
