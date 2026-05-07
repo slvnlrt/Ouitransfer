@@ -45,7 +45,7 @@ export default function PublicSharePage() {
         <div className="max-w-5xl mx-auto space-y-6">
           {!isPasswordModalOpen && !share && (
             <ErrorDisplay
-              variant="inline"
+              variant="page"
               title={t("share.notFound.title")}
               message={t("share.notFound.description")}
               icon={

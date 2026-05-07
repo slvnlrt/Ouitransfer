@@ -2,7 +2,7 @@
  * Tests for the ErrorDisplay component.
  *
  * Covers:
- *   - All three variants: page (default), inline, minimal
+ *   - All three variants: page (default), card, inline
  *   - Default and custom icon rendering
  *   - Action buttons (onClick) and action links (href → <a> tag)
  *   - Conditional rendering of message and actions sections
@@ -41,22 +41,20 @@ describe("ErrorDisplay — variants", () => {
     expect(screen.getByText("Please try again later.")).toBeInTheDocument();
   });
 
+  it("renders title and message for the card variant", () => {
+    render(<ErrorDisplay variant="card" title="Card error" message="A card error occurred." />);
+
+    expect(screen.getByRole("heading", { level: 2, name: "Card error" })).toBeInTheDocument();
+    expect(screen.getByText("A card error occurred.")).toBeInTheDocument();
+  });
+
   it("renders title and message for the inline variant", () => {
     render(
-      <ErrorDisplay variant="inline" title="Inline error" message="An inline error occurred." />,
+      <ErrorDisplay variant="inline" title="Inline error" message="An inline error message." />,
     );
 
     expect(screen.getByRole("heading", { level: 2, name: "Inline error" })).toBeInTheDocument();
-    expect(screen.getByText("An inline error occurred.")).toBeInTheDocument();
-  });
-
-  it("renders title and message for the minimal variant", () => {
-    render(
-      <ErrorDisplay variant="minimal" title="Minimal error" message="Minimal error message." />,
-    );
-
-    expect(screen.getByRole("heading", { level: 2, name: "Minimal error" })).toBeInTheDocument();
-    expect(screen.getByText("Minimal error message.")).toBeInTheDocument();
+    expect(screen.getByText("An inline error message.")).toBeInTheDocument();
   });
 
   it("page variant wraps content in a div with min-h-[60vh]", () => {
@@ -66,14 +64,14 @@ describe("ErrorDisplay — variants", () => {
     expect(wrapper.className).toMatch(/min-h-\[60vh\]/);
   });
 
-  it("inline variant renders a Card element (data-slot='card')", () => {
-    const { container } = render(<ErrorDisplay variant="inline" title="Inline error" />);
+  it("card variant renders a Card element (data-slot='card')", () => {
+    const { container } = render(<ErrorDisplay variant="card" title="Card error" />);
     const card = container.querySelector("[data-slot='card']");
     expect(card).toBeInTheDocument();
   });
 
-  it("minimal variant does not render a Card", () => {
-    const { container } = render(<ErrorDisplay variant="minimal" title="Minimal error" />);
+  it("inline variant does not render a Card", () => {
+    const { container } = render(<ErrorDisplay variant="inline" title="Inline error" />);
     const card = container.querySelector("[data-slot='card']");
     expect(card).not.toBeInTheDocument();
   });

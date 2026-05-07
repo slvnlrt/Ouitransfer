@@ -21,7 +21,7 @@ export default function ReverseShareError({
 
   return (
     <ErrorDisplay
-      variant="minimal"
+      variant="inline"
       title={t("uploadUnavailable")}
       message={t("uploadErrorMessage")}
       actions={[{ label: t("tryAgain"), onClick: () => reset() }]}

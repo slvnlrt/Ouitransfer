@@ -104,7 +104,6 @@ export function ShareDetailsModal({
     if (refreshTrigger) {
       invalidateShare();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshTrigger]);
 
   useEffect(() => {

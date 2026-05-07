@@ -118,11 +118,11 @@ export function FilesTable({
 
   useEffect(() => {
     editing.resetPendingChanges("file");
-  }, [files]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [files]);
 
   useEffect(() => {
     editing.resetPendingChanges("folder");
-  }, [folders]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [folders]);
 
   return (
     <div className="space-y-4">

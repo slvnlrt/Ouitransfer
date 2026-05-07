@@ -190,9 +190,7 @@ export function ShareFilesTable({
                           <span className="truncate max-w-[250px] font-medium">{item.name}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="h-12 px-4">
-                        {formatFileSize(Number(item.size))}
-                      </TableCell>
+                      <TableCell className="h-12 px-4">{formatFileSize(item.size)}</TableCell>
                       <TableCell className="h-12 px-4">{formatDateTime(item.createdAt)}</TableCell>
                       <TableCell className="h-12 px-4">
                         <div className="flex items-center gap-1">

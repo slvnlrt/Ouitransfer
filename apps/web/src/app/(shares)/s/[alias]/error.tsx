@@ -21,7 +21,7 @@ export default function ShareError({
 
   return (
     <ErrorDisplay
-      variant="minimal"
+      variant="inline"
       title={t("shareUnavailable")}
       message={t("shareErrorMessage")}
       actions={[{ label: t("tryAgain"), onClick: () => reset() }]}

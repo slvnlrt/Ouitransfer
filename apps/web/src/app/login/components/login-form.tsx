@@ -125,7 +125,7 @@ export function LoginForm({
     return (
       <>
         {renderErrorMessage()}
-        <ErrorDisplay variant="minimal" title={t("login.noAuthMethodsAvailable")} />
+        <ErrorDisplay variant="inline" title={t("login.noAuthMethodsAvailable")} />
       </>
     );
   }

@@ -16,7 +16,7 @@ interface ErrorDisplayAction {
 }
 
 interface ErrorDisplayProps {
-  variant?: "page" | "inline" | "minimal";
+  variant?: "page" | "card" | "inline";
   title: string;
   message?: string;
   icon?: React.ReactNode;
@@ -86,13 +86,13 @@ export function ErrorDisplay({
   switch (variant) {
     case "page":
       return <div className="flex items-center justify-center min-h-[60vh] px-6">{content}</div>;
-    case "inline":
+    case "card":
       return (
         <Card className="max-w-md">
           <CardContent className="py-8">{content}</CardContent>
         </Card>
       );
-    case "minimal":
+    case "inline":
       return <div className="flex items-center justify-center py-12 px-6">{content}</div>;
     default: {
       const _exhaustive: never = variant;

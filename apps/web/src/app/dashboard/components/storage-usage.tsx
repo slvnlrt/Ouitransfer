@@ -34,7 +34,7 @@ export function StorageUsage({ diskSpace, diskSpaceError, onRetry }: StorageUsag
               <span className="text-sm text-muted-foreground">{t("storageUsage.total")}: --</span>
             </div>
             <ErrorDisplay
-              variant="minimal"
+              variant="inline"
               title={t("storageUsage.errors.title")}
               message={getErrorMessage(diskSpaceError)}
               icon={<IconAlertCircle className="h-8 w-8 text-amber-600 dark:text-amber-400" />}

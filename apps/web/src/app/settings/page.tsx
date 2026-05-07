@@ -27,7 +27,7 @@ export default function SettingsPage() {
           <div className="flex-1 max-w-7xl mx-auto w-full px-6 py-8">
             <div className="flex flex-col gap-8 items-center justify-center min-h-[50vh]">
               <ErrorDisplay
-                variant="inline"
+                variant="card"
                 title={t("accessDenied")}
                 message={settings.error || t("accessDeniedMessage")}
                 actions={[
@@ -54,7 +54,7 @@ export default function SettingsPage() {
           <div className="flex-1 max-w-7xl mx-auto w-full px-6 py-8">
             <div className="flex flex-col gap-8 items-center justify-center min-h-[50vh]">
               <ErrorDisplay
-                variant="inline"
+                variant="card"
                 title={t("errorLoadingSettings")}
                 message={settings.error}
                 actions={[
