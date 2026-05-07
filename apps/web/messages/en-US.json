@@ -1,7 +1,6 @@
 {
   "a11y": {
-    "skipToContent": "Skip to content",
-    "routeChanged": "Navigated to {title}"
+    "skipToContent": "Skip to content"
   },
   "auth": {
     "successfullyAuthenticated": "Successfully authenticated!",

@@ -16,7 +16,6 @@ import { getLocale } from "next-intl/server";
 
 import "./globals.css";
 
-import { RouteAnnouncer } from "@/components/a11y/route-announcer";
 import { SkipToContent } from "@/components/a11y/skip-to-content";
 import { RedirectHandler } from "@/components/auth/redirect-handler";
 import { Favicon } from "@/components/layout/favicon";
@@ -133,7 +132,6 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               <ThemeColorProvider>
-                <RouteAnnouncer />
                 <AuthProvider>
                   <RedirectHandler>
                     <main id="main-content" tabIndex={-1} className="outline-none">
