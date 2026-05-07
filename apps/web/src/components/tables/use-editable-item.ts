@@ -15,9 +15,17 @@ type PendingChanges = Record<string, { name?: string; description?: string }>;
 
 interface EditableItemCallbacks {
   /** Called when a file field is saved. Receives the final (potentially transformed) value. */
-  onSaveFile?: (fileId: string, field: "name" | "description", value: string) => void;
+  onSaveFile?: (
+    fileId: string,
+    field: "name" | "description",
+    value: string,
+  ) => void | Promise<void>;
   /** Called when a folder field is saved. Receives the final (potentially transformed) value. */
-  onSaveFolder?: (folderId: string, field: "name" | "description", value: string) => void;
+  onSaveFolder?: (
+    folderId: string,
+    field: "name" | "description",
+    value: string,
+  ) => void | Promise<void>;
   /**
    * Optional transform for the value when entering edit mode.
    * Example: strip file extension from name so the user only edits the base name.
@@ -77,7 +85,23 @@ export function useEditableItem(callbacks: EditableItemCallbacks) {
     [callbacks],
   );
 
-  const saveEdit = useCallback(() => {
+  const revertPendingChange = useCallback((itemId: string, itemType: "file" | "folder") => {
+    if (itemType === "file") {
+      setPendingFileChanges((prev) => {
+        const next = { ...prev };
+        delete next[itemId];
+        return next;
+      });
+    } else {
+      setPendingFolderChanges((prev) => {
+        const next = { ...prev };
+        delete next[itemId];
+        return next;
+      });
+    }
+  }, []);
+
+  const saveEdit = useCallback(async () => {
     if (!editTarget) return;
     const { itemId, itemType, field } = editTarget;
 
@@ -90,19 +114,27 @@ export function useEditableItem(callbacks: EditableItemCallbacks) {
         ...prev,
         [itemId]: { ...prev[itemId], [field]: finalValue },
       }));
-      callbacks.onSaveFile?.(itemId, field, finalValue);
     } else {
       setPendingFolderChanges((prev) => ({
         ...prev,
         [itemId]: { ...prev[itemId], [field]: finalValue },
       }));
-      callbacks.onSaveFolder?.(itemId, field, finalValue);
     }
 
     setEditTarget(null);
     setEditValue("");
     setHoverTarget(null);
-  }, [editTarget, editValue, callbacks]);
+
+    try {
+      if (itemType === "file") {
+        await callbacks.onSaveFile?.(itemId, field, finalValue);
+      } else {
+        await callbacks.onSaveFolder?.(itemId, field, finalValue);
+      }
+    } catch {
+      revertPendingChange(itemId, itemType);
+    }
+  }, [editTarget, editValue, callbacks, revertPendingChange]);
 
   const cancelEdit = useCallback(() => {
     setEditTarget(null);
@@ -113,7 +145,7 @@ export function useEditableItem(callbacks: EditableItemCallbacks) {
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === "Enter") {
-        saveEdit();
+        void saveEdit();
       } else if (e.key === "Escape") {
         cancelEdit();
       }
@@ -172,5 +204,6 @@ export function useEditableItem(callbacks: EditableItemCallbacks) {
     isHovering,
     setHoverTarget,
     resetPendingChanges,
+    revertPendingChange,
   };
 }

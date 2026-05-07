@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -22,8 +23,8 @@ import { queryKeys } from "@/lib/query-keys";
  * so the caller can fall back to a generic i18n message.
  */
 function extractServerError(error: unknown): string | undefined {
-  const axiosError = error as { response?: { data?: { error?: string } } };
-  return axiosError.response?.data?.error || undefined;
+  if (!axios.isAxiosError(error)) return undefined;
+  return error.response?.data?.error || undefined;
 }
 
 export function useTwoFactor() {

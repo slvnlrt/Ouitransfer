@@ -1,9 +1,10 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import type { FileItem, FolderItem } from "@/components/tables/files-table-types";
 import { getShareByAlias } from "@/http/endpoints/index";
@@ -63,16 +64,16 @@ const findFolderByPathSlug = (folders: FolderItem[], pathSlug: string): FolderIt
  * Checks whether an axios error is a "Password required" 401.
  */
 function isPasswordRequired(error: unknown): boolean {
-  const axiosError = error as { response?: { data?: { error?: string } } };
-  return axiosError.response?.data?.error === "Password required";
+  if (!axios.isAxiosError(error)) return false;
+  return error.response?.data?.error === "Password required";
 }
 
 /**
  * Checks whether an axios error is an "Invalid password" 401.
  */
 function isInvalidPassword(error: unknown): boolean {
-  const axiosError = error as { response?: { data?: { error?: string } } };
-  return axiosError.response?.data?.error === "Invalid password";
+  if (!axios.isAxiosError(error)) return false;
+  return error.response?.data?.error === "Invalid password";
 }
 
 interface ShareBrowseState {
@@ -93,16 +94,8 @@ export function usePublicShare() {
 
   // --- UI-only state (not server-derived) ---
   const [password, setPassword] = useState("");
-  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [isPasswordError, setIsPasswordError] = useState(false);
 
-  const [browseState, setBrowseState] = useState<ShareBrowseState>({
-    folders: [],
-    files: [],
-    path: [],
-    isLoading: true,
-    error: null,
-  });
   const urlFolderSlug = searchParams.get("folder") || null;
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -135,13 +128,10 @@ export function usePublicShare() {
     retry: false, // 401 (password required) should not retry
   });
 
-  // --- React to query errors: open password modal or show toast ---
+  // --- React to non-password query errors ---
   useEffect(() => {
     if (!shareQuery.error) return;
-
-    if (isPasswordRequired(shareQuery.error)) {
-      setIsPasswordModalOpen(true);
-    } else {
+    if (!isPasswordRequired(shareQuery.error)) {
       toast.error(t("share.errors.loadFailed"));
     }
   }, [shareQuery.error, t]);
@@ -153,9 +143,9 @@ export function usePublicShare() {
       return response.data.share;
     },
     onSuccess: (shareData: Share) => {
-      // Inject the fetched data into the query cache
+      // Inject the fetched data into the query cache — the modal auto-closes
+      // because isPasswordModalOpen is derived from `!share && isPasswordRequired`
       queryClient.setQueryData(queryKeys.shares.byAlias(alias), shareData);
-      setIsPasswordModalOpen(false);
       setIsPasswordError(false);
     },
     onError: (error: unknown) => {
@@ -176,80 +166,53 @@ export function usePublicShare() {
   // --- Derived state from TQ cache ---
   const share: Share | null = shareQuery.data ?? null;
   const isLoading = shareQuery.isLoading || passwordMutation.isPending;
+  // Show the password modal when the query fails with "Password required" and we don't have share data yet
+  const isPasswordModalOpen = !share && isPasswordRequired(shareQuery.error);
 
   // --- Password submit handler (reads password from state, matches original signature) ---
   const handlePasswordSubmit = async () => {
     passwordMutation.mutate(password);
   };
 
-  const loadFolderContents = useCallback(
-    (folderId: string | null) => {
-      try {
-        setBrowseState((prev) => ({ ...prev, isLoading: true, error: null }));
+  // --- Derived browse state (pure computation from TQ cache + currentFolderId) ---
+  const browseState = useMemo((): ShareBrowseState => {
+    if (!share) {
+      return { folders: [], files: [], path: [], isLoading: shareQuery.isLoading, error: null };
+    }
 
-        if (!share) {
-          setBrowseState((prev) => ({
-            ...prev,
-            isLoading: false,
-            error: "No share data available",
-          }));
-          return;
-        }
+    const allFiles = mapShareFiles(share.files || []);
+    const allFolders = mapShareFolders(share.folders || []);
+    const shareFolderIds = new Set(allFolders.map((f) => f.id));
 
-        const allFiles = mapShareFiles(share.files || []);
-        const allFolders = mapShareFolders(share.folders || []);
-
-        const shareFolderIds = new Set(allFolders.map((f) => f.id));
-
-        const folders = allFolders.filter((folder) => {
-          if (folderId === null) {
-            return !folder.parentId || !shareFolderIds.has(folder.parentId);
-          } else {
-            return folder.parentId === folderId;
-          }
-        });
-        const files = allFiles.filter((file) => (file.folderId || null) === folderId);
-
-        const path: FolderItem[] = [];
-        if (folderId) {
-          let currentId: string | null = folderId;
-          while (currentId) {
-            const folder = allFolders.find((f) => f.id === currentId);
-            if (folder) {
-              path.unshift(folder);
-              currentId = (folder.parentId as string | undefined) ?? null;
-            } else {
-              break;
-            }
-          }
-        }
-
-        setBrowseState({
-          folders,
-          files,
-          path,
-          isLoading: false,
-          error: null,
-        });
-      } catch (error: unknown) {
-        logger.error("Error loading folder contents", {
-          err: error instanceof Error ? error.message : String(error),
-        });
-        setBrowseState((prev) => ({
-          ...prev,
-          isLoading: false,
-          error: "Failed to load folder contents",
-        }));
+    const folders = allFolders.filter((folder) => {
+      if (currentFolderId === null) {
+        return !folder.parentId || !shareFolderIds.has(folder.parentId);
       }
-    },
-    [share],
-  );
+      return folder.parentId === currentFolderId;
+    });
+    const files = allFiles.filter((file) => (file.folderId || null) === currentFolderId);
+
+    const path: FolderItem[] = [];
+    if (currentFolderId) {
+      let currentId: string | null = currentFolderId;
+      while (currentId) {
+        const folder = allFolders.find((f) => f.id === currentId);
+        if (folder) {
+          path.unshift(folder);
+          currentId = (folder.parentId as string | undefined) ?? null;
+        } else {
+          break;
+        }
+      }
+    }
+
+    return { folders, files, path, isLoading: false, error: null };
+  }, [share, currentFolderId, shareQuery.isLoading]);
 
   const navigateToFolder = useCallback(
     (folderId?: string) => {
       const targetFolderId = folderId || null;
       setCurrentFolderId(targetFolderId);
-      loadFolderContents(targetFolderId);
 
       const params = new URLSearchParams(searchParams);
       if (targetFolderId && share?.folders) {
@@ -267,7 +230,7 @@ export function usePublicShare() {
       }
       router.push(`/s/${alias}?${params.toString()}`);
     },
-    [loadFolderContents, searchParams, router, alias, share?.folders, getFolderPathSlugFromId],
+    [searchParams, router, alias, share?.folders, getFolderPathSlugFromId],
   );
 
   const handleSearch = useCallback((query: string) => {
@@ -601,7 +564,7 @@ export function usePublicShare() {
     file.name?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  // Browse state: update when share data changes or URL folder slug changes
+  // Sync currentFolderId from URL when share data first loads
   useEffect(() => {
     if (share) {
       const resolvedFolderId = getFolderIdFromPathSlug(
@@ -609,9 +572,8 @@ export function usePublicShare() {
         mapShareFolders(share.folders || []),
       );
       setCurrentFolderId(resolvedFolderId);
-      loadFolderContents(resolvedFolderId);
     }
-  }, [share, loadFolderContents, urlFolderSlug, getFolderIdFromPathSlug]);
+  }, [share, urlFolderSlug, getFolderIdFromPathSlug]);
 
   return {
     // Original functionality
@@ -636,6 +598,6 @@ export function usePublicShare() {
     searchQuery,
     navigateToFolder,
     handleSearch,
-    reload: () => loadFolderContents(currentFolderId),
+    reload: () => queryClient.invalidateQueries({ queryKey: queryKeys.shares.byAlias(alias) }),
   };
 }

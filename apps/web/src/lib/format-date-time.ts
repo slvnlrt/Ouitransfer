@@ -25,12 +25,13 @@ const COMPACT_FORMAT: Intl.DateTimeFormatOptions = {
  *
  * @param dateString — ISO date string from the API
  * @param format — "table" for full date+time, "compact" for short date
- *
- * NOTE: Uses hardcoded "en-US" locale. When next-intl's `useFormatter()`
- * becomes available in these contexts, this should be replaced with
- * locale-aware formatting.
+ * @param locale — BCP 47 locale tag (e.g. "fr-FR"). Defaults to "en-US".
  */
-export function formatDateTime(dateString: string, format: "table" | "compact" = "table"): string {
+export function formatDateTime(
+  dateString: string,
+  format: "table" | "compact" = "table",
+  locale?: string,
+): string {
   const options = format === "table" ? TABLE_FORMAT : COMPACT_FORMAT;
-  return new Intl.DateTimeFormat("en-US", options).format(new Date(dateString));
+  return new Intl.DateTimeFormat(locale ?? "en-US", options).format(new Date(dateString));
 }

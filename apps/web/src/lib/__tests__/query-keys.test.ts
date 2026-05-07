@@ -13,14 +13,9 @@ describe("queryKeys.files", () => {
     expect(queryKeys.files.all).toEqual(["files"]);
   });
 
-  it("list key includes folderId", () => {
-    const key = queryKeys.files.list("folder-1");
-    expect(key).toEqual(["files", "list", { folderId: "folder-1" }]);
-  });
-
-  it("list key works without folderId", () => {
+  it("list key is stable", () => {
     const key = queryKeys.files.list();
-    expect(key).toEqual(["files", "list", { folderId: undefined }]);
+    expect(key).toEqual(["files", "list"]);
   });
 
   it("embedToken key includes fileId and shareId", () => {

@@ -9,7 +9,7 @@ const supportedLocales = [
   "de-DE",
   "it-IT",
   "nl-NL",
-  "ps-PL",
+  "pl-PL",
   "tr-TR",
   "ru-RU",
   "hi-IN",

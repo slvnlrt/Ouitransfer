@@ -1,4 +1,4 @@
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -18,8 +18,8 @@ interface FilesTableProps {
   folders?: FolderItem[];
   onPreview?: (file: FileItem) => void;
   onRename?: (file: FileItem) => void;
-  onUpdateName?: (fileId: string, newName: string) => void;
-  onUpdateDescription?: (fileId: string, newDescription: string) => void;
+  onUpdateName?: (fileId: string, newName: string) => void | Promise<void>;
+  onUpdateDescription?: (fileId: string, newDescription: string) => void | Promise<void>;
   onDownload: (objectName: string, fileName: string) => void;
   onShare?: (file: FileItem) => void;
   onDelete?: (file: FileItem) => void;
@@ -35,8 +35,8 @@ interface FilesTableProps {
   onDownloadFolder?: (folderId: string, folderName: string) => Promise<void>;
   onMoveFolder?: (folder: FolderItem) => void;
   onMoveFile?: (file: FileItem) => void;
-  onUpdateFolderName?: (folderId: string, newName: string) => void;
-  onUpdateFolderDescription?: (folderId: string, newDescription: string) => void;
+  onUpdateFolderName?: (folderId: string, newName: string) => void | Promise<void>;
+  onUpdateFolderDescription?: (folderId: string, newDescription: string) => void | Promise<void>;
   showBulkActions?: boolean;
   isShareMode?: boolean;
 }
@@ -69,6 +69,7 @@ export function FilesTable({
   isShareMode = false,
 }: FilesTableProps) {
   const t = useTranslations();
+  const locale = useLocale();
 
   const selection = useSelectionManager({
     files,
@@ -93,13 +94,13 @@ export function FilesTable({
   };
 
   const editing = useEditableItem({
-    onSaveFile: (fileId, field, value) => {
-      if (field === "name") onUpdateName?.(fileId, value);
-      else onUpdateDescription?.(fileId, value);
+    onSaveFile: async (fileId, field, value) => {
+      if (field === "name") await onUpdateName?.(fileId, value);
+      else await onUpdateDescription?.(fileId, value);
     },
-    onSaveFolder: (folderId, field, value) => {
-      if (field === "name") onUpdateFolderName?.(folderId, value);
-      else onUpdateFolderDescription?.(folderId, value);
+    onSaveFolder: async (folderId, field, value) => {
+      if (field === "name") await onUpdateFolderName?.(folderId, value);
+      else await onUpdateFolderDescription?.(folderId, value);
     },
     transformEditValue: (_itemId, itemType, field, currentValue) => {
       if (itemType === "file" && field === "name") {
@@ -221,7 +222,7 @@ export function FilesTable({
                   onShareFolder={onShareFolder}
                   onDownloadFolder={onDownloadFolder}
                   onMoveFolder={onMoveFolder}
-                  formatDateTime={formatDateTime}
+                  formatDateTime={(d) => formatDateTime(d, "table", locale)}
                 />
               );
             })}
@@ -273,7 +274,7 @@ export function FilesTable({
                   onShare={onShare}
                   onDelete={onDelete}
                   onMoveFile={onMoveFile}
-                  formatDateTime={formatDateTime}
+                  formatDateTime={(d) => formatDateTime(d, "table", locale)}
                 />
               );
             })}

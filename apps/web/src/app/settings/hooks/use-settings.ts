@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -181,8 +182,11 @@ export function useSettings() {
 
       await refreshAppInfo();
     } catch (error: unknown) {
-      const axiosError = error as { response?: { data?: { error?: string } }; message?: string };
-      const errorMessage = axiosError?.response?.data?.error || axiosError?.message || "";
+      const errorMessage = axios.isAxiosError(error)
+        ? error.response?.data?.error || error.message || ""
+        : error instanceof Error
+          ? error.message
+          : "";
 
       if (
         errorMessage.includes("autenticação por senha") ||

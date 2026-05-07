@@ -27,7 +27,7 @@ export const queryKeys = {
 
   files: {
     all: ["files"] as const,
-    list: (folderId?: string) => [...queryKeys.files.all, "list", { folderId }] as const,
+    list: () => [...queryKeys.files.all, "list"] as const,
     embedToken: (fileId: string, shareId: string) =>
       [...queryKeys.files.all, "embedToken", fileId, shareId] as const,
   },

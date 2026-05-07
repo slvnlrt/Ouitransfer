@@ -1,5 +1,5 @@
 import { IconDownload, IconEye, IconFolder, IconFolderOpen } from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { FilePreviewModal } from "@/components/modals/file-preview-modal";
 import type { FileItem, FolderItem } from "@/components/tables/files-table-types";
@@ -39,6 +39,7 @@ export function ShareFilesTable({
   sharePassword,
 }: ShareFilesTableProps) {
   const t = useTranslations();
+  const locale = useLocale();
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<{
     name: string;
@@ -137,7 +138,9 @@ export function ShareFilesTable({
                       <TableCell className="h-12 px-4">
                         {item.totalSize ? formatFileSize(Number(item.totalSize)) : "—"}
                       </TableCell>
-                      <TableCell className="h-12 px-4">{formatDateTime(item.createdAt)}</TableCell>
+                      <TableCell className="h-12 px-4">
+                        {formatDateTime(item.createdAt, "table", locale)}
+                      </TableCell>
                       <TableCell className="h-12 px-4">
                         <div className="flex items-center gap-1">
                           {enableNavigation && (
@@ -180,7 +183,9 @@ export function ShareFilesTable({
                         </div>
                       </TableCell>
                       <TableCell className="h-12 px-4">{formatFileSize(item.size)}</TableCell>
-                      <TableCell className="h-12 px-4">{formatDateTime(item.createdAt)}</TableCell>
+                      <TableCell className="h-12 px-4">
+                        {formatDateTime(item.createdAt, "table", locale)}
+                      </TableCell>
                       <TableCell className="h-12 px-4">
                         <div className="flex items-center gap-1">
                           <Button

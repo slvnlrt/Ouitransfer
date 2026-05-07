@@ -1,5 +1,5 @@
 import { IconCloudUpload, IconFolderPlus } from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -81,6 +81,7 @@ export function FilesGrid({
   isShareMode = false,
 }: FilesGridProps) {
   const t = useTranslations();
+  const locale = useLocale();
 
   const selection = useSelectionManager({
     files,
@@ -99,7 +100,7 @@ export function FilesGrid({
     selection.selectFile(fileId, checked);
   };
 
-  const formatDate = (dateString: string) => formatDateTime(dateString, "compact");
+  const formatDate = (dateString: string) => formatDateTime(dateString, "compact", locale);
 
   const {
     draggedItem,

@@ -1,6 +1,6 @@
 import { IconDownload } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,12 +22,12 @@ interface QrCodeModalProps {
 export function QrCodeModal({ isOpen, onClose, shareLink, shareName }: QrCodeModalProps) {
   const t = useTranslations();
   const [isDownloading, setIsDownloading] = useState(false);
+  const qrContainerRef = useRef<HTMLDivElement>(null);
 
   const downloadQRCode = () => {
     setIsDownloading(true);
 
-    // Get the SVG element
-    const svg = document.getElementById("share-qr-code");
+    const svg = qrContainerRef.current?.querySelector("svg");
     if (!svg) {
       setIsDownloading(false);
       return;
@@ -83,9 +83,8 @@ export function QrCodeModal({ isOpen, onClose, shareLink, shareName }: QrCodeMod
         </DialogHeader>
 
         <div className="flex flex-col items-center justify-center">
-          <div className="p-4 bg-white rounded-lg">
+          <div ref={qrContainerRef} className="p-4 bg-white rounded-lg">
             <LazyQRCode
-              id="share-qr-code"
               value={shareLink}
               size={256}
               level="H"

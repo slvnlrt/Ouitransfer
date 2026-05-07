@@ -13,6 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useAppInfo } from "@/contexts/app-info-context";
 import { useEnabledProviders } from "../hooks/use-enabled-providers";
 import { createLoginSchema, type LoginFormValues } from "../schemas/schema";
 import { MultiProviderButtons } from "./multi-provider-buttons";
@@ -36,7 +37,10 @@ export function LoginForm({
   authConfigLoading,
 }: LoginFormProps) {
   const t = useTranslations();
-  const { data: providers = [], isLoading: providersLoading } = useEnabledProviders();
+  const { firstAccess } = useAppInfo();
+  const { data: providers = [], isLoading: providersLoading } = useEnabledProviders({
+    enabled: !firstAccess,
+  });
   const hasEnabledProviders = providers.length > 0;
 
   const loginSchema = createLoginSchema(t, passwordAuthEnabled);
