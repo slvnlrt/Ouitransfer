@@ -12,7 +12,8 @@
       "token_expired": "Token kedaluwarsa. Silakan coba lagi.",
       "config_error": "Kesalahan konfigurasi. Silakan hubungi dukungan.",
       "auth_failed": "Autentikasi gagal. Silakan coba lagi."
-    }
+    },
+    "sessionExpired": "Your session has expired. Please sign in again."
   },
   "contextMenu": {
     "newFolder": "Folder baru",

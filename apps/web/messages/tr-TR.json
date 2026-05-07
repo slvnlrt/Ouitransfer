@@ -12,7 +12,8 @@
       "auth_failed": "Kimlik doğrulama başarısız. Lütfen tekrar deneyin."
     },
     "authenticationFailed": "Kimlik doğrulama başarısız",
-    "successfullyAuthenticated": "Başarıyla kimlik doğrulandı!"
+    "successfullyAuthenticated": "Başarıyla kimlik doğrulandı!",
+    "sessionExpired": "Your session has expired. Please sign in again."
   },
   "authProviders": {
     "title": "Kimlik Doğrulama Sağlayıcıları",

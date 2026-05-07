@@ -12,7 +12,8 @@
       "token_expired": "Το διακριτικό έχει λήξει. Προσπαθήστε ξανά.",
       "config_error": "Σφάλμα ρυθμίσεων. Επικοινωνήστε με την υποστήριξη.",
       "auth_failed": "Αποτυχία ελέγχου ταυτότητας. Προσπαθήστε ξανά."
-    }
+    },
+    "sessionExpired": "Your session has expired. Please sign in again."
   },
   "contextMenu": {
     "newFolder": "Νέος φάκελος",

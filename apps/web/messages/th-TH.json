@@ -12,7 +12,8 @@
       "token_expired": "โทเค็นหมดอายุ กรุณาลองใหม่อีกครั้ง",
       "config_error": "เกิดข้อผิดพลาดในการตั้งค่า กรุณาติดต่อฝ่ายสนับสนุน",
       "auth_failed": "การยืนยันตัวตนล้มเหลว กรุณาลองใหม่อีกครั้ง"
-    }
+    },
+    "sessionExpired": "Your session has expired. Please sign in again."
   },
   "contextMenu": {
     "newFolder": "โฟลเดอร์ใหม่",

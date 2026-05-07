@@ -12,7 +12,8 @@
       "token_expired": "Mã thông báo đã hết hạn. Vui lòng thử lại.",
       "config_error": "Lỗi cấu hình. Vui lòng liên hệ với bộ phận hỗ trợ.",
       "auth_failed": "Xác thực không thành công. Vui lòng thử lại."
-    }
+    },
+    "sessionExpired": "Your session has expired. Please sign in again."
   },
   "contextMenu": {
     "newFolder": "Thư mục mới",

@@ -12,7 +12,8 @@
       "auth_failed": "Autenticazione fallita. Riprova."
     },
     "authenticationFailed": "Autenticazione fallita",
-    "successfullyAuthenticated": "Autenticazione completata con successo!"
+    "successfullyAuthenticated": "Autenticazione completata con successo!",
+    "sessionExpired": "Your session has expired. Please sign in again."
   },
   "authProviders": {
     "title": "Provider di Autenticazione",

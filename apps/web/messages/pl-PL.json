@@ -12,7 +12,8 @@
       "auth_failed": "Uwierzytelnienie nie powiodło się. Spróbuj ponownie."
     },
     "authenticationFailed": "Uwierzytelnienie nie powiodło się",
-    "successfullyAuthenticated": "Pomyślnie uwierzytelniono!"
+    "successfullyAuthenticated": "Pomyślnie uwierzytelniono!",
+    "sessionExpired": "Your session has expired. Please sign in again."
   },
   "authProviders": {
     "title": "Dostawcy uwierzytelniania",

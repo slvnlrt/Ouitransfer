@@ -12,7 +12,8 @@
       "token_expired": "Token expired. Please try again.",
       "config_error": "Configuration error. Please contact support.",
       "auth_failed": "Authentication failed. Please try again."
-    }
+    },
+    "sessionExpired": "Your session has expired. Please sign in again."
   },
   "contextMenu": {
     "newFolder": "New folder",

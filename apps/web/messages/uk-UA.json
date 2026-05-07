@@ -12,7 +12,8 @@
       "token_expired": "Токен прострочений. Спробуйте ще раз.",
       "config_error": "Помилка конфігурації. Будь ласка, зв'яжіться з підтримкою.",
       "auth_failed": "Помилка автентифікації. Спробуйте ще раз."
-    }
+    },
+    "sessionExpired": "Your session has expired. Please sign in again."
   },
   "contextMenu": {
     "newFolder": "Нова папка",

@@ -12,7 +12,8 @@
       "auth_failed": "认证失败。请重试。"
     },
     "authenticationFailed": "身份验证失败",
-    "successfullyAuthenticated": "身份验证成功！"
+    "successfullyAuthenticated": "身份验证成功！",
+    "sessionExpired": "Your session has expired. Please sign in again."
   },
   "authProviders": {
     "title": "身份验证提供商",

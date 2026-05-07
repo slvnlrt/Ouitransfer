@@ -12,7 +12,8 @@
       "auth_failed": "인증에 실패했습니다. 다시 시도하세요."
     },
     "authenticationFailed": "인증에 실패했습니다",
-    "successfullyAuthenticated": "인증에 성공했습니다!"
+    "successfullyAuthenticated": "인증에 성공했습니다!",
+    "sessionExpired": "Your session has expired. Please sign in again."
   },
   "authProviders": {
     "title": "인증 제공자",

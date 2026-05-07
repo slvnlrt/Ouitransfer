@@ -12,7 +12,8 @@
       "token_expired": "פג תוקף הטוקן. אנא נסה שוב.",
       "config_error": "שגיאת תצורה. אנא צור קשר עם התמיכה.",
       "auth_failed": "האימות נכשל. אנא נסה שוב."
-    }
+    },
+    "sessionExpired": "Your session has expired. Please sign in again."
   },
   "contextMenu": {
     "newFolder": "תיקייה חדשה",

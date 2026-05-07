@@ -12,7 +12,8 @@
       "auth_failed": "Échec de l'authentification. Veuillez réessayer."
     },
     "authenticationFailed": "Échec de l'authentification",
-    "successfullyAuthenticated": "Authentification réussie !"
+    "successfullyAuthenticated": "Authentification réussie !",
+    "sessionExpired": "Your session has expired. Please sign in again."
   },
   "authProviders": {
     "title": "Fournisseurs d'authentification",

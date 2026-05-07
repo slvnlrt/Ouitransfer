@@ -56,6 +56,25 @@ export function useLogin() {
   useEffect(() => {
     const errorParam = searchParams.get("error");
     const messageParam = searchParams.get("message");
+    const reasonParam = searchParams.get("reason");
+
+    const timers: ReturnType<typeof setTimeout>[] = [];
+
+    if (reasonParam === "session_expired") {
+      timers.push(
+        setTimeout(() => {
+          toast.error(t("auth.sessionExpired"));
+        }, 100),
+      );
+
+      timers.push(
+        setTimeout(() => {
+          const url = new URL(window.location.href);
+          url.searchParams.delete("reason");
+          window.history.replaceState({}, "", url.toString());
+        }, 1000),
+      );
+    }
 
     if (errorParam) {
       let message: string;
@@ -67,18 +86,26 @@ export function useLogin() {
         message = t(errorKey);
       }
 
-      setTimeout(() => {
-        toast.error(message);
-      }, 100);
+      timers.push(
+        setTimeout(() => {
+          toast.error(message);
+        }, 100),
+      );
 
-      setTimeout(() => {
-        const url = new URL(window.location.href);
-        url.searchParams.delete("error");
-        url.searchParams.delete("message");
-        url.searchParams.delete("provider");
-        window.history.replaceState({}, "", url.toString());
-      }, 1000);
+      timers.push(
+        setTimeout(() => {
+          const url = new URL(window.location.href);
+          url.searchParams.delete("error");
+          url.searchParams.delete("message");
+          url.searchParams.delete("provider");
+          window.history.replaceState({}, "", url.toString());
+        }, 1000),
+      );
     }
+
+    return () => {
+      for (const id of timers) clearTimeout(id);
+    };
   }, [searchParams, t]);
 
   const toggleVisibility = () => setIsVisible(!isVisible);

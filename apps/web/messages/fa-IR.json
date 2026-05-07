@@ -12,7 +12,8 @@
       "token_expired": "توکن منقضی شده است. لطفاً دوباره تلاش کنید.",
       "config_error": "خطای پیکربندی. لطفاً با پشتیبانی تماس بگیرید.",
       "auth_failed": "احراز هویت ناموفق بود. لطفاً دوباره تلاش کنید."
-    }
+    },
+    "sessionExpired": "Your session has expired. Please sign in again."
   },
   "contextMenu": {
     "newFolder": "پوشه جدید",

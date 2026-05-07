@@ -12,7 +12,8 @@
       "token_expired": "Token har löpt ut. Försök igen.",
       "config_error": "Konfigurationsfel. Kontakta supporten.",
       "auth_failed": "Autentiseringen misslyckades. Försök igen."
-    }
+    },
+    "sessionExpired": "Your session has expired. Please sign in again."
   },
   "contextMenu": {
     "newFolder": "Ny mapp",

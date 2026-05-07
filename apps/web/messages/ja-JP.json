@@ -12,7 +12,8 @@
       "auth_failed": "認証に失敗しました。もう一度お試しください。"
     },
     "authenticationFailed": "認証に失敗しました",
-    "successfullyAuthenticated": "認証に成功しました！"
+    "successfullyAuthenticated": "認証に成功しました！",
+    "sessionExpired": "Your session has expired. Please sign in again."
   },
   "authProviders": {
     "title": "認証プロバイダー",

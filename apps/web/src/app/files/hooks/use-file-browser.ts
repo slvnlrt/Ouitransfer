@@ -3,7 +3,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { FileItem, FolderItem } from "@/components/tables/files-table-types";
 import { useEnhancedFileManager } from "@/hooks/use-enhanced-file-manager";
@@ -138,8 +138,11 @@ export function useFileBrowser() {
     (() => void) | undefined
   >();
 
-  /** Track whether the initial folder sync from URL has happened. */
-  const hasSyncedUrlRef = useRef(false);
+  /**
+   * Track programmatic navigations (user clicked folder in UI) so that the
+   * URL→state sync effect can skip re-resolving when the change was initiated
+   * by our own code rather than the browser's back/forward buttons.
+   */
   const isNavigatingRef = useRef(false);
 
   const urlFolderSlug = searchParams.get("folder") || null;
@@ -166,16 +169,22 @@ export function useFileBrowser() {
   const dataLoaded = allDataQuery.isSuccess;
 
   // ── URL → currentFolderId sync ───────────────────────────────────────
-  // Once data loads, resolve the URL slug to a folder ID (once).
-  // On subsequent navigations, currentFolderId is set directly.
-  if (dataLoaded && !hasSyncedUrlRef.current) {
-    hasSyncedUrlRef.current = true;
-    const resolved = getFolderIdFromPathSlug(urlFolderSlug, allFolders);
-    // Only call setState if the value actually differs to avoid re-render loops
-    if (resolved !== currentFolderId) {
-      setCurrentFolderId(resolved);
+  // Whenever the URL slug changes (initial load, back/forward, etc.) and
+  // data is available, resolve the slug to a folder ID. Skip if the change
+  // was programmatic (navigateToFolder already set currentFolderId).
+  useEffect(() => {
+    if (!dataLoaded) return;
+
+    // Programmatic navigation — navigateToFolder already set state and pushed
+    // the URL. Reset the flag and skip re-resolving.
+    if (isNavigatingRef.current) {
+      isNavigatingRef.current = false;
+      return;
     }
-  }
+
+    const resolved = getFolderIdFromPathSlug(urlFolderSlug, allFolders);
+    setCurrentFolderId((prev) => (prev === resolved ? prev : resolved));
+  }, [urlFolderSlug, dataLoaded, allFolders]);
 
   // ── Derived: current folder contents (filtered from cache) ───────────
   const files = useMemo(
@@ -208,7 +217,7 @@ export function useFileBrowser() {
     (targetFolderId: string | null) => {
       setCurrentFolderId(targetFolderId);
 
-      // Update URL without full navigation
+      // Build URL with updated folder param
       const params = new URLSearchParams(searchParams);
       if (targetFolderId) {
         const folderPathSlug = getFolderPathSlugFromId(targetFolderId, allFolders);
@@ -220,9 +229,14 @@ export function useFileBrowser() {
       } else {
         params.delete("folder");
       }
-      window.history.pushState({}, "", `/files?${params.toString()}`);
+
+      // Use Next.js router so useSearchParams stays in sync and
+      // browser back/forward triggers proper re-renders.
+      const paramStr = params.toString();
+      const url = paramStr ? `/files?${paramStr}` : "/files";
+      router.push(url, { scroll: false });
     },
-    [allFolders, searchParams, getFolderPathSlugFromId],
+    [allFolders, searchParams, getFolderPathSlugFromId, router],
   );
 
   const navigateToFolder = useCallback(
@@ -230,9 +244,10 @@ export function useFileBrowser() {
       const targetFolderId = folderId || null;
 
       if (dataLoaded) {
+        // Mark as programmatic so the URL→state sync effect skips re-resolving.
+        // The effect itself resets the flag.
         isNavigatingRef.current = true;
         navigateToFolderDirect(targetFolderId);
-        isNavigatingRef.current = false;
       } else {
         // Data not loaded yet — do a full route push so URL changes and
         // the query will sync on the next render

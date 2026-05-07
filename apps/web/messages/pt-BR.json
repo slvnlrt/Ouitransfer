@@ -12,7 +12,8 @@
       "auth_failed": "Falha na autenticação. Tente novamente."
     },
     "authenticationFailed": "Falha na autenticação",
-    "successfullyAuthenticated": "Autenticado com sucesso!"
+    "successfullyAuthenticated": "Autenticado com sucesso!",
+    "sessionExpired": "Your session has expired. Please sign in again."
   },
   "contextMenu": {
     "newFolder": "Nova pasta",

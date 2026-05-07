@@ -12,7 +12,8 @@
       "auth_failed": "فشل في المصادقة. حاول مرة أخرى."
     },
     "authenticationFailed": "فشلت المصادقة",
-    "successfullyAuthenticated": "تم المصادقة بنجاح!"
+    "successfullyAuthenticated": "تم المصادقة بنجاح!",
+    "sessionExpired": "Your session has expired. Please sign in again."
   },
   "authProviders": {
     "title": "مزودي المصادقة",
