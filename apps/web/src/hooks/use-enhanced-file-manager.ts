@@ -30,8 +30,6 @@ type BulkFile = Pick<
   FileItem,
   "id" | "name" | "description" | "size" | "objectName" | "folderId" | "createdAt" | "updatedAt"
 > & { relativePath?: string };
-type BulkFolder = FolderItem;
-
 export interface EnhancedFileManagerHook {
   previewFile: PreviewFile | null;
   fileToDelete: FileToDelete | null;
@@ -40,7 +38,7 @@ export interface EnhancedFileManagerHook {
   filesToDelete: BulkFile[] | null;
   filesToShare: BulkFile[] | null;
   filesToDownload: BulkFile[] | null;
-  foldersToDelete: BulkFolder[] | null;
+  foldersToDelete: FolderItem[] | null;
   isBulkDownloadModalOpen: boolean;
 
   folderToDelete: FolderToDelete | null;
@@ -48,8 +46,8 @@ export interface EnhancedFileManagerHook {
   folderToShare: FolderToShare | null;
   isCreateFolderModalOpen: boolean;
 
-  foldersToShare: BulkFolder[] | null;
-  foldersToDownload: BulkFolder[] | null;
+  foldersToShare: FolderItem[] | null;
+  foldersToDownload: FolderItem[] | null;
 
   // These setters accept any object with at least {id, name} to be callable from
   // components that have their own local File/Folder types
@@ -60,22 +58,22 @@ export interface EnhancedFileManagerHook {
   setFilesToDelete: (files: BulkFile[] | null) => void;
   setFilesToShare: (files: BulkFile[] | null) => void;
   setFilesToDownload: (files: BulkFile[] | null) => void;
-  setFoldersToDelete: (folders: BulkFolder[] | null) => void;
+  setFoldersToDelete: (folders: FolderItem[] | null) => void;
   setBulkDownloadModalOpen: (open: boolean) => void;
 
   setFolderToDelete: (folder: FolderToDelete | null) => void;
   setFolderToRename: (folder: FolderToRename | null) => void;
   setFolderToShare: (folder: FolderToShare | null) => void;
   setCreateFolderModalOpen: (open: boolean) => void;
-  setFoldersToShare: (folders: BulkFolder[] | null) => void;
-  setFoldersToDownload: (folders: BulkFolder[] | null) => void;
+  setFoldersToShare: (folders: FolderItem[] | null) => void;
+  setFoldersToDownload: (folders: FolderItem[] | null) => void;
 
   handleDelete: (fileId: string) => Promise<void>;
   handleDownload: (objectName: string, fileName: string) => Promise<void>;
   handleRename: (fileId: string, newName: string, description?: string) => Promise<void>;
-  handleBulkDelete: (files: BulkFile[], folders?: BulkFolder[]) => void;
-  handleBulkShare: (files: BulkFile[], folders?: BulkFolder[]) => void;
-  handleBulkDownload: (files: BulkFile[], folders?: BulkFolder[]) => void;
+  handleBulkDelete: (files: BulkFile[], folders?: FolderItem[]) => void;
+  handleBulkShare: (files: BulkFile[], folders?: FolderItem[]) => void;
+  handleBulkDownload: (files: BulkFile[], folders?: FolderItem[]) => void;
   handleBulkDownloadWithZip: (files: BulkFile[], zipName: string) => Promise<void>;
   handleDeleteBulk: () => Promise<void>;
   handleShareBulkSuccess: () => void;
@@ -118,7 +116,7 @@ export function useEnhancedFileManager(
   const [filesToDelete, setFilesToDelete] = useState<BulkFile[] | null>(null);
   const [filesToShare, setFilesToShare] = useState<BulkFile[] | null>(null);
   const [filesToDownload, setFilesToDownload] = useState<BulkFile[] | null>(null);
-  const [foldersToDelete, setFoldersToDelete] = useState<BulkFolder[] | null>(null);
+  const [foldersToDelete, setFoldersToDelete] = useState<FolderItem[] | null>(null);
 
   const [folderToDelete, setFolderToDelete] = useState<FolderToDelete | null>(null);
   const [folderToRename, setFolderToRename] = useState<FolderToRename | null>(null);
@@ -129,8 +127,8 @@ export function useEnhancedFileManager(
     null,
   );
 
-  const [foldersToShare, setFoldersToShare] = useState<BulkFolder[] | null>(null);
-  const [foldersToDownload, setFoldersToDownload] = useState<BulkFolder[] | null>(null);
+  const [foldersToShare, setFoldersToShare] = useState<FolderItem[] | null>(null);
+  const [foldersToDownload, setFoldersToDownload] = useState<FolderItem[] | null>(null);
 
   const setClearSelectionCallback = useCallback((callback: () => void) => {
     setClearSelectionCallbackState(() => callback);
@@ -194,12 +192,12 @@ export function useEnhancedFileManager(
     }
   };
 
-  const handleBulkDelete = (files: BulkFile[], folders?: BulkFolder[]) => {
+  const handleBulkDelete = (files: BulkFile[], folders?: FolderItem[]) => {
     setFilesToDelete(files.length > 0 ? files : null);
     setFoldersToDelete(folders && folders.length > 0 ? folders : null);
   };
 
-  const handleBulkShare = (files: BulkFile[], folders?: BulkFolder[]) => {
+  const handleBulkShare = (files: BulkFile[], folders?: FolderItem[]) => {
     setFilesToShare(files);
     setFoldersToShare(folders || null);
   };
@@ -212,7 +210,7 @@ export function useEnhancedFileManager(
     }
   };
 
-  const handleBulkDownload = (files: BulkFile[], folders?: BulkFolder[]) => {
+  const handleBulkDownload = (files: BulkFile[], folders?: FolderItem[]) => {
     setFilesToDownload(files);
     setFoldersToDownload(folders || null);
     setBulkDownloadModalOpen(true);

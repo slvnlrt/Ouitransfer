@@ -1,4 +1,4 @@
-﻿import { IconLayoutGrid, IconSearch, IconTable } from "@tabler/icons-react";
+import { IconLayoutGrid, IconSearch, IconTable } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { FilesGridSkeleton, FilesTableSkeleton } from "@/components/skeletons";

@@ -1,4 +1,4 @@
-﻿import React, { KeyboardEvent, useState } from "react";
+import React, { KeyboardEvent, useState } from "react";
 import { IconX } from "@tabler/icons-react";
 
 import { Badge } from "@/components/ui/badge";

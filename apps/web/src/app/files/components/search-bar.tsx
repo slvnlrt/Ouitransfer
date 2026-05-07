@@ -1,4 +1,4 @@
-﻿import { IconSearch } from "@tabler/icons-react";
+import { IconSearch } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
 import { Input } from "@/components/ui/input";

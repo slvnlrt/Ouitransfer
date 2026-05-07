@@ -1,4 +1,4 @@
-﻿import { IconAlertTriangle, IconTrash } from "@tabler/icons-react";
+import { IconAlertTriangle, IconTrash } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { IconEye, IconEyeOff, IconLock, IconLockOpen } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";

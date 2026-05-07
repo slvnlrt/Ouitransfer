@@ -1,4 +1,4 @@
-﻿import { IconLayoutDashboard } from "@tabler/icons-react";
+import { IconLayoutDashboard } from "@tabler/icons-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";

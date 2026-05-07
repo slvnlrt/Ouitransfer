@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FileItem, FolderItem } from "./files-table-types";
 
 type BulkAction = "delete" | "share" | "download" | "move";
@@ -35,13 +35,13 @@ export function useSelectionManager({
   const [selectedFolders, setSelectedFolders] = useState<Set<string>>(new Set());
 
   // Reset file selection when the file list changes
-  const fileIds = files.map((f) => f.id).join(",");
+  const fileIds = useMemo(() => files.map((f) => f.id).join(","), [files]);
   useEffect(() => {
     setSelectedFiles(new Set());
   }, [fileIds]);
 
   // Reset folder selection when the folder list changes
-  const folderIds = folders.map((f) => f.id).join(",");
+  const folderIds = useMemo(() => folders.map((f) => f.id).join(","), [folders]);
   useEffect(() => {
     setSelectedFolders(new Set());
   }, [folderIds]);

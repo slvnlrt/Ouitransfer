@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatDateTime } from "@/lib/format-date-time";
 import { getFileIcon } from "@/utils/file-icons";
 import { formatFileSize } from "@/utils/format-file-size";
 
@@ -44,18 +45,6 @@ export function ShareFilesTable({
     objectName: string;
     type?: string;
   } | null>(null);
-
-  const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("en-US", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    }).format(date);
-  };
 
   const handlePreview = (file: { name: string; objectName: string }) => {
     setSelectedFile(file);
@@ -236,5 +225,3 @@ export function ShareFilesTable({
     </div>
   );
 }
-
-export const ShareContentTable = ShareFilesTable;

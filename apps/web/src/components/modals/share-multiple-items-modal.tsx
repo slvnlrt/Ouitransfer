@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import {
   IconCalendar,
@@ -36,8 +36,6 @@ type BulkFile = Pick<
   FileItem,
   "id" | "name" | "description" | "size" | "objectName" | "createdAt" | "updatedAt"
 >;
-type BulkFolder = FolderItem;
-
 interface BulkItem {
   id: string;
   name: string;
@@ -50,7 +48,7 @@ interface BulkItem {
 
 interface ShareMultipleItemsModalProps {
   files: BulkFile[] | null;
-  folders: BulkFolder[] | null;
+  folders: FolderItem[] | null;
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;

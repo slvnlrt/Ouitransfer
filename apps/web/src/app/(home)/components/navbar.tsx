@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { IconHeart, IconMenu2 } from "@tabler/icons-react";
 import Image from "next/image";

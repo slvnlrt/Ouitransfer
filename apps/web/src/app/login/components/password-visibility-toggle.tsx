@@ -1,4 +1,4 @@
-﻿import { IconEye, IconEyeClosed } from "@tabler/icons-react";
+import { IconEye, IconEyeClosed } from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
 

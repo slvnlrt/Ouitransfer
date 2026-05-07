@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { IconEye, IconEyeOff, IconInfoCircle } from "@tabler/icons-react";
 import dynamic from "next/dynamic";

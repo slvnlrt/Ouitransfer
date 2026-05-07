@@ -1,4 +1,4 @@
-﻿import { IconLayoutDashboard, IconLink, IconUserPlus, IconUsers } from "@tabler/icons-react";
+import { IconLayoutDashboard, IconLink, IconUserPlus, IconUsers } from "@tabler/icons-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 

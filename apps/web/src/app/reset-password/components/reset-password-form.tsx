@@ -1,4 +1,4 @@
-﻿import { IconEye, IconEyeOff } from "@tabler/icons-react";
+import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 

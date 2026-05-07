@@ -1,4 +1,4 @@
-﻿import { IconEye, IconEyeClosed, IconLock } from "@tabler/icons-react";
+import { IconEye, IconEyeClosed, IconLock } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";

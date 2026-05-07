@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { IconLanguage } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";

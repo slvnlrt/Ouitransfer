@@ -1,4 +1,4 @@
-﻿import { IconCheck, IconEdit, IconLock, IconLockOpen, IconX } from "@tabler/icons-react";
+import { IconCheck, IconEdit, IconLock, IconLockOpen, IconX } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";

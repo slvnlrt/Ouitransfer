@@ -1,4 +1,4 @@
-﻿import { IconPlus, IconRefresh, IconSearch } from "@tabler/icons-react";
+import { IconPlus, IconRefresh, IconSearch } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { IconFlask, IconInfoCircle, IconLoader } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";

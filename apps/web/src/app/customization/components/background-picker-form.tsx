@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { IconChevronDown, IconChevronUp, IconDeviceLaptop } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { IconX } from "@tabler/icons-react";
 import type React from "react";

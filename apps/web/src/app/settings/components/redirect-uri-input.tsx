@@ -1,4 +1,4 @@
-﻿import { useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { forwardRef } from "react";
 
 import { Input } from "@/components/ui/input";

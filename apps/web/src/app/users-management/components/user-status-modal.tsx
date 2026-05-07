@@ -1,4 +1,4 @@
-﻿import { DialogTitle } from "@radix-ui/react-dialog";
+import { DialogTitle } from "@radix-ui/react-dialog";
 import { IconUser } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 

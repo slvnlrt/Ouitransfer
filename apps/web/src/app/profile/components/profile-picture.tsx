@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { IconCamera, IconTrash } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";

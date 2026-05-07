@@ -1,4 +1,4 @@
-﻿import { IconChevronDown, IconChevronUp, IconDeviceFloppy } from "@tabler/icons-react";
+import { IconChevronDown, IconChevronUp, IconDeviceFloppy } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import React from "react";
 
