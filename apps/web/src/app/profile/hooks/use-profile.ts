@@ -8,9 +8,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { useAuth } from "@/contexts/auth-context";
 import { getCurrentUser, removeAvatar, updateUser, uploadAvatar } from "@/http/endpoints";
-import type { User } from "@/http/endpoints/auth/types";
+import type { GetCurrentUser200, User } from "@/http/endpoints/auth/types";
 import { queryKeys } from "@/lib/query-keys";
 
 const createSchemas = (t: (key: string) => string) => ({
@@ -43,7 +42,6 @@ export function useProfile() {
   const queryClient = useQueryClient();
   const { profileSchema, passwordSchema } = createSchemas(t);
 
-  const { setUser } = useAuth();
   const [isNewPasswordVisible, setIsNewPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
 
@@ -56,25 +54,26 @@ export function useProfile() {
   });
 
   // ── Query: load current user ──────────────────────────────────────
+  // Uses same query key & shape as AuthProvider (GetCurrentUser200 = { user: User })
   const userQuery = useQuery({
     queryKey: queryKeys.auth.currentUser(),
     queryFn: async () => {
       const response = await getCurrentUser();
-      return response.data.user;
+      return response.data;
     },
   });
 
-  const userData = userQuery.data ?? null;
+  const userData = userQuery.data?.user ?? null;
   const isLoading = userQuery.isLoading;
 
   // Reset form when user data loads or changes
   useEffect(() => {
-    if (userQuery.data) {
+    if (userQuery.data?.user) {
       profileForm.reset({
-        firstName: userQuery.data.firstName,
-        lastName: userQuery.data.lastName,
-        username: userQuery.data.username,
-        email: userQuery.data.email,
+        firstName: userQuery.data.user.firstName,
+        lastName: userQuery.data.user.lastName,
+        username: userQuery.data.user.username,
+        email: userQuery.data.user.email,
       });
     }
   }, [userQuery.data, profileForm]);
@@ -144,8 +143,9 @@ export function useProfile() {
       return response.data;
     },
     onSuccess: (updatedUser) => {
-      queryClient.setQueryData(queryKeys.auth.currentUser(), updatedUser);
-      setUser(updatedUser);
+      queryClient.setQueryData<GetCurrentUser200>(queryKeys.auth.currentUser(), {
+        user: updatedUser,
+      });
       toast.success(t("profile.messages.imageSuccess"));
     },
     onError: () => {
@@ -165,8 +165,9 @@ export function useProfile() {
       return response.data;
     },
     onSuccess: (updatedUser) => {
-      queryClient.setQueryData(queryKeys.auth.currentUser(), updatedUser);
-      setUser(updatedUser);
+      queryClient.setQueryData<GetCurrentUser200>(queryKeys.auth.currentUser(), {
+        user: updatedUser,
+      });
       toast.success(t("profile.messages.imageRemoved"));
     },
     onError: () => {

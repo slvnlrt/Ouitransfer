@@ -21,7 +21,6 @@ import { SkipToContent } from "@/components/a11y/skip-to-content";
 import { RedirectHandler } from "@/components/auth/redirect-handler";
 import { Favicon } from "@/components/layout/favicon";
 import { DynamicToaster } from "@/components/ui/dynamic-toaster";
-import { useAppInfo } from "@/contexts/app-info-context";
 import { AuthProvider } from "@/contexts/auth-context";
 import { RTL_LANGUAGES } from "@/lib/rtl-languages";
 import { QueryProvider } from "../providers/query-provider";
@@ -115,10 +114,6 @@ export default async function RootLayout({
 }>) {
   const locale = await getLocale();
   const isRTL = RTL_LANGUAGES.includes(locale as (typeof RTL_LANGUAGES)[number]);
-
-  if (typeof window !== "undefined") {
-    useAppInfo.getState().refreshAppInfo();
-  }
 
   return (
     <html lang={locale} dir={isRTL ? "rtl" : "ltr"} suppressHydrationWarning>

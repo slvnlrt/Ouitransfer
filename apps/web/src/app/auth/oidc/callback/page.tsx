@@ -1,17 +1,18 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 
 import { LoadingScreen } from "@/components/layout/loading-screen";
-import { useAuth } from "@/contexts/auth-context";
 import { getCurrentUser } from "@/http/endpoints";
 import { logger } from "@/lib/logger";
+import { queryKeys } from "@/lib/query-keys";
 
 export default function OIDCCallbackPage() {
   const router = useRouter();
-  const { setUser, setIsAuthenticated, setIsAdmin } = useAuth();
+  const queryClient = useQueryClient();
   const t = useTranslations();
 
   useEffect(() => {
@@ -20,11 +21,8 @@ export default function OIDCCallbackPage() {
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
         const response = await getCurrentUser();
-        const { isAdmin, ...userData } = response.data.user;
-
-        setUser(userData);
-        setIsAdmin(isAdmin);
-        setIsAuthenticated(true);
+        // Seed TQ cache so AuthProvider derives state
+        queryClient.setQueryData(queryKeys.auth.currentUser(), response.data);
 
         router.push("/dashboard");
       } catch (error) {
@@ -36,7 +34,7 @@ export default function OIDCCallbackPage() {
     };
 
     handleCallback();
-  }, [router, setUser, setIsAuthenticated, setIsAdmin]);
+  }, [router, queryClient]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">

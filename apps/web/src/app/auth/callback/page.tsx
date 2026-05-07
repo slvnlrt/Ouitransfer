@@ -1,18 +1,19 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
-import { useAuth } from "@/contexts/auth-context";
 import { getCurrentUser } from "@/http/endpoints";
 import { logger } from "@/lib/logger";
+import { queryKeys } from "@/lib/query-keys";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { setUser, setIsAuthenticated, setIsAdmin } = useAuth();
+  const queryClient = useQueryClient();
   const t = useTranslations();
 
   useEffect(() => {
@@ -54,15 +55,12 @@ export default function AuthCallbackPage() {
       // biome-ignore lint/suspicious/noDocumentCookie: Cookie Store API has poor browser support; direct assignment is the only cross-browser option here
       document.cookie = `token=${token}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=lax`;
 
-      // Buscar dados do usuário após definir o cookie
+      // Fetch user data and seed TQ cache so AuthProvider derives state
       const fetchUserData = async () => {
         try {
           const response = await getCurrentUser();
           if (response?.data?.user) {
-            const { isAdmin, ...userData } = response.data.user;
-            setUser(userData);
-            setIsAdmin(isAdmin);
-            setIsAuthenticated(true);
+            queryClient.setQueryData(queryKeys.auth.currentUser(), response.data);
             toast.success(t("auth.successfullyAuthenticated"));
             router.push("/dashboard");
           } else {
@@ -82,7 +80,7 @@ export default function AuthCallbackPage() {
     }
 
     router.push("/login");
-  }, [router, searchParams, setUser, setIsAuthenticated, setIsAdmin, t]);
+  }, [router, searchParams, queryClient, t]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">

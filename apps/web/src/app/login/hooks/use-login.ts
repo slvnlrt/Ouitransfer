@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -9,10 +9,10 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { useAuth } from "@/contexts/auth-context";
-import { getAuthConfig, getCurrentUser, login } from "@/http/endpoints";
+import { getAuthConfig, login } from "@/http/endpoints";
 import { completeTwoFactorLogin } from "@/http/endpoints/auth/two-factor";
 import type { LoginResponse } from "@/http/endpoints/auth/two-factor/types";
-import { logger } from "@/lib/logger";
+import type { GetCurrentUser200 } from "@/http/endpoints/auth/types";
 import { queryKeys } from "@/lib/query-keys";
 import type { LoginFormValues } from "../schemas/schema";
 
@@ -27,7 +27,8 @@ export function useLogin() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations();
-  const { isAuthenticated, setUser, setIsAdmin, setIsAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
   const [isVisible, setIsVisible] = useState(false);
   const [error, setError] = useState<string | undefined>();
   const [requiresTwoFactor, setRequiresTwoFactor] = useState(false);
@@ -82,6 +83,11 @@ export function useLogin() {
 
   const toggleVisibility = () => setIsVisible(!isVisible);
 
+  /** Inject user data into the TQ cache so AuthProvider derives state immediately */
+  const setAuthUserData = (userData: GetCurrentUser200) => {
+    queryClient.setQueryData(queryKeys.auth.currentUser(), userData);
+  };
+
   const onSubmit = async (data: LoginFormValues) => {
     setError(undefined);
     setIsSubmitting(true);
@@ -105,26 +111,14 @@ export function useLogin() {
       }
 
       if (loginData.user) {
-        try {
-          const userResponse = await getCurrentUser();
-          if (userResponse?.data?.user) {
-            const { isAdmin, ...userData } = userResponse.data.user;
-            setUser(userData);
-            setIsAdmin(isAdmin);
-            setIsAuthenticated(true);
-            router.replace("/dashboard");
-            return;
-          }
-        } catch (userErr) {
-          logger.warn("Failed to fetch complete user data, using login data", {
-            err: userErr instanceof Error ? userErr.message : String(userErr),
-          });
-        }
-
-        const { isAdmin, ...userData } = loginData.user;
-        setUser({ ...userData, image: null });
-        setIsAdmin(isAdmin);
-        setIsAuthenticated(true);
+        // The login response has user data — seed the TQ cache with it.
+        // LoginUser lacks `image`, so fill it in. The currentUser query shape
+        // is GetCurrentUser200 = { user: User }.
+        const user = { ...loginData.user, image: null as string | null };
+        setAuthUserData({ user });
+        // Also kick off a background refetch so we get the full user
+        // (including image) from getCurrentUser.
+        queryClient.invalidateQueries({ queryKey: queryKeys.auth.currentUser() });
         router.replace("/dashboard");
       }
     } catch (err) {
@@ -133,9 +127,6 @@ export function useLogin() {
       } else {
         setError(t("errors.unexpectedError"));
       }
-      setIsAuthenticated(false);
-      setUser(null);
-      setIsAdmin(false);
     } finally {
       setIsSubmitting(false);
     }
@@ -157,26 +148,14 @@ export function useLogin() {
         rememberDevice: rememberDevice,
       });
 
-      try {
-        const userResponse = await getCurrentUser();
-        if (userResponse?.data?.user) {
-          const { isAdmin, ...userData } = userResponse.data.user;
-          setUser(userData);
-          setIsAdmin(isAdmin);
-          setIsAuthenticated(true);
-          router.replace("/dashboard");
-          return;
-        }
-      } catch (userErr) {
-        logger.warn("Failed to fetch complete user data after 2FA, using response data", {
-          err: userErr instanceof Error ? userErr.message : String(userErr),
-        });
-      }
-
-      const { isAdmin, ...userData } = response.data.user;
-      setUser({ ...userData, image: userData.image ?? null });
-      setIsAdmin(isAdmin);
-      setIsAuthenticated(true);
+      // 2FA response has user data — seed TQ cache
+      const user = {
+        ...response.data.user,
+        image: response.data.user.image ?? null,
+      };
+      setAuthUserData({ user });
+      // Background refetch for freshest data
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.currentUser() });
       router.replace("/dashboard");
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.data?.error) {
