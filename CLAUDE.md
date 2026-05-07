@@ -95,6 +95,7 @@ audit/
   TODO-POST-PHASE-1.md        Reviewer follow-ups from Phase 1 (all resolved)
   TODO-POST-PHASE-2.md        Reviewer follow-ups from Phase 2 (all resolved)
   TODO-POST-PHASE-3.md        Reviewer follow-ups from Phase 3
+  TODO-POST-PHASE-4.md        Reviewer follow-ups from Phase 4 (all resolved)
 ```
 
 ### Phase 4 — Frontend Modernization: COMPLETE
@@ -121,6 +122,14 @@ Batch 5 complete: 4.9 (skip-to-content link), 4.10 (route announcer for focus ma
 server detection for fa-IR/he-IL, 191 Tailwind directional→logical replacements across 73 files).
 Batch 6 complete: 4.13 (middleware route protection — JWT verification via jose, cookie-based auth at Edge, admin gating). Also pulled forward 6.13 (JWT_SECRET mandatory env var, removed DB-stored secret).
 Phase 4 COMPLETE — all 15 items done.
+
+### Phase 4 — Post-Review Remediation: COMPLETE
+39 review findings from 3 reviewer agents. 3 critical + 20 important + 16 minor.
+Tasks 1-3 complete (11 items fixed): middleware JWT bypass + path confusion + env validation,
+translation namespace fix + locale parity test, auth context query-only + zustand removal +
+staleTime centralization. Tasks 4-8 complete (remaining items): navigation + 401 interceptor,
+RTL + a11y fixes, ErrorDisplay variant rename, dead code + BOM cleanup, TQ polish + locale-aware
+dates + Axios standardization + browseState refactor + editable-item error handling.
 
 ## Important: No Production, No Legacy
 The app is **not in production** and has no existing users. This means:
