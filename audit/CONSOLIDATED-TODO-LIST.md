@@ -1514,13 +1514,15 @@ Final Security Review (4h)
 
 &#x20; Justification: e2e.yml job disabled — no server running when Playwright tests execute
 
-\- \[ ] 8.21 — Add test coverage reporting to CI
+\- \[ ] 8.21 — Add test coverage reporting to CI *(optional — evaluate when project is in maintenance phase)*
 
 &#x20; File: .github/workflows/ci.yml
 
-&#x20; Action: After the test job, upload coverage reports as GitHub Actions artifacts (always free, no external service needed). Optionally integrate Codecov (free for public repos, paid for private) or Coveralls for a persistent coverage dashboard. At minimum: add \`pnpm -r run test:coverage\` as a separate CI job and upload the generated \`coverage/\` directories with \`actions/upload-artifact\`.
+&#x20; Note: Deferred. Coverage reporting in CI adds value only when (a) a minimum threshold is enforced (build fails below X%) and (b) someone actively monitors the trend. At the current stage (active development, pre-production), it adds CI overhead without proportional benefit. `just test-coverage` is available locally for on-demand inspection.
 
-&#x20; Justification: Item 1.15 specified coverage upload to Codecov but it was never implemented
+&#x20; Action when ready: Upload coverage reports as GitHub Actions artifacts (free, no external service). Optionally integrate Codecov (free for public repos, paid for private — repo is currently private) or Coveralls. Add a coverage threshold via vitest's \`thresholds\` config option before enabling CI enforcement.
+
+&#x20; Justification: Item 1.15 specified coverage upload to Codecov but it was never implemented. Repo is private so Codecov would require a paid plan.
 
 \---
 
