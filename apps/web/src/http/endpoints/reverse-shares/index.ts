@@ -39,7 +39,7 @@ import type {
  */
 export const createReverseShare = <TData = CreateReverseShareResult>(
   createReverseShareBody: CreateReverseShareBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.post(`/api/reverse-shares/create`, createReverseShareBody, options);
 };
@@ -49,7 +49,7 @@ export const createReverseShare = <TData = CreateReverseShareResult>(
  * @summary List User's Reverse Shares
  */
 export const listUserReverseShares = <TData = ListUserReverseSharesResult>(
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.get(`/api/reverse-shares/list`, options);
 };
@@ -60,7 +60,7 @@ export const listUserReverseShares = <TData = ListUserReverseSharesResult>(
  */
 export const getReverseShare = <TData = GetReverseShareResult>(
   id: string,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.get(`/api/reverse-shares/details/${id}`, options);
 };
@@ -71,7 +71,7 @@ export const getReverseShare = <TData = GetReverseShareResult>(
  */
 export const updateReverseShare = <TData = UpdateReverseShareResult>(
   updateReverseShareBody: UpdateReverseShareBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.put(`/api/reverse-shares/update`, updateReverseShareBody, options);
 };
@@ -83,9 +83,13 @@ export const updateReverseShare = <TData = UpdateReverseShareResult>(
 export const updateReverseSharePassword = <TData = UpdateReverseSharePasswordResult>(
   id: string,
   updateReverseSharePasswordBody: UpdateReverseSharePasswordBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
-  return apiInstance.put(`/api/reverse-shares/password/${id}`, updateReverseSharePasswordBody, options);
+  return apiInstance.put(
+    `/api/reverse-shares/password/${id}`,
+    updateReverseSharePasswordBody,
+    options,
+  );
 };
 
 /**
@@ -94,7 +98,7 @@ export const updateReverseSharePassword = <TData = UpdateReverseSharePasswordRes
  */
 export const deleteReverseShare = <TData = DeleteReverseShareResult>(
   id: string,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.delete(`/api/reverse-shares/delete/${id}`, options);
 };
@@ -106,14 +110,14 @@ export const deleteReverseShare = <TData = DeleteReverseShareResult>(
 export const getReverseShareForUpload = <TData = GetReverseShareForUploadResult>(
   id: string,
   params?: GetReverseShareForUploadParams,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   if (params?.password) {
     // Password-protected reverse shares use the POST /access endpoint
     return apiInstance.post(
       `/api/reverse-shares/upload/${id}/access`,
       { password: params.password },
-      options
+      options,
     );
   }
   return apiInstance.get(`/api/reverse-shares/upload/${id}`, options);
@@ -126,14 +130,14 @@ export const getReverseShareForUpload = <TData = GetReverseShareForUploadResult>
 export const getReverseShareForUploadByAlias = <TData = GetReverseShareForUploadResult>(
   alias: string,
   params?: GetReverseShareForUploadParams,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   if (params?.password) {
     // Password-protected reverse shares use the POST /access endpoint
     return apiInstance.post(
       `/api/reverse-shares/alias/${alias}/upload/access`,
       { password: params.password },
-      options
+      options,
     );
   }
   return apiInstance.get(`/api/reverse-shares/alias/${alias}/upload`, options);
@@ -147,9 +151,12 @@ export const getPresignedUrlForUpload = <TData = GetPresignedUrlResult>(
   id: string,
   getPresignedUrlBody: GetPresignedUrlBody,
   params?: RegisterFileUploadParams,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
-  const body = { ...getPresignedUrlBody, ...(params?.password ? { password: params.password } : {}) };
+  const body = {
+    ...getPresignedUrlBody,
+    ...(params?.password ? { password: params.password } : {}),
+  };
   return apiInstance.post(`/api/reverse-shares/presigned-url/${id}`, body, options);
 };
 
@@ -161,9 +168,12 @@ export const getPresignedUrlForUploadByAlias = <TData = GetPresignedUrlResult>(
   alias: string,
   getPresignedUrlBody: GetPresignedUrlBody,
   params?: RegisterFileUploadParams,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
-  const body = { ...getPresignedUrlBody, ...(params?.password ? { password: params.password } : {}) };
+  const body = {
+    ...getPresignedUrlBody,
+    ...(params?.password ? { password: params.password } : {}),
+  };
   return apiInstance.post(`/api/reverse-shares/alias/${alias}/presigned-url`, body, options);
 };
 
@@ -175,9 +185,12 @@ export const registerFileUpload = <TData = RegisterFileUploadResult>(
   id: string,
   registerFileUploadBody: RegisterFileUploadBody,
   params?: RegisterFileUploadParams,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
-  const body = { ...registerFileUploadBody, ...(params?.password ? { password: params.password } : {}) };
+  const body = {
+    ...registerFileUploadBody,
+    ...(params?.password ? { password: params.password } : {}),
+  };
   return apiInstance.post(`/api/reverse-shares/register-upload/${id}`, body, options);
 };
 
@@ -189,9 +202,12 @@ export const registerFileUploadByAlias = <TData = RegisterFileUploadResult>(
   alias: string,
   registerFileUploadBody: RegisterFileUploadBody,
   params?: RegisterFileUploadParams,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
-  const body = { ...registerFileUploadBody, ...(params?.password ? { password: params.password } : {}) };
+  const body = {
+    ...registerFileUploadBody,
+    ...(params?.password ? { password: params.password } : {}),
+  };
   return apiInstance.post(`/api/reverse-shares/alias/${alias}/register-file`, body, options);
 };
 
@@ -202,9 +218,13 @@ export const registerFileUploadByAlias = <TData = RegisterFileUploadResult>(
 export const checkReverseSharePassword = <TData = CheckReverseSharePasswordResult>(
   id: string,
   checkReverseSharePasswordBody: CheckReverseSharePasswordBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
-  return apiInstance.post(`/api/reverse-shares/check-password/${id}`, checkReverseSharePasswordBody, options);
+  return apiInstance.post(
+    `/api/reverse-shares/check-password/${id}`,
+    checkReverseSharePasswordBody,
+    options,
+  );
 };
 
 /**
@@ -213,7 +233,7 @@ export const checkReverseSharePassword = <TData = CheckReverseSharePasswordResul
  */
 export const downloadReverseShareFile = <TData = GetPresignedUrlResult>(
   fileId: string,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.get(`/api/reverse-shares/files/download/${fileId}`, options);
 };
@@ -222,7 +242,10 @@ export const downloadReverseShareFile = <TData = GetPresignedUrlResult>(
  * Delete file from reverse share
  * @summary Delete File from Reverse Share
  */
-export const deleteReverseShareFile = <TData = DeleteReverseShareFileByIdResult>(fileId: string, options?: AxiosRequestConfig): Promise<TData> => {
+export const deleteReverseShareFile = <TData = DeleteReverseShareFileByIdResult>(
+  fileId: string,
+  options?: AxiosRequestConfig,
+): Promise<TData> => {
   return apiInstance.delete(`/api/reverse-shares/files/${fileId}`, options);
 };
 
@@ -233,7 +256,7 @@ export const deleteReverseShareFile = <TData = DeleteReverseShareFileByIdResult>
 export const createReverseShareAlias = <TData = CreateReverseShareAliasResult>(
   reverseShareId: string,
   createAliasBody: { alias: string },
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.post(`/api/reverse-shares/${reverseShareId}/alias`, createAliasBody, options);
 };
@@ -244,7 +267,7 @@ export const createReverseShareAlias = <TData = CreateReverseShareAliasResult>(
  */
 export const activateReverseShare = <TData = ActivateReverseShareResult>(
   id: string,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.patch(`/api/reverse-shares/activate/${id}`, undefined, options);
 };
@@ -255,7 +278,7 @@ export const activateReverseShare = <TData = ActivateReverseShareResult>(
  */
 export const deactivateReverseShare = <TData = DeactivateReverseShareResult>(
   id: string,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.patch(`/api/reverse-shares/deactivate/${id}`, undefined, options);
 };
@@ -267,9 +290,13 @@ export const deactivateReverseShare = <TData = DeactivateReverseShareResult>(
 export const updateReverseShareFile = <TData = UpdateReverseShareFileResult>(
   fileId: string,
   updateReverseShareFileBody: UpdateReverseShareFileBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
-  return apiInstance.put(`/api/reverse-shares/files/${fileId}`, updateReverseShareFileBody, options);
+  return apiInstance.put(
+    `/api/reverse-shares/files/${fileId}`,
+    updateReverseShareFileBody,
+    options,
+  );
 };
 
 /**
@@ -278,7 +305,7 @@ export const updateReverseShareFile = <TData = UpdateReverseShareFileResult>(
  */
 export const copyReverseShareFileToUserFiles = <TData = CopyReverseShareFileResult>(
   fileId: string,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.post(`/api/reverse-shares/files/${fileId}/copy`, undefined, options);
 };
@@ -291,10 +318,14 @@ export const createMultipartUploadByAlias = <TData = CreateMultipartUploadByAlia
   alias: string,
   body: { filename: string; extension: string },
   params?: { password?: string },
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   const requestBody = { ...body, ...(params?.password ? { password: params.password } : {}) };
-  return apiInstance.post(`/api/reverse-shares/alias/${alias}/multipart/create`, requestBody, options);
+  return apiInstance.post(
+    `/api/reverse-shares/alias/${alias}/multipart/create`,
+    requestBody,
+    options,
+  );
 };
 
 /**
@@ -305,7 +336,7 @@ export const createMultipartUploadByAlias = <TData = CreateMultipartUploadByAlia
 export const getMultipartPartUrlByAlias = <TData = GetMultipartPartUrlByAliasResult>(
   alias: string,
   params: { uploadId: string; objectName: string; partNumber: string; password?: string },
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   const { uploadId, objectName, partNumber, password } = params;
   const body: { uploadId: string; objectName: string; partNumber: string; password?: string } = {
@@ -325,12 +356,20 @@ export const getMultipartPartUrlByAlias = <TData = GetMultipartPartUrlByAliasRes
  */
 export const completeMultipartUploadByAlias = <TData = CompleteMultipartUploadByAliasResult>(
   alias: string,
-  body: { uploadId: string; objectName: string; parts: Array<{ PartNumber: number; ETag: string }> },
+  body: {
+    uploadId: string;
+    objectName: string;
+    parts: Array<{ PartNumber: number; ETag: string }>;
+  },
   params?: { password?: string },
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   const requestBody = { ...body, ...(params?.password ? { password: params.password } : {}) };
-  return apiInstance.post(`/api/reverse-shares/alias/${alias}/multipart/complete`, requestBody, options);
+  return apiInstance.post(
+    `/api/reverse-shares/alias/${alias}/multipart/complete`,
+    requestBody,
+    options,
+  );
 };
 
 /**
@@ -341,8 +380,12 @@ export const abortMultipartUploadByAlias = <TData = AbortMultipartUploadByAliasR
   alias: string,
   body: { uploadId: string; objectName: string },
   params?: { password?: string },
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   const requestBody = { ...body, ...(params?.password ? { password: params.password } : {}) };
-  return apiInstance.post(`/api/reverse-shares/alias/${alias}/multipart/abort`, requestBody, options);
+  return apiInstance.post(
+    `/api/reverse-shares/alias/${alias}/multipart/abort`,
+    requestBody,
+    options,
+  );
 };

@@ -1,4 +1,4 @@
-import { type FileType } from "@/utils/file-types";
+import type { FileType } from "@/utils/file-types";
 import { AudioPreview } from "./audio-preview";
 import { DefaultPreview } from "./default-preview";
 import { ImagePreview } from "./image-preview";
@@ -67,7 +67,14 @@ export function FilePreviewRenderer({
       return <TextPreview content={textContent} fileName={fileName} />;
 
     case "image":
-      return <ImagePreview src={previewUrl!} alt={fileName} description={description} onDownload={onDownload} />;
+      return (
+        <ImagePreview
+          src={previewUrl!}
+          alt={fileName}
+          description={description}
+          onDownload={onDownload}
+        />
+      );
 
     case "audio":
       return <AudioPreview src={mediaUrl!} />;

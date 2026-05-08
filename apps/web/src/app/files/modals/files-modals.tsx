@@ -87,7 +87,7 @@ export function FilesModals({
           ...(fileManager.foldersToDownload?.map((folder) => ({
             id: folder.id,
             name: folder.name,
-            size: folder.totalSize ? parseInt(folder.totalSize) : undefined,
+            size: folder.totalSize ? parseInt(folder.totalSize, 10) : undefined,
             type: "folder" as const,
           })) || []),
         ]}
@@ -102,12 +102,14 @@ export function FilesModals({
         onConfirm={fileManager.handleDeleteBulk}
         title={t("files.bulkDeleteTitle")}
         description={t("files.bulkDeleteConfirmation", {
-          count: (fileManager.filesToDelete?.length || 0) + (fileManager.foldersToDelete?.length || 0),
+          count:
+            (fileManager.filesToDelete?.length || 0) + (fileManager.foldersToDelete?.length || 0),
         })}
         files={fileManager.filesToDelete?.map((f) => f.name) || []}
         folders={fileManager.foldersToDelete?.map((f) => f.name) || []}
         itemType={
-          (fileManager.filesToDelete?.length || 0) > 0 && (fileManager.foldersToDelete?.length || 0) > 0
+          (fileManager.filesToDelete?.length || 0) > 0 &&
+          (fileManager.foldersToDelete?.length || 0) > 0
             ? "mixed"
             : (fileManager.foldersToDelete?.length || 0) > 0
               ? "files"

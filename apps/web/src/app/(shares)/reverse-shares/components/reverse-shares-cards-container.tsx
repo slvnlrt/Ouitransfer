@@ -1,4 +1,4 @@
-import { ReverseShare } from "../hooks/use-reverse-shares";
+import type { ReverseShare } from "../hooks/use-reverse-shares";
 import { EmptyReverseSharesState } from "./empty-reverse-shares-state";
 import { ReverseShareCard } from "./reverse-share-card";
 
@@ -14,7 +14,10 @@ interface ReverseSharesCardsContainerProps {
   onCreateReverseShare: () => void;
   onUpdateReverseShare?: (id: string, data: Record<string, unknown>) => Promise<unknown>;
   onToggleActive?: (id: string, isActive: boolean) => Promise<unknown>;
-  onUpdatePassword?: (id: string, data: { hasPassword: boolean; password?: string }) => Promise<unknown>;
+  onUpdatePassword?: (
+    id: string,
+    data: { hasPassword: boolean; password?: string },
+  ) => Promise<unknown>;
 }
 
 export function ReverseSharesCardsContainer({

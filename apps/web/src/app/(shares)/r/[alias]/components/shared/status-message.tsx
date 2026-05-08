@@ -42,14 +42,18 @@ export function StatusMessage({
         </div>
       </div>
       <div className="space-y-2">
-        <h3 className={`${isCompact ? "text-lg" : "text-xl"} font-semibold ${styles.titleColor}`}>{title}</h3>
+        <h3 className={`${isCompact ? "text-lg" : "text-xl"} font-semibold ${styles.titleColor}`}>
+          {title}
+        </h3>
         <p
           className={`${styles.descriptionColor} ${isCompact ? "text-sm" : ""} ${isCompact ? "" : "max-w-md mx-auto"}`}
         >
           {description}
         </p>
         {additionalText && (
-          <p className={`${isCompact ? "text-xs" : "text-sm"} text-muted-foreground`}>{additionalText}</p>
+          <p className={`${isCompact ? "text-xs" : "text-sm"} text-muted-foreground`}>
+            {additionalText}
+          </p>
         )}
       </div>
     </div>
@@ -76,16 +80,19 @@ export function WeTransferStatusMessage({
         return "error";
       case MESSAGE_TYPES.EXPIRED:
         return "info";
-      case MESSAGE_TYPES.NOT_FOUND:
       default:
         return "neutral";
     }
   };
 
   const description =
-    type === MESSAGE_TYPES.MAX_FILES ? t(descriptionKey, { maxFiles: reverseShare?.maxFiles || 0 }) : t(descriptionKey);
+    type === MESSAGE_TYPES.MAX_FILES
+      ? t(descriptionKey, { maxFiles: reverseShare?.maxFiles || 0 })
+      : t(descriptionKey);
 
-  const additionalText = showContactOwner ? t("reverseShares.upload.maxFilesReached.contactOwner") : undefined;
+  const additionalText = showContactOwner
+    ? t("reverseShares.upload.maxFilesReached.contactOwner")
+    : undefined;
 
   return (
     <StatusMessage

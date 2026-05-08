@@ -1,4 +1,11 @@
-import type { File, Folder, Share, ShareAlias, ShareRecipient, ShareSecurity } from "@prisma/client";
+import type {
+  File,
+  Folder,
+  Share,
+  ShareAlias,
+  ShareRecipient,
+  ShareSecurity,
+} from "@prisma/client";
 
 import { prisma } from "../../shared/prisma.js";
 import type { CreateShareInput } from "./dto.js";
@@ -21,11 +28,17 @@ export interface IShareRepository {
   >;
   findShareBySecurityId(
     securityId: string,
-  ): Promise<(Share & { security: ShareSecurity; files: File[]; folders: FolderWithCount[] }) | null>;
-  findShareByAlias(
-    alias: string,
   ): Promise<
-    (Share & { security: ShareSecurity; files: File[]; folders: FolderWithCount[]; recipients: ShareRecipient[] }) | null
+    (Share & { security: ShareSecurity; files: File[]; folders: FolderWithCount[] }) | null
+  >;
+  findShareByAlias(alias: string): Promise<
+    | (Share & {
+        security: ShareSecurity;
+        files: File[];
+        folders: FolderWithCount[];
+        recipients: ShareRecipient[];
+      })
+    | null
   >;
   updateShare(id: string, data: Partial<Share>): Promise<Share>;
   updateShareSecurity(id: string, data: Partial<ShareSecurity>): Promise<ShareSecurity>;

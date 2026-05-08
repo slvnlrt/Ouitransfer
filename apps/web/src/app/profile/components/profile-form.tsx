@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ProfileFormProps } from "../types";
+import type { ProfileFormProps } from "../types";
 
 export function ProfileForm({ form, onSubmit }: ProfileFormProps) {
   const t = useTranslations();
@@ -32,7 +32,9 @@ export function ProfileForm({ form, onSubmit }: ProfileFormProps) {
                 aria-errormessage={errors.firstName?.message}
                 placeholder={t("profile.form.firstName")}
               />
-              {errors.firstName && <span className="text-sm text-red-500">{errors.firstName.message}</span>}
+              {errors.firstName && (
+                <span className="text-sm text-red-500">{errors.firstName.message}</span>
+              )}
             </div>
             <div className="flex flex-col gap-2">
               <Label>{t("profile.form.lastName")}</Label>
@@ -43,7 +45,9 @@ export function ProfileForm({ form, onSubmit }: ProfileFormProps) {
                 aria-errormessage={errors.lastName?.message}
                 placeholder={t("profile.form.lastName")}
               />
-              {errors.lastName && <span className="text-sm text-red-500">{errors.lastName.message}</span>}
+              {errors.lastName && (
+                <span className="text-sm text-red-500">{errors.lastName.message}</span>
+              )}
             </div>
           </div>
           <div className="flex flex-col gap-2">
@@ -55,7 +59,9 @@ export function ProfileForm({ form, onSubmit }: ProfileFormProps) {
               aria-errormessage={errors.username?.message}
               placeholder={t("profile.form.username")}
             />
-            {errors.username && <span className="text-sm text-red-500">{errors.username.message}</span>}
+            {errors.username && (
+              <span className="text-sm text-red-500">{errors.username.message}</span>
+            )}
           </div>
           <div className="flex flex-col gap-2">
             <Label>{t("profile.form.email")}</Label>
@@ -70,7 +76,11 @@ export function ProfileForm({ form, onSubmit }: ProfileFormProps) {
             {errors.email && <span className="text-sm text-red-500">{errors.email.message}</span>}
           </div>
           <div className="flex justify-end">
-            <Button className="mt-4 font-semibold flex items-center gap-2" disabled={isSubmitting} type="submit">
+            <Button
+              className="mt-4 font-semibold flex items-center gap-2"
+              disabled={isSubmitting}
+              type="submit"
+            >
               {!isSubmitting && <IconUserEdit className="w-5 h-5" />}
               {t("profile.form.updateButton")}
             </Button>

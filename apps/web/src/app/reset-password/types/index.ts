@@ -1,6 +1,6 @@
-import { UseFormReturn } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
 
-import { ResetPasswordFormData } from "../hooks/use-reset-password";
+import type { ResetPasswordFormData } from "../hooks/use-reset-password";
 
 export interface ResetPasswordFormProps {
   form: UseFormReturn<ResetPasswordFormData>;

@@ -346,7 +346,9 @@ export async function handleProxyRequest(
     return buildJsonResponse(apiRes);
   } catch (error: unknown) {
     const err = error as Error & { name?: string };
-    logger.error(`Proxy error [${method} /${segments.join("/")}]`, { err: err.message ?? String(error) });
+    logger.error(`Proxy error [${method} /${segments.join("/")}]`, {
+      err: err.message ?? String(error),
+    });
 
     if (err.name === "AbortError") {
       return NextResponse.json(

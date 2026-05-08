@@ -61,15 +61,24 @@ export class OAuthFlowService {
     };
   }
 
-  async resolveEndpoints(provider: AuthProviderModel, config: ProviderConfig): Promise<ProviderEndpoints> {
+  async resolveEndpoints(
+    provider: AuthProviderModel,
+    config: ProviderConfig,
+  ): Promise<ProviderEndpoints> {
     if (provider.authorizationEndpoint && provider.tokenEndpoint && provider.userInfoEndpoint) {
       return {
         authorizationEndpoint: this.resolveEndpointUrl(
           provider.authorizationEndpoint,
           provider.issuerUrl ?? undefined,
         ),
-        tokenEndpoint: this.resolveEndpointUrl(provider.tokenEndpoint, provider.issuerUrl ?? undefined),
-        userInfoEndpoint: this.resolveEndpointUrl(provider.userInfoEndpoint, provider.issuerUrl ?? undefined),
+        tokenEndpoint: this.resolveEndpointUrl(
+          provider.tokenEndpoint,
+          provider.issuerUrl ?? undefined,
+        ),
+        userInfoEndpoint: this.resolveEndpointUrl(
+          provider.userInfoEndpoint,
+          provider.issuerUrl ?? undefined,
+        ),
       };
     }
 
@@ -136,7 +145,10 @@ export class OAuthFlowService {
     return null;
   }
 
-  setupPkceIfNeeded(provider: AuthProviderModel): { codeVerifier?: string; codeChallenge?: string } {
+  setupPkceIfNeeded(provider: AuthProviderModel): {
+    codeVerifier?: string;
+    codeChallenge?: string;
+  } {
     const needsPkce = provider.type === DEFAULT_PROVIDER_TYPE;
 
     if (needsPkce) {
@@ -228,7 +240,10 @@ export class OAuthFlowService {
     return tokens;
   }
 
-  async fetchUserInfo(tokens: TokenResponse, endpoints: ProviderEndpoints): Promise<Record<string, unknown>> {
+  async fetchUserInfo(
+    tokens: TokenResponse,
+    endpoints: ProviderEndpoints,
+  ): Promise<Record<string, unknown>> {
     const userInfoResponse = await fetch(endpoints.userInfoEndpoint, {
       headers: {
         Authorization: `Bearer ${tokens.access_token}`,
@@ -272,7 +287,10 @@ export class OAuthFlowService {
     return config.authMethod || "body";
   }
 
-  private extractUserInfo(rawUserInfo: Record<string, unknown>, config: ProviderConfig): ProviderUserInfo {
+  private extractUserInfo(
+    rawUserInfo: Record<string, unknown>,
+    config: ProviderConfig,
+  ): ProviderUserInfo {
     const userInfo: ProviderUserInfo = { id: "", email: "" };
     const mappings = config.fieldMappings;
 

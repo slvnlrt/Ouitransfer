@@ -28,7 +28,11 @@ export default function SharesPage() {
     smtpEnabled,
   } = useShares();
 
-  const { isOpen: isCreateModalOpen, onOpen: onOpenCreateModal, onClose: onCloseCreateModal } = useDisclosure();
+  const {
+    isOpen: isCreateModalOpen,
+    onOpen: onOpenCreateModal,
+    onClose: onCloseCreateModal,
+  } = useDisclosure();
   const shareManager = useShareManager(loadShares);
   const fileManager = useEnhancedFileManager(loadShares);
 

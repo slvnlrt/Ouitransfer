@@ -7,11 +7,16 @@ export interface StorageProvider {
 
   // Multipart upload methods
   createMultipartUpload(objectName: string): Promise<string>;
-  getPresignedPartUrl(objectName: string, uploadId: string, partNumber: number, expires: number): Promise<string>;
+  getPresignedPartUrl(
+    objectName: string,
+    uploadId: string,
+    partNumber: number,
+    expires: number,
+  ): Promise<string>;
   completeMultipartUpload(
     objectName: string,
     uploadId: string,
-    parts: Array<{ PartNumber: number; ETag: string }>
+    parts: Array<{ PartNumber: number; ETag: string }>,
   ): Promise<void>;
   abortMultipartUpload(objectName: string, uploadId: string): Promise<void>;
 }

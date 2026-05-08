@@ -1,8 +1,5 @@
 import { fastify } from "fastify";
-import {
-  serializerCompiler,
-  validatorCompiler,
-} from "fastify-type-provider-zod";
+import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { healthRoutes } from "../modules/health/routes.js";

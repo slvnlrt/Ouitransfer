@@ -1,14 +1,19 @@
-import { useRouter } from "next/navigation";
 import { IconPlus, IconShare } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { SharesTable } from "@/components/tables/shares-table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { RecentSharesProps } from "../types";
+import type { RecentSharesProps } from "../types";
 import { EmptySharesState } from "./empty-shares-state";
 
-export function RecentShares({ shares, shareManager, onOpenCreateModal, onCopyLink }: RecentSharesProps) {
+export function RecentShares({
+  shares,
+  shareManager,
+  onOpenCreateModal,
+  onCopyLink,
+}: RecentSharesProps) {
   const t = useTranslations();
   const router = useRouter();
 

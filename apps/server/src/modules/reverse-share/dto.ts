@@ -11,13 +11,33 @@ export const CreateReverseShareSchema = z.object({
       message: "Data de expiração deve estar no formato ISO 8601 (ex: 2025-02-06T13:20:49Z)",
     })
     .optional(),
-  maxFiles: z.number().int().positive().nullable().optional().describe("Maximum number of files allowed"),
-  maxFileSize: z.number().int().positive().nullable().optional().describe("Maximum file size in bytes"),
-  allowedFileTypes: z.string().nullable().optional().describe("Comma-separated list of allowed file extensions"),
+  maxFiles: z
+    .number()
+    .int()
+    .positive()
+    .nullable()
+    .optional()
+    .describe("Maximum number of files allowed"),
+  maxFileSize: z
+    .number()
+    .int()
+    .positive()
+    .nullable()
+    .optional()
+    .describe("Maximum file size in bytes"),
+  allowedFileTypes: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("Comma-separated list of allowed file extensions"),
   password: z.string().optional().describe("Password for private access"),
   pageLayout: z.enum(["WETRANSFER", "DEFAULT"]).default("DEFAULT").describe("Page layout type"),
-  nameFieldRequired: FieldRequirementSchema.default("OPTIONAL").describe("Name field requirement setting"),
-  emailFieldRequired: FieldRequirementSchema.default("OPTIONAL").describe("Email field requirement setting"),
+  nameFieldRequired: FieldRequirementSchema.default("OPTIONAL").describe(
+    "Name field requirement setting",
+  ),
+  emailFieldRequired: FieldRequirementSchema.default("OPTIONAL").describe(
+    "Email field requirement setting",
+  ),
 });
 
 export const UpdateReverseShareSchema = z.object({
@@ -112,12 +132,19 @@ export const UpdateReverseSharePasswordSchema = z.object({
 
 export const GetPresignedUrlSchema = z.object({
   filename: z.string().min(1, "Filename is required").describe("The file name (without extension)"),
-  extension: z.string().min(1, "Extension is required").describe("The file extension (without leading dot)"),
+  extension: z
+    .string()
+    .min(1, "Extension is required")
+    .describe("The file extension (without leading dot)"),
 });
 
 export const UpdateReverseShareFileSchema = z.object({
   name: z.string().min(1, "Name is required").optional().describe("New file name"),
-  description: z.string().nullable().optional().describe("New file description (can be null to remove)"),
+  description: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("New file description (can be null to remove)"),
 });
 
 export type CreateReverseShareInput = z.infer<typeof CreateReverseShareSchema>;

@@ -22,7 +22,10 @@ export function FilesTableSkeleton({ rowCount = 10 }: FilesTableSkeletonProps) {
         {/* Table Rows */}
         <div className="divide-y">
           {Array.from({ length: rowCount }).map((_, index) => (
-            <div key={index} className="grid grid-cols-[auto_1fr_120px_120px_80px] gap-4 p-4 hover:bg-muted/50">
+            <div
+              key={index}
+              className="grid grid-cols-[auto_1fr_120px_120px_80px] gap-4 p-4 hover:bg-muted/50"
+            >
               {/* Checkbox */}
               <div className="flex items-center gap-2 min-w-0">
                 <Skeleton className="h-4 w-4" />

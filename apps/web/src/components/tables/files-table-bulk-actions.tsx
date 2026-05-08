@@ -49,7 +49,12 @@ export function FilesTableBulkActions({
       <div className="flex items-center gap-2">
         {isShareMode ? (
           onBulkDownload && (
-            <Button variant="default" size="sm" className="gap-2" onClick={() => onAction("download")}>
+            <Button
+              variant="default"
+              size="sm"
+              className="gap-2"
+              onClick={() => onAction("download")}
+            >
               <IconDownload className="h-4 w-4" />
               {t("filesTable.bulkActions.download")}
             </Button>
@@ -70,7 +75,10 @@ export function FilesTableBulkActions({
                 </DropdownMenuItem>
               )}
               {onBulkDownload && (
-                <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onAction("download")}>
+                <DropdownMenuItem
+                  className="cursor-pointer py-2"
+                  onClick={() => onAction("download")}
+                >
                   <IconDownload className="h-4 w-4" />
                   {t("filesTable.bulkActions.download")}
                 </DropdownMenuItem>

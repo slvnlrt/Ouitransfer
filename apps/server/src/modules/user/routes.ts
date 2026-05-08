@@ -18,9 +18,7 @@ export async function userRoutes(app: FastifyInstance) {
         try {
           await request.jwtVerify();
           if (!request.user.isAdmin) {
-            return reply
-              .status(403)
-              .send({ error: "Access restricted to administrators" });
+            return reply.status(403).send({ error: "Access restricted to administrators" });
           }
         } catch (authErr) {
           request.log.error({ err: authErr }, "JWT verification failed");
@@ -31,9 +29,7 @@ export async function userRoutes(app: FastifyInstance) {
       }
     } catch (err) {
       request.log.error({ err }, "Error in register preValidation");
-      return reply
-        .status(500)
-        .send({ error: "Internal server error" });
+      return reply.status(500).send({ error: "Internal server error" });
     }
   };
 

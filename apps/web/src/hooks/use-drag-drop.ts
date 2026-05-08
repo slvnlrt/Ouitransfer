@@ -1,5 +1,5 @@
-import { useCallback, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { moveFile } from "@/http/endpoints/files";
@@ -25,7 +25,11 @@ interface DragDropItem {
 
 interface UseDragDropProps {
   onRefresh?: () => Promise<void>;
-  onImmediateUpdate?: (itemId: string, itemType: "file" | "folder", newParentId: string | null) => void;
+  onImmediateUpdate?: (
+    itemId: string,
+    itemType: "file" | "folder",
+    newParentId: string | null,
+  ) => void;
   selectedFiles?: Set<string>;
   selectedFolders?: Set<string>;
   files?: DragDropItem[];
@@ -59,7 +63,9 @@ export function useDragDrop({
 
     // Dark mode support
     const isDarkMode = document.documentElement.classList.contains("dark");
-    ghost.style.backgroundColor = isDarkMode ? "rgba(10, 10, 10, 0.95)" : "rgba(255, 255, 255, 0.95)";
+    ghost.style.backgroundColor = isDarkMode
+      ? "rgba(10, 10, 10, 0.95)"
+      : "rgba(255, 255, 255, 0.95)";
     ghost.style.border = "2px solid hsl(var(--primary))";
     ghost.style.borderRadius = "8px";
     ghost.style.boxShadow = isDarkMode
@@ -79,13 +85,17 @@ export function useDragDrop({
       itemDiv.style.alignItems = "center";
       itemDiv.style.gap = "8px";
       itemDiv.style.padding = "6px 8px";
-      itemDiv.style.backgroundColor = isDarkMode ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.03)";
+      itemDiv.style.backgroundColor = isDarkMode
+        ? "rgba(255, 255, 255, 0.05)"
+        : "rgba(0, 0, 0, 0.03)";
       itemDiv.style.borderRadius = "4px";
       itemDiv.style.fontSize = "13px";
       itemDiv.style.fontWeight = "500";
       itemDiv.style.color = "hsl(var(--foreground))";
       itemDiv.style.transition = "all 0.2s ease";
-      itemDiv.style.boxShadow = isDarkMode ? "0 1px 3px rgba(0, 0, 0, 0.3)" : "0 1px 3px rgba(0, 0, 0, 0.1)";
+      itemDiv.style.boxShadow = isDarkMode
+        ? "0 1px 3px rgba(0, 0, 0, 0.3)"
+        : "0 1px 3px rgba(0, 0, 0, 0.1)";
 
       const icon = document.createElement("span");
       icon.textContent = item.type === "folder" ? "📁" : "📄";
@@ -109,7 +119,9 @@ export function useDragDrop({
       moreDiv.style.fontWeight = "600";
       moreDiv.style.color = "hsl(var(--primary))";
       moreDiv.style.textAlign = "center";
-      moreDiv.style.backgroundColor = isDarkMode ? "rgba(255, 255, 255, 0.03)" : "rgba(0, 0, 0, 0.02)";
+      moreDiv.style.backgroundColor = isDarkMode
+        ? "rgba(255, 255, 255, 0.03)"
+        : "rgba(0, 0, 0, 0.02)";
       moreDiv.style.borderRadius = "4px";
       moreDiv.style.marginTop = "2px";
       moreDiv.textContent = `+${remaining} more`;
@@ -159,7 +171,7 @@ export function useDragDrop({
         document.body.removeChild(ghost);
       }, 0);
     },
-    [selectedFiles, selectedFolders, files, folders, createDragGhost]
+    [selectedFiles, selectedFolders, files, folders, createDragGhost],
   );
 
   const handleDragEnd = useCallback(() => {
@@ -233,13 +245,15 @@ export function useDragDrop({
         // Show success message
         if (validItems.length === 1) {
           toast.success(
-            `${validItems[0].type === "folder" ? "Folder" : "File"} "${validItems[0].name}" moved to "${target.name}"`
+            `${validItems[0].type === "folder" ? "Folder" : "File"} "${validItems[0].name}" moved to "${target.name}"`,
           );
         } else {
           toast.success(`${validItems.length} items moved to "${target.name}"`);
         }
       } catch (error) {
-        logger.error("Error moving items", { err: error instanceof Error ? error.message : String(error) });
+        logger.error("Error moving items", {
+          err: error instanceof Error ? error.message : String(error),
+        });
         toast.error(t("files.errors.moveItemsFailed"));
         // Refresh to restore state on error
         if (onRefresh) {
@@ -249,7 +263,7 @@ export function useDragDrop({
         handleDragEnd();
       }
     },
-    [onImmediateUpdate, t, onRefresh, handleDragEnd]
+    [onImmediateUpdate, t, onRefresh, handleDragEnd],
   );
 
   return {

@@ -57,7 +57,9 @@ export class UserService {
   async updateUser(userId: string, data: Partial<UserWithPassword>) {
     const { password, ...rest } = data;
 
-    const updateData: Omit<Partial<UserWithPassword>, "password"> & { password?: string } = { ...rest };
+    const updateData: Omit<Partial<UserWithPassword>, "password"> & { password?: string } = {
+      ...rest,
+    };
 
     if (password) {
       updateData.password = await bcrypt.hash(password, 10);

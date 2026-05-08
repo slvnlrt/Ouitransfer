@@ -24,7 +24,7 @@ export const CreateShareSchema = z
     },
     {
       message: "At least one file or folder must be selected to create a share",
-    }
+    },
   );
 
 export const UpdateShareSchema = z.object({
@@ -70,7 +70,7 @@ export const ShareResponseSchema = z.object({
       folderId: z.string().nullable().describe("The folder ID containing this file"),
       createdAt: z.string().describe("The file creation date"),
       updatedAt: z.string().describe("The file update date"),
-    })
+    }),
   ),
   folders: z.array(
     z.object({
@@ -89,7 +89,7 @@ export const ShareResponseSchema = z.object({
           children: z.number().describe("Number of subfolders"),
         })
         .optional(),
-    })
+    }),
   ),
   recipients: z.array(
     z.object({
@@ -97,7 +97,7 @@ export const ShareResponseSchema = z.object({
       email: z.string().email().describe("The recipient email"),
       createdAt: z.string().describe("The recipient creation date"),
       updatedAt: z.string().describe("The recipient update date"),
-    })
+    }),
   ),
   alias: ShareAliasResponseSchema.nullable(),
 });
@@ -109,7 +109,9 @@ export const UpdateSharePasswordSchema = z.object({
 export const UpdateShareItemsSchema = z
   .object({
     files: z.array(z.string().min(1, "File ID is required").describe("The file IDs")).optional(),
-    folders: z.array(z.string().min(1, "Folder ID is required").describe("The folder IDs")).optional(),
+    folders: z
+      .array(z.string().min(1, "Folder ID is required").describe("The folder IDs"))
+      .optional(),
   })
   .refine(
     (data) => {
@@ -119,7 +121,7 @@ export const UpdateShareItemsSchema = z
     },
     {
       message: "At least one file or folder must be provided",
-    }
+    },
   );
 
 export const UpdateShareRecipientsSchema = z.object({

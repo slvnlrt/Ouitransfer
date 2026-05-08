@@ -2,7 +2,13 @@ import { IconTrash } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface AuthProviderDeleteModalProps {
   isOpen: boolean;
@@ -37,7 +43,9 @@ export function AuthProviderDeleteModal({
 
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            {t("authProviders.deleteModal.confirmMessage", { displayName: provider?.displayName || "" })}
+            {t("authProviders.deleteModal.confirmMessage", {
+              displayName: provider?.displayName || "",
+            })}
           </p>
 
           {provider && (

@@ -4,9 +4,7 @@ import * as jose from "jose";
 // Separate secret for challenge tokens (not the main JWT secret).
 // Generated once at module load — survives process lifetime.
 // Regenerated on restart, which is acceptable for short-lived tokens.
-const CHALLENGE_SECRET = new TextEncoder().encode(
-  crypto.randomBytes(32).toString("hex")
-);
+const CHALLENGE_SECRET = new TextEncoder().encode(crypto.randomBytes(32).toString("hex"));
 
 /**
  * Create a short-lived challenge token after password verification.

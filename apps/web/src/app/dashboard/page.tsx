@@ -47,7 +47,11 @@ export default function DashboardPage() {
           showBreadcrumb={false}
           title={t("dashboard.pageTitle")}
         >
-          <StorageUsage diskSpace={diskSpace} diskSpaceError={diskSpaceError} onRetry={handleRetryDiskSpace} />
+          <StorageUsage
+            diskSpace={diskSpace}
+            diskSpaceError={diskSpaceError}
+            onRetry={handleRetryDiskSpace}
+          />
           <QuickAccessCards />
 
           <div className="flex flex-col gap-6">

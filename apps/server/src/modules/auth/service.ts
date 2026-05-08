@@ -1,8 +1,7 @@
 import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
-
-import { getLogger } from "../../utils/logger.js";
 import { prisma } from "../../shared/prisma.js";
+import { getLogger } from "../../utils/logger.js";
 import { ConfigService } from "../config/service.js";
 import { EmailService } from "../email/service.js";
 import { TwoFactorService } from "../two-factor/service.js";

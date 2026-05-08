@@ -2,9 +2,8 @@ import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
 import * as OTPAuth from "otpauth";
 import QRCode from "qrcode";
-
-import { getLogger } from "../../utils/logger.js";
 import { prisma } from "../../shared/prisma.js";
+import { getLogger } from "../../utils/logger.js";
 
 interface BackupCode {
   code: string;

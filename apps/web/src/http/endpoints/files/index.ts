@@ -33,7 +33,7 @@ import type {
  */
 export const getFilePresignedUrl = <TData = GetPresignedUrlResult>(
   params: GetPresignedUrlParams,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.get(`/api/files/presigned-url`, {
     ...options,
@@ -47,7 +47,7 @@ export const getFilePresignedUrl = <TData = GetPresignedUrlResult>(
  */
 export const checkFile = <TData = CheckFileResult>(
   CheckFileBody: CheckFileBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.post(`/api/files/check`, CheckFileBody, options);
 };
@@ -58,7 +58,7 @@ export const checkFile = <TData = CheckFileResult>(
  */
 export const registerFile = <TData = RegisterFileResult>(
   registerFileBody: RegisterFileBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.post(`/api/files`, registerFileBody, options);
 };
@@ -69,7 +69,7 @@ export const registerFile = <TData = RegisterFileResult>(
  */
 export const listFiles = <TData = ListFilesResult>(
   params: { folderId?: string; recursive?: boolean } = {},
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   const queryParams = {
     ...params,
@@ -89,7 +89,7 @@ export const listFiles = <TData = ListFilesResult>(
 export const getDownloadUrl = <TData = GetDownloadUrlResult>(
   objectName: string,
   password?: string,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   const body: { objectName: string; password?: string } = { objectName };
   if (password) {
@@ -102,7 +102,10 @@ export const getDownloadUrl = <TData = GetDownloadUrlResult>(
  * Deletes a user file
  * @summary Delete File
  */
-export const deleteFile = <TData = DeleteFileResult>(id: string, options?: AxiosRequestConfig): Promise<TData> => {
+export const deleteFile = <TData = DeleteFileResult>(
+  id: string,
+  options?: AxiosRequestConfig,
+): Promise<TData> => {
   return apiInstance.delete(`/api/files/${id}`, options);
 };
 
@@ -113,7 +116,7 @@ export const deleteFile = <TData = DeleteFileResult>(id: string, options?: Axios
 export const updateFile = <TData = UpdateFileResult>(
   id: string,
   updateFileBody: UpdateFileBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.patch(`/api/files/${id}`, updateFileBody, options);
 };
@@ -125,7 +128,7 @@ export const updateFile = <TData = UpdateFileResult>(
 export const moveFile = <TData = MoveFileResult>(
   id: string,
   moveFileBody: MoveFileBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.put(`/api/files/${id}/move`, moveFileBody, options);
 };
@@ -136,7 +139,7 @@ export const moveFile = <TData = MoveFileResult>(
  */
 export const createMultipartUpload = <TData = CreateMultipartUploadResult>(
   createMultipartUploadBody: CreateMultipartUploadBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.post(`/api/files/multipart/create`, createMultipartUploadBody, options);
 };
@@ -147,7 +150,7 @@ export const createMultipartUpload = <TData = CreateMultipartUploadResult>(
  */
 export const getMultipartPartUrl = <TData = GetMultipartPartUrlResult>(
   params: GetMultipartPartUrlParams,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.get(`/api/files/multipart/part-url`, {
     ...options,
@@ -161,7 +164,7 @@ export const getMultipartPartUrl = <TData = GetMultipartPartUrlResult>(
  */
 export const completeMultipartUpload = <TData = CompleteMultipartUploadResult>(
   completeMultipartUploadBody: CompleteMultipartUploadBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.post(`/api/files/multipart/complete`, completeMultipartUploadBody, options);
 };
@@ -172,7 +175,7 @@ export const completeMultipartUpload = <TData = CompleteMultipartUploadResult>(
  */
 export const abortMultipartUpload = <TData = AbortMultipartUploadResult>(
   abortMultipartUploadBody: AbortMultipartUploadBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.post(`/api/files/multipart/abort`, abortMultipartUploadBody, options);
 };
@@ -183,7 +186,7 @@ export const abortMultipartUpload = <TData = AbortMultipartUploadResult>(
  */
 export const generateEmbedToken = <TData = GenerateEmbedTokenResult>(
   generateEmbedTokenBody: GenerateEmbedTokenBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.post(`/api/files/embed-token`, generateEmbedTokenBody, options);
 };

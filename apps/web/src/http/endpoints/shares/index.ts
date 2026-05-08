@@ -34,7 +34,7 @@ import type {
  */
 export const createShare = <TData = CreateShareResult>(
   createShareBody: CreateShareBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.post(`/api/shares/create`, createShareBody, options);
 };
@@ -45,7 +45,7 @@ export const createShare = <TData = CreateShareResult>(
  */
 export const updateShare = <TData = UpdateShareResult>(
   updateShareBody: UpdateShareBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.put(`/api/shares/update`, updateShareBody, options);
 };
@@ -54,7 +54,9 @@ export const updateShare = <TData = UpdateShareResult>(
  * List all shares created by the authenticated user
  * @summary List all shares created by the authenticated user
  */
-export const listUserShares = <TData = ListUserSharesResult>(options?: AxiosRequestConfig): Promise<TData> => {
+export const listUserShares = <TData = ListUserSharesResult>(
+  options?: AxiosRequestConfig,
+): Promise<TData> => {
   return apiInstance.get(`/api/shares/list`, options);
 };
 
@@ -65,14 +67,14 @@ export const listUserShares = <TData = ListUserSharesResult>(options?: AxiosRequ
 export const getShare = <TData = GetShareResult>(
   shareId: string,
   params?: GetShareParams,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   if (params?.password) {
     // Password-protected shares use the POST /access endpoint
     return apiInstance.post(
       `/api/shares/${shareId}/access`,
       { password: params.password },
-      options
+      options,
     );
   }
   return apiInstance.get(`/api/shares/details/${shareId}`, options);
@@ -82,7 +84,10 @@ export const getShare = <TData = GetShareResult>(
  * Delete a share
  * @summary Delete a share
  */
-export const deleteShare = <TData = DeleteShareResult>(id: string, options?: AxiosRequestConfig): Promise<TData> => {
+export const deleteShare = <TData = DeleteShareResult>(
+  id: string,
+  options?: AxiosRequestConfig,
+): Promise<TData> => {
   return apiInstance.delete(`/api/shares/delete/${id}`, options);
 };
 
@@ -92,9 +97,13 @@ export const deleteShare = <TData = DeleteShareResult>(id: string, options?: Axi
 export const updateSharePassword = <TData = UpdateSharePasswordResult>(
   shareId: string,
   updateSharePasswordBody: UpdateSharePasswordBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
-  return apiInstance.patch(`api/shares/password/update/${shareId}`, updateSharePasswordBody, options);
+  return apiInstance.patch(
+    `api/shares/password/update/${shareId}`,
+    updateSharePasswordBody,
+    options,
+  );
 };
 
 /**
@@ -103,7 +112,7 @@ export const updateSharePassword = <TData = UpdateSharePasswordResult>(
 export const addFiles = <TData = AddFilesResult>(
   shareId: string,
   addFilesBody: AddFilesBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.post(`/api/shares/files/add/${shareId}`, addFilesBody, options);
 };
@@ -114,7 +123,7 @@ export const addFiles = <TData = AddFilesResult>(
 export const removeFiles = <TData = RemoveFilesResult>(
   shareId: string,
   removeFilesBody: RemoveFilesBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.delete(`/api/shares/files/remove/${shareId}`, {
     data: removeFilesBody,
@@ -128,7 +137,7 @@ export const removeFiles = <TData = RemoveFilesResult>(
 export const addRecipients = <TData = AddRecipientsResult>(
   shareId: string,
   addRecipientsBody: AddRecipientsBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.post(`/api/shares/recipients/add/${shareId}`, addRecipientsBody, options);
 };
@@ -140,7 +149,7 @@ export const addRecipients = <TData = AddRecipientsResult>(
 export const removeRecipients = <TData = RemoveRecipientsResult>(
   shareId: string,
   removeRecipientsBody: RemoveRecipientsBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.delete(`/api/shares/recipients/remove/${shareId}`, {
     data: removeRecipientsBody,
@@ -154,7 +163,7 @@ export const removeRecipients = <TData = RemoveRecipientsResult>(
 export const createShareAlias = <TData = CreateShareAliasResult>(
   shareId: string,
   createShareAliasBody: CreateShareAliasBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.post(`/api/shares/alias/create/${shareId}`, createShareAliasBody, options);
 };
@@ -165,14 +174,14 @@ export const createShareAlias = <TData = CreateShareAliasResult>(
 export const getShareByAlias = <TData = GetShareByAliasResult>(
   alias: string,
   params?: GetShareByAliasParams,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   if (params?.password) {
     // Password-protected shares use the POST /access endpoint
     return apiInstance.post(
       `/api/shares/alias/${alias}/access`,
       { password: params.password },
-      options
+      options,
     );
   }
   return apiInstance.get(`/api/shares/alias/get/${alias}`, options);
@@ -185,9 +194,13 @@ export const getShareByAlias = <TData = GetShareByAliasResult>(
 export const notifyRecipients = <TData = NotifyRecipientsResult>(
   shareId: string,
   notifyRecipientsBody: NotifyRecipientsBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
-  return apiInstance.post(`/api/shares/recipients/notify/${shareId}`, notifyRecipientsBody, options);
+  return apiInstance.post(
+    `/api/shares/recipients/notify/${shareId}`,
+    notifyRecipientsBody,
+    options,
+  );
 };
 
 /**
@@ -196,7 +209,7 @@ export const notifyRecipients = <TData = NotifyRecipientsResult>(
 export const addFolders = <TData = unknown>(
   shareId: string,
   addFoldersBody: { folders: string[] },
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.post(`/api/shares/folders/add/${shareId}`, addFoldersBody, options);
 };
@@ -207,7 +220,7 @@ export const addFolders = <TData = unknown>(
 export const removeFolders = <TData = unknown>(
   shareId: string,
   removeFoldersBody: { folders: string[] },
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.delete(`/api/shares/folders/remove/${shareId}`, {
     data: removeFoldersBody,
@@ -222,10 +235,14 @@ export const getShareFolderContents = <TData = unknown>(
   shareId: string,
   folderId: string,
   password?: string,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   if (password) {
-    return apiInstance.post(`/api/shares/${shareId}/folders/${folderId}/contents`, { password }, options);
+    return apiInstance.post(
+      `/api/shares/${shareId}/folders/${folderId}/contents`,
+      { password },
+      options,
+    );
   }
   return apiInstance.get(`/api/shares/${shareId}/folders/${folderId}/contents`, options);
 };

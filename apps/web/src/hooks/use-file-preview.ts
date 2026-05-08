@@ -272,7 +272,9 @@ export function useFilePreview({
       toast.dismiss(loadingToast);
       toast.success(t("filePreview.downloadSuccess") || "Download started");
     } catch (error) {
-      logger.error("Download error", { err: error instanceof Error ? error.message : String(error) });
+      logger.error("Download error", {
+        err: error instanceof Error ? error.message : String(error),
+      });
       toast.error(t("filePreview.downloadError"));
     }
   }, [isReverseShare, file.id, file.objectName, file.name, sharePassword, t]);

@@ -1,5 +1,5 @@
-import { GetReverseShareForUploadResult } from "@/http/endpoints/reverse-shares/types";
-import { FILE_STATUS } from "../constants";
+import type { GetReverseShareForUploadResult } from "@/http/endpoints/reverse-shares/types";
+import type { FILE_STATUS } from "../constants";
 
 export type ReverseShareInfo = GetReverseShareForUploadResult["data"]["reverseShare"];
 export type FileStatus = (typeof FILE_STATUS)[keyof typeof FILE_STATUS];

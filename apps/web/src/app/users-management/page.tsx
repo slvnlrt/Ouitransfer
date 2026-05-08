@@ -41,7 +41,10 @@ export default function AdminAreaPage() {
         <Navbar />
         <div className="flex-1 max-w-7xl mx-auto w-full py-8 px-6">
           <div className="flex flex-col gap-8">
-            <UsersHeader onCreateUser={handleCreateUser} onGenerateInvite={() => setIsInviteModalOpen(true)} />
+            <UsersHeader
+              onCreateUser={handleCreateUser}
+              onGenerateInvite={() => setIsInviteModalOpen(true)}
+            />
 
             <UsersTable
               currentUser={currentUser}
@@ -71,7 +74,10 @@ export default function AdminAreaPage() {
           onToggleStatus={handleToggleUserStatus}
         />
 
-        <GenerateInviteLinkModal isOpen={isInviteModalOpen} onClose={() => setIsInviteModalOpen(false)} />
+        <GenerateInviteLinkModal
+          isOpen={isInviteModalOpen}
+          onClose={() => setIsInviteModalOpen(false)}
+        />
       </div>
     </ProtectedRoute>
   );

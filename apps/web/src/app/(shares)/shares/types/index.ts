@@ -1,6 +1,6 @@
-import type { Share } from "@/http/endpoints/shares/types";
 import type { EnhancedFileManagerHook } from "@/hooks/use-enhanced-file-manager";
 import type { ShareManagerHook } from "@/hooks/use-share-manager";
+import type { Share } from "@/http/endpoints/shares/types";
 
 export type { Share };
 

@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { FileListProps } from "../types";
+import type { FileListProps } from "../types";
 import { FilesViewManager } from "./files-view-manager";
 import { Header } from "./header";
 import { SearchBar } from "./search-bar";

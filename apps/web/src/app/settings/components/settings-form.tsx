@@ -1,4 +1,4 @@
-import { SettingsFormProps, ValidGroup } from "../types";
+import type { SettingsFormProps, ValidGroup } from "../types";
 import { AuthProvidersSettings } from "./auth-provider-form/auth-providers-settings";
 import { SettingsGroup } from "./settings-group";
 

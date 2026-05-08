@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
 import { IconCopy, IconDice, IconLink } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -14,10 +14,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { customNanoid } from "@/lib/utils";
-import { ReverseShare } from "../hooks/use-reverse-shares";
+import type { ReverseShare } from "../hooks/use-reverse-shares";
 
 interface GenerateAliasFormData {
   alias: string;
@@ -31,7 +38,8 @@ interface GenerateAliasModalProps {
   onCopyLink: (reverseShare: ReverseShare) => void;
 }
 
-const generateDefaultAlias = () => customNanoid(10, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+const generateDefaultAlias = () =>
+  customNanoid(10, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
 export function GenerateAliasModal({
   reverseShare,
@@ -92,7 +100,9 @@ export function GenerateAliasModal({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <IconLink size={20} />
-            {hasExistingAlias ? t("reverseShares.modals.alias.editTitle") : t("reverseShares.modals.alias.createTitle")}
+            {hasExistingAlias
+              ? t("reverseShares.modals.alias.editTitle")
+              : t("reverseShares.modals.alias.createTitle")}
           </DialogTitle>
           <DialogDescription>
             {hasExistingAlias
@@ -157,16 +167,18 @@ export function GenerateAliasModal({
 
                   {field.value && field.value.length >= 3 && (
                     <div className="mt-2 p-2 bg-primary/5 border border-primary/20 rounded-md overflow-hidden">
-                      <label className="text-xs text-muted-foreground block mb-1">
+                      <span className="text-xs text-muted-foreground block mb-1">
                         {t("reverseShares.modals.alias.preview")}
-                      </label>
+                      </span>
                       <code className="block text-xs font-mono text-primary bg-primary/10 px-2 py-1 rounded w-full truncate">
                         {origin}/r/{field.value}
                       </code>
                     </div>
                   )}
 
-                  <p className="text-xs text-muted-foreground">{t("reverseShares.modals.alias.help")}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t("reverseShares.modals.alias.help")}
+                  </p>
                   <FormMessage />
                 </FormItem>
               )}
@@ -174,7 +186,9 @@ export function GenerateAliasModal({
 
             {currentLink && (
               <div className="space-y-2">
-                <label className="text-sm font-medium">{t("reverseShares.modals.alias.currentLink")}</label>
+                <span className="text-sm font-medium">
+                  {t("reverseShares.modals.alias.currentLink")}
+                </span>
                 <div className="flex items-center gap-2 p-3 bg-muted rounded-md min-w-0 max-w-full overflow-hidden">
                   <div className="flex-1 min-w-0 max-w-full overflow-hidden">
                     <code className="block text-sm font-mono bg-background px-2 py-1 rounded border w-full truncate">

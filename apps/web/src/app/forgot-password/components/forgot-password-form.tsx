@@ -2,9 +2,16 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ForgotPasswordFormProps } from "../types";
+import type { ForgotPasswordFormProps } from "../types";
 
 export function ForgotPasswordForm({ form, onSubmit }: ForgotPasswordFormProps) {
   const t = useTranslations();

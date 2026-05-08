@@ -1,7 +1,7 @@
-import { UseFormReturn } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
 
-import { User } from "@/http/endpoints/auth/types";
-import { UserFormData } from "../hooks/use-user-management";
+import type { User } from "@/http/endpoints/auth/types";
+import type { UserFormData } from "../hooks/use-user-management";
 
 export interface UserActionsDropdownProps {
   user: User;

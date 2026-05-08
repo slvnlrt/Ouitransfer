@@ -1,8 +1,7 @@
-import bcrypt from "bcryptjs";
-
 import type { Prisma } from "@prisma/client";
-import { getLogger } from "../../utils/logger.js";
+import bcrypt from "bcryptjs";
 import { prisma } from "../../shared/prisma.js";
+import { getLogger } from "../../utils/logger.js";
 import { EmailService } from "../email/service.js";
 import { FolderService } from "../folder/service.js";
 import { UserService } from "../user/service.js";
@@ -15,8 +14,14 @@ type ShareWithRelations = Prisma.ShareGetPayload<{
     files: true;
     folders: {
       select: {
-        id: true; name: true; description: true; objectName: true;
-        parentId: true; userId: true; createdAt: true; updatedAt: true;
+        id: true;
+        name: true;
+        description: true;
+        objectName: true;
+        parentId: true;
+        userId: true;
+        createdAt: true;
+        updatedAt: true;
         _count: { select: { files: true; children: true } };
       };
     };

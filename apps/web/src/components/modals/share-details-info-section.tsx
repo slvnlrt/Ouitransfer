@@ -47,7 +47,9 @@ export function ShareDetailsInfoSection({
 
       <div>
         <div className="flex items-center gap-2 mb-1">
-          <label className="text-sm font-medium text-muted-foreground">{t("shareDetails.name")}</label>
+          <span className="text-sm font-medium text-muted-foreground">
+            {t("shareDetails.name")}
+          </span>
           {onUpdateName && !isEditingName && (
             <Button
               size="icon"
@@ -87,15 +89,17 @@ export function ShareDetailsInfoSection({
             </Button>
           </div>
         ) : (
-          <span className="text-sm font-medium block">{displayName || t("shareDetails.untitled")}</span>
+          <span className="text-sm font-medium block">
+            {displayName || t("shareDetails.untitled")}
+          </span>
         )}
       </div>
 
       <div>
         <div className="flex items-center gap-2 mb-1">
-          <label className="text-sm font-medium text-muted-foreground">
+          <span className="text-sm font-medium text-muted-foreground">
             {t("shareDetails.description")}
-          </label>
+          </span>
           {onUpdateDescription && !isEditingDescription && (
             <Button
               size="icon"
@@ -136,7 +140,9 @@ export function ShareDetailsInfoSection({
             </Button>
           </div>
         ) : (
-          <span className="text-sm block">{displayDescription || t("shareDetails.noDescription")}</span>
+          <span className="text-sm block">
+            {displayDescription || t("shareDetails.noDescription")}
+          </span>
         )}
       </div>
     </div>

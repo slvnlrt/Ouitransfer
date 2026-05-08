@@ -1,9 +1,9 @@
 import crypto from "node:crypto";
 
 import type { Prisma } from "@prisma/client";
-import { getLogger } from "../../utils/logger.js";
 import { env } from "../../env.js";
 import { prisma } from "../../shared/prisma.js";
+import { getLogger } from "../../utils/logger.js";
 import { EmailService } from "../email/service.js";
 import { FileService } from "../file/service.js";
 import { UserService } from "../user/service.js";
@@ -436,7 +436,10 @@ export class ReverseShareUploadService {
     }
   }
 
-  private addFileToUploadSession(reverseShare: Pick<ReverseShareWithCreator, "id" | "creatorId" | "name">, fileData: UploadToReverseShareInput) {
+  private addFileToUploadSession(
+    reverseShare: Pick<ReverseShareWithCreator, "id" | "creatorId" | "name">,
+    fileData: UploadToReverseShareInput,
+  ) {
     const uploaderIdentifier = fileData.uploaderEmail || fileData.uploaderName || "anonymous";
     const sessionKey = this.generateSessionKey(reverseShare.id, uploaderIdentifier);
     const uploaderName = fileData.uploaderName || "Someone";

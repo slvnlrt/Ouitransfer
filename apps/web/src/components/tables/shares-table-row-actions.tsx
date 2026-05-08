@@ -95,7 +95,10 @@ export function ShareRowActions({
           </DropdownMenuItem>
         )}
         {share.recipients?.length > 0 && share.alias && smtpEnabled === "true" && (
-          <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onNotifyRecipients(share)}>
+          <DropdownMenuItem
+            className="cursor-pointer py-2"
+            onClick={() => onNotifyRecipients(share)}
+          >
             <IconMail className="h-4 w-4" />
             {t("sharesTable.actions.notifyRecipients")}
           </DropdownMenuItem>

@@ -2,11 +2,24 @@ import { useTranslations } from "next-intl";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { UsersTableProps } from "../types";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import type { UsersTableProps } from "../types";
 import { UserActionsDropdown } from "./user-actions-dropdown";
 
-export function UsersTable({ users, currentUser, onEdit, onDelete, onToggleStatus }: UsersTableProps) {
+export function UsersTable({
+  users,
+  currentUser,
+  onEdit,
+  onDelete,
+  onToggleStatus,
+}: UsersTableProps) {
   const t = useTranslations();
   const isCurrentUser = (userId: string) => currentUser?.id === userId;
 

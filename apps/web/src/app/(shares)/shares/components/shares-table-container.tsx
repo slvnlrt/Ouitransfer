@@ -1,8 +1,13 @@
 import { SharesTable } from "@/components/tables/shares-table";
-import { SharesTableContainerProps } from "../types";
+import type { SharesTableContainerProps } from "../types";
 import { EmptySharesState } from "./empty-shares-state";
 
-export function SharesTableContainer({ shares, onCopyLink, onCreateShare, shareManager }: SharesTableContainerProps) {
+export function SharesTableContainer({
+  shares,
+  onCopyLink,
+  onCreateShare,
+  shareManager,
+}: SharesTableContainerProps) {
   return shares.length > 0 ? (
     <SharesTable
       shares={shares}

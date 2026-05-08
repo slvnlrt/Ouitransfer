@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Palmtree } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { HomeHeaderProps } from "../types";
+import type { HomeHeaderProps } from "../types";
 
 const fadeInUpAnimation = {
   animate: { opacity: 1, y: 0 },

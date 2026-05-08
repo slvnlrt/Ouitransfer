@@ -13,6 +13,7 @@ export function VideoPreview({ src }: VideoPreviewProps) {
     <AspectRatio ratio={16 / 9} className="bg-muted">
       <video controls className="w-full h-full rounded-lg object-contain" preload="metadata">
         <source src={src} />
+        <track kind="captions" />
         {t("filePreview.videoNotSupported")}
       </video>
     </AspectRatio>

@@ -9,7 +9,12 @@ interface WaveformVisualizerProps {
   isLoading?: boolean;
 }
 
-const WaveformVisualizer = ({ progress, onSeek, audioData, isLoading = false }: WaveformVisualizerProps) => {
+const WaveformVisualizer = ({
+  progress,
+  onSeek,
+  audioData,
+  isLoading = false,
+}: WaveformVisualizerProps) => {
   const t = useTranslations();
 
   const generateMockWaveform = () => {
@@ -38,6 +43,18 @@ const WaveformVisualizer = ({ progress, onSeek, audioData, isLoading = false }: 
     onSeek([percentage]);
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "ArrowRight" || event.key === "ArrowUp") {
+      onSeek([Math.min(100, progress + 5)]);
+    } else if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
+      onSeek([Math.max(0, progress - 5)]);
+    } else if (event.key === "Home") {
+      onSeek([0]);
+    } else if (event.key === "End") {
+      onSeek([100]);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="relative">
@@ -52,7 +69,13 @@ const WaveformVisualizer = ({ progress, onSeek, audioData, isLoading = false }: 
     <div className="relative">
       <div
         className="hidden sm:flex items-end justify-center h-24 gap-[2px] cursor-pointer rounded-md"
+        role="slider"
+        aria-valuenow={progress}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        tabIndex={0}
         onClick={handleClick}
+        onKeyDown={handleKeyDown}
       >
         {waveformData.map((height, index) => {
           const isActive = (index / waveformData.length) * 100 <= progress;

@@ -1,7 +1,6 @@
 import sharp from "sharp";
-
-import { getLogger } from "../../utils/logger.js";
 import { prisma } from "../../shared/prisma.js";
+import { getLogger } from "../../utils/logger.js";
 
 export class LogoService {
   async uploadLogo(buffer: Buffer): Promise<string> {

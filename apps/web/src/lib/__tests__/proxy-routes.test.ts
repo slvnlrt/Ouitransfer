@@ -10,9 +10,8 @@
  */
 
 import { describe, expect, it } from "vitest";
-
-import { type RouteConfig, routes } from "../proxy-routes";
 import { matchRoute } from "../proxy";
+import { routes } from "../proxy-routes";
 
 /** Split a URL path string into segments (strips leading slash). */
 function seg(path: string): string[] {
@@ -436,9 +435,7 @@ describe("proxy route resolution", () => {
     it("all :param names in backendPath are present in the frontend path", () => {
       const paramRegex = /:(\w+)/g;
       for (const config of routes) {
-        const frontendParams = new Set(
-          [...config.path.matchAll(paramRegex)].map((m) => m[1]),
-        );
+        const frontendParams = new Set([...config.path.matchAll(paramRegex)].map((m) => m[1]));
         const backendParams = [...config.backendPath.matchAll(paramRegex)].map((m) => m[1]);
         for (const param of backendParams) {
           expect(

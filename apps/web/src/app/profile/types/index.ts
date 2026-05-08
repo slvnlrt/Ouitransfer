@@ -1,7 +1,7 @@
-import { UseFormReturn } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
 
 import type { User } from "@/http/endpoints/auth/types";
-import { PasswordFormData, ProfileFormData } from "../hooks/use-profile";
+import type { PasswordFormData, ProfileFormData } from "../hooks/use-profile";
 
 export interface PasswordFormProps {
   form: UseFormReturn<PasswordFormData>;

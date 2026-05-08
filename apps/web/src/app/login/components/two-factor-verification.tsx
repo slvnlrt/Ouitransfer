@@ -1,14 +1,19 @@
 "use client";
 
-import { useState } from "react";
 import { IconShield } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui/input-otp";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
 
 interface TwoFactorVerificationProps {
@@ -54,14 +59,18 @@ export function TwoFactorVerification({
         </div>
         <CardTitle>{t("twoFactor.verification.title")}</CardTitle>
         <CardDescription>
-          {showBackupCode ? t("twoFactor.verification.backupDescription") : t("twoFactor.verification.description")}
+          {showBackupCode
+            ? t("twoFactor.verification.backupDescription")
+            : t("twoFactor.verification.description")}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="twoFactorCode" className="mb-2">
-              {showBackupCode ? t("twoFactor.verification.backupCode") : t("twoFactor.verification.verificationCode")}
+              {showBackupCode
+                ? t("twoFactor.verification.backupCode")
+                : t("twoFactor.verification.verificationCode")}
             </Label>
             {showBackupCode ? (
               <Input
@@ -108,11 +117,15 @@ export function TwoFactorVerification({
             className="w-full"
             disabled={isSubmitting || twoFactorCode.length < (showBackupCode ? 8 : 6)}
           >
-            {isSubmitting ? t("twoFactor.verification.verifying") : t("twoFactor.verification.verify")}
+            {isSubmitting
+              ? t("twoFactor.verification.verifying")
+              : t("twoFactor.verification.verify")}
           </Button>
 
           {error && (
-            <div className="text-sm text-destructive text-center bg-destructive/10 p-3 rounded-md">{error}</div>
+            <div className="text-sm text-destructive text-center bg-destructive/10 p-3 rounded-md">
+              {error}
+            </div>
           )}
 
           <div className="text-center">

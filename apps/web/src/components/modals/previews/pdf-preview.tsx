@@ -10,7 +10,13 @@ interface PdfPreviewProps {
   onLoadError: () => void;
 }
 
-export function PdfPreview({ src, fileName, pdfAsBlob, pdfLoadFailed, onLoadError }: PdfPreviewProps) {
+export function PdfPreview({
+  src,
+  fileName,
+  pdfAsBlob,
+  pdfLoadFailed,
+  onLoadError,
+}: PdfPreviewProps) {
   const t = useTranslations();
 
   return (

@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 import { BulkDownloadModal } from "@/components/modals/bulk-download-modal";
 import { CreateShareModal } from "@/components/modals/create-share-modal";
@@ -17,9 +17,14 @@ import { ShareSecurityModal } from "@/components/modals/share-security-modal";
 import { UploadFileModal } from "@/components/modals/upload-file-modal";
 import { listFiles, listFolders } from "@/http/endpoints";
 import type { Share } from "@/http/endpoints/shares/types";
-import { DashboardModalsProps } from "../types";
+import type { DashboardModalsProps } from "../types";
 
-export function DashboardModals({ modals, fileManager, shareManager, onSuccess }: DashboardModalsProps) {
+export function DashboardModals({
+  modals,
+  fileManager,
+  shareManager,
+  onSuccess,
+}: DashboardModalsProps) {
   const t = useTranslations();
   const [shareDetailsRefresh, setShareDetailsRefresh] = useState(0);
 
@@ -35,7 +40,11 @@ export function DashboardModals({ modals, fileManager, shareManager, onSuccess }
 
   return (
     <>
-      <UploadFileModal isOpen={modals.isUploadModalOpen} onClose={modals.onCloseUploadModal} onSuccess={onSuccess} />
+      <UploadFileModal
+        isOpen={modals.isUploadModalOpen}
+        onClose={modals.onCloseUploadModal}
+        onSuccess={onSuccess}
+      />
 
       <FilePreviewModal
         file={fileManager.previewFile || { name: "", objectName: "" }}
@@ -92,7 +101,9 @@ export function DashboardModals({ modals, fileManager, shareManager, onSuccess }
         onClose={() => fileManager.setFilesToDelete(null)}
         onConfirm={fileManager.handleDeleteBulk}
         title={t("files.bulkDeleteTitle")}
-        description={t("files.bulkDeleteConfirmation", { count: fileManager.filesToDelete?.length || 0 })}
+        description={t("files.bulkDeleteConfirmation", {
+          count: fileManager.filesToDelete?.length || 0,
+        })}
         files={fileManager.filesToDelete?.map((f) => f.name) || []}
       />
 
@@ -101,7 +112,9 @@ export function DashboardModals({ modals, fileManager, shareManager, onSuccess }
         onClose={() => shareManager.setSharesToDelete(null)}
         onConfirm={shareManager.handleDeleteBulk}
         title={t("shareActions.bulkDeleteTitle")}
-        description={t("shareActions.bulkDeleteConfirmation", { count: shareManager.sharesToDelete?.length || 0 })}
+        description={t("shareActions.bulkDeleteConfirmation", {
+          count: shareManager.sharesToDelete?.length || 0,
+        })}
         files={shareManager.sharesToDelete?.map((share) => share.name ?? "") || []}
         itemType="shares"
       />
@@ -159,8 +172,12 @@ export function DashboardModals({ modals, fileManager, shareManager, onSuccess }
         onClose={() => shareManager.setShareToViewDetails(null)}
         onUpdateName={shareManager.handleUpdateName}
         onUpdateDescription={shareManager.handleUpdateDescription}
-        onUpdateSecurity={async () => shareManager.handleUpdateSecurity(shareManager.shareToViewDetails!)}
-        onUpdateExpiration={async () => shareManager.handleUpdateExpiration(shareManager.shareToViewDetails!)}
+        onUpdateSecurity={async () =>
+          shareManager.handleUpdateSecurity(shareManager.shareToViewDetails!)
+        }
+        onUpdateExpiration={async () =>
+          shareManager.handleUpdateExpiration(shareManager.shareToViewDetails!)
+        }
         onGenerateLink={shareManager.handleGenerateLink}
         onManageFiles={shareManager.setShareToManageFiles}
         refreshTrigger={shareDetailsRefresh}

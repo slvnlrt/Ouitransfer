@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 import { CreateShareModal } from "@/components/modals/create-share-modal";
 import { DeleteConfirmationModal } from "@/components/modals/delete-confirmation-modal";
@@ -13,7 +13,7 @@ import { ShareSecurityModal } from "@/components/modals/share-security-modal";
 import { listFiles } from "@/http/endpoints";
 import { listFolders } from "@/http/endpoints/folders";
 import type { Share } from "@/http/endpoints/shares/types";
-import { SharesModalsProps } from "../types";
+import type { SharesModalsProps } from "../types";
 
 export function SharesModals({
   isCreateModalOpen,
@@ -84,7 +84,9 @@ export function SharesModals({
         onClose={() => shareManager.setSharesToDelete(null)}
         onConfirm={shareManager.handleDeleteBulk}
         title={t("shareActions.bulkDeleteTitle")}
-        description={t("shareActions.bulkDeleteConfirmation", { count: shareManager.sharesToDelete?.length || 0 })}
+        description={t("shareActions.bulkDeleteConfirmation", {
+          count: shareManager.sharesToDelete?.length || 0,
+        })}
         files={shareManager.sharesToDelete?.map((share) => share.name ?? "") || []}
         itemType="shares"
       />
@@ -94,8 +96,16 @@ export function SharesModals({
         onClose={onCloseViewDetails}
         onUpdateName={shareManager.handleUpdateName}
         onUpdateDescription={shareManager.handleUpdateDescription}
-        onUpdateSecurity={shareToViewDetails ? async () => shareManager.handleUpdateSecurity(shareToViewDetails) : undefined}
-        onUpdateExpiration={shareToViewDetails ? async () => shareManager.handleUpdateExpiration(shareToViewDetails) : undefined}
+        onUpdateSecurity={
+          shareToViewDetails
+            ? async () => shareManager.handleUpdateSecurity(shareToViewDetails)
+            : undefined
+        }
+        onUpdateExpiration={
+          shareToViewDetails
+            ? async () => shareManager.handleUpdateExpiration(shareToViewDetails)
+            : undefined
+        }
         onGenerateLink={shareManager.handleGenerateLink}
         onManageFiles={shareManager.setShareToManageFiles}
         refreshTrigger={shareDetailsRefresh}

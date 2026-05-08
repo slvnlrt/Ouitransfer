@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
 import { toast } from "sonner";
 
 import { DefaultFooter } from "@/components/ui/default-footer";
@@ -44,7 +44,9 @@ export default function ResetPasswordPage() {
               onToggleConfirmPassword={() =>
                 resetPassword.setIsConfirmPasswordVisible(!resetPassword.isConfirmPasswordVisible)
               }
-              onTogglePassword={() => resetPassword.setIsPasswordVisible(!resetPassword.isPasswordVisible)}
+              onTogglePassword={() =>
+                resetPassword.setIsPasswordVisible(!resetPassword.isPasswordVisible)
+              }
             />
           </motion.div>
         </div>

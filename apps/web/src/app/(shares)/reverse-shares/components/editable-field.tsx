@@ -1,12 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { IconCheck, IconEdit, IconX } from "@tabler/icons-react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type FieldValue = string | number | null | undefined;
 
@@ -74,7 +80,7 @@ export function EditableField({
     let processedValue: string | number | null = editValue;
 
     if (type === "number") {
-      processedValue = editValue ? parseInt(editValue) : null;
+      processedValue = editValue ? parseInt(editValue, 10) : null;
     } else if (type === "datetime-local") {
       processedValue = editValue ? new Date(editValue).toISOString() : null;
     }
@@ -108,7 +114,7 @@ export function EditableField({
   return (
     <div>
       <div className="flex items-center gap-2 mb-1">
-        <label className="text-sm font-medium text-muted-foreground">{label}</label>
+        <span className="text-sm font-medium text-muted-foreground">{label}</span>
         {!disabled && !isEditing && (
           <Button
             size="icon"
@@ -126,45 +132,42 @@ export function EditableField({
           {checkboxLabel && (
             <div className="flex items-center gap-2">
               <Checkbox checked={checkboxChecked} onCheckedChange={handleCheckboxChange} />
-              <label className="text-xs text-muted-foreground cursor-pointer">{checkboxLabel}</label>
+              <span className="text-xs text-muted-foreground cursor-pointer">{checkboxLabel}</span>
             </div>
           )}
 
-          {(!checkboxLabel || !checkboxChecked) && (
-            <>
-              {customEditor ? (
-                customEditor({
-                  value: editValue,
-                  onChange: setEditValue,
-                  onKeyDown: handleKeyDown,
-                })
-              ) : type === "select" ? (
-                <Select value={editValue} onValueChange={setEditValue}>
-                  <SelectTrigger className="h-8 flex-1 text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {options?.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                <Input
-                  ref={inputRef}
-                  type={type}
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  className="h-8 flex-1 text-sm"
-                  placeholder={placeholder}
-                  min={type === "number" ? "1" : undefined}
-                />
-              )}
-            </>
-          )}
+          {(!checkboxLabel || !checkboxChecked) &&
+            (customEditor ? (
+              customEditor({
+                value: editValue,
+                onChange: setEditValue,
+                onKeyDown: handleKeyDown,
+              })
+            ) : type === "select" ? (
+              <Select value={editValue} onValueChange={setEditValue}>
+                <SelectTrigger className="h-8 flex-1 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {options?.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <Input
+                ref={inputRef}
+                type={type}
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="h-8 flex-1 text-sm"
+                placeholder={placeholder}
+                min={type === "number" ? "1" : undefined}
+              />
+            ))}
 
           <div className="flex items-center gap-2">
             <Button

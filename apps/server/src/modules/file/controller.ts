@@ -424,19 +424,21 @@ export class FileController {
     }
   }
 
-  private async getAllUserFilesRecursively(userId: string): Promise<Array<{
-    id: string;
-    name: string;
-    description: string | null;
-    extension: string;
-    size: bigint;
-    objectName: string;
-    userId: string;
-    folderId: string | null;
-    relativePath?: string | null;
-    createdAt: Date;
-    updatedAt: Date;
-  }>> {
+  private async getAllUserFilesRecursively(userId: string): Promise<
+    Array<{
+      id: string;
+      name: string;
+      description: string | null;
+      extension: string;
+      size: bigint;
+      objectName: string;
+      userId: string;
+      folderId: string | null;
+      relativePath?: string | null;
+      createdAt: Date;
+      updatedAt: Date;
+    }>
+  > {
     const rootFiles = await prisma.file.findMany({
       where: { userId, folderId: null },
     });

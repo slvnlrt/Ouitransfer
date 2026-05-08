@@ -60,7 +60,8 @@ export function FileActionsModals({
                   placeholder={t("fileActions.namePlaceholder")}
                   onKeyUp={(e) => {
                     if (e.key === "Enter" && fileToRename) {
-                      const newName = e.currentTarget.value + splitFileName(fileToRename.name).extension;
+                      const newName =
+                        e.currentTarget.value + splitFileName(fileToRename.name).extension;
                       onRename(fileToRename.id, newName);
                     }
                   }}
@@ -82,10 +83,10 @@ export function FileActionsModals({
             <Button
               onClick={() => {
                 const nameInput = document.querySelector(
-                  `input[placeholder="${t("fileActions.namePlaceholder")}"]`
+                  `input[placeholder="${t("fileActions.namePlaceholder")}"]`,
                 ) as HTMLInputElement;
                 const descInput = document.querySelector(
-                  `input[placeholder="${t("fileActions.descriptionPlaceholder")}"]`
+                  `input[placeholder="${t("fileActions.descriptionPlaceholder")}"]`,
                 ) as HTMLInputElement;
 
                 if (fileToRename && nameInput && descInput) {
@@ -109,10 +110,14 @@ export function FileActionsModals({
             </DialogTitle>
           </DialogHeader>
           <DialogDescription>
-            <p className="text-base font-semibold mb-2 text-foreground">{t("fileActions.deleteConfirmation")}</p>
+            <p className="text-base font-semibold mb-2 text-foreground">
+              {t("fileActions.deleteConfirmation")}
+            </p>
             <p>
               {(fileToDelete?.name &&
-                (fileToDelete.name.length > 50 ? fileToDelete.name.substring(0, 50) + "..." : fileToDelete.name)) ||
+                (fileToDelete.name.length > 50
+                  ? `${fileToDelete.name.substring(0, 50)}...`
+                  : fileToDelete.name)) ||
                 ""}
             </p>
             <p className="text-sm  mt-2 text-amber-500">{t("fileActions.deleteWarning")}</p>

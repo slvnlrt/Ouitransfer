@@ -1,5 +1,5 @@
 import apiInstance from "@/config/api";
-import {
+import type {
   RemoveAllTrustedDevicesResponse,
   RemoveTrustedDeviceRequest,
   RemoveTrustedDeviceResponse,
@@ -11,7 +11,9 @@ export const getTrustedDevices = async (): Promise<TrustedDevicesResponse> => {
   return response.data;
 };
 
-export const removeTrustedDevice = async (data: RemoveTrustedDeviceRequest): Promise<RemoveTrustedDeviceResponse> => {
+export const removeTrustedDevice = async (
+  data: RemoveTrustedDeviceRequest,
+): Promise<RemoveTrustedDeviceResponse> => {
   const response = await apiInstance.delete(`/api/auth/trusted-devices/${data.deviceId}`);
   return response.data;
 };

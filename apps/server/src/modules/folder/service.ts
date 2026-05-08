@@ -1,7 +1,7 @@
-import { getLogger } from "../../utils/logger.js";
 import { S3StorageProvider } from "../../providers/s3-storage.provider.js";
 import { prisma } from "../../shared/prisma.js";
 import type { StorageProvider } from "../../types/storage.js";
+import { getLogger } from "../../utils/logger.js";
 
 export class FolderService {
   private storageProvider: StorageProvider;
@@ -46,19 +46,21 @@ export class FolderService {
     folderId: string,
     userId: string,
     basePath: string = "",
-  ): Promise<Array<{
-    id: string;
-    name: string;
-    description: string | null;
-    extension: string;
-    size: bigint;
-    objectName: string;
-    userId: string;
-    folderId: string | null;
-    relativePath: string;
-    createdAt: Date;
-    updatedAt: Date;
-  }>> {
+  ): Promise<
+    Array<{
+      id: string;
+      name: string;
+      description: string | null;
+      extension: string;
+      size: bigint;
+      objectName: string;
+      userId: string;
+      folderId: string | null;
+      relativePath: string;
+      createdAt: Date;
+      updatedAt: Date;
+    }>
+  > {
     const files = await prisma.file.findMany({
       where: { folderId, userId },
     });

@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { DefaultFooter } from "@/components/ui/default-footer";
@@ -32,7 +32,9 @@ export default function ForgotPasswordPage() {
             ) : !forgotPassword.passwordAuthEnabled ? (
               <div className="mt-8 space-y-4">
                 <div className="text-center p-4 bg-muted/50 rounded-lg">
-                  <p className="text-muted-foreground">{t("forgotPassword.passwordAuthDisabled")}</p>
+                  <p className="text-muted-foreground">
+                    {t("forgotPassword.passwordAuthDisabled")}
+                  </p>
                 </div>
                 <div className="text-center">
                   <Link className="text-muted-foreground hover:text-primary text-sm" href="/login">

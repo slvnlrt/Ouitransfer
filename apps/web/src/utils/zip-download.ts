@@ -25,7 +25,10 @@ export async function downloadFilesAsZip(items: DownloadItem[], zipName: string)
       const blob = await response.blob();
       zip.file(item.name, blob);
     } catch (error) {
-      logger.error("Error downloading file for ZIP", { name: item.name, err: error instanceof Error ? error.message : String(error) });
+      logger.error("Error downloading file for ZIP", {
+        name: item.name,
+        err: error instanceof Error ? error.message : String(error),
+      });
       throw error;
     }
   });

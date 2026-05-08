@@ -2,7 +2,6 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
 import { ReverseShareController } from "./controller.js";
-import { ReverseShareMultipartController } from "./multipart.controller.js";
 import {
   CreateReverseShareSchema,
   GetPresignedUrlSchema,
@@ -15,6 +14,7 @@ import {
   UpdateReverseShareSchema,
   UploadToReverseShareSchema,
 } from "./dto.js";
+import { ReverseShareMultipartController } from "./multipart.controller.js";
 
 export async function reverseShareRoutes(app: FastifyInstance) {
   const reverseShareController = new ReverseShareController();

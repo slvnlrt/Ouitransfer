@@ -33,7 +33,11 @@ export default function ReverseShareUploadPage() {
 
   if (isPasswordModalOpen) {
     return (
-      <PasswordModal isOpen={isPasswordModalOpen} onSubmit={handlePasswordSubmit} onClose={handlePasswordModalClose} />
+      <PasswordModal
+        isOpen={isPasswordModalOpen}
+        onSubmit={handlePasswordSubmit}
+        onClose={handlePasswordModalClose}
+      />
     );
   }
 

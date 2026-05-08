@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export interface FileSizeInputProps {
   value: string;
@@ -50,14 +56,20 @@ function bytesToHumanReadable(bytes: string): { value: string; unit: Unit } {
 
 function humanReadableToBytes(value: string, unit: Unit): string {
   const numValue = parseFloat(value);
-  if (isNaN(numValue) || numValue <= 0) {
+  if (Number.isNaN(numValue) || numValue <= 0) {
     return "0";
   }
 
   return Math.floor(numValue * UNIT_MULTIPLIERS[unit]).toString();
 }
 
-export function FileSizeInput({ value, onChange, disabled = false, error, placeholder = "0" }: FileSizeInputProps) {
+export function FileSizeInput({
+  value,
+  onChange,
+  disabled = false,
+  error,
+  placeholder = "0",
+}: FileSizeInputProps) {
   const [displayValue, setDisplayValue] = useState("");
   const [selectedUnit, setSelectedUnit] = useState<Unit>("MB");
 
@@ -76,7 +88,7 @@ export function FileSizeInput({ value, onChange, disabled = false, error, placeh
     const sanitizedValue = newValue.replace(/[^0-9.]/g, "");
 
     const parts = sanitizedValue.split(".");
-    const finalValue = parts.length > 2 ? parts[0] + "." + parts.slice(1).join("") : sanitizedValue;
+    const finalValue = parts.length > 2 ? `${parts[0]}.${parts.slice(1).join("")}` : sanitizedValue;
 
     setDisplayValue(finalValue);
 

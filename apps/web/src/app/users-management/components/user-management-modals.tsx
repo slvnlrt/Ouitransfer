@@ -1,4 +1,4 @@
-import { UserManagementModalsProps } from "../types";
+import type { UserManagementModalsProps } from "../types";
 import { UserDeleteModal } from "./user-delete-modal";
 import { UserFormModal } from "./user-form-modal";
 import { UserStatusModal } from "./user-status-modal";

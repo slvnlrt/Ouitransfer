@@ -1,10 +1,16 @@
 "use client";
 
-import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
-import { addRecipients, createShareAlias, deleteShare, notifyRecipients, updateShare } from "@/http/endpoints";
+import {
+  addRecipients,
+  createShareAlias,
+  deleteShare,
+  notifyRecipients,
+  updateShare,
+} from "@/http/endpoints";
 import { updateFolder } from "@/http/endpoints/folders";
 import type { Share, UpdateShareBody } from "@/http/endpoints/shares/types";
 import { getCachedDownloadUrl } from "@/lib/download-url-cache";
@@ -62,7 +68,9 @@ export function useShareManager(onSuccess: () => void) {
   const [shareToGenerateLink, setShareToGenerateLink] = useState<Share | null>(null);
   const [shareToViewQrCode, setShareToViewQrCode] = useState<Share | null>(null);
   const [sharesToDelete, setSharesToDelete] = useState<Share[] | null>(null);
-  const [clearSelectionCallback, setClearSelectionCallbackState] = useState<(() => void) | null>(null);
+  const [clearSelectionCallback, setClearSelectionCallbackState] = useState<(() => void) | null>(
+    null,
+  );
 
   const setClearSelectionCallback = useCallback((callback: () => void) => {
     setClearSelectionCallbackState(() => callback);
@@ -86,7 +94,9 @@ export function useShareManager(onSuccess: () => void) {
   const handleDeleteBulk = async () => {
     if (!sharesToDelete) return;
 
-    const loadingToast = toast.loading(t("shareManager.bulkDeleteLoading", { count: sharesToDelete.length }));
+    const loadingToast = toast.loading(
+      t("shareManager.bulkDeleteLoading", { count: sharesToDelete.length }),
+    );
 
     try {
       await Promise.all(sharesToDelete.map((share) => deleteShare(share.id)));
@@ -244,7 +254,7 @@ export function useShareManager(onSuccess: () => void) {
                   url,
                   name: item.name,
                 };
-              })
+              }),
           );
 
           if (downloadItems.length === 0) {
@@ -255,7 +265,10 @@ export function useShareManager(onSuccess: () => void) {
 
           // Create ZIP with all files
           const { downloadFilesAsZip } = await import("@/utils/zip-download");
-          await downloadFilesAsZip(downloadItems, zipName.endsWith(".zip") ? zipName : `${zipName}.zip`);
+          await downloadFilesAsZip(
+            downloadItems,
+            zipName.endsWith(".zip") ? zipName : `${zipName}.zip`,
+          );
 
           toast.dismiss(loadingToast);
           toast.success(t("shareManager.zipDownloadSuccess"));
@@ -272,7 +285,9 @@ export function useShareManager(onSuccess: () => void) {
         toast.error(t("shareManager.errors.multipleDownloadNotSupported"));
       }
     } catch (error) {
-      logger.error("Error creating ZIP", { err: error instanceof Error ? error.message : String(error) });
+      logger.error("Error creating ZIP", {
+        err: error instanceof Error ? error.message : String(error),
+      });
     }
   };
 
@@ -309,7 +324,9 @@ export function useShareManager(onSuccess: () => void) {
         toast.dismiss(loadingToast);
         toast.success(t("shareManager.downloadSuccess"));
       } catch (error) {
-        logger.error("Download error", { err: error instanceof Error ? error.message : String(error) });
+        logger.error("Download error", {
+          err: error instanceof Error ? error.message : String(error),
+        });
         toast.error(t("shareManager.downloadError"));
       }
     } else {

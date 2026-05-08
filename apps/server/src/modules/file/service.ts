@@ -1,6 +1,6 @@
-import { getLogger } from "../../utils/logger.js";
 import { S3StorageProvider } from "../../providers/s3-storage.provider.js";
 import type { StorageProvider } from "../../types/storage.js";
+import { getLogger } from "../../utils/logger.js";
 
 export class FileService {
   private storageProvider: StorageProvider;

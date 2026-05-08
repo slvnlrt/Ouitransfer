@@ -18,7 +18,10 @@ class DownloadUrlCache {
   /**
    * Generates unique cache key considering objectName and optional share password
    */
-  private getCacheKey(objectName: string, options?: { headers?: { "x-share-password"?: string } }): string {
+  private getCacheKey(
+    objectName: string,
+    options?: { headers?: { "x-share-password"?: string } },
+  ): string {
     const password = options?.headers?.["x-share-password"] || "";
     return password ? `${objectName}:${password}` : objectName;
   }
@@ -50,7 +53,7 @@ class DownloadUrlCache {
    */
   async getCachedDownloadUrl(
     objectName: string,
-    options?: { headers?: { "x-share-password"?: string } }
+    options?: { headers?: { "x-share-password"?: string } },
   ): Promise<string> {
     const cacheKey = this.getCacheKey(objectName, options);
     const now = Date.now();

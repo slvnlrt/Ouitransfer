@@ -2,11 +2,23 @@ import { IconLock } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { PasswordModalProps } from "../types";
+import type { PasswordModalProps } from "../types";
 
-export function PasswordModal({ isOpen, password, isError, onPasswordChange, onSubmit }: PasswordModalProps) {
+export function PasswordModal({
+  isOpen,
+  password,
+  isError,
+  onPasswordChange,
+  onSubmit,
+}: PasswordModalProps) {
   const t = useTranslations();
 
   return (

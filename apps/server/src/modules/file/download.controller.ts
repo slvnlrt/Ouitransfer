@@ -129,10 +129,7 @@ export class FileDownloadController {
           const fileName = reverseShareFile.name;
 
           reply.header("Content-Type", contentType);
-          reply.header(
-            "Content-Disposition",
-            `inline; filename="${encodeURIComponent(fileName)}"`,
-          );
+          reply.header("Content-Disposition", `inline; filename="${encodeURIComponent(fileName)}"`);
           reply.header("Content-Length", reverseShareFile.size.toString());
 
           return reply.send(stream);

@@ -1,6 +1,9 @@
 import { QrCodeModal } from "@/components/modals/qr-code-modal";
-import type { CreateReverseShareBody, UpdateReverseShareBody } from "@/http/endpoints/reverse-shares/types";
-import { ReverseShare } from "../hooks/use-reverse-shares";
+import type {
+  CreateReverseShareBody,
+  UpdateReverseShareBody,
+} from "@/http/endpoints/reverse-shares/types";
+import type { ReverseShare } from "../hooks/use-reverse-shares";
 import { CreateReverseShareModal } from "./create-reverse-share-modal";
 import { DeleteReverseShareModal } from "./delete-reverse-share-modal";
 import { EditReverseShareModal } from "./edit-reverse-share-modal";
@@ -33,7 +36,10 @@ interface ReverseSharesModalsProps {
   onCopyLink: (reverseShare: ReverseShare) => void;
   onViewQrCode: (reverseShare: ReverseShare) => void;
   onUpdateReverseShareData?: (id: string, data: Record<string, unknown>) => Promise<unknown>;
-  onUpdatePassword?: (id: string, data: { hasPassword: boolean; password?: string }) => Promise<unknown>;
+  onUpdatePassword?: (
+    id: string,
+    data: { hasPassword: boolean; password?: string },
+  ) => Promise<unknown>;
   onToggleActive?: (id: string, isActive: boolean) => Promise<unknown>;
   onRefreshData?: () => Promise<void>;
   refreshReverseShare?: (id: string) => Promise<void>;

@@ -1,14 +1,20 @@
 "use client";
 
-import { useState } from "react";
 import { IconLock } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PasswordModalProps } from "../types";
+import type { PasswordModalProps } from "../types";
 
 export function PasswordModal({ isOpen, onSubmit, onClose }: PasswordModalProps) {
   const [password, setPassword] = useState("");
@@ -60,11 +66,19 @@ export function PasswordModal({ isOpen, onSubmit, onClose }: PasswordModalProps)
           </div>
 
           <div className="flex gap-2">
-            <Button type="button" variant="outline" className="flex-1" onClick={onClose} disabled={isSubmitting}>
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1"
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
               {t("reverseShares.upload.password.cancel")}
             </Button>
             <Button type="submit" className="flex-1" disabled={!password.trim() || isSubmitting}>
-              {isSubmitting ? t("reverseShares.upload.password.verifying") : t("reverseShares.upload.password.submit")}
+              {isSubmitting
+                ? t("reverseShares.upload.password.verifying")
+                : t("reverseShares.upload.password.submit")}
             </Button>
           </div>
         </form>

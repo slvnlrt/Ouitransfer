@@ -38,25 +38,29 @@ export class ConfigService {
       where: { group },
     });
 
-    return configs.reduce<Record<string, unknown>>((acc, curr) => {
-      let value: unknown = curr.value;
+    return configs.reduce<Record<string, unknown>>(
+      (acc, curr) => {
+        let value: unknown = curr.value;
 
-      switch (curr.type) {
-        case "number":
-          value = Number(curr.value);
-          break;
-        case "boolean":
-          value = curr.value === "true";
-          break;
-        case "json":
-          value = JSON.parse(curr.value);
-          break;
-        case "bigint":
-          value = BigInt(curr.value);
-          break;
-      }
+        switch (curr.type) {
+          case "number":
+            value = Number(curr.value);
+            break;
+          case "boolean":
+            value = curr.value === "true";
+            break;
+          case "json":
+            value = JSON.parse(curr.value);
+            break;
+          case "bigint":
+            value = BigInt(curr.value);
+            break;
+        }
 
-      return { ...acc, [curr.key]: value };
-    }, {});
+        acc[curr.key] = value;
+        return acc;
+      },
+      {} as Record<string, unknown>,
+    );
   }
 }

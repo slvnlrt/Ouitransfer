@@ -24,7 +24,7 @@ import type {
  */
 export const registerUser = <TData = RegisterUserResult>(
   registerUserBody: RegisterUserBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.post(`/api/users/register`, registerUserBody, options);
 };
@@ -33,7 +33,9 @@ export const registerUser = <TData = RegisterUserResult>(
  * List all users (admin only)
  * @summary List All Users
  */
-export const listUsers = <TData = ListUsersResult>(options?: AxiosRequestConfig): Promise<TData> => {
+export const listUsers = <TData = ListUsersResult>(
+  options?: AxiosRequestConfig,
+): Promise<TData> => {
   return apiInstance.get(`/api/users/list`, options);
 };
 
@@ -43,7 +45,7 @@ export const listUsers = <TData = ListUsersResult>(options?: AxiosRequestConfig)
  */
 export const updateUser = <TData = UpdateUserResult>(
   updateUserBody: UpdateUserBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.put(`/api/users/update`, updateUserBody, options);
 };
@@ -52,7 +54,10 @@ export const updateUser = <TData = UpdateUserResult>(
  * Get a user by ID (admin only)
  * @summary Get User by ID
  */
-export const getUserById = <TData = GetUserByIdResult>(id: string, options?: AxiosRequestConfig): Promise<TData> => {
+export const getUserById = <TData = GetUserByIdResult>(
+  id: string,
+  options?: AxiosRequestConfig,
+): Promise<TData> => {
   return apiInstance.get(`/api/users/details/${id}`, options);
 };
 
@@ -60,7 +65,10 @@ export const getUserById = <TData = GetUserByIdResult>(id: string, options?: Axi
  * Delete a user (admin only)
  * @summary Delete User
  */
-export const deleteUser = <TData = DeleteUserResult>(id: string, options?: AxiosRequestConfig): Promise<TData> => {
+export const deleteUser = <TData = DeleteUserResult>(
+  id: string,
+  options?: AxiosRequestConfig,
+): Promise<TData> => {
   return apiInstance.delete(`/api/users/delete/${id}`, options);
 };
 
@@ -68,7 +76,10 @@ export const deleteUser = <TData = DeleteUserResult>(id: string, options?: Axios
  * Activate a user (admin only)
  * @summary Activate User
  */
-export const activateUser = <TData = ActivateUserResult>(id: string, options?: AxiosRequestConfig): Promise<TData> => {
+export const activateUser = <TData = ActivateUserResult>(
+  id: string,
+  options?: AxiosRequestConfig,
+): Promise<TData> => {
   return apiInstance.patch(`/api/users/activate/${id}`, undefined, options);
 };
 
@@ -78,7 +89,7 @@ export const activateUser = <TData = ActivateUserResult>(id: string, options?: A
  */
 export const deactivateUser = <TData = DeactivateUserResult>(
   id: string,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.patch(`/api/users/deactivate/${id}`, undefined, options);
 };
@@ -90,7 +101,7 @@ export const deactivateUser = <TData = DeactivateUserResult>(
 export const updateUserImage = <TData = UpdateUserImageResult>(
   id: string,
   updateUserImageBody: UpdateUserImageBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.patch(`/api/users/update-image/${id}`, updateUserImageBody, options);
 };
@@ -101,7 +112,7 @@ export const updateUserImage = <TData = UpdateUserImageResult>(
  */
 export const uploadAvatar = <TData = UploadAvatarResult>(
   uploadAvatarBody: UploadAvatarBody,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<TData> => {
   const formData = new FormData();
 
@@ -122,6 +133,8 @@ export const uploadAvatar = <TData = UploadAvatarResult>(
  * Remove user profile image
  * @summary Remove user avatar
  */
-export const removeAvatar = <TData = RemoveAvatarResult>(options?: AxiosRequestConfig): Promise<TData> => {
+export const removeAvatar = <TData = RemoveAvatarResult>(
+  options?: AxiosRequestConfig,
+): Promise<TData> => {
   return apiInstance.delete(`/api/users/avatar/remove`, options);
 };

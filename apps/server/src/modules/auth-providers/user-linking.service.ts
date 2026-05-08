@@ -5,7 +5,10 @@ import type { AuthProviderModel, ProviderUserInfo } from "./types.js";
 type ExistingUser = Prisma.UserGetPayload<Record<string, never>>;
 
 export class UserLinkingService {
-  async findOrCreateUser(userInfo: ProviderUserInfo, provider: Pick<AuthProviderModel, "id" | "name" | "displayName" | "autoRegister">) {
+  async findOrCreateUser(
+    userInfo: ProviderUserInfo,
+    provider: Pick<AuthProviderModel, "id" | "name" | "displayName" | "autoRegister">,
+  ) {
     const externalId = userInfo.id;
 
     if (!userInfo.email || !externalId) {
@@ -90,7 +93,10 @@ export class UserLinkingService {
     return updateData;
   }
 
-  private async updateExistingUserFromProvider(existingUser: ExistingUser, userInfo: ProviderUserInfo) {
+  private async updateExistingUserFromProvider(
+    existingUser: ExistingUser,
+    userInfo: ProviderUserInfo,
+  ) {
     const updateData = this.buildUserUpdateData(existingUser, userInfo);
 
     if (Object.keys(updateData).length > 0) {

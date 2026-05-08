@@ -20,11 +20,7 @@ module.exports = {
         "security",
       ],
     ],
-    "scope-enum": [
-      2,
-      "always",
-      ["server", "web", "docs", "infra", "deps", "ci", "monorepo"],
-    ],
+    "scope-enum": [2, "always", ["server", "web", "docs", "infra", "deps", "ci", "monorepo"]],
     "subject-case": [2, "never", ["upper-case", "pascal-case", "start-case"]],
     "body-max-line-length": [1, "always", 200],
     "footer-max-line-length": [0, "always"],

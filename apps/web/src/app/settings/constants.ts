@@ -1,5 +1,11 @@
-import { IconDatabase, IconMail, IconSettings, IconShield, IconUserCheck } from "@tabler/icons-react";
-import { createTranslator } from "next-intl";
+import {
+  IconDatabase,
+  IconMail,
+  IconSettings,
+  IconShield,
+  IconUserCheck,
+} from "@tabler/icons-react";
+import type { createTranslator } from "next-intl";
 
 export const createGroupMetadata = (t: ReturnType<typeof createTranslator>) => ({
   email: {

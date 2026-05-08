@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen } from "@tabler/icons-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -71,7 +71,7 @@ function formatFileSize(bytes: number): string {
   const k = 1024;
   const sizes = ["B", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+  return `${parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`;
 }
 
 function TreeNodeComponent({
@@ -103,14 +103,23 @@ function TreeNodeComponent({
       <div
         className={cn(
           "flex items-center gap-2 py-1 px-2 hover:bg-muted/50 rounded-sm w-full min-w-0",
-          isSelected && "bg-muted"
+          isSelected && "bg-muted",
         )}
         style={{ paddingLeft }}
       >
         <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">
           {isFolder && hasChildren && (
-            <Button variant="ghost" size="sm" className="h-4 w-4 p-0" onClick={() => onToggleExpand(item.id)}>
-              {isExpanded ? <IconChevronDown className="h-3 w-3" /> : <IconChevronRight className="h-3 w-3" />}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-4 w-4 p-0"
+              onClick={() => onToggleExpand(item.id)}
+            >
+              {isExpanded ? (
+                <IconChevronDown className="h-3 w-3" />
+              ) : (
+                <IconChevronRight className="h-3 w-3" />
+              )}
             </Button>
           )}
         </div>
@@ -127,7 +136,7 @@ function TreeNodeComponent({
           <Checkbox
             checked={isSelected}
             ref={(ref) => {
-              if (ref && ref.querySelector) {
+              if (ref?.querySelector) {
                 const checkbox = ref.querySelector('input[type="checkbox"]') as HTMLInputElement;
                 if (checkbox && !useCheckboxAsRadio) {
                   checkbox.indeterminate = isIndeterminate;
@@ -156,7 +165,9 @@ function TreeNodeComponent({
           <span className="truncate text-sm">{item.name}</span>
 
           {!isFolder && item.size && (
-            <span className="text-xs text-muted-foreground flex-shrink-0">({formatFileSize(item.size)})</span>
+            <span className="text-xs text-muted-foreground flex-shrink-0">
+              ({formatFileSize(item.size)})
+            </span>
           )}
 
           {isFolder && (item as TreeFolder).totalSize && (
@@ -224,7 +235,7 @@ export function FileTree({
       id: file.id,
       name: file.name,
       type: "file" as const,
-      size: parseInt(file.size),
+      size: parseInt(file.size, 10),
       parentId: file.folderId,
     }));
 
@@ -242,13 +253,15 @@ export function FileTree({
 
         const addParents = (itemId: string) => {
           const item = allItems.find((i) => i.id === itemId);
-          if (item && item.parentId) {
+          if (item?.parentId) {
             matching.add(item.parentId);
             addParents(item.parentId);
           }
         };
 
-        matching.forEach((itemId) => addParents(itemId));
+        matching.forEach((itemId) => {
+          addParents(itemId);
+        });
 
         return allItems.filter((item) => matching.has(item.id));
       };
@@ -267,11 +280,11 @@ export function FileTree({
     if (autoExpandToItem) {
       const allItems = convertToTreeItems();
       const item = allItems.find((i) => i.id === autoExpandToItem);
-      if (item && item.parentId) {
+      if (item?.parentId) {
         const pathToRoot: string[] = [];
         let currentItem: TreeItem | undefined = item;
 
-        while (currentItem && currentItem.parentId) {
+        while (currentItem?.parentId) {
           pathToRoot.push(currentItem.parentId);
           currentItem = allItems.find((i) => i.id === currentItem!.parentId);
         }
@@ -349,7 +362,7 @@ export function FileTree({
       collectDescendants(folderId);
       return descendants;
     },
-    [convertToTreeItems]
+    [convertToTreeItems],
   );
 
   const getAllAncestors = useCallback(
@@ -358,14 +371,14 @@ export function FileTree({
       const allItems = convertToTreeItems();
       let currentItem = allItems.find((i) => i.id === itemId);
 
-      while (currentItem && currentItem.parentId) {
+      while (currentItem?.parentId) {
         ancestors.push(currentItem.parentId);
         currentItem = allItems.find((i) => i.id === currentItem!.parentId);
       }
 
       return ancestors;
     },
-    [convertToTreeItems]
+    [convertToTreeItems],
   );
 
   const handleToggleExpand = useCallback((folderId: string) => {
@@ -398,7 +411,9 @@ export function FileTree({
 
         if (item.type === "folder") {
           const descendants = getDescendants(itemId);
-          descendants.forEach((id) => newSelection.delete(id));
+          descendants.forEach((id) => {
+            newSelection.delete(id);
+          });
         } else {
           const ancestors = getAllAncestors(itemId);
           const allItems = convertToTreeItems();
@@ -406,7 +421,9 @@ export function FileTree({
           ancestors.forEach((ancestorId) => {
             const ancestorDescendants = getDescendants(ancestorId);
 
-            const selectedDescendants = ancestorDescendants.filter((id) => id !== itemId && newSelection.has(id));
+            const selectedDescendants = ancestorDescendants.filter(
+              (id) => id !== itemId && newSelection.has(id),
+            );
 
             if (selectedDescendants.length === 0) {
               const ancestorSiblings = allItems.filter((i) => {
@@ -414,7 +431,9 @@ export function FileTree({
                 return ancestor && i.parentId === ancestor.parentId && i.id !== ancestorId;
               });
 
-              const selectedSiblings = ancestorSiblings.filter((sibling) => newSelection.has(sibling.id));
+              const selectedSiblings = ancestorSiblings.filter((sibling) =>
+                newSelection.has(sibling.id),
+              );
 
               if (selectedSiblings.length === 0) {
                 newSelection.delete(ancestorId);
@@ -436,7 +455,10 @@ export function FileTree({
           descendants.forEach((id) => {
             const descendantItem = allItems.find((i) => i.id === id);
             if (descendantItem) {
-              if ((descendantItem.type === "folder" && showFolders) || (descendantItem.type === "file" && showFiles)) {
+              if (
+                (descendantItem.type === "folder" && showFolders) ||
+                (descendantItem.type === "file" && showFiles)
+              ) {
                 newSelection.add(id);
               }
             }
@@ -457,7 +479,7 @@ export function FileTree({
       convertToTreeItems,
       singleSelection,
       useCheckboxAsRadio,
-    ]
+    ],
   );
 
   const isIndeterminate = useCallback(
@@ -473,9 +495,11 @@ export function FileTree({
       if (visibleDescendants.length === 0) return false;
 
       const selectedDescendants = visibleDescendants.filter((id) => selectedSet.has(id));
-      return selectedDescendants.length > 0 && selectedDescendants.length < visibleDescendants.length;
+      return (
+        selectedDescendants.length > 0 && selectedDescendants.length < visibleDescendants.length
+      );
     },
-    [getDescendants, selectedSet, showFiles, showFolders, convertToTreeItems]
+    [getDescendants, selectedSet, showFiles, showFolders, convertToTreeItems],
   );
 
   if (tree.length === 0) {

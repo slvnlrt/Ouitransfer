@@ -1,5 +1,5 @@
 import {
-  Icon,
+  type Icon,
   IconApi,
   IconAtom,
   IconBook,

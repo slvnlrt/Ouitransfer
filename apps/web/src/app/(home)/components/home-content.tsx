@@ -1,12 +1,12 @@
-import Link from "next/link";
 import { IconBrandGithubFilled } from "@tabler/icons-react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
 import { BackgroundLights } from "../../../components/ui/background-lights";
-import { HomeContentProps } from "../types";
+import type { HomeContentProps } from "../types";
 import { HomeHeader } from "./home-header";
 
 const fadeInAnimation = {

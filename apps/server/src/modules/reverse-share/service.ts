@@ -1,8 +1,7 @@
-import { getLogger } from "../../utils/logger.js";
 import { env } from "../../env.js";
 import { prisma } from "../../shared/prisma.js";
+import { getLogger } from "../../utils/logger.js";
 import { FileService } from "../file/service.js";
-import { UserService } from "../user/service.js";
 import {
   type CreateReverseShareInput,
   ReverseShareResponseSchema,
@@ -51,7 +50,6 @@ interface ReverseShareData {
 export class ReverseShareService {
   private reverseShareRepository = new ReverseShareRepository();
   private fileService = new FileService();
-  private userService = new UserService();
 
   async createReverseShare(data: CreateReverseShareInput, creatorId: string) {
     const reverseShare = await this.reverseShareRepository.create(data, creatorId);

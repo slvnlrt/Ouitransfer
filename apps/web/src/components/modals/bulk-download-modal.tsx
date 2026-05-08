@@ -1,11 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import { IconDownload, IconX } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -23,7 +29,12 @@ interface BulkDownloadModalProps {
   items?: BulkItem[];
 }
 
-export function BulkDownloadModal({ isOpen, onClose, onDownload, items = [] }: BulkDownloadModalProps) {
+export function BulkDownloadModal({
+  isOpen,
+  onClose,
+  onDownload,
+  items = [],
+}: BulkDownloadModalProps) {
   const t = useTranslations();
   const [zipName, setZipName] = useState("");
 

@@ -1,6 +1,6 @@
-import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
 
 import { useAppInfo } from "@/contexts/app-info-context";
 

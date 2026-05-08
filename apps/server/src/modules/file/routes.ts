@@ -3,8 +3,6 @@ import { z } from "zod";
 
 import { FileController } from "./controller.js";
 import { FileDownloadController } from "./download.controller.js";
-import { FileEmbedController } from "./embed.controller.js";
-import { FileMultipartController } from "./multipart.controller.js";
 import {
   CheckFileSchema,
   ListFilesSchema,
@@ -12,6 +10,8 @@ import {
   RegisterFileSchema,
   UpdateFileSchema,
 } from "./dto.js";
+import { FileEmbedController } from "./embed.controller.js";
+import { FileMultipartController } from "./multipart.controller.js";
 
 export async function fileRoutes(app: FastifyInstance) {
   const fileController = new FileController();

@@ -9,7 +9,11 @@ interface ReverseShareFilePreviewModalProps {
   file: ReverseShareFile | null;
 }
 
-export function ReverseShareFilePreviewModal({ isOpen, onClose, file }: ReverseShareFilePreviewModalProps) {
+export function ReverseShareFilePreviewModal({
+  isOpen,
+  onClose,
+  file,
+}: ReverseShareFilePreviewModalProps) {
   if (!file) return null;
 
   const adaptedFile = {
@@ -17,5 +21,7 @@ export function ReverseShareFilePreviewModal({ isOpen, onClose, file }: ReverseS
     description: file.description ?? undefined,
   };
 
-  return <FilePreviewModal isOpen={isOpen} onClose={onClose} file={adaptedFile} isReverseShare={true} />;
+  return (
+    <FilePreviewModal isOpen={isOpen} onClose={onClose} file={adaptedFile} isReverseShare={true} />
+  );
 }

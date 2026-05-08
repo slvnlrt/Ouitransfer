@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { UserActionsDropdownProps } from "../types";
+import type { UserActionsDropdownProps } from "../types";
 
 export function UserActionsDropdown({
   user,
@@ -22,7 +22,12 @@ export function UserActionsDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button size="icon" variant="ghost" className={isCurrentUser ? "hidden" : ""} disabled={isCurrentUser}>
+        <Button
+          size="icon"
+          variant="ghost"
+          className={isCurrentUser ? "hidden" : ""}
+          disabled={isCurrentUser}
+        >
           <IconDotsVertical className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>

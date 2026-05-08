@@ -37,8 +37,12 @@ export default function ProfilePage() {
                 isConfirmPasswordVisible={profile.isConfirmPasswordVisible}
                 isNewPasswordVisible={profile.isNewPasswordVisible}
                 onSubmit={profile.onPasswordSubmit}
-                onToggleConfirmPassword={() => profile.setIsConfirmPasswordVisible(!profile.isConfirmPasswordVisible)}
-                onToggleNewPassword={() => profile.setIsNewPasswordVisible(!profile.isNewPasswordVisible)}
+                onToggleConfirmPassword={() =>
+                  profile.setIsConfirmPasswordVisible(!profile.isConfirmPasswordVisible)
+                }
+                onToggleNewPassword={() =>
+                  profile.setIsNewPasswordVisible(!profile.isNewPasswordVisible)
+                }
               />
               <TwoFactorForm />
             </div>

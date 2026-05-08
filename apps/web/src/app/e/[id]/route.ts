@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 import { logger } from "@/lib/logger";
 
@@ -10,7 +10,7 @@ const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3333";
  * The `id` param is now a signed JWT embed token (not a raw file ID).
  * Only works for media files (images, videos, audio).
  */
-export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id: token } = await params;
 
   if (!token) {
@@ -63,7 +63,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
     return res;
   } catch (error) {
-    logger.error("Error proxying embed request", { err: error instanceof Error ? error.message : String(error) });
+    logger.error("Error proxying embed request", {
+      err: error instanceof Error ? error.message : String(error),
+    });
     return new NextResponse(JSON.stringify({ error: "Failed to fetch file" }), {
       status: 500,
       headers: {
