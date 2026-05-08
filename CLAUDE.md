@@ -22,6 +22,14 @@ D:\Code\Ouitransfer\
   audit/              Audit reports and remediation tracking
 ```
 
+## Development Tools
+- **Task runner**: `just` is installed — use `just --list` or `just` to see all available recipes (see `Justfile` at root)
+  - Common: `just dev`, `just test`, `just lint`, `just validate`, `just setup`
+  - Database: `just db-generate`, `just db-migrate-dev`, `just db-studio`, `just db-seed`, `just db-reset`
+  - Docker: `just docker-start`, `just docker-stop`, `just docker-build [tag]`
+  - Cleanup: `just clean` (artifacts), `just clean-all` (+ node_modules)
+- **Scripts (root package.json)**: `pnpm dev`, `pnpm build`, `pnpm lint`, `pnpm test`, `pnpm validate`, `pnpm e2e`, `pnpm knip`
+
 ## Key Conventions
 - **Module system**: ESM throughout (server has `"type": "module"`, all relative imports use `.js` extensions)
 - **File naming**: kebab-case for files, PascalCase for React components
