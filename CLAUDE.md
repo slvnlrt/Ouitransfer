@@ -30,7 +30,7 @@ D:\Code\Ouitransfer\
 - **Proxy layer**: Single catch-all handler at `apps/web/src/app/api/[...proxy]/route.ts` with route table in `proxy-routes.ts`
 - **Validation**: Zod schemas via `fastify-type-provider-zod`
 - **Auth**: JWT in httpOnly cookie, bcrypt, 2FA via otpauth (TOTP, RFC 6238)
-- **i18n**: next-intl, 22 languages, messages in `apps/web/messages/`
+- **i18n**: next-intl, 23 languages, messages in `apps/web/messages/`
 - **UI**: shadcn/ui (new-york style), Radix primitives, lucide-react icons
 - **Dependency versions**: pnpm catalogs in `pnpm-workspace.yaml` for shared deps (2+ apps)
 
@@ -89,13 +89,15 @@ audit/
   06-quality.md
   07-dependencies.md
   08-synthesis.md
-  CONSOLIDATED-TODO-LIST.md   Master roadmap (~120 items, 9 phases)
+  CONSOLIDATED-TODO-LIST.md   Master roadmap (~138 items, 9 phases)
   DONE.md                     Completed items log
   TODO-POST-PHASE-0.md        Reviewer follow-ups from Phase 0
   TODO-POST-PHASE-1.md        Reviewer follow-ups from Phase 1 (all resolved)
   TODO-POST-PHASE-2.md        Reviewer follow-ups from Phase 2 (all resolved)
-  TODO-POST-PHASE-3.md        Reviewer follow-ups from Phase 3
+  TODO-POST-PHASE-3.md        Reviewer follow-ups from Phase 3 (in-scope items resolved; deferred items forwarded to later phases)
   TODO-POST-PHASE-4.md        Reviewer follow-ups from Phase 4 (all resolved)
+  BATCH-REVIEWS.md            Phase 4 batch-level review history
+  PHASE-4-PLAN.md             Phase 4 implementation plan (historical snapshot)
 ```
 
 ### Phase 4 — Frontend Modernization: COMPLETE

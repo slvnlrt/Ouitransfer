@@ -42,7 +42,7 @@
 - [x] **A-I1 — 13 new `errors` translation keys only in `en-US.json`** ✅ Task 2
   - 21 other locales missing keys from error boundaries. Non-English users see raw key names like `"somethingWentWrong"`.
   - Fix: copy keys to all 22 other locale files (English copy acceptable per existing pattern), or configure next-intl `getMessageFallback` to return English value.
-  - **Fixed:** Added 13 `errors` keys + 2 `a11y` keys to all 22 non-en-US locales (English placeholders).
+  - **Fixed:** Added 13 `errors` keys + 1 `a11y` key to all 22 non-en-US locales (English placeholders).
 
 ---
 
@@ -159,7 +159,7 @@
 ## Recommendations (Cross-Cutting)
 
 1. ~~**Translation CI guard**~~ ✅ Done in Task 2 — recursive locale parity test with orphan detection at `apps/web/src/__tests__/locale-keys.test.ts`.
-2. ~~**Middleware path-matching tests**~~ ✅ Done in Task 1 — 30 middleware tests + 8 matchesPath unit tests.
+2. ~~**Middleware path-matching tests**~~ ✅ Done in Task 1 — 30 tests in middleware.test.ts (20 middleware integration + 8 matchesPath unit + 2 env validation).
 3. ~~**Centralize web env validation**~~ ✅ Done in Task 1 — `apps/web/src/env.ts` with Zod schema.
 4. ~~**RTL conversion gap documentation**~~ ✅ Done in Task 5 — C-I3 and C-I4 fixed. Radix physical `data-side` animations reverted to physical.
 5. ~~**Strip all dead `eslint-disable*` comments codebase-wide**~~ ✅ Done in Task 6 — all 3 remaining comments removed.

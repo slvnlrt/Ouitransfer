@@ -53,13 +53,13 @@
 - [x] **W12 — wrapFiles silently drops data on missing key** — Added `Array.isArray()` validation, throws descriptive error if key missing
   - File: `apps/web/src/lib/proxy-routes.ts`
 
-- [ ] **W1 — OAuth authorize response shape changed** — *Not a code fix; forwarded to Phase 8 for QA validation*
+- [x] **W1 — OAuth authorize response shape changed** — *Not a code fix; forwarded to Phase 8 for QA validation* (forwarded to later phases — non-actionable here)
   - Needs end-to-end test of OAuth authorize flow to verify `text()` vs `json()` handling
 
-- [ ] **W9 — Keep subpath export pattern for shared package** — *Architectural guidance; forwarded to Phase 3*
+- [x] **W9 — Keep subpath export pattern for shared package** — *Architectural guidance; forwarded to Phase 3* (forwarded to later phases — non-actionable here)
   - When adding utilities to `packages/shared`, use subpath exports (`./foo`) not barrel `"."` export
 
-- [ ] **W10 — Dockerfile pnpm symlink chain fragility** — *Future improvement; forwarded to Phase 6*
+- [x] **W10 — Dockerfile pnpm symlink chain fragility** — *Future improvement; forwarded to Phase 6* (forwarded to later phases — non-actionable here)
   - Consider `pnpm deploy` for portable runtime when Docker setup is overhauled
 
 ---

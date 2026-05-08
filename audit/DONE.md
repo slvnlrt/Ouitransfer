@@ -783,3 +783,72 @@
 - Matcher excludes: `_next/*`, `api/*`, `e/*`, static files
 - Imports path lists from existing `public-paths.ts` and `unauthenticated-only-paths.ts` (single source of truth)
 - `RedirectHandler` and `ProtectedRoute` kept as defense-in-depth safety nets
+
+---
+
+## Phase 4 — Post-Review Remediation (2026-05-08)
+
+39 review findings from 3 reviewer agents fixed across 8 tasks.
+
+### Task 1: Middleware Security Hardening
+- C-C1: Removed `decodeJwt` fallback, pinned HS256, created `apps/web/src/env.ts` (Zod, min 32 chars)
+- C-C3: Created `matchesPath()` at `apps/web/src/components/auth/paths/match-path.ts` (exact + slash-boundary)
+- C-I5: Web app `JWT_SECRET` validated at startup via Zod schema
+- C-I6: `jwtVerify` pinned to `algorithms: ["HS256"]`
+- C-M2: `redirect-handler.tsx` updated to use `matchesPath`
+- 30 tests in `apps/web/src/__tests__/middleware.test.ts`
+
+### Task 2: Translation Fixes
+- C-C2: `a11y` namespace moved to top-level in all 23 locale files; nested copy removed
+- A-I1: 13 `errors` keys + 1 `a11y` key added to 22 non-en-US locales (English placeholders)
+- Recursive locale parity test with orphan detection: `apps/web/src/__tests__/locale-keys.test.ts`
+
+### Task 3: Auth Context Cleanup
+- B-I1: AuthProvider rewritten with useMemo derivation, no more setters in context API
+- B-I1: useLogin/callback flows use setQueryData+invalidateQueries; no manual state writes
+- B-I1: logout() now clears both currentUser AND app.info queries
+- B-I1: Pre-existing data shape mismatch in use-profile.ts fixed
+- B-I5: Deleted dead `useAppInfo.getState` shim + `refreshAppInfoOutsideReact`; cleaned layout.tsx
+- B-I6: Removed `zustand` from `apps/web/package.json`
+- B-I9: Created `apps/web/src/hooks/use-app-info-query.ts` (single staleTime)
+- 9 tests in `apps/web/src/contexts/__tests__/auth-context.test.tsx`
+
+### Task 4: Navigation & API Fixes
+- B-I2: Replaced `hasSyncedUrlRef` with useEffect on `[urlFolderSlug, dataLoaded, allFolders]`
+- B-I2: Replaced `window.history.pushState` with `router.push` (root cause of back/forward bug)
+- B-I3: Added `?reason=session_expired` to 401 redirect, 5s safety timeout, session-expired toast
+- B-I3: `matchesPath` used in `api.ts` for public page detection
+- 21 tests across 3 new test files
+
+### Task 5: RTL & A11y Fixes
+- C-I1: Deleted `route-announcer.tsx`; removed orphan `routeChanged` key from all 23 locales
+- C-I3: Fixed physical borders in `sheet.tsx`, `scroll-area.tsx`, `input-otp.tsx`
+- C-I4: Reverted animation classes to physical in dropdown-menu, context-menu, select (Radix data-side is physical)
+- C-M5: Fixed "end-to-left" → "right-to-left" comment in `rtl-languages.ts`
+- C-M6: Replaced 16 `focus:` with `focus-visible:` in `skip-to-content.tsx`
+
+### Task 6: Error Display & Types
+- A-M1: Renamed ErrorDisplay variants: `inline`→`card`, `minimal`→`inline` (all 7 consumers + tests updated)
+- A-I4: Share not-found uses `variant="page"` instead of `variant="inline"`
+- A-I2: Removed redundant `Number(item.size)` cast
+- A-I3: Removed 3 dead `eslint-disable` comments
+
+### Task 7: Dead Code, BOM & Lint Cleanup
+- A-M2: Deleted dead `ShareContentTable = ShareFilesTable` alias
+- A-M3: Replaced inline `formatDateTime` copy with import in share `files-table.tsx`
+- A-M4: Removed `BulkFolder = FolderItem` alias (~16 occurrences replaced)
+- A-M7: Wrapped `fileIds`/`folderIds` in useMemo in `use-selection-manager.ts`
+- C-I7: Stripped UTF-8 BOM from 73 files
+- Added `.editorconfig` at repo root
+
+### Task 8: TQ Polish & Remaining Fixes
+- C-M4: Fixed Polish locale typo `ps-PL` → `pl-PL` in `i18n/request.ts`
+- B-I4: LoginForm passes `enabled: !firstAccess` to `useEnabledProviders`
+- C-M1: QR code download uses ref-based querySelector instead of getElementById
+- A-M5: `formatDateTime` accepts optional `locale` parameter; all callers pass `useLocale()`
+- B-minor: Standardized Axios error checking to `axios.isAxiosError()` in 3 files
+- B-minor: Removed unused `folderId` parameter from `queryKeys.files.list()`
+- Lazy ReactQueryDevtools behind `next/dynamic` + NODE_ENV guard
+- B-I7: `use-public-share.ts` browseState replaced with useMemo derivation
+- A-M6: `useEditableItem.saveEdit` is async; reverts pending change on callback failure
+- Password modal derived from `!share && isPasswordRequired(shareQuery.error)`
