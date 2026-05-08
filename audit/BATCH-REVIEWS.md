@@ -2,7 +2,7 @@
 
 
 
-\---
+---
 
 Security Fix Verification Report
 
@@ -16,17 +16,17 @@ onConstructorPoisoning: "error",
 
 Both set to "error" as required. Correct.
 
-\---
+---
 
 0.2 — Body limit reduced to 50MB — PASS (with one concern)
 
-\- apps/server/src/app.ts:30 — bodyLimit: 50 \* 1024 \* 1024 ✓
+- apps/server/src/app.ts:30 — bodyLimit: 50 \* 1024 \* 1024 ✓
 
-\- apps/server/src/server.ts:65 — fileSize: 50 \* 1024 \* 1024, // 50MB ✓
+- apps/server/src/server.ts:65 — fileSize: 50 \* 1024 \* 1024, // 50MB ✓
 
-\- apps/server/src/modules/reverse-share/routes.ts:389 — bodyLimit: 50 \* 1024 \* 1024 ✓
+- apps/server/src/modules/reverse-share/routes.ts:389 — bodyLimit: 50 \* 1024 \* 1024 ✓
 
-\- apps/web/next.config.ts:22 — bodySizeLimit: "50mb" ✓
+- apps/web/next.config.ts:22 — bodySizeLimit: "50mb" ✓
 
 All four values match the spec.
 
@@ -34,15 +34,15 @@ Concerns (non-blocking, but worth flagging):
 
 1\. Functional regression risk — this is a big one. The app advertises itself as a "WeTransfer alternative" and reverse-share/routes.ts literally exposes a multipart upload API for files ≥100MB (see line 605: "Initializes a multipart upload for large files (≥100MB)"). A 50MB global bodyLimit on the Fastify app is fine for API metadata payloads (presigned URL requests, register-file calls), because actual file bytes go to S3 directly via presigned URLs — they never hit Fastify's body parser. So this is probably safe in practice.
 
-&#x20;  
+   
 
-&#x20;  However, fastifyMultipart.limits.fileSize = 50MB in server.ts:65 means any route that still accepts multipart file uploads through Fastify itself is now capped at 50MB. If any legacy "upload via API" path exists (non-presigned), it will silently truncate/reject >50MB files. Recommend grepping for request.file() / request.files() callers and confirming they're all metadata, not raw file bytes. If any raw-bytes path exists, either migrate it to presigned uploads or make the limit configurable via env var.
+   However, fastifyMultipart.limits.fileSize = 50MB in server.ts:65 means any route that still accepts multipart file uploads through Fastify itself is now capped at 50MB. If any legacy "upload via API" path exists (non-presigned), it will silently truncate/reject >50MB files. Recommend grepping for request.file() / request.files() callers and confirming they're all metadata, not raw file bytes. If any raw-bytes path exists, either migrate it to presigned uploads or make the limit configurable via env var.
 
 2\. Stylistic — reverse-share/routes.ts:389 has an odd leading-space indent (       bodyLimit: — 7 spaces vs 6 for the other properties). Not a bug but will show up in any formatter pass.
 
 3\. Defense-in-depth suggestion: the 50MB value is hardcoded in 4 places. Centralize it (e.g., env.BODY\_LIMIT\_BYTES with 50 \* 1024 \* 1024 default) so operators can tune without touching code.
 
-\---
+---
 
 0.5 — CORS restricted to allowlist — PASS
 
@@ -50,57 +50,57 @@ apps/server/src/app.ts:71-84:
 
 const allowedOrigins = process.env.CORS\_ORIGINS
 
-&#x20; ? process.env.CORS\_ORIGINS.split(",").map((o) => o.trim())
+  ? process.env.CORS\_ORIGINS.split(",").map((o) => o.trim())
 
-&#x20; : \["http://localhost:3000", "http://localhost:5487"];
+  : ["http://localhost:3000", "http://localhost:5487"];
 
 app.register(fastifyCors, {
 
-&#x20; origin: (origin, cb) => {
+  origin: (origin, cb) => {
 
-&#x20;   if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin)) {
 
-&#x20;     cb(null, true);
+      cb(null, true);
 
-&#x20;   } else {
+    } else {
 
-&#x20;     cb(new Error("Not allowed by CORS"), false);
+      cb(new Error("Not allowed by CORS"), false);
 
-&#x20;   }
+    }
 
-&#x20; },
+  },
 
-&#x20; credentials: true,
+  credentials: true,
 
 });
 
-\- origin: true is gone ✓
+- origin: true is gone ✓
 
-\- Allowlist from CORS\_ORIGINS env var with sensible localhost defaults ✓
+- Allowlist from CORS\_ORIGINS env var with sensible localhost defaults ✓
 
-\- credentials: true preserved ✓
+- credentials: true preserved ✓
 
 Minor concerns (not failures):
 
-\- !origin is allowed (same-origin, curl, server-to-server). That's the standard pattern and is fine, but combined with credentials: true and trustProxy: true, it means any non-browser client (no Origin header) effectively bypasses the check. This is expected CORS behavior — CORS is a browser mechanism — but worth documenting.
+- !origin is allowed (same-origin, curl, server-to-server). That's the standard pattern and is fine, but combined with credentials: true and trustProxy: true, it means any non-browser client (no Origin header) effectively bypasses the check. This is expected CORS behavior — CORS is a browser mechanism — but worth documenting.
 
-\- Production footgun: if an operator forgets to set CORS\_ORIGINS in production, they get localhost-only, which will break the deployed web app. A startup warning when NODE\_ENV=production \&\& !CORS\_ORIGINS would be prudent. Not a security failure; an operability concern.
+- Production footgun: if an operator forgets to set CORS\_ORIGINS in production, they get localhost-only, which will break the deployed web app. A startup warning when NODE\_ENV=production \&\& !CORS\_ORIGINS would be prudent. Not a security failure; an operability concern.
 
-\- http://localhost:3000 is not used by any app in this monorepo (web=5487, docs=3001, server=3333). Where does 3000 come from? Probably Fumadocs dev default or legacy. Worth verifying; if unused, drop it.
+- http://localhost:3000 is not used by any app in this monorepo (web=5487, docs=3001, server=3333). Where does 3000 come from? Probably Fumadocs dev default or legacy. Worth verifying; if unused, drop it.
 
-\---
+---
 
 0.6 — SECURE\_SITE defaults to "true" — PASS
 
-\- apps/server/src/env.ts:22: SECURE\_SITE: z.union(\[z.literal("true"), z.literal("false")]).default("true") ✓
+- apps/server/src/env.ts:22: SECURE\_SITE: z.union([z.literal("true"), z.literal("false")]).default("true") ✓
 
-\- apps/server/src/server.ts:47-51: warning is logged when SECURE\_SITE === "false" ✓
+- apps/server/src/server.ts:47-51: warning is logged when SECURE\_SITE === "false" ✓
 
 Correct.
 
 Minor: the warning is logged once at startup. If an operator starts the server and never reads the log, they may not notice. Optionally: also emit on each cookie-issuing request in dev, or refuse to start if SECURE\_SITE=false \&\& NODE\_ENV=production. Not required for this fix.
 
-\---
+---
 
 0.12 — TLS bypass scoped to S3 only — PASS
 
@@ -118,13 +118,13 @@ Verified:
 
 Minor observations:
 
-\- httpsAgent is set unconditionally, even when useSSL=false (http). In that case the agent is unused by the underlying handler, so it's harmless — but stylistically you could gate it with storageConfig.useSSL.
+- httpsAgent is set unconditionally, even when useSSL=false (http). In that case the agent is unused by the underlying handler, so it's harmless — but stylistically you could gate it with storageConfig.useSSL.
 
-\- NodeHttpHandler also accepts httpAgent for plain HTTP; not setting it means default pooling for HTTP requests. Fine for now, but if you want consistent connection reuse / timeout behavior across HTTP and HTTPS, add httpAgent: new http.Agent(...) too.
+- NodeHttpHandler also accepts httpAgent for plain HTTP; not setting it means default pooling for HTTP requests. Fine for now, but if you want consistent connection reuse / timeout behavior across HTTP and HTTPS, add httpAgent: new http.Agent(...) too.
 
-\- Not strictly a concern, but worth noting: requestTimeout: 300000 is applied to S3 operations. For very large multipart part uploads this might be tight; verify against your largest expected part size on slow links. Pre-existing behavior, not introduced here.
+- Not strictly a concern, but worth noting: requestTimeout: 300000 is applied to S3 operations. For very large multipart part uploads this might be tight; verify against your largest expected part size on slow links. Pre-existing behavior, not introduced here.
 
-\---
+---
 
 0.13 — Next.js image patterns restricted — PASS
 
@@ -132,35 +132,35 @@ apps/web/next.config.ts:6-18:
 
 images: {
 
-&#x20; remotePatterns: process.env.ALLOWED\_IMAGE\_HOSTS
+  remotePatterns: process.env.ALLOWED\_IMAGE\_HOSTS
 
-&#x20;   ? process.env.ALLOWED\_IMAGE\_HOSTS.split(",").map((host) => ({
+    ? process.env.ALLOWED\_IMAGE\_HOSTS.split(",").map((host) => ({
 
-&#x20;       protocol: "https" as const,
+        protocol: "https" as const,
 
-&#x20;       hostname: host.trim(),
+        hostname: host.trim(),
 
-&#x20;     }))
+      }))
 
-&#x20;   : \[
+    : [
 
-&#x20;       { protocol: "https" as const, hostname: "localhost" },
+        { protocol: "https" as const, hostname: "localhost" },
 
-&#x20;       { protocol: "http" as const, hostname: "localhost" },
+        { protocol: "http" as const, hostname: "localhost" },
 
-&#x20;       { protocol: "https" as const, hostname: "127.0.0.1" },
+        { protocol: "https" as const, hostname: "127.0.0.1" },
 
-&#x20;       { protocol: "http" as const, hostname: "127.0.0.1" },
+        { protocol: "http" as const, hostname: "127.0.0.1" },
 
-&#x20;     ],
+      ],
 
 },
 
-\- No hostname: "\*\*" ✓
+- No hostname: "\*\*" ✓
 
-\- Defaults to localhost only ✓
+- Defaults to localhost only ✓
 
-\- ALLOWED\_IMAGE\_HOSTS env var for custom hosts ✓
+- ALLOWED\_IMAGE\_HOSTS env var for custom hosts ✓
 
 Concerns (important, not failures):
 
@@ -172,7 +172,7 @@ Concerns (important, not failures):
 
 4\. Ports: remotePatterns entries have no port. If internal storage is served on http://127.0.0.1:9379, this pattern matches by hostname only and Next should accept any port — but double-check against Next 15 semantics; some versions require explicit port: "" for "any port".
 
-\---
+---
 
 0.16 — removeAdditional enabled — PASS
 
@@ -180,11 +180,11 @@ apps/server/src/app.ts:22-26:
 
 ajv: {
 
-&#x20; customOptions: {
+  customOptions: {
 
-&#x20;   removeAdditional: "all",
+    removeAdditional: "all",
 
-&#x20; },
+  },
 
 },
 
@@ -192,7 +192,7 @@ Set to "all" as required. ✓
 
 Caveat worth raising: removeAdditional: "all" only affects Ajv, which validates non-Zod schemas. This app uses fastify-type-provider-zod — routes defined with Zod schemas go through the Zod validator compiler (line 62), not Ajv. So for most of this codebase, removeAdditional is a no-op unless routes use raw JSON Schema. It's still correct to set defensively, but don't expect it to strip extra fields on Zod-validated routes. If stripping on Zod routes matters, use .strict() or .strip() (the latter is the Zod default, so unknown keys are already dropped before reaching handlers).
 
-\---
+---
 
 Overall Verdict: ALL PASS
 
@@ -200,21 +200,21 @@ All seven items are correctly implemented and the code is syntactically sound. N
 
 Prioritized follow-ups (non-blocking):
 
-\- Important: Validate that no route uploads raw file bytes >50MB through Fastify multipart (audit request.file() / request.files() callers). Fix #0.2 is safe only if all large uploads go via S3 presigned URLs.
+- Important: Validate that no route uploads raw file bytes >50MB through Fastify multipart (audit request.file() / request.files() callers). Fix #0.2 is safe only if all large uploads go via S3 presigned URLs.
 
-\- Important: Compile a realistic default ALLOWED\_IMAGE\_HOSTS (Gravatar, OAuth avatars, STORAGE\_URL host) or audit apps/web for <Image src=...> remote URLs — otherwise users will see broken images post-deploy.
+- Important: Compile a realistic default ALLOWED\_IMAGE\_HOSTS (Gravatar, OAuth avatars, STORAGE\_URL host) or audit apps/web for <Image src=...> remote URLs — otherwise users will see broken images post-deploy.
 
-\- Minor: Fix the 7-space indent on reverse-share/routes.ts:389.
+- Minor: Fix the 7-space indent on reverse-share/routes.ts:389.
 
-\- Minor: Consider dropping the unused http://localhost:3000 from CORS defaults, or documenting why it's there.
+- Minor: Consider dropping the unused http://localhost:3000 from CORS defaults, or documenting why it's there.
 
-\- Minor: Add a production-mode guard that refuses startup (or at minimum loudly warns) if SECURE\_SITE=false or CORS\_ORIGINS is unset in NODE\_ENV=production.
+- Minor: Add a production-mode guard that refuses startup (or at minimum loudly warns) if SECURE\_SITE=false or CORS\_ORIGINS is unset in NODE\_ENV=production.
 
-\- Minor: Note in docs that removeAdditional: "all" applies to Ajv-validated routes only, not Zod-validated ones.
+- Minor: Note in docs that removeAdditional: "all" applies to Ajv-validated routes only, not Zod-validated ones.
 
 
 
-\---
+---
 
 ## BATCH 2
 
