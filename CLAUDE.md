@@ -71,12 +71,35 @@ QA-4 (mapper module, 16 double-casts eliminated), QA-5 (all 23 biome-ignore supp
 Pino) fixed. Dead crypto polyfill removed (Node 24 has native globalThis.crypto).
 QA-8 (component deduplication) and QA-9 (frontend logger naming) tracked for Phases 4/8.
 
-### Remediation Workflow
-Each phase follows this process:
-1. Execute items from `audit/CONSOLIDATED-TODO-LIST.md`
-2. Reviewer agent verifies each batch
+### Quality Standard
+**Perfect implementation, zero technical debt.** This applies to every phase and every review finding:
+- Fix pre-existing issues encountered along the way — not just the items explicitly in scope
+- All review findings must be addressed: Critical, Important, AND Minor — none are optional
+- No compromises justified by "it's minor" or "it works for now"
+- Future-proof: prefer the clean solution even if it requires more refactoring
+
+### Phase Closure Rule
+**Before starting Phase N+1**, verify that `audit/TODO-POST-PHASE-N.md` has zero orphaned items:
+- Every item must be either `[x]` (done) or explicitly moved to `audit/CONSOLIDATED-TODO-LIST.md` with a target phase
+- Items cannot remain as "deferred" in a TODO-POST file without a destination — they will never be seen again
+- Update `CLAUDE.md` phase status, `audit/DONE.md`, and `audit/CONSOLIDATED-TODO-LIST.md` checkboxes before closing a phase
+
+### Implementation & Remediation Workflow
+Use **subagent-driven development** (see `subagent-driven-development` skill) for both:
+- **Phase implementation**: execute batches of items from `audit/CONSOLIDATED-TODO-LIST.md`
+- **Post-review remediation**: execute the findings from `audit/TODO-POST-PHASE-N.md`
+
+Process per phase:
+1. Execute items using subagents (implementer → spec review → quality review per task)
+2. Reviewer agents verify completed work — split by scope if the phase is large
 3. Follow-ups go into `audit/TODO-POST-PHASE-N.md`
 4. Completed items are tracked in `audit/DONE.md`
+
+**Batching strategy**: Group multiple tasks into a single agent dispatch when tasks are:
+- Mechanical/repetitive (e.g., rename a type across N files, fix N locale files)
+- Touching the same system or files (e.g., all auth-related fixes, all RTL fixes)
+- Low-risk with clear specs (no architectural judgment required)
+Reserve separate agents for tasks requiring distinct architectural decisions or large file sets.
 
 ### Audit Directory Structure
 ```
