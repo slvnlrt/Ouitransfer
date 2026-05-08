@@ -1492,6 +1492,14 @@ Final Security Review (4h)
 
 &#x20; Justification: Phase 3 quality audit QA-9
 
+\- \[ ] 8.19 — Translate placeholder strings in non-English locales  
+
+&#x20; Files: apps/web/messages/\*.json (22 non-en-US locale files)  
+
+&#x20; Action: During Phase 4 post-review, 15 strings were added as English placeholders to all 22 non-en-US locales: 13 keys under the \`errors\` namespace (\`somethingWentWrong\`, \`tryAgain\`, \`goHome\`, \`pageNotFound\`, \`pageNotFoundMessage\`, \`shareUnavailable\`, \`shareErrorMessage\`, \`uploadUnavailable\`, \`uploadErrorMessage\`, \`accessDenied\`, \`accessDeniedMessage\`, \`errorLoadingSettings\`, \`refreshPage\`), 1 key under \`a11y\` (\`skipToContent\`), and 1 key under \`auth\` (\`sessionExpired\`). Arabic, Japanese, Chinese etc. users see these in English. Replace with proper translations or configure next-intl \`getMessageFallback\` to explicitly show the English value with a visual indicator.  
+
+&#x20; Justification: Phase 4 post-review A-I1, C-C2, B-I3 — English placeholders committed per existing pattern but never replaced with real translations
+
 \---
 
 Summary \& Metrics
@@ -1514,9 +1522,9 @@ Phase 6: Infrastructure \& Operations	16	\~24h	No — but operational risk
 
 Phase 7: Dependency Modernization	10	\~20h	Partial — critical deps in Phase 0/1
 
-Phase 8: Polish \& Production Readiness	18	\~20h	No — but not production-grade without it
+Phase 8: Polish \& Production Readiness	19	\~20h	No — but not production-grade without it
 
-TOTAL	138 items	\~256h	 
+TOTAL	139 items	\~256h	 
 
 Execution Notes
 
