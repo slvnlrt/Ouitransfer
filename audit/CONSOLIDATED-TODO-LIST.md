@@ -1500,6 +1500,28 @@ Final Security Review (4h)
 
 &#x20; Justification: Phase 4 post-review A-I1, C-C2, B-I3 — English placeholders committed per existing pattern but never replaced with real translations
 
+\- \[ ] 8.20 — Implement E2E CI workflow with full application stack
+
+&#x20; File: .github/workflows/e2e.yml
+
+&#x20; Action: The e2e.yml workflow exists but is disabled (if: false) because no app stack is started before tests run. Implement the prerequisites:
+&#x20; 1. Start the full stack via docker compose before tests (API port 3333, Web port 3000, MinIO)
+&#x20; 2. Wait for services to be healthy (use healthcheck or polling)
+&#x20; 3. Seed the database with test fixtures (prisma db seed against the containerized DB)
+&#x20; 4. Configure playwright.config.ts baseURL to point at the running stack
+&#x20; 5. Re-enable the job by removing the \`if: false\` guard
+&#x20; This item bundles the intent of the original item 1.17 which was marked done but implemented as a non-functional placeholder.
+
+&#x20; Justification: e2e.yml job disabled — no server running when Playwright tests execute
+
+\- \[ ] 8.21 — Add test coverage reporting to CI
+
+&#x20; File: .github/workflows/ci.yml
+
+&#x20; Action: After the test job, upload coverage reports as GitHub Actions artifacts (always free, no external service needed). Optionally integrate Codecov (free for public repos, paid for private) or Coveralls for a persistent coverage dashboard. At minimum: add \`pnpm -r run test:coverage\` as a separate CI job and upload the generated \`coverage/\` directories with \`actions/upload-artifact\`.
+
+&#x20; Justification: Item 1.15 specified coverage upload to Codecov but it was never implemented
+
 \---
 
 Summary \& Metrics

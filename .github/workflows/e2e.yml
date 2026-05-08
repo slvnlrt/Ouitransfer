@@ -1,5 +1,15 @@
 name: E2E Tests
 
+# TODO(phase-8): This workflow is intentionally disabled — the job is skipped at runtime.
+# To enable, the following prerequisites must be in place:
+#   1. Start the full application stack before tests:
+#      - Docker Compose with API (port 3333), Web (port 3000), and MinIO
+#      - Or: playwright.config.ts webServer config pointing to a running instance
+#      - Requires real environment variables (JWT_SECRET, S3 credentials, etc.)
+#   2. Seed the database with test fixtures before each run
+#   3. Add accessibility checks via @axe-core/playwright (item 8.12)
+#   See CONSOLIDATED-TODO-LIST.md items 8.20 and 8.21 for the full spec.
+
 on:
   push:
     branches: [main]
@@ -13,6 +23,8 @@ concurrency:
 jobs:
   e2e:
     name: Playwright E2E
+    # Disabled: app stack not started — tests would fail immediately (no server running)
+    if: false
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -24,6 +36,12 @@ jobs:
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
+
+      # TODO(phase-8/8.20): start docker compose stack here before running tests
+      # - name: Start application stack
+      #   run: docker compose up -d
+      # - name: Wait for services to be healthy
+      #   run: docker compose exec -T ouitransfer /bin/sh -c "..."
 
       - name: Run E2E tests
         run: pnpm e2e
