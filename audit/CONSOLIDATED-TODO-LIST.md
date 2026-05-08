@@ -18,7 +18,7 @@ Phase 0: Security Emergency 🚨
 
 Prototype Pollution \& DoS (immediate, 30min total)
 
-\- \[ ] 0.1 — Re-enable prototype pollution protection  
+\- \[x] 0.1 — Re-enable prototype pollution protection  
 
 &#x20; File: apps/server/src/app.ts:36-37  
 
@@ -26,7 +26,7 @@ Prototype Pollution \& DoS (immediate, 30min total)
 
 &#x20; Justification: Audit C2/S2 — disabling these opens RCE/auth bypass vectors via crafted JSON payloads
 
-\- \[ ] 0.2 — Set a reasonable body limit  
+\- \[x] 0.2 — Set a reasonable body limit  
 
 &#x20; Files: apps/server/src/app.ts:30, apps/server/src/server.ts:58, apps/server/src/modules/reverse-share/routes.ts:389  
 
@@ -36,7 +36,7 @@ Prototype Pollution \& DoS (immediate, 30min total)
 
 Unauthenticated Routes (critical, 4h total)
 
-\- \[ ] 0.3 — Add JWT preValidation to all /s3/\* routes  
+\- \[x] 0.3 — Add JWT preValidation to all /s3/\* routes  
 
 &#x20; File: apps/server/src/modules/s3-storage/routes.ts  
 
@@ -44,7 +44,7 @@ Unauthenticated Routes (critical, 4h total)
 
 &#x20; Justification: Audit S3 — unauthenticated upload/download/delete/enumerate of arbitrary S3 objects
 
-\- \[ ] 0.4 — Add authentication to /embed/:id  
+\- \[x] 0.4 — Add authentication to /embed/:id  
 
 &#x20; Files: apps/server/src/modules/file/routes.ts:134-155, apps/server/src/modules/file/controller.ts:583-625  
 
@@ -54,7 +54,7 @@ Unauthenticated Routes (critical, 4h total)
 
 CORS \& Transport (critical, 2h)
 
-\- \[ ] 0.5 — Restrict CORS to known frontend origins  
+\- \[x] 0.5 — Restrict CORS to known frontend origins  
 
 &#x20; File: apps/server/src/app.ts:71-74  
 
@@ -62,7 +62,7 @@ CORS \& Transport (critical, 2h)
 
 &#x20; Justification: Audit C1/S1 — any website can make authenticated cross-origin requests with cookies
 
-\- \[ ] 0.6 — Default SECURE\_SITE to "true"  
+\- \[x] 0.6 — Default SECURE\_SITE to "true"  
 
 &#x20; File: apps/server/src/modules/auth/controller.ts:43-48  
 
@@ -72,7 +72,7 @@ CORS \& Transport (critical, 2h)
 
 Command Injection (critical, 1h)
 
-\- \[ ] 0.7 — Replace exec() with execFile() or native fs.statfs()  
+\- \[x] 0.7 — Replace exec() with execFile() or native fs.statfs()  
 
 &#x20; File: apps/server/src/modules/storage/service.ts:1,49-51  
 
@@ -82,7 +82,7 @@ Command Injection (critical, 1h)
 
 Rate Limiting (critical, 4h)
 
-\- \[ ] 0.8 — Install and configure @fastify/rate-limit  
+\- \[x] 0.8 — Install and configure @fastify/rate-limit  
 
 &#x20; Files: apps/server/src/app.ts, per-module routes.ts  
 
@@ -92,7 +92,7 @@ Rate Limiting (critical, 4h)
 
 2FA Bypass Fix (critical, 4h)
 
-\- \[ ] 0.9 — Fix 2FA flow with server-side challenge token  
+\- \[x] 0.9 — Fix 2FA flow with server-side challenge token  
 
 &#x20; Files: apps/server/src/modules/auth/dto.ts:41-42, apps/server/src/modules/auth/controller.ts:56-84  
 
@@ -102,7 +102,7 @@ Rate Limiting (critical, 4h)
 
 Presigned URL Object Name (high, 2h)
 
-\- \[ ] 0.10 — Generate objectName server-side for write operations  
+\- \[x] 0.10 — Generate objectName server-side for write operations  
 
 &#x20; Files: apps/server/src/modules/file/controller.ts:202-270, apps/server/src/modules/reverse-share/controller.ts:190-214  
 
@@ -112,7 +112,7 @@ Presigned URL Object Name (high, 2h)
 
 Share Passwords (high, 2h)
 
-\- \[ ] 0.11 — Move share passwords from query parameters to request body  
+\- \[x] 0.11 — Move share passwords from query parameters to request body  
 
 &#x20; Files: apps/server/src/modules/share/routes.ts:82, apps/server/src/modules/file/routes.ts:117-118, apps/server/src/modules/reverse-share/routes.ts:188  
 
@@ -122,7 +122,7 @@ Share Passwords (high, 2h)
 
 TLS \& Image Proxy (medium, 1h)
 
-\- \[ ] 0.12 — Scope TLS bypass to S3 client only  
+\- \[x] 0.12 — Scope TLS bypass to S3 client only  
 
 &#x20; File: apps/server/src/config/storage.config.ts:65-71  
 
@@ -130,7 +130,7 @@ TLS \& Image Proxy (medium, 1h)
 
 &#x20; Justification: Audit M7 — global TLS bypass affects all outbound connections
 
-\- \[ ] 0.13 — Restrict Next.js image remote patterns  
+\- \[x] 0.13 — Restrict Next.js image remote patterns  
 
 &#x20; File: apps/web/next.config.ts:7-16  
 
@@ -140,7 +140,7 @@ TLS \& Image Proxy (medium, 1h)
 
 Auth Route Consistency (medium, 2h)
 
-\- \[ ] 0.14 — Move all auth checks to preValidation hooks  
+\- \[x] 0.14 — Move all auth checks to preValidation hooks  
 
 &#x20; Files: apps/server/src/modules/share/routes.ts:119-139, apps/server/src/modules/file/controller.ts:60, apps/server/src/modules/folder/controller.ts:21  
 
@@ -150,7 +150,7 @@ Auth Route Consistency (medium, 2h)
 
 Validation Gaps (medium, 2h)
 
-\- \[ ] 0.15 — Replace z.any() with proper Zod schema on auth provider update  
+\- \[x] 0.15 — Replace z.any() with proper Zod schema on auth provider update  
 
 &#x20; File: apps/server/src/modules/auth-providers/routes.ts:188  
 
@@ -158,7 +158,7 @@ Validation Gaps (medium, 2h)
 
 &#x20; Justification: Audit 02 — z.any() bypasses all validation on a sensitive endpoint
 
-\- \[ ] 0.16 — Enable removeAdditional to strip unknown fields  
+\- \[x] 0.16 — Enable removeAdditional to strip unknown fields  
 
 &#x20; File: apps/server/src/app.ts:22-24  
 
@@ -458,7 +458,7 @@ Phase 2: Architecture Restructuring 🏗️
 
 Shared Packages (8h)
 
-\- \[ ] 2.1 — Create packages/shared for cross-app utilities  
+\- \[x] 2.1 — Create packages/shared for cross-app utilities  
 
 &#x20; Files: packages/shared/ (new directory), packages/shared/package.json, packages/shared/tsconfig.json  
 
@@ -478,7 +478,7 @@ Shared Packages (8h)
 
 &#x20; Justification: Audit 01 critical — zero workspace: references, mime-types.ts duplicated (378+435 LOC), zero shared types
 
-\- \[ ] 2.2 — Create packages/config for shared tooling configs  
+\- \[x] 2.2 — Create packages/config for shared tooling configs  
 
 &#x20; Files: packages/config/ (new directory)  
 
@@ -494,7 +494,7 @@ Shared Packages (8h)
 
 Config Consolidation (4h)
 
-\- \[ ] 2.3 — Unify TypeScript versions and tsconfig settings  
+\- \[x] 2.3 — Unify TypeScript versions and tsconfig settings  
 
 &#x20; Files: All tsconfig.json files, all package.json files  
 
@@ -502,7 +502,7 @@ Config Consolidation (4h)
 
 &#x20; Justification: Audit 01/07 — TypeScript drift: ^5.7.3 vs 5.8.3
 
-\- \[ ] 2.4 — Remove ignoreDuringBuilds and ignoreBuildErrors from docs  
+\- \[x] 2.4 — Remove ignoreDuringBuilds and ignoreBuildErrors from docs  
 
 &#x20; File: apps/docs/next.config.mjs  
 
@@ -512,7 +512,7 @@ Config Consolidation (4h)
 
 Proxy Layer Rationalization (8h)
 
-\- \[ ] 2.5 — Evaluate and reduce the 101-route proxy layer  
+\- \[x] 2.5 — Evaluate and reduce the 101-route proxy layer  
 
 &#x20; Files: apps/web/src/app/api/(proxy)/ (101 files)  
 
@@ -534,7 +534,7 @@ Proxy Layer Rationalization (8h)
 
 Docker Architecture (2h)
 
-\- \[ ] 2.8 — Evaluate replacing supervisord with docker compose multi-container  
+\- \[x] 2.8 — Evaluate replacing supervisord with docker compose multi-container  
 
 &#x20; Files: infra/supervisord.conf, Dockerfile, docker-compose.yaml  
 
@@ -544,7 +544,7 @@ Docker Architecture (2h)
 
 Dependency Deduplication (4h)
 
-\- \[ ] 2.6 — Hoist shared dependencies to workspace root  
+\- \[x] 2.6 — Hoist shared dependencies to workspace root  
 
 &#x20; Files: Root package.json, per-app package.json files  
 
@@ -552,7 +552,7 @@ Dependency Deduplication (4h)
 
 &#x20; Justification: Audit 07 — duplicated deps across apps, version drift
 
-\- \[ ] 2.7 — Align drifting dependency versions  
+\- \[x] 2.7 — Align drifting dependency versions  
 
 &#x20; Files: Per-app package.json  
 
@@ -570,7 +570,7 @@ Phase 3: Code Quality \& Type Safety 🎯
 
 Type Safety (16h)
 
-\- \[ ] 3.1 — Type the Fastify request decoration properly  
+\- \[x] 3.1 — Type the Fastify request decoration properly  
 
 &#x20; Files: apps/server/src/types/fastify.d.ts, all controller files using (request as any).user  
 
@@ -590,7 +590,7 @@ Type Safety (16h)
 
 &#x20; Justification: Audit 06 — 15+ (request as any).user casts, defeats type safety
 
-\- \[ ] 3.2 — Escalate noExplicitAny to error in Biome  
+\- \[x] 3.2 — Escalate noExplicitAny to error in Biome  
 
 &#x20; File: biome.json  
 
@@ -610,7 +610,7 @@ Type Safety (16h)
 
 &#x20; Justification: Audit 06 — 470+ any occurrences, no-explicit-any disabled
 
-\- \[ ] 3.3 — Fix the "\_\_DELETE\_\_" as any sentinel pattern  
+\- \[x] 3.3 — Fix the "\_\_DELETE\_\_" as any sentinel pattern  
 
 &#x20; File: apps/web/src/hooks/use-enhanced-file-manager.ts  
 
@@ -620,7 +620,7 @@ Type Safety (16h)
 
 Error Handling (8h)
 
-\- \[ ] 3.4 — Implement centralized Fastify error handler  
+\- \[x] 3.4 — Implement centralized Fastify error handler  
 
 &#x20; File: apps/server/src/app.ts  
 
@@ -638,7 +638,7 @@ Error Handling (8h)
 
 &#x20; Justification: Audit 02/06 — no global error handler, Prisma errors leak to clients, inconsistent status codes
 
-\- \[ ] 3.5 — Fix silent catch blocks  
+\- \[x] 3.5 — Fix silent catch blocks  
 
 &#x20; Files: apps/server/src/modules/file/controller.ts:253, :359  
 
@@ -646,7 +646,7 @@ Error Handling (8h)
 
 &#x20; Justification: Audit 06 — 2 empty catch blocks silently swallow errors
 
-\- \[ ] 3.6 — Fix inconsistent eslint-disable react-hooks/exhaustive-deps  
+\- \[x] 3.6 — Fix inconsistent eslint-disable react-hooks/exhaustive-deps  
 
 &#x20; Files: 8 files with the suppression  
 
@@ -656,7 +656,7 @@ Error Handling (8h)
 
 Logging (4h)
 
-\- \[ ] 3.7 — Replace console.\* with Fastify's built-in Pino logger on the server  
+\- \[x] 3.7 — Replace console.\* with Fastify's built-in Pino logger on the server  
 
 &#x20; Files: apps/server/src/server.ts, all server modules  
 
@@ -664,7 +664,7 @@ Logging (4h)
 
 &#x20; Justification: Audit 06 — 334 console.\* occurrences, server bypasses configured Pino logger
 
-\- \[ ] 3.8 — Add structured logging to frontend  
+\- \[x] 3.8 — Add structured logging to frontend  
 
 &#x20; Files: apps/web/src/lib/logger.ts (new)  
 
@@ -674,7 +674,7 @@ Logging (4h)
 
 Code Decomposition (8h)
 
-\- \[ ] 3.9 — Break up files exceeding 500 lines  
+\- \[x] 3.9 — Break up files exceeding 500 lines  
 
 &#x20; Priority files:
 
@@ -694,7 +694,7 @@ Code Decomposition (8h)
 
 Miscellaneous Quality (2h)
 
-\- \[ ] 3.10 — Fix typo in filename  
+\- \[x] 3.10 — Fix typo in filename  
 
 &#x20; File: apps/web/src/utils/unahthenticated-only-paths.ts → unauthenticated-only-paths.ts  
 
@@ -702,7 +702,7 @@ Miscellaneous Quality (2h)
 
 &#x20; Justification: Audit 06 — typo unahthenticated
 
-\- \[ ] 3.11 — Unify PrismaClient to singleton  
+\- \[x] 3.11 — Unify PrismaClient to singleton  
 
 &#x20; Files: apps/server/src/modules/user/service.ts:16, apps/server/src/modules/storage/service.ts:11  
 
@@ -710,7 +710,7 @@ Miscellaneous Quality (2h)
 
 &#x20; Justification: Audit 02 — multiple PrismaClient instances waste connections and conflict with SQLite's single-writer lock
 
-\- \[ ] 3.12 — Use Prisma migrations instead of schema push  
+\- \[x] 3.12 — Use Prisma migrations instead of schema push  
 
 &#x20; Files: apps/server/prisma/  
 
@@ -718,7 +718,7 @@ Miscellaneous Quality (2h)
 
 &#x20; Justification: Audit 02 — no migration history, only schema push, no rollback capability
 
-\- \[ ] 3.13 — Replace trivial smoke tests with real integration tests  
+\- \[x] 3.13 — Replace trivial smoke tests with real integration tests  
 
 &#x20; Files: apps/server/src/__tests__/health.test.ts, apps/web/src/__tests__/smoke.test.tsx  
 
@@ -726,7 +726,7 @@ Miscellaneous Quality (2h)
 
 &#x20; Justification: Post-Phase 1 review S5 — current smoke tests only verify that modules are importable, not that the app works
 
-\- \[ ] 3.14 — Review and fix Knip configuration for docs MDX  
+\- \[x] 3.14 — Review and fix Knip configuration for docs MDX  
 
 &#x20; File: knip.json  
 
@@ -734,7 +734,7 @@ Miscellaneous Quality (2h)
 
 &#x20; Justification: Post-Phase 1 review S6 — MDX entry points removed from knip.json due to unreliable parsing
 
-\- \[ ] 3.15 — Add unit test for proxy route resolution ordering (Phase 2 review S2)
+\- \[x] 3.15 — Add unit test for proxy route resolution ordering (Phase 2 review S2)
 
 &#x20; File: apps/web/src/lib/\_\_tests\_\_/proxy-routes.test.ts (new)
 
@@ -742,7 +742,7 @@ Miscellaneous Quality (2h)
 
 &#x20; Justification: Phase 2 review S2 — route ordering is a maintenance trap
 
-\- \[ ] 3.16 — Clean up extractFilenameFromContentDisposition regex (Phase 2 review S5)
+\- \[x] 3.16 — Clean up extractFilenameFromContentDisposition regex (Phase 2 review S5)
 
 &#x20; File: packages/shared/src/mime-types.ts
 
@@ -750,7 +750,7 @@ Miscellaneous Quality (2h)
 
 &#x20; Justification: Phase 2 review S5
 
-\- \[ ] 3.17 — Keep subpath export pattern for packages/shared (Phase 2 review W9)
+\- \[x] 3.17 — Keep subpath export pattern for packages/shared (Phase 2 review W9)
 
 &#x20; File: packages/shared/package.json
 
@@ -1502,21 +1502,21 @@ Phase 0: Security Emergency	16	\~20h	YES — no deployment before completion
 
 Phase 1: Tooling \& DX Foundation	21	\~40h	YES — no safe development without this
 
-Phase 2: Architecture Restructuring	7	\~24h	Partial — shared packages needed for Phase 3
+Phase 2: Architecture Restructuring	8	\~24h	Partial — shared packages needed for Phase 3
 
-Phase 3: Code Quality \& Type Safety	12	\~40h	No — but debt compounds fast
+Phase 3: Code Quality \& Type Safety	17	\~40h	No — but debt compounds fast
 
-Phase 4: Frontend Modernization	13	\~40h	No — but UX suffers
+Phase 4: Frontend Modernization	15	\~40h	No — but UX suffers
 
-Phase 5: Backend Hardening	12	\~28h	No — but attack surface remains
+Phase 5: Backend Hardening	17	\~28h	No — but attack surface remains
 
-Phase 6: Infrastructure \& Operations	14	\~24h	No — but operational risk
+Phase 6: Infrastructure \& Operations	16	\~24h	No — but operational risk
 
 Phase 7: Dependency Modernization	10	\~20h	Partial — critical deps in Phase 0/1
 
-Phase 8: Polish \& Production Readiness	12	\~20h	No — but not production-grade without it
+Phase 8: Polish \& Production Readiness	18	\~20h	No — but not production-grade without it
 
-TOTAL	117 items	\~256h	 
+TOTAL	138 items	\~256h	 
 
 Execution Notes
 
