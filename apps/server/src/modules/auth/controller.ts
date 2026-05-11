@@ -2,6 +2,8 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 
 import { env } from "../../env.js";
 import { UnauthorizedError } from "../../utils/app-error.js";
+import { getLogger } from "../../utils/logger.js";
+import { logAuditEvent } from "../audit/service.js";
 import { ConfigService } from "../config/service.js";
 import { createChallengeToken, verifyChallengeToken } from "./challenge.js";
 import {
@@ -10,6 +12,7 @@ import {
   type LoginInput,
   RequestPasswordResetSchema,
 } from "./dto.js";
+import { createRefreshToken } from "./refresh-token.service.js";
 import { AuthService } from "./service.js";
 
 export class AuthController {
@@ -29,7 +32,20 @@ export class AuthController {
   async login(request: FastifyRequest, reply: FastifyReply) {
     const input = request.body as LoginInput;
     const { userAgent, ipAddress } = this.getClientInfo(request);
-    const result = await this.authService.login(input, userAgent, ipAddress);
+
+    let result: Awaited<ReturnType<AuthService["login"]>>;
+    try {
+      result = await this.authService.login(input, userAgent, ipAddress);
+    } catch (err) {
+      // Audit failed login (fire-and-forget)
+      logAuditEvent({
+        action: "LOGIN_FAILURE",
+        ipAddress,
+        userAgent,
+        metadata: { emailOrUsername: input.emailOrUsername },
+      }).catch((auditErr) => getLogger().error({ err: auditErr }, "Audit log write failed"));
+      throw err;
+    }
 
     if ("requiresTwoFactor" in result) {
       const challengeToken = await createChallengeToken(result.userId);
@@ -54,7 +70,18 @@ export class AuthController {
       sameSite: env.SECURE_SITE === "true" ? "lax" : "strict",
     });
 
-    return reply.send({ user });
+    // Issue refresh token for session persistence
+    const refreshToken = await createRefreshToken(user.id, userAgent, ipAddress);
+
+    // Audit successful login (fire-and-forget)
+    logAuditEvent({
+      userId: user.id,
+      action: "LOGIN_SUCCESS",
+      ipAddress,
+      userAgent,
+    }).catch((auditErr) => getLogger().error({ err: auditErr }, "Audit log write failed"));
+
+    return reply.send({ user, refreshToken });
   }
 
   async completeTwoFactorLogin(request: FastifyRequest, reply: FastifyReply) {
@@ -85,11 +112,43 @@ export class AuthController {
       sameSite: env.SECURE_SITE === "true" ? "lax" : "strict",
     });
 
-    return reply.send({ user });
+    // Issue refresh token for session persistence
+    const refreshToken = await createRefreshToken(user.id, userAgent, ipAddress);
+
+    // Audit successful 2FA login (fire-and-forget)
+    logAuditEvent({
+      userId: user.id,
+      action: "LOGIN_SUCCESS",
+      ipAddress,
+      userAgent,
+      metadata: { method: "2fa" },
+    }).catch((auditErr) => getLogger().error({ err: auditErr }, "Audit log write failed"));
+
+    return reply.send({ user, refreshToken });
   }
 
-  async logout(_request: FastifyRequest, reply: FastifyReply) {
+  async logout(request: FastifyRequest, reply: FastifyReply) {
+    const { userAgent, ipAddress } = this.getClientInfo(request);
+
+    // Try to get userId from JWT for audit logging (may fail if token expired)
+    let userId: string | undefined;
+    try {
+      await request.jwtVerify();
+      userId = request.user?.userId;
+    } catch {
+      // Token may be expired or invalid — still proceed with logout
+    }
+
     reply.clearCookie("token", { path: "/" });
+
+    // Audit logout (fire-and-forget)
+    logAuditEvent({
+      userId,
+      action: "LOGOUT",
+      ipAddress,
+      userAgent,
+    }).catch((auditErr) => getLogger().error({ err: auditErr }, "Audit log write failed"));
+
     return reply.send({ message: "Logout successful" });
   }
 
@@ -104,7 +163,18 @@ export class AuthController {
   async resetPassword(request: FastifyRequest, reply: FastifyReply) {
     const schema = await createResetPasswordSchema();
     const input = schema.parse(request.body);
+    const { userAgent, ipAddress } = this.getClientInfo(request);
+
     await this.authService.resetPassword(input.token, input.password);
+
+    // Audit password reset (fire-and-forget — userId not easily available here
+    // since the reset is token-based; log without userId)
+    logAuditEvent({
+      action: "PASSWORD_RESET",
+      ipAddress,
+      userAgent,
+    }).catch((auditErr) => getLogger().error({ err: auditErr }, "Audit log write failed"));
+
     return reply.send({ message: "Password reset successfully" });
   }
 

@@ -1,4 +1,6 @@
 import { prisma } from "../../shared/prisma.js";
+import { getLogger } from "../../utils/logger.js";
+import { logAuditEvent } from "../audit/service.js";
 
 const MAX_FAILED_ATTEMPTS = 10;
 const LOCKOUT_DURATION_MINUTES = 15;
@@ -47,6 +49,13 @@ export async function isAccountLocked(
     );
     const remainingMs = unlockAt.getTime() - Date.now();
     if (remainingMs > 0) {
+      // Audit account lockout (fire-and-forget)
+      logAuditEvent({
+        action: "ACCOUNT_LOCKED",
+        ipAddress: "unknown",
+        metadata: { email, remainingMinutes: Math.ceil(remainingMs / 60000) },
+      }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
+
       return {
         locked: true,
         remainingMinutes: Math.ceil(remainingMs / 60000),

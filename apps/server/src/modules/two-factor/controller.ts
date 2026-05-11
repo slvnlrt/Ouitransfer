@@ -3,6 +3,8 @@ import { z } from "zod";
 
 import { prisma } from "../../shared/prisma.js";
 import { NotFoundError, UnauthorizedError } from "../../utils/app-error.js";
+import { getLogger } from "../../utils/logger.js";
+import { logAuditEvent } from "../audit/service.js";
 import { ConfigService } from "../config/service.js";
 import { TwoFactorService } from "./service.js";
 
@@ -76,6 +78,14 @@ export class TwoFactorController {
 
     const result = await this.twoFactorService.verifySetup(userId, body.token, body.secret);
 
+    // Audit 2FA enable (fire-and-forget)
+    logAuditEvent({
+      userId,
+      action: "TWO_FACTOR_ENABLE",
+      ipAddress: request.ip,
+      userAgent: request.headers["user-agent"],
+    }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
+
     return reply.send(result);
   }
 
@@ -107,6 +117,14 @@ export class TwoFactorController {
     const body = DisableSchema.parse(request.body);
 
     const result = await this.twoFactorService.disable2FA(userId, body.password, body.totpCode);
+
+    // Audit 2FA disable (fire-and-forget)
+    logAuditEvent({
+      userId,
+      action: "TWO_FACTOR_DISABLE",
+      ipAddress: request.ip,
+      userAgent: request.headers["user-agent"],
+    }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
 
     return reply.send(result);
   }

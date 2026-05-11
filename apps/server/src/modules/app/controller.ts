@@ -1,6 +1,8 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
 import { ForbiddenError, ValidationError } from "../../utils/app-error.js";
+import { getLogger } from "../../utils/logger.js";
+import { logAuditEvent } from "../audit/service.js";
 import { EmailService } from "../email/service.js";
 import { LogoService } from "./logo.service.js";
 import { AppService } from "./service.js";
@@ -35,12 +37,32 @@ export class AppController {
     const { value } = request.body as { value: string };
 
     const config = await this.appService.updateConfig(key, value);
+
+    // Audit admin config change (fire-and-forget)
+    logAuditEvent({
+      userId: request.user?.userId,
+      action: "ADMIN_CONFIG_CHANGE",
+      ipAddress: request.ip,
+      userAgent: request.headers["user-agent"],
+      metadata: { key },
+    }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
+
     return reply.send({ config });
   }
 
   async bulkUpdateConfigs(request: FastifyRequest, reply: FastifyReply) {
     const updates = request.body as Array<{ key: string; value: string }>;
     const configs = await this.appService.bulkUpdateConfigs(updates);
+
+    // Audit admin config change (fire-and-forget)
+    logAuditEvent({
+      userId: request.user?.userId,
+      action: "ADMIN_CONFIG_CHANGE",
+      ipAddress: request.ip,
+      userAgent: request.headers["user-agent"],
+      metadata: { keys: updates.map((u) => u.key) },
+    }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
+
     return reply.send({ configs });
   }
 

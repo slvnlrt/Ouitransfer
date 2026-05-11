@@ -81,6 +81,11 @@ function r(method: string, path: string, backendPath: string, opts?: Opts): Rout
 
 export const routes: RouteConfig[] = [
   // ═══════════════════════════════════════════════════════════════
+  // ADMIN
+  // ═══════════════════════════════════════════════════════════════
+  r("GET", "admin/audit-logs", "/admin/audit-logs", { query: true }),
+
+  // ═══════════════════════════════════════════════════════════════
   // APP
   // ═══════════════════════════════════════════════════════════════
   r("GET", "app/configs/public", "/app/configs/public"),
@@ -118,6 +123,7 @@ export const routes: RouteConfig[] = [
   r("POST", "auth/login", "/auth/login", { cookie: false, clientHeaders: true }),
   r("POST", "auth/logout", "/auth/logout"),
   r("GET", "auth/me", "/auth/me"),
+  r("POST", "auth/refresh", "/auth/refresh", { cookie: false }),
   r("POST", "auth/reset-password", "/auth/reset-password", { cookie: false }),
 
   // ═══════════════════════════════════════════════════════════════

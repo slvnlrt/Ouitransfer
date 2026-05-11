@@ -11,6 +11,19 @@ const apiInstance = axios.create({
   timeout: 120000, // 2 minutes timeout for API calls
 });
 
+// ── Refresh Token Management ──────────────────────────────────
+// Stored in memory only (not localStorage — XSS risk).
+// Set on login, cleared on logout / failed refresh.
+let refreshTokenValue: string | null = null;
+
+export function setRefreshToken(token: string | null): void {
+  refreshTokenValue = token;
+}
+
+export function getRefreshToken(): string | null {
+  return refreshTokenValue;
+}
+
 // ── CSRF Token Management ─────────────────────────────────────
 // The server uses double-submit cookie CSRF protection:
 // 1. GET /api/csrf-token → sets httpOnly _csrf cookie + returns { token }
@@ -62,7 +75,7 @@ apiInstance.interceptors.request.use(async (config) => {
 });
 
 // ── 401 Response Interceptor ──────────────────────────────────
-// Redirects to /login on unauthorized responses.
+// On 401: attempts a token refresh first, then redirects to /login if refresh fails.
 // Skips redirect for auth endpoints (which may legitimately return 401)
 // and for pages that don't require authentication.
 
@@ -78,9 +91,40 @@ let isRedirecting = false;
 /** Safety timeout to reset the redirect guard if navigation is somehow prevented. */
 const REDIRECT_SAFETY_TIMEOUT_MS = 5000;
 
+/**
+ * Attempt to refresh the access token using the stored refresh token.
+ * Returns true if refresh succeeded, false otherwise.
+ */
+async function attemptTokenRefresh(): Promise<boolean> {
+  const token = refreshTokenValue;
+  if (!token) return false;
+
+  try {
+    // Use raw axios to avoid interceptor loops
+    const res = await axios.post(
+      "/api/auth/refresh",
+      { refreshToken: token },
+      { withCredentials: true },
+    );
+    const newRefreshToken = res.data?.refreshToken;
+    if (newRefreshToken) {
+      refreshTokenValue = newRefreshToken;
+      return true;
+    }
+    return false;
+  } catch {
+    // Refresh failed — clear the stored token
+    refreshTokenValue = null;
+    return false;
+  }
+}
+
+/** Mutex to prevent concurrent refresh attempts */
+let refreshPromise: Promise<boolean> | null = null;
+
 apiInstance.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (axios.isAxiosError(error) && typeof window !== "undefined") {
       const status = error.response?.status;
 
@@ -96,24 +140,53 @@ apiInstance.interceptors.response.use(
         }
       }
 
-      // Redirect to login on 401
-      if (status === 401 && !isRedirecting) {
-        const requestUrl = error.config?.url ?? "";
+      // Handle 401 — attempt refresh before redirecting
+      if (status === 401) {
+        const originalRequest = error.config;
+        const requestUrl = originalRequest?.url ?? "";
         const currentPath = window.location.pathname;
 
         const isAuthEndpoint = AUTH_API_PREFIXES.some((prefix) => requestUrl.startsWith(prefix));
+        const isRefreshEndpoint = requestUrl.includes("/auth/refresh");
         const isPublicPage = matchesPath(currentPath, publicPaths);
 
-        if (!isAuthEndpoint && !isPublicPage) {
-          isRedirecting = true;
+        // Don't attempt refresh for auth endpoints, the refresh endpoint itself, or public pages
+        if (
+          !isAuthEndpoint &&
+          !isRefreshEndpoint &&
+          !isPublicPage &&
+          originalRequest &&
+          !(originalRequest as unknown as Record<string, unknown>)._retry
+        ) {
+          (originalRequest as unknown as Record<string, unknown>)._retry = true;
 
-          // Safety: reset the flag after a timeout in case navigation is blocked
-          // (e.g. beforeunload handler prevents it).
+          // Use mutex to prevent concurrent refresh attempts
+          if (!refreshPromise) {
+            refreshPromise = attemptTokenRefresh().finally(() => {
+              refreshPromise = null;
+            });
+          }
+
+          const success = await refreshPromise;
+          if (success) {
+            // Retry the original request — the new cookie is set by the refresh endpoint
+            return apiInstance(originalRequest);
+          }
+
+          // Refresh failed — redirect to login (re-check isRedirecting after async gap)
+          if (!isRedirecting) {
+            isRedirecting = true;
+            setTimeout(() => {
+              isRedirecting = false;
+            }, REDIRECT_SAFETY_TIMEOUT_MS);
+            window.location.href = "/login?reason=session_expired";
+          }
+        } else if (!isAuthEndpoint && !isRefreshEndpoint && !isPublicPage && !isRedirecting) {
+          // Already retried and still 401 — redirect
+          isRedirecting = true;
           setTimeout(() => {
             isRedirecting = false;
           }, REDIRECT_SAFETY_TIMEOUT_MS);
-
-          // Hard navigation clears all React state (QueryClient cache, contexts, etc.)
           window.location.href = "/login?reason=session_expired";
         }
       }

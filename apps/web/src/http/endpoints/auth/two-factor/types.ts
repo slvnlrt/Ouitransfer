@@ -71,6 +71,7 @@ export interface LoginResponse {
     createdAt: string;
     updatedAt: string;
   };
+  refreshToken?: string;
   requiresTwoFactor?: boolean;
   challengeToken?: string;
   message?: string;

@@ -5,7 +5,9 @@ import { buildApp } from "./app.js";
 import { directoriesConfig } from "./config/directories.config.js";
 import { env } from "./env.js";
 import { appRoutes } from "./modules/app/routes.js";
+import { auditRoutes } from "./modules/audit/routes.js";
 import { cleanupOldAttempts } from "./modules/auth/login-attempts.service.js";
+import { cleanupExpiredTokens } from "./modules/auth/refresh-token.service.js";
 import { authRoutes } from "./modules/auth/routes.js";
 import { authProvidersRoutes } from "./modules/auth-providers/routes.js";
 import { fileRoutes } from "./modules/file/routes.js";
@@ -72,6 +74,7 @@ async function startServer() {
   app.register(reverseShareRoutes);
   app.register(storageRoutes);
   app.register(appRoutes);
+  app.register(auditRoutes);
   app.register(healthRoutes);
   app.register(s3StorageRoutes);
 
@@ -105,7 +108,23 @@ async function startServer() {
     60 * 60 * 1000,
   );
 
+  // Periodic cleanup of expired refresh tokens (every hour)
+  const refreshCleanupInterval = setInterval(
+    async () => {
+      try {
+        const count = await cleanupExpiredTokens();
+        if (count > 0) {
+          app.log.info({ count }, "Cleaned up expired refresh tokens");
+        }
+      } catch (err) {
+        app.log.error({ err }, "Failed to cleanup refresh tokens");
+      }
+    },
+    60 * 60 * 1000,
+  );
+
   app.addHook("onClose", () => clearInterval(cleanupInterval));
+  app.addHook("onClose", () => clearInterval(refreshCleanupInterval));
 
   // Cleanup on shutdown
   process.on("SIGINT", () => process.exit(0));

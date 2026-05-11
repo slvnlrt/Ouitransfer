@@ -15,6 +15,7 @@ import { UserResponseSchema } from "../user/dto.js";
 import { PrismaUserRepository } from "../user/repository.js";
 import type { LoginInput } from "./dto.js";
 import { isAccountLocked, recordLoginAttempt } from "./login-attempts.service.js";
+import { revokeAllUserTokens } from "./refresh-token.service.js";
 import { invalidateTokenVersionCache } from "./token-version.js";
 import { TrustedDeviceService } from "./trusted-device.service.js";
 
@@ -212,6 +213,8 @@ export class AuthService {
 
     // Invalidate cached tokenVersion so existing sessions are rejected immediately
     invalidateTokenVersionCache(resetRequest.userId);
+    // Also revoke all refresh tokens — password was just changed
+    await revokeAllUserTokens(resetRequest.userId);
   }
 
   async getUserById(userId: string) {

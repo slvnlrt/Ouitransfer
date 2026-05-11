@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { setRefreshToken } from "@/config/api";
 import { useAuth } from "@/contexts/auth-context";
 import { getAuthConfig, login } from "@/http/endpoints";
 import { completeTwoFactorLogin } from "@/http/endpoints/auth/two-factor";
@@ -138,6 +139,11 @@ export function useLogin() {
       }
 
       if (loginData.user) {
+        // Store refresh token in memory for silent refresh
+        if (loginData.refreshToken) {
+          setRefreshToken(loginData.refreshToken);
+        }
+
         // The login response has user data — seed the TQ cache with it.
         // LoginUser lacks `image`, so fill it in. The currentUser query shape
         // is GetCurrentUser200 = { user: User }.
@@ -174,6 +180,11 @@ export function useLogin() {
         token: twoFactorCode,
         rememberDevice: rememberDevice,
       });
+
+      // Store refresh token in memory for silent refresh
+      if (response.data.refreshToken) {
+        setRefreshToken(response.data.refreshToken);
+      }
 
       // 2FA response has user data — seed TQ cache
       const user = {

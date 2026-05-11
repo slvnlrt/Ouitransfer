@@ -35,6 +35,7 @@ model User {
   passwordResets PasswordReset[]
   authProviders  UserAuthProvider[]
   trustedDevices TrustedDevice[]
+  refreshTokens  RefreshToken[]
 
   @@map("users")
 }
@@ -329,4 +330,36 @@ model InviteToken {
   updatedAt DateTime  @updatedAt
 
   @@map("invite_tokens")
+}
+
+model RefreshToken {
+  id         String    @id @default(cuid())
+  token      String    @unique
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userAgent  String?
+  ipAddress  String?
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  replacedBy String?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  ipAddress String
+  userAgent String?
+  metadata  String?
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([action, createdAt])
+  @@index([createdAt])
+  @@map("audit_logs")
 }

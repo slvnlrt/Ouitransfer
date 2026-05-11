@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
+import { env } from "../../env.js";
 import { ConfigService } from "../config/service.js";
 import { validatePasswordMiddleware } from "../user/middleware.js";
 import { AuthController } from "./controller.js";
@@ -9,6 +10,7 @@ import {
   createResetPasswordSchema,
   RequestPasswordResetSchema,
 } from "./dto.js";
+import { rotateRefreshToken } from "./refresh-token.service.js";
 
 const configService = new ConfigService();
 
@@ -62,6 +64,7 @@ export async function authRoutes(app: FastifyInstance) {
                 createdAt: z.date().describe("User creation date"),
                 updatedAt: z.date().describe("User last update date"),
               }),
+              refreshToken: z.string().describe("Refresh token for session persistence"),
             }),
             z.object({
               requiresTwoFactor: z.boolean().describe("Whether 2FA is required"),
@@ -105,6 +108,7 @@ export async function authRoutes(app: FastifyInstance) {
               createdAt: z.date().describe("User creation date"),
               updatedAt: z.date().describe("User last update date"),
             }),
+            refreshToken: z.string().describe("Refresh token for session persistence"),
           }),
           400: z.object({ error: z.string().describe("Error message") }),
         },
@@ -340,5 +344,53 @@ export async function authRoutes(app: FastifyInstance) {
       },
     },
     authController.getAuthConfig.bind(authController),
+  );
+
+  // ── Refresh Token Endpoint ──────────────────────────────────
+  // Public unauthenticated endpoint — the refresh token IS the auth.
+  // CSRF-exempt (added to CSRF_EXEMPT_ROUTES in app.ts).
+  app.post(
+    "/auth/refresh",
+    {
+      config: { rateLimit: { max: 10, timeWindow: "1 minute" } },
+      bodyLimit: 64 * 1024,
+      schema: {
+        tags: ["Authentication"],
+        operationId: "refreshToken",
+        summary: "Refresh Access Token",
+        description:
+          "Exchange a valid refresh token for a new access token + refresh token pair (rotation)",
+        body: z.object({
+          refreshToken: z.string().min(1).describe("The refresh token to exchange"),
+        }),
+        response: {
+          200: z.object({
+            refreshToken: z.string().describe("New refresh token"),
+          }),
+          401: z.object({ error: z.string().describe("Error message") }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const { refreshToken } = request.body as { refreshToken: string };
+
+      const result = await rotateRefreshToken(refreshToken);
+
+      // Issue new short-lived access token as cookie
+      const accessToken = await reply.jwtSign({
+        userId: result.userId,
+        isAdmin: result.isAdmin,
+        tokenVersion: result.tokenVersion,
+      });
+
+      reply.setCookie("token", accessToken, {
+        httpOnly: true,
+        path: "/",
+        secure: env.SECURE_SITE === "true",
+        sameSite: env.SECURE_SITE === "true" ? "lax" : "strict",
+      });
+
+      return reply.send({ refreshToken: result.refreshToken });
+    },
   );
 }

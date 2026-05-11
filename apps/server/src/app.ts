@@ -136,7 +136,7 @@ export async function buildApp() {
       signed: false,
     },
     sign: {
-      expiresIn: "1d",
+      expiresIn: "15m", // Short-lived — refresh token handles session persistence
     },
     // Validate tokenVersion on every jwtVerify() call.
     // Returning false causes jwtVerify to throw "Untrusted token".
@@ -184,6 +184,7 @@ export async function buildApp() {
   /** Exact routes exempt from CSRF (public unauthenticated mutations). */
   const CSRF_EXEMPT_ROUTES = new Set([
     "/auth/login",
+    "/auth/refresh",
     "/auth/forgot-password",
     "/auth/reset-password",
     "/auth/2fa/login",

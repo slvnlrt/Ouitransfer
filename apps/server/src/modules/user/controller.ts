@@ -1,6 +1,8 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
 import { UnauthorizedError, ValidationError } from "../../utils/app-error.js";
+import { getLogger } from "../../utils/logger.js";
+import { logAuditEvent } from "../audit/service.js";
 import { AvatarService } from "./avatar.service.js";
 import { createRegisterUserSchema, UpdateUserSchema } from "./dto.js";
 import { UserService } from "./service.js";
@@ -13,6 +15,16 @@ export class UserController {
     const schema = await createRegisterUserSchema();
     const input = schema.parse(request.body);
     const user = await this.userService.register(input);
+
+    // Audit user creation (fire-and-forget)
+    logAuditEvent({
+      userId: request.user?.userId,
+      action: "USER_CREATE",
+      ipAddress: request.ip,
+      userAgent: request.headers["user-agent"],
+      metadata: { createdUserId: user.id, email: user.email },
+    }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
+
     return reply.status(201).send({ user, message: "User created successfully" });
   }
 
@@ -31,6 +43,17 @@ export class UserController {
     const input = UpdateUserSchema.parse(request.body);
     const { id, ...updateData } = input;
     const updatedUser = await this.userService.updateUser(id, updateData);
+
+    // Audit password change if password was in the update (fire-and-forget)
+    if (updateData.password) {
+      logAuditEvent({
+        userId: id,
+        action: "PASSWORD_CHANGE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+      }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
+    }
+
     return reply.send(updatedUser);
   }
 
@@ -49,6 +72,16 @@ export class UserController {
   async deleteUser(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as { id: string };
     const user = await this.userService.deleteUser(id);
+
+    // Audit user deletion (fire-and-forget)
+    logAuditEvent({
+      userId: request.user?.userId,
+      action: "USER_DELETE",
+      ipAddress: request.ip,
+      userAgent: request.headers["user-agent"],
+      metadata: { deletedUserId: id, email: user.email },
+    }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
+
     return reply.send(user);
   }
 

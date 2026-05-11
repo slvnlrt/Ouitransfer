@@ -8,7 +8,18 @@ vi.mock("../../../shared/prisma.js", () => ({
       findMany: vi.fn(),
       deleteMany: vi.fn(),
     },
+    auditLog: {
+      create: vi.fn(),
+    },
   },
+}));
+
+vi.mock("../../../utils/logger.js", () => ({
+  getLogger: () => ({
+    warn: vi.fn(),
+    error: vi.fn(),
+    info: vi.fn(),
+  }),
 }));
 
 import { prisma } from "../../../shared/prisma.js";
