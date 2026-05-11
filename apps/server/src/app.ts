@@ -180,7 +180,6 @@ export async function buildApp() {
   /** Exact routes exempt from CSRF (public unauthenticated mutations). */
   const CSRF_EXEMPT_ROUTES = new Set([
     "/auth/login",
-    "/auth/register",
     "/auth/forgot-password",
     "/auth/reset-password",
     "/auth/2fa/login",
@@ -216,8 +215,11 @@ export async function buildApp() {
       return done();
     }
 
-    // Strip query string for route matching
-    const url = request.url.split("?")[0];
+    // Strip query string for route matching, then normalize trailing slash.
+    // ignoreTrailingSlash:true means "/path/" and "/path" both reach the same handler,
+    // so we must normalize before the Set lookup to prevent a trailing-slash bypass.
+    const rawUrl = request.url.split("?")[0];
+    const url = rawUrl.endsWith("/") && rawUrl.length > 1 ? rawUrl.slice(0, -1) : rawUrl;
 
     if (CSRF_EXEMPT_ROUTES.has(url)) {
       return done();

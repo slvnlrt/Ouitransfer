@@ -215,7 +215,7 @@ export class TwoFactorService {
       // Try backup code as a fallback
       const backupCodes: BackupCode[] = JSON.parse(user.twoFactorBackupCodes);
       const backupCodeIndex = backupCodes.findIndex(
-        (bc) => !bc.used && timingSafeEqual(bc.code, totpCode),
+        (bc) => !bc.used && timingSafeEqual(bc.code, normalizedCode),
       );
 
       if (backupCodeIndex === -1) {

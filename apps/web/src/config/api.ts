@@ -84,9 +84,16 @@ apiInstance.interceptors.response.use(
     if (axios.isAxiosError(error) && typeof window !== "undefined") {
       const status = error.response?.status;
 
-      // Clear cached CSRF token on 403 (token expired/rotated)
+      // Clear cached CSRF token on 403 only if the error is CSRF-specific.
+      // Generic 403s (admin gate, permission denied) must not flush the token.
       if (status === 403) {
-        csrfToken = null;
+        const msg =
+          (error.response?.data as Record<string, unknown>)?.message ??
+          (error.response?.data as Record<string, unknown>)?.error ??
+          "";
+        if (typeof msg === "string" && (msg.includes("csrf") || msg.includes("CSRF"))) {
+          csrfToken = null;
+        }
       }
 
       // Redirect to login on 401

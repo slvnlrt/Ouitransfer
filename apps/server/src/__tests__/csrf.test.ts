@@ -160,6 +160,33 @@ describe("CSRF protection (5.4)", () => {
     expect(res.statusCode).not.toBe(403);
   });
 
+  it("requires CSRF token for POST /auth/register (no longer exempt)", async () => {
+    // /auth/register was removed from CSRF_EXEMPT_ROUTES — it is admin-only once
+    // users exist, so an unauthenticated CSRF bypass would be a security hole.
+    // Without cookie+token it must be rejected by CSRF protection (403).
+    const res = await app.inject({
+      method: "POST",
+      url: "/auth/register",
+      headers: { "content-type": "application/json" },
+      payload: JSON.stringify({ email: "test@test.com", password: "password123" }),
+    });
+    // No _csrf cookie → Missing CSRF secret → 403
+    expect(res.statusCode).toBe(403);
+  });
+
+  it("normalizes trailing slash before CSRF exempt check", async () => {
+    // ignoreTrailingSlash:true means /auth/login/ reaches the same handler as /auth/login.
+    // The CSRF hook must strip the trailing slash before the Set lookup — otherwise
+    // /auth/login/ would not be in the exempt set and would be blocked with 403.
+    const res = await app.inject({
+      method: "POST",
+      url: "/auth/login/",
+      headers: { "content-type": "application/json" },
+      payload: JSON.stringify({ emailOrUsername: "test@test.com", password: "password123456" }),
+    });
+    expect(res.statusCode).not.toBe(403);
+  });
+
   it("rejects POST with tampered CSRF token", async () => {
     const csrfRes = await app.inject({ method: "GET", url: "/csrf-token" });
     const csrfCookie = csrfRes.cookies.find((c: { name: string }) => c.name === "_csrf");

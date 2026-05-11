@@ -25,6 +25,7 @@ const DisableSchema = z.object({
   password: z.string().min(1, "Password is required"),
   totpCode: z
     .string()
+    .trim()
     .min(6, "Verification code must be at least 6 characters")
     .describe("TOTP code or backup code"),
 });

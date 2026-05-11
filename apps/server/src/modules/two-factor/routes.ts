@@ -119,6 +119,7 @@ export async function twoFactorRoutes(app: FastifyInstance) {
         description: "Disable two-factor authentication",
         body: z.object({
           password: z.string().min(1).describe("User password for confirmation"),
+          totpCode: z.string().min(6).describe("TOTP verification code or backup code"),
         }),
         response: {
           200: z.object({
