@@ -17,8 +17,6 @@ import type {
   UpdateProvidersOrderRequest,
 } from "./types.js";
 
-const COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // seconds (@fastify/cookie maxAge is in seconds)
-
 const ERROR_MESSAGES = {
   ENDPOINTS_INCOMPLETE:
     "When using manual endpoints, all three endpoints (authorization, token, userInfo) are required",
@@ -98,11 +96,12 @@ export class AuthProvidersController {
   }
 
   private setAuthCookie(reply: FastifyReply, token: string, isSecure: boolean) {
+    // Session cookie (no maxAge) — the access token expires in 15 min via JWT exp.
+    // Refresh token cookie has its own 7-day maxAge set separately.
     reply.setCookie("token", token, {
       httpOnly: true,
       secure: isSecure,
       sameSite: "lax",
-      maxAge: COOKIE_MAX_AGE,
       path: "/",
     });
   }
@@ -351,7 +350,7 @@ export class AuthProvidersController {
         tokenVersion: result.user.tokenVersion,
       });
 
-      this.setAuthCookie(reply, jwt, request.protocol === "https");
+      this.setAuthCookie(reply, jwt, env.SECURE_SITE === "true");
 
       // Issue a refresh token as an httpOnly cookie so OIDC users
       // can renew their 15-minute access token without re-authenticating.

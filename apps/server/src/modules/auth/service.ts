@@ -38,7 +38,7 @@ export class AuthService {
 
     // Check account lockout BEFORE any credential validation.
     // Uses the email/username from the request (works for non-existent accounts too).
-    const lockStatus = await isAccountLocked(data.emailOrUsername);
+    const lockStatus = await isAccountLocked(data.emailOrUsername, clientIp);
     if (lockStatus.locked) {
       throw new ForbiddenError(
         `Account temporarily locked. Try again in ${lockStatus.remainingMinutes} minutes.`,
@@ -203,6 +203,9 @@ export class AuthService {
     await prisma.$transaction([
       prisma.user.update({
         where: { id: resetRequest.userId },
+        // NOTE: tokenVersion increment is inlined (not using incrementTokenVersion helper)
+        // because it must be atomic with the password update. After this transaction,
+        // invalidateTokenVersionCache MUST be called — see below.
         data: { password: hashedPassword, tokenVersion: { increment: 1 } },
       }),
       prisma.passwordReset.update({

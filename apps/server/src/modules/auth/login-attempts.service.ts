@@ -24,6 +24,7 @@ export async function recordLoginAttempt(
  */
 export async function isAccountLocked(
   email: string,
+  ipAddress: string,
 ): Promise<{ locked: boolean; remainingMinutes?: number }> {
   const since = new Date(Date.now() - LOCKOUT_DURATION_MINUTES * 60 * 1000);
 
@@ -52,7 +53,7 @@ export async function isAccountLocked(
       // Audit account lockout (fire-and-forget)
       logAuditEvent({
         action: "ACCOUNT_LOCKED",
-        ipAddress: "unknown",
+        ipAddress,
         metadata: { email, remainingMinutes: Math.ceil(remainingMs / 60000) },
       }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
 

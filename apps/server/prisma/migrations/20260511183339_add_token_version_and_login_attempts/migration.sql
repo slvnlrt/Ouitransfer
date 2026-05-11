@@ -19,7 +19,7 @@ CREATE TABLE "new_login_attempts" (
     "success" BOOLEAN NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-INSERT INTO "new_login_attempts" ("id") SELECT "id" FROM "login_attempts";
+-- Old login_attempts rows are incompatible (missing NOT NULL columns) — drop without migrating.
 DROP TABLE "login_attempts";
 ALTER TABLE "new_login_attempts" RENAME TO "login_attempts";
 CREATE INDEX "login_attempts_email_createdAt_idx" ON "login_attempts"("email", "createdAt");

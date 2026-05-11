@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "../../shared/prisma.js";
 import { ConflictError, NotFoundError } from "../../utils/app-error.js";
 import { revokeAllUserTokens } from "../auth/refresh-token.service.js";
-import { incrementTokenVersion } from "../auth/token-version.js";
+import { incrementTokenVersion, invalidateTokenVersionCache } from "../auth/token-version.js";
 import { type RegisterUserInput, UserResponseSchema } from "./dto.js";
 import { type IUserRepository, PrismaUserRepository } from "./repository.js";
 
@@ -14,6 +14,8 @@ type UserWithPassword = {
   lastName?: string;
   username?: string;
   password?: string;
+  isAdmin?: boolean;
+  isActive?: boolean;
 };
 
 export class UserService {
@@ -73,8 +75,11 @@ export class UserService {
       ...updateData,
     });
 
-    // If password was changed, invalidate all existing sessions and refresh tokens
-    if (password) {
+    // Invalidate sessions when any security-relevant field changes:
+    // password, isAdmin (privilege change), or isActive (deactivation via admin edit)
+    const securityFieldChanged = password !== undefined || "isAdmin" in data || "isActive" in data;
+
+    if (securityFieldChanged) {
       await incrementTokenVersion(userId);
       await revokeAllUserTokens(userId);
     }
@@ -84,6 +89,9 @@ export class UserService {
 
   async deleteUser(id: string) {
     const deleted = await this.userRepository.deleteUser(id);
+    // DB cascade deletes refresh tokens, but we must clear the in-memory
+    // tokenVersion cache so validateTokenVersion rejects stale JWTs immediately.
+    invalidateTokenVersionCache(id);
     return UserResponseSchema.parse(deleted);
   }
 
@@ -94,6 +102,9 @@ export class UserService {
 
   async deactivateUser(id: string) {
     const user = await this.userRepository.deactivateUser(id);
+    // Deactivated user must not be able to use existing sessions
+    await incrementTokenVersion(id);
+    await revokeAllUserTokens(id);
     return UserResponseSchema.parse(user);
   }
 

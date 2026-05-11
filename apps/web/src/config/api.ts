@@ -11,19 +11,6 @@ const apiInstance = axios.create({
   timeout: 120000, // 2 minutes timeout for API calls
 });
 
-// ── Refresh Token Management ──────────────────────────────────
-// Stored in memory only (not localStorage — XSS risk).
-// Set on login, cleared on logout / failed refresh.
-let refreshTokenValue: string | null = null;
-
-export function setRefreshToken(token: string | null): void {
-  refreshTokenValue = token;
-}
-
-export function getRefreshToken(): string | null {
-  return refreshTokenValue;
-}
-
 // ── CSRF Token Management ─────────────────────────────────────
 // The server uses double-submit cookie CSRF protection:
 // 1. GET /api/csrf-token → sets httpOnly _csrf cookie + returns { token }
@@ -92,36 +79,19 @@ let isRedirecting = false;
 const REDIRECT_SAFETY_TIMEOUT_MS = 5000;
 
 /**
- * Attempt to refresh the access token using the stored refresh token.
+ * Attempt to refresh the access token using the httpOnly refresh_token cookie.
  * Returns true if refresh succeeded, false otherwise.
  *
- * The refresh token may come from:
- * 1. In-memory `refreshTokenValue` (set after password-based login)
- * 2. An httpOnly `refresh_token` cookie (set by OIDC callback)
- *
- * For case 2, the cookie is sent automatically by the browser — we still
- * send the body field if available so the server checks both sources.
+ * Both password login and OIDC login set the refresh token as an httpOnly cookie,
+ * which is sent automatically by the browser via withCredentials.
  */
 async function attemptTokenRefresh(): Promise<boolean> {
   try {
     // Use raw axios to avoid interceptor loops.
-    // Send the in-memory token in the body if available; for OIDC users
-    // the httpOnly cookie will be sent automatically via withCredentials.
-    const body: Record<string, string> = {};
-    if (refreshTokenValue) {
-      body.refreshToken = refreshTokenValue;
-    }
-
-    const res = await axios.post("/api/auth/refresh", body, { withCredentials: true });
-    const newRefreshToken = res.data?.refreshToken;
-    if (newRefreshToken) {
-      refreshTokenValue = newRefreshToken;
-      return true;
-    }
-    return false;
+    // The httpOnly refresh_token cookie is sent automatically.
+    await axios.post("/api/auth/refresh", {}, { withCredentials: true });
+    return true;
   } catch {
-    // Refresh failed — clear the stored token
-    refreshTokenValue = null;
     return false;
   }
 }

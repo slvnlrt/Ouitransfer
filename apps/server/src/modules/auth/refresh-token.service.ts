@@ -78,25 +78,34 @@ export async function rotateRefreshToken(oldTokenValue: string): Promise<{
   // Generate new token
   const newTokenValue = crypto.randomBytes(32).toString("base64url");
 
-  // In a transaction: revoke old token and create new one
-  const [, newToken] = await prisma.$transaction([
-    prisma.refreshToken.update({
-      where: { id: oldToken.id },
-      data: {
-        revokedAt: new Date(),
-        replacedBy: newTokenValue,
-      },
-    }),
-    prisma.refreshToken.create({
-      data: {
-        token: newTokenValue,
-        userId: oldToken.userId,
-        userAgent: oldToken.userAgent,
-        ipAddress: oldToken.ipAddress,
-        expiresAt: new Date(Date.now() + REFRESH_TOKEN_EXPIRY_MS),
-      },
-    }),
-  ]);
+  // Atomically revoke the old token (only if still active) and create the new one.
+  // The conditional updateMany prevents a TOCTOU race: two concurrent requests
+  // with the same valid token both passing the revokedAt check above.
+  const revoked = await prisma.refreshToken.updateMany({
+    where: { id: oldToken.id, revokedAt: null },
+    data: { revokedAt: new Date(), replacedBy: newTokenValue },
+  });
+
+  if (revoked.count === 0) {
+    // Another request rotated this token first — treat as replay
+    getLogger().warn(
+      { userId: oldToken.userId, tokenId: oldToken.id },
+      "Refresh token rotation race detected — revoking all tokens for user",
+    );
+    await revokeAllUserTokens(oldToken.userId);
+    throw new UnauthorizedError("Refresh token reuse detected");
+  }
+
+  // Create the new token
+  const newToken = await prisma.refreshToken.create({
+    data: {
+      token: newTokenValue,
+      userId: oldToken.userId,
+      userAgent: oldToken.userAgent,
+      ipAddress: oldToken.ipAddress,
+      expiresAt: new Date(Date.now() + REFRESH_TOKEN_EXPIRY_MS),
+    },
+  });
 
   return {
     refreshToken: newToken.token,

@@ -5,7 +5,6 @@ import apiInstance, {
   __resetRedirectingForTest,
   AUTH_API_PREFIXES,
   REDIRECT_SAFETY_TIMEOUT_MS,
-  setRefreshToken,
 } from "@/config/api";
 
 describe("401 response interceptor", () => {
@@ -181,7 +180,6 @@ describe("401 interceptor — refresh token flow (I-1)", () => {
     mock = new MockAdapter(apiInstance);
     rawAxiosMock = new MockAdapter(rawAxios);
     __resetRedirectingForTest();
-    setRefreshToken(null);
     vi.useFakeTimers();
 
     Object.defineProperty(window, "location", {
@@ -201,12 +199,9 @@ describe("401 interceptor — refresh token flow (I-1)", () => {
     rawAxiosMock.restore();
     vi.useRealTimers();
     locationHrefSetter.mockClear();
-    setRefreshToken(null);
   });
 
   it("401 → successful refresh → retries original request", async () => {
-    setRefreshToken("old-refresh-token");
-
     // First call to /api/files returns 401, retry returns 200
     let callCount = 0;
     mock.onGet("/api/files").reply(() => {
@@ -215,8 +210,9 @@ describe("401 interceptor — refresh token flow (I-1)", () => {
       return [200, { files: ["a.txt"] }];
     });
 
-    // The refresh endpoint (called via raw axios) returns a new token
-    rawAxiosMock.onPost("/api/auth/refresh").reply(200, { refreshToken: "new-refresh-token" });
+    // The refresh endpoint (called via raw axios) returns success
+    // (refresh token is in httpOnly cookie — sent automatically by browser)
+    rawAxiosMock.onPost("/api/auth/refresh").reply(200, { message: "Token refreshed" });
 
     const res = await apiInstance.get("/api/files");
     expect(res.status).toBe(200);
@@ -225,8 +221,6 @@ describe("401 interceptor — refresh token flow (I-1)", () => {
   });
 
   it("401 → failed refresh → redirects to login", async () => {
-    setRefreshToken("bad-refresh-token");
-
     mock.onGet("/api/files").reply(401);
     rawAxiosMock.onPost("/api/auth/refresh").reply(401, { error: "Invalid refresh token" });
 
@@ -235,12 +229,10 @@ describe("401 interceptor — refresh token flow (I-1)", () => {
   });
 
   it("concurrent 401s → only one refresh attempt (mutex)", async () => {
-    setRefreshToken("shared-refresh-token");
-
     let refreshCallCount = 0;
     rawAxiosMock.onPost("/api/auth/refresh").reply(() => {
       refreshCallCount++;
-      return [200, { refreshToken: "new-token" }];
+      return [200, { message: "Token refreshed" }];
     });
 
     // Both endpoints: first call returns 401, retry (after refresh) returns 200
@@ -273,8 +265,6 @@ describe("401 interceptor — refresh token flow (I-1)", () => {
   });
 
   it("refresh endpoint 401 → no infinite loop, redirects to login", async () => {
-    setRefreshToken("token-that-fails");
-
     mock.onGet("/api/files").reply(401);
     // Refresh endpoint itself returns 401
     rawAxiosMock.onPost("/api/auth/refresh").reply(401, { error: "Token expired" });
@@ -287,12 +277,10 @@ describe("401 interceptor — refresh token flow (I-1)", () => {
     expect(locationHrefSetter).toHaveBeenCalledTimes(1);
   });
 
-  it("no in-memory token → still attempts refresh (OIDC cookie), fails → redirects", async () => {
-    // refreshTokenValue is null (OIDC user — refresh token is in httpOnly cookie only)
-    setRefreshToken(null);
-
+  it("refresh attempt uses cookie (no body token), fails → redirects", async () => {
     mock.onGet("/api/files").reply(401);
-    // The raw axios POST won't have a cookie in test env, so this simulates cookie-only flow failing
+    // The raw axios POST sends httpOnly cookie automatically via withCredentials.
+    // In test env there's no real cookie, so this simulates the flow failing.
     rawAxiosMock.onPost("/api/auth/refresh").reply(401, { error: "Missing refresh token" });
 
     await expect(apiInstance.get("/api/files")).rejects.toThrow();

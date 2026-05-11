@@ -38,7 +38,6 @@ export interface GetCurrentUser200 {
 
 export interface Login200 {
   user: LoginUser;
-  refreshToken: string;
 }
 
 export interface LoginBody {

@@ -68,7 +68,7 @@ describe("Login attempts / account lockout (5.25)", () => {
     it("returns locked:false when there are no attempts", async () => {
       vi.mocked(prisma.loginAttempt.findMany).mockResolvedValue([]);
 
-      const result = await isAccountLocked("user@test.com");
+      const result = await isAccountLocked("user@test.com", "192.168.1.1");
       expect(result).toEqual({ locked: false });
     });
 
@@ -84,7 +84,7 @@ describe("Login attempts / account lockout (5.25)", () => {
 
       vi.mocked(prisma.loginAttempt.findMany).mockResolvedValue(attempts);
 
-      const result = await isAccountLocked("user@test.com");
+      const result = await isAccountLocked("user@test.com", "192.168.1.1");
       expect(result).toEqual({ locked: false });
     });
 
@@ -101,7 +101,7 @@ describe("Login attempts / account lockout (5.25)", () => {
 
       vi.mocked(prisma.loginAttempt.findMany).mockResolvedValue(attempts);
 
-      const result = await isAccountLocked("user@test.com");
+      const result = await isAccountLocked("user@test.com", "192.168.1.1");
       expect(result.locked).toBe(true);
       expect(result.remainingMinutes).toBeGreaterThan(0);
       expect(result.remainingMinutes).toBeLessThanOrEqual(15);
@@ -140,7 +140,7 @@ describe("Login attempts / account lockout (5.25)", () => {
 
       vi.mocked(prisma.loginAttempt.findMany).mockResolvedValue(attempts);
 
-      const result = await isAccountLocked("user@test.com");
+      const result = await isAccountLocked("user@test.com", "192.168.1.1");
       expect(result.locked).toBe(false);
     });
 
@@ -159,7 +159,7 @@ describe("Login attempts / account lockout (5.25)", () => {
 
       vi.mocked(prisma.loginAttempt.findMany).mockResolvedValue(attempts);
 
-      const result = await isAccountLocked("user@test.com");
+      const result = await isAccountLocked("user@test.com", "192.168.1.1");
       // These attempts would be outside the 15-minute window, so findMany returns
       // empty since the query filters by createdAt >= since.
       // Actually, the mock returns them regardless of the query — but the lockout
@@ -173,7 +173,7 @@ describe("Login attempts / account lockout (5.25)", () => {
     it("normalizes email to lowercase for lookups", async () => {
       vi.mocked(prisma.loginAttempt.findMany).mockResolvedValue([]);
 
-      await isAccountLocked("User@Example.COM");
+      await isAccountLocked("User@Example.COM", "10.0.0.1");
 
       expect(prisma.loginAttempt.findMany).toHaveBeenCalledWith(
         expect.objectContaining({

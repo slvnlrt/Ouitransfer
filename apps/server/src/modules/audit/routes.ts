@@ -1,18 +1,12 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 
-import { prisma } from "../../shared/prisma.js";
 import { AuditController } from "./controller.js";
 
 export async function auditRoutes(app: FastifyInstance) {
   const auditController = new AuditController();
 
   const adminPreValidation = async (request: FastifyRequest, reply: FastifyReply) => {
-    const usersCount = await prisma.user.count();
-    if (usersCount === 0) {
-      return;
-    }
-
     try {
       await request.jwtVerify();
     } catch (err) {

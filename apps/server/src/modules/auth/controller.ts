@@ -57,6 +57,8 @@ export class AuthController {
     }
 
     const user = result;
+    const isSecure = env.SECURE_SITE === "true";
+
     const token = await reply.jwtSign({
       userId: user.id,
       isAdmin: user.isAdmin,
@@ -66,12 +68,19 @@ export class AuthController {
     reply.setCookie("token", token, {
       httpOnly: true,
       path: "/",
-      secure: env.SECURE_SITE === "true",
-      sameSite: env.SECURE_SITE === "true" ? "lax" : "strict",
+      secure: isSecure,
+      sameSite: isSecure ? "lax" : "strict",
     });
 
-    // Issue refresh token for session persistence
+    // Issue refresh token as httpOnly cookie (same approach as OIDC callback)
     const refreshToken = await createRefreshToken(user.id, userAgent, ipAddress);
+    reply.setCookie("refresh_token", refreshToken, {
+      httpOnly: true,
+      secure: isSecure,
+      sameSite: "lax",
+      path: "/api/auth/refresh",
+      maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+    });
 
     // Audit successful login (fire-and-forget)
     logAuditEvent({
@@ -81,7 +90,7 @@ export class AuthController {
       userAgent,
     }).catch((auditErr) => getLogger().error({ err: auditErr }, "Audit log write failed"));
 
-    return reply.send({ user, refreshToken });
+    return reply.send({ user });
   }
 
   async completeTwoFactorLogin(request: FastifyRequest, reply: FastifyReply) {
@@ -99,6 +108,8 @@ export class AuthController {
       ipAddress,
     );
 
+    const isSecure = env.SECURE_SITE === "true";
+
     const token = await reply.jwtSign({
       userId: user.id,
       isAdmin: user.isAdmin,
@@ -108,12 +119,19 @@ export class AuthController {
     reply.setCookie("token", token, {
       httpOnly: true,
       path: "/",
-      secure: env.SECURE_SITE === "true",
-      sameSite: env.SECURE_SITE === "true" ? "lax" : "strict",
+      secure: isSecure,
+      sameSite: isSecure ? "lax" : "strict",
     });
 
-    // Issue refresh token for session persistence
+    // Issue refresh token as httpOnly cookie (same approach as OIDC callback)
     const refreshToken = await createRefreshToken(user.id, userAgent, ipAddress);
+    reply.setCookie("refresh_token", refreshToken, {
+      httpOnly: true,
+      secure: isSecure,
+      sameSite: "lax",
+      path: "/api/auth/refresh",
+      maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+    });
 
     // Audit successful 2FA login (fire-and-forget)
     logAuditEvent({
@@ -124,7 +142,7 @@ export class AuthController {
       metadata: { method: "2fa" },
     }).catch((auditErr) => getLogger().error({ err: auditErr }, "Audit log write failed"));
 
-    return reply.send({ user, refreshToken });
+    return reply.send({ user });
   }
 
   async logout(request: FastifyRequest, reply: FastifyReply) {

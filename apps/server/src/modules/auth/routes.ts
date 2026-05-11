@@ -64,7 +64,6 @@ export async function authRoutes(app: FastifyInstance) {
                 createdAt: z.date().describe("User creation date"),
                 updatedAt: z.date().describe("User last update date"),
               }),
-              refreshToken: z.string().describe("Refresh token for session persistence"),
             }),
             z.object({
               requiresTwoFactor: z.boolean().describe("Whether 2FA is required"),
@@ -108,7 +107,6 @@ export async function authRoutes(app: FastifyInstance) {
               createdAt: z.date().describe("User creation date"),
               updatedAt: z.date().describe("User last update date"),
             }),
-            refreshToken: z.string().describe("Refresh token for session persistence"),
           }),
           400: z.object({ error: z.string().describe("Error message") }),
         },
@@ -359,28 +357,18 @@ export async function authRoutes(app: FastifyInstance) {
         operationId: "refreshToken",
         summary: "Refresh Access Token",
         description:
-          "Exchange a valid refresh token for a new access token + refresh token pair (rotation). " +
-          "The refresh token can be provided in the request body OR via the refresh_token httpOnly cookie (set by OIDC callback).",
-        body: z.object({
-          refreshToken: z
-            .string()
-            .min(1)
-            .optional()
-            .describe("The refresh token to exchange (optional if refresh_token cookie is set)"),
-        }),
+          "Exchange a valid refresh token (sent via httpOnly cookie) for a new access token + refresh token pair (rotation).",
         response: {
           200: z.object({
-            refreshToken: z.string().describe("New refresh token"),
+            message: z.string().describe("Success message"),
           }),
           401: z.object({ error: z.string().describe("Error message") }),
         },
       },
     },
     async (request, reply) => {
-      const body = request.body as { refreshToken?: string };
-      // Accept refresh token from body (password login) or cookie (OIDC login)
-      const refreshToken =
-        body.refreshToken || (request.cookies as Record<string, string>).refresh_token;
+      // Refresh token is always in the httpOnly cookie (unified approach for password + OIDC login)
+      const refreshToken = (request.cookies as Record<string, string>).refresh_token;
 
       if (!refreshToken) {
         return reply.status(401).send({ error: "Missing refresh token" });
@@ -404,7 +392,7 @@ export async function authRoutes(app: FastifyInstance) {
         sameSite: isSecure ? "lax" : "strict",
       });
 
-      // Also update the refresh_token cookie for OIDC users (or any cookie-based consumer)
+      // Update the refresh_token cookie with the rotated value
       reply.setCookie("refresh_token", result.refreshToken, {
         httpOnly: true,
         secure: isSecure,
@@ -413,7 +401,7 @@ export async function authRoutes(app: FastifyInstance) {
         maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
       });
 
-      return reply.send({ refreshToken: result.refreshToken });
+      return reply.send({ message: "Token refreshed" });
     },
   );
 }

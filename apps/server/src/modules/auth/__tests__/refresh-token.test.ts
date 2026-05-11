@@ -7,9 +7,7 @@ vi.mock("../../../shared/prisma.js", () => ({
       findUnique: vi.fn(),
       updateMany: vi.fn(),
       deleteMany: vi.fn(),
-      update: vi.fn(),
     },
-    $transaction: vi.fn(),
   },
 }));
 
@@ -123,7 +121,7 @@ describe("Refresh token service", () => {
       await expect(rotateRefreshToken("valid-token")).rejects.toThrow("Account is inactive");
     });
 
-    it("rotates valid token: revokes old, creates new, returns user info", async () => {
+    it("rotates valid token: conditionally revokes old, creates new, returns user info", async () => {
       vi.mocked(prisma.refreshToken.findUnique).mockResolvedValue({
         id: "rt-1",
         token: "valid-token",
@@ -135,12 +133,15 @@ describe("Refresh token service", () => {
         user: { id: "user-1", tokenVersion: 3, isAdmin: true, isActive: true },
       } as never);
 
+      // CQ-2: conditional updateMany (revokedAt: null) succeeds
+      vi.mocked(prisma.refreshToken.updateMany).mockResolvedValue({ count: 1 } as never);
+
       const newTokenRecord = {
         id: "rt-2",
         token: "new-token-value",
         userId: "user-1",
       };
-      vi.mocked(prisma.$transaction).mockResolvedValue([{}, newTokenRecord] as never);
+      vi.mocked(prisma.refreshToken.create).mockResolvedValue(newTokenRecord as never);
 
       const result = await rotateRefreshToken("valid-token");
 
@@ -149,11 +150,43 @@ describe("Refresh token service", () => {
       expect(result.tokenVersion).toBe(3);
       expect(result.isAdmin).toBe(true);
 
-      // Verify transaction was called with an array of 2 Prisma operations
-      expect(prisma.$transaction).toHaveBeenCalledTimes(1);
-      const txArg = vi.mocked(prisma.$transaction).mock.calls[0][0] as unknown;
-      expect(Array.isArray(txArg)).toBe(true);
-      expect((txArg as unknown[]).length).toBe(2);
+      // Verify conditional updateMany was called with revokedAt: null guard
+      expect(prisma.refreshToken.updateMany).toHaveBeenCalledWith({
+        where: { id: "rt-1", revokedAt: null },
+        data: { revokedAt: expect.any(Date), replacedBy: expect.any(String) },
+      });
+      // Verify new token was created
+      expect(prisma.refreshToken.create).toHaveBeenCalledTimes(1);
+    });
+
+    it("detects race condition (CQ-2): conditional updateMany returns 0, revokes all", async () => {
+      vi.mocked(prisma.refreshToken.findUnique).mockResolvedValue({
+        id: "rt-1",
+        token: "race-token",
+        userId: "user-1",
+        userAgent: "Chrome",
+        ipAddress: "10.0.0.1",
+        revokedAt: null,
+        expiresAt: new Date(Date.now() + 86400000),
+        user: { id: "user-1", tokenVersion: 3, isAdmin: true, isActive: true },
+      } as never);
+
+      // Another request already rotated this token — conditional updateMany returns 0
+      vi.mocked(prisma.refreshToken.updateMany)
+        .mockResolvedValueOnce({ count: 0 } as never) // conditional revoke fails
+        .mockResolvedValueOnce({ count: 5 } as never); // revokeAllUserTokens succeeds
+
+      await expect(rotateRefreshToken("race-token")).rejects.toThrow(
+        "Refresh token reuse detected",
+      );
+
+      // Should have called updateMany twice: once for conditional revoke, once for revokeAll
+      expect(prisma.refreshToken.updateMany).toHaveBeenCalledTimes(2);
+      // Second call should be revokeAllUserTokens
+      expect(prisma.refreshToken.updateMany).toHaveBeenNthCalledWith(2, {
+        where: { userId: "user-1", revokedAt: null },
+        data: { revokedAt: expect.any(Date) },
+      });
     });
   });
 

@@ -139,14 +139,14 @@ describe("GET /admin/audit-logs — integration", () => {
     );
   });
 
-  it("allows access when there are zero users (initial setup)", async () => {
+  it("returns 401 when there are zero users and no auth token", async () => {
     mockUserCount.mockResolvedValue(0);
 
     const res = await app.inject({
       method: "GET",
       url: "/admin/audit-logs",
-      // No auth cookie — should be allowed when user count is 0
+      // No auth cookie — should be rejected even when user count is 0
     });
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(401);
   });
 });

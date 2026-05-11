@@ -8,12 +8,10 @@ vi.mock("../shared/prisma.js", () => ({
     refreshToken: {
       create: vi.fn(),
       findUnique: vi.fn(),
-      update: vi.fn(),
       updateMany: vi.fn(),
       deleteMany: vi.fn(),
     },
     passwordReset: { findFirst: vi.fn() },
-    $transaction: vi.fn(),
   },
 }));
 
@@ -63,39 +61,27 @@ describe("POST /auth/refresh — integration", () => {
     const res = await app.inject({
       method: "POST",
       url: "/auth/refresh",
-      headers: { "content-type": "application/json" },
-      payload: JSON.stringify({ refreshToken: "some-token" }),
+      headers: {
+        cookie: "refresh_token=some-token",
+      },
     });
     expect(res.statusCode).not.toBe(403);
   });
 
-  it("returns 401 when body and cookie both missing refresh token", async () => {
+  it("returns 401 when no refresh_token cookie is present", async () => {
     const res = await app.inject({
       method: "POST",
       url: "/auth/refresh",
-      headers: { "content-type": "application/json" },
-      payload: JSON.stringify({}),
     });
     expect(res.statusCode).toBe(401);
     expect(res.json().error).toBe("Missing refresh token");
   });
 
-  it("validates body schema — rejects non-string refreshToken", async () => {
-    const res = await app.inject({
-      method: "POST",
-      url: "/auth/refresh",
-      headers: { "content-type": "application/json" },
-      payload: JSON.stringify({ refreshToken: 12345 }),
-    });
-    // Zod validation failure → 400
-    expect(res.statusCode).toBe(400);
-  });
-
-  it("accepts refresh token from body (password-login flow)", async () => {
+  it("accepts refresh token from cookie and sets new cookies", async () => {
     const { prisma } = await import("../shared/prisma.js");
     vi.mocked(prisma.refreshToken.findUnique).mockResolvedValue({
       id: "rt-1",
-      token: "valid-body-token",
+      token: "valid-cookie-token",
       userId: "user-1",
       userAgent: "TestAgent",
       ipAddress: "127.0.0.1",
@@ -105,21 +91,31 @@ describe("POST /auth/refresh — integration", () => {
       createdAt: new Date(),
       user: { id: "user-1", tokenVersion: 0, isAdmin: false, isActive: true },
     } as never);
-    vi.mocked(prisma.$transaction).mockResolvedValue([
-      {},
-      { id: "rt-2", token: "new-token-value", userId: "user-1" },
-    ] as never);
+    // CQ-2: rotateRefreshToken now uses updateMany (conditional on revokedAt: null) + create
+    vi.mocked(prisma.refreshToken.updateMany).mockResolvedValue({ count: 1 } as never);
+    vi.mocked(prisma.refreshToken.create).mockResolvedValue({
+      id: "rt-2",
+      token: "new-token-value",
+      userId: "user-1",
+      userAgent: "TestAgent",
+      ipAddress: "127.0.0.1",
+      revokedAt: null,
+      replacedBy: null,
+      expiresAt: new Date(Date.now() + 86400000),
+      createdAt: new Date(),
+    } as never);
 
     const res = await app.inject({
       method: "POST",
       url: "/auth/refresh",
-      headers: { "content-type": "application/json" },
-      payload: JSON.stringify({ refreshToken: "valid-body-token" }),
+      headers: {
+        cookie: "refresh_token=valid-cookie-token",
+      },
     });
 
     expect(res.statusCode).toBe(200);
     const body = res.json();
-    expect(body.refreshToken).toBe("new-token-value");
+    expect(body.message).toBe("Token refreshed");
 
     // Should set the access token cookie
     const cookies = res.cookies;
@@ -127,45 +123,11 @@ describe("POST /auth/refresh — integration", () => {
     expect(tokenCookie).toBeDefined();
     expect(tokenCookie?.httpOnly).toBe(true);
 
-    // Should also set the refresh_token cookie
+    // Should also set the refresh_token cookie with rotated value
     const refreshCookie = cookies.find((c: { name: string }) => c.name === "refresh_token");
     expect(refreshCookie).toBeDefined();
     expect(refreshCookie?.httpOnly).toBe(true);
     expect(refreshCookie?.path).toBe("/api/auth/refresh");
-  });
-
-  it("accepts refresh token from cookie (OIDC flow)", async () => {
-    const { prisma } = await import("../shared/prisma.js");
-    vi.mocked(prisma.refreshToken.findUnique).mockResolvedValue({
-      id: "rt-3",
-      token: "cookie-based-token",
-      userId: "user-2",
-      userAgent: "OIDCAgent",
-      ipAddress: "10.0.0.1",
-      revokedAt: null,
-      replacedBy: null,
-      expiresAt: new Date(Date.now() + 86400000),
-      createdAt: new Date(),
-      user: { id: "user-2", tokenVersion: 1, isAdmin: true, isActive: true },
-    } as never);
-    vi.mocked(prisma.$transaction).mockResolvedValue([
-      {},
-      { id: "rt-4", token: "new-oidc-token", userId: "user-2" },
-    ] as never);
-
-    const res = await app.inject({
-      method: "POST",
-      url: "/auth/refresh",
-      headers: {
-        "content-type": "application/json",
-        cookie: "refresh_token=cookie-based-token",
-      },
-      payload: JSON.stringify({}),
-    });
-
-    expect(res.statusCode).toBe(200);
-    const body = res.json();
-    expect(body.refreshToken).toBe("new-oidc-token");
   });
 
   it("returns 401 for invalid refresh token", async () => {
@@ -175,8 +137,9 @@ describe("POST /auth/refresh — integration", () => {
     const res = await app.inject({
       method: "POST",
       url: "/auth/refresh",
-      headers: { "content-type": "application/json" },
-      payload: JSON.stringify({ refreshToken: "nonexistent-token" }),
+      headers: {
+        cookie: "refresh_token=nonexistent-token",
+      },
     });
     expect(res.statusCode).toBe(401);
     expect(res.json().error).toContain("Invalid refresh token");
@@ -199,48 +162,40 @@ describe("POST /auth/refresh — integration", () => {
     const res = await app.inject({
       method: "POST",
       url: "/auth/refresh",
-      headers: { "content-type": "application/json" },
-      payload: JSON.stringify({ refreshToken: "replayed-token" }),
+      headers: {
+        cookie: "refresh_token=replayed-token",
+      },
     });
     expect(res.statusCode).toBe(401);
     expect(res.json().error).toContain("Refresh token reuse");
   });
 
-  it("body refreshToken takes precedence over cookie", async () => {
+  it("returns 401 on rotation race condition (CQ-2)", async () => {
     const { prisma } = await import("../shared/prisma.js");
+    // Token appears valid on lookup...
     vi.mocked(prisma.refreshToken.findUnique).mockResolvedValue({
-      id: "rt-6",
-      token: "body-token",
-      userId: "user-3",
+      id: "rt-race",
+      token: "race-token",
+      userId: "user-1",
       userAgent: "Agent",
       ipAddress: "1.2.3.4",
       revokedAt: null,
       replacedBy: null,
       expiresAt: new Date(Date.now() + 86400000),
       createdAt: new Date(),
-      user: { id: "user-3", tokenVersion: 0, isAdmin: false, isActive: true },
+      user: { id: "user-1", tokenVersion: 0, isAdmin: false, isActive: true },
     } as never);
-    vi.mocked(prisma.$transaction).mockResolvedValue([
-      {},
-      { id: "rt-7", token: "new-from-body", userId: "user-3" },
-    ] as never);
+    // ...but conditional updateMany returns 0 (another request already rotated it)
+    vi.mocked(prisma.refreshToken.updateMany).mockResolvedValue({ count: 0 } as never);
 
     const res = await app.inject({
       method: "POST",
       url: "/auth/refresh",
       headers: {
-        "content-type": "application/json",
-        cookie: "refresh_token=cookie-token",
+        cookie: "refresh_token=race-token",
       },
-      payload: JSON.stringify({ refreshToken: "body-token" }),
     });
-
-    expect(res.statusCode).toBe(200);
-    // Verify that findUnique was called with the body token, not the cookie token
-    expect(vi.mocked(prisma.refreshToken.findUnique)).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { token: "body-token" },
-      }),
-    );
+    expect(res.statusCode).toBe(401);
+    expect(res.json().error).toContain("Refresh token reuse");
   });
 });
