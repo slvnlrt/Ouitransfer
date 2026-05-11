@@ -12,14 +12,11 @@ export const createPasswordSchema = async () => {
     .describe("User password");
 };
 
-export const LoginSchema = z.object({
-  emailOrUsername: z
-    .string()
-    .min(1, "Email or username is required")
-    .describe("User email or username"),
-  password: z.string().min(6, "Password must be at least 6 characters").describe("User password"),
-});
-export type LoginInput = z.infer<typeof LoginSchema>;
+/** Login input shape — matches the dynamic schema built in routes.ts */
+export interface LoginInput {
+  emailOrUsername: string;
+  password: string;
+}
 
 export const RequestPasswordResetSchema = z.object({
   email: z.string().email("Invalid email").describe("User email"),

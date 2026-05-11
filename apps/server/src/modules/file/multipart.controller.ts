@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import type { FastifyReply, FastifyRequest } from "fastify";
 
 import { env } from "../../env.js";
+import { sanitizeFilename } from "../../utils/sanitize-filename.js";
 import { FileService } from "./service.js";
 
 export class FileMultipartController {
@@ -21,7 +22,7 @@ export class FileMultipartController {
       }
 
       // Generate unique object name (same pattern as simple upload)
-      const safeFilename = `${filename}.${extension}`.replace(/[/\\?%*:|"<>]/g, "_");
+      const safeFilename = sanitizeFilename(`${filename}.${extension}`);
       const objectName = `${userId}/${crypto.randomUUID()}-${safeFilename}`;
 
       const uploadId = await this.fileService.createMultipartUpload(objectName);

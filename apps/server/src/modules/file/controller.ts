@@ -8,6 +8,7 @@ import {
   generateUniqueFileNameForRename,
   parseFileName,
 } from "../../utils/file-name-generator.js";
+import { sanitizeFilename } from "../../utils/sanitize-filename.js";
 import { ConfigService } from "../config/service.js";
 import {
   type CheckFileInput,
@@ -41,7 +42,7 @@ export class FileController {
       }
 
       // Generate unique object name
-      const safeFilename = `${filename}.${extension}`.replace(/[/\\?%*:|"<>]/g, "_");
+      const safeFilename = sanitizeFilename(`${filename}.${extension}`);
       const objectName = `${userId}/${crypto.randomUUID()}-${safeFilename}`;
       const expires = env.PRESIGNED_URL_EXPIRATION;
 

@@ -14,13 +14,16 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch --preserveWatchOutput",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "files": [
     "src",
     "dist"
   ],
   "devDependencies": {
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

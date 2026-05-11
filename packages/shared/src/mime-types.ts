@@ -390,23 +390,31 @@ export function isVideoMimeType(mimeType: string): boolean {
 /**
  * Extract filename from Content-Disposition header.
  *
- * Supports RFC 5987 `filename*=` with UTF-8 encoding only.
- * Handles both quoted (`filename="foo.txt"`) and unquoted (`filename=foo.txt`) values.
+ * Per RFC 6266, `filename*` takes priority over `filename` when both are present.
+ * Only UTF-8 charset is supported for filename* (per RFC 5987). Non-UTF-8 charsets
+ * are ignored and the parser falls through to plain filename=.
  *
  * @param contentDisposition - The Content-Disposition header value
- * @returns Extracted filename or null if not found
+ * @returns Decoded filename or null if not found
  */
 export function extractFilenameFromContentDisposition(
   contentDisposition: string | null,
 ): string | null {
   if (!contentDisposition) return null;
 
-  // Match filename="value" (quoted) or filename*=UTF-8''value (RFC 5987)
-  // Captures: group 1 = quoted filename, group 2 = unquoted filename
-  const filenameMatch = contentDisposition.match(
-    /filename\*?=(?:UTF-8'')?(?:"([^"]*)"|([^;\s]*))/i,
-  );
-  const filename = filenameMatch ? filenameMatch[1] || filenameMatch[2] : null;
+  // First pass: look for RFC 5987 filename* with UTF-8 charset only
+  const extMatch = contentDisposition.match(/filename\*=UTF-8''([^;\s]+)/i);
+  if (extMatch?.[1]) {
+    try {
+      return decodeURIComponent(extMatch[1]);
+    } catch {
+      // Malformed percent-encoding — fall through to filename=
+    }
+  }
+
+  // Second pass: fall back to plain filename= (quoted or unquoted)
+  const plainMatch = contentDisposition.match(/filename=(?:"([^"]*)"|([^;\s]*))/i);
+  const filename = plainMatch ? (plainMatch[1] ?? plainMatch[2] ?? null) : null;
   return filename ? decodeURIComponent(filename) : null;
 }
 

@@ -6,7 +6,7 @@ import { createChallengeToken, verifyChallengeToken } from "./challenge.js";
 import {
   CompleteTwoFactorLoginSchema,
   createResetPasswordSchema,
-  LoginSchema,
+  type LoginInput,
   RequestPasswordResetSchema,
 } from "./dto.js";
 import { AuthService } from "./service.js";
@@ -27,7 +27,7 @@ export class AuthController {
 
   async login(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const input = LoginSchema.parse(request.body);
+      const input = request.body as LoginInput;
       const { userAgent, ipAddress } = this.getClientInfo(request);
       const result = await this.authService.login(input, userAgent, ipAddress);
 
