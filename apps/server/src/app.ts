@@ -12,6 +12,7 @@ import {
   validatorCompiler,
   type ZodTypeProvider,
 } from "fastify-type-provider-zod";
+import { CSRF_EXEMPT_DYNAMIC, CSRF_EXEMPT_ROUTES } from "./config/csrf.config.js";
 import { registerSwagger } from "./config/swagger.config.js";
 import { envTimeoutOverrides } from "./config/timeout.config.js";
 import { env } from "./env.js";
@@ -183,38 +184,8 @@ export async function buildApp() {
   // Skips safe methods and public unauthenticated mutation endpoints.
   // Everything else must present a valid X-CSRF-Token header.
 
-  /** Exact routes exempt from CSRF (public unauthenticated mutations). */
-  const CSRF_EXEMPT_ROUTES = new Set([
-    "/auth/login",
-    "/auth/refresh",
-    "/auth/forgot-password",
-    "/auth/reset-password",
-    "/auth/2fa/login",
-    "/register-with-invite",
-    "/health",
-    "/csrf-token",
-  ]);
-
-  /**
-   * Prefix + suffix patterns for public endpoints with dynamic segments.
-   * Each entry: [prefix, test function for the rest of the URL].
-   */
-  const CSRF_EXEMPT_DYNAMIC: Array<(url: string) => boolean> = [
-    // POST /shares/:shareId/access
-    (url) => url.startsWith("/shares/") && url.endsWith("/access"),
-    // POST /shares/alias/:alias/access
-    (url) => url.startsWith("/shares/alias/") && url.endsWith("/access"),
-    // POST /reverse-shares/alias/:alias/* (public upload flow)
-    (url) => url.startsWith("/reverse-shares/alias/"),
-    // POST /reverse-shares/:id/presigned-url
-    (url) => url.startsWith("/reverse-shares/") && url.endsWith("/presigned-url"),
-    // POST /reverse-shares/:id/register-file
-    (url) => url.startsWith("/reverse-shares/") && url.endsWith("/register-file"),
-    // POST /reverse-shares/:id/check-password
-    (url) => url.startsWith("/reverse-shares/") && url.endsWith("/check-password"),
-    // POST /reverse-shares/:id/upload/access (anonymous upload to password-protected reverse share)
-    (url) => url.startsWith("/reverse-shares/") && url.endsWith("/upload/access"),
-  ];
+  // CSRF_EXEMPT_ROUTES and CSRF_EXEMPT_DYNAMIC are imported from ./config/csrf.config.js
+  // so that tests can import the production list directly and verify against it.
 
   app.addHook("onRequest", (request, reply, done) => {
     const method = request.method.toUpperCase();
