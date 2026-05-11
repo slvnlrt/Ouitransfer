@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import type { FastifyReply, FastifyRequest } from "fastify";
 
 import { env } from "../../env.js";
@@ -40,8 +41,9 @@ export class FileController {
       }
 
       // Generate unique object name
-      const objectName = `${userId}/${Date.now()}-${Math.random().toString(36).substring(7)}-${filename}.${extension}`;
-      const expires = parseInt(env.PRESIGNED_URL_EXPIRATION, 10);
+      const safeFilename = `${filename}.${extension}`.replace(/[/\\?%*:|"<>]/g, "_");
+      const objectName = `${userId}/${crypto.randomUUID()}-${safeFilename}`;
+      const expires = env.PRESIGNED_URL_EXPIRATION;
 
       const url = await this.fileService.getPresignedPutUrl(objectName, expires);
 

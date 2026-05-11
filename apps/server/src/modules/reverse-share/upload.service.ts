@@ -66,7 +66,7 @@ export class ReverseShareUploadService {
     const sanitizedFilename = filename.replace(/[^a-zA-Z0-9._-]/g, "_").substring(0, 100);
     const objectName = `reverse-shares/${id}/${Date.now()}-${crypto.randomUUID()}-${sanitizedFilename}.${extension}`;
 
-    const expires = parseInt(env.PRESIGNED_URL_EXPIRATION, 10);
+    const expires = env.PRESIGNED_URL_EXPIRATION;
 
     // Import storage config to check if using internal or external S3
     const { isInternalStorage } = await import("../../config/storage.config.js");
@@ -121,7 +121,7 @@ export class ReverseShareUploadService {
     const sanitizedFilename = filename.replace(/[^a-zA-Z0-9._-]/g, "_").substring(0, 100);
     const objectName = `reverse-shares/${reverseShare.id}/${Date.now()}-${crypto.randomUUID()}-${sanitizedFilename}.${extension}`;
 
-    const expires = parseInt(env.PRESIGNED_URL_EXPIRATION, 10);
+    const expires = env.PRESIGNED_URL_EXPIRATION;
 
     // Import storage config to check if using internal or external S3
     const { isInternalStorage } = await import("../../config/storage.config.js");

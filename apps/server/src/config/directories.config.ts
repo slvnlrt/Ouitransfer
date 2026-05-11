@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import * as path from "node:path";
 
 import { IS_RUNNING_IN_CONTAINER } from "../utils/container-detection.js";
@@ -47,6 +48,6 @@ export function getUploadsDir(): string {
 export function getTempFilePath(objectName: string): string {
   const sanitizedName = objectName.replace(/[^a-zA-Z0-9\-_./]/g, "_");
   const timestamp = Date.now();
-  const randomSuffix = Math.random().toString(36).substring(2, 8);
+  const randomSuffix = crypto.randomUUID().slice(0, 8);
   return path.join(getTempUploadDir(), `${timestamp}-${randomSuffix}-${sanitizedName}.tmp`);
 }

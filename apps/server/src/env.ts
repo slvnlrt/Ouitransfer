@@ -18,7 +18,9 @@ const envSchema = z.object({
   DISABLE_FILESYSTEM_ENCRYPTION: z.union([z.literal("true"), z.literal("false")]).default("true"),
 
   // Application configuration
-  PRESIGNED_URL_EXPIRATION: z.string().optional().default("3600"),
+  PORT: z.coerce.number().int().min(1).max(65535).optional().default(3333),
+  PRESIGNED_URL_EXPIRATION: z.coerce.number().int().min(60).max(86400).optional().default(3600),
+  PRESIGNED_GET_URL_EXPIRATION: z.coerce.number().int().min(60).max(86400).optional().default(900),
   SECURE_SITE: z.union([z.literal("true"), z.literal("false")]).default("true"),
   STORAGE_URL: z.string().optional(), // Storage URL for internal storage presigned URLs (required when ENABLE_S3=false, e.g., https://syrg.OUITRANSFER.com or http://192.168.1.100:9379)
   DATABASE_URL: z.string().optional().default("file:/app/server/prisma/ouitransfer.db"),
@@ -26,6 +28,12 @@ const envSchema = z.object({
 
   // Security
   JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 characters"),
+  TRUST_PROXY: z
+    .string()
+    .optional()
+    .default("loopback")
+    .transform((v) => v.toLowerCase()),
+  ENABLE_API_DOCS: z.union([z.literal("true"), z.literal("false")]).optional(),
 });
 
 export const env = envSchema.parse(process.env);

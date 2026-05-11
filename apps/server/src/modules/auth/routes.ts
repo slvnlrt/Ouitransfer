@@ -35,6 +35,7 @@ export async function authRoutes(app: FastifyInstance) {
   app.post(
     "/auth/login",
     {
+      bodyLimit: 64 * 1024, // 64 KB — auth payloads are small JSON
       config: {
         rateLimit: {
           max: 5,
@@ -78,6 +79,7 @@ export async function authRoutes(app: FastifyInstance) {
   app.post(
     "/auth/2fa/login",
     {
+      bodyLimit: 64 * 1024, // 64 KB — auth payloads are small JSON
       config: {
         rateLimit: {
           max: 5,
@@ -114,6 +116,7 @@ export async function authRoutes(app: FastifyInstance) {
   app.post(
     "/auth/logout",
     {
+      bodyLimit: 64 * 1024, // 64 KB — auth payloads are small JSON
       schema: {
         tags: ["Authentication"],
         operationId: "logout",
@@ -130,6 +133,7 @@ export async function authRoutes(app: FastifyInstance) {
   app.post(
     "/auth/forgot-password",
     {
+      bodyLimit: 64 * 1024, // 64 KB — auth payloads are small JSON
       config: {
         rateLimit: {
           max: 3,
@@ -156,6 +160,7 @@ export async function authRoutes(app: FastifyInstance) {
   app.post(
     "/auth/reset-password",
     {
+      bodyLimit: 64 * 1024, // 64 KB — auth payloads are small JSON
       config: {
         rateLimit: {
           max: 3,

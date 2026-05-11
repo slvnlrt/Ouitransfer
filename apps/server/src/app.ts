@@ -1,6 +1,7 @@
 import * as http from "node:http";
 import fastifyCookie from "@fastify/cookie";
 import { fastifyCors } from "@fastify/cors";
+import helmet from "@fastify/helmet";
 import fastifyJwt from "@fastify/jwt";
 import rateLimit from "@fastify/rate-limit";
 import { fastifySwaggerUi } from "@fastify/swagger-ui";
@@ -15,6 +16,25 @@ import { envTimeoutOverrides } from "./config/timeout.config.js";
 import { env } from "./env.js";
 import { globalErrorHandler, globalNotFoundHandler } from "./utils/error-handler.js";
 import { setLogger } from "./utils/logger.js";
+
+/**
+ * Parse TRUST_PROXY env var into the type Fastify expects.
+ *
+ * Accepts:
+ * - "true" / "false" → boolean
+ * - "loopback", "linklocal", "uniquelocal" → string (Fastify keywords)
+ * - A numeric string like "1" → number (hop count)
+ * - A comma-separated list → string[] (CIDR ranges)
+ * - A single CIDR → string
+ */
+function parseTrustProxy(value: string): boolean | number | string | string[] {
+  if (value === "true") return true;
+  if (value === "false") return false;
+  // Numeric hop count (e.g. "1" = trust 1 proxy hop)
+  if (/^\d+$/.test(value)) return Number(value);
+  if (value.includes(",")) return value.split(",").map((s) => s.trim());
+  return value; // "loopback", "linklocal", "uniquelocal", or single CIDR
+}
 
 export async function buildApp() {
   // JWT_SECRET removed from DB — now in env.ts
@@ -31,7 +51,7 @@ export async function buildApp() {
     connectionTimeout: 0,
     keepAliveTimeout: envTimeoutOverrides.keepAliveTimeout,
     requestTimeout: envTimeoutOverrides.requestTimeout,
-    trustProxy: true,
+    trustProxy: parseTrustProxy(env.TRUST_PROXY),
     maxParamLength: 500,
     onProtoPoisoning: "error",
     onConstructorPoisoning: "error",
@@ -77,9 +97,9 @@ export async function buildApp() {
     : ["http://localhost:5487"];
 
   if (!process.env.CORS_ORIGINS && process.env.NODE_ENV === "production") {
-    app.log.warn(
-      "[SECURITY] CORS_ORIGINS is not set in production. Defaulting to localhost only. " +
-        "Set CORS_ORIGINS=https://your-domain.com to allow your frontend.",
+    throw new Error(
+      "CORS_ORIGINS is required in production. " +
+        "Set CORS_ORIGINS=https://your-domain.com (comma-separated for multiple origins).",
     );
   }
 
@@ -106,6 +126,24 @@ export async function buildApp() {
     }),
   });
 
+  // Security headers: CSP, X-Content-Type-Options, X-Frame-Options, etc.
+  await app.register(helmet, {
+    // Content-Security-Policy is set by Next.js for the frontend;
+    // the API doesn't serve HTML, so a restrictive default is fine.
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'none'"],
+        frameAncestors: ["'none'"],
+      },
+    },
+    // HSTS is typically set by the reverse proxy (nginx/caddy), but
+    // setting it here provides defense-in-depth.
+    strictTransportSecurity: {
+      maxAge: 31536000, // 1 year
+      includeSubDomains: true,
+    },
+  });
+
   app.register(fastifyCookie);
   app.register(fastifyJwt, {
     secret: env.JWT_SECRET,
@@ -118,18 +156,24 @@ export async function buildApp() {
     },
   });
 
-  registerSwagger(app);
-  app.register(fastifySwaggerUi, {
-    routePrefix: "/swagger",
-  });
+  const isDevMode = process.env.NODE_ENV !== "production";
+  const docsEnabled = isDevMode || env.ENABLE_API_DOCS === "true";
 
-  const { default: scalarFastify } = await import("@scalar/fastify-api-reference");
-  app.register(scalarFastify, {
-    routePrefix: "/docs",
-    configuration: {
-      theme: "deepSpace",
-    },
-  });
+  if (docsEnabled) {
+    registerSwagger(app);
+    app.register(fastifySwaggerUi, {
+      routePrefix: "/swagger",
+    });
+
+    const { default: scalarFastify } = await import("@scalar/fastify-api-reference");
+    app.register(scalarFastify, {
+      routePrefix: "/docs",
+      configuration: {
+        theme: "deepSpace",
+      },
+    });
+  }
+  // No else branch — globalNotFoundHandler already returns 404 for unregistered routes.
 
   return app;
 }

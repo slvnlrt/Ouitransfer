@@ -68,7 +68,7 @@ export class ReverseShareMultipartService {
   ): Promise<{ url: string }> {
     await this.validateReverseShareAccessByAlias(alias, password);
 
-    const expires = parseInt(env.PRESIGNED_URL_EXPIRATION, 10);
+    const expires = env.PRESIGNED_URL_EXPIRATION;
     const url = await this.fileService.getPresignedPartUrl(
       objectName,
       uploadId,

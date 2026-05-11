@@ -73,7 +73,7 @@ export class FileDownloadController {
       }
 
       const fileName = fileRecord.name;
-      const expires = parseInt(env.PRESIGNED_URL_EXPIRATION, 10);
+      const expires = env.PRESIGNED_GET_URL_EXPIRATION;
 
       // Always use presigned URLs (works for both internal and external storage)
       const url = await this.fileService.getPresignedGetUrl(objectName, expires, fileName);

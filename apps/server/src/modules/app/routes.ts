@@ -76,6 +76,7 @@ export async function appRoutes(app: FastifyInstance) {
   app.patch(
     "/app/configs/:key",
     {
+      bodyLimit: 64 * 1024, // 64 KB — admin config payloads are small JSON
       preValidation: adminPreValidation,
       schema: {
         tags: ["App"],
@@ -146,6 +147,7 @@ export async function appRoutes(app: FastifyInstance) {
   app.patch(
     "/app/configs",
     {
+      bodyLimit: 64 * 1024, // 64 KB — admin config payloads are small JSON
       preValidation: adminPreValidation,
       schema: {
         tags: ["App"],

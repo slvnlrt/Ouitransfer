@@ -83,11 +83,11 @@ async function startServer() {
   }
 
   await app.listen({
-    port: 3333,
+    port: env.PORT,
     host: "0.0.0.0",
   });
 
-  app.log.info({ port: 3333 }, "OUITRANSFER server running");
+  app.log.info({ port: env.PORT }, "OUITRANSFER server running");
 
   // Cleanup on shutdown
   process.on("SIGINT", () => process.exit(0));
