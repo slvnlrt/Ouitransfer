@@ -99,17 +99,32 @@ export async function buildApp() {
     credentials: true,
   });
 
+  const isDevMode = process.env.NODE_ENV !== "production";
+  const docsEnabled = isDevMode || env.ENABLE_API_DOCS === "true";
+
   // Security headers: CSP, X-Content-Type-Options, X-Frame-Options, etc.
   // Registered BEFORE rate-limit so security headers apply to all responses,
   // including rate-limit rejections.
+  //
+  // When Swagger UI / Scalar docs are enabled, we relax CSP to allow the
+  // assets those UIs need (inline scripts/styles, data: URIs for images).
+  // This relaxation only applies when docsEnabled is true (dev or explicit opt-in).
   await app.register(helmet, {
-    // Content-Security-Policy is set by Next.js for the frontend;
-    // the API doesn't serve HTML, so a restrictive default is fine.
     contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'none'"],
-        frameAncestors: ["'none'"],
-      },
+      directives: docsEnabled
+        ? {
+            // Swagger UI and Scalar require inline scripts/styles and data: images.
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", "data:"],
+            frameAncestors: ["'none'"],
+          }
+        : {
+            // The API doesn't serve HTML in production; a restrictive default is fine.
+            defaultSrc: ["'none'"],
+            frameAncestors: ["'none'"],
+          },
     },
     // HSTS is typically set by the reverse proxy (nginx/caddy), but
     // setting it here provides defense-in-depth.
@@ -213,9 +228,6 @@ export async function buildApp() {
     // On success it calls done(); on failure it calls reply.send(error) directly.
     app.csrfProtection(request, reply, done);
   });
-
-  const isDevMode = process.env.NODE_ENV !== "production";
-  const docsEnabled = isDevMode || env.ENABLE_API_DOCS === "true";
 
   if (docsEnabled) {
     registerSwagger(app);

@@ -97,11 +97,30 @@ export class FileController {
     } catch (err) {
       // Re-throw any AppError (e.g. ValidationError from magic-byte mismatch)
       if (err instanceof AppError) throw err;
-      // If S3 read fails, log but don't block — the consistency check above still passed
-      request.log.warn(
-        { err, objectName: input.objectName },
-        "Magic-byte verification skipped (S3 read failed)",
-      );
+
+      // Distinguish expected S3 limitations from genuine infrastructure failures.
+      // "Expected" scenarios: storage doesn't support range requests, object too
+      // small, empty response body, or the key wasn't found yet (eventual consistency).
+      // Everything else (connection refused, auth error, timeout) is unexpected.
+      const message = err instanceof Error ? err.message.toLowerCase() : String(err).toLowerCase();
+      const isExpectedFailure =
+        message.includes("range") ||
+        message.includes("not supported") ||
+        message.includes("empty response") ||
+        message.includes("nosuchkey") ||
+        message.includes("not found");
+
+      if (isExpectedFailure) {
+        request.log.debug(
+          { objectName: input.objectName, reason: message },
+          "Magic-byte verification skipped (expected S3 limitation)",
+        );
+      } else {
+        request.log.warn(
+          { err, objectName: input.objectName },
+          "Magic-byte verification skipped (unexpected S3 error)",
+        );
+      }
     }
 
     const maxFileSize = BigInt(await this.configService.getValue("maxFileSize"));

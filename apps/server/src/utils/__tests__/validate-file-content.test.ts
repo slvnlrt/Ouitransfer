@@ -27,8 +27,22 @@ describe("isMimeTypeConsistent (5.1)", () => {
     expect(isMimeTypeConsistent("application/x-msdownload", "pdf")).toBe(false);
   });
 
-  it("allows when mimeType is undefined (optional field)", () => {
+  it("allows when mimeType is undefined and extension is safe", () => {
     expect(isMimeTypeConsistent(undefined, "jpg")).toBe(true);
+    expect(isMimeTypeConsistent(undefined, "pdf")).toBe(true);
+    expect(isMimeTypeConsistent(undefined, "docx")).toBe(true);
+  });
+
+  it("rejects dangerous extension even when mimeType is undefined", () => {
+    expect(isMimeTypeConsistent(undefined, "exe")).toBe(false);
+    expect(isMimeTypeConsistent(undefined, "sh")).toBe(false);
+    expect(isMimeTypeConsistent(undefined, "ps1")).toBe(false);
+  });
+
+  it("rejects dangerous extension with application/octet-stream (treated as unknown)", () => {
+    expect(isMimeTypeConsistent("application/octet-stream", "exe")).toBe(false);
+    expect(isMimeTypeConsistent("application/octet-stream", "bat")).toBe(false);
+    expect(isMimeTypeConsistent("application/octet-stream", "sh")).toBe(false);
   });
 
   it("is case-insensitive for MIME types and extensions", () => {

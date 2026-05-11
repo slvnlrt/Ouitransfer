@@ -52,21 +52,40 @@ export const DANGEROUS_EXTENSIONS = new Set([
 
 /**
  * Check if the declared MIME type is consistent with the file extension.
- * Returns true if consistent or unknown (no false positives on exotic formats).
- * Returns false if a dangerous mismatch is detected.
+ *
+ * Returns `false` (invalid) if any of the following are true:
+ * - The extension is in `DANGEROUS_EXTENSIONS` and MIME is absent or "application/octet-stream"
+ * - The declared MIME type is in `BLOCKED_MIME_TYPES`
+ * - The declared MIME type is `application/octet-stream` (treated as "unknown")
+ *   and the extension is in `DANGEROUS_EXTENSIONS`
+ * - The declared MIME type is a clearly benign type (image/*, video/*, audio/*,
+ *   application/pdf, text/plain) but the extension is dangerous (spoofing signal)
+ *
+ * Returns `true` for exotic/unknown combinations to avoid false positives.
+ * Defense-in-depth is provided by `DANGEROUS_EXTENSIONS` and `verifyMagicBytes`.
  */
 export function isMimeTypeConsistent(mimeType: string | undefined, extension: string): boolean {
-  if (!mimeType) return true; // optional field — no check possible
+  const lowerExt = extension.toLowerCase().replace(/^\./, "");
+
+  // Extension check runs independently of MIME type.
+  // If mimeType is absent or "application/octet-stream" (effectively unknown),
+  // still block dangerous extensions.
+  if (!mimeType || mimeType.toLowerCase() === "application/octet-stream") {
+    if (DANGEROUS_EXTENSIONS.has(lowerExt)) {
+      return false;
+    }
+    // For truly absent MIME, no further checks are possible; allow.
+    if (!mimeType) return true;
+  }
 
   const lowerMime = mimeType.toLowerCase();
-  const lowerExt = extension.toLowerCase().replace(/^\./, "");
 
   // Block explicitly dangerous MIME types
   if (BLOCKED_MIME_TYPES.has(lowerMime)) {
     return false;
   }
 
-  // Dangerous extension with a benign MIME → mismatch
+  // Dangerous extension with a clearly benign MIME → likely spoofing
   if (DANGEROUS_EXTENSIONS.has(lowerExt)) {
     const isBenignMime =
       lowerMime.startsWith("image/") ||
