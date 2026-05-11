@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 
 import { prisma } from "../../shared/prisma.js";
 import { ConflictError, NotFoundError } from "../../utils/app-error.js";
+import { incrementTokenVersion } from "../auth/token-version.js";
 import { type RegisterUserInput, UserResponseSchema } from "./dto.js";
 import { type IUserRepository, PrismaUserRepository } from "./repository.js";
 
@@ -70,6 +71,11 @@ export class UserService {
       id: userId,
       ...updateData,
     });
+
+    // If password was changed, invalidate all existing sessions for this user
+    if (password) {
+      await incrementTokenVersion(userId);
+    }
 
     return UserResponseSchema.parse(user);
   }

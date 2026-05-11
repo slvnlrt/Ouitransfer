@@ -11,6 +11,7 @@ import {
 } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { timingSafeEqual } from "../../utils/timing-safe.js";
+import { incrementTokenVersion } from "../auth/token-version.js";
 
 interface BackupCode {
   code: string;
@@ -96,6 +97,9 @@ export class TwoFactorService {
         twoFactorVerified: true,
       },
     });
+
+    // Invalidate existing sessions — 2FA status change is a privilege escalation event
+    await incrementTokenVersion(userId);
 
     return {
       success: true,
@@ -247,6 +251,9 @@ export class TwoFactorService {
         twoFactorVerified: false,
       },
     });
+
+    // Invalidate existing sessions — 2FA status change is a privilege escalation event
+    await incrementTokenVersion(userId);
 
     return { success: true };
   }

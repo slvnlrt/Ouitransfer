@@ -49,6 +49,7 @@ export const UserResponseSchema = z.object({
   image: z.string().nullable(),
   isAdmin: z.boolean(),
   isActive: z.boolean(),
+  tokenVersion: z.number(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });

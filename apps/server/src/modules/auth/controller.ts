@@ -44,6 +44,7 @@ export class AuthController {
     const token = await reply.jwtSign({
       userId: user.id,
       isAdmin: user.isAdmin,
+      tokenVersion: user.tokenVersion,
     });
 
     reply.setCookie("token", token, {
@@ -74,6 +75,7 @@ export class AuthController {
     const token = await reply.jwtSign({
       userId: user.id,
       isAdmin: user.isAdmin,
+      tokenVersion: user.tokenVersion,
     });
 
     reply.setCookie("token", token, {

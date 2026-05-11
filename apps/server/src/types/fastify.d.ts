@@ -16,6 +16,7 @@ declare module "@fastify/jwt" {
     user: {
       userId: string;
       isAdmin: boolean;
+      tokenVersion: number;
     };
   }
 }

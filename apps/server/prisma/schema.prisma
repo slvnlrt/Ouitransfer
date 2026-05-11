@@ -25,12 +25,12 @@ model User {
   twoFactorBackupCodes String?
   twoFactorVerified    Boolean @default(false)
 
+  tokenVersion Int @default(0)
+
   files         File[]
   folders       Folder[]
   shares        Share[]
   reverseShares ReverseShare[]
-
-  loginAttempts LoginAttempt?
 
   passwordResets PasswordReset[]
   authProviders  UserAuthProvider[]
@@ -125,12 +125,14 @@ model AppConfig {
 }
 
 model LoginAttempt {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  attempts    Int      @default(1)
-  lastAttempt DateTime @default(now())
+  id        String   @id @default(cuid())
+  email     String
+  ipAddress String
+  success   Boolean
+  createdAt DateTime @default(now())
 
+  @@index([email, createdAt])
+  @@index([createdAt])
   @@map("login_attempts")
 }
 

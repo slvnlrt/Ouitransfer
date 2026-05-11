@@ -14,6 +14,8 @@ import { TwoFactorService } from "../two-factor/service.js";
 import { UserResponseSchema } from "../user/dto.js";
 import { PrismaUserRepository } from "../user/repository.js";
 import type { LoginInput } from "./dto.js";
+import { isAccountLocked, recordLoginAttempt } from "./login-attempts.service.js";
+import { invalidateTokenVersionCache } from "./token-version.js";
 import { TrustedDeviceService } from "./trusted-device.service.js";
 
 export class AuthService {
@@ -31,41 +33,25 @@ export class AuthService {
       );
     }
 
+    const clientIp = ipAddress || "unknown";
+
+    // Check account lockout BEFORE any credential validation.
+    // Uses the email/username from the request (works for non-existent accounts too).
+    const lockStatus = await isAccountLocked(data.emailOrUsername);
+    if (lockStatus.locked) {
+      throw new ForbiddenError(
+        `Account temporarily locked. Try again in ${lockStatus.remainingMinutes} minutes.`,
+      );
+    }
+
     const user = await this.userRepository.findUserByEmailOrUsername(data.emailOrUsername);
     if (!user) {
+      await recordLoginAttempt(data.emailOrUsername, clientIp, false);
       throw new UnauthorizedError("Invalid credentials");
     }
 
     if (!user.isActive) {
       throw new ForbiddenError("Account is inactive. Please contact an administrator.");
-    }
-
-    const maxAttempts = Number(await this.configService.getValue("maxLoginAttempts"));
-    const blockDurationSeconds = Number(await this.configService.getValue("loginBlockDuration"));
-    const blockDuration = blockDurationSeconds * 1000;
-
-    const loginAttempt = await prisma.loginAttempt.findUnique({
-      where: { userId: user.id },
-    });
-
-    if (loginAttempt) {
-      if (
-        loginAttempt.attempts >= maxAttempts &&
-        Date.now() - loginAttempt.lastAttempt.getTime() < blockDuration
-      ) {
-        const remainingTime = Math.ceil(
-          (blockDuration - (Date.now() - loginAttempt.lastAttempt.getTime())) / 1000 / 60,
-        );
-        throw new ForbiddenError(
-          `Too many failed attempts. Please try again in ${remainingTime} minutes.`,
-        );
-      }
-
-      if (Date.now() - loginAttempt.lastAttempt.getTime() >= blockDuration) {
-        await prisma.loginAttempt.delete({
-          where: { userId: user.id },
-        });
-      }
     }
 
     if (!user.password) {
@@ -77,29 +63,12 @@ export class AuthService {
     const isValid = await bcrypt.compare(data.password, user.password);
 
     if (!isValid) {
-      await prisma.loginAttempt.upsert({
-        where: { userId: user.id },
-        create: {
-          userId: user.id,
-          attempts: 1,
-          lastAttempt: new Date(),
-        },
-        update: {
-          attempts: {
-            increment: 1,
-          },
-          lastAttempt: new Date(),
-        },
-      });
-
+      await recordLoginAttempt(data.emailOrUsername, clientIp, false);
       throw new UnauthorizedError("Invalid credentials");
     }
 
-    if (loginAttempt) {
-      await prisma.loginAttempt.delete({
-        where: { userId: user.id },
-      });
-    }
+    // Record successful login
+    await recordLoginAttempt(data.emailOrUsername, clientIp, true);
 
     const has2FA = await this.twoFactorService.isEnabled(user.id);
 
@@ -151,10 +120,6 @@ export class AuthService {
     if (!verificationResult.success) {
       throw new UnauthorizedError("Invalid two-factor authentication code");
     }
-
-    await prisma.loginAttempt.deleteMany({
-      where: { userId },
-    });
 
     if (rememberDevice && userAgent && ipAddress) {
       await this.trustedDeviceService.addTrustedDevice(userId, userAgent, ipAddress);
@@ -237,13 +202,16 @@ export class AuthService {
     await prisma.$transaction([
       prisma.user.update({
         where: { id: resetRequest.userId },
-        data: { password: hashedPassword },
+        data: { password: hashedPassword, tokenVersion: { increment: 1 } },
       }),
       prisma.passwordReset.update({
         where: { id: resetRequest.id },
         data: { used: true },
       }),
     ]);
+
+    // Invalidate cached tokenVersion so existing sessions are rejected immediately
+    invalidateTokenVersionCache(resetRequest.userId);
   }
 
   async getUserById(userId: string) {

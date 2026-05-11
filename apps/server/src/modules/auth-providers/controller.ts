@@ -346,6 +346,7 @@ export class AuthProvidersController {
       const jwt = await reply.jwtSign({
         userId: result.user.id,
         isAdmin: result.user.isAdmin,
+        tokenVersion: result.user.tokenVersion,
       });
 
       this.setAuthCookie(reply, jwt, request.protocol === "https");

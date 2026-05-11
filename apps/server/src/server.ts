@@ -5,6 +5,7 @@ import { buildApp } from "./app.js";
 import { directoriesConfig } from "./config/directories.config.js";
 import { env } from "./env.js";
 import { appRoutes } from "./modules/app/routes.js";
+import { cleanupOldAttempts } from "./modules/auth/login-attempts.service.js";
 import { authRoutes } from "./modules/auth/routes.js";
 import { authProvidersRoutes } from "./modules/auth-providers/routes.js";
 import { fileRoutes } from "./modules/file/routes.js";
@@ -88,6 +89,23 @@ async function startServer() {
   });
 
   app.log.info({ port: env.PORT }, "OUITRANSFER server running");
+
+  // Periodic cleanup of old login attempts (every hour)
+  const cleanupInterval = setInterval(
+    async () => {
+      try {
+        const count = await cleanupOldAttempts();
+        if (count > 0) {
+          app.log.info({ count }, "Cleaned up old login attempts");
+        }
+      } catch (err) {
+        app.log.error({ err }, "Failed to cleanup login attempts");
+      }
+    },
+    60 * 60 * 1000,
+  );
+
+  app.addHook("onClose", () => clearInterval(cleanupInterval));
 
   // Cleanup on shutdown
   process.on("SIGINT", () => process.exit(0));

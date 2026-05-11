@@ -15,6 +15,7 @@ import {
 import { registerSwagger } from "./config/swagger.config.js";
 import { envTimeoutOverrides } from "./config/timeout.config.js";
 import { env } from "./env.js";
+import { validateTokenVersion } from "./modules/auth/token-version.js";
 import { globalErrorHandler, globalNotFoundHandler } from "./utils/error-handler.js";
 import { setLogger } from "./utils/logger.js";
 import { parseTrustProxy } from "./utils/parse-trust-proxy.js";
@@ -137,6 +138,9 @@ export async function buildApp() {
     sign: {
       expiresIn: "1d",
     },
+    // Validate tokenVersion on every jwtVerify() call.
+    // Returning false causes jwtVerify to throw "Untrusted token".
+    trusted: validateTokenVersion,
   });
 
   // ── CSRF Protection (double-submit cookie pattern) ──────────
