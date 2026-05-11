@@ -1741,9 +1741,11 @@
     },
     "disable": {
       "title": "Disable Two-Factor Authentication",
-      "description": "Enter your password to confirm disabling two-factor authentication.",
+      "description": "Enter your password and verification code to confirm disabling two-factor authentication.",
       "password": "Password",
       "passwordPlaceholder": "Enter your password",
+      "totpLabel": "Verification code",
+      "totpHint": "Enter your 6-digit authenticator code or a backup code",
       "confirm": "Confirm Disable",
       "cancel": "Cancel"
     },

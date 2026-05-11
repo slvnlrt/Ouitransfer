@@ -23,6 +23,10 @@ const VerifyTokenSchema = z.object({
 
 const DisableSchema = z.object({
   password: z.string().min(1, "Password is required"),
+  totpCode: z
+    .string()
+    .min(6, "Verification code must be at least 6 characters")
+    .describe("TOTP code or backup code"),
 });
 
 export class TwoFactorController {
@@ -116,7 +120,7 @@ export class TwoFactorController {
 
       const body = DisableSchema.parse(request.body);
 
-      const result = await this.twoFactorService.disable2FA(userId, body.password);
+      const result = await this.twoFactorService.disable2FA(userId, body.password, body.totpCode);
 
       return reply.send(result);
     } catch (error: unknown) {

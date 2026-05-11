@@ -40,6 +40,7 @@ export function useTwoFactor() {
   const [backupCodes, setBackupCodes] = useState<string[]>([]);
   const [verificationCode, setVerificationCode] = useState("");
   const [disablePassword, setDisablePassword] = useState("");
+  const [disableTotpCode, setDisableTotpCode] = useState("");
 
   // ── Query: 2FA status ───────────────────────────────────────────────
   const statusQuery = useQuery({
@@ -110,13 +111,20 @@ export function useTwoFactor() {
       if (!disablePassword) {
         throw new Error("missing_password");
       }
-      const response = await disableTwoFactor({ password: disablePassword });
+      if (!disableTotpCode) {
+        throw new Error("missing_totp");
+      }
+      const response = await disableTwoFactor({
+        password: disablePassword,
+        totpCode: disableTotpCode,
+      });
       return response.data;
     },
     onSuccess: (data) => {
       if (data.success) {
         setIsDisableModalOpen(false);
         setDisablePassword("");
+        setDisableTotpCode("");
         toast.success(t("twoFactor.messages.disabledSuccess"));
         queryClient.invalidateQueries({ queryKey: queryKeys.auth.twoFactor.status() });
       }
@@ -124,6 +132,10 @@ export function useTwoFactor() {
     onError: (error: unknown) => {
       if (error instanceof Error && error.message === "missing_password") {
         toast.error(t("twoFactor.messages.enterPassword"));
+        return;
+      }
+      if (error instanceof Error && error.message === "missing_totp") {
+        toast.error(t("twoFactor.messages.enterVerificationCode"));
         return;
       }
       logger.error("Failed to disable 2FA", {
@@ -203,6 +215,7 @@ export function useTwoFactor() {
     backupCodes,
     verificationCode,
     disablePassword,
+    disableTotpCode,
 
     isSetupModalOpen,
     isDisableModalOpen,
@@ -210,6 +223,7 @@ export function useTwoFactor() {
 
     setVerificationCode,
     setDisablePassword,
+    setDisableTotpCode,
     setIsSetupModalOpen,
     setIsDisableModalOpen,
     setIsBackupCodesModalOpen,

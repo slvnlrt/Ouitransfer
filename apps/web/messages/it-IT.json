@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Skip to content"
   },
@@ -1688,6 +1688,8 @@
       "description": "Inserisci la tua password per confermare la disabilitazione dell'autenticazione a due fattori.",
       "password": "Password",
       "passwordPlaceholder": "Inserisci la tua password",
+      "totpLabel": "[en] Verification code",
+      "totpHint": "[en] Enter your 6-digit authenticator code or a backup code",
       "confirm": "Conferma Disabilitazione",
       "cancel": "Annulla"
     },

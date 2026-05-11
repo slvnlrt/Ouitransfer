@@ -154,14 +154,18 @@ export class TwoFactorService {
 
   /**
    * Disable 2FA for a user
+   * Requires both password AND a valid TOTP code (or backup code) to prevent
+   * an attacker with only the password from disabling 2FA.
    */
-  async disable2FA(userId: string, password: string) {
+  async disable2FA(userId: string, password: string, totpCode: string) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
         id: true,
         password: true,
         twoFactorEnabled: true,
+        twoFactorSecret: true,
+        twoFactorBackupCodes: true,
       },
     });
 
@@ -186,6 +190,41 @@ export class TwoFactorService {
     }
     if (!isValidPassword) {
       throw new Error("Invalid password");
+    }
+
+    if (!user.twoFactorSecret) {
+      throw new Error("Two-factor secret not found");
+    }
+
+    // Verify TOTP code — follow the same pattern as verifyToken
+    const disableTotp = new OTPAuth.TOTP({
+      algorithm: "SHA1",
+      digits: 6,
+      period: 30,
+      secret: OTPAuth.Secret.fromBase32(user.twoFactorSecret),
+    });
+    const normalizedCode = totpCode.replace(/[\s-]/g, "");
+    const totpVerified = disableTotp.validate({ token: normalizedCode, window: 1 }) !== null;
+
+    if (totpVerified) {
+      // TOTP code is valid — proceed to disable
+    } else if (user.twoFactorBackupCodes) {
+      // Try backup code as a fallback
+      const backupCodes: BackupCode[] = JSON.parse(user.twoFactorBackupCodes);
+      const backupCodeIndex = backupCodes.findIndex((bc) => bc.code === totpCode && !bc.used);
+
+      if (backupCodeIndex === -1) {
+        throw new Error("Invalid verification code");
+      }
+
+      // Mark backup code as used
+      backupCodes[backupCodeIndex].used = true;
+      await prisma.user.update({
+        where: { id: userId },
+        data: { twoFactorBackupCodes: JSON.stringify(backupCodes) },
+      });
+    } else {
+      throw new Error("Invalid verification code");
     }
 
     await prisma.user.update({

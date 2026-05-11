@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Skip to content"
   },
@@ -1692,6 +1692,8 @@
       "description": "Digite sua senha para confirmar a desativação da autenticação de dois fatores.",
       "password": "Senha",
       "passwordPlaceholder": "Digite sua senha",
+      "totpLabel": "[en] Verification code",
+      "totpHint": "[en] Enter your 6-digit authenticator code or a backup code",
       "confirm": "Confirmar Desativação",
       "cancel": "Cancelar"
     },

@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Skip to content"
   },
@@ -1688,6 +1688,8 @@
       "description": "2단계 인증 비활성화를 확인하려면 비밀번호를 입력하세요.",
       "password": "비밀번호",
       "passwordPlaceholder": "비밀번호 입력",
+      "totpLabel": "[en] Verification code",
+      "totpHint": "[en] Enter your 6-digit authenticator code or a backup code",
       "confirm": "비활성화 확인",
       "cancel": "취소"
     },

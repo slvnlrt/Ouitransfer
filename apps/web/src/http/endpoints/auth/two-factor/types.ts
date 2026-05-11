@@ -35,6 +35,7 @@ export interface VerifyTokenResponse {
 
 export interface DisableTwoFactorRequest {
   password: string;
+  totpCode: string; // TOTP code or backup code — now required
 }
 
 export interface DisableTwoFactorResponse {

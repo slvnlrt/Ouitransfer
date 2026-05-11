@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Skip to content"
   },
@@ -1701,6 +1701,8 @@
       "description": "برای تأیید غیرفعال‌سازی احراز هویت دو مرحله‌ای، گذرواژه خود را وارد کنید.",
       "password": "گذرواژه",
       "passwordPlaceholder": "گذرواژه خود را وارد کنید",
+      "totpLabel": "[en] Verification code",
+      "totpHint": "[en] Enter your 6-digit authenticator code or a backup code",
       "confirm": "تأیید غیرفعال‌سازی",
       "cancel": "انصراف"
     },

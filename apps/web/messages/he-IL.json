@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Skip to content"
   },
@@ -1701,6 +1701,8 @@
       "description": "הזן את הסיסמה שלך כדי לאשר השבתת אימות דו-שלבי.",
       "password": "סיסמה",
       "passwordPlaceholder": "הזן את הסיסמה שלך",
+      "totpLabel": "[en] Verification code",
+      "totpHint": "[en] Enter your 6-digit authenticator code or a backup code",
       "confirm": "אשר השבתה",
       "cancel": "ביטול"
     },

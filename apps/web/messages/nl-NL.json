@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Skip to content"
   },
@@ -1688,6 +1688,8 @@
       "description": "Voer uw wachtwoord in om het uitschakelen van twee-factor authenticatie te bevestigen.",
       "password": "Wachtwoord",
       "passwordPlaceholder": "Voer uw wachtwoord in",
+      "totpLabel": "[en] Verification code",
+      "totpHint": "[en] Enter your 6-digit authenticator code or a backup code",
       "confirm": "Bevestig Uitschakelen",
       "cancel": "Annuleren"
     },

@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Skip to content"
   },
@@ -1688,6 +1688,8 @@
       "description": "दो-कारक प्रमाणीकरण को अक्षम करने की पुष्टि के लिए अपना पासवर्ड दर्ज करें।",
       "password": "पासवर्ड",
       "passwordPlaceholder": "अपना पासवर्ड दर्ज करें",
+      "totpLabel": "[en] Verification code",
+      "totpHint": "[en] Enter your 6-digit authenticator code or a backup code",
       "confirm": "अक्षम करने की पुष्टि करें",
       "cancel": "रद्द करें"
     },

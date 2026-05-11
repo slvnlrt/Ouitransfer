@@ -55,11 +55,13 @@ export function TwoFactorForm() {
     backupCodes,
     verificationCode,
     disablePassword,
+    disableTotpCode,
     isSetupModalOpen,
     isDisableModalOpen,
     isBackupCodesModalOpen,
     setVerificationCode,
     setDisablePassword,
+    setDisableTotpCode,
     setIsSetupModalOpen,
     setIsDisableModalOpen,
     setIsBackupCodesModalOpen,
@@ -439,6 +441,19 @@ export function TwoFactorForm() {
                 </Button>
               </div>
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="totp-code">{t("twoFactor.disable.totpLabel")}</Label>
+              <Input
+                id="totp-code"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9 -]*"
+                placeholder="000 000"
+                value={disableTotpCode}
+                onChange={(e) => setDisableTotpCode(e.target.value)}
+              />
+              <p className="text-sm text-muted-foreground">{t("twoFactor.disable.totpHint")}</p>
+            </div>
           </div>
 
           <DialogFooter>
@@ -452,7 +467,7 @@ export function TwoFactorForm() {
             <Button
               variant="destructive"
               onClick={disable2FA}
-              disabled={isLoading || !disablePassword}
+              disabled={isLoading || !disablePassword || !disableTotpCode}
             >
               {t("twoFactor.disable.confirm")}
             </Button>

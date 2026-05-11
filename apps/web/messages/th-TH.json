@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Skip to content"
   },
@@ -1701,6 +1701,8 @@
       "description": "ป้อนรหัสผ่านของคุณเพื่อยืนยันการปิดใช้งานการยืนยันตัวตนแบบสองปัจจัย",
       "password": "รหัสผ่าน",
       "passwordPlaceholder": "ป้อนรหัสผ่านของคุณ",
+      "totpLabel": "[en] Verification code",
+      "totpHint": "[en] Enter your 6-digit authenticator code or a backup code",
       "confirm": "ยืนยันการปิดใช้งาน",
       "cancel": "ยกเลิก"
     },

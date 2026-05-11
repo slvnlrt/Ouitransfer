@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Skip to content"
   },
@@ -1688,6 +1688,8 @@
       "description": "أدخل كلمة المرور للتأكيد على تعطيل المصادقة الثنائية.",
       "password": "كلمة المرور",
       "passwordPlaceholder": "أدخل كلمة المرور",
+      "totpLabel": "[en] Verification code",
+      "totpHint": "[en] Enter your 6-digit authenticator code or a backup code",
       "confirm": "تأكيد التعطيل",
       "cancel": "إلغاء"
     },

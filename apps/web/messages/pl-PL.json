@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Skip to content"
   },
@@ -1688,6 +1688,8 @@
       "description": "Wprowadź hasło, aby potwierdzić wyłączenie uwierzytelniania dwuskładnikowego.",
       "password": "Hasło",
       "passwordPlaceholder": "Wprowadź swoje hasło",
+      "totpLabel": "[en] Verification code",
+      "totpHint": "[en] Enter your 6-digit authenticator code or a backup code",
       "confirm": "Potwierdź wyłączenie",
       "cancel": "Anuluj"
     },
