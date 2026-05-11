@@ -17,6 +17,7 @@ import {
 } from "../../utils/file-name-generator.js";
 import { sanitizeFilename } from "../../utils/sanitize-filename.js";
 import { isMimeTypeConsistent, verifyMagicBytes } from "../../utils/validate-file-content.js";
+import { validateObjectName } from "../../utils/validate-object-name.js";
 import { ConfigService } from "../config/service.js";
 import {
   type CheckFileInput,
@@ -69,6 +70,9 @@ export class FileController {
     }
 
     const input: RegisterFileInput = RegisterFileSchema.parse(request.body);
+
+    // Validate objectName ownership: must be under the user's namespace
+    validateObjectName(input.objectName, userId);
 
     // Layer 1: MIME/extension consistency check
     if (!isMimeTypeConsistent(input.mimeType, input.extension)) {

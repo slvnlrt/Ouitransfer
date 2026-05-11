@@ -4,6 +4,7 @@ import type { Prisma } from "@prisma/client";
 import { env } from "../../env.js";
 import { prisma } from "../../shared/prisma.js";
 import {
+  AppError,
   ForbiddenError,
   GoneError,
   NotFoundError,
@@ -13,6 +14,7 @@ import {
 import { getLogger } from "../../utils/logger.js";
 import { sanitizeFilename } from "../../utils/sanitize-filename.js";
 import { isMimeTypeConsistent } from "../../utils/validate-file-content.js";
+import { validateObjectName } from "../../utils/validate-object-name.js";
 import { EmailService } from "../email/service.js";
 import { FileService } from "../file/service.js";
 import { UserService } from "../user/service.js";
@@ -185,7 +187,7 @@ export class ReverseShareUploadService {
     }
 
     // Validate objectName belongs to this reverse share's namespace
-    this.validateObjectName(fileData.objectName, reverseShareId);
+    validateObjectName(fileData.objectName, `reverse-shares/${reverseShareId}`);
 
     if (reverseShare.maxFiles) {
       const currentFileCount =
@@ -255,7 +257,7 @@ export class ReverseShareUploadService {
     }
 
     // Validate objectName belongs to this reverse share's namespace (use reverseShare.id, not alias)
-    this.validateObjectName(fileData.objectName, reverseShare.id);
+    validateObjectName(fileData.objectName, `reverse-shares/${reverseShare.id}`);
 
     if (reverseShare.maxFiles) {
       const currentFileCount = await this.reverseShareRepository.countFilesByReverseShareId(
@@ -378,7 +380,8 @@ export class ReverseShareUploadService {
 
         if (retries >= maxRetries) {
           const message = error instanceof Error ? error.message : String(error);
-          throw new ValidationError(`Failed to copy file after ${maxRetries} attempts: ${message}`);
+          getLogger().error({ maxRetries, error: message }, "File copy exhausted retries");
+          throw new AppError(500, "File copy failed", "COPY_FAILED");
         }
 
         const delay = Math.min(1000 * 2 ** (retries - 1), 10_000);
@@ -408,24 +411,6 @@ export class ReverseShareUploadService {
       createdAt: newFileRecord.createdAt.toISOString(),
       updatedAt: newFileRecord.updatedAt.toISOString(),
     };
-  }
-
-  private validateObjectName(objectName: string, reverseShareId: string): void {
-    // Reject null bytes (path injection protection)
-    if (objectName.includes("\0")) {
-      throw new ValidationError("Invalid object name: contains null bytes");
-    }
-
-    // Reject path traversal attempts
-    if (objectName.includes("..")) {
-      throw new ValidationError("Invalid object name: contains path traversal sequences");
-    }
-
-    // Validate that objectName starts with the expected namespace
-    const expectedPrefix = `reverse-shares/${reverseShareId}/`;
-    if (!objectName.startsWith(expectedPrefix)) {
-      throw new ValidationError("Invalid object name: does not belong to this reverse share");
-    }
   }
 
   private generateSessionKey(reverseShareId: string, uploaderIdentifier: string): string {

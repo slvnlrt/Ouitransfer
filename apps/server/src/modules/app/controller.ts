@@ -34,16 +34,8 @@ export class AppController {
     const { key } = request.params as { key: string };
     const { value } = request.body as { value: string };
 
-    try {
-      const config = await this.appService.updateConfig(key, value);
-      return reply.send({ config });
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : String(error);
-      if (message === "Configuration not found") {
-        throw new ValidationError("Configuration not found");
-      }
-      throw error;
-    }
+    const config = await this.appService.updateConfig(key, value);
+    return reply.send({ config });
   }
 
   async bulkUpdateConfigs(request: FastifyRequest, reply: FastifyReply) {

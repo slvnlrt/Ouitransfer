@@ -231,7 +231,11 @@ export class OAuthFlowService {
 
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text();
-      throw new UnauthorizedError(`Token exchange failed: ${tokenResponse.status} - ${errorText}`);
+      getLogger().error(
+        { status: tokenResponse.status, body: errorText },
+        "OAuth token exchange failed",
+      );
+      throw new UnauthorizedError("Token exchange failed");
     }
 
     const tokens = (await tokenResponse.json()) as TokenResponse;
@@ -256,9 +260,11 @@ export class OAuthFlowService {
 
     if (!userInfoResponse.ok) {
       const errorText = await userInfoResponse.text();
-      throw new UnauthorizedError(
-        `UserInfo request failed: ${userInfoResponse.status} - ${errorText}`,
+      getLogger().error(
+        { status: userInfoResponse.status, body: errorText },
+        "OAuth UserInfo request failed",
       );
+      throw new UnauthorizedError("Failed to fetch user info");
     }
 
     return (await userInfoResponse.json()) as Record<string, unknown>;
@@ -282,7 +288,7 @@ export class OAuthFlowService {
     }
 
     if (!userInfo.email) {
-      throw new ValidationError(`No email address found in ${config.name} account`);
+      throw new ValidationError(`No email found in ${config.name} account`);
     }
 
     return userInfo;
