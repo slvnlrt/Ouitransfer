@@ -8,8 +8,8 @@ import { AppError } from "./app-error.js";
 
 /**
  * Standard error response shape returned by all error paths.
- * Controllers that manually return errors should also follow this shape
- * (to be migrated in a future task).
+ * All controllers use AppError subclasses — the globalErrorHandler is the
+ * single place that maps these to HTTP responses.
  */
 export interface ErrorResponse {
   error: string;

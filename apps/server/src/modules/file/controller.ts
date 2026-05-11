@@ -4,6 +4,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { env } from "../../env.js";
 import { prisma } from "../../shared/prisma.js";
 import {
+  AppError,
   ForbiddenError,
   NotFoundError,
   UnauthorizedError,
@@ -90,8 +91,8 @@ export class FileController {
         throw new ValidationError("File content does not match the declared file type");
       }
     } catch (err) {
-      // Re-throw AppErrors (e.g. ValidationError from magic-byte mismatch)
-      if (err instanceof ValidationError) throw err;
+      // Re-throw any AppError (e.g. ValidationError from magic-byte mismatch)
+      if (err instanceof AppError) throw err;
       // If S3 read fails, log but don't block — the consistency check above still passed
       request.log.warn(
         { err, objectName: input.objectName },
