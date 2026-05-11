@@ -99,7 +99,7 @@ export const routes: RouteConfig[] = [
   // ═══════════════════════════════════════════════════════════════
   r("POST", "auth/2fa/backup-codes", "/auth/2fa/backup-codes", { auth: true }),
   r("POST", "auth/2fa/disable", "/auth/2fa/disable", { auth: true }),
-  r("POST", "auth/2fa/login", "/auth/2fa/login", { auth: true, clientHeaders: true }),
+  r("POST", "auth/2fa/login", "/auth/2fa/login", { cookie: false, clientHeaders: true }),
   r("POST", "auth/2fa/setup", "/auth/2fa/setup", { auth: true }),
   r("GET", "auth/2fa/status", "/auth/2fa/status", { auth: true }),
   r("POST", "auth/2fa/verify-setup", "/auth/2fa/verify-setup", { auth: true }),
@@ -122,13 +122,13 @@ export const routes: RouteConfig[] = [
   r("PUT", "auth/providers/manage/:id", "/auth/providers/:id", { auth: true }),
   r("DELETE", "auth/providers/manage/:id", "/auth/providers/:id", { auth: true }),
   r("GET", "auth/providers/:provider/authorize", "/auth/providers/:provider/authorize", {
-    auth: true,
+    cookie: false,
     forwardedHost: true,
     query: true,
     redirect: true,
   }),
   r("GET", "auth/providers/:provider/callback", "/auth/providers/:provider/callback", {
-    auth: true,
+    cookie: false,
     forwardedHost: true,
     query: true,
     redirect: true,
@@ -137,7 +137,11 @@ export const routes: RouteConfig[] = [
   r("GET", "auth/providers/all", "/auth/providers/all", { auth: true }),
   r("PUT", "auth/providers/order", "/auth/providers/order", { auth: true }),
   // 2-seg
-  r("GET", "auth/providers", "/auth/providers", { auth: true, forwardedHost: true, query: true }),
+  r("GET", "auth/providers", "/auth/providers", {
+    cookie: false,
+    forwardedHost: true,
+    query: true,
+  }),
   r("POST", "auth/providers", "/auth/providers", { auth: true }),
 
   // ═══════════════════════════════════════════════════════════════
@@ -352,8 +356,8 @@ export const routes: RouteConfig[] = [
   // SHARES — 4-seg (static [2] before dynamic where applicable)
   // ═══════════════════════════════════════════════════════════════
   r("POST", "shares/alias/create/:shareId", "/shares/:shareId/alias"),
-  r("GET", "shares/alias/get/:alias", "/shares/alias/:alias"),
-  r("POST", "shares/alias/:alias/access", "/shares/alias/:alias/access"),
+  r("GET", "shares/alias/get/:alias", "/shares/alias/:alias", { cookie: false }),
+  r("POST", "shares/alias/:alias/access", "/shares/alias/:alias/access", { cookie: false }),
   r("POST", "shares/files/add/:shareId", "/shares/:shareId/items", { bodyTransform: wrapFiles }),
   r("DELETE", "shares/files/remove/:shareId", "/shares/:shareId/items", {
     bodyTransform: wrapFiles,
@@ -373,8 +377,8 @@ export const routes: RouteConfig[] = [
   // SHARES — 3-seg (static [1] before dynamic :shareId)
   // ═══════════════════════════════════════════════════════════════
   r("DELETE", "shares/delete/:id", "/shares/:id"),
-  r("GET", "shares/details/:shareId", "/shares/:shareId"),
-  r("POST", "shares/:shareId/access", "/shares/:shareId/access"),
+  r("GET", "shares/details/:shareId", "/shares/:shareId", { cookie: false }),
+  r("POST", "shares/:shareId/access", "/shares/:shareId/access", { cookie: false }),
 
   // ═══════════════════════════════════════════════════════════════
   // SHARES — 2-seg

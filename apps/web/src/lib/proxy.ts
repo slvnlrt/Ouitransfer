@@ -15,6 +15,67 @@ import { getClientHeaders } from "./proxy-utils";
 
 const API_BASE_URL = (process.env.API_BASE_URL || "http://localhost:3333").replace(/\/+$/, "");
 
+/**
+ * Well-known OAuth provider hostnames. Extended at runtime by
+ * OAUTH_ALLOWED_REDIRECT_HOSTS env var for custom OIDC providers
+ * (e.g. Keycloak, Auth0).
+ */
+const BUILTIN_OAUTH_HOSTS = new Set([
+  "accounts.google.com",
+  "github.com",
+  "gitlab.com",
+  "login.microsoftonline.com",
+  "discord.com",
+  "accounts.spotify.com",
+]);
+
+function getAllowedRedirectHosts(): Set<string> {
+  const hosts = new Set(BUILTIN_OAUTH_HOSTS);
+  const envHosts = process.env.OAUTH_ALLOWED_REDIRECT_HOSTS;
+  if (envHosts) {
+    for (const h of envHosts.split(",")) {
+      const trimmed = h.trim().toLowerCase();
+      if (trimmed) hosts.add(trimmed);
+    }
+  }
+  return hosts;
+}
+
+/**
+ * Validate that a redirect URL is safe:
+ * - Relative URLs (starting with "/" but not "//") are always allowed
+ * - Same-origin URLs are allowed
+ * - Known OAuth provider hostnames (built-in + env OAUTH_ALLOWED_REDIRECT_HOSTS) are allowed
+ * - Everything else is blocked
+ */
+export function isAllowedRedirectUrl(location: string, requestUrl: string): boolean {
+  // Relative URLs are safe (same-origin implied by browser)
+  if (location.startsWith("/") && !location.startsWith("//")) {
+    return true;
+  }
+
+  try {
+    const locationUrl = new URL(location);
+    const reqUrl = new URL(requestUrl);
+
+    // Same-origin check
+    if (locationUrl.origin === reqUrl.origin) {
+      return true;
+    }
+
+    // Known OAuth provider (built-in + env)
+    const allowedHosts = getAllowedRedirectHosts();
+    if (allowedHosts.has(locationUrl.hostname.toLowerCase())) {
+      return true;
+    }
+
+    return false;
+  } catch {
+    // Malformed URL
+    return false;
+  }
+}
+
 interface MatchResult {
   config: RouteConfig;
   params: Record<string, string>;
@@ -325,7 +386,10 @@ export async function handleProxyRequest(
     if (config.redirect && apiRes.status >= 300 && apiRes.status < 400) {
       const location = apiRes.headers.get("location");
       if (location) {
-        // Resolve relative URLs against the request URL and preserve original status
+        if (!isAllowedRedirectUrl(location, req.url)) {
+          logger.error(`Proxy blocked suspicious redirect to: ${location}`);
+          return NextResponse.json({ error: "Invalid redirect target" }, { status: 502 });
+        }
         const absoluteUrl = new URL(location, req.url).toString();
         const response = new NextResponse(null, {
           status: apiRes.status,
