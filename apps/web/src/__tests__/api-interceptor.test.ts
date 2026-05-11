@@ -5,6 +5,7 @@ import apiInstance, {
   __resetRedirectingForTest,
   AUTH_API_PREFIXES,
   REDIRECT_SAFETY_TIMEOUT_MS,
+  setRefreshToken,
 } from "@/config/api";
 
 describe("401 response interceptor", () => {
@@ -159,6 +160,144 @@ describe("401 response interceptor", () => {
     await expect(apiInstance.get("/api/protected")).rejects.toThrow();
 
     // /loginadmin is NOT a public path, so redirect should happen
+    expect(locationHrefSetter).toHaveBeenCalledWith("/login?reason=session_expired");
+  });
+});
+
+describe("401 interceptor — refresh token flow (I-1)", () => {
+  let mock: MockAdapter;
+  let rawAxiosMock: MockAdapter;
+  const locationHrefSetter = vi.fn();
+
+  // We need to mock BOTH the apiInstance (for the original request)
+  // AND the default axios instance (for the refresh call which uses raw axios).
+  // Import the default axios used in api.ts for raw refresh calls.
+  let rawAxios: typeof import("axios").default;
+
+  beforeEach(async () => {
+    const axiosModule = await import("axios");
+    rawAxios = axiosModule.default;
+
+    mock = new MockAdapter(apiInstance);
+    rawAxiosMock = new MockAdapter(rawAxios);
+    __resetRedirectingForTest();
+    setRefreshToken(null);
+    vi.useFakeTimers();
+
+    Object.defineProperty(window, "location", {
+      value: { pathname: "/dashboard", href: "http://localhost/dashboard" },
+      writable: true,
+      configurable: true,
+    });
+    Object.defineProperty(window.location, "href", {
+      get: () => "http://localhost/dashboard",
+      set: locationHrefSetter,
+      configurable: true,
+    });
+  });
+
+  afterEach(() => {
+    mock.restore();
+    rawAxiosMock.restore();
+    vi.useRealTimers();
+    locationHrefSetter.mockClear();
+    setRefreshToken(null);
+  });
+
+  it("401 → successful refresh → retries original request", async () => {
+    setRefreshToken("old-refresh-token");
+
+    // First call to /api/files returns 401, retry returns 200
+    let callCount = 0;
+    mock.onGet("/api/files").reply(() => {
+      callCount++;
+      if (callCount === 1) return [401];
+      return [200, { files: ["a.txt"] }];
+    });
+
+    // The refresh endpoint (called via raw axios) returns a new token
+    rawAxiosMock.onPost("/api/auth/refresh").reply(200, { refreshToken: "new-refresh-token" });
+
+    const res = await apiInstance.get("/api/files");
+    expect(res.status).toBe(200);
+    expect(res.data.files).toEqual(["a.txt"]);
+    expect(locationHrefSetter).not.toHaveBeenCalled();
+  });
+
+  it("401 → failed refresh → redirects to login", async () => {
+    setRefreshToken("bad-refresh-token");
+
+    mock.onGet("/api/files").reply(401);
+    rawAxiosMock.onPost("/api/auth/refresh").reply(401, { error: "Invalid refresh token" });
+
+    await expect(apiInstance.get("/api/files")).rejects.toThrow();
+    expect(locationHrefSetter).toHaveBeenCalledWith("/login?reason=session_expired");
+  });
+
+  it("concurrent 401s → only one refresh attempt (mutex)", async () => {
+    setRefreshToken("shared-refresh-token");
+
+    let refreshCallCount = 0;
+    rawAxiosMock.onPost("/api/auth/refresh").reply(() => {
+      refreshCallCount++;
+      return [200, { refreshToken: "new-token" }];
+    });
+
+    // Both endpoints: first call returns 401, retry (after refresh) returns 200
+    let fileCallCount = 0;
+    mock.onGet("/api/files").reply(() => {
+      fileCallCount++;
+      if (fileCallCount === 1) return [401];
+      return [200, { files: [] }];
+    });
+
+    let folderCallCount = 0;
+    mock.onGet("/api/folders").reply(() => {
+      folderCallCount++;
+      if (folderCallCount === 1) return [401];
+      return [200, { folders: [] }];
+    });
+
+    const results = await Promise.allSettled([
+      apiInstance.get("/api/files"),
+      apiInstance.get("/api/folders"),
+    ]);
+
+    // Both should succeed via retry after refresh
+    const fulfilled = results.filter((r) => r.status === "fulfilled");
+    expect(fulfilled.length).toBe(2);
+
+    // The critical assertion: only ONE refresh request was made (mutex deduplication)
+    expect(refreshCallCount).toBe(1);
+    expect(locationHrefSetter).not.toHaveBeenCalled();
+  });
+
+  it("refresh endpoint 401 → no infinite loop, redirects to login", async () => {
+    setRefreshToken("token-that-fails");
+
+    mock.onGet("/api/files").reply(401);
+    // Refresh endpoint itself returns 401
+    rawAxiosMock.onPost("/api/auth/refresh").reply(401, { error: "Token expired" });
+
+    await expect(apiInstance.get("/api/files")).rejects.toThrow();
+
+    // Should redirect to login, NOT loop forever
+    expect(locationHrefSetter).toHaveBeenCalledWith("/login?reason=session_expired");
+    // Only one redirect despite the chain of 401s
+    expect(locationHrefSetter).toHaveBeenCalledTimes(1);
+  });
+
+  it("no in-memory token → still attempts refresh (OIDC cookie), fails → redirects", async () => {
+    // refreshTokenValue is null (OIDC user — refresh token is in httpOnly cookie only)
+    setRefreshToken(null);
+
+    mock.onGet("/api/files").reply(401);
+    // The raw axios POST won't have a cookie in test env, so this simulates cookie-only flow failing
+    rawAxiosMock.onPost("/api/auth/refresh").reply(401, { error: "Missing refresh token" });
+
+    await expect(apiInstance.get("/api/files")).rejects.toThrow();
+
+    // Attempted refresh (via cookie) failed → redirect
     expect(locationHrefSetter).toHaveBeenCalledWith("/login?reason=session_expired");
   });
 });

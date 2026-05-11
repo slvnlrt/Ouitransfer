@@ -1,3 +1,5 @@
+import type { AuditLog } from "@prisma/client";
+
 import { prisma } from "../../shared/prisma.js";
 
 export type AuditAction =
@@ -36,7 +38,7 @@ export async function getAuditLogs(params: {
   action?: string;
   limit?: number;
   offset?: number;
-}): Promise<{ logs: Array<Record<string, unknown>>; total: number }> {
+}): Promise<{ logs: AuditLog[]; total: number }> {
   const where = {
     ...(params.userId ? { userId: params.userId } : {}),
     ...(params.action ? { action: params.action } : {}),
@@ -52,5 +54,5 @@ export async function getAuditLogs(params: {
     prisma.auditLog.count({ where }),
   ]);
 
-  return { logs: logs as unknown as Array<Record<string, unknown>>, total };
+  return { logs, total };
 }

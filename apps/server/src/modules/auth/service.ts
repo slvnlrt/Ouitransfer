@@ -173,7 +173,7 @@ export class AuthService {
     }
   }
 
-  async resetPassword(token: string, newPassword: string) {
+  async resetPassword(token: string, newPassword: string): Promise<{ userId: string }> {
     const passwordAuthEnabled = await this.configService.getValue("passwordAuthEnabled");
     if (passwordAuthEnabled === "false") {
       throw new ForbiddenError(
@@ -215,6 +215,8 @@ export class AuthService {
     invalidateTokenVersionCache(resetRequest.userId);
     // Also revoke all refresh tokens — password was just changed
     await revokeAllUserTokens(resetRequest.userId);
+
+    return { userId: resetRequest.userId };
   }
 
   async getUserById(userId: string) {

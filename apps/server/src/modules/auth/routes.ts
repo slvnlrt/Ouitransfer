@@ -359,9 +359,14 @@ export async function authRoutes(app: FastifyInstance) {
         operationId: "refreshToken",
         summary: "Refresh Access Token",
         description:
-          "Exchange a valid refresh token for a new access token + refresh token pair (rotation)",
+          "Exchange a valid refresh token for a new access token + refresh token pair (rotation). " +
+          "The refresh token can be provided in the request body OR via the refresh_token httpOnly cookie (set by OIDC callback).",
         body: z.object({
-          refreshToken: z.string().min(1).describe("The refresh token to exchange"),
+          refreshToken: z
+            .string()
+            .min(1)
+            .optional()
+            .describe("The refresh token to exchange (optional if refresh_token cookie is set)"),
         }),
         response: {
           200: z.object({
@@ -372,7 +377,14 @@ export async function authRoutes(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const { refreshToken } = request.body as { refreshToken: string };
+      const body = request.body as { refreshToken?: string };
+      // Accept refresh token from body (password login) or cookie (OIDC login)
+      const refreshToken =
+        body.refreshToken || (request.cookies as Record<string, string>).refresh_token;
+
+      if (!refreshToken) {
+        return reply.status(401).send({ error: "Missing refresh token" });
+      }
 
       const result = await rotateRefreshToken(refreshToken);
 
@@ -383,11 +395,22 @@ export async function authRoutes(app: FastifyInstance) {
         tokenVersion: result.tokenVersion,
       });
 
+      const isSecure = env.SECURE_SITE === "true";
+
       reply.setCookie("token", accessToken, {
         httpOnly: true,
         path: "/",
-        secure: env.SECURE_SITE === "true",
-        sameSite: env.SECURE_SITE === "true" ? "lax" : "strict",
+        secure: isSecure,
+        sameSite: isSecure ? "lax" : "strict",
+      });
+
+      // Also update the refresh_token cookie for OIDC users (or any cookie-based consumer)
+      reply.setCookie("refresh_token", result.refreshToken, {
+        httpOnly: true,
+        secure: isSecure,
+        sameSite: "lax",
+        path: "/api/auth/refresh",
+        maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
       });
 
       return reply.send({ refreshToken: result.refreshToken });

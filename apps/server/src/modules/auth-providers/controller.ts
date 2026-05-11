@@ -1,7 +1,9 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
+import { env } from "../../env.js";
 import { NotFoundError, ValidationError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
+import { createRefreshToken } from "../auth/refresh-token.service.js";
 import { ConfigService } from "../config/service.js";
 import type { CreateAuthProviderInput } from "./dto.js";
 import { UpdateAuthProviderSchema, UpdateOfficialProviderSchema } from "./dto.js";
@@ -15,7 +17,7 @@ import type {
   UpdateProvidersOrderRequest,
 } from "./types.js";
 
-const COOKIE_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
+const COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // seconds (@fastify/cookie maxAge is in seconds)
 
 const ERROR_MESSAGES = {
   ENDPOINTS_INCOMPLETE:
@@ -350,6 +352,21 @@ export class AuthProvidersController {
       });
 
       this.setAuthCookie(reply, jwt, request.protocol === "https");
+
+      // Issue a refresh token as an httpOnly cookie so OIDC users
+      // can renew their 15-minute access token without re-authenticating.
+      const userAgent = request.headers["user-agent"] || "";
+      const ipAddress = request.ip || request.socket.remoteAddress || "";
+      const refreshToken = await createRefreshToken(result.user.id, userAgent, ipAddress);
+
+      const isSecure = env.SECURE_SITE === "true";
+      reply.setCookie("refresh_token", refreshToken, {
+        httpOnly: true,
+        secure: isSecure,
+        sameSite: "lax",
+        path: "/api/auth/refresh",
+        maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+      });
 
       const redirectUrl = result.redirectUrl || "/dashboard";
       const fullRedirectUrl = redirectUrl.startsWith("http")

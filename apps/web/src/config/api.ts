@@ -94,18 +94,25 @@ const REDIRECT_SAFETY_TIMEOUT_MS = 5000;
 /**
  * Attempt to refresh the access token using the stored refresh token.
  * Returns true if refresh succeeded, false otherwise.
+ *
+ * The refresh token may come from:
+ * 1. In-memory `refreshTokenValue` (set after password-based login)
+ * 2. An httpOnly `refresh_token` cookie (set by OIDC callback)
+ *
+ * For case 2, the cookie is sent automatically by the browser — we still
+ * send the body field if available so the server checks both sources.
  */
 async function attemptTokenRefresh(): Promise<boolean> {
-  const token = refreshTokenValue;
-  if (!token) return false;
-
   try {
-    // Use raw axios to avoid interceptor loops
-    const res = await axios.post(
-      "/api/auth/refresh",
-      { refreshToken: token },
-      { withCredentials: true },
-    );
+    // Use raw axios to avoid interceptor loops.
+    // Send the in-memory token in the body if available; for OIDC users
+    // the httpOnly cookie will be sent automatically via withCredentials.
+    const body: Record<string, string> = {};
+    if (refreshTokenValue) {
+      body.refreshToken = refreshTokenValue;
+    }
+
+    const res = await axios.post("/api/auth/refresh", body, { withCredentials: true });
     const newRefreshToken = res.data?.refreshToken;
     if (newRefreshToken) {
       refreshTokenValue = newRefreshToken;

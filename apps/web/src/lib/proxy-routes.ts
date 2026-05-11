@@ -123,7 +123,7 @@ export const routes: RouteConfig[] = [
   r("POST", "auth/login", "/auth/login", { cookie: false, clientHeaders: true }),
   r("POST", "auth/logout", "/auth/logout"),
   r("GET", "auth/me", "/auth/me"),
-  r("POST", "auth/refresh", "/auth/refresh", { cookie: false }),
+  r("POST", "auth/refresh", "/auth/refresh", { clientHeaders: true }),
   r("POST", "auth/reset-password", "/auth/reset-password", { cookie: false }),
 
   // ═══════════════════════════════════════════════════════════════

@@ -12,7 +12,7 @@ import {
   type LoginInput,
   RequestPasswordResetSchema,
 } from "./dto.js";
-import { createRefreshToken } from "./refresh-token.service.js";
+import { createRefreshToken, revokeAllUserTokens } from "./refresh-token.service.js";
 import { AuthService } from "./service.js";
 
 export class AuthController {
@@ -140,6 +140,14 @@ export class AuthController {
     }
 
     reply.clearCookie("token", { path: "/" });
+    reply.clearCookie("refresh_token", { path: "/api/auth/refresh" });
+
+    // Revoke all refresh tokens for this user so stolen tokens cannot be reused
+    if (userId) {
+      revokeAllUserTokens(userId).catch((err) =>
+        getLogger().error({ err }, "Failed to revoke refresh tokens on logout"),
+      );
+    }
 
     // Audit logout (fire-and-forget)
     logAuditEvent({
@@ -165,11 +173,11 @@ export class AuthController {
     const input = schema.parse(request.body);
     const { userAgent, ipAddress } = this.getClientInfo(request);
 
-    await this.authService.resetPassword(input.token, input.password);
+    const { userId } = await this.authService.resetPassword(input.token, input.password);
 
-    // Audit password reset (fire-and-forget — userId not easily available here
-    // since the reset is token-based; log without userId)
+    // Audit password reset (fire-and-forget)
     logAuditEvent({
+      userId,
       action: "PASSWORD_RESET",
       ipAddress,
       userAgent,
