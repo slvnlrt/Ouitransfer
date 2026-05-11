@@ -4,6 +4,8 @@ import {
   isResponseSerializationError,
 } from "fastify-type-provider-zod";
 
+import { AppError } from "./app-error.js";
+
 /**
  * Standard error response shape returned by all error paths.
  * Controllers that manually return errors should also follow this shape
@@ -142,6 +144,19 @@ export function globalErrorHandler(
   request.log.error({ err: error }, "Request error");
 
   let response: ErrorResponse;
+
+  // 0. AppError — domain errors from controllers/services (most common path)
+  // Convention: AppError messages are always client-safe.
+  if (error instanceof AppError) {
+    response = {
+      error: error.message,
+      code: error.code,
+      statusCode: error.statusCode,
+      ...(error.details ? { details: error.details } : {}),
+    };
+    reply.status(response.statusCode).send(response);
+    return;
+  }
 
   // 1. Zod validation errors (from fastify-type-provider-zod)
   if (hasZodFastifySchemaValidationErrors(error)) {

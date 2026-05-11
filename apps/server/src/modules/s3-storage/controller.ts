@@ -15,6 +15,7 @@ import path from "node:path";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { S3StorageProvider } from "../../providers/s3-storage.provider.js";
 import { prisma } from "../../shared/prisma.js";
+import { ForbiddenError, UnauthorizedError, ValidationError } from "../../utils/app-error.js";
 
 export class S3StorageController {
   private storageProvider = new S3StorageProvider();
@@ -24,55 +25,50 @@ export class S3StorageController {
    * Client uploads directly to S3 (Garage)
    */
   async getUploadUrl(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const userId = request.user?.userId;
+    const userId = request.user?.userId;
 
-      if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized" });
-      }
-
-      const { objectName, expires } = request.body as { objectName: string; expires?: number };
-
-      if (!objectName) {
-        return reply.status(400).send({ error: "objectName is required" });
-      }
-
-      // Reject path traversal attempts
-      if (objectName.includes("..") || objectName.includes("\0")) {
-        return reply.status(400).send({ error: "Invalid object name" });
-      }
-      const normalized = path.posix.normalize(objectName);
-      if (!normalized.startsWith(`${userId}/`)) {
-        return reply.status(403).send({ error: "Forbidden: you do not own this file." });
-      }
-
-      const expiresIn = expires || 3600; // 1 hour default
-
-      // Import storage config to check if using internal or external S3
-      const { isInternalStorage } = await import("../../config/storage.config.js");
-
-      let uploadUrl: string;
-
-      if (isInternalStorage) {
-        // Internal storage: Use frontend proxy (much simpler!)
-        uploadUrl = `/api/files/upload?objectName=${encodeURIComponent(objectName)}`;
-      } else {
-        // External S3: Use presigned URLs directly (more efficient)
-        uploadUrl = await this.storageProvider.getPresignedPutUrl(objectName, expiresIn);
-      }
-
-      return reply.status(200).send({
-        uploadUrl,
-        objectName,
-        expiresIn,
-        message: isInternalStorage
-          ? "Upload via backend proxy"
-          : "Upload directly to this URL using PUT request",
-      });
-    } catch (error) {
-      request.log.error({ err: error }, "[S3] Error generating upload URL");
-      return reply.status(500).send({ error: "Failed to generate upload URL" });
+    if (!userId) {
+      throw new UnauthorizedError();
     }
+
+    const { objectName, expires } = request.body as { objectName: string; expires?: number };
+
+    if (!objectName) {
+      throw new ValidationError("objectName is required");
+    }
+
+    // Reject path traversal attempts
+    if (objectName.includes("..") || objectName.includes("\0")) {
+      throw new ValidationError("Invalid object name");
+    }
+    const normalized = path.posix.normalize(objectName);
+    if (!normalized.startsWith(`${userId}/`)) {
+      throw new ForbiddenError("Forbidden: you do not own this file.");
+    }
+
+    const expiresIn = expires || 3600; // 1 hour default
+
+    // Import storage config to check if using internal or external S3
+    const { isInternalStorage } = await import("../../config/storage.config.js");
+
+    let uploadUrl: string;
+
+    if (isInternalStorage) {
+      // Internal storage: Use frontend proxy (much simpler!)
+      uploadUrl = `/api/files/upload?objectName=${encodeURIComponent(objectName)}`;
+    } else {
+      // External S3: Use presigned URLs directly (more efficient)
+      uploadUrl = await this.storageProvider.getPresignedPutUrl(objectName, expiresIn);
+    }
+
+    return reply.status(200).send({
+      uploadUrl,
+      objectName,
+      expiresIn,
+      message: isInternalStorage
+        ? "Upload via backend proxy"
+        : "Upload directly to this URL using PUT request",
+    });
   }
 
   /**
@@ -81,69 +77,58 @@ export class S3StorageController {
    * For external S3: Uses presigned URLs directly
    */
   async getDownloadUrl(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const userId = request.user?.userId;
+    const userId = request.user?.userId;
 
-      if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized" });
-      }
-
-      const { objectName, expires, fileName } = request.query as {
-        objectName: string;
-        expires?: string;
-        fileName?: string;
-      };
-
-      if (!objectName) {
-        return reply.status(400).send({ error: "objectName is required" });
-      }
-
-      // Reject path traversal attempts
-      if (objectName.includes("..") || objectName.includes("\0")) {
-        return reply.status(400).send({ error: "Invalid object name" });
-      }
-      const normalized = path.posix.normalize(objectName);
-      if (!normalized.startsWith(`${userId}/`)) {
-        return reply.status(403).send({ error: "Forbidden: you do not own this file." });
-      }
-
-      // Verify the file exists in the DB and belongs to the authenticated user
-      const file = await prisma.file.findFirst({ where: { objectName, userId } });
-      if (!file) {
-        return reply.status(403).send({ error: "Access denied" });
-      }
-
-      const expiresIn = expires ? parseInt(expires, 10) : 3600;
-
-      // Import storage config to check if using internal or external S3
-      const { isInternalStorage } = await import("../../config/storage.config.js");
-
-      let downloadUrl: string;
-
-      if (isInternalStorage) {
-        // Internal storage: Use frontend proxy (much simpler!)
-        downloadUrl = `/api/files/download?objectName=${encodeURIComponent(objectName)}`;
-      } else {
-        // External S3: Use presigned URLs directly (more efficient)
-        downloadUrl = await this.storageProvider.getPresignedGetUrl(
-          objectName,
-          expiresIn,
-          fileName,
-        );
-      }
-
-      return reply.status(200).send({
-        downloadUrl,
-        objectName,
-        expiresIn,
-        message: isInternalStorage
-          ? "Download via backend proxy"
-          : "Download directly from this URL",
-      });
-    } catch (error) {
-      request.log.error({ err: error }, "[S3] Error generating download URL");
-      return reply.status(500).send({ error: "Failed to generate download URL" });
+    if (!userId) {
+      throw new UnauthorizedError();
     }
+
+    const { objectName, expires, fileName } = request.query as {
+      objectName: string;
+      expires?: string;
+      fileName?: string;
+    };
+
+    if (!objectName) {
+      throw new ValidationError("objectName is required");
+    }
+
+    // Reject path traversal attempts
+    if (objectName.includes("..") || objectName.includes("\0")) {
+      throw new ValidationError("Invalid object name");
+    }
+    const normalized = path.posix.normalize(objectName);
+    if (!normalized.startsWith(`${userId}/`)) {
+      throw new ForbiddenError("Forbidden: you do not own this file.");
+    }
+
+    // Verify the file exists in the DB and belongs to the authenticated user
+    const file = await prisma.file.findFirst({ where: { objectName, userId } });
+    if (!file) {
+      throw new ForbiddenError("Access denied");
+    }
+
+    const expiresIn = expires ? parseInt(expires, 10) : 3600;
+
+    // Import storage config to check if using internal or external S3
+    const { isInternalStorage } = await import("../../config/storage.config.js");
+
+    let downloadUrl: string;
+
+    if (isInternalStorage) {
+      // Internal storage: Use frontend proxy (much simpler!)
+      downloadUrl = `/api/files/download?objectName=${encodeURIComponent(objectName)}`;
+    } else {
+      // External S3: Use presigned URLs directly (more efficient)
+      downloadUrl = await this.storageProvider.getPresignedGetUrl(objectName, expiresIn, fileName);
+    }
+
+    return reply.status(200).send({
+      downloadUrl,
+      objectName,
+      expiresIn,
+      message: isInternalStorage ? "Download via backend proxy" : "Download directly from this URL",
+    });
   }
 
   /**
@@ -151,105 +136,90 @@ export class S3StorageController {
    * Receives file and uploads to S3
    */
   async upload(_request: FastifyRequest, reply: FastifyReply) {
-    try {
-      // For large files, clients should use presigned URLs
-      // This is just for backward compatibility or small files
+    // For large files, clients should use presigned URLs
+    // This is just for backward compatibility or small files
 
-      return reply.status(501).send({
-        error: "Not implemented",
-        message: "Use getUploadUrl endpoint for efficient uploads",
-      });
-    } catch (error) {
-      _request.log.error({ err: error }, "[S3] Error in upload");
-      return reply.status(500).send({ error: "Upload failed" });
-    }
+    return reply.status(501).send({
+      error: "Not implemented",
+      message: "Use getUploadUrl endpoint for efficient uploads",
+    });
   }
 
   /**
    * Delete object from S3
    */
   async deleteObject(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const userId = request.user?.userId;
+    const userId = request.user?.userId;
 
-      if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized" });
-      }
-
-      const { objectName } = request.params as { objectName: string };
-
-      if (!objectName) {
-        return reply.status(400).send({ error: "objectName is required" });
-      }
-
-      // Reject path traversal attempts
-      if (objectName.includes("..") || objectName.includes("\0")) {
-        return reply.status(400).send({ error: "Invalid object name" });
-      }
-      const normalized = path.posix.normalize(objectName);
-      if (!normalized.startsWith(`${userId}/`)) {
-        return reply.status(403).send({ error: "Forbidden: you do not own this file." });
-      }
-
-      // Verify the file exists in the DB and belongs to the authenticated user
-      const file = await prisma.file.findFirst({ where: { objectName, userId } });
-      if (!file) {
-        return reply.status(403).send({ error: "Access denied" });
-      }
-
-      await this.storageProvider.deleteObject(objectName);
-
-      return reply.status(200).send({
-        message: "Object deleted successfully",
-        objectName,
-      });
-    } catch (error) {
-      request.log.error({ err: error }, "[S3] Error deleting object");
-      return reply.status(500).send({ error: "Failed to delete object" });
+    if (!userId) {
+      throw new UnauthorizedError();
     }
+
+    const { objectName } = request.params as { objectName: string };
+
+    if (!objectName) {
+      throw new ValidationError("objectName is required");
+    }
+
+    // Reject path traversal attempts
+    if (objectName.includes("..") || objectName.includes("\0")) {
+      throw new ValidationError("Invalid object name");
+    }
+    const normalized = path.posix.normalize(objectName);
+    if (!normalized.startsWith(`${userId}/`)) {
+      throw new ForbiddenError("Forbidden: you do not own this file.");
+    }
+
+    // Verify the file exists in the DB and belongs to the authenticated user
+    const file = await prisma.file.findFirst({ where: { objectName, userId } });
+    if (!file) {
+      throw new ForbiddenError("Access denied");
+    }
+
+    await this.storageProvider.deleteObject(objectName);
+
+    return reply.status(200).send({
+      message: "Object deleted successfully",
+      objectName,
+    });
   }
 
   /**
    * Check if object exists
    */
   async checkExists(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const userId = request.user?.userId;
+    const userId = request.user?.userId;
 
-      if (!userId) {
-        return reply.status(401).send({ error: "Unauthorized" });
-      }
-
-      const { objectName } = request.query as { objectName: string };
-
-      if (!objectName) {
-        return reply.status(400).send({ error: "objectName is required" });
-      }
-
-      // Reject path traversal attempts
-      if (objectName.includes("..") || objectName.includes("\0")) {
-        return reply.status(400).send({ error: "Invalid object name" });
-      }
-      const normalized = path.posix.normalize(objectName);
-      if (!normalized.startsWith(`${userId}/`)) {
-        return reply.status(403).send({ error: "Forbidden: you do not own this file." });
-      }
-
-      // Verify the file exists in the DB and belongs to the authenticated user
-      const file = await prisma.file.findFirst({ where: { objectName, userId } });
-      if (!file) {
-        return reply.status(403).send({ error: "Access denied" });
-      }
-
-      const exists = await this.storageProvider.fileExists(objectName);
-
-      return reply.status(200).send({
-        exists,
-        objectName,
-      });
-    } catch (error) {
-      request.log.error({ err: error }, "[S3] Error checking existence");
-      return reply.status(500).send({ error: "Failed to check existence" });
+    if (!userId) {
+      throw new UnauthorizedError();
     }
+
+    const { objectName } = request.query as { objectName: string };
+
+    if (!objectName) {
+      throw new ValidationError("objectName is required");
+    }
+
+    // Reject path traversal attempts
+    if (objectName.includes("..") || objectName.includes("\0")) {
+      throw new ValidationError("Invalid object name");
+    }
+    const normalized = path.posix.normalize(objectName);
+    if (!normalized.startsWith(`${userId}/`)) {
+      throw new ForbiddenError("Forbidden: you do not own this file.");
+    }
+
+    // Verify the file exists in the DB and belongs to the authenticated user
+    const file = await prisma.file.findFirst({ where: { objectName, userId } });
+    if (!file) {
+      throw new ForbiddenError("Access denied");
+    }
+
+    const exists = await this.storageProvider.fileExists(objectName);
+
+    return reply.status(200).send({
+      exists,
+      objectName,
+    });
   }
 }

@@ -9,6 +9,14 @@ import type { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 import { describe, expect, it, vi } from "vitest";
 
 import {
+  AppError,
+  ForbiddenError,
+  GoneError,
+  NotFoundError,
+  UnauthorizedError,
+  ValidationError,
+} from "../utils/app-error.js";
+import {
   type ErrorResponse,
   globalErrorHandler,
   globalNotFoundHandler,
@@ -108,6 +116,100 @@ function makePrismaError(
   if (meta) err.meta = meta;
   return err;
 }
+
+// ---------------------------------------------------------------------------
+// 0. AppError domain errors
+// ---------------------------------------------------------------------------
+
+describe("globalErrorHandler — AppError domain errors", () => {
+  it("returns the correct status code and message for AppError", () => {
+    const request = makeRequest();
+    const reply = makeReply();
+    const error = new AppError(409, "Already exists", "ALREADY_EXISTS");
+
+    invokeErrorHandler(error, request, reply);
+
+    expect(reply.status).toHaveBeenCalledWith(409);
+    const sent = reply.send.mock.calls[0][0] as ErrorResponse;
+    expect(sent.statusCode).toBe(409);
+    expect(sent.code).toBe("ALREADY_EXISTS");
+    expect(sent.error).toBe("Already exists");
+    expect(sent.details).toBeUndefined();
+  });
+
+  it("includes details when present", () => {
+    const request = makeRequest();
+    const reply = makeReply();
+    const error = new ValidationError("Bad input", { fields: ["email"] });
+
+    invokeErrorHandler(error, request, reply);
+
+    expect(reply.status).toHaveBeenCalledWith(400);
+    const sent = reply.send.mock.calls[0][0] as ErrorResponse;
+    expect(sent.statusCode).toBe(400);
+    expect(sent.code).toBe("VALIDATION_ERROR");
+    expect(sent.details).toEqual({ fields: ["email"] });
+  });
+
+  it("handles NotFoundError correctly", () => {
+    const request = makeRequest();
+    const reply = makeReply();
+    const error = new NotFoundError("User not found");
+
+    invokeErrorHandler(error, request, reply);
+
+    expect(reply.status).toHaveBeenCalledWith(404);
+    const sent = reply.send.mock.calls[0][0] as ErrorResponse;
+    expect(sent.code).toBe("NOT_FOUND");
+  });
+
+  it("handles UnauthorizedError correctly", () => {
+    const request = makeRequest();
+    const reply = makeReply();
+    const error = new UnauthorizedError();
+
+    invokeErrorHandler(error, request, reply);
+
+    expect(reply.status).toHaveBeenCalledWith(401);
+    const sent = reply.send.mock.calls[0][0] as ErrorResponse;
+    expect(sent.code).toBe("UNAUTHORIZED");
+  });
+
+  it("handles ForbiddenError correctly", () => {
+    const request = makeRequest();
+    const reply = makeReply();
+    const error = new ForbiddenError("Not allowed");
+
+    invokeErrorHandler(error, request, reply);
+
+    expect(reply.status).toHaveBeenCalledWith(403);
+    const sent = reply.send.mock.calls[0][0] as ErrorResponse;
+    expect(sent.code).toBe("FORBIDDEN");
+  });
+
+  it("handles GoneError correctly", () => {
+    const request = makeRequest();
+    const reply = makeReply();
+    const error = new GoneError("Resource expired");
+
+    invokeErrorHandler(error, request, reply);
+
+    expect(reply.status).toHaveBeenCalledWith(410);
+    const sent = reply.send.mock.calls[0][0] as ErrorResponse;
+    expect(sent.code).toBe("GONE");
+  });
+
+  it("logs the full error via request.log.error", () => {
+    const request = makeRequest();
+    const reply = makeReply();
+    const error = new NotFoundError("Resource not found");
+
+    invokeErrorHandler(error, request, reply);
+
+    expect(request.log.error).toHaveBeenCalledOnce();
+    expect(request.log.error).toHaveBeenCalledWith({ err: error }, "Request error");
+  });
+});
 
 // ---------------------------------------------------------------------------
 // 1. Zod validation errors

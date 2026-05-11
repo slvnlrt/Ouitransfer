@@ -1,5 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
+import { NotFoundError, ValidationError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { ConfigService } from "../config/service.js";
 import type { CreateAuthProviderInput } from "./dto.js";
@@ -55,23 +56,6 @@ export class AuthProvidersController {
     if (data !== undefined) responseBody.data = data;
     if (message) responseBody.message = message;
     return reply.send(responseBody);
-  }
-
-  private sendErrorResponse(reply: FastifyReply, status: number, error: string) {
-    return reply.status(status).send({
-      success: false,
-      error,
-    });
-  }
-
-  private async handleControllerError(reply: FastifyReply, error: unknown, defaultMessage: string) {
-    getLogger().error({ err: error }, `Controller error: ${defaultMessage}`);
-
-    if (error instanceof Error && error.message.includes("Either provide issuerUrl")) {
-      return this.sendErrorResponse(reply, 400, error.message);
-    }
-
-    return this.sendErrorResponse(reply, 500, defaultMessage);
   }
 
   private validateCustomEndpoints(data: {
@@ -176,79 +160,60 @@ export class AuthProvidersController {
   }
 
   async getProviders(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const requestContext = this.buildRequestContext(request);
-      const providers = await this.authProvidersService.getEnabledProviders(requestContext);
-
-      return this.sendSuccessResponse(reply, providers);
-    } catch (error) {
-      return this.handleControllerError(reply, error, "Failed to get auth providers");
-    }
+    const requestContext = this.buildRequestContext(request);
+    const providers = await this.authProvidersService.getEnabledProviders(requestContext);
+    return this.sendSuccessResponse(reply, providers);
   }
 
   async getAllProviders(_request: FastifyRequest, reply: FastifyReply) {
     if (reply.sent) return;
 
-    try {
-      const providers = await this.authProvidersService.getAllProviders();
-      return this.sendSuccessResponse(reply, providers);
-    } catch (error) {
-      return this.handleControllerError(reply, error, "Failed to get providers");
-    }
+    const providers = await this.authProvidersService.getAllProviders();
+    return this.sendSuccessResponse(reply, providers);
   }
 
   async createProvider(request: FastifyRequest, reply: FastifyReply) {
     if (reply.sent) return;
 
-    try {
-      // Body is validated by Fastify's schema (CreateAuthProviderSchema in routes.ts)
-      const data = request.body as CreateAuthProviderInput;
+    // Body is validated by Fastify's schema (CreateAuthProviderSchema in routes.ts)
+    const data = request.body as CreateAuthProviderInput;
 
-      const validationError = this.validateCustomEndpoints(data);
-      if (validationError) {
-        return this.sendErrorResponse(reply, 400, validationError);
-      }
-
-      const provider = await this.authProvidersService.createProvider(data);
-      return this.sendSuccessResponse(reply, provider);
-    } catch (error) {
-      return this.handleControllerError(reply, error, "Failed to create provider");
+    const validationError = this.validateCustomEndpoints(data);
+    if (validationError) {
+      throw new ValidationError(validationError);
     }
+
+    const provider = await this.authProvidersService.createProvider(data);
+    return this.sendSuccessResponse(reply, provider);
   }
 
   async updateProvider(request: FastifyRequest, reply: FastifyReply) {
     if (reply.sent) return;
 
-    try {
-      const { id } = request.params as UpdateProviderRequest["Params"];
-      const data = request.body as Record<string, unknown>;
+    const { id } = request.params as UpdateProviderRequest["Params"];
+    const data = request.body as Record<string, unknown>;
 
-      const existingProvider = await this.authProvidersService.getProviderById(id);
-      if (!existingProvider) {
-        return this.sendErrorResponse(reply, 404, ERROR_MESSAGES.PROVIDER_NOT_FOUND);
-      }
-
-      if (data.enabled === false && existingProvider.enabled === true) {
-        const canDisable = await this.configService.validateAllProvidersDisable();
-        if (!canDisable) {
-          return this.sendErrorResponse(
-            reply,
-            400,
-            "Cannot disable the last authentication provider when password authentication is disabled",
-          );
-        }
-      }
-
-      const isOfficial = this.authProvidersService.isOfficialProvider(existingProvider.name);
-
-      if (isOfficial) {
-        return this.updateOfficialProvider(reply, id, data);
-      }
-
-      return this.updateCustomProvider(reply, id, data);
-    } catch (error) {
-      return this.handleControllerError(reply, error, "Failed to update provider");
+    const existingProvider = await this.authProvidersService.getProviderById(id);
+    if (!existingProvider) {
+      throw new NotFoundError(ERROR_MESSAGES.PROVIDER_NOT_FOUND);
     }
+
+    if (data.enabled === false && existingProvider.enabled === true) {
+      const canDisable = await this.configService.validateAllProvidersDisable();
+      if (!canDisable) {
+        throw new ValidationError(
+          "Cannot disable the last authentication provider when password authentication is disabled",
+        );
+      }
+    }
+
+    const isOfficial = this.authProvidersService.isOfficialProvider(existingProvider.name);
+
+    if (isOfficial) {
+      return this.updateOfficialProvider(reply, id, data);
+    }
+
+    return this.updateCustomProvider(reply, id, data);
   }
 
   private async updateOfficialProvider(
@@ -262,14 +227,17 @@ export class AuthProvidersController {
       const validatedData = UpdateOfficialProviderSchema.parse(data);
 
       if (validatedData.issuerUrl && !this.validateIssuerUrl(validatedData.issuerUrl)) {
-        return this.sendErrorResponse(reply, 400, ERROR_MESSAGES.INVALID_URL);
+        throw new ValidationError(ERROR_MESSAGES.INVALID_URL);
       }
 
       const provider = await this.authProvidersService.updateProvider(id, validatedData);
       return this.sendSuccessResponse(reply, provider);
-    } catch (validationError) {
-      getLogger().error({ err: validationError, data }, "Validation error for official provider");
-      return this.sendErrorResponse(reply, 400, ERROR_MESSAGES.INVALID_DATA);
+    } catch (error) {
+      // Re-throw AppErrors (including ValidationError thrown above)
+      if (error instanceof ValidationError) throw error;
+      // Zod parse errors → validation error
+      getLogger().error({ err: error, data }, "Validation error for official provider");
+      throw new ValidationError(ERROR_MESSAGES.INVALID_DATA);
     }
   }
 
@@ -282,85 +250,73 @@ export class AuthProvidersController {
       const validatedData = UpdateAuthProviderSchema.parse(data);
       const provider = await this.authProvidersService.updateProvider(id, validatedData);
       return this.sendSuccessResponse(reply, provider);
-    } catch (validationError) {
-      getLogger().error({ err: validationError, data }, "Validation error for custom provider");
-      return this.sendErrorResponse(reply, 400, ERROR_MESSAGES.INVALID_DATA);
+    } catch (error) {
+      if (error instanceof ValidationError) throw error;
+      // Zod parse errors → validation error
+      getLogger().error({ err: error, data }, "Validation error for custom provider");
+      throw new ValidationError(ERROR_MESSAGES.INVALID_DATA);
     }
   }
 
   async updateProvidersOrder(request: FastifyRequest, reply: FastifyReply) {
     if (reply.sent) return;
 
-    try {
-      const { providers } = request.body as UpdateProvidersOrderRequest["Body"];
+    const { providers } = request.body as UpdateProvidersOrderRequest["Body"];
 
-      if (!Array.isArray(providers)) {
-        return this.sendErrorResponse(reply, 400, ERROR_MESSAGES.INVALID_PROVIDERS_ARRAY);
-      }
-
-      await this.authProvidersService.updateProvidersOrder(providers);
-      return this.sendSuccessResponse(reply, undefined, "Providers order updated successfully");
-    } catch (error) {
-      return this.handleControllerError(reply, error, "Failed to update providers order");
+    if (!Array.isArray(providers)) {
+      throw new ValidationError(ERROR_MESSAGES.INVALID_PROVIDERS_ARRAY);
     }
+
+    await this.authProvidersService.updateProvidersOrder(providers);
+    return this.sendSuccessResponse(reply, undefined, "Providers order updated successfully");
   }
 
   async deleteProvider(request: FastifyRequest, reply: FastifyReply) {
     if (reply.sent) return;
 
-    try {
-      const { id } = request.params as DeleteProviderRequest["Params"];
+    const { id } = request.params as DeleteProviderRequest["Params"];
 
-      const provider = await this.authProvidersService.getProviderById(id);
-      if (!provider) {
-        return this.sendErrorResponse(reply, 404, ERROR_MESSAGES.PROVIDER_NOT_FOUND);
-      }
-
-      const isOfficial = this.authProvidersService.isOfficialProvider(provider.name);
-      if (isOfficial) {
-        return this.sendErrorResponse(reply, 400, ERROR_MESSAGES.OFFICIAL_CANNOT_DELETE);
-      }
-
-      if (provider.enabled) {
-        const canDisable = await this.configService.validateAllProvidersDisable();
-        if (!canDisable) {
-          return this.sendErrorResponse(
-            reply,
-            400,
-            "Cannot delete the last authentication provider when password authentication is disabled",
-          );
-        }
-      }
-
-      await this.authProvidersService.deleteProvider(id);
-      return this.sendSuccessResponse(reply, undefined, "Provider deleted successfully");
-    } catch (error) {
-      return this.handleControllerError(reply, error, "Failed to delete provider");
+    const provider = await this.authProvidersService.getProviderById(id);
+    if (!provider) {
+      throw new NotFoundError(ERROR_MESSAGES.PROVIDER_NOT_FOUND);
     }
+
+    const isOfficial = this.authProvidersService.isOfficialProvider(provider.name);
+    if (isOfficial) {
+      throw new ValidationError(ERROR_MESSAGES.OFFICIAL_CANNOT_DELETE);
+    }
+
+    if (provider.enabled) {
+      const canDisable = await this.configService.validateAllProvidersDisable();
+      if (!canDisable) {
+        throw new ValidationError(
+          "Cannot delete the last authentication provider when password authentication is disabled",
+        );
+      }
+    }
+
+    await this.authProvidersService.deleteProvider(id);
+    return this.sendSuccessResponse(reply, undefined, "Provider deleted successfully");
   }
 
   async authorize(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const { provider: providerName } = request.params as AuthorizeRequest["Params"];
-      const { state, redirect_uri } = (request.query as AuthorizeRequest["Querystring"]) || {};
+    const { provider: providerName } = request.params as AuthorizeRequest["Params"];
+    const { state, redirect_uri } = (request.query as AuthorizeRequest["Querystring"]) || {};
 
-      const requestContext = this.buildRequestContext(request);
-      const authUrl = await this.authProvidersService.getAuthorizationUrl(
-        providerName,
-        state,
-        redirect_uri,
-        requestContext,
-      );
+    const requestContext = this.buildRequestContext(request);
+    const authUrl = await this.authProvidersService.getAuthorizationUrl(
+      providerName,
+      state,
+      redirect_uri,
+      requestContext,
+    );
 
-      return reply.redirect(authUrl);
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : ERROR_MESSAGES.AUTHORIZATION_FAILED;
-      return this.sendErrorResponse(reply, 400, errorMessage);
-    }
+    return reply.redirect(authUrl);
   }
 
   async callback(request: FastifyRequest<CallbackRequest>, reply: FastifyReply) {
+    // Keep try/catch: callback errors redirect to login page with error params,
+    // they don't return JSON error responses.
     try {
       const { provider: providerName } = request.params;
       const { code, state, error } = request.query;
