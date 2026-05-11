@@ -206,6 +206,8 @@ export async function buildApp() {
     (url) => url.startsWith("/reverse-shares/") && url.endsWith("/register-file"),
     // POST /reverse-shares/:id/check-password
     (url) => url.startsWith("/reverse-shares/") && url.endsWith("/check-password"),
+    // POST /reverse-shares/:id/upload/access (anonymous upload to password-protected reverse share)
+    (url) => url.startsWith("/reverse-shares/") && url.endsWith("/upload/access"),
   ];
 
   app.addHook("onRequest", (request, reply, done) => {

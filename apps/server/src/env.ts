@@ -40,4 +40,10 @@ const envSchema = z.object({
   ENABLE_API_DOCS: z.union([z.literal("true"), z.literal("false")]).optional(),
 });
 
-export const env = envSchema.parse(process.env);
+const refinedEnvSchema = envSchema.refine((data) => data.CSRF_SECRET !== data.JWT_SECRET, {
+  message:
+    "CSRF_SECRET must be different from JWT_SECRET — reusing the same secret for both is a security risk",
+  path: ["CSRF_SECRET"],
+});
+
+export const env = refinedEnvSchema.parse(process.env);
