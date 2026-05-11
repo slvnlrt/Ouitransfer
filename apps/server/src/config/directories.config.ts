@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import * as path from "node:path";
 
 import { IS_RUNNING_IN_CONTAINER } from "../utils/container-detection.js";
+import { sanitizeFilename } from "../utils/sanitize-filename.js";
 
 /**
  * Directory Configuration for OUITRANSFER Server
@@ -46,7 +47,9 @@ export function getUploadsDir(): string {
  * Files are stored directly in temp-uploads with timestamp + random suffix
  */
 export function getTempFilePath(objectName: string): string {
-  const sanitizedName = objectName.replace(/[^a-zA-Z0-9\-_./]/g, "_");
+  // Use the basename of the objectName (strip S3 path prefixes like "userId/...") then sanitize
+  const basename = objectName.split("/").pop() ?? objectName;
+  const sanitizedName = sanitizeFilename(basename);
   const timestamp = Date.now();
   const randomSuffix = crypto.randomUUID().slice(0, 8);
   return path.join(getTempUploadDir(), `${timestamp}-${randomSuffix}-${sanitizedName}.tmp`);

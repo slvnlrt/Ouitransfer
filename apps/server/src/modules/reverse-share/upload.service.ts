@@ -4,6 +4,7 @@ import type { Prisma } from "@prisma/client";
 import { env } from "../../env.js";
 import { prisma } from "../../shared/prisma.js";
 import { getLogger } from "../../utils/logger.js";
+import { sanitizeFilename } from "../../utils/sanitize-filename.js";
 import { EmailService } from "../email/service.js";
 import { FileService } from "../file/service.js";
 import { UserService } from "../user/service.js";
@@ -63,7 +64,7 @@ export class ReverseShareUploadService {
     }
 
     // Generate objectName server-side to prevent path injection / overwrite attacks
-    const sanitizedFilename = filename.replace(/[^a-zA-Z0-9._-]/g, "_").substring(0, 100);
+    const sanitizedFilename = sanitizeFilename(filename);
     const objectName = `reverse-shares/${id}/${Date.now()}-${crypto.randomUUID()}-${sanitizedFilename}.${extension}`;
 
     const expires = env.PRESIGNED_URL_EXPIRATION;
@@ -118,7 +119,7 @@ export class ReverseShareUploadService {
 
     // Generate objectName server-side to prevent path injection / overwrite attacks
     // Use the resolved reverseShare.id (not the alias) as the namespace
-    const sanitizedFilename = filename.replace(/[^a-zA-Z0-9._-]/g, "_").substring(0, 100);
+    const sanitizedFilename = sanitizeFilename(filename);
     const objectName = `reverse-shares/${reverseShare.id}/${Date.now()}-${crypto.randomUUID()}-${sanitizedFilename}.${extension}`;
 
     const expires = env.PRESIGNED_URL_EXPIRATION;

@@ -415,7 +415,13 @@ export function extractFilenameFromContentDisposition(
   // Second pass: fall back to plain filename= (quoted or unquoted)
   const plainMatch = contentDisposition.match(/filename=(?:"([^"]*)"|([^;\s]*))/i);
   const filename = plainMatch ? (plainMatch[1] ?? plainMatch[2] ?? null) : null;
-  return filename ? decodeURIComponent(filename) : null;
+  if (!filename) return null;
+  try {
+    return decodeURIComponent(filename);
+  } catch {
+    // Malformed percent-encoding (e.g. "50%off.pdf") — return raw string
+    return filename;
+  }
 }
 
 /**

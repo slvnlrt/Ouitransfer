@@ -45,4 +45,14 @@ describe("extractFilenameFromContentDisposition (5.17)", () => {
     const header = `attachment; filename*=UTF-8''bad%ZZname.txt; filename="good.txt"`;
     expect(extractFilenameFromContentDisposition(header)).toBe("good.txt");
   });
+
+  it("decodes valid percent-encoded filename= value", () => {
+    const header = `attachment; filename="50%25off.pdf"`;
+    expect(extractFilenameFromContentDisposition(header)).toBe("50%off.pdf");
+  });
+
+  it("returns raw filename string when filename= has malformed percent-encoding", () => {
+    const header = `attachment; filename="50%off.pdf"`;
+    expect(extractFilenameFromContentDisposition(header)).toBe("50%off.pdf");
+  });
 });
