@@ -58,6 +58,7 @@ export async function fileRoutes(app: FastifyInstance) {
           200: z.object({
             url: z.string().describe("The pre-signed URL"),
             objectName: z.string().describe("The object name of the file"),
+            maxFileSize: z.number().describe("Maximum allowed file size in bytes"),
           }),
           400: z.object({ error: z.string().describe("Error message") }),
           401: z.object({ error: z.string().describe("Error message") }),

@@ -262,6 +262,28 @@ export class S3StorageProvider implements StorageProvider {
   }
 
   /**
+   * Read the first N bytes of an S3 object (for magic-byte verification).
+   */
+  async getObjectHead(objectName: string, bytes = 4096): Promise<Buffer> {
+    const client = this.ensureClient();
+
+    const command = new GetObjectCommand({
+      Bucket: bucketName,
+      Key: objectName,
+      Range: `bytes=0-${bytes - 1}`,
+    });
+    const response = await client.send(command);
+    const stream = response.Body;
+    if (!stream) throw new Error("Empty response body from S3");
+    // Collect the stream into a buffer
+    const chunks: Uint8Array[] = [];
+    for await (const chunk of stream as AsyncIterable<Uint8Array>) {
+      chunks.push(chunk);
+    }
+    return Buffer.concat(chunks);
+  }
+
+  /**
    * Abort a multipart upload
    */
   async abortMultipartUpload(objectName: string, uploadId: string): Promise<void> {

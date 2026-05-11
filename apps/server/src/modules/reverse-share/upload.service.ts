@@ -5,6 +5,7 @@ import { env } from "../../env.js";
 import { prisma } from "../../shared/prisma.js";
 import { getLogger } from "../../utils/logger.js";
 import { sanitizeFilename } from "../../utils/sanitize-filename.js";
+import { isMimeTypeConsistent } from "../../utils/validate-file-content.js";
 import { EmailService } from "../email/service.js";
 import { FileService } from "../file/service.js";
 import { UserService } from "../user/service.js";
@@ -171,6 +172,11 @@ export class ReverseShareUploadService {
       }
     }
 
+    // Layer 1: MIME/extension consistency check
+    if (!isMimeTypeConsistent(fileData.mimeType, fileData.extension)) {
+      throw new Error("File type does not match the declared extension");
+    }
+
     // Validate objectName belongs to this reverse share's namespace
     this.validateObjectName(fileData.objectName, reverseShareId);
 
@@ -234,6 +240,11 @@ export class ReverseShareUploadService {
       if (!isValidPassword) {
         throw new Error("Invalid password");
       }
+    }
+
+    // Layer 1: MIME/extension consistency check
+    if (!isMimeTypeConsistent(fileData.mimeType, fileData.extension)) {
+      throw new Error("File type does not match the declared extension");
     }
 
     // Validate objectName belongs to this reverse share's namespace (use reverseShare.id, not alias)

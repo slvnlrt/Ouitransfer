@@ -9,6 +9,7 @@ import {
   parseFileName,
 } from "../../utils/file-name-generator.js";
 import { sanitizeFilename } from "../../utils/sanitize-filename.js";
+import { isMimeTypeConsistent, verifyMagicBytes } from "../../utils/validate-file-content.js";
 import { ConfigService } from "../config/service.js";
 import {
   type CheckFileInput,
@@ -48,7 +49,9 @@ export class FileController {
 
       const url = await this.fileService.getPresignedPutUrl(objectName, expires);
 
-      return reply.status(200).send({ url, objectName });
+      const maxFileSize = Number(await this.configService.getValue("maxFileSize"));
+
+      return reply.status(200).send({ url, objectName, maxFileSize });
     } catch (error) {
       request.log.error({ err: error }, "Error in getPresignedUrl");
       return reply.status(500).send({ error: "Internal server error" });
@@ -65,6 +68,38 @@ export class FileController {
       }
 
       const input: RegisterFileInput = RegisterFileSchema.parse(request.body);
+
+      // Layer 1: MIME/extension consistency check
+      if (!isMimeTypeConsistent(input.mimeType, input.extension)) {
+        return reply.status(400).send({
+          error: "File type does not match the declared extension",
+        });
+      }
+
+      // Layer 2: Magic-byte verification (read first 4 KB from S3)
+      try {
+        const headBuffer = await this.fileService.getObjectHead(input.objectName);
+        const magicResult = await verifyMagicBytes(headBuffer, input.mimeType);
+        if (!magicResult.valid) {
+          request.log.warn(
+            {
+              declared: magicResult.declared,
+              detected: magicResult.detected,
+              objectName: input.objectName,
+            },
+            "Magic-byte mismatch detected",
+          );
+          return reply.status(400).send({
+            error: "File content does not match the declared file type",
+          });
+        }
+      } catch (err) {
+        // If S3 read fails, log but don't block — the consistency check above still passed
+        request.log.warn(
+          { err, objectName: input.objectName },
+          "Magic-byte verification skipped (S3 read failed)",
+        );
+      }
 
       const maxFileSize = BigInt(await this.configService.getValue("maxFileSize"));
       if (BigInt(input.size) > maxFileSize) {

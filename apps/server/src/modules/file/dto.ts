@@ -4,6 +4,7 @@ export const RegisterFileSchema = z.object({
   name: z.string().min(1, "O nome do arquivo é obrigatório"),
   description: z.string().optional(),
   extension: z.string().min(1, "A extensão é obrigatória"),
+  mimeType: z.string().optional().describe("MIME type declared by the client"),
   size: z.number({
     required_error: "O tamanho é obrigatório",
     invalid_type_error: "O tamanho deve ser um número",

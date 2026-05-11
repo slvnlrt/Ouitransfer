@@ -4,6 +4,7 @@ export interface StorageProvider {
   deleteObject(objectName: string): Promise<void>;
   fileExists(objectName: string): Promise<boolean>;
   getObjectStream(objectName: string): Promise<NodeJS.ReadableStream>;
+  getObjectHead(objectName: string, bytes?: number): Promise<Buffer>;
 
   // Multipart upload methods
   createMultipartUpload(objectName: string): Promise<string>;

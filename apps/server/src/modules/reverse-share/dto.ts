@@ -116,6 +116,7 @@ export const UploadToReverseShareSchema = z.object({
   name: z.string().describe("The file name"),
   description: z.string().optional().describe("File description"),
   extension: z.string().describe("The file extension"),
+  mimeType: z.string().optional().describe("MIME type declared by the client"),
   size: z.number().int().positive().describe("The file size in bytes"),
   objectName: z.string().describe("The file object name"),
   uploaderEmail: z.string().email().optional().describe("The uploader email"),

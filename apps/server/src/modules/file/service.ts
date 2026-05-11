@@ -40,6 +40,10 @@ export class FileService {
     }
   }
 
+  async getObjectHead(objectName: string, bytes = 4096): Promise<Buffer> {
+    return await this.storageProvider.getObjectHead(objectName, bytes);
+  }
+
   // Multipart upload methods
   async createMultipartUpload(objectName: string): Promise<string> {
     return await this.storageProvider.createMultipartUpload(objectName);
