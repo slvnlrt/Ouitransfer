@@ -11,6 +11,56 @@ const apiInstance = axios.create({
   timeout: 120000, // 2 minutes timeout for API calls
 });
 
+// ── CSRF Token Management ─────────────────────────────────────
+// The server uses double-submit cookie CSRF protection:
+// 1. GET /api/csrf-token → sets httpOnly _csrf cookie + returns { token }
+// 2. Frontend stores token in memory (not cookie — the cookie is the secret)
+// 3. On state-changing requests, sends token as X-CSRF-Token header
+// 4. Server validates header token against cookie secret
+
+let csrfToken: string | null = null;
+let csrfFetchPromise: Promise<string | null> | null = null;
+
+async function fetchCsrfToken(): Promise<string | null> {
+  // SSR guard — CSRF tokens are browser-only
+  if (typeof window === "undefined") return null;
+
+  try {
+    // Use the raw axios instance to avoid infinite interceptor loops
+    const res = await axios.get("/api/csrf-token", { withCredentials: true });
+    csrfToken = res.data.token;
+    return csrfToken;
+  } catch {
+    return null;
+  }
+}
+
+async function getCsrfToken(): Promise<string | null> {
+  if (csrfToken) return csrfToken;
+  // Deduplicate concurrent fetches
+  if (!csrfFetchPromise) {
+    csrfFetchPromise = fetchCsrfToken().finally(() => {
+      csrfFetchPromise = null;
+    });
+  }
+  return csrfFetchPromise;
+}
+
+// Attach X-CSRF-Token to state-changing requests
+apiInstance.interceptors.request.use(async (config) => {
+  // SSR guard
+  if (typeof window === "undefined") return config;
+
+  const method = config.method?.toUpperCase() ?? "";
+  if (!["GET", "HEAD", "OPTIONS"].includes(method)) {
+    const token = await getCsrfToken();
+    if (token) {
+      config.headers["X-CSRF-Token"] = token;
+    }
+  }
+  return config;
+});
+
 // ── 401 Response Interceptor ──────────────────────────────────
 // Redirects to /login on unauthorized responses.
 // Skips redirect for auth endpoints (which may legitimately return 401)
@@ -31,29 +81,34 @@ const REDIRECT_SAFETY_TIMEOUT_MS = 5000;
 apiInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (
-      axios.isAxiosError(error) &&
-      error.response?.status === 401 &&
-      typeof window !== "undefined" &&
-      !isRedirecting
-    ) {
-      const requestUrl = error.config?.url ?? "";
-      const currentPath = window.location.pathname;
+    if (axios.isAxiosError(error) && typeof window !== "undefined") {
+      const status = error.response?.status;
 
-      const isAuthEndpoint = AUTH_API_PREFIXES.some((prefix) => requestUrl.startsWith(prefix));
-      const isPublicPage = matchesPath(currentPath, publicPaths);
+      // Clear cached CSRF token on 403 (token expired/rotated)
+      if (status === 403) {
+        csrfToken = null;
+      }
 
-      if (!isAuthEndpoint && !isPublicPage) {
-        isRedirecting = true;
+      // Redirect to login on 401
+      if (status === 401 && !isRedirecting) {
+        const requestUrl = error.config?.url ?? "";
+        const currentPath = window.location.pathname;
 
-        // Safety: reset the flag after a timeout in case navigation is blocked
-        // (e.g. beforeunload handler prevents it).
-        setTimeout(() => {
-          isRedirecting = false;
-        }, REDIRECT_SAFETY_TIMEOUT_MS);
+        const isAuthEndpoint = AUTH_API_PREFIXES.some((prefix) => requestUrl.startsWith(prefix));
+        const isPublicPage = matchesPath(currentPath, publicPaths);
 
-        // Hard navigation clears all React state (QueryClient cache, contexts, etc.)
-        window.location.href = "/login?reason=session_expired";
+        if (!isAuthEndpoint && !isPublicPage) {
+          isRedirecting = true;
+
+          // Safety: reset the flag after a timeout in case navigation is blocked
+          // (e.g. beforeunload handler prevents it).
+          setTimeout(() => {
+            isRedirecting = false;
+          }, REDIRECT_SAFETY_TIMEOUT_MS);
+
+          // Hard navigation clears all React state (QueryClient cache, contexts, etc.)
+          window.location.href = "/login?reason=session_expired";
+        }
       }
     }
 

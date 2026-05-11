@@ -4,6 +4,7 @@ import * as OTPAuth from "otpauth";
 import QRCode from "qrcode";
 import { prisma } from "../../shared/prisma.js";
 import { getLogger } from "../../utils/logger.js";
+import { timingSafeEqual } from "../../utils/timing-safe.js";
 
 interface BackupCode {
   code: string;
@@ -133,7 +134,9 @@ export class TwoFactorService {
 
     if (user.twoFactorBackupCodes) {
       const backupCodes: BackupCode[] = JSON.parse(user.twoFactorBackupCodes);
-      const backupCodeIndex = backupCodes.findIndex((bc) => bc.code === token && !bc.used);
+      const backupCodeIndex = backupCodes.findIndex(
+        (bc) => !bc.used && timingSafeEqual(bc.code, token),
+      );
 
       if (backupCodeIndex !== -1) {
         backupCodes[backupCodeIndex].used = true;
@@ -211,7 +214,9 @@ export class TwoFactorService {
     } else if (user.twoFactorBackupCodes) {
       // Try backup code as a fallback
       const backupCodes: BackupCode[] = JSON.parse(user.twoFactorBackupCodes);
-      const backupCodeIndex = backupCodes.findIndex((bc) => bc.code === totpCode && !bc.used);
+      const backupCodeIndex = backupCodes.findIndex(
+        (bc) => !bc.used && timingSafeEqual(bc.code, totpCode),
+      );
 
       if (backupCodeIndex === -1) {
         throw new Error("Invalid verification code");

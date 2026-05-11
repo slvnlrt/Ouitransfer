@@ -157,6 +157,13 @@ function buildRequestHeaders(req: NextRequest, config: RouteConfig): Record<stri
     if (auth) headers.authorization = auth;
   }
 
+  // CSRF token (double-submit pattern — browser sends the header,
+  // the _csrf cookie is forwarded via the cookie block above)
+  const csrfToken = req.headers.get("x-csrf-token");
+  if (csrfToken) {
+    headers["x-csrf-token"] = csrfToken;
+  }
+
   // Client IP/UA headers
   if (config.clientHeaders) {
     Object.assign(headers, getClientHeaders(req));

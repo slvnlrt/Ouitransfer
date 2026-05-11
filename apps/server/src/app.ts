@@ -1,6 +1,7 @@
 import * as http from "node:http";
 import fastifyCookie from "@fastify/cookie";
 import { fastifyCors } from "@fastify/cors";
+import fastifyCsrf from "@fastify/csrf-protection";
 import helmet from "@fastify/helmet";
 import fastifyJwt from "@fastify/jwt";
 import rateLimit from "@fastify/rate-limit";
@@ -136,6 +137,99 @@ export async function buildApp() {
     sign: {
       expiresIn: "1d",
     },
+  });
+
+  // ── CSRF Protection (double-submit cookie pattern) ──────────
+  // Must be registered after @fastify/cookie.
+  // The plugin stores a secret in an httpOnly _csrf cookie and derives
+  // tokens via HMAC. The frontend fetches a token from GET /csrf-token,
+  // stores it in memory, and sends it as X-CSRF-Token on mutations.
+  await app.register(fastifyCsrf, {
+    sessionPlugin: "@fastify/cookie",
+    cookieOpts: {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: env.SECURE_SITE === "true",
+      path: "/",
+      signed: false,
+    },
+    getToken: (req) => req.headers["x-csrf-token"] as string,
+    csrfOpts: {
+      hmacKey: env.CSRF_SECRET,
+    },
+  });
+
+  // CSRF token endpoint — returns a fresh token + sets the secret cookie
+  app.get(
+    "/csrf-token",
+    {
+      config: {
+        rateLimit: { max: 30, timeWindow: "1 minute" },
+      },
+    },
+    async (_request, reply) => {
+      const token = reply.generateCsrf();
+      return reply.send({ token });
+    },
+  );
+
+  // ── Global CSRF enforcement hook ───────────────────────────
+  // Skips safe methods and public unauthenticated mutation endpoints.
+  // Everything else must present a valid X-CSRF-Token header.
+
+  /** Exact routes exempt from CSRF (public unauthenticated mutations). */
+  const CSRF_EXEMPT_ROUTES = new Set([
+    "/auth/login",
+    "/auth/register",
+    "/auth/forgot-password",
+    "/auth/reset-password",
+    "/auth/2fa/login",
+    "/register-with-invite",
+    "/health",
+    "/csrf-token",
+  ]);
+
+  /**
+   * Prefix + suffix patterns for public endpoints with dynamic segments.
+   * Each entry: [prefix, test function for the rest of the URL].
+   */
+  const CSRF_EXEMPT_DYNAMIC: Array<(url: string) => boolean> = [
+    // POST /shares/:shareId/access
+    (url) => url.startsWith("/shares/") && url.endsWith("/access"),
+    // POST /shares/alias/:alias/access
+    (url) => url.startsWith("/shares/alias/") && url.endsWith("/access"),
+    // POST /reverse-shares/alias/:alias/* (public upload flow)
+    (url) => url.startsWith("/reverse-shares/alias/"),
+    // POST /reverse-shares/:id/presigned-url
+    (url) => url.startsWith("/reverse-shares/") && url.endsWith("/presigned-url"),
+    // POST /reverse-shares/:id/register-file
+    (url) => url.startsWith("/reverse-shares/") && url.endsWith("/register-file"),
+    // POST /reverse-shares/:id/check-password
+    (url) => url.startsWith("/reverse-shares/") && url.endsWith("/check-password"),
+  ];
+
+  app.addHook("onRequest", (request, reply, done) => {
+    const method = request.method.toUpperCase();
+    if (method === "GET" || method === "HEAD" || method === "OPTIONS") {
+      return done();
+    }
+
+    // Strip query string for route matching
+    const url = request.url.split("?")[0];
+
+    if (CSRF_EXEMPT_ROUTES.has(url)) {
+      return done();
+    }
+
+    for (const test of CSRF_EXEMPT_DYNAMIC) {
+      if (test(url)) {
+        return done();
+      }
+    }
+
+    // Delegate to the plugin's callback-based csrfProtection(req, reply, next).
+    // On success it calls done(); on failure it calls reply.send(error) directly.
+    app.csrfProtection(request, reply, done);
   });
 
   const isDevMode = process.env.NODE_ENV !== "production";

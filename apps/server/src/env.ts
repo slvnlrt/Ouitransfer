@@ -28,6 +28,10 @@ const envSchema = z.object({
 
   // Security
   JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 characters"),
+  CSRF_SECRET: z
+    .string()
+    .min(32, "CSRF_SECRET must be at least 32 characters")
+    .describe("HMAC key for CSRF token generation — must be distinct from JWT_SECRET"),
   TRUST_PROXY: z
     .string()
     .optional()
