@@ -12,6 +12,9 @@ import {
 } from "./dto.js";
 import { rotateRefreshToken } from "./refresh-token.service.js";
 
+/** Body size limit for auth endpoints — payloads are small JSON only. */
+const AUTH_BODY_LIMIT = 64 * 1024; // 64 KB
+
 const configService = new ConfigService();
 
 const createPasswordSchema = async () => {
@@ -37,7 +40,7 @@ export async function authRoutes(app: FastifyInstance) {
   app.post(
     "/auth/login",
     {
-      bodyLimit: 64 * 1024, // 64 KB — auth payloads are small JSON
+      bodyLimit: AUTH_BODY_LIMIT,
       config: {
         rateLimit: {
           max: 5,
@@ -81,7 +84,7 @@ export async function authRoutes(app: FastifyInstance) {
   app.post(
     "/auth/2fa/login",
     {
-      bodyLimit: 64 * 1024, // 64 KB — auth payloads are small JSON
+      bodyLimit: AUTH_BODY_LIMIT,
       config: {
         rateLimit: {
           max: 5,
@@ -118,7 +121,7 @@ export async function authRoutes(app: FastifyInstance) {
   app.post(
     "/auth/logout",
     {
-      bodyLimit: 64 * 1024, // 64 KB — auth payloads are small JSON
+      bodyLimit: AUTH_BODY_LIMIT,
       schema: {
         tags: ["Authentication"],
         operationId: "logout",
@@ -135,7 +138,7 @@ export async function authRoutes(app: FastifyInstance) {
   app.post(
     "/auth/forgot-password",
     {
-      bodyLimit: 64 * 1024, // 64 KB — auth payloads are small JSON
+      bodyLimit: AUTH_BODY_LIMIT,
       config: {
         rateLimit: {
           max: 3,
@@ -162,7 +165,7 @@ export async function authRoutes(app: FastifyInstance) {
   app.post(
     "/auth/reset-password",
     {
-      bodyLimit: 64 * 1024, // 64 KB — auth payloads are small JSON
+      bodyLimit: AUTH_BODY_LIMIT,
       config: {
         rateLimit: {
           max: 3,
@@ -351,7 +354,7 @@ export async function authRoutes(app: FastifyInstance) {
     "/auth/refresh",
     {
       config: { rateLimit: { max: 10, timeWindow: "1 minute" } },
-      bodyLimit: 64 * 1024,
+      bodyLimit: AUTH_BODY_LIMIT,
       schema: {
         tags: ["Authentication"],
         operationId: "refreshToken",

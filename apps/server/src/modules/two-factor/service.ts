@@ -219,10 +219,12 @@ export class TwoFactorService {
     const normalizedCode = totpCode.replace(/[\s-]/g, "");
     const totpVerified = disableTotp.validate({ token: normalizedCode, window: 1 }) !== null;
 
-    if (totpVerified) {
-      // TOTP code is valid — proceed to disable
-    } else if (user.twoFactorBackupCodes) {
-      // Try backup code as a fallback
+    if (!totpVerified) {
+      // TOTP code is invalid — try backup code as a fallback
+      if (!user.twoFactorBackupCodes) {
+        throw new UnauthorizedError("Invalid verification code");
+      }
+
       const backupCodes: BackupCode[] = JSON.parse(user.twoFactorBackupCodes);
       const backupCodeIndex = backupCodes.findIndex(
         (bc) => !bc.used && timingSafeEqual(bc.code, normalizedCode),
@@ -238,8 +240,6 @@ export class TwoFactorService {
         where: { id: userId },
         data: { twoFactorBackupCodes: JSON.stringify(backupCodes) },
       });
-    } else {
-      throw new UnauthorizedError("Invalid verification code");
     }
 
     await prisma.user.update({

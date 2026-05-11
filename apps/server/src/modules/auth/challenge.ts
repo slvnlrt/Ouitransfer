@@ -1,6 +1,8 @@
 import crypto from "node:crypto";
 import * as jose from "jose";
 
+import { UnauthorizedError } from "../../utils/app-error.js";
+
 // Separate secret for challenge tokens (not the main JWT secret).
 // Generated once at module load — survives process lifetime.
 // Regenerated on restart, which is acceptable for short-lived tokens.
@@ -26,7 +28,7 @@ export async function createChallengeToken(userId: string): Promise<string> {
 export async function verifyChallengeToken(token: string): Promise<string> {
   const { payload } = await jose.jwtVerify(token, CHALLENGE_SECRET);
   if (payload.purpose !== "2fa-challenge") {
-    throw new Error("Invalid challenge token");
+    throw new UnauthorizedError("Invalid challenge token");
   }
   return payload.userId as string;
 }

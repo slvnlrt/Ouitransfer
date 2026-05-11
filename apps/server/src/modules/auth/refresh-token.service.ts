@@ -81,6 +81,12 @@ export async function rotateRefreshToken(oldTokenValue: string): Promise<{
   // Atomically revoke the old token (only if still active) and create the new one.
   // The conditional updateMany prevents a TOCTOU race: two concurrent requests
   // with the same valid token both passing the revokedAt check above.
+  //
+  // `replacedBy` stores the raw new token value (not a FK to the RefreshToken row).
+  // This is intentional: it provides an audit trail so that a token chain can be
+  // reconstructed (old.replacedBy → new.token) without requiring a self-referencing
+  // FK. Since refresh tokens are rotated on every use, the chain is implicitly
+  // linear and FK constraints would add no safety benefit.
   const revoked = await prisma.refreshToken.updateMany({
     where: { id: oldToken.id, revokedAt: null },
     data: { revokedAt: new Date(), replacedBy: newTokenValue },
@@ -127,14 +133,22 @@ export async function revokeAllUserTokens(userId: string): Promise<void> {
 }
 
 /**
- * Cleanup expired refresh tokens.
- * Deletes tokens that expired more than 24 hours ago.
- * Revoked tokens within the 24h window are kept for replay detection.
+ * Cleanup expired and stale revoked refresh tokens.
+ *
+ * Deletion criteria (OR):
+ * 1. Token expired more than 24 hours ago — no longer useful for any purpose.
+ * 2. Token was revoked more than 24 hours ago — kept for replay detection;
+ *    safe to purge after the replay-detection window has passed.
+ *
+ * Revoked tokens within the 24h window are kept so that replay attacks
+ * (reuse of a just-rotated token) can be detected and the full chain revoked.
  */
 export async function cleanupExpiredTokens(): Promise<number> {
   const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
   const result = await prisma.refreshToken.deleteMany({
-    where: { expiresAt: { lt: cutoff } },
+    where: {
+      OR: [{ expiresAt: { lt: cutoff } }, { revokedAt: { lt: cutoff } }],
+    },
   });
   return result.count;
 }

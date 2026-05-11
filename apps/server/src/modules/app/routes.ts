@@ -5,6 +5,9 @@ import { prisma } from "../../shared/prisma.js";
 import { AppController } from "./controller.js";
 import { BulkUpdateConfigSchema, ConfigResponseSchema } from "./dto.js";
 
+/** Body size limit for admin config endpoints — payloads are small JSON only. */
+const SMALL_BODY_LIMIT = 64 * 1024; // 64 KB
+
 export async function appRoutes(app: FastifyInstance) {
   const appController = new AppController();
 
@@ -80,7 +83,7 @@ export async function appRoutes(app: FastifyInstance) {
   app.patch(
     "/app/configs/:key",
     {
-      bodyLimit: 64 * 1024, // 64 KB — admin config payloads are small JSON
+      bodyLimit: SMALL_BODY_LIMIT,
       preValidation: adminPreValidation,
       schema: {
         tags: ["App"],
@@ -151,7 +154,7 @@ export async function appRoutes(app: FastifyInstance) {
   app.patch(
     "/app/configs",
     {
-      bodyLimit: 64 * 1024, // 64 KB — admin config payloads are small JSON
+      bodyLimit: SMALL_BODY_LIMIT,
       preValidation: adminPreValidation,
       schema: {
         tags: ["App"],

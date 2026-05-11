@@ -15,7 +15,12 @@ import path from "node:path";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { S3StorageProvider } from "../../providers/s3-storage.provider.js";
 import { prisma } from "../../shared/prisma.js";
-import { ForbiddenError, UnauthorizedError, ValidationError } from "../../utils/app-error.js";
+import {
+  AppError,
+  ForbiddenError,
+  UnauthorizedError,
+  ValidationError,
+} from "../../utils/app-error.js";
 
 export class S3StorageController {
   private storageProvider = new S3StorageProvider();
@@ -135,14 +140,10 @@ export class S3StorageController {
    * Upload directly (for small files)
    * Receives file and uploads to S3
    */
-  async upload(_request: FastifyRequest, reply: FastifyReply) {
-    // For large files, clients should use presigned URLs
-    // This is just for backward compatibility or small files
-
-    return reply.status(501).send({
-      error: "Not implemented",
-      message: "Use getUploadUrl endpoint for efficient uploads",
-    });
+  async upload(_request: FastifyRequest, _reply: FastifyReply) {
+    // For large files, clients should use presigned URLs.
+    // Direct upload is not implemented — use the getUploadUrl endpoint instead.
+    throw new AppError(501, "Use getUploadUrl endpoint for efficient uploads", "NOT_IMPLEMENTED");
   }
 
   /**

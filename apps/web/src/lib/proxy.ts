@@ -29,7 +29,17 @@ const BUILTIN_OAUTH_HOSTS = new Set([
   "accounts.spotify.com",
 ]);
 
+/**
+ * Module-level cache: built once from BUILTIN_OAUTH_HOSTS + the env var.
+ * Avoids rebuilding the Set on every redirect validation call.
+ * Tests can reset it via `__resetAllowedRedirectHostsForTest()`.
+ */
+let _allowedRedirectHosts: Set<string> | null = null;
+
 function getAllowedRedirectHosts(): Set<string> {
+  if (_allowedRedirectHosts !== null) {
+    return _allowedRedirectHosts;
+  }
   const hosts = new Set(BUILTIN_OAUTH_HOSTS);
   const envHosts = process.env.OAUTH_ALLOWED_REDIRECT_HOSTS;
   if (envHosts) {
@@ -38,7 +48,16 @@ function getAllowedRedirectHosts(): Set<string> {
       if (trimmed) hosts.add(trimmed);
     }
   }
+  _allowedRedirectHosts = hosts;
   return hosts;
+}
+
+/**
+ * Reset the cached allowed-redirect-hosts Set.
+ * Only for use in tests that use `vi.stubEnv` to change OAUTH_ALLOWED_REDIRECT_HOSTS.
+ */
+export function __resetAllowedRedirectHostsForTest(): void {
+  _allowedRedirectHosts = null;
 }
 
 /**

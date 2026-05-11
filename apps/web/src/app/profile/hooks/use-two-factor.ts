@@ -138,6 +138,9 @@ export function useTwoFactor() {
         toast.error(t("twoFactor.messages.enterVerificationCode"));
         return;
       }
+      // Clear the TOTP code on error so the user can enter a fresh code.
+      // The password is kept so the user doesn't have to re-type it.
+      setDisableTotpCode("");
       logger.error("Failed to disable 2FA", {
         err: error instanceof Error ? error.message : String(error),
       });

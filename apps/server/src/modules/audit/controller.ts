@@ -1,11 +1,11 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { getAuditLogs } from "./service.js";
+import { type AuditAction, getAuditLogs } from "./service.js";
 
 /** Query params after Zod coercion in the route schema */
 interface AuditLogsQuery {
   userId?: string;
-  action?: string;
+  action?: AuditAction;
   limit?: number;
   offset?: number;
 }

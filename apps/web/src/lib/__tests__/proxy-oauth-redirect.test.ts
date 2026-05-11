@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { isAllowedRedirectUrl } from "../proxy.js";
+import { __resetAllowedRedirectHostsForTest, isAllowedRedirectUrl } from "../proxy.js";
 
 describe("isAllowedRedirectUrl (5.15)", () => {
   it("allows same-origin redirects", () => {
@@ -44,7 +44,8 @@ describe("isAllowedRedirectUrl (5.15)", () => {
   // I-5: env-driven extension for custom OIDC providers
   it("allows custom OIDC redirect hosts from env", () => {
     vi.stubEnv("OAUTH_ALLOWED_REDIRECT_HOSTS", "auth.acme.example.com,login.corp.net");
-    // Re-import or call a function that reads env at invocation time
+    // Reset the module-level cache so the new env value is picked up
+    __resetAllowedRedirectHostsForTest();
     expect(
       isAllowedRedirectUrl("https://auth.acme.example.com/auth", "https://app.example.com/api/x"),
     ).toBe(true);
@@ -52,5 +53,7 @@ describe("isAllowedRedirectUrl (5.15)", () => {
       isAllowedRedirectUrl("https://login.corp.net/callback", "https://app.example.com/api/x"),
     ).toBe(true);
     vi.unstubAllEnvs();
+    // Reset again after test so the cache doesn't bleed into subsequent tests
+    __resetAllowedRedirectHostsForTest();
   });
 });

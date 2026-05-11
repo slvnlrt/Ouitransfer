@@ -6,15 +6,40 @@ const MAX_FAILED_ATTEMPTS = 10;
 const LOCKOUT_DURATION_MINUTES = 15;
 
 /**
+ * Normalize an email address for consistent storage and lookup.
+ * Trim whitespace and lowercase so "User@Example.com " matches "user@example.com".
+ */
+function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
+/**
  * Record a login attempt (success or failure).
+ *
+ * Skips recording if the account is already locked. This prevents a "rolling
+ * lockout" where subsequent blocked requests push the oldest attempt out of
+ * the window, indefinitely extending the lockout beyond the intended duration.
+ * The lockout should expire based on the LAST real attempt, not be extended
+ * by subsequent rejected requests.
+ *
+ * Successful attempts are always recorded to reset the lockout counter.
  */
 export async function recordLoginAttempt(
   email: string,
   ipAddress: string,
   success: boolean,
 ): Promise<void> {
+  // If it's a failure, check if the account is already locked before recording.
+  // Successful logins always get recorded (they reset the failure counter).
+  if (!success) {
+    const { locked } = await isAccountLocked(email, ipAddress);
+    if (locked) {
+      return; // Don't record — the lockout window is already in effect
+    }
+  }
+
   await prisma.loginAttempt.create({
-    data: { email: email.toLowerCase(), ipAddress, success },
+    data: { email: normalizeEmail(email), ipAddress, success },
   });
 }
 
@@ -30,7 +55,7 @@ export async function isAccountLocked(
 
   const recentAttempts = await prisma.loginAttempt.findMany({
     where: {
-      email: email.toLowerCase(),
+      email: normalizeEmail(email),
       createdAt: { gte: since },
     },
     orderBy: { createdAt: "desc" },

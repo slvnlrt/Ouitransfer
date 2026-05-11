@@ -98,19 +98,9 @@ export async function buildApp() {
     credentials: true,
   });
 
-  await app.register(rateLimit, {
-    max: 100,
-    timeWindow: "1 minute",
-    // Trust proxy headers for IP detection
-    keyGenerator: (request) => request.ip,
-    errorResponseBuilder: (_request, context) => ({
-      error: "Too many requests",
-      message: `Rate limit exceeded. Try again in ${Math.ceil(context.ttl / 1000)} seconds.`,
-      retryAfter: Math.ceil(context.ttl / 1000),
-    }),
-  });
-
   // Security headers: CSP, X-Content-Type-Options, X-Frame-Options, etc.
+  // Registered BEFORE rate-limit so security headers apply to all responses,
+  // including rate-limit rejections.
   await app.register(helmet, {
     // Content-Security-Policy is set by Next.js for the frontend;
     // the API doesn't serve HTML, so a restrictive default is fine.
@@ -126,6 +116,18 @@ export async function buildApp() {
       maxAge: 31536000, // 1 year
       includeSubDomains: true,
     },
+  });
+
+  await app.register(rateLimit, {
+    max: 100,
+    timeWindow: "1 minute",
+    // Trust proxy headers for IP detection
+    keyGenerator: (request) => request.ip,
+    errorResponseBuilder: (_request, context) => ({
+      error: "Too many requests",
+      message: `Rate limit exceeded. Try again in ${Math.ceil(context.ttl / 1000)} seconds.`,
+      retryAfter: Math.ceil(context.ttl / 1000),
+    }),
   });
 
   app.register(fastifyCookie);

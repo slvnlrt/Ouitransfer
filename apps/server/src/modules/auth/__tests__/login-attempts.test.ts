@@ -37,6 +37,8 @@ describe("Login attempts / account lockout (5.25)", () => {
   describe("recordLoginAttempt", () => {
     it("creates a login attempt record with lowercase email", async () => {
       vi.mocked(prisma.loginAttempt.create).mockResolvedValue({} as never);
+      // recordLoginAttempt checks isAccountLocked first for failures — return not-locked
+      vi.mocked(prisma.loginAttempt.findMany).mockResolvedValue([]);
 
       await recordLoginAttempt("User@Example.COM", "192.168.1.1", false);
 

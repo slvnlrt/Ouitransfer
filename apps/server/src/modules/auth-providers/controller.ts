@@ -167,15 +167,11 @@ export class AuthProvidersController {
   }
 
   async getAllProviders(_request: FastifyRequest, reply: FastifyReply) {
-    if (reply.sent) return;
-
     const providers = await this.authProvidersService.getAllProviders();
     return this.sendSuccessResponse(reply, providers);
   }
 
   async createProvider(request: FastifyRequest, reply: FastifyReply) {
-    if (reply.sent) return;
-
     // Body is validated by Fastify's schema (CreateAuthProviderSchema in routes.ts)
     const data = request.body as CreateAuthProviderInput;
 
@@ -189,8 +185,6 @@ export class AuthProvidersController {
   }
 
   async updateProvider(request: FastifyRequest, reply: FastifyReply) {
-    if (reply.sent) return;
-
     const { id } = request.params as UpdateProviderRequest["Params"];
     const data = request.body as Record<string, unknown>;
 
@@ -260,8 +254,6 @@ export class AuthProvidersController {
   }
 
   async updateProvidersOrder(request: FastifyRequest, reply: FastifyReply) {
-    if (reply.sent) return;
-
     const { providers } = request.body as UpdateProvidersOrderRequest["Body"];
 
     if (!Array.isArray(providers)) {
@@ -273,8 +265,6 @@ export class AuthProvidersController {
   }
 
   async deleteProvider(request: FastifyRequest, reply: FastifyReply) {
-    if (reply.sent) return;
-
     const { id } = request.params as DeleteProviderRequest["Params"];
 
     const provider = await this.authProvidersService.getProviderById(id);

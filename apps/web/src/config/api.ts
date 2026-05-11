@@ -69,7 +69,7 @@ apiInstance.interceptors.request.use(async (config) => {
 const AUTH_API_PREFIXES = [
   "/api/auth/login",
   "/api/auth/register",
-  "/api/auth/request-password-reset",
+  "/api/auth/forgot-password",
   "/api/auth/reset-password",
 ];
 
@@ -188,3 +188,13 @@ export const __resetRedirectingForTest: () => void =
         isRedirecting = false;
       }
     : () => {};
+
+/**
+ * Reset the module-level CSRF state (token + in-flight fetch promise).
+ * Use in tests that stub the CSRF endpoint or need a clean slate between
+ * test cases (e.g. after `vi.stubEnv` or `vi.fn()` resets).
+ */
+export function __resetCsrfStateForTest(): void {
+  csrfToken = null;
+  csrfFetchPromise = null;
+}

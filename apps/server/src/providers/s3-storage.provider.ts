@@ -261,16 +261,21 @@ export class S3StorageProvider implements StorageProvider {
     await client.send(command);
   }
 
+  /** Maximum bytes to read via getObjectHead (prevents runaway range requests). */
+  private static readonly MAX_HEAD_BYTES = 4096;
+
   /**
    * Read the first N bytes of an S3 object (for magic-byte verification).
+   * The `bytes` parameter is capped at MAX_HEAD_BYTES to prevent excessive data transfer.
    */
   async getObjectHead(objectName: string, bytes = 4096): Promise<Buffer> {
     const client = this.ensureClient();
+    const safeBytes = Math.min(bytes, S3StorageProvider.MAX_HEAD_BYTES);
 
     const command = new GetObjectCommand({
       Bucket: bucketName,
       Key: objectName,
-      Range: `bytes=0-${bytes - 1}`,
+      Range: `bytes=0-${safeBytes - 1}`,
     });
     const response = await client.send(command);
     const stream = response.Body;

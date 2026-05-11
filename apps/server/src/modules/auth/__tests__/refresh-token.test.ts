@@ -214,13 +214,21 @@ describe("Refresh token service", () => {
       expect(count).toBe(5);
 
       const call = vi.mocked(prisma.refreshToken.deleteMany).mock.calls[0][0];
-      const cutoff = (
-        (call as { where: { expiresAt: { lt: Date } } }).where.expiresAt.lt as Date
-      ).getTime();
+      // New OR clause: deletes tokens expired > 24h ago OR revoked > 24h ago
+      const orClause = (
+        call as { where: { OR: Array<{ expiresAt?: { lt: Date }; revokedAt?: { lt: Date } }> } }
+      ).where.OR;
+      expect(orClause).toHaveLength(2);
+
+      const expiredCutoff = (orClause[0].expiresAt?.lt as Date).getTime();
+      const revokedCutoff = (orClause[1].revokedAt?.lt as Date).getTime();
       const oneDayAgo = 24 * 60 * 60 * 1000;
 
-      expect(cutoff).toBeGreaterThanOrEqual(before - oneDayAgo - 1000);
-      expect(cutoff).toBeLessThanOrEqual(after - oneDayAgo + 1000);
+      expect(expiredCutoff).toBeGreaterThanOrEqual(before - oneDayAgo - 1000);
+      expect(expiredCutoff).toBeLessThanOrEqual(after - oneDayAgo + 1000);
+      // Both cutoffs use the same 24h window
+      expect(revokedCutoff).toBeGreaterThanOrEqual(before - oneDayAgo - 1000);
+      expect(revokedCutoff).toBeLessThanOrEqual(after - oneDayAgo + 1000);
     });
   });
 });

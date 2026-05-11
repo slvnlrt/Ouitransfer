@@ -7,7 +7,15 @@
  */
 import { fileTypeFromBuffer } from "file-type";
 
-/** MIME types that are never acceptable regardless of extension */
+/**
+ * MIME types that are never acceptable regardless of file extension.
+ *
+ * This denylist is intentionally non-exhaustive — it covers the most
+ * dangerous server-executable types but cannot enumerate every possible
+ * malicious MIME type. Defense-in-depth is provided by `DANGEROUS_EXTENSIONS`
+ * (extension denylist) and `verifyMagicBytes` (content-level check), which
+ * together catch cases that slip through MIME-type spoofing.
+ */
 export const BLOCKED_MIME_TYPES = new Set([
   "application/x-executable",
   "application/x-msdownload",

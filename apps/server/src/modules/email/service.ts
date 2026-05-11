@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-import { ValidationError } from "../../utils/app-error.js";
+import { AppError, ValidationError } from "../../utils/app-error.js";
 import { ConfigService } from "../config/service.js";
 
 interface SmtpConfig {
@@ -152,9 +152,8 @@ export class EmailService {
     try {
       await transporter.verify();
       return { success: true, message: "SMTP connection successful" };
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : String(error);
-      throw new ValidationError(`SMTP connection failed: ${message}`);
+    } catch {
+      throw new AppError(503, "Email delivery failed", "EMAIL_DELIVERY_FAILED");
     }
   }
 

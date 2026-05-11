@@ -1,19 +1,26 @@
 import type { AuditLog } from "@prisma/client";
+import { z } from "zod";
 
 import { prisma } from "../../shared/prisma.js";
 
-export type AuditAction =
-  | "LOGIN_SUCCESS"
-  | "LOGIN_FAILURE"
-  | "LOGOUT"
-  | "PASSWORD_CHANGE"
-  | "PASSWORD_RESET"
-  | "TWO_FACTOR_ENABLE"
-  | "TWO_FACTOR_DISABLE"
-  | "ADMIN_CONFIG_CHANGE"
-  | "USER_CREATE"
-  | "USER_DELETE"
-  | "ACCOUNT_LOCKED";
+/** Typed union of all supported audit actions. */
+export const AUDIT_ACTIONS = [
+  "LOGIN_SUCCESS",
+  "LOGIN_FAILURE",
+  "LOGOUT",
+  "PASSWORD_CHANGE",
+  "PASSWORD_RESET",
+  "TWO_FACTOR_ENABLE",
+  "TWO_FACTOR_DISABLE",
+  "ADMIN_CONFIG_CHANGE",
+  "USER_CREATE",
+  "USER_DELETE",
+  "ACCOUNT_LOCKED",
+] as const;
+
+export const AuditActionSchema = z.enum(AUDIT_ACTIONS);
+
+export type AuditAction = z.infer<typeof AuditActionSchema>;
 
 export async function logAuditEvent(params: {
   userId?: string;
@@ -35,16 +42,16 @@ export async function logAuditEvent(params: {
 
 export async function getAuditLogs(params: {
   userId?: string;
-  action?: string;
+  action?: AuditAction;
   limit?: number;
   offset?: number;
-}): Promise<{ logs: AuditLog[]; total: number }> {
+}): Promise<{ logs: (Omit<AuditLog, "metadata"> & { metadata: unknown })[]; total: number }> {
   const where = {
     ...(params.userId ? { userId: params.userId } : {}),
     ...(params.action ? { action: params.action } : {}),
   };
 
-  const [logs, total] = await Promise.all([
+  const [rawLogs, total] = await Promise.all([
     prisma.auditLog.findMany({
       where,
       orderBy: { createdAt: "desc" },
@@ -53,6 +60,19 @@ export async function getAuditLogs(params: {
     }),
     prisma.auditLog.count({ where }),
   ]);
+
+  // Parse metadata JSON strings into objects for the API response.
+  // If parsing fails, fall back to the raw string (defensive — logs are internal data).
+  const logs = rawLogs.map((log) => {
+    if (log.metadata === null) {
+      return { ...log, metadata: null };
+    }
+    try {
+      return { ...log, metadata: JSON.parse(log.metadata) as unknown };
+    } catch {
+      return { ...log, metadata: log.metadata };
+    }
+  });
 
   return { logs, total };
 }

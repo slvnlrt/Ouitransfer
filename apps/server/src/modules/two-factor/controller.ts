@@ -30,7 +30,7 @@ const DisableSchema = z.object({
     .string()
     .trim()
     .min(6, "Verification code must be at least 6 characters")
-    .describe("TOTP code or backup code"),
+    .describe("6-digit TOTP code or backup code in XXXXX-XXXXX format"),
 });
 
 export class TwoFactorController {

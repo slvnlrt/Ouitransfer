@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-
 import { AuditController } from "./controller.js";
+import { AuditActionSchema } from "./service.js";
 
 export async function auditRoutes(app: FastifyInstance) {
   const auditController = new AuditController();
@@ -29,8 +29,10 @@ export async function auditRoutes(app: FastifyInstance) {
         summary: "Get Audit Logs",
         description: "Get paginated audit logs (admin only)",
         querystring: z.object({
-          userId: z.string().optional().describe("Filter by user ID"),
-          action: z.string().optional().describe("Filter by action"),
+          userId: z.string().min(1).optional().describe("Filter by user ID (non-empty string)"),
+          action: AuditActionSchema.optional().describe(
+            `Filter by action. Valid values: ${AuditActionSchema.options.join(", ")}`,
+          ),
           limit: z.coerce
             .number()
             .int()
@@ -56,7 +58,7 @@ export async function auditRoutes(app: FastifyInstance) {
                 action: z.string().describe("Action performed"),
                 ipAddress: z.string().describe("IP address"),
                 userAgent: z.string().nullable().describe("User agent"),
-                metadata: z.string().nullable().describe("JSON metadata"),
+                metadata: z.unknown().nullable().describe("Parsed metadata object (or null)"),
                 createdAt: z.date().describe("Timestamp"),
               }),
             ),
