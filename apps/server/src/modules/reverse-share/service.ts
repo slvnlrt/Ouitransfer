@@ -1,5 +1,12 @@
 import { env } from "../../env.js";
 import { prisma } from "../../shared/prisma.js";
+import {
+  ConflictError,
+  ForbiddenError,
+  GoneError,
+  NotFoundError,
+  UnauthorizedError,
+} from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { FileService } from "../file/service.js";
 import {
@@ -69,11 +76,11 @@ export class ReverseShareService {
   async getReverseShareById(id: string, creatorId?: string) {
     const reverseShare = await this.reverseShareRepository.findById(id);
     if (!reverseShare) {
-      throw new Error("Reverse share not found");
+      throw new NotFoundError("Reverse share not found");
     }
 
     if (creatorId && reverseShare.creatorId !== creatorId) {
-      throw new Error("Unauthorized to access this reverse share");
+      throw new ForbiddenError("Unauthorized to access this reverse share");
     }
 
     return ReverseShareResponseSchema.parse(this.formatReverseShareResponse(reverseShare));
@@ -82,27 +89,27 @@ export class ReverseShareService {
   async getReverseShareForUpload(id: string, password?: string) {
     const reverseShare = await this.reverseShareRepository.findById(id);
     if (!reverseShare) {
-      throw new Error("Reverse share not found");
+      throw new NotFoundError("Reverse share not found");
     }
 
     if (!reverseShare.isActive) {
-      throw new Error("Reverse share is inactive");
+      throw new GoneError("Reverse share is inactive");
     }
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
-      throw new Error("Reverse share has expired");
+      throw new GoneError("Reverse share has expired");
     }
 
     if (reverseShare.password) {
       if (!password) {
-        throw new Error("Password required");
+        throw new UnauthorizedError("Password required");
       }
       const isValidPassword = await this.reverseShareRepository.comparePassword(
         password,
         reverseShare.password,
       );
       if (!isValidPassword) {
-        throw new Error("Invalid password");
+        throw new UnauthorizedError("Invalid password");
       }
     }
 
@@ -126,27 +133,27 @@ export class ReverseShareService {
   async getReverseShareForUploadByAlias(alias: string, password?: string) {
     const reverseShare = await this.reverseShareRepository.findByAlias(alias);
     if (!reverseShare) {
-      throw new Error("Reverse share not found");
+      throw new NotFoundError("Reverse share not found");
     }
 
     if (!reverseShare.isActive) {
-      throw new Error("Reverse share is inactive");
+      throw new GoneError("Reverse share is inactive");
     }
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
-      throw new Error("Reverse share has expired");
+      throw new GoneError("Reverse share has expired");
     }
 
     if (reverseShare.password) {
       if (!password) {
-        throw new Error("Password required");
+        throw new UnauthorizedError("Password required");
       }
       const isValidPassword = await this.reverseShareRepository.comparePassword(
         password,
         reverseShare.password,
       );
       if (!isValidPassword) {
-        throw new Error("Invalid password");
+        throw new UnauthorizedError("Invalid password");
       }
     }
 
@@ -172,11 +179,11 @@ export class ReverseShareService {
   async updateReverseShare(id: string, data: Partial<UpdateReverseShareInput>, creatorId: string) {
     const reverseShare = await this.reverseShareRepository.findById(id);
     if (!reverseShare) {
-      throw new Error("Reverse share not found");
+      throw new NotFoundError("Reverse share not found");
     }
 
     if (reverseShare.creatorId !== creatorId) {
-      throw new Error("Unauthorized to update this reverse share");
+      throw new ForbiddenError("Unauthorized to update this reverse share");
     }
 
     const updatedReverseShare = await this.reverseShareRepository.update(id, data);
@@ -186,11 +193,11 @@ export class ReverseShareService {
   async deleteReverseShare(id: string, creatorId: string) {
     const reverseShare = await this.reverseShareRepository.findById(id);
     if (!reverseShare) {
-      throw new Error("Reverse share not found");
+      throw new NotFoundError("Reverse share not found");
     }
 
     if (reverseShare.creatorId !== creatorId) {
-      throw new Error("Unauthorized to delete this reverse share");
+      throw new ForbiddenError("Unauthorized to delete this reverse share");
     }
 
     for (const file of reverseShare.files) {
@@ -208,11 +215,11 @@ export class ReverseShareService {
   async getFileInfo(fileId: string, creatorId: string) {
     const file = await this.reverseShareRepository.findFileById(fileId);
     if (!file) {
-      throw new Error("File not found");
+      throw new NotFoundError("File not found");
     }
 
     if (file.reverseShare.creatorId !== creatorId) {
-      throw new Error("Unauthorized to access this file");
+      throw new ForbiddenError("Unauthorized to access this file");
     }
 
     return {
@@ -231,11 +238,11 @@ export class ReverseShareService {
   ) {
     const file = await this.reverseShareRepository.findFileById(fileId);
     if (!file) {
-      throw new Error("File not found");
+      throw new NotFoundError("File not found");
     }
 
     if (file.reverseShare.creatorId !== creatorId) {
-      throw new Error("Unauthorized to download this file");
+      throw new ForbiddenError("Unauthorized to download this file");
     }
 
     const fileName = file.name;
@@ -258,11 +265,11 @@ export class ReverseShareService {
   async deleteReverseShareFile(fileId: string, creatorId: string) {
     const file = await this.reverseShareRepository.findFileById(fileId);
     if (!file) {
-      throw new Error("File not found");
+      throw new NotFoundError("File not found");
     }
 
     if (file.reverseShare.creatorId !== creatorId) {
-      throw new Error("Unauthorized to delete this file");
+      throw new ForbiddenError("Unauthorized to delete this file");
     }
 
     await this.fileService.deleteObject(file.objectName);
@@ -274,7 +281,7 @@ export class ReverseShareService {
   async checkPassword(id: string, password: string) {
     const reverseShare = await this.reverseShareRepository.findById(id);
     if (!reverseShare) {
-      throw new Error("Reverse share not found");
+      throw new NotFoundError("Reverse share not found");
     }
 
     if (!reverseShare.password) {
@@ -291,11 +298,11 @@ export class ReverseShareService {
   async updatePassword(id: string, password: string | null, creatorId: string) {
     const reverseShare = await this.reverseShareRepository.findById(id);
     if (!reverseShare) {
-      throw new Error("Reverse share not found");
+      throw new NotFoundError("Reverse share not found");
     }
 
     if (reverseShare.creatorId !== creatorId) {
-      throw new Error("Unauthorized to update this reverse share");
+      throw new ForbiddenError("Unauthorized to update this reverse share");
     }
 
     const updatedReverseShare = await this.reverseShareRepository.update(id, { password });
@@ -305,11 +312,11 @@ export class ReverseShareService {
   async activateReverseShare(id: string, creatorId: string) {
     const reverseShare = await this.reverseShareRepository.findById(id);
     if (!reverseShare) {
-      throw new Error("Reverse share not found");
+      throw new NotFoundError("Reverse share not found");
     }
 
     if (reverseShare.creatorId !== creatorId) {
-      throw new Error("Unauthorized to activate this reverse share");
+      throw new ForbiddenError("Unauthorized to activate this reverse share");
     }
 
     const updatedReverseShare = await this.reverseShareRepository.update(id, { isActive: true });
@@ -319,11 +326,11 @@ export class ReverseShareService {
   async deactivateReverseShare(id: string, creatorId: string) {
     const reverseShare = await this.reverseShareRepository.findById(id);
     if (!reverseShare) {
-      throw new Error("Reverse share not found");
+      throw new NotFoundError("Reverse share not found");
     }
 
     if (reverseShare.creatorId !== creatorId) {
-      throw new Error("Unauthorized to deactivate this reverse share");
+      throw new ForbiddenError("Unauthorized to deactivate this reverse share");
     }
 
     const updatedReverseShare = await this.reverseShareRepository.update(id, { isActive: false });
@@ -334,11 +341,11 @@ export class ReverseShareService {
     const reverseShare = await this.reverseShareRepository.findById(reverseShareId);
 
     if (!reverseShare) {
-      throw new Error("Reverse share not found");
+      throw new NotFoundError("Reverse share not found");
     }
 
     if (reverseShare.creatorId !== userId) {
-      throw new Error("Unauthorized to update this reverse share");
+      throw new ForbiddenError("Unauthorized to update this reverse share");
     }
 
     const existingAlias = await prisma.reverseShareAlias.findUnique({
@@ -346,7 +353,7 @@ export class ReverseShareService {
     });
 
     if (existingAlias && existingAlias.reverseShareId !== reverseShareId) {
-      throw new Error("Alias already in use");
+      throw new ConflictError("Alias already in use");
     }
 
     const reverseShareAlias = await prisma.reverseShareAlias.upsert({
@@ -369,11 +376,11 @@ export class ReverseShareService {
   ) {
     const file = await this.reverseShareRepository.findFileById(fileId);
     if (!file) {
-      throw new Error("File not found");
+      throw new NotFoundError("File not found");
     }
 
     if (file.reverseShare.creatorId !== creatorId) {
-      throw new Error("Unauthorized to edit this file");
+      throw new ForbiddenError("Unauthorized to edit this file");
     }
 
     const updateData = { ...data };
@@ -393,7 +400,7 @@ export class ReverseShareService {
   async getReverseShareMetadataByAlias(alias: string) {
     const reverseShare = await this.reverseShareRepository.findByAlias(alias);
     if (!reverseShare) {
-      throw new Error("Reverse share not found");
+      throw new NotFoundError("Reverse share not found");
     }
 
     // Check if reverse share is expired

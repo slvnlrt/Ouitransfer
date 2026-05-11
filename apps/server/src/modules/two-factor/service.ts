@@ -3,6 +3,12 @@ import bcrypt from "bcryptjs";
 import * as OTPAuth from "otpauth";
 import QRCode from "qrcode";
 import { prisma } from "../../shared/prisma.js";
+import {
+  ConflictError,
+  NotFoundError,
+  UnauthorizedError,
+  ValidationError,
+} from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { timingSafeEqual } from "../../utils/timing-safe.js";
 
@@ -22,11 +28,11 @@ export class TwoFactorService {
     });
 
     if (!user) {
-      throw new Error("User not found");
+      throw new NotFoundError("User not found");
     }
 
     if (user.twoFactorEnabled) {
-      throw new Error("Two-factor authentication is already enabled");
+      throw new ConflictError("Two-factor authentication is already enabled");
     }
 
     const secret = new OTPAuth.Secret({ size: 20 });
@@ -59,11 +65,11 @@ export class TwoFactorService {
     });
 
     if (!user) {
-      throw new Error("User not found");
+      throw new NotFoundError("User not found");
     }
 
     if (user.twoFactorEnabled) {
-      throw new Error("Two-factor authentication is already enabled");
+      throw new ConflictError("Two-factor authentication is already enabled");
     }
 
     const setupTotp = new OTPAuth.TOTP({
@@ -76,7 +82,7 @@ export class TwoFactorService {
     const verified = setupTotp.validate({ token: normalizedToken, window: 1 }) !== null;
 
     if (!verified) {
-      throw new Error("Invalid verification code");
+      throw new UnauthorizedError("Invalid verification code");
     }
 
     const backupCodes = await this.generateBackupCodes();
@@ -112,11 +118,11 @@ export class TwoFactorService {
     });
 
     if (!user) {
-      throw new Error("User not found");
+      throw new NotFoundError("User not found");
     }
 
     if (!user.twoFactorEnabled || !user.twoFactorSecret) {
-      throw new Error("Two-factor authentication is not enabled");
+      throw new ValidationError("Two-factor authentication is not enabled");
     }
 
     const loginTotp = new OTPAuth.TOTP({
@@ -152,7 +158,7 @@ export class TwoFactorService {
       }
     }
 
-    throw new Error("Invalid verification code");
+    throw new UnauthorizedError("Invalid verification code");
   }
 
   /**
@@ -173,15 +179,15 @@ export class TwoFactorService {
     });
 
     if (!user) {
-      throw new Error("User not found");
+      throw new NotFoundError("User not found");
     }
 
     if (!user.twoFactorEnabled) {
-      throw new Error("Two-factor authentication is not enabled");
+      throw new ValidationError("Two-factor authentication is not enabled");
     }
 
     if (!user.password) {
-      throw new Error("Password verification required");
+      throw new ValidationError("Password verification required");
     }
 
     let isValidPassword = false;
@@ -189,14 +195,14 @@ export class TwoFactorService {
       isValidPassword = await bcrypt.compare(password, user.password);
     } catch (error) {
       getLogger().error({ err: error }, "bcrypt.compare error");
-      throw new Error("Password verification failed");
+      throw new UnauthorizedError("Password verification failed");
     }
     if (!isValidPassword) {
-      throw new Error("Invalid password");
+      throw new UnauthorizedError("Invalid password");
     }
 
     if (!user.twoFactorSecret) {
-      throw new Error("Two-factor secret not found");
+      throw new ValidationError("Two-factor secret not found");
     }
 
     // Verify TOTP code — follow the same pattern as verifyToken
@@ -219,7 +225,7 @@ export class TwoFactorService {
       );
 
       if (backupCodeIndex === -1) {
-        throw new Error("Invalid verification code");
+        throw new UnauthorizedError("Invalid verification code");
       }
 
       // Mark backup code as used
@@ -229,7 +235,7 @@ export class TwoFactorService {
         data: { twoFactorBackupCodes: JSON.stringify(backupCodes) },
       });
     } else {
-      throw new Error("Invalid verification code");
+      throw new UnauthorizedError("Invalid verification code");
     }
 
     await prisma.user.update({
@@ -255,11 +261,11 @@ export class TwoFactorService {
     });
 
     if (!user) {
-      throw new Error("User not found");
+      throw new NotFoundError("User not found");
     }
 
     if (!user.twoFactorEnabled) {
-      throw new Error("Two-factor authentication is not enabled");
+      throw new ValidationError("Two-factor authentication is not enabled");
     }
 
     const backupCodes = await this.generateBackupCodes();
@@ -289,7 +295,7 @@ export class TwoFactorService {
     });
 
     if (!user) {
-      throw new Error("User not found");
+      throw new NotFoundError("User not found");
     }
 
     let availableBackupCodes = 0;

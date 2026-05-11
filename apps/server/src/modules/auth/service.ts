@@ -1,6 +1,12 @@
 import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
 import { prisma } from "../../shared/prisma.js";
+import {
+  ForbiddenError,
+  NotFoundError,
+  UnauthorizedError,
+  ValidationError,
+} from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { ConfigService } from "../config/service.js";
 import { EmailService } from "../email/service.js";
@@ -20,18 +26,18 @@ export class AuthService {
   async login(data: LoginInput, userAgent?: string, ipAddress?: string) {
     const passwordAuthEnabled = await this.configService.getValue("passwordAuthEnabled");
     if (passwordAuthEnabled === "false") {
-      throw new Error(
+      throw new ForbiddenError(
         "Password authentication is disabled. Please use an external authentication provider.",
       );
     }
 
     const user = await this.userRepository.findUserByEmailOrUsername(data.emailOrUsername);
     if (!user) {
-      throw new Error("Invalid credentials");
+      throw new UnauthorizedError("Invalid credentials");
     }
 
     if (!user.isActive) {
-      throw new Error("Account is inactive. Please contact an administrator.");
+      throw new ForbiddenError("Account is inactive. Please contact an administrator.");
     }
 
     const maxAttempts = Number(await this.configService.getValue("maxLoginAttempts"));
@@ -50,7 +56,9 @@ export class AuthService {
         const remainingTime = Math.ceil(
           (blockDuration - (Date.now() - loginAttempt.lastAttempt.getTime())) / 1000 / 60,
         );
-        throw new Error(`Too many failed attempts. Please try again in ${remainingTime} minutes.`);
+        throw new ForbiddenError(
+          `Too many failed attempts. Please try again in ${remainingTime} minutes.`,
+        );
       }
 
       if (Date.now() - loginAttempt.lastAttempt.getTime() >= blockDuration) {
@@ -61,7 +69,7 @@ export class AuthService {
     }
 
     if (!user.password) {
-      throw new Error(
+      throw new ForbiddenError(
         "This account uses external authentication. Please use the appropriate login method.",
       );
     }
@@ -84,7 +92,7 @@ export class AuthService {
         },
       });
 
-      throw new Error("Invalid credentials");
+      throw new UnauthorizedError("Invalid credentials");
     }
 
     if (loginAttempt) {
@@ -131,17 +139,17 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new Error("User not found");
+      throw new NotFoundError("User not found");
     }
 
     if (!user.isActive) {
-      throw new Error("Account is inactive. Please contact an administrator.");
+      throw new ForbiddenError("Account is inactive. Please contact an administrator.");
     }
 
     const verificationResult = await this.twoFactorService.verifyToken(userId, token);
 
     if (!verificationResult.success) {
-      throw new Error("Invalid two-factor authentication code");
+      throw new UnauthorizedError("Invalid two-factor authentication code");
     }
 
     await prisma.loginAttempt.deleteMany({
@@ -168,7 +176,9 @@ export class AuthService {
   async requestPasswordReset(email: string, origin: string) {
     const passwordAuthEnabled = await this.configService.getValue("passwordAuthEnabled");
     if (passwordAuthEnabled === "false") {
-      throw new Error("Password authentication is disabled. Password reset is not available.");
+      throw new ForbiddenError(
+        "Password authentication is disabled. Password reset is not available.",
+      );
     }
 
     const user = await this.userRepository.findUserByEmail(email);
@@ -193,14 +203,16 @@ export class AuthService {
       await this.emailService.sendPasswordResetEmail(email, token, origin);
     } catch (error) {
       getLogger().error({ err: error }, "Failed to send password reset email");
-      throw new Error("Failed to send password reset email");
+      throw new ValidationError("Failed to send password reset email");
     }
   }
 
   async resetPassword(token: string, newPassword: string) {
     const passwordAuthEnabled = await this.configService.getValue("passwordAuthEnabled");
     if (passwordAuthEnabled === "false") {
-      throw new Error("Password authentication is disabled. Password reset is not available.");
+      throw new ForbiddenError(
+        "Password authentication is disabled. Password reset is not available.",
+      );
     }
 
     const resetRequest = await prisma.passwordReset.findFirst({
@@ -217,7 +229,7 @@ export class AuthService {
     });
 
     if (!resetRequest) {
-      throw new Error("Invalid or expired reset token");
+      throw new UnauthorizedError("Invalid or expired reset token");
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -239,7 +251,7 @@ export class AuthService {
       where: { id: userId },
     });
     if (!user) {
-      throw new Error("User not found");
+      throw new NotFoundError("User not found");
     }
     return UserResponseSchema.parse(user);
   }

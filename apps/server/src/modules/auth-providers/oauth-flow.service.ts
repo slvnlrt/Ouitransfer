@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 
+import { UnauthorizedError, ValidationError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import {
   DISCOVERY_PATHS,
@@ -169,7 +170,9 @@ export class OAuthFlowService {
     providerName?: string,
   ): Promise<string> {
     if (!provider.clientId) {
-      throw new Error(`Client ID not configured for provider: ${providerName || provider.name}`);
+      throw new ValidationError(
+        `Client ID not configured for provider: ${providerName || provider.name}`,
+      );
     }
 
     const authUrl = new URL(endpoints.authorizationEndpoint);
@@ -228,13 +231,13 @@ export class OAuthFlowService {
 
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text();
-      throw new Error(`Token exchange failed: ${tokenResponse.status} - ${errorText}`);
+      throw new UnauthorizedError(`Token exchange failed: ${tokenResponse.status} - ${errorText}`);
     }
 
     const tokens = (await tokenResponse.json()) as TokenResponse;
 
     if (!tokens.access_token) {
-      throw new Error("No access token received");
+      throw new UnauthorizedError("No access token received");
     }
 
     return tokens;
@@ -253,7 +256,9 @@ export class OAuthFlowService {
 
     if (!userInfoResponse.ok) {
       const errorText = await userInfoResponse.text();
-      throw new Error(`UserInfo request failed: ${userInfoResponse.status} - ${errorText}`);
+      throw new UnauthorizedError(
+        `UserInfo request failed: ${userInfoResponse.status} - ${errorText}`,
+      );
     }
 
     return (await userInfoResponse.json()) as Record<string, unknown>;
@@ -277,7 +282,7 @@ export class OAuthFlowService {
     }
 
     if (!userInfo.email) {
-      throw new Error(`No email address found in ${config.name} account`);
+      throw new ValidationError(`No email address found in ${config.name} account`);
     }
 
     return userInfo;

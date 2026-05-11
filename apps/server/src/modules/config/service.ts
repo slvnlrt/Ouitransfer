@@ -1,4 +1,5 @@
 import { prisma } from "../../shared/prisma.js";
+import { NotFoundError } from "../../utils/app-error.js";
 
 export class ConfigService {
   async getValue(key: string): Promise<string> {
@@ -7,7 +8,7 @@ export class ConfigService {
     });
 
     if (!config) {
-      throw new Error(`Configuration ${key} not found`);
+      throw new NotFoundError(`Configuration ${key} not found`);
     }
 
     return config.value;

@@ -1,5 +1,6 @@
 import sharp from "sharp";
 import { prisma } from "../../shared/prisma.js";
+import { ValidationError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 
 export class AvatarService {
@@ -7,7 +8,7 @@ export class AvatarService {
     try {
       const metadata = await sharp(buffer).metadata();
       if (!metadata.width || !metadata.height) {
-        throw new Error("Invalid image file");
+        throw new ValidationError("Invalid image file");
       }
 
       const webpBuffer = await sharp(buffer)

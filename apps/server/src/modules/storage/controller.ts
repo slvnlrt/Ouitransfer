@@ -1,6 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { AppError, UnauthorizedError, ValidationError } from "../../utils/app-error.js";
+import { UnauthorizedError, ValidationError } from "../../utils/app-error.js";
 import { StorageService } from "./service.js";
 
 export class StorageController {
@@ -20,22 +20,8 @@ export class StorageController {
       );
     }
 
-    try {
-      const diskSpace = await this.storageService.getDiskSpace(userId, isAdmin);
-      return reply.send(diskSpace);
-    } catch (error: unknown) {
-      // Map specific disk-space detection errors to 503
-      const message = error instanceof Error ? error.message : undefined;
-      if (message?.includes("Unable to determine actual disk space")) {
-        throw new AppError(
-          503,
-          "Disk space detection unavailable - system configuration issue",
-          "DISK_SPACE_DETECTION_FAILED",
-          { details: "Please check system permissions and available disk utilities" },
-        );
-      }
-      throw error;
-    }
+    const diskSpace = await this.storageService.getDiskSpace(userId, isAdmin);
+    return reply.send(diskSpace);
   }
 
   async checkUploadAllowed(request: FastifyRequest, reply: FastifyReply) {

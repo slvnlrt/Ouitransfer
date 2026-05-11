@@ -2,6 +2,7 @@ import fs from "node:fs";
 import { statfs } from "node:fs/promises";
 import { env } from "../../env.js";
 import { prisma } from "../../shared/prisma.js";
+import { AppError, ValidationError } from "../../utils/app-error.js";
 import { IS_RUNNING_IN_CONTAINER } from "../../utils/container-detection.js";
 import { getLogger } from "../../utils/logger.js";
 import { ConfigService } from "../config/service.js";
@@ -106,7 +107,11 @@ export class StorageService {
         const diskInfo = await this._getDiskSpaceMultiplePaths();
 
         if (!diskInfo) {
-          throw new Error("Unable to determine actual disk space - system configuration issue");
+          throw new AppError(
+            503,
+            "Unable to determine actual disk space - system configuration issue",
+            "DISK_SPACE_DETECTION_FAILED",
+          );
         }
 
         const { total, available } = diskInfo;
@@ -146,11 +151,14 @@ export class StorageService {
         };
       }
 
-      throw new Error("User ID is required for non-admin users");
+      throw new ValidationError("User ID is required for non-admin users");
     } catch (error) {
+      if (error instanceof AppError) throw error;
       getLogger().error({ err: error }, "Error getting disk space");
-      throw new Error(
+      throw new AppError(
+        500,
         `Failed to get disk space information: ${error instanceof Error ? error.message : String(error)}`,
+        "DISK_SPACE_ERROR",
       );
     }
   }

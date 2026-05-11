@@ -3,6 +3,13 @@ import crypto from "node:crypto";
 import type { Prisma } from "@prisma/client";
 import { env } from "../../env.js";
 import { prisma } from "../../shared/prisma.js";
+import {
+  ForbiddenError,
+  GoneError,
+  NotFoundError,
+  UnauthorizedError,
+  ValidationError,
+} from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { sanitizeFilename } from "../../utils/sanitize-filename.js";
 import { isMimeTypeConsistent } from "../../utils/validate-file-content.js";
@@ -40,27 +47,27 @@ export class ReverseShareUploadService {
   async getPresignedUrl(id: string, filename: string, extension: string, password?: string) {
     const reverseShare = await this.reverseShareRepository.findById(id);
     if (!reverseShare) {
-      throw new Error("Reverse share not found");
+      throw new NotFoundError("Reverse share not found");
     }
 
     if (!reverseShare.isActive) {
-      throw new Error("Reverse share is inactive");
+      throw new GoneError("Reverse share is inactive");
     }
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
-      throw new Error("Reverse share has expired");
+      throw new GoneError("Reverse share has expired");
     }
 
     if (reverseShare.password) {
       if (!password) {
-        throw new Error("Password required");
+        throw new UnauthorizedError("Password required");
       }
       const isValidPassword = await this.reverseShareRepository.comparePassword(
         password,
         reverseShare.password,
       );
       if (!isValidPassword) {
-        throw new Error("Invalid password");
+        throw new UnauthorizedError("Invalid password");
       }
     }
 
@@ -94,27 +101,27 @@ export class ReverseShareUploadService {
   ) {
     const reverseShare = await this.reverseShareRepository.findByAlias(alias);
     if (!reverseShare) {
-      throw new Error("Reverse share not found");
+      throw new NotFoundError("Reverse share not found");
     }
 
     if (!reverseShare.isActive) {
-      throw new Error("Reverse share is inactive");
+      throw new GoneError("Reverse share is inactive");
     }
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
-      throw new Error("Reverse share has expired");
+      throw new GoneError("Reverse share has expired");
     }
 
     if (reverseShare.password) {
       if (!password) {
-        throw new Error("Password required");
+        throw new UnauthorizedError("Password required");
       }
       const isValidPassword = await this.reverseShareRepository.comparePassword(
         password,
         reverseShare.password,
       );
       if (!isValidPassword) {
-        throw new Error("Invalid password");
+        throw new UnauthorizedError("Invalid password");
       }
     }
 
@@ -148,33 +155,33 @@ export class ReverseShareUploadService {
   ) {
     const reverseShare = await this.reverseShareRepository.findById(reverseShareId);
     if (!reverseShare) {
-      throw new Error("Reverse share not found");
+      throw new NotFoundError("Reverse share not found");
     }
 
     if (!reverseShare.isActive) {
-      throw new Error("Reverse share is inactive");
+      throw new GoneError("Reverse share is inactive");
     }
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
-      throw new Error("Reverse share has expired");
+      throw new GoneError("Reverse share has expired");
     }
 
     if (reverseShare.password) {
       if (!password) {
-        throw new Error("Password required");
+        throw new UnauthorizedError("Password required");
       }
       const isValidPassword = await this.reverseShareRepository.comparePassword(
         password,
         reverseShare.password,
       );
       if (!isValidPassword) {
-        throw new Error("Invalid password");
+        throw new UnauthorizedError("Invalid password");
       }
     }
 
     // Layer 1: MIME/extension consistency check
     if (!isMimeTypeConsistent(fileData.mimeType, fileData.extension)) {
-      throw new Error("File type does not match the declared extension");
+      throw new ValidationError("File type does not match the declared extension");
     }
 
     // Validate objectName belongs to this reverse share's namespace
@@ -184,12 +191,12 @@ export class ReverseShareUploadService {
       const currentFileCount =
         await this.reverseShareRepository.countFilesByReverseShareId(reverseShareId);
       if (currentFileCount >= reverseShare.maxFiles) {
-        throw new Error("Maximum number of files reached");
+        throw new ForbiddenError("Maximum number of files reached");
       }
     }
 
     if (reverseShare.maxFileSize && BigInt(fileData.size) > reverseShare.maxFileSize) {
-      throw new Error("File size exceeds limit");
+      throw new ValidationError("File size exceeds limit");
     }
 
     if (reverseShare.allowedFileTypes) {
@@ -197,7 +204,7 @@ export class ReverseShareUploadService {
         .split(",")
         .map((type) => type.trim().toLowerCase());
       if (!allowedTypes.includes(fileData.extension.toLowerCase())) {
-        throw new Error("File type not allowed");
+        throw new ValidationError("File type not allowed");
       }
     }
 
@@ -218,33 +225,33 @@ export class ReverseShareUploadService {
   ) {
     const reverseShare = await this.reverseShareRepository.findByAlias(alias);
     if (!reverseShare) {
-      throw new Error("Reverse share not found");
+      throw new NotFoundError("Reverse share not found");
     }
 
     if (!reverseShare.isActive) {
-      throw new Error("Reverse share is inactive");
+      throw new GoneError("Reverse share is inactive");
     }
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
-      throw new Error("Reverse share has expired");
+      throw new GoneError("Reverse share has expired");
     }
 
     if (reverseShare.password) {
       if (!password) {
-        throw new Error("Password required");
+        throw new UnauthorizedError("Password required");
       }
       const isValidPassword = await this.reverseShareRepository.comparePassword(
         password,
         reverseShare.password,
       );
       if (!isValidPassword) {
-        throw new Error("Invalid password");
+        throw new UnauthorizedError("Invalid password");
       }
     }
 
     // Layer 1: MIME/extension consistency check
     if (!isMimeTypeConsistent(fileData.mimeType, fileData.extension)) {
-      throw new Error("File type does not match the declared extension");
+      throw new ValidationError("File type does not match the declared extension");
     }
 
     // Validate objectName belongs to this reverse share's namespace (use reverseShare.id, not alias)
@@ -255,12 +262,12 @@ export class ReverseShareUploadService {
         reverseShare.id,
       );
       if (currentFileCount >= reverseShare.maxFiles) {
-        throw new Error("Maximum number of files reached");
+        throw new ForbiddenError("Maximum number of files reached");
       }
     }
 
     if (reverseShare.maxFileSize && BigInt(fileData.size) > reverseShare.maxFileSize) {
-      throw new Error("File size exceeds limit");
+      throw new ValidationError("File size exceeds limit");
     }
 
     if (reverseShare.allowedFileTypes) {
@@ -268,7 +275,7 @@ export class ReverseShareUploadService {
         .split(",")
         .map((type) => type.trim().toLowerCase());
       if (!allowedTypes.includes(fileData.extension.toLowerCase())) {
-        throw new Error("File type not allowed");
+        throw new ValidationError("File type not allowed");
       }
     }
 
@@ -285,11 +292,11 @@ export class ReverseShareUploadService {
   async copyReverseShareFileToUserFiles(fileId: string, creatorId: string) {
     const file = await this.reverseShareRepository.findFileById(fileId);
     if (!file) {
-      throw new Error("File not found");
+      throw new NotFoundError("File not found");
     }
 
     if (file.reverseShare.creatorId !== creatorId) {
-      throw new Error("Unauthorized to copy this file");
+      throw new ForbiddenError("Unauthorized to copy this file");
     }
 
     const { ConfigService } = await import("../config/service.js");
@@ -298,7 +305,7 @@ export class ReverseShareUploadService {
     const maxFileSize = BigInt(await configService.getValue("maxFileSize"));
     if (file.size > maxFileSize) {
       const maxSizeMB = Number(maxFileSize) / (1024 * 1024);
-      throw new Error(`File size exceeds the maximum allowed size of ${maxSizeMB}MB`);
+      throw new ValidationError(`File size exceeds the maximum allowed size of ${maxSizeMB}MB`);
     }
 
     const maxTotalStorage = BigInt(await configService.getValue("maxTotalStoragePerUser"));
@@ -315,7 +322,7 @@ export class ReverseShareUploadService {
 
     if (currentStorage + file.size > maxTotalStorage) {
       const availableSpace = Number(maxTotalStorage - currentStorage) / (1024 * 1024);
-      throw new Error(
+      throw new ValidationError(
         `Insufficient storage space. You have ${availableSpace.toFixed(2)}MB available`,
       );
     }
@@ -371,10 +378,10 @@ export class ReverseShareUploadService {
 
         if (retries >= maxRetries) {
           const message = error instanceof Error ? error.message : String(error);
-          throw new Error(`Failed to copy file after ${maxRetries} attempts: ${message}`);
+          throw new ValidationError(`Failed to copy file after ${maxRetries} attempts: ${message}`);
         }
 
-        const delay = Math.min(1000 * 2 ** (retries - 1), 10000);
+        const delay = Math.min(1000 * 2 ** (retries - 1), 10_000);
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
@@ -406,18 +413,18 @@ export class ReverseShareUploadService {
   private validateObjectName(objectName: string, reverseShareId: string): void {
     // Reject null bytes (path injection protection)
     if (objectName.includes("\0")) {
-      throw new Error("Invalid object name: contains null bytes");
+      throw new ValidationError("Invalid object name: contains null bytes");
     }
 
     // Reject path traversal attempts
     if (objectName.includes("..")) {
-      throw new Error("Invalid object name: contains path traversal sequences");
+      throw new ValidationError("Invalid object name: contains path traversal sequences");
     }
 
     // Validate that objectName starts with the expected namespace
     const expectedPrefix = `reverse-shares/${reverseShareId}/`;
     if (!objectName.startsWith(expectedPrefix)) {
-      throw new Error("Invalid object name: does not belong to this reverse share");
+      throw new ValidationError("Invalid object name: does not belong to this reverse share");
     }
   }
 

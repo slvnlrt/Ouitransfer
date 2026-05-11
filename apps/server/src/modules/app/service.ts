@@ -1,4 +1,5 @@
 import { prisma } from "../../shared/prisma.js";
+import { ForbiddenError, NotFoundError } from "../../utils/app-error.js";
 import { ConfigService } from "../config/service.js";
 
 export class AppService {
@@ -63,7 +64,7 @@ export class AppService {
       if (value === "false") {
         const canDisable = await this.configService.validatePasswordAuthDisable();
         if (!canDisable) {
-          throw new Error(
+          throw new ForbiddenError(
             "Password authentication cannot be disabled. At least one authentication provider must be active.",
           );
         }
@@ -75,7 +76,7 @@ export class AppService {
     });
 
     if (!config) {
-      throw new Error("Configuration not found");
+      throw new NotFoundError("Configuration not found");
     }
 
     return prisma.appConfig.update({
@@ -89,7 +90,7 @@ export class AppService {
     if (passwordAuthUpdate && passwordAuthUpdate.value === "false") {
       const canDisable = await this.configService.validatePasswordAuthDisable();
       if (!canDisable) {
-        throw new Error(
+        throw new ForbiddenError(
           "Password authentication cannot be disabled. At least one authentication provider must be active.",
         );
       }
@@ -103,7 +104,7 @@ export class AppService {
     if (existingConfigs.length !== keys.length) {
       const existingKeys = existingConfigs.map((config) => config.key);
       const missingKeys = keys.filter((key) => !existingKeys.includes(key));
-      throw new Error(`Configurations not found: ${missingKeys.join(", ")}`);
+      throw new NotFoundError(`Configurations not found: ${missingKeys.join(", ")}`);
     }
 
     return prisma.$transaction(

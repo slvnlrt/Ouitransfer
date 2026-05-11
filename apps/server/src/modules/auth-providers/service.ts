@@ -1,4 +1,5 @@
 import { prisma } from "../../shared/prisma.js";
+import { NotFoundError, UnauthorizedError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import type {
   CreateAuthProviderInput,
@@ -49,13 +50,13 @@ export class AuthProvidersService {
 
   private validateProvider(provider: AuthProviderModel | null, providerName: string): void {
     if (!provider?.enabled) {
-      throw new Error(`${ERROR_MESSAGES.PROVIDER_NOT_FOUND}: ${providerName}`);
+      throw new NotFoundError(`${ERROR_MESSAGES.PROVIDER_NOT_FOUND}: ${providerName}`);
     }
   }
 
   private validateConfig(config: ProviderConfig | null | undefined, providerName: string): void {
     if (!config) {
-      throw new Error(`${ERROR_MESSAGES.CONFIG_NOT_FOUND}: ${providerName}`);
+      throw new NotFoundError(`${ERROR_MESSAGES.CONFIG_NOT_FOUND}: ${providerName}`);
     }
   }
 
@@ -67,7 +68,7 @@ export class AuthProvidersService {
     const pendingState = this.pendingStates.get(state);
 
     if (!pendingState) {
-      throw new Error(ERROR_MESSAGES.INVALID_STATE);
+      throw new UnauthorizedError(ERROR_MESSAGES.INVALID_STATE);
     }
 
     return pendingState;

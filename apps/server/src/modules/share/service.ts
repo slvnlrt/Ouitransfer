@@ -1,6 +1,14 @@
 import type { Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { prisma } from "../../shared/prisma.js";
+import {
+  ConflictError,
+  ForbiddenError,
+  GoneError,
+  NotFoundError,
+  UnauthorizedError,
+  ValidationError,
+} from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { EmailService } from "../email/service.js";
 import { FolderService } from "../folder/service.js";
@@ -38,7 +46,7 @@ export class ShareService {
   private folderService = new FolderService();
 
   private async formatShareResponse(share: ShareWithRelations | null) {
-    if (!share) throw new Error("Share not found");
+    if (!share) throw new NotFoundError("Share not found");
 
     return {
       ...share,
@@ -101,7 +109,7 @@ export class ShareService {
       });
       const notFoundFiles = files.filter((id) => !existingFiles.some((file) => file.id === id));
       if (notFoundFiles.length > 0) {
-        throw new Error(`Files not found or access denied: ${notFoundFiles.join(", ")}`);
+        throw new NotFoundError(`Files not found or access denied: ${notFoundFiles.join(", ")}`);
       }
     }
 
@@ -116,12 +124,14 @@ export class ShareService {
         (id) => !existingFolders.some((folder) => folder.id === id),
       );
       if (notFoundFolders.length > 0) {
-        throw new Error(`Folders not found or access denied: ${notFoundFolders.join(", ")}`);
+        throw new NotFoundError(
+          `Folders not found or access denied: ${notFoundFolders.join(", ")}`,
+        );
       }
     }
 
     if ((!files || files.length === 0) && (!folders || folders.length === 0)) {
-      throw new Error("At least one file or folder must be selected to create a share");
+      throw new ValidationError("At least one file or folder must be selected to create a share");
     }
 
     const security = await prisma.shareSecurity.create({
@@ -147,7 +157,7 @@ export class ShareService {
     const share = await this.shareRepository.findShareById(shareId);
 
     if (!share) {
-      throw new Error("Share not found");
+      throw new NotFoundError("Share not found");
     }
 
     if (userId && share.creatorId === userId) {
@@ -155,21 +165,21 @@ export class ShareService {
     }
 
     if (share.expiration && new Date() > new Date(share.expiration)) {
-      throw new Error("Share has expired");
+      throw new GoneError("Share has expired");
     }
 
     if (share.security?.maxViews && share.views >= share.security.maxViews) {
-      throw new Error("Share has reached maximum views");
+      throw new GoneError("Share has reached maximum views");
     }
 
     if (share.security?.password && !password) {
-      throw new Error("Password required");
+      throw new UnauthorizedError("Password required");
     }
 
     if (share.security?.password && password) {
       const isPasswordValid = await bcrypt.compare(password, share.security.password);
       if (!isPasswordValid) {
-        throw new Error("Invalid password");
+        throw new UnauthorizedError("Invalid password");
       }
     }
 
@@ -184,11 +194,11 @@ export class ShareService {
 
     const share = await this.shareRepository.findShareById(shareId);
     if (!share) {
-      throw new Error("Share not found");
+      throw new NotFoundError("Share not found");
     }
 
     if (share.creatorId !== userId) {
-      throw new Error("Unauthorized to update this share");
+      throw new ForbiddenError("Unauthorized to update this share");
     }
 
     if (password || maxViews !== undefined) {
@@ -220,7 +230,7 @@ export class ShareService {
   async deleteShare(id: string) {
     const share = await this.shareRepository.findShareById(id);
     if (!share) {
-      throw new Error("Share not found");
+      throw new NotFoundError("Share not found");
     }
 
     await prisma.$transaction(async (tx) => {
@@ -260,11 +270,11 @@ export class ShareService {
   async updateSharePassword(shareId: string, userId: string, password: string | null) {
     const share = await this.shareRepository.findShareById(shareId);
     if (!share) {
-      throw new Error("Share not found");
+      throw new NotFoundError("Share not found");
     }
 
     if (share.creatorId !== userId) {
-      throw new Error("Unauthorized to update this share");
+      throw new ForbiddenError("Unauthorized to update this share");
     }
 
     await this.shareRepository.updateShareSecurity(share.security.id, {
@@ -278,11 +288,11 @@ export class ShareService {
   async addItemsToShare(shareId: string, userId: string, fileIds: string[], folderIds: string[]) {
     const share = await this.shareRepository.findShareById(shareId);
     if (!share) {
-      throw new Error("Share not found");
+      throw new NotFoundError("Share not found");
     }
 
     if (share.creatorId !== userId) {
-      throw new Error("Unauthorized to update this share");
+      throw new ForbiddenError("Unauthorized to update this share");
     }
 
     if (fileIds.length > 0) {
@@ -290,7 +300,7 @@ export class ShareService {
       const notFoundFiles = fileIds.filter((id) => !existingFiles.some((file) => file.id === id));
 
       if (notFoundFiles.length > 0) {
-        throw new Error(`Files not found: ${notFoundFiles.join(", ")}`);
+        throw new NotFoundError(`Files not found: ${notFoundFiles.join(", ")}`);
       }
 
       await this.shareRepository.addFilesToShare(shareId, fileIds);
@@ -303,7 +313,7 @@ export class ShareService {
       );
 
       if (notFoundFolders.length > 0) {
-        throw new Error(`Folders not found: ${notFoundFolders.join(", ")}`);
+        throw new NotFoundError(`Folders not found: ${notFoundFolders.join(", ")}`);
       }
 
       await this.shareRepository.addFoldersToShare(shareId, folderIds);
@@ -321,11 +331,11 @@ export class ShareService {
   ) {
     const share = await this.shareRepository.findShareById(shareId);
     if (!share) {
-      throw new Error("Share not found");
+      throw new NotFoundError("Share not found");
     }
 
     if (share.creatorId !== userId) {
-      throw new Error("Unauthorized to update this share");
+      throw new ForbiddenError("Unauthorized to update this share");
     }
 
     if (fileIds.length > 0) {
@@ -343,7 +353,7 @@ export class ShareService {
   async findShareById(id: string) {
     const share = await this.shareRepository.findShareById(id);
     if (!share) {
-      throw new Error("Share not found");
+      throw new NotFoundError("Share not found");
     }
     return share;
   }
@@ -351,11 +361,11 @@ export class ShareService {
   async addRecipients(shareId: string, userId: string, emails: string[]) {
     const share = await this.shareRepository.findShareById(shareId);
     if (!share) {
-      throw new Error("Share not found");
+      throw new NotFoundError("Share not found");
     }
 
     if (share.creatorId !== userId) {
-      throw new Error("Unauthorized to update this share");
+      throw new ForbiddenError("Unauthorized to update this share");
     }
 
     await this.shareRepository.addRecipients(shareId, emails);
@@ -366,11 +376,11 @@ export class ShareService {
   async removeRecipients(shareId: string, userId: string, emails: string[]) {
     const share = await this.shareRepository.findShareById(shareId);
     if (!share) {
-      throw new Error("Share not found");
+      throw new NotFoundError("Share not found");
     }
 
     if (share.creatorId !== userId) {
-      throw new Error("Unauthorized to update this share");
+      throw new ForbiddenError("Unauthorized to update this share");
     }
 
     await this.shareRepository.removeRecipients(shareId, emails);
@@ -382,11 +392,11 @@ export class ShareService {
     const share = await this.findShareById(shareId);
 
     if (!share) {
-      throw new Error("Share not found");
+      throw new NotFoundError("Share not found");
     }
 
     if (share.creatorId !== userId) {
-      throw new Error("Unauthorized to update this share");
+      throw new ForbiddenError("Unauthorized to update this share");
     }
 
     const existingAlias = await prisma.shareAlias.findUnique({
@@ -394,7 +404,7 @@ export class ShareService {
     });
 
     if (existingAlias && existingAlias.shareId !== shareId) {
-      throw new Error("Alias already in use");
+      throw new ConflictError("Alias already in use");
     }
 
     const shareAlias = await prisma.shareAlias.upsert({
@@ -425,7 +435,7 @@ export class ShareService {
     });
 
     if (!shareAlias) {
-      throw new Error("Share not found");
+      throw new NotFoundError("Share not found");
     }
 
     return this.getShare(shareAlias.shareId, password);
@@ -435,15 +445,15 @@ export class ShareService {
     const share = await this.shareRepository.findShareById(shareId);
 
     if (!share) {
-      throw new Error("Share not found");
+      throw new NotFoundError("Share not found");
     }
 
     if (share.creatorId !== userId) {
-      throw new Error("Unauthorized to access this share");
+      throw new ForbiddenError("Unauthorized to access this share");
     }
 
     if (!share.recipients || share.recipients.length === 0) {
-      throw new Error("No recipients found for this share");
+      throw new ValidationError("No recipients found for this share");
     }
 
     let senderName = "Someone";
@@ -485,7 +495,7 @@ export class ShareService {
   async getShareMetadataByAlias(alias: string) {
     const share = await this.shareRepository.findShareByAlias(alias);
     if (!share) {
-      throw new Error("Share not found");
+      throw new NotFoundError("Share not found");
     }
 
     // Check if share is expired

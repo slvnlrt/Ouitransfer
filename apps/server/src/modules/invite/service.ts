@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import bcrypt from "bcryptjs";
 
 import { prisma } from "../../shared/prisma.js";
+import { ConflictError, GoneError, NotFoundError } from "../../utils/app-error.js";
 
 export class InviteService {
   async generateInviteToken(adminUserId: string): Promise<{ token: string; expiresAt: Date }> {
@@ -54,12 +55,12 @@ export class InviteService {
 
     if (!validation.valid) {
       if (validation.used) {
-        throw new Error("This invite link has already been used");
+        throw new ConflictError("This invite link has already been used");
       }
       if (validation.expired) {
-        throw new Error("This invite link has expired");
+        throw new GoneError("This invite link has expired");
       }
-      throw new Error("Invalid invite link");
+      throw new NotFoundError("Invalid invite link");
     }
 
     const existingUser = await prisma.user.findFirst({
@@ -70,10 +71,10 @@ export class InviteService {
 
     if (existingUser) {
       if (existingUser.username === data.username) {
-        throw new Error("Username already exists");
+        throw new ConflictError("Username already exists");
       }
       if (existingUser.email === data.email) {
-        throw new Error("Email already exists");
+        throw new ConflictError("Email already exists");
       }
     }
 

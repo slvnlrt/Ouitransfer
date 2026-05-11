@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 
 import { prisma } from "../../shared/prisma.js";
+import { ConflictError, NotFoundError } from "../../utils/app-error.js";
 import { type RegisterUserInput, UserResponseSchema } from "./dto.js";
 import { type IUserRepository, PrismaUserRepository } from "./repository.js";
 
@@ -21,11 +22,11 @@ export class UserService {
     const existingUsername = await this.userRepository.findUserByUsername(data.username);
 
     if (existingUser) {
-      throw new Error("User with this email already exists");
+      throw new ConflictError("User with this email already exists");
     }
 
     if (existingUsername) {
-      throw new Error("User with this username already exists");
+      throw new ConflictError("User with this username already exists");
     }
 
     const usersCount = await prisma.user.count();
@@ -49,7 +50,7 @@ export class UserService {
   async getUserById(id: string) {
     const user = await this.userRepository.findUserById(id);
     if (!user) {
-      throw new Error("User not found");
+      throw new NotFoundError("User not found");
     }
     return UserResponseSchema.parse(user);
   }

@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import { prisma } from "../../shared/prisma.js";
+import { ForbiddenError, ValidationError } from "../../utils/app-error.js";
 import type { AuthProviderModel, ProviderUserInfo } from "./types.js";
 
 type ExistingUser = Prisma.UserGetPayload<Record<string, never>>;
@@ -12,7 +13,7 @@ export class UserLinkingService {
     const externalId = userInfo.id;
 
     if (!userInfo.email || !externalId) {
-      throw new Error("Missing required user information (email or external ID)");
+      throw new ValidationError("Missing required user information (email or external ID)");
     }
 
     const existingAuthProvider = await this.findExistingAuthProvider(
@@ -46,7 +47,9 @@ export class UserLinkingService {
 
     // Check if auto-registration is disabled
     if (provider.autoRegister === false) {
-      throw new Error(`User registration via ${provider.displayName || provider.name} is disabled`);
+      throw new ForbiddenError(
+        `User registration via ${provider.displayName || provider.name} is disabled`,
+      );
     }
 
     return await this.createNewUserWithProvider(userInfo, provider.id, String(externalId));

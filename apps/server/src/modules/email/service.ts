@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 
+import { ValidationError } from "../../utils/app-error.js";
 import { ConfigService } from "../config/service.js";
 
 interface SmtpConfig {
@@ -94,7 +95,7 @@ export class EmailService {
     }
 
     if (smtpConfig.smtpEnabled !== "true") {
-      throw new Error("SMTP is not enabled");
+      throw new ValidationError("SMTP is not enabled");
     }
 
     const port = Number(smtpConfig.smtpPort);
@@ -153,14 +154,14 @@ export class EmailService {
       return { success: true, message: "SMTP connection successful" };
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
-      throw new Error(`SMTP connection failed: ${message}`);
+      throw new ValidationError(`SMTP connection failed: ${message}`);
     }
   }
 
   async sendPasswordResetEmail(to: string, resetToken: string, origin: string) {
     const transporter = await this.createTransporter();
     if (!transporter) {
-      throw new Error("SMTP is not enabled");
+      throw new ValidationError("SMTP is not enabled");
     }
 
     const fromName = await this.configService.getValue("smtpFromName");
@@ -190,7 +191,7 @@ export class EmailService {
   ) {
     const transporter = await this.createTransporter();
     if (!transporter) {
-      throw new Error("SMTP is not enabled");
+      throw new ValidationError("SMTP is not enabled");
     }
 
     const fromName = await this.configService.getValue("smtpFromName");
@@ -272,7 +273,7 @@ export class EmailService {
   ) {
     const transporter = await this.createTransporter();
     if (!transporter) {
-      throw new Error("SMTP is not enabled");
+      throw new ValidationError("SMTP is not enabled");
     }
 
     const fromName = await this.configService.getValue("smtpFromName");

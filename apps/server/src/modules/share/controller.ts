@@ -1,13 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-import {
-  AppError,
-  ForbiddenError,
-  GoneError,
-  NotFoundError,
-  UnauthorizedError,
-  ValidationError,
-} from "../../utils/app-error.js";
+import { NotFoundError, UnauthorizedError } from "../../utils/app-error.js";
 import {
   CreateShareSchema,
   UpdateShareItemsSchema,
@@ -16,28 +9,6 @@ import {
   UpdateShareSchema,
 } from "./dto.js";
 import { ShareService } from "./service.js";
-
-/**
- * Maps common share service errors (thrown as plain Error with specific messages)
- * to appropriate AppError subclasses.
- */
-function mapShareError(error: unknown): never {
-  if (error instanceof AppError) throw error;
-  const message = error instanceof Error ? error.message : String(error);
-
-  if (message === "Share not found") throw new NotFoundError(message);
-  if (message === "Share has reached maximum views") throw new ForbiddenError(message);
-  if (message === "Share has expired") throw new GoneError(message);
-  if (message === "Unauthorized to update this share") throw new UnauthorizedError(message);
-  if (message === "Unauthorized to access this share") throw new UnauthorizedError(message);
-  if (message === "Unauthorized to delete this share") throw new UnauthorizedError(message);
-  if (message.startsWith("Files not found:") || message.startsWith("Folders not found:")) {
-    throw new NotFoundError(message);
-  }
-  if (message === "SMTP is not enabled") throw new ValidationError(message);
-
-  throw error;
-}
 
 export class ShareController {
   private shareService = new ShareService();
@@ -82,12 +53,8 @@ export class ShareController {
       request.log.error({ err }, "JWT verification failed");
     }
 
-    try {
-      const share = await this.shareService.getShare(shareId, password, userId);
-      return reply.send({ share });
-    } catch (error) {
-      mapShareError(error);
-    }
+    const share = await this.shareService.getShare(shareId, password, userId);
+    return reply.send({ share });
   }
 
   async updateShare(request: FastifyRequest, reply: FastifyReply) {
@@ -113,12 +80,8 @@ export class ShareController {
     const { shareId } = request.params as { shareId: string };
     const { password } = UpdateSharePasswordSchema.parse(request.body);
 
-    try {
-      const share = await this.shareService.updateSharePassword(shareId, userId, password);
-      return reply.send({ share });
-    } catch (error) {
-      mapShareError(error);
-    }
+    const share = await this.shareService.updateSharePassword(shareId, userId, password);
+    return reply.send({ share });
   }
 
   async addItems(request: FastifyRequest, reply: FastifyReply) {
@@ -133,17 +96,13 @@ export class ShareController {
     const { shareId } = request.params as { shareId: string };
     const { files, folders } = UpdateShareItemsSchema.parse(request.body);
 
-    try {
-      const share = await this.shareService.addItemsToShare(
-        shareId,
-        userId,
-        files || [],
-        folders || [],
-      );
-      return reply.send({ share });
-    } catch (error) {
-      mapShareError(error);
-    }
+    const share = await this.shareService.addItemsToShare(
+      shareId,
+      userId,
+      files || [],
+      folders || [],
+    );
+    return reply.send({ share });
   }
 
   async removeItems(request: FastifyRequest, reply: FastifyReply) {
@@ -158,17 +117,13 @@ export class ShareController {
     const { shareId } = request.params as { shareId: string };
     const { files, folders } = UpdateShareItemsSchema.parse(request.body);
 
-    try {
-      const share = await this.shareService.removeItemsFromShare(
-        shareId,
-        userId,
-        files || [],
-        folders || [],
-      );
-      return reply.send({ share });
-    } catch (error) {
-      mapShareError(error);
-    }
+    const share = await this.shareService.removeItemsFromShare(
+      shareId,
+      userId,
+      files || [],
+      folders || [],
+    );
+    return reply.send({ share });
   }
 
   async deleteShare(request: FastifyRequest, reply: FastifyReply) {
@@ -206,12 +161,8 @@ export class ShareController {
     const { shareId } = request.params as { shareId: string };
     const { emails } = UpdateShareRecipientsSchema.parse(request.body);
 
-    try {
-      const share = await this.shareService.addRecipients(shareId, userId, emails);
-      return reply.send({ share });
-    } catch (error) {
-      mapShareError(error);
-    }
+    const share = await this.shareService.addRecipients(shareId, userId, emails);
+    return reply.send({ share });
   }
 
   async removeRecipients(request: FastifyRequest, reply: FastifyReply) {
@@ -226,12 +177,8 @@ export class ShareController {
     const { shareId } = request.params as { shareId: string };
     const { emails } = UpdateShareRecipientsSchema.parse(request.body);
 
-    try {
-      const share = await this.shareService.removeRecipients(shareId, userId, emails);
-      return reply.send({ share });
-    } catch (error) {
-      mapShareError(error);
-    }
+    const share = await this.shareService.removeRecipients(shareId, userId, emails);
+    return reply.send({ share });
   }
 
   async createOrUpdateAlias(request: FastifyRequest, reply: FastifyReply) {
@@ -247,12 +194,8 @@ export class ShareController {
     const { alias } = request.params as { alias: string };
     const password = (request.body as { password?: string } | null)?.password;
 
-    try {
-      const share = await this.shareService.getShareByAlias(alias, password);
-      return reply.send({ share });
-    } catch (error) {
-      mapShareError(error);
-    }
+    const share = await this.shareService.getShareByAlias(alias, password);
+    return reply.send({ share });
   }
 
   async notifyRecipients(request: FastifyRequest, reply: FastifyReply) {
@@ -267,21 +210,13 @@ export class ShareController {
     const { shareId } = request.params as { shareId: string };
     const { shareLink } = request.body as { shareLink: string };
 
-    try {
-      const result = await this.shareService.notifyRecipients(shareId, userId, shareLink);
-      return reply.send(result);
-    } catch (error) {
-      mapShareError(error);
-    }
+    const result = await this.shareService.notifyRecipients(shareId, userId, shareLink);
+    return reply.send(result);
   }
 
   async getShareMetadataByAlias(request: FastifyRequest, reply: FastifyReply) {
     const { alias } = request.params as { alias: string };
-    try {
-      const metadata = await this.shareService.getShareMetadataByAlias(alias);
-      return reply.send(metadata);
-    } catch (error) {
-      mapShareError(error);
-    }
+    const metadata = await this.shareService.getShareMetadataByAlias(alias);
+    return reply.send(metadata);
   }
 }

@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 
 import { env } from "../../env.js";
+import { GoneError, NotFoundError, UnauthorizedError } from "../../utils/app-error.js";
 import { FileService } from "../file/service.js";
 import { ReverseShareRepository } from "./repository.js";
 
@@ -12,27 +13,27 @@ export class ReverseShareMultipartService {
   private async validateReverseShareAccessByAlias(alias: string, password?: string) {
     const reverseShare = await this.reverseShareRepository.findByAlias(alias);
     if (!reverseShare) {
-      throw new Error("Reverse share not found");
+      throw new NotFoundError("Reverse share not found");
     }
 
     if (!reverseShare.isActive) {
-      throw new Error("Reverse share is inactive");
+      throw new GoneError("Reverse share is inactive");
     }
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
-      throw new Error("Reverse share has expired");
+      throw new GoneError("Reverse share has expired");
     }
 
     if (reverseShare.password) {
       if (!password) {
-        throw new Error("Password required");
+        throw new UnauthorizedError("Password required");
       }
       const isValidPassword = await this.reverseShareRepository.comparePassword(
         password,
         reverseShare.password,
       );
       if (!isValidPassword) {
-        throw new Error("Invalid password");
+        throw new UnauthorizedError("Invalid password");
       }
     }
 

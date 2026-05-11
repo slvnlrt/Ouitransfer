@@ -1,11 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-import {
-  ConflictError,
-  ForbiddenError,
-  GoneError,
-  ValidationError,
-} from "../../utils/app-error.js";
+import { ForbiddenError } from "../../utils/app-error.js";
 import { InviteService } from "./service.js";
 
 export class InviteController {
@@ -45,42 +40,18 @@ export class InviteController {
   ) {
     const { token, firstName, lastName, username, email, password } = request.body;
 
-    try {
-      const user = await this.inviteService.registerWithInvite({
-        token,
-        firstName,
-        lastName,
-        username,
-        email,
-        password,
-      });
+    const user = await this.inviteService.registerWithInvite({
+      token,
+      firstName,
+      lastName,
+      username,
+      email,
+      password,
+    });
 
-      return reply.send({
-        message: "User registered successfully",
-        user,
-      });
-    } catch (error: unknown) {
-      // Map specific service errors to appropriate AppErrors
-      const message = error instanceof Error ? error.message : String(error);
-
-      if (message.includes("already been used")) {
-        throw new ValidationError("This invite link has already been used");
-      }
-      if (message.includes("expired")) {
-        throw new GoneError("This invite link has expired");
-      }
-      if (message.includes("Invalid invite")) {
-        throw new ValidationError("Invalid invite link");
-      }
-      if (message.includes("Username already exists")) {
-        throw new ConflictError("Username already exists");
-      }
-      if (message.includes("Email already exists")) {
-        throw new ConflictError("Email already exists");
-      }
-
-      // Unknown error — let the global handler deal with it as 500
-      throw error;
-    }
+    return reply.send({
+      message: "User registered successfully",
+      user,
+    });
   }
 }
