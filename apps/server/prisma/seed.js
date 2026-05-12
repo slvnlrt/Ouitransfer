@@ -88,7 +88,7 @@ const defaultConfigs = [
   },
   {
     key: "smtpHost",
-    value: "smtp.gmail.com",
+    value: "",
     type: "string",
     group: "email",
   },
@@ -100,25 +100,25 @@ const defaultConfigs = [
   },
   {
     key: "smtpUser",
-    value: "your-email@gmail.com",
+    value: "",
     type: "string",
     group: "email",
   },
   {
     key: "smtpPass",
-    value: "your-app-specific-password",
+    value: "",
     type: "string",
     group: "email",
   },
   {
     key: "smtpFromName",
-    value: "OUITRANSFER",
+    value: "Ouitransfer",
     type: "string",
     group: "email",
   },
   {
     key: "smtpFromEmail",
-    value: "noreply@burger-cie.com",
+    value: "",
     type: "string",
     group: "email",
   },
