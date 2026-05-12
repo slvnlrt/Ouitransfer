@@ -5,6 +5,7 @@ import {
   DeleteObjectCommand,
   GetObjectCommand,
   HeadObjectCommand,
+  ListPartsCommand,
   PutObjectCommand,
   UploadPartCommand,
 } from "@aws-sdk/client-s3";
@@ -301,5 +302,47 @@ export class S3StorageProvider implements StorageProvider {
     });
 
     await client.send(command);
+  }
+
+  /**
+   * List uploaded parts for a multipart upload (for upload resume).
+   * S3 ListParts is paginated (max 1000 parts per call), so we loop until exhausted.
+   */
+  async listParts(
+    objectName: string,
+    uploadId: string,
+  ): Promise<Array<{ PartNumber: number; Size: number; ETag: string }>> {
+    const client = this.ensureClient();
+    const allParts: Array<{ PartNumber: number; Size: number; ETag: string }> = [];
+    let partNumberMarker: string | undefined;
+
+    do {
+      const command = new ListPartsCommand({
+        Bucket: bucketName,
+        Key: objectName,
+        UploadId: uploadId,
+        ...(partNumberMarker !== undefined && {
+          PartNumberMarker: partNumberMarker,
+        }),
+      });
+
+      const response = await client.send(command);
+
+      if (response.Parts) {
+        for (const part of response.Parts) {
+          if (part.PartNumber != null && part.Size != null && part.ETag != null) {
+            allParts.push({
+              PartNumber: part.PartNumber,
+              Size: part.Size,
+              ETag: part.ETag,
+            });
+          }
+        }
+      }
+
+      partNumberMarker = response.IsTruncated ? response.NextPartNumberMarker : undefined;
+    } while (partNumberMarker !== undefined);
+
+    return allParts;
   }
 }

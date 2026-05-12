@@ -20,6 +20,10 @@ export interface StorageProvider {
     parts: Array<{ PartNumber: number; ETag: string }>,
   ): Promise<void>;
   abortMultipartUpload(objectName: string, uploadId: string): Promise<void>;
+  listParts(
+    objectName: string,
+    uploadId: string,
+  ): Promise<Array<{ PartNumber: number; Size: number; ETag: string }>>;
 }
 
 export interface StorageConfig {

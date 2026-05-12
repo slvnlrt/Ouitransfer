@@ -19,6 +19,7 @@ import {
   createMultipartUploadByAlias,
   getMultipartPartUrlByAlias,
   getPresignedUrlForUploadByAlias,
+  listMultipartPartsByAlias,
   registerFileUploadByAlias,
 } from "@/http/endpoints";
 import { formatFileSize } from "@/utils/format-file-size";
@@ -153,6 +154,14 @@ export function FileUploadSection({
             { uploadId, objectName },
             password ? { password } : undefined,
           );
+        },
+        listParts: async (uploadId: string, objectName: string) => {
+          const response = await listMultipartPartsByAlias(
+            alias,
+            { uploadId, objectName },
+            password ? { password } : undefined,
+          );
+          return response.data.parts;
         },
       },
     });

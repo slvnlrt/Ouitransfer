@@ -836,6 +836,51 @@ export async function reverseShareRoutes(app: FastifyInstance) {
     multipartController.abortMultipartUploadByAlias.bind(multipartController),
   );
 
+  app.post(
+    "/reverse-shares/alias/:alias/multipart/list-parts",
+    {
+      config: { csrfExempt: true },
+      schema: {
+        tags: ["Reverse Share"],
+        operationId: "listMultipartPartsByAlias",
+        summary: "List Multipart Upload Parts (Public)",
+        description:
+          "Lists already-uploaded parts for a multipart upload to a reverse share, enabling upload resume after interruption",
+        params: z.object({
+          alias: z.string().describe("Alias of the reverse share"),
+        }),
+        body: z.object({
+          uploadId: z.string().min(1).describe("The multipart upload ID"),
+          objectName: z.string().min(1).describe("The object name"),
+          password: z
+            .string()
+            .optional()
+            .describe("Password for accessing password-protected reverse shares"),
+        }),
+        response: {
+          200: z.object({
+            parts: z
+              .array(
+                z.object({
+                  PartNumber: z.number().describe("The part number"),
+                  Size: z.number().describe("The part size in bytes"),
+                  ETag: z.string().describe("The ETag of the uploaded part"),
+                }),
+              )
+              .describe("Array of already-uploaded parts"),
+          }),
+          400: ErrorResponseSchema,
+          401: ErrorResponseSchema,
+          403: ErrorResponseSchema,
+          404: ErrorResponseSchema,
+          410: ErrorResponseSchema,
+          500: ErrorResponseSchema,
+        },
+      },
+    },
+    multipartController.listPartsByAlias.bind(multipartController),
+  );
+
   app.get(
     "/reverse-shares/alias/:alias/metadata",
     {

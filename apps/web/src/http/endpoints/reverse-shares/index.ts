@@ -21,6 +21,7 @@ import type {
   GetReverseShareForUploadParams,
   GetReverseShareForUploadResult,
   GetReverseShareResult,
+  ListMultipartPartsByAliasResult,
   ListUserReverseSharesResult,
   RegisterFileUploadBody,
   RegisterFileUploadParams,
@@ -385,6 +386,24 @@ export const abortMultipartUploadByAlias = <TData = AbortMultipartUploadByAliasR
   const requestBody = { ...body, ...(params?.password ? { password: params.password } : {}) };
   return apiInstance.post(
     `/api/reverse-shares/alias/${alias}/multipart/abort`,
+    requestBody,
+    options,
+  );
+};
+
+/**
+ * List already-uploaded parts for a multipart upload to a reverse share (public endpoint)
+ * @summary List Multipart Parts for Reverse Share (Public)
+ */
+export const listMultipartPartsByAlias = <TData = ListMultipartPartsByAliasResult>(
+  alias: string,
+  body: { uploadId: string; objectName: string },
+  params?: { password?: string },
+  options?: AxiosRequestConfig,
+): Promise<TData> => {
+  const requestBody = { ...body, ...(params?.password ? { password: params.password } : {}) };
+  return apiInstance.post(
+    `/api/reverse-shares/alias/${alias}/multipart/list-parts`,
     requestBody,
     options,
   );

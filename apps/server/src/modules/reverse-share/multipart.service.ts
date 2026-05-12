@@ -111,4 +111,15 @@ export class ReverseShareMultipartService {
       message: "Multipart upload aborted successfully",
     };
   }
+
+  async listPartsByAlias(
+    alias: string,
+    uploadId: string,
+    objectName: string,
+    password?: string,
+  ): Promise<Array<{ PartNumber: number; Size: number; ETag: string }>> {
+    await this.validateReverseShareAccessByAlias(alias, password);
+
+    return await this.fileService.listParts(objectName, uploadId);
+  }
 }

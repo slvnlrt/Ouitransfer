@@ -52,6 +52,10 @@ export interface CustomMultipartFunctions {
     parts: Array<{ PartNumber: number; ETag: string }>,
   ) => Promise<void>;
   abortMultipartUpload: (uploadId: string, objectName: string) => Promise<void>;
+  listParts: (
+    uploadId: string,
+    objectName: string,
+  ) => Promise<Array<{ PartNumber: number; Size: number; ETag: string }>>;
 }
 
 /**
@@ -271,12 +275,37 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
         }
       },
 
-      //TODO: List parts (for resuming multipart uploads)
       async listParts(file: UppyFile<Meta, Body>, { uploadId, key }: UppyUploadResult) {
-        logger.debug("[Upload:Multipart] Listing parts", { fileName: file.name, uploadId, key });
-        // For simplicity, multipart upload resumption is not implemented for now
-        // Return an empty array indicating no parts have been uploaded yet
-        return [];
+        logger.debug("[Upload:Multipart] Listing parts for resume", {
+          fileName: file.name,
+          uploadId,
+          key,
+        });
+
+        try {
+          let parts: Array<{ PartNumber: number; Size: number; ETag: string }>;
+
+          if (customMultipartRef.current) {
+            parts = await customMultipartRef.current.listParts(uploadId ?? "", key);
+          } else {
+            const { listMultipartParts } = await import("@/http/endpoints/files");
+            const response = await listMultipartParts({
+              uploadId: uploadId ?? "",
+              objectName: key,
+            });
+            parts = response.data.parts;
+          }
+
+          logger.debug("[Upload:Multipart] Found existing parts", {
+            count: parts.length,
+          });
+          return parts;
+        } catch (error) {
+          logger.warn("[Upload:Multipart] Failed to list parts, starting fresh", {
+            err: error instanceof Error ? error.message : String(error),
+          });
+          return [];
+        }
       },
 
       // Sign individual parts for multipart upload

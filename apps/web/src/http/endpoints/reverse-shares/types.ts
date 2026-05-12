@@ -254,3 +254,12 @@ export interface AbortMultipartUpload200 {
   message: string;
 }
 export type AbortMultipartUploadByAliasResult = AxiosResponse<AbortMultipartUpload200>;
+
+export interface ListMultipartPartsByAlias200 {
+  parts: Array<{
+    PartNumber: number;
+    Size: number;
+    ETag: string;
+  }>;
+}
+export type ListMultipartPartsByAliasResult = AxiosResponse<ListMultipartPartsByAlias200>;

@@ -104,6 +104,19 @@ export interface AbortMultipartUploadResponse {
   message: string;
 }
 
+export interface ListMultipartPartsParams {
+  uploadId: string;
+  objectName: string;
+}
+
+export interface ListMultipartPartsResponse {
+  parts: Array<{
+    PartNumber: number;
+    Size: number;
+    ETag: string;
+  }>;
+}
+
 export interface GetPresignedUrlParams {
   filename: string;
   extension: string;
@@ -130,6 +143,7 @@ export type CreateMultipartUpload201 = CreateMultipartUploadResponse;
 export type GetMultipartPartUrl200 = GetMultipartPartUrlResponse;
 export type CompleteMultipartUpload200 = CompleteMultipartUploadResponse;
 export type AbortMultipartUpload200 = AbortMultipartUploadResponse;
+export type ListMultipartParts200 = ListMultipartPartsResponse;
 
 export type GetPresignedUrlResult = AxiosResponse<GetPresignedUrl200>;
 export type RegisterFileResult = AxiosResponse<RegisterFile201>;
@@ -143,4 +157,5 @@ export type CreateMultipartUploadResult = AxiosResponse<CreateMultipartUpload201
 export type GetMultipartPartUrlResult = AxiosResponse<GetMultipartPartUrl200>;
 export type CompleteMultipartUploadResult = AxiosResponse<CompleteMultipartUpload200>;
 export type AbortMultipartUploadResult = AxiosResponse<AbortMultipartUpload200>;
+export type ListMultipartPartsResult = AxiosResponse<ListMultipartParts200>;
 export type GenerateEmbedTokenResult = AxiosResponse<GenerateEmbedToken200>;

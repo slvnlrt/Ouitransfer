@@ -107,4 +107,24 @@ export class FileMultipartController {
       message: "Multipart upload aborted successfully",
     });
   }
+
+  async listParts(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const userId = request.user?.userId;
+    if (!userId) {
+      throw new UnauthorizedError();
+    }
+
+    const { uploadId, objectName } = request.query as {
+      uploadId: string;
+      objectName: string;
+    };
+
+    if (!uploadId || !objectName) {
+      throw new ValidationError("uploadId and objectName are required");
+    }
+
+    const parts = await this.fileService.listParts(objectName, uploadId);
+
+    return reply.status(200).send({ parts });
+  }
 }

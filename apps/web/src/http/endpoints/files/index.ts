@@ -19,6 +19,8 @@ import type {
   GetPresignedUrlParams,
   GetPresignedUrlResult,
   ListFilesResult,
+  ListMultipartPartsParams,
+  ListMultipartPartsResult,
   MoveFileBody,
   MoveFileResult,
   RegisterFileBody,
@@ -178,6 +180,20 @@ export const abortMultipartUpload = <TData = AbortMultipartUploadResult>(
   options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.post(`/api/files/multipart/abort`, abortMultipartUploadBody, options);
+};
+
+/**
+ * Lists already-uploaded parts for a multipart upload (enables upload resume)
+ * @summary List Multipart Parts
+ */
+export const listMultipartParts = <TData = ListMultipartPartsResult>(
+  params: ListMultipartPartsParams,
+  options?: AxiosRequestConfig,
+): Promise<TData> => {
+  return apiInstance.get(`/api/files/multipart/list-parts`, {
+    ...options,
+    params: { ...params, ...options?.params },
+  });
 };
 
 /**

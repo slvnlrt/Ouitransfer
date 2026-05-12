@@ -106,4 +106,26 @@ export class ReverseShareMultipartController {
     );
     return reply.status(200).send(result);
   }
+
+  async listPartsByAlias(request: FastifyRequest, reply: FastifyReply) {
+    const { alias } = request.params as { alias: string };
+    // Password in body (POST) — passwords must not appear in URLs
+    const { uploadId, objectName, password } = request.body as {
+      uploadId: string;
+      objectName: string;
+      password?: string;
+    };
+
+    if (!uploadId || !objectName) {
+      throw new ValidationError("uploadId and objectName are required");
+    }
+
+    const parts = await this.multipartService.listPartsByAlias(
+      alias,
+      uploadId,
+      objectName,
+      password,
+    );
+    return reply.status(200).send({ parts });
+  }
 }

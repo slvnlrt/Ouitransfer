@@ -74,4 +74,11 @@ export class FileService {
   async abortMultipartUpload(objectName: string, uploadId: string): Promise<void> {
     await this.storageProvider.abortMultipartUpload(objectName, uploadId);
   }
+
+  async listParts(
+    objectName: string,
+    uploadId: string,
+  ): Promise<Array<{ PartNumber: number; Size: number; ETag: string }>> {
+    return await this.storageProvider.listParts(objectName, uploadId);
+  }
 }

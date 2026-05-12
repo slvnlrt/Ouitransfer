@@ -499,4 +499,39 @@ export async function fileRoutes(app: FastifyInstance) {
     },
     multipartController.abortMultipartUpload.bind(multipartController),
   );
+
+  app.get(
+    "/files/multipart/list-parts",
+    {
+      preValidation,
+      schema: {
+        tags: ["File"],
+        operationId: "listMultipartParts",
+        summary: "List Multipart Upload Parts",
+        description:
+          "Lists already-uploaded parts for a multipart upload, enabling upload resume after interruption",
+        querystring: z.object({
+          uploadId: z.string().min(1).describe("The multipart upload ID"),
+          objectName: z.string().min(1).describe("The object name"),
+        }),
+        response: {
+          200: z.object({
+            parts: z
+              .array(
+                z.object({
+                  PartNumber: z.number().describe("The part number"),
+                  Size: z.number().describe("The part size in bytes"),
+                  ETag: z.string().describe("The ETag of the uploaded part"),
+                }),
+              )
+              .describe("Array of already-uploaded parts"),
+          }),
+          400: ErrorResponseSchema,
+          401: ErrorResponseSchema,
+          500: ErrorResponseSchema,
+        },
+      },
+    },
+    multipartController.listParts.bind(multipartController),
+  );
 }

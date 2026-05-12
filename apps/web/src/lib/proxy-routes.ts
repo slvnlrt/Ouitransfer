@@ -179,6 +179,7 @@ export const routes: RouteConfig[] = [
   r("POST", "files/multipart/abort", "/files/multipart/abort"),
   r("POST", "files/multipart/complete", "/files/multipart/complete"),
   r("POST", "files/multipart/create", "/files/multipart/create"),
+  r("GET", "files/multipart/list-parts", "/files/multipart/list-parts", { query: true }),
   r("GET", "files/multipart/part-url", "/files/multipart/part-url", { query: true }),
   r("PUT", "files/:id/move", "/files/:id/move"),
   // 2-seg static (before dynamic files/:id)
@@ -254,6 +255,12 @@ export const routes: RouteConfig[] = [
     "POST",
     "reverse-shares/alias/:alias/multipart/create",
     "/reverse-shares/alias/:alias/multipart/create",
+    { cookie: false },
+  ),
+  r(
+    "POST",
+    "reverse-shares/alias/:alias/multipart/list-parts",
+    "/reverse-shares/alias/:alias/multipart/list-parts",
     { cookie: false },
   ),
   r(
