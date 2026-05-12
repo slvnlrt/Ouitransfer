@@ -57,7 +57,7 @@
     "@tanstack/react-query-devtools": "^5.100.6",
     "@uppy/aws-s3": "^4.3.2",
     "@uppy/core": "^4.5.2",
-    "axios": "^1.10.0",
+    "axios": "^1.15.2",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",
     "motion": "catalog:",
