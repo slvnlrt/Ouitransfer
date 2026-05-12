@@ -938,3 +938,20 @@
 - M-2: Documented accepted timing leak in backup code findIndex
 - M-3: Documented defense-in-depth double isAccountLocked check
 - M-5: Extracted refresh token cookie constants to auth.config.ts
+
+### Phase 5 Quality Audit (post-completion)
+Systematic review found 13 issues (3 Critical, 7 Important, 3 Minor). All resolved.
+Full report: `audit/TODO-PHASE-5-QUALITY-AUDIT.md`
+- QA-C1: auth-providers error schemas → ErrorResponseSchema (was causing 500 instead of 401/403)
+- QA-C2: auth-providers adminPreValidation `<= 1` → `=== 0` (unfixed security bug)
+- QA-C3: /auth/refresh reply.send() → throw UnauthorizedError
+- QA-I1: Extracted shared `createAdminPreValidation` middleware (3 copies → 1 shared)
+- QA-I2: s3-storage routes: added 401/500 error schemas
+- QA-I3: invite route: replaced inline preValidation with shared adminPreValidation
+- QA-I4: invite route: added 401 error schema
+- QA-I5: Removed 31 redundant jwtVerify() calls from 5 controllers
+- QA-I6: storage routes: added preValidation hooks (was auth-only-in-controller)
+- QA-I7: Added 11 integration tests for adminPreValidation middleware
+- QA-M1: Fixed 9 preValidation hooks: log level error → warn
+- QA-M2: share/controller.ts: optional JWT failure log error → debug
+- QA-M3: Added error schemas to storage and s3-storage routes
