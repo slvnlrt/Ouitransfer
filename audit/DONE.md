@@ -1028,3 +1028,78 @@ Full report: `audit/TODO-PHASE-5-QUALITY-AUDIT.md`
 - QA-M1: Fixed 9 preValidation hooks: log level error → warn
 - QA-M2: share/controller.ts: optional JWT failure log error → debug
 - QA-M3: Added error schemas to storage and s3-storage routes
+
+---
+
+## Phase 7: Dependency Modernization
+
+### 7.4 — Consolidate icon libraries (@tabler/icons-react → lucide-react + react-icons/tb)
+- **Date**: 2026-05-12
+- **Files**: ~122 source files in `apps/web/src/`, `apps/web/package.json`
+- **Change**: Migrated ~85 non-brand icons to `lucide-react`, 17 brand icons to `react-icons/tb`. Removed `@tabler/icons-react` from dependencies. Created union type in `file-icons.tsx`. Fixed Link/LinkIcon naming collision.
+- **Verified**: PASS — 203 web tests, type-check clean, 0 tabler imports remain
+
+### 7.5 — Remove node-fetch, use native fetch
+- **Date**: 2026-05-12
+- **Files**: `apps/server/package.json`
+- **Change**: Removed `node-fetch` from dependencies (zero imports, Node 24 has native fetch)
+- **Verified**: PASS — 192 server tests, type-check clean
+
+### 7.6 — Remove redundant ts-node, keep only tsx
+- **Date**: 2026-05-12
+- **Files**: `apps/server/package.json`, `knip.json`
+- **Change**: Removed `ts-node` from devDependencies, removed from Knip `ignoreDependencies`
+- **Verified**: PASS
+
+### 7.7 — Replace nookies with native document.cookie
+- **Date**: 2026-05-12
+- **Files**: `apps/web/src/components/general/language-switcher.tsx`, `apps/web/package.json`
+- **Change**: Replaced `setCookie` from nookies with native `document.cookie` assignment (SameSite=Lax, conditional Secure, encodeURIComponent). Removed `nookies` package.
+- **Verified**: PASS
+
+### 7.8 — Rename framer-motion to motion
+- **Date**: 2026-05-12
+- **Files**: `apps/web/package.json`, 9 source files
+- **Change**: Replaced `framer-motion` with `motion` package. Updated all imports from `"framer-motion"` to `"motion/react"`.
+- **Verified**: PASS — all 3 app type-checks clean
+
+### 7.9 — Remove @types/react-dropzone (react-dropzone ships own types)
+- **Date**: 2026-05-12
+- **Files**: `apps/web/package.json`
+- **Change**: Removed `@types/react-dropzone` from dependencies (react-dropzone v14+ ships own types)
+- **Verified**: PASS
+
+### 7.10 — Prisma CLI and Client versions already aligned
+- **Date**: 2026-05-12
+- **Verified**: Both at `^6.11.0`, no change needed
+
+### 7.11 — Remove unused openid-client
+- **Date**: 2026-05-12
+- **Files**: `apps/server/package.json`
+- **Change**: Removed `openid-client` (zero imports, OAuth uses manual fetch)
+- **Verified**: PASS
+
+### 7.12 — Remove unused js-cookie + @types/js-cookie
+- **Date**: 2026-05-12
+- **Files**: `apps/web/package.json`
+- **Change**: Removed `js-cookie` and `@types/js-cookie` (installed but never imported)
+- **Verified**: PASS
+
+### 7.13 — Add motion + jose to pnpm catalog
+- **Date**: 2026-05-12
+- **Files**: `pnpm-workspace.yaml`, `apps/web/package.json`, `apps/docs/package.json`, `apps/server/package.json`
+- **Change**: Added `motion: "^12.23.0"` and `jose: "^5.10.0"` to catalog. Updated all consumers to `catalog:`.
+- **Verified**: PASS
+
+### 7.14 — Replace date-fns with Intl.DateTimeFormat (formatDateTime)
+- **Date**: 2026-05-12
+- **Files**: 4 source files, `apps/web/package.json`
+- **Change**: Replaced `date-fns` `format()` with `formatDateTime()` (Intl-based) in shares-table, share-details-modal, received-files-file-row, share-details. Fixed hardcoded `ptBR` locale bug. Removed `date-fns`. Added 13 `formatDateTime` locale tests.
+- **Verified**: PASS — 203 web tests
+
+### Review follow-ups
+- M-3 (encodeURIComponent cookie value): Fixed inline
+- M-5 (formatDateTime locale tests): 13 tests added
+- M-1 (hardcoded "Move" label): Forwarded to Phase 8
+- M-2 (icon semantic equivalents): Forwarded to Phase 8
+- M-4 (pre-existing knip findings): Forwarded to Phase 8

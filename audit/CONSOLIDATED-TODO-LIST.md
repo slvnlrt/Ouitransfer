@@ -1324,7 +1324,7 @@ Critical Replacements (12h)
 
 Cleanup \& Consolidation (8h)
 
-- [ ] 7.4 — Consolidate icon libraries to lucide-react only  
+- [x] 7.4 — Consolidate icon libraries to lucide-react only  
 
   Files: apps/web/package.json, all components using @tabler/icons-react or react-icons  
 
@@ -1332,7 +1332,7 @@ Cleanup \& Consolidation (8h)
 
   Justification: Audit 07 — 3 icon libraries is excessive, increases bundle size
 
-- [ ] 7.5 — Remove node-fetch, use native fetch  
+- [x] 7.5 — Remove node-fetch, use native fetch  
 
   File: apps/server/package.json, all server files importing node-fetch  
 
@@ -1340,7 +1340,7 @@ Cleanup \& Consolidation (8h)
 
   Justification: Audit 07 — node-fetch is superseded by native fetch in Node 18+
 
-- [ ] 7.6 — Remove redundant ts-node, keep only tsx  
+- [x] 7.6 — Remove redundant ts-node, keep only tsx  
 
   File: apps/server/package.json  
 
@@ -1348,7 +1348,7 @@ Cleanup \& Consolidation (8h)
 
   Justification: Audit 07 — redundant, tsx does everything ts-node does but better
 
-- [ ] 7.7 — Replace nookies with Next.js native cookies  
+- [x] 7.7 — Replace nookies with Next.js native cookies  
 
   File: apps/web/package.json, files using nookies  
 
@@ -1356,7 +1356,7 @@ Cleanup \& Consolidation (8h)
 
   Justification: Audit 07 — stale since 2022, designed for Pages Router, App Router has native alternatives
 
-- [ ] 7.8 — Rename framer-motion to motion  
+- [x] 7.8 — Rename framer-motion to motion  
 
   File: apps/web/package.json  
 
@@ -1364,7 +1364,7 @@ Cleanup \& Consolidation (8h)
 
   Justification: Audit 07 — inconsistency, framer-motion is the legacy name
 
-- [ ] 7.9 — Move @types/\* from dependencies to devDependencies  
+- [x] 7.9 — Move @types/\* from dependencies to devDependencies  
 
   Files: apps/server/package.json (@types/crypto-js), apps/web/package.json (@types/react-dropzone)  
 
@@ -1372,7 +1372,7 @@ Cleanup \& Consolidation (8h)
 
   Justification: Audit 07 — @types/\* in production dependencies
 
-- [ ] 7.10 — Align Prisma CLI and Client versions  
+- [x] 7.10 — Align Prisma CLI and Client versions  
 
   File: apps/server/package.json  
 

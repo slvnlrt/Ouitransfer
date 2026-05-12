@@ -135,6 +135,9 @@ audit/
   REVIEW-PHASE-5-BATCH-2.md   Phase 5 Batch 2 review (Tasks 3-5)
   REVIEW-PHASE-5-BATCH-3.md   Phase 5 Batch 3 review (Tasks 6-7)
   REVIEW-PHASE-5-BATCH-4.md   Phase 5 Batch 4 review (Tasks 8-9)
+  REVIEW-PHASE-7.md           Phase 7 final review
+  TODO-POST-PHASE-7.md        Reviewer follow-ups from Phase 7 (all resolved)
+  PHASE-7-PLAN.md             Phase 7 implementation plan (historical snapshot)
 ```
 
 ### Phase 4 — Frontend Modernization: COMPLETE
@@ -219,6 +222,22 @@ Key changes:
   updated for RustFS. Lefthook already correct (Biome `--staged`).
 - Review follow-ups: 27 items (4 Critical + 4 Legacy + 9 Important + 8 Minor), all resolved.
   See `audit/TODO-POST-PHASE-6.md`.
+
+### Phase 7 — Dependency Modernization: COMPLETE
+10 packages removed, 2 added to pnpm catalog, ~122 icon import sites migrated. 5 commits.
+Key changes:
+- **Server cleanup**: Removed `node-fetch` (unused, Node 24 native fetch), `openid-client` (unused,
+  OAuth via manual fetch), `ts-node` (redundant with tsx). Updated knip.json.
+- **Motion rename**: `framer-motion` → `motion` package. 9 source files updated to `"motion/react"`.
+  Added `motion: "^12.23.0"` and `jose: "^5.10.0"` to pnpm catalog.
+- **Web dep cleanup**: Removed `nookies` (replaced with native `document.cookie` + encodeURIComponent),
+  `js-cookie` + `@types/js-cookie` (installed but never imported), `date-fns` (replaced with
+  `formatDateTime()` using `Intl.DateTimeFormat`), `@types/react-dropzone` (react-dropzone v14 ships
+  own types). Fixed hardcoded `ptBR` locale bug. Added 13 `formatDateTime` locale tests.
+- **Icon consolidation**: Removed `@tabler/icons-react`. ~85 non-brand icons → `lucide-react`,
+  17 brand icons → `react-icons/tb`. Union type in `file-icons.tsx`. Link/LinkIcon collision fixed.
+- Review: 0 Critical, 2 Important (documentation-only), 7 Minor (3 fixed inline, 3 forwarded to
+  Phase 8, 1 pre-existing no-action). See `audit/REVIEW-PHASE-7.md` and `audit/TODO-POST-PHASE-7.md`.
 
 ## Important: No Production, No Legacy
 The app is **not in production** and has no existing users. This means:
