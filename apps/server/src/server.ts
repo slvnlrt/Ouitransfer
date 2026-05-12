@@ -51,8 +51,6 @@ async function startServer() {
   const { isInternalStorage, isExternalS3, ensureBucket } = await import(
     "./config/storage.config.js"
   );
-  const { runAutoMigration } = await import("./scripts/migrate-filesystem-to-s3.js");
-  await runAutoMigration();
   await ensureBucket();
 
   await app.register(fastifyMultipart, {
@@ -82,7 +80,7 @@ async function startServer() {
   app.register(s3StorageRoutes);
 
   if (isInternalStorage) {
-    app.log.info("Using internal storage (auto-configured)");
+    app.log.info("Using internal storage");
   } else if (isExternalS3) {
     app.log.info("Using external S3 storage (AWS/S3-compatible)");
   } else {

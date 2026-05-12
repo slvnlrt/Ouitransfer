@@ -13,16 +13,12 @@ const envSchema = z.object({
   S3_FORCE_PATH_STYLE: z.union([z.literal("true"), z.literal("false")]).default("false"),
   S3_REJECT_UNAUTHORIZED: z.union([z.literal("true"), z.literal("false")]).default("true"),
 
-  // Legacy encryption vars (kept for backward compatibility but not used with S3 storage)
-  ENCRYPTION_KEY: z.string().optional(),
-  DISABLE_FILESYSTEM_ENCRYPTION: z.union([z.literal("true"), z.literal("false")]).default("true"),
-
   // Application configuration
   PORT: z.coerce.number().int().min(1).max(65535).optional().default(3333),
   PRESIGNED_URL_EXPIRATION: z.coerce.number().int().min(60).max(86400).optional().default(3600),
   PRESIGNED_GET_URL_EXPIRATION: z.coerce.number().int().min(60).max(86400).optional().default(900),
   SECURE_SITE: z.union([z.literal("true"), z.literal("false")]).default("true"),
-  STORAGE_URL: z.string().optional(), // Storage URL for internal storage presigned URLs (required when ENABLE_S3=false, e.g., https://syrg.OUITRANSFER.com or http://192.168.1.100:9379)
+  STORAGE_URL: z.string().optional(), // Public URL for internal storage presigned URLs (required when ENABLE_S3=false, e.g., http://192.168.1.100:9000)
   DATABASE_URL: z.string().optional().default("file:/app/server/prisma/ouitransfer.db"),
   CUSTOM_PATH: z.string().optional(),
 

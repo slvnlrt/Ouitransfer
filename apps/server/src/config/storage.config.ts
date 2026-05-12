@@ -7,7 +7,7 @@ import type { StorageConfig } from "../types/storage.js";
 
 /**
  * Storage configuration:
- * - Default (ENABLE_S3=false or not set): Internal storage (auto-configured, zero config)
+ * - Default (ENABLE_S3=false or not set): Internal storage (S3_* env vars point to internal storage service, e.g. RustFS container)
  * - ENABLE_S3=true: External S3 (AWS, S3-compatible, etc) using env vars
  *
  * Credentials always come from environment variables (S3_* env vars).
@@ -76,7 +76,7 @@ export const isInternalStorage = s3Client !== null && env.ENABLE_S3 !== "true";
 
 /**
  * Creates a public S3 client for presigned URL generation.
- * - Internal storage (ENABLE_S3=false): Uses STORAGE_URL (e.g., https://syrg.OUITRANSFER.com)
+ * - Internal storage (ENABLE_S3=false): Uses STORAGE_URL (e.g., https://storage.example.com)
  * - External S3 (ENABLE_S3=true): Uses the original S3 endpoint configuration
  *
  * @returns S3Client configured with public endpoint, or null if S3 is disabled
@@ -93,7 +93,7 @@ export function createPublicS3Client(): S3Client | null {
     if (!env.STORAGE_URL) {
       throw new Error(
         "[STORAGE] STORAGE_URL environment variable is required when using internal storage (ENABLE_S3=false). " +
-          "Set STORAGE_URL to your public storage URL with protocol (e.g., https://syrg.OUITRANSFER.com or http://192.168.1.100:9379)",
+          "Set STORAGE_URL to your public storage URL with protocol (e.g., https://storage.example.com or http://192.168.1.100:9000)",
       );
     }
     publicEndpoint = env.STORAGE_URL;
@@ -139,6 +139,11 @@ export async function ensureBucket(): Promise<void> {
       await s3Client.send(new CreateBucketCommand({ Bucket: bucketName }));
       console.log(`[STORAGE] Bucket "${bucketName}" created`);
     } else {
+      console.error(
+        `[STORAGE] Bucket check failed for "${bucketName}":`,
+        err.name,
+        (error as Error).message,
+      );
       throw error;
     }
   }
