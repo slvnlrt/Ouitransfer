@@ -29,7 +29,6 @@
   },
   "dependencies": {
     "@radix-ui/react-dialog": "catalog:",
-    "class-variance-authority": "catalog:",
     "clsx": "catalog:",
     "fumadocs-core": "15.2.7",
     "fumadocs-mdx": "11.6.10",
