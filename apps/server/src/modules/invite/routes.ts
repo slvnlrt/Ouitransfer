@@ -2,6 +2,7 @@ import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 
 import { UnauthorizedError } from "../../utils/app-error.js";
+import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { InviteController } from "./controller.js";
 import {
   CreateInviteTokenResponseSchema,
@@ -23,8 +24,8 @@ export async function inviteRoutes(app: FastifyInstance) {
         description: "Generate a one-time use invite token for user registration (admin only)",
         response: {
           200: CreateInviteTokenResponseSchema,
-          403: z.object({ error: z.string().describe("Error message") }),
-          500: z.object({ error: z.string().describe("Error message") }),
+          403: ErrorResponseSchema,
+          500: ErrorResponseSchema,
         },
       },
       preValidation: async (request: FastifyRequest) => {
@@ -54,7 +55,7 @@ export async function inviteRoutes(app: FastifyInstance) {
         }),
         response: {
           200: ValidateInviteTokenResponseSchema,
-          500: z.object({ error: z.string().describe("Error message") }),
+          500: ErrorResponseSchema,
         },
       },
     },
@@ -73,8 +74,8 @@ export async function inviteRoutes(app: FastifyInstance) {
         body: RegisterWithInviteSchema,
         response: {
           200: RegisterWithInviteResponseSchema,
-          400: z.object({ error: z.string().describe("Error message") }),
-          500: z.object({ error: z.string().describe("Error message") }),
+          400: ErrorResponseSchema,
+          500: ErrorResponseSchema,
         },
       },
     },

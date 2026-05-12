@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { env } from "../../env.js";
 import { UnauthorizedError } from "../../utils/app-error.js";
+import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { ConfigService } from "../config/service.js";
 import { validatePasswordMiddleware } from "../user/middleware.js";
 import { AuthController } from "./controller.js";
@@ -76,7 +77,7 @@ export async function authRoutes(app: FastifyInstance) {
               message: z.string().describe("2FA required message"),
             }),
           ]),
-          400: z.object({ error: z.string().describe("Error message") }),
+          400: ErrorResponseSchema,
         },
       },
     },
@@ -114,7 +115,7 @@ export async function authRoutes(app: FastifyInstance) {
               updatedAt: z.date().describe("User last update date"),
             }),
           }),
-          400: z.object({ error: z.string().describe("Error message") }),
+          400: ErrorResponseSchema,
         },
       },
     },
@@ -159,7 +160,7 @@ export async function authRoutes(app: FastifyInstance) {
           200: z.object({
             message: z.string().describe("Reset password email sent"),
           }),
-          400: z.object({ error: z.string().describe("Error message") }),
+          400: ErrorResponseSchema,
         },
       },
     },
@@ -188,7 +189,7 @@ export async function authRoutes(app: FastifyInstance) {
           200: z.object({
             message: z.string().describe("Reset password message"),
           }),
-          400: z.object({ error: z.string().describe("Error message") }),
+          400: ErrorResponseSchema,
         },
       },
     },
@@ -252,7 +253,7 @@ export async function authRoutes(app: FastifyInstance) {
               }),
             ),
           }),
-          401: z.object({ error: z.string().describe("Error message") }),
+          401: ErrorResponseSchema,
         },
       },
       preValidation: async (request: FastifyRequest) => {
@@ -285,7 +286,7 @@ export async function authRoutes(app: FastifyInstance) {
             success: z.boolean().describe("Success status"),
             message: z.string().describe("Success message"),
           }),
-          401: z.object({ error: z.string().describe("Error message") }),
+          401: ErrorResponseSchema,
         },
       },
       preValidation: async (request: FastifyRequest) => {
@@ -316,7 +317,7 @@ export async function authRoutes(app: FastifyInstance) {
             message: z.string().describe("Success message"),
             removedCount: z.number().describe("Number of devices removed"),
           }),
-          401: z.object({ error: z.string().describe("Error message") }),
+          401: ErrorResponseSchema,
         },
       },
       preValidation: async (request: FastifyRequest) => {
@@ -345,7 +346,7 @@ export async function authRoutes(app: FastifyInstance) {
           200: z.object({
             passwordAuthEnabled: z.boolean().describe("Whether password authentication is enabled"),
           }),
-          400: z.object({ error: z.string().describe("Error message") }),
+          400: ErrorResponseSchema,
         },
       },
     },
@@ -370,7 +371,7 @@ export async function authRoutes(app: FastifyInstance) {
           200: z.object({
             message: z.string().describe("Success message"),
           }),
-          401: z.object({ error: z.string().describe("Error message") }),
+          401: ErrorResponseSchema,
         },
       },
     },

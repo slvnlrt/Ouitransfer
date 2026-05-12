@@ -2,6 +2,7 @@ import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 
 import { UnauthorizedError } from "../../utils/app-error.js";
+import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { TwoFactorController } from "./controller.js";
 
 export async function twoFactorRoutes(app: FastifyInstance) {
@@ -44,8 +45,8 @@ export async function twoFactorRoutes(app: FastifyInstance) {
               )
               .describe("Backup codes"),
           }),
-          400: z.object({ error: z.string().describe("Error message") }),
-          401: z.object({ error: z.string().describe("Error message") }),
+          400: ErrorResponseSchema,
+          401: ErrorResponseSchema,
         },
       },
     },
@@ -70,8 +71,8 @@ export async function twoFactorRoutes(app: FastifyInstance) {
             success: z.boolean().describe("Setup success"),
             backupCodes: z.array(z.string()).describe("Backup codes"),
           }),
-          400: z.object({ error: z.string().describe("Error message") }),
-          401: z.object({ error: z.string().describe("Error message") }),
+          400: ErrorResponseSchema,
+          401: ErrorResponseSchema,
         },
       },
     },
@@ -101,8 +102,8 @@ export async function twoFactorRoutes(app: FastifyInstance) {
             success: z.boolean().describe("Verification success"),
             method: z.enum(["totp", "backup"]).describe("Verification method used"),
           }),
-          400: z.object({ error: z.string().describe("Error message") }),
-          401: z.object({ error: z.string().describe("Error message") }),
+          400: ErrorResponseSchema,
+          401: ErrorResponseSchema,
         },
       },
     },
@@ -126,8 +127,8 @@ export async function twoFactorRoutes(app: FastifyInstance) {
           200: z.object({
             success: z.boolean().describe("Disable success"),
           }),
-          400: z.object({ error: z.string().describe("Error message") }),
-          401: z.object({ error: z.string().describe("Error message") }),
+          400: ErrorResponseSchema,
+          401: ErrorResponseSchema,
         },
       },
     },
@@ -147,8 +148,8 @@ export async function twoFactorRoutes(app: FastifyInstance) {
           200: z.object({
             backupCodes: z.array(z.string()).describe("New backup codes"),
           }),
-          400: z.object({ error: z.string().describe("Error message") }),
-          401: z.object({ error: z.string().describe("Error message") }),
+          400: ErrorResponseSchema,
+          401: ErrorResponseSchema,
         },
       },
     },
@@ -170,8 +171,8 @@ export async function twoFactorRoutes(app: FastifyInstance) {
             verified: z.boolean().describe("Whether 2FA is verified"),
             availableBackupCodes: z.number().describe("Number of available backup codes"),
           }),
-          400: z.object({ error: z.string().describe("Error message") }),
-          401: z.object({ error: z.string().describe("Error message") }),
+          400: ErrorResponseSchema,
+          401: ErrorResponseSchema,
         },
       },
     },

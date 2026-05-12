@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { prisma } from "../../shared/prisma.js";
 import { ForbiddenError, UnauthorizedError } from "../../utils/app-error.js";
+import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { AppController } from "./controller.js";
 import { BulkUpdateConfigSchema, ConfigResponseSchema } from "./dto.js";
 
@@ -54,7 +55,7 @@ export async function appRoutes(app: FastifyInstance) {
             appLogo: z.string().describe("The application logo"),
             firstUserAccess: z.boolean().describe("Whether it's the first user access"),
           }),
-          400: z.object({ error: z.string().describe("Error message") }),
+          400: ErrorResponseSchema,
         },
       },
     },
@@ -74,7 +75,7 @@ export async function appRoutes(app: FastifyInstance) {
             storageProvider: z.enum(["s3", "filesystem"]).describe("The active storage provider"),
             s3Enabled: z.boolean().describe("Whether S3 storage is enabled"),
           }),
-          400: z.object({ error: z.string().describe("Error message") }),
+          400: ErrorResponseSchema,
         },
       },
     },
@@ -101,10 +102,10 @@ export async function appRoutes(app: FastifyInstance) {
           200: z.object({
             config: ConfigResponseSchema,
           }),
-          400: z.object({ error: z.string().describe("Error message") }),
-          401: z.object({ error: z.string().describe("Error message") }),
-          403: z.object({ error: z.string().describe("Error message") }),
-          404: z.object({ error: z.string().describe("Error message") }),
+          400: ErrorResponseSchema,
+          401: ErrorResponseSchema,
+          403: ErrorResponseSchema,
+          404: ErrorResponseSchema,
         },
       },
     },
@@ -123,7 +124,7 @@ export async function appRoutes(app: FastifyInstance) {
           200: z.object({
             configs: z.array(ConfigResponseSchema),
           }),
-          400: z.object({ error: z.string().describe("Error message") }),
+          400: ErrorResponseSchema,
         },
       },
     },
@@ -143,9 +144,9 @@ export async function appRoutes(app: FastifyInstance) {
           200: z.object({
             configs: z.array(ConfigResponseSchema),
           }),
-          400: z.object({ error: z.string().describe("Error message") }),
-          401: z.object({ error: z.string().describe("Error message") }),
-          403: z.object({ error: z.string().describe("Error message") }),
+          400: ErrorResponseSchema,
+          401: ErrorResponseSchema,
+          403: ErrorResponseSchema,
         },
       },
     },
@@ -167,9 +168,9 @@ export async function appRoutes(app: FastifyInstance) {
           200: z.object({
             configs: z.array(ConfigResponseSchema),
           }),
-          400: z.object({ error: z.string().describe("Error message") }),
-          401: z.object({ error: z.string().describe("Error message") }),
-          403: z.object({ error: z.string().describe("Error message") }),
+          400: ErrorResponseSchema,
+          401: ErrorResponseSchema,
+          403: ErrorResponseSchema,
         },
       },
     },
@@ -231,15 +232,9 @@ export async function appRoutes(app: FastifyInstance) {
             success: z.boolean().describe("Whether the SMTP connection test was successful"),
             message: z.string().describe("Descriptive message about the test result"),
           }),
-          400: z.object({
-            error: z.string().describe("Error message describing what went wrong with the test"),
-          }),
-          401: z.object({
-            error: z.string().describe("Authentication error - invalid or missing JWT token"),
-          }),
-          403: z.object({
-            error: z.string().describe("Authorization error - user does not have admin privileges"),
-          }),
+          400: ErrorResponseSchema,
+          401: ErrorResponseSchema,
+          403: ErrorResponseSchema,
         },
       },
     },
@@ -259,9 +254,9 @@ export async function appRoutes(app: FastifyInstance) {
           200: z.object({
             logo: z.string().describe("The logo URL"),
           }),
-          400: z.object({ error: z.string().describe("Error message") }),
-          401: z.object({ error: z.string().describe("Error message") }),
-          403: z.object({ error: z.string().describe("Error message") }),
+          400: ErrorResponseSchema,
+          401: ErrorResponseSchema,
+          403: ErrorResponseSchema,
         },
       },
     },
@@ -281,9 +276,9 @@ export async function appRoutes(app: FastifyInstance) {
           200: z.object({
             message: z.string().describe("Success message"),
           }),
-          400: z.object({ error: z.string().describe("Error message") }),
-          401: z.object({ error: z.string().describe("Error message") }),
-          403: z.object({ error: z.string().describe("Error message") }),
+          400: ErrorResponseSchema,
+          401: ErrorResponseSchema,
+          403: ErrorResponseSchema,
         },
       },
     },

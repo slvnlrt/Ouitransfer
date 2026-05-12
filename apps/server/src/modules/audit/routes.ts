@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { ForbiddenError, UnauthorizedError } from "../../utils/app-error.js";
+import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { AuditController } from "./controller.js";
 import { AuditActionSchema } from "./service.js";
 
@@ -65,8 +66,8 @@ export async function auditRoutes(app: FastifyInstance) {
             ),
             total: z.number().describe("Total number of matching records"),
           }),
-          401: z.object({ error: z.string().describe("Error message") }),
-          403: z.object({ error: z.string().describe("Error message") }),
+          401: ErrorResponseSchema,
+          403: ErrorResponseSchema,
         },
       },
     },

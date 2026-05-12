@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 
+import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { StorageController } from "./controller.js";
 
 export async function storageRoutes(app: FastifyInstance) {
@@ -21,7 +22,7 @@ export async function storageRoutes(app: FastifyInstance) {
             diskAvailableGB: z.number().describe("The server disk available in GB"),
             uploadAllowed: z.boolean().describe("Whether file upload is allowed"),
           }),
-          500: z.object({ error: z.string().describe("Error message") }),
+          500: ErrorResponseSchema,
         },
       },
     },
@@ -52,8 +53,8 @@ export async function storageRoutes(app: FastifyInstance) {
               gb: z.number(),
             }),
           }),
-          400: z.object({ error: z.string().describe("Error message") }),
-          500: z.object({ error: z.string().describe("Error message") }),
+          400: ErrorResponseSchema,
+          500: ErrorResponseSchema,
         },
       },
     },
