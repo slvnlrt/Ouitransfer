@@ -76,7 +76,7 @@ Choose your storage method based on your needs:
           # - S3_BUCKET_NAME=ouitransfer-files        # Your bucket name
           # - S3_REGION=us-east-1               # Region (optional)
           # - S3_USE_SSL=true                   # Use SSL (optional)
-          # - S3_FORCE_PATH_STYLE=false         # Path-style URLs (optional, true for Minio)
+          # - S3_FORCE_PATH_STYLE=false         # Path-style URLs (optional, true for RustFS or self-hosted S3)
           # - S3_REJECT_UNAUTHORIZED=true       # Reject self-signed certs (optional)
           #
           # ==============================================================================
@@ -147,7 +147,7 @@ Choose your storage method based on your needs:
           # - S3_BUCKET_NAME=ouitransfer-files        # Your bucket name
           # - S3_REGION=us-east-1               # Region (optional)
           # - S3_USE_SSL=true                   # Use SSL (optional)
-          # - S3_FORCE_PATH_STYLE=false         # Path-style URLs (optional, true for Minio)
+          # - S3_FORCE_PATH_STYLE=false         # Path-style URLs (optional, true for RustFS or self-hosted S3)
           # - S3_REJECT_UNAUTHORIZED=true       # Reject self-signed certs (optional)
           #
           # ==============================================================================
@@ -200,7 +200,7 @@ Customize OUITRANSFER's behavior with these environment variables:
 | `S3_BUCKET_NAME`             | -       | S3 bucket name for file storage (required when using S3)                                                                 |
 | `S3_REGION`                  | -       | S3 region configuration (optional when using S3)                                                                         |
 | `S3_USE_SSL`                 | `true`  | Enable SSL for S3 connections (optional when using S3)                                                                   |
-| `S3_FORCE_PATH_STYLE`        | `false` | Force path-style S3 URLs (optional when using S3, set to `true` for Minio)                                              |
+| `S3_FORCE_PATH_STYLE`        | `false` | Force path-style S3 URLs (optional when using S3, set to `true` for RustFS or self-hosted S3)                           |
 | `S3_REJECT_UNAUTHORIZED`     | `true`  | Enable strict SSL certificate validation for S3 (set to `false` for self-signed certificates)                           |
 | `OUITRANSFER_UID`                  | `1000`  | User ID for container processes (helps with file permissions)                                                            |
 | `OUITRANSFER_GID`                  | `1000`  | Group ID for container processes (helps with file permissions)                                                           |

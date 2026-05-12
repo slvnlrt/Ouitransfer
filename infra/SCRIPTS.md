@@ -1,37 +1,41 @@
-## 🚀 Quick Start
+# Infrastructure Scripts
 
-OUITRANSFER. includes a convenient Makefile to simplify development and deployment tasks:
+## Docker Architecture
+
+Ouitransfer runs as 3 containers via Docker Compose:
+
+| Service   | Image                     | Port | Description                     |
+|-----------|---------------------------|------|---------------------------------|
+| storage   | `rustfs/rustfs:latest`    | 9000 | S3-compatible object storage    |
+| server    | `ouitransfer/server`      | 3333 | Fastify API                     |
+| web       | `ouitransfer/web`         | 5487 | Next.js frontend                |
+
+## Files
+
+| File              | Purpose                                      |
+|-------------------|----------------------------------------------|
+| `Dockerfile`      | Multi-target build (server-runner, web-runner)|
+| `docker-compose.yaml` | 3-service orchestration                 |
+| `server-start.sh` | Server entrypoint (DB setup, privilege drop) |
+| `.env.example`    | Environment variable reference               |
+
+## Common Commands
 
 ```bash
-# Show all available commands
-make help
+# Start all services
+just docker-start
 
-# Build Docker image with multi-platform support
-make build
+# Build images locally
+just docker-build
 
-# Start the application
-make start
+# Build and push multi-platform images
+just docker-push v3.4.0
 
-# View application logs
-make logs
+# View logs
+just docker-logs
 
-# Stop the application
-make stop
-
-# Clean up containers and images
-make clean
-
-# Update apps version
-make update-version
+# Shell into server
+just docker-shell
 ```
 
-### Available Commands:
-- `make build` - Build Docker image using the build script in `./infra/`
-- `make start` - Start the application using docker-compose
-- `make stop` - Stop all running containers
-- `make logs` - Show application logs
-- `make clean` - Clean up containers and images
-- `make shell` - Access the application container shell
-- `make update-version` - Update all apps version in package.json
-
-All infrastructure scripts are organized in the `./infra/` directory for better project organization.
+See `just --list` for all available recipes.

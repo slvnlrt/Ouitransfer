@@ -40,7 +40,7 @@ Let's make sure your environment is ready to roll. Check that you've got these t
 - **CPU**: 2+ cores for smooth performance.
 - **S3-Compatible Storage**: **REQUIRED** - Either:
   - External S3 service (AWS S3, DigitalOcean Spaces, etc.)
-  - Local Minio server running on port 9379
+  - Local RustFS server running on port 9000
   - Another S3-compatible service
 
 ---
@@ -87,15 +87,15 @@ S3_BUCKET_NAME=ouitransfer-files
 S3_REGION=us-east-1
 ```
 
-**Option 2: Local Minio (for development)**
+**Option 2: Local RustFS (for development)**
 ```bash
-# First, start Minio locally:
-# docker run -p 9379:9000 -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin minio/minio server /data
+# First, start RustFS locally:
+docker run -p 9000:9000 -e RUSTFS_ACCESS_KEY=dev -e RUSTFS_SECRET_KEY=devsecret rustfs/rustfs:latest rustfs server /data
 
 ENABLE_S3=true
-S3_ENDPOINT=localhost:9379
-S3_ACCESS_KEY=minioadmin
-S3_SECRET_KEY=minioadmin
+S3_ENDPOINT=localhost:9000
+S3_ACCESS_KEY=dev
+S3_SECRET_KEY=devsecret
 S3_BUCKET_NAME=ouitransfer-files
 S3_USE_SSL=false
 S3_FORCE_PATH_STYLE=true
@@ -229,12 +229,12 @@ You should see the full OUITRANSFER. application ready to go!
 
 ## Quick notes
 
-**Storage Requirement**: OUITRANSFER v3+ requires S3-compatible storage to function. This guide assumes you've configured either external S3 or local Minio as shown in the environment variables section above. Without proper S3 configuration, file uploads will not work.
+**Storage Requirement**: OUITRANSFER v3+ requires S3-compatible storage to function. This guide assumes you've configured either external S3 or local RustFS as shown in the environment variables section above. Without proper S3 configuration, file uploads will not work.
 
-**Development Tip**: For local development, we recommend using Minio as it's lightweight and S3-compatible. Start it with Docker before running OUITRANSFER:
+**Development Tip**: For local development, we recommend using RustFS as it's lightweight and S3-compatible. Start it with Docker before running OUITRANSFER:
 
 ```bash
-docker run -p 9379:9000 -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin minio/minio server /data
+docker run -p 9000:9000 -e RUSTFS_ACCESS_KEY=dev -e RUSTFS_SECRET_KEY=devsecret rustfs/rustfs:latest rustfs server /data
 ```
 
 ### Custom Installation Paths and Symlinks
@@ -255,8 +255,8 @@ This tells OUITRANSFER. to check your custom path first when determining availab
 Here's a quick reference for all the commands we've covered perfect for copy-pasting once you're familiar with the steps:
 
 ```bash
-# --- Prerequisites (if using local Minio) ---
-docker run -p 9379:9000 -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin minio/minio server /data
+# --- Prerequisites (if using local RustFS) ---
+docker run -p 9000:9000 -e RUSTFS_ACCESS_KEY=dev -e RUSTFS_SECRET_KEY=devsecret rustfs/rustfs:latest rustfs server /data
 
 # --- Backend (Fastify API) ---
 cd apps/server

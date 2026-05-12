@@ -47,9 +47,9 @@ services:
     environment:
       - OUITRANSFER_UID=1000
       - OUITRANSFER_GID=1000
-      - STORAGE_URL="https://your-domain:9379"
+      - STORAGE_URL="https://your-domain:9000"
     ports:
-      - "9379:9379"
+      - "9000:9000"
       - "5487:5487"
     volumes:
       - ./data:/app/server
@@ -105,9 +105,9 @@ services:
     environment:
       - OUITRANSFER_UID=1000
       - OUITRANSFER_GID=1000
-      - STORAGE_URL="https://your-domain:9379"
+      - STORAGE_URL="https://your-domain:9000"
     ports:
-      - "9379:9379"
+      - "9000:9000"
       - "5487:5487"
     volumes:
       - ./data:/app/server
@@ -124,9 +124,9 @@ services:
     environment:
       - OUITRANSFER_UID=1026
       - OUITRANSFER_GID=100
-      - STORAGE_URL="https://your-synology-nas:9379"
+      - STORAGE_URL="https://your-synology-nas:9000"
     ports:
-      - "9379:9379"
+      - "9000:9000"
       - "5487:5487"
     volumes:
       - /volume1/docker/OUITRANSFER:/app/server
@@ -143,9 +143,9 @@ services:
     environment:
       - OUITRANSFER_UID=1000
       - OUITRANSFER_GID=100
-      - STORAGE_URL="https://your-qnap-nas:9379"
+      - STORAGE_URL="https://your-qnap-nas:9000"
     ports:
-      - "9379:9379"
+      - "9000:9000"
       - "5487:5487"
     volumes:
       - /share/Container/OUITRANSFER:/app/server
