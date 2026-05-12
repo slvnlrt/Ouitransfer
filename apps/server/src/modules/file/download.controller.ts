@@ -182,7 +182,7 @@ export class FileDownloadController {
       throw new UnauthorizedError("Unauthorized access to file.");
     }
 
-    // Stream from S3/MinIO
+    // Stream from S3 storage
     const stream = await this.fileService.getObjectStream(objectName);
     const contentType = getContentType(fileRecord.name);
     const fileName = fileRecord.name;

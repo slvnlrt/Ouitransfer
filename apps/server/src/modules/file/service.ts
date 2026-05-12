@@ -6,7 +6,7 @@ export class FileService {
   private storageProvider: StorageProvider;
 
   constructor() {
-    // Always use S3 (Garage internal or external S3)
+    // Always use S3 (internal RustFS or external S3 provider)
     this.storageProvider = new S3StorageProvider();
   }
 

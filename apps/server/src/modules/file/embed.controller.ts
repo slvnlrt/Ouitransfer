@@ -84,7 +84,7 @@ export class FileEmbedController {
       throw new ForbiddenError("Embed is only allowed for media files.");
     }
 
-    // Stream from S3/MinIO
+    // Stream from S3 storage
     const stream = await this.fileService.getObjectStream(fileRecord.objectName);
     const contentType = getContentType(fileRecord.name);
 

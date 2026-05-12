@@ -8,7 +8,7 @@ import type { StorageProvider } from "../types/storage.js";
  */
 async function cleanupOrphanFiles() {
   console.log("Starting orphan file cleanup...");
-  console.log(`Storage mode: S3 (Garage or External)`);
+  console.log(`Storage mode: S3`);
 
   // Always use S3 storage provider
   const storageProvider: StorageProvider = new S3StorageProvider();

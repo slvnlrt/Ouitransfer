@@ -1,5 +1,5 @@
 /**
- * Automatic Migration Script: Filesystem → S3 (Garage)
+ * Automatic Migration Script: Filesystem → S3
  *
  * This script runs automatically on server start and:
  * 1. Detects existing filesystem files

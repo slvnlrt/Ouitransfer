@@ -1,12 +1,12 @@
 /**
  * S3 Storage Controller (Simplified)
  *
- * This controller handles uploads/downloads using S3-compatible storage (Garage).
+ * This controller handles uploads/downloads using S3-compatible storage.
  * It's much simpler than the filesystem controller because:
  * - Uses S3 multipart uploads (no chunk management needed)
  * - Uses presigned URLs (no streaming through Node.js)
- * - No memory management needed (Garage handles it)
- * - No encryption needed (Garage handles it)
+ * - No memory management needed (storage handles it)
+ * - No encryption needed (storage handles it)
  *
  * Replaces ~800 lines of complex code with ~100 lines of simple code.
  */
@@ -27,7 +27,7 @@ export class S3StorageController {
 
   /**
    * Generate presigned upload URL
-   * Client uploads directly to S3 (Garage)
+   * Client uploads directly to S3
    */
   async getUploadUrl(request: FastifyRequest, reply: FastifyReply) {
     const userId = request.user?.userId;
