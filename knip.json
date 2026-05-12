@@ -4,7 +4,7 @@
     "apps/server": {
       "entry": ["src/server.ts"],
       "project": ["src/**/*.ts"],
-      "ignoreDependencies": ["tsx", "ts-node"]
+      "ignoreDependencies": ["tsx"]
     },
     "apps/web": {
       "entry": ["src/app/**/{layout,page,loading,error,not-found}.{ts,tsx}", "src/middleware.ts"],
