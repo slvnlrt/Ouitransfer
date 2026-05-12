@@ -9,6 +9,7 @@ import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 
 import { UnauthorizedError } from "../../utils/app-error.js";
+import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { S3StorageController } from "./controller.js";
 
 export async function s3StorageRoutes(app: FastifyInstance) {
@@ -49,6 +50,8 @@ export async function s3StorageRoutes(app: FastifyInstance) {
             expiresIn: z.number(),
             message: z.string(),
           }),
+          401: ErrorResponseSchema,
+          500: ErrorResponseSchema,
         },
       },
     },
@@ -77,6 +80,8 @@ export async function s3StorageRoutes(app: FastifyInstance) {
             expiresIn: z.number(),
             message: z.string(),
           }),
+          401: ErrorResponseSchema,
+          500: ErrorResponseSchema,
         },
       },
     },
@@ -100,6 +105,8 @@ export async function s3StorageRoutes(app: FastifyInstance) {
             message: z.string(),
             objectName: z.string(),
           }),
+          401: ErrorResponseSchema,
+          500: ErrorResponseSchema,
         },
       },
     },
@@ -123,6 +130,8 @@ export async function s3StorageRoutes(app: FastifyInstance) {
             exists: z.boolean(),
             objectName: z.string(),
           }),
+          401: ErrorResponseSchema,
+          500: ErrorResponseSchema,
         },
       },
     },

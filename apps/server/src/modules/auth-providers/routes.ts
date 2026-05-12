@@ -1,8 +1,8 @@
-import type { FastifyInstance, FastifyRequest } from "fastify";
+import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 
-import { prisma } from "../../shared/prisma.js";
-import { ForbiddenError, UnauthorizedError } from "../../utils/app-error.js";
+import { createAdminPreValidation } from "../../middleware/admin-prevalidation.js";
+import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { AuthProvidersController } from "./controller.js";
 import {
   CreateAuthProviderSchema,
@@ -33,26 +33,7 @@ const AuthProviderResponseSchema = z.object({
 export async function authProvidersRoutes(fastify: FastifyInstance) {
   const authProvidersController = new AuthProvidersController();
 
-  const adminPreValidation = async (request: FastifyRequest) => {
-    const usersCount = await prisma.user.count();
-
-    if (usersCount <= 1) {
-      return;
-    }
-
-    try {
-      await request.jwtVerify();
-    } catch (err) {
-      request.log.error({ err }, "Admin validation error");
-      throw new UnauthorizedError(
-        "Unauthorized: a valid token is required to access this resource.",
-      );
-    }
-
-    if (!request.user.isAdmin) {
-      throw new ForbiddenError("Access restricted to administrators");
-    }
-  };
+  const adminPreValidation = createAdminPreValidation({ allowSetupBypass: true });
 
   fastify.get(
     "/providers",
@@ -76,10 +57,7 @@ export async function authProvidersRoutes(fastify: FastifyInstance) {
               }),
             ),
           }),
-          500: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
+          500: ErrorResponseSchema,
         },
       },
     },
@@ -100,18 +78,9 @@ export async function authProvidersRoutes(fastify: FastifyInstance) {
             success: z.boolean(),
             data: z.array(AuthProviderResponseSchema),
           }),
-          401: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
-          403: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
-          500: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
+          401: ErrorResponseSchema,
+          403: ErrorResponseSchema,
+          500: ErrorResponseSchema,
         },
       },
     },
@@ -134,22 +103,10 @@ export async function authProvidersRoutes(fastify: FastifyInstance) {
             success: z.boolean(),
             data: AuthProviderResponseSchema,
           }),
-          400: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
-          401: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
-          403: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
-          500: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
+          400: ErrorResponseSchema,
+          401: ErrorResponseSchema,
+          403: ErrorResponseSchema,
+          500: ErrorResponseSchema,
         },
       },
     },
@@ -171,22 +128,10 @@ export async function authProvidersRoutes(fastify: FastifyInstance) {
             success: z.boolean(),
             message: z.string(),
           }),
-          400: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
-          401: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
-          403: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
-          500: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
+          400: ErrorResponseSchema,
+          401: ErrorResponseSchema,
+          403: ErrorResponseSchema,
+          500: ErrorResponseSchema,
         },
       },
     },
@@ -212,22 +157,10 @@ export async function authProvidersRoutes(fastify: FastifyInstance) {
             success: z.boolean(),
             data: AuthProviderResponseSchema,
           }),
-          400: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
-          401: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
-          403: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
-          500: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
+          400: ErrorResponseSchema,
+          401: ErrorResponseSchema,
+          403: ErrorResponseSchema,
+          500: ErrorResponseSchema,
         },
       },
     },
@@ -251,18 +184,9 @@ export async function authProvidersRoutes(fastify: FastifyInstance) {
             success: z.boolean(),
             message: z.string(),
           }),
-          401: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
-          403: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
-          500: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
+          401: ErrorResponseSchema,
+          403: ErrorResponseSchema,
+          500: ErrorResponseSchema,
         },
       },
     },
@@ -290,10 +214,7 @@ export async function authProvidersRoutes(fastify: FastifyInstance) {
           302: z.object({
             message: z.string(),
           }),
-          400: z.object({
-            success: z.boolean(),
-            error: z.string(),
-          }),
+          400: ErrorResponseSchema,
         },
       },
     },

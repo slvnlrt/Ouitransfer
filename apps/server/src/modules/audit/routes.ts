@@ -1,6 +1,6 @@
-import type { FastifyInstance, FastifyRequest } from "fastify";
+import type { FastifyInstance } from "fastify";
 import { z } from "zod";
-import { ForbiddenError, UnauthorizedError } from "../../utils/app-error.js";
+import { createAdminPreValidation } from "../../middleware/admin-prevalidation.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { AuditController } from "./controller.js";
 import { AuditActionSchema } from "./service.js";
@@ -8,18 +8,7 @@ import { AuditActionSchema } from "./service.js";
 export async function auditRoutes(app: FastifyInstance) {
   const auditController = new AuditController();
 
-  const adminPreValidation = async (request: FastifyRequest) => {
-    try {
-      await request.jwtVerify();
-    } catch (err) {
-      request.log.warn({ err }, "Admin JWT verification failed");
-      throw new UnauthorizedError("Unauthorized");
-    }
-
-    if (!request.user.isAdmin) {
-      throw new ForbiddenError("Access restricted to administrators");
-    }
-  };
+  const adminPreValidation = createAdminPreValidation({ allowSetupBypass: false });
 
   app.get(
     "/admin/audit-logs",

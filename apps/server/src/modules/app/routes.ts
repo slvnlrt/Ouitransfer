@@ -1,8 +1,7 @@
-import type { FastifyInstance, FastifyRequest } from "fastify";
+import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 
-import { prisma } from "../../shared/prisma.js";
-import { ForbiddenError, UnauthorizedError } from "../../utils/app-error.js";
+import { createAdminPreValidation } from "../../middleware/admin-prevalidation.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { AppController } from "./controller.js";
 import { BulkUpdateConfigSchema, ConfigResponseSchema } from "./dto.js";
@@ -13,32 +12,7 @@ const SMALL_BODY_LIMIT = 64 * 1024; // 64 KB
 export async function appRoutes(app: FastifyInstance) {
   const appController = new AppController();
 
-  const adminPreValidation = async (request: FastifyRequest) => {
-    // Count users — this is a separate concern from JWT verification.
-    // DB errors must propagate to globalErrorHandler, not be swallowed as 401.
-    const usersCount = await prisma.user.count();
-
-    // Only skip auth before any user is registered (initial setup).
-    // Once even one user exists, all admin endpoints require authentication.
-    // NOTE: During the setup window (usersCount === 0), admin endpoints are
-    // unprotected. This is acceptable for initial setup only. A future
-    // improvement could restrict this bypass to the "create first user" route.
-    if (usersCount === 0) {
-      return;
-    }
-
-    // JWT verification — failures throw and are caught by globalErrorHandler.
-    try {
-      await request.jwtVerify();
-    } catch (err) {
-      request.log.warn({ err }, "Admin JWT verification failed");
-      throw new UnauthorizedError("Unauthorized");
-    }
-
-    if (!request.user.isAdmin) {
-      throw new ForbiddenError("Access restricted to administrators");
-    }
-  };
+  const adminPreValidation = createAdminPreValidation({ allowSetupBypass: true });
 
   app.get(
     "/app/info",

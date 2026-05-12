@@ -1,7 +1,7 @@
-import type { FastifyInstance, FastifyRequest } from "fastify";
+import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 
-import { UnauthorizedError } from "../../utils/app-error.js";
+import { createAdminPreValidation } from "../../middleware/admin-prevalidation.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { InviteController } from "./controller.js";
 import {
@@ -24,20 +24,12 @@ export async function inviteRoutes(app: FastifyInstance) {
         description: "Generate a one-time use invite token for user registration (admin only)",
         response: {
           200: CreateInviteTokenResponseSchema,
+          401: ErrorResponseSchema,
           403: ErrorResponseSchema,
           500: ErrorResponseSchema,
         },
       },
-      preValidation: async (request: FastifyRequest) => {
-        try {
-          await request.jwtVerify();
-        } catch (err) {
-          request.log.error({ err }, "JWT verification failed");
-          throw new UnauthorizedError(
-            "Unauthorized: a valid token is required to access this resource.",
-          );
-        }
-      },
+      preValidation: createAdminPreValidation({ allowSetupBypass: false }),
     },
     inviteController.generateInviteToken.bind(inviteController),
   );

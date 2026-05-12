@@ -1,16 +1,11 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { ForbiddenError } from "../../utils/app-error.js";
 import { InviteService } from "./service.js";
 
 export class InviteController {
   private inviteService = new InviteService();
 
   async generateInviteToken(request: FastifyRequest, reply: FastifyReply) {
-    if (!request.user?.isAdmin) {
-      throw new ForbiddenError("Forbidden: admin access required");
-    }
-
     const { token, expiresAt } = await this.inviteService.generateInviteToken(request.user.userId);
     return reply.send({ token, expiresAt });
   }
