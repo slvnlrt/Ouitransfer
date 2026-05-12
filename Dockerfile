@@ -23,7 +23,8 @@ COPY pnpm-workspace.yaml .npmrc package.json pnpm-lock.yaml ./
 COPY apps/server/package.json apps/server/
 COPY packages/shared/package.json packages/shared/
 COPY packages/config/package.json packages/config/
-RUN pnpm install --frozen-lockfile --filter ouitransfer-api
+# --ignore-scripts: skip root 'prepare' hook (lefthook install requires .git)
+RUN pnpm install --frozen-lockfile --ignore-scripts --filter ouitransfer-api
 
 
 # === SERVER BUILD STAGE ===
@@ -92,7 +93,8 @@ COPY pnpm-workspace.yaml .npmrc package.json pnpm-lock.yaml ./
 COPY apps/web/package.json apps/web/
 COPY packages/shared/package.json packages/shared/
 COPY packages/config/package.json packages/config/
-RUN pnpm install --frozen-lockfile --filter ouitransfer-web
+# --ignore-scripts: skip root 'prepare' hook (lefthook install requires .git)
+RUN pnpm install --frozen-lockfile --ignore-scripts --filter ouitransfer-web
 
 
 # === WEB BUILD STAGE ===
