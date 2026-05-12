@@ -1140,13 +1140,13 @@ Auth Hardening — Continued (8h)
 
 Phase 6: Infrastructure \& Operations 🐳
 
-> Goal: Hardened Docker setup, proper MinIO security, monitoring, reliable deployment.  
+> Goal: Hardened Docker setup, proper MinIO security, monitoring, reliable deployment. **COMPLETE** — Migrated from monolith supervisord container to 3-container Docker Compose (RustFS + server + web).  
 
 > Estimated effort: \~24h
 
 Docker Improvements (8h)
 
-- [ ] 6.1 — Move MinIO installation to a dedicated build stage or runtime-only  
+- [x] 6.1 — Move MinIO installation to a dedicated build stage or runtime-only  
 
   File: Dockerfile:16-21  
 
@@ -1154,7 +1154,7 @@ Docker Improvements (8h)
 
   Justification: Audit 04 — MinIO in base stage inflates build cache
 
-- [ ] 6.2 — Extract the 100-line heredoc startup script  
+- [x] 6.2 — Extract the 100-line heredoc startup script  
 
   Files: Dockerfile:145-248, infra/start.sh (new)  
 
@@ -1162,7 +1162,7 @@ Docker Improvements (8h)
 
   Justification: Audit 04 — 100-line heredoc inline in Dockerfile, untestable
 
-- [ ] 6.3 — Fix the VOLUME declaration  
+- [x] 6.3 — Fix the VOLUME declaration  
 
   File: Dockerfile:253  
 
@@ -1170,7 +1170,7 @@ Docker Improvements (8h)
 
   Justification: Audit 04 — VOLUME creates anonymous volumes by default
 
-- [ ] 6.4 — Harmonize UID/GID defaults  
+- [x] 6.4 — Harmonize UID/GID defaults  
 
   Files: Dockerfile:87, infra/server-start.sh:34, infra/start-minio.sh  
 
@@ -1178,7 +1178,7 @@ Docker Improvements (8h)
 
   Justification: Audit 04 — UID/GID 1000 in server-start.sh vs 1001 in Dockerfile
 
-- [ ] 6.5 — Fix docker-compose.yaml STORAGE\_URL  
+- [x] 6.5 — Fix docker-compose.yaml STORAGE\_URL  
 
   File: docker-compose.yaml:35  
 
@@ -1188,7 +1188,7 @@ Docker Improvements (8h)
 
 MinIO Security (4h)
 
-- [ ] 6.6 — Create a dedicated MinIO service account  
+- [x] 6.6 — Create a dedicated MinIO service account  
 
   File: infra/minio-setup.sh  
 
@@ -1196,7 +1196,7 @@ MinIO Security (4h)
 
   Justification: Audit 04 — app uses root MinIO credentials, has full admin access
 
-- [ ] 6.7 — Fix credential file permissions  
+- [x] 6.7 — Fix credential file permissions  
 
   File: infra/minio-setup.sh:109  
 
@@ -1204,7 +1204,7 @@ MinIO Security (4h)
 
   Justification: Audit 04 — credentials world-readable
 
-- [ ] 6.8 — Stop deleting .minio.sys on every startup  
+- [x] 6.8 — Stop deleting .minio.sys on every startup  
 
   File: infra/start-minio.sh:25-28  
 
@@ -1214,7 +1214,7 @@ MinIO Security (4h)
 
 Binary Verification (2h)
 
-- [ ] 6.9 — Add SHA256 checksum verification for downloaded binaries  
+- [x] 6.9 — Add SHA256 checksum verification for downloaded binaries  
 
   Files: infra/install-minio.sh, infra/install-mc.sh  
 
@@ -1224,7 +1224,7 @@ Binary Verification (2h)
 
 Build Script (1h)
 
-- [ ] 6.10 — Delete infra/build-docker.sh (superseded by CI)  
+- [x] 6.10 — Delete infra/build-docker.sh (superseded by CI)  
 
   File: infra/build-docker.sh  
 
@@ -1234,7 +1234,7 @@ Build Script (1h)
 
 Monitoring (4h)
 
-- [ ] 6.11 — Add structured health check endpoint  
+- [x] 6.11 — Add structured health check endpoint  
 
   File: apps/server/src/modules/health/  
 
@@ -1242,7 +1242,7 @@ Monitoring (4h)
 
   Justification: Production readiness — current health check is superficial
 
-- [ ] 6.12 — Add Docker Compose healthcheck for API  
+- [x] 6.12 — Add Docker Compose healthcheck for API  
 
   File: docker-compose.yaml  
 
@@ -1260,7 +1260,7 @@ Secrets Management (2h)
 
   Justification: Audit 02 — risk of secret regeneration invalidating all tokens
 
-- [ ] 6.14 — Remove SMTP placeholder credentials from seed  
+- [x] 6.14 — Remove SMTP placeholder credentials from seed  
 
   File: apps/server/prisma/seed.js:106-112  
 
@@ -1268,7 +1268,7 @@ Secrets Management (2h)
 
   Justification: Audit L4 — seed contains placeholder credentials
 
-- [ ] 6.15 — Evaluate pnpm deploy for portable Docker runtime (Phase 2 review W10)
+- [x] 6.15 — Evaluate pnpm deploy for portable Docker runtime (Phase 2 review W10)
 
   File: Dockerfile
 
@@ -1276,7 +1276,7 @@ Secrets Management (2h)
 
   Justification: Phase 2 review W10 — Dockerfile pnpm symlink chain fragility
 
-- [ ] 6.16 — Fix lefthook pre-commit hook for large commits on Windows (Phase 3 review)
+- [x] 6.16 — Fix lefthook pre-commit hook for large commits on Windows (Phase 3 review)
 
   File: lefthook.yml
 

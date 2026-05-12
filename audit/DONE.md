@@ -939,6 +939,79 @@
 - M-3: Documented defense-in-depth double isAccountLocked check
 - M-5: Extracted refresh token cookie constants to auth.config.ts
 
+---
+
+## Phase 6 — Infrastructure & Operations (2026-05-12)
+
+Migrated from monolith supervisord container (MinIO+API+Web) to 3-container Docker Compose
+architecture (RustFS storage + Fastify server + Next.js web). 16 items (6.1-6.16) completed.
+
+### 6.1-6.9 — Docker + MinIO items (replaced by 3-container architecture)
+- **Date**: 2026-05-12
+- **Change**: All 9 items eliminated by architectural migration. Supervisord removed. Single Dockerfile
+  with two build targets (`server-runner`, `web-runner`). RustFS uses official `rustfs/rustfs:latest` image.
+  Docker Compose with healthcheck-based startup ordering (`storage` → `server` → `web`).
+- **Files deleted**: `infra/install-minio.sh`, `infra/start-minio.sh`, `infra/minio-setup.sh`,
+  `infra/load-minio-credentials.sh`, `infra/install-mc.sh`, `infra/supervisord.conf`
+- **Files rewritten**: `Dockerfile` (287 → 121 lines), `docker-compose.yaml` (55 → 118 lines, 3 services),
+  `infra/server-start.sh` (147 → 80 lines)
+
+### 6.10 — Delete build-docker.sh
+- **Date**: 2026-05-12
+- **Change**: `infra/build-docker.sh` deleted. Docker builds via `docker compose build` or `just docker-build`.
+- **Verified**: PASS
+
+### 6.11 — Structured health endpoint
+- **Date**: 2026-05-12
+- **Files**: `apps/server/src/modules/health/controller.ts`, `apps/server/src/modules/health/routes.ts`
+- **Change**: Enhanced with DB check (`prisma.$queryRaw`) + S3 check (`HeadBucketCommand`).
+  Returns `{ status, timestamp, uptime, checks: { database, storage } }`. 200=healthy, 503=degraded.
+- **Verified**: PASS (4 integration tests)
+
+### 6.12 — Docker Compose healthchecks
+- **Date**: 2026-05-12
+- **Change**: All 3 services have healthchecks. `depends_on: { condition: service_healthy }` for
+  startup ordering. Storage → Server → Web.
+- **Verified**: PASS (`docker compose config` validates)
+
+### 6.14 — Remove SMTP placeholder credentials
+- **Date**: 2026-05-12
+- **Files**: `apps/server/prisma/seed.js`
+- **Change**: smtpHost→`""`, smtpUser→`""`, smtpPass→`""`, smtpFromName→`"Ouitransfer"`, smtpFromEmail→`""`
+- **Verified**: PASS
+
+### 6.15 — Evaluate pnpm deploy
+- **Date**: 2026-05-12
+- **Change**: Evaluated during Dockerfile rewrite. Current approach (workspace symlinks + COPY) works
+  correctly with `--ignore-scripts` flag. pnpm deploy not needed — symlink resolution verified in
+  Docker build tests for both targets.
+- **Verified**: PASS (both Docker targets build successfully)
+
+### 6.16 — Lefthook Windows fix
+- **Date**: 2026-05-12
+- **Change**: Already fixed — `lefthook.yml` uses Biome's `--staged` flag instead of `{staged_files}`
+  placeholder. No changes needed.
+- **Verified**: PASS
+
+### Additional changes (storage modernization)
+- `apps/server/src/config/storage.config.ts`: Removed `loadInternalStorageCredentials()` (file reading),
+  extracted `buildEndpointUrl()` DRY helper, added `ensureBucket()` using HeadBucket/CreateBucket.
+- `apps/server/src/server.ts`: `ensureBucket()` called at startup after DB migration.
+- `.env.example`: Updated for RustFS and 3-container architecture.
+- `Justfile`: Docker recipes updated for 3 services.
+- 8 TS files: Garage/MinIO comments → S3-compatible.
+- User-facing docs: `quick-start.mdx`, `s3-providers.mdx`, `manual-installation.mdx`, `architecture.mdx`,
+  `uid-gid-configuration.mdx` all updated for RustFS and 3-container architecture.
+
+### Dead code removed
+- `apps/server/src/scripts/migrate-filesystem-to-s3.ts` (335 lines) — deleted, no production users
+- `runAutoMigration()` import/call removed from `server.ts`
+- `ENCRYPTION_KEY`/`DISABLE_FILESYSTEM_ENCRYPTION` env vars deleted from `env.ts`
+
+### Phase 6 Post-Review Remediation
+27 review findings (4 Critical + 4 Legacy + 9 Important + 8 Minor), all resolved.
+See `audit/TODO-POST-PHASE-6.md`.
+
 ### Phase 5 Quality Audit (post-completion)
 Systematic review found 13 issues (3 Critical, 7 Important, 3 Minor). All resolved.
 Full report: `audit/TODO-PHASE-5-QUALITY-AUDIT.md`
