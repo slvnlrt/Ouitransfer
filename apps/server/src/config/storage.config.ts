@@ -1,61 +1,18 @@
-import * as fs from "node:fs";
 import * as https from "node:https";
-import { S3Client } from "@aws-sdk/client-s3";
+import { CreateBucketCommand, HeadBucketCommand, S3Client } from "@aws-sdk/client-s3";
 import { NodeHttpHandler } from "@smithy/node-http-handler";
 
 import { env } from "../env.js";
 import type { StorageConfig } from "../types/storage.js";
 
 /**
- * Load internal storage credentials if they exist
- * This provides S3-compatible storage automatically when ENABLE_S3=false
- */
-function loadInternalStorageCredentials(): Partial<StorageConfig> | null {
-  const credentialsPath = "/app/server/.minio-credentials";
-
-  try {
-    if (fs.existsSync(credentialsPath)) {
-      const content = fs.readFileSync(credentialsPath, "utf-8");
-      const credentials: Record<string, string> = {};
-
-      content.split("\n").forEach((line) => {
-        const [key, value] = line.split("=");
-        if (key && value) {
-          credentials[key.trim()] = value.trim();
-        }
-      });
-
-      // console.log used here because this module is evaluated at import time
-      // (before Fastify app and Pino logger are initialized via buildApp).
-      console.log("[STORAGE] Using internal storage system");
-
-      return {
-        endpoint: credentials.S3_ENDPOINT || "127.0.0.1",
-        port: parseInt(credentials.S3_PORT || "9379", 10),
-        useSSL: credentials.S3_USE_SSL === "true",
-        accessKey: credentials.S3_ACCESS_KEY,
-        secretKey: credentials.S3_SECRET_KEY,
-        region: credentials.S3_REGION || "default",
-        bucketName: credentials.S3_BUCKET_NAME || "ouitransfer-files",
-        forcePathStyle: true,
-      };
-    }
-  } catch (error) {
-    // console.warn used here — module-level code runs before Pino logger is available.
-    console.warn("[STORAGE] Could not load internal storage credentials:", error);
-  }
-
-  return null;
-}
-
-/**
  * Storage configuration:
  * - Default (ENABLE_S3=false or not set): Internal storage (auto-configured, zero config)
  * - ENABLE_S3=true: External S3 (AWS, S3-compatible, etc) using env vars
+ *
+ * Credentials always come from environment variables (S3_* env vars).
  */
-const internalStorageConfig = env.ENABLE_S3 === "true" ? null : loadInternalStorageCredentials();
-
-export const storageConfig: StorageConfig = (internalStorageConfig as StorageConfig) || {
+export const storageConfig: StorageConfig = {
   endpoint: env.S3_ENDPOINT || "",
   port: env.S3_PORT ? Number(env.S3_PORT) : undefined,
   useSSL: env.S3_USE_SSL === "true",
@@ -74,6 +31,15 @@ export const storageConfig: StorageConfig = (internalStorageConfig as StorageCon
 export const rejectUnauthorized = env.S3_REJECT_UNAUTHORIZED !== "false";
 
 /**
+ * Build the endpoint URL from a StorageConfig (DRY — used by s3Client and publicS3Client).
+ */
+function buildEndpointUrl(config: StorageConfig): string {
+  const scheme = config.useSSL ? "https" : "http";
+  const port = config.port ? `:${config.port}` : "";
+  return `${scheme}://${config.endpoint}${port}`;
+}
+
+/**
  * Storage is ALWAYS S3-compatible:
  * - ENABLE_S3=false → Internal storage (automatic)
  * - ENABLE_S3=true  → External S3 (AWS, S3-compatible, etc)
@@ -82,9 +48,7 @@ const hasValidConfig = storageConfig.endpoint && storageConfig.accessKey && stor
 
 export const s3Client = hasValidConfig
   ? new S3Client({
-      endpoint: storageConfig.useSSL
-        ? `https://${storageConfig.endpoint}${storageConfig.port ? `:${storageConfig.port}` : ""}`
-        : `http://${storageConfig.endpoint}${storageConfig.port ? `:${storageConfig.port}` : ""}`,
+      endpoint: buildEndpointUrl(storageConfig),
       region: storageConfig.region,
       credentials: {
         accessKeyId: storageConfig.accessKey,
@@ -135,9 +99,7 @@ export function createPublicS3Client(): S3Client | null {
     publicEndpoint = env.STORAGE_URL;
   } else {
     // External S3: use the original endpoint configuration
-    publicEndpoint = storageConfig.useSSL
-      ? `https://${storageConfig.endpoint}${storageConfig.port ? `:${storageConfig.port}` : ""}`
-      : `http://${storageConfig.endpoint}${storageConfig.port ? `:${storageConfig.port}` : ""}`;
+    publicEndpoint = buildEndpointUrl(storageConfig);
   }
 
   return new S3Client({
@@ -155,4 +117,29 @@ export function createPublicS3Client(): S3Client | null {
       requestTimeout: 300000, // 5 minutes timeout for S3 operations
     }),
   });
+}
+
+/**
+ * Ensures the configured S3 bucket exists, creating it if necessary.
+ * Called once at server startup.
+ * console.log is acceptable here — runs at module init, before Pino logger is available.
+ */
+export async function ensureBucket(): Promise<void> {
+  if (!s3Client || !bucketName) {
+    console.log("[STORAGE] S3 not configured — skipping bucket check");
+    return;
+  }
+  try {
+    await s3Client.send(new HeadBucketCommand({ Bucket: bucketName }));
+    console.log(`[STORAGE] Bucket "${bucketName}" exists`);
+  } catch (error: unknown) {
+    const err = error as { name?: string };
+    if (err.name === "NotFound" || err.name === "NoSuchBucket") {
+      console.log(`[STORAGE] Creating bucket "${bucketName}"...`);
+      await s3Client.send(new CreateBucketCommand({ Bucket: bucketName }));
+      console.log(`[STORAGE] Bucket "${bucketName}" created`);
+    } else {
+      throw error;
+    }
+  }
 }

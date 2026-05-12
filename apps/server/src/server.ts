@@ -48,9 +48,12 @@ async function startServer() {
   const app = await buildApp();
 
   await ensureDirectories(app.log);
-  const { isInternalStorage, isExternalS3 } = await import("./config/storage.config.js");
+  const { isInternalStorage, isExternalS3, ensureBucket } = await import(
+    "./config/storage.config.js"
+  );
   const { runAutoMigration } = await import("./scripts/migrate-filesystem-to-s3.js");
   await runAutoMigration();
+  await ensureBucket();
 
   await app.register(fastifyMultipart, {
     limits: {
