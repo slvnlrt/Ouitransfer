@@ -1,6 +1,5 @@
 import { IconCheck, IconEdit, IconLock, IconLockOpen, IconX } from "@tabler/icons-react";
-import { format } from "date-fns";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +16,7 @@ import {
 } from "@/components/ui/table";
 import { useSecureConfigValue } from "@/hooks/use-secure-configs";
 import type { Share } from "@/http/endpoints/shares/types";
+import { formatDateTime } from "@/lib/format-date-time";
 import { SharesTableBulkActions } from "./shares-table-bulk-actions";
 import { ShareRowActions } from "./shares-table-row-actions";
 
@@ -62,6 +62,7 @@ export function SharesTable({
   setClearSelectionCallback,
 }: SharesTableProps) {
   const t = useTranslations();
+  const locale = useLocale();
   const { value: smtpEnabled } = useSecureConfigValue("smtpEnabled");
   const [editingField, setEditingField] = useState<{
     shareId: string;
@@ -401,7 +402,7 @@ export function SharesTable({
                     </div>
                   </TableCell>
                   <TableCell className="h-12 px-4">
-                    {format(new Date(share.createdAt), "MM/dd/yyyy HH:mm")}
+                    {formatDateTime(share.createdAt, "table", locale)}
                   </TableCell>
                   <TableCell
                     className="h-12 px-4"
@@ -411,7 +412,7 @@ export function SharesTable({
                     <div className="flex items-center gap-1 min-w-0">
                       <span className="text-sm">
                         {share.expiration
-                          ? format(new Date(share.expiration), "MM/dd/yyyy HH:mm")
+                          ? formatDateTime(share.expiration, "table", locale)
                           : t("sharesTable.never")}
                       </span>
                       <div className="w-6 flex justify-center flex-shrink-0">

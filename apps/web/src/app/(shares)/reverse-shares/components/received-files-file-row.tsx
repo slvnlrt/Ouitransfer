@@ -9,9 +9,7 @@ import {
   IconTrash,
   IconX,
 } from "@tabler/icons-react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -20,6 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { TableCell, TableRow } from "@/components/ui/table";
 import type { ReverseShareFile } from "@/http/endpoints/reverse-shares/types";
+import { formatDateTime } from "@/lib/format-date-time";
 import { getFileIcon } from "@/utils/file-icons";
 
 // --- Utility functions ---
@@ -44,9 +43,9 @@ const formatFileSize = (sizeString: string) => {
 
 type TranslateFunction = ReturnType<typeof useTranslations>;
 
-const formatDate = (dateString: string, t: TranslateFunction) => {
+const formatDate = (dateString: string, t: TranslateFunction, locale: string) => {
   try {
-    return format(new Date(dateString), "dd/MM/yyyy HH:mm", { locale: ptBR });
+    return formatDateTime(dateString, "table", locale);
   } catch {
     return t("reverseShares.modals.receivedFiles.invalidDate");
   }
@@ -294,6 +293,7 @@ export function FileRow({
   onSelectFile,
 }: FileRowProps) {
   const t = useTranslations();
+  const locale = useLocale();
   const { icon: FileIcon, color } = getFileIcon(file.name);
 
   return (
@@ -371,7 +371,7 @@ export function FileRow({
         </div>
       </TableCell>
       <TableCell className="text-sm text-muted-foreground">
-        {formatDate(file.createdAt, t)}
+        {formatDate(file.createdAt, t, locale)}
       </TableCell>
       <TableCell className="text-end">
         <div className="flex items-center justify-end gap-1">

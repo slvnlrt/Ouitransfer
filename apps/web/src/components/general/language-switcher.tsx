@@ -3,7 +3,6 @@
 import { IconLanguage } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
-import { setCookie } from "nookies";
 import ReactCountryFlag from "react-country-flag";
 
 import { Button } from "@/components/ui/button";
@@ -52,12 +51,9 @@ export function LanguageSwitcher() {
     const isRTL = RTL_LANGUAGES.includes(fullLocale as (typeof RTL_LANGUAGES)[number]);
     document.documentElement.dir = isRTL ? "rtl" : "ltr";
 
-    setCookie(null, COOKIE_LANG_KEY, fullLocale, {
-      maxAge: COOKIE_MAX_AGE,
-      path: "/",
-      sameSite: "lax",
-      secure: window.location.protocol === "https:",
-    });
+    const secure = window.location.protocol === "https:" ? "; Secure" : "";
+    // biome-ignore lint/suspicious/noDocumentCookie: Cookie Store API not available without a polyfill; this is the correct native approach
+    document.cookie = `${COOKIE_LANG_KEY}=${fullLocale}; Max-Age=${COOKIE_MAX_AGE}; Path=/; SameSite=Lax${secure}`;
 
     router.refresh();
   };

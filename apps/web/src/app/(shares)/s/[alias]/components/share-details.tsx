@@ -1,6 +1,5 @@
 import { IconDownload, IconFolderOff, IconShare } from "@tabler/icons-react";
-import { format } from "date-fns";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { FilesViewManager } from "@/app/files/components/files-view-manager";
@@ -16,6 +15,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { formatDateTime } from "@/lib/format-date-time";
 import type { ShareDetailsProps } from "../types";
 
 interface ShareDetailsPropsExtended extends Omit<ShareDetailsProps, "onBulkDownload"> {
@@ -45,6 +45,7 @@ export function ShareDetails({
   handleSearch,
 }: ShareDetailsPropsExtended) {
   const t = useTranslations();
+  const locale = useLocale();
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<{
     name: string;
@@ -89,13 +90,13 @@ export function ShareDetails({
               <div className="flex gap-4 text-sm text-muted-foreground">
                 <span>
                   {t("share.details.created", {
-                    date: format(new Date(share.createdAt), "MM/dd/yyyy HH:mm"),
+                    date: formatDateTime(share.createdAt, "table", locale),
                   })}
                 </span>
                 {share.expiration && (
                   <span>
                     {t("share.details.expires", {
-                      date: format(new Date(share.expiration), "MM/dd/yyyy HH:mm"),
+                      date: formatDateTime(share.expiration, "table", locale),
                     })}
                   </span>
                 )}

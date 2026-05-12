@@ -10,8 +10,7 @@ import {
   IconMail,
 } from "@tabler/icons-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +28,7 @@ import { LazyQRCode } from "@/components/ui/lazy-qr-code";
 import { Loader } from "@/components/ui/loader";
 import { getShare } from "@/http/endpoints";
 import type { Share } from "@/http/endpoints/shares/types";
+import { formatDateTime } from "@/lib/format-date-time";
 import { logger } from "@/lib/logger";
 import { queryKeys } from "@/lib/query-keys";
 import { GenerateShareLinkModal } from "./generate-share-link-modal";
@@ -71,6 +71,7 @@ export function ShareDetailsModal({
   onSuccess,
 }: ShareDetailsModalProps) {
   const t = useTranslations();
+  const locale = useLocale();
   const queryClient = useQueryClient();
   const [editingField, setEditingField] = useState<{ field: "name" | "description" } | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -120,7 +121,7 @@ export function ShareDetailsModal({
   const formatDate = (dateString: string | null) => {
     if (!dateString) return t("shareDetails.notAvailable");
     try {
-      return format(new Date(dateString), "MM/dd/yyyy HH:mm");
+      return formatDateTime(dateString, "table", locale);
     } catch {
       return t("shareDetails.invalidDate");
     }
