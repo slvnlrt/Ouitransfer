@@ -32,6 +32,12 @@ const envSchema = z.object({
     .string()
     .min(32, "CSRF_SECRET must be at least 32 characters")
     .describe("HMAC key for CSRF token generation — must be distinct from JWT_SECRET"),
+  COOKIE_SECRET: z
+    .string()
+    .min(32, "COOKIE_SECRET must be at least 32 characters")
+    .describe(
+      "Secret used to sign httpOnly cookies — must be distinct from JWT_SECRET and CSRF_SECRET",
+    ),
   TRUST_PROXY: z
     .string()
     .optional()
@@ -40,10 +46,21 @@ const envSchema = z.object({
   ENABLE_API_DOCS: z.union([z.literal("true"), z.literal("false")]).optional(),
 });
 
-const refinedEnvSchema = envSchema.refine((data) => data.CSRF_SECRET !== data.JWT_SECRET, {
-  message:
-    "CSRF_SECRET must be different from JWT_SECRET — reusing the same secret for both is a security risk",
-  path: ["CSRF_SECRET"],
-});
+const refinedEnvSchema = envSchema
+  .refine((data) => data.CSRF_SECRET !== data.JWT_SECRET, {
+    message:
+      "CSRF_SECRET must be different from JWT_SECRET — reusing the same secret for both is a security risk",
+    path: ["CSRF_SECRET"],
+  })
+  .refine((data) => data.COOKIE_SECRET !== data.JWT_SECRET, {
+    message:
+      "COOKIE_SECRET must be different from JWT_SECRET — reusing the same secret for both is a security risk",
+    path: ["COOKIE_SECRET"],
+  })
+  .refine((data) => data.COOKIE_SECRET !== data.CSRF_SECRET, {
+    message:
+      "COOKIE_SECRET must be different from CSRF_SECRET — reusing the same secret for both is a security risk",
+    path: ["COOKIE_SECRET"],
+  });
 
 export const env = refinedEnvSchema.parse(process.env);

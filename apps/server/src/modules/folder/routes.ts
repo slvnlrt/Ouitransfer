@@ -20,7 +20,7 @@ export async function folderRoutes(app: FastifyInstance) {
       await request.jwtVerify();
     } catch (err) {
       request.log.error({ err }, "JWT verification failed");
-      throw new UnauthorizedError("Token inválido ou ausente.");
+      throw new UnauthorizedError("Invalid or missing token");
     }
   };
 

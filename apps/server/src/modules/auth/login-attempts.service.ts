@@ -31,6 +31,12 @@ export async function recordLoginAttempt(
 ): Promise<void> {
   // If it's a failure, check if the account is already locked before recording.
   // Successful logins always get recorded (they reset the failure counter).
+  //
+  // Defense-in-depth: callers (login controller, 2FA controller) typically check
+  // isAccountLocked themselves before attempting authentication, so this guard
+  // is usually a no-op. It is kept here to protect against any future call sites
+  // that skip the pre-check, and to enforce the "rolling lockout prevention"
+  // invariant regardless of how recordLoginAttempt is invoked.
   if (!success) {
     const { locked } = await isAccountLocked(email, ipAddress);
     if (locked) {
@@ -46,6 +52,21 @@ export async function recordLoginAttempt(
 /**
  * Check if an account is locked due to too many failed attempts.
  * Returns { locked: true, remainingMinutes } or { locked: false }.
+ *
+ * **Lockout is intentionally email-only** — the decision is based solely on
+ * the `email` parameter, not on `ipAddress`. This is a deliberate design choice:
+ *
+ * - `ipAddress` is accepted as a parameter and forwarded to the audit log so
+ *   that administrators can correlate lockout events with specific IP addresses,
+ *   but it plays no role in the lockout calculation itself.
+ *
+ * - Email-only lockout prevents IP-rotation attacks: an attacker who changes
+ *   their IP address between attempts would bypass an IP-based lockout, but
+ *   cannot escape an email-based one.
+ *
+ * The trade-off is that a malicious actor can trigger a lockout for a target
+ * account (denial-of-service against a single user). This is accepted as a
+ * lesser risk than allowing unlimited credential-stuffing through IP rotation.
  */
 export async function isAccountLocked(
   email: string,

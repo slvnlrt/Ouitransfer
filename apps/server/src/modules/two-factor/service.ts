@@ -52,7 +52,7 @@ export class TwoFactorService {
       secret: secret.base32,
       qrCode: qrCodeUrl,
       manualEntryKey: secret.base32,
-      backupCodes: await this.generateBackupCodes(),
+      backupCodes: this.generateBackupCodes(),
     };
   }
 
@@ -86,7 +86,7 @@ export class TwoFactorService {
       throw new UnauthorizedError("Invalid verification code");
     }
 
-    const backupCodes = await this.generateBackupCodes();
+    const backupCodes = this.generateBackupCodes();
 
     await prisma.user.update({
       where: { id: userId },
@@ -144,6 +144,12 @@ export class TwoFactorService {
 
     if (user.twoFactorBackupCodes) {
       const backupCodes: BackupCode[] = JSON.parse(user.twoFactorBackupCodes);
+      // Timing note: Array.findIndex short-circuits on the first match, introducing
+      // a theoretical timing side-channel based on which position in the list matches.
+      // This is accepted because backup codes are high-entropy (64-bit random) single-use
+      // values. An attacker cannot exploit the position timing to enumerate codes within
+      // the 15-minute lockout window — the search space is too large and each code is
+      // invalidated on use. The timingSafeEqual comparison itself remains constant-time.
       const backupCodeIndex = backupCodes.findIndex(
         (bc) => !bc.used && timingSafeEqual(bc.code, token),
       );
@@ -275,7 +281,7 @@ export class TwoFactorService {
       throw new ValidationError("Two-factor authentication is not enabled");
     }
 
-    const backupCodes = await this.generateBackupCodes();
+    const backupCodes = this.generateBackupCodes();
 
     await prisma.user.update({
       where: { id: userId },
@@ -321,7 +327,7 @@ export class TwoFactorService {
   /**
    * Generate backup codes
    */
-  private async generateBackupCodes(): Promise<BackupCode[]> {
+  private generateBackupCodes(): BackupCode[] {
     const codes: BackupCode[] = [];
 
     for (let i = 0; i < 10; i++) {

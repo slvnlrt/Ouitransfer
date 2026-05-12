@@ -1,5 +1,9 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-
+import {
+  REFRESH_TOKEN_COOKIE_NAME,
+  REFRESH_TOKEN_COOKIE_PATH,
+  REFRESH_TOKEN_MAX_AGE,
+} from "../../config/auth.config.js";
 import { env } from "../../env.js";
 import { UnauthorizedError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
@@ -65,21 +69,27 @@ export class AuthController {
       tokenVersion: user.tokenVersion,
     });
 
+    // signed: true — the token cookie is signed by @fastify/cookie so that
+    // @fastify/jwt can verify its integrity via request.unsignCookie() on read.
     reply.setCookie("token", token, {
       httpOnly: true,
       path: "/",
       secure: isSecure,
       sameSite: isSecure ? "lax" : "strict",
+      signed: true,
     });
 
-    // Issue refresh token as httpOnly cookie (same approach as OIDC callback)
+    // Issue refresh token as httpOnly cookie (same approach as OIDC callback).
+    // signed: false — the refresh token is an opaque value looked up in the DB;
+    // its integrity is guaranteed by the DB record, not by cookie signing.
     const refreshToken = await createRefreshToken(user.id, userAgent, ipAddress);
-    reply.setCookie("refresh_token", refreshToken, {
+    reply.setCookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
       httpOnly: true,
       secure: isSecure,
       sameSite: "lax",
-      path: "/api/auth/refresh",
-      maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+      path: REFRESH_TOKEN_COOKIE_PATH,
+      maxAge: REFRESH_TOKEN_MAX_AGE,
+      signed: false,
     });
 
     // Audit successful login (fire-and-forget)
@@ -116,21 +126,27 @@ export class AuthController {
       tokenVersion: user.tokenVersion,
     });
 
+    // signed: true — the token cookie is signed by @fastify/cookie so that
+    // @fastify/jwt can verify its integrity via request.unsignCookie() on read.
     reply.setCookie("token", token, {
       httpOnly: true,
       path: "/",
       secure: isSecure,
       sameSite: isSecure ? "lax" : "strict",
+      signed: true,
     });
 
-    // Issue refresh token as httpOnly cookie (same approach as OIDC callback)
+    // Issue refresh token as httpOnly cookie (same approach as OIDC callback).
+    // signed: false — the refresh token is an opaque value looked up in the DB;
+    // its integrity is guaranteed by the DB record, not by cookie signing.
     const refreshToken = await createRefreshToken(user.id, userAgent, ipAddress);
-    reply.setCookie("refresh_token", refreshToken, {
+    reply.setCookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
       httpOnly: true,
       secure: isSecure,
       sameSite: "lax",
-      path: "/api/auth/refresh",
-      maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+      path: REFRESH_TOKEN_COOKIE_PATH,
+      maxAge: REFRESH_TOKEN_MAX_AGE,
+      signed: false,
     });
 
     // Audit successful 2FA login (fire-and-forget)
@@ -158,7 +174,7 @@ export class AuthController {
     }
 
     reply.clearCookie("token", { path: "/" });
-    reply.clearCookie("refresh_token", { path: "/api/auth/refresh" });
+    reply.clearCookie(REFRESH_TOKEN_COOKIE_NAME, { path: REFRESH_TOKEN_COOKIE_PATH });
 
     // Revoke all refresh tokens for this user so stolen tokens cannot be reused
     if (userId) {

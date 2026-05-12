@@ -42,6 +42,7 @@ describe("POST /auth/refresh — integration", () => {
   beforeAll(async () => {
     vi.stubEnv("JWT_SECRET", "a]test-jwt-secret-32-chars-long!");
     vi.stubEnv("CSRF_SECRET", "b]test-csrf-secret-32chars-long!");
+    vi.stubEnv("COOKIE_SECRET", "c]test-cookie-secret-32chars-lon");
     vi.stubEnv("NODE_ENV", "test");
 
     const { buildApp } = await import("../app.js");
@@ -150,8 +151,14 @@ describe("POST /auth/refresh — integration", () => {
     // ── Item 6 verification: decode the new access token and check tokenVersion ─
     // The issued token must carry the correct tokenVersion so that subsequent
     // jwtVerify() calls can validate it against the DB.
-    const issuedToken = tokenCookie?.value;
-    expect(issuedToken).toBeDefined();
+    //
+    // The token cookie is signed (signed: true), so its raw value is in the format
+    // "s:<JWT>.<HMAC_SIG>". We must unsign it before decoding with app.jwt.decode().
+    const signedTokenValue = tokenCookie?.value;
+    expect(signedTokenValue).toBeDefined();
+    const unsigned = app.unsignCookie(signedTokenValue!);
+    expect(unsigned.valid).toBe(true);
+    const issuedToken = unsigned.value;
     const decoded = app.jwt.decode(issuedToken!) as {
       userId: string;
       isAdmin: boolean;

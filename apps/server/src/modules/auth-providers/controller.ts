@@ -1,5 +1,9 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-
+import {
+  REFRESH_TOKEN_COOKIE_NAME,
+  REFRESH_TOKEN_COOKIE_PATH,
+  REFRESH_TOKEN_MAX_AGE,
+} from "../../config/auth.config.js";
 import { env } from "../../env.js";
 import { NotFoundError, ValidationError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
@@ -98,11 +102,14 @@ export class AuthProvidersController {
   private setAuthCookie(reply: FastifyReply, token: string, isSecure: boolean) {
     // Session cookie (no maxAge) — the access token expires in 15 min via JWT exp.
     // Refresh token cookie has its own 7-day maxAge set separately.
+    // signed: true — the token cookie is signed by @fastify/cookie so that
+    // @fastify/jwt can verify its integrity via request.unsignCookie() on read.
     reply.setCookie("token", token, {
       httpOnly: true,
       secure: isSecure,
       sameSite: "lax",
       path: "/",
+      signed: true,
     });
   }
 
@@ -349,12 +356,15 @@ export class AuthProvidersController {
       const refreshToken = await createRefreshToken(result.user.id, userAgent, ipAddress);
 
       const isSecure = env.SECURE_SITE === "true";
-      reply.setCookie("refresh_token", refreshToken, {
+      // signed: false — the refresh token is an opaque value looked up in the DB;
+      // its integrity is guaranteed by the DB record, not by cookie signing.
+      reply.setCookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
         httpOnly: true,
         secure: isSecure,
         sameSite: "lax",
-        path: "/api/auth/refresh",
-        maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+        path: REFRESH_TOKEN_COOKIE_PATH,
+        maxAge: REFRESH_TOKEN_MAX_AGE,
+        signed: false,
       });
 
       const redirectUrl = result.redirectUrl || "/dashboard";

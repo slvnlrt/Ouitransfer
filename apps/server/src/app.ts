@@ -146,12 +146,14 @@ export async function buildApp() {
     }),
   });
 
-  app.register(fastifyCookie);
+  app.register(fastifyCookie, {
+    secret: env.COOKIE_SECRET,
+  });
   app.register(fastifyJwt, {
     secret: env.JWT_SECRET,
     cookie: {
       cookieName: "token",
-      signed: false,
+      signed: true,
     },
     sign: {
       expiresIn: "15m", // Short-lived — refresh token handles session persistence

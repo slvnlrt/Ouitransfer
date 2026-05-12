@@ -85,6 +85,7 @@ describe("POST /files — file validation integration (Item 5)", () => {
   beforeAll(async () => {
     vi.stubEnv("JWT_SECRET", "a]test-jwt-secret-32-chars-long!");
     vi.stubEnv("CSRF_SECRET", "b]test-csrf-secret-32chars-long!");
+    vi.stubEnv("COOKIE_SECRET", "c]test-cookie-secret-32chars-lon");
     vi.stubEnv("NODE_ENV", "test");
 
     const { buildApp } = await import("../app.js");
@@ -105,11 +106,16 @@ describe("POST /files — file validation integration (Item 5)", () => {
   });
 
   /**
-   * Helper: create a signed JWT that jwtVerify() + validateTokenVersion() will accept.
+   * Helper: create a signed-cookie JWT that jwtVerify() + validateTokenVersion() will accept.
    * validateTokenVersion is mocked to always return true, so any tokenVersion works.
+   *
+   * The token cookie is signed (signed: true), so we must wrap the raw JWT with
+   * app.signCookie() to produce the "s:<jwt>.<hmac>" format that @fastify/jwt
+   * expects to unsign when reading the cookie.
    */
   function signTestToken(userId: string, isAdmin = false): string {
-    return app.jwt.sign({ userId, isAdmin, tokenVersion: 0 });
+    const jwt = app.jwt.sign({ userId, isAdmin, tokenVersion: 0 });
+    return app.signCookie(jwt);
   }
 
   // ── Test 1: Blocked MIME type → 400 ────────────────────────────────────────

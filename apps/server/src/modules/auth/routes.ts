@@ -1,6 +1,10 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
-
+import {
+  REFRESH_TOKEN_COOKIE_NAME,
+  REFRESH_TOKEN_COOKIE_PATH,
+  REFRESH_TOKEN_MAX_AGE,
+} from "../../config/auth.config.js";
 import { env } from "../../env.js";
 import { UnauthorizedError } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
@@ -377,7 +381,7 @@ export async function authRoutes(app: FastifyInstance) {
     },
     async (request, reply) => {
       // Refresh token is always in the httpOnly cookie (unified approach for password + OIDC login)
-      const refreshToken = (request.cookies as Record<string, string>).refresh_token;
+      const refreshToken = (request.cookies as Record<string, string>)[REFRESH_TOKEN_COOKIE_NAME];
 
       if (!refreshToken) {
         return reply.status(401).send({ error: "Missing refresh token" });
@@ -394,20 +398,26 @@ export async function authRoutes(app: FastifyInstance) {
 
       const isSecure = env.SECURE_SITE === "true";
 
+      // signed: true — the token cookie is signed by @fastify/cookie so that
+      // @fastify/jwt can verify its integrity via request.unsignCookie() on read.
       reply.setCookie("token", accessToken, {
         httpOnly: true,
         path: "/",
         secure: isSecure,
         sameSite: isSecure ? "lax" : "strict",
+        signed: true,
       });
 
-      // Update the refresh_token cookie with the rotated value
-      reply.setCookie("refresh_token", result.refreshToken, {
+      // Update the refresh_token cookie with the rotated value.
+      // signed: false — the refresh token is an opaque value looked up in the DB;
+      // its integrity is guaranteed by the DB record, not by cookie signing.
+      reply.setCookie(REFRESH_TOKEN_COOKIE_NAME, result.refreshToken, {
         httpOnly: true,
         secure: isSecure,
         sameSite: "lax",
-        path: "/api/auth/refresh",
-        maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+        path: REFRESH_TOKEN_COOKIE_PATH,
+        maxAge: REFRESH_TOKEN_MAX_AGE,
+        signed: false,
       });
 
       return reply.send({ message: "Token refreshed" });

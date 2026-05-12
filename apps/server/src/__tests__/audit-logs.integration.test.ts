@@ -42,6 +42,7 @@ describe("GET /admin/audit-logs — integration", () => {
   beforeAll(async () => {
     vi.stubEnv("JWT_SECRET", "a]test-jwt-secret-32-chars-long!");
     vi.stubEnv("CSRF_SECRET", "b]test-csrf-secret-32chars-long!");
+    vi.stubEnv("COOKIE_SECRET", "c]test-cookie-secret-32chars-lon");
     vi.stubEnv("NODE_ENV", "test");
 
     const { buildApp } = await import("../app.js");
@@ -79,11 +80,14 @@ describe("GET /admin/audit-logs — integration", () => {
 
   it("returns 403 when a non-admin user requests audit logs", async () => {
     // Sign a JWT for a non-admin user with tokenVersion matching the DB mock
-    const token = app.jwt.sign({
+    const jwt = app.jwt.sign({
       userId: "non-admin-user",
       isAdmin: false,
       tokenVersion: TOKEN_VERSION,
     });
+    // Cookie is signed (signed: true) — must use app.signCookie() to produce
+    // the "s:<value>.<hmac>" format that @fastify/jwt expects to unsign.
+    const token = app.signCookie(jwt);
 
     // The non-admin user also needs a matching DB entry for validateTokenVersion
     mockUserFindUnique.mockResolvedValueOnce({
@@ -117,11 +121,12 @@ describe("GET /admin/audit-logs — integration", () => {
     mockFindMany.mockResolvedValue(mockLogs);
     mockAuditCount.mockResolvedValue(1);
 
-    const token = app.jwt.sign({
+    const jwt = app.jwt.sign({
       userId: "admin-user",
       isAdmin: true,
       tokenVersion: TOKEN_VERSION,
     });
+    const token = app.signCookie(jwt);
 
     // mockUserFindUnique is set in beforeEach to return { tokenVersion: TOKEN_VERSION }
     // for "admin-user" — no extra setup needed here.
@@ -141,11 +146,12 @@ describe("GET /admin/audit-logs — integration", () => {
   });
 
   it("forwards query params for filtering and pagination", async () => {
-    const token = app.jwt.sign({
+    const jwt = app.jwt.sign({
       userId: "admin-user",
       isAdmin: true,
       tokenVersion: TOKEN_VERSION,
     });
+    const token = app.signCookie(jwt);
 
     const res = await app.inject({
       method: "GET",
@@ -185,11 +191,12 @@ describe("GET /admin/audit-logs — integration", () => {
     const CURRENT_VERSION = 100; // DB has been incremented (e.g. password change)
 
     // Sign a JWT with the old (stale) version
-    const staleToken = app.jwt.sign({
+    const staleJwt = app.jwt.sign({
       userId: "admin-user",
       isAdmin: true,
       tokenVersion: STALE_VERSION,
     });
+    const staleToken = app.signCookie(staleJwt);
 
     // DB returns the current (newer) version — token is now invalid
     mockUserFindUnique.mockResolvedValueOnce({

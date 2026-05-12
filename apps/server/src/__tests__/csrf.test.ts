@@ -11,6 +11,7 @@ describe("CSRF protection (5.4)", () => {
   beforeAll(async () => {
     vi.stubEnv("JWT_SECRET", "a".repeat(32));
     vi.stubEnv("CSRF_SECRET", "b".repeat(32));
+    vi.stubEnv("COOKIE_SECRET", "c".repeat(32));
     vi.stubEnv("NODE_ENV", "test");
 
     const { buildApp } = await import("../app.js");

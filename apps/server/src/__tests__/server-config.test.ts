@@ -44,6 +44,7 @@ describe("API docs registration (docsEnabled)", () => {
   }, async () => {
     vi.stubEnv("JWT_SECRET", "a".repeat(32));
     vi.stubEnv("CSRF_SECRET", "b".repeat(32));
+    vi.stubEnv("COOKIE_SECRET", "c".repeat(32));
     vi.stubEnv("NODE_ENV", "test");
 
     const { buildApp } = await import("../app.js");
@@ -62,6 +63,7 @@ describe("API docs registration (docsEnabled)", () => {
   it("registers /docs route when NODE_ENV=test (dev mode)", { timeout: 15_000 }, async () => {
     vi.stubEnv("JWT_SECRET", "a".repeat(32));
     vi.stubEnv("CSRF_SECRET", "b".repeat(32));
+    vi.stubEnv("COOKIE_SECRET", "c".repeat(32));
     vi.stubEnv("NODE_ENV", "test");
 
     const { buildApp } = await import("../app.js");
@@ -81,6 +83,7 @@ describe("API docs registration (docsEnabled)", () => {
   }, async () => {
     vi.stubEnv("JWT_SECRET", "a".repeat(32));
     vi.stubEnv("CSRF_SECRET", "b".repeat(32));
+    vi.stubEnv("COOKIE_SECRET", "c".repeat(32));
     vi.stubEnv("NODE_ENV", "production");
     vi.stubEnv("CORS_ORIGINS", "https://example.com");
     // ENABLE_API_DOCS intentionally NOT set
@@ -102,6 +105,7 @@ describe("API docs registration (docsEnabled)", () => {
   }, async () => {
     vi.stubEnv("JWT_SECRET", "a".repeat(32));
     vi.stubEnv("CSRF_SECRET", "b".repeat(32));
+    vi.stubEnv("COOKIE_SECRET", "c".repeat(32));
     vi.stubEnv("NODE_ENV", "production");
     vi.stubEnv("CORS_ORIGINS", "https://example.com");
     vi.stubEnv("ENABLE_API_DOCS", "true");
