@@ -90,35 +90,46 @@ db-reset:
 
 # ─── Docker / Production ─────────────────────────────────────────────────────
 
-# Build multi-platform Docker image and push — usage: just docker-build [tag]
-# Requires: docker buildx, authenticated to registry (burger-cie/ouitransfer)
-docker-build tag="latest":
-    @echo "Building ouitransfer Docker image (tag: {{tag}})..."
+# Build both Docker images locally
+docker-build:
+    docker compose build
+
+# Build and push multi-platform images — usage: just docker-push [tag]
+docker-push tag="latest":
+    @echo "Building and pushing ouitransfer images (tag: {{tag}})..."
     docker buildx create --name ouitransfer-builder --use 2>/dev/null || docker buildx use ouitransfer-builder
     docker buildx build \
         --platform linux/amd64,linux/arm64 \
-        -t burger-cie/ouitransfer:latest \
-        -t burger-cie/ouitransfer:{{tag}} \
+        --target server-runner \
+        -t ouitransfer/server:latest \
+        -t ouitransfer/server:{{tag}} \
+        --push \
+        .
+    docker buildx build \
+        --platform linux/amd64,linux/arm64 \
+        --target web-runner \
+        -t ouitransfer/web:latest \
+        -t ouitransfer/web:{{tag}} \
         --push \
         .
 
-# Start the application (docker compose up -d)
+# Start all services (docker compose up -d)
 docker-start:
     docker compose up -d
 
-# Stop the application (docker compose down)
+# Stop all services (docker compose down)
 docker-stop:
     docker compose down
 
-# Tail container logs
+# Tail logs for all services
 docker-logs:
     docker compose logs -f
 
-# Open a shell in the running container
+# Open a shell in the server container
 docker-shell:
-    docker compose exec ouitransfer /bin/sh
+    docker compose exec server /bin/sh
 
-# Remove containers and volumes (destructive — data loss)
+# Remove all containers and volumes (destructive — data loss)
 docker-clean:
     docker compose down -v
     docker system prune -f
