@@ -53,7 +53,7 @@ export function LanguageSwitcher() {
 
     const secure = window.location.protocol === "https:" ? "; Secure" : "";
     // biome-ignore lint/suspicious/noDocumentCookie: Cookie Store API not available without a polyfill; this is the correct native approach
-    document.cookie = `${COOKIE_LANG_KEY}=${fullLocale}; Max-Age=${COOKIE_MAX_AGE}; Path=/; SameSite=Lax${secure}`;
+    document.cookie = `${COOKIE_LANG_KEY}=${encodeURIComponent(fullLocale)}; Max-Age=${COOKIE_MAX_AGE}; Path=/; SameSite=Lax${secure}`;
 
     router.refresh();
   };
