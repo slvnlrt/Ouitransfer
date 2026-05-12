@@ -42,18 +42,35 @@ describe("isAllowedRedirectUrl (5.15)", () => {
   });
 
   // I-5: env-driven extension for custom OIDC providers
-  it("allows custom OIDC redirect hosts from env", () => {
-    vi.stubEnv("OAUTH_ALLOWED_REDIRECT_HOSTS", "auth.acme.example.com,login.corp.net");
-    // Reset the module-level cache so the new env value is picked up
-    __resetAllowedRedirectHostsForTest();
-    expect(
-      isAllowedRedirectUrl("https://auth.acme.example.com/auth", "https://app.example.com/api/x"),
-    ).toBe(true);
-    expect(
-      isAllowedRedirectUrl("https://login.corp.net/callback", "https://app.example.com/api/x"),
-    ).toBe(true);
-    vi.unstubAllEnvs();
-    // Reset again after test so the cache doesn't bleed into subsequent tests
+  it("allows custom OIDC redirect hosts from env", async () => {
+    vi.resetModules();
+
+    // Mock @/env with the custom hosts so the proxy module picks them up at load time
+    vi.doMock("@/env", () => ({
+      env: {
+        JWT_SECRET: "a]#Fq9K!mZ3Tv&bW8xR2pL7jY0sN5dH6",
+        API_BASE_URL: "http://localhost:3333",
+        OAUTH_ALLOWED_REDIRECT_HOSTS: "auth.acme.example.com,login.corp.net",
+        ALLOWED_IMAGE_HOSTS: undefined,
+      },
+    }));
+
+    const { isAllowedRedirectUrl: isAllowed, __resetAllowedRedirectHostsForTest: reset } =
+      await import("../proxy.js");
+
+    // Reset cache so the new env value is picked up
+    reset();
+
+    expect(isAllowed("https://auth.acme.example.com/auth", "https://app.example.com/api/x")).toBe(
+      true,
+    );
+    expect(isAllowed("https://login.corp.net/callback", "https://app.example.com/api/x")).toBe(
+      true,
+    );
+
+    // Clean up
+    vi.doUnmock("@/env");
+    vi.resetModules();
     __resetAllowedRedirectHostsForTest();
   });
 });

@@ -8,12 +8,13 @@
 import { detectMimeTypeWithFallback } from "@ouitransfer/shared/mime-types";
 import { type NextRequest, NextResponse } from "next/server";
 
+import { env } from "@/env";
 import { logger } from "@/lib/logger";
 
 import { type RouteConfig, routes } from "./proxy-routes";
 import { getClientHeaders } from "./proxy-utils";
 
-const API_BASE_URL = (process.env.API_BASE_URL || "http://localhost:3333").replace(/\/+$/, "");
+const API_BASE_URL = env.API_BASE_URL;
 
 /**
  * Well-known OAuth provider hostnames. Extended at runtime by
@@ -41,7 +42,7 @@ function getAllowedRedirectHosts(): Set<string> {
     return _allowedRedirectHosts;
   }
   const hosts = new Set(BUILTIN_OAUTH_HOSTS);
-  const envHosts = process.env.OAUTH_ALLOWED_REDIRECT_HOSTS;
+  const envHosts = env.OAUTH_ALLOWED_REDIRECT_HOSTS;
   if (envHosts) {
     for (const h of envHosts.split(",")) {
       const trimmed = h.trim().toLowerCase();

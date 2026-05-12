@@ -14,6 +14,12 @@ export default defineConfig({
     environment: "jsdom",
     include: ["src/**/*.test.ts", "src/**/*.test.tsx", "src/**/*.spec.ts", "src/**/*.spec.tsx"],
     setupFiles: ["./vitest.setup.ts"],
+    env: {
+      // Provide default values so env.ts validation passes in the test environment.
+      // Tests that need different values should mock @/env directly via vi.mock.
+      JWT_SECRET: "test-secret-value-that-is-32-chars-long!!",
+      API_BASE_URL: "http://localhost:3333",
+    },
     coverage: {
       provider: "v8",
       reporter: ["text", "lcov"],
