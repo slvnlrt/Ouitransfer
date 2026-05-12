@@ -14,7 +14,7 @@ import {
 } from "fastify-type-provider-zod";
 import { CSRF_EXEMPT_ROUTES } from "./config/csrf.config.js";
 import { registerSwagger } from "./config/swagger.config.js";
-import { envTimeoutOverrides } from "./config/timeout.config.js";
+import { envTimeoutOverrides, timeoutConfig } from "./config/timeout.config.js";
 import { env } from "./env.js";
 import { validateTokenVersion } from "./modules/auth/token-version.js";
 import { globalErrorHandler, globalNotFoundHandler } from "./utils/error-handler.js";
@@ -33,7 +33,7 @@ export async function buildApp() {
       level: process.env.LOG_LEVEL || "info",
     },
     bodyLimit: 50 * 1024 * 1024,
-    connectionTimeout: 0,
+    connectionTimeout: timeoutConfig.connection.timeout,
     keepAliveTimeout: envTimeoutOverrides.keepAliveTimeout,
     requestTimeout: envTimeoutOverrides.requestTimeout,
     trustProxy: parseTrustProxy(env.TRUST_PROXY),
@@ -43,8 +43,9 @@ export async function buildApp() {
     ignoreTrailingSlash: true,
     serverFactory: (handler: (req: http.IncomingMessage, res: http.ServerResponse) => void) => {
       const server = http.createServer((req: http.IncomingMessage, res: http.ServerResponse) => {
-        res.setTimeout(0);
-        req.setTimeout(0);
+        // Do not call res.setTimeout(0) or req.setTimeout(0) here — Fastify manages
+        // socket timeouts via connectionTimeout and requestTimeout. Overriding them
+        // to 0 disables all timeout protection and opens the door to slowloris attacks.
 
         req.on("close", () => {
           if (typeof global !== "undefined" && global.gc) {
@@ -56,7 +57,9 @@ export async function buildApp() {
       });
 
       server.maxHeadersCount = 0;
-      server.timeout = 0;
+      // Set the Node.js http.Server timeout to match our request timeout env override.
+      // This is a backstop in case Fastify's requestTimeout is not sufficient.
+      server.timeout = envTimeoutOverrides.requestTimeout;
       server.keepAliveTimeout = envTimeoutOverrides.keepAliveTimeout;
       server.headersTimeout = envTimeoutOverrides.keepAliveTimeout + 1000;
 
