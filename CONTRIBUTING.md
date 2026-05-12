@@ -1,160 +1,202 @@
-# How to Contribute to the OUITRANSFER. Project
+# Contributing to Ouitransfer
 
+Ouitransfer is a self-hosted file transfer solution (WeTransfer alternative) built as a pnpm monorepo with Turborepo. Contributions are welcome — this guide covers the developer workflow from setup through submitting a PR.
 
-Thank you for your interest in contributing to the **OUITRANSFER.** project! Contributions are what make the open-source community such an amazing place to learn, inspire, and create. This guide will walk you through the process of contributing to OUITRANSFER.
-
----
-
-### Step 1: Log in to GitHub
-
-Before you can contribute, you need to be logged into your GitHub account. If you don't have an account yet, you can sign up for free at **[GitHub](https://github.com/)**.
+Repository: **[https://github.com/burger-cie/ouitransfer](https://github.com/burger-cie/ouitransfer)**
 
 ---
 
-### Step 2: Go to the OUITRANSFER Repository
+## Prerequisites
 
-Once you're logged in, go to the OUITRANSFER repository by clicking on this link: **[https://github.com/burger-cie/ouitransfer](https://github.com/burger-cie/ouitransfer)**.
+| Tool | Version |
+|------|---------|
+| Node.js | 24 |
+| pnpm | 10.6.0 |
+| Docker | any recent version (for S3-compatible storage) |
+| `just` | any recent version (task runner) |
 
-Alternatively, you can search for "OUITRANSFER" in the GitHub search bar and click on the repository owned by **Burger&Cie**.
-
----
-
-### Step 3: Fork the Repository
-
-To contribute to the project, you’ll need to create your own copy of the repository. This is called a **fork**. Here’s how to do it:
-1. Click the **Fork** button at the top right of the repository page.
-2. This will create a copy of the repository under your GitHub account.
+Install `just` via [https://github.com/casey/just](https://github.com/casey/just) or your system package manager.
 
 ---
 
-### Step 4: Clone Your Forked Repository
-
-Next, you’ll need to clone your forked repository to your local machine. Here’s how:
-1. On your forked repository page, click the **Code** button.
-2. Copy the repository URL (HTTPS or SSH).
-3. Open your terminal or command prompt and run the following command to clone the repository:
-
-   ```bash 
-   git clone <repository-url>
-   ```
-4. Navigate into the cloned directory:
-
-   ```bash
-   cd OUITRANSFER
-   ```
-
----
-
-### Step 5: Set Up the `next` Branch as the Base
-
-Before making changes, ensure your local repository is set up to track the `next` branch from the original OUITRANSFER repository. Here’s how:
-1. Add the original OUITRANSFER repository as a remote:
-
-   ```bash
-   git remote add upstream https://github.com/burger-cie/ouitransfer.git
-   ```
-2. Fetch the latest changes from the `next` branch:
-
-   ```bash
-   git fetch upstream next
-   ```
-
-3. Create a new branch for your contribution based on `upstream/next`:
-
-   ```bash
-   git checkout -b your-branch-name upstream/next
-   ```
-
----
-
-### Step 6: Make Your Changes
-
-Now you’re ready to make your contributions! This could include:
-- Fixing a bug
-- Adding a new feature
-- Improving documentation
-- Writing tests
-
-Make your changes in your local repository using your preferred code editor.
-
----
-
-### Step 7: Commit Your Changes Using Conventional Commits
-
-Once you’ve made your changes, commit them to your branch using **Conventional Commits**. Conventional Commits help maintain a clean and consistent commit history. Here’s how to format your commit messages:
-
-#### Commit Message Format:
-`<type>(<scope>): <description>`
-
-#### Examples:
-- `feat: add user authentication`
-- `fix(api): resolve null pointer exception`
-- `docs: update README file`
-- `chore: update dependencies`
-
-#### Steps to Commit:
-1. Stage your changes:
-
-  ```bash
-  git add .
-  ```
-2. Commit your changes with a properly formatted message:
-
-  ```bash
-  git commit -m "feat: add new feature for user profiles"
-  ```
-
----
-
-### Step 8: Push Your Changes to GitHub
-
-After committing your changes, push them to your forked repository on GitHub:
+## Local Setup
 
 ```bash
-git push origin your-branch-name
+# 1. Clone and install dependencies
+git clone https://github.com/burger-cie/ouitransfer.git
+cd ouitransfer
+pnpm install
+
+# 2. Copy environment config
+cp .env.example .env
+# Edit .env with your storage credentials and secrets
+
+# 3. Set up the database
+just db-migrate-dev   # Apply migrations (creates SQLite DB)
+just db-seed          # Seed initial data (admin user, etc.)
+
+# 4. Start all apps in development mode
+just dev
+```
+
+The following services will be available:
+- **Server** (Fastify API): http://localhost:3333
+- **Web** (Next.js frontend): http://localhost:3000
+- **Docs** (Fumadocs): http://localhost:3001
+
+---
+
+## Project Structure
+
+```
+ouitransfer/
+  apps/
+    server/         Fastify 5 API — port 3333
+    web/            Next.js 15 frontend — port 3000 (dev) / 5487 (prod)
+    docs/           Fumadocs documentation site — port 3001
+  packages/
+    shared/         @ouitransfer/shared — cross-app utilities (mime-types, etc.)
+    config/         @ouitransfer/config — shared tsconfig presets
+  infra/            Docker Compose, deployment config
+  audit/            Audit reports and remediation tracking
 ```
 
 ---
 
-### Step 9: Open a Pull Request to the `next` Branch
+## Development Workflow
 
-Now that your changes are on GitHub, you can open a **Pull Request (PR)** to propose your changes to the `next` branch of the OUITRANSFER repository. Here’s how:
-1. Go to your forked repository on GitHub.
-2. Click the **Pull Request** button.
-3. On the PR creation page:
-   - Set the **base repository** to `burger-cie/ouitransfer`.
-   - Set the **base branch** to `next`.
-   - Set the **head repository** to your forked repository.
-   - Set the **compare branch** to your branch (`your-branch-name`).
-4. Fill out the PR form with a clear title and description of your changes.
-5. Click **Create Pull Request**.
+```bash
+just dev        # Start all apps (server + web + docs) in watch mode
+just test       # Run all Vitest unit/integration tests
+just lint       # Run Biome linter across the monorepo
+just validate   # type-check + lint + test (full CI check locally)
+```
 
----
+Run tests for a specific app:
 
-### Step 10: Wait for Review
+```bash
+pnpm --filter @ouitransfer/server test
+pnpm --filter @ouitransfer/web test
+```
 
-Once your PR is submitted, the maintainers will review your changes. They may provide feedback or request additional changes. Be sure to respond to their comments and make any necessary updates.
+Run E2E tests (requires a running dev server):
 
----
-
-### Tips for Contributing
-
-To ensure your contribution is accepted, follow these tips:
-- **Use Conventional Commits**: Write clear and consistent commit messages using the Conventional Commits format.
-- **Keep Your PRs Small**: Focus on one issue or feature per PR to make it easier to review.
-- **Be Patient**: Maintainers are often volunteers and may take some time to review your PR.
+```bash
+pnpm e2e
+```
 
 ---
 
-### Why Contributing is Important
+## Common `just` Commands
 
-Contributing to open-source projects like OUITRANSFER has many benefits:
-1. **Improves the Project**: Your contributions help make the project better for everyone.
-2. **Builds Your Skills**: You’ll gain experience working with Git, GitHub, and collaborative coding.
-3. **Supports the Community**: Open-source thrives on community contributions. Your work helps sustain the project.
+Run `just --list` to see all available recipes.
+
+| Command | Description |
+|---------|-------------|
+| `just dev` | Start all apps in development mode |
+| `just test` | Run all tests (Vitest) |
+| `just lint` | Run Biome linter |
+| `just validate` | type-check + lint + test |
+| `just db-generate` | Re-generate Prisma client after schema changes |
+| `just db-migrate-dev` | Apply pending migrations (dev) |
+| `just db-studio` | Open Prisma Studio (database GUI) |
+| `just db-seed` | Seed the database with initial data |
+| `just db-reset` | Drop and re-create the database |
+| `just clean` | Remove build artifacts |
+| `just clean-all` | Remove build artifacts + node_modules |
+| `just docker-start` | Start Docker Compose (storage + server + web) |
+| `just docker-stop` | Stop Docker Compose |
+| `just docker-build [tag]` | Build Docker images |
 
 ---
 
-### Conclusion
+## Code Standards
 
-That's it! You've successfully contributed to the **🌴 OUITRANSFER.** project on GitHub. Thank you for your time and effort in making OUITRANSFER better for everyone. We appreciate your contribution! 
+**Biome** handles linting and formatting (replaces ESLint + Prettier). Configuration is in `biome.json` at the root.
+
+**Lefthook** runs Biome automatically on staged files before each commit — no manual formatting step needed.
+
+Key rules enforced:
+- No `any` types (`noExplicitAny` + `noImplicitAnyLet` as errors)
+- No unused imports or variables
+- Consistent import ordering
+
+To check or fix manually:
+
+```bash
+just lint                          # Check all files
+pnpm biome check --write .         # Auto-fix
+```
+
+---
+
+## Commit Format
+
+Commits are enforced by **commitlint** (Conventional Commits specification):
+
+```
+<type>(<scope>): <description>
+
+Types: feat, fix, docs, style, refactor, test, chore, perf, build, ci
+```
+
+Examples:
+```
+feat(share): add password-protected share expiry
+fix(auth): correct token refresh cookie path
+docs: update CONTRIBUTING.md
+chore(deps): update Fastify to v5.3
+```
+
+Scopes are optional but encouraged (e.g., `auth`, `share`, `file`, `web`, `server`).
+
+---
+
+## Testing
+
+- **Unit/integration tests**: [Vitest](https://vitest.dev/) — run with `just test` or `pnpm test`
+- **E2E tests**: [Playwright](https://playwright.dev/) — run with `pnpm e2e`
+- **Test pattern**: `*.test.ts` / `*.spec.ts` files co-located in `__tests__/` directories
+
+For server integration tests, use Fastify's `app.inject()` to exercise the full request lifecycle (route registration, middleware, schema validation). Service-layer unit tests alone are not sufficient for security-critical flows.
+
+---
+
+## Pull Requests
+
+1. Fork the repository and create a branch from `main`
+2. Make your changes with atomic, conventional commits
+3. Ensure `just validate` passes locally (type-check + lint + test)
+4. Open a PR against the `main` branch of `burger-cie/ouitransfer`
+5. Fill in the PR template with a clear description of what changed and why
+
+CI will run: lint, type-check, tests, and build for all packages.
+
+Keep PRs focused — one concern per PR makes review faster.
+
+---
+
+## Architecture Notes
+
+### Server (`apps/server`)
+
+- **Framework**: Fastify 5 with `fastify-type-provider-zod` for schema validation
+- **Database**: Prisma ORM with SQLite
+- **Storage**: S3-compatible (RustFS by default in Docker)
+- **Module structure**: `src/modules/{feature}/` — each module has `controller.ts`, `service.ts`, `routes.ts`, `dto.ts`
+- **Auth**: JWT in httpOnly cookies (15-min access tokens + refresh rotation), 2FA via TOTP (RFC 6238)
+- **Validation**: Zod schemas on both route level and controller level — keep them in sync
+
+### Web (`apps/web`)
+
+- **Framework**: Next.js 15 (App Router) + React 19
+- **Data fetching**: TanStack Query v5 — all server state lives in the TQ cache (no Zustand/Context for server data)
+- **API communication**: Single catch-all proxy at `apps/web/src/app/api/[...proxy]/route.ts`, route table in `proxy-routes.ts`
+- **Auth**: JWT verification via `jose` at the Edge in `src/middleware.ts`
+- **i18n**: next-intl with 23 languages, message files in `apps/web/messages/`
+- **UI**: shadcn/ui (new-york style) + Radix primitives + lucide-react icons
+
+### Shared packages
+
+- `@ouitransfer/shared` — utilities shared across apps (mime-type helpers, etc.). Use subpath exports: `import { ... } from "@ouitransfer/shared/mime-types"`, not barrel imports.
+- `@ouitransfer/config` — shared TypeScript config presets (`base`, `server`, `nextjs`)
