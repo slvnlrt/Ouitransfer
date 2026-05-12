@@ -1568,6 +1568,121 @@ Final Security Review (4h)
 
 ---
 
+Phase 9: Documentation Site Overhaul 📖
+
+> Goal: Bring `apps/docs/content/docs/v3-beta/` in sync with all changes from Phases 0–6.
+
+> **Important**: This phase was identified via a quick cross-cut exploration. Before implementing each item,
+> re-verify the actual current state of the file against the full history (CONSOLIDATED-TODO-LIST.md,
+> DONE.md, commits) — some issues may already be partially addressed or may not apply after closer reading.
+
+> Estimated effort: ~12h
+
+High Priority (blocking for self-hosters)
+
+- [ ] 9.1 — Rewrite `architecture.mdx` for S3-first architecture
+
+  File: `apps/docs/content/docs/v3-beta/architecture.mdx`
+
+  Issues identified:
+  - Entire "Filesystem storage" section describes filesystem as the default — incorrect, S3/RustFS is now always required
+  - References `DISABLE_FILESYSTEM_ENCRYPTION` and filesystem encryption (AES-NI, `/proc/cpuinfo`) — env var was deleted in Phase 6
+  - "Storage flexibility" section still shows "Default setup (Filesystem)" as primary mode
+  - No mention of 3-container Docker architecture
+  - No mention of mandatory secrets (`JWT_SECRET`, `CSRF_SECRET`, `COOKIE_SECRET`)
+
+  Action: Rewrite storage section to reflect S3-first model. Add section on Docker architecture (3 containers). Update mandatory env vars list. Remove all filesystem/encryption references.
+
+  Justification: Quick exploration 2026-05-12 — file appears not updated by Phase 6 despite being listed as updated
+
+- [ ] 9.2 — Fix `password-reset-without-smtp.mdx` for 3-container architecture
+
+  File: `apps/docs/content/docs/v3-beta/password-reset-without-smtp.mdx`
+
+  Issues identified:
+  - Container name `ouitransfer-app` → should be `ouitransfer-server`
+  - App directory path `/app/ouitransfer-app` → wrong in new container layout
+  - `npm install` and `npx prisma generate` in troubleshooting section → should use `pnpm`
+  - Instructions to find "the container" no longer clear with 3 containers running
+
+  Action: Update all container names, paths, and package manager references. Clarify which container (server) to target.
+
+  Justification: Quick exploration 2026-05-12
+
+- [ ] 9.3 — Update `api.mdx` — remove monolith Docker examples
+
+  File: `apps/docs/content/docs/v3-beta/api.mdx`
+
+  Issues identified:
+  - Docker Compose and `docker run` examples show single-container monolith image `burger-cie/ouitransfer:latest`
+  - Old volume path `-v OUITRANSFER_data:/app/server`
+  - Capabilities section mentions "Manage filesystem and S3 storage options" — filesystem mode removed
+
+  Action: Replace Docker examples with 3-container compose snippet. Remove filesystem storage from capabilities.
+
+  Justification: Quick exploration 2026-05-12
+
+Medium Priority
+
+- [ ] 9.4 — Fix container names and port in `reverse-proxy-configuration.mdx`
+
+  File: `apps/docs/content/docs/v3-beta/reverse-proxy-configuration.mdx`
+
+  Issues identified:
+  - Diagnostic command references old single-container name `OUITRANSFER` → should target `ouitransfer-server`
+  - Health check example uses port 5487 (web) instead of 3333 (API) for `/health` endpoint
+  - `docker logs OUITRANSFER` → `docker compose logs server`
+  - No mention of `STORAGE_URL` requirement when behind a reverse proxy
+  - No mention that CSRF double-submit cookies may be affected by some proxy configurations
+
+  Action: Update all container references, fix health endpoint port, add STORAGE_URL and CSRF notes.
+
+  Justification: Quick exploration 2026-05-12
+
+- [ ] 9.5 — Update `github-architecture.mdx` for current stack
+
+  File: `apps/docs/content/docs/v3-beta/github-architecture.mdx`
+
+  Issues identified:
+  - "React 18" → should be React 19
+  - Filesystem storage described as default throughout; S3 described as optional
+  - "Files stored directly in the filesystem" in file management section
+  - `packages/` directory missing from project structure tree (added in Phase 2)
+  - No mention of Biome, Vitest, Lefthook, `just`, Turborepo in architecture description
+
+  Action: Update React version, storage description, project tree, and tooling section.
+
+  Justification: Quick exploration 2026-05-12
+
+- [ ] 9.6 — Update `contribute.mdx` for new tooling
+
+  File: `apps/docs/content/docs/v3-beta/contribute.mdx`
+
+  Issues identified:
+  - No mention that the project uses pnpm (not npm/yarn)
+  - No mention of Biome for linting/formatting (replaces ESLint+Prettier)
+  - No mention of `just` as task runner
+  - No mention that Lefthook + commitlint enforce commit format automatically
+  - No local setup instructions (`pnpm install`, `just dev`, `just test`)
+
+  Action: Add "Local setup" section with pnpm/just commands. Document Biome, Lefthook, commitlint. Update style guide references.
+
+  Justification: Quick exploration 2026-05-12
+
+- [ ] 9.7 — Add required secrets to `manual-installation.mdx` env var section
+
+  File: `apps/docs/content/docs/v3-beta/manual-installation.mdx`
+
+  Issues identified:
+  - `JWT_SECRET`, `CSRF_SECRET`, `COOKIE_SECRET` are now mandatory (min 32 chars each) but not mentioned in the env var setup section
+  - A user following this guide will get a Zod startup error with no guidance on what's missing
+
+  Action: Add required secrets to the environment variable setup section with generation commands (`openssl rand -hex 32`).
+
+  Justification: Quick exploration 2026-05-12
+
+---
+
 Summary \& Metrics
 
 Phase	Items	Estimated Effort	Blocking
@@ -1590,7 +1705,9 @@ Phase 7: Dependency Modernization	10	\~20h	Partial — critical deps in Phase 0/
 
 Phase 8: Polish \& Production Readiness	19	\~20h	No — but not production-grade without it
 
-TOTAL	139 items	\~256h	 
+Phase 9: Documentation Site Overhaul	7	\~12h	No — but misleads self-hosters
+
+TOTAL	146 items	\~268h	 
 
 Execution Notes
 
