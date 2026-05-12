@@ -121,7 +121,7 @@ export function DefaultLayout({
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header público */}
+      {/* Public header */}
       <header className="w-full px-6 border-b border-border/50 bg-background/70 backdrop-blur-sm">
         <div className="mx-auto max-w-5xl sm:p-0 h-16 flex items-center justify-between">
           <Link className="flex items-center gap-2" href="/">
@@ -144,10 +144,10 @@ export function DefaultLayout({
         </div>
       </header>
 
-      {/* Conteúdo principal */}
+      {/* Main content */}
       <main id="main-content" className="flex-1 container mx-auto px-6 py-8 md:py-12">
         <div className="max-w-2xl mx-auto space-y-8 ">
-          {/* Header da página */}
+          {/* Page header */}
           <div className="text-center space-y-4">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">
               {reverseShare?.name || t("reverseShares.upload.layout.defaultTitle")}
@@ -159,12 +159,12 @@ export function DefaultLayout({
             )}
           </div>
 
-          {/* Seção de upload */}
+          {/* Upload section */}
           <div className="bg-card rounded-xl shadow-sm border border-border p-6 md:p-8 lg:p-10">
             {getUploadStatus().component}
           </div>
 
-          {/* Informações adicionais */}
+          {/* Additional information */}
           {showUploadLimits && (
             <div className="bg-muted/30 rounded-lg p-4 space-y-2">
               <h3 className="text-sm font-medium text-foreground">

@@ -8,7 +8,7 @@ export const CreateReverseShareSchema = z.object({
   expiration: z
     .string()
     .datetime({
-      message: "Data de expiração deve estar no formato ISO 8601 (ex: 2025-02-06T13:20:49Z)",
+      message: "Expiration date must be in ISO 8601 format (e.g. 2025-02-06T13:20:49Z)",
     })
     .optional(),
   maxFiles: z

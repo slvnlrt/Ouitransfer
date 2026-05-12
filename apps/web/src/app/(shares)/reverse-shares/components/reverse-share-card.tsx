@@ -180,7 +180,7 @@ export function ReverseShareCard({
     <>
       <Card className="group relative overflow-hidden hover:shadow-lg transition-all duration-300 bg-background/50 dark:bg-foreground/5 border border-border/50 py-1">
         <CardContent className="p-4 space-y-3">
-          {/* Header: Nome, Status e Ações */}
+          {/* Header: Name, Status and Actions */}
           <div className="flex items-start justify-between gap-1">
             <div className="flex-1 min-w-0">
               {editingField?.field === "name" ? (
@@ -343,7 +343,7 @@ export function ReverseShareCard({
             </div>
           </div>
 
-          {/* Descrição compacta */}
+          {/* Compact description */}
           {editingField?.field === "description" ? (
             <div className="flex items-center gap-2">
               <Input
@@ -430,9 +430,9 @@ export function ReverseShareCard({
             </div>
           )}
 
-          {/* Grid compacto: Estatísticas + Controles */}
+          {/* Compact grid: Statistics + Controls */}
           <div className="grid grid-cols-4 gap-2">
-            {/* Arquivos */}
+            {/* Files */}
             <Button
               variant="ghost"
               className="bg-muted/20 rounded-md p-2 text-center border border-border/50 hover:bg-muted/40 transition-colors h-auto"
@@ -446,7 +446,7 @@ export function ReverseShareCard({
               </div>
             </Button>
 
-            {/* Tamanho */}
+            {/* Size */}
             <div className="bg-muted/20 rounded-md p-2 text-center border border-border/50">
               <div className="flex items-center justify-center mb-2">
                 <FileQuestion className="h-4 w-4 text-green-600" />
@@ -457,7 +457,7 @@ export function ReverseShareCard({
               <p className="text-xs text-muted-foreground">{t("reverseShares.labels.size")}</p>
             </div>
 
-            {/* Status Toggle */}
+            {/* Active status toggle */}
             <div className="bg-muted/20 rounded-md overflow-hidden border border-border/50">
               {onToggleActive ? (
                 <Button
@@ -503,7 +503,7 @@ export function ReverseShareCard({
               )}
             </div>
 
-            {/* Proteção Toggle */}
+            {/* Password protection toggle */}
             <div className="bg-muted/20 rounded-md overflow-hidden border border-border/50">
               {onUpdatePassword ? (
                 <Button

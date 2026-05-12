@@ -120,7 +120,7 @@ export function EditPasswordModal({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* Toggle Proteção */}
+            {/* Password protection toggle */}
             <FormField
               control={form.control}
               name="hasPassword"

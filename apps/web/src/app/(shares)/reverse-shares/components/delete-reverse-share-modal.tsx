@@ -50,7 +50,7 @@ export function DeleteReverseShareModal({
           </DialogDescription>
         </DialogHeader>
 
-        {/* Informações do reverse-share a ser excluído */}
+        {/* Details of the reverse share to be deleted */}
         <div className="rounded-lg border p-4 bg-muted/30">
           <div className="space-y-2">
             <h4 className="font-medium">{reverseShare.name || t("reverseShares.card.untitled")}</h4>

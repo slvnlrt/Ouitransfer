@@ -89,9 +89,9 @@ export const FALLBACK_ENDPOINTS: Record<
 } as const;
 
 /**
- * Configuração técnica oficial do Discord
- * OAuth2 com mapeamentos específicos do Discord
- * Endpoints vêm do banco de dados
+ * Official technical configuration for Discord
+ * OAuth2 with Discord-specific field mappings
+ * Endpoints come from the database
  */
 const discordConfig: ProviderConfig = {
   supportsDiscovery: false,
@@ -107,9 +107,9 @@ const discordConfig: ProviderConfig = {
 };
 
 /**
- * Configuração técnica oficial do Google
- * OAuth2 com discovery automático
- * Endpoints vêm do banco de dados
+ * Official technical configuration for Google
+ * OAuth2 with automatic OIDC discovery
+ * Endpoints come from the database
  */
 const googleConfig: ProviderConfig = {
   supportsDiscovery: true,
@@ -126,9 +126,9 @@ const googleConfig: ProviderConfig = {
 };
 
 /**
- * Configuração técnica oficial do GitHub
- * OAuth2 com busca separada de email
- * Endpoints vêm do banco de dados
+ * Official technical configuration for GitHub
+ * OAuth2 with separate email fetch
+ * Endpoints come from the database
  */
 const githubConfig: ProviderConfig = {
   supportsDiscovery: false,
@@ -149,9 +149,9 @@ const githubConfig: ProviderConfig = {
 };
 
 /**
- * Configuração técnica oficial do Auth0
- * OIDC com discovery automático
- * Endpoints vêm do banco de dados
+ * Official technical configuration for Auth0
+ * OIDC with automatic discovery
+ * Endpoints come from the database
  */
 const auth0Config: ProviderConfig = {
   supportsDiscovery: true,
@@ -168,9 +168,9 @@ const auth0Config: ProviderConfig = {
 };
 
 /**
- * Configuração técnica oficial do Kinde
- * OIDC com mapeamentos de campo customizados
- * Endpoints vêm do banco de dados
+ * Official technical configuration for Kinde
+ * OIDC with custom field mappings
+ * Endpoints come from the database
  */
 const kindeConfig: ProviderConfig = {
   supportsDiscovery: true,
@@ -187,9 +187,9 @@ const kindeConfig: ProviderConfig = {
 };
 
 /**
- * Configuração técnica oficial do Zitadel
- * OIDC com Basic Auth
- * Endpoints vêm do banco de dados
+ * Official technical configuration for Zitadel
+ * OIDC with Basic Auth
+ * Endpoints come from the database
  */
 const zitadelConfig: ProviderConfig = {
   supportsDiscovery: true,
@@ -206,9 +206,9 @@ const zitadelConfig: ProviderConfig = {
 };
 
 /**
- * Configuração técnica oficial do Authentik
- * OIDC self-hosted com discovery
- * Endpoints vêm do banco de dados
+ * Official technical configuration for Authentik
+ * Self-hosted OIDC with discovery
+ * Endpoints come from the database
  */
 const authentikConfig: ProviderConfig = {
   supportsDiscovery: true,
@@ -225,9 +225,9 @@ const authentikConfig: ProviderConfig = {
 };
 
 /**
- * Configuração técnica oficial do Frontegg
- * OIDC multi-tenant com discovery automático
- * Endpoints vêm do banco de dados
+ * Official technical configuration for Frontegg
+ * Multi-tenant OIDC with automatic discovery
+ * Endpoints come from the database
  */
 const fronteggConfig: ProviderConfig = {
   supportsDiscovery: true,
@@ -244,9 +244,9 @@ const fronteggConfig: ProviderConfig = {
 };
 
 /**
- * Configuração técnica oficial do Pocket ID
- * OIDC com discovery automático
- * Endpoints vêm do banco de dados
+ * Official technical configuration for Pocket ID
+ * OIDC with automatic discovery
+ * Endpoints come from the database
  */
 const pocketidConfig: ProviderConfig = {
   supportsDiscovery: true,
@@ -267,8 +267,8 @@ const pocketidConfig: ProviderConfig = {
 };
 
 /**
- * Template genérico ULTRA-INTELIGENTE para providers customizados
- * Detecta automaticamente padrões comuns e se adapta
+ * Generic template for custom providers
+ * Automatically detects common patterns and adapts accordingly
  */
 const genericProviderTemplate: ProviderConfig = {
   supportsDiscovery: true,
@@ -304,8 +304,8 @@ const genericProviderTemplate: ProviderConfig = {
 };
 
 /**
- * Configuração completa dos providers
- * Exporta todos os providers oficiais e o template genérico
+ * Complete providers configuration
+ * Exports all official providers and the generic template
  */
 export const providersConfig: ProvidersConfigFile = {
   officialProviders: {
@@ -323,7 +323,7 @@ export const providersConfig: ProvidersConfigFile = {
 };
 
 /**
- * Exportações individuais para facilitar importação
+ * Individual exports for convenient importing
  */
 export {
   auth0Config,

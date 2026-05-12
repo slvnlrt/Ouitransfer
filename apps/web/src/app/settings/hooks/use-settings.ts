@@ -189,8 +189,6 @@ export function useSettings() {
           : "";
 
       if (
-        errorMessage.includes("autenticação por senha") ||
-        errorMessage.includes("provedor de autenticação ativo") ||
         errorMessage.includes("password authentication") ||
         errorMessage.includes("authentication provider")
       ) {

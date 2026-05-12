@@ -21,9 +21,9 @@ export function V3BetaModal() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Verifica se está na rota v3-beta
+    // Check if we are on the v3-beta route
     if (pathname?.includes("/docs/v3-beta")) {
-      // Verifica se o modal já foi mostrado antes
+      // Check if the modal has already been shown before
       const hasSeenModal = localStorage.getItem(V3_BETA_MODAL_KEY);
 
       if (!hasSeenModal) {
@@ -33,7 +33,7 @@ export function V3BetaModal() {
   }, [pathname]);
 
   const handleClose = () => {
-    // Marca como visto no localStorage
+    // Mark as seen in localStorage
     localStorage.setItem(V3_BETA_MODAL_KEY, "true");
     setIsOpen(false);
   };

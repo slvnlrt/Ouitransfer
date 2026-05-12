@@ -150,7 +150,7 @@ export function ReverseShareDetailsModal({
           </DialogHeader>
 
           <div className="py-4 space-y-6">
-            {/* Estatísticas */}
+            {/* Statistics */}
             <ReverseShareStats
               filesCount={reverseShare.files?.length || 0}
               maxFiles={reverseShare.maxFiles}
@@ -158,7 +158,7 @@ export function ReverseShareDetailsModal({
             />
 
             <div className="grid grid-cols-2 gap-4">
-              {/* Informações Básicas */}
+              {/* Basic Information */}
               <div className="space-y-3">
                 <h3 className="text-base font-medium text-foreground border-b pb-2">
                   {t("reverseShares.modals.details.basicInfo")}
@@ -280,7 +280,7 @@ export function ReverseShareDetailsModal({
               )}
             </div>
 
-            {/* Link de Compartilhamento */}
+            {/* Share Link */}
             <div className="space-y-3">
               <div className="flex items-center gap-2 border-b pb-2">
                 <h3 className="text-base font-medium text-foreground">
@@ -338,7 +338,7 @@ export function ReverseShareDetailsModal({
               )}
             </div>
 
-            {/* Configurações e Limites */}
+            {/* Settings and Limits */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-3">
                 <h3 className="text-base font-medium text-foreground border-b pb-2">
@@ -513,7 +513,7 @@ export function ReverseShareDetailsModal({
               </div>
             </div>
 
-            {/* Arquivos Recebidos */}
+            {/* Received Files */}
             <ReceivedFilesSection files={reverseShare.files || []} onFileDeleted={onSuccess} />
           </div>
 
