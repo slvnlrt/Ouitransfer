@@ -929,3 +929,12 @@
 - Batch 3: embed.controller migrated, validateObjectName extracted, client-unsafe messages fixed
 - Batch 4: tokenVersion on privilege changes, refresh rotation race fix, httpOnly cookie unification, OIDC cookie maxAge, logout revocation, audit-logs auth hardened
 - Backlog: 42+ items across 6 agent passes — all resolved (0 deferred)
+
+### Final Review Fixes
+- 5.5: JWT cookie signing (`signed: true`, `COOKIE_SECRET` env var with 3 Zod refines)
+- I-1: Portuguese error messages → English in file/dto.ts, folder/dto.ts, 4 routes.ts files
+- I-2: Documented email-only lockout design in isAccountLocked JSDoc
+- M-1: Removed unnecessary async from generateBackupCodes
+- M-2: Documented accepted timing leak in backup code findIndex
+- M-3: Documented defense-in-depth double isAccountLocked check
+- M-5: Extracted refresh token cookie constants to auth.config.ts
