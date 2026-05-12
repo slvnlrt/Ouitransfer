@@ -3,7 +3,7 @@
 ## Project Overview
 Ouitransfer is a self-hosted file transfer solution (WeTransfer alternative).
 - **Monorepo**: `apps/server`, `apps/web`, `apps/docs` (pnpm workspace + Turborepo)
-- **Server**: Fastify 5 + Prisma (SQLite) + S3-compatible storage (MinIO or external)
+- **Server**: Fastify 5 + Prisma (SQLite) + S3-compatible storage (RustFS or external)
 - **Web**: Next.js 15 (App Router) + React 19 + Tailwind CSS 4 + shadcn/ui
 - **Docs**: Fumadocs (Next.js)
 - **Package manager**: pnpm 10.6.0
@@ -18,7 +18,7 @@ D:\Code\Ouitransfer\
   apps/docs/          Fumadocs site, port 3001, ~31 files
   packages/shared/    @ouitransfer/shared — shared utilities (mime-types, etc.)
   packages/config/    @ouitransfer/config — shared tsconfig presets (base, server, nextjs)
-  infra/              Docker, MinIO, deployment scripts
+  infra/              Docker, deployment scripts
   audit/              Audit reports and remediation tracking
 ```
 
