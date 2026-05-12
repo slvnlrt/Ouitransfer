@@ -8,7 +8,7 @@ import { env } from "../../env.js";
 import { UnauthorizedError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
-import { ConfigService } from "../config/service.js";
+import { getConfigValue } from "../config/service.js";
 import { createChallengeToken, verifyChallengeToken } from "./challenge.js";
 import {
   CompleteTwoFactorLoginSchema,
@@ -21,7 +21,6 @@ import { AuthService } from "./service.js";
 
 export class AuthController {
   private authService = new AuthService();
-  private configService = new ConfigService();
 
   private getClientInfo(request: FastifyRequest) {
     const realIP = request.headers["x-real-ip"] as string;
@@ -280,7 +279,7 @@ export class AuthController {
   }
 
   async getAuthConfig(_request: FastifyRequest, reply: FastifyReply) {
-    const passwordAuthEnabled = await this.configService.getValue("passwordAuthEnabled");
+    const passwordAuthEnabled = await getConfigValue("passwordAuthEnabled");
     return reply.send({
       passwordAuthEnabled: passwordAuthEnabled === "true",
     });

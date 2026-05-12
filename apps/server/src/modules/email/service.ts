@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 
 import { AppError, ValidationError } from "../../utils/app-error.js";
-import { ConfigService } from "../config/service.js";
+import { getConfigValue } from "../config/service.js";
 
 interface SmtpConfig {
   smtpEnabled: string;
@@ -15,18 +15,16 @@ interface SmtpConfig {
 }
 
 export class EmailService {
-  private configService = new ConfigService();
-
   private async createTransporter() {
-    const smtpEnabled = await this.configService.getValue("smtpEnabled");
+    const smtpEnabled = await getConfigValue("smtpEnabled");
     if (smtpEnabled !== "true") {
       return null;
     }
 
-    const port = Number(await this.configService.getValue("smtpPort"));
-    const smtpSecure = (await this.configService.getValue("smtpSecure")) || "auto";
-    const smtpNoAuth = await this.configService.getValue("smtpNoAuth");
-    const smtpTrustSelfSigned = await this.configService.getValue("smtpTrustSelfSigned");
+    const port = Number(await getConfigValue("smtpPort"));
+    const smtpSecure = (await getConfigValue("smtpSecure")) || "auto";
+    const smtpNoAuth = await getConfigValue("smtpNoAuth");
+    const smtpTrustSelfSigned = await getConfigValue("smtpTrustSelfSigned");
 
     let secure = false;
     let requireTLS = false;
@@ -54,7 +52,7 @@ export class EmailService {
       tls?: { rejectUnauthorized: boolean };
       auth?: { user: string; pass: string };
     } = {
-      host: await this.configService.getValue("smtpHost"),
+      host: await getConfigValue("smtpHost"),
       port: port,
       secure: secure,
       requireTLS: requireTLS,
@@ -68,8 +66,8 @@ export class EmailService {
 
     if (smtpNoAuth !== "true") {
       transportConfig.auth = {
-        user: await this.configService.getValue("smtpUser"),
-        pass: await this.configService.getValue("smtpPass"),
+        user: await getConfigValue("smtpUser"),
+        pass: await getConfigValue("smtpPass"),
       };
     }
 
@@ -83,14 +81,14 @@ export class EmailService {
       smtpConfig = config;
     } else {
       smtpConfig = {
-        smtpEnabled: await this.configService.getValue("smtpEnabled"),
-        smtpHost: await this.configService.getValue("smtpHost"),
-        smtpPort: await this.configService.getValue("smtpPort"),
-        smtpUser: await this.configService.getValue("smtpUser"),
-        smtpPass: await this.configService.getValue("smtpPass"),
-        smtpSecure: (await this.configService.getValue("smtpSecure")) || "auto",
-        smtpNoAuth: await this.configService.getValue("smtpNoAuth"),
-        smtpTrustSelfSigned: await this.configService.getValue("smtpTrustSelfSigned"),
+        smtpEnabled: await getConfigValue("smtpEnabled"),
+        smtpHost: await getConfigValue("smtpHost"),
+        smtpPort: await getConfigValue("smtpPort"),
+        smtpUser: await getConfigValue("smtpUser"),
+        smtpPass: await getConfigValue("smtpPass"),
+        smtpSecure: (await getConfigValue("smtpSecure")) || "auto",
+        smtpNoAuth: await getConfigValue("smtpNoAuth"),
+        smtpTrustSelfSigned: await getConfigValue("smtpTrustSelfSigned"),
       };
     }
 
@@ -163,9 +161,9 @@ export class EmailService {
       throw new ValidationError("SMTP is not enabled");
     }
 
-    const fromName = await this.configService.getValue("smtpFromName");
-    const fromEmail = await this.configService.getValue("smtpFromEmail");
-    const appName = await this.configService.getValue("appName");
+    const fromName = await getConfigValue("smtpFromName");
+    const fromEmail = await getConfigValue("smtpFromEmail");
+    const appName = await getConfigValue("appName");
 
     await transporter.sendMail({
       from: `"${fromName}" <${fromEmail}>`,
@@ -193,9 +191,9 @@ export class EmailService {
       throw new ValidationError("SMTP is not enabled");
     }
 
-    const fromName = await this.configService.getValue("smtpFromName");
-    const fromEmail = await this.configService.getValue("smtpFromEmail");
-    const appName = await this.configService.getValue("appName");
+    const fromName = await getConfigValue("smtpFromName");
+    const fromEmail = await getConfigValue("smtpFromEmail");
+    const appName = await getConfigValue("appName");
 
     const shareTitle = shareName || "Files";
     const sender = senderName || "Someone";
@@ -275,9 +273,9 @@ export class EmailService {
       throw new ValidationError("SMTP is not enabled");
     }
 
-    const fromName = await this.configService.getValue("smtpFromName");
-    const fromEmail = await this.configService.getValue("smtpFromEmail");
-    const appName = await this.configService.getValue("appName");
+    const fromName = await getConfigValue("smtpFromName");
+    const fromEmail = await getConfigValue("smtpFromEmail");
+    const appName = await getConfigValue("appName");
 
     await transporter.sendMail({
       from: `"${fromName}" <${fromEmail}>`,

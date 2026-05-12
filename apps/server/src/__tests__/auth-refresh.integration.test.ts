@@ -18,12 +18,13 @@ vi.mock("../shared/prisma.js", () => ({
   },
 }));
 
-// ConfigService must be a class with `new ConfigService()` usage
+// Mock config functions used during auth route registration and request handling.
 vi.mock("../modules/config/service.js", () => ({
-  ConfigService: class MockConfigService {
-    getValue = vi.fn().mockResolvedValue("true");
-    validateAllProvidersDisable = vi.fn().mockResolvedValue(true);
-  },
+  getConfigValue: vi.fn().mockResolvedValue("true"),
+  setConfigValue: vi.fn().mockResolvedValue(undefined),
+  validatePasswordAuthDisable: vi.fn().mockResolvedValue(true),
+  validateAllProvidersDisable: vi.fn().mockResolvedValue(true),
+  getGroupConfigs: vi.fn().mockResolvedValue({}),
 }));
 
 // ── Item 6: Do NOT mock validateTokenVersion ─────────────────────────────────

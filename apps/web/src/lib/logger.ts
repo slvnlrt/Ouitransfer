@@ -1,3 +1,18 @@
+/**
+ * Client-side logger with level filtering.
+ *
+ * A thin console wrapper that filters messages below the configured level.
+ * NOT a structured logger — no JSON serialization, no transports, no redaction.
+ *
+ * The log level is captured once at module evaluation time from
+ * `NEXT_PUBLIC_LOG_LEVEL` (build-time env var). Runtime changes require a
+ * rebuild. Defaults to "warn" if not set.
+ *
+ * Usage:
+ *   logger.debug("Fetching data", { url, params });
+ *   logger.error("Upload failed", { err: error.message });
+ */
+
 type LogLevel = "debug" | "info" | "warn" | "error";
 
 interface LogContext {
@@ -29,6 +44,7 @@ function formatMessage(level: LogLevel, message: string, context?: LogContext): 
   }
 }
 
+/** Client-side level-filtered logger. See module JSDoc for details. */
 export const logger = {
   debug: (message: string, context?: LogContext) => formatMessage("debug", message, context),
   info: (message: string, context?: LogContext) => formatMessage("info", message, context),

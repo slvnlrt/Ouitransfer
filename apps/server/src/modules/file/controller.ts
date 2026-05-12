@@ -18,7 +18,7 @@ import {
 import { sanitizeFilename } from "../../utils/sanitize-filename.js";
 import { isMimeTypeConsistent, verifyMagicBytes } from "../../utils/validate-file-content.js";
 import { validateObjectName } from "../../utils/validate-object-name.js";
-import { ConfigService } from "../config/service.js";
+import { getConfigValue } from "../config/service.js";
 import {
   type CheckFileInput,
   CheckFileSchema,
@@ -34,7 +34,6 @@ import { FileService } from "./service.js";
 
 export class FileController {
   private fileService = new FileService();
-  private configService = new ConfigService();
 
   async getPresignedUrl(request: FastifyRequest, reply: FastifyReply): Promise<void> {
     const { filename, extension } = request.query as { filename: string; extension: string };
@@ -56,7 +55,7 @@ export class FileController {
 
     const url = await this.fileService.getPresignedPutUrl(objectName, expires);
 
-    const maxFileSize = Number(await this.configService.getValue("maxFileSize"));
+    const maxFileSize = Number(await getConfigValue("maxFileSize"));
 
     return reply.status(200).send({ url, objectName, maxFileSize });
   }
@@ -123,13 +122,13 @@ export class FileController {
       }
     }
 
-    const maxFileSize = BigInt(await this.configService.getValue("maxFileSize"));
+    const maxFileSize = BigInt(await getConfigValue("maxFileSize"));
     if (BigInt(input.size) > maxFileSize) {
       const maxSizeMB = Number(maxFileSize) / (1024 * 1024);
       throw new ValidationError(`File size exceeds the maximum allowed size of ${maxSizeMB}MB`);
     }
 
-    const maxTotalStorage = BigInt(await this.configService.getValue("maxTotalStoragePerUser"));
+    const maxTotalStorage = BigInt(await getConfigValue("maxTotalStoragePerUser"));
 
     const userFiles = await prisma.file.findMany({
       where: { userId },
@@ -199,13 +198,13 @@ export class FileController {
 
     const input: CheckFileInput = CheckFileSchema.parse(request.body);
 
-    const maxFileSize = BigInt(await this.configService.getValue("maxFileSize"));
+    const maxFileSize = BigInt(await getConfigValue("maxFileSize"));
     if (BigInt(input.size) > maxFileSize) {
       const maxSizeMB = Number(maxFileSize) / (1024 * 1024);
       throw new ValidationError(`File size exceeds the maximum allowed size of ${maxSizeMB}MB`);
     }
 
-    const maxTotalStorage = BigInt(await this.configService.getValue("maxTotalStoragePerUser"));
+    const maxTotalStorage = BigInt(await getConfigValue("maxTotalStoragePerUser"));
 
     const userFiles = await prisma.file.findMany({
       where: { userId },

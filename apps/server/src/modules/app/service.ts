@@ -1,16 +1,14 @@
 import { prisma } from "../../shared/prisma.js";
 import { ForbiddenError, NotFoundError } from "../../utils/app-error.js";
-import { ConfigService } from "../config/service.js";
+import { getConfigValue, validatePasswordAuthDisable } from "../config/service.js";
 
 export class AppService {
-  private configService = new ConfigService();
-
   async getAppInfo() {
     const [appName, appDescription, appLogo, firstUserAccess] = await Promise.all([
-      this.configService.getValue("appName"),
-      this.configService.getValue("appDescription"),
-      this.configService.getValue("appLogo"),
-      this.configService.getValue("firstUserAccess"),
+      getConfigValue("appName"),
+      getConfigValue("appDescription"),
+      getConfigValue("appLogo"),
+      getConfigValue("firstUserAccess"),
     ]);
 
     return {
@@ -62,7 +60,7 @@ export class AppService {
   async updateConfig(key: string, value: string) {
     if (key === "passwordAuthEnabled") {
       if (value === "false") {
-        const canDisable = await this.configService.validatePasswordAuthDisable();
+        const canDisable = await validatePasswordAuthDisable();
         if (!canDisable) {
           throw new ForbiddenError(
             "Password authentication cannot be disabled. At least one authentication provider must be active.",
@@ -88,7 +86,7 @@ export class AppService {
   async bulkUpdateConfigs(updates: Array<{ key: string; value: string }>) {
     const passwordAuthUpdate = updates.find((update) => update.key === "passwordAuthEnabled");
     if (passwordAuthUpdate && passwordAuthUpdate.value === "false") {
-      const canDisable = await this.configService.validatePasswordAuthDisable();
+      const canDisable = await validatePasswordAuthDisable();
       if (!canDisable) {
         throw new ForbiddenError(
           "Password authentication cannot be disabled. At least one authentication provider must be active.",

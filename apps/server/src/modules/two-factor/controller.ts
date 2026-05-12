@@ -5,7 +5,7 @@ import { prisma } from "../../shared/prisma.js";
 import { NotFoundError, UnauthorizedError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
-import { ConfigService } from "../config/service.js";
+import { getConfigValue } from "../config/service.js";
 import { TwoFactorService } from "./service.js";
 
 const SetupSchema = z
@@ -35,7 +35,6 @@ const DisableSchema = z.object({
 
 export class TwoFactorController {
   private twoFactorService = new TwoFactorService();
-  private configService = new ConfigService();
 
   /**
    * Generate 2FA setup (QR code and secret)
@@ -57,8 +56,7 @@ export class TwoFactorController {
       throw new NotFoundError("User not found");
     }
 
-    const appName =
-      body?.appName || (await this.configService.getValue("appName")) || "OUITRANSFER";
+    const appName = body?.appName || (await getConfigValue("appName")) || "OUITRANSFER";
 
     const setupData = await this.twoFactorService.generateSetup(userId, user.email, appName);
 

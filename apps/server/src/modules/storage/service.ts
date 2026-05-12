@@ -5,11 +5,9 @@ import { prisma } from "../../shared/prisma.js";
 import { AppError, ValidationError } from "../../utils/app-error.js";
 import { IS_RUNNING_IN_CONTAINER } from "../../utils/container-detection.js";
 import { getLogger } from "../../utils/logger.js";
-import { ConfigService } from "../config/service.js";
+import { getConfigValue } from "../config/service.js";
 
 export class StorageService {
-  private configService = new ConfigService();
-
   private _ensureNumber(value: number, fallback: number = 0): number {
     return Number.isNaN(value) || !Number.isFinite(value) || value < 0 ? fallback : value;
   }
@@ -128,7 +126,7 @@ export class StorageService {
           uploadAllowed: diskAvailableGB > 0.1,
         };
       } else if (userId) {
-        const maxTotalStorage = BigInt(await this.configService.getValue("maxTotalStoragePerUser"));
+        const maxTotalStorage = BigInt(await getConfigValue("maxTotalStoragePerUser"));
         const maxStorageGB = this._ensureNumber(Number(maxTotalStorage) / (1024 * 1024 * 1024), 10);
 
         const userFiles = await prisma.file.findMany({

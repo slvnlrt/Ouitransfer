@@ -43,18 +43,19 @@ vi.mock("../shared/prisma.js", () => ({
   },
 }));
 
-// ── Mock ConfigService (so we don't need a DB for config lookups) ────────────
+// ── Mock config functions (so we don't need a DB for config lookups) ─────────
 vi.mock("../modules/config/service.js", () => ({
-  ConfigService: class MockConfigService {
-    getValue = vi.fn().mockImplementation(async (key: string) => {
-      if (key === "maxFileSize") return String(100 * 1024 * 1024); // 100 MB
-      if (key === "maxTotalStoragePerUser") return String(10 * 1024 * 1024 * 1024); // 10 GB
-      if (key === "passwordMinLength") return "8";
-      if (key === "passwordAuthEnabled") return "true";
-      return "true";
-    });
-    validateAllProvidersDisable = vi.fn().mockResolvedValue(true);
-  },
+  getConfigValue: vi.fn().mockImplementation(async (key: string) => {
+    if (key === "maxFileSize") return String(100 * 1024 * 1024); // 100 MB
+    if (key === "maxTotalStoragePerUser") return String(10 * 1024 * 1024 * 1024); // 10 GB
+    if (key === "passwordMinLength") return "8";
+    if (key === "passwordAuthEnabled") return "true";
+    return "true";
+  }),
+  setConfigValue: vi.fn().mockResolvedValue(undefined),
+  validatePasswordAuthDisable: vi.fn().mockResolvedValue(true),
+  validateAllProvidersDisable: vi.fn().mockResolvedValue(true),
+  getGroupConfigs: vi.fn().mockResolvedValue({}),
 }));
 
 // ── Mock validateTokenVersion — always trusts tokens in this test suite ──────

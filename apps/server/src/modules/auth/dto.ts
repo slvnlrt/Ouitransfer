@@ -1,11 +1,9 @@
 import { z } from "zod";
 
-import { ConfigService } from "../config/service.js";
-
-const configService = new ConfigService();
+import { getConfigValue } from "../config/service.js";
 
 export const createPasswordSchema = async () => {
-  const minLength = Number(await configService.getValue("passwordMinLength"));
+  const minLength = Number(await getConfigValue("passwordMinLength"));
   return z
     .string()
     .min(minLength, `Password must be at least ${minLength} characters`)
@@ -30,7 +28,7 @@ export const BaseResetPasswordSchema = z.object({
 export type BaseResetPasswordInput = z.infer<typeof BaseResetPasswordSchema>;
 
 export const createResetPasswordSchema = async () => {
-  const minLength = Number(await configService.getValue("passwordMinLength"));
+  const minLength = Number(await getConfigValue("passwordMinLength"));
   return BaseResetPasswordSchema.extend({
     password: z
       .string()

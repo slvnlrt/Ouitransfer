@@ -8,7 +8,7 @@ import {
   ValidationError,
 } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
-import { ConfigService } from "../config/service.js";
+import { getConfigValue } from "../config/service.js";
 import { EmailService } from "../email/service.js";
 import { TwoFactorService } from "../two-factor/service.js";
 import { UserResponseSchema } from "../user/dto.js";
@@ -21,13 +21,12 @@ import { TrustedDeviceService } from "./trusted-device.service.js";
 
 export class AuthService {
   private userRepository = new PrismaUserRepository();
-  private configService = new ConfigService();
   private emailService = new EmailService();
   private twoFactorService = new TwoFactorService();
   private trustedDeviceService = new TrustedDeviceService();
 
   async login(data: LoginInput, userAgent?: string, ipAddress?: string) {
-    const passwordAuthEnabled = await this.configService.getValue("passwordAuthEnabled");
+    const passwordAuthEnabled = await getConfigValue("passwordAuthEnabled");
     if (passwordAuthEnabled === "false") {
       throw new ForbiddenError(
         "Password authentication is disabled. Please use an external authentication provider.",
@@ -140,7 +139,7 @@ export class AuthService {
   }
 
   async requestPasswordReset(email: string, origin: string) {
-    const passwordAuthEnabled = await this.configService.getValue("passwordAuthEnabled");
+    const passwordAuthEnabled = await getConfigValue("passwordAuthEnabled");
     if (passwordAuthEnabled === "false") {
       throw new ForbiddenError(
         "Password authentication is disabled. Password reset is not available.",
@@ -153,9 +152,7 @@ export class AuthService {
     }
 
     const token = crypto.randomBytes(128).toString("hex");
-    const expirationSeconds = Number(
-      await this.configService.getValue("passwordResetTokenExpiration"),
-    );
+    const expirationSeconds = Number(await getConfigValue("passwordResetTokenExpiration"));
 
     await prisma.passwordReset.create({
       data: {
@@ -174,7 +171,7 @@ export class AuthService {
   }
 
   async resetPassword(token: string, newPassword: string): Promise<{ userId: string }> {
-    const passwordAuthEnabled = await this.configService.getValue("passwordAuthEnabled");
+    const passwordAuthEnabled = await getConfigValue("passwordAuthEnabled");
     if (passwordAuthEnabled === "false") {
       throw new ForbiddenError(
         "Password authentication is disabled. Password reset is not available.",

@@ -15,6 +15,7 @@ import { getLogger } from "../../utils/logger.js";
 import { sanitizeFilename } from "../../utils/sanitize-filename.js";
 import { isMimeTypeConsistent } from "../../utils/validate-file-content.js";
 import { validateObjectName } from "../../utils/validate-object-name.js";
+import { getConfigValue } from "../config/service.js";
 import { EmailService } from "../email/service.js";
 import { FileService } from "../file/service.js";
 import { UserService } from "../user/service.js";
@@ -301,16 +302,13 @@ export class ReverseShareUploadService {
       throw new ForbiddenError("Unauthorized to copy this file");
     }
 
-    const { ConfigService } = await import("../config/service.js");
-    const configService = new ConfigService();
-
-    const maxFileSize = BigInt(await configService.getValue("maxFileSize"));
+    const maxFileSize = BigInt(await getConfigValue("maxFileSize"));
     if (file.size > maxFileSize) {
       const maxSizeMB = Number(maxFileSize) / (1024 * 1024);
       throw new ValidationError(`File size exceeds the maximum allowed size of ${maxSizeMB}MB`);
     }
 
-    const maxTotalStorage = BigInt(await configService.getValue("maxTotalStoragePerUser"));
+    const maxTotalStorage = BigInt(await getConfigValue("maxTotalStoragePerUser"));
 
     const userFiles = await prisma.file.findMany({
       where: { userId: creatorId },

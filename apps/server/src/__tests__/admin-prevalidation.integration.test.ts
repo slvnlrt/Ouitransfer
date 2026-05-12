@@ -32,14 +32,14 @@ vi.mock("../shared/prisma.js", () => ({
   },
 }));
 
-// ConfigService is used by AppService.updateConfig for password-auth validation.
-// Mock it to avoid additional prisma calls that aren't under test.
+// Config functions are used by AppService.updateConfig for password-auth validation.
+// Mock them to avoid additional prisma calls that aren't under test.
 vi.mock("../modules/config/service.js", () => ({
-  ConfigService: class MockConfigService {
-    getValue = vi.fn().mockResolvedValue("true");
-    validatePasswordAuthDisable = vi.fn().mockResolvedValue(true);
-    validateAllProvidersDisable = vi.fn().mockResolvedValue(true);
-  },
+  getConfigValue: vi.fn().mockResolvedValue("true"),
+  setConfigValue: vi.fn().mockResolvedValue(undefined),
+  validatePasswordAuthDisable: vi.fn().mockResolvedValue(true),
+  validateAllProvidersDisable: vi.fn().mockResolvedValue(true),
+  getGroupConfigs: vi.fn().mockResolvedValue({}),
 }));
 
 // ── Do NOT mock createAdminPreValidation or validateTokenVersion ─────────────

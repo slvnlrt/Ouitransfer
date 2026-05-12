@@ -8,7 +8,7 @@ import { env } from "../../env.js";
 import { NotFoundError, ValidationError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { createRefreshToken } from "../auth/refresh-token.service.js";
-import { ConfigService } from "../config/service.js";
+import { validateAllProvidersDisable } from "../config/service.js";
 import type { CreateAuthProviderInput } from "./dto.js";
 import { UpdateAuthProviderSchema, UpdateOfficialProviderSchema } from "./dto.js";
 import { AuthProvidersService } from "./service.js";
@@ -36,11 +36,9 @@ const ERROR_MESSAGES = {
 
 export class AuthProvidersController {
   private authProvidersService: AuthProvidersService;
-  private configService: ConfigService;
 
   constructor() {
     this.authProvidersService = new AuthProvidersService();
-    this.configService = new ConfigService();
   }
 
   private buildRequestContext(request: FastifyRequest): RequestContext {
@@ -201,7 +199,7 @@ export class AuthProvidersController {
     }
 
     if (data.enabled === false && existingProvider.enabled === true) {
-      const canDisable = await this.configService.validateAllProvidersDisable();
+      const canDisable = await validateAllProvidersDisable();
       if (!canDisable) {
         throw new ValidationError(
           "Cannot disable the last authentication provider when password authentication is disabled",
@@ -285,7 +283,7 @@ export class AuthProvidersController {
     }
 
     if (provider.enabled) {
-      const canDisable = await this.configService.validateAllProvidersDisable();
+      const canDisable = await validateAllProvidersDisable();
       if (!canDisable) {
         throw new ValidationError(
           "Cannot delete the last authentication provider when password authentication is disabled",

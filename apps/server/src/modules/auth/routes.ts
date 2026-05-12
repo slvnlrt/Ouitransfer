@@ -8,7 +8,7 @@ import {
 import { env } from "../../env.js";
 import { UnauthorizedError } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
-import { ConfigService } from "../config/service.js";
+import { getConfigValue } from "../config/service.js";
 import { validatePasswordMiddleware } from "../user/middleware.js";
 import { AuthController } from "./controller.js";
 import {
@@ -21,10 +21,8 @@ import { rotateRefreshToken } from "./refresh-token.service.js";
 /** Body size limit for auth endpoints — payloads are small JSON only. */
 const AUTH_BODY_LIMIT = 64 * 1024; // 64 KB
 
-const configService = new ConfigService();
-
 const createPasswordSchema = async () => {
-  const minLength = Number(await configService.getValue("passwordMinLength"));
+  const minLength = Number(await getConfigValue("passwordMinLength"));
   return z
     .string()
     .min(minLength, `Password must be at least ${minLength} characters`)
