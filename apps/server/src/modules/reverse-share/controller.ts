@@ -16,7 +16,6 @@ export class ReverseShareController {
   private uploadService = new ReverseShareUploadService();
 
   async createReverseShare(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
@@ -30,7 +29,6 @@ export class ReverseShareController {
   }
 
   async listUserReverseShares(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
@@ -43,7 +41,6 @@ export class ReverseShareController {
   }
 
   async getReverseShare(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
@@ -76,7 +73,6 @@ export class ReverseShareController {
   }
 
   async updateReverseShare(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
@@ -90,7 +86,6 @@ export class ReverseShareController {
   }
 
   async updatePassword(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
@@ -107,7 +102,6 @@ export class ReverseShareController {
   }
 
   async deleteReverseShare(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
@@ -178,7 +172,6 @@ export class ReverseShareController {
   }
 
   async downloadFile(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
@@ -200,7 +193,6 @@ export class ReverseShareController {
   }
 
   async deleteFile(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
@@ -222,7 +214,6 @@ export class ReverseShareController {
   }
 
   async activateReverseShare(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
@@ -236,7 +227,6 @@ export class ReverseShareController {
   }
 
   async deactivateReverseShare(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
@@ -263,7 +253,6 @@ export class ReverseShareController {
   }
 
   async updateFile(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const { fileId } = request.params as { fileId: string };
     const body = request.body as { name?: string; description?: string | null };
     const userId = request.user?.userId;
@@ -277,8 +266,6 @@ export class ReverseShareController {
   }
 
   async copyFileToUserFiles(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
-
     const { fileId } = request.params as { fileId: string };
     const userId = request.user?.userId;
 

@@ -264,7 +264,7 @@ export async function authRoutes(app: FastifyInstance) {
         try {
           await request.jwtVerify();
         } catch (err) {
-          request.log.error({ err }, "JWT verification failed");
+          request.log.warn({ err }, "JWT verification failed");
           throw new UnauthorizedError(
             "Unauthorized: a valid token is required to access this resource.",
           );
@@ -297,7 +297,7 @@ export async function authRoutes(app: FastifyInstance) {
         try {
           await request.jwtVerify();
         } catch (err) {
-          request.log.error({ err }, "JWT verification failed");
+          request.log.warn({ err }, "JWT verification failed");
           throw new UnauthorizedError(
             "Unauthorized: a valid token is required to access this resource.",
           );
@@ -328,7 +328,7 @@ export async function authRoutes(app: FastifyInstance) {
         try {
           await request.jwtVerify();
         } catch (err) {
-          request.log.error({ err }, "JWT verification failed");
+          request.log.warn({ err }, "JWT verification failed");
           throw new UnauthorizedError(
             "Unauthorized: a valid token is required to access this resource.",
           );
@@ -384,7 +384,7 @@ export async function authRoutes(app: FastifyInstance) {
       const refreshToken = (request.cookies as Record<string, string>)[REFRESH_TOKEN_COOKIE_NAME];
 
       if (!refreshToken) {
-        return reply.status(401).send({ error: "Missing refresh token" });
+        throw new UnauthorizedError("Missing refresh token");
       }
 
       const result = await rotateRefreshToken(refreshToken);

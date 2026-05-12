@@ -12,7 +12,7 @@ export async function twoFactorRoutes(app: FastifyInstance) {
     try {
       await request.jwtVerify();
     } catch (err) {
-      request.log.error({ err }, "JWT verification failed");
+      request.log.warn({ err }, "JWT verification failed");
       throw new UnauthorizedError(
         "Unauthorized: a valid token is required to access this resource.",
       );

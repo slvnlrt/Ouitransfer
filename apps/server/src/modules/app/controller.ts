@@ -1,6 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { ForbiddenError, ValidationError } from "../../utils/app-error.js";
+import { ValidationError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
 import { EmailService } from "../email/service.js";
@@ -67,12 +67,6 @@ export class AppController {
   }
 
   async testSmtpConnection(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
-
-    if (!request.user?.isAdmin) {
-      throw new ForbiddenError("Access restricted to administrators");
-    }
-
     const body = request.body as {
       smtpConfig?: {
         smtpEnabled: string;

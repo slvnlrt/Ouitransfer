@@ -20,7 +20,7 @@ export async function userRoutes(app: FastifyInstance) {
       try {
         await request.jwtVerify();
       } catch (authErr) {
-        request.log.error({ err: authErr }, "JWT verification failed");
+        request.log.warn({ err: authErr }, "JWT verification failed");
         throw new UnauthorizedError(
           "Unauthorized: a valid token is required to access this resource.",
         );

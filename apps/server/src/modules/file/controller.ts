@@ -190,7 +190,6 @@ export class FileController {
   }
 
   async checkFile(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
@@ -239,7 +238,6 @@ export class FileController {
   }
 
   async listFiles(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
@@ -305,7 +303,6 @@ export class FileController {
   }
 
   async deleteFile(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const { id } = request.params as { id: string };
     if (!id) {
       throw new ValidationError("The 'id' parameter is required.");
@@ -329,7 +326,6 @@ export class FileController {
   }
 
   async updateFile(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const { id } = request.params as { id: string };
     const userId = request.user?.userId;
 
@@ -389,7 +385,6 @@ export class FileController {
   }
 
   async moveFile(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
 
     if (!userId) {

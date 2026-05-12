@@ -81,7 +81,6 @@ export class FolderController {
   }
 
   async checkFolder(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
@@ -113,7 +112,6 @@ export class FolderController {
   }
 
   async listFolders(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
@@ -192,7 +190,6 @@ export class FolderController {
   }
 
   async updateFolder(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const { id } = request.params as { id: string };
     const userId = request.user?.userId;
 
@@ -261,7 +258,6 @@ export class FolderController {
   }
 
   async moveFolder(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
 
     if (!userId) {
@@ -335,7 +331,6 @@ export class FolderController {
   }
 
   async deleteFolder(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const { id } = request.params as { id: string };
     if (!id) {
       throw new ValidationError("The 'id' parameter is required.");

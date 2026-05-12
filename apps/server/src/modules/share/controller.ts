@@ -14,7 +14,6 @@ export class ShareController {
   private shareService = new ShareService();
 
   async createShare(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
@@ -28,7 +27,6 @@ export class ShareController {
   }
 
   async listUserShares(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
@@ -50,7 +48,7 @@ export class ShareController {
       userId = request.user?.userId;
     } catch (err) {
       // JWT verification failure is expected for unauthenticated share access
-      request.log.error({ err }, "JWT verification failed");
+      request.log.debug({ err }, "JWT verification skipped (anonymous access)");
     }
 
     const share = await this.shareService.getShare(shareId, password, userId);
@@ -69,7 +67,6 @@ export class ShareController {
   }
 
   async updatePassword(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
@@ -85,7 +82,6 @@ export class ShareController {
   }
 
   async addItems(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
@@ -106,7 +102,6 @@ export class ShareController {
   }
 
   async removeItems(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
@@ -150,7 +145,6 @@ export class ShareController {
   }
 
   async addRecipients(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
@@ -166,7 +160,6 @@ export class ShareController {
   }
 
   async removeRecipients(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
@@ -199,7 +192,6 @@ export class ShareController {
   }
 
   async notifyRecipients(request: FastifyRequest, reply: FastifyReply) {
-    await request.jwtVerify();
     const userId = request.user?.userId;
     if (!userId) {
       throw new UnauthorizedError(
