@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
 
 import { BackgroundLights } from "@/components/ui/background-lights";

@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
 import { Palmtree } from "lucide-react";
+import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
 
 import type { HomeHeaderProps } from "../types";

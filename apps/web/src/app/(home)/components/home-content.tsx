@@ -1,5 +1,5 @@
 import { IconBrandGithubFilled } from "@tabler/icons-react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 

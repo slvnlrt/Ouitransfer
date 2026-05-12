@@ -4,6 +4,8 @@ packages:
 
 catalog:
   # ── Runtime (shared across 2+ apps) ──────────────────────────
+  motion: "^12.23.0"
+  jose: "^5.10.0"
   next: "15.3.6"
   react: "^19.1.0"
   react-dom: "^19.1.0"

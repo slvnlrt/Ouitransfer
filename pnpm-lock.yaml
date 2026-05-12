@@ -30,9 +30,15 @@ catalogs:
     clsx:
       specifier: ^2.1.1
       version: 2.1.1
+    jose:
+      specifier: ^5.10.0
+      version: 5.10.0
     lucide-react:
       specifier: ^0.525.0
       version: 0.525.0
+    motion:
+      specifier: ^12.23.0
+      version: 12.38.0
     next:
       specifier: 15.3.6
       version: 15.3.6
@@ -120,7 +126,7 @@ importers:
         specifier: 'catalog:'
         version: 0.525.0(react@19.2.5)
       motion:
-        specifier: ^12.23.0
+        specifier: 'catalog:'
         version: 12.38.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       next:
         specifier: 'catalog:'
@@ -226,7 +232,7 @@ importers:
         specifier: ^22.0.1
         version: 22.0.1
       jose:
-        specifier: ^5.10.0
+        specifier: 'catalog:'
         version: 5.10.0
       nodemailer:
         specifier: ^6.10.0
@@ -358,14 +364,11 @@ importers:
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
-      framer-motion:
-        specifier: ^12.20.1
-        version: 12.38.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       input-otp:
         specifier: ^1.4.2
         version: 1.4.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       jose:
-        specifier: ^5.10.0
+        specifier: 'catalog:'
         version: 5.10.0
       js-cookie:
         specifier: ^3.0.5
@@ -376,6 +379,9 @@ importers:
       lucide-react:
         specifier: 'catalog:'
         version: 0.525.0(react@19.2.5)
+      motion:
+        specifier: 'catalog:'
+        version: 12.38.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       nanoid:
         specifier: ^5.1.5
         version: 5.1.9

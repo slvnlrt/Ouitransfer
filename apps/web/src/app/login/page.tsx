@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 import { LanguageSwitcher } from "@/components/general/language-switcher";
 import { LoadingScreen } from "@/components/layout/loading-screen";
