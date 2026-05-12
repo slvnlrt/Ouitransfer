@@ -81,10 +81,6 @@ describe("Health endpoint — degraded state", () => {
   const app = fastify({ logger: false });
 
   beforeAll(async () => {
-    // Override prisma mock to simulate DB failure
-    const { prisma } = await import("../shared/prisma.js");
-    vi.mocked(prisma.$queryRaw).mockRejectedValue(new Error("DB connection failed"));
-
     app.setValidatorCompiler(validatorCompiler);
     app.setSerializerCompiler(serializerCompiler);
     app.register(healthRoutes);
@@ -93,10 +89,12 @@ describe("Health endpoint — degraded state", () => {
 
   afterAll(async () => {
     await app.close();
-    vi.restoreAllMocks();
   });
 
   it("GET /health returns 503 when database check fails", async () => {
+    const { prisma } = await import("../shared/prisma.js");
+    vi.mocked(prisma.$queryRaw).mockRejectedValueOnce(new Error("DB connection failed"));
+
     const response = await app.inject({
       method: "GET",
       url: "/health",
