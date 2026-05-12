@@ -1,4 +1,4 @@
-import { IconChevronDown, IconDownload, IconTrash } from "@tabler/icons-react";
+import { ChevronDown, Download, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -36,13 +36,13 @@ export function SharesTableBulkActions({
           <DropdownMenuTrigger asChild>
             <Button variant="default" size="sm" className="gap-2">
               {t("sharesTable.bulkActions.actions")}
-              <IconChevronDown className="h-4 w-4" />
+              <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[200px]">
             {onBulkDownload && (
               <DropdownMenuItem className="cursor-pointer py-2" onClick={onBulkDownload}>
-                <IconDownload className="h-4 w-4" />
+                <Download className="h-4 w-4" />
                 {t("sharesTable.bulkActions.download")}
               </DropdownMenuItem>
             )}
@@ -51,7 +51,7 @@ export function SharesTableBulkActions({
                 onClick={onBulkDelete}
                 className="cursor-pointer py-2 text-destructive focus:text-destructive"
               >
-                <IconTrash className="h-4 w-4" />
+                <Trash2 className="h-4 w-4" />
                 {t("sharesTable.bulkActions.delete")}
               </DropdownMenuItem>
             )}

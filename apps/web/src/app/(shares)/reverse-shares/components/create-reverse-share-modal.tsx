@@ -1,17 +1,17 @@
 "use client";
 
 import {
-  IconCalendar,
-  IconChevronDown,
-  IconChevronUp,
-  IconEye,
-  IconFile,
-  IconFiles,
-  IconLock,
-  IconSettings,
-  IconUpload,
-  IconUser,
-} from "@tabler/icons-react";
+  Calendar,
+  ChevronDown,
+  ChevronUp,
+  Eye,
+  File,
+  Files,
+  Lock,
+  Settings,
+  Upload,
+  User,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 
@@ -226,9 +226,9 @@ export function CreateReverseShareModal({
       </Label>
       <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={onToggle}>
         {isExpanded ? (
-          <IconChevronUp size={ICON_SIZES.small} />
+          <ChevronUp size={ICON_SIZES.small} />
         ) : (
-          <IconChevronDown size={ICON_SIZES.small} />
+          <ChevronDown size={ICON_SIZES.small} />
         )}
       </Button>
     </div>
@@ -255,7 +255,7 @@ export function CreateReverseShareModal({
       >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <IconUpload size={ICON_SIZES.large} />
+            <Upload size={ICON_SIZES.large} />
             {t("reverseShares.modals.create.title")}
           </DialogTitle>
           <DialogDescription>{t("reverseShares.modals.create.description")}</DialogDescription>
@@ -308,7 +308,7 @@ export function CreateReverseShareModal({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="flex items-center gap-2">
-                        <IconSettings size={ICON_SIZES.medium} />
+                        <Settings size={ICON_SIZES.medium} />
                         {t("reverseShares.form.pageLayout.label")}
                       </FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -343,7 +343,7 @@ export function CreateReverseShareModal({
               <div className="space-y-4">
                 {renderSectionToggle(
                   watchedValues.hasExpiration,
-                  <IconCalendar size={ICON_SIZES.medium} />,
+                  <Calendar size={ICON_SIZES.medium} />,
                   t("reverseShares.labels.configureExpiration"),
                   toggleSection("hasExpiration"),
                 )}
@@ -374,7 +374,7 @@ export function CreateReverseShareModal({
               <div className="space-y-4">
                 {renderSectionToggle(
                   watchedValues.isPasswordProtected,
-                  <IconLock size={ICON_SIZES.medium} />,
+                  <Lock size={ICON_SIZES.medium} />,
                   t("reverseShares.labels.protectWithPassword"),
                   toggleSection("isPasswordProtected", ["password"]),
                 )}
@@ -414,7 +414,7 @@ export function CreateReverseShareModal({
               <div className="space-y-4">
                 {renderSectionToggle(
                   watchedValues.hasFileLimits,
-                  <IconFile size={ICON_SIZES.medium} />,
+                  <File size={ICON_SIZES.medium} />,
                   t("reverseShares.labels.configureLimits"),
                   toggleSection("hasFileLimits", ["maxFiles", "maxFileSize", "allowedFileTypes"]),
                 )}
@@ -427,7 +427,7 @@ export function CreateReverseShareModal({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2">
-                            <IconEye size={ICON_SIZES.medium} />
+                            <Eye size={ICON_SIZES.medium} />
                             {t("reverseShares.form.maxFiles.label")}
                           </FormLabel>
                           <div className="space-y-3">
@@ -465,7 +465,7 @@ export function CreateReverseShareModal({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2">
-                            <IconFiles size={ICON_SIZES.medium} />
+                            <Files size={ICON_SIZES.medium} />
                             {t("reverseShares.form.maxFileSize.label")}
                           </FormLabel>
                           <div className="space-y-3">
@@ -539,7 +539,7 @@ export function CreateReverseShareModal({
               <div className="space-y-4">
                 {renderSectionToggle(
                   watchedValues.hasFieldRequirements,
-                  <IconUser size={ICON_SIZES.medium} />,
+                  <User size={ICON_SIZES.medium} />,
                   t("reverseShares.form.fieldRequirements.title"),
                   toggleSection("hasFieldRequirements"),
                 )}
@@ -553,7 +553,7 @@ export function CreateReverseShareModal({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="flex items-center gap-2 font-medium">
-                              <IconUser size={ICON_SIZES.small} />
+                              <User size={ICON_SIZES.small} />
                               {t("reverseShares.form.nameFieldRequired.label")}
                             </FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -594,7 +594,7 @@ export function CreateReverseShareModal({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="flex items-center gap-2 font-medium">
-                              <IconUser size={ICON_SIZES.small} />
+                              <User size={ICON_SIZES.small} />
                               {t("reverseShares.form.emailFieldRequired.label")}
                             </FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -632,10 +632,7 @@ export function CreateReverseShareModal({
 
                     <div className="text-xs text-muted-foreground bg-blue-50 dark:bg-blue-950/20 p-3 rounded-md border border-blue-200 dark:border-blue-800">
                       <div className="flex items-start gap-2">
-                        <IconSettings
-                          size={12}
-                          className="mt-0.5 text-blue-600 dark:text-blue-400"
-                        />
+                        <Settings size={12} className="mt-0.5 text-blue-600 dark:text-blue-400" />
                         <div className="space-y-1">
                           <p className="font-medium text-blue-900 dark:text-blue-100">
                             Field Configuration:

@@ -1,6 +1,6 @@
 "use client";
 
-import { IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen } from "@tabler/icons-react";
+import { ChevronDown, ChevronRight, Folder, FolderOpen } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -116,9 +116,9 @@ function TreeNodeComponent({
               onClick={() => onToggleExpand(item.id)}
             >
               {isExpanded ? (
-                <IconChevronDown className="h-3 w-3" />
+                <ChevronDown className="h-3 w-3" />
               ) : (
-                <IconChevronRight className="h-3 w-3" />
+                <ChevronRight className="h-3 w-3" />
               )}
             </Button>
           )}
@@ -151,9 +151,9 @@ function TreeNodeComponent({
         <div className="flex items-center gap-2 flex-1 min-w-0 overflow-hidden">
           {isFolder ? (
             isExpanded ? (
-              <IconFolderOpen className="h-4 w-4 flex-shrink-0 text-primary" />
+              <FolderOpen className="h-4 w-4 flex-shrink-0 text-primary" />
             ) : (
-              <IconFolder className="h-4 w-4 flex-shrink-0 text-primary" />
+              <Folder className="h-4 w-4 flex-shrink-0 text-primary" />
             )
           ) : (
             (() => {

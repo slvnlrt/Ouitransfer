@@ -1,7 +1,8 @@
 "use client";
 
 import { DragDropContext, Draggable, Droppable, type DropResult } from "@hello-pangea/dnd";
-import { IconSettings } from "@tabler/icons-react";
+import { Settings } from "lucide-react";
+
 import { useTranslations } from "next-intl";
 import type React from "react";
 
@@ -46,7 +47,7 @@ export function ProviderList({
   if (filteredProviders.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
-        <IconSettings className="h-12 w-12 mx-auto mb-4 opacity-50" />
+        <Settings className="h-12 w-12 mx-auto mb-4 opacity-50" />
         <p>
           {hideDisabledProviders
             ? t("authProviders.noProvidersEnabled")

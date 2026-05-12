@@ -1,4 +1,4 @@
-import { IconEdit, IconFolderPlus, IconTrash } from "@tabler/icons-react";
+import { FolderPlus, Pencil, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import type { FolderItem } from "@/components/tables/files-table-types";
@@ -50,7 +50,7 @@ export function FolderActionsModals({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <IconFolderPlus size={20} />
+              <FolderPlus size={20} />
               {t("folderActions.createFolder")}
             </DialogTitle>
           </DialogHeader>
@@ -100,7 +100,7 @@ export function FolderActionsModals({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <IconEdit size={20} />
+              <Pencil size={20} />
               {t("folderActions.editFolder")}
             </DialogTitle>
           </DialogHeader>
@@ -164,7 +164,7 @@ export function FolderActionsModals({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <IconTrash size={20} />
+              <Trash2 size={20} />
               {t("folderActions.deleteFolder")}
             </DialogTitle>
           </DialogHeader>

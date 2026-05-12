@@ -1,6 +1,6 @@
 "use client";
 
-import { IconFolder } from "@tabler/icons-react";
+import { Folder } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FileItem } from "@/components/tables/files-table-types";
@@ -176,7 +176,7 @@ export function MoveItemsModal({
             <div className="max-h-20 overflow-y-auto text-muted-foreground">
               {itemsToMove?.folders.map((folder) => (
                 <div key={folder.id} className="flex items-center gap-2 truncate">
-                  <IconFolder className="h-4 w-4 text-primary flex-shrink-0" />
+                  <Folder className="h-4 w-4 text-primary flex-shrink-0" />
                   <span className="truncate">{folder.name}</span>
                 </div>
               ))}

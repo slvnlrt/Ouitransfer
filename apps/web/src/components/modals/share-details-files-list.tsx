@@ -1,6 +1,6 @@
 "use client";
 
-import { IconEdit } from "@tabler/icons-react";
+import { Pencil } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,7 @@ export function ShareDetailsFilesList({ files, onManageFiles, share }: ShareDeta
             onClick={() => onManageFiles(share)}
             title={t("sharesTable.actions.manageFiles")}
           >
-            <IconEdit className="h-3 w-3" />
+            <Pencil className="h-3 w-3" />
           </Button>
         )}
       </div>

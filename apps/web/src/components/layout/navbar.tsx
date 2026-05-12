@@ -1,6 +1,6 @@
 "use client";
 
-import { IconLogout, IconPalette, IconSettings, IconUser, IconUsers } from "@tabler/icons-react";
+import { LogOut, Palette, Settings, User, Users } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -93,13 +93,13 @@ export function Navbar() {
                 </div>
                 <DropdownMenuItem asChild>
                   <Link href="/profile" className="flex items-center gap-2 cursor-pointer">
-                    <IconUser className="h-4 w-4" />
+                    <User className="h-4 w-4" />
                     {t("navbar.profile")}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/customization" className="flex items-center gap-2 cursor-pointer">
-                    <IconPalette className="h-4 w-4" />
+                    <Palette className="h-4 w-4" />
                     {t("navbar.customization")}
                   </Link>
                 </DropdownMenuItem>
@@ -107,7 +107,7 @@ export function Navbar() {
                   <>
                     <DropdownMenuItem asChild>
                       <Link href="/settings" className="flex items-center gap-2 cursor-pointer">
-                        <IconSettings className="h-4 w-4" />
+                        <Settings className="h-4 w-4" />
                         {t("navbar.settings")}
                       </Link>
                     </DropdownMenuItem>
@@ -116,7 +116,7 @@ export function Navbar() {
                         href="/users-management"
                         className="flex items-center gap-2 cursor-pointer"
                       >
-                        <IconUsers className="h-4 w-4" />
+                        <Users className="h-4 w-4" />
                         {t("navbar.usersManagement")}
                       </Link>
                     </DropdownMenuItem>
@@ -126,7 +126,7 @@ export function Navbar() {
                   className="text-destructive focus:text-destructive cursor-pointer"
                   onClick={handleLogout}
                 >
-                  <IconLogout className="h-4 w-4 text-destructive" />
+                  <LogOut className="h-4 w-4 text-destructive" />
                   {t("navbar.logout")}
                 </DropdownMenuItem>
               </DropdownMenuContent>

@@ -1,15 +1,7 @@
 "use client";
 
-import {
-  IconCopy,
-  IconDownload,
-  IconEdit,
-  IconExternalLink,
-  IconLock,
-  IconLockOpen,
-  IconMail,
-} from "@tabler/icons-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Copy, Download, ExternalLink, Lock, LockOpen, Mail, Pencil } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -346,7 +338,7 @@ export function ShareDetailsModal({
                           disabled={isDownloading}
                           title={t("shareDetails.downloadQrCode")}
                         >
-                          <IconDownload className="h-3 w-3" />
+                          <Download className="h-3 w-3" />
                         </Button>
                       </div>
                       <div className="flex flex-col items-start justify-start ">
@@ -387,7 +379,7 @@ export function ShareDetailsModal({
                           shareLink ? t("shareDetails.editLink") : t("shareDetails.generateLink")
                         }
                       >
-                        <IconEdit className="h-3 w-3" />
+                        <Pencil className="h-3 w-3" />
                       </Button>
                     )}
                   </div>
@@ -405,7 +397,7 @@ export function ShareDetailsModal({
                         onClick={handleCopyLink}
                         title={t("shareDetails.copyLink")}
                       >
-                        <IconCopy className="h-3.5 w-3.5" />
+                        <Copy className="h-3.5 w-3.5" />
                       </Button>
                       <Button
                         variant="outline"
@@ -414,7 +406,7 @@ export function ShareDetailsModal({
                         onClick={handleOpenLink}
                         title={t("shareDetails.openLink")}
                       >
-                        <IconExternalLink className="h-3.5 w-3.5" />
+                        <ExternalLink className="h-3.5 w-3.5" />
                       </Button>
                     </div>
                   ) : (
@@ -438,7 +430,7 @@ export function ShareDetailsModal({
                           onClick={() => setShowExpirationModal(true)}
                           title={t("shareDetails.editExpiration")}
                         >
-                          <IconEdit className="h-3 w-3" />
+                          <Pencil className="h-3 w-3" />
                         </Button>
                       )}
                     </div>
@@ -475,7 +467,7 @@ export function ShareDetailsModal({
                           onClick={() => setShowSecurityModal(true)}
                           title={t("shareDetails.editSecurity")}
                         >
-                          <IconEdit className="h-3 w-3" />
+                          <Pencil className="h-3 w-3" />
                         </Button>
                       )}
                     </div>
@@ -485,7 +477,7 @@ export function ShareDetailsModal({
                           variant="secondary"
                           className="bg-yellow-500/20 text-yellow-700 border-yellow-200 w-fit"
                         >
-                          <IconLock className="h-3 w-3 me-1" />
+                          <Lock className="h-3 w-3 me-1" />
                           {t("shareDetails.passwordProtected")}
                         </Badge>
                       ) : (
@@ -493,7 +485,7 @@ export function ShareDetailsModal({
                           variant="secondary"
                           className="bg-green-500/20 text-green-700 border-green-200 w-fit"
                         >
-                          <IconLockOpen className="h-3 w-3 me-1" />
+                          <LockOpen className="h-3 w-3 me-1" />
                           {t("shareDetails.publicAccess")}
                         </Badge>
                       )}
@@ -529,7 +521,7 @@ export function ShareDetailsModal({
                           variant="secondary"
                           className="bg-blue-500/20 text-blue-700 border-blue-200 text-xs"
                         >
-                          <IconMail className="h-3 w-3 me-1" />
+                          <Mail className="h-3 w-3 me-1" />
                           {recipient.email}
                         </Badge>
                       ))}

@@ -1,4 +1,4 @@
-import { IconCheck, IconEdit, IconLock, IconLockOpen, IconX } from "@tabler/icons-react";
+import { Check, Lock, LockOpen, Pencil, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
@@ -291,7 +291,7 @@ export function SharesTable({
                               saveEdit();
                             }}
                           >
-                            <IconCheck className="h-4 w-4" />
+                            <Check className="h-4 w-4" />
                           </Button>
                           <Button
                             size="icon"
@@ -302,7 +302,7 @@ export function SharesTable({
                               cancelEdit();
                             }}
                           >
-                            <IconX className="h-4 w-4" />
+                            <X className="h-4 w-4" />
                           </Button>
                         </div>
                       ) : (
@@ -324,7 +324,7 @@ export function SharesTable({
                                   startEdit(share.id, "name", displayName ?? "");
                                 }}
                               >
-                                <IconEdit className="h-3 w-3" />
+                                <Pencil className="h-3 w-3" />
                               </Button>
                             )}
                           </div>
@@ -360,7 +360,7 @@ export function SharesTable({
                               saveEdit();
                             }}
                           >
-                            <IconCheck className="h-4 w-4" />
+                            <Check className="h-4 w-4" />
                           </Button>
                           <Button
                             size="icon"
@@ -371,7 +371,7 @@ export function SharesTable({
                               cancelEdit();
                             }}
                           >
-                            <IconX className="h-4 w-4" />
+                            <X className="h-4 w-4" />
                           </Button>
                         </div>
                       ) : (
@@ -393,7 +393,7 @@ export function SharesTable({
                                   startEdit(share.id, "description", displayDescription || "");
                                 }}
                               >
-                                <IconEdit className="h-3 w-3" />
+                                <Pencil className="h-3 w-3" />
                               </Button>
                             )}
                           </div>
@@ -426,7 +426,7 @@ export function SharesTable({
                               onUpdateExpiration(share);
                             }}
                           >
-                            <IconEdit className="h-3 w-3" />
+                            <Pencil className="h-3 w-3" />
                           </Button>
                         )}
                       </div>
@@ -463,9 +463,9 @@ export function SharesTable({
                         }`}
                       >
                         {share.security.hasPassword ? (
-                          <IconLock className="h-4 w-4" />
+                          <Lock className="h-4 w-4" />
                         ) : (
-                          <IconLockOpen className="h-4 w-4" />
+                          <LockOpen className="h-4 w-4" />
                         )}
                         {share.security.hasPassword
                           ? t("sharesTable.security.protected")
@@ -482,7 +482,7 @@ export function SharesTable({
                               onUpdateSecurity(share);
                             }}
                           >
-                            <IconEdit className="h-3 w-3" />
+                            <Pencil className="h-3 w-3" />
                           </Button>
                         )}
                       </div>
@@ -509,7 +509,7 @@ export function SharesTable({
                               onManageFiles(share);
                             }}
                           >
-                            <IconEdit className="h-3 w-3" />
+                            <Pencil className="h-3 w-3" />
                           </Button>
                         )}
                       </div>
@@ -535,7 +535,7 @@ export function SharesTable({
                               onManageRecipients(share);
                             }}
                           >
-                            <IconEdit className="h-3 w-3" />
+                            <Pencil className="h-3 w-3" />
                           </Button>
                         )}
                       </div>

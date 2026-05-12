@@ -1,4 +1,4 @@
-import { IconAlertCircle, IconDatabaseCog } from "@tabler/icons-react";
+import { CircleAlert, DatabaseZap } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { ErrorDisplay } from "@/components/error-display";
@@ -28,7 +28,7 @@ export function StorageUsage({ diskSpace, diskSpaceError, onRetry }: StorageUsag
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold flex items-center gap-2">
-                <IconDatabaseCog className="text-gray-500" size={24} />
+                <DatabaseZap className="text-gray-500" size={24} />
                 {t("storageUsage.title")}
               </h2>
               <span className="text-sm text-muted-foreground">{t("storageUsage.total")}: --</span>
@@ -37,7 +37,7 @@ export function StorageUsage({ diskSpace, diskSpaceError, onRetry }: StorageUsag
               variant="inline"
               title={t("storageUsage.errors.title")}
               message={getErrorMessage(diskSpaceError)}
-              icon={<IconAlertCircle className="h-8 w-8 text-amber-600 dark:text-amber-400" />}
+              icon={<CircleAlert className="h-8 w-8 text-amber-600 dark:text-amber-400" />}
               actions={
                 onRetry
                   ? [{ label: t("storageUsage.retry"), onClick: onRetry, variant: "outline" }]
@@ -57,7 +57,7 @@ export function StorageUsage({ diskSpace, diskSpaceError, onRetry }: StorageUsag
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold flex items-center gap-2">
-                <IconDatabaseCog className="text-gray-500" size={24} />
+                <DatabaseZap className="text-gray-500" size={24} />
                 {t("storageUsage.title")}
               </h2>
               <span className="text-sm text-muted-foreground">{t("storageUsage.total")}: --</span>
@@ -81,7 +81,7 @@ export function StorageUsage({ diskSpace, diskSpaceError, onRetry }: StorageUsag
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold flex items-center gap-2">
-              <IconDatabaseCog className="text-gray-500" size={24} />
+              <DatabaseZap className="text-gray-500" size={24} />
               {t("storageUsage.title")}
             </h2>
             <span className="text-sm text-muted-foreground">

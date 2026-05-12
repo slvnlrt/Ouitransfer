@@ -1,4 +1,4 @@
-import { IconCloudUpload, IconFolderOpen } from "@tabler/icons-react";
+import { CloudUpload, FolderOpen } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -17,7 +17,7 @@ export function RecentFiles({ files, fileManager, onOpenUploadModal }: RecentFil
       <CardHeader>
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
           <CardTitle className="text-xl font-semibold flex items-center gap-2">
-            <IconCloudUpload className="text-xl text-gray-500" />
+            <CloudUpload className="text-xl text-gray-500" />
             {t("recentFiles.title")}
           </CardTitle>
 
@@ -28,7 +28,7 @@ export function RecentFiles({ files, fileManager, onOpenUploadModal }: RecentFil
               size="default"
               onClick={() => router.push("/files")}
             >
-              <IconFolderOpen className="h-4 w-4" />
+              <FolderOpen className="h-4 w-4" />
               {t("recentFiles.viewAll")}
             </Button>
 
@@ -38,7 +38,7 @@ export function RecentFiles({ files, fileManager, onOpenUploadModal }: RecentFil
               size="default"
               onClick={onOpenUploadModal}
             >
-              <IconCloudUpload className="h-4 w-4" />
+              <CloudUpload className="h-4 w-4" />
               {t("recentFiles.upload")}
             </Button>
           </div>

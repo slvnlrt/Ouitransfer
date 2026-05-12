@@ -1,4 +1,4 @@
-import { IconPlus, IconUpload } from "@tabler/icons-react";
+import { Plus, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ export function EmptyReverseSharesState({ onCreateReverseShare }: EmptyReverseSh
     <div className="flex flex-col items-center justify-center py-12 text-center">
       <div className="mb-6">
         <div className="mx-auto w-20 h-20 bg-muted rounded-full flex items-center justify-center">
-          <IconUpload className="h-10 w-10 text-muted-foreground" />
+          <Upload className="h-10 w-10 text-muted-foreground" />
         </div>
       </div>
 
@@ -24,7 +24,7 @@ export function EmptyReverseSharesState({ onCreateReverseShare }: EmptyReverseSh
       </div>
 
       <Button onClick={onCreateReverseShare}>
-        <IconPlus className="h-4 w-4" />
+        <Plus className="h-4 w-4" />
         {t("reverseShares.empty.createButton")}
       </Button>
     </div>

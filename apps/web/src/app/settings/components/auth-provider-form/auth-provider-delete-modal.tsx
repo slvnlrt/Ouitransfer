@@ -1,4 +1,4 @@
-import { IconTrash } from "@tabler/icons-react";
+import { Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -36,7 +36,7 @@ export function AuthProviderDeleteModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-destructive">
-            <IconTrash size={20} />
+            <Trash2 size={20} />
             {t("authProviders.deleteModal.title")}
           </DialogTitle>
         </DialogHeader>
@@ -67,12 +67,12 @@ export function AuthProviderDeleteModal({
           <Button variant="destructive" onClick={handleConfirm} disabled={isDeleting}>
             {isDeleting ? (
               <>
-                <IconTrash className="h-4 w-4 animate-spin" />
+                <Trash2 className="h-4 w-4 animate-spin" />
                 {t("authProviders.deleteModal.deleting")}
               </>
             ) : (
               <>
-                <IconTrash className="h-4 w-4" />
+                <Trash2 className="h-4 w-4" />
                 {t("authProviders.deleteModal.delete")}
               </>
             )}

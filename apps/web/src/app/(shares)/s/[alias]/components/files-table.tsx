@@ -1,4 +1,4 @@
-import { IconDownload, IconEye, IconFolder, IconFolderOpen } from "@tabler/icons-react";
+import { Download, Eye, Folder, FolderOpen } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { FilePreviewModal } from "@/components/modals/file-preview-modal";
@@ -101,7 +101,7 @@ export function ShareFilesTable({
               <TableRow>
                 <TableCell colSpan={4} className="h-32 text-center text-muted-foreground">
                   <div className="flex flex-col items-center gap-2">
-                    <IconFolderOpen className="h-16 w-16 text-muted-foreground/50" />
+                    <FolderOpen className="h-16 w-16 text-muted-foreground/50" />
                     <p className="font-medium">
                       {enableNavigation ? "No files or folders" : "No files or folders shared"}
                     </p>
@@ -121,7 +121,7 @@ export function ShareFilesTable({
                     >
                       <TableCell className="h-12 px-4 border-0">
                         <div className="flex items-center gap-2">
-                          <IconFolder className="h-5 w-5 text-blue-600" />
+                          <Folder className="h-5 w-5 text-blue-600" />
                           {enableNavigation ? (
                             <button
                               type="button"
@@ -151,7 +151,7 @@ export function ShareFilesTable({
                               onClick={() => handleFolderClick(item.id)}
                               title={t("files.openFolder")}
                             >
-                              <IconFolder className="h-4 w-4" />
+                              <Folder className="h-4 w-4" />
                               <span className="sr-only">{t("files.openFolder")}</span>
                             </Button>
                           )}
@@ -162,7 +162,7 @@ export function ShareFilesTable({
                             onClick={() => handleFolderDownload(item.id, item.name)}
                             title={t("filesTable.actions.download")}
                           >
-                            <IconDownload className="h-4 w-4" />
+                            <Download className="h-4 w-4" />
                             <span className="sr-only">Download folder</span>
                           </Button>
                         </div>
@@ -196,7 +196,7 @@ export function ShareFilesTable({
                               handlePreview({ name: item.name, objectName: item.objectName })
                             }
                           >
-                            <IconEye className="h-4 w-4" />
+                            <Eye className="h-4 w-4" />
                             <span className="sr-only">{t("filesTable.actions.preview")}</span>
                           </Button>
                           <Button
@@ -205,7 +205,7 @@ export function ShareFilesTable({
                             className="h-8 w-8 hover:bg-muted"
                             onClick={() => onDownload(item.objectName, item.name)}
                           >
-                            <IconDownload className="h-4 w-4" />
+                            <Download className="h-4 w-4" />
                             <span className="sr-only">{t("filesTable.actions.download")}</span>
                           </Button>
                         </div>

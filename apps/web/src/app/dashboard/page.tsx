@@ -1,6 +1,6 @@
 "use client";
 
-import { IconLayoutDashboardFilled } from "@tabler/icons-react";
+import { LayoutDashboard } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { ProtectedRoute } from "@/components/auth/protected-route";
@@ -43,7 +43,7 @@ export default function DashboardPage() {
       <GlobalDropZone onSuccess={loadDashboardData}>
         <FileManagerLayout
           breadcrumbLabel={t("dashboard.breadcrumb")}
-          icon={<IconLayoutDashboardFilled className="text-xl" />}
+          icon={<LayoutDashboard className="text-xl" />}
           showBreadcrumb={false}
           title={t("dashboard.pageTitle")}
         >

@@ -1,6 +1,6 @@
 "use client";
 
-import { IconDotsVertical, IconDownload } from "@tabler/icons-react";
+import { Download, EllipsisVertical } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ComponentType } from "react";
 
@@ -58,7 +58,7 @@ export function ItemDropdownMenu({
           onShareModeDownload();
         }}
       >
-        <IconDownload className="h-4 w-4" />
+        <Download className="h-4 w-4" />
         <span className="sr-only">{t("filesTable.actions.download")}</span>
       </Button>
     );
@@ -73,7 +73,7 @@ export function ItemDropdownMenu({
           className={triggerClassName}
           onClick={(e) => e.stopPropagation()}
         >
-          <IconDotsVertical className="h-4 w-4" />
+          <EllipsisVertical className="h-4 w-4" />
           <span className="sr-only">{menuSrLabel ?? t("filesTable.actions.menu")}</span>
         </Button>
       </DropdownMenuTrigger>

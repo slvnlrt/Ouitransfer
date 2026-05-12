@@ -1,6 +1,6 @@
 "use client";
 
-import { IconCopy, IconDownload } from "@tabler/icons-react";
+import { Copy, Download } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -174,14 +174,14 @@ export function GenerateShareLinkModal({
                   onClick={handleCopyLink}
                   title={t("generateShareLink.copyButton")}
                 >
-                  <IconCopy className="h-4 w-4" />
+                  <Copy className="h-4 w-4" />
                 </Button>
               </div>
             </div>
 
             <DialogFooter>
               <Button onClick={downloadQRCode} disabled={isDownloading}>
-                <IconDownload className="h-4 w-4" />
+                <Download className="h-4 w-4" />
                 {t("qrCodeModal.download")}
               </Button>
             </DialogFooter>

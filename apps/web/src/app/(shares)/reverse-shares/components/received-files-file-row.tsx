@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  IconCheck,
-  IconClipboardCopy,
-  IconDownload,
-  IconEdit,
-  IconEye,
-  IconTrash,
-  IconX,
-} from "@tabler/icons-react";
+import { Check, ClipboardCopy, Download, Eye, Pencil, Trash2, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
@@ -193,7 +185,7 @@ function EditableField({
           }}
           title={t("reverseShares.components.editField.saveChanges")}
         >
-          <IconCheck className="h-3 w-3" />
+          <Check className="h-3 w-3" />
         </Button>
         <Button
           size="icon"
@@ -205,7 +197,7 @@ function EditableField({
           }}
           title={t("reverseShares.components.editField.cancelEdit")}
         >
-          <IconX className="h-3 w-3" />
+          <X className="h-3 w-3" />
         </Button>
       </div>
     );
@@ -242,7 +234,7 @@ function EditableField({
           }}
           title={t("reverseShares.components.fileActions.edit")}
         >
-          <IconEdit className="h-3 w-3" />
+          <Pencil className="h-3 w-3" />
         </Button>
       </div>
     </div>
@@ -381,7 +373,7 @@ export function FileRow({
             onClick={() => onPreview(file)}
             title={t("reverseShares.components.fileActions.preview")}
           >
-            <IconEye className="h-4 w-4" />
+            <Eye className="h-4 w-4" />
           </Button>
           <Button
             variant="ghost"
@@ -398,7 +390,7 @@ export function FileRow({
             {copyingFile === file.id ? (
               <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
             ) : (
-              <IconClipboardCopy className="h-4 w-4" />
+              <ClipboardCopy className="h-4 w-4" />
             )}
           </Button>
           <Button
@@ -407,7 +399,7 @@ export function FileRow({
             onClick={() => onDownload(file)}
             title={t("reverseShares.components.fileActions.download")}
           >
-            <IconDownload className="h-4 w-4" />
+            <Download className="h-4 w-4" />
           </Button>
           <Button
             variant="ghost"
@@ -416,7 +408,7 @@ export function FileRow({
             title={t("reverseShares.components.fileActions.delete")}
             className="text-red-600 hover:text-red-700 hover:bg-red-50"
           >
-            <IconTrash className="h-4 w-4" />
+            <Trash2 className="h-4 w-4" />
           </Button>
         </div>
       </TableCell>

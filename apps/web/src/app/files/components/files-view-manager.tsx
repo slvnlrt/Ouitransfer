@@ -1,4 +1,4 @@
-import { IconLayoutGrid, IconSearch, IconTable } from "@tabler/icons-react";
+import { LayoutGrid, Search, Table } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { FilesGridSkeleton, FilesTableSkeleton } from "@/components/skeletons";
@@ -150,7 +150,7 @@ export function FilesViewManager({
 
         <div className="flex items-center gap-4">
           <div className="relative">
-            <IconSearch className="absolute start-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute start-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
               placeholder={t("searchBar.placeholder")}
@@ -167,7 +167,7 @@ export function FilesViewManager({
               className="h-8 px-3"
               onClick={() => setViewMode("table")}
             >
-              <IconTable className="h-4 w-4" />
+              <Table className="h-4 w-4" />
             </Button>
             <Button
               variant={viewMode === "grid" ? "default" : "ghost"}
@@ -175,7 +175,7 @@ export function FilesViewManager({
               className="h-8 px-3"
               onClick={() => setViewMode("grid")}
             >
-              <IconLayoutGrid className="h-4 w-4" />
+              <LayoutGrid className="h-4 w-4" />
             </Button>
           </div>
         </div>

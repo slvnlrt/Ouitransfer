@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  IconAlertTriangle,
-  IconCheck,
-  IconCloudUpload,
-  IconLoader,
-  IconTrash,
-  IconX,
-} from "@tabler/icons-react";
+import { Check, CloudUpload, Loader, Trash2, TriangleAlert, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -55,7 +48,7 @@ function ConfirmationModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <IconAlertTriangle size={20} className="text-amber-500" />
+            <TriangleAlert size={20} className="text-amber-500" />
             {t("uploadFile.confirmCancel.title")}
           </DialogTitle>
         </DialogHeader>
@@ -252,13 +245,13 @@ export function UploadFileModal({
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "uploading":
-        return <IconLoader size={16} className="animate-spin text-blue-500" />;
+        return <Loader size={16} className="animate-spin text-blue-500" />;
       case "success":
-        return <IconCheck size={16} className="text-green-500" />;
+        return <Check size={16} className="text-green-500" />;
       case "error":
-        return <IconX size={16} className="text-red-500" />;
+        return <X size={16} className="text-red-500" />;
       case "cancelled":
-        return <IconX size={16} className="text-muted-foreground" />;
+        return <X size={16} className="text-muted-foreground" />;
       default:
         return null;
     }
@@ -335,7 +328,7 @@ export function UploadFileModal({
               onDrop={handleDrop}
             >
               <div className="flex flex-col items-center gap-2">
-                <IconCloudUpload size={32} className="text-muted-foreground" />
+                <CloudUpload size={32} className="text-muted-foreground" />
                 <p className="text-foreground text-center">{t("uploadFile.selectMultipleFiles")}</p>
                 <p className="text-sm text-muted-foreground">{t("uploadFile.dragAndDrop")}</p>
               </div>
@@ -391,7 +384,7 @@ export function UploadFileModal({
                           onClick={() => cancelUpload(upload.id)}
                           className="h-8 w-8 p-0"
                         >
-                          <IconX size={14} />
+                          <X size={14} />
                         </Button>
                       ) : upload.status === "success" ? null : upload.status === "error" ? (
                         <div className="flex gap-1">
@@ -402,7 +395,7 @@ export function UploadFileModal({
                             className="h-8 w-8 p-0"
                             title={t("uploadFile.retry")}
                           >
-                            <IconLoader size={14} />
+                            <Loader size={14} />
                           </Button>
                           <Button
                             variant="ghost"
@@ -410,7 +403,7 @@ export function UploadFileModal({
                             onClick={() => removeFile(upload.id)}
                             className="h-8 w-8 p-0"
                           >
-                            <IconTrash size={14} />
+                            <Trash2 size={14} />
                           </Button>
                         </div>
                       ) : (
@@ -420,7 +413,7 @@ export function UploadFileModal({
                           onClick={() => removeFile(upload.id)}
                           className="h-8 w-8 p-0"
                         >
-                          <IconTrash size={14} />
+                          <Trash2 size={14} />
                         </Button>
                       )}
                     </div>
@@ -441,9 +434,9 @@ export function UploadFileModal({
                 onClick={startUpload}
               >
                 {isUploading ? (
-                  <IconLoader className="h-4 w-4 animate-spin" />
+                  <Loader className="h-4 w-4 animate-spin" />
                 ) : (
-                  <IconCloudUpload className="h-4 w-4" />
+                  <CloudUpload className="h-4 w-4" />
                 )}
                 {hasPendingUploads ? t("uploadFile.startUploads") : t("uploadFile.upload")}
               </Button>

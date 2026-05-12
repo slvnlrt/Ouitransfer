@@ -1,6 +1,6 @@
 "use client";
 
-import { IconEye, IconEyeOff, IconLock, IconLockOpen } from "@tabler/icons-react";
+import { Eye, EyeOff, Lock, LockOpen } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -112,7 +112,7 @@ export function EditPasswordModal({
       <DialogContent className="sm:max-w-[450px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <IconLock size={20} />
+            <Lock size={20} />
             {t("reverseShares.modals.password.title")}
           </DialogTitle>
           <DialogDescription>{t("reverseShares.modals.password.description")}</DialogDescription>
@@ -129,9 +129,9 @@ export function EditPasswordModal({
                   <div className="space-y-0.5">
                     <FormLabel className="flex items-center gap-2">
                       {field.value ? (
-                        <IconLock className="h-4 w-4 text-yellow-600" />
+                        <Lock className="h-4 w-4 text-yellow-600" />
                       ) : (
-                        <IconLockOpen className="h-4 w-4 text-green-600" />
+                        <LockOpen className="h-4 w-4 text-green-600" />
                       )}
                       {t("reverseShares.modals.password.hasPassword")}
                     </FormLabel>
@@ -180,9 +180,9 @@ export function EditPasswordModal({
                             onClick={() => setShowPassword(!showPassword)}
                           >
                             {showPassword ? (
-                              <IconEyeOff className="h-4 w-4" />
+                              <EyeOff className="h-4 w-4" />
                             ) : (
-                              <IconEye className="h-4 w-4" />
+                              <Eye className="h-4 w-4" />
                             )}
                           </Button>
                         </div>

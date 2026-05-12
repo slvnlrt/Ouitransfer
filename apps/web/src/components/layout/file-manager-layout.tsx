@@ -1,4 +1,4 @@
-import { IconLayoutDashboard } from "@tabler/icons-react";
+import { LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
@@ -48,7 +48,7 @@ export function FileManagerLayout({
                   <BreadcrumbItem>
                     <BreadcrumbLink asChild>
                       <Link href="/dashboard" className="flex items-center">
-                        <IconLayoutDashboard size={20} className="me-2" />
+                        <LayoutDashboard size={20} className="me-2" />
                         {t("navigation.dashboard")}
                       </Link>
                     </BreadcrumbLink>

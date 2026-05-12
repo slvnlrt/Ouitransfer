@@ -1,16 +1,16 @@
 import {
-  IconCopy,
-  IconDotsVertical,
-  IconDownload,
-  IconEdit,
-  IconEye,
-  IconFolder,
-  IconLink,
-  IconMail,
-  IconQrcode,
-  IconTrash,
-  IconUsers,
-} from "@tabler/icons-react";
+  Copy,
+  Download,
+  EllipsisVertical,
+  Eye,
+  Folder,
+  Link,
+  Mail,
+  Pencil,
+  QrCode,
+  Trash2,
+  Users,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -57,40 +57,40 @@ export function ShareRowActions({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted cursor-pointer">
-          <IconDotsVertical className="h-4 w-4" />
+          <EllipsisVertical className="h-4 w-4" />
           <span className="sr-only">{t("sharesTable.actions.menu")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[200px]">
         <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onEdit(share)}>
-          <IconEdit className="h-4 w-4" />
+          <Pencil className="h-4 w-4" />
           {t("sharesTable.actions.edit")}
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onManageFiles(share)}>
-          <IconFolder className="h-4 w-4" />
+          <Folder className="h-4 w-4" />
           {t("sharesTable.actions.manageFiles")}
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onManageRecipients(share)}>
-          <IconUsers className="h-4 w-4" />
+          <Users className="h-4 w-4" />
           {t("sharesTable.actions.manageRecipients")}
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onViewDetails(share)}>
-          <IconEye className="h-4 w-4" />
+          <Eye className="h-4 w-4" />
           {t("sharesTable.actions.viewDetails")}
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onGenerateLink(share)}>
-          <IconLink className="h-4 w-4" />
+          <Link className="h-4 w-4" />
           {share.alias ? t("sharesTable.actions.editLink") : t("sharesTable.actions.generateLink")}
         </DropdownMenuItem>
         {share.alias && (
           <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onCopyLink(share)}>
-            <IconCopy className="h-4 w-4" />
+            <Copy className="h-4 w-4" />
             {t("sharesTable.actions.copyLink")}
           </DropdownMenuItem>
         )}
         {share.alias && onViewQrCode && (
           <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onViewQrCode(share)}>
-            <IconQrcode className="h-4 w-4" />
+            <QrCode className="h-4 w-4" />
             {t("sharesTable.actions.viewQrCode", { defaultValue: "View QR Code" })}
           </DropdownMenuItem>
         )}
@@ -99,7 +99,7 @@ export function ShareRowActions({
             className="cursor-pointer py-2"
             onClick={() => onNotifyRecipients(share)}
           >
-            <IconMail className="h-4 w-4" />
+            <Mail className="h-4 w-4" />
             {t("sharesTable.actions.notifyRecipients")}
           </DropdownMenuItem>
         )}
@@ -110,7 +110,7 @@ export function ShareRowActions({
               onDownloadShareFiles(share);
             }}
           >
-            <IconDownload className="h-4 w-4" />
+            <Download className="h-4 w-4" />
             {t("sharesTable.actions.downloadShareFiles")}
           </DropdownMenuItem>
         )}
@@ -118,7 +118,7 @@ export function ShareRowActions({
           onClick={() => onDelete(share)}
           className="cursor-pointer py-2 text-destructive focus:text-destructive"
         >
-          <IconTrash className="h-4 w-4" />
+          <Trash2 className="h-4 w-4" />
           {t("sharesTable.actions.delete")}
         </DropdownMenuItem>
       </DropdownMenuContent>

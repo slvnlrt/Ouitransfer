@@ -1,10 +1,4 @@
-import {
-  IconArrowsMove,
-  IconChevronDown,
-  IconDownload,
-  IconShare,
-  IconTrash,
-} from "@tabler/icons-react";
+import { ChevronDown, Download, Move, Share, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -55,7 +49,7 @@ export function FilesTableBulkActions({
               className="gap-2"
               onClick={() => onAction("download")}
             >
-              <IconDownload className="h-4 w-4" />
+              <Download className="h-4 w-4" />
               {t("filesTable.bulkActions.download")}
             </Button>
           )
@@ -64,13 +58,13 @@ export function FilesTableBulkActions({
             <DropdownMenuTrigger asChild>
               <Button variant="default" size="sm" className="gap-2">
                 {t("filesTable.bulkActions.actions")}
-                <IconChevronDown className="h-4 w-4" />
+                <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[200px]">
               {onBulkMove && (
                 <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onAction("move")}>
-                  <IconArrowsMove className="h-4 w-4" />
+                  <Move className="h-4 w-4" />
                   {t("common.move")}
                 </DropdownMenuItem>
               )}
@@ -79,13 +73,13 @@ export function FilesTableBulkActions({
                   className="cursor-pointer py-2"
                   onClick={() => onAction("download")}
                 >
-                  <IconDownload className="h-4 w-4" />
+                  <Download className="h-4 w-4" />
                   {t("filesTable.bulkActions.download")}
                 </DropdownMenuItem>
               )}
               {onBulkShare && (
                 <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onAction("share")}>
-                  <IconShare className="h-4 w-4" />
+                  <Share className="h-4 w-4" />
                   {t("filesTable.bulkActions.share")}
                 </DropdownMenuItem>
               )}
@@ -94,7 +88,7 @@ export function FilesTableBulkActions({
                   onClick={() => onAction("delete")}
                   className="cursor-pointer py-2 text-destructive focus:text-destructive"
                 >
-                  <IconTrash className="h-4 w-4" />
+                  <Trash2 className="h-4 w-4" />
                   {t("filesTable.bulkActions.delete")}
                 </DropdownMenuItem>
               )}

@@ -1,15 +1,6 @@
 "use client";
 
-import {
-  IconCalendar,
-  IconCopy,
-  IconDownload,
-  IconEye,
-  IconFolder,
-  IconLink,
-  IconLock,
-  IconShare,
-} from "@tabler/icons-react";
+import { Calendar, Copy, Download, Eye, Folder, Link, Lock, Share } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -293,12 +284,12 @@ export function ShareMultipleItemsModal({
           <DialogTitle className="flex items-center gap-2">
             {step === "create" ? (
               <>
-                <IconShare size={20} />
+                <Share size={20} />
                 {t("shareMultipleFiles.title")}
               </>
             ) : (
               <>
-                <IconLink size={20} />
+                <Link size={20} />
                 {t("shareActions.linkTitle")}
               </>
             )}
@@ -329,7 +320,7 @@ export function ShareMultipleItemsModal({
 
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
-                  <IconCalendar size={16} />
+                  <Calendar size={16} />
                   {t("createShare.expirationLabel")}
                 </Label>
                 <Input
@@ -342,7 +333,7 @@ export function ShareMultipleItemsModal({
 
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
-                  <IconEye size={16} />
+                  <Eye size={16} />
                   {t("createShare.maxViewsLabel")}
                 </Label>
                 <Input
@@ -367,7 +358,7 @@ export function ShareMultipleItemsModal({
                   id="password-protection"
                 />
                 <Label htmlFor="password-protection" className="flex items-center gap-2">
-                  <IconLock size={16} />
+                  <Lock size={16} />
                   {t("createShare.passwordProtection")}
                 </Label>
               </div>
@@ -391,7 +382,7 @@ export function ShareMultipleItemsModal({
                     {allItems.map((item) => {
                       const isFolder = item.type === "folder";
                       const { icon: FileIcon, color } = isFolder
-                        ? { icon: IconFolder, color: "text-primary" }
+                        ? { icon: Folder, color: "text-primary" }
                         : getFileIcon(item.name);
 
                       return (
@@ -456,7 +447,7 @@ export function ShareMultipleItemsModal({
                       onClick={handleCopyLink}
                       title={t("shareActions.copyLink")}
                     >
-                      <IconCopy className="h-4 w-4" />
+                      <Copy className="h-4 w-4" />
                     </Button>
                   </div>
                 </>
@@ -501,7 +492,7 @@ export function ShareMultipleItemsModal({
                 {t("common.close")}
               </Button>
               <Button onClick={downloadQRCode}>
-                <IconDownload className="h-4 w-4" />
+                <Download className="h-4 w-4" />
                 {t("qrCodeModal.download")}
               </Button>
             </>

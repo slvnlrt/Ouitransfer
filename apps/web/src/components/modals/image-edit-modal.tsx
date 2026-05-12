@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  IconCheck,
-  IconRotateClockwise,
-  IconX,
-  IconZoomIn,
-  IconZoomOut,
-} from "@tabler/icons-react";
+import { Check, RotateCw, X, ZoomIn, ZoomOut } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { type Crop, centerCrop, makeAspectCrop, type PixelCrop } from "react-image-crop";
@@ -217,7 +211,7 @@ export function ImageEditModal({ isOpen, onClose, onSave, imageFile }: ImageEdit
               <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm" onClick={handleRotate} disabled={isLoading}>
-                    <IconRotateClockwise className="h-4 w-4" />
+                    <RotateCw className="h-4 w-4" />
                     {t("imageEdit.rotate")}
                   </Button>
                   <Button
@@ -226,7 +220,7 @@ export function ImageEditModal({ isOpen, onClose, onSave, imageFile }: ImageEdit
                     onClick={handleZoomOut}
                     disabled={isLoading || scale <= 0.5}
                   >
-                    <IconZoomOut className="h-4 w-4" />
+                    <ZoomOut className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="outline"
@@ -234,7 +228,7 @@ export function ImageEditModal({ isOpen, onClose, onSave, imageFile }: ImageEdit
                     onClick={handleZoomIn}
                     disabled={isLoading || scale >= 3}
                   >
-                    <IconZoomIn className="h-4 w-4" />
+                    <ZoomIn className="h-4 w-4" />
                   </Button>
                 </div>
                 <div className="flex-1 max-w-xs">
@@ -287,11 +281,11 @@ export function ImageEditModal({ isOpen, onClose, onSave, imageFile }: ImageEdit
 
         <DialogFooter className="flex gap-2">
           <Button variant="outline" onClick={handleClose} disabled={isLoading}>
-            <IconX className="h-4 w-4" />
+            <X className="h-4 w-4" />
             {t("common.cancel")}
           </Button>
           <Button onClick={handleSave} disabled={isLoading || !completedCrop}>
-            <IconCheck className="h-4 w-4" />
+            <Check className="h-4 w-4" />
             {isLoading ? t("common.saving") : t("common.save")}
           </Button>
         </DialogFooter>

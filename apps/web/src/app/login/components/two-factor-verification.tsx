@@ -1,6 +1,6 @@
 "use client";
 
-import { IconShield } from "@tabler/icons-react";
+import { Shield } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -54,7 +54,7 @@ export function TwoFactorVerification({
       <CardHeader className="text-center">
         <div className="flex justify-center mb-4">
           <div className="p-3 rounded-full bg-primary/10">
-            <IconShield className="h-8 w-8 text-primary" />
+            <Shield className="h-8 w-8 text-primary" />
           </div>
         </div>
         <CardTitle>{t("twoFactor.verification.title")}</CardTitle>

@@ -1,4 +1,4 @@
-import { IconDownload } from "@tabler/icons-react";
+import { Download } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -102,7 +102,7 @@ export function QrCodeModal({ isOpen, onClose, shareLink, shareName }: QrCodeMod
             {t("common.close")}
           </Button>
           <Button onClick={downloadQRCode} className="mt-2 sm:mt-0" disabled={isDownloading}>
-            <IconDownload className="h-4 w-4" />
+            <Download className="h-4 w-4" />
             {t("qrCodeModal.download", { defaultValue: "Download QR Code" })}
           </Button>
         </DialogFooter>

@@ -1,11 +1,4 @@
-import {
-  IconArrowsMove,
-  IconDownload,
-  IconEdit,
-  IconFolder,
-  IconShare,
-  IconTrash,
-} from "@tabler/icons-react";
+import { Download, Folder, Move, Pencil, Share, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -71,7 +64,7 @@ export function FolderCard({
       ? [
           {
             key: "edit",
-            icon: IconEdit,
+            icon: Pencil,
             label: t("filesTable.actions.edit"),
             onClick: () => onRenameFolder(folder),
           },
@@ -81,7 +74,7 @@ export function FolderCard({
       ? [
           {
             key: "move",
-            icon: IconArrowsMove,
+            icon: Move,
             label: t("common.move"),
             onClick: () => onMoveFolder(folder),
           },
@@ -91,7 +84,7 @@ export function FolderCard({
       ? [
           {
             key: "share",
-            icon: IconShare,
+            icon: Share,
             label: t("filesTable.actions.share"),
             onClick: () => onShareFolder(folder),
           },
@@ -101,7 +94,7 @@ export function FolderCard({
       ? [
           {
             key: "download",
-            icon: IconDownload,
+            icon: Download,
             label: t("filesTable.actions.download"),
             onClick: () => onDownloadFolder(folder.id, folder.name),
           },
@@ -111,7 +104,7 @@ export function FolderCard({
       ? [
           {
             key: "delete",
-            icon: IconTrash,
+            icon: Trash2,
             label: t("filesTable.actions.delete"),
             onClick: () => onDeleteFolder(folder),
             variant: "destructive" as const,
@@ -192,7 +185,7 @@ export function FolderCard({
 
           <div className="flex flex-col items-center space-y-3">
             <div className="w-16 h-16 flex items-center justify-center bg-muted/30 rounded-lg overflow-hidden">
-              <IconFolder className="h-10 w-10 text-primary" />
+              <Folder className="h-10 w-10 text-primary" />
             </div>
             <div className="w-full space-y-1">
               <p className="text-sm font-medium truncate text-start" title={folder.name}>

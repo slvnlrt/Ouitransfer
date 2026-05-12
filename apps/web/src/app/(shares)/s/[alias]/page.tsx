@@ -1,6 +1,6 @@
 "use client";
 
-import { IconLock } from "@tabler/icons-react";
+import { Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { ErrorDisplay } from "@/components/error-display";
@@ -50,7 +50,7 @@ export default function PublicSharePage() {
               message={t("share.notFound.description")}
               icon={
                 <div className="w-20 h-20 rounded-full bg-destructive/20 flex items-center justify-center">
-                  <IconLock className="w-10 h-10 text-destructive" />
+                  <Lock className="w-10 h-10 text-destructive" />
                 </div>
               }
             />

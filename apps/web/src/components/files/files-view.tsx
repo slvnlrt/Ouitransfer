@@ -1,4 +1,4 @@
-import { IconLayoutGrid, IconTable } from "@tabler/icons-react";
+import { LayoutGrid, Table } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { FilesGrid } from "@/components/tables/files-grid";
@@ -77,7 +77,7 @@ export function FilesView({
               className="h-8 px-3"
               onClick={() => setViewMode("table")}
             >
-              <IconTable className="h-4 w-4" />
+              <Table className="h-4 w-4" />
               {t("files.viewMode.table")}
             </Button>
             <Button
@@ -86,7 +86,7 @@ export function FilesView({
               className="h-8 px-3"
               onClick={() => setViewMode("grid")}
             >
-              <IconLayoutGrid className="h-4 w-4" />
+              <LayoutGrid className="h-4 w-4" />
               {t("files.viewMode.grid")}
             </Button>
           </div>

@@ -1,11 +1,4 @@
-import {
-  IconArrowsMove,
-  IconDownload,
-  IconEdit,
-  IconFolder,
-  IconShare,
-  IconTrash,
-} from "@tabler/icons-react";
+import { Download, Folder, Move, Pencil, Share, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -86,20 +79,20 @@ export function FolderRow({
       ? [
           {
             key: "edit",
-            icon: IconEdit,
+            icon: Pencil,
             label: t("filesTable.actions.edit"),
             onClick: () => onRenameFolder(folder),
           },
         ]
       : []),
     ...(onMoveFolder
-      ? [{ key: "move", icon: IconArrowsMove, label: "Move", onClick: () => onMoveFolder(folder) }]
+      ? [{ key: "move", icon: Move, label: "Move", onClick: () => onMoveFolder(folder) }]
       : []),
     ...(onDownloadFolder
       ? [
           {
             key: "download",
-            icon: IconDownload,
+            icon: Download,
             label: t("filesTable.actions.download"),
             onClick: () => onDownloadFolder(folder.id, folder.name),
           },
@@ -109,7 +102,7 @@ export function FolderRow({
       ? [
           {
             key: "share",
-            icon: IconShare,
+            icon: Share,
             label: t("filesTable.actions.share"),
             onClick: () => onShareFolder(folder),
           },
@@ -119,7 +112,7 @@ export function FolderRow({
       ? [
           {
             key: "delete",
-            icon: IconTrash,
+            icon: Trash2,
             label: t("filesTable.actions.delete"),
             onClick: () => onDeleteFolder(folder),
             variant: "destructive" as const,
@@ -160,7 +153,7 @@ export function FolderRow({
             onMouseEnter={() => onSetHoveredFolderField({ folderId: folder.id, field: "name" })}
             onMouseLeave={() => onSetHoveredFolderField(null)}
           >
-            <IconFolder className="h-5.5 w-5.5 text-primary" />
+            <Folder className="h-5.5 w-5.5 text-primary" />
             <div className="flex items-center gap-1 min-w-0 flex-1">
               <EditableField
                 isEditing={isEditingName}

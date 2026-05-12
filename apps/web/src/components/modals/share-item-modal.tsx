@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  IconCalendar,
-  IconCopy,
-  IconDownload,
-  IconEye,
-  IconLink,
-  IconLock,
-  IconShare,
-} from "@tabler/icons-react";
+import { Calendar, Copy, Download, Eye, Link, Lock, Share } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -232,12 +224,12 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
           <DialogTitle className="flex items-center gap-2">
             {step === "create" ? (
               <>
-                <IconShare size={20} />
+                <Share size={20} />
                 {itemType === "file" ? t("shareActions.fileTitle") : t("shareActions.folderTitle")}
               </>
             ) : (
               <>
-                <IconLink size={20} />
+                <Link size={20} />
                 {t("shareActions.linkTitle")}
               </>
             )}
@@ -266,7 +258,7 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
 
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
-                <IconCalendar size={16} />
+                <Calendar size={16} />
                 {t("createShare.expirationLabel")}
               </Label>
               <Input
@@ -279,7 +271,7 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
 
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
-                <IconEye size={16} />
+                <Eye size={16} />
                 {t("createShare.maxViewsLabel")}
               </Label>
               <Input
@@ -304,7 +296,7 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
                 id="password-protection"
               />
               <Label htmlFor="password-protection" className="flex items-center gap-2">
-                <IconLock size={16} />
+                <Lock size={16} />
                 {t("createShare.passwordProtection")}
               </Label>
             </div>
@@ -365,7 +357,7 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
                     onClick={handleCopyLink}
                     title={t("shareActions.copyLink")}
                   >
-                    <IconCopy className="h-4 w-4" />
+                    <Copy className="h-4 w-4" />
                   </Button>
                 </div>
               </>
@@ -402,7 +394,7 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
                 {t("common.close")}
               </Button>
               <Button onClick={downloadQRCode}>
-                <IconDownload className="h-4 w-4" />
+                <Download className="h-4 w-4" />
                 {t("qrCodeModal.download")}
               </Button>
             </>

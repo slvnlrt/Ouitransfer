@@ -1,6 +1,6 @@
 "use client";
 
-import { IconChevronDown, IconChevronUp, IconTypography } from "@tabler/icons-react";
+import { ChevronDown, ChevronUp, Type } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 
@@ -65,16 +65,16 @@ export function FontPickerForm() {
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
         <div className="flex flex-row items-center gap-8">
-          <IconTypography className="text-xl text-muted-foreground" />
+          <Type className="text-xl text-muted-foreground" />
           <div className="flex flex-col gap-1">
             <h2 className="text-xl font-semibold">{t("customization.fonts.title")}</h2>
             <p className="text-sm text-muted-foreground">{t("customization.fonts.description")}</p>
           </div>
         </div>
         {isCollapsed ? (
-          <IconChevronDown className="text-muted-foreground" />
+          <ChevronDown className="text-muted-foreground" />
         ) : (
-          <IconChevronUp className="text-muted-foreground" />
+          <ChevronUp className="text-muted-foreground" />
         )}
       </CardHeader>
       <CardContent className={`${isCollapsed ? "hidden" : "block"} px-0`}>

@@ -1,4 +1,4 @@
-import { IconChevronDown, IconChevronUp, IconDeviceFloppy } from "@tabler/icons-react";
+import { ChevronDown, ChevronUp, Save } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React from "react";
 
@@ -49,9 +49,9 @@ export function SettingsGroup({
             </div>
           </div>
           {isCollapsed ? (
-            <IconChevronDown className="text-muted-foreground" />
+            <ChevronDown className="text-muted-foreground" />
           ) : (
-            <IconChevronUp className="text-muted-foreground" />
+            <ChevronUp className="text-muted-foreground" />
           )}
         </CardHeader>
         <CardContent className={`${isCollapsed ? "hidden" : "block"} px-0`}>
@@ -132,7 +132,7 @@ export function SettingsGroup({
                 className="flex items-center gap-2"
                 type="submit"
               >
-                {!form.formState.isSubmitting && <IconDeviceFloppy className="h-4 w-4" />}
+                {!form.formState.isSubmitting && <Save className="h-4 w-4" />}
                 {t("settings.buttons.save", {
                   group: t(`settings.groups.${group}.title`, { defaultValue: metadata.title }),
                 })}

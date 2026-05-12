@@ -1,6 +1,6 @@
 "use client";
 
-import { IconDownload, IconEye, IconTrash } from "@tabler/icons-react";
+import { Download, Eye, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -134,7 +134,7 @@ export function ReceivedFilesSection({ files, onFileDeleted }: ReceivedFilesSect
                       onClick={() => setPreviewFile(file)}
                       title={t("reverseShares.actions.viewDetails")}
                     >
-                      <IconEye className="h-3 w-3" />
+                      <Eye className="h-3 w-3" />
                     </Button>
                     <Button
                       variant="ghost"
@@ -143,7 +143,7 @@ export function ReceivedFilesSection({ files, onFileDeleted }: ReceivedFilesSect
                       onClick={() => handleDownload(file)}
                       title={t("common.download")}
                     >
-                      <IconDownload className="h-3 w-3" />
+                      <Download className="h-3 w-3" />
                     </Button>
                     <Button
                       variant="ghost"
@@ -152,7 +152,7 @@ export function ReceivedFilesSection({ files, onFileDeleted }: ReceivedFilesSect
                       onClick={() => handleDeleteFile(file)}
                       title={t("common.delete")}
                     >
-                      <IconTrash className="h-3 w-3" />
+                      <Trash2 className="h-3 w-3" />
                     </Button>
                   </div>
                 </div>

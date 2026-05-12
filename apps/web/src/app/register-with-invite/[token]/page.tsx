@@ -1,7 +1,7 @@
 "use client";
 
-import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
+import { Eye, EyeOff } from "lucide-react";
 import { motion } from "motion/react";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -267,7 +267,7 @@ export default function RegisterWithInvitePage() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
-                    {showPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
                 {errors.password && (
@@ -295,7 +295,7 @@ export default function RegisterWithInvitePage() {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
-                    {showConfirmPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
+                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
                 {errors.confirmPassword && (

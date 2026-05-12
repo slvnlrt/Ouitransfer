@@ -1,4 +1,4 @@
-import { IconTrash } from "@tabler/icons-react";
+import { Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ export function UserDeleteModal({ isOpen, onClose, user, onConfirm }: UserDelete
       <DialogContent>
         <DialogHeader className="flex flex-col gap-1">
           <DialogTitle className="flex items-center gap-2 font-semibold">
-            <IconTrash size={24} className="me-1" />
+            <Trash2 size={24} className="me-1" />
             {t("users.delete.title")}
           </DialogTitle>
         </DialogHeader>

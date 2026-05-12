@@ -1,10 +1,4 @@
-import {
-  IconPlayerPause,
-  IconPlayerPlay,
-  IconVolume,
-  IconVolume3,
-  IconVolumeOff,
-} from "@tabler/icons-react";
+import { Pause, Play, Volume1, Volume2, VolumeX } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -130,7 +124,7 @@ export function CustomAudioPlayer({ src }: CustomAudioPlayerProps) {
     }
   };
 
-  const VolumeIcon = volume === 0 ? IconVolumeOff : volume < 0.5 ? IconVolume3 : IconVolume;
+  const VolumeIcon = volume === 0 ? VolumeX : volume < 0.5 ? Volume1 : Volume2;
 
   return (
     <div className="flex flex-col gap-2 w-full">
@@ -152,11 +146,7 @@ export function CustomAudioPlayer({ src }: CustomAudioPlayerProps) {
           disabled={isLoading}
           className="h-8 w-8"
         >
-          {isPlaying ? (
-            <IconPlayerPause className="h-4 w-4" />
-          ) : (
-            <IconPlayerPlay className="h-4 w-4" />
-          )}
+          {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
         </Button>
 
         <div className="text-sm text-muted-foreground space-x-1">

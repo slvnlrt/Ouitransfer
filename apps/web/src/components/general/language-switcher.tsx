@@ -1,6 +1,6 @@
 "use client";
 
-import { IconLanguage } from "@tabler/icons-react";
+import { Languages } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import ReactCountryFlag from "react-country-flag";
@@ -62,7 +62,7 @@ export function LanguageSwitcher() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="h-9 w-9 p-0">
-          <IconLanguage className="h-5 w-5" />
+          <Languages className="h-5 w-5" />
           <span className="sr-only">Change language</span>
         </Button>
       </DropdownMenuTrigger>

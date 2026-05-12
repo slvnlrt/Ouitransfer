@@ -1,6 +1,6 @@
 "use client";
 
-import { IconCalendar, IconEye, IconLock, IconShare } from "@tabler/icons-react";
+import { Calendar, Eye, Lock, Share } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -167,7 +167,7 @@ export function CreateShareModal({
       <DialogContent className="max-w-4xl max-h-[90vh] w-full">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <IconShare className="h-5 w-5" />
+            <Share className="h-5 w-5" />
             {t("createShare.title")}
           </DialogTitle>
         </DialogHeader>
@@ -216,7 +216,7 @@ export function CreateShareModal({
                   onCheckedChange={(checked) => updateFormData("isPasswordProtected", checked)}
                 />
                 <Label htmlFor="password-protection" className="flex items-center gap-2">
-                  <IconLock className="h-4 w-4" />
+                  <Lock className="h-4 w-4" />
                   {t("createShare.passwordProtection")}
                 </Label>
               </div>
@@ -236,7 +236,7 @@ export function CreateShareModal({
 
               <div className="space-y-2">
                 <Label htmlFor="expiration" className="flex items-center gap-2">
-                  <IconCalendar className="h-4 w-4" />
+                  <Calendar className="h-4 w-4" />
                   {t("createShare.expirationLabel")}
                 </Label>
                 <Input
@@ -249,7 +249,7 @@ export function CreateShareModal({
 
               <div className="space-y-2">
                 <Label htmlFor="max-views" className="flex items-center gap-2">
-                  <IconEye className="h-4 w-4" />
+                  <Eye className="h-4 w-4" />
                   {t("createShare.maxViewsLabel")}
                 </Label>
                 <Input

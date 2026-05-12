@@ -1,4 +1,4 @@
-import { IconLayoutDashboard, IconUser } from "@tabler/icons-react";
+import { LayoutDashboard, User } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -17,7 +17,7 @@ export function ProfileHeader() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-row items-center gap-2">
-        <IconUser size={20} />
+        <User size={20} />
         <h1 className="text-2xl font-bold">{t("profile.header.title")}</h1>
       </div>
       <Separator />
@@ -26,7 +26,7 @@ export function ProfileHeader() {
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
               <Link href="/dashboard" className="flex items-center">
-                <IconLayoutDashboard size={20} className="me-1" />
+                <LayoutDashboard size={20} className="me-1" />
                 {t("navigation.dashboard")}
               </Link>
             </BreadcrumbLink>
@@ -34,7 +34,7 @@ export function ProfileHeader() {
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <span className="flex items-center gap-1">
-              <IconUser size={20} /> {t("profile.header.title")}
+              <User size={20} /> {t("profile.header.title")}
             </span>
           </BreadcrumbItem>
         </BreadcrumbList>

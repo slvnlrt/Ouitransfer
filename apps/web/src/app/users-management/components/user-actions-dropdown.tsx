@@ -1,4 +1,4 @@
-import { IconBan, IconCheck, IconDotsVertical, IconEdit, IconTrash } from "@tabler/icons-react";
+import { Ban, Check, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -28,20 +28,20 @@ export function UserActionsDropdown({
           className={isCurrentUser ? "hidden" : ""}
           disabled={isCurrentUser}
         >
-          <IconDotsVertical className="h-4 w-4" />
+          <EllipsisVertical className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem onClick={() => onEdit(user)}>
-          <IconEdit className="h-4 w-4" />
+          <Pencil className="h-4 w-4" />
           {t("users.actions.edit")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onToggleStatus(user)}>
-          {user.isActive ? <IconBan className="h-4 w-4" /> : <IconCheck className="h-4 w-4" />}
+          {user.isActive ? <Ban className="h-4 w-4" /> : <Check className="h-4 w-4" />}
           {user.isActive ? t("users.actions.deactivate") : t("users.actions.activate")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onDelete(user)} className="text-destructive">
-          <IconTrash className="h-4 w-4" />
+          <Trash2 className="h-4 w-4" />
           {t("users.actions.delete")}
         </DropdownMenuItem>
       </DropdownMenuContent>

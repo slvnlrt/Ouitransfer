@@ -1,6 +1,6 @@
 "use client";
 
-import { IconLock } from "@tabler/icons-react";
+import { Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -44,7 +44,7 @@ export function PasswordModal({ isOpen, onSubmit, onClose }: PasswordModalProps)
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="text-center">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/20">
-            <IconLock className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+            <Lock className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
           </div>
           <DialogTitle>{t("reverseShares.upload.password.title")}</DialogTitle>
           <DialogDescription>{t("reverseShares.upload.password.description")}</DialogDescription>

@@ -1,4 +1,4 @@
-import { IconPlus, IconShare } from "@tabler/icons-react";
+import { Plus, Share } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -23,7 +23,7 @@ export function RecentShares({
         <div className="flex flex-col gap-6">
           <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
-              <IconShare className="text-xl text-gray-500" />
+              <Share className="text-xl text-gray-500" />
               {t("recentShares.title")}
             </h2>
 
@@ -34,7 +34,7 @@ export function RecentShares({
                 size="default"
                 onClick={() => router.push("/shares")}
               >
-                <IconShare className="h-4 w-4" />
+                <Share className="h-4 w-4" />
                 {t("recentShares.viewAll")}
               </Button>
 
@@ -44,7 +44,7 @@ export function RecentShares({
                 size="default"
                 onClick={onOpenCreateModal}
               >
-                <IconPlus className="h-4 w-4" />
+                <Plus className="h-4 w-4" />
                 {t("recentShares.createShare")}
               </Button>
             </div>

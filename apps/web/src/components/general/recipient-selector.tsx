@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  IconBell,
-  IconCheck,
-  IconMail,
-  IconPlus,
-  IconTrash,
-  IconUsers,
-  IconX,
-} from "@tabler/icons-react";
+import { Bell, Check, Mail, Plus, Trash2, Users, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -174,12 +166,12 @@ export function RecipientSelector({
     <div className="space-y-6">
       <div className="space-y-4">
         <div className="flex items-center gap-2">
-          <IconPlus className="h-5 w-5 text-primary" />
+          <Plus className="h-5 w-5 text-primary" />
           <h3 className="text-lg font-medium">{t("recipientSelector.addRecipient")}</h3>
         </div>
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <IconMail className="absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Mail className="absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               className="ps-9 h-10"
               placeholder={t("recipientSelector.emailPlaceholder")}
@@ -201,7 +193,7 @@ export function RecipientSelector({
               </div>
             ) : (
               <>
-                <IconPlus className="h-4 w-4" />
+                <Plus className="h-4 w-4" />
                 {t("recipientSelector.add")}
               </>
             )}
@@ -214,7 +206,7 @@ export function RecipientSelector({
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center gap-2">
-            <IconUsers className="h-5 w-5 text-primary" />
+            <Users className="h-5 w-5 text-primary" />
             <h3 className="text-lg font-medium">
               {t("recipientSelector.recipients", { count: recipients.length })}
             </h3>
@@ -227,7 +219,7 @@ export function RecipientSelector({
               onClick={handleNotifyAll}
               className="sm:w-auto w-full"
             >
-              <IconBell className="h-4 w-4" />
+              <Bell className="h-4 w-4" />
               {t("recipientSelector.notifyAll")}
             </Button>
           )}
@@ -236,7 +228,7 @@ export function RecipientSelector({
         {hasSelection && (
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
             <div className="flex items-center gap-2">
-              <IconCheck className="h-4 w-4 text-blue-600" />
+              <Check className="h-4 w-4 text-blue-600" />
               <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
                 {t("recipientSelector.selectedCount", { count: selectedForAction.size })}
               </span>
@@ -249,7 +241,7 @@ export function RecipientSelector({
                   onClick={handleNotifySelected}
                   className="sm:w-auto w-full"
                 >
-                  <IconBell className="h-4 w-4" />
+                  <Bell className="h-4 w-4" />
                   {t("recipientSelector.notifySelected")}
                 </Button>
               )}
@@ -259,7 +251,7 @@ export function RecipientSelector({
                 onClick={handleRemoveSelected}
                 className="sm:w-auto w-full"
               >
-                <IconTrash className="h-4 w-4" />
+                <Trash2 className="h-4 w-4" />
                 {t("recipientSelector.removeSelected")}
               </Button>
               <Button
@@ -269,7 +261,7 @@ export function RecipientSelector({
                 className="h-8 w-8 p-0 self-center"
                 title={t("common.cancel")}
               >
-                <IconX className="h-4 w-4" />
+                <X className="h-4 w-4" />
               </Button>
             </div>
           </div>
@@ -279,7 +271,7 @@ export function RecipientSelector({
           {recipients.length === 0 ? (
             <div className="text-center py-12 px-6">
               <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
-                <IconUsers className="h-8 w-8 text-muted-foreground" />
+                <Users className="h-8 w-8 text-muted-foreground" />
               </div>
               <h4 className="text-lg font-medium mb-2">{t("recipientSelector.noRecipients")}</h4>
               <p className="text-sm text-muted-foreground mb-4">
@@ -319,7 +311,7 @@ export function RecipientSelector({
 
                       <div className="flex items-center gap-3 flex-1 min-w-0">
                         <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                          <IconMail className="h-4 w-4 text-primary" />
+                          <Mail className="h-4 w-4 text-primary" />
                         </div>
                         <span className="truncate font-medium">{email}</span>
                       </div>
@@ -349,7 +341,7 @@ export function RecipientSelector({
                             }}
                             title={t("recipientSelector.notifySingle")}
                           >
-                            <IconBell className="h-4 w-4" />
+                            <Bell className="h-4 w-4" />
                           </Button>
                         )}
 
@@ -360,7 +352,7 @@ export function RecipientSelector({
                           onClick={() => handleRemoveRecipient(email)}
                           title={t("recipientSelector.removeSingle")}
                         >
-                          <IconTrash className="h-4 w-4" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>

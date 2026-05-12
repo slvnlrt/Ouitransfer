@@ -1,6 +1,6 @@
 "use client";
 
-import { IconCheck, IconCopy, IconLink } from "@tabler/icons-react";
+import { Check, Copy, Link } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -74,7 +74,7 @@ export function GenerateInviteLinkModal({ isOpen, onClose }: GenerateInviteLinkM
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <IconLink size={24} />
+            <Link size={24} />
             {t("users.invite.title")}
           </DialogTitle>
           <DialogDescription>{t("users.invite.description")}</DialogDescription>
@@ -108,7 +108,7 @@ export function GenerateInviteLinkModal({ isOpen, onClose }: GenerateInviteLinkM
                       onClick={handleCopy}
                       className="shrink-0"
                     >
-                      {copied ? <IconCheck size={18} /> : <IconCopy size={18} />}
+                      {copied ? <Check size={18} /> : <Copy size={18} />}
                     </Button>
                   </div>
                   <p className="text-muted-foreground text-xs">{t("users.invite.expiresIn")}</p>

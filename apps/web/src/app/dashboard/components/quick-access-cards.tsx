@@ -1,4 +1,4 @@
-import { IconDeviceDesktopDown, IconFoldersFilled, IconShare2 } from "@tabler/icons-react";
+import { Folders, MonitorDown, Share2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -11,19 +11,19 @@ export function QuickAccessCards() {
   const QUICK_ACCESS_ITEMS = [
     {
       title: t("quickAccess.files.title"),
-      icon: <IconFoldersFilled size={24} />,
+      icon: <Folders size={24} />,
       description: t("quickAccess.files.description"),
       path: "/files",
     },
     {
       title: t("quickAccess.shares.title"),
-      icon: <IconShare2 size={24} />,
+      icon: <Share2 size={24} />,
       description: t("quickAccess.shares.description"),
       path: "/shares",
     },
     {
       title: t("quickAccess.reverseShares.title"),
-      icon: <IconDeviceDesktopDown size={24} />,
+      icon: <MonitorDown size={24} />,
       description: t("quickAccess.reverseShares.description"),
       path: "/reverse-shares",
     },

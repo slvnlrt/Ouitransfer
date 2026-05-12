@@ -1,4 +1,4 @@
-import { IconPlus, IconRefresh, IconSearch } from "@tabler/icons-react";
+import { Plus, RefreshCw, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -31,10 +31,10 @@ export function ReverseSharesSearch({
         <h2 className="text-xl font-semibold">{t("reverseShares.search.title")}</h2>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
           <Button variant="outline" size="icon" onClick={onRefresh} disabled={isRefreshing}>
-            <IconRefresh className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
+            <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
           </Button>
           <Button onClick={onCreateReverseShare} className="w-full sm:w-auto">
-            <IconPlus className="h-4 w-4" />
+            <Plus className="h-4 w-4" />
             {t("reverseShares.search.createButton")}
           </Button>
         </div>
@@ -42,7 +42,7 @@ export function ReverseSharesSearch({
 
       <div className="flex items-center gap-2">
         <div className="relative max-w-md">
-          <IconSearch className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             className="ps-9"
             placeholder={t("reverseShares.search.placeholder")}

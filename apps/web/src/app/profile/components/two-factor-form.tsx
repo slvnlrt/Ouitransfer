@@ -1,21 +1,21 @@
 "use client";
 
 import {
-  IconAlertTriangle,
-  IconCalendar,
-  IconClock,
-  IconCopy,
-  IconDeviceDesktop,
-  IconDeviceMobile,
-  IconDevices,
-  IconDownload,
-  IconEye,
-  IconEyeClosed,
-  IconKey,
-  IconShield,
-  IconShieldCheck,
-  IconTrash,
-} from "@tabler/icons-react";
+  Calendar,
+  Clock,
+  Copy,
+  Download,
+  Eye,
+  EyeClosed,
+  Key,
+  Monitor,
+  MonitorSmartphone,
+  Shield,
+  ShieldCheck,
+  Smartphone,
+  Trash2,
+  TriangleAlert,
+} from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -93,17 +93,17 @@ export function TwoFactorForm() {
   const [showPassword, setShowPassword] = useState(false);
 
   const getDeviceIcon = (userAgent: string) => {
-    if (!userAgent) return IconDevices;
+    if (!userAgent) return MonitorSmartphone;
 
     if (
       userAgent.includes("iPhone") ||
       userAgent.includes("Android") ||
       userAgent.includes("Mobile")
     ) {
-      return IconDeviceMobile;
+      return Smartphone;
     }
 
-    return IconDeviceDesktop;
+    return Monitor;
   };
 
   if (isLoading) {
@@ -111,7 +111,7 @@ export function TwoFactorForm() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <IconShield className="h-5 w-5" />
+            <Shield className="h-5 w-5" />
             {t("twoFactor.title")}
           </CardTitle>
           <CardDescription>{t("common.loadingSimple")}</CardDescription>
@@ -126,9 +126,9 @@ export function TwoFactorForm() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             {status.enabled ? (
-              <IconShieldCheck className="h-5 w-5 text-green-600" />
+              <ShieldCheck className="h-5 w-5 text-green-600" />
             ) : (
-              <IconShield className="h-5 w-5" />
+              <Shield className="h-5 w-5" />
             )}
             {t("twoFactor.title")}
           </CardTitle>
@@ -158,7 +158,7 @@ export function TwoFactorForm() {
                     disabled={isLoading}
                     className="w-full sm:w-auto"
                   >
-                    <IconKey className="h-4 w-4" />
+                    <Key className="h-4 w-4" />
                     {t("twoFactor.backupCodes.generateNew")}
                   </Button>
                   <Button
@@ -172,7 +172,7 @@ export function TwoFactorForm() {
                 </>
               ) : (
                 <Button onClick={startSetup} disabled={isLoading} className="w-full sm:w-auto">
-                  <IconShield className="h-4 w-4" />
+                  <Shield className="h-4 w-4" />
                   {t("twoFactor.buttons.enable2FA")}
                 </Button>
               )}
@@ -187,7 +187,7 @@ export function TwoFactorForm() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <IconDevices className="h-5 w-5 text-muted-foreground" />
+                    <MonitorSmartphone className="h-5 w-5 text-muted-foreground" />
                     <h3 className="text-lg font-semibold">{t("twoFactor.trustedDevices.title")}</h3>
                   </div>
                   {devices.length > 0 && (
@@ -198,7 +198,7 @@ export function TwoFactorForm() {
                       disabled={isRemoving}
                       className="text-muted-foreground hover:text-destructive"
                     >
-                      <IconTrash className="h-4 w-4" />
+                      <Trash2 className="h-4 w-4" />
                       {t("twoFactor.trustedDevices.removeAll")}
                     </Button>
                   )}
@@ -213,7 +213,7 @@ export function TwoFactorForm() {
                   </div>
                 ) : devices.length === 0 ? (
                   <div className="text-center py-12">
-                    <IconDevices className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <MonitorSmartphone className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                     <p className="text-muted-foreground text-sm">
                       {t("twoFactor.trustedDevices.noDevices")}
                     </p>
@@ -273,7 +273,7 @@ export function TwoFactorForm() {
                               </TableCell>
                               <TableCell>
                                 <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                                  <IconCalendar className="h-3 w-3" />
+                                  <Calendar className="h-3 w-3" />
                                   <span>{formatDate(device.createdAt)}</span>
                                 </div>
                               </TableCell>
@@ -281,14 +281,14 @@ export function TwoFactorForm() {
                                 <div
                                   className={`flex items-center gap-1 text-sm ${isExpired ? "text-destructive" : "text-muted-foreground"}`}
                                 >
-                                  <IconClock className="h-3 w-3" />
+                                  <Clock className="h-3 w-3" />
                                   <span>{formatDate(device.expiresAt)}</span>
                                 </div>
                               </TableCell>
                               <TableCell>
                                 {device.lastUsedAt ? (
                                   <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                                    <IconClock className="h-3 w-3" />
+                                    <Clock className="h-3 w-3" />
                                     <span>{formatDate(device.lastUsedAt)}</span>
                                   </div>
                                 ) : (
@@ -310,7 +310,7 @@ export function TwoFactorForm() {
                                   disabled={isRemoving}
                                   className="text-muted-foreground hover:text-destructive h-8 w-8 p-0"
                                 >
-                                  <IconTrash className="h-4 w-4" />
+                                  <Trash2 className="h-4 w-4" />
                                 </Button>
                               </TableCell>
                             </TableRow>
@@ -358,7 +358,7 @@ export function TwoFactorForm() {
                     variant="outline"
                     onClick={() => navigator.clipboard.writeText(setupData.manualEntryKey)}
                   >
-                    <IconCopy className="h-4 w-4" />
+                    <Copy className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
@@ -434,9 +434,9 @@ export function TwoFactorForm() {
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <IconEye className="h-4 w-4 text-muted-foreground" />
+                    <Eye className="h-4 w-4 text-muted-foreground" />
                   ) : (
-                    <IconEyeClosed className="h-4 w-4 text-muted-foreground" />
+                    <EyeClosed className="h-4 w-4 text-muted-foreground" />
                   )}
                 </Button>
               </div>
@@ -496,11 +496,11 @@ export function TwoFactorForm() {
 
             <div className="flex gap-2">
               <Button variant="outline" onClick={downloadBackupCodes} className="flex-1">
-                <IconDownload className="h-4 w-4" />
+                <Download className="h-4 w-4" />
                 {t("twoFactor.backupCodes.download")}
               </Button>
               <Button variant="outline" onClick={copyBackupCodes} className="flex-1">
-                <IconCopy className="h-4 w-4" />
+                <Copy className="h-4 w-4" />
                 {t("twoFactor.backupCodes.copyToClipboard")}
               </Button>
             </div>
@@ -527,7 +527,7 @@ export function TwoFactorForm() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <IconAlertTriangle className="h-5 w-5 text-destructive" />
+              <TriangleAlert className="h-5 w-5 text-destructive" />
               {t("twoFactor.trustedDevices.modals.removeDevice.title")}
             </DialogTitle>
             <DialogDescription>{t("twoFactor.trustedDevices.confirmRemove")}</DialogDescription>
@@ -568,7 +568,7 @@ export function TwoFactorForm() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <IconAlertTriangle className="h-5 w-5 text-destructive" />
+              <TriangleAlert className="h-5 w-5 text-destructive" />
               {t("twoFactor.trustedDevices.modals.removeAllDevices.title")}
             </DialogTitle>
             <DialogDescription>{t("twoFactor.trustedDevices.confirmRemoveAll")}</DialogDescription>

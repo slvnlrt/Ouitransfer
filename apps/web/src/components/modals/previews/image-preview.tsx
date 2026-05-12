@@ -1,6 +1,6 @@
 "use client";
 
-import { IconDownload, IconMaximize, IconX } from "@tabler/icons-react";
+import { Download, Maximize, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -82,7 +82,7 @@ export function ImagePreview({ src, alt, description, onDownload }: ImagePreview
               className="absolute bottom-2 end-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 hover:bg-white text-black shadow-lg h-8 w-8"
               onClick={handleExpandClick}
             >
-              <IconMaximize className="h-4 w-4" />
+              <Maximize className="h-4 w-4" />
             </Button>
           </div>
         </div>
@@ -111,7 +111,7 @@ export function ImagePreview({ src, alt, description, onDownload }: ImagePreview
                     handleDownload();
                   }}
                 >
-                  <IconDownload className="h-5 w-5" />
+                  <Download className="h-5 w-5" />
                 </Button>
                 <Button
                   variant="outline"
@@ -122,7 +122,7 @@ export function ImagePreview({ src, alt, description, onDownload }: ImagePreview
                     handleCloseFullscreen();
                   }}
                 >
-                  <IconX className="h-6 w-6" />
+                  <X className="h-6 w-6" />
                 </Button>
               </div>
             </div>

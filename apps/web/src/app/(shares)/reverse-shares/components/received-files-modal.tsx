@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  IconChevronDown,
-  IconClipboardCopy,
-  IconDownload,
-  IconFile,
-  IconTrash,
-} from "@tabler/icons-react";
+import { ChevronDown, ClipboardCopy, Download, File, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -387,7 +381,7 @@ export function ReceivedFilesModal({
         <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <IconFile size={20} />
+              <File size={20} />
               {t("reverseShares.modals.receivedFiles.title")}
             </DialogTitle>
             <DialogDescription>
@@ -423,7 +417,7 @@ export function ReceivedFilesModal({
                     <DropdownMenuTrigger asChild>
                       <Button variant="default" size="sm" className="gap-2">
                         {t("reverseShares.modals.receivedFiles.bulkActions.actions")}
-                        <IconChevronDown className="h-4 w-4" />
+                        <ChevronDown className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-[200px]">
@@ -431,7 +425,7 @@ export function ReceivedFilesModal({
                         className="cursor-pointer py-2"
                         onClick={handleBulkDownload}
                       >
-                        <IconDownload className="h-4 w-4" />
+                        <Download className="h-4 w-4" />
                         {t("reverseShares.modals.receivedFiles.bulkActions.download")}
                       </DropdownMenuItem>
                       <DropdownMenuItem
@@ -442,7 +436,7 @@ export function ReceivedFilesModal({
                         {bulkCopying ? (
                           <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
                         ) : (
-                          <IconClipboardCopy className="h-4 w-4" />
+                          <ClipboardCopy className="h-4 w-4" />
                         )}
                         {t("reverseShares.modals.receivedFiles.bulkActions.copyToMyFiles")}
                       </DropdownMenuItem>
@@ -454,7 +448,7 @@ export function ReceivedFilesModal({
                         {bulkDeleting ? (
                           <div className="animate-spin rounded-full h-4 w-4 border-2 border-red-600 border-t-transparent"></div>
                         ) : (
-                          <IconTrash className="h-4 w-4" />
+                          <Trash2 className="h-4 w-4" />
                         )}
                         {t("reverseShares.modals.receivedFiles.bulkActions.delete")}
                       </DropdownMenuItem>
@@ -470,7 +464,7 @@ export function ReceivedFilesModal({
             {files.length === 0 ? (
               <div className="flex flex-col items-center justify-center flex-1 gap-4 py-12">
                 <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
-                  <IconFile className="h-8 w-8 text-muted-foreground" />
+                  <File className="h-8 w-8 text-muted-foreground" />
                 </div>
                 <div className="text-center space-y-2">
                   <h3 className="text-lg font-medium">

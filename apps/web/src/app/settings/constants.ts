@@ -1,37 +1,31 @@
-import {
-  IconDatabase,
-  IconMail,
-  IconSettings,
-  IconShield,
-  IconUserCheck,
-} from "@tabler/icons-react";
+import { Database, Mail, Settings, Shield, UserCheck } from "lucide-react";
 import type { createTranslator } from "next-intl";
 
 export const createGroupMetadata = (t: ReturnType<typeof createTranslator>) => ({
   email: {
     title: t("settings.groups.email.title"),
     description: t("settings.groups.email.description"),
-    icon: IconMail,
+    icon: Mail,
   },
   general: {
     title: t("settings.groups.general.title"),
     description: t("settings.groups.general.description"),
-    icon: IconSettings,
+    icon: Settings,
   },
   "auth-providers": {
     title: "Authentication Providers",
     description: "Configure external authentication providers for SSO",
-    icon: IconUserCheck,
+    icon: UserCheck,
   },
   security: {
     title: t("settings.groups.security.title"),
     description: t("settings.groups.security.description"),
-    icon: IconShield,
+    icon: Shield,
   },
   storage: {
     title: t("settings.groups.storage.title"),
     description: t("settings.groups.storage.description"),
-    icon: IconDatabase,
+    icon: Database,
   },
 });
 

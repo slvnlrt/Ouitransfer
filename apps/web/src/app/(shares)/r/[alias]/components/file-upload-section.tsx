@@ -1,6 +1,6 @@
 "use client";
 
-import { IconCheck, IconFile, IconMail, IconUpload, IconUser, IconX } from "@tabler/icons-react";
+import { Check, File, Mail, Upload, User, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -280,7 +280,7 @@ export function FileUploadSection({
           variant="default"
           className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
         >
-          <IconCheck className="h-3 w-3 me-1" />
+          <Check className="h-3 w-3 me-1" />
           {t("reverseShares.upload.fileList.statusUploaded")}
         </Badge>
       );
@@ -298,7 +298,7 @@ export function FileUploadSection({
       key={upload.id}
       className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
     >
-      <IconFile className="h-5 w-5 text-gray-500 flex-shrink-0" />
+      <File className="h-5 w-5 text-gray-500 flex-shrink-0" />
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
           {upload.file.name}
@@ -318,7 +318,7 @@ export function FileUploadSection({
             onClick={() => removeFile(upload.id)}
             disabled={isUploading}
           >
-            <IconX className="h-4 w-4" />
+            <X className="h-4 w-4" />
           </Button>
         )}
         {upload.status === "error" && (
@@ -330,7 +330,7 @@ export function FileUploadSection({
               disabled={isUploading}
               title={t("reverseShares.upload.errors.retry")}
             >
-              <IconUpload className="h-4 w-4" />
+              <Upload className="h-4 w-4" />
             </Button>
             <Button
               size="sm"
@@ -338,7 +338,7 @@ export function FileUploadSection({
               onClick={() => removeFile(upload.id)}
               disabled={isUploading}
             >
-              <IconX className="h-4 w-4" />
+              <X className="h-4 w-4" />
             </Button>
           </div>
         )}
@@ -350,7 +350,7 @@ export function FileUploadSection({
     <div className="space-y-6">
       <div {...getRootProps()} className={getDropzoneStyles()}>
         <input {...getInputProps()} />
-        <IconUpload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+        <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
         <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
           {isDragActive
             ? t("reverseShares.upload.fileDropzone.dragActive")
@@ -373,7 +373,7 @@ export function FileUploadSection({
           {reverseShare.nameFieldRequired !== "HIDDEN" && (
             <div className="space-y-2">
               <Label htmlFor="name">
-                <IconUser className="inline h-4 w-4" />
+                <User className="inline h-4 w-4" />
                 {reverseShare.nameFieldRequired === "OPTIONAL"
                   ? t("reverseShares.upload.form.nameLabelOptional")
                   : t("reverseShares.upload.form.nameLabel")}
@@ -394,7 +394,7 @@ export function FileUploadSection({
           {reverseShare.emailFieldRequired !== "HIDDEN" && (
             <div className="space-y-2">
               <Label htmlFor="email">
-                <IconMail className="inline h-4 w-4" />
+                <Mail className="inline h-4 w-4" />
                 {reverseShare.emailFieldRequired === "OPTIONAL"
                   ? t("reverseShares.upload.form.emailLabelOptional")
                   : t("reverseShares.upload.form.emailLabel")}

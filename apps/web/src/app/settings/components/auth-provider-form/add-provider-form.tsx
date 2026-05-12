@@ -1,6 +1,6 @@
 "use client";
 
-import { IconInfoCircle, IconPlus } from "@tabler/icons-react";
+import { Info, Plus } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -179,7 +179,7 @@ export function AddProviderForm({
   if (!showAddForm) {
     return (
       <Button onClick={onToggleForm} variant="outline" size="sm">
-        <IconPlus className="h-4 w-4" />
+        <Plus className="h-4 w-4" />
         {t("authProviders.addProvider")}
       </Button>
     );
@@ -196,7 +196,7 @@ export function AddProviderForm({
       <div className="bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
         <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
           <span>
-            <IconInfoCircle className="h-4 w-4" />
+            <Info className="h-4 w-4" />
           </span>
           <span className="text-sm font-medium">{t("authProviders.info.title")}</span>
         </div>

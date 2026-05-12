@@ -1,4 +1,4 @@
-import { IconEdit, IconTrash } from "@tabler/icons-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -48,7 +48,7 @@ export function FileActionsModals({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <IconEdit size={20} />
+              <Pencil size={20} />
               {t("fileActions.editFile")}
             </DialogTitle>
           </DialogHeader>
@@ -105,7 +105,7 @@ export function FileActionsModals({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <IconTrash size={20} />
+              <Trash2 size={20} />
               {t("fileActions.deleteFile")}
             </DialogTitle>
           </DialogHeader>

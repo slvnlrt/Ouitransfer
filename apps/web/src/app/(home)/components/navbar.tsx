@@ -1,6 +1,6 @@
 "use client";
 
-import { IconHeart, IconMenu2 } from "@tabler/icons-react";
+import { Heart, Menu } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -60,7 +60,7 @@ export function Navbar() {
 
             <Button asChild variant="ghost" className="text-sm font-normal">
               <Link href={siteConfig.links.sponsor} target="_blank" rel="noopener noreferrer">
-                <IconHeart className="h-4 w-4 text-destructive" />
+                <Heart className="h-4 w-4 text-destructive" />
                 Sponsor
               </Link>
             </Button>
@@ -72,7 +72,7 @@ export function Navbar() {
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-9 w-9 p-0">
-                  <IconMenu2 className="h-5 w-5" />
+                  <Menu className="h-5 w-5" />
                   <span className="sr-only">Toggle menu</span>
                 </Button>
               </SheetTrigger>
@@ -96,7 +96,7 @@ export function Navbar() {
                       className="text-foreground text-lg font-medium flex items-center gap-2"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      <IconHeart className="h-4 w-4 text-destructive" />
+                      <Heart className="h-4 w-4 text-destructive" />
                       Sponsor
                     </Link>
                   </div>

@@ -1,4 +1,4 @@
-import { IconDownload, IconFolderOff, IconShare } from "@tabler/icons-react";
+import { Download, FolderX, Share } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -71,7 +71,7 @@ export function ShareDetails({
             <div className="flex flex-col gap-2">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="flex items-center gap-2">
-                  <IconShare className="w-6 h-6 text-muted-foreground" />
+                  <Share className="w-6 h-6 text-muted-foreground" />
                   <h1 className="text-2xl font-semibold">
                     {share.name || t("share.details.untitled")}
                   </h1>
@@ -81,7 +81,7 @@ export function ShareDetails({
                     onClick={onBulkDownload}
                     className="flex items-center gap-2 w-full sm:w-auto"
                   >
-                    <IconDownload className="w-4 h-4" />
+                    <Download className="w-4 h-4" />
                     {t("share.downloadAll")}
                   </Button>
                 )}
@@ -115,7 +115,7 @@ export function ShareDetails({
               emptyStateComponent={() => (
                 <div className="text-center py-16">
                   <div className="flex justify-center mb-6">
-                    <IconFolderOff className="h-24 w-24 text-muted-foreground/30" />
+                    <FolderX className="h-24 w-24 text-muted-foreground/30" />
                   </div>
                   <h3 className="text-lg font-semibold text-foreground mb-2">
                     {t("fileSelector.noFilesInShare")}
@@ -133,7 +133,7 @@ export function ShareDetails({
                         className="flex items-center gap-1 cursor-pointer"
                         onClick={() => navigateToFolder()}
                       >
-                        <IconShare size={16} />
+                        <Share size={16} />
                         {t("folderActions.rootFolder")}
                       </BreadcrumbLink>
                     </BreadcrumbItem>

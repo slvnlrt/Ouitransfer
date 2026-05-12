@@ -1,6 +1,6 @@
 "use client";
 
-import { IconCloudUpload, IconTrash } from "@tabler/icons-react";
+import { CloudUpload, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
@@ -92,7 +92,7 @@ export function LogoInput({ value, onChange, isDisabled }: LogoInputProps) {
             />
           </div>
           <Button variant="destructive" disabled={isDisabled} onClick={handleRemoveLogo}>
-            {!isUploading && <IconTrash className="h-4 w-4" />}
+            {!isUploading && <Trash2 className="h-4 w-4" />}
             {t("logo.buttons.remove")}
           </Button>
         </div>
@@ -103,7 +103,7 @@ export function LogoInput({ value, onChange, isDisabled }: LogoInputProps) {
           disabled={isDisabled}
           onClick={() => fileInputRef.current?.click()}
         >
-          {!isUploading && <IconCloudUpload className="h-5 w-5" />}
+          {!isUploading && <CloudUpload className="h-5 w-5" />}
           {t("logo.buttons.upload")}
         </Button>
       )}

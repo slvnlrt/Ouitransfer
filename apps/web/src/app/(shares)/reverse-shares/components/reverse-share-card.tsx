@@ -1,21 +1,21 @@
 import {
-  IconCheck,
-  IconCopy,
-  IconDotsVertical,
-  IconEdit,
-  IconExternalLink,
-  IconEye,
-  IconFile,
-  IconFileUnknown,
-  IconLink,
-  IconLock,
-  IconLockOpen,
-  IconQrcode,
-  IconToggleLeft,
-  IconToggleRight,
-  IconTrash,
-  IconX,
-} from "@tabler/icons-react";
+  Check,
+  Copy,
+  EllipsisVertical,
+  ExternalLink,
+  Eye,
+  File,
+  FileQuestion,
+  Link,
+  Lock,
+  LockOpen,
+  Pencil,
+  QrCode,
+  ToggleLeft,
+  ToggleRight,
+  Trash2,
+  X,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -198,7 +198,7 @@ export function ReverseShareCard({
                     className="h-6 w-6 text-green-600 hover:text-green-700"
                     onClick={saveEdit}
                   >
-                    <IconCheck className="h-3 w-3" />
+                    <Check className="h-3 w-3" />
                   </Button>
                   <Button
                     size="icon"
@@ -206,7 +206,7 @@ export function ReverseShareCard({
                     className="h-6 w-6 text-red-600 hover:text-red-700"
                     onClick={cancelEdit}
                   >
-                    <IconX className="h-3 w-3" />
+                    <X className="h-3 w-3" />
                   </Button>
                 </div>
               ) : (
@@ -238,7 +238,7 @@ export function ReverseShareCard({
                       className="h-4 w-4 opacity-0 group-hover/title:opacity-100 transition-opacity text-muted-foreground hover:text-foreground"
                       onClick={() => startEdit("name", getDisplayValue("name"))}
                     >
-                      <IconEdit className="h-3 w-3" />
+                      <Pencil className="h-3 w-3" />
                     </Button>
                   )}
                 </div>
@@ -254,7 +254,7 @@ export function ReverseShareCard({
                   onClick={() => onViewQrCode(reverseShare)}
                   title={t("reverseShares.card.viewQrCode")}
                 >
-                  <IconQrcode className="h-3 w-3" />
+                  <QrCode className="h-3 w-3" />
                 </Button>
               )}
 
@@ -265,7 +265,7 @@ export function ReverseShareCard({
                 onClick={() => onViewDetails(reverseShare)}
                 title={t("reverseShares.card.viewDetails")}
               >
-                <IconEye className="h-3 w-3" />
+                <Eye className="h-3 w-3" />
               </Button>
               <Button
                 variant="outline"
@@ -274,7 +274,7 @@ export function ReverseShareCard({
                 onClick={() => onEdit(reverseShare)}
                 title={t("reverseShares.actions.edit")}
               >
-                <IconEdit className="h-3 w-3" />
+                <Pencil className="h-3 w-3" />
               </Button>
 
               <DropdownMenu>
@@ -284,30 +284,30 @@ export function ReverseShareCard({
                     size="sm"
                     className="h-6 w-6 p-0 hover:bg-background/80 rounded-sm"
                   >
-                    <IconDotsVertical className="h-3 w-3" />
+                    <EllipsisVertical className="h-3 w-3" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => onViewDetails(reverseShare)}>
-                    <IconEye className="h-4 w-4" />
+                    <Eye className="h-4 w-4" />
                     {t("reverseShares.card.viewDetails")}
                   </DropdownMenuItem>
 
                   <DropdownMenuItem onClick={() => onCopyLink(reverseShare)}>
-                    <IconCopy className="h-4 w-4" />
+                    <Copy className="h-4 w-4" />
                     {t("reverseShares.card.copyLink")}
                   </DropdownMenuItem>
 
                   {hasAlias && (
                     <DropdownMenuItem onClick={handleOpenInNewTab}>
-                      <IconExternalLink className="h-4 w-4" />
+                      <ExternalLink className="h-4 w-4" />
                       {t("reverseShares.card.openInNewTab")}
                     </DropdownMenuItem>
                   )}
 
                   {hasAlias && (
                     <DropdownMenuItem onClick={() => onGenerateLink(reverseShare)}>
-                      <IconLink className="h-4 w-4" />
+                      <Link className="h-4 w-4" />
                       {hasAlias
                         ? t("reverseShares.card.editLink")
                         : t("reverseShares.card.createLink")}
@@ -315,18 +315,18 @@ export function ReverseShareCard({
                   )}
 
                   <DropdownMenuItem onClick={() => onEdit(reverseShare)}>
-                    <IconEdit className="h-4 w-4" />
+                    <Pencil className="h-4 w-4" />
                     {t("reverseShares.actions.edit")}
                   </DropdownMenuItem>
 
                   <DropdownMenuItem onClick={() => onViewFiles(reverseShare)}>
-                    <IconFile className="h-4 w-4" />
+                    <File className="h-4 w-4" />
                     {t("reverseShares.actions.viewFiles")}
                   </DropdownMenuItem>
 
                   {hasAlias && onViewQrCode && (
                     <DropdownMenuItem onClick={() => onViewQrCode(reverseShare)}>
-                      <IconQrcode className="h-4 w-4" />
+                      <QrCode className="h-4 w-4" />
                       {t("reverseShares.actions.viewQrCode")}
                     </DropdownMenuItem>
                   )}
@@ -335,7 +335,7 @@ export function ReverseShareCard({
                     className="text-destructive"
                     onClick={() => onDelete(reverseShare)}
                   >
-                    <IconTrash className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4" />
                     {t("reverseShares.card.delete")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -360,7 +360,7 @@ export function ReverseShareCard({
                 className="h-5 w-5 text-green-600 hover:text-green-700"
                 onClick={saveEdit}
               >
-                <IconCheck className="h-3 w-3" />
+                <Check className="h-3 w-3" />
               </Button>
               <Button
                 size="icon"
@@ -368,7 +368,7 @@ export function ReverseShareCard({
                 className="h-5 w-5 text-red-600 hover:text-red-700"
                 onClick={cancelEdit}
               >
-                <IconX className="h-3 w-3" />
+                <X className="h-3 w-3" />
               </Button>
             </div>
           ) : (
@@ -383,7 +383,7 @@ export function ReverseShareCard({
                   className="h-4 w-4 opacity-0 group-hover/desc:opacity-100 transition-opacity text-muted-foreground hover:text-foreground"
                   onClick={() => startEdit("description", getDisplayValue("description"))}
                 >
-                  <IconEdit className="h-3 w-3" />
+                  <Pencil className="h-3 w-3" />
                 </Button>
               )}
             </div>
@@ -399,7 +399,7 @@ export function ReverseShareCard({
               }`}
             >
               <div className="flex items-center gap-2">
-                <IconLink
+                <Link
                   className={`h-3 w-3 shrink-0 ${
                     reverseShare.isActive && !isExpired ? "text-primary" : "text-red-500"
                   }`}
@@ -424,7 +424,7 @@ export function ReverseShareCard({
                   onClick={() => onCopyLink(reverseShare)}
                   title={t("reverseShares.card.copyLinkTitle")}
                 >
-                  <IconCopy className="h-3 w-3" />
+                  <Copy className="h-3 w-3" />
                 </Button>
               </div>
             </div>
@@ -440,7 +440,7 @@ export function ReverseShareCard({
               title={t("reverseShares.actions.viewFiles")}
             >
               <div className="flex flex-col items-center gap-1">
-                <IconFile className="h-4 w-4 text-blue-600" />
+                <File className="h-4 w-4 text-blue-600" />
                 <p className="text-xs font-medium text-foreground leading-none">{fileCount}</p>
                 <p className="text-xs text-muted-foreground">{t("reverseShares.labels.files")}</p>
               </div>
@@ -449,7 +449,7 @@ export function ReverseShareCard({
             {/* Tamanho */}
             <div className="bg-muted/20 rounded-md p-2 text-center border border-border/50">
               <div className="flex items-center justify-center mb-2">
-                <IconFileUnknown className="h-4 w-4 text-green-600" />
+                <FileQuestion className="h-4 w-4 text-green-600" />
               </div>
               <p className="text-xs font-medium text-foreground leading-none">
                 {formatFileSize(totalSize)}
@@ -468,9 +468,9 @@ export function ReverseShareCard({
                 >
                   <div className="flex flex-col items-center gap-1">
                     {reverseShare.isActive ? (
-                      <IconToggleRight className="h-4 w-4 text-green-600" />
+                      <ToggleRight className="h-4 w-4 text-green-600" />
                     ) : (
-                      <IconToggleLeft className="h-4 w-4 text-red-600" />
+                      <ToggleLeft className="h-4 w-4 text-red-600" />
                     )}
                     <p className="text-xs font-medium leading-none">
                       {reverseShare.isActive
@@ -486,9 +486,9 @@ export function ReverseShareCard({
                 <div className="p-2 text-center">
                   <div className="flex flex-col items-center gap-1">
                     {reverseShare.isActive ? (
-                      <IconToggleRight className="h-4 w-4 text-green-600" />
+                      <ToggleRight className="h-4 w-4 text-green-600" />
                     ) : (
-                      <IconToggleLeft className="h-4 w-4 text-red-600" />
+                      <ToggleLeft className="h-4 w-4 text-red-600" />
                     )}
                     <p className="text-xs font-medium leading-none">
                       {reverseShare.isActive
@@ -514,9 +514,9 @@ export function ReverseShareCard({
                 >
                   <div className="flex flex-col items-center gap-1">
                     {hasPassword ? (
-                      <IconLock className="h-4 w-4 text-yellow-600" />
+                      <Lock className="h-4 w-4 text-yellow-600" />
                     ) : (
-                      <IconLockOpen className="h-4 w-4 text-green-600" />
+                      <LockOpen className="h-4 w-4 text-green-600" />
                     )}
                     <p className="text-xs font-medium leading-none">
                       {hasPassword
@@ -532,9 +532,9 @@ export function ReverseShareCard({
                 <div className="p-2 text-center">
                   <div className="flex flex-col items-center gap-1">
                     {hasPassword ? (
-                      <IconLock className="h-4 w-4 text-yellow-600" />
+                      <Lock className="h-4 w-4 text-yellow-600" />
                     ) : (
-                      <IconLockOpen className="h-4 w-4 text-green-600" />
+                      <LockOpen className="h-4 w-4 text-green-600" />
                     )}
                     <p className="text-xs font-medium leading-none">
                       {hasPassword
@@ -558,7 +558,7 @@ export function ReverseShareCard({
               onClick={() => onGenerateLink(reverseShare)}
               className="w-full h-8 text-sm"
             >
-              <IconLink className="h-3 w-3" />
+              <Link className="h-3 w-3" />
               {t("reverseShares.card.createLinkCTA")}
             </Button>
           )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { IconEye, IconEyeOff, IconInfoCircle } from "@tabler/icons-react";
+import { Eye, EyeOff, Info } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -167,7 +167,7 @@ export function EditProviderForm({
         <div className="bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
           <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
             <span>
-              <IconInfoCircle className="h-4 w-4" />
+              <Info className="h-4 w-4" />
             </span>
             <span className="text-sm font-medium">{t("authProviders.info.officialProvider")}</span>
           </div>
@@ -337,7 +337,7 @@ export function EditProviderForm({
               </div>
               <div className="bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                 <div className="flex items-start gap-2 text-blue-700 dark:text-blue-300">
-                  <IconInfoCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
                   <div className="text-xs">
                     <p className="font-medium">{t("authProviders.info.manualConfigTitle")}</p>
                     <p className="mt-1">{t("authProviders.info.manualConfigDescription")}</p>
@@ -408,9 +408,9 @@ export function EditProviderForm({
               onClick={() => setShowClientSecret(!showClientSecret)}
             >
               {showClientSecret ? (
-                <IconEyeOff className="h-4 w-4 text-muted-foreground" />
+                <EyeOff className="h-4 w-4 text-muted-foreground" />
               ) : (
-                <IconEye className="h-4 w-4 text-muted-foreground" />
+                <Eye className="h-4 w-4 text-muted-foreground" />
               )}
             </Button>
           </div>

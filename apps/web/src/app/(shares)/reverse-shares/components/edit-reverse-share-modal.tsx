@@ -1,17 +1,17 @@
 "use client";
 
 import {
-  IconCalendar,
-  IconChevronDown,
-  IconChevronUp,
-  IconEdit,
-  IconEye,
-  IconFile,
-  IconFiles,
-  IconLock,
-  IconSettings,
-  IconUser,
-} from "@tabler/icons-react";
+  Calendar,
+  ChevronDown,
+  ChevronUp,
+  Eye,
+  File,
+  Files,
+  Lock,
+  Pencil,
+  Settings,
+  User,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { type UseFormReturn, useForm } from "react-hook-form";
@@ -206,7 +206,7 @@ function createToggleButton(
         {label}
       </Label>
       <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={onToggle}>
-        {isExpanded ? <IconChevronUp size={14} /> : <IconChevronDown size={14} />}
+        {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
       </Button>
     </div>
   );
@@ -275,7 +275,7 @@ function BasicInfoSection({ form, t }: { form: UseFormReturn<EditReverseShareFor
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center gap-2">
-              <IconSettings size={16} />
+              <Settings size={16} />
               {t("reverseShares.form.pageLayout.label")}
             </FormLabel>
             <Select onValueChange={field.onChange} value={field.value}>
@@ -344,7 +344,7 @@ function ExpirationSection({
       {createToggleButton(
         hasExpiration,
         toggleExpiration,
-        <IconCalendar size={16} />,
+        <Calendar size={16} />,
         t("reverseShares.form.expiration.configure"),
       )}
 
@@ -400,7 +400,7 @@ function FileLimitsSection({
       {createToggleButton(
         hasFileLimits,
         toggleFileLimits,
-        <IconFile size={16} />,
+        <File size={16} />,
         t("reverseShares.form.fileLimits.configure"),
       )}
 
@@ -412,7 +412,7 @@ function FileLimitsSection({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="flex items-center gap-2">
-                  <IconEye size={16} />
+                  <Eye size={16} />
                   {t("reverseShares.form.maxFiles.label")}
                 </FormLabel>
                 <div className="space-y-3">
@@ -450,7 +450,7 @@ function FileLimitsSection({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="flex items-center gap-2">
-                  <IconFiles size={16} />
+                  <Files size={16} />
                   {t("reverseShares.form.maxFileSize.label")}
                 </FormLabel>
                 <div className="space-y-3">
@@ -542,7 +542,7 @@ function PasswordSection({
       {createToggleButton(
         hasPassword,
         togglePassword,
-        <IconLock size={16} />,
+        <Lock size={16} />,
         t("reverseShares.form.password.configurePassword"),
       )}
 
@@ -590,7 +590,7 @@ function FieldRequirementsSection({
       {createToggleButton(
         hasFieldRequirements,
         toggleFieldRequirements,
-        <IconUser size={16} />,
+        <User size={16} />,
         t("reverseShares.form.fieldRequirements.title"),
       )}
 
@@ -603,7 +603,7 @@ function FieldRequirementsSection({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex items-center gap-2 font-medium">
-                    <IconUser size={14} />
+                    <User size={14} />
                     {t("reverseShares.form.nameFieldRequired.label")}
                   </FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
@@ -644,7 +644,7 @@ function FieldRequirementsSection({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex items-center gap-2 font-medium">
-                    <IconUser size={14} />
+                    <User size={14} />
                     {t("reverseShares.form.emailFieldRequired.label")}
                   </FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
@@ -682,7 +682,7 @@ function FieldRequirementsSection({
 
           <div className="text-xs text-muted-foreground bg-blue-50 dark:bg-blue-950/20 p-3 rounded-md border border-blue-200 dark:border-blue-800">
             <div className="flex items-start gap-2">
-              <IconSettings size={12} className="mt-0.5 text-blue-600 dark:text-blue-400" />
+              <Settings size={12} className="mt-0.5 text-blue-600 dark:text-blue-400" />
               <div className="space-y-1">
                 <p className="font-medium text-blue-900 dark:text-blue-100">Field Configuration:</p>
                 <ul className="space-y-0.5 text-blue-800 dark:text-blue-200">
@@ -750,7 +750,7 @@ export function EditReverseShareModal({
       <DialogContent className="sm:max-w-[500px] md:max-w-[650px] max-h-[85vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <IconEdit size={20} />
+            <Pencil size={20} />
             {t("reverseShares.modals.edit.title")}
           </DialogTitle>
           <DialogDescription>{t("reverseShares.modals.edit.description")}</DialogDescription>

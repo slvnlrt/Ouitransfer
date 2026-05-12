@@ -1,4 +1,4 @@
-import { IconDeviceFloppy, IconUserPlus } from "@tabler/icons-react";
+import { Save, UserPlus } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -43,7 +43,7 @@ export function UserFormModal({
           <form onSubmit={formMethods.handleSubmit(onSubmit)}>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 mb-2">
-                <IconUserPlus size={24} className="me-1" />
+                <UserPlus size={24} className="me-1" />
                 {modalMode === "create" ? t("users.form.titleCreate") : t("users.form.titleEdit")}
               </DialogTitle>
             </DialogHeader>
@@ -147,7 +147,7 @@ export function UserFormModal({
                 {t("common.cancel")}
               </Button>
               <Button disabled={isSubmitting} type="submit">
-                {modalMode === "create" ? "" : <IconDeviceFloppy className="h-4 w-4" />}
+                {modalMode === "create" ? "" : <Save className="h-4 w-4" />}
                 {modalMode === "create" ? t("users.form.create") : t("users.form.save")}
               </Button>
             </DialogFooter>

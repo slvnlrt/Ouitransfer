@@ -1,6 +1,6 @@
 "use client";
 
-import { IconPalette } from "@tabler/icons-react";
+import { Palette } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { ProtectedRoute } from "@/components/auth/protected-route";
@@ -18,7 +18,7 @@ export default function CustomizationPage() {
     <ProtectedRoute>
       <FileManagerLayout
         breadcrumbLabel={t("customization.breadcrumb")}
-        icon={<IconPalette size={20} />}
+        icon={<Palette size={20} />}
         title={t("customization.pageTitle")}
       >
         <div className="flex flex-col gap-6">

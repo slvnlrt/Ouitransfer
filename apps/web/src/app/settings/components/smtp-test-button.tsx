@@ -1,6 +1,6 @@
 "use client";
 
-import { IconFlask, IconInfoCircle, IconLoader } from "@tabler/icons-react";
+import { FlaskConical, Info, Loader } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -84,14 +84,14 @@ export function SmtpTestButton({ smtpEnabled, getFormValues }: SmtpTestButtonPro
         className="flex items-center gap-2"
       >
         {isLoading ? (
-          <IconLoader className="h-4 w-4 animate-spin" />
+          <Loader className="h-4 w-4 animate-spin" />
         ) : (
-          <IconFlask className="h-4 w-4" />
+          <FlaskConical className="h-4 w-4" />
         )}
         {isLoading ? t("settings.buttons.testing") : t("settings.buttons.testSmtp")}
       </Button>
       <div className="relative group">
-        <IconInfoCircle className="h-4 w-4 text-muted-foreground hover:text-foreground cursor-help transition-colors" />
+        <Info className="h-4 w-4 text-muted-foreground hover:text-foreground cursor-help transition-colors" />
         <div className="absolute start-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 bg-popover text-popover-foreground text-xs rounded-md border shadow-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 w-72 text-wrap">
           {t("settings.tooltips.testSmtp")}
           <div className="absolute top-full start-1/2 -translate-x-1/2 border-4 border-transparent border-t-popover"></div>

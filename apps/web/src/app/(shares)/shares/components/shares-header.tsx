@@ -1,4 +1,4 @@
-import { IconLayoutDashboard, IconShare } from "@tabler/icons-react";
+import { LayoutDashboard, Share } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -17,7 +17,7 @@ export function SharesHeader() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-row items-center gap-2">
-        <IconShare className="text-xl" />
+        <Share className="text-xl" />
         <h1 className="text-2xl font-bold">{t("shares.header.title")}</h1>
       </div>
       <Separator />
@@ -26,7 +26,7 @@ export function SharesHeader() {
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
               <Link href="/dashboard" className="flex items-center">
-                <IconLayoutDashboard size={20} className="me-2" />
+                <LayoutDashboard size={20} className="me-2" />
                 {t("common.dashboard")}
               </Link>
             </BreadcrumbLink>
@@ -34,7 +34,7 @@ export function SharesHeader() {
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <span className="flex items-center gap-2">
-              <IconShare size={20} /> {t("shares.header.myShares")}
+              <Share size={20} /> {t("shares.header.myShares")}
             </span>
           </BreadcrumbItem>
         </BreadcrumbList>

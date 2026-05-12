@@ -1,4 +1,4 @@
-import { IconLock } from "@tabler/icons-react";
+import { Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -27,7 +27,7 @@ export function PasswordModal({
         <DialogHeader className="flex flex-col gap-1">
           <DialogTitle>{t("share.password.title")}</DialogTitle>
           <div className="flex items-center gap-2 text-warning text-sm">
-            <IconLock size={16} />
+            <Lock size={16} />
             <p>{t("share.password.protected")}</p>
           </div>
           {isError && (

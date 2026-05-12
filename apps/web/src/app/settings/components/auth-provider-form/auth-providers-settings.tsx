@@ -1,6 +1,6 @@
 "use client";
 
-import { IconChevronDown, IconChevronUp, IconSettings } from "@tabler/icons-react";
+import { ChevronDown, ChevronUp, Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -68,7 +68,7 @@ export function AuthProvidersSettings() {
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
         <div className="flex flex-row items-center gap-8">
-          <IconSettings className="text-xl text-muted-foreground" />
+          <Settings className="text-xl text-muted-foreground" />
           <div className="flex flex-col gap-1">
             <h2 className="text-xl font-semibold">{t("authProviders.title")}</h2>
             <p className="text-sm text-muted-foreground">
@@ -82,9 +82,9 @@ export function AuthProvidersSettings() {
           </div>
         </div>
         {isCollapsed ? (
-          <IconChevronDown className="text-muted-foreground" />
+          <ChevronDown className="text-muted-foreground" />
         ) : (
-          <IconChevronUp className="text-muted-foreground" />
+          <ChevronUp className="text-muted-foreground" />
         )}
       </CardHeader>
 
@@ -93,7 +93,7 @@ export function AuthProvidersSettings() {
 
         {loading ? (
           <div className="flex items-center justify-center py-8">
-            <IconSettings className="h-6 w-6 animate-spin" />
+            <Settings className="h-6 w-6 animate-spin" />
             {t("authProviders.loadingProviders")}
           </div>
         ) : (

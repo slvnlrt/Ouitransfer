@@ -1,4 +1,4 @@
-import { IconCloudUpload, IconFolderPlus } from "@tabler/icons-react";
+import { CloudUpload, FolderPlus } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -292,13 +292,13 @@ export function FilesGrid({
           <ContextMenuContent className="w-[200px]">
             {onCreateFolder && (
               <ContextMenuItem onClick={onCreateFolder} className="cursor-pointer py-2">
-                <IconFolderPlus className="h-4 w-4" />
+                <FolderPlus className="h-4 w-4" />
                 {t("contextMenu.newFolder")}
               </ContextMenuItem>
             )}
             {onUpload && (
               <ContextMenuItem onClick={onUpload} className="cursor-pointer py-2">
-                <IconCloudUpload className="h-4 w-4" />
+                <CloudUpload className="h-4 w-4" />
                 {t("contextMenu.uploadFile")}
               </ContextMenuItem>
             )}

@@ -1,7 +1,7 @@
 "use client";
 
-import { IconCheck, IconCopy } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
+import { Check, Copy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -69,12 +69,12 @@ export function MediaEmbedLink({ fileId, shareId }: MediaEmbedLinkProps) {
             >
               {copied ? (
                 <>
-                  <IconCheck className="h-4 w-4 me-1" />
+                  <Check className="h-4 w-4 me-1" />
                   {t("common.copied")}
                 </>
               ) : (
                 <>
-                  <IconCopy className="h-4 w-4 me-1" />
+                  <Copy className="h-4 w-4 me-1" />
                   {t("common.copy")}
                 </>
               )}

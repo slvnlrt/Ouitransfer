@@ -1,4 +1,4 @@
-import { IconDeviceDesktopDown, IconLayoutDashboard } from "@tabler/icons-react";
+import { LayoutDashboard, MonitorDown } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -17,7 +17,7 @@ export function ReverseSharesHeader() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-row items-center gap-2">
-        <IconDeviceDesktopDown className="text-xl" />
+        <MonitorDown className="text-xl" />
         <h1 className="text-2xl font-bold">{t("reverseShares.pageTitle")}</h1>
       </div>
       <Separator />
@@ -26,7 +26,7 @@ export function ReverseSharesHeader() {
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
               <Link href="/dashboard" className="flex items-center">
-                <IconLayoutDashboard size={20} className="me-2" />
+                <LayoutDashboard size={20} className="me-2" />
                 {t("common.dashboard")}
               </Link>
             </BreadcrumbLink>
@@ -34,7 +34,7 @@ export function ReverseSharesHeader() {
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <span className="flex items-center gap-2">
-              <IconDeviceDesktopDown size={20} /> {t("reverseShares.pageTitle")}
+              <MonitorDown size={20} /> {t("reverseShares.pageTitle")}
             </span>
           </BreadcrumbItem>
         </BreadcrumbList>

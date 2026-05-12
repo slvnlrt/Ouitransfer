@@ -1,6 +1,6 @@
 "use client";
 
-import { IconToggleLeft, IconToggleRight } from "@tabler/icons-react";
+import { ToggleLeft, ToggleRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 interface ReverseShareStatsProps {
@@ -25,9 +25,9 @@ export function ReverseShareStats({ filesCount, maxFiles, isActive }: ReverseSha
       <div className="text-center p-2 bg-muted/30 rounded-lg">
         <div className="flex items-center justify-center gap-1">
           {isActive ? (
-            <IconToggleRight className="h-5 w-5 text-green-600" />
+            <ToggleRight className="h-5 w-5 text-green-600" />
           ) : (
-            <IconToggleLeft className="h-5 w-5 text-red-600" />
+            <ToggleLeft className="h-5 w-5 text-red-600" />
           )}
         </div>
         <p className="text-xs text-muted-foreground">

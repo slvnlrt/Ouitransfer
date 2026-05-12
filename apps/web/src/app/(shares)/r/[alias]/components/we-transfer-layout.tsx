@@ -1,6 +1,6 @@
 "use client";
 
-import { IconAlertTriangle, IconCheck, IconClock, IconInfoCircle } from "@tabler/icons-react";
+import { Check, Clock, Info, TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "@/components/general/language-switcher";
@@ -94,7 +94,7 @@ export function WeTransferLayout({
       return (
         <WeTransferStatusMessage
           type={MESSAGE_TYPES.SUCCESS}
-          icon={IconCheck}
+          icon={Check}
           titleKey="reverseShares.upload.success.title"
           descriptionKey="reverseShares.upload.success.description"
         />
@@ -105,7 +105,7 @@ export function WeTransferLayout({
       return (
         <WeTransferStatusMessage
           type={MESSAGE_TYPES.INACTIVE}
-          icon={IconAlertTriangle}
+          icon={TriangleAlert}
           titleKey="reverseShares.upload.linkInactive.title"
           descriptionKey="reverseShares.upload.linkInactive.description"
           showContactOwner
@@ -117,7 +117,7 @@ export function WeTransferLayout({
       return (
         <WeTransferStatusMessage
           type={MESSAGE_TYPES.NOT_FOUND}
-          icon={IconAlertTriangle}
+          icon={TriangleAlert}
           titleKey="reverseShares.upload.linkNotFound.title"
           descriptionKey="reverseShares.upload.linkNotFound.description"
         />
@@ -128,7 +128,7 @@ export function WeTransferLayout({
       return (
         <WeTransferStatusMessage
           type={MESSAGE_TYPES.EXPIRED}
-          icon={IconClock}
+          icon={Clock}
           titleKey="reverseShares.upload.linkExpired.title"
           descriptionKey="reverseShares.upload.linkExpired.description"
           showContactOwner
@@ -140,7 +140,7 @@ export function WeTransferLayout({
       return (
         <WeTransferStatusMessage
           type={MESSAGE_TYPES.MAX_FILES}
-          icon={IconInfoCircle}
+          icon={Info}
           titleKey="reverseShares.upload.maxFilesReached.title"
           descriptionKey="reverseShares.upload.maxFilesReached.description"
           showContactOwner

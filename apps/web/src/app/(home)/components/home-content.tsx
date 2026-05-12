@@ -1,7 +1,7 @@
-import { IconBrandGithubFilled } from "@tabler/icons-react";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { TbBrandGithubFilled } from "react-icons/tb";
 
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
@@ -31,7 +31,7 @@ function ActionButtons({ t }: { t: (key: string) => string }) {
       </Button>
       <Button asChild variant="outline">
         <Link href={siteConfig.links.github} target="_blank" rel="noopener noreferrer">
-          <IconBrandGithubFilled className="size-5" />
+          <TbBrandGithubFilled className="size-5" />
           {t("home.starOnGithub")}
         </Link>
       </Button>

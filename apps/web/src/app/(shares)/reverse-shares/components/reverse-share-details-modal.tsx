@@ -1,15 +1,15 @@
 "use client";
 
 import {
-  IconCopy,
-  IconDownload,
-  IconEdit,
-  IconLink,
-  IconLock,
-  IconLockOpen,
-  IconToggleLeft,
-  IconToggleRight,
-} from "@tabler/icons-react";
+  Copy,
+  Download,
+  Link,
+  Lock,
+  LockOpen,
+  Pencil,
+  ToggleLeft,
+  ToggleRight,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -256,7 +256,7 @@ export function ReverseShareDetailsModal({
                       disabled={isDownloading}
                       title={t("qrCodeModal.download")}
                     >
-                      <IconDownload className="h-3 w-3" />
+                      <Download className="h-3 w-3" />
                     </Button>
                   </div>
                   <div className="flex flex-col items-start justify-start">
@@ -298,7 +298,7 @@ export function ReverseShareDetailsModal({
                         : t("reverseShares.modals.details.createAlias")
                     }
                   >
-                    <IconEdit className="h-3 w-3" />
+                    <Pencil className="h-3 w-3" />
                   </Button>
                 )}
               </div>
@@ -317,7 +317,7 @@ export function ReverseShareDetailsModal({
                     onClick={handleCopyLink}
                     title={t("reverseShares.modals.details.copyLink")}
                   >
-                    <IconCopy className="h-3.5 w-3.5" />
+                    <Copy className="h-3.5 w-3.5" />
                   </Button>
                   <Button
                     variant="outline"
@@ -326,7 +326,7 @@ export function ReverseShareDetailsModal({
                     onClick={handleOpenLink}
                     title={t("reverseShares.modals.details.openLink")}
                   >
-                    <IconLink className="h-3.5 w-3.5" />
+                    <Link className="h-3.5 w-3.5" />
                   </Button>
                 </div>
               ) : (
@@ -415,7 +415,7 @@ export function ReverseShareDetailsModal({
                         onClick={() => setShowPasswordModal(true)}
                         title={t("reverseShares.modals.details.editPassword")}
                       >
-                        <IconEdit className="h-2.5 w-2.5" />
+                        <Pencil className="h-2.5 w-2.5" />
                       </Button>
                     )}
                   </div>
@@ -425,7 +425,7 @@ export function ReverseShareDetailsModal({
                         variant="secondary"
                         className="bg-yellow-500/20 text-yellow-700 border-yellow-200"
                       >
-                        <IconLock className="h-3 w-3 me-1" />
+                        <Lock className="h-3 w-3 me-1" />
                         {t("reverseShares.modals.details.protectedByPassword")}
                       </Badge>
                     ) : (
@@ -433,7 +433,7 @@ export function ReverseShareDetailsModal({
                         variant="secondary"
                         className="bg-green-500/20 text-green-700 border-green-200"
                       >
-                        <IconLockOpen className="h-3 w-3 me-1" />
+                        <LockOpen className="h-3 w-3 me-1" />
                         {t("reverseShares.modals.details.publicAccess")}
                       </Badge>
                     )}
@@ -450,7 +450,7 @@ export function ReverseShareDetailsModal({
                         variant="secondary"
                         className="bg-green-500/20 text-green-700 border-green-200"
                       >
-                        <IconToggleRight className="h-3 w-3 me-1" />
+                        <ToggleRight className="h-3 w-3 me-1" />
                         {t("reverseShares.status.active")}
                       </Badge>
                     ) : (
@@ -458,7 +458,7 @@ export function ReverseShareDetailsModal({
                         variant="secondary"
                         className="bg-red-500/20 text-red-700 border-red-200"
                       >
-                        <IconToggleLeft className="h-3 w-3 me-1" />
+                        <ToggleLeft className="h-3 w-3 me-1" />
                         {t("reverseShares.status.inactive")}
                       </Badge>
                     )}

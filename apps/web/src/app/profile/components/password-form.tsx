@@ -1,4 +1,4 @@
-import { IconEye, IconEyeClosed, IconLock } from "@tabler/icons-react";
+import { Eye, EyeClosed, Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -42,9 +42,9 @@ export function PasswordForm({
               className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
             >
               {isNewPasswordVisible ? (
-                <IconEye className="h-5 w-5" />
+                <Eye className="h-5 w-5" />
               ) : (
-                <IconEyeClosed className="h-5 w-5" />
+                <EyeClosed className="h-5 w-5" />
               )}
             </button>
             {errors.newPassword && (
@@ -66,9 +66,9 @@ export function PasswordForm({
               className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
             >
               {isConfirmPasswordVisible ? (
-                <IconEye className="h-5 w-5" />
+                <Eye className="h-5 w-5" />
               ) : (
-                <IconEyeClosed className="h-5 w-5" />
+                <EyeClosed className="h-5 w-5" />
               )}
             </button>
             {errors.confirmPassword && (
@@ -83,7 +83,7 @@ export function PasswordForm({
               disabled={isSubmitting}
               type="submit"
             >
-              {!isSubmitting && <IconLock className="h-4 w-4" />}
+              {!isSubmitting && <Lock className="h-4 w-4" />}
               {t("profile.password.updateButton")}
             </Button>
           </div>

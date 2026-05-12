@@ -1,6 +1,6 @@
 "use client";
 
-import { IconAlertTriangle, IconCheck, IconClock, IconInfoCircle } from "@tabler/icons-react";
+import { Check, Clock, Info, TriangleAlert } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
@@ -32,7 +32,7 @@ export function DefaultLayout({
       return {
         component: (
           <StatusMessage
-            icon={IconCheck}
+            icon={Check}
             title={t("reverseShares.upload.success.title")}
             description={t("reverseShares.upload.success.description")}
             variant="success"
@@ -45,7 +45,7 @@ export function DefaultLayout({
       return {
         component: (
           <StatusMessage
-            icon={IconAlertTriangle}
+            icon={TriangleAlert}
             title={t("reverseShares.upload.linkInactive.title")}
             description={t("reverseShares.upload.linkInactive.description")}
             additionalText={t("reverseShares.upload.linkInactive.contactOwner")}
@@ -59,7 +59,7 @@ export function DefaultLayout({
       return {
         component: (
           <StatusMessage
-            icon={IconAlertTriangle}
+            icon={TriangleAlert}
             title={t("reverseShares.upload.linkNotFound.title")}
             description={t("reverseShares.upload.linkNotFound.description")}
             variant="neutral"
@@ -72,7 +72,7 @@ export function DefaultLayout({
       return {
         component: (
           <StatusMessage
-            icon={IconClock}
+            icon={Clock}
             title={t("reverseShares.upload.linkExpired.title")}
             description={t("reverseShares.upload.linkExpired.description")}
             additionalText={t("reverseShares.upload.linkExpired.contactOwner")}
@@ -86,7 +86,7 @@ export function DefaultLayout({
       return {
         component: (
           <StatusMessage
-            icon={IconInfoCircle}
+            icon={Info}
             title={t("reverseShares.upload.maxFilesReached.title")}
             description={t("reverseShares.upload.maxFilesReached.description", {
               maxFiles: reverseShare?.maxFiles || 0,

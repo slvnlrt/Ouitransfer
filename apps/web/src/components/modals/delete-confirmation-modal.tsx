@@ -1,6 +1,6 @@
 "use client";
 
-import { IconFolder, IconTrash, IconX } from "@tabler/icons-react";
+import { Folder, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -48,7 +48,7 @@ export function DeleteConfirmationModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-destructive">
-            <IconTrash size={20} />
+            <Trash2 size={20} />
             {title}
           </DialogTitle>
         </DialogHeader>
@@ -75,7 +75,7 @@ export function DeleteConfirmationModal({
                       key={`folder-${index}`}
                       className="flex items-center gap-2 p-2 bg-muted/20 rounded text-sm min-w-0"
                     >
-                      <IconFolder className="h-4 w-4 text-primary flex-shrink-0" />
+                      <Folder className="h-4 w-4 text-primary flex-shrink-0" />
                       <span className="flex-1 break-all" title={folderName}>
                         {truncateFileName(folderName)}
                       </span>
@@ -104,11 +104,11 @@ export function DeleteConfirmationModal({
 
         <DialogFooter className="flex gap-2">
           <Button variant="outline" onClick={onClose}>
-            <IconX className="h-4 w-4" />
+            <X className="h-4 w-4" />
             {t("common.cancel")}
           </Button>
           <Button variant="destructive" onClick={handleConfirm}>
-            <IconTrash className="h-4 w-4" />
+            <Trash2 className="h-4 w-4" />
             {t("common.delete")}
           </Button>
         </DialogFooter>

@@ -1,6 +1,6 @@
 "use client";
 
-import { IconCamera, IconTrash } from "@tabler/icons-react";
+import { Camera, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 
@@ -100,7 +100,7 @@ export function ProfilePicture({ userData, onImageChange, onImageRemove }: Profi
                 variant="default"
                 disabled={isLoading}
               >
-                <IconCamera className="h-4 w-4" />
+                <Camera className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -110,12 +110,12 @@ export function ProfilePicture({ userData, onImageChange, onImageRemove }: Profi
                   onClick={handleImageRemove}
                   disabled={isLoading}
                 >
-                  <IconTrash className="h-4 w-4" />
+                  <Trash2 className="h-4 w-4" />
                   {t("profile.picture.removePhoto")}
                 </DropdownMenuItem>
               ) : (
                 <DropdownMenuItem onClick={handleAvatarClick} disabled={isLoading}>
-                  <IconCamera className="h-4 w-4" />
+                  <Camera className="h-4 w-4" />
                   {t("profile.picture.uploadPhoto")}
                 </DropdownMenuItem>
               )}

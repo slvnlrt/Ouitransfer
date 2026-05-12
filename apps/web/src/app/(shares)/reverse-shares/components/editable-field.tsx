@@ -1,6 +1,6 @@
 "use client";
 
-import { IconCheck, IconEdit, IconX } from "@tabler/icons-react";
+import { Check, Pencil, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -122,7 +122,7 @@ export function EditableField({
             className="h-5 w-5 text-muted-foreground hover:text-foreground"
             onClick={startEdit}
           >
-            <IconEdit className="h-3 w-3" />
+            <Pencil className="h-3 w-3" />
           </Button>
         )}
       </div>
@@ -176,7 +176,7 @@ export function EditableField({
               className="h-6 w-6 text-green-600 hover:text-green-700"
               onClick={handleSave}
             >
-              <IconCheck className="h-3 w-3" />
+              <Check className="h-3 w-3" />
             </Button>
             <Button
               size="icon"
@@ -184,7 +184,7 @@ export function EditableField({
               className="h-6 w-6 text-red-600 hover:text-red-700"
               onClick={handleCancel}
             >
-              <IconX className="h-3 w-3" />
+              <X className="h-3 w-3" />
             </Button>
           </div>
         </div>

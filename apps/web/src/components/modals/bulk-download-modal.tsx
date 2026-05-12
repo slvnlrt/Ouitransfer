@@ -1,6 +1,6 @@
 "use client";
 
-import { IconDownload, IconX } from "@tabler/icons-react";
+import { Download, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -55,7 +55,7 @@ export function BulkDownloadModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <IconDownload size={20} />
+            <Download size={20} />
             {t("bulkDownload.title")}
           </DialogTitle>
         </DialogHeader>
@@ -81,11 +81,11 @@ export function BulkDownloadModal({
 
         <DialogFooter className="flex gap-2">
           <Button variant="outline" onClick={handleClose}>
-            <IconX className="h-4 w-4" />
+            <X className="h-4 w-4" />
             {t("common.cancel")}
           </Button>
           <Button onClick={handleSubmit} disabled={!zipName.trim()}>
-            <IconDownload className="h-4 w-4" />
+            <Download className="h-4 w-4" />
             {t("bulkDownload.download")}
           </Button>
         </DialogFooter>

@@ -1,4 +1,4 @@
-import { IconEye, IconEyeOff } from "@tabler/icons-react";
+import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -48,7 +48,7 @@ export function ResetPasswordForm({
                     onClick={onTogglePassword}
                     className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
-                    {isPasswordVisible ? <IconEye size={20} /> : <IconEyeOff size={20} />}
+                    {isPasswordVisible ? <Eye size={20} /> : <EyeOff size={20} />}
                   </button>
                 </div>
               </FormControl>
@@ -77,7 +77,7 @@ export function ResetPasswordForm({
                     onClick={onToggleConfirmPassword}
                     className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
-                    {isConfirmPasswordVisible ? <IconEye size={20} /> : <IconEyeOff size={20} />}
+                    {isConfirmPasswordVisible ? <Eye size={20} /> : <EyeOff size={20} />}
                   </button>
                 </div>
               </FormControl>

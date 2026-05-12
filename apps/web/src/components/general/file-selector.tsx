@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  IconCheck,
-  IconEdit,
-  IconEye,
-  IconFile,
-  IconFolder,
-  IconFolderOpen,
-  IconMinus,
-  IconPlus,
-  IconSearch,
-} from "@tabler/icons-react";
+import { Check, Eye, File, Folder, FolderOpen, Minus, Pencil, Plus, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -239,7 +229,7 @@ export function FileSelector({
                 }
                 title={t("fileSelector.editFile")}
               >
-                <IconEdit className="h-4 w-4" />
+                <Pencil className="h-4 w-4" />
               </Button>
             )}
             <Button
@@ -249,7 +239,7 @@ export function FileSelector({
               onClick={() => setPreviewFile(file)}
               title={t("fileSelector.previewFile")}
             >
-              <IconEye className="h-4 w-4" />
+              <Eye className="h-4 w-4" />
             </Button>
           </div>
 
@@ -261,7 +251,7 @@ export function FileSelector({
               onClick={() => (isInShare ? removeFromShare(file.id) : addToShare(file.id))}
               title={isInShare ? t("fileSelector.removeFromShare") : t("fileSelector.addToShare")}
             >
-              {isInShare ? <IconMinus className="h-4 w-4" /> : <IconPlus className="h-4 w-4" />}
+              {isInShare ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
             </Button>
           </div>
         </div>
@@ -281,7 +271,7 @@ export function FileSelector({
 
     return (
       <div className="flex items-center gap-3 p-3 bg-background rounded-lg border group hover:border-muted-foreground/20 transition-colors">
-        <IconFolder className="h-5 w-5 text-blue-600 flex-shrink-0" />
+        <Folder className="h-5 w-5 text-blue-600 flex-shrink-0" />
         <div className="flex-1 min-w-0">
           <div className="font-medium text-sm truncate max-w-[260px]" title={folder.name}>
             {folder.name}
@@ -315,7 +305,7 @@ export function FileSelector({
                 }
                 title={t("fileSelector.editFolder")}
               >
-                <IconEdit className="h-4 w-4" />
+                <Pencil className="h-4 w-4" />
               </Button>
             )}
           </div>
@@ -330,7 +320,7 @@ export function FileSelector({
               }
               title={isInShare ? "Remove from share" : "Add to share"}
             >
-              {isInShare ? <IconMinus className="h-4 w-4" /> : <IconPlus className="h-4 w-4" />}
+              {isInShare ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
             </Button>
           </div>
         </div>
@@ -356,7 +346,7 @@ export function FileSelector({
 
           {(shareFiles.length > 0 || shareFolders.length > 0) && (
             <div className="relative">
-              <IconSearch className="absolute start-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute start-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder={t("searchBar.placeholder")}
                 value={shareSearchFilter}
@@ -384,7 +374,7 @@ export function FileSelector({
             </div>
           ) : (
             <div className="text-center py-8 text-muted-foreground border rounded-lg bg-muted/20">
-              <IconFolderOpen className="h-16 w-16 mx-auto mb-2 text-muted-foreground/50" />
+              <FolderOpen className="h-16 w-16 mx-auto mb-2 text-muted-foreground/50" />
               <p className="font-medium">{t("fileSelector.noFilesInShare")}</p>
               <p className="text-sm">{t("fileSelector.addFilesFromList")}</p>
             </div>
@@ -404,7 +394,7 @@ export function FileSelector({
           </div>
 
           <div className="relative">
-            <IconSearch className="absolute start-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute start-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder={t("fileSelector.searchPlaceholder")}
               value={searchFilter}
@@ -424,13 +414,13 @@ export function FileSelector({
             </div>
           ) : searchFilter ? (
             <div className="text-center py-8 text-muted-foreground border rounded-lg bg-muted/20">
-              <IconSearch className="h-16 w-16 mx-auto mb-2 text-muted-foreground/50" />
+              <Search className="h-16 w-16 mx-auto mb-2 text-muted-foreground/50" />
               <p className="font-medium">{t("fileSelector.noFilesFound")}</p>
               <p className="text-sm">{t("fileSelector.tryDifferentSearch")}</p>
             </div>
           ) : (
             <div className="text-center py-8 text-muted-foreground border rounded-lg bg-muted/20">
-              <IconFile className="h-16 w-16 mx-auto mb-2 text-muted-foreground/50" />
+              <File className="h-16 w-16 mx-auto mb-2 text-muted-foreground/50" />
               <p className="font-medium">{t("fileSelector.allFilesInShare")}</p>
               <p className="text-sm">{t("fileSelector.uploadNewFiles")}</p>
             </div>
@@ -449,7 +439,7 @@ export function FileSelector({
               </>
             ) : (
               <>
-                <IconCheck className="h-4 w-4" />
+                <Check className="h-4 w-4" />
                 {t("fileSelector.saveChanges")}
               </>
             )}

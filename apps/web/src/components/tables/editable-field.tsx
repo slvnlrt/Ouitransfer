@@ -1,7 +1,6 @@
 "use client";
 
-import { IconCheck, IconEdit, IconX } from "@tabler/icons-react";
-
+import { Check, Pencil, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -73,7 +72,7 @@ export function EditableField({
             onSaveEdit();
           }}
         >
-          <IconCheck className="h-3 w-3" />
+          <Check className="h-3 w-3" />
         </Button>
         <Button
           size="icon"
@@ -84,7 +83,7 @@ export function EditableField({
             onCancelEdit();
           }}
         >
-          <IconX className="h-3 w-3" />
+          <X className="h-3 w-3" />
         </Button>
       </div>
     );
@@ -106,7 +105,7 @@ export function EditableField({
               onStartEdit();
             }}
           >
-            <IconEdit className="h-3 w-3" />
+            <Pencil className="h-3 w-3" />
           </Button>
         )}
       </div>

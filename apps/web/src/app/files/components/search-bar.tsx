@@ -1,4 +1,4 @@
-import { IconSearch } from "@tabler/icons-react";
+import { Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,7 @@ export function SearchBar({
   return (
     <div className="flex items-center gap-2">
       <div className="relative max-w-xs">
-        <IconSearch className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           className="ps-9"
           placeholder={t("searchBar.placeholder")}

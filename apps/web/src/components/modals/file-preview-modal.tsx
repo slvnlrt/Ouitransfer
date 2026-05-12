@@ -1,6 +1,6 @@
 "use client";
 
-import { IconDownload } from "@tabler/icons-react";
+import { Download } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { EmbedCodeDisplay } from "@/components/files/embed-code-display";
@@ -101,7 +101,7 @@ export function FilePreviewModal({
             {t("common.close")}
           </Button>
           <Button onClick={previewState.handleDownload}>
-            <IconDownload className="h-4 w-4" />
+            <Download className="h-4 w-4" />
             {t("common.download")}
           </Button>
         </DialogFooter>

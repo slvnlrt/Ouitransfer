@@ -1,6 +1,6 @@
 "use client";
 
-import { IconCheck, IconCopy } from "@tabler/icons-react";
+import { Check, Copy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -51,7 +51,7 @@ export function CallbackUrlDisplay({ providerName }: CallbackUrlDisplayProps) {
             className="shrink-0"
             title={t("authProviders.form.copyCallbackUrl")}
           >
-            {copied ? <IconCheck className="h-3 w-3" /> : <IconCopy className="h-3 w-3" />}
+            {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
           </Button>
         </div>
         <p className="text-xs text-muted-foreground mb-2">

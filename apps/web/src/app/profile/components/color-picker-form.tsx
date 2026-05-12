@@ -1,6 +1,6 @@
 "use client";
 
-import { IconPalette } from "@tabler/icons-react";
+import { Palette } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 
@@ -126,7 +126,7 @@ export function ColorPickerForm() {
     <Card>
       <CardHeader>
         <h2 className="text-lg font-semibold flex items-center gap-2">
-          <IconPalette className="w-5 h-5" />
+          <Palette className="w-5 h-5" />
           {t("profile.colors.title")}
         </h2>
         <p className="text-sm text-muted-foreground">{t("profile.colors.description")}</p>

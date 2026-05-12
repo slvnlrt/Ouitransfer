@@ -1,11 +1,4 @@
-import {
-  IconArrowsMove,
-  IconDownload,
-  IconEdit,
-  IconEye,
-  IconShare,
-  IconTrash,
-} from "@tabler/icons-react";
+import { Download, Eye, Move, Pencil, Share, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 
@@ -70,7 +63,7 @@ export function FileCard({
       ? [
           {
             key: "preview",
-            icon: IconEye,
+            icon: Eye,
             label: t("filesTable.actions.preview"),
             onClick: () => onPreview(file),
           },
@@ -80,7 +73,7 @@ export function FileCard({
       ? [
           {
             key: "edit",
-            icon: IconEdit,
+            icon: Pencil,
             label: t("filesTable.actions.edit"),
             onClick: () => onRename(file),
           },
@@ -88,7 +81,7 @@ export function FileCard({
       : []),
     {
       key: "download",
-      icon: IconDownload,
+      icon: Download,
       label: t("filesTable.actions.download"),
       onClick: () => onDownload(file.objectName, file.name),
     },
@@ -96,7 +89,7 @@ export function FileCard({
       ? [
           {
             key: "share",
-            icon: IconShare,
+            icon: Share,
             label: t("filesTable.actions.share"),
             onClick: () => onShare(file),
           },
@@ -106,7 +99,7 @@ export function FileCard({
       ? [
           {
             key: "move",
-            icon: IconArrowsMove,
+            icon: Move,
             label: t("common.move"),
             onClick: () => onMoveFile(file),
           },
@@ -116,7 +109,7 @@ export function FileCard({
       ? [
           {
             key: "delete",
-            icon: IconTrash,
+            icon: Trash2,
             label: t("filesTable.actions.delete"),
             onClick: () => onDelete(file),
             variant: "destructive" as const,

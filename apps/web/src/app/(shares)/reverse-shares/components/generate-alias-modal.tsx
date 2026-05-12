@@ -1,6 +1,6 @@
 "use client";
 
-import { IconCopy, IconDice, IconLink } from "@tabler/icons-react";
+import { Copy, Dices, Link } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -99,7 +99,7 @@ export function GenerateAliasModal({
       <DialogContent className="sm:max-w-lg max-w-[95vw] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <IconLink size={20} />
+            <Link size={20} />
             {hasExistingAlias
               ? t("reverseShares.modals.alias.editTitle")
               : t("reverseShares.modals.alias.createTitle")}
@@ -146,7 +146,7 @@ export function GenerateAliasModal({
                       }}
                       title={t("reverseShares.modals.alias.randomTooltip")}
                     >
-                      <IconDice className="h-4 w-4" />
+                      <Dices className="h-4 w-4" />
                     </Button>
                   </div>
                   <FormControl>
@@ -203,7 +203,7 @@ export function GenerateAliasModal({
                     className="shrink-0"
                     title={t("reverseShares.modals.alias.copyCurrentLink")}
                   >
-                    <IconCopy className="h-4 w-4" />
+                    <Copy className="h-4 w-4" />
                   </Button>
                 </div>
               </div>

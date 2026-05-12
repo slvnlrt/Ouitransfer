@@ -1,6 +1,6 @@
 "use client";
 
-import { IconCloudUpload, IconLoader, IconX } from "@tabler/icons-react";
+import { CloudUpload, Loader, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -244,11 +244,11 @@ export function GlobalDropZone({ onSuccess, children, currentFolderId }: GlobalD
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "uploading":
-        return <IconLoader size={14} className="animate-spin text-blue-500" />;
+        return <Loader size={14} className="animate-spin text-blue-500" />;
       case "success":
-        return <IconCloudUpload size={14} className="text-green-500" />;
+        return <CloudUpload size={14} className="text-green-500" />;
       case "error":
-        return <IconX size={14} className="text-red-500" />;
+        return <X size={14} className="text-red-500" />;
       default:
         return null;
     }
@@ -261,7 +261,7 @@ export function GlobalDropZone({ onSuccess, children, currentFolderId }: GlobalD
       {isDragOver && (
         <div className="fixed inset-0 z-50 dark:bg-black/80 bg-white/90 border-2 border-dashed dark:border-primary/50 border-primary/90 rounded-lg m-1 flex items-center justify-center">
           <div className="text-center">
-            <IconCloudUpload size={64} className="text-primary mx-auto mb-4" />
+            <CloudUpload size={64} className="text-primary mx-auto mb-4" />
             <h3 className="text-2xl font-bold text-primary mb-2">
               {t("uploadFile.globalDrop.title")}
             </h3>
@@ -310,7 +310,7 @@ export function GlobalDropZone({ onSuccess, children, currentFolderId }: GlobalD
                       className="h-6 w-6 p-0"
                       title={t("uploadFile.retry")}
                     >
-                      <IconLoader size={12} />
+                      <Loader size={12} />
                     </Button>
                     <Button
                       variant="ghost"
@@ -318,7 +318,7 @@ export function GlobalDropZone({ onSuccess, children, currentFolderId }: GlobalD
                       onClick={() => removeFile(upload.id)}
                       className="h-6 w-6 p-0"
                     >
-                      <IconX size={12} />
+                      <X size={12} />
                     </Button>
                   </div>
                 ) : upload.status === "success" ? null : (
@@ -328,7 +328,7 @@ export function GlobalDropZone({ onSuccess, children, currentFolderId }: GlobalD
                     onClick={() => removeFile(upload.id)}
                     className="h-6 w-6 p-0"
                   >
-                    <IconX size={12} />
+                    <X size={12} />
                   </Button>
                 )}
               </div>

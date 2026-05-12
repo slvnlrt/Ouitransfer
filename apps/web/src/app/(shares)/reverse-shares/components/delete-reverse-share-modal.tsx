@@ -1,4 +1,4 @@
-import { IconAlertTriangle, IconTrash } from "@tabler/icons-react";
+import { Trash2, TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -39,7 +39,7 @@ export function DeleteReverseShareModal({
         <DialogHeader>
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
-              <IconAlertTriangle className="h-5 w-5 text-destructive" />
+              <TriangleAlert className="h-5 w-5 text-destructive" />
             </div>
             <div>
               <DialogTitle className="text-start">{t("reverseShares.delete.title")}</DialogTitle>
@@ -73,12 +73,12 @@ export function DeleteReverseShareModal({
           <Button variant="destructive" onClick={handleConfirm} disabled={isDeleting}>
             {isDeleting ? (
               <>
-                <IconTrash className="h-4 w-4 animate-spin" />
+                <Trash2 className="h-4 w-4 animate-spin" />
                 {t("reverseShares.delete.deleting")}
               </>
             ) : (
               <>
-                <IconTrash className="h-4 w-4" />
+                <Trash2 className="h-4 w-4" />
                 {t("reverseShares.delete.confirmButton")}
               </>
             )}

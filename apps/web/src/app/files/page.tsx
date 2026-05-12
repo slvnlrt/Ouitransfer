@@ -1,6 +1,6 @@
 "use client";
 
-import { IconFolderOpen } from "@tabler/icons-react";
+import { FolderOpen } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -179,7 +179,7 @@ export default function FilesPage() {
       >
         <FileManagerLayout
           breadcrumbLabel={t("files.breadcrumb")}
-          icon={<IconFolderOpen size={20} />}
+          icon={<FolderOpen size={20} />}
           title={t("files.pageTitle")}
         >
           <Card>
@@ -256,7 +256,7 @@ export default function FilesPage() {
                               }
                             }}
                           >
-                            <IconFolderOpen size={16} />
+                            <FolderOpen size={16} />
                             {t("folderActions.rootFolder")}
                           </BreadcrumbLink>
                         </BreadcrumbItem>
@@ -267,7 +267,7 @@ export default function FilesPage() {
                             <BreadcrumbItem>
                               {index === currentPath.length - 1 ? (
                                 <BreadcrumbPage className="flex items-center gap-1.5">
-                                  <IconFolderOpen size={16} />
+                                  <FolderOpen size={16} />
                                   {folder.name}
                                 </BreadcrumbPage>
                               ) : (
@@ -345,7 +345,7 @@ export default function FilesPage() {
                                     }
                                   }}
                                 >
-                                  <IconFolderOpen size={16} />
+                                  <FolderOpen size={16} />
                                   {folder.name}
                                 </BreadcrumbLink>
                               )}
@@ -418,7 +418,7 @@ export default function FilesPage() {
                   }}
                   emptyStateComponent={() => (
                     <div className="flex flex-col items-center justify-center py-12 text-center">
-                      <IconFolderOpen size={48} className="text-muted-foreground mb-4" />
+                      <FolderOpen size={48} className="text-muted-foreground mb-4" />
                       <h3 className="text-lg font-semibold mb-2">{t("files.empty.title")}</h3>
                       <p className="text-muted-foreground mb-6">{t("files.empty.description")}</p>
                     </div>

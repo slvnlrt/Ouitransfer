@@ -1,7 +1,8 @@
 "use client";
 
 import type { DraggableProvidedDragHandleProps } from "@hello-pangea/dnd";
-import { IconEdit, IconGripVertical, IconTrash } from "@tabler/icons-react";
+import { GripVertical, Pencil, Trash2 } from "lucide-react";
+
 import { useTranslations } from "next-intl";
 import type React from "react";
 
@@ -58,7 +59,7 @@ export function ProviderRow({
               className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors"
               title={t("authProviders.dragToReorder")}
             >
-              <IconGripVertical className="h-4 w-4" />
+              <GripVertical className="h-4 w-4" />
             </div>
           ) : null}
 
@@ -95,7 +96,7 @@ export function ProviderRow({
             disabled={saving}
             title={t("authProviders.editProvider")}
           >
-            <IconEdit className="h-3 w-3" />
+            <Pencil className="h-3 w-3" />
           </Button>
           {!provider.isOfficial && (
             <Button
@@ -106,7 +107,7 @@ export function ProviderRow({
               className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
               title={t("authProviders.deleteProvider")}
             >
-              <IconTrash className="h-3 w-3" />
+              <Trash2 className="h-3 w-3" />
             </Button>
           )}
         </div>

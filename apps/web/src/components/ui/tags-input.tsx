@@ -1,5 +1,6 @@
+import { X } from "lucide-react";
 import React, { KeyboardEvent, useState } from "react";
-import { IconX } from "@tabler/icons-react";
+
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -78,7 +79,7 @@ export function TagsInput({ value = [], onChange, placeholder, disabled, classNa
               onClick={() => removeTag(index)}
               className="ms-1 rounded-sm hover:bg-background/50 dark:hover:bg-background/20 flex items-center justify-center transition-colors hover:cursor-pointer"
             >
-              <IconX className="h-2.5 w-2.5" />
+              <X className="h-2.5 w-2.5" />
             </button>
           )}
         </Badge>

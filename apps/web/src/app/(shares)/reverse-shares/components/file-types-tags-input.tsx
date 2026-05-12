@@ -1,6 +1,6 @@
 "use client";
 
-import { IconX } from "@tabler/icons-react";
+import { X } from "lucide-react";
 import type React from "react";
 import { type KeyboardEvent, useState } from "react";
 
@@ -90,7 +90,7 @@ export function FileTypesTagsInput({
               onClick={() => removeTag(index)}
               className="ms-1 rounded-sm hover:bg-background/50 dark:hover:bg-background/20 flex items-center justify-center transition-colors hover:cursor-pointer"
             >
-              <IconX className="h-2.5 w-2.5" />
+              <X className="h-2.5 w-2.5" />
             </button>
           )}
         </Badge>

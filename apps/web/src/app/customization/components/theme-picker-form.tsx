@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  IconChevronDown,
-  IconChevronUp,
-  IconDeviceLaptop,
-  IconMoon,
-  IconSun,
-  IconSunMoon,
-} from "@tabler/icons-react";
+import { ChevronDown, ChevronUp, Laptop, Moon, Sun, SunMoon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useState } from "react";
@@ -21,11 +14,11 @@ const THEME_OPTIONS = [
   {
     name: "System",
     value: "system",
-    icon: IconDeviceLaptop,
+    icon: Laptop,
     description: "Follow system preference",
   },
-  { name: "Light", value: "light", icon: IconSun, description: "Always light mode" },
-  { name: "Dark", value: "dark", icon: IconMoon, description: "Always dark mode" },
+  { name: "Light", value: "light", icon: Sun, description: "Always light mode" },
+  { name: "Dark", value: "dark", icon: Moon, description: "Always dark mode" },
 ];
 
 export function ThemePickerForm() {
@@ -48,16 +41,16 @@ export function ThemePickerForm() {
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
         <div className="flex flex-row items-center gap-8">
-          <IconSunMoon className="text-xl text-muted-foreground" />
+          <SunMoon className="text-xl text-muted-foreground" />
           <div className="flex flex-col gap-1">
             <h2 className="text-xl font-semibold">{t("customization.theme.title")}</h2>
             <p className="text-sm text-muted-foreground">{t("customization.theme.description")}</p>
           </div>
         </div>
         {isCollapsed ? (
-          <IconChevronDown className="text-muted-foreground" />
+          <ChevronDown className="text-muted-foreground" />
         ) : (
-          <IconChevronUp className="text-muted-foreground" />
+          <ChevronUp className="text-muted-foreground" />
         )}
       </CardHeader>
       <CardContent className={`${isCollapsed ? "hidden" : "block"} px-0`}>
