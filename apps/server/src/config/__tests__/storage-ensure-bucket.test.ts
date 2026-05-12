@@ -32,13 +32,12 @@ function mockS3ClientModule(mockSend: ReturnType<typeof vi.fn>) {
   vi.doMock("@aws-sdk/client-s3", async () => {
     const actual = await vi.importActual<typeof import("@aws-sdk/client-s3")>("@aws-sdk/client-s3");
     // Must be a class (constructor), not an arrow function.
-    const send = mockSend;
     return {
       ...actual,
       S3Client: class MockS3Client {
         // biome-ignore lint/suspicious/noExplicitAny: test helper
         send(...args: any[]) {
-          return send(...args);
+          return (mockSend as (...a: unknown[]) => unknown)(...args);
         }
       },
     };
