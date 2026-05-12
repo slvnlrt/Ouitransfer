@@ -1558,6 +1558,14 @@ Final Security Review (4h)
 
   Justification: Item 1.15 specified coverage upload to Codecov but it was never implemented. Repo is private so Codecov would require a paid plan.
 
+- [ ] 8.22 — Refactor ConfigService to shared singleton or static methods (Phase 5 final review M-4)
+
+  Files: apps/server/src/modules/config/service.ts, multiple controllers
+
+  Action: ConfigService is stateless — it wraps prisma.appConfig.findUnique calls with no caching. Each controller (`AuthController`, `TwoFactorController`, `FileController`, `AppController`, etc.) instantiates `new ConfigService()`. Refactor to either a singleton instance exported from the module, or convert methods to static. This eliminates unnecessary object allocations and makes the dependency explicit.
+
+  Justification: Phase 5 final review M-4 — pre-existing pattern, deferred from Phase 5
+
 ---
 
 Summary \& Metrics
