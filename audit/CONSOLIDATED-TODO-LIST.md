@@ -992,7 +992,7 @@ Auth Improvements (8h)
 
   Justification: Audit M3/05 — with credentials: true and cookie auth, CSRF attacks are possible even after fixing CORS
 
-- [x] 5.5 — Sign the JWT cookie  
+- [ ] 5.5 — Sign the JWT cookie  
 
   File: apps/server/src/app.ts:79-81  
 
