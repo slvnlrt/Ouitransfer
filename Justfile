@@ -90,7 +90,7 @@ db-reset:
 
 # ─── Docker / Production ─────────────────────────────────────────────────────
 
-# Build both Docker images locally
+# Build both Docker images locally (single-arch, current platform only)
 docker-build:
     docker compose build
 
