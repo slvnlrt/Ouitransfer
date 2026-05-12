@@ -37,22 +37,19 @@ drwxr-xr-x 2 user user 4096 Jan 15 10:00 data/
 
 ### Option 1: Set OUITRANSFER to Use Standard UID/GID (Recommended)
 
-Add these environment variables to your `docker-compose.yaml`:
+Add these environment variables to the **server** service in your `docker-compose.yaml`:
 
 ```yaml
 services:
-  OUITRANSFER:
-    image: burger-cie/ouitransfer:latest
-    container_name: OUITRANSFER
+  server:
+    image: ouitransfer/server:latest
+    container_name: ouitransfer-server
     environment:
-      - OUITRANSFER_UID=1000
-      - OUITRANSFER_GID=1000
-      - STORAGE_URL="https://your-domain:9000"
-    ports:
-      - "9000:9000"
-      - "5487:5487"
+      OUITRANSFER_UID: "1000"
+      OUITRANSFER_GID: "1000"
+      # ... (storage and web services omitted for brevity)
     volumes:
-      - ./data:/app/server
+      - ./server-data:/app/server
     restart: unless-stopped
 ```
 
@@ -62,13 +59,13 @@ If you prefer to keep OUITRANSFER's defaults:
 
 ```bash
 # Create directory with correct ownership
-mkdir -p data
-chown -R 1001:1001 data
+mkdir -p server-data
+chown -R 1001:1001 server-data
 ```
 
 ## Environment Variables
 
-Configure permissions using these optional environment variables:
+Configure permissions using these optional environment variables on the **server** service:
 
 | Variable    | Description                      | Default | Example |
 | ----------- | -------------------------------- | ------- | ------- |
@@ -99,18 +96,15 @@ Use the `uid` and `gid` values for your `OUITRANSFER_UID` and `OUITRANSFER_GID` 
 
 ```yaml
 services:
-  OUITRANSFER:
-    image: burger-cie/ouitransfer:latest
-    container_name: OUITRANSFER
+  server:
+    image: ouitransfer/server:latest
+    container_name: ouitransfer-server
     environment:
-      - OUITRANSFER_UID=1000
-      - OUITRANSFER_GID=1000
-      - STORAGE_URL="https://your-domain:9000"
-    ports:
-      - "9000:9000"
-      - "5487:5487"
+      OUITRANSFER_UID: "1000"
+      OUITRANSFER_GID: "1000"
+      # ... (other server env vars, storage and web services omitted for brevity)
     volumes:
-      - ./data:/app/server
+      - ./server-data:/app/server
     restart: unless-stopped
 ```
 
@@ -118,18 +112,15 @@ services:
 
 ```yaml
 services:
-  OUITRANSFER:
-    image: burger-cie/ouitransfer:latest
-    container_name: OUITRANSFER
+  server:
+    image: ouitransfer/server:latest
+    container_name: ouitransfer-server
     environment:
-      - OUITRANSFER_UID=1026
-      - OUITRANSFER_GID=100
-      - STORAGE_URL="https://your-synology-nas:9000"
-    ports:
-      - "9000:9000"
-      - "5487:5487"
+      OUITRANSFER_UID: "1026"
+      OUITRANSFER_GID: "100"
+      # ... (other server env vars, storage and web services omitted for brevity)
     volumes:
-      - /volume1/docker/OUITRANSFER:/app/server
+      - /volume1/docker/ouitransfer/server-data:/app/server
     restart: unless-stopped
 ```
 
@@ -137,20 +128,49 @@ services:
 
 ```yaml
 services:
-  OUITRANSFER:
-    image: burger-cie/ouitransfer:latest
-    container_name: OUITRANSFER
+  server:
+    image: ouitransfer/server:latest
+    container_name: ouitransfer-server
     environment:
-      - OUITRANSFER_UID=1000
-      - OUITRANSFER_GID=100
-      - STORAGE_URL="https://your-qnap-nas:9000"
-    ports:
-      - "9000:9000"
-      - "5487:5487"
+      OUITRANSFER_UID: "1000"
+      OUITRANSFER_GID: "100"
+      # ... (other server env vars, storage and web services omitted for brevity)
     volumes:
-      - /share/Container/OUITRANSFER:/app/server
+      - /share/Container/ouitransfer/server-data:/app/server
     restart: unless-stopped
 ```
+
+---
+
+## Storage Service Permissions (RustFS)
+
+The RustFS storage image runs as **UID 10001** by default. This affects bind mounts for the storage service:
+
+### Named Volumes (No Action Needed)
+
+Docker named volumes handle permissions automatically. This is the recommended approach.
+
+### Bind Mounts
+
+If you use bind mounts for the storage service, you must set correct ownership:
+
+```bash
+mkdir -p storage-data
+chown -R 10001:10001 storage-data
+```
+
+Then in your `docker-compose.yaml`:
+
+```yaml
+services:
+  storage:
+    image: rustfs/rustfs:latest
+    volumes:
+      - ./storage-data:/data
+    # ...
+```
+
+If the directory has wrong ownership, RustFS will fail to start with permission errors.
 
 ---
 
@@ -165,25 +185,25 @@ services:
 id
 
 # 2. Check directory ownership
-ls -la data/
+ls -la server-data/
 
 # 3. Fix via environment variables (preferred)
-# Add to docker-compose.yaml:
-# - OUITRANSFER_UID=1000
-# - OUITRANSFER_GID=1000
+# Add to server service in docker-compose.yaml:
+# OUITRANSFER_UID: "1000"
+# OUITRANSFER_GID: "1000"
 
 # 4. Or fix via chown (alternative)
-chown -R 1001:1001 data
+chown -R 1001:1001 server-data
 ```
 
 **Error**: Container starts but files aren't accessible
 
 ```bash
 # Check container's UID/GID configuration
-docker-compose logs OUITRANSFER | grep -E "🔧|Runtime UID/GID"
+docker compose logs server | grep -E "🔧|Runtime UID/GID"
 
 # Check file ownership inside container
-docker exec OUITRANSFER ls -la /app/server/
+docker exec ouitransfer-server ls -la /app/server/
 ```
 
 ### Verification Commands
@@ -192,16 +212,16 @@ Verify UID/GID settings are applied correctly:
 
 ```bash
 # View startup logs for UID/GID configuration
-docker-compose logs OUITRANSFER | head -20
+docker compose logs server | head -20
 
 # Check file ownership in container
-docker exec OUITRANSFER ls -la /app/server/
+docker exec ouitransfer-server ls -la /app/server/
 
 # Verify process is running with correct UID/GID
-docker exec OUITRANSFER ps aux | grep node
+docker exec ouitransfer-server ps aux | grep node
 
 # Check environment variables
-docker exec OUITRANSFER env | grep OUITRANSFER
+docker exec ouitransfer-server env | grep OUITRANSFER
 ```
 
 ### Advanced Troubleshooting
@@ -210,10 +230,10 @@ docker exec OUITRANSFER env | grep OUITRANSFER
 
 ```bash
 # Synology - Check mount point ownership
-ls -la /volume1/docker/OUITRANSFER/
+ls -la /volume1/docker/ouitransfer/
 
 # QNAP - Check mount point ownership
-ls -la /share/Container/OUITRANSFER/
+ls -la /share/Container/ouitransfer/
 
 # Check NAS user configuration
 cat /etc/passwd | grep -v nobody
@@ -223,11 +243,11 @@ cat /etc/passwd | grep -v nobody
 
 ```bash
 # Check if data directory exists and is writable
-test -w data && echo "data writable" || echo "data NOT writable"
+test -w server-data && echo "data writable" || echo "data NOT writable"
 
 # Create directory with correct permissions
-mkdir -p data
-sudo chown -R $(id -u):$(id -g) data
+mkdir -p server-data
+sudo chown -R $(id -u):$(id -g) server-data
 ```
 
 ---
@@ -256,16 +276,16 @@ UID/GID configuration is **optional** when:
 
 To add UID/GID configuration to running installations:
 
-1. **Stop the container**
+1. **Stop the containers**
 
    ```bash
-   docker-compose down
+   docker compose down
    ```
 
 2. **Backup your data**
 
    ```bash
-   cp -r ./data ./data-backup
+   cp -r ./server-data ./server-data-backup
    ```
 
 3. **Check your UID/GID**
@@ -275,17 +295,17 @@ To add UID/GID configuration to running installations:
    ```
 
 4. **Update configuration**
-   Add UID/GID variables to your `docker-compose.yaml`:
+   Add UID/GID variables to the server service in your `docker-compose.yaml`:
 
    ```yaml
    environment:
-     - OUITRANSFER_UID=1000
-     - OUITRANSFER_GID=1000
+     OUITRANSFER_UID: "1000"
+     OUITRANSFER_GID: "1000"
    ```
 
 5. **Restart with new configuration**
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
 ---
@@ -299,6 +319,8 @@ The UID/GID configuration process:
 3. **Privilege Drop** - Application runs with specified user permissions via `su-exec`
 4. **Logging** - Configuration changes are logged for verification
 
+The server container starts as root to allow runtime UID/GID configuration, then drops privileges to the target user via `su-exec`. The web container runs as non-root (`nextjs` user) by default since it doesn't need UID/GID override.
+
 This approach provides automatic permission management without user creation or system modification.
 
 ---
@@ -311,7 +333,7 @@ For custom base images with different default values:
 docker build \
   --build-arg OUITRANSFER_UID=2000 \
   --build-arg OUITRANSFER_GID=2000 \
-  -t OUITRANSFER:custom .
+  -t ouitransfer:custom .
 ```
 
 Runtime environment variables override build-time defaults.
@@ -331,12 +353,12 @@ Runtime environment variables override build-time defaults.
 For most users experiencing permission issues with bind mounts:
 
 1. **Find your UID/GID**: Run `id` command
-2. **Add to docker-compose.yaml**:
+2. **Add to docker-compose.yaml** (server service):
    ```yaml
    environment:
-     - OUITRANSFER_UID=1000
-     - OUITRANSFER_GID=1000
+     OUITRANSFER_UID: "1000"
+     OUITRANSFER_GID: "1000"
    ```
-3. **Restart**: `docker-compose down && docker-compose up -d`
+3. **Restart**: `docker compose down && docker compose up -d`
 
 This ensures compatibility between OUITRANSFER's UID/GID and your host system's file ownership.

@@ -39,3 +39,30 @@ just docker-shell
 ```
 
 See `just --list` for all available recipes.
+
+## Operations
+
+### Backup
+
+```bash
+# Stop services and back up data volumes
+docker compose stop
+docker run --rm -v ouitransfer_server_data:/data -v $(pwd):/backup alpine tar czf /backup/server-backup.tar.gz -C /data .
+docker run --rm -v ouitransfer_storage_data:/data -v $(pwd):/backup alpine tar czf /backup/storage-backup.tar.gz -C /data .
+docker compose start
+```
+
+### Troubleshooting
+
+```bash
+# Check service health
+docker compose ps
+
+# Check individual service logs
+docker compose logs storage
+docker compose logs server
+docker compose logs web
+
+# Verify storage connectivity from server
+docker compose exec server curl -s http://storage:9000/health
+```
