@@ -127,8 +127,13 @@ audit/
   TODO-POST-PHASE-2.md        Reviewer follow-ups from Phase 2 (all resolved)
   TODO-POST-PHASE-3.md        Reviewer follow-ups from Phase 3 (in-scope items resolved; deferred items forwarded to later phases)
   TODO-POST-PHASE-4.md        Reviewer follow-ups from Phase 4 (all resolved)
+  TODO-POST-PHASE-5.md        Reviewer follow-ups from Phase 5 (all resolved)
   BATCH-REVIEWS.md            Phase 4 batch-level review history
   PHASE-4-PLAN.md             Phase 4 implementation plan (historical snapshot)
+  REVIEW-PHASE-5-BATCH-1.md   Phase 5 Batch 1 review (Tasks 1-2)
+  REVIEW-PHASE-5-BATCH-2.md   Phase 5 Batch 2 review (Tasks 3-5)
+  REVIEW-PHASE-5-BATCH-3.md   Phase 5 Batch 3 review (Tasks 6-7)
+  REVIEW-PHASE-5-BATCH-4.md   Phase 5 Batch 4 review (Tasks 8-9)
 ```
 
 ### Phase 4 — Frontend Modernization: COMPLETE
@@ -164,6 +169,29 @@ staleTime centralization. Tasks 4-8 complete (remaining items): navigation + 401
 RTL + a11y fixes, ErrorDisplay variant rename, dead code + BOM cleanup, TQ polish + locale-aware
 dates + Axios standardization + browseState refactor + editable-item error handling.
 
+### Phase 5 — Backend Hardening: COMPLETE
+26 items (5.1-5.17, 5.18-5.26) implemented across 9 tasks in 4 review batches. All 42+ review
+backlog items resolved (0 deferred). 174 server tests, 190 web tests, 11 shared tests — all pass.
+Key changes:
+- **Config hardening**: trustProxy, Swagger gating, crypto.randomUUID, configurable port, helmet,
+  per-route body limits, CORS fail-fast, presigned URL expiry split
+- **Filename hardening**: RFC 5987 `filename*` priority, `sanitizeFilename` utility, LoginSchema deleted
+- **Auth hardening**: admin detection fix (`=== 0`), proxy `cookie: false` on 8 routes, OAuth redirect
+  validation, 2FA disable requires TOTP code, CSRF double-submit cookie protection, timing-safe
+  comparisons for backup codes
+- **File validation**: MIME/magic-byte validation, blocked MIME types, dangerous extensions, maxFileSize
+  in presigned URL responses, `validateObjectName` for path traversal protection
+- **Error architecture**: AppError hierarchy (6 subclasses), all 17 controllers + 17 services migrated
+  to throw AppError directly, globalErrorHandler handles AppError first, `ErrorResponseSchema` shared
+  across ~176 route error schemas, preValidation hooks converted to throw AppError, CSRF per-route
+  `config: { csrfExempt: true }` flag replaces fragile URL matching
+- **Token security**: tokenVersion rotation on privilege changes (password, isAdmin, isActive, 2FA),
+  JWT `trusted` callback with 30s cache, per-account brute-force lockout (LoginAttempt model),
+  refresh token rotation with replay detection, 15-min access tokens + httpOnly refresh cookie
+- **Audit logging**: AuditLog model, 11 audit actions at 8 security-sensitive locations, admin
+  endpoint with pagination/filtering
+- Review follow-ups: all Critical + Important fixed inline per batch. See `audit/REVIEW-PHASE-5-BATCH-{1-4}.md`.
+
 ## Important: No Production, No Legacy
 The app is **not in production** and has no existing users. This means:
 - **No backward compatibility required** — APIs, env vars, DB schemas can be changed freely
@@ -181,3 +209,8 @@ This affects implementation strategy: always choose the clean approach over the 
 4. **Preserve i18n** — don't break translation keys
 5. **Test your changes** — at minimum verify TypeScript compiles (`pnpm run type-check` in the relevant app)
 6. **Report clearly** — state what was changed, which files, and any risks or follow-up needed
+7. **Reference files, don't copy them** — when dispatching subagents or writing prompts, reference files by path and line range (e.g. `apps/server/src/app.ts:109-120`) instead of copy-pasting their content. Agents can read files themselves. Copying file content into prompts wastes tokens and creates stale duplicates.
+8. **Don't defer items to the wrong phase out of laziness** — if a review or audit surfaces new items, place them in the phase where they thematically belong, not in a later phase just because they require more effort. "Architectural" or "requires a migration" is not a valid reason to move an auth hardening item out of the auth hardening phase. If the item belongs in the current phase's scope, it stays — even if it makes the phase bigger. Phases are organized by theme, not by effort ceiling.
+9. **Run the FULL test suite for affected packages, not just your new tests** — a recurring failure mode is: agent writes 3 unit tests, they pass, agent claims "done" — but the full `pnpm --filter <package> test` reveals regressions in existing tests. Always run the full suite for every package you touched. This catches BOM corruption, broken imports, schema mismatches, and other side effects that targeted tests miss.
+10. **Fastify + Zod route schemas strip unknown properties** — `fastify-type-provider-zod` replaces `request.body` with `schema.parse(data)`, and Zod's default `.strip()` mode removes undeclared fields. If you add a field to a controller's validation schema but forget to add it to the route-level body schema in `routes.ts`, the field will be silently removed before the controller runs. **Always keep route-level and controller-level schemas in sync.** Service-layer unit tests don't catch this — you need integration tests with `app.inject()`.
+11. **Service-layer tests are necessary but not sufficient** — testing a service method directly bypasses route registration, middleware, schema validation, and plugin hooks. For security-critical flows (auth, CSRF, 2FA), always add at least one integration test using `app.inject()` that exercises the full request lifecycle. The pattern of "test the service, skip the route" has repeatedly hidden real bugs.

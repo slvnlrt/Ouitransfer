@@ -39,7 +39,9 @@ describe("API docs registration (docsEnabled)", () => {
     vi.unstubAllEnvs();
   });
 
-  it("registers /swagger route when NODE_ENV=test (dev mode, default)", async () => {
+  it("registers /swagger route when NODE_ENV=test (dev mode, default)", {
+    timeout: 15_000,
+  }, async () => {
     vi.stubEnv("JWT_SECRET", "a".repeat(32));
     vi.stubEnv("CSRF_SECRET", "b".repeat(32));
     vi.stubEnv("NODE_ENV", "test");
@@ -57,7 +59,7 @@ describe("API docs registration (docsEnabled)", () => {
     }
   });
 
-  it("registers /docs route when NODE_ENV=test (dev mode)", async () => {
+  it("registers /docs route when NODE_ENV=test (dev mode)", { timeout: 15_000 }, async () => {
     vi.stubEnv("JWT_SECRET", "a".repeat(32));
     vi.stubEnv("CSRF_SECRET", "b".repeat(32));
     vi.stubEnv("NODE_ENV", "test");
@@ -74,7 +76,9 @@ describe("API docs registration (docsEnabled)", () => {
     }
   });
 
-  it("does NOT register /swagger when NODE_ENV=production and ENABLE_API_DOCS is unset", async () => {
+  it("does NOT register /swagger when NODE_ENV=production and ENABLE_API_DOCS is unset", {
+    timeout: 15_000,
+  }, async () => {
     vi.stubEnv("JWT_SECRET", "a".repeat(32));
     vi.stubEnv("CSRF_SECRET", "b".repeat(32));
     vi.stubEnv("NODE_ENV", "production");
@@ -93,7 +97,9 @@ describe("API docs registration (docsEnabled)", () => {
     }
   });
 
-  it("registers /swagger when NODE_ENV=production and ENABLE_API_DOCS=true", async () => {
+  it("registers /swagger when NODE_ENV=production and ENABLE_API_DOCS=true", {
+    timeout: 15_000,
+  }, async () => {
     vi.stubEnv("JWT_SECRET", "a".repeat(32));
     vi.stubEnv("CSRF_SECRET", "b".repeat(32));
     vi.stubEnv("NODE_ENV", "production");

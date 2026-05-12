@@ -958,7 +958,7 @@ Phase 5: Backend Hardening 🛡️
 
 Validation \& Content Security (8h)
 
-- [ ] 5.1 — Implement file content validation (magic bytes)  
+- [x] 5.1 — Implement file content validation (magic bytes)  
 
   Files: apps/server/src/modules/file/controller.ts, new utility  
 
@@ -966,7 +966,7 @@ Validation \& Content Security (8h)
 
   Justification: Audit H4/05 — zero server-side file content validation
 
-- [ ] 5.2 — Validate file size at presigned URL generation time  
+- [x] 5.2 — Validate file size at presigned URL generation time  
 
   File: apps/server/src/modules/file/controller.ts  
 
@@ -974,7 +974,7 @@ Validation \& Content Security (8h)
 
   Justification: Audit 02 — file size only validated at registration, not at upload. Users can upload 100GB then fail registration, leaving orphaned data
 
-- [ ] 5.3 — Fix password validation consistency  
+- [x] 5.3 — Fix password validation consistency  
 
   File: apps/server/src/modules/auth/dto.ts  
 
@@ -984,7 +984,7 @@ Validation \& Content Security (8h)
 
 Auth Improvements (8h)
 
-- [ ] 5.4 — Implement CSRF protection  
+- [x] 5.4 — Implement CSRF protection  
 
   File: apps/server/src/app.ts, apps/web  
 
@@ -992,7 +992,7 @@ Auth Improvements (8h)
 
   Justification: Audit M3/05 — with credentials: true and cookie auth, CSRF attacks are possible even after fixing CORS
 
-- [ ] 5.5 — Sign the JWT cookie  
+- [x] 5.5 — Sign the JWT cookie  
 
   File: apps/server/src/app.ts:79-81  
 
@@ -1000,7 +1000,7 @@ Auth Improvements (8h)
 
   Justification: Audit M4 — cookie signed: false means no integrity check by Fastify
 
-- [ ] 5.6 — Fix admin detection logic  
+- [x] 5.6 — Fix admin detection logic  
 
   Files: apps/server/src/modules/user/service.ts:33-34, apps/server/src/modules/app/routes.ts:11-32  
 
@@ -1008,7 +1008,7 @@ Auth Improvements (8h)
 
   Justification: Audit 02/M2 — admin bypass when ≤1 users
 
-- [ ] 5.7 — Restrict trustProxy configuration  
+- [x] 5.7 — Restrict trustProxy configuration  
 
   File: apps/server/src/app.ts:34  
 
@@ -1016,7 +1016,7 @@ Auth Improvements (8h)
 
   Justification: Audit 02 — trustProxy: true trusts all proxy headers, IP spoofing
 
-- [ ] 5.8 — Protect Swagger/API docs in production  
+- [x] 5.8 — Protect Swagger/API docs in production  
 
   File: apps/server/src/app.ts:92-102  
 
@@ -1026,7 +1026,7 @@ Auth Improvements (8h)
 
 Data Layer (4h)
 
-- [ ] 5.9 — Use crypto.randomUUID() instead of Math.random() for object names  
+- [x] 5.9 — Use crypto.randomUUID() instead of Math.random() for object names  
 
   File: apps/server/src/modules/file/controller.ts:46,667  
 
@@ -1034,7 +1034,7 @@ Data Layer (4h)
 
   Justification: Audit L3 — Math.random() is predictable, aids enumeration attacks
 
-- [ ] 5.10 — Sanitize filenames for path traversal characters  
+- [x] 5.10 — Sanitize filenames for path traversal characters  
 
   File: apps/server/src/modules/file/controller.ts:46  
 
@@ -1042,7 +1042,7 @@ Data Layer (4h)
 
   Justification: Audit L1 — filenames not sanitized for path characters
 
-- [ ] 5.11 — Sanitize error messages sent to clients  
+- [x] 5.11 — Sanitize error messages sent to clients  
 
   Files: All controllers' catch blocks  
 
@@ -1052,7 +1052,7 @@ Data Layer (4h)
 
 Port Configuration (1h)
 
-- [ ] 5.12 — Make server port configurable via env var  
+- [x] 5.12 — Make server port configurable via env var  
 
   File: apps/server/src/server.ts:87  
 
@@ -1060,7 +1060,7 @@ Port Configuration (1h)
 
   Justification: Audit 02 — port hardcoded, not configurable
 
-- [ ] 5.13 — Require 2FA code (or backup code) to disable 2FA  
+- [x] 5.13 — Require 2FA code (or backup code) to disable 2FA  
 
   Files: apps/server/src/modules/two-factor/service.ts, apps/server/src/modules/two-factor/controller.ts, apps/server/src/modules/two-factor/routes.ts  
 
@@ -1068,7 +1068,7 @@ Port Configuration (1h)
 
   Justification: Post-Phase 1 review W13 — defense-in-depth for 2FA
 
-- [ ] 5.14 — Standardize cookie:false on public proxy routes (Phase 2 review S3)
+- [x] 5.14 — Standardize cookie:false on public proxy routes (Phase 2 review S3)
 
   File: apps/web/src/lib/proxy-routes.ts
 
@@ -1076,7 +1076,7 @@ Port Configuration (1h)
 
   Justification: Phase 2 review S3 — inconsistent cookie forwarding
 
-- [ ] 5.15 — Validate OAuth redirect URLs against allowlist (Phase 2 review S6)
+- [x] 5.15 — Validate OAuth redirect URLs against allowlist (Phase 2 review S6)
 
   File: apps/web/src/lib/proxy.ts
 
@@ -1086,7 +1086,7 @@ Port Configuration (1h)
 
 Note: S4 (X-Forwarded-For trust without TRUST\_PROXY) is already covered by item 5.7 above.
 
-- [ ] 5.17 — Prefer `filename*` over `filename` in Content-Disposition parsing (Phase 3 review M-3)
+- [x] 5.17 — Prefer `filename*` over `filename` in Content-Disposition parsing (Phase 3 review M-3)
 
   File: packages/shared/src/mime-types.ts
 
@@ -1094,13 +1094,47 @@ Note: S4 (X-Forwarded-For trust without TRUST\_PROXY) is already covered by item
 
   Justification: Phase 3 review M-3 — pre-existing, not introduced by Phase 3
 
-- [ ] 5.16 — Migrate controllers to use the centralized error handler (Phase 3 review I-2)
+- [x] 5.16 — Migrate controllers to use the centralized error handler (Phase 3 review I-2)
 
   Files: All server controller files (~15 files)
 
   Action: Remove try/catch wrappers from controller handlers. Let errors propagate to globalErrorHandler (registered in app.ts). This unifies the error response shape to `{ error, code, statusCode, details? }` instead of the current mix of global handler + per-controller `{ error: "..." }`. Consider adopting an AppError class for domain-specific errors.
 
   Justification: Phase 3 review I-2 — globalErrorHandler exists but is mostly bypassed by controller-level catch blocks, creating two inconsistent error response shapes.
+
+Auth Hardening — Continued (8h)
+
+- [x] 5.23 — Token rotation on privilege escalation (Phase 5 review)
+
+  Files: apps/server/prisma/schema.prisma, apps/server/src/modules/auth/, apps/server/src/modules/two-factor/, apps/server/src/modules/user/
+
+  Action: Add a `tokenVersion` integer column to the User model. Increment it when the user enables/disables 2FA or changes password. Include `tokenVersion` in the JWT payload. On `jwtVerify`, compare the JWT's `tokenVersion` against the DB value — reject if stale. This invalidates all existing sessions when a security-sensitive operation occurs.
+
+  Justification: Phase 5 review — existing JWT remains valid after 2FA enable/password change, attacker with stolen token retains access
+
+- [x] 5.24 — Audit logging for security-sensitive operations (Phase 5 review)
+
+  Files: new `apps/server/src/modules/audit/` module, apps/server/prisma/schema.prisma
+
+  Action: Create an AuditLog model (userId, action, ipAddress, userAgent, metadata, timestamp). Log: login success/failure, 2FA enable/disable, password change/reset, admin config changes, user creation/deletion. Expose via admin API endpoint with pagination/filtering. Consider structured JSON logging to stdout as an alternative for external log aggregation.
+
+  Justification: Phase 5 review — no structured audit trail for security-sensitive operations
+
+- [x] 5.25 — Per-account brute-force protection / account lockout (Phase 5 review)
+
+  Files: new `apps/server/src/modules/auth/login-attempts.ts`, apps/server/prisma/schema.prisma
+
+  Action: Create a LoginAttempt model (userId or email, ipAddress, success, timestamp). Track failed login attempts per account. After N consecutive failures (configurable, default 10), lock the account for M minutes (configurable, default 15). Provide admin API to unlock accounts. The existing IP-based rate limit (5/min on /auth/login) remains as the first line of defense — this adds per-account protection against distributed attacks rotating IPs.
+
+  Justification: Phase 5 review — IP-based rate limiting alone is insufficient against distributed brute-force
+
+- [x] 5.26 — Refresh token / sliding session strategy (Phase 5 review)
+
+  Files: apps/server/src/modules/auth/, apps/server/src/app.ts, apps/web/src/config/api.ts
+
+  Action: Implement a refresh token mechanism. On login, issue both an access token (short-lived, e.g. 15min) and a refresh token (longer-lived, e.g. 7d, stored in DB with device fingerprint). Add a `POST /auth/refresh` endpoint that issues a new access token given a valid refresh token (rotation: old refresh token is invalidated, new one issued). Frontend Axios interceptor catches 401, calls refresh, retries the original request. Provides smooth UX (no abrupt logout after 1d) and better security (shorter access token lifetime).
+
+  Justification: Phase 5 review — JWT expires in 1d with no refresh mechanism, users get logged out abruptly, no way to revoke individual sessions
 
 ---
 

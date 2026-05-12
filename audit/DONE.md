@@ -852,3 +852,80 @@
 - B-I7: `use-public-share.ts` browseState replaced with useMemo derivation
 - A-M6: `useEditableItem.saveEdit` is async; reverts pending change on callback failure
 - Password modal derived from `!share && isPasswordRequired(shareQuery.error)`
+
+---
+
+## Phase 5: Backend Hardening
+
+**Date**: 2026-05-11/12
+**Verification**: `pnpm validate` passes, 174 server tests, 190 web tests, 11 shared tests — all green.
+
+### Task 1 — Server Config Hardening (5.7, 5.8, 5.9, 5.12, 5.18-5.21)
+- 5.9: `Math.random()` → `crypto.randomUUID()` in 3 files
+- 5.12: `PORT` env var with Zod coercion
+- 5.7: `TRUST_PROXY` env var + `parseTrustProxy()` helper (extracted to `utils/parse-trust-proxy.ts` + 7 tests)
+- 5.8: `ENABLE_API_DOCS` gating for Swagger (4 behavioral tests)
+- 5.18: `@fastify/helmet` with restrictive CSP + HSTS (conditional CSP for Swagger docs)
+- 5.19: `bodyLimit` 64KB on auth + admin config routes (extracted constants)
+- 5.20: CORS fail-fast in production (throw Error)
+- 5.21: `PRESIGNED_GET_URL_EXPIRATION` (900s) for downloads, split from upload expiry
+
+### Task 2 — Filename/Content-Disposition Hardening (5.17, 5.3, 5.10)
+- 5.17: `extractFilenameFromContentDisposition` rewritten as two-pass RFC 5987 parser (9 tests)
+- 5.10: `sanitizeFilename` utility (path seps, null bytes, dots, Windows reserved, 255-byte truncation) + 10 tests
+- 5.3: `LoginSchema` deleted, replaced with `LoginInput` interface
+
+### Task 3 — Admin Detection, Proxy Cookie, OAuth Redirect (5.6, 5.14, 5.15)
+- 5.6: `adminPreValidation` fixed: `usersCount === 0` (was `<= 1`)
+- 5.14: `cookie: false` on 8 public proxy routes
+- 5.15: `isAllowedRedirectUrl` with same-origin check + OAuth host allowlist + env extension (7 tests)
+
+### Task 4 — 2FA Disable Hardening (5.13)
+- `disable2FA` requires TOTP code or backup code (3 tests)
+- Frontend: TOTP input in disable modal, 23 locale files updated
+
+### Task 5 — CSRF Protection + Timing-Safe (5.4, 5.22)
+- `@fastify/csrf-protection` with double-submit cookie, `CSRF_SECRET` env var
+- Per-route `config: { csrfExempt: true }` on 17 routes (replaced fragile URL matching)
+- `csrf.config.ts` for centralized exempt routes
+- `timing-safe.ts` utility for backup code comparisons (6 tests)
+- Frontend CSRF interceptor with dedup
+- 12+ CSRF tests including rotation, real routes, per-route config
+
+### Task 6 — File Content Validation (5.1, 5.2)
+- `validate-file-content.ts`: MIME consistency + magic-byte verification (16 tests)
+- `getObjectHead` ranged GET on S3 provider + StorageProvider interface
+- `validateObjectName` extracted + applied in file controller and upload service (6 tests)
+- `maxFileSize` returned in presigned URL response (route schema updated)
+- 5 integration tests for validation pipeline
+
+### Task 7 — AppError Hierarchy + Controller/Service Migrations (5.11, 5.16)
+- `AppError` base + 6 subclasses (NotFoundError, ValidationError, ForbiddenError, UnauthorizedError, ConflictError, GoneError) + 10 tests
+- `globalErrorHandler` updated: AppError branch first (7 tests)
+- All 17 controllers migrated (including embed.controller.ts)
+- All 17 services migrated to throw AppError directly
+- 3 mapper functions removed
+- `ErrorResponseSchema` shared across ~176 route error schemas (13 route files)
+- 13 preValidation hooks converted to throw AppError (15 files)
+
+### Task 8 — Token Rotation + Account Lockout (5.23, 5.25)
+- `tokenVersion` on User, validated via `@fastify/jwt` `trusted` callback (30s cache)
+- Incremented on password/isAdmin/isActive/2FA changes + user deactivation
+- `LoginAttempt` model (per-email), lockout after 10 failures for 15 min (9 tests)
+- Hourly cleanup interval
+
+### Task 9 — Refresh Tokens + Audit Logging (5.26, 5.24)
+- `RefreshToken` model, rotation with replay detection (conditional updateMany)
+- JWT 15-min expiry, httpOnly refresh cookie (unified for password + OIDC login)
+- `POST /auth/refresh` endpoint (rate-limited, CSRF-exempt), 13 integration tests
+- Logout revokes all refresh tokens
+- `AuditLog` model, 11 audit actions, 8 logging locations (5 tests)
+- `GET /admin/audit-logs` admin endpoint (paginated, filterable, 5 integration tests)
+- Frontend 401 interceptor with refresh-before-redirect (5 tests)
+
+### Review Follow-ups (all resolved)
+- Batch 1: parseTrustProxy extracted + tested, decodeURIComponent try/catch, bespoke sanitizers consolidated
+- Batch 2: BOM stripped, CSRF exemptions fixed, route schema sync, trailing-slash, backup code normalization
+- Batch 3: embed.controller migrated, validateObjectName extracted, client-unsafe messages fixed
+- Batch 4: tokenVersion on privilege changes, refresh rotation race fix, httpOnly cookie unification, OIDC cookie maxAge, logout revocation, audit-logs auth hardened
+- Backlog: 42+ items across 6 agent passes — all resolved (0 deferred)
