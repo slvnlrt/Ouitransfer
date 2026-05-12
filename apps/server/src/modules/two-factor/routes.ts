@@ -1,19 +1,20 @@
-import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 
+import { UnauthorizedError } from "../../utils/app-error.js";
 import { TwoFactorController } from "./controller.js";
 
 export async function twoFactorRoutes(app: FastifyInstance) {
   const twoFactorController = new TwoFactorController();
 
-  const preValidation = async (request: FastifyRequest, reply: FastifyReply) => {
+  const preValidation = async (request: FastifyRequest) => {
     try {
       await request.jwtVerify();
     } catch (err) {
       request.log.error({ err }, "JWT verification failed");
-      reply
-        .status(401)
-        .send({ error: "Unauthorized: a valid token is required to access this resource." });
+      throw new UnauthorizedError(
+        "Unauthorized: a valid token is required to access this resource.",
+      );
     }
   };
 

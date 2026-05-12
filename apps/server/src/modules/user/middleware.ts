@@ -1,18 +1,17 @@
-import type { FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyRequest } from "fastify";
 
+import { ValidationError } from "../../utils/app-error.js";
 import { ConfigService } from "../config/service.js";
 
 const configService = new ConfigService();
 
-export async function validatePasswordMiddleware(request: FastifyRequest, reply: FastifyReply) {
+export async function validatePasswordMiddleware(request: FastifyRequest) {
   const body = request.body as { password?: string };
   if (!body.password) return;
 
   const minLength = Number(await configService.getValue("passwordMinLength"));
 
   if (body.password.length < minLength) {
-    return reply.status(400).send({
-      error: `Password must be at least ${minLength} characters long`,
-    });
+    throw new ValidationError(`Password must be at least ${minLength} characters long`);
   }
 }

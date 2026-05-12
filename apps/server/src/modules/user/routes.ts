@@ -1,7 +1,8 @@
-import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 
 import { prisma } from "../../shared/prisma.js";
+import { ForbiddenError, UnauthorizedError } from "../../utils/app-error.js";
 import { createPasswordSchema } from "../auth/dto.js";
 import { UserController } from "./controller.js";
 import { UpdateUserSchema, UserResponseSchema } from "./dto.js";
@@ -10,26 +11,22 @@ import { validatePasswordMiddleware } from "./middleware.js";
 export async function userRoutes(app: FastifyInstance) {
   const userController = new UserController();
 
-  const preValidation = async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const usersCount = await prisma.user.count();
+  const preValidation = async (request: FastifyRequest) => {
+    // DB errors propagate to globalErrorHandler as 500 automatically.
+    const usersCount = await prisma.user.count();
 
-      if (usersCount > 0) {
-        try {
-          await request.jwtVerify();
-          if (!request.user.isAdmin) {
-            return reply.status(403).send({ error: "Access restricted to administrators" });
-          }
-        } catch (authErr) {
-          request.log.error({ err: authErr }, "JWT verification failed");
-          return reply
-            .status(401)
-            .send({ error: "Unauthorized: a valid token is required to access this resource." });
-        }
+    if (usersCount > 0) {
+      try {
+        await request.jwtVerify();
+      } catch (authErr) {
+        request.log.error({ err: authErr }, "JWT verification failed");
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
       }
-    } catch (err) {
-      request.log.error({ err }, "Error in register preValidation");
-      return reply.status(500).send({ error: "Internal server error" });
+      if (!request.user.isAdmin) {
+        throw new ForbiddenError("Access restricted to administrators");
+      }
     }
   };
 
@@ -319,12 +316,12 @@ export async function userRoutes(app: FastifyInstance) {
   app.post(
     "/users/avatar",
     {
-      preValidation: async (request: FastifyRequest, reply: FastifyReply) => {
+      preValidation: async (request: FastifyRequest) => {
         try {
           await request.jwtVerify();
         } catch (err) {
           request.log.error({ err }, "JWT verification failed");
-          return reply.status(401).send({ error: "Unauthorized" });
+          throw new UnauthorizedError("Unauthorized");
         }
       },
       schema: {
@@ -346,12 +343,12 @@ export async function userRoutes(app: FastifyInstance) {
   app.delete(
     "/users/avatar",
     {
-      preValidation: async (request: FastifyRequest, reply: FastifyReply) => {
+      preValidation: async (request: FastifyRequest) => {
         try {
           await request.jwtVerify();
         } catch (err) {
           request.log.error({ err }, "JWT verification failed");
-          reply.status(401).send({ error: "Unauthorized" });
+          throw new UnauthorizedError("Unauthorized");
         }
       },
       schema: {

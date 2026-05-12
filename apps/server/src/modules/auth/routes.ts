@@ -1,7 +1,8 @@
-import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 
 import { env } from "../../env.js";
+import { UnauthorizedError } from "../../utils/app-error.js";
 import { ConfigService } from "../config/service.js";
 import { validatePasswordMiddleware } from "../user/middleware.js";
 import { AuthController } from "./controller.js";
@@ -42,6 +43,7 @@ export async function authRoutes(app: FastifyInstance) {
     {
       bodyLimit: AUTH_BODY_LIMIT,
       config: {
+        csrfExempt: true,
         rateLimit: {
           max: 5,
           timeWindow: "1 minute",
@@ -86,6 +88,7 @@ export async function authRoutes(app: FastifyInstance) {
     {
       bodyLimit: AUTH_BODY_LIMIT,
       config: {
+        csrfExempt: true,
         rateLimit: {
           max: 5,
           timeWindow: "1 minute",
@@ -140,6 +143,7 @@ export async function authRoutes(app: FastifyInstance) {
     {
       bodyLimit: AUTH_BODY_LIMIT,
       config: {
+        csrfExempt: true,
         rateLimit: {
           max: 3,
           timeWindow: "1 minute",
@@ -167,6 +171,7 @@ export async function authRoutes(app: FastifyInstance) {
     {
       bodyLimit: AUTH_BODY_LIMIT,
       config: {
+        csrfExempt: true,
         rateLimit: {
           max: 3,
           timeWindow: "1 minute",
@@ -250,14 +255,14 @@ export async function authRoutes(app: FastifyInstance) {
           401: z.object({ error: z.string().describe("Error message") }),
         },
       },
-      preValidation: async (request: FastifyRequest, reply: FastifyReply) => {
+      preValidation: async (request: FastifyRequest) => {
         try {
           await request.jwtVerify();
         } catch (err) {
           request.log.error({ err }, "JWT verification failed");
-          reply
-            .status(401)
-            .send({ error: "Unauthorized: a valid token is required to access this resource." });
+          throw new UnauthorizedError(
+            "Unauthorized: a valid token is required to access this resource.",
+          );
         }
       },
     },
@@ -283,14 +288,14 @@ export async function authRoutes(app: FastifyInstance) {
           401: z.object({ error: z.string().describe("Error message") }),
         },
       },
-      preValidation: async (request: FastifyRequest, reply: FastifyReply) => {
+      preValidation: async (request: FastifyRequest) => {
         try {
           await request.jwtVerify();
         } catch (err) {
           request.log.error({ err }, "JWT verification failed");
-          reply
-            .status(401)
-            .send({ error: "Unauthorized: a valid token is required to access this resource." });
+          throw new UnauthorizedError(
+            "Unauthorized: a valid token is required to access this resource.",
+          );
         }
       },
     },
@@ -314,14 +319,14 @@ export async function authRoutes(app: FastifyInstance) {
           401: z.object({ error: z.string().describe("Error message") }),
         },
       },
-      preValidation: async (request: FastifyRequest, reply: FastifyReply) => {
+      preValidation: async (request: FastifyRequest) => {
         try {
           await request.jwtVerify();
         } catch (err) {
           request.log.error({ err }, "JWT verification failed");
-          reply
-            .status(401)
-            .send({ error: "Unauthorized: a valid token is required to access this resource." });
+          throw new UnauthorizedError(
+            "Unauthorized: a valid token is required to access this resource.",
+          );
         }
       },
     },

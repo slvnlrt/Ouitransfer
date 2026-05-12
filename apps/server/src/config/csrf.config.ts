@@ -1,14 +1,28 @@
 /**
  * CSRF exemption configuration.
  *
+ * The PRIMARY mechanism for CSRF exemption is per-route config:
+ *   `config: { csrfExempt: true }` on the route definition.
+ * This co-locates the exemption with the route and is type-safe.
+ *
+ * The CSRF_EXEMPT_ROUTES set below is a FALLBACK safety net — it catches
+ * requests even if a route registration is missing or misconfigured.
+ *
  * Exported so that tests can import the production list directly and verify
  * against it — preventing drift between test assumptions and production behaviour.
  */
 
 /**
- * Exact URL paths that are exempt from CSRF validation.
- * These are public unauthenticated mutation endpoints where the caller
- * cannot feasibly obtain a CSRF token first (e.g. the login endpoint).
+ * Exact URL paths that are exempt from CSRF validation (fallback safety net).
+ *
+ * All routes listed here SHOULD also have `config: { csrfExempt: true }` on
+ * their route definition. This set exists as defense-in-depth — if a route
+ * is accidentally registered without the config flag, the fallback still
+ * prevents CSRF enforcement on public unauthenticated endpoints.
+ *
+ * @deprecated for NEW routes — use `config: { csrfExempt: true }` on the
+ * route definition instead of adding entries here. This set is maintained
+ * for backward compatibility and defense-in-depth.
  */
 export const CSRF_EXEMPT_ROUTES = new Set([
   "/auth/login",
@@ -20,24 +34,3 @@ export const CSRF_EXEMPT_ROUTES = new Set([
   "/health",
   "/csrf-token",
 ]);
-
-/**
- * Dynamic URL patterns exempt from CSRF.
- * Each function returns `true` if the URL matches the pattern.
- */
-export const CSRF_EXEMPT_DYNAMIC: Array<(url: string) => boolean> = [
-  // POST /shares/:shareId/access
-  (url) => url.startsWith("/shares/") && url.endsWith("/access"),
-  // POST /shares/alias/:alias/access
-  (url) => url.startsWith("/shares/alias/") && url.endsWith("/access"),
-  // POST /reverse-shares/alias/:alias/* (public upload flow)
-  (url) => url.startsWith("/reverse-shares/alias/"),
-  // POST /reverse-shares/:id/presigned-url
-  (url) => url.startsWith("/reverse-shares/") && url.endsWith("/presigned-url"),
-  // POST /reverse-shares/:id/register-file
-  (url) => url.startsWith("/reverse-shares/") && url.endsWith("/register-file"),
-  // POST /reverse-shares/:id/check-password
-  (url) => url.startsWith("/reverse-shares/") && url.endsWith("/check-password"),
-  // POST /reverse-shares/:id/upload/access (anonymous upload to password-protected reverse share)
-  (url) => url.startsWith("/reverse-shares/") && url.endsWith("/upload/access"),
-];

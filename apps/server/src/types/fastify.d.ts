@@ -21,6 +21,19 @@ declare module "@fastify/jwt" {
   }
 }
 
+/**
+ * Augment Fastify's route config type to support per-route CSRF exemption.
+ *
+ * Routes that set `config: { csrfExempt: true }` are skipped by the global
+ * CSRF onRequest hook. This replaces the fragile centralized CSRF_EXEMPT_DYNAMIC
+ * list with a type-safe, co-located configuration.
+ */
+declare module "fastify" {
+  interface FastifyContextConfig {
+    csrfExempt?: boolean;
+  }
+}
+
 // Required: makes this file an ES module so `declare module` performs
 // augmentation (merging) rather than ambient module declaration.
 export {};

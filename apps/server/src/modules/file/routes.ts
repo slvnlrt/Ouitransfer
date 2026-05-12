@@ -1,6 +1,7 @@
-import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 
+import { UnauthorizedError } from "../../utils/app-error.js";
 import { FileController } from "./controller.js";
 import { FileDownloadController } from "./download.controller.js";
 import {
@@ -19,12 +20,12 @@ export async function fileRoutes(app: FastifyInstance) {
   const embedController = new FileEmbedController();
   const multipartController = new FileMultipartController();
 
-  const preValidation = async (request: FastifyRequest, reply: FastifyReply) => {
+  const preValidation = async (request: FastifyRequest) => {
     try {
       await request.jwtVerify();
     } catch (err) {
       request.log.error({ err }, "JWT verification failed");
-      reply.status(401).send({ error: "Token inválido ou ausente." });
+      throw new UnauthorizedError("Token inválido ou ausente.");
     }
   };
 

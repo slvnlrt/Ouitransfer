@@ -1,6 +1,7 @@
-import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 
+import { UnauthorizedError } from "../../utils/app-error.js";
 import { ReverseShareController } from "./controller.js";
 import {
   CreateReverseShareSchema,
@@ -20,12 +21,12 @@ export async function reverseShareRoutes(app: FastifyInstance) {
   const reverseShareController = new ReverseShareController();
   const multipartController = new ReverseShareMultipartController();
 
-  const preValidation = async (request: FastifyRequest, reply: FastifyReply) => {
+  const preValidation = async (request: FastifyRequest) => {
     try {
       await request.jwtVerify();
     } catch (err) {
       request.log.error({ err }, "JWT verification failed");
-      reply.status(401).send({ error: "Token inválido ou ausente." });
+      throw new UnauthorizedError("Token inválido ou ausente.");
     }
   };
 
@@ -203,6 +204,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
   app.post(
     "/reverse-shares/:id/upload/access",
     {
+      config: { csrfExempt: true },
       schema: {
         tags: ["Reverse Share"],
         operationId: "accessReverseShareForUploadWithPassword",
@@ -261,6 +263,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
   app.post(
     "/reverse-shares/alias/:alias/upload/access",
     {
+      config: { csrfExempt: true },
       schema: {
         tags: ["Reverse Share"],
         operationId: "accessReverseShareForUploadByAliasWithPassword",
@@ -293,6 +296,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
   app.post(
     "/reverse-shares/:id/presigned-url",
     {
+      config: { csrfExempt: true },
       schema: {
         tags: ["Reverse Share"],
         operationId: "getPresignedUrl",
@@ -329,6 +333,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
   app.post(
     "/reverse-shares/alias/:alias/presigned-url",
     {
+      config: { csrfExempt: true },
       schema: {
         tags: ["Reverse Share"],
         operationId: "getPresignedUrlByAlias",
@@ -365,6 +370,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
   app.post(
     "/reverse-shares/:id/register-file",
     {
+      config: { csrfExempt: true },
       schema: {
         tags: ["Reverse Share"],
         operationId: "registerFileUpload",
@@ -398,6 +404,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
   app.post(
     "/reverse-shares/alias/:alias/register-file",
     {
+      config: { csrfExempt: true },
       schema: {
         tags: ["Reverse Share"],
         operationId: "registerFileUploadByAlias",
@@ -431,6 +438,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
   app.post(
     "/reverse-shares/:id/check-password",
     {
+      config: { csrfExempt: true },
       schema: {
         tags: ["Reverse Share"],
         operationId: "checkReverseSharePassword",
@@ -672,6 +680,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
   app.post(
     "/reverse-shares/alias/:alias/multipart/create",
     {
+      config: { csrfExempt: true },
       schema: {
         tags: ["Reverse Share"],
         operationId: "createMultipartUploadByAlias",
@@ -710,6 +719,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
   app.post(
     "/reverse-shares/alias/:alias/multipart/part-url",
     {
+      config: { csrfExempt: true },
       schema: {
         tags: ["Reverse Share"],
         operationId: "getMultipartPartUrlByAlias",
@@ -747,6 +757,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
   app.post(
     "/reverse-shares/alias/:alias/multipart/complete",
     {
+      config: { csrfExempt: true },
       schema: {
         tags: ["Reverse Share"],
         operationId: "completeMultipartUploadByAlias",
@@ -792,6 +803,7 @@ export async function reverseShareRoutes(app: FastifyInstance) {
   app.post(
     "/reverse-shares/alias/:alias/multipart/abort",
     {
+      config: { csrfExempt: true },
       schema: {
         tags: ["Reverse Share"],
         operationId: "abortMultipartUploadByAlias",

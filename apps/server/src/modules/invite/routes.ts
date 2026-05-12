@@ -1,6 +1,7 @@
-import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 
+import { UnauthorizedError } from "../../utils/app-error.js";
 import { InviteController } from "./controller.js";
 import {
   CreateInviteTokenResponseSchema,
@@ -26,14 +27,14 @@ export async function inviteRoutes(app: FastifyInstance) {
           500: z.object({ error: z.string().describe("Error message") }),
         },
       },
-      preValidation: async (request: FastifyRequest, reply: FastifyReply) => {
+      preValidation: async (request: FastifyRequest) => {
         try {
           await request.jwtVerify();
         } catch (err) {
           request.log.error({ err }, "JWT verification failed");
-          reply
-            .status(401)
-            .send({ error: "Unauthorized: a valid token is required to access this resource." });
+          throw new UnauthorizedError(
+            "Unauthorized: a valid token is required to access this resource.",
+          );
         }
       },
     },
@@ -63,6 +64,7 @@ export async function inviteRoutes(app: FastifyInstance) {
   app.post(
     "/register-with-invite",
     {
+      config: { csrfExempt: true },
       schema: {
         tags: ["Invite"],
         operationId: "registerWithInvite",

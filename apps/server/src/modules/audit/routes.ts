@@ -1,21 +1,22 @@
-import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
+import { ForbiddenError, UnauthorizedError } from "../../utils/app-error.js";
 import { AuditController } from "./controller.js";
 import { AuditActionSchema } from "./service.js";
 
 export async function auditRoutes(app: FastifyInstance) {
   const auditController = new AuditController();
 
-  const adminPreValidation = async (request: FastifyRequest, reply: FastifyReply) => {
+  const adminPreValidation = async (request: FastifyRequest) => {
     try {
       await request.jwtVerify();
     } catch (err) {
       request.log.warn({ err }, "Admin JWT verification failed");
-      return reply.status(401).send({ error: "Unauthorized" });
+      throw new UnauthorizedError("Unauthorized");
     }
 
     if (!request.user.isAdmin) {
-      return reply.status(403).send({ error: "Access restricted to administrators" });
+      throw new ForbiddenError("Access restricted to administrators");
     }
   };
 

@@ -1,7 +1,8 @@
-import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 
 import { prisma } from "../../shared/prisma.js";
+import { ForbiddenError, UnauthorizedError } from "../../utils/app-error.js";
 import { AppController } from "./controller.js";
 import { BulkUpdateConfigSchema, ConfigResponseSchema } from "./dto.js";
 
@@ -11,7 +12,7 @@ const SMALL_BODY_LIMIT = 64 * 1024; // 64 KB
 export async function appRoutes(app: FastifyInstance) {
   const appController = new AppController();
 
-  const adminPreValidation = async (request: FastifyRequest, reply: FastifyReply) => {
+  const adminPreValidation = async (request: FastifyRequest) => {
     // Count users — this is a separate concern from JWT verification.
     // DB errors must propagate to globalErrorHandler, not be swallowed as 401.
     const usersCount = await prisma.user.count();
@@ -25,16 +26,16 @@ export async function appRoutes(app: FastifyInstance) {
       return;
     }
 
-    // JWT verification — failures should return 401 Unauthorized.
+    // JWT verification — failures throw and are caught by globalErrorHandler.
     try {
       await request.jwtVerify();
     } catch (err) {
       request.log.warn({ err }, "Admin JWT verification failed");
-      return reply.status(401).send({ error: "Unauthorized" });
+      throw new UnauthorizedError("Unauthorized");
     }
 
     if (!request.user.isAdmin) {
-      return reply.status(403).send({ error: "Access restricted to administrators" });
+      throw new ForbiddenError("Access restricted to administrators");
     }
   };
 

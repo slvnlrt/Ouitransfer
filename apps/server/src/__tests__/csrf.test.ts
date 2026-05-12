@@ -34,6 +34,27 @@ describe("CSRF protection (5.4)", () => {
       return reply.send({ message: "Logged out" });
     });
 
+    // ── Per-route config test routes ─────────────────────────────────
+    // Synthetic routes that use `config: { csrfExempt: true }` to verify
+    // the primary CSRF exemption mechanism works independently of the
+    // CSRF_EXEMPT_ROUTES fallback set.
+    app.post(
+      "/test/csrf-exempt-via-config",
+      { config: { csrfExempt: true } },
+      async (_req, reply) => {
+        return reply.send({ ok: true, mechanism: "per-route-config" });
+      },
+    );
+
+    // Route without csrfExempt — should require CSRF token
+    app.post(
+      "/test/csrf-required-via-config",
+      { config: { csrfExempt: false } },
+      async (_req, reply) => {
+        return reply.send({ ok: true });
+      },
+    );
+
     await app.ready();
   });
 
@@ -142,7 +163,7 @@ describe("CSRF protection (5.4)", () => {
 
   it("allows exempt POST /register-with-invite without CSRF token", async () => {
     // /register-with-invite is not registered in this test app, but the CSRF hook
-    // should still mark it as exempt (it returns 404, not 403).
+    // should still mark it as exempt via CSRF_EXEMPT_ROUTES fallback (it returns 404, not 403).
     const res = await app.inject({
       method: "POST",
       url: "/register-with-invite",
@@ -285,7 +306,7 @@ describe("CSRF protection (5.4)", () => {
   // ── Item 7: Verify exempt list matches production code ─────────────────────
   // These tests import the production CSRF_EXEMPT_ROUTES constant directly — any
   // change to the exempt list in csrf.config.ts is reflected here automatically.
-  it("exempt set contains the expected public routes (imported from production config)", () => {
+  it("fallback exempt set contains the expected public routes (imported from production config)", () => {
     expect(CSRF_EXEMPT_ROUTES.has("/auth/login")).toBe(true);
     expect(CSRF_EXEMPT_ROUTES.has("/auth/refresh")).toBe(true);
     expect(CSRF_EXEMPT_ROUTES.has("/auth/forgot-password")).toBe(true);
@@ -296,10 +317,45 @@ describe("CSRF protection (5.4)", () => {
     expect(CSRF_EXEMPT_ROUTES.has("/auth/register")).toBe(false);
   });
 
-  it("exempt set does NOT contain authenticated mutation routes", () => {
+  it("fallback exempt set does NOT contain authenticated mutation routes", () => {
     // These are authenticated endpoints — they must NOT be exempt from CSRF
     expect(CSRF_EXEMPT_ROUTES.has("/auth/logout")).toBe(false);
     expect(CSRF_EXEMPT_ROUTES.has("/files")).toBe(false);
     expect(CSRF_EXEMPT_ROUTES.has("/shares")).toBe(false);
+  });
+
+  // ── Per-route config: primary CSRF exemption mechanism ─────────────────────
+  // Routes with `config: { csrfExempt: true }` are exempt from CSRF without
+  // needing to be in CSRF_EXEMPT_ROUTES. This is the preferred mechanism.
+
+  it("allows POST to route with config.csrfExempt=true without CSRF token", async () => {
+    const res = await app.inject({
+      method: "POST",
+      url: "/test/csrf-exempt-via-config",
+      headers: { "content-type": "application/json" },
+      payload: JSON.stringify({}),
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual({ ok: true, mechanism: "per-route-config" });
+  });
+
+  it("rejects POST to route with config.csrfExempt=false without CSRF token", async () => {
+    const res = await app.inject({
+      method: "POST",
+      url: "/test/csrf-required-via-config",
+      // No _csrf cookie, no x-csrf-token header
+    });
+    expect(res.statusCode).toBe(403);
+  });
+
+  it("per-route config takes precedence over fallback Set absence", async () => {
+    // /test/csrf-exempt-via-config is NOT in CSRF_EXEMPT_ROUTES, but has
+    // config.csrfExempt=true — should still be exempt.
+    expect(CSRF_EXEMPT_ROUTES.has("/test/csrf-exempt-via-config")).toBe(false);
+    const res = await app.inject({
+      method: "POST",
+      url: "/test/csrf-exempt-via-config",
+    });
+    expect(res.statusCode).toBe(200);
   });
 });

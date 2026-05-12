@@ -12,7 +12,7 @@ import {
   validatorCompiler,
   type ZodTypeProvider,
 } from "fastify-type-provider-zod";
-import { CSRF_EXEMPT_DYNAMIC, CSRF_EXEMPT_ROUTES } from "./config/csrf.config.js";
+import { CSRF_EXEMPT_ROUTES } from "./config/csrf.config.js";
 import { registerSwagger } from "./config/swagger.config.js";
 import { envTimeoutOverrides } from "./config/timeout.config.js";
 import { env } from "./env.js";
@@ -198,9 +198,10 @@ export async function buildApp() {
   // ── Global CSRF enforcement hook ───────────────────────────
   // Skips safe methods and public unauthenticated mutation endpoints.
   // Everything else must present a valid X-CSRF-Token header.
-
-  // CSRF_EXEMPT_ROUTES and CSRF_EXEMPT_DYNAMIC are imported from ./config/csrf.config.js
-  // so that tests can import the production list directly and verify against it.
+  //
+  // Primary mechanism: per-route `config: { csrfExempt: true }` (type-safe, co-located).
+  // Fallback: CSRF_EXEMPT_ROUTES Set (for routes registered outside app modules, e.g.
+  // /csrf-token, /health). Imported from ./config/csrf.config.js so tests can verify.
 
   app.addHook("onRequest", (request, reply, done) => {
     const method = request.method.toUpperCase();
@@ -208,6 +209,14 @@ export async function buildApp() {
       return done();
     }
 
+    // Per-route config is the primary exemption mechanism (type-safe, co-located
+    // with the route definition). Checked first — no URL parsing needed.
+    if (request.routeOptions.config?.csrfExempt === true) {
+      return done();
+    }
+
+    // Fallback: static exempt set for routes that don't go through module route files
+    // (e.g. /csrf-token, /health, /auth/refresh registered directly in app.ts).
     // Strip query string for route matching, then normalize trailing slash.
     // ignoreTrailingSlash:true means "/path/" and "/path" both reach the same handler,
     // so we must normalize before the Set lookup to prevent a trailing-slash bypass.
@@ -216,12 +225,6 @@ export async function buildApp() {
 
     if (CSRF_EXEMPT_ROUTES.has(url)) {
       return done();
-    }
-
-    for (const test of CSRF_EXEMPT_DYNAMIC) {
-      if (test(url)) {
-        return done();
-      }
     }
 
     // Delegate to the plugin's callback-based csrfProtection(req, reply, next).

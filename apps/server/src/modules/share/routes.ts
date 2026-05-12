@@ -1,6 +1,7 @@
-import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 
+import { UnauthorizedError } from "../../utils/app-error.js";
 import { ShareController } from "./controller.js";
 import {
   CreateShareSchema,
@@ -15,12 +16,12 @@ import {
 export async function shareRoutes(app: FastifyInstance) {
   const shareController = new ShareController();
 
-  const preValidation = async (request: FastifyRequest, reply: FastifyReply) => {
+  const preValidation = async (request: FastifyRequest) => {
     try {
       await request.jwtVerify();
     } catch (err) {
       request.log.error({ err }, "JWT verification failed");
-      reply.status(401).send({ error: "Token inválido ou ausente." });
+      throw new UnauthorizedError("Token inválido ou ausente.");
     }
   };
 
@@ -95,6 +96,7 @@ export async function shareRoutes(app: FastifyInstance) {
   app.post(
     "/shares/:shareId/access",
     {
+      config: { csrfExempt: true },
       schema: {
         tags: ["Share"],
         operationId: "accessShareWithPassword",
@@ -350,6 +352,7 @@ export async function shareRoutes(app: FastifyInstance) {
   app.post(
     "/shares/alias/:alias/access",
     {
+      config: { csrfExempt: true },
       schema: {
         tags: ["Share"],
         operationId: "accessShareByAliasWithPassword",

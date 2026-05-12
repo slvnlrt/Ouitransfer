@@ -1,6 +1,7 @@
-import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 
+import { UnauthorizedError } from "../../utils/app-error.js";
 import { FolderController } from "./controller.js";
 import {
   CheckFolderSchema,
@@ -13,12 +14,12 @@ import {
 export async function folderRoutes(app: FastifyInstance) {
   const folderController = new FolderController();
 
-  const preValidation = async (request: FastifyRequest, reply: FastifyReply) => {
+  const preValidation = async (request: FastifyRequest) => {
     try {
       await request.jwtVerify();
     } catch (err) {
       request.log.error({ err }, "JWT verification failed");
-      reply.status(401).send({ error: "Token inválido ou ausente." });
+      throw new UnauthorizedError("Token inválido ou ausente.");
     }
   };
 

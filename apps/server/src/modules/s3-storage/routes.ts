@@ -5,19 +5,20 @@
  * Much simpler than filesystem routes - no chunk management, no streaming.
  */
 
-import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 
+import { UnauthorizedError } from "../../utils/app-error.js";
 import { S3StorageController } from "./controller.js";
 
 export async function s3StorageRoutes(app: FastifyInstance) {
   const controller = new S3StorageController();
 
-  const preValidation = async (request: FastifyRequest, reply: FastifyReply) => {
+  const preValidation = async (request: FastifyRequest) => {
     try {
       await request.jwtVerify();
     } catch (_err) {
-      reply.status(401).send({ error: "Unauthorized: a valid token is required." });
+      throw new UnauthorizedError("Unauthorized: a valid token is required.");
     }
   };
 
