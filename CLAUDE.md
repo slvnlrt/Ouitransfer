@@ -136,7 +136,7 @@ audit/
   REVIEW-PHASE-5-BATCH-3.md   Phase 5 Batch 3 review (Tasks 6-7)
   REVIEW-PHASE-5-BATCH-4.md   Phase 5 Batch 4 review (Tasks 8-9)
   REVIEW-PHASE-7.md           Phase 7 final review
-  TODO-POST-PHASE-7.md        Reviewer follow-ups from Phase 7 (all resolved)
+  TODO-POST-PHASE-7.md        Reviewer follow-ups from Phase 7 (in-scope resolved; 2 pre-existing items forwarded to Phase 8)
   PHASE-7-PLAN.md             Phase 7 implementation plan (historical snapshot)
 ```
 
@@ -236,8 +236,9 @@ Key changes:
   own types). Fixed hardcoded `ptBR` locale bug. Added 13 `formatDateTime` locale tests.
 - **Icon consolidation**: Removed `@tabler/icons-react`. ~85 non-brand icons → `lucide-react`,
   17 brand icons → `react-icons/tb`. Union type in `file-icons.tsx`. Link/LinkIcon collision fixed.
-- Review: 0 Critical, 2 Important (documentation-only), 7 Minor (3 fixed inline, 3 forwarded to
-  Phase 8, 1 pre-existing no-action). See `audit/REVIEW-PHASE-7.md` and `audit/TODO-POST-PHASE-7.md`.
+- Review: 0 Critical, 2 Important (documentation-only), 7 Minor (3 fixed inline, 4 no-action/kept,
+  M-4 knip cleanup done). 2 pre-existing items forwarded to Phase 8 (M-1 i18n, M-2 icon polish).
+  See `audit/REVIEW-PHASE-7.md` and `audit/TODO-POST-PHASE-7.md`.
 
 ## Important: No Production, No Legacy
 The app is **not in production** and has no existing users. This means:

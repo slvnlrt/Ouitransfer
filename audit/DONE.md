@@ -1099,7 +1099,7 @@ Full report: `audit/TODO-PHASE-5-QUALITY-AUDIT.md`
 
 ### Review follow-ups
 - M-3 (encodeURIComponent cookie value): Fixed inline
+- M-4 (knip unused deps): Investigated 7 deps. Removed `@fastify/static` (server), `qrcode` + `@types/qrcode` (web), `class-variance-authority` (docs). Kept `@radix-ui/react-collapsible` (shadcn/ui primitive), `tw-animate-css` (used in CSS), `tailwindcss` (build tool).
 - M-5 (formatDateTime locale tests): 13 tests added
 - M-1 (hardcoded "Move" label): Forwarded to Phase 8
 - M-2 (icon semantic equivalents): Forwarded to Phase 8
-- M-4 (pre-existing knip findings): Forwarded to Phase 8
