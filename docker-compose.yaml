@@ -19,22 +19,24 @@ services:
   storage:
     image: rustfs/rustfs:latest
     container_name: ouitransfer-storage
-    command: rustfs server /data
     environment:
-      RUSTFS_ACCESS_KEY: ouitransfer
-      RUSTFS_SECRET_KEY: ouitransfer-secret-key    # CHANGE in production
+      RUSTFS_VOLUMES: /data
+      RUSTFS_ACCESS_KEY: ""    # REQUIRED: set your storage access key
+      RUSTFS_SECRET_KEY: ""    # REQUIRED: set your storage secret key
       RUSTFS_CONSOLE_ENABLE: "true"
     volumes:
       - storage_data:/data
     ports:
-      - "9000:9000"    # S3 API — must be reachable by browsers for file uploads
+      - "9000:9000"    # S3 API — must be reachable by browsers for file uploads (when using internal storage)
       # - "9001:9001"  # Storage console (optional, for debugging)
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:9000/minio/health/live || exit 1"]
+      test: ["CMD-SHELL", "curl -fs http://localhost:9000/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
+    security_opt:
+      - "no-new-privileges:true"
     restart: unless-stopped
 
   # ─── Fastify API Server ────────────────────────────────────────────────────
@@ -50,8 +52,8 @@ services:
       S3_ENDPOINT: storage
       S3_PORT: "9000"
       S3_USE_SSL: "false"
-      S3_ACCESS_KEY: ouitransfer
-      S3_SECRET_KEY: ouitransfer-secret-key         # Must match RUSTFS_SECRET_KEY
+      S3_ACCESS_KEY: ""                                # Must match RUSTFS_ACCESS_KEY
+      S3_SECRET_KEY: ""                                # Must match RUSTFS_SECRET_KEY
       S3_BUCKET_NAME: ouitransfer-files
       S3_REGION: auto
       S3_FORCE_PATH_STYLE: "true"
@@ -62,13 +64,13 @@ services:
       #   http://localhost:9000           (local development)
       #   http://192.168.1.100:9000      (LAN access)
       #   https://storage.example.com    (production with reverse proxy)
-      STORAGE_URL: "http://localhost:9000"
+      STORAGE_URL: ""    # REQUIRED: public URL where browsers reach storage (e.g., http://192.168.1.100:9000)
 
       # REQUIRED: Security secrets — generate each with: openssl rand -hex 32
       # All three MUST be different from each other.
-      JWT_SECRET: "change-me-jwt-secret-at-least-32-characters-long!!"
-      CSRF_SECRET: "change-me-csrf-secret-at-least-32-characters-long!"
-      COOKIE_SECRET: "change-me-cookie-at-least-32-characters-long!!!"
+      JWT_SECRET: ""       # REQUIRED: generate with: openssl rand -hex 32
+      CSRF_SECRET: ""      # REQUIRED: generate with: openssl rand -hex 32
+      COOKIE_SECRET: ""    # REQUIRED: generate with: openssl rand -hex 32
       #
       # ── Optional settings ──
       # OUITRANSFER_UID: "1000"              # UID for server process
