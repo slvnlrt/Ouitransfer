@@ -128,6 +128,7 @@ audit/
   TODO-POST-PHASE-3.md        Reviewer follow-ups from Phase 3 (in-scope items resolved; deferred items forwarded to later phases)
   TODO-POST-PHASE-4.md        Reviewer follow-ups from Phase 4 (all resolved)
   TODO-POST-PHASE-5.md        Reviewer follow-ups from Phase 5 (all resolved)
+  TODO-POST-PHASE-6.md        Reviewer follow-ups from Phase 6 (all resolved)
   BATCH-REVIEWS.md            Phase 4 batch-level review history
   PHASE-4-PLAN.md             Phase 4 implementation plan (historical snapshot)
   REVIEW-PHASE-5-BATCH-1.md   Phase 5 Batch 1 review (Tasks 1-2)
@@ -191,6 +192,33 @@ Key changes:
 - **Audit logging**: AuditLog model, 11 audit actions at 8 security-sensitive locations, admin
   endpoint with pagination/filtering
 - Review follow-ups: all Critical + Important fixed inline per batch. See `audit/REVIEW-PHASE-5-BATCH-{1-4}.md`.
+
+### Phase 6 — Infrastructure & Operations: COMPLETE
+Migrated from monolith supervisord container (MinIO+API+Web) to 3-container Docker Compose
+architecture (RustFS storage + Fastify server + Next.js web). 16 items (6.1-6.16) completed.
+Key changes:
+- **Architecture**: Supervisord eliminated. Single Dockerfile with two build targets (`server-runner`,
+  `web-runner`). RustFS uses official `rustfs/rustfs:latest` image. Docker Compose with healthcheck-
+  based startup ordering (`storage` → `server` → `web`).
+- **Dockerfile**: Rewritten from 287 → 121 lines. No MinIO/mc binaries, no inline heredoc startup
+  script, no VOLUME declaration. Consistent UID/GID 1001, lowercase user `ouitransfer`.
+- **Storage config**: `loadInternalStorageCredentials()` (file reading) removed — all credentials via
+  env vars. `ensureBucket()` auto-creates bucket at startup via HeadBucket/CreateBucket. `buildEndpointUrl()`
+  DRY helper. Legacy `ENCRYPTION_KEY`/`DISABLE_FILESYSTEM_ENCRYPTION` env vars deleted.
+- **Health endpoint**: Enhanced with DB check (`prisma.$queryRaw`) + S3 check (`HeadBucketCommand`).
+  Returns `{ status, timestamp, uptime, checks: { database, storage } }`. 200=healthy, 503=degraded.
+- **Dead code removed**: 7 infra scripts deleted (`install-minio.sh`, `start-minio.sh`, `minio-setup.sh`,
+  `load-minio-credentials.sh`, `install-mc.sh`, `supervisord.conf`, `build-docker.sh`).
+  `migrate-filesystem-to-s3.ts` (335 lines) deleted — no production users, no migration needed.
+- **Security**: Empty secrets in docker-compose.yaml force fail-fast. `security_opt: no-new-privileges`
+  on storage container. RustFS credentials left empty with REQUIRED comments.
+- **Documentation**: `quick-start.mdx` fully rewritten for 3-container architecture. `uid-gid-configuration.mdx`
+  updated with RustFS UID 10001 bind mount guidance. `SCRIPTS.md` expanded with operations section.
+  All code comments updated (Garage/MinIO → S3-compatible).
+- **Other**: SMTP seed placeholders removed. Justfile docker recipes updated for 3 services. `.env.example`
+  updated for RustFS. Lefthook already correct (Biome `--staged`).
+- Review follow-ups: 27 items (4 Critical + 4 Legacy + 9 Important + 8 Minor), all resolved.
+  See `audit/TODO-POST-PHASE-6.md`.
 
 ## Important: No Production, No Legacy
 The app is **not in production** and has no existing users. This means:
