@@ -75,8 +75,8 @@ just validate   # type-check + lint + test (full CI check locally)
 Run tests for a specific app:
 
 ```bash
-pnpm --filter @ouitransfer/server test
-pnpm --filter @ouitransfer/web test
+pnpm --filter ouitransfer-api test
+pnpm --filter ouitransfer-web test
 ```
 
 Run E2E tests (requires a running dev server):
@@ -170,7 +170,7 @@ For server integration tests, use Fastify's `app.inject()` to exercise the full 
 4. Open a PR against the `main` branch of `burger-cie/ouitransfer`
 5. Fill in the PR template with a clear description of what changed and why
 
-CI will run: lint, type-check, tests, and build for all packages.
+CI will run: lint, type-check, tests, security audit, build, and Lighthouse (non-blocking) for all packages.
 
 Keep PRs focused — one concern per PR makes review faster.
 

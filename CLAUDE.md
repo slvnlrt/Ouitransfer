@@ -264,10 +264,13 @@ Key changes:
 - **Translations**: 15 keys translated in 12 common-language locales. Hardcoded "Move" label → i18n.
   GraphQL/Proto icons fixed (Webhook → Braces/FileCode).
 - **Test improvements**: Health test (5 new), formatFileSize tests (6 new), OAuth redirect tests (3 new)
-- **CI & tooling**: Lighthouse CI config, bundle analyzer, @axe-core/playwright a11y tests, E2E
-  workflow enabled with Docker Compose
+- **CI & tooling**: Lighthouse CI integrated in `ci.yml` (after build, non-blocking), bundle analyzer,
+  @axe-core/playwright a11y tests, E2E workflow enabled with Docker Compose
 - **Portuguese cleanup**: 33 Portuguese comments/strings translated across 11 files
 - Review follow-ups: all resolved. See `audit/REVIEW-PHASE-8.md` and `audit/TODO-POST-PHASE-8.md`.
+- **Post-phase fixes**: ru-RU auth error messages (Portuguese → Russian), server test contention
+  (`fileParallelism: false` in vitest.config.ts), `npx` → `pnpm exec` in e2e.yml, Lighthouse job
+  added to ci.yml.
 
 ### Phase 9 — Documentation Site Overhaul: COMPLETE
 7 items (9.1-9.7) updated across 7 documentation pages. 4 commits.
