@@ -12,10 +12,11 @@ node_modules
 */node_modules
 **/node_modules
 
-# Build outputs
-.next
-dist
-build
+# Build outputs (recursive — match at any depth)
+**/.next
+**/dist
+**/build
+**/.turbo
 
 # Development files
 .env*
@@ -59,6 +60,13 @@ jspm_packages/
 # Docker files
 Dockerfile*
 docker-compose*
+
+# Test & CI artifacts
+e2e
+playwright-report
+.lighthouseci
+audit
+.github
 
 # Storage directories (created at runtime)
 uploads/
