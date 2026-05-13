@@ -4,9 +4,8 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { useSecureConfigValue } from "@/hooks/use-secure-configs";
-import packageJson from "../../../../../../package.json";
 
-const { version } = packageJson;
+const version = process.env.NEXT_PUBLIC_APP_VERSION ?? "dev";
 
 export function TransparentFooter() {
   const t = useTranslations();

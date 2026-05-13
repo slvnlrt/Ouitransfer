@@ -32,5 +32,7 @@ services:
     build:
       context: .
       target: web-runner
+      args:
+        NEXT_PUBLIC_APP_VERSION: ${NEXT_PUBLIC_APP_VERSION:-dev}
     environment:
       JWT_SECRET: ci-e2e-jwt-secret-minimum-32-characters-long-ok

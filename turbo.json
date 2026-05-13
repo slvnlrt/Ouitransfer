@@ -16,6 +16,7 @@
         "CSP_CONNECT_SOURCES",
         "NEXT_PUBLIC_LOG_LEVEL",
         "NEXT_PUBLIC_DEFAULT_LANGUAGE",
+        "NEXT_PUBLIC_APP_VERSION",
         "ANALYZE"
       ]
     },

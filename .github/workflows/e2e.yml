@@ -34,7 +34,13 @@ jobs:
       # compose file (ghcr.io/slvnlrt/ouitransfer-{server,web}:latest).
       # These same images are reused for testing AND publishing — no double build.
       - name: Build Docker images
-        run: docker compose -f docker-compose.yaml -f docker-compose.ci.yml build
+        run: |
+          if [[ "$GITHUB_REF_NAME" == v* ]]; then
+            export NEXT_PUBLIC_APP_VERSION="${GITHUB_REF_NAME#v}"
+          else
+            export NEXT_PUBLIC_APP_VERSION="dev"
+          fi
+          docker compose -f docker-compose.yaml -f docker-compose.ci.yml build
 
       - name: Start Docker stack
         run: docker compose -f docker-compose.yaml -f docker-compose.ci.yml up -d

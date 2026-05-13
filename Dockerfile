@@ -120,6 +120,8 @@ COPY --from=web-deps /app/apps/web/node_modules ./apps/web/node_modules
 COPY --from=shared-builder /app/packages ./packages/
 COPY apps/web/ ./apps/web/
 WORKDIR /app/apps/web
+ARG NEXT_PUBLIC_APP_VERSION=dev
+ENV NEXT_PUBLIC_APP_VERSION=$NEXT_PUBLIC_APP_VERSION
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 RUN pnpm run build
