@@ -74,7 +74,7 @@ If you experience authentication issues behind a reverse proxy:
 2. **Verify Environment Variables**:
 
    ```bash
-   docker exec -it OUITRANSFER env | grep SECURE_SITE
+   docker exec -it ouitransfer-server env | grep SECURE_SITE
    ```
 
 3. **Test Cookie Settings**:
@@ -98,7 +98,7 @@ environment:
 
 ```yaml
 # Traefik
-- "traefik.http.middlewares.OUITRANSFER-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
+- "traefik.http.middlewares.ouitransfer-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
 
 # Nginx
 proxy_set_header X-Forwarded-Proto $scheme;
@@ -171,18 +171,57 @@ environment:
 
 ### Health Checks
 
-Add health checks to ensure proper proxy configuration:
+Add health checks to ensure proper proxy configuration. In the 3-container architecture, the health endpoint lives on the **server** container (port 3333), not the web container:
 
 ```yaml
 services:
-  OUITRANSFER:
+  server:
+    image: ouitransfer/server:latest
+    container_name: ouitransfer-server
     # ... other config
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5487/api/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:3333/health"]
       interval: 30s
       timeout: 10s
       retries: 3
 ```
+
+The health endpoint returns `{ status, timestamp, uptime, checks: { database, storage } }`. It returns HTTP 200 when all subsystems are healthy, or HTTP 503 when degraded.
+
+---
+
+## Storage and CSP Configuration Behind a Reverse Proxy
+
+When deploying behind a reverse proxy, two additional configuration points are important:
+
+### STORAGE_URL Must Be Externally Reachable
+
+The `STORAGE_URL` environment variable on the **server** service controls the base URL embedded in presigned upload/download URLs. When behind a reverse proxy, this must point to the externally reachable address of the storage service — not an internal Docker hostname.
+
+```yaml
+services:
+  server:
+    environment:
+      STORAGE_URL: "https://files.yourdomain.com"  # or http://YOUR_SERVER_IP:9000
+```
+
+> **💡 Note:** Browsers must be able to reach port 9000 (or your proxy path for storage) to perform file uploads and downloads. Presigned URLs are generated with this address and sent directly to browsers.
+
+### CSP Configuration for Storage Origin
+
+The web container sets a Content Security Policy (CSP) that restricts which origins browsers can connect to. If your storage service runs on a different domain or port than the web interface, you must add it to the allowed origins using the `CSP_CONNECT_SOURCES` environment variable on the **web** service:
+
+```yaml
+services:
+  web:
+    image: ouitransfer/web:latest
+    container_name: ouitransfer-web
+    environment:
+      API_BASE_URL: "http://server:3333"
+      CSP_CONNECT_SOURCES: "https://files.yourdomain.com"  # Add storage origin here
+```
+
+Multiple origins can be space-separated: `CSP_CONNECT_SOURCES: "https://files.yourdomain.com https://cdn.yourdomain.com"`.
 
 ---
 
@@ -190,7 +229,7 @@ services:
 
 If you're still experiencing issues after following this guide:
 
-1. **Check the Logs**: `docker logs OUITRANSFER`
+1. **Check the Logs**: `docker compose logs server` (or `docker compose logs web` for frontend issues)
 2. **Verify Headers**: Use browser dev tools or `curl -I`
 3. **Test Direct Access**: Try accessing OUITRANSFER. directly (bypassing proxy)
 4. **Open an Issue**: [Report bugs on GitHub](https://github.com/burger-cie/ouitransfer/issues)

@@ -11,30 +11,37 @@ OUITRANSFER. provides a comprehensive, well-documented, and fully typed REST API
 
 ### Exposing the API port
 
-To access the API endpoints, you need to expose port **3333** in your Docker configuration. This port is where the OUITRANSFER. API server runs.
+To access the API endpoints, you need to expose port **3333** in your Docker configuration. This port is where the OUITRANSFER. API server (`ouitransfer-server`) runs.
 
-**Using Docker Compose:**
+**Using Docker Compose** — add a `ports` entry to the `server` service:
 
 ```yaml
 services:
-  OUITRANSFER:
-    image: burger-cie/ouitransfer:latest
+  server:
+    image: ouitransfer/server:latest
+    container_name: ouitransfer-server
     ports:
-      - "5487:5487" # Web interface
-      - "3333:3333" # API port (required for API access)
-    # ... other configuration
+      - "3333:3333"    # API (optional: only needed for direct API access)
+    # ... see Quick Start guide for full configuration
 ```
 
-**Using Docker run command:**
+For a complete deployment example including all three containers (storage, server, web), see the [Quick Start guide](/docs/v3-beta/quick-start).
+
+**Using individual Docker run commands:**
 
 ```bash
 docker run -d \
-  --name OUITRANSFER \
-  -p 5487:5487 \
+  --name ouitransfer-server \
+  --network ouitransfer \
+  -e S3_ENDPOINT=ouitransfer-storage \
+  -e JWT_SECRET=your-jwt-secret-at-least-32-chars \
+  -e CSRF_SECRET=your-csrf-secret-at-least-32-chars \
+  -e COOKIE_SECRET=your-cookie-secret-at-least-32-chars \
+  -e STORAGE_URL=http://YOUR_SERVER_IP:9000 \
   -p 3333:3333 \
-  -v OUITRANSFER_data:/app/server \
+  -v server_data:/app/server \
   --restart unless-stopped \
-  burger-cie/ouitransfer:latest
+  ouitransfer/server:latest
 ```
 
 > **Note:** Port 3333 exposure is optional if you only need the web interface. However, it's required for direct API access, custom integrations, and accessing the interactive documentation.
@@ -128,7 +135,7 @@ The OUITRANSFER. API provides comprehensive access to all platform features:
 
 - **Health checks** - Monitor system status and availability
 - **Configuration** - Access and modify system settings
-- **Storage operations** - Manage filesystem and S3 storage options
+- **Storage operations** - S3-compatible object storage management
 
 ## Authentication
 
@@ -161,6 +168,7 @@ GET /api/files
 - **Token expiration** - Automatic session timeout for security
 - **Role-based access** - Different permissions for users and administrators
 - **Request validation** - All inputs validated using Zod schemas
+- **CSRF protection** - Mutating endpoints (POST, PUT, PATCH, DELETE) require a CSRF token. OUITRANSFER uses the double-submit cookie pattern: on login, a `csrf-token` cookie is set; clients must echo its value in the `X-CSRF-Token` request header. The interactive web interface handles this automatically.
 
 ## Getting started with the API
 
