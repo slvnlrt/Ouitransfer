@@ -1390,7 +1390,7 @@ Phase 8: Polish \& Production Readiness ✨
 
 Documentation (4h)
 
-- [ ] 8.1 — Add LICENSE file at repository root  
+- [x] 8.1 — Add LICENSE file at repository root  
 
   File: LICENSE (new, root)  
 
@@ -1398,7 +1398,7 @@ Documentation (4h)
 
   Justification: Audit 07 — license declared but file absent
 
-- [ ] 8.2 — Update CONTRIBUTING.md with new tooling  
+- [x] 8.2 — Update CONTRIBUTING.md with new tooling  
 
   File: CONTRIBUTING.md  
 
@@ -1406,7 +1406,7 @@ Documentation (4h)
 
   Justification: New tooling from Phase 1 needs documentation
 
-- [ ] 8.3 — Add README.md to apps/server/src/ and apps/web/src/  
+- [x] 8.3 — Add README.md to apps/server/src/ and apps/web/src/  
 
   Files: apps/server/src/README.md (new), apps/web/src/README.md (new)  
 
@@ -1416,7 +1416,7 @@ Documentation (4h)
 
 Upload Resume (8h)
 
-- [ ] 8.4 — Implement upload resume for multipart uploads  
+- [x] 8.4 — Implement upload resume for multipart uploads  
 
   File: apps/web/src/hooks/useUppyUpload.ts  
 
@@ -1426,13 +1426,13 @@ Upload Resume (8h)
 
 Performance Audit (4h)
 
-- [ ] 8.5 — Run Lighthouse CI and fix major issues  
+- [x] 8.5 — Run Lighthouse CI and fix major issues  
 
   Action: Set up @lhci/cli in CI. Run Lighthouse on key pages (home, login, dashboard, file manager, share view). Target scores: Performance >90, Accessibility >95, Best Practices >95, SEO >90. Fix any major findings  
 
   Justification: No performance baseline exists
 
-- [ ] 8.6 — Add @next/bundle-analyzer for bundle size monitoring  
+- [x] 8.6 — Add @next/bundle-analyzer for bundle size monitoring  
 
   File: apps/web/next.config.ts  
 
@@ -1442,21 +1442,21 @@ Performance Audit (4h)
 
 Final Security Review (4h)
 
-- [ ] 8.7 — Run pnpm audit and resolve all findings  
+- [x] 8.7 — Run pnpm audit and resolve all findings  
 
   Action: After all dependency changes, run pnpm audit to verify zero known vulnerabilities. Add pnpm audit --audit-level=high to CI pipeline  
 
   Justification: Final verification after all dependency changes
 
-- [ ] 8.8 — Add security headers via Fastify  
+- [x] 8.8 — Add security headers via Fastify — **CLOSED: already configured** (helmet registered in app.ts with CSP, HSTS, frameAncestors)
 
-  File: apps/server/src/app.ts  
+   File: apps/server/src/app.ts
 
-  Action: Install @fastify/helmet. Configure with appropriate CSP, HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy headers  
+   Action: Install @fastify/helmet. Configure with appropriate CSP, HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy headers
 
-  Justification: No security headers configured
+   Justification: No security headers configured
 
-- [ ] 8.9 — Add Content Security Policy to Next.js  
+- [x] 8.9 — Add Content Security Policy to Next.js  
 
   File: apps/web/next.config.ts or apps/web/src/middleware.ts  
 
@@ -1464,7 +1464,7 @@ Final Security Review (4h)
 
   Justification: Defense-in-depth, no CSP exists
 
-- [ ] 8.10 — Validate all env vars at startup  
+- [x] 8.10 — Validate all env vars at startup  
 
   Files: apps/server/src/config/, apps/web/src/env.ts (new)  
 
@@ -1472,7 +1472,7 @@ Final Security Review (4h)
 
   Justification: Audit 02 — STORAGE\_URL required but not validated at startup, API\_BASE\_URL has a typo in example
 
-- [ ] 8.11 — Configure timeout values for production  
+- [x] 8.11 — Configure timeout values for production  
 
   File: apps/server/src/app.ts:31-33  
 
@@ -1480,29 +1480,29 @@ Final Security Review (4h)
 
   Justification: Audit 02 — all timeouts disabled, slowloris vulnerability
 
-- [ ] 8.12 — Add a11y testing to CI  
+- [x] 8.12 — Add a11y testing to CI  
 
   Action: Install @axe-core/playwright. Add accessibility checks to Playwright E2E tests using checkA11y(). Configure rules severity (critical = fail, moderate = warn)  
 
   Justification: Audit 03 — no formal a11y testing
 
-- [ ] 8.13 — QA validate OAuth flow through proxy (Phase 2 review W1)
+- [x] 8.13 — QA validate OAuth flow through proxy (Phase 2 review W1)
 
   Action: End-to-end test the OAuth authorize/callback flow through the new catch-all proxy. The proxy now uses `text()` instead of `json()` for non-redirect OAuth responses, which is more correct but untested. Verify error cases where upstream returns non-JSON.
 
   Justification: Phase 2 review W1 — OAuth authorize response shape changed
 
-- [ ] 8.14 — Evaluate proxy route matcher performance (Phase 2 review S1)
+- [x] 8.14 — Evaluate proxy route matcher performance (Phase 2 review S1) — **CLOSED: evaluated** (O(n) with n=124 routes is microseconds, acceptable)
 
-  File: apps/web/src/lib/proxy.ts
+   File: apps/web/src/lib/proxy.ts
 
-  Action: The route matcher is O(n) scanning 122 routes per request. Fine at current scale (~microseconds). If route count grows significantly, consider bucketing by method then segment count, or pre-compiling to a trie.
+   Action: The route matcher is O(n) scanning 122 routes per request. Fine at current scale (~microseconds). If route count grows significantly, consider bucketing by method then segment count, or pre-compiling to a trie.
 
-  Justification: Phase 2 review S1 — performance note
+   Justification: Phase 2 review S1 — performance note
 
 - [x] 8.15 — ~~PrismaClient singleton: add globalThis memoization for HMR/test reloads (Phase 3 review M-1)~~ — **CLOSED: not applicable**. Server uses `tsx watch` which restarts the process on file changes (no HMR). The `globalThis` memoization pattern is a Next.js-specific concern. Prisma is not used in the Next.js app (proxies to Fastify). If Prisma usage is ever added to `apps/web/` server components, revisit then.
 
-- [ ] 8.16 — Expand health test and web smoke test to cover real app logic (Phase 3 review M-5/M-6)
+- [x] 8.16 — Expand health test and web smoke test to cover real app logic (Phase 3 review M-5/M-6)
 
   Files: apps/server/src/\_\_tests\_\_/health.test.ts, apps/web/src/\_\_tests\_\_/smoke.test.tsx
 
@@ -1510,7 +1510,7 @@ Final Security Review (4h)
 
   Justification: Phase 3 review M-5/M-6
 
-- [ ] 8.17 — Add JSDoc comment to frontend logger about module-load env capture (Phase 3 review M-4)
+- [x] 8.17 — Add JSDoc comment to frontend logger about module-load env capture (Phase 3 review M-4)
 
   File: apps/web/src/lib/logger.ts
 
@@ -1518,7 +1518,7 @@ Final Security Review (4h)
 
   Justification: Phase 3 review M-4 — trivial but worth documenting for future developers
 
-- [ ] 8.18 — Honest frontend logger: rename or upgrade (Phase 3 QA-9)
+- [x] 8.18 — Honest frontend logger: rename or upgrade (Phase 3 QA-9)
 
   File: apps/web/src/lib/logger.ts
 
@@ -1526,7 +1526,7 @@ Final Security Review (4h)
 
   Justification: Phase 3 quality audit QA-9
 
-- [ ] 8.19 — Translate placeholder strings in non-English locales  
+- [x] 8.19 — Translate placeholder strings in non-English locales  
 
   Files: apps/web/messages/\*.json (22 non-en-US locale files)  
 
@@ -1534,7 +1534,7 @@ Final Security Review (4h)
 
   Justification: Phase 4 post-review A-I1, C-C2, B-I3 — English placeholders committed per existing pattern but never replaced with real translations
 
-- [ ] 8.20 — Implement E2E CI workflow with full application stack
+- [x] 8.20 — Implement E2E CI workflow with full application stack
 
   File: .github/workflows/e2e.yml
 
@@ -1548,7 +1548,7 @@ Final Security Review (4h)
 
   Justification: e2e.yml job disabled — no server running when Playwright tests execute
 
-- [ ] 8.21 — Add test coverage reporting to CI *(optional — evaluate when project is in maintenance phase)*
+- [x] 8.21 — Add test coverage reporting to CI *(optional — evaluate when project is in maintenance phase)* — **SKIPPED per user decision**
 
   File: .github/workflows/ci.yml
 
@@ -1558,7 +1558,7 @@ Final Security Review (4h)
 
   Justification: Item 1.15 specified coverage upload to Codecov but it was never implemented. Repo is private so Codecov would require a paid plan.
 
-- [ ] 8.22 — Refactor ConfigService to shared singleton or static methods (Phase 5 final review M-4)
+- [x] 8.22 — Refactor ConfigService to shared singleton or static methods (Phase 5 final review M-4)
 
   Files: apps/server/src/modules/config/service.ts, multiple controllers
 

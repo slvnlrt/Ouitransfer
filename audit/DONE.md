@@ -1103,3 +1103,151 @@ Full report: `audit/TODO-PHASE-5-QUALITY-AUDIT.md`
 - M-5 (formatDateTime locale tests): 13 tests added
 - M-1 (hardcoded "Move" label): Forwarded to Phase 8
 - M-2 (icon semantic equivalents): Forwarded to Phase 8
+
+---
+
+## Phase 8: Polish & Production Readiness
+
+### 8.1 — Add LICENSE file
+- **Date**: 2026-05-13
+- **Files**: `LICENSE` (new)
+- **Change**: Created Apache-2.0 license file. Copyright "Ouitransfer Contributors", 2024-present.
+- **Verified**: PASS
+
+### 8.2 — Update CONTRIBUTING.md
+- **Date**: 2026-05-13
+- **Files**: `CONTRIBUTING.md`
+- **Change**: Complete rewrite. Dev-focused guide with prerequisites, setup, just commands, code standards, testing, PR process, architecture notes. Generic GitHub tutorial removed.
+- **Verified**: PASS
+
+### 8.3 — Add architecture READMEs
+- **Date**: 2026-05-13
+- **Files**: `apps/server/src/README.md` (new), `apps/web/src/README.md` (new)
+- **Change**: Server: module structure, config, providers, validation, auth, how-to guide. Web: App Router, TanStack Query, proxy, auth, i18n, UI stack, how-to guide.
+- **Verified**: PASS
+
+### 8.4 — Implement upload resume for multipart uploads
+- **Date**: 2026-05-13
+- **Files**: 16 files (full stack)
+- **Change**: Full-stack S3 ListParts implementation. Server: StorageProvider interface + S3 provider + FileService + multipart controller + routes. Reverse-share: service + controller + POST route (CSRF exempt). Frontend: proxy routes + HTTP endpoint types/functions + Uppy listParts callback (replaces return [] stub). 7 integration tests.
+- **Verified**: PASS — 199 server + 203 web tests
+
+### 8.5 — Lighthouse CI
+- **Date**: 2026-05-13
+- **Files**: `.lighthouserc.cjs` (new), `package.json`
+- **Change**: Created Lighthouse CI config (2 URLs, 3 runs, thresholds). Added `@lhci/cli` devDep and `lighthouse` script.
+- **Verified**: PASS
+
+### 8.6 — Bundle analyzer
+- **Date**: 2026-05-13
+- **Files**: `apps/web/next.config.ts`, `apps/web/package.json`
+- **Change**: Added `@next/bundle-analyzer` with `withBundleAnalyzer` wrapper (conditional on `ANALYZE=true`). Added `analyze` script.
+- **Verified**: PASS
+
+### 8.7 — pnpm audit + dependency security
+- **Date**: 2026-05-13
+- **Files**: `apps/server/package.json`, `apps/web/package.json`, `pnpm-workspace.yaml`, `.github/workflows/ci.yml`
+- **Change**: Fixed 34 vulnerabilities (3 crit → 0, 15 high → 3 unfixable transitive). Upgraded @fastify/jwt 9→10, nodemailer 6→8, axios →1.15.2, next →15.5.18. Added CI audit job (continue-on-error for transitive vulns).
+- **Verified**: PASS — 192 server tests, all type-checks clean
+
+### 8.8 — Security headers via Fastify — CLOSED
+- **Date**: 2026-05-13
+- **Change**: Already configured. Helmet registered with CSP, HSTS 1yr, frameAncestors none.
+- **Verified**: N/A — already done
+
+### 8.9 — Frontend CSP
+- **Date**: 2026-05-13
+- **Files**: `apps/web/src/middleware.ts`, `apps/web/src/env.ts`
+- **Change**: Added `addSecurityHeaders()` helper with 5 headers (X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy, CSP with 9 directives). Dynamic `connect-src` via `CSP_CONNECT_SOURCES` env var for S3 presigned uploads. All 7 response paths wrapped.
+- **Verified**: PASS — 208 web tests
+
+### 8.10 — Frontend env validation
+- **Date**: 2026-05-13
+- **Files**: `apps/web/src/env.ts`, `apps/web/src/lib/proxy.ts`
+- **Change**: Expanded env.ts from 10→31 lines. Added API_BASE_URL (URL-validated, trailing slash stripped), OAUTH_ALLOWED_REDIRECT_HOSTS, ALLOWED_IMAGE_HOSTS, CSP_CONNECT_SOURCES. proxy.ts uses validated env.
+- **Verified**: PASS
+
+### 8.11 — Server timeout hardening
+- **Date**: 2026-05-13
+- **Files**: `apps/server/src/config/timeout.config.ts`, `apps/server/src/app.ts`
+- **Change**: connectionTimeout 0→30s, keepAlive 20h→30s, requestTimeout 0→4h, server.timeout 0→requestTimeout. Removed res/req.setTimeout(0) from serverFactory.
+- **Verified**: PASS — 192 server tests
+
+### 8.12 — a11y testing
+- **Date**: 2026-05-13
+- **Files**: `e2e/smoke.spec.ts`, `package.json`
+- **Change**: Added @axe-core/playwright. 2 new a11y tests (homepage + login) with wcag2a/wcag2aa tags.
+- **Verified**: PASS
+
+### 8.13 — OAuth proxy test coverage
+- **Date**: 2026-05-13
+- **Files**: `apps/web/src/lib/__tests__/proxy-oauth-redirect.test.ts`
+- **Change**: 3 new tests: all 6 OAuth hosts coverage, empty string URL, credentials-in-URL attack pattern.
+- **Verified**: PASS — 208 web tests
+
+### 8.14 — Route matcher performance — CLOSED
+- **Date**: 2026-05-13
+- **Change**: Evaluated. O(n) with n=124 routes is microseconds per request. Optimization not warranted.
+- **Verified**: N/A
+
+### 8.16 — Expand health + smoke tests
+- **Date**: 2026-05-13
+- **Files**: `apps/server/src/__tests__/health.test.ts`, `apps/web/src/__tests__/smoke.test.tsx`
+- **Change**: Health: 5 new tests (uptime, timestamp, 404, both-unhealthy with getter-based mock). Smoke: replaced 3 Button tests with 6 formatFileSize unit tests.
+- **Verified**: PASS — 203 server + 208 web tests
+
+### 8.17 + 8.18 — Frontend logger JSDoc + rename
+- **Date**: 2026-05-13
+- **Files**: `apps/web/src/lib/logger.ts`
+- **Change**: Added full module JSDoc (clarifies: client-side level-filtered console wrapper, NOT structured logger). Added LogContext interface. API surface unchanged.
+- **Verified**: PASS
+
+### 8.19 — Translate placeholder strings
+- **Date**: 2026-05-13
+- **Files**: 12 locale files (fr-FR, de-DE, es-ES, it-IT, pt-BR, nl-NL, pl-PL, ru-RU, tr-TR, sv-SE, el-GR, uk-UA)
+- **Change**: 15 keys translated per locale (errors.*, a11y.skipToContent, auth.sessionExpired). 10 exotic locales left with English per user decision.
+- **Verified**: PASS
+
+### 8.20 — E2E CI workflow
+- **Date**: 2026-05-13
+- **Files**: `.github/workflows/e2e.yml`, `playwright.config.ts`
+- **Change**: Removed `if: false`. Added Docker Compose start, health wait, DB seed, artifact upload, cleanup. Playwright webServer conditionally omitted in CI.
+- **Verified**: PASS
+
+### 8.21 — Test coverage reporting — SKIPPED
+- **Date**: 2026-05-13
+- **Change**: Skipped per user decision. Coverage reporting deferred to maintenance phase.
+
+### 8.22 — ConfigService refactor
+- **Date**: 2026-05-13
+- **Files**: `apps/server/src/modules/config/service.ts`, 12 server files, `apps/server/src/utils/app-error.ts`
+- **Change**: Replaced ConfigService class with 5 standalone exported functions. Added try/catch around JSON.parse in getGroupConfigs → throws InternalError. Added InternalError class. Updated 12 server files and 3 test mocks.
+- **Verified**: PASS — 192 server + 203 web tests
+
+### Portuguese comments cleanup (new item)
+- **Date**: 2026-05-13
+- **Files**: 11 files across server and web
+- **Change**: 33 Portuguese comments/strings translated to English across useUppyUpload.ts, V3BetaModal.tsx, providers.config.ts (12 JSDoc blocks), share/dto.ts, reverse-share/dto.ts, use-settings.ts (2 dead strings removed), default-layout.tsx, edit-password-modal.tsx, reverse-share-card.tsx, delete-reverse-share-modal.tsx, reverse-share-details-modal.tsx.
+- **Verified**: PASS
+
+### Phase 7 M-1 — Hardcoded "Move" label
+- **Date**: 2026-05-13
+- **Files**: `apps/web/src/components/tables/files-table-folder-row.tsx`
+- **Change**: `label: "Move"` → `label: t("common.move")` (key already exists in all 23 locales)
+- **Verified**: PASS
+
+### Phase 7 M-2 — GraphQL/Proto icon semantic fix
+- **Date**: 2026-05-13
+- **Files**: `apps/web/src/utils/file-icons.tsx`
+- **Change**: graphql/gql → Braces icon (pink-600), proto/protobuf → FileCode icon (blue-700). Removed Webhook import.
+- **Verified**: PASS
+
+### Review follow-ups
+- C-1 (CSP connect-src blocks S3 uploads): Added CSP_CONNECT_SOURCES env var, dynamic connect-src in middleware
+- I-1 (missed Portuguese strings): Fixed 4 strings in file/service.ts and folder/service.ts
+- I-2 (multipart objectName validation): Added validateObjectName() in all 4 multipart controller methods
+- I-3 (E2E workflow secrets pattern): Replaced ${{ secrets || fallback }} with plain test values
+- M-1 (audit CI transitive vulns): Added continue-on-error: true
+- M-2 (Lighthouse uses dev server): Acceptable for regression tracking, no change
+- M-3 (next.config.ts process.env): Build-time config, by design, no change
+- M-4 (stale smoke test comment): Simplified

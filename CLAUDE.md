@@ -135,9 +135,12 @@ audit/
   REVIEW-PHASE-5-BATCH-2.md   Phase 5 Batch 2 review (Tasks 3-5)
   REVIEW-PHASE-5-BATCH-3.md   Phase 5 Batch 3 review (Tasks 6-7)
   REVIEW-PHASE-5-BATCH-4.md   Phase 5 Batch 4 review (Tasks 8-9)
-  REVIEW-PHASE-7.md           Phase 7 final review
-  TODO-POST-PHASE-7.md        Reviewer follow-ups from Phase 7 (in-scope resolved; 2 pre-existing items forwarded to Phase 8)
-  PHASE-7-PLAN.md             Phase 7 implementation plan (historical snapshot)
+   REVIEW-PHASE-7.md           Phase 7 final review
+   TODO-POST-PHASE-7.md        Reviewer follow-ups from Phase 7 (in-scope resolved; 2 pre-existing items forwarded to Phase 8)
+   PHASE-7-PLAN.md             Phase 7 implementation plan (historical snapshot)
+   TODO-POST-PHASE-8.md        Reviewer follow-ups from Phase 8 (all resolved)
+   REVIEW-PHASE-8.md           Phase 8 final review
+   PHASE-8-PLAN.md             Phase 8 implementation plan (historical snapshot)
 ```
 
 ### Phase 4 — Frontend Modernization: COMPLETE
@@ -237,8 +240,31 @@ Key changes:
 - **Icon consolidation**: Removed `@tabler/icons-react`. ~85 non-brand icons → `lucide-react`,
   17 brand icons → `react-icons/tb`. Union type in `file-icons.tsx`. Link/LinkIcon collision fixed.
 - Review: 0 Critical, 2 Important (documentation-only), 7 Minor (3 fixed inline, 4 no-action/kept,
-  M-4 knip cleanup done). 2 pre-existing items forwarded to Phase 8 (M-1 i18n, M-2 icon polish).
-  See `audit/REVIEW-PHASE-7.md` and `audit/TODO-POST-PHASE-7.md`.
+   M-4 knip cleanup done). 2 pre-existing items forwarded to Phase 8 (M-1 i18n, M-2 icon polish).
+   See `audit/REVIEW-PHASE-7.md` and `audit/TODO-POST-PHASE-7.md`.
+
+### Phase 8 — Polish & Production Readiness: COMPLETE
+22 items (8.1-8.22) plus Portuguese comments cleanup and 2 Phase 7 forwarded items. 9 tasks,
+9 commits. 203 server tests + 208 web tests + 11 shared tests pass. All type-checks clean.
+Key changes:
+- **Documentation**: Apache-2.0 LICENSE file, CONTRIBUTING.md complete rewrite (dev-focused),
+  server + web architecture READMEs
+- **Upload resume**: Full-stack S3 ListParts implementation (server StorageProvider + controller +
+  routes, reverse-share support, frontend Uppy callback, 7 integration tests)
+- **Server security**: Timeout hardening (connection 30s, keepAlive 30s, request 4h), @fastify/jwt
+  9→10 (fixed 3 crit CVEs), nodemailer 6→8, axios →1.15.2, next →15.5.18. CI audit job.
+- **Frontend security**: CSP + 4 security headers in middleware, env validation expanded (API_BASE_URL,
+  OAUTH_ALLOWED_REDIRECT_HOSTS, ALLOWED_IMAGE_HOSTS, CSP_CONNECT_SOURCES), proxy uses validated env
+- **ConfigService refactor**: Class → 5 standalone functions, JSON.parse error handling, InternalError
+  class, 12 server files updated
+- **Logger**: Full module JSDoc, LogContext interface, clarified as client-side level-filtered wrapper
+- **Translations**: 15 keys translated in 12 common-language locales. Hardcoded "Move" label → i18n.
+  GraphQL/Proto icons fixed (Webhook → Braces/FileCode).
+- **Test improvements**: Health test (5 new), formatFileSize tests (6 new), OAuth redirect tests (3 new)
+- **CI & tooling**: Lighthouse CI config, bundle analyzer, @axe-core/playwright a11y tests, E2E
+  workflow enabled with Docker Compose
+- **Portuguese cleanup**: 33 Portuguese comments/strings translated across 11 files
+- Review follow-ups: all resolved. See `audit/REVIEW-PHASE-8.md` and `audit/TODO-POST-PHASE-8.md`.
 
 ## Important: No Production, No Legacy
 The app is **not in production** and has no existing users. This means:
