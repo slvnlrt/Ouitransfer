@@ -46,7 +46,7 @@ jobs:
 
       - name: Seed database
         run: |
-          docker compose exec -T server npx prisma db seed
+          docker compose exec -T server pnpm exec prisma db seed
 
       - name: Run E2E tests
         run: pnpm e2e
