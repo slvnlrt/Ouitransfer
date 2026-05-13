@@ -31,7 +31,8 @@
     "translations:prune": "python3 scripts/prune_translations.py",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
@@ -83,6 +84,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^15.3.3",
     "@tailwindcss/postcss": "catalog:",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",

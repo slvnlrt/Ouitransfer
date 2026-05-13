@@ -26,18 +26,23 @@ export default defineConfig({
       use: { ...devices["Desktop Safari"] },
     },
   ],
-  webServer: [
-    {
-      command: "pnpm dev:server",
-      port: 3333,
-      reuseExistingServer: !process.env.CI,
-      timeout: 30000,
-    },
-    {
-      command: "pnpm dev:web",
-      port: 3000,
-      reuseExistingServer: !process.env.CI,
-      timeout: 30000,
-    },
-  ],
+  // Only start dev servers locally — CI uses Docker Compose
+  ...(process.env.CI
+    ? {}
+    : {
+        webServer: [
+          {
+            command: "pnpm dev:server",
+            port: 3333,
+            reuseExistingServer: true,
+            timeout: 30000,
+          },
+          {
+            command: "pnpm dev:web",
+            port: 3000,
+            reuseExistingServer: true,
+            timeout: 30000,
+          },
+        ],
+      }),
 });
