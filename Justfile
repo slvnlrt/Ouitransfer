@@ -92,7 +92,7 @@ db-reset:
 
 # Build both Docker images locally (single-arch, current platform only)
 docker-build:
-    docker compose build
+    docker compose -f docker-compose.yaml -f docker-compose.ci.yml build
 
 # Build and push multi-platform images — usage: just docker-push [tag]
 docker-push tag="latest":
@@ -113,25 +113,25 @@ docker-push tag="latest":
         --push \
         .
 
-# Start all services (docker compose up -d)
+# Start all services (build + docker compose up -d)
 docker-start:
-    docker compose up -d
+    docker compose -f docker-compose.yaml -f docker-compose.ci.yml up -d --build
 
 # Stop all services (docker compose down)
 docker-stop:
-    docker compose down
+    docker compose -f docker-compose.yaml -f docker-compose.ci.yml down
 
 # Tail logs for all services
 docker-logs:
-    docker compose logs -f
+    docker compose -f docker-compose.yaml -f docker-compose.ci.yml logs -f
 
 # Open a shell in the server container
 docker-shell:
-    docker compose exec server /bin/sh
+    docker compose -f docker-compose.yaml -f docker-compose.ci.yml exec server /bin/sh
 
 # Remove all containers and volumes (destructive — data loss)
 docker-clean:
-    docker compose down -v
+    docker compose -f docker-compose.yaml -f docker-compose.ci.yml down -v
     docker system prune -f
 
 # ─── Dependencies & Setup ────────────────────────────────────────────────────

@@ -141,6 +141,20 @@ describe("middleware", () => {
   });
 
   // -----------------------------------------------------------------------
+  // Test 2b: Signed cookie (Fastify cookie-signature format) → access granted
+  // -----------------------------------------------------------------------
+  it("allows access with a signed JWT cookie (jwt.cookieHmac format)", async () => {
+    const token = await signToken({ userId: "user-1", isAdmin: false });
+    // Simulate @fastify/cookie signed format: jwt_value.cookie_hmac_signature
+    const signedToken = `${token}.fakeCookieHmacSignature123`;
+    const req = createRequest("/dashboard", signedToken);
+    await middleware(req);
+
+    expect(mockNext).toHaveBeenCalledTimes(1);
+    expect(mockRedirect).not.toHaveBeenCalled();
+  });
+
+  // -----------------------------------------------------------------------
   // Test 3: Expired JWT → redirect to /login, cookie deleted
   // -----------------------------------------------------------------------
   it("rejects expired JWT, clears cookie, and redirects to /login", async () => {

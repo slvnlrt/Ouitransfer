@@ -1,8 +1,15 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
+import {
+  REFRESH_TOKEN_COOKIE_NAME,
+  REFRESH_TOKEN_COOKIE_PATH,
+  REFRESH_TOKEN_MAX_AGE,
+} from "../../config/auth.config.js";
+import { env } from "../../env.js";
 import { UnauthorizedError, ValidationError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
+import { createRefreshToken } from "../auth/refresh-token.service.js";
 import { AvatarService } from "./avatar.service.js";
 import { createRegisterUserSchema, UpdateUserSchema } from "./dto.js";
 import { UserService } from "./service.js";
@@ -14,16 +21,52 @@ export class UserController {
   async register(request: FastifyRequest, reply: FastifyReply) {
     const schema = await createRegisterUserSchema();
     const input = schema.parse(request.body);
-    const user = await this.userService.register(input);
+    const result = await this.userService.register(input);
+    const { isFirstUser, ...user } = result;
 
     // Audit user creation (fire-and-forget)
     logAuditEvent({
-      userId: request.user?.userId,
+      userId: request.user?.userId ?? user.id,
       action: "USER_CREATE",
       ipAddress: request.ip,
       userAgent: request.headers["user-agent"],
       metadata: { createdUserId: user.id, email: user.email },
     }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
+
+    // Auto-login the first user so they're immediately authenticated
+    // after registration. Subsequent users are created by an admin who
+    // is already logged in, so no auto-login is needed for them.
+    if (isFirstUser) {
+      const isSecure = env.SECURE_SITE === "true";
+
+      const token = await reply.jwtSign({
+        userId: user.id,
+        isAdmin: user.isAdmin,
+        tokenVersion: user.tokenVersion,
+      });
+
+      reply.setCookie("token", token, {
+        httpOnly: true,
+        path: "/",
+        secure: isSecure,
+        sameSite: isSecure ? "lax" : "strict",
+        signed: true,
+      });
+
+      const refreshToken = await createRefreshToken(
+        user.id,
+        request.headers["user-agent"] ?? "",
+        request.ip,
+      );
+      reply.setCookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
+        httpOnly: true,
+        secure: isSecure,
+        sameSite: "lax",
+        path: REFRESH_TOKEN_COOKIE_PATH,
+        maxAge: REFRESH_TOKEN_MAX_AGE,
+        signed: false,
+      });
+    }
 
     return reply.status(201).send({ user, message: "User created successfully" });
   }

@@ -34,16 +34,27 @@ export class UserService {
     }
 
     const usersCount = await prisma.user.count();
-    const isAdmin = usersCount === 0;
+    const isFirstUser = usersCount === 0;
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
     const user = await this.userRepository.createUser({
       ...data,
       password: hashedPassword,
-      isAdmin,
+      isAdmin: isFirstUser,
     });
 
-    return UserResponseSchema.parse(user);
+    // When the first user registers, mark setup as complete so the
+    // registration form is no longer shown. This is done server-side
+    // to avoid a race condition where the frontend would need to call
+    // PATCH /app/configs/firstUserAccess without a JWT token.
+    if (isFirstUser) {
+      await prisma.appConfig.update({
+        where: { key: "firstUserAccess" },
+        data: { value: "false" },
+      });
+    }
+
+    return { ...UserResponseSchema.parse(user), isFirstUser };
   }
 
   async listUsers() {

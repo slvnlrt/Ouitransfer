@@ -31,7 +31,7 @@ const defaultConfigs = [
   },
   {
     key: "appLogo",
-    value: "https://i.ibb.co/gMpk75bZ/Group.png",
+    value: "",
     type: "string",
     group: "general",
   },

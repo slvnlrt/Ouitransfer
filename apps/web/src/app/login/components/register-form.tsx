@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAppInfo } from "@/contexts/app-info-context";
-import { registerUser, updateConfig } from "@/http/endpoints";
+import { registerUser } from "@/http/endpoints";
 import { MultiProviderButtons } from "./multi-provider-buttons";
 import { PasswordVisibilityToggle } from "./password-visibility-toggle";
 
@@ -58,10 +58,8 @@ export function RegisterForm({ isVisible, onToggleVisibility }: RegisterFormProp
         ...data,
       });
 
-      await updateConfig("firstUserAccess", {
-        value: "false",
-      });
-
+      // The server sets firstUserAccess=false and auto-logs in the first user,
+      // so we just need to refresh app info to reflect the updated state.
       await refreshAppInfo();
       toast.success(t("register.validation.success"));
     } catch {

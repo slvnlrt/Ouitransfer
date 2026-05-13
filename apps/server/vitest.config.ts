@@ -12,6 +12,11 @@ export default defineConfig({
     // instances from booting simultaneously. Tests within each file still run
     // concurrently (this only affects cross-file parallelism).
     fileParallelism: false,
+    // Integration tests call buildApp() in beforeAll, which boots Fastify with
+    // 10+ plugins (helmet, JWT, CSRF, Swagger, Scalar, rate-limit, etc.).
+    // Under CPU contention (Turbo runs web/shared tests in parallel, CI load),
+    // this cold bootstrap can exceed vitest's default 10s hookTimeout.
+    hookTimeout: 30_000,
     coverage: {
       provider: "v8",
       reporter: ["text", "lcov"],

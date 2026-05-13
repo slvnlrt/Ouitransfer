@@ -23,9 +23,30 @@ function getJwtSecretKey(): Uint8Array {
   return _jwtSecretKey;
 }
 
+/**
+ * Extract the bare JWT from a potentially signed cookie value.
+ *
+ * @fastify/cookie with `signed: true` appends an HMAC signature to the cookie
+ * value using the cookie-signature format: `value.base64_hmac`.
+ * A JWT has exactly 3 dot-separated parts (header.payload.signature), so a
+ * signed JWT cookie has 4 parts (header.payload.jwtSig.cookieHmac).
+ *
+ * This strips the 4th part if present, recovering the original JWT.
+ * The middleware cannot unsign with COOKIE_SECRET (server-only), but it doesn't
+ * need to — JWT integrity is verified independently via JWT_SECRET.
+ */
+function extractJwtFromSignedCookie(cookieValue: string): string {
+  const parts = cookieValue.split(".");
+  if (parts.length === 4) {
+    return parts.slice(0, 3).join(".");
+  }
+  return cookieValue;
+}
+
 async function getTokenPayload(token: string): Promise<TokenPayload | null> {
   try {
-    const { payload } = await jwtVerify(token, getJwtSecretKey(), {
+    const jwt = extractJwtFromSignedCookie(token);
+    const { payload } = await jwtVerify(jwt, getJwtSecretKey(), {
       algorithms: ["HS256"],
     });
 
