@@ -17,6 +17,8 @@
 
 ## Forwarded to Phase 8
 
-- [ ] **M-1**: Replace hardcoded `label: "Move"` in `files-table-folder-row.tsx:89` with `t("filesTable.actions.move")` and add the translation key to all 23 locale files. *Pre-existing tech debt, not introduced by Phase 7.* → Phase 8 (translations/i18n cleanup)
-- [ ] **M-2**: Optionally re-evaluate `Webhook` icon for `graphql`/`proto`/`protobuf` file types — consider `Network` or `Code` for better semantic match. *Cosmetic, low priority.* → Phase 8 (polish)
+- [x] **M-1**: Replace hardcoded `label: "Move"` in `files-table-folder-row.tsx:89` with `t("filesTable.actions.move")` and add the translation key to all 23 locale files. *Pre-existing tech debt, not introduced by Phase 7.* → Phase 8 (translations/i18n cleanup)
+   - **Completed in Phase 8** — Hardcoded "Move" label replaced with `label: t("common.move")`
+- [x] **M-2**: Optionally re-evaluate `Webhook` icon for `graphql`/`proto`/`protobuf` file types — consider `Network` or `Code` for better semantic match. *Cosmetic, low priority.* → Phase 8 (polish)
+   - **Completed in Phase 8** — Braces icon for graphql, FileCode icon for proto
 - [x] **M-4**: Knip cleanup — investigated all 7 flagged deps. Removed 3 genuinely unused (`@fastify/static` server, `qrcode` + `@types/qrcode` web, `class-variance-authority` docs). Kept 4 (false positives or intentionally pre-installed): `@radix-ui/react-collapsible` (shadcn/ui primitive for future use), `tw-animate-css` (used in globals.css), `tailwindcss` (PostCSS build tool). **Fixed in Phase 7.**

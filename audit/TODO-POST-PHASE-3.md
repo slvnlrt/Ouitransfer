@@ -41,28 +41,34 @@
 
 ## Deferred — Controller Error Migration → Phase 5 (item 5.16)
 
-- [ ] **I-2 — Error handler bypassed by existing controllers** — Controllers still wrap handler bodies in try/catch returning `{ error: "..." }` while the global handler returns `{ error, code, statusCode, details? }`. Clients face two distinct error formats. Prisma errors inside catch blocks get swallowed into generic 500 instead of being mapped by the global handler. The handler primarily catches Zod schema validation errors.
-  - **Why deferred**: Phase 5 (Backend Hardening) will touch these same controller files for validation/auth improvements. Migrating try/catch now then re-refactoring in Phase 5 = double work on the same files.
-  - **Impact**: Medium — two concurrent error response shapes until migration
-  - **Added to**: `CONSOLIDATED-TODO-LIST.md` Phase 5 as item 5.16
+- [x] **I-2 — Error handler bypassed by existing controllers** — Controllers still wrap handler bodies in try/catch returning `{ error: "..." }` while the global handler returns `{ error, code, statusCode, details? }`. Clients face two distinct error formats. Prisma errors inside catch blocks get swallowed into generic 500 instead of being mapped by the global handler. The handler primarily catches Zod schema validation errors.
+   - **Why deferred**: Phase 5 (Backend Hardening) will touch these same controller files for validation/auth improvements. Migrating try/catch now then re-refactoring in Phase 5 = double work on the same files.
+   - **Impact**: Medium — two concurrent error response shapes until migration
+   - **Added to**: `CONSOLIDATED-TODO-LIST.md` Phase 5 as item 5.16
+   - **Completed in Phase 5 (item 5.16)** — All controllers migrated to throw AppError directly
 
 ---
 
 ## Minor / Documentation
 
-- [ ] **M-1 — PrismaClient singleton doesn't memoize across HMR** — `apps/server/src/shared/prisma.ts` uses plain `const prisma = new PrismaClient()`. Consider `globalThis` memoization pattern for Vitest watch mode connection-pool leaks.
-  - **Suggested phase**: Phase 8 (testing maturity)
+- [x] **M-1 — PrismaClient singleton doesn't memoize across HMR** — `apps/server/src/shared/prisma.ts` uses plain `const prisma = new PrismaClient()`. Consider `globalThis` memoization pattern for Vitest watch mode connection-pool leaks.
+   - **Suggested phase**: Phase 8 (testing maturity)
+   - **Not applicable** — tsx watch restarts the process, no HMR in server
 
-- [ ] **M-3 — Mime-type regex doesn't prefer `filename*` over `filename`** — Per RFC 6266, when both are present, `filename*` should be preferred. Current regex returns whichever appears first. Pre-existing, not introduced by Phase 3.
-  - **Suggested phase**: Phase 5 (robustness) or low priority
+- [x] **M-3 — Mime-type regex doesn't prefer `filename*` over `filename`** — Per RFC 6266, when both are present, `filename*` should be preferred. Current regex returns whichever appears first. Pre-existing, not introduced by Phase 3.
+   - **Suggested phase**: Phase 5 (robustness) or low priority
+   - **Completed in Phase 5** — RFC 5987 `filename*` priority implemented in sanitizeFilename
 
-- [ ] **M-4 — Frontend logger reads env at module load** — `NEXT_PUBLIC_LOG_LEVEL` captured once at evaluation time. Runtime overrides won't work. Intentional design, just needs a JSDoc comment.
+- [x] **M-4 — Frontend logger reads env at module load** — `NEXT_PUBLIC_LOG_LEVEL` captured once at evaluation time. Runtime overrides won't work. Intentional design, just needs a JSDoc comment.
+   - **Completed in Phase 8 (item 8.17)** — Full JSDoc added explaining build-time capture
 
-- [ ] **M-5 — Health test is a route smoke test, not integration** — Single 200-status assertion doesn't exercise error handler, Prisma, JWT, or plugin chain. Consider expanding or renaming to `health.smoke.test.ts`.
-  - **Suggested phase**: Phase 8 (testing maturity)
+- [x] **M-5 — Health test is a route smoke test, not integration** — Single 200-status assertion doesn't exercise error handler, Prisma, JWT, or plugin chain. Consider expanding or renaming to `health.smoke.test.ts`.
+   - **Suggested phase**: Phase 8 (testing maturity)
+   - **Completed in Phase 8 (item 8.16)** — 5 new health integration tests added
 
-- [ ] **M-6 — Web smoke test tests shadcn Button, not app code** — Useful as test-infrastructure validation but doesn't cover Phase 3 changes.
-  - **Suggested phase**: Phase 8 (testing maturity)
+- [x] **M-6 — Web smoke test tests shadcn Button, not app code** — Useful as test-infrastructure validation but doesn't cover Phase 3 changes.
+   - **Suggested phase**: Phase 8 (testing maturity)
+   - **Completed in Phase 8 (item 8.16)** — Replaced with formatFileSize unit tests
 
 ---
 
@@ -99,19 +105,22 @@
 
 ### Minor / Deferred
 
-- [ ] **QA-8 — Web component splits created ~100-120 lines of cross-file duplication** — `files-table-file-row.tsx` and `files-table-folder-row.tsx` share identical inline-edit UI (input + confirm/cancel buttons), checkbox blocks, and icon imports. Same pattern in `files-grid-file-card.tsx` vs `files-grid-folder-card.tsx`. The fast agent noted callbacks and menus do differ, so it's not a full clone — but the inline-edit widget is copy-pasted 4x.
-  - **Fix**: Extract `<EditableField>` and `<SelectionCheckbox>` components. This naturally fits Phase 4 (Frontend Modernization) scope. Do a broader scan for other duplicated UI patterns across the split files — the fast agent only checked the file/folder pairs.
-  - **Suggested phase**: Phase 4 (item to add)
-  - Files: `apps/web/src/app/files/components/files-table-file-row.tsx`, `files-table-folder-row.tsx`, `files-grid-file-card.tsx`, `files-grid-folder-card.tsx`
+- [x] **QA-8 — Web component splits created ~100-120 lines of cross-file duplication** — `files-table-file-row.tsx` and `files-table-folder-row.tsx` share identical inline-edit UI (input + confirm/cancel buttons), checkbox blocks, and icon imports. Same pattern in `files-grid-file-card.tsx` vs `files-grid-folder-card.tsx`. The fast agent noted callbacks and menus do differ, so it's not a full clone — but the inline-edit widget is copy-pasted 4x.
+   - **Fix**: Extract `<EditableField>` and `<SelectionCheckbox>` components. This naturally fits Phase 4 (Frontend Modernization) scope. Do a broader scan for other duplicated UI patterns across the split files — the fast agent only checked the file/folder pairs.
+   - **Suggested phase**: Phase 4 (item to add)
+   - Files: `apps/web/src/app/files/components/files-table-file-row.tsx`, `files-table-folder-row.tsx`, `files-grid-file-card.tsx`, `files-grid-folder-card.tsx`
+   - **Completed in Phase 4 (item 4.14)** — Shared UI primitives extracted (EditableField, ItemActions, useEditableItem)
 
-- [ ] **QA-9 — Frontend "structured logger" is a console wrapper** — `apps/web/src/lib/logger.ts` is 37 lines that filter by level then call `console[method]()`. No JSON serialization, no transports, no redaction, no correlation IDs. The migration itself is complete (zero console.* in web code), but calling it "structured" is misleading.
-  - **Fix**: Either (a) rename references in docs to "level-filtered logger" / "client logger", or (b) back it with a real transport in Phase 8 (Sentry breadcrumbs, OTel browser, etc.). Not blocking — but don't claim structured logging on the frontend until it actually is.
-  - **Suggested phase**: Phase 8 (polish)
+- [x] **QA-9 — Frontend "structured logger" is a console wrapper** — `apps/web/src/lib/logger.ts` is 37 lines that filter by level then call `console[method]()`. No JSON serialization, no transports, no redaction, no correlation IDs. The migration itself is complete (zero console.* in web code), but calling it "structured" is misleading.
+   - **Fix**: Either (a) rename references in docs to "level-filtered logger" / "client logger", or (b) back it with a real transport in Phase 8 (Sentry breadcrumbs, OTel browser, etc.). Not blocking — but don't claim structured logging on the frontend until it actually is.
+   - **Suggested phase**: Phase 8 (polish)
+   - **Completed in Phase 8 (items 8.17+8.18)** — Full JSDoc and LogContext interface added, clarified as client-side level-filtered wrapper
 
 ### Reclassified from Minor
 
-- [ ] **M-1 — PrismaClient HMR memoization — NOT APPLICABLE** — Audit found `apps/server/src/shared/prisma.ts` uses plain `const prisma = new PrismaClient()` which is correct for this codebase. The server uses `tsx watch` which restarts the process on changes (no HMR). The `globalThis` memoization pattern is a Next.js-specific concern that doesn't apply here. Recommend closing this item.
-  - **Action**: Close in CONSOLIDATED-TODO-LIST.md (item 8.15) with "not applicable — tsx watch restarts process" justification.
+- [x] **M-1 — PrismaClient HMR memoization — NOT APPLICABLE** — Audit found `apps/server/src/shared/prisma.ts` uses plain `const prisma = new PrismaClient()` which is correct for this codebase. The server uses `tsx watch` which restarts the process on changes (no HMR). The `globalThis` memoization pattern is a Next.js-specific concern that doesn't apply here. Recommend closing this item.
+   - **Action**: Close in CONSOLIDATED-TODO-LIST.md (item 8.15) with "not applicable — tsx watch restarts process" justification.
+   - **Closed** — Not applicable, tsx watch restarts process
 
 ---
 
