@@ -37,9 +37,9 @@ jobs:
       - name: Lint, Type Check & Test
         # Turbo runs all three task types in parallel across packages.
         # --continue ensures all tasks run even if one fails early.
-        run: turbo lint type-check test --continue
+        run: pnpm exec turbo lint type-check test --continue
 
       - name: Build
-        run: turbo build
+        run: pnpm build
         env:
           JWT_SECRET: ci-build-jwt-secret-minimum-32-characters-long
