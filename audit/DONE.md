@@ -1251,3 +1251,59 @@ Full report: `audit/TODO-PHASE-5-QUALITY-AUDIT.md`
 - M-2 (Lighthouse uses dev server): Acceptable for regression tracking, no change
 - M-3 (next.config.ts process.env): Build-time config, by design, no change
 - M-4 (stale smoke test comment): Simplified
+
+---
+
+## Phase 9: Documentation Site Overhaul
+
+### 9.1 — Rewrite architecture.mdx for S3-first architecture
+- **Date**: 2026-05-13
+- **Files**: `apps/docs/content/docs/v3-beta/architecture.mdx`
+- **Change**: Rewrote storage section (filesystem → S3/RustFS), added Docker architecture table (3 containers), added security secrets section, removed encryption cruft (AES-NI, DISABLE_FILESYSTEM_ENCRYPTION)
+- **Verified**: PASS
+
+### 9.2 — Fix password-reset-without-smtp.mdx for 3-container architecture
+- **Date**: 2026-05-13
+- **Files**: `apps/docs/content/docs/v3-beta/password-reset-without-smtp.mdx`
+- **Change**: Container name fix (ouitransfer-app → ouitransfer-server), docker logs fix, pnpm commands, added server container note
+- **Verified**: PASS
+
+### 9.3 — Update api.mdx — remove monolith Docker examples
+- **Date**: 2026-05-13
+- **Files**: `apps/docs/content/docs/v3-beta/api.mdx`
+- **Change**: Replaced monolith Docker examples with 3-container architecture, fixed image/volume references, removed filesystem capability, added CSRF protection note
+- **Verified**: PASS
+
+### 9.4 — Fix container names and port in reverse-proxy-configuration.mdx
+- **Date**: 2026-05-13
+- **Files**: `apps/docs/content/docs/v3-beta/reverse-proxy-configuration.mdx`
+- **Change**: Fixed container names, health endpoint (port 5487→3333, /api/health→/health), added STORAGE_URL and CSP_CONNECT_SOURCES guidance
+- **Verified**: PASS
+
+### 9.5 — Update github-architecture.mdx for current stack
+- **Date**: 2026-05-13
+- **Files**: `apps/docs/content/docs/v3-beta/github-architecture.mdx`
+- **Change**: React 18→19, TailwindCSS→Tailwind CSS 4, added Node 24/pnpm 10.6.0, added packages/ to project tree, JSON schema→Zod, filesystem→S3, added monorepo tooling section, fixed localstorage typo
+- **Verified**: PASS
+
+### 9.6 — Update contribute.mdx for new tooling
+- **Date**: 2026-05-13
+- **Files**: `apps/docs/content/docs/v3-beta/contribute.mdx`
+- **Change**: 442→93 lines. Removed generic Git tutorial, added prerequisites table, quick setup, dev tools (Biome, just, Vitest), commit format, link to CONTRIBUTING.md
+- **Verified**: PASS
+
+### 9.7 — Add required secrets to manual-installation.mdx
+- **Date**: 2026-05-13
+- **Files**: `apps/docs/content/docs/v3-beta/manual-installation.mdx`
+- **Change**: 300→188 lines. Added mandatory secrets section, STORAGE_URL, fixed S3 config, fixed commands (pnpm exec, --filter), port 5487 for prod web, Node 24 prerequisite
+- **Verified**: PASS
+
+### Review follow-ups
+- C-1 (api.mdx missing S3 env vars): Added 7 S3 env vars to docker run example
+- I-1 (Swagger→Scalar naming): Fixed in manual-installation.mdx, added ENABLE_API_DOCS=true production note
+- I-2 (relative DB path): Fixed to absolute Docker path in password-reset.mdx
+- I-3 (broken /docs/v3-beta/manage-users link): Removed from manual-installation.mdx
+- M-1 (title inconsistency): Accepted — minor style difference
+- M-2 (error message text): Accepted — illustrative, not exact
+- M-3 (GET /api/files → GET /files): Fixed in api.mdx
+- M-4 (UID/GID container context): Accepted — clear from surrounding context

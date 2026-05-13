@@ -1580,7 +1580,7 @@ Phase 9: Documentation Site Overhaul 📖
 
 High Priority (blocking for self-hosters)
 
-- [ ] 9.1 — Rewrite `architecture.mdx` for S3-first architecture
+- [x] 9.1 — Rewrite `architecture.mdx` for S3-first architecture
 
   File: `apps/docs/content/docs/v3-beta/architecture.mdx`
 
@@ -1595,7 +1595,7 @@ High Priority (blocking for self-hosters)
 
   Justification: Quick exploration 2026-05-12 — file appears not updated by Phase 6 despite being listed as updated
 
-- [ ] 9.2 — Fix `password-reset-without-smtp.mdx` for 3-container architecture
+- [x] 9.2 — Fix `password-reset-without-smtp.mdx` for 3-container architecture
 
   File: `apps/docs/content/docs/v3-beta/password-reset-without-smtp.mdx`
 
@@ -1609,7 +1609,7 @@ High Priority (blocking for self-hosters)
 
   Justification: Quick exploration 2026-05-12
 
-- [ ] 9.3 — Update `api.mdx` — remove monolith Docker examples
+- [x] 9.3 — Update `api.mdx` — remove monolith Docker examples
 
   File: `apps/docs/content/docs/v3-beta/api.mdx`
 
@@ -1624,7 +1624,7 @@ High Priority (blocking for self-hosters)
 
 Medium Priority
 
-- [ ] 9.4 — Fix container names and port in `reverse-proxy-configuration.mdx`
+- [x] 9.4 — Fix container names and port in `reverse-proxy-configuration.mdx`
 
   File: `apps/docs/content/docs/v3-beta/reverse-proxy-configuration.mdx`
 
@@ -1639,7 +1639,7 @@ Medium Priority
 
   Justification: Quick exploration 2026-05-12
 
-- [ ] 9.5 — Update `github-architecture.mdx` for current stack
+- [x] 9.5 — Update `github-architecture.mdx` for current stack
 
   File: `apps/docs/content/docs/v3-beta/github-architecture.mdx`
 
@@ -1654,7 +1654,7 @@ Medium Priority
 
   Justification: Quick exploration 2026-05-12
 
-- [ ] 9.6 — Update `contribute.mdx` for new tooling
+- [x] 9.6 — Update `contribute.mdx` for new tooling
 
   File: `apps/docs/content/docs/v3-beta/contribute.mdx`
 
@@ -1669,7 +1669,7 @@ Medium Priority
 
   Justification: Quick exploration 2026-05-12
 
-- [ ] 9.7 — Add required secrets to `manual-installation.mdx` env var section
+- [x] 9.7 — Add required secrets to `manual-installation.mdx` env var section
 
   File: `apps/docs/content/docs/v3-beta/manual-installation.mdx`
 

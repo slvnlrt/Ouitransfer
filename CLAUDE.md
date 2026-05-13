@@ -135,12 +135,15 @@ audit/
   REVIEW-PHASE-5-BATCH-2.md   Phase 5 Batch 2 review (Tasks 3-5)
   REVIEW-PHASE-5-BATCH-3.md   Phase 5 Batch 3 review (Tasks 6-7)
   REVIEW-PHASE-5-BATCH-4.md   Phase 5 Batch 4 review (Tasks 8-9)
-   REVIEW-PHASE-7.md           Phase 7 final review
-   TODO-POST-PHASE-7.md        Reviewer follow-ups from Phase 7 (in-scope resolved; 2 pre-existing items forwarded to Phase 8)
-   PHASE-7-PLAN.md             Phase 7 implementation plan (historical snapshot)
-   TODO-POST-PHASE-8.md        Reviewer follow-ups from Phase 8 (all resolved)
-   REVIEW-PHASE-8.md           Phase 8 final review
-   PHASE-8-PLAN.md             Phase 8 implementation plan (historical snapshot)
+    REVIEW-PHASE-7.md           Phase 7 final review
+    TODO-POST-PHASE-7.md        Reviewer follow-ups from Phase 7 (in-scope resolved; 2 pre-existing items forwarded to Phase 8)
+    PHASE-7-PLAN.md             Phase 7 implementation plan (historical snapshot)
+    TODO-POST-PHASE-8.md        Reviewer follow-ups from Phase 8 (all resolved)
+    REVIEW-PHASE-8.md           Phase 8 final review
+    PHASE-8-PLAN.md             Phase 8 implementation plan (historical snapshot)
+    REVIEW-PHASE-9.md           Phase 9 final review
+    TODO-POST-PHASE-9.md        Reviewer follow-ups from Phase 9 (all resolved)
+    PHASE-9-PLAN.md             Phase 9 implementation plan (historical snapshot)
 ```
 
 ### Phase 4 — Frontend Modernization: COMPLETE
@@ -265,6 +268,19 @@ Key changes:
   workflow enabled with Docker Compose
 - **Portuguese cleanup**: 33 Portuguese comments/strings translated across 11 files
 - Review follow-ups: all resolved. See `audit/REVIEW-PHASE-8.md` and `audit/TODO-POST-PHASE-8.md`.
+
+### Phase 9 — Documentation Site Overhaul: COMPLETE
+7 items (9.1-9.7) updated across 7 documentation pages. 4 commits.
+Key changes:
+- **Architecture pages**: `architecture.mdx` rewritten for S3-first model (RustFS default, 3-container
+  Docker table, security secrets section, encryption cruft removed). `github-architecture.mdx` updated
+  (React 19, Tailwind CSS 4, Node 24, packages/ tree, Zod, monorepo tooling section)
+- **Operational docs**: `password-reset-without-smtp.mdx` container names fixed, `api.mdx` monolith
+  examples replaced with 3-container architecture + CSRF note, `reverse-proxy-configuration.mdx`
+  health endpoint fixed + STORAGE_URL/CSP guidance added
+- **Contributor docs**: `contribute.mdx` rewritten (442→93 lines, dev-focused), `manual-installation.mdx`
+  rewritten (300→188 lines, mandatory secrets, correct commands)
+- Review follow-ups: all resolved. See `audit/REVIEW-PHASE-9.md` and `audit/TODO-POST-PHASE-9.md`.
 
 ## Important: No Production, No Legacy
 The app is **not in production** and has no existing users. This means:
