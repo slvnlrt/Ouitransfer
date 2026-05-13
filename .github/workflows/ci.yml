@@ -11,8 +11,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
-    name: Lint & Format
+  ci:
+    name: CI
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,100 +25,21 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: .turbo
-          key: turbo-lint-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: turbo-lint-${{ runner.os }}-
-      - run: pnpm lint
+          key: turbo-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: turbo-${{ runner.os }}-
 
-  type-check:
-    name: Type Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: ".node-version"
-          cache: "pnpm"
-      - run: pnpm install --frozen-lockfile
-      - uses: actions/cache@v4
-        with:
-          path: .turbo
-          key: turbo-typecheck-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: turbo-typecheck-${{ runner.os }}-
-      - run: pnpm type-check
+      - name: Security Audit
+        # Transitive vulnerabilities may cause failures until upstream patches.
+        # Non-blocking: surfaces warnings without gating the build.
+        run: pnpm audit --audit-level=high
+        continue-on-error: true
 
-  test:
-    name: Unit Tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: ".node-version"
-          cache: "pnpm"
-      - run: pnpm install --frozen-lockfile
-      - uses: actions/cache@v4
-        with:
-          path: .turbo
-          key: turbo-test-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: turbo-test-${{ runner.os }}-
-      - run: pnpm test
+      - name: Lint, Type Check & Test
+        # Turbo runs all three task types in parallel across packages.
+        # --continue ensures all tasks run even if one fails early.
+        run: turbo lint type-check test --continue
 
-  audit:
-    name: Security Audit
-    runs-on: ubuntu-latest
-    # Transitive vulnerabilities (fast-xml-builder via @aws-sdk, fast-uri via
-    # @commitlint/@fastify/swagger) may cause failures until upstream releases fixes.
-    # continue-on-error prevents blocking the build while still surfacing the warnings.
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: ".node-version"
-          cache: "pnpm"
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm audit --audit-level=high
-
-  lighthouse:
-    name: Lighthouse CI
-    runs-on: ubuntu-latest
-    needs: [build]
-    # Lighthouse scores can vary under CI load — non-blocking, informational only
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: ".node-version"
-          cache: "pnpm"
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm lighthouse
+      - name: Build
+        run: turbo build
         env:
-          # JWT_SECRET is required by apps/web/src/env.ts at startup
-          JWT_SECRET: ci-lighthouse-jwt-secret-minimum-32-characters-long
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    needs: [lint, type-check, test, audit]
-    env:
-      # JWT_SECRET is required by apps/web/src/env.ts at module import time during build
-      JWT_SECRET: ci-build-jwt-secret-minimum-32-characters-long
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: ".node-version"
-          cache: "pnpm"
-      - run: pnpm install --frozen-lockfile
-      - uses: actions/cache@v4
-        with:
-          path: .turbo
-          key: turbo-build-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: turbo-build-${{ runner.os }}-
-      - run: pnpm build
+          JWT_SECRET: ci-build-jwt-secret-minimum-32-characters-long

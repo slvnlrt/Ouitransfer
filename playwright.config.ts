@@ -8,7 +8,8 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: process.env.CI ? "github" : "html",
   use: {
-    baseURL: "http://localhost:3000",
+    // CI uses Docker Compose (production port 5487); local dev uses Next.js dev (port 3000)
+    baseURL: process.env.CI ? "http://localhost:5487" : "http://localhost:3000",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
   },

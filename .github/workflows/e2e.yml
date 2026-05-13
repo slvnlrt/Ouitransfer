@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   e2e:
-    name: Playwright E2E
+    name: E2E & Lighthouse
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -25,16 +25,11 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
 
-      - name: Build application
-        run: pnpm build
-
-      - name: Start application stack
-        run: |
-          docker compose -f docker-compose.yaml up -d
-        env:
-          JWT_SECRET: ci-test-jwt-secret-that-is-at-least-32-characters-long
-          CSRF_SECRET: ci-test-csrf-secret-that-is-at-least-32-characters-long
-          COOKIE_SECRET: ci-test-cookie-secret-at-least-32-characters-long-ok
+      # Build images locally and start the full stack with CI test credentials.
+      # The CI overlay adds build directives and injects env vars that override
+      # the empty REQUIRED placeholders in docker-compose.yaml.
+      - name: Build and start Docker stack
+        run: docker compose -f docker-compose.yaml -f docker-compose.ci.yml up -d --build
 
       - name: Wait for services to be healthy
         run: |
@@ -44,14 +39,16 @@ jobs:
           timeout 120 bash -c 'until curl -fs http://localhost:5487; do sleep 2; done'
           echo "All services healthy"
 
-      - name: Seed database
-        run: |
-          docker compose exec -T server pnpm exec prisma db seed
+      # Lighthouse runs against the production Docker stack (port 5487).
+      # Non-blocking: scores can vary under CI load.
+      - name: Lighthouse CI
+        run: pnpm lighthouse
+        continue-on-error: true
 
       - name: Run E2E tests
         run: pnpm e2e
 
-      - name: Upload report
+      - name: Upload Playwright report
         uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
@@ -61,4 +58,4 @@ jobs:
 
       - name: Stop services
         if: always()
-        run: docker compose down -v
+        run: docker compose -f docker-compose.yaml -f docker-compose.ci.yml down -v

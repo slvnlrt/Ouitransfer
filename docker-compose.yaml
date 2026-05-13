@@ -41,7 +41,7 @@ services:
 
   # ─── Fastify API Server ────────────────────────────────────────────────────
   server:
-    image: ouitransfer/server:latest
+    image: ghcr.io/slvnlrt/ouitransfer-server:latest
     # Uncomment to build locally instead of pulling:
     # build:
     #   context: .
@@ -103,7 +103,7 @@ services:
 
   # ─── Next.js Web Frontend ──────────────────────────────────────────────────
   web:
-    image: ouitransfer/web:latest
+    image: ghcr.io/slvnlrt/ouitransfer-web:latest
     # Uncomment to build locally instead of pulling:
     # build:
     #   context: .
@@ -111,6 +111,7 @@ services:
     container_name: ouitransfer-web
     environment:
       API_BASE_URL: "http://server:3333"
+      JWT_SECRET: ""       # REQUIRED: must match server's JWT_SECRET (used by middleware for auth)
       # DEFAULT_LANGUAGE: "en-US"
     ports:
       - "5487:5487"    # Web interface
