@@ -86,7 +86,7 @@ export function FolderRow({
         ]
       : []),
     ...(onMoveFolder
-      ? [{ key: "move", icon: Move, label: "Move", onClick: () => onMoveFolder(folder) }]
+      ? [{ key: "move", icon: Move, label: t("common.move"), onClick: () => onMoveFolder(folder) }]
       : []),
     ...(onDownloadFolder
       ? [

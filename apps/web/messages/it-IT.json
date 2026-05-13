@@ -1,6 +1,6 @@
 {
   "a11y": {
-    "skipToContent": "Skip to content"
+    "skipToContent": "Vai al contenuto"
   },
   "auth": {
     "errors": {
@@ -12,7 +12,7 @@
     },
     "authenticationFailed": "Autenticazione fallita",
     "successfullyAuthenticated": "Autenticazione completata con successo!",
-    "sessionExpired": "Your session has expired. Please sign in again."
+    "sessionExpired": "La sessione è scaduta. Effettua di nuovo l'accesso."
   },
   "authProviders": {
     "title": "Provider di Autenticazione",
@@ -295,19 +295,19 @@
     "Two-factor authentication is not enabled": "L'autenticazione a due fattori non è abilitata",
     "Two-factor authentication required": "Autenticazione a due fattori richiesta",
     "noUserData": "Nessun dato utente",
-    "somethingWentWrong": "Something went wrong",
-    "tryAgain": "Try again",
-    "goHome": "Go home",
-    "pageNotFound": "Page not found",
-    "pageNotFoundMessage": "The page you're looking for doesn't exist or has been moved.",
-    "shareUnavailable": "Share unavailable",
-    "shareErrorMessage": "An error occurred while loading this share.",
-    "uploadUnavailable": "Upload unavailable",
-    "uploadErrorMessage": "An error occurred while loading this upload page.",
-    "accessDenied": "Access denied",
-    "accessDeniedMessage": "You don't have administrator privileges to access this page.",
-    "errorLoadingSettings": "Error loading settings",
-    "refreshPage": "Refresh page"
+    "somethingWentWrong": "Qualcosa è andato storto",
+    "tryAgain": "Riprova",
+    "goHome": "Vai alla home",
+    "pageNotFound": "Pagina non trovata",
+    "pageNotFoundMessage": "La pagina che stai cercando non esiste o è stata spostata.",
+    "shareUnavailable": "Condivisione non disponibile",
+    "shareErrorMessage": "Si è verificato un errore durante il caricamento di questa condivisione.",
+    "uploadUnavailable": "Caricamento non disponibile",
+    "uploadErrorMessage": "Si è verificato un errore durante il caricamento di questa pagina.",
+    "accessDenied": "Accesso negato",
+    "accessDeniedMessage": "Non disponi dei privilegi di amministratore per accedere a questa pagina.",
+    "errorLoadingSettings": "Errore nel caricamento delle impostazioni",
+    "refreshPage": "Aggiorna la pagina"
   },
   "fileActions": {
     "editFile": "Modifica File",

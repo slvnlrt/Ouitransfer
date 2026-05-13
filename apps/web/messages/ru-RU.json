@@ -1,6 +1,6 @@
 {
   "a11y": {
-    "skipToContent": "Skip to content"
+    "skipToContent": "Перейти к содержимому"
   },
   "auth": {
     "errors": {
@@ -12,7 +12,7 @@
     },
     "authenticationFailed": "Ошибка аутентификации",
     "successfullyAuthenticated": "Успешно аутентифицирован!",
-    "sessionExpired": "Your session has expired. Please sign in again."
+    "sessionExpired": "Ваша сессия истекла. Пожалуйста, войдите снова."
   },
   "authProviders": {
     "title": "Провайдеры аутентификации",
@@ -295,19 +295,19 @@
     "Two-factor authentication is not enabled": "Двухфакторная аутентификация не включена",
     "Two-factor authentication required": "Требуется двухфакторная аутентификация",
     "noUserData": "Нет данных пользователя",
-    "somethingWentWrong": "Something went wrong",
-    "tryAgain": "Try again",
-    "goHome": "Go home",
-    "pageNotFound": "Page not found",
-    "pageNotFoundMessage": "The page you're looking for doesn't exist or has been moved.",
-    "shareUnavailable": "Share unavailable",
-    "shareErrorMessage": "An error occurred while loading this share.",
-    "uploadUnavailable": "Upload unavailable",
-    "uploadErrorMessage": "An error occurred while loading this upload page.",
-    "accessDenied": "Access denied",
-    "accessDeniedMessage": "You don't have administrator privileges to access this page.",
-    "errorLoadingSettings": "Error loading settings",
-    "refreshPage": "Refresh page"
+    "somethingWentWrong": "Что-то пошло не так",
+    "tryAgain": "Попробовать снова",
+    "goHome": "На главную",
+    "pageNotFound": "Страница не найдена",
+    "pageNotFoundMessage": "Страница, которую вы ищете, не существует или была перемещена.",
+    "shareUnavailable": "Ссылка недоступна",
+    "shareErrorMessage": "Произошла ошибка при загрузке этой ссылки.",
+    "uploadUnavailable": "Загрузка недоступна",
+    "uploadErrorMessage": "Произошла ошибка при загрузке этой страницы.",
+    "accessDenied": "Доступ запрещён",
+    "accessDeniedMessage": "У вас нет прав администратора для доступа к этой странице.",
+    "errorLoadingSettings": "Ошибка загрузки настроек",
+    "refreshPage": "Обновить страницу"
   },
   "fileActions": {
     "editFile": "Редактировать файл",

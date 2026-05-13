@@ -1,6 +1,6 @@
 {
   "a11y": {
-    "skipToContent": "Skip to content"
+    "skipToContent": "Ga naar inhoud"
   },
   "auth": {
     "errors": {
@@ -12,7 +12,7 @@
     },
     "authenticationFailed": "Authenticatie mislukt",
     "successfullyAuthenticated": "Succesvol geauthenticeerd!",
-    "sessionExpired": "Your session has expired. Please sign in again."
+    "sessionExpired": "Je sessie is verlopen. Log opnieuw in."
   },
   "authProviders": {
     "title": "Authenticatie Providers",
@@ -295,19 +295,19 @@
     "Two-factor authentication is not enabled": "Tweefactorauthenticatie is niet ingeschakeld",
     "Two-factor authentication required": "Tweefactorauthenticatie vereist",
     "noUserData": "Geen gebruikersgegevens",
-    "somethingWentWrong": "Something went wrong",
-    "tryAgain": "Try again",
-    "goHome": "Go home",
-    "pageNotFound": "Page not found",
-    "pageNotFoundMessage": "The page you're looking for doesn't exist or has been moved.",
-    "shareUnavailable": "Share unavailable",
-    "shareErrorMessage": "An error occurred while loading this share.",
-    "uploadUnavailable": "Upload unavailable",
-    "uploadErrorMessage": "An error occurred while loading this upload page.",
-    "accessDenied": "Access denied",
-    "accessDeniedMessage": "You don't have administrator privileges to access this page.",
-    "errorLoadingSettings": "Error loading settings",
-    "refreshPage": "Refresh page"
+    "somethingWentWrong": "Er is iets misgegaan",
+    "tryAgain": "Opnieuw proberen",
+    "goHome": "Naar startpagina",
+    "pageNotFound": "Pagina niet gevonden",
+    "pageNotFoundMessage": "De pagina die je zoekt bestaat niet of is verplaatst.",
+    "shareUnavailable": "Deling niet beschikbaar",
+    "shareErrorMessage": "Er is een fout opgetreden bij het laden van deze deling.",
+    "uploadUnavailable": "Upload niet beschikbaar",
+    "uploadErrorMessage": "Er is een fout opgetreden bij het laden van deze uploadpagina.",
+    "accessDenied": "Toegang geweigerd",
+    "accessDeniedMessage": "Je hebt geen beheerdersrechten om deze pagina te openen.",
+    "errorLoadingSettings": "Fout bij het laden van instellingen",
+    "refreshPage": "Pagina vernieuwen"
   },
   "fileActions": {
     "editFile": "Bestand Bewerken",

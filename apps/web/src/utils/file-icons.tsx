@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   Atom,
   BookOpen,
+  Braces,
   Bug,
   Cloud,
   Code,
@@ -24,7 +25,6 @@ import {
   Sigma,
   SquareTerminal,
   Video,
-  Webhook,
   Wrench,
 } from "lucide-react";
 import type { ComponentType, SVGAttributes } from "react";
@@ -440,12 +440,12 @@ const fileIcons: FileIconMapping[] = [
   // Data Formats
   {
     extensions: ["graphql", "gql"],
-    icon: Webhook,
+    icon: Braces,
     color: "text-pink-600",
   },
   {
     extensions: ["proto", "protobuf"],
-    icon: Webhook,
+    icon: FileCode,
     color: "text-blue-700",
   },
 
