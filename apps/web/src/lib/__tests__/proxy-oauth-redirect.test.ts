@@ -8,19 +8,28 @@ describe("isAllowedRedirectUrl (5.15)", () => {
     ).toBe(true);
   });
 
-  it("allows known OAuth provider hostnames", () => {
+  it("allows all 6 built-in OAuth provider hostnames", () => {
+    const requestUrl = "https://app.example.com/api/x";
+
+    // Google
+    expect(isAllowedRedirectUrl("https://accounts.google.com/o/oauth2/auth", requestUrl)).toBe(
+      true,
+    );
+    // GitHub
+    expect(isAllowedRedirectUrl("https://github.com/login/oauth/authorize", requestUrl)).toBe(true);
+    // GitLab
+    expect(isAllowedRedirectUrl("https://gitlab.com/oauth/authorize", requestUrl)).toBe(true);
+    // Microsoft
     expect(
       isAllowedRedirectUrl(
-        "https://accounts.google.com/o/oauth2/auth",
-        "https://app.example.com/api/x",
+        "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+        requestUrl,
       ),
     ).toBe(true);
-    expect(
-      isAllowedRedirectUrl(
-        "https://github.com/login/oauth/authorize",
-        "https://app.example.com/api/x",
-      ),
-    ).toBe(true);
+    // Discord
+    expect(isAllowedRedirectUrl("https://discord.com/api/oauth2/authorize", requestUrl)).toBe(true);
+    // Spotify
+    expect(isAllowedRedirectUrl("https://accounts.spotify.com/authorize", requestUrl)).toBe(true);
   });
 
   it("rejects arbitrary external URLs", () => {
@@ -39,6 +48,27 @@ describe("isAllowedRedirectUrl (5.15)", () => {
 
   it("handles malformed URLs gracefully", () => {
     expect(isAllowedRedirectUrl("not-a-url-at-all", "https://app.example.com/api/x")).toBe(false);
+  });
+
+  it("rejects empty string URL", () => {
+    expect(isAllowedRedirectUrl("", "https://app.example.com/api/x")).toBe(false);
+  });
+
+  it("rejects URLs that use an allowed host as credentials to redirect to an evil host", () => {
+    // Attack pattern: https://allowed.host@evil.com/steal
+    // The actual hostname is evil.com, not accounts.google.com
+    expect(
+      isAllowedRedirectUrl(
+        "https://accounts.google.com@evil.com/steal",
+        "https://app.example.com/api/x",
+      ),
+    ).toBe(false);
+    expect(
+      isAllowedRedirectUrl(
+        "https://github.com@attacker.net/token-steal",
+        "https://app.example.com/api/x",
+      ),
+    ).toBe(false);
   });
 
   // I-5: env-driven extension for custom OIDC providers

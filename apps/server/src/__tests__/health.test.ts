@@ -9,20 +9,42 @@ vi.mock("../shared/prisma.js", () => ({
   },
 }));
 
-// Mock storage.config so s3Client is null (storage not configured in test env)
-vi.mock("../config/storage.config.js", () => ({
-  s3Client: null,
-  bucketName: "",
-  isS3Enabled: false,
-  isExternalS3: false,
-  isInternalStorage: false,
-  rejectUnauthorized: true,
-  storageConfig: {},
-  createPublicS3Client: vi.fn().mockReturnValue(null),
-  ensureBucket: vi.fn().mockResolvedValue(undefined),
-}));
+/**
+ * Mutable s3Client stub — starts as null (storage not configured).
+ * The "both unhealthy" describe block enables it by setting s3Enabled = true
+ * and making send() throw.
+ *
+ * We use explicit getters on the mock namespace object so that Vitest's ESM
+ * live-binding layer always reads the current value on each import access.
+ */
+const storageState = {
+  s3Enabled: false,
+  sendImpl: vi.fn().mockResolvedValue({}),
+};
+
+vi.mock("../config/storage.config.js", () => {
+  const stub = {
+    get s3Client() {
+      if (!storageState.s3Enabled) return null;
+      return { send: storageState.sendImpl };
+    },
+    get bucketName() {
+      return storageState.s3Enabled ? "test-bucket" : "";
+    },
+    isS3Enabled: false,
+    isExternalS3: false,
+    isInternalStorage: false,
+    rejectUnauthorized: true,
+    storageConfig: {},
+    createPublicS3Client: vi.fn().mockReturnValue(null),
+    ensureBucket: vi.fn().mockResolvedValue(undefined),
+  };
+  return stub;
+});
 
 import { healthRoutes } from "../modules/health/routes.js";
+
+// ── Healthy state ──────────────────────────────────────────────────────────────
 
 describe("Health endpoint", () => {
   const app = fastify({ logger: false });
@@ -75,7 +97,47 @@ describe("Health endpoint", () => {
     expect(body.checks).toHaveProperty("database");
     expect(body.checks).toHaveProperty("storage");
   });
+
+  it("GET /health uptime is a non-negative number", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/health",
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = response.json<{ uptime: number }>();
+    expect(body.uptime).toBeGreaterThanOrEqual(0);
+  });
+
+  it("GET /health timestamp is an ISO 8601 date string", async () => {
+    const before = Date.now();
+    const response = await app.inject({
+      method: "GET",
+      url: "/health",
+    });
+    const after = Date.now();
+
+    expect(response.statusCode).toBe(200);
+    const body = response.json<{ timestamp: string }>();
+    const ts = Date.parse(body.timestamp);
+    expect(Number.isNaN(ts)).toBe(false);
+    expect(ts).toBeGreaterThanOrEqual(before);
+    expect(ts).toBeLessThanOrEqual(after);
+    // ISO 8601 format: starts with full date and time components
+    expect(body.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+  });
+
+  it("GET /nonexistent returns 404 (no catch-all swallows unknown routes)", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/nonexistent-route-that-does-not-exist",
+    });
+
+    expect(response.statusCode).toBe(404);
+  });
 });
+
+// ── Degraded state — DB failure ────────────────────────────────────────────────
 
 describe("Health endpoint — degraded state", () => {
   const app = fastify({ logger: false });
@@ -108,5 +170,48 @@ describe("Health endpoint — degraded state", () => {
     }>();
     expect(body.status).toBe("degraded");
     expect(body.checks.database).toBe("error");
+  });
+});
+
+// ── Degraded state — both DB and storage failure ───────────────────────────────
+
+describe("Health endpoint — both DB and storage degraded", () => {
+  const app = fastify({ logger: false });
+
+  beforeAll(async () => {
+    // Enable storage so the controller reaches the HeadBucketCommand branch
+    storageState.s3Enabled = true;
+
+    app.setValidatorCompiler(validatorCompiler);
+    app.setSerializerCompiler(serializerCompiler);
+    app.register(healthRoutes);
+    await app.ready();
+  });
+
+  afterAll(async () => {
+    // Restore storage to "not configured" state for isolation
+    storageState.s3Enabled = false;
+    await app.close();
+  });
+
+  it("GET /health returns 503 with both database and storage errors", async () => {
+    const { prisma } = await import("../shared/prisma.js");
+    vi.mocked(prisma.$queryRaw).mockRejectedValueOnce(new Error("DB connection failed"));
+    storageState.sendImpl.mockRejectedValueOnce(new Error("S3 connection failed"));
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/health",
+    });
+
+    expect(response.statusCode).toBe(503);
+
+    const body = response.json<{
+      status: string;
+      checks: { database: string; storage: string };
+    }>();
+    expect(body.status).toBe("degraded");
+    expect(body.checks.database).toBe("error");
+    expect(body.checks.storage).toBe("error");
   });
 });
