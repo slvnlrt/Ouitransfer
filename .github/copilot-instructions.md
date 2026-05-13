@@ -1,86 +1,84 @@
-# Instructions pour GitHub Copilot - Ouitransfer
+# GitHub Copilot Instructions — Ouitransfer
 
-Ce fichier contient des instructions pour GitHub Copilot afin d'aider au développement du projet Ouitransfer (Burger&Cie).
+Ouitransfer is a self-hosted file transfer solution (WeTransfer alternative), built as a pnpm monorepo with Turborepo.
 
-## Vue d'ensemble du projet
+## Stack
 
-Ouitransfer est une solution de transfert de fichiers auto-hébergée pour Burger&Cie, construite avec :
+- **Backend**: Fastify 5 + TypeScript (ESM), Prisma ORM (SQLite), S3-compatible storage (RustFS default)
+- **Frontend**: Next.js 15 (App Router) + React 19 + Tailwind CSS 4 + shadcn/ui (new-york style)
+- **Docs**: Fumadocs (Next.js)
+- **Package manager**: pnpm 10.6.0 with workspace catalogs
+- **Node**: 24
+- **Monorepo tooling**: Turborepo, pnpm workspaces
 
-- **Backend** : Fastify (Node.js) avec TypeScript, base SQLite, stockage filesystem/S3
-- **Frontend** : Next.js 15 + React + TypeScript + Shadcn/ui
-- **Documentation** : Next.js + Fumadocs + MDX
-- **Package Manager** : pnpm (v10.6.0)
-- **Structure Monorepo** : Trois apps (web, server, docs) dans le répertoire `apps/`
-
-## Architecture
+## Repository structure
 
 ```
 apps/
-├── docs/       # Site de documentation (Next.js + Fumadocs)
-├── server/     # API Backend (Fastify + TypeScript)
-└── web/        # Application Frontend (Next.js 15)
+  server/     # Fastify API, port 3333
+  web/        # Next.js frontend, port 3000
+  docs/       # Fumadocs documentation site, port 3001
+packages/
+  shared/     # @ouitransfer/shared — shared utilities (mime-types, etc.)
+  config/     # @ouitransfer/config — shared tsconfig presets
+infra/        # Docker, deployment config
+e2e/          # Playwright end-to-end tests
 ```
 
-## Technologies clés
+## Key conventions
 
-- **TypeScript** : Langage principal pour toutes les applications
-- **Base de données** : Prisma ORM avec SQLite (stockage S3-compatible optionnel)
-- **Authentification** : Multiple providers OAuth (Google, GitHub, Discord, etc.)
-- **Internationalisation** : Support multi-langues avec scripts de traduction
-- **Validation** : Hooks Husky pre-push pour linting et vérification des types
+- **Module system**: ESM throughout — server uses `"type": "module"`, all relative imports use `.js` extensions
+- **File naming**: kebab-case for files, PascalCase for React components
+- **Server modules**: `src/modules/{feature}/` with `controller.ts`, `service.ts`, `routes.ts`, `dto.ts`
+- **Shared code**: `packages/shared` via subpath exports (`@ouitransfer/shared/mime-types`)
+- **Validation**: Zod schemas via `fastify-type-provider-zod`
+- **Auth**: JWT (httpOnly cookie, 15-min access + refresh rotation), bcrypt, 2FA via otpauth (TOTP)
+- **i18n**: next-intl, 23 languages, messages in `apps/web/messages/`
+- **Error handling**: AppError hierarchy thrown from services/controllers, caught by `globalErrorHandler`
 
-## Workflow de développement
+## Code quality tools
 
-### Convention de commits
+- **Linter + formatter**: Biome (replaces ESLint + Prettier) — run `pnpm lint` or `pnpm format`
+- **Type checking**: `pnpm type-check`
+- **Tests**: Vitest (unit + integration), Playwright (e2e)
+- **Validation**: `pnpm validate` (lint + type-check)
+- **Git hooks**: Lefthook (replaces Husky)
+- **Dead code**: Knip — `pnpm knip`
 
-Utiliser le format Conventional Commits :
+## Common commands
+
+```bash
+# Development
+pnpm dev                        # Start all apps
+pnpm --filter ouitransfer-api dev   # Start server only
+pnpm --filter ouitransfer-web dev   # Start web only
+
+# Quality
+pnpm lint        # Biome lint (all apps)
+pnpm format      # Biome format (all apps)
+pnpm type-check  # TypeScript check (all apps)
+pnpm validate    # lint + type-check
+pnpm test        # Vitest (all packages)
+
+# Database (server)
+pnpm --filter ouitransfer-api db:generate   # Generate Prisma client
+pnpm --filter ouitransfer-api db:migrate    # Run migrations
+
+# Docker
+docker compose up    # Start all 3 containers (storage + server + web)
+docker compose down  # Stop all containers
+```
+
+## Commit convention
+
+Conventional Commits format:
 
 ```
 <type>(<scope>): <description>
 
-Types :
-- feat: Nouvelle fonctionnalité
-- fix: Correction de bug
-- docs: Modifications de documentation
-- test: Ajout ou mise à jour de tests
-- refactor: Refactoring de code
-- style: Formatage de code
-- chore: Tâches de maintenance
+Types: feat, fix, docs, test, refactor, style, chore, perf, ci
 ```
 
-### Qualité de code
-
-1. **Linting** : Toutes les apps utilisent ESLint. Lancer `pnpm lint` avant de commiter
-2. **Formatage** : Utiliser Prettier. Lancer `pnpm format`
-3. **Vérification de types** : Lancer `pnpm type-check`
-4. **Validation** : Lancer `pnpm validate` pour linting + vérification de types
-
-## Commandes utiles
-
-### Racine
-
-```bash
-pnpm install          # Installer toutes les dépendances
-```
-
-### Par app (web/server/docs)
-
-```bash
-pnpm dev              # Démarrer le serveur de développement
-pnpm build            # Build pour la production
-pnpm lint             # Lancer ESLint
-pnpm format           # Formater le code avec Prettier
-pnpm type-check       # Vérification des types TypeScript
-pnpm validate         # lint + type-check
-```
-
-### Docker
-
-```bash
-docker compose up     # Démarrer tous les services
-docker compose down   # Arrêter tous les services
-```
-
-## Licence
+## License
 
 Apache-2.0
