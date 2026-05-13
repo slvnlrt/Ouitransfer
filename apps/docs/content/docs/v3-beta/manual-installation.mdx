@@ -3,81 +3,113 @@ title: Manual Installation
 icon: Cog
 ---
 
-Hey there! Looking to run **OUITRANSFER.** your way, with complete control over every piece of the stack? This manual installation guide is for you. No Docker, no pre-built containers just the raw source code to tweak, customize, and deploy as you see fit.
+Hey there! Looking to run **Ouitransfer** your way, with complete control over every piece of the stack? This manual installation guide is for you. No Docker, no pre-built containers — just the raw source code to tweak, customize, and deploy as you see fit.
 
 > **Prefer a quicker setup?** If this hands-on approach feels like overkill, check out our [**Quick Start (Docker)**](/docs/v3-beta/quick-start) guide for a fast, containerized deployment. This manual path is tailored for developers who want to dive deep, modify the codebase, or integrate custom services.
 
 Here's what you'll do at a glance:
 
 1. **Clone** the repository to get the code.
-2. **Configure** `.env` files for backend and frontend.
-3. **Install** JavaScript dependencies using `pnpm`.
+2. **Configure** your `.env` file with required secrets and storage settings.
+3. **Install** JavaScript dependencies using `pnpm` (from the repo root).
 4. **Generate** the Prisma client and run database migrations.
-5. **Seed** the database with initial OUITRANSFER. data.
+5. **Seed** the database with initial data.
 6. **Build & start** the backend (Fastify API).
 7. **Build & serve** the frontend (Next.js app).
 
-We've broken down each step below feel free to jump to the section you're working on!
+---
 
-## Before you start
+## Before You Start
 
-Let's make sure your environment is ready to roll. Check that you've got these tools installed and set up on your system:
+### Prerequisites
 
-- <span style={{ color: "#16a34a" }}>Node.js</span> *(Powers our JavaScript/TypeScript apps)*
-- <span style={{ color: "#16a34a" }}>pnpm</span> *(Our go-to package manager)*
-- <span style={{ color: "#16a34a" }}>Git</span> *(For cloning and managing the repo)*
+| Tool | Version | Notes |
+|------|---------|-------|
+| Node.js | **24** | Required — earlier versions are not supported |
+| pnpm | **10.6.0** | `npm install -g pnpm@10.6.0` |
+| Git | any recent | For cloning the repository |
 
-⚠️ **Heads Up on Package Managers**: OUITRANSFER. was built and tested with `pnpm`. While you _could_ try `npm`, `yarn`, or `bun`, we strongly recommend sticking with `pnpm` to avoid compatibility headaches.
+⚠️ **Package manager**: Ouitransfer is built and tested with `pnpm`. Do not use `npm`, `yarn`, or `bun` — the lockfile and workspace configuration are pnpm-specific.
+
+### System Requirements
+
+- **OS**: macOS or Linux (recommended). Windows works but is not thoroughly tested.
+- **Memory**: 4 GB RAM minimum.
+- **S3-Compatible Storage**: **Required** — either a local RustFS instance or an external S3 provider.
 
 ---
 
-### System requirements
-
-- **Operating System**: MacOS or Linux (recommended for best results)
-  - Windows works but hasn't been thoroughly tested.
-- **Memory**: At least 4GB RAM is suggested.
-- **Storage**: Depends on how much file storage you'll need.
-- **CPU**: 2+ cores for smooth performance.
-- **S3-Compatible Storage**: **REQUIRED** - Either:
-  - External S3 service (AWS S3, DigitalOcean Spaces, etc.)
-  - Local RustFS server running on port 9000
-  - Another S3-compatible service
-
----
-
-## Let's Get OUITRANSFER. Running
-
-### Step 1: Clone the repository
-
-First things first, grab a local copy of the OUITRANSFER. codebase. Run this command to clone the official repo:
+## Step 1: Clone the Repository
 
 ```bash
 git clone https://github.com/burger-cie/ouitransfer.git
+cd ouitransfer
 ```
 
-Once it's done, you'll have a new directory with the project structure. Inside, the `apps` folder holds the key pieces: `docs`, `server`, and `web`. For this guide, we're focusing on `server` (our Fastify backend) and `web` (our Next.js frontend).
+The repo is a **pnpm monorepo**. Always run commands from the **repo root** unless instructed otherwise. The key directories are:
+
+- `apps/server` — Fastify API backend
+- `apps/web` — Next.js frontend
+- `packages/shared` + `packages/config` — internal packages (built automatically by Turborepo during `pnpm build`)
 
 ---
 
-### Step 2: Set up the backend
+## Step 2: Configure Environment Variables
 
-Let's get the backend up and running. Start by navigating to the server directory:
-
-```bash
-cd ./apps/server
-```
-
-#### Configure environment variables
-
-Before anything else, we need to set up the environment variables OUITRANSFER. relies on. We've included a handy template file called `.env.example` to get you started. Create your own `.env` file with this command:
+Copy the template and fill in your values:
 
 ```bash
 cp .env.example .env
 ```
 
-This copies the template into a new `.env` file with all the necessary settings. **Important**: You must configure S3-compatible storage for OUITRANSFER v3+ to work. Edit the `.env` file to either:
+### ⚠️ Mandatory Security Secrets
 
-**Option 1: External S3 Service**
+The server will **crash at startup** if these three variables are missing or too short. Each must be at least 32 characters and all three must be distinct.
+
+Generate each secret with:
+
+```bash
+openssl rand -hex 32
+```
+
+Then set them in your `.env`:
+
+```bash
+JWT_SECRET=<output of openssl rand -hex 32>
+CSRF_SECRET=<output of openssl rand -hex 32>
+COOKIE_SECRET=<output of openssl rand -hex 32>
+```
+
+### Storage Configuration
+
+**Option 1 — Local RustFS (for development)**
+
+Start RustFS first:
+
+```bash
+docker run -p 9000:9000 \
+  -e RUSTFS_ACCESS_KEY=dev \
+  -e RUSTFS_SECRET_KEY=devsecret \
+  rustfs/rustfs:latest rustfs server /data
+```
+
+Then configure your `.env`:
+
+```bash
+S3_ENDPOINT=localhost
+S3_PORT=9000
+S3_USE_SSL=false
+S3_ACCESS_KEY=dev
+S3_SECRET_KEY=devsecret
+S3_BUCKET_NAME=ouitransfer-files
+S3_FORCE_PATH_STYLE=true
+STORAGE_URL=http://localhost:9000
+```
+
+`STORAGE_URL` is the public URL that browsers use to reach the storage service. For local RustFS, this is `http://localhost:9000`.
+
+**Option 2 — External S3 Service (AWS S3, DigitalOcean Spaces, Backblaze B2, etc.)**
+
 ```bash
 ENABLE_S3=true
 S3_ENDPOINT=s3.amazonaws.com
@@ -87,214 +119,159 @@ S3_BUCKET_NAME=ouitransfer-files
 S3_REGION=us-east-1
 ```
 
-**Option 2: Local RustFS (for development)**
-```bash
-# First, start RustFS locally:
-docker run -p 9000:9000 -e RUSTFS_ACCESS_KEY=dev -e RUSTFS_SECRET_KEY=devsecret rustfs/rustfs:latest rustfs server /data
+When `ENABLE_S3=true`, `STORAGE_URL` is not required — presigned URLs use the S3 endpoint directly.
 
-ENABLE_S3=true
-S3_ENDPOINT=localhost:9000
-S3_ACCESS_KEY=dev
-S3_SECRET_KEY=devsecret
-S3_BUCKET_NAME=ouitransfer-files
-S3_USE_SSL=false
-S3_FORCE_PATH_STYLE=true
+### Other Important Settings
+
+```bash
+# Database (SQLite, relative to apps/server)
+DATABASE_URL="file:./ouitransfer.db"
+
+# Backend URL as seen by the Next.js frontend
+API_BASE_URL=http://localhost:3333
+
+# Default UI language
+NEXT_PUBLIC_DEFAULT_LANGUAGE=en-US
 ```
 
-#### Install dependencies
+---
 
-Next, let's install the backend dependencies. With Node.js and `pnpm` ready, run:
+## Step 3: Install Dependencies
+
+From the **repo root**:
 
 ```bash
 pnpm install
 ```
 
-This pulls in everything needed for the backend, including Prisma, our database ORM.
-
-#### Generate Prisma client
-
-Now, generate the Prisma client tailored for OUITRANSFER. with:
-
-```bash
-pnpm dlx prisma generate
-```
-
-This sets up the interface for smooth database interactions.
-
-#### Deploy Prisma migrations
-
-With the client ready, apply the database schema using:
-
-```bash
-pnpm dlx prisma migrate deploy
-```
-
-This ensures your database structure is set up with all the required migrations.
-
-#### Seed the database
-
-Let's populate the database with some initial data. Run the seeding script:
-
-```bash
-pnpm db:seed
-```
-
-This adds the baseline data OUITRANSFER. needs to function properly.
-
-#### Build and run the backend
-
-Finally, build the backend app:
-
-```bash
-pnpm run build
-```
-
-Once the build is complete, start the service:
-
-```bash
-pnpm start
-```
-
-To confirm everything's working, check out the API documentation at:
-
-```bash
-http://localhost:3333/docs
-```
-
-This page lists all available API endpoints and how to use them.
+This installs dependencies for all workspaces (`apps/server`, `apps/web`, `apps/docs`, `packages/shared`, `packages/config`) in a single pass.
 
 ---
 
-### Step 3: Set up the frontend
-
-With the backend humming, let's tackle the frontend setup.
-
-#### Navigate to the Frontend Directory
-
-If you're in the `server` folder, move to `web` with:
+## Step 4: Generate Prisma Client
 
 ```bash
-cd ../web
+pnpm exec prisma generate --schema=apps/server/prisma/schema.prisma
 ```
 
-Or, from the repo root, use:
+Or using the `just` task runner (if installed):
 
 ```bash
-cd apps/web
+just db-generate
 ```
-
-#### Configure environment variables
-
-Just like the backend, set up the frontend environment variables:
-
-```bash
-cp .env.example .env
-```
-
-This creates a `.env` file with the necessary configurations for the frontend.
-
-
-
-#### Install dependencies
-
-Install all the frontend dependencies:
-
-```bash
-pnpm install
-```
-
-#### Build and run the frontend
-
-Build the production version of the frontend:
-
-```bash
-pnpm run build
-```
-
-Once that's done, serve it up:
-
-```bash
-pnpm serve
-```
-
-Now, open your browser and head to:
-
-```bash
-http://localhost:3000
-```
-
-You should see the full OUITRANSFER. application ready to go!
 
 ---
 
-## Quick notes
-
-**Storage Requirement**: OUITRANSFER v3+ requires S3-compatible storage to function. This guide assumes you've configured either external S3 or local RustFS as shown in the environment variables section above. Without proper S3 configuration, file uploads will not work.
-
-**Development Tip**: For local development, we recommend using RustFS as it's lightweight and S3-compatible. Start it with Docker before running OUITRANSFER:
+## Step 5: Apply Database Migrations
 
 ```bash
-docker run -p 9000:9000 -e RUSTFS_ACCESS_KEY=dev -e RUSTFS_SECRET_KEY=devsecret rustfs/rustfs:latest rustfs server /data
+pnpm exec prisma migrate deploy --schema=apps/server/prisma/schema.prisma
 ```
 
-### Custom Installation Paths and Symlinks
-
-If you're using a custom installation setup with symlinks (for example, `/opt/OUITRANSFER_data/uploads -> /mnt/data/uploads`), you might encounter issues with disk space detection. OUITRANSFER. includes a `CUSTOM_PATH` environment variable to handle these scenarios:
+Or:
 
 ```bash
-# In your .env file (apps/server/.env)
-CUSTOM_PATH=/opt/OUITRANSFER_data
+just db-migrate-dev   # development (creates migration history)
 ```
-
-This tells OUITRANSFER. to check your custom path first when determining available disk space, ensuring proper detection even when using symlinks or non-standard directory structures.
 
 ---
 
-## Command cheat sheet
+## Step 6: Seed the Database
 
-Here's a quick reference for all the commands we've covered perfect for copy-pasting once you're familiar with the steps:
+```bash
+just db-seed
+```
+
+This creates the initial admin user and baseline configuration.
+
+---
+
+## Step 7: Build and Start the Backend
+
+```bash
+pnpm --filter=ouitransfer-api run build
+pnpm --filter=ouitransfer-api start
+```
+
+Verify the API is running:
+
+```
+http://localhost:3333/health
+```
+
+> **Note**: The Swagger UI at `/docs` is only available in development mode (`NODE_ENV=development`). It is disabled in production for security reasons.
+
+---
+
+## Step 8: Build and Serve the Frontend
+
+```bash
+pnpm --filter=ouitransfer-web run build
+pnpm --filter=ouitransfer-web start
+```
+
+The frontend runs on **port 5487** in production:
+
+```
+http://localhost:5487
+```
+
+---
+
+## Command Cheat Sheet
 
 ```bash
 # --- Prerequisites (if using local RustFS) ---
-docker run -p 9000:9000 -e RUSTFS_ACCESS_KEY=dev -e RUSTFS_SECRET_KEY=devsecret rustfs/rustfs:latest rustfs server /data
+docker run -p 9000:9000 \
+  -e RUSTFS_ACCESS_KEY=dev \
+  -e RUSTFS_SECRET_KEY=devsecret \
+  rustfs/rustfs:latest rustfs server /data
 
-# --- Backend (Fastify API) ---
-cd apps/server
+# --- From repo root ---
 pnpm install
-pnpm dlx prisma generate
-pnpm dlx prisma migrate deploy
-pnpm db:seed
-pnpm run build
-pnpm start
 
-# --- Frontend (Next.js) ---
-cd apps/web
-pnpm install
-pnpm run build
-pnpm serve
+# Generate secrets (run 3 times for JWT_SECRET, CSRF_SECRET, COOKIE_SECRET)
+openssl rand -hex 32
+
+# Database setup
+pnpm exec prisma generate --schema=apps/server/prisma/schema.prisma
+pnpm exec prisma migrate deploy --schema=apps/server/prisma/schema.prisma
+just db-seed
+
+# Build and start backend
+pnpm --filter=ouitransfer-api run build
+pnpm --filter=ouitransfer-api start
+
+# Build and start frontend
+pnpm --filter=ouitransfer-web run build
+pnpm --filter=ouitransfer-web start
 ```
 
-> **Tip**: Keep this handy in your clipboard for your first setup run.
+> **Tip**: Install [`just`](https://github.com/casey/just) and use `just --list` to see all available shortcuts, including `just dev` for running everything in development mode.
 
 ---
 
-## What's next?
+## Custom Installation Paths
 
-OUITRANSFER. is now up and running locally . Here are some suggested next steps:
+If you use symlinks for storage (e.g., `/opt/ouitransfer_data/uploads -> /mnt/data/uploads`), set `CUSTOM_PATH` so disk space detection works correctly:
 
-- **Manage Users**: Dive into the [Users Management](/docs/v3-beta/manage-users) guide.
-- **Switch to Object Storage**: Update `.env` variables to use an S3-compatible bucket (see Quick Notes above).
-- **Secure Your Instance**: Put OUITRANSFER. behind a reverse proxy like **Nginx** or **Caddy** and enable HTTPS.
-- **Learn the Internals**: Explore how everything connects in the [Architecture](/docs/v3-beta/architecture) overview.
+```bash
+CUSTOM_PATH=/opt/ouitransfer_data
+```
 
-Jump into whichever area fits your needs our docs are designed for exploration in any order.
+---
 
-## Wrapping up
+## What's Next?
 
-Congrats! You've successfully set up a production-ready instance of OUITRANSFER. through this detailed manual process. From cloning the repo to deploying the app, you've tackled every step like a pro.
+Ouitransfer is now up and running. Here are some suggested next steps:
 
-## Helpful resources
+- **Manage Users**: See the [Users Management](/docs/v3-beta/manage-users) guide.
+- **Secure Your Instance**: Put Ouitransfer behind a reverse proxy (Nginx or Caddy) and enable HTTPS. Set `SECURE_SITE=true` in your `.env`.
+- **Learn the Internals**: Explore the [Architecture](/docs/v3-beta/architecture) overview.
+
+## Helpful Resources
 
 - [Node.js Documentation](https://nodejs.org/en/docs/)
 - [pnpm Documentation](https://pnpm.io/)
 - [Prisma Documentation](https://www.prisma.io/docs/)
+- [just task runner](https://github.com/casey/just)
