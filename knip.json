@@ -25,7 +25,6 @@
   "ignore": ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}", "e2e/**"],
   "ignoreDependencies": [
     "@biomejs/biome",
-    "@changesets/cli",
     "@commitlint/cli",
     "@commitlint/config-conventional",
     "@playwright/test",

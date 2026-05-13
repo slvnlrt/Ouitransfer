@@ -144,20 +144,6 @@ install:
 setup: install db-generate
     @echo "Setup complete. Copy .env.example to .env and configure your environment."
 
-# ─── Versioning (Changesets) ─────────────────────────────────────────────────
-
-# Create a new changeset describing your changes
-changeset:
-    pnpm changeset
-
-# Apply pending changesets: bump versions in all package.json files
-version-bump:
-    pnpm version-packages
-
-# Create git tags for the current version (run after version-bump + commit)
-release:
-    pnpm release
-
 # ─── Cleanup ─────────────────────────────────────────────────────────────────
 
 # Remove build artifacts (.next, dist/) — keeps node_modules intact

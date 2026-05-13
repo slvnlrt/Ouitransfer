@@ -96,7 +96,6 @@ just docker-start # Lancer la stack Docker
 | [Lefthook](https://github.com/evilmartians/lefthook) | Hooks Git (pre-commit, commit-msg) |
 | [commitlint](https://commitlint.js.org) | Validation des messages de commit |
 | [Renovate](https://docs.renovatebot.com) | Mise à jour automatique des dépendances |
-| [Changesets](https://github.com/changesets/changesets) | Gestion des versions et changelogs |
 | [Knip](https://knip.dev) | Détection du code mort |
 
 ## Licence

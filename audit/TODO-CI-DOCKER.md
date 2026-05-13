@@ -6,18 +6,18 @@
 
 ## Server Lifecycle
 
-- [ ] **Add a server startup integration test** — The `addHook("onClose")` after `app.listen()` bug was invisible to unit tests because `app.inject()` never calls `listen()`. Add a test in `apps/server/src/__tests__/` that calls `startServer()` (or at minimum `app.listen()` + `app.close()`) and verifies the full lifecycle completes without errors. This catches any future violation of Fastify's "no mutations after listen" rule.
+- [x] **Add a server startup integration test** — `apps/server/src/__tests__/server-lifecycle.test.ts` (3 tests): full listen/close lifecycle, health endpoint after listen, onClose hooks fire on shutdown. Exercises Fastify 5's "no mutations after listen" rule that `app.inject()`-only tests never trigger.
 
-- [ ] **Audit all post-listen code paths** — Verify no other code in the server registers hooks, decorators, or plugins after `app.listen()` is called. Fastify 5 is strict about this. Search for any `app.addHook`, `app.decorate`, `app.register` that could execute after the listen promise resolves.
+- [x] **Audit all post-listen code paths** — Verified: zero post-listen mutations. All 24 `app.register()`, 3 `app.addHook()`, and 4 `set*()` calls occur before `app.listen()` on line 124 of `server.ts`. No route modules contain `addHook`/`decorate`/`addSchema`.
 
 ## Docker / Deployment
 
-- [ ] **`CORS_ORIGINS` missing from `docker-compose.yaml` comments** — The server requires `CORS_ORIGINS` in production mode but the base `docker-compose.yaml` doesn't list it in the server environment section. Add it with a `# REQUIRED` comment like the other secrets so self-hosters don't hit a cryptic startup crash.
+- [x] **`CORS_ORIGINS` in `docker-compose.yaml`** — Already present at line 81: `CORS_ORIGINS: ""  # REQUIRED: e.g., http://localhost:5487`. Also in `docker-compose.ci.yml:29` with test value.
 
-- [ ] **Prisma deprecation warning** — `The configuration property package.json#prisma is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., prisma.config.ts)`. Low priority but should be addressed before Prisma 7.
+- [x] **Prisma deprecation warning** — Migrated to `apps/server/prisma.config.ts`. Removed deprecated `"prisma"` key from `package.json`.
 
-- [ ] **`apps/server/package.json` still has `"author": "Burger&Cie"`** — Leftover from the original fork. Should be updated or removed.
+- ~~**`apps/server/package.json` still has `"author": "Burger&Cie"`**~~ — Cancelled (intentional).
 
 ## Frontend SSR
 
-- [ ] **Add a layout SSR smoke test** — The `SkipToContent` (outside `NextIntlClientProvider`) and `Favicon` (outside `QueryProvider`) bugs were invisible in dev mode but crashed production SSR with opaque minified errors. Add a test that renders `RootLayout` server-side and asserts no errors are thrown. This catches components placed outside their required provider. In production, de-minifying chunk errors to find the root cause is impractical — this test surfaces the real error message immediately with a clear stack trace.
+- ~~**Add a layout SSR smoke test**~~ — Dropped. Testing an async Server Component with 11 font mocks + deep provider tree in jsdom produces a fragile test with massive mock surface that essentially just checks JSX nesting order. The E2E Docker workflow (`e2e.yml`) already catches provider placement bugs (this is how the SkipToContent/Favicon bugs were found). Limitation: E2E detects the crash but doesn't pinpoint the root cause — accepted trade-off.

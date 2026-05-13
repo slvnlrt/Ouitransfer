@@ -51,7 +51,7 @@ Frontend migrated to new POST endpoints. See `audit/DONE.md` for full details.
 
 ### Phase 1 — Tooling & DX Foundation: COMPLETE
 pnpm workspace, Turborepo, Biome (replaces ESLint+Prettier), Vitest, Playwright, Lefthook,
-commitlint, GitHub Actions CI/CD, Knip, Renovate, Changesets. Dockerfile reworked for workspace.
+commitlint, GitHub Actions CI/CD, Knip, Renovate. Dockerfile reworked for workspace.
 Phase 7 security deps also done: speakeasy→otpauth, crypto-js and react-qr-reader removed.
 
 ### Phase 2 — Architecture Restructuring: COMPLETE
