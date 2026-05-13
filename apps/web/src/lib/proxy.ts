@@ -14,7 +14,14 @@ import { logger } from "@/lib/logger";
 import { type RouteConfig, routes } from "./proxy-routes";
 import { getClientHeaders } from "./proxy-utils";
 
-const API_BASE_URL = env.API_BASE_URL;
+// Deferred to avoid triggering env validation during `next build`'s
+// module-discovery phase ("Collecting page data").
+let _apiBaseUrl: string | null = null;
+function getApiBaseUrl(): string {
+  if (_apiBaseUrl) return _apiBaseUrl;
+  _apiBaseUrl = env.API_BASE_URL;
+  return _apiBaseUrl;
+}
 
 /**
  * Well-known OAuth provider hostnames. Extended at runtime by
@@ -143,7 +150,7 @@ function buildBackendUrl(
   forwardQuery: boolean,
 ): string {
   let url =
-    API_BASE_URL +
+    getApiBaseUrl() +
     backendPath.replace(/:(\w+)/g, (_, key) => encodeURIComponent(params[key] ?? ""));
   if (forwardQuery && queryString) {
     url += queryString;
@@ -342,7 +349,7 @@ export async function handleProxyRequest(
   try {
     // Optional health check (long operations like file copy)
     if (config.healthCheck) {
-      const healthRes = await fetch(`${API_BASE_URL}/health`, {
+      const healthRes = await fetch(`${getApiBaseUrl()}/health`, {
         method: "GET",
         signal: AbortSignal.timeout(5000),
       });

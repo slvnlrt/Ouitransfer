@@ -12,13 +12,20 @@ interface TokenPayload {
   isAdmin: boolean;
 }
 
-// Encode the secret once at module level — env.JWT_SECRET is guaranteed
-// present by Zod validation in env.ts (min 32 chars, fail-fast at import).
-const JWT_SECRET_KEY = new TextEncoder().encode(env.JWT_SECRET);
+// Lazily encode the secret on first request — env.JWT_SECRET is validated
+// by Zod on first access (min 32 chars, fail-fast at runtime).
+// Deferred to avoid triggering env validation during `next build`'s
+// module-discovery phase, where process.env may not contain all vars.
+let _jwtSecretKey: Uint8Array | null = null;
+function getJwtSecretKey(): Uint8Array {
+  if (_jwtSecretKey) return _jwtSecretKey;
+  _jwtSecretKey = new TextEncoder().encode(env.JWT_SECRET);
+  return _jwtSecretKey;
+}
 
 async function getTokenPayload(token: string): Promise<TokenPayload | null> {
   try {
-    const { payload } = await jwtVerify(token, JWT_SECRET_KEY, {
+    const { payload } = await jwtVerify(token, getJwtSecretKey(), {
       algorithms: ["HS256"],
     });
 

@@ -403,9 +403,13 @@ describe("matchesPath", () => {
 
 // ---------------------------------------------------------------------------
 // env.ts validation tests
+//
+// env.ts uses lazy validation via a Proxy — the Zod parse runs on first
+// property access, not at import time. This means `import("@/env")` succeeds
+// even when env vars are missing; the throw happens on `env.JWT_SECRET`.
 // ---------------------------------------------------------------------------
 describe("env validation", () => {
-  it("throws when JWT_SECRET is missing", async () => {
+  it("throws on first access when JWT_SECRET is missing", async () => {
     const originalSecret = process.env.JWT_SECRET;
     delete process.env.JWT_SECRET;
 
@@ -413,7 +417,9 @@ describe("env validation", () => {
     vi.doUnmock("@/env");
 
     try {
-      await expect(import("@/env")).rejects.toThrow();
+      const { env } = await import("@/env");
+      // Import succeeds; accessing a property triggers validation
+      expect(() => env.JWT_SECRET).toThrow();
     } finally {
       if (originalSecret !== undefined) {
         process.env.JWT_SECRET = originalSecret;
@@ -421,7 +427,7 @@ describe("env validation", () => {
     }
   });
 
-  it("throws when JWT_SECRET is too short", async () => {
+  it("throws on first access when JWT_SECRET is too short", async () => {
     const originalSecret = process.env.JWT_SECRET;
     process.env.JWT_SECRET = "short";
 
@@ -429,7 +435,8 @@ describe("env validation", () => {
     vi.doUnmock("@/env");
 
     try {
-      await expect(import("@/env")).rejects.toThrow();
+      const { env } = await import("@/env");
+      expect(() => env.JWT_SECRET).toThrow();
     } finally {
       if (originalSecret !== undefined) {
         process.env.JWT_SECRET = originalSecret;

@@ -1,11 +1,20 @@
 import { z } from "zod";
 
 /**
- * Server-side environment variables validated at import time.
- * Fails fast during build or server start if required values are missing/invalid.
+ * Server-side environment variables, validated lazily on first access.
  *
- * Note: NEXT_PUBLIC_* vars are captured at build time and embedded in client bundles.
- * Runtime changes require a rebuild.
+ * Validation is deferred (not module-level) so that `next build` can import
+ * route modules during the "Collecting page data" phase without crashing.
+ * Turborepo strict mode (the v2 default) only passes through env vars listed
+ * in `passThroughEnv` / `globalEnv`; a module-level `z.parse()` would fail
+ * during build if any required var isn't declared there.
+ *
+ * At runtime (server start, incoming request) the getter runs once, validates
+ * all vars via Zod, and caches the result. If validation fails the process
+ * crashes immediately — production safety is preserved.
+ *
+ * Note: NEXT_PUBLIC_* vars are captured at build time and embedded in client
+ * bundles. Runtime changes require a rebuild.
  */
 const envSchema = z.object({
   JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 characters"),
@@ -23,10 +32,31 @@ const envSchema = z.object({
 // Validated inline in apps/web/src/lib/logger.ts with "warn" default.
 // It cannot be validated here because this module runs server-side.
 
-export const env = envSchema.parse({
-  JWT_SECRET: process.env.JWT_SECRET,
-  API_BASE_URL: process.env.API_BASE_URL,
-  OAUTH_ALLOWED_REDIRECT_HOSTS: process.env.OAUTH_ALLOWED_REDIRECT_HOSTS,
-  ALLOWED_IMAGE_HOSTS: process.env.ALLOWED_IMAGE_HOSTS,
-  CSP_CONNECT_SOURCES: process.env.CSP_CONNECT_SOURCES,
+type Env = z.infer<typeof envSchema>;
+
+let _cached: Env | null = null;
+
+function getEnv(): Env {
+  if (_cached) return _cached;
+  _cached = envSchema.parse({
+    JWT_SECRET: process.env.JWT_SECRET,
+    API_BASE_URL: process.env.API_BASE_URL,
+    OAUTH_ALLOWED_REDIRECT_HOSTS: process.env.OAUTH_ALLOWED_REDIRECT_HOSTS,
+    ALLOWED_IMAGE_HOSTS: process.env.ALLOWED_IMAGE_HOSTS,
+    CSP_CONNECT_SOURCES: process.env.CSP_CONNECT_SOURCES,
+  });
+  return _cached;
+}
+
+/**
+ * Validated server-side environment.
+ *
+ * Uses a `Proxy` so that `env.JWT_SECRET` (property access) triggers lazy
+ * validation on first use — no call-site changes required for existing
+ * `import { env } from "@/env"` consumers.
+ */
+export const env: Env = new Proxy({} as Env, {
+  get(_target, prop: string) {
+    return getEnv()[prop as keyof Env];
+  },
 });

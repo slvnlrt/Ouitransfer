@@ -7,7 +7,17 @@
       "dependsOn": ["^build"],
       "inputs": ["src/**", "package.json", "tsconfig.json", "tsconfig*.json"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
-      "env": ["NODE_ENV"]
+      "env": ["NODE_ENV"],
+      "passThroughEnv": [
+        "JWT_SECRET",
+        "API_BASE_URL",
+        "OAUTH_ALLOWED_REDIRECT_HOSTS",
+        "ALLOWED_IMAGE_HOSTS",
+        "CSP_CONNECT_SOURCES",
+        "NEXT_PUBLIC_LOG_LEVEL",
+        "NEXT_PUBLIC_DEFAULT_LANGUAGE",
+        "ANALYZE"
+      ]
     },
     "dev": {
       "dependsOn": ["^build"],
