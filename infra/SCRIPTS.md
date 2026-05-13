@@ -4,20 +4,21 @@
 
 Ouitransfer runs as 3 containers via Docker Compose:
 
-| Service   | Image                     | Port | Description                     |
-|-----------|---------------------------|------|---------------------------------|
-| storage   | `rustfs/rustfs:latest`    | 9000 | S3-compatible object storage    |
-| server    | `ouitransfer/server`      | 3333 | Fastify API                     |
-| web       | `ouitransfer/web`         | 5487 | Next.js frontend                |
+| Service   | Image                                          | Port | Description                     |
+|-----------|------------------------------------------------|------|---------------------------------|
+| storage   | `rustfs/rustfs:latest`                         | 9000 | S3-compatible object storage    |
+| server    | `ghcr.io/slvnlrt/ouitransfer-server:latest`    | 3333 | Fastify API                     |
+| web       | `ghcr.io/slvnlrt/ouitransfer-web:latest`       | 5487 | Next.js frontend                |
 
 ## Files
 
-| File              | Purpose                                      |
-|-------------------|----------------------------------------------|
-| `Dockerfile`      | Multi-target build (server-runner, web-runner)|
-| `docker-compose.yaml` | 3-service orchestration                 |
-| `server-start.sh` | Server entrypoint (DB setup, privilege drop) |
-| `.env.example`    | Environment variable reference               |
+| File                    | Purpose                                           |
+|-------------------------|---------------------------------------------------|
+| `Dockerfile`            | Multi-target build (server-runner, web-runner). Server uses `pnpm deploy` for flat node_modules. Web uses Next.js standalone with `outputFileTracingRoot` for monorepo. |
+| `docker-compose.yaml`   | 3-service orchestration (production, uses GHCR images) |
+| `docker-compose.ci.yml` | CI overlay: adds `build:` directives + test env vars (secrets, CORS). Use `-f docker-compose.yaml -f docker-compose.ci.yml` for local builds and all `just docker-*` recipes. |
+| `server-start.sh`       | Server entrypoint (DB setup via `prisma db push`, privilege drop) |
+| `.env.example`          | Environment variable reference                    |
 
 ## Common Commands
 

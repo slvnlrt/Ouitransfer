@@ -100,7 +100,7 @@ Choose your storage method based on your needs:
 
       # ─── Fastify API Server ──────────────────────────────────────
       server:
-        image: ouitransfer/server:latest
+        image: ghcr.io/slvnlrt/ouitransfer-server:latest
         container_name: ouitransfer-server
         environment:
           # Storage connection (must match storage service credentials)
@@ -118,6 +118,8 @@ Choose your storage method based on your needs:
           JWT_SECRET: ""                 # REQUIRED: generate with: openssl rand -hex 32
           CSRF_SECRET: ""                # REQUIRED: generate with: openssl rand -hex 32
           COOKIE_SECRET: ""              # REQUIRED: generate with: openssl rand -hex 32
+          # REQUIRED: comma-separated list of origins allowed to make requests
+          CORS_ORIGINS: ""               # REQUIRED: e.g., http://localhost:5487 or https://files.example.com
           # Optional settings:
           # OUITRANSFER_UID: "1000"
           # OUITRANSFER_GID: "1000"
@@ -141,10 +143,11 @@ Choose your storage method based on your needs:
 
       # ─── Next.js Web Frontend ────────────────────────────────────
       web:
-        image: ouitransfer/web:latest
+        image: ghcr.io/slvnlrt/ouitransfer-web:latest
         container_name: ouitransfer-web
         environment:
           API_BASE_URL: "http://server:3333"
+          JWT_SECRET: ""     # REQUIRED: must match server's JWT_SECRET (used by Edge middleware)
           # DEFAULT_LANGUAGE: "en-US"
         ports:
           - "5487:5487"    # Web interface
@@ -205,7 +208,7 @@ Choose your storage method based on your needs:
 
       # ─── Fastify API Server ──────────────────────────────────────
       server:
-        image: ouitransfer/server:latest
+        image: ghcr.io/slvnlrt/ouitransfer-server:latest
         container_name: ouitransfer-server
         environment:
           # Storage connection (must match storage service credentials)
@@ -223,6 +226,8 @@ Choose your storage method based on your needs:
           JWT_SECRET: ""                 # REQUIRED: generate with: openssl rand -hex 32
           CSRF_SECRET: ""                # REQUIRED: generate with: openssl rand -hex 32
           COOKIE_SECRET: ""              # REQUIRED: generate with: openssl rand -hex 32
+          # REQUIRED: comma-separated list of origins allowed to make requests
+          CORS_ORIGINS: ""               # REQUIRED: e.g., http://localhost:5487 or https://files.example.com
           # Optional settings:
           # OUITRANSFER_UID: "1000"
           # OUITRANSFER_GID: "1000"
@@ -246,10 +251,11 @@ Choose your storage method based on your needs:
 
       # ─── Next.js Web Frontend ────────────────────────────────────
       web:
-        image: ouitransfer/web:latest
+        image: ghcr.io/slvnlrt/ouitransfer-web:latest
         container_name: ouitransfer-web
         environment:
           API_BASE_URL: "http://server:3333"
+          JWT_SECRET: ""     # REQUIRED: must match server's JWT_SECRET (used by Edge middleware)
           # DEFAULT_LANGUAGE: "en-US"
         ports:
           - "5487:5487"    # Web interface
@@ -288,9 +294,10 @@ Customize OUITRANSFER's behavior with these environment variables on the **serve
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `STORAGE_URL` | - | **REQUIRED** for internal storage: Public URL where browsers reach the storage service (e.g., `http://192.168.1.100:9000`) |
-| `JWT_SECRET` | - | **REQUIRED**: JWT signing key (min 32 chars). Generate with: `openssl rand -hex 32` |
+| `JWT_SECRET` | - | **REQUIRED** (server + web): JWT signing key (min 32 chars). Generate with: `openssl rand -hex 32`. Must be set on **both** the server and web services. |
 | `CSRF_SECRET` | - | **REQUIRED**: CSRF token HMAC key (min 32 chars, must differ from JWT_SECRET) |
 | `COOKIE_SECRET` | - | **REQUIRED**: Cookie signing key (min 32 chars, must differ from other secrets) |
+| `CORS_ORIGINS` | - | **REQUIRED**: Comma-separated list of allowed request origins (e.g., `http://localhost:5487` or `https://files.example.com`) |
 | `ENABLE_S3` | `false` | Set `true` to use external S3 storage (AWS, Backblaze, etc.) instead of built-in RustFS |
 | `S3_ENDPOINT` | - | S3 server endpoint (required when using S3) |
 | `S3_ACCESS_KEY` | - | S3 access key for authentication |
@@ -371,19 +378,21 @@ docker run -d \
   -e JWT_SECRET=your-jwt-secret-at-least-32-chars \
   -e CSRF_SECRET=your-csrf-secret-at-least-32-chars \
   -e COOKIE_SECRET=your-cookie-secret-at-least-32-chars \
+  -e CORS_ORIGINS=http://YOUR_SERVER_IP:5487 \
   -p 3333:3333 \
   -v server_data:/app/server \
   --restart unless-stopped \
-  ouitransfer/server:latest
+  ghcr.io/slvnlrt/ouitransfer-server:latest
 
 # Start web (wait for server to be healthy first)
 docker run -d \
   --name ouitransfer-web \
   --network ouitransfer \
   -e API_BASE_URL=http://ouitransfer-server:3333 \
+  -e JWT_SECRET=your-jwt-secret-at-least-32-chars \
   -p 5487:5487 \
   --restart unless-stopped \
-  ouitransfer/web:latest
+  ghcr.io/slvnlrt/ouitransfer-web:latest
 ```
 
 <Callout type="warn">

@@ -71,6 +71,15 @@ services:
       JWT_SECRET: ""       # REQUIRED: generate with: openssl rand -hex 32
       CSRF_SECRET: ""      # REQUIRED: generate with: openssl rand -hex 32
       COOKIE_SECRET: ""    # REQUIRED: generate with: openssl rand -hex 32
+
+      # REQUIRED: Comma-separated list of origins allowed to make cross-origin requests.
+      # Must include the URL(s) users access the web interface from.
+      # Examples:
+      #   http://localhost:5487           (local single-host setup)
+      #   http://192.168.1.100:5487      (LAN access)
+      #   https://files.example.com      (production with reverse proxy)
+      CORS_ORIGINS: ""     # REQUIRED: e.g., http://localhost:5487
+
       #
       # ── Optional settings ──
       # OUITRANSFER_UID: "1000"              # UID for server process
