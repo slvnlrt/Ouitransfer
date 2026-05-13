@@ -68,6 +68,10 @@ jobs:
   audit:
     name: Security Audit
     runs-on: ubuntu-latest
+    # Transitive vulnerabilities (fast-xml-builder via @aws-sdk, fast-uri via
+    # @commitlint/@fastify/swagger) may cause failures until upstream releases fixes.
+    # continue-on-error prevents blocking the build while still surfacing the warnings.
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4

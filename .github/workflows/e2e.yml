@@ -32,9 +32,9 @@ jobs:
         run: |
           docker compose -f docker-compose.yaml up -d
         env:
-          JWT_SECRET: ${{ secrets.CI_JWT_SECRET || 'ci-test-secret-that-is-at-least-32-characters-long' }}
-          CSRF_SECRET: ${{ secrets.CI_CSRF_SECRET || 'ci-csrf-secret-that-is-at-least-32-characters-long' }}
-          COOKIE_SECRET: ${{ secrets.CI_COOKIE_SECRET || 'ci-cookie-secret-at-least-32-characters-long-here' }}
+          JWT_SECRET: ci-test-jwt-secret-that-is-at-least-32-characters-long
+          CSRF_SECRET: ci-test-csrf-secret-that-is-at-least-32-characters-long
+          COOKIE_SECRET: ci-test-cookie-secret-at-least-32-characters-long-ok
 
       - name: Wait for services to be healthy
         run: |

@@ -15,7 +15,7 @@ export class FolderService {
     try {
       return await this.storageProvider.getPresignedPutUrl(objectName, expires);
     } catch (err) {
-      getLogger().error({ err }, "Erro no presignedPutObject");
+      getLogger().error({ err }, "Error getting presigned PUT URL from storage");
       throw err;
     }
   }
@@ -28,7 +28,7 @@ export class FolderService {
     try {
       return await this.storageProvider.getPresignedGetUrl(objectName, expires, folderName);
     } catch (err) {
-      getLogger().error({ err }, "Erro no presignedGetObject");
+      getLogger().error({ err }, "Error getting presigned GET URL from storage");
       throw err;
     }
   }
@@ -37,7 +37,7 @@ export class FolderService {
     try {
       await this.storageProvider.deleteObject(objectName);
     } catch (err) {
-      getLogger().error({ err }, "Erro no removeObject");
+      getLogger().error({ err }, "Error removing object from storage");
       throw err;
     }
   }

@@ -66,8 +66,8 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
       "img-src 'self' blob: data:",
       // Fonts: self
       "font-src 'self'",
-      // Connect: self + API + storage (for presigned URL uploads)
-      "connect-src 'self'",
+      // Connect: self + any additional sources (e.g., storage endpoint for presigned URL uploads)
+      `connect-src 'self'${env.CSP_CONNECT_SOURCES ? ` ${env.CSP_CONNECT_SOURCES}` : ""}`,
       // Forms: self
       "form-action 'self'",
       // Frames: none

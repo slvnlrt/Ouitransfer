@@ -1,10 +1,4 @@
-/**
- * Smoke tests for core app utilities.
- *
- * Previously tested the third-party Button primitive (not meaningful).
- * Now covers actual app code:
- *   - formatFileSize: human-readable file size formatting
- */
+/** Unit tests for shared utility functions. */
 
 import { describe, expect, it } from "vitest";
 

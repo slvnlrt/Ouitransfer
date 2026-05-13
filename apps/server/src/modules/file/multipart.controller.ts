@@ -4,6 +4,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { env } from "../../env.js";
 import { UnauthorizedError, ValidationError } from "../../utils/app-error.js";
 import { sanitizeFilename } from "../../utils/sanitize-filename.js";
+import { validateObjectName } from "../../utils/validate-object-name.js";
 import { FileService } from "./service.js";
 
 export class FileMultipartController {
@@ -55,6 +56,8 @@ export class FileMultipartController {
       throw new ValidationError("partNumber must be between 1 and 10000");
     }
 
+    validateObjectName(objectName, userId);
+
     const expires = env.PRESIGNED_URL_EXPIRATION;
 
     const url = await this.fileService.getPresignedPartUrl(objectName, uploadId, partNum, expires);
@@ -77,6 +80,8 @@ export class FileMultipartController {
     if (!uploadId || !objectName || !parts || !Array.isArray(parts)) {
       throw new ValidationError("uploadId, objectName, and parts are required");
     }
+
+    validateObjectName(objectName, userId);
 
     await this.fileService.completeMultipartUpload(objectName, uploadId, parts);
 
@@ -101,6 +106,8 @@ export class FileMultipartController {
       throw new ValidationError("uploadId and objectName are required");
     }
 
+    validateObjectName(objectName, userId);
+
     await this.fileService.abortMultipartUpload(objectName, uploadId);
 
     return reply.status(200).send({
@@ -122,6 +129,8 @@ export class FileMultipartController {
     if (!uploadId || !objectName) {
       throw new ValidationError("uploadId and objectName are required");
     }
+
+    validateObjectName(objectName, userId);
 
     const parts = await this.fileService.listParts(objectName, uploadId);
 

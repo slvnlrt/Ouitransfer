@@ -16,6 +16,7 @@ const envSchema = z.object({
     .transform((url) => url.replace(/\/+$/, "")),
   OAUTH_ALLOWED_REDIRECT_HOSTS: z.string().optional(),
   ALLOWED_IMAGE_HOSTS: z.string().optional(),
+  CSP_CONNECT_SOURCES: z.string().optional(),
 });
 
 // NEXT_PUBLIC_LOG_LEVEL is a build-time client-side variable.
@@ -27,4 +28,5 @@ export const env = envSchema.parse({
   API_BASE_URL: process.env.API_BASE_URL,
   OAUTH_ALLOWED_REDIRECT_HOSTS: process.env.OAUTH_ALLOWED_REDIRECT_HOSTS,
   ALLOWED_IMAGE_HOSTS: process.env.ALLOWED_IMAGE_HOSTS,
+  CSP_CONNECT_SOURCES: process.env.CSP_CONNECT_SOURCES,
 });
