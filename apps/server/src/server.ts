@@ -87,13 +87,6 @@ async function startServer() {
     app.log.warn("Storage not configured — storage may not work");
   }
 
-  await app.listen({
-    port: env.PORT,
-    host: "0.0.0.0",
-  });
-
-  app.log.info({ port: env.PORT }, "OUITRANSFER server running");
-
   // Periodic cleanup of old login attempts (every hour)
   const cleanupInterval = setInterval(
     async () => {
@@ -124,8 +117,16 @@ async function startServer() {
     60 * 60 * 1000,
   );
 
+  // Register cleanup hooks BEFORE listen (Fastify rejects hooks after listen)
   app.addHook("onClose", () => clearInterval(cleanupInterval));
   app.addHook("onClose", () => clearInterval(refreshCleanupInterval));
+
+  await app.listen({
+    port: env.PORT,
+    host: "0.0.0.0",
+  });
+
+  app.log.info({ port: env.PORT }, "OUITRANSFER server running");
 
   // Cleanup on shutdown
   process.on("SIGINT", () => process.exit(0));

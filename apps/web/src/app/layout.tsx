@@ -116,15 +116,18 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} dir={isRTL ? "rtl" : "ltr"} suppressHydrationWarning>
-      <head>
-        <Favicon />
-      </head>
+      <head />
       <body
         className={`${outfit.variable} ${inter.variable} ${roboto.variable} ${openSans.variable} ${poppins.variable} ${nunito.variable} ${lato.variable} ${montserrat.variable} ${sourceSans.variable} ${raleway.variable} ${workSans.variable} font-sans antialiased`}
       >
-        <SkipToContent />
         <NextIntlClientProvider>
           <QueryProvider>
+            {/* SkipToContent needs NextIntlClientProvider (useTranslations).
+                Favicon needs QueryProvider (useAppInfo → useQueryClient).
+                Both must be inside their respective providers. React 19
+                automatically hoists <link> elements to <head>. */}
+            <SkipToContent />
+            <Favicon />
             <ThemeProvider
               attribute="class"
               defaultTheme="system"

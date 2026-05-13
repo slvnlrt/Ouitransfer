@@ -15,6 +15,12 @@
   ],
   "license": "Apache-2.0",
   "packageManager": "pnpm@10.6.0",
+  "files": [
+    "dist",
+    "prisma",
+    "reset-password.sh",
+    "src/scripts"
+  ],
   "scripts": {
     "postinstall": "prisma generate",
     "dev": "tsx watch src/server.ts",
@@ -52,6 +58,7 @@
     "@fastify/swagger-ui": "^5.2.3",
     "@ouitransfer/shared": "workspace:*",
     "@prisma/client": "^6.11.0",
+    "prisma": "^6.11.0",
     "@scalar/fastify-api-reference": "^1.32.1",
     "@smithy/node-http-handler": "^4.6.0",
     "bcryptjs": "^2.4.3",
@@ -70,7 +77,6 @@
     "@types/node": "catalog:",
     "@types/nodemailer": "^8.0.0",
     "@types/qrcode": "catalog:",
-    "prisma": "^6.11.0",
     "tsx": "^4.19.2",
     "typescript": "catalog:",
     "vitest": "catalog:"

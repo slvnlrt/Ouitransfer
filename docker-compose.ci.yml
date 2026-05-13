@@ -26,6 +26,7 @@ services:
       JWT_SECRET: ci-e2e-jwt-secret-minimum-32-characters-long-ok
       CSRF_SECRET: ci-e2e-csrf-secret-minimum-32-characters-long-ok
       COOKIE_SECRET: ci-e2e-cookie-secret-minimum-32-characters-long-ok
+      CORS_ORIGINS: "http://localhost:5487"
 
   web:
     build:

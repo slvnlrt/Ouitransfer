@@ -1,3 +1,4 @@
+import path from "node:path";
 import createBundleAnalyzer from "@next/bundle-analyzer";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
@@ -55,6 +56,9 @@ const DEFAULT_IMAGE_PATTERNS: RemotePattern[] = [
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  // Required for pnpm monorepos: trace from the monorepo root so that
+  // pnpm symlinks are resolved to real files in the standalone output.
+  outputFileTracingRoot: path.join(import.meta.dirname, "../../"),
   images: {
     remotePatterns: process.env.ALLOWED_IMAGE_HOSTS
       ? parseImageHosts(process.env.ALLOWED_IMAGE_HOSTS)
