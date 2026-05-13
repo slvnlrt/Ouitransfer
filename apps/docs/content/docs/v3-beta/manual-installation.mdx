@@ -199,7 +199,7 @@ Verify the API is running:
 http://localhost:3333/health
 ```
 
-> **Note**: The Swagger UI at `/docs` is only available in development mode (`NODE_ENV=development`). It is disabled in production for security reasons.
+> **Note**: The API documentation (`/docs` for Scalar, `/swagger` for Swagger UI) is available in development mode by default. To enable it in production, set `ENABLE_API_DOCS=true`.
 
 ---
 
@@ -265,7 +265,6 @@ CUSTOM_PATH=/opt/ouitransfer_data
 
 Ouitransfer is now up and running. Here are some suggested next steps:
 
-- **Manage Users**: See the [Users Management](/docs/v3-beta/manage-users) guide.
 - **Secure Your Instance**: Put Ouitransfer behind a reverse proxy (Nginx or Caddy) and enable HTTPS. Set `SECURE_SITE=true` in your `.env`.
 - **Learn the Internals**: Explore the [Architecture](/docs/v3-beta/architecture) overview.
 

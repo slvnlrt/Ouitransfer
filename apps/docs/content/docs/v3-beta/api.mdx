@@ -34,6 +34,13 @@ docker run -d \
   --name ouitransfer-server \
   --network ouitransfer \
   -e S3_ENDPOINT=ouitransfer-storage \
+  -e S3_PORT=9000 \
+  -e S3_USE_SSL=false \
+  -e S3_ACCESS_KEY=your-access-key \
+  -e S3_SECRET_KEY=your-secret-key \
+  -e S3_BUCKET_NAME=ouitransfer-files \
+  -e S3_REGION=auto \
+  -e S3_FORCE_PATH_STYLE=true \
   -e JWT_SECRET=your-jwt-secret-at-least-32-chars \
   -e CSRF_SECRET=your-csrf-secret-at-least-32-chars \
   -e COOKIE_SECRET=your-cookie-secret-at-least-32-chars \
@@ -151,7 +158,7 @@ POST /auth/login
 
 # Subsequent requests automatically include authentication cookies
 # No Authorization header needed - cookies are sent automatically
-GET /api/files
+GET /files
 ```
 
 ### How authentication works
