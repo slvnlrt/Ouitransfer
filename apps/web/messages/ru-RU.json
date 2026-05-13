@@ -4,11 +4,11 @@
   },
   "auth": {
     "errors": {
-      "account_inactive": "Conta inativa. Entre em contato com o administrador.",
-      "registration_disabled": "Registro via SSO está desabilitado.",
-      "token_expired": "Token expirado. Tente novamente.",
-      "config_error": "Erro de configuração. Contate o suporte.",
-      "auth_failed": "Falha na autenticação. Tente novamente."
+      "account_inactive": "Учётная запись неактивна. Обратитесь к администратору.",
+      "registration_disabled": "Регистрация через SSO отключена.",
+      "token_expired": "Токен истёк. Попробуйте ещё раз.",
+      "config_error": "Ошибка конфигурации. Обратитесь в поддержку.",
+      "auth_failed": "Ошибка аутентификации. Попробуйте ещё раз."
     },
     "authenticationFailed": "Ошибка аутентификации",
     "successfullyAuthenticated": "Успешно аутентифицирован!",
