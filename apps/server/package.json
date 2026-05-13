@@ -16,6 +16,7 @@
   "license": "Apache-2.0",
   "packageManager": "pnpm@10.6.0",
   "scripts": {
+    "postinstall": "prisma generate",
     "dev": "tsx watch src/server.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
