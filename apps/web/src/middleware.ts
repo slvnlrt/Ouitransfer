@@ -86,8 +86,9 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
     "Content-Security-Policy",
     [
       "default-src 'self'",
-      // Scripts: self + inline for Next.js hydration (required by App Router)
-      "script-src 'self' 'unsafe-inline'",
+      // Scripts: self + inline for Next.js hydration (required by App Router).
+      // Dev mode adds 'unsafe-eval' for React Fast Refresh (HMR) — blocked in production.
+      `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""}`,
       // Styles: self + inline for Tailwind/styled components
       "style-src 'self' 'unsafe-inline'",
       // Images: self + blob (for preview) + data (for QR codes) + storage URL

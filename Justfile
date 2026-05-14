@@ -8,19 +8,29 @@ default:
 
 # ─── Development ─────────────────────────────────────────────────────────────
 
-# Run all apps in dev mode (turbo)
+# Run all apps in dev mode (turbo). Requires a local SQLite DB — run 'just db-dev-init' first.
 dev:
+    #!/usr/bin/env sh
+    if [ ! -f apps/server/prisma/ouitransfer.db ]; then
+      printf '\nERROR: Local database not found.\n  The API server needs a SQLite database to start.\n  Run: just db-dev-init\n\n'
+      exit 1
+    fi
     pnpm dev
 
-# Run API server only
+# Run API server only. Requires a local SQLite DB — run 'just db-dev-init' first.
 dev-server:
+    #!/usr/bin/env sh
+    if [ ! -f apps/server/prisma/ouitransfer.db ]; then
+      printf '\nERROR: Local database not found.\n  Run: just db-dev-init\n\n'
+      exit 1
+    fi
     pnpm dev:server
 
-# Run web frontend only
+# Run web frontend only (no DB required)
 dev-web:
     pnpm dev:web
 
-# Run docs site only
+# Run docs site only (no DB required)
 dev-docs:
     pnpm dev:docs
 
