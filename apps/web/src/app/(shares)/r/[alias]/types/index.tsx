@@ -1,8 +1,6 @@
 import type { GetReverseShareForUploadResult } from "@/http/endpoints/reverse-shares/types";
-import type { FILE_STATUS } from "../constants";
 
 export type ReverseShareInfo = GetReverseShareForUploadResult["data"]["reverseShare"];
-export type FileStatus = (typeof FILE_STATUS)[keyof typeof FILE_STATUS];
 
 export interface DefaultLayoutProps {
   reverseShare: ReverseShareInfo | null;
@@ -21,13 +19,6 @@ export interface FileUploadSectionProps {
   password: string;
   alias: string;
   onUploadSuccess?: () => void;
-}
-
-export interface FileWithProgress {
-  file: File;
-  progress: number;
-  status: FileStatus;
-  error?: string;
 }
 
 export interface PasswordModalProps {

@@ -58,5 +58,3 @@ export const UPLOAD_CONFIG = {
   PREVIEW_MAX_SIZE: null, // No limit
   PREVIEW_TYPES: ["image/*"],
 } as const;
-
-export type UploadConfig = typeof UPLOAD_CONFIG;

@@ -59,11 +59,6 @@ export interface TokenResponse {
   scope?: string;
 }
 
-export interface AuthResult {
-  userInfo: ProviderUserInfo;
-  tokens: TokenResponse;
-}
-
 export interface RequestContext {
   protocol: string;
   host: string;

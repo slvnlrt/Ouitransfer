@@ -109,7 +109,7 @@ class DownloadUrlCache {
 }
 
 // Singleton instance
-export const downloadUrlCache = new DownloadUrlCache();
+const downloadUrlCache = new DownloadUrlCache();
 
 // Export main methods
 export const getCachedDownloadUrl = downloadUrlCache.getCachedDownloadUrl.bind(downloadUrlCache);

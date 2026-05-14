@@ -5,9 +5,6 @@
  * the refresh endpoint, the logout handler, and the OIDC callback.
  */
 
-/** Name of the httpOnly access-token cookie read by @fastify/jwt. */
-export const TOKEN_COOKIE_NAME = "token";
-
 /** Name of the httpOnly refresh-token cookie used for token rotation. */
 export const REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
 

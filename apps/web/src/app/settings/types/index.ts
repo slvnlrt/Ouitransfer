@@ -25,14 +25,6 @@ export interface SettingsGroupProps {
   onSubmit: (data: GroupFormData) => Promise<void>;
 }
 
-export interface ConfigInputProps {
-  config: Config;
-  register: GroupForm["register"];
-  setValue: GroupForm["setValue"];
-  error?: string;
-  smtpEnabled?: string;
-}
-
 export type ConfigType = "text" | "number" | "boolean" | "bigint";
 
 export type Config = {

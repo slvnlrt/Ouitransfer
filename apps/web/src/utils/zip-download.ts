@@ -48,17 +48,3 @@ export async function downloadFilesAsZip(items: DownloadItem[], zipName: string)
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
-
-/**
- * Downloads a single file directly
- * @param url Presigned URL
- * @param fileName File name
- */
-export async function downloadFile(url: string, fileName: string): Promise<void> {
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = fileName;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}

@@ -1,36 +1,37 @@
 {
   "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "ignoreExportsUsedInFile": true,
+  "exclude": ["duplicates", "unresolved"],
+  "ignoreBinaries": ["python3"],
+  "ignoreDependencies": ["vitest", "@commitlint/types"],
+  "ignoreWorkspaces": ["packages/config"],
   "workspaces": {
+    ".": {
+      "entry": [".lighthouserc.cjs", "infra/check-missing.js"],
+      "ignoreDependencies": ["@prisma/client"]
+    },
     "apps/server": {
-      "entry": ["src/server.ts"],
+      "entry": ["src/scripts/reset-password.ts"],
       "project": ["src/**/*.ts"],
-      "ignoreDependencies": ["tsx"]
+      "ignoreDependencies": ["@vitest/coverage-v8"]
     },
     "apps/web": {
-      "entry": ["src/app/**/{layout,page,loading,error,not-found}.{ts,tsx}", "src/middleware.ts"],
+      "entry": [
+        "src/app/**/{layout,page,loading,error,not-found}.{ts,tsx}",
+        "src/components/ui/*.{ts,tsx}"
+      ],
       "project": ["src/**/*.{ts,tsx}"],
-      "ignoreDependencies": ["sharp"]
+      "ignoreDependencies": ["@vitest/coverage-v8", "postcss", "tw-animate-css", "tailwindcss"]
     },
     "apps/docs": {
       "entry": [
         "src/app/**/{layout,page}.{ts,tsx}",
         "src/app/layout.config.tsx",
         "source.config.ts",
-        "content/**/*.mdx"
+        "src/components/ui/*.{ts,tsx}"
       ],
-      "project": ["src/**/*.{ts,tsx}", "content/**/*.mdx"],
-      "ignoreDependencies": ["fumadocs-mdx"]
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignoreDependencies": ["tw-animate-css"]
     }
-  },
-  "ignore": ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}", "e2e/**"],
-  "ignoreDependencies": [
-    "@biomejs/biome",
-    "@commitlint/cli",
-    "@commitlint/config-conventional",
-    "@playwright/test",
-    "knip",
-    "lefthook",
-    "turbo",
-    "vitest"
-  ]
+  }
 }

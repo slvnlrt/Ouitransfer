@@ -45,18 +45,6 @@ export const STATUS_VARIANTS = {
   },
 };
 
-export const UPLOAD_PROGRESS = {
-  INITIAL: 0,
-  COMPLETE: 100,
-} as const;
-
-export const FILE_STATUS = {
-  PENDING: "pending",
-  UPLOADING: "uploading",
-  SUCCESS: "success",
-  ERROR: "error",
-} as const;
-
 export const UPLOAD_CONFIG = {
   TEXTAREA_ROWS: 3,
 } as const;

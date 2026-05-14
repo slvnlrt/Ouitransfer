@@ -42,6 +42,5 @@ export const ListFilesSchema = z.object({
   recursive: z.string().optional().default("true").describe("Include files from subfolders"),
 });
 
-export type UpdateFileInput = z.infer<typeof UpdateFileSchema>;
 export type MoveFileInput = z.infer<typeof MoveFileSchema>;
 export type ListFilesInput = z.infer<typeof ListFilesSchema>;

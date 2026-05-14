@@ -424,5 +424,3 @@ export function useFileBrowser() {
     buildFolderPath,
   };
 }
-
-export const useFiles = useFileBrowser;

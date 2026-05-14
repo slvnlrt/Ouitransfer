@@ -25,8 +25,6 @@ export const BaseResetPasswordSchema = z.object({
   token: z.string().min(1, "Token is required").describe("Reset password token"),
 });
 
-export type BaseResetPasswordInput = z.infer<typeof BaseResetPasswordSchema>;
-
 export const createResetPasswordSchema = async () => {
   const minLength = Number(await getConfigValue("passwordMinLength"));
   return BaseResetPasswordSchema.extend({
@@ -35,10 +33,6 @@ export const createResetPasswordSchema = async () => {
       .min(minLength, `Password must be at least ${minLength} characters`)
       .describe("User password"),
   });
-};
-
-export type ResetPasswordInput = BaseResetPasswordInput & {
-  password: string;
 };
 
 export const CompleteTwoFactorLoginSchema = z.object({
@@ -56,5 +50,3 @@ export const CompleteTwoFactorLoginSchema = z.object({
     .default(false)
     .describe("Remember this device for 30 days"),
 });
-
-export type CompleteTwoFactorLoginInput = z.infer<typeof CompleteTwoFactorLoginSchema>;

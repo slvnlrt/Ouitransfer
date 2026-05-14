@@ -83,34 +83,6 @@ export const timeoutConfig = {
 };
 
 /**
- * Get timeout configuration based on file size.
- * Very large files (>10GB) get longer presigned URL expiry.
- */
-export function getTimeoutForFileSize(fileSizeBytes: number) {
-  const fileSizeGB = fileSizeBytes / (1024 * 1024 * 1024);
-
-  if (fileSizeGB > 100) {
-    return {
-      ...timeoutConfig,
-      token: {
-        expiration: 24 * 60 * 60 * 1000, // 24 hours for very large files
-      },
-    };
-  }
-
-  if (fileSizeGB > 10) {
-    return {
-      ...timeoutConfig,
-      token: {
-        expiration: 4 * 60 * 60 * 1000, // 4 hours for large files
-      },
-    };
-  }
-
-  return timeoutConfig;
-}
-
-/**
  * Environment-based timeout overrides.
  * Set these in your .env file to tune defaults without code changes.
  *

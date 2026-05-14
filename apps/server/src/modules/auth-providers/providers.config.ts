@@ -1,6 +1,6 @@
 import type { ProviderConfig, ProvidersConfigFile } from "./types.js";
 
-export const PROVIDER_PATTERNS = [
+const PROVIDER_PATTERNS = [
   { pattern: "frontegg.com", type: "frontegg" },
   { pattern: "discord.com", type: "discord" },
   { pattern: "github.com", type: "github" },
@@ -16,7 +16,7 @@ export const PROVIDER_PATTERNS = [
   { pattern: "pocketid", type: "pocketid" },
 ] as const;
 
-export const DEFAULT_SCOPES_BY_TYPE: Record<string, string[]> = {
+const DEFAULT_SCOPES_BY_TYPE: Record<string, string[]> = {
   frontegg: ["openid", "profile", "email"],
   discord: ["identify", "email"],
   github: ["read:user", "user:email"],
@@ -32,7 +32,7 @@ export const DEFAULT_SCOPES_BY_TYPE: Record<string, string[]> = {
   pocketid: ["openid", "profile", "email"],
 } as const;
 
-export const DISCOVERY_SUPPORTED_PROVIDERS = [
+const DISCOVERY_SUPPORTED_PROVIDERS = [
   "frontegg",
   "oidc",
   "authentik",
@@ -52,7 +52,7 @@ export const DISCOVERY_PATHS = [
   "/.well-known/oauth-authorization-server",
 ] as const;
 
-export const FALLBACK_ENDPOINTS: Record<
+const FALLBACK_ENDPOINTS: Record<
   string,
   { authorizationEndpoint: string; tokenEndpoint: string; userInfoEndpoint: string }
 > = {
@@ -320,21 +320,6 @@ export const providersConfig: ProvidersConfigFile = {
     pocketid: pocketidConfig,
   },
   genericProviderTemplate,
-};
-
-/**
- * Individual exports for convenient importing
- */
-export {
-  auth0Config,
-  authentikConfig,
-  discordConfig,
-  fronteggConfig,
-  genericProviderTemplate,
-  githubConfig,
-  googleConfig,
-  kindeConfig,
-  zitadelConfig,
 };
 
 export function detectProviderType(issuerUrl: string): string {

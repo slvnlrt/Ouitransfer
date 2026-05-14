@@ -4,7 +4,7 @@ import { z } from "zod";
 import { prisma } from "../../shared/prisma.js";
 
 /** Typed union of all supported audit actions. */
-export const AUDIT_ACTIONS = [
+const AUDIT_ACTIONS = [
   "LOGIN_SUCCESS",
   "LOGIN_FAILURE",
   "LOGOUT",

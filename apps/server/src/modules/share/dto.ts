@@ -128,16 +128,5 @@ export const UpdateShareRecipientsSchema = z.object({
   emails: z.array(z.string().email("Invalid email format").describe("The recipient emails")),
 });
 
-export const CreateShareAliasSchema = z.object({
-  shareId: z.string().describe("The share ID"),
-  alias: z
-    .string()
-    .regex(/^[a-zA-Z0-9]+$/, "Alias must contain only letters and numbers")
-    .min(3, "Alias must be at least 3 characters long")
-    .max(30, "Alias must not exceed 30 characters")
-    .describe("The custom alias for the share"),
-});
-
 export type CreateShareInput = z.infer<typeof CreateShareSchema>;
 export type UpdateShareInput = z.infer<typeof UpdateShareSchema>;
-export type ShareResponse = z.infer<typeof ShareResponseSchema>;

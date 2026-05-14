@@ -150,8 +150,4 @@ export const UpdateReverseShareFileSchema = z.object({
 
 export type CreateReverseShareInput = z.infer<typeof CreateReverseShareSchema>;
 export type UpdateReverseShareInput = z.infer<typeof UpdateReverseShareSchema>;
-export type ReverseShareResponse = z.infer<typeof ReverseShareResponseSchema>;
-export type ReverseSharePublic = z.infer<typeof ReverseSharePublicSchema>;
 export type UploadToReverseShareInput = z.infer<typeof UploadToReverseShareSchema>;
-export type GetPresignedUrlInput = z.infer<typeof GetPresignedUrlSchema>;
-export type UpdateReverseShareFileInput = z.infer<typeof UpdateReverseShareFileSchema>;

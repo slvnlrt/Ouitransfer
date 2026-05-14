@@ -43,7 +43,7 @@ const formatDate = (dateString: string, t: TranslateFunction, locale: string) =>
   }
 };
 
-export const getSenderDisplay = (file: ReverseShareFile, t: TranslateFunction) => {
+const getSenderDisplay = (file: ReverseShareFile, t: TranslateFunction) => {
   if (file.uploaderName && file.uploaderEmail) {
     return `${file.uploaderName} (${file.uploaderEmail})`;
   }

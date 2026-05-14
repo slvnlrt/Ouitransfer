@@ -8,26 +8,6 @@ export interface HeaderProps {
   onCreateFolder?: () => void;
 }
 
-export interface FileListProps {
-  files: FileItem[];
-  filteredFiles: FileItem[];
-  folders?: FolderItem[];
-  filteredFolders?: FolderItem[];
-  fileManager: EnhancedFileManagerHook;
-  searchQuery: string;
-  onSearch: (query: string) => void;
-  onUpload: () => void;
-}
-
-export interface SearchBarProps {
-  searchQuery: string;
-  onSearch: (query: string) => void;
-  totalFiles: number;
-  totalFolders?: number;
-  filteredCount: number;
-  filteredFolders?: number;
-}
-
 export interface FilesModalsProps {
   fileManager: EnhancedFileManagerHook;
   modals: {

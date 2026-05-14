@@ -64,39 +64,3 @@ export const createFieldDescriptions = (t: ReturnType<typeof createTranslator>) 
   maxFileSize: t("settings.fields.maxFileSize.description"),
   maxTotalStoragePerUser: t("settings.fields.maxTotalStoragePerUser.description"),
 });
-
-export const createFieldTitles = (t: ReturnType<typeof createTranslator>) => ({
-  // General settings
-  appLogo: t("settings.fields.appLogo.title"),
-  appName: t("settings.fields.appName.title"),
-  appDescription: t("settings.fields.appDescription.title"),
-  showHomePage: t("settings.fields.showHomePage.title"),
-  hideVersion: t("settings.fields.hideVersion.title"),
-  firstUserAccess: t("settings.fields.firstUserAccess.title"),
-  serverUrl: t("settings.fields.serverUrl.title"),
-
-  // Email settings
-  smtpEnabled: t("settings.fields.smtpEnabled.title"),
-  smtpHost: t("settings.fields.smtpHost.title"),
-  smtpPort: t("settings.fields.smtpPort.title"),
-  smtpUser: t("settings.fields.smtpUser.title"),
-  smtpPass: t("settings.fields.smtpPass.title"),
-  smtpFromName: t("settings.fields.smtpFromName.title"),
-  smtpFromEmail: t("settings.fields.smtpFromEmail.title"),
-  smtpSecure: t("settings.fields.smtpSecure.title"),
-  smtpNoAuth: t("settings.fields.smtpNoAuth.title"),
-  smtpTrustSelfSigned: t("settings.fields.smtpTrustSelfSigned.title"),
-
-  // Auth Providers settings
-  authProvidersEnabled: "Authentication Providers Enabled",
-
-  // Security settings
-  maxLoginAttempts: t("settings.fields.maxLoginAttempts.title"),
-  loginBlockDuration: t("settings.fields.loginBlockDuration.title"),
-  passwordMinLength: t("settings.fields.passwordMinLength.title"),
-  passwordResetTokenExpiration: t("settings.fields.passwordResetTokenExpiration.title"),
-
-  // Storage settings
-  maxFileSize: t("settings.fields.maxFileSize.title"),
-  maxTotalStoragePerUser: t("settings.fields.maxTotalStoragePerUser.title"),
-});

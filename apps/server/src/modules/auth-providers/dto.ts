@@ -13,29 +13,6 @@ export const BaseAuthProviderSchema = z.object({
   clientSecret: z.string().min(1, "Client secret is required").describe("OAuth client secret"),
 });
 
-export const DiscoveryModeSchema = BaseAuthProviderSchema.extend({
-  issuerUrl: z.string().url("Invalid issuer URL").describe("Provider issuer URL for discovery"),
-  authorizationEndpoint: z.literal("").optional(),
-  tokenEndpoint: z.literal("").optional(),
-  userInfoEndpoint: z.literal("").optional(),
-});
-
-export const ManualEndpointsSchema = BaseAuthProviderSchema.extend({
-  issuerUrl: z.string().optional(),
-  authorizationEndpoint: z
-    .string()
-    .min(1, "Authorization endpoint is required")
-    .describe("Authorization endpoint URL or path"),
-  tokenEndpoint: z
-    .string()
-    .min(1, "Token endpoint is required")
-    .describe("Token endpoint URL or path"),
-  userInfoEndpoint: z
-    .string()
-    .min(1, "User info endpoint is required")
-    .describe("User info endpoint URL or path"),
-});
-
 export const CreateAuthProviderSchema = BaseAuthProviderSchema.extend({
   issuerUrl: z.string().url("Invalid issuer URL").optional(),
   authorizationEndpoint: z.string().optional(),

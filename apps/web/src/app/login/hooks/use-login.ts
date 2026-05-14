@@ -16,12 +16,12 @@ import type { GetCurrentUser200 } from "@/http/endpoints/auth/types";
 import { queryKeys } from "@/lib/query-keys";
 import type { LoginFormValues } from "../schemas/schema";
 
-export const loginSchema = z.object({
+const loginSchema = z.object({
   emailOrUsername: z.string(),
   password: z.string(),
 });
 
-export type LoginFormData = z.infer<typeof loginSchema>;
+type LoginFormData = z.infer<typeof loginSchema>;
 
 export function useLogin() {
   const router = useRouter();
