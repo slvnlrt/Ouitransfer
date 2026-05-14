@@ -73,10 +73,6 @@ export interface ListUserReverseShares200 {
   reverseShares: ReverseShareWithAlias[];
 }
 
-export interface GetReverseShare200 {
-  reverseShare: ReverseShareWithAlias;
-}
-
 export interface DeleteReverseShare200 {
   reverseShare: BaseReverseShare;
 }
@@ -91,15 +87,12 @@ export interface UpdateReverseSharePassword200 {
 
 export interface GetPresignedUrl200 {
   url: string;
+  objectName: string;
   expiresIn: number;
 }
 
 export interface RegisterFileUpload201 {
   file: ReverseShareFile;
-}
-
-export interface CheckReverseSharePassword200 {
-  valid: boolean;
 }
 
 export interface DownloadReverseShareFile200 {
@@ -109,14 +102,6 @@ export interface DownloadReverseShareFile200 {
 
 export interface DeleteReverseShareFile200 {
   file: ReverseShareFile;
-}
-
-export interface ActivateReverseShare200 {
-  reverseShare: BaseReverseShare;
-}
-
-export interface DeactivateReverseShare200 {
-  reverseShare: BaseReverseShare;
 }
 
 export interface UpdateReverseShareFile200 {
@@ -156,7 +141,8 @@ export interface UpdateReverseSharePasswordBody {
 }
 
 export interface GetPresignedUrlBody {
-  objectName: string;
+  filename: string;
+  extension: string;
 }
 
 export interface RegisterFileUploadBody {
@@ -169,17 +155,13 @@ export interface RegisterFileUploadBody {
   uploaderName?: string;
 }
 
-export interface CheckReverseSharePasswordBody {
-  password: string;
+export interface GetReverseShareForUploadParams {
+  password?: string;
 }
 
 export interface UpdateReverseShareFileBody {
   name?: string;
   description?: string | null;
-}
-
-export interface GetReverseShareForUploadParams {
-  password?: string;
 }
 
 export interface RegisterFileUploadParams {
@@ -189,17 +171,13 @@ export interface RegisterFileUploadParams {
 export type CreateReverseShareResult = AxiosResponse<CreateReverseShare201>;
 export type UpdateReverseShareResult = AxiosResponse<UpdateReverseShare200>;
 export type ListUserReverseSharesResult = AxiosResponse<ListUserReverseShares200>;
-export type GetReverseShareResult = AxiosResponse<GetReverseShare200>;
 export type DeleteReverseShareResult = AxiosResponse<DeleteReverseShare200>;
 export type GetReverseShareForUploadResult = AxiosResponse<GetReverseShareForUpload200>;
 export type UpdateReverseSharePasswordResult = AxiosResponse<UpdateReverseSharePassword200>;
 export type GetPresignedUrlResult = AxiosResponse<GetPresignedUrl200>;
 export type RegisterFileUploadResult = AxiosResponse<RegisterFileUpload201>;
-export type CheckReverseSharePasswordResult = AxiosResponse<CheckReverseSharePassword200>;
 export type DownloadReverseShareFileResult = AxiosResponse<DownloadReverseShareFile200>;
 export type DeleteReverseShareFileResult = AxiosResponse<DeleteReverseShareFile200>;
-export type ActivateReverseShareResult = AxiosResponse<ActivateReverseShare200>;
-export type DeactivateReverseShareResult = AxiosResponse<DeactivateReverseShare200>;
 export type UpdateReverseShareFileResult = AxiosResponse<UpdateReverseShareFile200>;
 
 export interface CopyReverseShareFile200 {

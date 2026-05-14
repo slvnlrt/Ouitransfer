@@ -80,13 +80,18 @@ export function FileUploadSection({
         const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
         return `reverse-shares/${alias}/${timestamp}-${sanitizedFileName}`;
       },
-      getPresignedUrl: async (objectName) => {
+      getPresignedUrl: async (_objectName, extension) => {
+        const filename = _objectName.split("/").pop()?.replace(`.${extension}`, "") || _objectName;
         const response = await getPresignedUrlForUploadByAlias(
           alias,
-          { objectName },
+          { filename, extension },
           password ? { password } : undefined,
         );
-        return { url: response.data.url, method: "PUT" };
+        return {
+          url: response.data.url,
+          method: "PUT",
+          actualObjectName: response.data.objectName,
+        };
       },
       onAfterUpload: async (_fileId, file, objectName) => {
         const fileExtension = file.name.split(".").pop() || "";
