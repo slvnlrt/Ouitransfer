@@ -1,97 +1,254 @@
-# Unconnected API Wrappers — Wire-Up TODO
+# Wire-Up Plan — Dead Code Cleanup & New Features
 
-These frontend API wrappers and server utilities exist and map to **active server endpoints**,
-but are not yet consumed by any UI component. They were preserved during the knip audit because
-the app was under active development when the refactor began — these are planned API surface,
-not dead code.
+Post-exploration analysis of all frontend API wrappers flagged by knip.
+Each item has been investigated against server endpoints, current UI usage, and feature gaps.
 
-**Goal**: Wire each function to a UI component or hook. Once connected, remove its knip suppression.
+---
 
-## Reverse Shares — `apps/web/src/http/endpoints/reverse-shares/index.ts`
+## Phase 1: Delete Dead Code
 
-| Function | Server Endpoint | Purpose | Wire-up Target |
-|----------|----------------|---------|----------------|
-| `getReverseShare` | `GET /reverse-shares/:id` | Get reverse share details | Admin detail view / edit modal |
-| `getReverseShareForUpload` | `GET /reverse-shares/:id/upload` | Public upload page data | Upload page (currently uses `ByAlias` variant) |
-| `getPresignedUrlForUpload` | `POST /reverse-shares/:id/presigned-url` | Get upload URL by ID | Upload flow (currently uses `ByAlias` variant) |
-| `registerFileUpload` | `POST /reverse-shares/:id/register-upload` | Register completed upload by ID | Upload flow (currently uses `ByAlias` variant) |
-| `checkReverseSharePassword` | `POST /reverse-shares/:id/check-password` | Verify password by ID | Password gate (currently uses `ByAlias` variant) |
-| `activateReverseShare` | `POST /reverse-shares/:id/activate` | Activate a reverse share | Reverse share management table |
-| `deactivateReverseShare` | `POST /reverse-shares/:id/deactivate` | Deactivate a reverse share | Reverse share management table |
+These wrappers are **truly dead** — the functionality they provide is already implemented via other code paths. Safe to delete along with their associated types and orphaned proxy routes.
 
-**Note**: The `ByAlias` variants of `getPresignedUrlForUpload`, `registerFileUpload`, and
-`getReverseShareForUpload` ARE consumed. The by-ID variants exist for admin/internal use.
+### Reverse Shares — `apps/web/src/http/endpoints/reverse-shares/index.ts`
 
-### Orphaned Types (same file's `types.ts`)
-- `DownloadReverseShareFileResult` — used by `downloadReverseShareFile` (connected), but type itself not imported directly
-- `DeleteReverseShareFileResult` — used by `deleteReverseShareFile` (connected), but type itself not imported directly
+- [x] Delete `activateReverseShare` — replaced by `updateReverseShare({id, isActive: true})` via generic PUT
+- [x] Delete `deactivateReverseShare` — replaced by `updateReverseShare({id, isActive: false})` via generic PUT
+- [x] Delete `getReverseShareForUpload` — by-ID variant; UI exclusively uses by-alias (`/r/:alias`)
+- [x] Delete `getPresignedUrlForUpload` — by-ID variant; UI exclusively uses by-alias
+- [x] Delete `registerFileUpload` — by-ID variant; UI exclusively uses by-alias
+- [x] Delete `checkReverseSharePassword` — password validated implicitly via `getReverseShareForUploadByAlias(alias, {password})`
+- [x] Delete `getReverseShare` — list query (`listUserReverseShares`) already returns all data; no detail page exists
 
-## Two-Factor Auth — `apps/web/src/http/endpoints/auth/two-factor/index.ts`
+### Two-Factor Auth — `apps/web/src/http/endpoints/auth/two-factor/index.ts`
 
-| Function | Server Endpoint | Purpose | Wire-up Target |
-|----------|----------------|---------|----------------|
-| `verifyTwoFactorToken` | `POST /two-factor/verify` | Verify a 2FA token | 2FA login flow (may already use `completeTwoFactorLogin` instead) |
+- [x] Delete `verifyTwoFactorToken` — would be used for re-auth gates (e.g. "confirm 2FA to do sensitive action"), but no such feature exists; login flow uses `completeTwoFactorLogin` instead. Server endpoint (`POST /auth/2fa/verify`) stays — only frontend wrapper deleted.
 
-## App — `apps/web/src/http/endpoints/app/index.ts`
+### App — `apps/web/src/http/endpoints/app/index.ts`
 
-| Function | Server Endpoint | Purpose | Wire-up Target |
-|----------|----------------|---------|----------------|
-| `getSystemInfo` | `GET /app/system-info` | System info (storage, version) | Admin dashboard / system status page |
-| `checkHealth` | `GET /health` | Health check | Status indicator / admin dashboard |
-| `checkUploadAllowed` | `GET /app/check-upload` | Verify uploads are allowed | Upload flow pre-check |
+- [x] Delete `getSystemInfo` — returns hardcoded `{storageProvider: 's3', s3Enabled: true}` since S3-only migration (Phase 6). Vestigial endpoint.
 
-## Config — `apps/web/src/http/endpoints/config/index.ts`
+### Config — `apps/web/src/http/endpoints/config/index.ts`
 
-| Function | Server Endpoint | Purpose | Wire-up Target |
-|----------|----------------|---------|----------------|
-| `updateConfig` | `PUT /app/configs/:key` | Update single config | Settings page (currently uses `bulkUpdateConfigs`) |
+- [x] Delete `updateConfig` — settings page uses `bulkUpdateConfigs` exclusively for all saves, even single fields
 
-## Shares — `apps/web/src/http/endpoints/shares/index.ts`
+### Shares — `apps/web/src/http/endpoints/shares/index.ts`
 
-| Function | Server Endpoint | Purpose | Wire-up Target |
-|----------|----------------|---------|----------------|
-| `getShareFolderContents` | `GET /shares/:id/folders/:folderId` | Browse share folder tree | Share detail view with folder navigation |
+- [x] Delete `getShareFolderContents` — folder navigation is fully client-side (`useMemo` filtering over preloaded data). No matching backend endpoint exists for `GET /shares/:id/folders/:folderId` anyway.
 
-## Users — `apps/web/src/http/endpoints/users/index.ts`
+### Users — `apps/web/src/http/endpoints/users/index.ts`
 
-| Function | Server Endpoint | Purpose | Wire-up Target |
-|----------|----------------|---------|----------------|
-| `getUserById` | `GET /users/:id` | Get user details | Admin user detail view |
-| `updateUserImage` | `PUT /users/:id/image` | Update user profile image | Profile / admin user edit |
+- [x] Delete `getUserById` — admin table uses `listUsers`; no user detail page exists
+- [x] Delete `updateUserImage` — admin image-by-URL endpoint; profile uses self-service multipart avatar upload (`POST /users/avatar`)
 
-### Orphaned Type
-- `ListUsers200` — response type for `listUsers` (connected), but type itself not imported directly
+### Orphaned Proxy Routes — `apps/web/src/lib/proxy-routes.ts`
 
-## Server Utilities
+- [x] Delete `GET shares/:shareId/folders/:folderId/contents` (lines ~356-360) — no backend endpoint
+- [x] Delete `POST shares/:shareId/folders/:folderId/contents` (lines ~361-365) — no backend endpoint
+- [x] Delete `GET shares/:shareId/folders/:folderId/download` (lines ~366-371) — no backend endpoint
+- [x] Delete `PATCH users/update-image/:id` — wrapper (`updateUserImage`) never called
 
-### `apps/server/src/modules/config/service.ts`
+### Orphaned Types (clean up alongside their wrappers)
 
-| Function | Purpose | Wire-up Target |
-|----------|---------|----------------|
-| `setConfigValue` | Update a single config in DB | Used by `updateConfig` controller (check if controller uses it) |
-| `getGroupConfigs` | Get all configs for a group | Settings page group display |
+- [x] Delete types only used by deleted wrappers (17 types deleted; `GetReverseShareForUploadParams` and `GetPresignedUrlBody` kept — used by active by-alias variants)
+- [x] Verify `DownloadReverseShareFileResult`, `DeleteReverseShareFileResult`, `ListUsers200` — all used by active wrappers, kept
 
-### `apps/server/src/config/storage.config.ts`
+### Server Utilities — FALSE POSITIVES (keep)
 
-| Export | Purpose | Wire-up Target |
-|--------|---------|----------------|
-| `isS3Enabled` | Boolean flag for S3 availability | Health check, conditional UI rendering |
+These were listed in the original TODO but are **not dead**:
+- `setConfigValue` — used by auth registration flow (`POST /auth/register` sets `firstUserAccess`)
+- `getGroupConfigs` — used by email service
+- `isS3Enabled` — 28 server-side consumers; frontend correctly has zero references (storage-agnostic by design)
+- `useSecureConfigs` hook — 8 active frontend consumers
 
-### `apps/web/src/hooks/use-secure-configs.ts`
+---
 
-| Hook | Purpose | Wire-up Target |
-|------|---------|----------------|
-| `useSecureConfigs` | Fetch secure (admin-only) configs | Admin settings pages |
+## Phase 2: Fix Presigned URL Type Mismatch Bug
 
-## Knip Pre-commit Hook
+**Bug**: `GetPresignedUrlBody` type in reverse share upload has a schema mismatch.
+- Frontend type: `{ objectName: string }`
+- Server Zod schema: `{ filename: string; extension: string }`
 
-A `knip` pre-commit command is prepared but **commented out** in `lefthook.yml`.
-Once all items in this file are resolved and `pnpm knip` exits 0, uncomment it:
+The server generates objectNames server-side for security (path traversal prevention, Phase 5 filename hardening). The by-ID variant wrapper is dead code (deleted in Phase 1), but the **by-alias variant may have the same issue** — needs investigation.
 
-```yaml
-# In lefthook.yml, under pre-commit.commands:
-    knip:
-      run: pnpm knip
+- [x] Investigate `getPresignedUrlForUploadByAlias` and its actual request body vs server schema — confirmed 100% upload failure: frontend sent `{objectName}`, server requires `{filename, extension}`
+- [x] Investigate `file-upload-section.tsx` Uppy upload flow to see what fields are actually sent — sent `objectName` only, server strips it via Zod and rejects missing required fields
+- [x] Fix: `GetPresignedUrlBody` → `{filename, extension}`, `GetPresignedUrl200` → added `objectName` response field, `file-upload-section.tsx` → extract filename/extension from path, use returned `objectName` for S3 upload
+
+---
+
+## Phase 3: Wire Up Useful Endpoints
+
+These wrappers map to real features that should exist in the UI. Wiring them up resolves knip warnings AND adds value.
+
+### 3.1 — Admin Health Status Card
+
+- [ ] Wire `checkHealth` (`GET /health`) into the admin dashboard
+- [ ] Add a "System Status" card showing: DB status, S3 status, uptime, overall health
+- [ ] Use TanStack Query with appropriate polling interval (e.g. 60s)
+- [ ] Show degraded state visually (amber warning if one check fails)
+
+### 3.2 — Pre-Upload Storage Validation
+
+- [ ] Wire `checkUploadAllowed` (`GET /app/check-upload` → `GET /storage/check-upload`) into the upload flow
+- [ ] Block uploads with a user-friendly error when disk space is exhausted
+- [ ] Show remaining space indicator in upload modal (optional enhancement)
+
+---
+
+## Phase 4: Knip Clean & Pre-Commit Hook
+
+- [ ] Run `pnpm knip` — verify zero unused exports/types/dependencies
+- [ ] Uncomment the knip command in `lefthook.yml` pre-commit hook
+- [ ] Verify pre-commit hook runs knip on a test commit
+
+---
+
+## Phase 5: New Features (Brainstorming Required)
+
+### 5.1 — Per-User Storage Quotas & Groups
+
+**Goal**: Prevent employees from uploading unlimited data without cleanup.
+
+**Quota hierarchy** (resolved from top to bottom):
+1. Per-user override (admin sets explicitly on a user) — highest priority
+2. Group quota (user belongs to a group with a quota) — if no per-user override
+3. Global default quota (admin-configurable, e.g. 10 GB) — fallback
+
+**Design requirements**:
+- Global default quota per user (admin-configurable setting)
+- Groups with configurable quotas (see 5.4 — Groups below)
+- Per-user admin override (nullable, takes precedence over group and default)
+- Quota applies to all user content: personal files + shares + reverse share received files
+- Reverse share creation: user chooses max total size for the reverse share, capped at their remaining quota
+- Upload rejection when quota exceeded (both direct uploads and reverse share uploads count toward the creator's quota)
+- User-facing quota indicator ("X of Y used") in dashboard and/or upload modal
+- Admin-facing per-user consumption view in user management
+
+**Server changes needed**:
+- New `User.storageQuotaOverride` field (nullable bigint)
+- Quota resolution logic: `user.storageQuotaOverride ?? user.group?.storageQuota ?? globalDefault`
+- New endpoint or extend existing: calculate per-user total storage consumption
+- Enforce quota on presigned URL generation (reject before upload, not after)
+- Reverse share creation: validate requested `maxTotalSize` against creator's remaining quota
+
+**Frontend changes needed**:
+- Dashboard: user storage quota widget ("X of Y GB used")
+- Upload flow: quota check before upload
+- Reverse share create/edit: max size field capped by remaining quota
+- Admin user management: view per-user consumption, set quota overrides
+
+**Open questions** (for brainstorming):
+- What counts toward quota? Files only, or also S3 overhead (multipart fragments, etc.)?
+- Should there be a "soft limit" warning (e.g. 80% used notification)?
+- When quota is exceeded: block new uploads only, or also block creating new shares?
+
+### 5.2 — Automatic Cleanup of Expired Content
+
+**Goal**: Expired shares and reverse shares accumulate in DB and S3 forever. Need automated cleanup.
+
+**Decisions**:
+- **Grace period**: Configurable (admin sets days, e.g. 7 days after expiration before deletion)
+- **Notification**: Email the owner before cleanup (e.g. "your share X expires in 3 days and will be deleted")
+- Relies on the existing email system (SMTP already used for share notifications, password reset, invites)
+
+**Design requirements**:
+- Server-side scheduled task (cron-like) that runs periodically
+- Deletes shares past their `expiration` date + grace period (and their S3 objects)
+- Deletes reverse shares past their `expiration` date + grace period (and their S3 objects)
+- Configurable grace period in days (admin setting)
+- Email notification to owner N days before cleanup (configurable N)
+- Admin-configurable via settings page
+- Audit log entries for automated deletions
+
+**Server changes needed**:
+- Scheduled task mechanism (Fastify plugin, `node-cron`, or `setInterval`-based)
+- Cleanup service: query expired items past grace period, cascade-delete S3 objects + DB records
+- Notification service: query items approaching cleanup, send warning emails
+- New config keys: `autoCleanupEnabled`, `autoCleanupGracePeriodDays`, `autoCleanupIntervalHours`,
+  `autoCleanupNotifyDaysBefore`
+
+**Frontend changes needed**:
+- Admin settings: auto-cleanup toggle, grace period, notification timing configuration
+- Optional: admin dashboard card showing "X items pending cleanup"
+
+**Open questions** (for brainstorming):
+- Should cleanup also handle shares that exceed max views (already blocked but still in storage)?
+- Run as in-process Fastify task, or separate worker process for production reliability?
+
+### 5.3 — LDAP / Active Directory Synchronization
+
+**Goal**: Sync user accounts from corporate Active Directory.
+
+**Decisions**:
+- **Target**: Active Directory only (no OpenLDAP/FreeIPA for V1)
+- **Groups**: Fetch AD groups from the start. V1 stores them but doesn't enforce quotas via groups yet — that comes when Groups (5.4) is implemented. Groups will eventually map to Ouitransfer groups with per-group quotas.
+- **Auth approach**: To be decided in brainstorming (Option A vs B — see below)
+
+**Two possible auth approaches** (brainstorming needed):
+
+#### Option A: LDAP as Auth Backend
+- Users authenticate directly against AD (LDAP bind with their domain credentials)
+- No local password stored — auth always goes through AD
+- Pro: single source of truth, password policies enforced by AD, no separate password to manage
+- Con: requires AD connectivity at every login, no offline/fallback auth
+
+#### Option B: LDAP as User Import Source
+- AD syncs user accounts (create/update/deactivate) on a schedule
+- Authentication uses app-specific passwords (set via invite email + password reset flow)
+- Pro: works if AD is down, simpler auth flow, existing invite/reset email system is reused
+- Con: two sets of credentials, users must manage a separate password
+
+**Design requirements (common to both)**:
+- Admin AD configuration page (server URL, bind DN/password, search base, LDAP filter, attribute mapping)
+- Scheduled sync (configurable interval, e.g. every 6 hours)
+- Manual sync trigger button in admin UI
+- User create/update/deactivate based on AD state (disabled AD accounts → deactivated app accounts)
+- Group sync: fetch AD group memberships and store them (for future group-based quotas)
+- Sync log / history visible to admin
+- LDAP-synced users visually distinguished in admin UI (badge/icon)
+
+**Open questions** (for brainstorming):
+- Auth approach: Option A (AD bind) vs Option B (import + app passwords)?
+- If Option A: fallback auth when AD is unreachable?
+- If Option B: auto-send invite email on first sync to let users set their app password?
+- Conflict resolution: if a user exists locally and in AD with different email, which wins?
+- Nested group support? (AD commonly uses nested groups via `memberOf:1.2.840.113556.1.4.1941:=`)
+- TLS/STARTTLS requirements for AD connection?
+
+### 5.4 — Groups
+
+**Goal**: Organizational groups with per-group quotas and settings. Foundation for LDAP group mapping.
+
+**Depends on**: 5.1 (Quotas), partially on 5.3 (LDAP — provides group data to map from)
+
+**Design requirements**:
+- `Group` model with: name, description, storageQuota (bigint), optional AD group DN (for LDAP mapping)
+- Users belong to 0 or 1 group (or many-to-many if needed — brainstorm)
+- Group quota overrides global default, per-user override overrides group
+- Admin CRUD for groups
+- Admin page: group list with member count, storage consumption per group
+- LDAP sync maps AD groups → Ouitransfer groups (by DN or name)
+- Manual group assignment for non-LDAP users
+
+**Open questions** (for brainstorming):
+- One group per user, or multiple groups? (simpler = one; AD users often belong to many groups)
+- If multiple groups: which quota applies? Highest? Lowest? Sum?
+- Should groups have permissions beyond quotas? (e.g. max file size, allowed file types)
+
+---
+
+## Execution Order
+
+```
+Phase 1  →  Phase 2  →  Phase 3  →  Phase 4  →  Phase 5
+(delete)    (bugfix)    (wire-up)   (knip=0)    (new features)
+  ~1h         ~1h        ~3h         ~30min       brainstorm then build
 ```
 
-When a function is wired up, remove it from this file. When the file is empty, activate the hook.
+Phases 1-4 are mechanical and can be executed with worker agents.
+
+Phase 5 feature order (each requires brainstorming before implementation):
+1. **5.1 Quotas** — foundation for everything (groups need quotas, reverse shares need quotas)
+2. **5.4 Groups** — depends on quota model being in place
+3. **5.2 Auto-cleanup** — depends on notification system (emails), independent of groups
+4. **5.3 LDAP/AD sync** — depends on groups being in place (to map AD groups → app groups)
