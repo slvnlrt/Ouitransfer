@@ -505,15 +505,14 @@
     }
   },
   "home": {
-    "description": "Giải pháp thay thế mã nguồn mở cho WeTransfer. Chia sẻ tệp một cách an toàn, không theo dõi hoặc giới hạn.",
-    "documentation": "Tài liệu",
-    "starOnGithub": "Gắn sao trên GitHub",
-    "privacyMessage": "Được xây dựng với sự riêng tư. Các tệp của bạn chỉ có thể được truy cập bởi những người có liên kết chia sẻ trước khi tải lên. Mãi mãi miễn phí và mã nguồn mở.",
-    "header": {
-      "fileSharing": "Chia sẻ tệp",
-      "tagline": "đơn giản và miễn phí"
-    },
-    "pageTitle": "Trang chủ"
+    "pageTitle": "Trang chủ",
+    "tagline": "Secure file transfer",
+    "subtitle": "Send and share your files securely.",
+    "login": "Sign in",
+    "partners": {
+      "title": "Received a link?",
+      "description": "Use the link you were given to access your files. If you can't find it, contact the person who sent it to you."
+    }
   },
   "iconPicker": {
     "title": "Chọn biểu tượng",

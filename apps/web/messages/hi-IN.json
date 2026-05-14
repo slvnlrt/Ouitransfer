@@ -501,15 +501,14 @@
     }
   },
   "home": {
-    "description": "WeTransfer का ओपन-सोर्स विकल्प। फाइलें सुरक्षित रूप से साझा करें, बिना ट्रैकिंग या सीमाओं के।",
-    "documentation": "दस्तावेज",
-    "starOnGithub": "GitHub पर स्टार करें",
-    "privacyMessage": "गोपनीयता को ध्यान में रखते हुए बनाया गया। अपलोड से पहले आपकी फाइलें केवल उनके लिए उपलब्ध हैं जिनके पास साझाकरण लिंक है। हमेशा मुफ्त और ओपन सोर्स।",
-    "header": {
-      "fileSharing": "फाइल साझा करें",
-      "tagline": "सरल और मुफ्त"
-    },
-    "pageTitle": "होम"
+    "pageTitle": "होम",
+    "tagline": "Secure file transfer",
+    "subtitle": "Send and share your files securely.",
+    "login": "Sign in",
+    "partners": {
+      "title": "Received a link?",
+      "description": "Use the link you were given to access your files. If you can't find it, contact the person who sent it to you."
+    }
   },
   "iconPicker": {
     "title": "आइकन चुनें",

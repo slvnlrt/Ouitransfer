@@ -501,15 +501,14 @@
     }
   },
   "home": {
-    "description": "WeTransfer의 오픈소스 대안입니다. 추적이나 제한 없이 파일을 안전하게 공유하세요.",
-    "documentation": "문서",
-    "starOnGithub": "GitHub에서 별표 달기",
-    "privacyMessage": "개인정보 보호를 고려하여 제작되었습니다. 업로드 전 파일은 공유 링크가 있는 사람만 접근할 수 있습니다. 항상 무료이며 오픈소스입니다.",
-    "header": {
-      "fileSharing": "파일 공유",
-      "tagline": "심플하고 무료"
-    },
-    "pageTitle": "홈"
+    "pageTitle": "홈",
+    "tagline": "안전한 파일 전송",
+    "subtitle": "파일을 안전하게 전송하고 공유하세요.",
+    "login": "로그인",
+    "partners": {
+      "title": "링크를 받으셨나요?",
+      "description": "받은 링크를 사용하여 파일에 액세스하세요. 링크를 찾을 수 없는 경우 보낸 사람에게 연락하세요."
+    }
   },
   "iconPicker": {
     "title": "아이콘 선택",

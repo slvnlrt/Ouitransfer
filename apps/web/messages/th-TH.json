@@ -505,15 +505,14 @@
     }
   },
   "home": {
-    "description": "ทางเลือกโอเพนซอร์สแทน WeTransfer แชร์ไฟล์อย่างปลอดภัยโดยไม่มีการติดตามหรือข้อจำกัด",
-    "documentation": "เอกสารประกอบ",
-    "starOnGithub": "ให้ดาว บน GitHub",
-    "privacyMessage": "สร้างขึ้นด้วยการคำนึงถึงความเป็นส่วนตัว ไฟล์ของคุณสามารถเข้าถึงได้เฉพาะผู้ที่มีลิงค์แชร์เท่านั้นก่อนการอัปโหลด ฟรีและโอเพนซอร์สตลอดไป",
-    "header": {
-      "fileSharing": "แชร์ไฟล์",
-      "tagline": "ทำให้ง่ายและฟรี"
-    },
-    "pageTitle": "หน้าแรก"
+    "pageTitle": "หน้าแรก",
+    "tagline": "Secure file transfer",
+    "subtitle": "Send and share your files securely.",
+    "login": "Sign in",
+    "partners": {
+      "title": "Received a link?",
+      "description": "Use the link you were given to access your files. If you can't find it, contact the person who sent it to you."
+    }
   },
   "iconPicker": {
     "title": "เลือกไอคอน",

@@ -505,15 +505,14 @@
     }
   },
   "home": {
-    "description": "האלטרנטיבה בקוד פתוח ל-WeTransfer. שתף קבצים בצורה מאובטחת, ללא מעקב או הגבלות.",
-    "documentation": "תיעוד",
-    "starOnGithub": "תן כוכב ב-GitHub",
-    "privacyMessage": "בנוי עם פרטיות בראש. הקבצים שלך נגישים רק לאלו עם קישור השיתוף לפני ההעלאה. חינמי וקוד פתוח לנצח.",
-    "header": {
-      "fileSharing": "שיתוף קבצים",
-      "tagline": "נעשה פשוט וחינם"
-    },
-    "pageTitle": "בית"
+    "pageTitle": "בית",
+    "tagline": "Secure file transfer",
+    "subtitle": "Send and share your files securely.",
+    "login": "Sign in",
+    "partners": {
+      "title": "Received a link?",
+      "description": "Use the link you were given to access your files. If you can't find it, contact the person who sent it to you."
+    }
   },
   "iconPicker": {
     "title": "בחר אייקון",

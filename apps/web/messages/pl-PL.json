@@ -501,15 +501,14 @@
     }
   },
   "home": {
-    "description": "Otwartoźródłowa alternatywa dla WeTransfer. Udostępniaj pliki bezpiecznie, bez śledzenia i ograniczeń.",
-    "documentation": "Dokumentacja",
-    "starOnGithub": "Oceń na GitHub",
-    "privacyMessage": "Stworzone z myślą o prywatności. Twoje pliki są dostępne tylko dla osób posiadających link do udostępniania przed przesłaniem. Zawsze darmowe i open source.",
-    "header": {
-      "fileSharing": "Udostępnianie plików",
-      "tagline": "proste i darmowe"
-    },
-    "pageTitle": "Strona główna"
+    "pageTitle": "Strona główna",
+    "tagline": "Secure file transfer",
+    "subtitle": "Send and share your files securely.",
+    "login": "Sign in",
+    "partners": {
+      "title": "Received a link?",
+      "description": "Use the link you were given to access your files. If you can't find it, contact the person who sent it to you."
+    }
   },
   "iconPicker": {
     "title": "Wybierz ikonę",

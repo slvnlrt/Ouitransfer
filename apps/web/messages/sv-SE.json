@@ -505,15 +505,14 @@
     }
   },
   "home": {
-    "description": "Alternativet med öppen källkod till WeTransfer. Dela filer säkert, utan spårning eller begränsningar.",
-    "documentation": "Dokumentation",
-    "starOnGithub": "Stjärna på GitHub",
-    "privacyMessage": "Byggd med integritet i åtanke. Dina filer är endast tillgängliga för de med delningslänken före uppladdning. För alltid gratis och öppen källkod.",
-    "header": {
-      "fileSharing": "Fildelning",
-      "tagline": "gjort enkelt och gratis"
-    },
-    "pageTitle": "Hem"
+    "pageTitle": "Hem",
+    "tagline": "Secure file transfer",
+    "subtitle": "Send and share your files securely.",
+    "login": "Sign in",
+    "partners": {
+      "title": "Received a link?",
+      "description": "Use the link you were given to access your files. If you can't find it, contact the person who sent it to you."
+    }
   },
   "iconPicker": {
     "title": "Välj ikon",

@@ -505,15 +505,14 @@
     }
   },
   "home": {
-    "description": "Альтернатива WeTransfer з відкритим кодом. Діліться файлами безпечно, без відстеження або обмежень.",
-    "documentation": "Документація",
-    "starOnGithub": "Поставити зірочку на GitHub",
-    "privacyMessage": "Створено з думкою про приватність. Ваші файли доступні лише тим, у кого є посилання для спільного доступу перед завантаженням. Назавжди безкоштовно та з відкритим кодом.",
-    "header": {
-      "fileSharing": "Обмін файлами",
-      "tagline": "зроблено простим і безкоштовним"
-    },
-    "pageTitle": "Головна"
+    "pageTitle": "Головна",
+    "tagline": "Secure file transfer",
+    "subtitle": "Send and share your files securely.",
+    "login": "Sign in",
+    "partners": {
+      "title": "Received a link?",
+      "description": "Use the link you were given to access your files. If you can't find it, contact the person who sent it to you."
+    }
   },
   "iconPicker": {
     "title": "Вибрати іконку",

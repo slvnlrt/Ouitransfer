@@ -505,15 +505,14 @@
     }
   },
   "home": {
-    "description": "La alternativa de código abierto a WeTransfer. Comparte archivos de forma segura, sin rastreo ni limitaciones.",
-    "documentation": "Documentación",
-    "starOnGithub": "Dale una estrella en GitHub",
-    "privacyMessage": "Construido con la privacidad en mente. Tus archivos antes de la subida son accesibles solo para aquellos con el enlace de compartición. Siempre libre y de código abierto.",
-    "header": {
-      "fileSharing": "Compartir archivos",
-      "tagline": "simple y gratuito"
-    },
-    "pageTitle": "Inicio"
+    "pageTitle": "Inicio",
+    "tagline": "Transferencia segura de archivos",
+    "subtitle": "Envíe y comparta sus archivos de forma segura.",
+    "login": "Iniciar sesión",
+    "partners": {
+      "title": "¿Has recibido un enlace?",
+      "description": "Utiliza el enlace que te han proporcionado para acceder a tus archivos. Si no lo encuentras, contacta con la persona que te lo envió."
+    }
   },
   "iconPicker": {
     "title": "Seleccionar Icono",

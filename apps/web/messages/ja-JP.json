@@ -501,15 +501,14 @@
     }
   },
   "home": {
-    "description": "WeTransferのオープンソース代替です。トラッキングや制限なしに安全にファイルを共有します。",
-    "documentation": "ドキュメント",
-    "starOnGithub": "GitHubでスターを付ける",
-    "privacyMessage": "プライバシーを重視して作られています。アップロード前のファイルは、共有リンクを持つ人だけがアクセスできます。常に無料でオープンソースです。",
-    "header": {
-      "fileSharing": "ファイル共有",
-      "tagline": "シンプルで無料"
-    },
-    "pageTitle": "ホーム"
+    "pageTitle": "ホーム",
+    "tagline": "安全なファイル転送",
+    "subtitle": "ファイルを安全に送信・共有できます。",
+    "login": "ログイン",
+    "partners": {
+      "title": "リンクを受け取りましたか？",
+      "description": "受け取ったリンクを使用してファイルにアクセスしてください。リンクが見つからない場合は、送信者にお問い合わせください。"
+    }
   },
   "iconPicker": {
     "title": "アイコンを選択",

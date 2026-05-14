@@ -505,15 +505,14 @@
     }
   },
   "home": {
-    "description": "Η εναλλακτική λύση ανοιχτού κώδικα στο WeTransfer. Μοιραστείτε αρχεία με ασφάλεια, χωρίς παρακολούθηση ή περιορισμούς.",
-    "documentation": "Τεκμηρίωση",
-    "starOnGithub": "Αστέρι στο GitHub",
-    "privacyMessage": "Φτιαγμένο με γνώμονα το απόρρητο. Τα αρχεία σας είναι προσβάσιμα μόνο σε όσους έχουν τον σύνδεσμο κοινής χρήσης πριν τη μεταφόρτωση. Για πάντα δωρεάν και ανοικτού κώδικα.",
-    "header": {
-      "fileSharing": "Κοινή χρήση αρχείων",
-      "tagline": "απλή και δωρεάν"
-    },
-    "pageTitle": "Αρχική"
+    "pageTitle": "Αρχική",
+    "tagline": "Secure file transfer",
+    "subtitle": "Send and share your files securely.",
+    "login": "Sign in",
+    "partners": {
+      "title": "Received a link?",
+      "description": "Use the link you were given to access your files. If you can't find it, contact the person who sent it to you."
+    }
   },
   "iconPicker": {
     "title": "Επιλογή εικονιδίου",

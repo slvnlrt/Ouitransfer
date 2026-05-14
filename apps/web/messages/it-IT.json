@@ -501,15 +501,14 @@
     }
   },
   "home": {
-    "description": "L'alternativa open-source a WeTransfer. Condividi file in sicurezza, senza tracciamento o limitazioni.",
-    "documentation": "Documentazione",
-    "starOnGithub": "Metti una stella su GitHub",
-    "privacyMessage": "Costruito pensando alla privacy. I tuoi file prima del caricamento sono accessibili solo a chi ha il link di condivisione. Sempre gratuito e open source.",
-    "header": {
-      "fileSharing": "Condivisione file",
-      "tagline": "semplice e gratuita"
-    },
-    "pageTitle": "Pagina iniziale"
+    "pageTitle": "Home",
+    "tagline": "Trasferimento file sicuro",
+    "subtitle": "Invia e condividi i tuoi file in sicurezza.",
+    "login": "Accedi",
+    "partners": {
+      "title": "Hai ricevuto un link?",
+      "description": "Utilizza il link che ti è stato inviato per accedere ai tuoi file. Se non riesci a trovarlo, contatta la persona che te lo ha inviato."
+    }
   },
   "iconPicker": {
     "title": "Seleziona Icona",

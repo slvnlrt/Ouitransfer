@@ -501,15 +501,14 @@
     }
   },
   "home": {
-    "description": "WeTransfer的开源替代方案。安全分享文件，无需跟踪或限制。",
-    "documentation": "文档",
-    "starOnGithub": "在GitHub上点赞",
-    "privacyMessage": "本应用注重隐私。在上传前，您的文件仅对拥有共享链接的人可见。永远免费且开源。",
-    "header": {
-      "fileSharing": "文件共享",
-      "tagline": "简单且免费"
-    },
-    "pageTitle": "首页"
+    "pageTitle": "首页",
+    "tagline": "安全文件传输",
+    "subtitle": "安全地发送和共享您的文件。",
+    "login": "登录",
+    "partners": {
+      "title": "收到了链接？",
+      "description": "请使用您收到的链接来访问文件。如果找不到链接，请联系发送链接的人。"
+    }
   },
   "iconPicker": {
     "title": "选择图标",

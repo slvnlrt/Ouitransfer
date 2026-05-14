@@ -505,15 +505,14 @@
     }
   },
   "home": {
-    "description": "جایگزین متن‌باز برای WeTransfer. فایل‌ها را به صورت امن و بدون ردیابی یا محدودیت به اشتراک بگذارید.",
-    "documentation": "مستندات",
-    "starOnGithub": "ستاره در GitHub",
-    "privacyMessage": "با در نظر گرفتن حریم خصوصی ساخته شده. فایل‌های شما فقط قبل از بارگذاری برای کسانی که لینک اشتراک‌گذاری دارند قابل دسترسی هستند. برای همیشه رایگان و متن‌باز.",
-    "header": {
-      "fileSharing": "اشتراک‌گذاری فایل",
-      "tagline": "ساده و رایگان شده"
-    },
-    "pageTitle": "خانه"
+    "pageTitle": "خانه",
+    "tagline": "Secure file transfer",
+    "subtitle": "Send and share your files securely.",
+    "login": "Sign in",
+    "partners": {
+      "title": "Received a link?",
+      "description": "Use the link you were given to access your files. If you can't find it, contact the person who sent it to you."
+    }
   },
   "iconPicker": {
     "title": "انتخاب آیکون",

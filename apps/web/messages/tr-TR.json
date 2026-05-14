@@ -501,15 +501,14 @@
     }
   },
   "home": {
-    "description": "WeTransfer'e açık kaynaklı alternatif. Takip veya kısıtlama olmadan dosyalarınızı güvenle paylaşın.",
-    "documentation": "Belgelendirme",
-    "starOnGithub": "GitHub'da Yıldız Verin",
-    "privacyMessage": "Gizlilik göz önünde bulundurularak tasarlanmıştır. Yüklemeden önceki dosyalar, yalnızca paylaşım bağlantısına sahip olanlar tarafından erişilebilir. Her zaman ücretsiz ve açık kaynaktır.",
-    "header": {
-      "fileSharing": "Dosya Paylaşımı",
-      "tagline": "Basit ve Ücretsiz"
-    },
-    "pageTitle": "Ana Sayfa"
+    "pageTitle": "Ana Sayfa",
+    "tagline": "Secure file transfer",
+    "subtitle": "Send and share your files securely.",
+    "login": "Sign in",
+    "partners": {
+      "title": "Received a link?",
+      "description": "Use the link you were given to access your files. If you can't find it, contact the person who sent it to you."
+    }
   },
   "iconPicker": {
     "title": "Simge Seç",

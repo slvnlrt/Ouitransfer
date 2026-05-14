@@ -505,15 +505,14 @@
     }
   },
   "home": {
-    "description": "Alternatif open-source untuk WeTransfer. Bagikan file secara aman, tanpa pelacakan atau batasan.",
-    "documentation": "Dokumentasi",
-    "starOnGithub": "Berikan Bintang di GitHub",
-    "privacyMessage": "Dibangun dengan mengutamakan privasi. File Anda hanya dapat diakses oleh mereka yang memiliki tautan berbagi sebelum unggah. Selamanya gratis dan open source.",
-    "header": {
-      "fileSharing": "Berbagi file",
-      "tagline": "dibuat sederhana dan gratis"
-    },
-    "pageTitle": "Beranda"
+    "pageTitle": "Beranda",
+    "tagline": "Secure file transfer",
+    "subtitle": "Send and share your files securely.",
+    "login": "Sign in",
+    "partners": {
+      "title": "Received a link?",
+      "description": "Use the link you were given to access your files. If you can't find it, contact the person who sent it to you."
+    }
   },
   "iconPicker": {
     "title": "Pilih Ikon",
