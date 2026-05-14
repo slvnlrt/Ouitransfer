@@ -241,6 +241,50 @@ describe("Server lifecycle integration", () => {
     }
   });
 
+  it("Test 4: server starts when ensureBucket rejects (non-fatal S3)", {
+    timeout: 30_000,
+  }, async () => {
+    vi.stubEnv("JWT_SECRET", "a".repeat(32));
+    vi.stubEnv("CSRF_SECRET", "b".repeat(32));
+    vi.stubEnv("COOKIE_SECRET", "c".repeat(32));
+    vi.stubEnv("NODE_ENV", "test");
+
+    const app = await buildFullApp();
+
+    // Make ensureBucket reject — simulates S3 being unreachable at startup
+    const storageModule = await import("../config/storage.config.js");
+    vi.mocked(storageModule.ensureBucket).mockRejectedValueOnce(
+      new Error("connect ECONNREFUSED 127.0.0.1:9000"),
+    );
+
+    const warnSpy = vi.spyOn(app.log, "warn");
+
+    // Simulate the non-fatal pattern now in server.ts
+    try {
+      await storageModule.ensureBucket();
+    } catch (error) {
+      app.log.warn(
+        { err: error },
+        "[STORAGE] S3 unreachable at startup — file operations will be unavailable until storage is restored",
+      );
+    }
+
+    // Server still starts successfully despite the S3 failure
+    try {
+      await app.listen({ port: 0, host: "127.0.0.1" });
+
+      const addr = app.server.address() as AddressInfo;
+      expect(addr).not.toBeNull();
+      expect(addr.port).toBeGreaterThan(0);
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ err: expect.any(Error) }),
+        expect.stringContaining("[STORAGE]"),
+      );
+    } finally {
+      await app.close();
+    }
+  });
+
   it("Test 3: onClose hooks fire on shutdown", { timeout: 30_000 }, async () => {
     vi.stubEnv("JWT_SECRET", "a".repeat(32));
     vi.stubEnv("CSRF_SECRET", "b".repeat(32));

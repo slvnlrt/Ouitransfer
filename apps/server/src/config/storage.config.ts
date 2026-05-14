@@ -4,6 +4,7 @@ import { NodeHttpHandler } from "@smithy/node-http-handler";
 
 import { env } from "../env.js";
 import type { StorageConfig } from "../types/storage.js";
+import { getLogger } from "../utils/logger.js";
 
 /**
  * Storage configuration:
@@ -121,29 +122,36 @@ export function createPublicS3Client(): S3Client | null {
 
 /**
  * Ensures the configured S3 bucket exists, creating it if necessary.
- * Called once at server startup.
- * console.log is acceptable here — runs at module init, before Pino logger is available.
+ * Called once at server startup, after the Pino logger has been initialized via buildApp().
+ * Throws for connectivity errors — callers decide whether to treat the failure as fatal.
  */
 export async function ensureBucket(): Promise<void> {
   if (!s3Client || !bucketName) {
-    console.log("[STORAGE] S3 not configured — skipping bucket check");
+    getLogger().info("[STORAGE] S3 not configured — skipping bucket check");
     return;
   }
   try {
     await s3Client.send(new HeadBucketCommand({ Bucket: bucketName }));
-    console.log(`[STORAGE] Bucket "${bucketName}" exists`);
+    getLogger().info({ bucket: bucketName }, "[STORAGE] Bucket exists");
   } catch (error: unknown) {
     const err = error as { name?: string };
     if (err.name === "NotFound" || err.name === "NoSuchBucket") {
-      console.log(`[STORAGE] Creating bucket "${bucketName}"...`);
-      await s3Client.send(new CreateBucketCommand({ Bucket: bucketName }));
-      console.log(`[STORAGE] Bucket "${bucketName}" created`);
+      getLogger().info({ bucket: bucketName }, "[STORAGE] Creating bucket");
+      try {
+        await s3Client.send(new CreateBucketCommand({ Bucket: bucketName }));
+        getLogger().info({ bucket: bucketName }, "[STORAGE] Bucket created");
+      } catch (createError: unknown) {
+        getLogger().error(
+          { err: createError, bucket: bucketName },
+          "[STORAGE] Bucket creation failed",
+        );
+        throw new Error(
+          `[STORAGE] Failed to create bucket "${bucketName}": ${(createError as Error).message}`,
+          { cause: createError },
+        );
+      }
     } else {
-      console.error(
-        `[STORAGE] Bucket check failed for "${bucketName}":`,
-        err.name,
-        (error as Error).message,
-      );
+      getLogger().error({ err: error, bucket: bucketName }, "[STORAGE] Bucket check failed");
       throw error;
     }
   }

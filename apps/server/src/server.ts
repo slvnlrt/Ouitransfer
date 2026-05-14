@@ -51,7 +51,14 @@ async function startServer() {
   const { isInternalStorage, isExternalS3, ensureBucket } = await import(
     "./config/storage.config.js"
   );
-  await ensureBucket();
+  try {
+    await ensureBucket();
+  } catch (error) {
+    app.log.warn(
+      { err: error },
+      "[STORAGE] S3 unreachable at startup — file operations will be unavailable until storage is restored",
+    );
+  }
 
   await app.register(fastifyMultipart, {
     limits: {
