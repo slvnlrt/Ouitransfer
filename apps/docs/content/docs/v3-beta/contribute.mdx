@@ -27,17 +27,10 @@ Install `just` from [https://github.com/casey/just](https://github.com/casey/jus
 git clone https://github.com/your-username/ouitransfer.git
 cd ouitransfer
 
-# 2. Install all dependencies (monorepo root — installs everything)
-pnpm install
+# 2. Install deps + generate Prisma client + create local SQLite DB
+just setup-dev
 
-# 3. Copy environment config and fill in your values
-cp .env.example .env
-
-# 4. Set up the database
-just db-migrate-dev   # Apply migrations (creates SQLite DB)
-just db-seed          # Seed initial data (admin user, etc.)
-
-# 5. Start all apps in development mode
+# 3. Start all apps in development mode
 just dev
 ```
 
@@ -45,6 +38,8 @@ Running services:
 - **API** (Fastify): http://localhost:3333
 - **Web** (Next.js): http://localhost:3000
 - **Docs** (Fumadocs): http://localhost:3001
+
+**No S3 setup required.** The server starts without storage — auth, config, and the UI all work. File operations are unavailable until you connect S3 (see `apps/server/.env.development` for the local RustFS config). Dev secrets (`JWT_SECRET` etc.) are committed in `.env.development` files — no manual configuration needed.
 
 ---
 
@@ -70,11 +65,13 @@ Run `just --list` to see everything. The most common ones:
 
 | Command | Description |
 |---------|-------------|
+| `just setup-dev` | First-time local dev setup |
 | `just dev` | Start all apps in watch mode |
 | `just test` | Run all Vitest tests |
 | `just lint` | Run Biome across the monorepo |
 | `just validate` | type-check + lint + test (full CI check) |
 | `just db-generate` | Re-generate Prisma client after schema changes |
+| `just db-dev-init` | (Re-)create local SQLite DB |
 | `just db-migrate-dev` | Apply pending migrations |
 | `just db-seed` | Seed the database |
 

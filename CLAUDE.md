@@ -8,7 +8,7 @@ Ouitransfer is a self-hosted file transfer solution (WeTransfer alternative).
 - **Docs**: Fumadocs (Next.js)
 - **Package manager**: pnpm 10.6.0
 - **Node**: 24 (Alpine in Docker)
-- **Version**: 3.3.2-beta
+- **Version**: 0.0.0-dev (displayed as `vdev` in UI; injected from git tag at Docker build time via `NEXT_PUBLIC_APP_VERSION`)
 
 ## Architecture
 ```
@@ -25,6 +25,7 @@ D:\Code\Ouitransfer\
 ## Development Tools
 - **Task runner**: `just` is installed — use `just --list` or `just` to see all available recipes (see `Justfile` at root)
   - Common: `just dev`, `just test`, `just lint`, `just validate`, `just setup`
+  - Local dev: `just setup-dev` (first-time setup), `just db-dev-init` (create/recreate SQLite DB)
   - Database: `just db-generate`, `just db-migrate-dev`, `just db-studio`, `just db-seed`, `just db-reset`
   - Docker: `just docker-start`, `just docker-stop`, `just docker-build [tag]`
   - Cleanup: `just clean` (artifacts), `just clean-all` (+ node_modules)
@@ -53,6 +54,7 @@ Frontend migrated to new POST endpoints. See `audit/DONE.md` for full details.
 pnpm workspace, Turborepo, Biome (replaces ESLint+Prettier), Vitest, Playwright, Lefthook,
 commitlint, GitHub Actions CI/CD, Knip, Renovate. Dockerfile reworked for workspace.
 Phase 7 security deps also done: speakeasy→otpauth, crypto-js and react-qr-reader removed.
+Note: Changesets was briefly added but removed — irrelevant for a Docker-only release flow.
 
 ### Phase 2 — Architecture Restructuring: COMPLETE
 `packages/shared` (mime-types), `packages/config` (tsconfig presets), unified TS 5.8.3,
@@ -297,6 +299,34 @@ Key changes:
 - **E2E smoke tests**: Rewritten with 4 meaningful flow tests (health, registration, login form state, login flow). `axe-core` a11y test removed (color contrast design issue). All 4 pass in ~5s.
 - **Justfile**: All `docker-*` recipes updated to use `-f docker-compose.yaml -f docker-compose.ci.yml`.
 - **vitest.config.ts**: `hookTimeout: 30_000` added (was 10s — too tight under CPU contention from parallel Turbo tasks).
+
+### Post-Phase 9 Polish (May 2026): COMPLETE
+Several dev-experience and production-correctness fixes applied after the CI/Docker integration work.
+Key changes:
+- **Landing page redesign**: Two-column corporate layout (employee CTA left, partner info right).
+  Animated Send icon, glassmorphism card, full i18n across 23 locales. Old open-source promo page
+  (Palmtree icon, GitHub/Docs CTAs) deleted. `site.ts` config deleted. Navbar simplified to
+  logo + LanguageSwitcher + ModeToggle. `DefaultFooter` removed from home page.
+- **Version injection**: `NEXT_PUBLIC_APP_VERSION` env var replaces hardcoded `package.json` import
+  in footers. Defaults to `"dev"` locally; injected from git tag at Docker build time via
+  `ARG NEXT_PUBLIC_APP_VERSION=dev` in Dockerfile web-builder stage. `turbo.json` `passThroughEnv` updated.
+  All `package.json` files use `"0.0.0-dev"` as the neutral source-of-truth version.
+- **S3 non-fatal startup**: `ensureBucket()` failures are now caught in `server.ts` — server starts
+  in degraded mode with a `warn` log instead of crashing with `process.exit(1)`. `getLogger()` used
+  instead of `console.*` in storage config.
+- **Dev DB setup**: `apps/server/prisma/ouitransfer.db` is gitignored. `just db-dev-init` creates it
+  via `prisma db push`. `just setup-dev` = install + generate + db-dev-init (one command for
+  first-time contributors). `apps/server/.env.development` and `apps/web/.env.development` committed
+  with safe dev-only secrets — no manual `.env` editing needed for local dev.
+- **CSP in dev mode**: `'unsafe-eval'` added to `script-src` in `NODE_ENV=development` in
+  `apps/web/src/middleware.ts`. React Fast Refresh (HMR) requires eval; the CSP from Phase 8 blocked
+  it, leaving the browser stuck on the loading screen. Production CSP unchanged.
+- **Justfile DB check**: `just dev` and `just dev-server` check for the SQLite DB before launching
+  and print a helpful error if missing. Uses `[linux]`/`[macos]`/`[windows]` just platform attributes.
+- **Prisma config**: `apps/server/prisma.config.ts` created (seed config), deprecated `"prisma"` key
+  removed from `apps/server/package.json`.
+- **Server startup test**: `apps/server/src/__tests__/server-lifecycle.test.ts` — 4 tests covering
+  the full `buildApp()` → `listen()` → `close()` lifecycle (including onClose hooks and S3 failure).
 
 ### Phase 9 — Documentation Site Overhaul: COMPLETE
 7 items (9.1-9.7) updated across 7 documentation pages. 4 commits.

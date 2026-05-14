@@ -35,7 +35,7 @@ Here's what you'll do at a glance:
 
 - **OS**: macOS or Linux (recommended). Windows works but is not thoroughly tested.
 - **Memory**: 4 GB RAM minimum.
-- **S3-Compatible Storage**: **Required** — either a local RustFS instance or an external S3 provider.
+- **S3-Compatible Storage**: Required for production. Optional for local development — if S3 is not configured or unreachable, the server starts in degraded mode (auth and configuration work; file operations are unavailable).
 
 ---
 

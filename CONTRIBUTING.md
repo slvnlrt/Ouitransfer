@@ -25,17 +25,11 @@ Install `just` via [https://github.com/casey/just](https://github.com/casey/just
 # 1. Clone and install dependencies
 git clone https://github.com/burger-cie/ouitransfer.git
 cd ouitransfer
-pnpm install
 
-# 2. Copy environment config
-cp .env.example .env
-# Edit .env with your storage credentials and secrets
+# 2. Install deps + generate Prisma client + create local SQLite DB
+just setup-dev
 
-# 3. Set up the database
-just db-migrate-dev   # Apply migrations (creates SQLite DB)
-just db-seed          # Seed initial data (admin user, etc.)
-
-# 4. Start all apps in development mode
+# 3. Start all apps in development mode
 just dev
 ```
 
@@ -43,6 +37,10 @@ The following services will be available:
 - **Server** (Fastify API): http://localhost:3333
 - **Web** (Next.js frontend): http://localhost:3000
 - **Docs** (Fumadocs): http://localhost:3001
+
+**No S3 storage required for local development.** If S3 is not configured or unreachable, the server starts in degraded mode — auth, configuration, and the UI all work normally. File upload/download operations will be unavailable until storage is connected. To run a local RustFS instance, see the S3 dev config in `apps/server/.env.development`.
+
+**Dev secrets are committed.** `apps/server/.env.development` and `apps/web/.env.development` contain safe development-only secrets and are committed to the repository. No manual `.env` configuration is needed to start hacking.
 
 ---
 
@@ -93,11 +91,13 @@ Run `just --list` to see all available recipes.
 
 | Command | Description |
 |---------|-------------|
-| `just dev` | Start all apps in development mode |
+| `just setup-dev` | First-time local dev setup (install + generate + create SQLite DB) |
+| `just dev` | Start all apps in development mode (checks DB first) |
 | `just test` | Run all tests (Vitest) |
 | `just lint` | Run Biome linter |
 | `just validate` | type-check + lint + test |
 | `just db-generate` | Re-generate Prisma client after schema changes |
+| `just db-dev-init` | (Re-)create local SQLite DB — no S3 required |
 | `just db-migrate-dev` | Apply pending migrations (dev) |
 | `just db-studio` | Open Prisma Studio (database GUI) |
 | `just db-seed` | Seed the database with initial data |
