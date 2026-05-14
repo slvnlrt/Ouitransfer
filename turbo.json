@@ -38,6 +38,7 @@
       "dependsOn": ["lint", "type-check"]
     },
     "test": {
+      "dependsOn": ["^build"],
       "inputs": ["src/**/*.{ts,tsx}", "vitest.config.*", "package.json"],
       "outputs": ["coverage/**"]
     }
