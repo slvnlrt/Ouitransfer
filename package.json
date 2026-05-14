@@ -1,6 +1,6 @@
 {
   "name": "ouitransfer-monorepo",
-  "version": "3.3.2-beta",
+  "version": "0.0.0-dev",
   "description": "Ouitransfer monorepo — self-hosted file transfer",
   "private": true,
   "packageManager": "pnpm@10.6.0",
