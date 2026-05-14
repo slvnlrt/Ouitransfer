@@ -9,6 +9,5 @@ pre-commit:
     lint:
       run: pnpm exec biome check --write --unsafe --no-errors-on-unmatched --files-ignore-unknown=true --staged
       stage_fixed: true
-    # knip:
-    #   run: pnpm knip
-    #   Uncomment once all items in audit/TODO-WIRE-UP.md are resolved (knip exits 0)
+    knip:
+      run: pnpm knip

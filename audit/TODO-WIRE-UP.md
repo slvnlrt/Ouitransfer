@@ -52,13 +52,21 @@ These wrappers are **truly dead** — the functionality they provide is already 
 - [x] Delete types only used by deleted wrappers (17 types deleted; `GetReverseShareForUploadParams` and `GetPresignedUrlBody` kept — used by active by-alias variants)
 - [x] Verify `DownloadReverseShareFileResult`, `DeleteReverseShareFileResult`, `ListUsers200` — all used by active wrappers, kept
 
-### Server Utilities — FALSE POSITIVES (keep)
+### Server Utilities & Hooks — CORRECTED (initially marked false positive, actually dead)
 
-These were listed in the original TODO but are **not dead**:
-- `setConfigValue` — used by auth registration flow (`POST /auth/register` sets `firstUserAccess`)
-- `getGroupConfigs` — used by email service
-- `isS3Enabled` — 28 server-side consumers; frontend correctly has zero references (storage-agnostic by design)
-- `useSecureConfigs` hook — 8 active frontend consumers
+Earlier agent reports incorrectly claimed these had production consumers. PowerShell `Select-String`
+verification confirmed zero production imports — only test mock references. All deleted.
+
+- [x] Delete `setConfigValue` — zero production imports (only in test mock objects)
+- [x] Delete `getGroupConfigs` — zero production imports (only in test mock objects)
+- [x] Delete `isS3Enabled` — zero production imports (only in test mock objects); `isInternalStorage` and `isExternalS3` are used instead
+- [x] Delete `useSecureConfigs` hook — zero callers; `useAdminConfigs` and `useSecureConfigValue` are the ones actually used
+
+### Additional Dead Types (Phase 4 cleanup)
+
+- [x] Delete `DownloadReverseShareFileResult` — defined but never imported
+- [x] Delete `DeleteReverseShareFileResult` — defined but never imported
+- [x] Delete `ListUsers200` — defined but never imported
 
 ---
 
@@ -103,8 +111,9 @@ These wrappers map to real features that should exist in the UI. Wiring them up 
 
 ## Phase 4: Knip Clean & Pre-Commit Hook
 
-- [ ] Run `pnpm knip` — verify zero unused exports/types/dependencies
-- [ ] Uncomment the knip command in `lefthook.yml` pre-commit hook
+- [x] Run `pnpm knip` — verified zero unused exports/types/dependencies
+  - Additional cleanup: deleted `isS3Enabled`, `setConfigValue`, `getGroupConfigs` (corrected from earlier false-positive assessment), `useSecureConfigs`, `InternalError` class, `DownloadReverseShareFile200`, `DeleteReverseShareFile200`, `ListUsers200` + cleaned test mocks + stripped BOM from 22 locale files
+- [x] Uncomment the knip command in `lefthook.yml` pre-commit hook
 - [ ] Verify pre-commit hook runs knip on a test commit
 
 ---
