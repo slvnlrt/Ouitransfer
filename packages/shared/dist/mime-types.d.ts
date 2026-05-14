@@ -29,11 +29,12 @@ export declare function isVideoMimeType(mimeType: string): boolean;
 /**
  * Extract filename from Content-Disposition header.
  *
- * Supports RFC 5987 `filename*=` with UTF-8 encoding only.
- * Handles both quoted (`filename="foo.txt"`) and unquoted (`filename=foo.txt`) values.
+ * Per RFC 6266, `filename*` takes priority over `filename` when both are present.
+ * Only UTF-8 charset is supported for filename* (per RFC 5987). Non-UTF-8 charsets
+ * are ignored and the parser falls through to plain filename=.
  *
  * @param contentDisposition - The Content-Disposition header value
- * @returns Extracted filename or null if not found
+ * @returns Decoded filename or null if not found
  */
 export declare function extractFilenameFromContentDisposition(contentDisposition: string | null): string | null;
 /**
