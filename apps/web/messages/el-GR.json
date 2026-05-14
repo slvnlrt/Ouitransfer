@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Μετάβαση στο περιεχόμενο"
   },
@@ -1864,6 +1864,7 @@
     "error": "Αποτυχία μεταφόρτωσης αρχείου",
     "fileSizeExceeded": "Το μέγεθος αρχείου υπερβαίνει το όριο {maxsizemb}MB.",
     "insufficientStorage": "Ανεπαρκής χώρος αποθήκευσης. Διαθέσιμα {availablespace}MB.",
+    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
     "unauthorized": "Μη εξουσιοδοτημένο: απαιτείται έγκυρο διακριτικό για πρόσβαση σε αυτόν τον πόρο.",
     "globalDrop": {
       "title": "Αφήστε αρχεία για μεταφόρτωση",

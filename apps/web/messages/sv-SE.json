@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Hoppa till innehåll"
   },
@@ -1864,6 +1864,7 @@
     "error": "Det gick inte att ladda upp filen",
     "fileSizeExceeded": "File size exceeds the limit of {maxsizemb}MB.",
     "insufficientStorage": "Insufficient storage space. You have {availablespace}MB available.",
+    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
     "unauthorized": "Obehörig: en giltig token krävs för att komma åt den här resursen.",
     "globalDrop": {
       "title": "Släpp filer för att ladda upp",

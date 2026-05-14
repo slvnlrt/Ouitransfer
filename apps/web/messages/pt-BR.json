@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Ir para o conteúdo"
   },
@@ -1863,6 +1863,7 @@
     "error": "Falha ao enviar arquivo",
     "fileSizeExceeded": "O tamanho do arquivo excede o limite de {maxsizemb}MB.",
     "insufficientStorage": "Espaço de armazenamento insuficiente. Você tem {availablespace}MB disponíveis.",
+    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
     "unauthorized": "Não autorizado: um token válido é necessário para acessar este recurso.",
     "globalDrop": {
       "title": "Solte arquivos para enviar",

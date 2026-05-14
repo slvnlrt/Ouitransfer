@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "İçeriğe geç"
   },
@@ -1859,6 +1859,7 @@
     "error": "Dosya yükleme başarısız",
     "fileSizeExceeded": "Dosya boyutu {maxsizemb}MB sınırını aşıyor.",
     "insufficientStorage": "Yetersiz depolama alanı. {availablespace}MB kullanılabilir alanınız var.",
+    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
     "unauthorized": "Yetkisiz: Bu kaynağa erişmek için geçerli bir token gereklidir.",
     "confirmCancel": {
       "title": "Yüklemeleri İptal Et",

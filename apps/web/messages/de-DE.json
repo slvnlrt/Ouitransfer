@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Zum Inhalt springen"
   },
@@ -1859,6 +1859,7 @@
     "error": "Fehler beim Hochladen der Datei",
     "fileSizeExceeded": "Die Dateigröße überschreitet das Limit von {maxsizemb}MB.",
     "insufficientStorage": "Unzureichender Speicherplatz. Sie haben {availablespace}MB verfügbar.",
+    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
     "unauthorized": "Nicht autorisiert: Ein gültiger Token ist erforderlich, um auf diese Ressource zuzugreifen.",
     "confirmCancel": {
       "title": "Uploads Abbrechen",

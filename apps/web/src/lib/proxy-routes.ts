@@ -89,7 +89,7 @@ export const routes: RouteConfig[] = [
   // APP
   // ═══════════════════════════════════════════════════════════════
   r("GET", "app/configs/public", "/app/configs/public"),
-  r("GET", "app/check-upload", "/storage/check-upload"),
+  r("GET", "app/check-upload", "/storage/check-upload", { query: true }),
   r("GET", "app/configs", "/app/configs"),
   r("GET", "app/disk-space", "/storage/disk-space"),
   r("GET", "app/health", "/health"),

@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Skip to content"
   },
@@ -1859,6 +1859,7 @@
     "error": "فشل في رفع الملف",
     "fileSizeExceeded": "حجم الملف يتجاوز الحد الأقصى {maxsizemb}MB.",
     "insufficientStorage": "مساحة تخزين غير كافية. لديك {availablespace}MB متاحة.",
+    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
     "unauthorized": "غير مخول: مطلوب رمز صالح للوصول إلى هذا المورد.",
     "confirmCancel": {
       "title": "إلغاء الرفع",

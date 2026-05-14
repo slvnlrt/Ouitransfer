@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Skip to content"
   },
@@ -1859,6 +1859,7 @@
     "error": "फ़ाइल अपलोड करने में विफल",
     "fileSizeExceeded": "फ़ाइल का आकार {maxsizemb}MB की सीमा से अधिक है।",
     "insufficientStorage": "अपर्याप्त संग्रहण स्थान। आपके पास {availablespace}MB उपलब्ध है।",
+    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
     "unauthorized": "अनधिकृत: इस संसाधन तक पहुंचने के लिए एक वैध टोकन आवश्यक है।",
     "confirmCancel": {
       "title": "अपलोड रद्द करें",

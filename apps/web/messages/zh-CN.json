@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Skip to content"
   },
@@ -1859,6 +1859,7 @@
     "error": "文件上传失败",
     "fileSizeExceeded": "文件大小超过 {maxsizemb}MB 限制。",
     "insufficientStorage": "存储空间不足。您有 {availablespace}MB 可用空间。",
+    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
     "unauthorized": "未授权：需要有效的令牌才能访问此资源。",
     "confirmCancel": {
       "title": "取消上传",

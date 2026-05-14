@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Skip to content"
   },
@@ -1864,6 +1864,7 @@
     "error": "ไม่สามารถอัปโหลดไฟล์",
     "fileSizeExceeded": "ขนาดไฟล์เกินขีดจำกัด {maxsizemb}MB",
     "insufficientStorage": "พื้นที่จัดเก็บไม่เพียงพอ คุณมีพื้นที่ว่าง {availablespace}MB",
+    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
     "unauthorized": "ไม่ได้รับอนุญาต: ต้องมีโทเค็นที่ถูกต้องเพื่อเข้าถึงทรัพยากรนี้",
     "globalDrop": {
       "title": "วางไฟล์เพื่ออัปโหลด",

@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Перейти к содержимому"
   },
@@ -1859,6 +1859,7 @@
     "error": "Не удалось загрузить файл",
     "fileSizeExceeded": "Размер файла превышает лимит в {maxsizemb}МБ.",
     "insufficientStorage": "Недостаточно места для хранения. У вас доступно {availablespace}МБ.",
+    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
     "unauthorized": "Не авторизовано: для доступа к этому ресурсу требуется действительный токен.",
     "confirmCancel": {
       "title": "Отменить Загрузку",

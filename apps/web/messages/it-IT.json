@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Vai al contenuto"
   },
@@ -1859,6 +1859,7 @@
     "error": "Errore nel caricamento del file",
     "fileSizeExceeded": "La dimensione del file supera il limite di {maxsizemb}MB.",
     "insufficientStorage": "Spazio di archiviazione insufficiente. Hai {availablespace}MB disponibili.",
+    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
     "unauthorized": "Non autorizzato: è richiesto un token valido per accedere a questa risorsa.",
     "confirmCancel": {
       "title": "Annulla Caricamenti",

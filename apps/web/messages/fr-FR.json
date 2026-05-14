@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Aller au contenu"
   },
@@ -1859,6 +1859,7 @@
     "error": "Échec du téléchargement du fichier",
     "fileSizeExceeded": "La taille du fichier dépasse la limite de {maxsizemb}MB.",
     "insufficientStorage": "Espace de stockage insuffisant. Vous avez {availablespace}MB disponibles.",
+    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
     "unauthorized": "Non autorisé : un token valide est requis pour accéder à cette ressource.",
     "confirmCancel": {
       "title": "Annuler les Téléchargements",

@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Skip to content"
   },
@@ -1864,6 +1864,7 @@
     "error": "بارگذاری فایل ناموفق بود",
     "fileSizeExceeded": "حجم فایل از محدودیت {maxsizemb}MB تجاوز می‌کند.",
     "insufficientStorage": "فضای ذخیره‌سازی کافی نیست. شما {availablespace}MB فضای موجود دارید.",
+    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
     "unauthorized": "غیرمجاز: برای دسترسی به این منبع به یک توکن معتبر نیاز است.",
     "globalDrop": {
       "title": "فایل‌ها را برای بارگذاری رها کنید",

@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Skip to content"
   },
@@ -1864,6 +1864,7 @@
     "error": "Gagal mengunggah file",
     "fileSizeExceeded": "Ukuran file melebihi batas {maxsizemb}MB.",
     "insufficientStorage": "Ruang penyimpanan tidak mencukupi. Anda memiliki {availablespace}MB yang tersedia.",
+    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
     "unauthorized": "Tidak berwenang: token yang valid diperlukan untuk mengakses sumber daya ini.",
     "globalDrop": {
       "title": "Lepaskan file untuk mengunggah",

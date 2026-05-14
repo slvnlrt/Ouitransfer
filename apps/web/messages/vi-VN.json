@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Skip to content"
   },
@@ -1864,6 +1864,7 @@
     "error": "Không thể tải lên tệp",
     "fileSizeExceeded": "Kích thước tệp vượt quá giới hạn {maxsizemb}MB.",
     "insufficientStorage": "Không đủ dung lượng lưu trữ. Bạn còn {availablespace}MB.",
+    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
     "unauthorized": "Không được phép: cần có mã thông báo hợp lệ để truy cập tài nguyên này.",
     "globalDrop": {
       "title": "Thả tệp để tải lên",

@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Ir al contenido"
   },
@@ -1863,6 +1863,7 @@
     "error": "Error al subir el archivo",
     "fileSizeExceeded": "El tamaño del archivo excede el límite de {maxsizemb}MB.",
     "insufficientStorage": "Espacio de almacenamiento insuficiente. Tiene {availablespace}MB disponibles.",
+    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
     "unauthorized": "No autorizado: se requiere un token válido para acceder a este recurso.",
     "confirmCancel": {
       "title": "Cancelar Subidas",

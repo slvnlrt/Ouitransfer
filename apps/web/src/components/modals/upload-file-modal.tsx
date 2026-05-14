@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
+import { useStorageCheck } from "@/hooks/use-storage-check";
 import { useUppyUpload } from "@/hooks/useUppyUpload";
 import { checkFile, getFilePresignedUrl, registerFile } from "@/http/endpoints";
 import { logger } from "@/lib/logger";
@@ -84,8 +85,11 @@ export function UploadFileModal({
   const t = useTranslations();
   const [isDragOver, setIsDragOver] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isCheckingStorage, setIsCheckingStorage] = useState(false);
   const hasShownSuccessToastRef = useRef(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { checkStorageSpace } = useStorageCheck();
 
   const {
     addFiles,
@@ -294,6 +298,28 @@ export function UploadFileModal({
 
   const hasPendingUploads = fileUploads.some((u) => u.status === "pending");
 
+  const handleStartUpload = async () => {
+    const totalBytes = fileUploads
+      .filter((u) => u.status === "pending")
+      .reduce((sum, u) => sum + (u.file.size ?? 0), 0);
+
+    try {
+      setIsCheckingStorage(true);
+      const { allowed } = await checkStorageSpace(totalBytes);
+      if (!allowed) return;
+    } catch (error) {
+      logger.error("Storage check failed, proceeding with upload", {
+        err: error instanceof Error ? error.message : String(error),
+      });
+      // If the check itself fails (network error etc.), allow the upload to proceed.
+      // The server will enforce the limit on the actual upload request.
+    } finally {
+      setIsCheckingStorage(false);
+    }
+
+    startUpload();
+  };
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -430,10 +456,10 @@ export function UploadFileModal({
             {!allUploadsComplete && (
               <Button
                 variant="default"
-                disabled={fileUploads.length === 0 || isUploading}
-                onClick={startUpload}
+                disabled={fileUploads.length === 0 || isUploading || isCheckingStorage}
+                onClick={handleStartUpload}
               >
-                {isUploading ? (
+                {isUploading || isCheckingStorage ? (
                   <Loader className="h-4 w-4 animate-spin" />
                 ) : (
                   <CloudUpload className="h-4 w-4" />

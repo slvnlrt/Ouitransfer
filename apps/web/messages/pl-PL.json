@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Przejdź do treści"
   },
@@ -1859,6 +1859,7 @@
     "error": "Nie udało się przesłać pliku",
     "fileSizeExceeded": "Rozmiar pliku przekracza limit {maxsizemb}MB.",
     "insufficientStorage": "Niewystarczająca ilość miejsca na dysku. Masz {availablespace}MB dostępnych.",
+    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
     "unauthorized": "Nieautoryzowany: wymagany jest ważny token do dostępu do tego zasobu.",
     "confirmCancel": {
       "title": "Anuluj przesyłanie",

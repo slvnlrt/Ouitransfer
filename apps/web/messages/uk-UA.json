@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Перейти до вмісту"
   },
@@ -1864,6 +1864,7 @@
     "error": "Не вдалося завантажити файл",
     "fileSizeExceeded": "Розмір файлу перевищує ліміт {maxsizemb}МБ.",
     "insufficientStorage": "Недостатньо місця для зберігання. У вас доступно {availablespace}МБ.",
+    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
     "unauthorized": "Неавторизовано: для доступу до цього ресурсу потрібний дійсний токен.",
     "globalDrop": {
       "title": "Відпустіть файли для завантаження",

@@ -1907,6 +1907,7 @@
     "error": "Failed to upload file",
     "fileSizeExceeded": "File size exceeds the limit of {maxsizemb}MB.",
     "insufficientStorage": "Insufficient storage space. You have {availablespace}MB available.",
+    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
     "unauthorized": "Unauthorized: a valid token is required to access this resource.",
     "globalDrop": {
       "title": "Drop files to upload",

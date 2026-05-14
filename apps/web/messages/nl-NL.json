@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Ga naar inhoud"
   },
@@ -1859,6 +1859,7 @@
     "error": "Bestand uploaden mislukt",
     "fileSizeExceeded": "Bestandsgrootte overschrijdt de limiet van {maxsizemb}MB.",
     "insufficientStorage": "Onvoldoende opslagruimte. U heeft {availablespace}MB beschikbaar.",
+    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
     "unauthorized": "Niet geautoriseerd: een geldig token is vereist om toegang te krijgen tot deze bron.",
     "confirmCancel": {
       "title": "Uploads Annuleren",

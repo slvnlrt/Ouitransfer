@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Skip to content"
   },
@@ -1864,6 +1864,7 @@
     "error": "נכשל בהעלאת קובץ",
     "fileSizeExceeded": "גודל הקובץ חורג מהגבול של {maxsizemb}MB.",
     "insufficientStorage": "אין מספיק שטח אחסון. יש לך {availablespace}MB זמינים.",
+    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
     "unauthorized": "לא מורשה: נדרש טוקן חוקי כדי לגשת למשאב הזה.",
     "globalDrop": {
       "title": "שחרר קבצים להעלאה",
