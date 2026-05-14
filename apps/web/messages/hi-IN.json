@@ -1645,6 +1645,25 @@
     "selectShare": "साझाकरण {shareName} चुनें",
     "folderCount": "फ़ोल्डर"
   },
+  "systemHealth": {
+    "title": "System Status",
+    "status": {
+      "healthy": "Healthy",
+      "degraded": "Degraded"
+    },
+    "checks": {
+      "database": "Database",
+      "storage": "Storage",
+      "ok": "OK",
+      "error": "Error",
+      "notConfigured": "Not configured"
+    },
+    "uptime": "Uptime",
+    "errors": {
+      "title": "Health status unavailable",
+      "fetchFailed": "Unable to retrieve system health information. Please try again later."
+    }
+  },
   "storageUsage": {
     "title": "स्टोरेज उपयोग",
     "ariaLabel": "स्टोरेज उपयोग प्रगति पट्टी",

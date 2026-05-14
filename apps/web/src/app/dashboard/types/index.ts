@@ -1,6 +1,7 @@
 import type { FileItem } from "@/components/tables/files-table-types";
 import type { EnhancedFileManagerHook } from "@/hooks/use-enhanced-file-manager";
 import type { ShareManagerHook } from "@/hooks/use-share-manager";
+import type { CheckHealth200 } from "@/http/endpoints/app/types";
 import type { Share } from "@/http/endpoints/shares/types";
 
 export interface RecentFilesProps {
@@ -27,6 +28,11 @@ export interface StorageUsageProps {
   } | null;
   diskSpaceError?: string | null;
   onRetry?: () => void;
+}
+
+export interface SystemHealthProps {
+  healthData: CheckHealth200 | null;
+  healthError: boolean;
 }
 
 export interface DashboardModalsProps {

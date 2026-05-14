@@ -9,7 +9,7 @@ import type { FileItem } from "@/components/tables/files-table-types";
 import { useEnhancedFileManager } from "@/hooks/use-enhanced-file-manager";
 import { useSecureConfigValue } from "@/hooks/use-secure-configs";
 import { useShareManager } from "@/hooks/use-share-manager";
-import { getDiskSpace, listFiles, listUserShares } from "@/http/endpoints";
+import { checkHealth, getDiskSpace, listFiles, listUserShares } from "@/http/endpoints";
 import type { Share } from "@/http/endpoints/shares/types";
 import { mapApiFiles } from "@/lib/api-mappers";
 import { queryKeys } from "@/lib/query-keys";
@@ -28,6 +28,19 @@ export function useDashboard() {
   const onCloseUploadModal = () => setIsUploadModalOpen(false);
   const onOpenCreateModal = () => setIsCreateModalOpen(true);
   const onCloseCreateModal = () => setIsCreateModalOpen(false);
+
+  // ── Health query (60s polling) ─────────────────────────────────────
+  const healthQuery = useQuery({
+    queryKey: queryKeys.app.health(),
+    queryFn: async () => {
+      const res = await checkHealth();
+      return res.data;
+    },
+    refetchInterval: 60_000,
+  });
+
+  const healthData = healthQuery.data ?? null;
+  const healthError = healthQuery.isError;
 
   // ── Disk space query ───────────────────────────────────────────────
   const diskSpaceQuery = useQuery({
@@ -124,6 +137,8 @@ export function useDashboard() {
     isLoading,
     diskSpace,
     diskSpaceError,
+    healthData,
+    healthError,
     recentFiles,
     recentShares,
     modals: {

@@ -15,8 +15,13 @@ export interface DiskSpaceInfo {
 }
 
 export interface CheckHealth200 {
-  status: string;
+  status: "healthy" | "degraded";
   timestamp: string;
+  uptime: number;
+  checks: {
+    database: "ok" | "error";
+    storage: "ok" | "error" | "not_configured";
+  };
 }
 
 export interface CheckUploadAllowed200 extends DiskSpaceInfo {

@@ -1645,6 +1645,25 @@
     "selectShare": "共有{shareName}を選択",
     "folderCount": "フォルダ"
   },
+  "systemHealth": {
+    "title": "System Status",
+    "status": {
+      "healthy": "Healthy",
+      "degraded": "Degraded"
+    },
+    "checks": {
+      "database": "Database",
+      "storage": "Storage",
+      "ok": "OK",
+      "error": "Error",
+      "notConfigured": "Not configured"
+    },
+    "uptime": "Uptime",
+    "errors": {
+      "title": "Health status unavailable",
+      "fetchFailed": "Unable to retrieve system health information. Please try again later."
+    }
+  },
   "storageUsage": {
     "title": "ストレージ使用量",
     "ariaLabel": "ストレージ使用状況のプログレスバー",

@@ -1649,6 +1649,25 @@
     "selectAll": "Chọn tất cả",
     "selectShare": "Chọn chia sẻ {shareName}"
   },
+  "systemHealth": {
+    "title": "System Status",
+    "status": {
+      "healthy": "Healthy",
+      "degraded": "Degraded"
+    },
+    "checks": {
+      "database": "Database",
+      "storage": "Storage",
+      "ok": "OK",
+      "error": "Error",
+      "notConfigured": "Not configured"
+    },
+    "uptime": "Uptime",
+    "errors": {
+      "title": "Health status unavailable",
+      "fetchFailed": "Unable to retrieve system health information. Please try again later."
+    }
+  },
   "storageUsage": {
     "title": "Sử dụng bộ nhớ",
     "ariaLabel": "Thanh tiến trình sử dụng bộ nhớ",

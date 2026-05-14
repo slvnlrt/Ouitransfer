@@ -1649,6 +1649,25 @@
     "selectAll": "Välj alla",
     "selectShare": "Välj delning {shareName}"
   },
+  "systemHealth": {
+    "title": "System Status",
+    "status": {
+      "healthy": "Healthy",
+      "degraded": "Degraded"
+    },
+    "checks": {
+      "database": "Database",
+      "storage": "Storage",
+      "ok": "OK",
+      "error": "Error",
+      "notConfigured": "Not configured"
+    },
+    "uptime": "Uptime",
+    "errors": {
+      "title": "Health status unavailable",
+      "fetchFailed": "Unable to retrieve system health information. Please try again later."
+    }
+  },
   "storageUsage": {
     "title": "Användning av lagring",
     "ariaLabel": "Förloppsindikator för lagringsanvändning",

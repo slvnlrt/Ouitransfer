@@ -74,6 +74,7 @@ export const queryKeys = {
     all: ["app"] as const,
     info: () => [...queryKeys.app.all, "info"] as const,
     diskSpace: () => [...queryKeys.app.all, "diskSpace"] as const,
+    health: () => [...queryKeys.app.all, "health"] as const,
     systemInfo: () => [...queryKeys.app.all, "systemInfo"] as const,
   },
 
