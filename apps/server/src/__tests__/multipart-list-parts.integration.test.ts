@@ -31,7 +31,6 @@ vi.mock("../config/storage.config.js", () => {
   return {
     s3Client: mockS3Client,
     bucketName: "test-bucket",
-    isS3Enabled: true,
     isExternalS3: false,
     isInternalStorage: true,
     rejectUnauthorized: true,
@@ -62,10 +61,8 @@ vi.mock("../modules/config/service.js", () => ({
     if (key === "maxTotalStoragePerUser") return String(10 * 1024 * 1024 * 1024);
     return "true";
   }),
-  setConfigValue: vi.fn().mockResolvedValue(undefined),
   validatePasswordAuthDisable: vi.fn().mockResolvedValue(true),
   validateAllProvidersDisable: vi.fn().mockResolvedValue(true),
-  getGroupConfigs: vi.fn().mockResolvedValue({}),
 }));
 
 import type { Mock } from "vitest";

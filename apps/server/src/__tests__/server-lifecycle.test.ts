@@ -90,7 +90,6 @@ vi.mock("../shared/prisma.js", () => ({
 vi.mock("../config/storage.config.js", () => ({
   s3Client: null,
   bucketName: "",
-  isS3Enabled: false,
   isExternalS3: false,
   isInternalStorage: false,
   rejectUnauthorized: true,
@@ -116,10 +115,8 @@ vi.mock("node:fs/promises", () => ({
 // Mock config service (used by several route modules at registration time)
 vi.mock("../modules/config/service.js", () => ({
   getConfigValue: vi.fn().mockResolvedValue("true"),
-  setConfigValue: vi.fn().mockResolvedValue(undefined),
   validatePasswordAuthDisable: vi.fn().mockResolvedValue(true),
   validateAllProvidersDisable: vi.fn().mockResolvedValue(true),
-  getGroupConfigs: vi.fn().mockResolvedValue({}),
 }));
 
 // ── Helpers ────────────────────────────────────────────────────────────────

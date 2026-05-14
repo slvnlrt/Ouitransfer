@@ -18,10 +18,6 @@ export interface UserWithMessageResponse {
   message: string;
 }
 
-export interface ListUsers200 {
-  users: User[];
-}
-
 export interface RegisterUserBody {
   firstName: string;
   lastName: string;

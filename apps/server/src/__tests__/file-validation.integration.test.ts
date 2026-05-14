@@ -52,10 +52,8 @@ vi.mock("../modules/config/service.js", () => ({
     if (key === "passwordAuthEnabled") return "true";
     return "true";
   }),
-  setConfigValue: vi.fn().mockResolvedValue(undefined),
   validatePasswordAuthDisable: vi.fn().mockResolvedValue(true),
   validateAllProvidersDisable: vi.fn().mockResolvedValue(true),
-  getGroupConfigs: vi.fn().mockResolvedValue({}),
 }));
 
 // ── Mock validateTokenVersion — always trusts tokens in this test suite ──────

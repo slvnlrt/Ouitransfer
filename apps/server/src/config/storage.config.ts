@@ -71,7 +71,6 @@ export const bucketName = storageConfig.bucketName;
  * Storage is always S3-compatible
  * ENABLE_S3=true means EXTERNAL S3, otherwise uses internal storage
  */
-export const isS3Enabled = s3Client !== null;
 export const isExternalS3 = env.ENABLE_S3 === "true";
 export const isInternalStorage = s3Client !== null && env.ENABLE_S3 !== "true";
 

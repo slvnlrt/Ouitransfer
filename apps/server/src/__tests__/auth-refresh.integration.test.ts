@@ -21,10 +21,8 @@ vi.mock("../shared/prisma.js", () => ({
 // Mock config functions used during auth route registration and request handling.
 vi.mock("../modules/config/service.js", () => ({
   getConfigValue: vi.fn().mockResolvedValue("true"),
-  setConfigValue: vi.fn().mockResolvedValue(undefined),
   validatePasswordAuthDisable: vi.fn().mockResolvedValue(true),
   validateAllProvidersDisable: vi.fn().mockResolvedValue(true),
-  getGroupConfigs: vi.fn().mockResolvedValue({}),
 }));
 
 // ── Item 6: Do NOT mock validateTokenVersion ─────────────────────────────────

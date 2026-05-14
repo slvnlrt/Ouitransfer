@@ -31,7 +31,6 @@ vi.mock("../config/storage.config.js", () => {
     get bucketName() {
       return storageState.s3Enabled ? "test-bucket" : "";
     },
-    isS3Enabled: false,
     isExternalS3: false,
     isInternalStorage: false,
     rejectUnauthorized: true,

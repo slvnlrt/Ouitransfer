@@ -95,15 +95,6 @@ export interface RegisterFileUpload201 {
   file: ReverseShareFile;
 }
 
-export interface DownloadReverseShareFile200 {
-  url: string;
-  expiresIn: number;
-}
-
-export interface DeleteReverseShareFile200 {
-  file: ReverseShareFile;
-}
-
 export interface UpdateReverseShareFile200 {
   file: ReverseShareFile;
 }
@@ -176,8 +167,6 @@ export type GetReverseShareForUploadResult = AxiosResponse<GetReverseShareForUpl
 export type UpdateReverseSharePasswordResult = AxiosResponse<UpdateReverseSharePassword200>;
 export type GetPresignedUrlResult = AxiosResponse<GetPresignedUrl200>;
 export type RegisterFileUploadResult = AxiosResponse<RegisterFileUpload201>;
-export type DownloadReverseShareFileResult = AxiosResponse<DownloadReverseShareFile200>;
-export type DeleteReverseShareFileResult = AxiosResponse<DeleteReverseShareFile200>;
 export type UpdateReverseShareFileResult = AxiosResponse<UpdateReverseShareFile200>;
 
 export interface CopyReverseShareFile200 {

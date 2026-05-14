@@ -55,9 +55,3 @@ export class GoneError extends AppError {
     super(410, message, "GONE");
   }
 }
-
-export class InternalError extends AppError {
-  constructor(message = "Internal server error") {
-    super(500, message, "INTERNAL_ERROR");
-  }
-}

@@ -26,39 +26,6 @@ function extractErrorMessage(error: unknown): string {
 }
 
 /**
- * Hook to fetch public configurations (excludes sensitive SMTP data)
- * Safe to use without authentication
- */
-export function useSecureConfigs() {
-  const queryClient = useQueryClient();
-
-  const {
-    data: configs = [],
-    isLoading,
-    error: queryError,
-  } = useQuery({
-    queryKey: queryKeys.config.public(),
-    queryFn: async (): Promise<Config[]> => {
-      const response = await getPublicConfigs();
-      return response.data.configs;
-    },
-  });
-
-  const error: string | null = queryError ? extractErrorMessage(queryError) : null;
-
-  const reload = () => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.config.public() });
-  };
-
-  return {
-    configs,
-    isLoading,
-    error,
-    reload,
-  };
-}
-
-/**
  * Hook to fetch configurations for administrators
  * REQUIRES ADMIN PERMISSIONS - returns error if user is not admin
  */
