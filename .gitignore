@@ -53,3 +53,9 @@ screenshots/
 # Playwright
 playwright-report/
 test-results/
+
+# Shared package dist (compiled by Dockerfile shared-builder stage — never commit)
+packages/shared/dist/
+
+# Superpowers brainstorm session artifacts
+.superpowers/
