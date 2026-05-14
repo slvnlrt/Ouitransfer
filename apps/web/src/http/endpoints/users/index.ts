@@ -5,14 +5,11 @@ import type {
   ActivateUserResult,
   DeactivateUserResult,
   DeleteUserResult,
-  GetUserByIdResult,
   ListUsersResult,
   RegisterUserBody,
   RegisterUserResult,
   RemoveAvatarResult,
   UpdateUserBody,
-  UpdateUserImageBody,
-  UpdateUserImageResult,
   UpdateUserResult,
   UploadAvatarBody,
   UploadAvatarResult,
@@ -51,17 +48,6 @@ export const updateUser = <TData = UpdateUserResult>(
 };
 
 /**
- * Get a user by ID (admin only)
- * @summary Get User by ID
- */
-export const getUserById = <TData = GetUserByIdResult>(
-  id: string,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  return apiInstance.get(`/api/users/details/${id}`, options);
-};
-
-/**
  * Delete a user (admin only)
  * @summary Delete User
  */
@@ -92,18 +78,6 @@ export const deactivateUser = <TData = DeactivateUserResult>(
   options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.patch(`/api/users/deactivate/${id}`, undefined, options);
-};
-
-/**
- * Update user profile image (admin only)
- * @summary Update User Image
- */
-export const updateUserImage = <TData = UpdateUserImageResult>(
-  id: string,
-  updateUserImageBody: UpdateUserImageBody,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  return apiInstance.patch(`/api/users/update-image/${id}`, updateUserImageBody, options);
 };
 
 /**

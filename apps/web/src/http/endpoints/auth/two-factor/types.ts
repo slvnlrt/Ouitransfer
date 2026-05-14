@@ -24,15 +24,6 @@ export interface VerifySetupResponse {
   backupCodes: string[];
 }
 
-export interface VerifyTokenRequest {
-  token: string;
-}
-
-export interface VerifyTokenResponse {
-  success: boolean;
-  method: "totp" | "backup";
-}
-
 export interface DisableTwoFactorRequest {
   password: string;
   totpCode: string; // TOTP code or backup code — now required

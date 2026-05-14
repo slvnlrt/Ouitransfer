@@ -351,26 +351,6 @@ export const routes: RouteConfig[] = [
   r("PUT", "reverse-shares/update", "/reverse-shares"),
 
   // ═══════════════════════════════════════════════════════════════
-  // SHARES — 5-seg
-  // ═══════════════════════════════════════════════════════════════
-  r(
-    "GET",
-    "shares/:shareId/folders/:folderId/contents",
-    "/shares/:shareId/folders/:folderId/contents",
-  ),
-  r(
-    "POST",
-    "shares/:shareId/folders/:folderId/contents",
-    "/shares/:shareId/folders/:folderId/contents",
-  ),
-  r(
-    "GET",
-    "shares/:shareId/folders/:folderId/download",
-    "/shares/:shareId/folders/:folderId/download",
-    { stream: true, query: true },
-  ),
-
-  // ═══════════════════════════════════════════════════════════════
   // SHARES — 4-seg (static [2] before dynamic where applicable)
   // ═══════════════════════════════════════════════════════════════
   r("POST", "shares/alias/create/:shareId", "/shares/:shareId/alias"),
@@ -410,7 +390,6 @@ export const routes: RouteConfig[] = [
   // ═══════════════════════════════════════════════════════════════
   r("POST", "users/avatar/upload", "/users/avatar", { body: "raw" }),
   r("DELETE", "users/avatar/remove", "/users/avatar"),
-  r("PATCH", "users/update-image/:id", "/users/:id/avatar", { body: "raw" }),
   r("PATCH", "users/activate/:id", "/users/:id/activate"),
   r("PATCH", "users/deactivate/:id", "/users/:id/deactivate"),
   r("DELETE", "users/delete/:id", "/users/:id"),

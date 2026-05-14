@@ -32,11 +32,6 @@ export interface GetAppInfo200 {
   firstUserAccess: boolean;
 }
 
-export interface GetSystemInfo200 {
-  storageProvider: "s3";
-  s3Enabled: boolean;
-}
-
 export interface RemoveLogo200 {
   message: string;
 }
@@ -54,7 +49,6 @@ export interface UploadLogoBody {
 }
 
 export type GetAppInfoResult = AxiosResponse<GetAppInfo200>;
-export type GetSystemInfoResult = AxiosResponse<GetSystemInfo200>;
 export type UploadLogoResult = AxiosResponse<UploadLogo200>;
 export type RemoveLogoResult = AxiosResponse<RemoveLogo200>;
 export type CheckHealthResult = AxiosResponse<CheckHealth200>;

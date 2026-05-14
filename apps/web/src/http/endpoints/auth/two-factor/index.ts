@@ -9,8 +9,6 @@ import type {
   TwoFactorStatus,
   VerifySetupRequest,
   VerifySetupResponse,
-  VerifyTokenRequest,
-  VerifyTokenResponse,
 } from "./types";
 
 export const generate2FASetup = async (data?: TwoFactorSetupRequest) => {
@@ -19,10 +17,6 @@ export const generate2FASetup = async (data?: TwoFactorSetupRequest) => {
 
 export const verifyTwoFactorSetup = async (data: VerifySetupRequest) => {
   return apiInstance.post<VerifySetupResponse>("/api/auth/2fa/verify-setup", data);
-};
-
-export const verifyTwoFactorToken = async (data: VerifyTokenRequest) => {
-  return apiInstance.post<VerifyTokenResponse>("/api/auth/2fa/verify", data);
 };
 
 export const disableTwoFactor = async (data: DisableTwoFactorRequest) => {

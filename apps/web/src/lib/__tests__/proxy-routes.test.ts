@@ -102,27 +102,6 @@ describe("proxy route resolution", () => {
   // 2. Multi-segment dynamic paths
   // ───────────────────────────────────────────────────────────────────────────
   describe("multi-segment dynamic paths", () => {
-    it("GET shares/:shareId/folders/:folderId/contents matches 5-seg route correctly", () => {
-      const result = matchRoute(seg("shares/share-1/folders/folder-2/contents"), "GET");
-      expect(result).not.toBeNull();
-      expect(result!.config.path).toBe("shares/:shareId/folders/:folderId/contents");
-      expect(result!.params).toEqual({ shareId: "share-1", folderId: "folder-2" });
-    });
-
-    it("POST shares/:shareId/folders/:folderId/contents extracts both params", () => {
-      const result = matchRoute(seg("shares/s1/folders/f1/contents"), "POST");
-      expect(result).not.toBeNull();
-      expect(result!.config.backendPath).toBe("/shares/:shareId/folders/:folderId/contents");
-      expect(result!.params).toEqual({ shareId: "s1", folderId: "f1" });
-    });
-
-    it("GET shares/:shareId/folders/:folderId/download matches stream route", () => {
-      const result = matchRoute(seg("shares/s1/folders/f1/download"), "GET");
-      expect(result).not.toBeNull();
-      expect(result!.config.stream).toBe(true);
-      expect(result!.params).toEqual({ shareId: "s1", folderId: "f1" });
-    });
-
     it("POST reverse-shares/alias/:alias/multipart/abort matches 5-seg alias route", () => {
       const result = matchRoute(seg("reverse-shares/alias/my-alias/multipart/abort"), "POST");
       expect(result).not.toBeNull();
@@ -358,11 +337,6 @@ describe("proxy route resolution", () => {
     it("extracts shareId from shares/abc123/access", () => {
       const r = matchRoute(seg("shares/abc123/access"), "POST");
       expect(r?.params).toEqual({ shareId: "abc123" });
-    });
-
-    it("extracts both shareId and folderId from 5-seg path", () => {
-      const r = matchRoute(seg("shares/s-1/folders/f-2/contents"), "GET");
-      expect(r?.params).toEqual({ shareId: "s-1", folderId: "f-2" });
     });
 
     it("extracts alias from reverse-shares/alias/:alias/upload path", () => {

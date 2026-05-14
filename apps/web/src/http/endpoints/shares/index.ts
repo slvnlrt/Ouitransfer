@@ -227,22 +227,3 @@ export const removeFolders = <TData = unknown>(
     ...options,
   });
 };
-
-/**
- * @summary Get folder contents within a share
- */
-export const getShareFolderContents = <TData = unknown>(
-  shareId: string,
-  folderId: string,
-  password?: string,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  if (password) {
-    return apiInstance.post(
-      `/api/shares/${shareId}/folders/${folderId}/contents`,
-      { password },
-      options,
-    );
-  }
-  return apiInstance.get(`/api/shares/${shareId}/folders/${folderId}/contents`, options);
-};

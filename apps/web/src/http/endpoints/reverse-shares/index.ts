@@ -3,16 +3,12 @@ import type { AxiosRequestConfig } from "axios";
 import apiInstance from "@/config/api";
 import type {
   AbortMultipartUploadByAliasResult,
-  ActivateReverseShareResult,
-  CheckReverseSharePasswordBody,
-  CheckReverseSharePasswordResult,
   CompleteMultipartUploadByAliasResult,
   CopyReverseShareFileResult,
   CreateMultipartUploadByAliasResult,
   CreateReverseShareAliasResult,
   CreateReverseShareBody,
   CreateReverseShareResult,
-  DeactivateReverseShareResult,
   DeleteReverseShareFileByIdResult,
   DeleteReverseShareResult,
   GetMultipartPartUrlByAliasResult,
@@ -20,7 +16,6 @@ import type {
   GetPresignedUrlResult,
   GetReverseShareForUploadParams,
   GetReverseShareForUploadResult,
-  GetReverseShareResult,
   ListMultipartPartsByAliasResult,
   ListUserReverseSharesResult,
   RegisterFileUploadBody,
@@ -53,17 +48,6 @@ export const listUserReverseShares = <TData = ListUserReverseSharesResult>(
   options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.get(`/api/reverse-shares/list`, options);
-};
-
-/**
- * Get a reverse share by ID
- * @summary Get Reverse Share Details
- */
-export const getReverseShare = <TData = GetReverseShareResult>(
-  id: string,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  return apiInstance.get(`/api/reverse-shares/details/${id}`, options);
 };
 
 /**
@@ -105,26 +89,6 @@ export const deleteReverseShare = <TData = DeleteReverseShareResult>(
 };
 
 /**
- * Get reverse share information for upload (public endpoint)
- * @summary Get Reverse Share for Upload (Public)
- */
-export const getReverseShareForUpload = <TData = GetReverseShareForUploadResult>(
-  id: string,
-  params?: GetReverseShareForUploadParams,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  if (params?.password) {
-    // Password-protected reverse shares use the POST /access endpoint
-    return apiInstance.post(
-      `/api/reverse-shares/upload/${id}/access`,
-      { password: params.password },
-      options,
-    );
-  }
-  return apiInstance.get(`/api/reverse-shares/upload/${id}`, options);
-};
-
-/**
  * Get reverse share information for upload by alias (public endpoint)
  * @summary Get Reverse Share for Upload by Alias (Public)
  */
@@ -145,23 +109,6 @@ export const getReverseShareForUploadByAlias = <TData = GetReverseShareForUpload
 };
 
 /**
- * Get presigned URL for upload to reverse share (public endpoint)
- * @summary Get Presigned URL for File Upload (Public)
- */
-export const getPresignedUrlForUpload = <TData = GetPresignedUrlResult>(
-  id: string,
-  getPresignedUrlBody: GetPresignedUrlBody,
-  params?: RegisterFileUploadParams,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  const body = {
-    ...getPresignedUrlBody,
-    ...(params?.password ? { password: params.password } : {}),
-  };
-  return apiInstance.post(`/api/reverse-shares/presigned-url/${id}`, body, options);
-};
-
-/**
  * Get presigned URL for upload to reverse share by alias (public endpoint)
  * @summary Get Presigned URL for File Upload by Alias (Public)
  */
@@ -179,23 +126,6 @@ export const getPresignedUrlForUploadByAlias = <TData = GetPresignedUrlResult>(
 };
 
 /**
- * Register file upload completion (public endpoint)
- * @summary Register File Upload Completion (Public)
- */
-export const registerFileUpload = <TData = RegisterFileUploadResult>(
-  id: string,
-  registerFileUploadBody: RegisterFileUploadBody,
-  params?: RegisterFileUploadParams,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  const body = {
-    ...registerFileUploadBody,
-    ...(params?.password ? { password: params.password } : {}),
-  };
-  return apiInstance.post(`/api/reverse-shares/register-upload/${id}`, body, options);
-};
-
-/**
  * Register file upload completion by alias (public endpoint)
  * @summary Register File Upload Completion by Alias (Public)
  */
@@ -210,22 +140,6 @@ export const registerFileUploadByAlias = <TData = RegisterFileUploadResult>(
     ...(params?.password ? { password: params.password } : {}),
   };
   return apiInstance.post(`/api/reverse-shares/alias/${alias}/register-file`, body, options);
-};
-
-/**
- * Verify reverse share password (public endpoint)
- * @summary Verify Reverse Share Password (Public)
- */
-export const checkReverseSharePassword = <TData = CheckReverseSharePasswordResult>(
-  id: string,
-  checkReverseSharePasswordBody: CheckReverseSharePasswordBody,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  return apiInstance.post(
-    `/api/reverse-shares/check-password/${id}`,
-    checkReverseSharePasswordBody,
-    options,
-  );
 };
 
 /**
@@ -260,28 +174,6 @@ export const createReverseShareAlias = <TData = CreateReverseShareAliasResult>(
   options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.post(`/api/reverse-shares/${reverseShareId}/alias`, createAliasBody, options);
-};
-
-/**
- * Activate a reverse share
- * @summary Activate Reverse Share
- */
-export const activateReverseShare = <TData = ActivateReverseShareResult>(
-  id: string,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  return apiInstance.patch(`/api/reverse-shares/activate/${id}`, undefined, options);
-};
-
-/**
- * Deactivate a reverse share
- * @summary Deactivate Reverse Share
- */
-export const deactivateReverseShare = <TData = DeactivateReverseShareResult>(
-  id: string,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  return apiInstance.patch(`/api/reverse-shares/deactivate/${id}`, undefined, options);
 };
 
 /**

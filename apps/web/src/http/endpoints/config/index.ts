@@ -1,25 +1,7 @@
 import type { AxiosRequestConfig } from "axios";
 
 import apiInstance from "@/config/api";
-import type {
-  BulkUpdateConfigsBody,
-  BulkUpdateConfigsResult,
-  GetAllConfigsResult,
-  UpdateConfigBody,
-  UpdateConfigResult,
-} from "./types";
-
-/**
- * Update a configuration value (admin only)
- * @summary Update a configuration value
- */
-export const updateConfig = <TData = UpdateConfigResult>(
-  key: string,
-  updateConfigBody: UpdateConfigBody,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  return apiInstance.patch(`/api/config/update/${key}`, updateConfigBody, options);
-};
+import type { BulkUpdateConfigsBody, BulkUpdateConfigsResult, GetAllConfigsResult } from "./types";
 
 /**
  * List public configurations (excludes sensitive data)

@@ -13,10 +13,6 @@ export interface ConfigUpdateItem {
   value: string;
 }
 
-export interface UpdateConfig200 {
-  config: ConfigItem;
-}
-
 export interface GetAllConfigs200 {
   configs: ConfigItem[];
 }
@@ -25,12 +21,7 @@ export interface BulkUpdateConfigs200 {
   configs: ConfigItem[];
 }
 
-export interface UpdateConfigBody {
-  value: string;
-}
-
 export type BulkUpdateConfigsBody = ConfigUpdateItem[];
 
-export type UpdateConfigResult = AxiosResponse<UpdateConfig200>;
 export type GetAllConfigsResult = AxiosResponse<GetAllConfigs200>;
 export type BulkUpdateConfigsResult = AxiosResponse<BulkUpdateConfigs200>;
