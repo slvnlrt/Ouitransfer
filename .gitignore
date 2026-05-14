@@ -28,6 +28,12 @@ apps/server/node_modules
 apps/server/.env
 apps/server/dist/*
 
+# SQLite dev database (local only — never commit)
+apps/server/prisma/*.db
+apps/server/prisma/*.db-journal
+apps/server/prisma/*.db-shm
+apps/server/prisma/*.db-wal
+
 #DOCS
 apps/docs/node_modules
 apps/docs/.env

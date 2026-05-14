@@ -88,6 +88,11 @@ db-seed:
 db-reset:
     pnpm --filter=ouitransfer-api exec prisma migrate reset
 
+# Initialize local dev SQLite database (one-time, no S3 required)
+# Creates apps/server/prisma/ouitransfer.db from the schema
+db-dev-init:
+    DATABASE_URL="file:./ouitransfer.db" pnpm --filter=ouitransfer-api exec prisma db push --skip-generate
+
 # ─── Docker / Production ─────────────────────────────────────────────────────
 
 # Build both Docker images locally (single-arch, current platform only)
@@ -143,6 +148,10 @@ install:
 # First-time project setup: install deps + generate Prisma client
 setup: install db-generate
     @echo "Setup complete. Copy .env.example to .env and configure your environment."
+
+# First-time LOCAL DEV setup: install + generate Prisma client + create dev SQLite DB
+setup-dev: install db-generate db-dev-init
+    @echo "Dev setup complete. Run 'just dev' to start all services (API server starts without S3)."
 
 # ─── Cleanup ─────────────────────────────────────────────────────────────────
 
