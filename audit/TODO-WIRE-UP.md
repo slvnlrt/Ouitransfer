@@ -82,16 +82,22 @@ These wrappers map to real features that should exist in the UI. Wiring them up 
 
 ### 3.1 — Admin Health Status Card
 
-- [ ] Wire `checkHealth` (`GET /health`) into the admin dashboard
-- [ ] Add a "System Status" card showing: DB status, S3 status, uptime, overall health
-- [ ] Use TanStack Query with appropriate polling interval (e.g. 60s)
-- [ ] Show degraded state visually (amber warning if one check fails)
+- [x] Wire `checkHealth` (`GET /health`) into the admin dashboard
+- [x] Add a "System Status" card showing: DB status, S3 status, uptime, overall health — `system-health.tsx` with green/amber/red indicators
+- [x] Use TanStack Query with 60s polling interval (`refetchInterval: 60_000`)
+- [x] Show degraded state visually (amber if one check fails, red if all fail)
+- [x] Fixed `CheckHealth200` type — was missing `uptime` and `checks` fields
+- [x] Admin-only: card only rendered when `isAdmin` is true
+- [x] i18n keys added to all 23 locales
 
 ### 3.2 — Pre-Upload Storage Validation
 
-- [ ] Wire `checkUploadAllowed` (`GET /app/check-upload` → `GET /storage/check-upload`) into the upload flow
-- [ ] Block uploads with a user-friendly error when disk space is exhausted
-- [ ] Show remaining space indicator in upload modal (optional enhancement)
+- [x] Wire `checkUploadAllowed` (`GET /app/check-upload` → `GET /storage/check-upload`) into the upload flow
+- [x] Block uploads with a user-friendly error toast when disk space is exhausted — `useStorageCheck` hook
+- [x] Fixed proxy route: added `query: true` so `fileSize` query param is forwarded to backend
+- [x] Wired into `UploadFileModal` — pre-upload check with loading spinner, fail-open on network errors
+- [x] Reverse share upload NOT wired (endpoint requires JWT, reverse share page is public/unauthenticated)
+- [x] i18n `uploadFile.storageFull` key added to all 23 locales
 
 ---
 
