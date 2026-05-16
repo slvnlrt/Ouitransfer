@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { generateInviteToken } from "@/http/endpoints/invite";
 import { logger } from "@/lib/logger";
 
@@ -26,7 +27,7 @@ export function GenerateInviteLinkModal({ isOpen, onClose }: GenerateInviteLinkM
   const t = useTranslations();
   const [isGenerating, setIsGenerating] = useState(false);
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useCopyToClipboard();
 
   const handleGenerate = async () => {
     setIsGenerating(true);
@@ -50,22 +51,16 @@ export function GenerateInviteLinkModal({ isOpen, onClose }: GenerateInviteLinkM
   const handleCopy = async () => {
     if (!inviteUrl) return;
 
-    try {
-      await navigator.clipboard.writeText(inviteUrl);
-      setCopied(true);
+    const ok = await copy(inviteUrl);
+    if (ok) {
       toast.success(t("users.invite.linkCopied"));
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      logger.error("Failed to copy:", {
-        err: error instanceof Error ? error.message : String(error),
-      });
-      toast.error("Failed to copy link");
+    } else {
+      toast.error(t("users.invite.errors.copyFailed"));
     }
   };
 
   const handleClose = () => {
     setInviteUrl(null);
-    setCopied(false);
     onClose();
   };
 
@@ -74,7 +69,7 @@ export function GenerateInviteLinkModal({ isOpen, onClose }: GenerateInviteLinkM
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Link size={24} />
+            <Link className="size-6" />
             {t("users.invite.title")}
           </DialogTitle>
           <DialogDescription>{t("users.invite.description")}</DialogDescription>
@@ -108,7 +103,11 @@ export function GenerateInviteLinkModal({ isOpen, onClose }: GenerateInviteLinkM
                       onClick={handleCopy}
                       className="shrink-0"
                     >
-                      {copied ? <Check size={18} /> : <Copy size={18} />}
+                      {copied ? (
+                        <Check className="size-[18px]" />
+                      ) : (
+                        <Copy className="size-[18px]" />
+                      )}
                     </Button>
                   </div>
                   <p className="text-muted-foreground text-xs">{t("users.invite.expiresIn")}</p>

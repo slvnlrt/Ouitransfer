@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { TableCell, TableRow } from "@/components/ui/table";
 import type { ReverseShareFile } from "@/http/endpoints/reverse-shares/types";
 import { formatDateTime } from "@/lib/format-date-time";
@@ -178,7 +179,7 @@ function EditableField({
         <Button
           size="icon"
           variant="ghost"
-          className="h-5 w-5 text-green-600 hover:text-green-700 flex-shrink-0"
+          className="h-5 w-5 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex-shrink-0"
           onClick={(e) => {
             e.stopPropagation();
             onSaveEdit();
@@ -190,7 +191,7 @@ function EditableField({
         <Button
           size="icon"
           variant="ghost"
-          className="h-5 w-5 text-red-600 hover:text-red-700 flex-shrink-0"
+          className="h-5 w-5 text-destructive hover:text-destructive/80 flex-shrink-0"
           onClick={(e) => {
             e.stopPropagation();
             onCancelEdit();
@@ -385,10 +386,10 @@ export function FileRow({
                 ? t("reverseShares.components.fileActions.copying")
                 : t("reverseShares.components.fileActions.copyToMyFiles")
             }
-            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 disabled:opacity-50"
+            className="text-primary hover:text-primary hover:bg-primary/10 disabled:opacity-50"
           >
             {copyingFile === file.id ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
+              <Spinner size="sm" />
             ) : (
               <ClipboardCopy className="h-4 w-4" />
             )}
@@ -406,7 +407,7 @@ export function FileRow({
             size="sm"
             onClick={() => onDelete(file)}
             title={t("reverseShares.components.fileActions.delete")}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            className="text-destructive hover:text-destructive/80 hover:bg-destructive/10"
           >
             <Trash2 className="h-4 w-4" />
           </Button>

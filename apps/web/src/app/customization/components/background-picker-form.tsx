@@ -101,7 +101,7 @@ export function BackgroundPickerForm() {
                   className={`relative p-4 rounded-xl border-2 transition-all hover:shadow-md text-center group ${
                     selectedBackground.light === bg.background
                       ? "border-primary ring-2 ring-primary ring-offset-2 bg-primary/5"
-                      : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-muted/30"
+                      : "border-border hover:border-border/70 hover:bg-muted/30"
                   }`}
                   type="button"
                 >
@@ -111,7 +111,7 @@ export function BackgroundPickerForm() {
                       <span className="text-xs text-muted-foreground">{bg.description}</span>
                     </div>
                     <div
-                      className="w-12 h-8 rounded border border-gray-300"
+                      className="w-12 h-8 rounded border border-border"
                       style={{ backgroundColor: bg.background }}
                     />
                   </div>
@@ -132,7 +132,7 @@ export function BackgroundPickerForm() {
                   className={`relative p-4 rounded-xl border-2 transition-all hover:shadow-md text-center group ${
                     selectedBackground.dark === bg.background
                       ? "border-primary ring-2 ring-primary ring-offset-2 bg-primary/5"
-                      : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-muted/30"
+                      : "border-border hover:border-border/70 hover:bg-muted/30"
                   }`}
                   type="button"
                 >
@@ -142,7 +142,7 @@ export function BackgroundPickerForm() {
                       <span className="text-xs text-muted-foreground">{bg.description}</span>
                     </div>
                     <div
-                      className="w-12 h-8 rounded border border-gray-600"
+                      className="w-12 h-8 rounded border border-border"
                       style={{ backgroundColor: bg.background }}
                     />
                   </div>

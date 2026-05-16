@@ -12,7 +12,21 @@
       "config_error": "Помилка конфігурації. Будь ласка, зв'яжіться з підтримкою.",
       "auth_failed": "Помилка автентифікації. Спробуйте ще раз."
     },
-    "sessionExpired": "Ваша сесія закінчилася. Будь ласка, увійдіть знову."
+    "sessionExpired": "Ваша сесія закінчилася. Будь ласка, увійдіть знову.",
+    "callback": {
+      "errors": {
+        "oauth_error": "OAuth authentication failed",
+        "missing_parameters": "Missing authentication parameters",
+        "missing_code": "Missing authorization code",
+        "registration_disabled": "Registration is disabled for this provider",
+        "provider_disabled": "This authentication provider is disabled",
+        "state_expired": "Authentication session expired",
+        "account_inactive": "Your account is inactive",
+        "no_email": "No email address found in your account",
+        "token_exchange_failed": "Failed to authenticate with provider",
+        "missing_user_info": "Incomplete user information from provider"
+      }
+    }
   },
   "contextMenu": {
     "newFolder": "Нова папка",
@@ -345,7 +359,8 @@
     "pdfPreviewNotAvailable": "Попередній перегляд PDF недоступний. Спробуйте альтернативний перегляд або завантаження",
     "tryAlternativeView": "Спробувати альтернативний перегляд",
     "loadingAlternative": "Завантаження альтернативного перегляду...",
-    "loadingAudio": "Завантаження аудіо..."
+    "loadingAudio": "Завантаження аудіо...",
+    "downloading": "Downloading..."
   },
   "fileSelector": {
     "availableFiles": "Доступні файли ({count})",
@@ -412,6 +427,14 @@
     "viewMode": {
       "table": "Таблиця",
       "grid": "Сітка"
+    },
+    "drag": {
+      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
+      "fileMoved": "File \"{name}\" moved to \"{target}\"",
+      "itemsMoved": "{count} items moved to \"{target}\"",
+      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
+      "fileMovedToRoot": "File \"{name}\" moved to root folder",
+      "itemsMovedToRoot": "{count} items moved to root folder"
     }
   },
   "filesTable": {
@@ -550,7 +573,10 @@
     "pageTitle": "Вхід",
     "or": "або",
     "continueWithSSO": "Продовжити з SSO",
-    "processing": "Обробка автентифікації..."
+    "processing": "Обробка автентифікації...",
+    "orContinueWith": "Or continue with",
+    "continueWith": "Continue with {name}",
+    "providerNotConfigured": "{name} is not properly configured"
   },
   "logo": {
     "labels": {
@@ -905,7 +931,8 @@
         "editError": "Помилка оновлення файлу",
         "previewNotAvailable": "Попередній перегляд недоступний",
         "notAvailable": "Недоступно",
-        "invalidDate": "Неправильна дата"
+        "invalidDate": "Неправильна дата",
+        "downloading": "Downloading..."
       },
       "alias": {
         "editTitle": "Редагувати псевдонім",
@@ -992,7 +1019,8 @@
           "timeout": "Операція копіювання перевищила час очікування. Спробуйте ще раз з меншим файлом або перевірте з'єднання.",
           "failed": "Операція копіювання не вдалася. Спробуйте ще раз.",
           "aborted": "Операція копіювання була скасована через перевищення часу очікування."
-        }
+        },
+        "downloading": "Downloading..."
       }
     },
     "form": {
@@ -1063,7 +1091,11 @@
       },
       "fieldRequirements": {
         "title": "Вимоги до полів",
-        "description": "Налаштуйте, які поля показуються в формі завантаження"
+        "description": "Налаштуйте, які поля показуються в формі завантаження",
+        "configurationTitle": "Field Configuration:",
+        "hiddenDescription": "Hidden: Field won't appear in the upload form",
+        "optionalDescription": "Optional: Field will appear but isn't mandatory",
+        "requiredDescription": "Required: Field must be filled before upload"
       },
       "submit": "Створити посилання для отримання"
     },
@@ -1878,7 +1910,11 @@
       "continue": "Продовжити завантаження",
       "cancel": "Скасувати завантаження"
     },
-    "pasteSuccess": "{count, plural, =1 {Зображення вставлено і завантажено успішно} few {# зображення вставлено і завантажено успішно} many {# зображень вставлено і завантажено успішно} other {# зображень вставлено і завантажено успішно}}"
+    "pasteSuccess": "{count, plural, =1 {Зображення вставлено і завантажено успішно} few {# зображення вставлено і завантажено успішно} many {# зображень вставлено і завантажено успішно} other {# зображень вставлено і завантажено успішно}}",
+    "errors": {
+      "addFileFailed": "Failed to add {name}: {error}",
+      "uploadFailed": "Upload failed"
+    }
   },
   "users": {
     "modes": {
@@ -1962,7 +1998,8 @@
       "expiresIn": "Закінчується через 15 хвилин",
       "close": "Закрити",
       "errors": {
-        "generateFailed": "Не вдалося створити посилання для запрошення"
+        "generateFailed": "Не вдалося створити посилання для запрошення",
+        "copyFailed": "Failed to copy link"
       }
     }
   },
@@ -2035,5 +2072,11 @@
       "createFailed": "Не вдалося створити обліковий запис. Спробуйте ще раз."
     },
     "pageTitle": "Створити обліковий запис"
+  },
+  "filesTree": {
+    "noItems": "No items to display"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Change language"
   }
 }

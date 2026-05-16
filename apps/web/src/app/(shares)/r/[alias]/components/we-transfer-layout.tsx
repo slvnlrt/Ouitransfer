@@ -176,11 +176,11 @@ export function WeTransferLayout({
         <div className="w-full max-w-md lg:max-w-lg xl:max-w-xl">
           <div className="bg-white dark:bg-black rounded-2xl shadow-2xl p-6 md:p-8 backdrop-blur-sm border border-white/20">
             <div className="text-start mb-6 md:mb-8">
-              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
                 {reverseShare?.name || t("reverseShares.upload.layout.defaultTitle")}
               </h1>
               {reverseShare?.description && (
-                <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
+                <p className="text-muted-foreground text-sm md:text-base">
                   {reverseShare.description}
                 </p>
               )}

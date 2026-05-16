@@ -2,9 +2,8 @@
 
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { LoadingScreen } from "@/components/layout/loading-screen";
-import { Navbar } from "@/components/layout/navbar";
+import { PageLayout } from "@/components/layout/page-layout";
 import { Card, CardContent } from "@/components/ui/card";
-import { DefaultFooter } from "@/components/ui/default-footer";
 import { ReverseSharesCardsContainer } from "./components/reverse-shares-cards-container";
 import { ReverseSharesHeader } from "./components/reverse-shares-header";
 import { ReverseSharesModals } from "./components/reverse-shares-modals";
@@ -53,76 +52,72 @@ export default function ReverseSharesPage() {
 
   return (
     <ProtectedRoute>
-      <div className="w-full h-screen flex flex-col">
-        <Navbar />
-        <div className="flex-1 max-w-7xl mx-auto w-full px-6 py-8">
-          <div className="flex flex-col gap-8">
-            <ReverseSharesHeader />
-            <Card>
-              <CardContent>
-                <div className="flex flex-col gap-6">
-                  <ReverseSharesSearch
-                    filteredCount={filteredReverseShares.length}
-                    searchQuery={searchQuery}
-                    totalReverseShares={reverseShares.length}
-                    onCreateReverseShare={() => setIsCreateModalOpen(true)}
-                    onSearchChange={setSearchQuery}
-                    onRefresh={loadReverseShares}
-                    isRefreshing={isLoading}
-                  />
+      <PageLayout>
+        <div className="flex flex-col gap-8">
+          <ReverseSharesHeader />
+          <Card>
+            <CardContent>
+              <div className="flex flex-col gap-6">
+                <ReverseSharesSearch
+                  filteredCount={filteredReverseShares.length}
+                  searchQuery={searchQuery}
+                  totalReverseShares={reverseShares.length}
+                  onCreateReverseShare={() => setIsCreateModalOpen(true)}
+                  onSearchChange={setSearchQuery}
+                  onRefresh={loadReverseShares}
+                  isRefreshing={isLoading}
+                />
 
-                  <ReverseSharesCardsContainer
-                    reverseShares={filteredReverseShares}
-                    onCopyLink={handleCopyLink}
-                    onDelete={setReverseShareToDelete}
-                    onEdit={setReverseShareToEdit}
-                    onGenerateLink={setReverseShareToGenerateLink}
-                    onViewDetails={setReverseShareToViewDetails}
-                    onViewFiles={setReverseShareToViewFiles}
-                    onViewQrCode={setReverseShareToViewQrCode}
-                    onCreateReverseShare={() => setIsCreateModalOpen(true)}
-                    onUpdateReverseShare={handleUpdateReverseShareData}
-                    onToggleActive={handleToggleActive}
-                    onUpdatePassword={handleUpdatePassword}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+                <ReverseSharesCardsContainer
+                  reverseShares={filteredReverseShares}
+                  onCopyLink={handleCopyLink}
+                  onDelete={setReverseShareToDelete}
+                  onEdit={setReverseShareToEdit}
+                  onGenerateLink={setReverseShareToGenerateLink}
+                  onViewDetails={setReverseShareToViewDetails}
+                  onViewFiles={setReverseShareToViewFiles}
+                  onViewQrCode={setReverseShareToViewQrCode}
+                  onCreateReverseShare={() => setIsCreateModalOpen(true)}
+                  onUpdateReverseShare={handleUpdateReverseShareData}
+                  onToggleActive={handleToggleActive}
+                  onUpdatePassword={handleUpdatePassword}
+                />
+              </div>
+            </CardContent>
+          </Card>
 
-            <ReverseSharesModals
-              isCreateModalOpen={isCreateModalOpen}
-              onCloseCreateModal={() => setIsCreateModalOpen(false)}
-              onCreateReverseShare={handleCreateReverseShare}
-              isCreating={isCreating}
-              reverseShareToEdit={reverseShareToEdit}
-              onCloseEditModal={() => setReverseShareToEdit(null)}
-              onUpdateReverseShare={handleUpdateReverseShare}
-              isUpdating={isUpdating}
-              reverseShareToGenerateLink={reverseShareToGenerateLink}
-              reverseShareToViewDetails={reverseShareToViewDetails}
-              reverseShareToDelete={reverseShareToDelete}
-              reverseShareToViewFiles={reverseShareToViewFiles}
-              reverseShareToViewQrCode={reverseShareToViewQrCode}
-              isDeleting={isDeleting}
-              onCloseGenerateLink={() => setReverseShareToGenerateLink(null)}
-              onCloseViewDetails={() => setReverseShareToViewDetails(null)}
-              onCloseDeleteModal={() => setReverseShareToDelete(null)}
-              onCloseViewFiles={() => setReverseShareToViewFiles(null)}
-              onCloseViewQrCode={() => setReverseShareToViewQrCode(null)}
-              onConfirmDelete={handleDeleteReverseShare}
-              onCreateAlias={handleCreateAlias}
-              onCopyLink={handleCopyLink}
-              onViewQrCode={setReverseShareToViewQrCode}
-              onUpdateReverseShareData={handleUpdateReverseShareData}
-              onUpdatePassword={handleUpdatePassword}
-              onToggleActive={handleToggleActive}
-              onRefreshData={loadReverseShares}
-              refreshReverseShare={refreshReverseShare}
-            />
-          </div>
+          <ReverseSharesModals
+            isCreateModalOpen={isCreateModalOpen}
+            onCloseCreateModal={() => setIsCreateModalOpen(false)}
+            onCreateReverseShare={handleCreateReverseShare}
+            isCreating={isCreating}
+            reverseShareToEdit={reverseShareToEdit}
+            onCloseEditModal={() => setReverseShareToEdit(null)}
+            onUpdateReverseShare={handleUpdateReverseShare}
+            isUpdating={isUpdating}
+            reverseShareToGenerateLink={reverseShareToGenerateLink}
+            reverseShareToViewDetails={reverseShareToViewDetails}
+            reverseShareToDelete={reverseShareToDelete}
+            reverseShareToViewFiles={reverseShareToViewFiles}
+            reverseShareToViewQrCode={reverseShareToViewQrCode}
+            isDeleting={isDeleting}
+            onCloseGenerateLink={() => setReverseShareToGenerateLink(null)}
+            onCloseViewDetails={() => setReverseShareToViewDetails(null)}
+            onCloseDeleteModal={() => setReverseShareToDelete(null)}
+            onCloseViewFiles={() => setReverseShareToViewFiles(null)}
+            onCloseViewQrCode={() => setReverseShareToViewQrCode(null)}
+            onConfirmDelete={handleDeleteReverseShare}
+            onCreateAlias={handleCreateAlias}
+            onCopyLink={handleCopyLink}
+            onViewQrCode={setReverseShareToViewQrCode}
+            onUpdateReverseShareData={handleUpdateReverseShareData}
+            onUpdatePassword={handleUpdatePassword}
+            onToggleActive={handleToggleActive}
+            onRefreshData={loadReverseShares}
+            refreshReverseShare={refreshReverseShare}
+          />
         </div>
-        <DefaultFooter />
-      </div>
+      </PageLayout>
     </ProtectedRoute>
   );
 }

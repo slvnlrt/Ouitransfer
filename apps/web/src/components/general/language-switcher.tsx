@@ -2,7 +2,7 @@
 
 import { Languages } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import ReactCountryFlag from "react-country-flag";
 
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,7 @@ const languages = {
   "de-DE": "Deutsch",
   "it-IT": "Italiano",
   "nl-NL": "Nederlands",
-  "ps-PL": "Polski",
+  "pl-PL": "Polski",
   "tr-TR": "Türkçe (Turkish)",
   "ru-RU": "Русский (Russian)",
   "hi-IN": "हिन्दी (Hindi)",
@@ -44,6 +44,7 @@ const COOKIE_LANG_KEY = "NEXT_LOCALE";
 const COOKIE_MAX_AGE = 365 * 24 * 60 * 60;
 
 export function LanguageSwitcher() {
+  const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
 
@@ -63,7 +64,7 @@ export function LanguageSwitcher() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="h-9 w-9 p-0">
           <Languages className="h-5 w-5" />
-          <span className="sr-only">Change language</span>
+          <span className="sr-only">{t("languageSwitcher.changeLanguage")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

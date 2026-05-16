@@ -114,7 +114,7 @@ These wrappers map to real features that should exist in the UI. Wiring them up 
 - [x] Run `pnpm knip` — verified zero unused exports/types/dependencies
   - Additional cleanup: deleted `isS3Enabled`, `setConfigValue`, `getGroupConfigs` (corrected from earlier false-positive assessment), `useSecureConfigs`, `InternalError` class, `DownloadReverseShareFile200`, `DeleteReverseShareFile200`, `ListUsers200` + cleaned test mocks + stripped BOM from 22 locale files
 - [x] Uncomment the knip command in `lefthook.yml` pre-commit hook
-- [ ] Verify pre-commit hook runs knip on a test commit
+- [x] Verify pre-commit hook runs knip on a test commit
 
 ---
 

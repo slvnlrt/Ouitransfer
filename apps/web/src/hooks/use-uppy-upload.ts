@@ -555,7 +555,10 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
           err: error instanceof Error ? error.message : String(error),
         });
         toast.error(
-          `Failed to add ${file.name}: ${error instanceof Error ? error.message : String(error)}`,
+          t("uploadFile.errors.addFileFailed", {
+            name: file.name,
+            error: error instanceof Error ? error.message : String(error),
+          }),
         );
       }
     });

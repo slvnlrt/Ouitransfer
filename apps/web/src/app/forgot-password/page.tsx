@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { DefaultFooter } from "@/components/ui/default-footer";
+import { Spinner } from "@/components/ui/spinner";
 import { StaticBackgroundLights } from "../login/components/static-background-lights";
 import { ForgotPasswordForm } from "./components/forgot-password-form";
 import { ForgotPasswordHeader } from "./components/forgot-password-header";
@@ -21,13 +22,13 @@ export default function ForgotPasswordPage() {
         <div className="relative z-10 w-full max-w-md space-y-4 px-4 py-12">
           <motion.div
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-2xl border border-default-200 bg-background/30 p-8"
+            className="rounded-2xl border border-border bg-background/30 p-8"
             initial={{ opacity: 0, y: 20 }}
           >
             <ForgotPasswordHeader />
             {forgotPassword.authConfigLoading ? (
               <div className="flex justify-center items-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <Spinner size="lg" />
               </div>
             ) : !forgotPassword.passwordAuthEnabled ? (
               <div className="mt-8 space-y-4">

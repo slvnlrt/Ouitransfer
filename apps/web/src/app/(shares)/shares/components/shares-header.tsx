@@ -26,7 +26,7 @@ export function SharesHeader() {
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
               <Link href="/dashboard" className="flex items-center">
-                <LayoutDashboard size={20} className="me-2" />
+                <LayoutDashboard className="size-5 me-2" />
                 {t("common.dashboard")}
               </Link>
             </BreadcrumbLink>
@@ -34,7 +34,7 @@ export function SharesHeader() {
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <span className="flex items-center gap-2">
-              <Share size={20} /> {t("shares.header.myShares")}
+              <Share className="size-5" /> {t("shares.header.myShares")}
             </span>
           </BreadcrumbItem>
         </BreadcrumbList>

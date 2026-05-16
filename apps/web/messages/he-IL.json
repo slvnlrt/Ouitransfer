@@ -12,7 +12,21 @@
       "config_error": "שגיאת תצורה. אנא צור קשר עם התמיכה.",
       "auth_failed": "האימות נכשל. אנא נסה שוב."
     },
-    "sessionExpired": "Your session has expired. Please sign in again."
+    "sessionExpired": "Your session has expired. Please sign in again.",
+    "callback": {
+      "errors": {
+        "oauth_error": "OAuth authentication failed",
+        "missing_parameters": "Missing authentication parameters",
+        "missing_code": "Missing authorization code",
+        "registration_disabled": "Registration is disabled for this provider",
+        "provider_disabled": "This authentication provider is disabled",
+        "state_expired": "Authentication session expired",
+        "account_inactive": "Your account is inactive",
+        "no_email": "No email address found in your account",
+        "token_exchange_failed": "Failed to authenticate with provider",
+        "missing_user_info": "Incomplete user information from provider"
+      }
+    }
   },
   "contextMenu": {
     "newFolder": "תיקייה חדשה",
@@ -345,7 +359,8 @@
     "pdfPreviewNotAvailable": "תצוגה מקדימה של PDF אינה זמינה. נסה תצוגה חלופית או הורד",
     "tryAlternativeView": "נסה תצוגה חלופית",
     "loadingAlternative": "טוען תצוגה חלופית...",
-    "loadingAudio": "טוען אודיו..."
+    "loadingAudio": "טוען אודיו...",
+    "downloading": "Downloading..."
   },
   "fileSelector": {
     "availableFiles": "קבצים זמינים ({count})",
@@ -412,6 +427,14 @@
     "viewMode": {
       "table": "טבלה",
       "grid": "רשת"
+    },
+    "drag": {
+      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
+      "fileMoved": "File \"{name}\" moved to \"{target}\"",
+      "itemsMoved": "{count} items moved to \"{target}\"",
+      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
+      "fileMovedToRoot": "File \"{name}\" moved to root folder",
+      "itemsMovedToRoot": "{count} items moved to root folder"
     }
   },
   "filesTable": {
@@ -550,7 +573,10 @@
     "pageTitle": "כניסה",
     "or": "או",
     "continueWithSSO": "המשך עם SSO",
-    "processing": "מעבד אימות..."
+    "processing": "מעבד אימות...",
+    "orContinueWith": "Or continue with",
+    "continueWith": "Continue with {name}",
+    "providerNotConfigured": "{name} is not properly configured"
   },
   "logo": {
     "labels": {
@@ -905,7 +931,8 @@
         "editError": "שגיאה בעדכון קובץ",
         "previewNotAvailable": "תצוגה מקדימה אינה זמינה",
         "notAvailable": "לא זמין",
-        "invalidDate": "תאריך לא חוקי"
+        "invalidDate": "תאריך לא חוקי",
+        "downloading": "Downloading..."
       },
       "alias": {
         "editTitle": "ערוך כינוי",
@@ -992,7 +1019,8 @@
           "timeout": "פעולת העתקה פג זמנה. אנא נסה שוב עם קובץ קטן יותר או בדוק את החיבור שלך.",
           "failed": "פעולת העתקה נכשלה. אנא נסה שוב.",
           "aborted": "פעולת העתקה בוטלה עקב פג זמן."
-        }
+        },
+        "downloading": "Downloading..."
       }
     },
     "form": {
@@ -1063,7 +1091,11 @@
       },
       "fieldRequirements": {
         "title": "דרישות שדות",
-        "description": "הגדר אילו שדות מוצגים בטופס ההעלאה"
+        "description": "הגדר אילו שדות מוצגים בטופס ההעלאה",
+        "configurationTitle": "Field Configuration:",
+        "hiddenDescription": "Hidden: Field won't appear in the upload form",
+        "optionalDescription": "Optional: Field will appear but isn't mandatory",
+        "requiredDescription": "Required: Field must be filled before upload"
       },
       "submit": "צור קישור קבלה"
     },
@@ -1878,7 +1910,11 @@
       "continue": "המשך העלאות",
       "cancel": "בטל העלאות"
     },
-    "pasteSuccess": "{count, plural, =1 {תמונה הודבקה והועלתה בהצלחה} other {# תמונות הודבקו והועלו בהצלחה}}"
+    "pasteSuccess": "{count, plural, =1 {תמונה הודבקה והועלתה בהצלחה} other {# תמונות הודבקו והועלו בהצלחה}}",
+    "errors": {
+      "addFileFailed": "Failed to add {name}: {error}",
+      "uploadFailed": "Upload failed"
+    }
   },
   "users": {
     "modes": {
@@ -1962,7 +1998,8 @@
       "expiresIn": "פג תוקף בעוד 15 דקות",
       "close": "סגור",
       "errors": {
-        "generateFailed": "נכשל ביצירת קישור הזמנה"
+        "generateFailed": "נכשל ביצירת קישור הזמנה",
+        "copyFailed": "Failed to copy link"
       }
     }
   },
@@ -2035,5 +2072,11 @@
       "createFailed": "נכשל ביצירת חשבון. אנא נסה שוב."
     },
     "pageTitle": "צור חשבון"
+  },
+  "filesTree": {
+    "noItems": "No items to display"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Change language"
   }
 }

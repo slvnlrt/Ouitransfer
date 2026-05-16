@@ -1,6 +1,6 @@
 import { Check, Lock, LockOpen, Pencil, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import type { Share } from "@/http/endpoints/shares/types";
 import { formatDateTime } from "@/lib/format-date-time";
 import { SharesTableBulkActions } from "./shares-table-bulk-actions";
 import { ShareRowActions } from "./shares-table-row-actions";
+import { useEditableItem } from "./use-editable-item";
 
 export interface SharesTableProps {
   shares: Share[];
@@ -64,30 +65,25 @@ export function SharesTable({
   const t = useTranslations();
   const locale = useLocale();
   const { value: smtpEnabled } = useSecureConfigValue("smtpEnabled");
-  const [editingField, setEditingField] = useState<{
+
+  // Inline editing via shared hook (same pattern as FilesTable)
+  const editing = useEditableItem({
+    onSaveFile: async (shareId, field, value) => {
+      if (field === "name") onUpdateName(shareId, value);
+      else onUpdateDescription(shareId, value);
+    },
+  });
+
+  // Additional hover state for non-editable fields (security, expiration, files, recipients)
+  const [hoveredAction, setHoveredAction] = useState<{
     shareId: string;
-    field: "name" | "description";
+    field: "security" | "expiration" | "files" | "recipients";
   } | null>(null);
-  const [editValue, setEditValue] = useState("");
-  const [hoveredField, setHoveredField] = useState<{
-    shareId: string;
-    field: "name" | "description" | "security" | "expiration" | "files" | "recipients";
-  } | null>(null);
-  const [pendingChanges, setPendingChanges] = useState<{
-    [shareId: string]: { name?: string; description?: string };
-  }>({});
+
   const [selectedShares, setSelectedShares] = useState<Set<string>>(new Set());
-  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (editingField && inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.select();
-    }
-  }, [editingField]);
-
-  useEffect(() => {
-    setPendingChanges({});
+    editing.resetPendingChanges("file");
   }, [shares]);
 
   useEffect(() => {
@@ -98,55 +94,6 @@ export function SharesTable({
     const clearSelection = () => setSelectedShares(new Set());
     setClearSelectionCallback?.(clearSelection);
   }, [setClearSelectionCallback]);
-
-  const startEdit = (shareId: string, field: "name" | "description", currentValue: string) => {
-    setEditingField({ shareId, field });
-    setEditValue(currentValue || "");
-  };
-
-  const saveEdit = () => {
-    if (!editingField) return;
-
-    const { shareId, field } = editingField;
-
-    setPendingChanges((prev) => ({
-      ...prev,
-      [shareId]: { ...prev[shareId], [field]: editValue },
-    }));
-
-    if (field === "name") {
-      onUpdateName(shareId, editValue);
-    } else {
-      onUpdateDescription(shareId, editValue);
-    }
-
-    setEditingField(null);
-    setEditValue("");
-  };
-
-  const cancelEdit = () => {
-    setEditingField(null);
-    setEditValue("");
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      saveEdit();
-    } else if (e.key === "Escape") {
-      cancelEdit();
-    }
-  };
-
-  const getDisplayValue = (
-    share: Share,
-    field: "name" | "description",
-  ): string | null | undefined => {
-    const pendingChange = pendingChanges[share.id];
-    if (pendingChange && pendingChange[field] !== undefined) {
-      return pendingChange[field];
-    }
-    return field === "name" ? share.name : share.description;
-  };
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -237,25 +184,31 @@ export function SharesTable({
           </TableHeader>
           <TableBody>
             {shares.map((share) => {
-              const isEditingName =
-                editingField?.shareId === share.id && editingField?.field === "name";
-              const isEditingDescription =
-                editingField?.shareId === share.id && editingField?.field === "description";
-              const isHoveringName =
-                hoveredField?.shareId === share.id && hoveredField?.field === "name";
-              const isHoveringDescription =
-                hoveredField?.shareId === share.id && hoveredField?.field === "description";
+              const isEditingName = editing.isEditing(share.id, "name");
+              const isEditingDescription = editing.isEditing(share.id, "description");
+              const isHoveringName = editing.isHovering(share.id, "name");
+              const isHoveringDescription = editing.isHovering(share.id, "description");
               const isHoveringSecurity =
-                hoveredField?.shareId === share.id && hoveredField?.field === "security";
+                hoveredAction?.shareId === share.id && hoveredAction?.field === "security";
               const isHoveringExpiration =
-                hoveredField?.shareId === share.id && hoveredField?.field === "expiration";
+                hoveredAction?.shareId === share.id && hoveredAction?.field === "expiration";
               const isHoveringFiles =
-                hoveredField?.shareId === share.id && hoveredField?.field === "files";
+                hoveredAction?.shareId === share.id && hoveredAction?.field === "files";
               const isHoveringRecipients =
-                hoveredField?.shareId === share.id && hoveredField?.field === "recipients";
+                hoveredAction?.shareId === share.id && hoveredAction?.field === "recipients";
               const isSelected = selectedShares.has(share.id);
-              const displayName = getDisplayValue(share, "name");
-              const displayDescription = getDisplayValue(share, "description");
+              const displayName = editing.getDisplayValue(
+                share.id,
+                "file",
+                "name",
+                share.name ?? undefined,
+              );
+              const displayDescription = editing.getDisplayValue(
+                share.id,
+                "file",
+                "description",
+                share.description ?? undefined,
+              );
 
               return (
                 <TableRow key={share.id} className="hover:bg-muted/50 transition-colors border-0">
@@ -268,27 +221,27 @@ export function SharesTable({
                   </TableCell>
                   <TableCell
                     className="h-12 px-4 border-0"
-                    onMouseEnter={() => setHoveredField({ shareId: share.id, field: "name" })}
-                    onMouseLeave={() => setHoveredField(null)}
+                    onMouseEnter={() => editing.setHoverTarget({ itemId: share.id, field: "name" })}
+                    onMouseLeave={() => editing.setHoverTarget(null)}
                   >
                     <div className="flex items-center gap-1 min-w-0">
                       {isEditingName ? (
                         <div className="flex items-center gap-1 flex-1">
                           <Input
-                            ref={inputRef}
-                            value={editValue}
-                            onChange={(e) => setEditValue(e.target.value)}
-                            onKeyDown={handleKeyDown}
+                            ref={editing.inputRef}
+                            value={editing.editValue}
+                            onChange={(e) => editing.setEditValue(e.target.value)}
+                            onKeyDown={editing.handleKeyDown}
                             className="h-8 text-sm font-medium min-w-[200px]"
                             onClick={(e) => e.stopPropagation()}
                           />
                           <Button
                             size="icon"
                             variant="ghost"
-                            className="h-8 w-8 text-green-600 hover:text-green-700 flex-shrink-0"
+                            className="h-8 w-8 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex-shrink-0"
                             onClick={(e) => {
                               e.stopPropagation();
-                              saveEdit();
+                              void editing.saveEdit();
                             }}
                           >
                             <Check className="h-4 w-4" />
@@ -296,10 +249,10 @@ export function SharesTable({
                           <Button
                             size="icon"
                             variant="ghost"
-                            className="h-8 w-8 text-red-600 hover:text-red-700 flex-shrink-0"
+                            className="h-8 w-8 text-destructive hover:text-destructive flex-shrink-0"
                             onClick={(e) => {
                               e.stopPropagation();
-                              cancelEdit();
+                              editing.cancelEdit();
                             }}
                           >
                             <X className="h-4 w-4" />
@@ -321,7 +274,7 @@ export function SharesTable({
                                 className="h-6 w-6 text-muted-foreground hover:text-foreground hidden sm:block"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  startEdit(share.id, "name", displayName ?? "");
+                                  editing.startEdit(share.id, "file", "name", displayName ?? "");
                                 }}
                               >
                                 <Pencil className="h-3 w-3" />
@@ -335,18 +288,18 @@ export function SharesTable({
                   <TableCell
                     className="h-12 px-4"
                     onMouseEnter={() =>
-                      setHoveredField({ shareId: share.id, field: "description" })
+                      editing.setHoverTarget({ itemId: share.id, field: "description" })
                     }
-                    onMouseLeave={() => setHoveredField(null)}
+                    onMouseLeave={() => editing.setHoverTarget(null)}
                   >
                     <div className="flex items-center gap-1 min-w-0">
                       {isEditingDescription ? (
                         <div className="flex items-center gap-1 flex-1">
                           <Input
-                            ref={inputRef}
-                            value={editValue}
-                            onChange={(e) => setEditValue(e.target.value)}
-                            onKeyDown={handleKeyDown}
+                            ref={editing.inputRef}
+                            value={editing.editValue}
+                            onChange={(e) => editing.setEditValue(e.target.value)}
+                            onKeyDown={editing.handleKeyDown}
                             className="h-8 text-sm min-w-[250px]"
                             placeholder={t("shareActions.addDescriptionPlaceholder")}
                             onClick={(e) => e.stopPropagation()}
@@ -354,10 +307,10 @@ export function SharesTable({
                           <Button
                             size="icon"
                             variant="ghost"
-                            className="h-8 w-8 text-green-600 hover:text-green-700 flex-shrink-0"
+                            className="h-8 w-8 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex-shrink-0"
                             onClick={(e) => {
                               e.stopPropagation();
-                              saveEdit();
+                              void editing.saveEdit();
                             }}
                           >
                             <Check className="h-4 w-4" />
@@ -365,10 +318,10 @@ export function SharesTable({
                           <Button
                             size="icon"
                             variant="ghost"
-                            className="h-8 w-8 text-red-600 hover:text-red-700 flex-shrink-0"
+                            className="h-8 w-8 text-destructive hover:text-destructive flex-shrink-0"
                             onClick={(e) => {
                               e.stopPropagation();
-                              cancelEdit();
+                              editing.cancelEdit();
                             }}
                           >
                             <X className="h-4 w-4" />
@@ -390,7 +343,12 @@ export function SharesTable({
                                 className="h-6 w-6 text-muted-foreground hover:text-foreground hidden sm:block"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  startEdit(share.id, "description", displayDescription || "");
+                                  editing.startEdit(
+                                    share.id,
+                                    "file",
+                                    "description",
+                                    displayDescription || "",
+                                  );
                                 }}
                               >
                                 <Pencil className="h-3 w-3" />
@@ -406,8 +364,10 @@ export function SharesTable({
                   </TableCell>
                   <TableCell
                     className="h-12 px-4"
-                    onMouseEnter={() => setHoveredField({ shareId: share.id, field: "expiration" })}
-                    onMouseLeave={() => setHoveredField(null)}
+                    onMouseEnter={() =>
+                      setHoveredAction({ shareId: share.id, field: "expiration" })
+                    }
+                    onMouseLeave={() => setHoveredAction(null)}
                   >
                     <div className="flex items-center gap-1 min-w-0">
                       <span className="text-sm">
@@ -437,8 +397,8 @@ export function SharesTable({
                       variant="secondary"
                       className={
                         !share.expiration || new Date(share.expiration) > new Date()
-                          ? "bg-green-500/20 hover:bg-green-500/30 text-green-500"
-                          : "bg-red-500/20 hover:bg-red-500/30 text-red-500"
+                          ? "bg-green-500/20 hover:bg-green-500/30 text-green-600 dark:text-green-400"
+                          : "bg-red-500/20 hover:bg-red-500/30 text-red-600 dark:text-red-400"
                       }
                     >
                       {!share.expiration
@@ -450,16 +410,16 @@ export function SharesTable({
                   </TableCell>
                   <TableCell
                     className="h-12 px-4"
-                    onMouseEnter={() => setHoveredField({ shareId: share.id, field: "security" })}
-                    onMouseLeave={() => setHoveredField(null)}
+                    onMouseEnter={() => setHoveredAction({ shareId: share.id, field: "security" })}
+                    onMouseLeave={() => setHoveredAction(null)}
                   >
                     <div className="flex items-center gap-1 min-w-0">
                       <Badge
                         variant="secondary"
                         className={`flex items-center gap-1 ${
                           share.security.hasPassword
-                            ? "bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-500"
-                            : "bg-green-500/20 hover:bg-green-500/30 text-green-500"
+                            ? "bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-600 dark:text-yellow-400"
+                            : "bg-green-500/20 hover:bg-green-500/30 text-green-600 dark:text-green-400"
                         }`}
                       >
                         {share.security.hasPassword ? (
@@ -490,8 +450,8 @@ export function SharesTable({
                   </TableCell>
                   <TableCell
                     className="h-12 px-4"
-                    onMouseEnter={() => setHoveredField({ shareId: share.id, field: "files" })}
-                    onMouseLeave={() => setHoveredField(null)}
+                    onMouseEnter={() => setHoveredAction({ shareId: share.id, field: "files" })}
+                    onMouseLeave={() => setHoveredAction(null)}
                   >
                     <div className="flex items-center gap-1 min-w-0">
                       <span className="text-sm">
@@ -517,8 +477,10 @@ export function SharesTable({
                   </TableCell>
                   <TableCell
                     className="h-12 px-4"
-                    onMouseEnter={() => setHoveredField({ shareId: share.id, field: "recipients" })}
-                    onMouseLeave={() => setHoveredField(null)}
+                    onMouseEnter={() =>
+                      setHoveredAction({ shareId: share.id, field: "recipients" })
+                    }
+                    onMouseLeave={() => setHoveredAction(null)}
                   >
                     <div className="flex items-center gap-1 min-w-0">
                       <span className="text-sm">

@@ -5,6 +5,20 @@
   "auth": {
     "successfullyAuthenticated": "Successfully authenticated!",
     "authenticationFailed": "Authentication failed",
+    "callback": {
+      "errors": {
+        "oauth_error": "OAuth authentication failed",
+        "missing_parameters": "Missing authentication parameters",
+        "missing_code": "Missing authorization code",
+        "registration_disabled": "Registration is disabled for this provider",
+        "provider_disabled": "This authentication provider is disabled",
+        "state_expired": "Authentication session expired",
+        "account_inactive": "Your account is inactive",
+        "no_email": "No email address found in your account",
+        "token_exchange_failed": "Failed to authenticate with provider",
+        "missing_user_info": "Incomplete user information from provider"
+      }
+    },
     "errors": {
       "account_inactive": "Account inactive. Please contact the administrator.",
       "registration_disabled": "SSO registration is disabled.",
@@ -336,6 +350,7 @@
     "title": "Preview File",
     "description": "Preview and download file",
     "loading": "Loading...",
+    "downloading": "Downloading...",
     "notAvailable": "Preview not available for this file type",
     "downloadToView": "Use the download button to view this file",
     "loadError": "Error loading file preview",
@@ -412,6 +427,14 @@
     "viewMode": {
       "table": "Table",
       "grid": "Grid"
+    },
+    "drag": {
+      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
+      "fileMoved": "File \"{name}\" moved to \"{target}\"",
+      "itemsMoved": "{count} items moved to \"{target}\"",
+      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
+      "fileMovedToRoot": "File \"{name}\" moved to root folder",
+      "itemsMovedToRoot": "{count} items moved to root folder"
     }
   },
   "filesTable": {
@@ -441,6 +464,9 @@
       "share": "Share Selected",
       "delete": "Delete Selected"
     }
+  },
+  "filesTree": {
+    "noItems": "No items to display"
   },
   "folderActions": {
     "editFolder": "Edit Folder",
@@ -472,6 +498,9 @@
   "footer": {
     "poweredBy": "Powered by",
     "kyanHomepage": "Burger&Cie homepage"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Change language"
   },
   "forgotPassword": {
     "emailLabel": "Email Address",
@@ -550,7 +579,10 @@
     "pageTitle": "Login",
     "or": "or",
     "continueWithSSO": "Continue with SSO",
-    "processing": "Processing authentication..."
+    "processing": "Processing authentication...",
+    "orContinueWith": "Or continue with",
+    "continueWith": "Continue with {name}",
+    "providerNotConfigured": "{name} is not properly configured"
   },
   "logo": {
     "labels": {
@@ -944,6 +976,7 @@
         "placeholderTypes": ".pdf,.jpg,.png (comma separated)",
         "downloadSuccess": "Download started",
         "downloadError": "Error downloading file",
+        "downloading": "Downloading...",
         "editSuccess": "File updated successfully",
         "editError": "Error updating file",
         "previewNotAvailable": "Preview not available",
@@ -1008,6 +1041,7 @@
         "anonymous": "Anonymous",
         "downloadSuccess": "Download started",
         "downloadError": "Error downloading file",
+        "downloading": "Downloading...",
         "editSuccess": "File updated successfully",
         "editError": "Error updating file",
         "previewNotAvailable": "Preview not available",
@@ -1106,7 +1140,11 @@
       },
       "fieldRequirements": {
         "title": "Field Requirements",
-        "description": "Configure which fields are shown in the upload form"
+        "description": "Configure which fields are shown in the upload form",
+        "configurationTitle": "Field Configuration:",
+        "hiddenDescription": "Hidden: Field won't appear in the upload form",
+        "optionalDescription": "Optional: Field will appear but isn't mandatory",
+        "requiredDescription": "Required: Field must be filled before upload"
       },
       "submit": "Create Receive Link"
     },
@@ -1921,7 +1959,11 @@
       "continue": "Continue Uploads",
       "cancel": "Cancel Uploads"
     },
-    "pasteSuccess": "{count, plural, =1 {Image pasted and uploaded successfully} other {# images pasted and uploaded successfully}}"
+    "pasteSuccess": "{count, plural, =1 {Image pasted and uploaded successfully} other {# images pasted and uploaded successfully}}",
+    "errors": {
+      "addFileFailed": "Failed to add {name}: {error}",
+      "uploadFailed": "Upload failed"
+    }
   },
   "users": {
     "modes": {
@@ -2005,7 +2047,8 @@
       "expiresIn": "Expires in 15 minutes",
       "close": "Close",
       "errors": {
-        "generateFailed": "Failed to generate invite link"
+        "generateFailed": "Failed to generate invite link",
+        "copyFailed": "Failed to copy link"
       }
     }
   },

@@ -12,8 +12,8 @@ export function EmptySharesState({ onCreateShare }: EmptySharesStateProps) {
 
   return (
     <div className="text-center py-6 flex flex-col items-center gap-2">
-      <Share className="w-8 h-8 text-gray-500" />
-      <p className="text-gray-500">{t("shares.empty.message")}</p>
+      <Share className="w-8 h-8 text-muted-foreground" />
+      <p className="text-muted-foreground">{t("shares.empty.message")}</p>
       <Button variant="default" size="sm" onClick={onCreateShare} className="gap-2">
         <Plus className="h-4 w-4" />
         {t("shares.empty.createButton")}

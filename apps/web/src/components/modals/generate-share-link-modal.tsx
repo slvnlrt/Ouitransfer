@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { LazyQRCode } from "@/components/ui/lazy-qr-code";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import type { Share } from "@/http/endpoints/shares/types";
 import { customNanoid } from "@/lib/utils";
 
@@ -36,6 +37,7 @@ export function GenerateShareLinkModal({
   onGenerate,
 }: GenerateShareLinkModalProps) {
   const t = useTranslations();
+  const { copy } = useCopyToClipboard();
   const [alias, setAlias] = useState(() => generateCustomId());
   const [isLoading, setIsLoading] = useState(false);
   const [generatedLink, setGeneratedLink] = useState("");
@@ -71,9 +73,11 @@ export function GenerateShareLinkModal({
     }
   };
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(generatedLink);
-    toast.success(t("generateShareLink.copied"));
+  const handleCopyLink = async () => {
+    const ok = await copy(generatedLink);
+    if (ok) {
+      toast.success(t("generateShareLink.copied"));
+    }
   };
 
   const downloadQRCode = () => {
@@ -153,7 +157,7 @@ export function GenerateShareLinkModal({
               })}
             </p>
             <div className="flex flex-col items-center justify-center">
-              <div className="p-4 bg-white rounded-lg">
+              <div className="p-4 bg-card rounded-lg">
                 <LazyQRCode
                   id="share-link-qr-code"
                   value={generatedLink}

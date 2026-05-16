@@ -12,7 +12,21 @@
     },
     "authenticationFailed": "Falha na autenticação",
     "successfullyAuthenticated": "Autenticado com sucesso!",
-    "sessionExpired": "Sua sessão expirou. Por favor, faça login novamente."
+    "sessionExpired": "Sua sessão expirou. Por favor, faça login novamente.",
+    "callback": {
+      "errors": {
+        "oauth_error": "OAuth authentication failed",
+        "missing_parameters": "Missing authentication parameters",
+        "missing_code": "Missing authorization code",
+        "registration_disabled": "Registration is disabled for this provider",
+        "provider_disabled": "This authentication provider is disabled",
+        "state_expired": "Authentication session expired",
+        "account_inactive": "Your account is inactive",
+        "no_email": "No email address found in your account",
+        "token_exchange_failed": "Failed to authenticate with provider",
+        "missing_user_info": "Incomplete user information from provider"
+      }
+    }
   },
   "contextMenu": {
     "newFolder": "Nova pasta",
@@ -345,7 +359,8 @@
     "pdfPreviewNotAvailable": "Preview do PDF não está disponível. Tente o modo alternativo ou faça o download.",
     "tryAlternativeView": "Tentar Visualização Alternativa",
     "loadingAlternative": "Carregando visualização alternativa...",
-    "loadingAudio": "Carregando áudio..."
+    "loadingAudio": "Carregando áudio...",
+    "downloading": "Downloading..."
   },
   "fileSelector": {
     "availableFiles": "Arquivos Disponíveis ({count})",
@@ -412,7 +427,15 @@
       "moveItemsFailed": "Falha ao mover itens. Por favor, tente novamente.",
       "cannotMoveHere": "Não é possível mover itens para este local"
     },
-    "openFolder": "Abrir pasta"
+    "openFolder": "Abrir pasta",
+    "drag": {
+      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
+      "fileMoved": "File \"{name}\" moved to \"{target}\"",
+      "itemsMoved": "{count} items moved to \"{target}\"",
+      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
+      "fileMovedToRoot": "File \"{name}\" moved to root folder",
+      "itemsMovedToRoot": "{count} items moved to root folder"
+    }
   },
   "filesTable": {
     "ariaLabel": "Tabela de arquivos",
@@ -550,7 +573,10 @@
     "pageTitle": "Login",
     "or": "ou",
     "continueWithSSO": "Continuar com SSO",
-    "processing": "Processando autenticação..."
+    "processing": "Processando autenticação...",
+    "orContinueWith": "Or continue with",
+    "continueWith": "Continue with {name}",
+    "providerNotConfigured": "{name} is not properly configured"
   },
   "logo": {
     "labels": {
@@ -905,7 +931,8 @@
         "editError": "Erro ao atualizar arquivo",
         "previewNotAvailable": "Visualização não disponível",
         "notAvailable": "Não disponível",
-        "invalidDate": "Data inválida"
+        "invalidDate": "Data inválida",
+        "downloading": "Downloading..."
       },
       "alias": {
         "editTitle": "Editar Alias",
@@ -992,7 +1019,8 @@
           "failed": "A operação de cópia falhou. Por favor, tente novamente.",
           "aborted": "A operação de cópia foi cancelada devido ao tempo limite."
         },
-        "invalidDate": "Data inválida"
+        "invalidDate": "Data inválida",
+        "downloading": "Downloading..."
       }
     },
     "form": {
@@ -1060,7 +1088,11 @@
       },
       "fieldRequirements": {
         "title": "Requisitos de campo",
-        "description": "Configure quais campos são mostrados no formulário de upload"
+        "description": "Configure quais campos são mostrados no formulário de upload",
+        "configurationTitle": "Field Configuration:",
+        "hiddenDescription": "Hidden: Field won't appear in the upload form",
+        "optionalDescription": "Optional: Field will appear but isn't mandatory",
+        "requiredDescription": "Required: Field must be filled before upload"
       },
       "nameFieldRequired": {
         "label": "Nome Requisito de campo",
@@ -1878,7 +1910,11 @@
       "cancel": "Cancelar Uploads"
     },
     "pasteSuccess": "{count, plural, =1 {Imagem colada e enviada com sucesso} other {# imagens coladas e enviadas com sucesso}}",
-    "filesQueued": "{count, plural, one {# arquivo na fila para upload} other {# arquivos na fila para upload}}"
+    "filesQueued": "{count, plural, one {# arquivo na fila para upload} other {# arquivos na fila para upload}}",
+    "errors": {
+      "addFileFailed": "Failed to add {name}: {error}",
+      "uploadFailed": "Upload failed"
+    }
   },
   "users": {
     "modes": {
@@ -1962,7 +1998,8 @@
       "expiresIn": "Expira em 15 minutos",
       "close": "Fechar",
       "errors": {
-        "generateFailed": "Falha ao gerar link de convite"
+        "generateFailed": "Falha ao gerar link de convite",
+        "copyFailed": "Failed to copy link"
       }
     }
   },
@@ -2035,5 +2072,11 @@
     "directLinkDescription": "URL direto para o arquivo de mídia",
     "htmlDescription": "Use este código para incorporar a mídia em páginas HTML",
     "bbcodeDescription": "Use este código para incorporar a mídia em fóruns que suportam BBCode"
+  },
+  "filesTree": {
+    "noItems": "No items to display"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Change language"
   }
 }

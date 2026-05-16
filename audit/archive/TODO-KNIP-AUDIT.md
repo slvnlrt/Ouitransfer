@@ -15,8 +15,7 @@ false positives (shadcn sub-components, barrel re-exports, Zod schema types).
 - [x] Fix unlisted dependencies (added to knip.json ignoreDependencies)
 - [x] Clean up unused exports (12 exports removed/unexported)
 - [x] Refine `knip.json` config to reduce false positives
-- [ ] Consider adding knip to CI (`ci.yml`) as a non-blocking check
-- [ ] Consider adding knip to pre-commit hook (lefthook)
+- [x] Add knip to pre-commit hook (lefthook) — commit `1112f7a`
 
 ## Summary of Changes
 

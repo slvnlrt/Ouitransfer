@@ -4,10 +4,9 @@ import { Send } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-
+import { BackgroundLights } from "@/components/ui/background-lights";
 import { Button } from "@/components/ui/button";
 import { useAppInfo } from "@/contexts/app-info-context";
-import { BackgroundLights } from "../../../components/ui/background-lights";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },

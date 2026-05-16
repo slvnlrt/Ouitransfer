@@ -12,7 +12,21 @@
       "config_error": "เกิดข้อผิดพลาดในการตั้งค่า กรุณาติดต่อฝ่ายสนับสนุน",
       "auth_failed": "การยืนยันตัวตนล้มเหลว กรุณาลองใหม่อีกครั้ง"
     },
-    "sessionExpired": "Your session has expired. Please sign in again."
+    "sessionExpired": "Your session has expired. Please sign in again.",
+    "callback": {
+      "errors": {
+        "oauth_error": "OAuth authentication failed",
+        "missing_parameters": "Missing authentication parameters",
+        "missing_code": "Missing authorization code",
+        "registration_disabled": "Registration is disabled for this provider",
+        "provider_disabled": "This authentication provider is disabled",
+        "state_expired": "Authentication session expired",
+        "account_inactive": "Your account is inactive",
+        "no_email": "No email address found in your account",
+        "token_exchange_failed": "Failed to authenticate with provider",
+        "missing_user_info": "Incomplete user information from provider"
+      }
+    }
   },
   "contextMenu": {
     "newFolder": "โฟลเดอร์ใหม่",
@@ -345,7 +359,8 @@
     "pdfPreviewNotAvailable": "ตัวอย่าง PDF ไม่พร้อมใช้งาน ลองมุมมองอื่นหรือดาวน์โหลด",
     "tryAlternativeView": "ลองมุมมองอื่น",
     "loadingAlternative": "กำลังโหลดมุมมองอื่น...",
-    "loadingAudio": "กำลังโหลดเสียง..."
+    "loadingAudio": "กำลังโหลดเสียง...",
+    "downloading": "Downloading..."
   },
   "fileSelector": {
     "availableFiles": "ไฟล์ที่พร้อมใช้งาน ({count})",
@@ -412,6 +427,14 @@
     "viewMode": {
       "table": "ตาราง",
       "grid": "กริด"
+    },
+    "drag": {
+      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
+      "fileMoved": "File \"{name}\" moved to \"{target}\"",
+      "itemsMoved": "{count} items moved to \"{target}\"",
+      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
+      "fileMovedToRoot": "File \"{name}\" moved to root folder",
+      "itemsMovedToRoot": "{count} items moved to root folder"
     }
   },
   "filesTable": {
@@ -550,7 +573,10 @@
     "pageTitle": "เข้าสู่ระบบ",
     "or": "หรือ",
     "continueWithSSO": "ดำเนินการต่อด้วย SSO",
-    "processing": "กำลังประมวลผลการยืนยันตัวตน..."
+    "processing": "กำลังประมวลผลการยืนยันตัวตน...",
+    "orContinueWith": "Or continue with",
+    "continueWith": "Continue with {name}",
+    "providerNotConfigured": "{name} is not properly configured"
   },
   "logo": {
     "labels": {
@@ -905,7 +931,8 @@
         "editError": "เกิดข้อผิดพลาดในการอัปเดตไฟล์",
         "previewNotAvailable": "ไม่มีตัวอย่างพร้อมใช้งาน",
         "notAvailable": "ไม่พร้อมใช้งาน",
-        "invalidDate": "วันที่ไม่ถูกต้อง"
+        "invalidDate": "วันที่ไม่ถูกต้อง",
+        "downloading": "Downloading..."
       },
       "alias": {
         "editTitle": "แก้ไขนามแฝง",
@@ -992,7 +1019,8 @@
           "timeout": "หมดเวลาการคัดลอก โปรดลองใหม่ด้วยไฟล์ที่เล็กกว่าหรือตรวจสอบการเชื่อมต่อของคุณ",
           "failed": "การคัดลอกล้มเหลว โปรดลองใหม่",
           "aborted": "การคัดลอกถูกยกเลิกเนื่องจากหมดเวลา"
-        }
+        },
+        "downloading": "Downloading..."
       }
     },
     "form": {
@@ -1063,7 +1091,11 @@
       },
       "fieldRequirements": {
         "title": "ข้อกำหนดฟิลด์",
-        "description": "ตั้งค่าฟิลด์ใดที่จะแสดงในแบบฟอร์มการอัปโหลด"
+        "description": "ตั้งค่าฟิลด์ใดที่จะแสดงในแบบฟอร์มการอัปโหลด",
+        "configurationTitle": "Field Configuration:",
+        "hiddenDescription": "Hidden: Field won't appear in the upload form",
+        "optionalDescription": "Optional: Field will appear but isn't mandatory",
+        "requiredDescription": "Required: Field must be filled before upload"
       },
       "submit": "สร้างลิงค์การรับ"
     },
@@ -1878,7 +1910,11 @@
       "continue": "ดำเนินการอัปโหลดต่อ",
       "cancel": "ยกเลิกการอัปโหลด"
     },
-    "pasteSuccess": "{count, plural, =1 {วางและอัปโหลดรูปภาพเรียบร้อยแล้ว} other {วางและอัปโหลด # รูปภาพเรียบร้อยแล้ว}}"
+    "pasteSuccess": "{count, plural, =1 {วางและอัปโหลดรูปภาพเรียบร้อยแล้ว} other {วางและอัปโหลด # รูปภาพเรียบร้อยแล้ว}}",
+    "errors": {
+      "addFileFailed": "Failed to add {name}: {error}",
+      "uploadFailed": "Upload failed"
+    }
   },
   "users": {
     "modes": {
@@ -1962,7 +1998,8 @@
       "expiresIn": "หมดอายุใน 15 นาที",
       "close": "ปิด",
       "errors": {
-        "generateFailed": "ไม่สามารถสร้างลิงค์เชิญ"
+        "generateFailed": "ไม่สามารถสร้างลิงค์เชิญ",
+        "copyFailed": "Failed to copy link"
       }
     }
   },
@@ -2035,5 +2072,11 @@
       "createFailed": "ไม่สามารถสร้างบัญชี โปรดลองอีกครั้ง"
     },
     "pageTitle": "สร้างบัญชี"
+  },
+  "filesTree": {
+    "noItems": "No items to display"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Change language"
   }
 }

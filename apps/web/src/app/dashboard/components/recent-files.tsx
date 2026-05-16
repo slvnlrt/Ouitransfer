@@ -17,7 +17,7 @@ export function RecentFiles({ files, fileManager, onOpenUploadModal }: RecentFil
       <CardHeader>
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
           <CardTitle className="text-xl font-semibold flex items-center gap-2">
-            <CloudUpload className="text-xl text-gray-500" />
+            <CloudUpload className="text-xl text-muted-foreground" />
             {t("recentFiles.title")}
           </CardTitle>
 

@@ -41,7 +41,7 @@ export default function PublicSharePage() {
     <div className="min-h-screen flex flex-col">
       <ShareHeader />
 
-      <main id="main-content" className="flex-1 container mx-auto px-6 py-8">
+      <div className="flex-1 container mx-auto px-6 py-8">
         <div className="max-w-5xl mx-auto space-y-6">
           {!isPasswordModalOpen && !share && (
             <ErrorDisplay
@@ -72,7 +72,7 @@ export default function PublicSharePage() {
             />
           )}
         </div>
-      </main>
+      </div>
 
       <DefaultFooter />
 

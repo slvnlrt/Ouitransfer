@@ -83,7 +83,7 @@ export function QrCodeModal({ isOpen, onClose, shareLink, shareName }: QrCodeMod
         </DialogHeader>
 
         <div className="flex flex-col items-center justify-center">
-          <div ref={qrContainerRef} className="p-4 bg-white rounded-lg">
+          <div ref={qrContainerRef} className="p-4 bg-card rounded-lg">
             <LazyQRCode
               value={shareLink}
               size={256}

@@ -50,7 +50,7 @@ export function FolderActionsModals({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <FolderPlus size={20} />
+              <FolderPlus className="size-5" />
               {t("folderActions.createFolder")}
             </DialogTitle>
           </DialogHeader>
@@ -100,7 +100,7 @@ export function FolderActionsModals({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Pencil size={20} />
+              <Pencil className="size-5" />
               {t("folderActions.editFolder")}
             </DialogTitle>
           </DialogHeader>
@@ -164,7 +164,7 @@ export function FolderActionsModals({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Trash2 size={20} />
+              <Trash2 className="size-5" />
               {t("folderActions.deleteFolder")}
             </DialogTitle>
           </DialogHeader>

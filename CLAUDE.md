@@ -19,7 +19,8 @@ D:\Code\Ouitransfer\
   packages/shared/    @ouitransfer/shared — shared utilities (mime-types, etc.)
   packages/config/    @ouitransfer/config — shared tsconfig presets (base, server, nextjs)
   infra/              Docker, deployment scripts
-  audit/              Audit reports and remediation tracking
+  audit/              Historical audit reports (all archived in audit/archive/)
+  features/           Active feature specs, plans, and tracking (see below)
 ```
 
 ## Development Tools
@@ -38,308 +39,58 @@ D:\Code\Ouitransfer\
 - **Shared code**: `packages/shared` for cross-app utilities — use subpath exports (`./mime-types`) not barrel exports
 - **Proxy layer**: Single catch-all handler at `apps/web/src/app/api/[...proxy]/route.ts` with route table in `proxy-routes.ts`
 - **Validation**: Zod schemas via `fastify-type-provider-zod`
-- **Auth**: JWT in httpOnly cookie, bcrypt, 2FA via otpauth (TOTP, RFC 6238)
+- **Auth**: JWT in httpOnly signed cookie, bcrypt, 2FA via otpauth (TOTP, RFC 6238), CSRF double-submit cookie
 - **i18n**: next-intl, 23 languages, messages in `apps/web/messages/`
-- **UI**: shadcn/ui (new-york style), Radix primitives, lucide-react icons
+- **UI**: shadcn/ui (new-york style), Radix primitives, lucide-react icons, motion (framer-motion)
 - **Dependency versions**: pnpm catalogs in `pnpm-workspace.yaml` for shared deps (2+ apps)
+- **Error handling**: AppError hierarchy (server), ErrorDisplay component (frontend), globalErrorHandler
+- **Logging**: Pino (server), level-filtered logger wrapper (frontend)
+- **Testing**: Vitest (unit/integration), Playwright (E2E), `app.inject()` for Fastify route tests
+- **Docker**: 3-container architecture (RustFS storage + Fastify server + Next.js web)
 
-## Current State (Post-Audit)
-A comprehensive 8-dimension audit was completed. Score: 4.3/10. See `audit/` directory for full reports.
+## Refactor History (Phases 0-9) — COMPLETE
 
-### Phase 0 — Security Emergency: COMPLETE
-All 16 critical security items have been remediated, plus 14 reviewer follow-up items.
-Frontend migrated to new POST endpoints. See `audit/DONE.md` for full details.
+A comprehensive 8-dimension audit scored the codebase at 4.3/10. Nine remediation phases (0-9) plus CI/Docker integration and post-phase polish brought it to production-ready quality. All audit items are resolved, all review follow-ups are closed.
 
-### Phase 1 — Tooling & DX Foundation: COMPLETE
-pnpm workspace, Turborepo, Biome (replaces ESLint+Prettier), Vitest, Playwright, Lefthook,
-commitlint, GitHub Actions CI/CD, Knip, Renovate. Dockerfile reworked for workspace.
-Phase 7 security deps also done: speakeasy→otpauth, crypto-js and react-qr-reader removed.
-Note: Changesets was briefly added but removed — irrelevant for a Docker-only release flow.
+Key outcomes:
+- **Security**: CSRF, JWT signed cookies, brute-force lockout, refresh token rotation, CSP headers, MIME validation
+- **Architecture**: ESM migration, pnpm workspace, Turborepo, packages/shared + packages/config
+- **Code quality**: Biome (noExplicitAny enforced), AppError hierarchy, Pino logging, 420+ tests
+- **Frontend**: TanStack Query, error boundaries, code splitting, a11y (skip-to-content, RTL, route announcer)
+- **Infrastructure**: 3-container Docker Compose, health endpoint with DB+S3 checks, CI pipeline
+- **Dependencies**: 10 packages removed, framer-motion → motion, icons consolidated to lucide-react
+- **Documentation**: All docs rewritten for current architecture
 
-### Phase 2 — Architecture Restructuring: COMPLETE
-`packages/shared` (mime-types), `packages/config` (tsconfig presets), unified TS 5.8.3,
-pnpm catalogs (20 shared deps), 110-route proxy → 3-file catch-all handler, docs build strictness
-enabled, Dockerfile updated for packages/. Server migrated to full ESM (`"type": "module"`).
-Review follow-ups: all critical/warning items fixed. Remaining guidance forwarded to Phases 3/5/6/8.
+Full historical details are in `audit/archive/`. The audit phase is closed — we are now in the feature development phase.
 
-### Phase 3 — Code Quality & Type Safety: COMPLETE
-17 items completed. `noExplicitAny` + `noImplicitAnyLet` enforced as errors in Biome (~355 any types
-eliminated). `@fastify/jwt` type augmentation for `FastifyJWT.user`; redundant custom `jwtSign`
-decorator removed (callers switched to native `reply.jwtSign()`). Centralized error handler
-(`globalErrorHandler` — catches Zod, JWT via prefix-based detection, Prisma, generic errors;
-controllers still have own try/catch — migration deferred to Phase 5 item 5.16). Pino logger
-replaces console.* on server (hooks + controllers + runtime migration script migrated; 5 pre-logger
-bootstrap calls remain with comments). Frontend level-filtered logger for all hooks + components
-(54 + 57 calls). 9 large files split (4 server modules, 5 web components). PrismaClient singleton
-unified. Initial Prisma migration committed. Real tests: health endpoint inject test, Button
-component tests, 62 proxy route tests, 31 error handler tests. Knip config fixed for docs MDX.
-`__DELETE__` sentinel typed. eslint-disable comments removed. 13 pre-existing a11y lint errors fixed.
-Review follow-ups: I-1/I-3/I-4/I-5/I-6/I-7/I-8 fixed; I-2 deferred to Phase 5.
-Quality audit rework: QA-1 (test type errors), QA-2 (jwtSign), QA-3 (JWT detection) fixed.
-QA-4 (mapper module, 16 double-casts eliminated), QA-5 (all 23 biome-ignore suppressions resolved —
-0 remaining in codebase), QA-6 (auth-providers Zod-derived types), QA-7 (37 console.* migrated to
-Pino) fixed. Dead crypto polyfill removed (Node 24 has native globalThis.crypto).
-QA-8 (component deduplication) and QA-9 (frontend logger naming) tracked for Phases 4/8.
+## Active Work — Feature Development
 
-### Quality Standard
-**Perfect implementation, zero technical debt.** This applies to every phase and every review finding:
-- Fix pre-existing issues encountered along the way — not just the items explicitly in scope
-- All review findings must be addressed: Critical, Important, AND Minor — none are optional
-- No compromises justified by "it's minor" or "it works for now"
-- Future-proof: prefer the clean solution even if it requires more refactoring
+All planning and tracking lives in `features/`. See [`features/README.md`](features/README.md) for the full status table.
 
-### Phase Closure Rule
-**Before starting Phase N+1**, verify that `audit/TODO-POST-PHASE-N.md` has zero orphaned items:
-- Every item must be either `[x]` (done) or explicitly moved to `audit/CONSOLIDATED-TODO-LIST.md` with a target phase
-- Items cannot remain as "deferred" in a TODO-POST file without a destination — they will never be seen again
-- Update `CLAUDE.md` phase status, `audit/DONE.md`, and `audit/CONSOLIDATED-TODO-LIST.md` checkboxes before closing a phase
-
-### Implementation & Remediation Workflow
-Use **subagent-driven development** (see `subagent-driven-development` skill) for both:
-- **Phase implementation**: execute batches of items from `audit/CONSOLIDATED-TODO-LIST.md`
-- **Post-review remediation**: execute the findings from `audit/TODO-POST-PHASE-N.md`
-
-Process per phase:
-1. Execute items using subagents (implementer → spec review → quality review per task)
-2. Reviewer agents verify completed work — split by scope if the phase is large
-3. Follow-ups go into `audit/TODO-POST-PHASE-N.md`
-4. Completed items are tracked in `audit/DONE.md`
-
-**Batching strategy**: Group multiple tasks into a single agent dispatch when tasks are:
-- Mechanical/repetitive (e.g., rename a type across N files, fix N locale files)
-- Touching the same system or files (e.g., all auth-related fixes, all RTL fixes)
-- Low-risk with clear specs (no architectural judgment required)
-Reserve separate agents for tasks requiring distinct architectural decisions or large file sets.
-
-### Audit Directory Structure
+### Directory Structure
 ```
-audit/
-  01-architecture.md          Dimension reports (read-only reference)
-  02-backend.md
-  03-frontend.md
-  04-infrastructure.md
-  05-security.md
-  06-quality.md
-  07-dependencies.md
-  08-synthesis.md
-  CONSOLIDATED-TODO-LIST.md   Master roadmap (~138 items, 9 phases)
-  DONE.md                     Completed items log
-  TODO-POST-PHASE-0.md        Reviewer follow-ups from Phase 0
-  TODO-POST-PHASE-1.md        Reviewer follow-ups from Phase 1 (all resolved)
-  TODO-POST-PHASE-2.md        Reviewer follow-ups from Phase 2 (all resolved)
-  TODO-POST-PHASE-3.md        Reviewer follow-ups from Phase 3 (in-scope items resolved; deferred items forwarded to later phases)
-  TODO-POST-PHASE-4.md        Reviewer follow-ups from Phase 4 (all resolved)
-  TODO-POST-PHASE-5.md        Reviewer follow-ups from Phase 5 (all resolved)
-  TODO-POST-PHASE-6.md        Reviewer follow-ups from Phase 6 (all resolved)
-  BATCH-REVIEWS.md            Phase 4 batch-level review history
-  PHASE-4-PLAN.md             Phase 4 implementation plan (historical snapshot)
-  REVIEW-PHASE-5-BATCH-1.md   Phase 5 Batch 1 review (Tasks 1-2)
-  REVIEW-PHASE-5-BATCH-2.md   Phase 5 Batch 2 review (Tasks 3-5)
-  REVIEW-PHASE-5-BATCH-3.md   Phase 5 Batch 3 review (Tasks 6-7)
-  REVIEW-PHASE-5-BATCH-4.md   Phase 5 Batch 4 review (Tasks 8-9)
-    REVIEW-PHASE-7.md           Phase 7 final review
-    TODO-POST-PHASE-7.md        Reviewer follow-ups from Phase 7 (in-scope resolved; 2 pre-existing items forwarded to Phase 8)
-    PHASE-7-PLAN.md             Phase 7 implementation plan (historical snapshot)
-    TODO-POST-PHASE-8.md        Reviewer follow-ups from Phase 8 (all resolved)
-    REVIEW-PHASE-8.md           Phase 8 final review
-    PHASE-8-PLAN.md             Phase 8 implementation plan (historical snapshot)
-    REVIEW-PHASE-9.md           Phase 9 final review
-    TODO-POST-PHASE-9.md        Reviewer follow-ups from Phase 9 (all resolved)
-    PHASE-9-PLAN.md             Phase 9 implementation plan (historical snapshot)
-    TODO-CI-DOCKER.md           Post-Phase 9 follow-ups from CI/Docker integration testing (6 open items)
+features/
+  README.md           ← orientation, status table, workflow
+  SESSIONS.md         ← session log (date + bullet points)
+  specs/              ← one file per feature (design + decisions)
+    5.1-quotas.md       Per-User Storage Quotas
+    5.2-cleanup.md      Automatic Cleanup of Expired Content
+    5.3-ldap.md         LDAP / Active Directory Sync
+    5.4-groups.md       Groups
+    6.1-ui-audit.md     UI Code Audit
+    6.2-ui-fixes.md     UI Code Quality Fixes
+    6.3-visual-redesign.md  Visual Redesign (new identity)
+  plans/              ← implementation plans (tasks, batches)
+  reviews/            ← review findings (checkboxes = post-review TODO)
 ```
 
-### Phase 4 — Frontend Modernization: COMPLETE
-Batch 1 complete: 4.14 (shared UI primitives extracted — EditableField, ItemActions, useEditableItem,
-useSelectionManager, formatDateTime; 6 consumer files reduced by 797 lines), 4.15 (29 duplicate
-File/Folder type interfaces consolidated — 10 exact duplicates replaced with imports, 13 subsets
-converted to Pick<>, 4 dead types removed, 1 kept separate for API null boundary).
-Batch 2 complete: 4.1 (error boundaries — ErrorDisplay component with 3 variants, reportError utility,
-global-error.tsx, error.tsx, not-found.tsx, share-specific error.tsx files, settings refactored;
-25 tests), 4.2 (loading.tsx — self-contained CSS spinner, no provider dependency).
-Batch 2 cleanup: 3 ad-hoc error UIs replaced with ErrorDisplay (ShareNotFound deleted, login
-"no auth methods", storage-usage error state).
-Batch 3 complete: 4.3 (TanStack Query v5 — query-client with smart retry, hierarchical query-keys,
-QueryProvider. 13 hooks + 6 components migrated to useQuery/useMutation. 28 new tests. Zustand
-useAppInfo + useHomeStore eliminated, ShareContext eliminated, AuthContext backed by TQ queries),
-4.4 (Axios 401 interceptor — hard-nav to /login, skips auth+public pages, anti-cascade flag),
-4.5 (state unification — 2 zustand stores and 1 context eliminated, all data from TQ cache).
-Batch 4 complete: 4.6 (lazy fonts — `preload: false` on 10 non-default fonts, only Outfit preloaded),
-4.7 (code splitting — DynamicIcon replaces catastrophic 31-pack react-icons import on login page,
-IconPicker wrapped with next/dynamic, LazyQRCode + LazyReactCrop wrappers for modal-only libraries),
-4.8 (next/image — 7 `<img>` → `<Image>` with `unoptimized` for presigned/proxy URLs).
-Batch 5 complete: 4.9 (skip-to-content link), 4.10 (route announcer for focus management),
-4.11 (keyboard DnD — already implemented via bulk actions), 4.12 (RTL fix — shared constant,
-server detection for fa-IR/he-IL, 191 Tailwind directional→logical replacements across 73 files).
-Batch 6 complete: 4.13 (middleware route protection — JWT verification via jose, cookie-based auth at Edge, admin gating). Also pulled forward 6.13 (JWT_SECRET mandatory env var, removed DB-stored secret).
-Phase 4 COMPLETE — all 15 items done.
+### Workstreams
 
-### Phase 4 — Post-Review Remediation: COMPLETE
-39 review findings from 3 reviewer agents. 3 critical + 20 important + 16 minor.
-Tasks 1-3 complete (11 items fixed): middleware JWT bypass + path confusion + env validation,
-translation namespace fix + locale parity test, auth context query-only + zustand removal +
-staleTime centralization. Tasks 4-8 complete (remaining items): navigation + 401 interceptor,
-RTL + a11y fixes, ErrorDisplay variant rename, dead code + BOM cleanup, TQ polish + locale-aware
-dates + Axios standardization + browseState refactor + editable-item error handling.
+**5.x — New Features**: Quotas → Groups → LDAP/AD (sequential dependency). Auto-cleanup is independent.
 
-### Phase 5 — Backend Hardening: COMPLETE
-26 items (5.1-5.17, 5.18-5.26) implemented across 9 tasks in 4 review batches. All 42+ review
-backlog items resolved (0 deferred). 174 server tests, 190 web tests, 11 shared tests — all pass.
-Key changes:
-- **Config hardening**: trustProxy, Swagger gating, crypto.randomUUID, configurable port, helmet,
-  per-route body limits, CORS fail-fast, presigned URL expiry split
-- **Filename hardening**: RFC 5987 `filename*` priority, `sanitizeFilename` utility, LoginSchema deleted
-- **Auth hardening**: admin detection fix (`=== 0`), proxy `cookie: false` on 8 routes, OAuth redirect
-  validation, 2FA disable requires TOTP code, CSRF double-submit cookie protection, timing-safe
-  comparisons for backup codes
-- **File validation**: MIME/magic-byte validation, blocked MIME types, dangerous extensions, maxFileSize
-  in presigned URL responses, `validateObjectName` for path traversal protection
-- **Error architecture**: AppError hierarchy (6 subclasses), all 17 controllers + 17 services migrated
-  to throw AppError directly, globalErrorHandler handles AppError first, `ErrorResponseSchema` shared
-  across ~176 route error schemas, preValidation hooks converted to throw AppError, CSRF per-route
-  `config: { csrfExempt: true }` flag replaces fragile URL matching
-- **Token security**: tokenVersion rotation on privilege changes (password, isAdmin, isActive, 2FA),
-  JWT `trusted` callback with 30s cache, per-account brute-force lockout (LoginAttempt model),
-  refresh token rotation with replay detection, 15-min access tokens + httpOnly refresh cookie
-- **Audit logging**: AuditLog model, 11 audit actions at 8 security-sensitive locations, admin
-  endpoint with pagination/filtering
-- Review follow-ups: all Critical + Important fixed inline per batch. See `audit/REVIEW-PHASE-5-BATCH-{1-4}.md`.
+**6.x — UI Overhaul**: Audit → Fixes → Visual Redesign (sequential). Independent from 5.x, can run in parallel.
 
-### Phase 6 — Infrastructure & Operations: COMPLETE
-Migrated from monolith supervisord container (MinIO+API+Web) to 3-container Docker Compose
-architecture (RustFS storage + Fastify server + Next.js web). 16 items (6.1-6.16) completed.
-Key changes:
-- **Architecture**: Supervisord eliminated. Single Dockerfile with two build targets (`server-runner`,
-  `web-runner`). RustFS uses official `rustfs/rustfs:latest` image. Docker Compose with healthcheck-
-  based startup ordering (`storage` → `server` → `web`).
-- **Dockerfile**: Rewritten from 287 → 121 lines. No MinIO/mc binaries, no inline heredoc startup
-  script, no VOLUME declaration. Consistent UID/GID 1001, lowercase user `ouitransfer`.
-- **Storage config**: `loadInternalStorageCredentials()` (file reading) removed — all credentials via
-  env vars. `ensureBucket()` auto-creates bucket at startup via HeadBucket/CreateBucket. `buildEndpointUrl()`
-  DRY helper. Legacy `ENCRYPTION_KEY`/`DISABLE_FILESYSTEM_ENCRYPTION` env vars deleted.
-- **Health endpoint**: Enhanced with DB check (`prisma.$queryRaw`) + S3 check (`HeadBucketCommand`).
-  Returns `{ status, timestamp, uptime, checks: { database, storage } }`. 200=healthy, 503=degraded.
-- **Dead code removed**: 7 infra scripts deleted (`install-minio.sh`, `start-minio.sh`, `minio-setup.sh`,
-  `load-minio-credentials.sh`, `install-mc.sh`, `supervisord.conf`, `build-docker.sh`).
-  `migrate-filesystem-to-s3.ts` (335 lines) deleted — no production users, no migration needed.
-- **Security**: Empty secrets in docker-compose.yaml force fail-fast. `security_opt: no-new-privileges`
-  on storage container. RustFS credentials left empty with REQUIRED comments.
-- **Documentation**: `quick-start.mdx` fully rewritten for 3-container architecture. `uid-gid-configuration.mdx`
-  updated with RustFS UID 10001 bind mount guidance. `SCRIPTS.md` expanded with operations section.
-  All code comments updated (Garage/MinIO → S3-compatible).
-- **Other**: SMTP seed placeholders removed. Justfile docker recipes updated for 3 services. `.env.example`
-  updated for RustFS. Lefthook already correct (Biome `--staged`).
-- Review follow-ups: 27 items (4 Critical + 4 Legacy + 9 Important + 8 Minor), all resolved.
-  See `audit/TODO-POST-PHASE-6.md`.
-
-### Phase 7 — Dependency Modernization: COMPLETE
-10 packages removed, 2 added to pnpm catalog, ~122 icon import sites migrated. 5 commits.
-Key changes:
-- **Server cleanup**: Removed `node-fetch` (unused, Node 24 native fetch), `openid-client` (unused,
-  OAuth via manual fetch), `ts-node` (redundant with tsx). Updated knip.json.
-- **Motion rename**: `framer-motion` → `motion` package. 9 source files updated to `"motion/react"`.
-  Added `motion: "^12.23.0"` and `jose: "^5.10.0"` to pnpm catalog.
-- **Web dep cleanup**: Removed `nookies` (replaced with native `document.cookie` + encodeURIComponent),
-  `js-cookie` + `@types/js-cookie` (installed but never imported), `date-fns` (replaced with
-  `formatDateTime()` using `Intl.DateTimeFormat`), `@types/react-dropzone` (react-dropzone v14 ships
-  own types). Fixed hardcoded `ptBR` locale bug. Added 13 `formatDateTime` locale tests.
-- **Icon consolidation**: Removed `@tabler/icons-react`. ~85 non-brand icons → `lucide-react`,
-  17 brand icons → `react-icons/tb`. Union type in `file-icons.tsx`. Link/LinkIcon collision fixed.
-- Review: 0 Critical, 2 Important (documentation-only), 7 Minor (3 fixed inline, 4 no-action/kept,
-   M-4 knip cleanup done). 2 pre-existing items forwarded to Phase 8 (M-1 i18n, M-2 icon polish).
-   See `audit/REVIEW-PHASE-7.md` and `audit/TODO-POST-PHASE-7.md`.
-
-### Phase 8 — Polish & Production Readiness: COMPLETE
-22 items (8.1-8.22) plus Portuguese comments cleanup and 2 Phase 7 forwarded items. 9 tasks,
-9 commits. 203 server tests + 208 web tests + 11 shared tests pass. All type-checks clean.
-Key changes:
-- **Documentation**: Apache-2.0 LICENSE file, CONTRIBUTING.md complete rewrite (dev-focused),
-  server + web architecture READMEs
-- **Upload resume**: Full-stack S3 ListParts implementation (server StorageProvider + controller +
-  routes, reverse-share support, frontend Uppy callback, 7 integration tests)
-- **Server security**: Timeout hardening (connection 30s, keepAlive 30s, request 4h), @fastify/jwt
-  9→10 (fixed 3 crit CVEs), nodemailer 6→8, axios →1.15.2, next →15.5.18. CI audit job.
-- **Frontend security**: CSP + 4 security headers in middleware, env validation expanded (API_BASE_URL,
-  OAUTH_ALLOWED_REDIRECT_HOSTS, ALLOWED_IMAGE_HOSTS, CSP_CONNECT_SOURCES), proxy uses validated env
-- **ConfigService refactor**: Class → 5 standalone functions, JSON.parse error handling, InternalError
-  class, 12 server files updated
-- **Logger**: Full module JSDoc, LogContext interface, clarified as client-side level-filtered wrapper
-- **Translations**: 15 keys translated in 12 common-language locales. Hardcoded "Move" label → i18n.
-  GraphQL/Proto icons fixed (Webhook → Braces/FileCode).
-- **Test improvements**: Health test (5 new), formatFileSize tests (6 new), OAuth redirect tests (3 new)
-- **CI & tooling**: Lighthouse CI integrated in `ci.yml` (after build, non-blocking), bundle analyzer,
-  @axe-core/playwright a11y tests, E2E workflow enabled with Docker Compose
-- **Portuguese cleanup**: 33 Portuguese comments/strings translated across 11 files
-- Review follow-ups: all resolved. See `audit/REVIEW-PHASE-8.md` and `audit/TODO-POST-PHASE-8.md`.
-- **Post-phase fixes**: ru-RU auth error messages (Portuguese → Russian), server test contention
-  (`fileParallelism: false` in vitest.config.ts), `npx` → `pnpm exec` in e2e.yml, Lighthouse job
-  added to ci.yml.
-
-### CI/Docker Integration — COMPLETE (Post-Phase 9, May 2026)
-End-to-end integration testing revealed 6 major production-only bugs never caught by unit/integration tests.
-All fixed. See `audit/TODO-CI-DOCKER.md` for 6 remaining follow-up items.
-Key changes:
-- **Turborepo strict env**: `JWT_SECRET` and all Next.js env vars added to `passThroughEnv` in `turbo.json`.
-  `apps/web/src/env.ts` now uses a lazy Proxy (validation deferred to first property access, not module import).
-  `apps/web/src/middleware.ts` and `apps/web/src/lib/proxy.ts` use lazy getter functions instead of module-level consts.
-- **CI overhaul**: 5 parallel jobs consolidated into 1 (lint + typecheck + test + audit + build). Turbo cache unified.
-  E2E/Release Validation workflow only triggers on `v*` tags or `workflow_dispatch` (not every push).
-  `docker.yml` deleted (absorbed into `e2e.yml`).
-- **Docker Compose**: `docker-compose.ci.yml` overlay adds build directives + test secrets.
-  `docker-compose.yaml` fixed: GHCR image refs, `JWT_SECRET` on web, `CORS_ORIGINS` on server.
-  `.dockerignore` fixed: `**/.next` pattern (was `/.next`, missed `apps/web/.next` — 1.86 GB → 70 MB context).
-- **Dockerfile**: `shared-builder` stage builds `packages/shared` from source (web build needs compiled `dist/`).
-  Server uses `pnpm deploy --legacy --prod --ignore-scripts` for flat node_modules (no broken symlinks).
-  Web uses Next.js standalone output with `outputFileTracingRoot` set to monorepo root (resolves pnpm symlinks).
-- **Server bugs**: `app.addHook("onClose")` called after `app.listen()` (Fastify 5 rejects post-listen mutations) → moved before listen. `prisma` moved to production deps (needed by `server-start.sh` at runtime). `server-start.sh` uses `node node_modules/prisma/build/index.js` directly (no `.bin/` from `--ignore-scripts`).
-- **Registration flow**: `POST /auth/register` now atomically sets `firstUserAccess="false"` in DB and auto-logs the first user in (JWT + refresh cookie). Frontend no longer calls `PATCH /app/configs/firstUserAccess` after registration.
-- **Signed cookie middleware**: `@fastify/cookie` with `signed: true` appends a 4th `.cookieHmac` to the JWT value. Next.js middleware now calls `extractJwtFromSignedCookie()` to strip it before passing to `jose.jwtVerify()`.
-- **SSR provider bugs**: `<Favicon />` and `<SkipToContent />` were outside `<QueryProvider>` / `<NextIntlClientProvider>` in `layout.tsx`. Both moved inside providers. React 19 hoists `<link>` to `<head>` automatically.
-- **Seed data**: `appLogo` ibb.co URL removed (blocked by CSP `img-src 'self' blob: data:`).
-- **E2E smoke tests**: Rewritten with 4 meaningful flow tests (health, registration, login form state, login flow). `axe-core` a11y test removed (color contrast design issue). All 4 pass in ~5s.
-- **Justfile**: All `docker-*` recipes updated to use `-f docker-compose.yaml -f docker-compose.ci.yml`.
-- **vitest.config.ts**: `hookTimeout: 30_000` added (was 10s — too tight under CPU contention from parallel Turbo tasks).
-
-### Post-Phase 9 Polish (May 2026): COMPLETE
-Several dev-experience and production-correctness fixes applied after the CI/Docker integration work.
-Key changes:
-- **Landing page redesign**: Two-column corporate layout (employee CTA left, partner info right).
-  Animated Send icon, glassmorphism card, full i18n across 23 locales. Old open-source promo page
-  (Palmtree icon, GitHub/Docs CTAs) deleted. `site.ts` config deleted. Navbar simplified to
-  logo + LanguageSwitcher + ModeToggle. `DefaultFooter` removed from home page.
-- **Version injection**: `NEXT_PUBLIC_APP_VERSION` env var replaces hardcoded `package.json` import
-  in footers. Defaults to `"dev"` locally; injected from git tag at Docker build time via
-  `ARG NEXT_PUBLIC_APP_VERSION=dev` in Dockerfile web-builder stage. `turbo.json` `passThroughEnv` updated.
-  All `package.json` files use `"0.0.0-dev"` as the neutral source-of-truth version.
-- **S3 non-fatal startup**: `ensureBucket()` failures are now caught in `server.ts` — server starts
-  in degraded mode with a `warn` log instead of crashing with `process.exit(1)`. `getLogger()` used
-  instead of `console.*` in storage config.
-- **Dev DB setup**: `apps/server/prisma/ouitransfer.db` is gitignored. `just db-dev-init` creates it
-  via `prisma db push`. `just setup-dev` = install + generate + db-dev-init (one command for
-  first-time contributors). `apps/server/.env.development` and `apps/web/.env.development` committed
-  with safe dev-only secrets — no manual `.env` editing needed for local dev.
-- **CSP in dev mode**: `'unsafe-eval'` added to `script-src` in `NODE_ENV=development` in
-  `apps/web/src/middleware.ts`. React Fast Refresh (HMR) requires eval; the CSP from Phase 8 blocked
-  it, leaving the browser stuck on the loading screen. Production CSP unchanged.
-- **Justfile DB check**: `just dev` and `just dev-server` check for the SQLite DB before launching
-  and print a helpful error if missing. Uses `[linux]`/`[macos]`/`[windows]` just platform attributes.
-- **Prisma config**: `apps/server/prisma.config.ts` created (seed config), deprecated `"prisma"` key
-  removed from `apps/server/package.json`.
-- **Server startup test**: `apps/server/src/__tests__/server-lifecycle.test.ts` — 4 tests covering
-  the full `buildApp()` → `listen()` → `close()` lifecycle (including onClose hooks and S3 failure).
-
-### Phase 9 — Documentation Site Overhaul: COMPLETE
-7 items (9.1-9.7) updated across 7 documentation pages. 4 commits.
-Key changes:
-- **Architecture pages**: `architecture.mdx` rewritten for S3-first model (RustFS default, 3-container
-  Docker table, security secrets section, encryption cruft removed). `github-architecture.mdx` updated
-  (React 19, Tailwind CSS 4, Node 24, packages/ tree, Zod, monorepo tooling section)
-- **Operational docs**: `password-reset-without-smtp.mdx` container names fixed, `api.mdx` monolith
-  examples replaced with 3-container architecture + CSRF note, `reverse-proxy-configuration.mdx`
-  health endpoint fixed + STORAGE_URL/CSP guidance added
-- **Contributor docs**: `contribute.mdx` rewritten (442→93 lines, dev-focused), `manual-installation.mdx`
-  rewritten (300→188 lines, mandatory secrets, correct commands)
-- Review follow-ups: all resolved. See `audit/REVIEW-PHASE-9.md` and `audit/TODO-POST-PHASE-9.md`.
+The visual redesign (6.3) aims for a **smart, sober, corporate** look with **wow factor** — replacing the current green palette with a new identity that signals the project's fresh direction.
 
 ## Important: No Production, No Legacy
 The app is **not in production** and has no existing users. This means:
@@ -349,7 +100,30 @@ The app is **not in production** and has no existing users. This means:
 - **No gradual rollouts** — breaking changes are fine, no feature flags needed
 - **Clean slate** — prefer the correct solution over the compatible one
 
-This affects implementation strategy: always choose the clean approach over the safe-migration approach.
+## Quality Standard
+**Perfect implementation, zero technical debt.**
+- Fix pre-existing issues encountered along the way — not just items explicitly in scope
+- All review findings must be addressed: Critical, Important, AND Minor — none are optional
+- No compromises justified by "it's minor" or "it works for now"
+- Future-proof: prefer the clean solution even if it requires more refactoring
+
+## Implementation Workflow
+Use **subagent-driven development** (see `subagent-driven-development` skill):
+1. **Spec** — resolve open questions, record decisions in the spec file (`features/specs/`)
+2. **Plan** — write implementation plan (`features/plans/`)
+3. **Implement** — execute with subagents (implementer → spec review → quality review per task)
+4. **Review** — reviewer agent writes findings in `features/reviews/` (each finding = checkbox)
+5. **Fix ALL** — address every finding, check them off in the review file
+6. **Done** — update `features/README.md` status table and `features/SESSIONS.md` log
+
+The review file IS the post-review TODO. A feature is not Done until every checkbox is checked.
+Findings are rated Critical / Important / Minor — **all must be fixed, none are optional**.
+
+**Batching strategy**: Group tasks into a single agent dispatch when they are:
+- Mechanical/repetitive (e.g., rename a type across N files, fix N locale files)
+- Touching the same system or files
+- Low-risk with clear specs (no architectural judgment required)
+Reserve separate agents for tasks requiring distinct architectural decisions or large file sets.
 
 ## Rules for Agents
 1. **Consistency over compatibility** — prefer clean implementations, no need to preserve legacy behavior
@@ -358,9 +132,8 @@ This affects implementation strategy: always choose the clean approach over the 
 4. **Preserve i18n** — don't break translation keys
 5. **Test your changes** — at minimum verify TypeScript compiles (`pnpm run type-check` in the relevant app)
 6. **Report clearly** — state what was changed, which files, and any risks or follow-up needed
-7. **Reference files, don't copy them** — when dispatching subagents or writing prompts, reference files by path and line range (e.g. `apps/server/src/app.ts:109-120`) instead of copy-pasting their content. Agents can read files themselves. Copying file content into prompts wastes tokens and creates stale duplicates.
-8. **Don't defer items to the wrong phase out of laziness** — if a review or audit surfaces new items, place them in the phase where they thematically belong, not in a later phase just because they require more effort. "Architectural" or "requires a migration" is not a valid reason to move an auth hardening item out of the auth hardening phase. If the item belongs in the current phase's scope, it stays — even if it makes the phase bigger. Phases are organized by theme, not by effort ceiling.
-9. **Run the FULL test suite for affected packages, not just your new tests** — a recurring failure mode is: agent writes 3 unit tests, they pass, agent claims "done" — but the full `pnpm --filter <package> test` reveals regressions in existing tests. Always run the full suite for every package you touched. This catches BOM corruption, broken imports, schema mismatches, and other side effects that targeted tests miss.
-10. **Fastify + Zod route schemas strip unknown properties** — `fastify-type-provider-zod` replaces `request.body` with `schema.parse(data)`, and Zod's default `.strip()` mode removes undeclared fields. If you add a field to a controller's validation schema but forget to add it to the route-level body schema in `routes.ts`, the field will be silently removed before the controller runs. **Always keep route-level and controller-level schemas in sync.** Service-layer unit tests don't catch this — you need integration tests with `app.inject()`.
-11. **Service-layer tests are necessary but not sufficient** — testing a service method directly bypasses route registration, middleware, schema validation, and plugin hooks. For security-critical flows (auth, CSRF, 2FA), always add at least one integration test using `app.inject()` that exercises the full request lifecycle. The pattern of "test the service, skip the route" has repeatedly hidden real bugs.
-12. **Production-only bugs require production-like testing** — dev mode (`next dev`) is too permissive to catch SSR errors, cookie handling issues, and build-time failures. A recurring class of bugs (SSR provider placement, signed cookies, Turbo env stripping) only manifests in the production Docker build. The E2E workflow (`e2e.yml`) exists precisely to catch these. Before claiming "all tests pass", verify that the Docker build succeeds and containers start healthy.
+7. **Reference files, don't copy them** — reference files by path and line range instead of copy-pasting content into prompts
+8. **Run the FULL test suite for affected packages** — not just new tests. Always `pnpm --filter <package> test` for every package touched.
+9. **Fastify + Zod route schemas strip unknown properties** — keep route-level and controller-level schemas in sync. Service-layer unit tests don't catch missing fields — use integration tests with `app.inject()`.
+10. **Service-layer tests are necessary but not sufficient** — for security-critical flows, always add at least one `app.inject()` integration test that exercises the full request lifecycle.
+11. **Production-only bugs require production-like testing** — dev mode is too permissive. The E2E workflow (`e2e.yml`) catches SSR, cookie, and build-time issues.

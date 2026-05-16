@@ -35,10 +35,10 @@ vi.mock("@/components/modals/generate-share-link-modal", () => ({
 vi.mock("@/components/modals/qr-code-modal", () => ({
   QrCodeModal: () => null,
 }));
-vi.mock("@/components/modals/share-details-files-list", () => ({
+vi.mock("@/components/modals/share-details/share-details-files-list", () => ({
   ShareDetailsFilesList: () => null,
 }));
-vi.mock("@/components/modals/share-details-info-section", () => ({
+vi.mock("@/components/modals/share-details/share-details-info-section", () => ({
   ShareDetailsInfoSection: () => <div data-testid="info-section" />,
 }));
 vi.mock("@/components/modals/share-expiration-modal", () => ({

@@ -2,11 +2,10 @@
 
 import { Check, Copy } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { logger } from "@/lib/logger";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
 interface CallbackUrlDisplayProps {
   providerName: string;
@@ -14,23 +13,17 @@ interface CallbackUrlDisplayProps {
 
 export function CallbackUrlDisplay({ providerName }: CallbackUrlDisplayProps) {
   const t = useTranslations();
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useCopyToClipboard();
 
   const callbackUrl =
     typeof window !== "undefined"
       ? `${window.location.origin}/api/auth/providers/${providerName}/callback`
       : `/api/auth/providers/${providerName}/callback`;
 
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(callbackUrl);
-      setCopied(true);
+  const handleCopy = async () => {
+    const ok = await copy(callbackUrl);
+    if (ok) {
       toast.success(t("authProviders.form.callbackUrlCopied"));
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      logger.error("Failed to copy text:", {
-        err: err instanceof Error ? err.message : String(err),
-      });
     }
   };
 
@@ -47,7 +40,7 @@ export function CallbackUrlDisplay({ providerName }: CallbackUrlDisplayProps) {
           <Button
             variant="ghost"
             size="icon"
-            onClick={copyToClipboard}
+            onClick={handleCopy}
             className="shrink-0"
             title={t("authProviders.form.copyCallbackUrl")}
           >

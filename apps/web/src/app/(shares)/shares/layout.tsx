@@ -13,6 +13,6 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function UsersManagementLayout({ children }: LayoutProps) {
+export default function SharesLayout({ children }: LayoutProps) {
   return <>{children}</>;
 }

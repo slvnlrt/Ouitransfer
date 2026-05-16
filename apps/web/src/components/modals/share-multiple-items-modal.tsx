@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { LazyQRCode } from "@/components/ui/lazy-qr-code";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { createShare, createShareAlias, listFiles, listFolders } from "@/http/endpoints";
 import { logger } from "@/lib/logger";
 import { customNanoid } from "@/lib/utils";
@@ -56,6 +57,7 @@ export function ShareMultipleItemsModal({
   onSuccess,
 }: ShareMultipleItemsModalProps) {
   const t = useTranslations();
+  const { copy } = useCopyToClipboard();
   const [step, setStep] = useState<"create" | "link">("create");
   const [shareId, setShareId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -199,9 +201,11 @@ export function ShareMultipleItemsModal({
     }
   };
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(generatedLink);
-    toast.success(t("generateShareLink.copied"));
+  const handleCopyLink = async () => {
+    const ok = await copy(generatedLink);
+    if (ok) {
+      toast.success(t("generateShareLink.copied"));
+    }
   };
 
   const downloadQRCode = () => {
@@ -284,12 +288,12 @@ export function ShareMultipleItemsModal({
           <DialogTitle className="flex items-center gap-2">
             {step === "create" ? (
               <>
-                <Share size={20} />
+                <Share className="size-5" />
                 {t("shareMultipleFiles.title")}
               </>
             ) : (
               <>
-                <Link size={20} />
+                <Link className="size-5" />
                 {t("shareActions.linkTitle")}
               </>
             )}
@@ -320,7 +324,7 @@ export function ShareMultipleItemsModal({
 
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
-                  <Calendar size={16} />
+                  <Calendar className="size-4" />
                   {t("createShare.expirationLabel")}
                 </Label>
                 <Input
@@ -333,7 +337,7 @@ export function ShareMultipleItemsModal({
 
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
-                  <Eye size={16} />
+                  <Eye className="size-4" />
                   {t("createShare.maxViewsLabel")}
                 </Label>
                 <Input
@@ -358,7 +362,7 @@ export function ShareMultipleItemsModal({
                   id="password-protection"
                 />
                 <Label htmlFor="password-protection" className="flex items-center gap-2">
-                  <Lock size={16} />
+                  <Lock className="size-4" />
                   {t("createShare.passwordProtection")}
                 </Label>
               </div>
@@ -426,7 +430,7 @@ export function ShareMultipleItemsModal({
               ) : (
                 <>
                   <div className="flex flex-col items-center justify-center">
-                    <div className="p-4 bg-white rounded-lg">
+                    <div className="p-4 bg-card rounded-lg">
                       <svg style={{ display: "none" }} /> {/* For SSR safety */}
                       <LazyQRCode
                         id="share-multiple-files-qr-code"

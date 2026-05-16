@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader } from "@/components/ui/loader";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { Switch } from "@/components/ui/switch";
 import { updateShare } from "@/http/endpoints";
 import type { Share } from "@/http/endpoints/shares/types";
@@ -138,15 +139,15 @@ export function ShareExpirationModal({
             </h3>
             <div className="flex gap-2">
               {share?.expiration ? (
-                <div className="bg-yellow-500/20 text-yellow-800 border border-yellow-300 dark:bg-yellow-500/10 dark:text-yellow-400 dark:border-yellow-500/20 rounded-md px-2 py-1 text-xs font-medium flex items-center gap-1">
+                <StatusBadge variant="warning">
                   <Clock className="h-3 w-3" />
                   {t("shareExpiration.expires")} {new Date(share.expiration).toLocaleString()}
-                </div>
+                </StatusBadge>
               ) : (
-                <div className="bg-green-500/20 text-green-800 border border-green-300 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20 rounded-md px-2 py-1 text-xs font-medium flex items-center gap-1">
+                <StatusBadge variant="success">
                   <TimerOff className="h-3 w-3" />
                   {t("shareExpiration.neverExpires")}
-                </div>
+                </StatusBadge>
               )}
             </div>
           </div>
@@ -159,7 +160,7 @@ export function ShareExpirationModal({
                 onCheckedChange={handleExpirationToggle}
               />
               <Label htmlFor="expiration-enabled" className="flex items-center gap-2">
-                <Calendar size={16} />
+                <Calendar className="size-4" />
                 {t("shareExpiration.enableExpiration")}
               </Label>
             </div>

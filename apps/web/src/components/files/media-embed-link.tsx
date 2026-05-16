@@ -3,10 +3,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { Check, Copy } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { generateEmbedToken } from "@/http/endpoints/files";
 import { queryKeys } from "@/lib/query-keys";
 
@@ -17,7 +17,7 @@ interface MediaEmbedLinkProps {
 
 export function MediaEmbedLink({ fileId, shareId }: MediaEmbedLinkProps) {
   const t = useTranslations();
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useCopyToClipboard();
 
   const embedQuery = useQuery({
     queryKey: queryKeys.files.embedToken(fileId, shareId ?? ""),
@@ -32,16 +32,6 @@ export function MediaEmbedLink({ fileId, shareId }: MediaEmbedLinkProps) {
 
   // Don't render if no embed URL is available
   if (!embedUrl) return null;
-
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(embedUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // clipboard write failed — silently ignore
-    }
-  };
 
   return (
     <Card>
@@ -64,7 +54,7 @@ export function MediaEmbedLink({ fileId, shareId }: MediaEmbedLinkProps) {
             <Button
               size="default"
               variant="outline"
-              onClick={copyToClipboard}
+              onClick={() => copy(embedUrl)}
               className="shrink-0 h-full"
             >
               {copied ? (

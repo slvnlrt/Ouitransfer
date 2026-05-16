@@ -12,7 +12,21 @@
     },
     "authenticationFailed": "인증에 실패했습니다",
     "successfullyAuthenticated": "인증에 성공했습니다!",
-    "sessionExpired": "Your session has expired. Please sign in again."
+    "sessionExpired": "Your session has expired. Please sign in again.",
+    "callback": {
+      "errors": {
+        "oauth_error": "OAuth authentication failed",
+        "missing_parameters": "Missing authentication parameters",
+        "missing_code": "Missing authorization code",
+        "registration_disabled": "Registration is disabled for this provider",
+        "provider_disabled": "This authentication provider is disabled",
+        "state_expired": "Authentication session expired",
+        "account_inactive": "Your account is inactive",
+        "no_email": "No email address found in your account",
+        "token_exchange_failed": "Failed to authenticate with provider",
+        "missing_user_info": "Incomplete user information from provider"
+      }
+    }
   },
   "authProviders": {
     "title": "인증 제공자",
@@ -341,7 +355,8 @@
     "pdfPreviewNotAvailable": "PDF 미리보기를 사용할 수 없습니다. 대체 보기를 시도하거나 다운로드하세요.",
     "tryAlternativeView": "대체 보기 시도",
     "loadingAlternative": "대체 보기 로딩 중...",
-    "loadingAudio": "오디오 로딩 중..."
+    "loadingAudio": "오디오 로딩 중...",
+    "downloading": "Downloading..."
   },
   "fileSelector": {
     "availableFiles": "사용 가능한 파일 ({count})",
@@ -408,7 +423,15 @@
       "moveItemsFailed": "항목 이동에 실패했습니다. 다시 시도해주세요.",
       "cannotMoveHere": "이 위치로 항목을 이동할 수 없습니다"
     },
-    "openFolder": "폴더 열기"
+    "openFolder": "폴더 열기",
+    "drag": {
+      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
+      "fileMoved": "File \"{name}\" moved to \"{target}\"",
+      "itemsMoved": "{count} items moved to \"{target}\"",
+      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
+      "fileMovedToRoot": "File \"{name}\" moved to root folder",
+      "itemsMovedToRoot": "{count} items moved to root folder"
+    }
   },
   "filesTable": {
     "ariaLabel": "파일 테이블",
@@ -546,7 +569,10 @@
     "pageTitle": "로그인",
     "or": "또는",
     "continueWithSSO": "SSO로 계속하기",
-    "processing": "인증 처리 중..."
+    "processing": "인증 처리 중...",
+    "orContinueWith": "Or continue with",
+    "continueWith": "Continue with {name}",
+    "providerNotConfigured": "{name} is not properly configured"
   },
   "logo": {
     "labels": {
@@ -901,7 +927,8 @@
         "editError": "파일 업데이트 오류",
         "previewNotAvailable": "미리보기 불가",
         "notAvailable": "사용 불가",
-        "invalidDate": "잘못된 날짜"
+        "invalidDate": "잘못된 날짜",
+        "downloading": "Downloading..."
       },
       "alias": {
         "editTitle": "별칭 편집",
@@ -988,7 +1015,8 @@
           "failed": "복사 작업이 실패했습니다. 다시 시도해 주세요.",
           "aborted": "시간 초과로 인해 복사 작업이 취소되었습니다."
         },
-        "invalidDate": "잘못된 날짜"
+        "invalidDate": "잘못된 날짜",
+        "downloading": "Downloading..."
       }
     },
     "form": {
@@ -1056,7 +1084,11 @@
       },
       "fieldRequirements": {
         "title": "필드 요구 사항",
-        "description": "업로드 양식으로 표시되는 필드를 구성하십시오"
+        "description": "업로드 양식으로 표시되는 필드를 구성하십시오",
+        "configurationTitle": "Field Configuration:",
+        "hiddenDescription": "Hidden: Field won't appear in the upload form",
+        "optionalDescription": "Optional: Field will appear but isn't mandatory",
+        "requiredDescription": "Required: Field must be filled before upload"
       },
       "nameFieldRequired": {
         "label": "이름 필드 요구 사항",
@@ -1874,7 +1906,11 @@
       "description": "파일을 업로드하려면 놓으세요"
     },
     "pasteSuccess": "{count, plural, =1 {이미지가 성공적으로 붙여넣기 및 업로드되었습니다} other {# 개의 이미지가 성공적으로 붙여넣기 및 업로드되었습니다}}",
-    "filesQueued": "{count, plural, one {# 파일이 업로드 대기 중} other {# 파일이 업로드 대기 중}}"
+    "filesQueued": "{count, plural, one {# 파일이 업로드 대기 중} other {# 파일이 업로드 대기 중}}",
+    "errors": {
+      "addFileFailed": "Failed to add {name}: {error}",
+      "uploadFailed": "Upload failed"
+    }
   },
   "users": {
     "modes": {
@@ -1958,7 +1994,8 @@
       "expiresIn": "15분 후 만료",
       "close": "닫기",
       "errors": {
-        "generateFailed": "초대 링크 생성 실패"
+        "generateFailed": "초대 링크 생성 실패",
+        "copyFailed": "Failed to copy link"
       }
     }
   },
@@ -2035,5 +2072,11 @@
       "createFailed": "계정 생성에 실패했습니다. 다시 시도해주세요."
     },
     "pageTitle": "계정 만들기"
+  },
+  "filesTree": {
+    "noItems": "No items to display"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Change language"
   }
 }

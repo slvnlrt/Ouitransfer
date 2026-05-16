@@ -23,7 +23,7 @@ export function RecentShares({
         <div className="flex flex-col gap-6">
           <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
-              <Share className="text-xl text-gray-500" />
+              <Share className="text-xl text-muted-foreground" />
               {t("recentShares.title")}
             </h2>
 

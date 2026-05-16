@@ -12,7 +12,21 @@
     },
     "authenticationFailed": "Uwierzytelnienie nie powiodło się",
     "successfullyAuthenticated": "Pomyślnie uwierzytelniono!",
-    "sessionExpired": "Twoja sesja wygasła. Zaloguj się ponownie."
+    "sessionExpired": "Twoja sesja wygasła. Zaloguj się ponownie.",
+    "callback": {
+      "errors": {
+        "oauth_error": "OAuth authentication failed",
+        "missing_parameters": "Missing authentication parameters",
+        "missing_code": "Missing authorization code",
+        "registration_disabled": "Registration is disabled for this provider",
+        "provider_disabled": "This authentication provider is disabled",
+        "state_expired": "Authentication session expired",
+        "account_inactive": "Your account is inactive",
+        "no_email": "No email address found in your account",
+        "token_exchange_failed": "Failed to authenticate with provider",
+        "missing_user_info": "Incomplete user information from provider"
+      }
+    }
   },
   "authProviders": {
     "title": "Dostawcy uwierzytelniania",
@@ -341,7 +355,8 @@
     "pdfPreviewNotAvailable": "Podgląd PDF niedostępny. Spróbuj alternatywnego widoku lub pobierz",
     "tryAlternativeView": "Spróbuj alternatywnego widoku",
     "loadingAlternative": "Ładowanie alternatywnego widoku...",
-    "loadingAudio": "Ładowanie audio..."
+    "loadingAudio": "Ładowanie audio...",
+    "downloading": "Downloading..."
   },
   "fileSelector": {
     "availableFiles": "Dostępne pliki ({count})",
@@ -408,7 +423,15 @@
       "moveItemsFailed": "Nie udało się przenieść elementów. Spróbuj ponownie.",
       "cannotMoveHere": "Nie można przenieść elementów do tej lokalizacji"
     },
-    "openFolder": "Otwórz folder"
+    "openFolder": "Otwórz folder",
+    "drag": {
+      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
+      "fileMoved": "File \"{name}\" moved to \"{target}\"",
+      "itemsMoved": "{count} items moved to \"{target}\"",
+      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
+      "fileMovedToRoot": "File \"{name}\" moved to root folder",
+      "itemsMovedToRoot": "{count} items moved to root folder"
+    }
   },
   "filesTable": {
     "ariaLabel": "Tabela plików",
@@ -546,7 +569,10 @@
     "pageTitle": "Logowanie",
     "or": "lub",
     "continueWithSSO": "Kontynuuj z SSO",
-    "processing": "Przetwarzanie uwierzytelnienia..."
+    "processing": "Przetwarzanie uwierzytelnienia...",
+    "orContinueWith": "Or continue with",
+    "continueWith": "Continue with {name}",
+    "providerNotConfigured": "{name} is not properly configured"
   },
   "logo": {
     "labels": {
@@ -901,7 +927,8 @@
         "editError": "Błąd aktualizacji pliku",
         "previewNotAvailable": "Podgląd niedostępny",
         "notAvailable": "Niedostępne",
-        "invalidDate": "Nieprawidłowa data"
+        "invalidDate": "Nieprawidłowa data",
+        "downloading": "Downloading..."
       },
       "alias": {
         "editTitle": "Edytuj alias",
@@ -988,7 +1015,8 @@
           "failed": "Operacja kopiowania nie powiodła się. Spróbuj ponownie.",
           "aborted": "Operacja kopiowania została anulowana z powodu przekroczenia limitu czasu."
         },
-        "invalidDate": "Nieprawidłowa data"
+        "invalidDate": "Nieprawidłowa data",
+        "downloading": "Downloading..."
       }
     },
     "form": {
@@ -1056,7 +1084,11 @@
       },
       "fieldRequirements": {
         "title": "Wymagania terenowe",
-        "description": "Skonfiguruj, które pola są pokazane w formularzu przesyłania"
+        "description": "Skonfiguruj, które pola są pokazane w formularzu przesyłania",
+        "configurationTitle": "Field Configuration:",
+        "hiddenDescription": "Hidden: Field won't appear in the upload form",
+        "optionalDescription": "Optional: Field will appear but isn't mandatory",
+        "requiredDescription": "Required: Field must be filled before upload"
       },
       "nameFieldRequired": {
         "label": "Nazwa Wymagania pola",
@@ -1874,7 +1906,11 @@
       "description": "Zwolnij, aby przesłać pliki"
     },
     "pasteSuccess": "{count, plural, =1 {Obraz wklejony i przesłany pomyślnie} other {# obrazy wklejone i przesłane pomyślnie}}",
-    "filesQueued": "{count, plural, one {# plik w kolejce do przesyłania} other {# pliki w kolejce do przesyłania}}"
+    "filesQueued": "{count, plural, one {# plik w kolejce do przesyłania} other {# pliki w kolejce do przesyłania}}",
+    "errors": {
+      "addFileFailed": "Failed to add {name}: {error}",
+      "uploadFailed": "Upload failed"
+    }
   },
   "users": {
     "modes": {
@@ -1958,7 +1994,8 @@
       "expiresIn": "Wygasa za 15 minut",
       "close": "Zamknij",
       "errors": {
-        "generateFailed": "Nie udało się wygenerować linku zaproszenia"
+        "generateFailed": "Nie udało się wygenerować linku zaproszenia",
+        "copyFailed": "Failed to copy link"
       }
     }
   },
@@ -2035,5 +2072,11 @@
       "createFailed": "Nie udało się utworzyć konta. Spróbuj ponownie."
     },
     "pageTitle": "Utwórz konto"
+  },
+  "filesTree": {
+    "noItems": "No items to display"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Change language"
   }
 }

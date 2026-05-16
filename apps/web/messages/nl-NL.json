@@ -12,7 +12,21 @@
     },
     "authenticationFailed": "Authenticatie mislukt",
     "successfullyAuthenticated": "Succesvol geauthenticeerd!",
-    "sessionExpired": "Je sessie is verlopen. Log opnieuw in."
+    "sessionExpired": "Je sessie is verlopen. Log opnieuw in.",
+    "callback": {
+      "errors": {
+        "oauth_error": "OAuth authentication failed",
+        "missing_parameters": "Missing authentication parameters",
+        "missing_code": "Missing authorization code",
+        "registration_disabled": "Registration is disabled for this provider",
+        "provider_disabled": "This authentication provider is disabled",
+        "state_expired": "Authentication session expired",
+        "account_inactive": "Your account is inactive",
+        "no_email": "No email address found in your account",
+        "token_exchange_failed": "Failed to authenticate with provider",
+        "missing_user_info": "Incomplete user information from provider"
+      }
+    }
   },
   "authProviders": {
     "title": "Authenticatie Providers",
@@ -341,7 +355,8 @@
     "pdfPreviewNotAvailable": "PDF-voorbeeld is niet beschikbaar. Probeer de alternatieve weergave of download.",
     "tryAlternativeView": "Alternatieve Weergave Proberen",
     "loadingAlternative": "Alternatieve weergave laden...",
-    "loadingAudio": "Audio laden..."
+    "loadingAudio": "Audio laden...",
+    "downloading": "Downloading..."
   },
   "fileSelector": {
     "availableFiles": "Beschikbare Bestanden ({count})",
@@ -408,7 +423,15 @@
       "moveItemsFailed": "Verplaatsen van items mislukt. Probeer het opnieuw.",
       "cannotMoveHere": "Kan items niet naar deze locatie verplaatsen"
     },
-    "openFolder": "Map openen"
+    "openFolder": "Map openen",
+    "drag": {
+      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
+      "fileMoved": "File \"{name}\" moved to \"{target}\"",
+      "itemsMoved": "{count} items moved to \"{target}\"",
+      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
+      "fileMovedToRoot": "File \"{name}\" moved to root folder",
+      "itemsMovedToRoot": "{count} items moved to root folder"
+    }
   },
   "filesTable": {
     "ariaLabel": "Bestanden tabel",
@@ -546,7 +569,10 @@
     "pageTitle": "Aanmelden",
     "or": "ou",
     "continueWithSSO": "Continuar com SSO",
-    "processing": "Processando autenticação..."
+    "processing": "Processando autenticação...",
+    "orContinueWith": "Or continue with",
+    "continueWith": "Continue with {name}",
+    "providerNotConfigured": "{name} is not properly configured"
   },
   "logo": {
     "labels": {
@@ -901,7 +927,8 @@
         "editError": "Fout bij bijwerken bestand",
         "previewNotAvailable": "Voorvertoning niet beschikbaar",
         "notAvailable": "Niet beschikbaar",
-        "invalidDate": "Ongeldige datum"
+        "invalidDate": "Ongeldige datum",
+        "downloading": "Downloading..."
       },
       "alias": {
         "editTitle": "Alias Bewerken",
@@ -988,7 +1015,8 @@
           "failed": "Kopieeroperatie mislukt. Probeer het opnieuw.",
           "aborted": "Kopieeroperatie is geannuleerd vanwege een time-out."
         },
-        "invalidDate": "Ongeldige datum"
+        "invalidDate": "Ongeldige datum",
+        "downloading": "Downloading..."
       }
     },
     "form": {
@@ -1056,7 +1084,11 @@
       },
       "fieldRequirements": {
         "title": "Veldvereisten",
-        "description": "Configureer welke velden worden weergegeven in het uploadformulier"
+        "description": "Configureer welke velden worden weergegeven in het uploadformulier",
+        "configurationTitle": "Field Configuration:",
+        "hiddenDescription": "Hidden: Field won't appear in the upload form",
+        "optionalDescription": "Optional: Field will appear but isn't mandatory",
+        "requiredDescription": "Required: Field must be filled before upload"
       },
       "nameFieldRequired": {
         "label": "Naam veldvereiste",
@@ -1874,7 +1906,11 @@
       "description": "Laat los om je bestanden te uploaden"
     },
     "pasteSuccess": "{count, plural, =1 {Afbeelding geplakt en succesvol geüpload} other {# afbeeldingen geplakt en succesvol geüpload}}",
-    "filesQueued": "{count, plural, one {# bestand in de wachtrij voor upload} other {# bestanden in de wachtrij voor upload}}"
+    "filesQueued": "{count, plural, one {# bestand in de wachtrij voor upload} other {# bestanden in de wachtrij voor upload}}",
+    "errors": {
+      "addFileFailed": "Failed to add {name}: {error}",
+      "uploadFailed": "Upload failed"
+    }
   },
   "users": {
     "modes": {
@@ -1958,7 +1994,8 @@
       "expiresIn": "Verloopt over 15 minuten",
       "close": "Sluiten",
       "errors": {
-        "generateFailed": "Genereren van uitnodigingslink mislukt"
+        "generateFailed": "Genereren van uitnodigingslink mislukt",
+        "copyFailed": "Failed to copy link"
       }
     }
   },
@@ -2035,5 +2072,11 @@
       "createFailed": "Aanmaken van account mislukt. Probeer het opnieuw."
     },
     "pageTitle": "Account Aanmaken"
+  },
+  "filesTree": {
+    "noItems": "No items to display"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Change language"
   }
 }

@@ -12,7 +12,21 @@
     },
     "authenticationFailed": "فشلت المصادقة",
     "successfullyAuthenticated": "تم المصادقة بنجاح!",
-    "sessionExpired": "Your session has expired. Please sign in again."
+    "sessionExpired": "Your session has expired. Please sign in again.",
+    "callback": {
+      "errors": {
+        "oauth_error": "OAuth authentication failed",
+        "missing_parameters": "Missing authentication parameters",
+        "missing_code": "Missing authorization code",
+        "registration_disabled": "Registration is disabled for this provider",
+        "provider_disabled": "This authentication provider is disabled",
+        "state_expired": "Authentication session expired",
+        "account_inactive": "Your account is inactive",
+        "no_email": "No email address found in your account",
+        "token_exchange_failed": "Failed to authenticate with provider",
+        "missing_user_info": "Incomplete user information from provider"
+      }
+    }
   },
   "authProviders": {
     "title": "مزودي المصادقة",
@@ -341,7 +355,8 @@
     "pdfPreviewNotAvailable": "معاينة PDF غير متاحة. جرب العرض البديل أو قم بالتنزيل.",
     "tryAlternativeView": "جرب العرض البديل",
     "loadingAlternative": "جاري تحميل العرض البديل...",
-    "loadingAudio": "جاري تحميل الصوت..."
+    "loadingAudio": "جاري تحميل الصوت...",
+    "downloading": "Downloading..."
   },
   "fileSelector": {
     "availableFiles": "الملفات المتاحة ({count})",
@@ -408,7 +423,15 @@
       "moveItemsFailed": "فشل نقل العناصر. يرجى المحاولة مرة أخرى.",
       "cannotMoveHere": "لا يمكن نقل العناصر إلى هذا الموقع"
     },
-    "openFolder": "فتح المجلد"
+    "openFolder": "فتح المجلد",
+    "drag": {
+      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
+      "fileMoved": "File \"{name}\" moved to \"{target}\"",
+      "itemsMoved": "{count} items moved to \"{target}\"",
+      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
+      "fileMovedToRoot": "File \"{name}\" moved to root folder",
+      "itemsMovedToRoot": "{count} items moved to root folder"
+    }
   },
   "filesTable": {
     "ariaLabel": "جدول الملفات",
@@ -546,7 +569,10 @@
     "pageTitle": "تسجيل الدخول",
     "or": "أو",
     "continueWithSSO": "متابعة مع تسجيل الدخول الموحد",
-    "processing": "جاري معالجة المصادقة..."
+    "processing": "جاري معالجة المصادقة...",
+    "orContinueWith": "Or continue with",
+    "continueWith": "Continue with {name}",
+    "providerNotConfigured": "{name} is not properly configured"
   },
   "logo": {
     "labels": {
@@ -901,7 +927,8 @@
         "editError": "خطأ في تحديث الملف",
         "previewNotAvailable": "المعاينة غير متوفرة",
         "notAvailable": "غير متوفر",
-        "invalidDate": "تاريخ غير صالح"
+        "invalidDate": "تاريخ غير صالح",
+        "downloading": "Downloading..."
       },
       "alias": {
         "editTitle": "تحرير الاسم المستعار",
@@ -988,7 +1015,8 @@
           "failed": "فشلت عملية النسخ. يرجى المحاولة مرة أخرى.",
           "aborted": "تم إلغاء عملية النسخ بسبب انتهاء المهلة."
         },
-        "invalidDate": "تاريخ غير صحيح"
+        "invalidDate": "تاريخ غير صحيح",
+        "downloading": "Downloading..."
       }
     },
     "form": {
@@ -1056,7 +1084,11 @@
       },
       "fieldRequirements": {
         "title": "المتطلبات الميدانية",
-        "description": "تكوين الحقول المعروضة في نموذج التحميل"
+        "description": "تكوين الحقول المعروضة في نموذج التحميل",
+        "configurationTitle": "Field Configuration:",
+        "hiddenDescription": "Hidden: Field won't appear in the upload form",
+        "optionalDescription": "Optional: Field will appear but isn't mandatory",
+        "requiredDescription": "Required: Field must be filled before upload"
       },
       "nameFieldRequired": {
         "label": "اسم حقل الاسم",
@@ -1874,7 +1906,11 @@
       "description": "حرر للرفع ملفاتك"
     },
     "pasteSuccess": "{count, plural, =1 {تم لصق الصورة ورفعها بنجاح} other {تم لصق # صور ورفعها بنجاح}}",
-    "filesQueued": "{count, plural, one {# ملف في الصف} other {# ملفات في الصف}}"
+    "filesQueued": "{count, plural, one {# ملف في الصف} other {# ملفات في الصف}}",
+    "errors": {
+      "addFileFailed": "Failed to add {name}: {error}",
+      "uploadFailed": "Upload failed"
+    }
   },
   "users": {
     "modes": {
@@ -1958,7 +1994,8 @@
       "expiresIn": "ينتهي بعد 15 دقيقة",
       "close": "إغلاق",
       "errors": {
-        "generateFailed": "فشل في إنشاء رابط الدعوة"
+        "generateFailed": "فشل في إنشاء رابط الدعوة",
+        "copyFailed": "Failed to copy link"
       }
     }
   },
@@ -2035,5 +2072,11 @@
       "createFailed": "فشل في إنشاء الحساب. يرجى المحاولة مرة أخرى."
     },
     "pageTitle": "إنشاء حساب"
+  },
+  "filesTree": {
+    "noItems": "No items to display"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Change language"
   }
 }

@@ -12,7 +12,21 @@
       "config_error": "Σφάλμα ρυθμίσεων. Επικοινωνήστε με την υποστήριξη.",
       "auth_failed": "Αποτυχία ελέγχου ταυτότητας. Προσπαθήστε ξανά."
     },
-    "sessionExpired": "Η συνεδρία σας έληξε. Παρακαλώ συνδεθείτε ξανά."
+    "sessionExpired": "Η συνεδρία σας έληξε. Παρακαλώ συνδεθείτε ξανά.",
+    "callback": {
+      "errors": {
+        "oauth_error": "OAuth authentication failed",
+        "missing_parameters": "Missing authentication parameters",
+        "missing_code": "Missing authorization code",
+        "registration_disabled": "Registration is disabled for this provider",
+        "provider_disabled": "This authentication provider is disabled",
+        "state_expired": "Authentication session expired",
+        "account_inactive": "Your account is inactive",
+        "no_email": "No email address found in your account",
+        "token_exchange_failed": "Failed to authenticate with provider",
+        "missing_user_info": "Incomplete user information from provider"
+      }
+    }
   },
   "contextMenu": {
     "newFolder": "Νέος φάκελος",
@@ -345,7 +359,8 @@
     "pdfPreviewNotAvailable": "Η προεπισκόπηση PDF δεν είναι διαθέσιμη. Δοκιμάστε εναλλακτική προβολή ή κάντε λήψη",
     "tryAlternativeView": "Δοκιμάστε εναλλακτική προβολή",
     "loadingAlternative": "Φόρτωση εναλλακτικής προβολής...",
-    "loadingAudio": "Φόρτωση ήχου..."
+    "loadingAudio": "Φόρτωση ήχου...",
+    "downloading": "Downloading..."
   },
   "fileSelector": {
     "availableFiles": "Διαθέσιμα αρχεία ({count})",
@@ -412,6 +427,14 @@
     "viewMode": {
       "table": "Πίνακας",
       "grid": "Πλέγμα"
+    },
+    "drag": {
+      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
+      "fileMoved": "File \"{name}\" moved to \"{target}\"",
+      "itemsMoved": "{count} items moved to \"{target}\"",
+      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
+      "fileMovedToRoot": "File \"{name}\" moved to root folder",
+      "itemsMovedToRoot": "{count} items moved to root folder"
     }
   },
   "filesTable": {
@@ -550,7 +573,10 @@
     "pageTitle": "Σύνδεση",
     "or": "ή",
     "continueWithSSO": "Συνέχεια με SSO",
-    "processing": "Επεξεργασία ελέγχου ταυτότητας..."
+    "processing": "Επεξεργασία ελέγχου ταυτότητας...",
+    "orContinueWith": "Or continue with",
+    "continueWith": "Continue with {name}",
+    "providerNotConfigured": "{name} is not properly configured"
   },
   "logo": {
     "labels": {
@@ -905,7 +931,8 @@
         "editError": "Σφάλμα ενημέρωσης αρχείου",
         "previewNotAvailable": "Η προεπισκόπηση δεν είναι διαθέσιμη",
         "notAvailable": "Μ/Δ",
-        "invalidDate": "Μη έγκυρη ημερομηνία"
+        "invalidDate": "Μη έγκυρη ημερομηνία",
+        "downloading": "Downloading..."
       },
       "alias": {
         "editTitle": "Επεξεργασία ψευδωνύμου",
@@ -992,7 +1019,8 @@
           "timeout": "Η αντιγραφή έληξε λόγω χρονικού ορίου. Δοκιμάστε ξανά με μικρότερο αρχείο ή ελέγξτε τη σύνδεσή σας.",
           "failed": "Η αντιγραφή απέτυχε. Προσπαθήστε ξανά.",
           "aborted": "Η αντιγραφή ακυρώθηκε λόγω λήξης χρονικού ορίου."
-        }
+        },
+        "downloading": "Downloading..."
       }
     },
     "form": {
@@ -1063,7 +1091,11 @@
       },
       "fieldRequirements": {
         "title": "Απαιτήσεις πεδίων",
-        "description": "Ρυθμίστε ποια πεδία θα εμφανίζονται στη φόρμα μεταφόρτωσης"
+        "description": "Ρυθμίστε ποια πεδία θα εμφανίζονται στη φόρμα μεταφόρτωσης",
+        "configurationTitle": "Field Configuration:",
+        "hiddenDescription": "Hidden: Field won't appear in the upload form",
+        "optionalDescription": "Optional: Field will appear but isn't mandatory",
+        "requiredDescription": "Required: Field must be filled before upload"
       },
       "submit": "Δημιουργία συνδέσμου λήψης"
     },
@@ -1878,7 +1910,11 @@
       "continue": "Συνέχιση μεταφορτώσεων",
       "cancel": "Ακύρωση μεταφορτώσεων"
     },
-    "pasteSuccess": "{count, plural, =1 {Η εικόνα επικολλήθηκε και μεταφορτώθηκε με επιτυχία} other {# εικόνες επικολλήθηκαν και μεταφορτώθηκαν με επιτυχία}}"
+    "pasteSuccess": "{count, plural, =1 {Η εικόνα επικολλήθηκε και μεταφορτώθηκε με επιτυχία} other {# εικόνες επικολλήθηκαν και μεταφορτώθηκαν με επιτυχία}}",
+    "errors": {
+      "addFileFailed": "Failed to add {name}: {error}",
+      "uploadFailed": "Upload failed"
+    }
   },
   "users": {
     "modes": {
@@ -1962,7 +1998,8 @@
       "expiresIn": "Λήγει σε 15 λεπτά",
       "close": "Κλείσιμο",
       "errors": {
-        "generateFailed": "Αποτυχία δημιουργίας συνδέσμου πρόσκλησης"
+        "generateFailed": "Αποτυχία δημιουργίας συνδέσμου πρόσκλησης",
+        "copyFailed": "Failed to copy link"
       }
     }
   },
@@ -2035,5 +2072,11 @@
       "createFailed": "Αποτυχία δημιουργίας λογαριασμού. Παρακαλώ δοκιμάστε ξανά."
     },
     "pageTitle": "Δημιουργία λογαριασμού"
+  },
+  "filesTree": {
+    "noItems": "No items to display"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Change language"
   }
 }

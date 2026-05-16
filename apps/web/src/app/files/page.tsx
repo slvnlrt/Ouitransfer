@@ -22,6 +22,7 @@ import { moveFile } from "@/http/endpoints/files";
 import { listFolders, moveFolder } from "@/http/endpoints/folders";
 import { getCachedDownloadUrl } from "@/lib/download-url-cache";
 import { logger } from "@/lib/logger";
+import { getFolderFilesWithPath } from "@/utils/folder-traversal";
 import { FilesViewManager } from "./components/files-view-manager";
 import { Header } from "./components/header";
 import { useFileBrowser } from "./hooks/use-file-browser";
@@ -105,30 +106,7 @@ export default function FilesPage() {
 
   const handleFolderDownload = async (folderId: string, folderName: string) => {
     try {
-      // Get all files in this folder and subfolders recursively with their paths
-      const getFolderFilesWithPath = (
-        targetFolderId: string,
-        currentPath: string = "",
-      ): Array<{ file: FileItem; path: string }> => {
-        const filesWithPath: Array<{ file: FileItem; path: string }> = [];
-
-        // Get direct files in this folder
-        const directFiles = allFiles.filter((f) => f.folderId === targetFolderId);
-        directFiles.forEach((file) => {
-          filesWithPath.push({ file, path: currentPath });
-        });
-
-        // Get subfolders and process them recursively
-        const subfolders = allFolders.filter((f) => f.parentId === targetFolderId);
-        for (const subfolder of subfolders) {
-          const subfolderPath = currentPath ? `${currentPath}/${subfolder.name}` : subfolder.name;
-          filesWithPath.push(...getFolderFilesWithPath(subfolder.id, subfolderPath));
-        }
-
-        return filesWithPath;
-      };
-
-      const folderFilesWithPath = getFolderFilesWithPath(folderId);
+      const folderFilesWithPath = getFolderFilesWithPath(folderId, allFiles, allFolders);
 
       if (folderFilesWithPath.length === 0) {
         toast.error(t("shareManager.noFilesToDownload"));
@@ -179,7 +157,7 @@ export default function FilesPage() {
       >
         <FileManagerLayout
           breadcrumbLabel={t("files.breadcrumb")}
-          icon={<FolderOpen size={20} />}
+          icon={<FolderOpen className="size-5" />}
           title={t("files.pageTitle")}
         >
           <Card>
@@ -242,10 +220,14 @@ export default function FilesPage() {
 
                                 if (items.length === 1) {
                                   toast.success(
-                                    `${items[0].type === "folder" ? "Folder" : "File"} "${items[0].name}" moved to root folder`,
+                                    items[0].type === "folder"
+                                      ? t("files.drag.folderMovedToRoot", { name: items[0].name })
+                                      : t("files.drag.fileMovedToRoot", { name: items[0].name }),
                                   );
                                 } else {
-                                  toast.success(`${items.length} items moved to root folder`);
+                                  toast.success(
+                                    t("files.drag.itemsMovedToRoot", { count: items.length }),
+                                  );
                                 }
                               } catch (error) {
                                 logger.error("Error moving items:", {
@@ -256,7 +238,7 @@ export default function FilesPage() {
                               }
                             }}
                           >
-                            <FolderOpen size={16} />
+                            <FolderOpen className="size-4" />
                             {t("folderActions.rootFolder")}
                           </BreadcrumbLink>
                         </BreadcrumbItem>
@@ -267,7 +249,7 @@ export default function FilesPage() {
                             <BreadcrumbItem>
                               {index === currentPath.length - 1 ? (
                                 <BreadcrumbPage className="flex items-center gap-1.5">
-                                  <FolderOpen size={16} />
+                                  <FolderOpen className="size-4" />
                                   {folder.name}
                                 </BreadcrumbPage>
                               ) : (
@@ -329,11 +311,22 @@ export default function FilesPage() {
 
                                       if (validItems.length === 1) {
                                         toast.success(
-                                          `${validItems[0].type === "folder" ? "Folder" : "File"} "${validItems[0].name}" moved to "${folder.name}"`,
+                                          validItems[0].type === "folder"
+                                            ? t("files.drag.folderMoved", {
+                                                name: validItems[0].name,
+                                                target: folder.name,
+                                              })
+                                            : t("files.drag.fileMoved", {
+                                                name: validItems[0].name,
+                                                target: folder.name,
+                                              }),
                                         );
                                       } else {
                                         toast.success(
-                                          `${validItems.length} items moved to "${folder.name}"`,
+                                          t("files.drag.itemsMoved", {
+                                            count: validItems.length,
+                                            target: folder.name,
+                                          }),
                                         );
                                       }
                                     } catch (error) {
@@ -345,7 +338,7 @@ export default function FilesPage() {
                                     }
                                   }}
                                 >
-                                  <FolderOpen size={16} />
+                                  <FolderOpen className="size-4" />
                                   {folder.name}
                                 </BreadcrumbLink>
                               )}
@@ -418,7 +411,7 @@ export default function FilesPage() {
                   }}
                   emptyStateComponent={() => (
                     <div className="flex flex-col items-center justify-center py-12 text-center">
-                      <FolderOpen size={48} className="text-muted-foreground mb-4" />
+                      <FolderOpen className="size-12 text-muted-foreground mb-4" />
                       <h3 className="text-lg font-semibold mb-2">{t("files.empty.title")}</h3>
                       <p className="text-muted-foreground mb-6">{t("files.empty.description")}</p>
                     </div>

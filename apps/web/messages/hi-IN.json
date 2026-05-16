@@ -12,7 +12,21 @@
     },
     "authenticationFailed": "प्रमाणीकरण विफल",
     "successfullyAuthenticated": "सफलतापूर्वक प्रमाणित!",
-    "sessionExpired": "Your session has expired. Please sign in again."
+    "sessionExpired": "Your session has expired. Please sign in again.",
+    "callback": {
+      "errors": {
+        "oauth_error": "OAuth authentication failed",
+        "missing_parameters": "Missing authentication parameters",
+        "missing_code": "Missing authorization code",
+        "registration_disabled": "Registration is disabled for this provider",
+        "provider_disabled": "This authentication provider is disabled",
+        "state_expired": "Authentication session expired",
+        "account_inactive": "Your account is inactive",
+        "no_email": "No email address found in your account",
+        "token_exchange_failed": "Failed to authenticate with provider",
+        "missing_user_info": "Incomplete user information from provider"
+      }
+    }
   },
   "authProviders": {
     "title": "प्रमाणीकरण प्रदाता",
@@ -341,7 +355,8 @@
     "pdfPreviewNotAvailable": "PDF पूर्वावलोकन उपलब्ध नहीं है। वैकल्पिक दृश्य आज़माएं या डाउनलोड करें।",
     "tryAlternativeView": "वैकल्पिक दृश्य आज़माएं",
     "loadingAlternative": "वैकल्पिक दृश्य लोड हो रहा है...",
-    "loadingAudio": "ऑडियो लोड हो रहा है..."
+    "loadingAudio": "ऑडियो लोड हो रहा है...",
+    "downloading": "Downloading..."
   },
   "fileSelector": {
     "availableFiles": "उपलब्ध फाइलें ({count})",
@@ -408,7 +423,15 @@
       "moveItemsFailed": "आइटम स्थानांतरित करने में विफल। कृपया पुनः प्रयास करें।",
       "cannotMoveHere": "इस स्थान पर आइटम स्थानांतरित नहीं कर सकते"
     },
-    "openFolder": "फ़ोल्डर खोलें"
+    "openFolder": "फ़ोल्डर खोलें",
+    "drag": {
+      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
+      "fileMoved": "File \"{name}\" moved to \"{target}\"",
+      "itemsMoved": "{count} items moved to \"{target}\"",
+      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
+      "fileMovedToRoot": "File \"{name}\" moved to root folder",
+      "itemsMovedToRoot": "{count} items moved to root folder"
+    }
   },
   "filesTable": {
     "ariaLabel": "फाइल तालिका",
@@ -546,7 +569,10 @@
     "pageTitle": "लॉगिन",
     "or": "ou",
     "continueWithSSO": "Continuar com SSO",
-    "processing": "Processando autenticação..."
+    "processing": "Processando autenticação...",
+    "orContinueWith": "Or continue with",
+    "continueWith": "Continue with {name}",
+    "providerNotConfigured": "{name} is not properly configured"
   },
   "logo": {
     "labels": {
@@ -901,7 +927,8 @@
         "editError": "फ़ाइल अपडेट करने में त्रुटि",
         "previewNotAvailable": "पूर्वावलोकन उपलब्ध नहीं है",
         "notAvailable": "उपलब्ध नहीं है",
-        "invalidDate": "अमान्य तिथि"
+        "invalidDate": "अमान्य तिथि",
+        "downloading": "Downloading..."
       },
       "alias": {
         "editTitle": "उपनाम संपादित करें",
@@ -988,7 +1015,8 @@
           "failed": "कॉपी ऑपरेशन विफल हो गया। कृपया पुनः प्रयास करें।",
           "aborted": "टाइमआउट के कारण कॉपी ऑपरेशन रद्द कर दिया गया।"
         },
-        "invalidDate": "अमान्य दिनांक"
+        "invalidDate": "अमान्य दिनांक",
+        "downloading": "Downloading..."
       }
     },
     "form": {
@@ -1056,7 +1084,11 @@
       },
       "fieldRequirements": {
         "title": "क्षेत्र आवश्यकताएँ",
-        "description": "कॉन्फ़िगर करें कि कौन से फ़ील्ड अपलोड फॉर्म में दिखाए गए हैं"
+        "description": "कॉन्फ़िगर करें कि कौन से फ़ील्ड अपलोड फॉर्म में दिखाए गए हैं",
+        "configurationTitle": "Field Configuration:",
+        "hiddenDescription": "Hidden: Field won't appear in the upload form",
+        "optionalDescription": "Optional: Field will appear but isn't mandatory",
+        "requiredDescription": "Required: Field must be filled before upload"
       },
       "nameFieldRequired": {
         "label": "नाम क्षेत्र की आवश्यकता",
@@ -1874,7 +1906,11 @@
       "description": "अपनी फ़ाइलें अपलोड करने के लिए छोड़ें"
     },
     "pasteSuccess": "{count, plural, =1 {छवि सफलतापूर्वक चिपकाई और अपलोड की गई} other {# छवियाँ सफलतापूर्वक चिपकाई और अपलोड की गईं}}",
-    "filesQueued": "{count, plural, one {# फ़ाइल अपलोड के लिए इंतजार में है} other {# फ़ाइलें अपलोड के लिए इंतजार में हैं}}"
+    "filesQueued": "{count, plural, one {# फ़ाइल अपलोड के लिए इंतजार में है} other {# फ़ाइलें अपलोड के लिए इंतजार में हैं}}",
+    "errors": {
+      "addFileFailed": "Failed to add {name}: {error}",
+      "uploadFailed": "Upload failed"
+    }
   },
   "users": {
     "modes": {
@@ -1958,7 +1994,8 @@
       "expiresIn": "15 मिनट में समाप्त होता है",
       "close": "बंद करें",
       "errors": {
-        "generateFailed": "आमंत्रण लिंक जनरेट करने में विफल"
+        "generateFailed": "आमंत्रण लिंक जनरेट करने में विफल",
+        "copyFailed": "Failed to copy link"
       }
     }
   },
@@ -2035,5 +2072,11 @@
       "createFailed": "खाता बनाने में विफल। कृपया पुनः प्रयास करें।"
     },
     "pageTitle": "खाता बनाएं"
+  },
+  "filesTree": {
+    "noItems": "No items to display"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Change language"
   }
 }

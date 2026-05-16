@@ -12,7 +12,21 @@
       "config_error": "Konfigurationsfel. Kontakta supporten.",
       "auth_failed": "Autentiseringen misslyckades. Försök igen."
     },
-    "sessionExpired": "Din session har löpt ut. Vänligen logga in igen."
+    "sessionExpired": "Din session har löpt ut. Vänligen logga in igen.",
+    "callback": {
+      "errors": {
+        "oauth_error": "OAuth authentication failed",
+        "missing_parameters": "Missing authentication parameters",
+        "missing_code": "Missing authorization code",
+        "registration_disabled": "Registration is disabled for this provider",
+        "provider_disabled": "This authentication provider is disabled",
+        "state_expired": "Authentication session expired",
+        "account_inactive": "Your account is inactive",
+        "no_email": "No email address found in your account",
+        "token_exchange_failed": "Failed to authenticate with provider",
+        "missing_user_info": "Incomplete user information from provider"
+      }
+    }
   },
   "contextMenu": {
     "newFolder": "Ny mapp",
@@ -345,7 +359,8 @@
     "pdfPreviewNotAvailable": "PDF-förhandsgranskning är inte tillgänglig. Prova alternativ vy eller ladda ner",
     "tryAlternativeView": "Prova Alternativ vy",
     "loadingAlternative": "Laddar alternativ vy...",
-    "loadingAudio": "Laddar ljud..."
+    "loadingAudio": "Laddar ljud...",
+    "downloading": "Downloading..."
   },
   "fileSelector": {
     "availableFiles": "Tillgängliga filer ({count})",
@@ -412,6 +427,14 @@
     "viewMode": {
       "table": "Tabell",
       "grid": "Rutnät"
+    },
+    "drag": {
+      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
+      "fileMoved": "File \"{name}\" moved to \"{target}\"",
+      "itemsMoved": "{count} items moved to \"{target}\"",
+      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
+      "fileMovedToRoot": "File \"{name}\" moved to root folder",
+      "itemsMovedToRoot": "{count} items moved to root folder"
     }
   },
   "filesTable": {
@@ -550,7 +573,10 @@
     "pageTitle": "Inloggning",
     "or": "eller",
     "continueWithSSO": "Fortsätt med SSO",
-    "processing": "Bearbetar autentisering..."
+    "processing": "Bearbetar autentisering...",
+    "orContinueWith": "Or continue with",
+    "continueWith": "Continue with {name}",
+    "providerNotConfigured": "{name} is not properly configured"
   },
   "logo": {
     "labels": {
@@ -905,7 +931,8 @@
         "editError": "Fel vid uppdatering av filen",
         "previewNotAvailable": "Förhandsgranskning inte tillgänglig",
         "notAvailable": "Ej tillgängligt",
-        "invalidDate": "Ogiltigt datum"
+        "invalidDate": "Ogiltigt datum",
+        "downloading": "Downloading..."
       },
       "alias": {
         "editTitle": "Redigera Alias",
@@ -992,7 +1019,8 @@
           "timeout": "Kopieringsåtgärden tog timeout. Försök igen med en mindre fil eller kontrollera din anslutning.",
           "failed": "Kopieringsåtgärden misslyckades. Försök igen.",
           "aborted": "Kopieringsåtgärden avbröts på grund av timeout."
-        }
+        },
+        "downloading": "Downloading..."
       }
     },
     "form": {
@@ -1063,7 +1091,11 @@
       },
       "fieldRequirements": {
         "title": "Fältkrav",
-        "description": "Konfigurera vilka fält som ska visas i uppladdningsformuläret"
+        "description": "Konfigurera vilka fält som ska visas i uppladdningsformuläret",
+        "configurationTitle": "Field Configuration:",
+        "hiddenDescription": "Hidden: Field won't appear in the upload form",
+        "optionalDescription": "Optional: Field will appear but isn't mandatory",
+        "requiredDescription": "Required: Field must be filled before upload"
       },
       "submit": "Skapa mottagningslänk"
     },
@@ -1878,7 +1910,11 @@
       "continue": "Fortsätt uppladdningar",
       "cancel": "Avbryt uppladdningar"
     },
-    "pasteSuccess": "{count, plural, =1 {Bild klistrad och uppladdad framgångsrikt} other {# bilder klistrade och uppladdade framgångsrikt}}"
+    "pasteSuccess": "{count, plural, =1 {Bild klistrad och uppladdad framgångsrikt} other {# bilder klistrade och uppladdade framgångsrikt}}",
+    "errors": {
+      "addFileFailed": "Failed to add {name}: {error}",
+      "uploadFailed": "Upload failed"
+    }
   },
   "users": {
     "modes": {
@@ -1962,7 +1998,8 @@
       "expiresIn": "Upphör om 15 minuter",
       "close": "Stäng",
       "errors": {
-        "generateFailed": "Det gick inte att generera inbjudningslänk"
+        "generateFailed": "Det gick inte att generera inbjudningslänk",
+        "copyFailed": "Failed to copy link"
       }
     }
   },
@@ -2035,5 +2072,11 @@
       "createFailed": "Det gick inte att skapa konto. Försök igen."
     },
     "pageTitle": "Skapa konto"
+  },
+  "filesTree": {
+    "noItems": "No items to display"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Change language"
   }
 }

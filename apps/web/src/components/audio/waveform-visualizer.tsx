@@ -9,12 +9,12 @@ interface WaveformVisualizerProps {
   isLoading?: boolean;
 }
 
-const WaveformVisualizer = ({
+export function WaveformVisualizer({
   progress,
   onSeek,
   audioData,
   isLoading = false,
-}: WaveformVisualizerProps) => {
+}: WaveformVisualizerProps) {
   const t = useTranslations();
 
   const generateMockWaveform = () => {
@@ -99,6 +99,4 @@ const WaveformVisualizer = ({
       </div>
     </div>
   );
-};
-
-export default WaveformVisualizer;
+}

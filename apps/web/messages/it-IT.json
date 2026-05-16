@@ -12,7 +12,21 @@
     },
     "authenticationFailed": "Autenticazione fallita",
     "successfullyAuthenticated": "Autenticazione completata con successo!",
-    "sessionExpired": "La sessione è scaduta. Effettua di nuovo l'accesso."
+    "sessionExpired": "La sessione è scaduta. Effettua di nuovo l'accesso.",
+    "callback": {
+      "errors": {
+        "oauth_error": "OAuth authentication failed",
+        "missing_parameters": "Missing authentication parameters",
+        "missing_code": "Missing authorization code",
+        "registration_disabled": "Registration is disabled for this provider",
+        "provider_disabled": "This authentication provider is disabled",
+        "state_expired": "Authentication session expired",
+        "account_inactive": "Your account is inactive",
+        "no_email": "No email address found in your account",
+        "token_exchange_failed": "Failed to authenticate with provider",
+        "missing_user_info": "Incomplete user information from provider"
+      }
+    }
   },
   "authProviders": {
     "title": "Provider di Autenticazione",
@@ -341,7 +355,8 @@
     "pdfPreviewNotAvailable": "L'anteprima PDF non è disponibile. Prova la vista alternativa o scarica.",
     "tryAlternativeView": "Prova Vista Alternativa",
     "loadingAlternative": "Caricamento vista alternativa...",
-    "loadingAudio": "Caricamento audio..."
+    "loadingAudio": "Caricamento audio...",
+    "downloading": "Downloading..."
   },
   "fileSelector": {
     "availableFiles": "File Disponibili ({count})",
@@ -408,7 +423,15 @@
       "moveItemsFailed": "Impossibile spostare gli elementi. Riprova.",
       "cannotMoveHere": "Impossibile spostare gli elementi in questa posizione"
     },
-    "openFolder": "Apri cartella"
+    "openFolder": "Apri cartella",
+    "drag": {
+      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
+      "fileMoved": "File \"{name}\" moved to \"{target}\"",
+      "itemsMoved": "{count} items moved to \"{target}\"",
+      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
+      "fileMovedToRoot": "File \"{name}\" moved to root folder",
+      "itemsMovedToRoot": "{count} items moved to root folder"
+    }
   },
   "filesTable": {
     "ariaLabel": "Tabella dei file",
@@ -546,7 +569,10 @@
     "pageTitle": "Accesso",
     "or": "oppure",
     "continueWithSSO": "Continua con SSO",
-    "processing": "Elaborazione autenticazione..."
+    "processing": "Elaborazione autenticazione...",
+    "orContinueWith": "Or continue with",
+    "continueWith": "Continue with {name}",
+    "providerNotConfigured": "{name} is not properly configured"
   },
   "logo": {
     "labels": {
@@ -901,7 +927,8 @@
         "editError": "Errore durante l'aggiornamento del file",
         "previewNotAvailable": "Anteprima non disponibile",
         "notAvailable": "Non disponibile",
-        "invalidDate": "Data non valida"
+        "invalidDate": "Data non valida",
+        "downloading": "Downloading..."
       },
       "alias": {
         "editTitle": "Modifica Alias",
@@ -988,7 +1015,8 @@
           "timeout": "Operazione di copia scaduta. Riprova con un file più piccolo o controlla la tua connessione.",
           "failed": "Operazione di copia fallita. Per favore riprova.",
           "aborted": "L'operazione di copia è stata annullata per timeout."
-        }
+        },
+        "downloading": "Downloading..."
       }
     },
     "form": {
@@ -1056,7 +1084,11 @@
       },
       "fieldRequirements": {
         "title": "Requisiti sul campo",
-        "description": "Configurare quali campi sono mostrati nel modulo di caricamento"
+        "description": "Configurare quali campi sono mostrati nel modulo di caricamento",
+        "configurationTitle": "Field Configuration:",
+        "hiddenDescription": "Hidden: Field won't appear in the upload form",
+        "optionalDescription": "Optional: Field will appear but isn't mandatory",
+        "requiredDescription": "Required: Field must be filled before upload"
       },
       "nameFieldRequired": {
         "label": "Requisiti del campo Nome",
@@ -1874,7 +1906,11 @@
       "description": "Rilascia per caricare i tuoi file"
     },
     "pasteSuccess": "{count, plural, =1 {Immagine incollata e caricata con successo} other {# immagini incollate e caricate con successo}}",
-    "filesQueued": "{count, plural, one {# file in coda per il caricamento} other {# files in coda per il caricamento}}"
+    "filesQueued": "{count, plural, one {# file in coda per il caricamento} other {# files in coda per il caricamento}}",
+    "errors": {
+      "addFileFailed": "Failed to add {name}: {error}",
+      "uploadFailed": "Upload failed"
+    }
   },
   "users": {
     "modes": {
@@ -1958,7 +1994,8 @@
       "expiresIn": "Scade in 15 minuti",
       "close": "Chiudi",
       "errors": {
-        "generateFailed": "Impossibile generare il link di invito"
+        "generateFailed": "Impossibile generare il link di invito",
+        "copyFailed": "Failed to copy link"
       }
     }
   },
@@ -2035,5 +2072,11 @@
       "createFailed": "Impossibile creare l'account. Riprova."
     },
     "pageTitle": "Crea Account"
+  },
+  "filesTree": {
+    "noItems": "No items to display"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Change language"
   }
 }

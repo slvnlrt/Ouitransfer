@@ -262,7 +262,7 @@ export function ReverseShareDetailsModal({
                   <div className="flex flex-col items-start justify-start">
                     <button
                       type="button"
-                      className="p-2 bg-white rounded-lg cursor-pointer hover:opacity-80 transition-opacity duration-300 border-0"
+                      className="p-2 bg-card rounded-lg cursor-pointer hover:opacity-80 transition-opacity duration-300 border-0"
                       onClick={() => onViewQrCode?.(reverseShare)}
                       title={t("reverseShares.actions.viewQrCode")}
                     >
@@ -431,7 +431,7 @@ export function ReverseShareDetailsModal({
                     ) : (
                       <Badge
                         variant="secondary"
-                        className="bg-green-500/20 text-green-700 border-green-200"
+                        className="bg-green-500/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800"
                       >
                         <LockOpen className="h-3 w-3 me-1" />
                         {t("reverseShares.modals.details.publicAccess")}
@@ -448,7 +448,7 @@ export function ReverseShareDetailsModal({
                     {reverseShare.isActive ? (
                       <Badge
                         variant="secondary"
-                        className="bg-green-500/20 text-green-700 border-green-200"
+                        className="bg-green-500/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800"
                       >
                         <ToggleRight className="h-3 w-3 me-1" />
                         {t("reverseShares.status.active")}

@@ -117,7 +117,7 @@ export function ColorPickerForm() {
                     className={`relative w-14 h-14 rounded-xl border-2 transition-all hover:scale-105 shadow-sm ${
                       selectedColor === color.value
                         ? "border-primary ring-2 ring-primary ring-offset-2"
-                        : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-md"
+                        : "border-border hover:border-border/70 hover:shadow-md"
                     }`}
                     style={{
                       backgroundColor: color.value,
@@ -127,7 +127,7 @@ export function ColorPickerForm() {
                   >
                     {selectedColor === color.value && (
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-4 h-4 bg-white dark:bg-black rounded-full shadow-md border border-gray-200 dark:border-gray-600" />
+                        <div className="w-4 h-4 bg-background rounded-full shadow-md border border-border" />
                       </div>
                     )}
                   </button>

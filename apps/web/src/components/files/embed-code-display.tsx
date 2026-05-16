@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { generateEmbedToken } from "@/http/endpoints/files";
 import { queryKeys } from "@/lib/query-keys";
 
@@ -21,6 +22,7 @@ interface EmbedCodeDisplayProps {
 export function EmbedCodeDisplay({ imageUrl, fileName, fileId, shareId }: EmbedCodeDisplayProps) {
   const t = useTranslations();
   const [copiedType, setCopiedType] = useState<string | null>(null);
+  const { copy } = useCopyToClipboard();
 
   const embedQuery = useQuery({
     queryKey: queryKeys.files.embedToken(fileId, shareId ?? ""),
@@ -40,13 +42,11 @@ export function EmbedCodeDisplay({ imageUrl, fileName, fileId, shareId }: EmbedC
   const htmlCode = `<img src="${directLink}" alt="${fileName}" />`;
   const bbCode = `[img]${directLink}[/img]`;
 
-  const copyToClipboard = async (text: string, type: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
+  const handleCopy = async (text: string, type: string) => {
+    const ok = await copy(text);
+    if (ok) {
       setCopiedType(type);
       setTimeout(() => setCopiedType(null), 2000);
-    } catch {
-      // clipboard write failed — silently ignore
     }
   };
 
@@ -85,7 +85,7 @@ export function EmbedCodeDisplay({ imageUrl, fileName, fileId, shareId }: EmbedC
                 <Button
                   size="default"
                   variant="outline"
-                  onClick={() => copyToClipboard(directLink, "direct")}
+                  onClick={() => handleCopy(directLink, "direct")}
                   className="shrink-0 h-full"
                 >
                   {copiedType === "direct" ? (
@@ -116,7 +116,7 @@ export function EmbedCodeDisplay({ imageUrl, fileName, fileId, shareId }: EmbedC
                 />
                 <Button
                   variant="outline"
-                  onClick={() => copyToClipboard(htmlCode, "html")}
+                  onClick={() => handleCopy(htmlCode, "html")}
                   className="shrink-0 h-full"
                 >
                   {copiedType === "html" ? (
@@ -145,7 +145,7 @@ export function EmbedCodeDisplay({ imageUrl, fileName, fileId, shareId }: EmbedC
                 />
                 <Button
                   variant="outline"
-                  onClick={() => copyToClipboard(bbCode, "bbcode")}
+                  onClick={() => handleCopy(bbCode, "bbcode")}
                   className="shrink-0 h-full"
                 >
                   {copiedType === "bbcode" ? (

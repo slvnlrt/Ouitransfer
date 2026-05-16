@@ -74,7 +74,7 @@ export function ShareDetailsInfoSection({
             <Button
               size="icon"
               variant="ghost"
-              className="h-6 w-6 text-green-600 hover:text-green-700"
+              className="h-6 w-6 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300"
               onClick={onSaveEdit}
             >
               <Check className="h-3 w-3" />
@@ -82,7 +82,7 @@ export function ShareDetailsInfoSection({
             <Button
               size="icon"
               variant="ghost"
-              className="h-6 w-6 text-red-600 hover:text-red-700"
+              className="h-6 w-6 text-destructive hover:text-destructive"
               onClick={onCancelEdit}
             >
               <X className="h-3 w-3" />
@@ -125,7 +125,7 @@ export function ShareDetailsInfoSection({
             <Button
               size="icon"
               variant="ghost"
-              className="h-6 w-6 text-green-600 hover:text-green-700"
+              className="h-6 w-6 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300"
               onClick={onSaveEdit}
             >
               <Check className="h-3 w-3" />
@@ -133,7 +133,7 @@ export function ShareDetailsInfoSection({
             <Button
               size="icon"
               variant="ghost"
-              className="h-6 w-6 text-red-600 hover:text-red-700"
+              className="h-6 w-6 text-destructive hover:text-destructive"
               onClick={onCancelEdit}
             >
               <X className="h-3 w-3" />

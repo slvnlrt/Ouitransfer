@@ -26,7 +26,7 @@ export function SettingsHeader() {
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
               <Link href="/dashboard" className="flex items-center">
-                <LayoutDashboard size={20} className="me-2" />
+                <LayoutDashboard className="size-5 me-2" />
                 {t("navigation.dashboard")}
               </Link>
             </BreadcrumbLink>
@@ -34,7 +34,7 @@ export function SettingsHeader() {
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <span className="flex items-center gap-2">
-              <Settings size={20} /> {t("settings.breadcrumb")}
+              <Settings className="size-5" /> {t("settings.breadcrumb")}
             </span>
           </BreadcrumbItem>
         </BreadcrumbList>

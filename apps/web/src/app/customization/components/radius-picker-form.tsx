@@ -82,7 +82,7 @@ export function RadiusPickerForm() {
                   className={`relative p-4 rounded-xl border-2 transition-all hover:shadow-md text-center group ${
                     selectedRadius === radius.value
                       ? "border-primary ring-2 ring-primary ring-offset-2 bg-primary/5"
-                      : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-muted/30"
+                      : "border-border hover:border-border/70 hover:bg-muted/30"
                   }`}
                   type="button"
                 >

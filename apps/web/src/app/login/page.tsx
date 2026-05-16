@@ -22,7 +22,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative flex flex-col h-screen">
+    <div className="relative flex flex-col min-h-screen">
       <div className="fixed top-4 end-4 z-50">
         <LanguageSwitcher />
       </div>

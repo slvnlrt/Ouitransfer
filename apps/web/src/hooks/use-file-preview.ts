@@ -3,6 +3,9 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+/** Time to wait for PDF viewer to initialize before falling back to download (ms) */
+const PDF_FALLBACK_TIMEOUT_MS = 4000;
+
 import { getCachedDownloadUrl, getCachedReverseShareDownloadUrl } from "@/lib/download-url-cache";
 import { logger } from "@/lib/logger";
 import { type FileType, getFileExtension, getFileType } from "@/utils/file-types";
@@ -151,7 +154,7 @@ export function useFilePreview({
         setState((prev) => ({ ...prev, previewUrl: url }));
         setTimeout(() => {
           handlePdfLoadError();
-        }, 4000);
+        }, PDF_FALLBACK_TIMEOUT_MS);
       }
     },
     [handlePdfLoadError],
@@ -251,7 +254,7 @@ export function useFilePreview({
     if (!fileKey) return;
 
     try {
-      const loadingToast = toast.loading(t("filePreview.downloading") || "Downloading...");
+      const loadingToast = toast.loading(t("filePreview.downloading"));
       let url: string;
       if (isReverseShare) {
         url = await getCachedReverseShareDownloadUrl(file.id!);

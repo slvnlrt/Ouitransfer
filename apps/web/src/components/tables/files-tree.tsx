@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown, ChevronRight, Folder, FolderOpen } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import type { FileItem } from "@/http/endpoints/files/types";
 import type { FolderItem } from "@/http/endpoints/folders/types";
 import { cn } from "@/lib/utils";
 import { getFileIcon } from "@/utils/file-icons";
+import { formatFileSize } from "@/utils/format-file-size";
 
 export interface TreeFile {
   id: string;
@@ -64,14 +66,6 @@ interface TreeNodeProps {
   singleSelection?: boolean;
   useRadioButtons?: boolean;
   useCheckboxAsRadio?: boolean;
-}
-
-function formatFileSize(bytes: number): string {
-  if (bytes === 0) return "0 B";
-  const k = 1024;
-  const sizes = ["B", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`;
 }
 
 function TreeNodeComponent({
@@ -219,6 +213,7 @@ export function FileTree({
   searchQuery = "",
   autoExpandToItem = null,
 }: FileTreeProps) {
+  const t = useTranslations();
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const selectedSet = useMemo(() => new Set(selectedItems), [selectedItems]);
 
@@ -505,7 +500,7 @@ export function FileTree({
   if (tree.length === 0) {
     return (
       <div className={cn("flex items-center justify-center py-8 text-muted-foreground", className)}>
-        <p>No items to display</p>
+        <p>{t("filesTree.noItems")}</p>
       </div>
     );
   }

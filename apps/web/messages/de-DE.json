@@ -12,7 +12,21 @@
     },
     "authenticationFailed": "Authentifizierung fehlgeschlagen",
     "successfullyAuthenticated": "Erfolgreich authentifiziert!",
-    "sessionExpired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an."
+    "sessionExpired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.",
+    "callback": {
+      "errors": {
+        "oauth_error": "OAuth authentication failed",
+        "missing_parameters": "Missing authentication parameters",
+        "missing_code": "Missing authorization code",
+        "registration_disabled": "Registration is disabled for this provider",
+        "provider_disabled": "This authentication provider is disabled",
+        "state_expired": "Authentication session expired",
+        "account_inactive": "Your account is inactive",
+        "no_email": "No email address found in your account",
+        "token_exchange_failed": "Failed to authenticate with provider",
+        "missing_user_info": "Incomplete user information from provider"
+      }
+    }
   },
   "authProviders": {
     "title": "Authentifizierungsanbieter",
@@ -341,7 +355,8 @@
     "pdfPreviewNotAvailable": "PDF-Vorschau ist nicht verfügbar. Versuchen Sie die alternative Ansicht oder laden Sie herunter.",
     "tryAlternativeView": "Alternative Ansicht Versuchen",
     "loadingAlternative": "Lade alternative Ansicht...",
-    "loadingAudio": "Audio wird geladen..."
+    "loadingAudio": "Audio wird geladen...",
+    "downloading": "Downloading..."
   },
   "fileSelector": {
     "availableFiles": "Verfügbare Dateien ({count})",
@@ -408,7 +423,15 @@
       "moveItemsFailed": "Verschieben der Elemente fehlgeschlagen. Bitte erneut versuchen.",
       "cannotMoveHere": "Elemente können nicht an diesen Speicherort verschoben werden"
     },
-    "openFolder": "Ordner öffnen"
+    "openFolder": "Ordner öffnen",
+    "drag": {
+      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
+      "fileMoved": "File \"{name}\" moved to \"{target}\"",
+      "itemsMoved": "{count} items moved to \"{target}\"",
+      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
+      "fileMovedToRoot": "File \"{name}\" moved to root folder",
+      "itemsMovedToRoot": "{count} items moved to root folder"
+    }
   },
   "filesTable": {
     "ariaLabel": "Dateien-Tabelle",
@@ -546,7 +569,10 @@
     "pageTitle": "Anmeldung",
     "or": "oder",
     "continueWithSSO": "Mit SSO fortfahren",
-    "processing": "Authentifizierung wird verarbeitet..."
+    "processing": "Authentifizierung wird verarbeitet...",
+    "orContinueWith": "Or continue with",
+    "continueWith": "Continue with {name}",
+    "providerNotConfigured": "{name} is not properly configured"
   },
   "logo": {
     "labels": {
@@ -901,7 +927,8 @@
         "editError": "Fehler beim Aktualisieren der Datei",
         "previewNotAvailable": "Vorschau nicht verfügbar",
         "notAvailable": "Nicht verfügbar",
-        "invalidDate": "Ungültiges Datum"
+        "invalidDate": "Ungültiges Datum",
+        "downloading": "Downloading..."
       },
       "alias": {
         "editTitle": "Alias bearbeiten",
@@ -988,7 +1015,8 @@
           "timeout": "Zeitüberschreitung beim Kopiervorgang. Bitte versuchen Sie es erneut mit einer kleineren Datei oder überprüfen Sie Ihre Verbindung.",
           "failed": "Kopiervorgang fehlgeschlagen. Bitte versuchen Sie es erneut.",
           "aborted": "Kopiervorgang wurde wegen Zeitüberschreitung abgebrochen."
-        }
+        },
+        "downloading": "Downloading..."
       }
     },
     "form": {
@@ -1056,7 +1084,11 @@
       },
       "fieldRequirements": {
         "title": "Feldanforderungen",
-        "description": "Konfigurieren Sie, welche Felder im Upload -Formular angezeigt werden"
+        "description": "Konfigurieren Sie, welche Felder im Upload -Formular angezeigt werden",
+        "configurationTitle": "Field Configuration:",
+        "hiddenDescription": "Hidden: Field won't appear in the upload form",
+        "optionalDescription": "Optional: Field will appear but isn't mandatory",
+        "requiredDescription": "Required: Field must be filled before upload"
       },
       "nameFieldRequired": {
         "label": "Namensfeldbedarf",
@@ -1874,7 +1906,11 @@
       "description": "Loslassen, um Ihre Dateien hochzuladen"
     },
     "pasteSuccess": "{count, plural, =1 {Bild erfolgreich eingefügt und hochgeladen} other {# Bilder erfolgreich eingefügt und hochgeladen}}",
-    "filesQueued": "{count, plural, one {# Datei in der Warteschlange} other {# Dateien in der Warteschlange}}"
+    "filesQueued": "{count, plural, one {# Datei in der Warteschlange} other {# Dateien in der Warteschlange}}",
+    "errors": {
+      "addFileFailed": "Failed to add {name}: {error}",
+      "uploadFailed": "Upload failed"
+    }
   },
   "users": {
     "modes": {
@@ -1958,7 +1994,8 @@
       "expiresIn": "Läuft in 15 Minuten ab",
       "close": "Schließen",
       "errors": {
-        "generateFailed": "Fehler beim Generieren des Einladungslinks"
+        "generateFailed": "Fehler beim Generieren des Einladungslinks",
+        "copyFailed": "Failed to copy link"
       }
     }
   },
@@ -2035,5 +2072,11 @@
       "createFailed": "Konto konnte nicht erstellt werden. Bitte versuchen Sie es erneut."
     },
     "pageTitle": "Konto erstellen"
+  },
+  "filesTree": {
+    "noItems": "No items to display"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Change language"
   }
 }

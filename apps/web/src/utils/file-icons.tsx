@@ -265,7 +265,7 @@ const fileIcons: FileIconMapping[] = [
   {
     extensions: ["bat", "cmd"],
     icon: SquareTerminal,
-    color: "text-gray-600",
+    color: "text-muted-foreground",
   },
 
   // Database
@@ -299,7 +299,7 @@ const fileIcons: FileIconMapping[] = [
   {
     extensions: ["ini", "cfg", "conf", "config"],
     icon: Settings,
-    color: "text-gray-600",
+    color: "text-muted-foreground",
   },
   {
     extensions: ["env", "dotenv"],
@@ -397,7 +397,7 @@ const fileIcons: FileIconMapping[] = [
   {
     extensions: ["rst", "txt"],
     icon: FileText,
-    color: "text-gray-500",
+    color: "text-muted-foreground",
   },
   {
     extensions: ["adoc", "asciidoc"],
@@ -494,14 +494,14 @@ const fileIcons: FileIconMapping[] = [
   {
     extensions: ["lock", "sum"],
     icon: Lock,
-    color: "text-gray-600",
+    color: "text-muted-foreground",
   },
 
   // Fallback for general text/code files
   {
     extensions: ["svelte", "astro", "erb", "haml", "slim"],
     icon: FileCode,
-    color: "text-gray-600",
+    color: "text-muted-foreground",
   },
 ];
 
@@ -510,5 +510,5 @@ export function getFileIcon(filename: string): { icon: FileIconComponent; color:
 
   const mapping = fileIcons.find((type) => type.extensions.includes(extension));
 
-  return mapping || { icon: File, color: "text-gray-400" };
+  return mapping || { icon: File, color: "text-muted-foreground" };
 }

@@ -12,7 +12,21 @@
     },
     "authenticationFailed": "Échec de l'authentification",
     "successfullyAuthenticated": "Authentification réussie !",
-    "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter."
+    "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
+    "callback": {
+      "errors": {
+        "oauth_error": "OAuth authentication failed",
+        "missing_parameters": "Missing authentication parameters",
+        "missing_code": "Missing authorization code",
+        "registration_disabled": "Registration is disabled for this provider",
+        "provider_disabled": "This authentication provider is disabled",
+        "state_expired": "Authentication session expired",
+        "account_inactive": "Your account is inactive",
+        "no_email": "No email address found in your account",
+        "token_exchange_failed": "Failed to authenticate with provider",
+        "missing_user_info": "Incomplete user information from provider"
+      }
+    }
   },
   "authProviders": {
     "title": "Fournisseurs d'authentification",
@@ -341,7 +355,8 @@
     "pdfPreviewNotAvailable": "L'aperçu PDF n'est pas disponible. Essayez la vue alternative ou téléchargez.",
     "tryAlternativeView": "Essayer la Vue Alternative",
     "loadingAlternative": "Chargement de la vue alternative...",
-    "loadingAudio": "Chargement de l'audio..."
+    "loadingAudio": "Chargement de l'audio...",
+    "downloading": "Downloading..."
   },
   "fileSelector": {
     "availableFiles": "Fichiers Disponibles ({count})",
@@ -408,7 +423,15 @@
       "moveItemsFailed": "Échec du déplacement des éléments. Veuillez réessayer.",
       "cannotMoveHere": "Impossible de déplacer les éléments vers cet emplacement"
     },
-    "openFolder": "Ouvrir le dossier"
+    "openFolder": "Ouvrir le dossier",
+    "drag": {
+      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
+      "fileMoved": "File \"{name}\" moved to \"{target}\"",
+      "itemsMoved": "{count} items moved to \"{target}\"",
+      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
+      "fileMovedToRoot": "File \"{name}\" moved to root folder",
+      "itemsMovedToRoot": "{count} items moved to root folder"
+    }
   },
   "filesTable": {
     "ariaLabel": "Tableau des fichiers",
@@ -546,7 +569,10 @@
     "pageTitle": "Connexion",
     "or": "ou",
     "continueWithSSO": "Continuar com SSO",
-    "processing": "Processando autenticação..."
+    "processing": "Processando autenticação...",
+    "orContinueWith": "Or continue with",
+    "continueWith": "Continue with {name}",
+    "providerNotConfigured": "{name} is not properly configured"
   },
   "logo": {
     "labels": {
@@ -901,7 +927,8 @@
         "editError": "Erreur lors de la mise à jour du fichier",
         "previewNotAvailable": "Aperçu non disponible",
         "notAvailable": "Non disponible",
-        "invalidDate": "Date invalide"
+        "invalidDate": "Date invalide",
+        "downloading": "Downloading..."
       },
       "alias": {
         "editTitle": "Modifier l'Alias",
@@ -988,7 +1015,8 @@
           "timeout": "L'opération de copie a expiré. Veuillez réessayer avec un fichier plus petit ou vérifier votre connexion.",
           "failed": "L'opération de copie a échoué. Veuillez réessayer.",
           "aborted": "L'opération de copie a été annulée en raison d'un délai d'attente dépassé."
-        }
+        },
+        "downloading": "Downloading..."
       }
     },
     "form": {
@@ -1056,7 +1084,11 @@
       },
       "fieldRequirements": {
         "title": "Exigences sur le terrain",
-        "description": "Configurer quels champs sont affichés dans le formulaire de téléchargement"
+        "description": "Configurer quels champs sont affichés dans le formulaire de téléchargement",
+        "configurationTitle": "Field Configuration:",
+        "hiddenDescription": "Hidden: Field won't appear in the upload form",
+        "optionalDescription": "Optional: Field will appear but isn't mandatory",
+        "requiredDescription": "Required: Field must be filled before upload"
       },
       "nameFieldRequired": {
         "label": "Exigence de champ de nom",
@@ -1874,7 +1906,11 @@
       "description": "Relâchez pour télécharger vos fichiers"
     },
     "pasteSuccess": "{count, plural, =1 {Image collée et téléchargée avec succès} other {# images collées et téléchargées avec succès}}",
-    "filesQueued": "{count, plural, one {# fichier en attente de téléchargement} other {# fichiers en attente de téléchargement}}"
+    "filesQueued": "{count, plural, one {# fichier en attente de téléchargement} other {# fichiers en attente de téléchargement}}",
+    "errors": {
+      "addFileFailed": "Failed to add {name}: {error}",
+      "uploadFailed": "Upload failed"
+    }
   },
   "users": {
     "modes": {
@@ -1958,7 +1994,8 @@
       "expiresIn": "Expire dans 15 minutes",
       "close": "Fermer",
       "errors": {
-        "generateFailed": "Échec de la génération du lien d'invitation"
+        "generateFailed": "Échec de la génération du lien d'invitation",
+        "copyFailed": "Failed to copy link"
       }
     }
   },
@@ -2035,5 +2072,11 @@
       "createFailed": "Échec de la création du compte. Veuillez réessayer."
     },
     "pageTitle": "Créer un Compte"
+  },
+  "filesTree": {
+    "noItems": "No items to display"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Change language"
   }
 }

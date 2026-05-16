@@ -1,11 +1,9 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Copy, Download, ExternalLink, Lock, LockOpen, Mail, Pencil } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { Mail } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -15,18 +13,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { LazyQRCode } from "@/components/ui/lazy-qr-code";
 import { Loader } from "@/components/ui/loader";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { getShare } from "@/http/endpoints";
 import type { Share } from "@/http/endpoints/shares/types";
-import { formatDateTime } from "@/lib/format-date-time";
 import { logger } from "@/lib/logger";
 import { queryKeys } from "@/lib/query-keys";
 import { GenerateShareLinkModal } from "./generate-share-link-modal";
 import { QrCodeModal } from "./qr-code-modal";
-import { ShareDetailsFilesList } from "./share-details-files-list";
-import { ShareDetailsInfoSection } from "./share-details-info-section";
+import { ShareDetailsDatesSection } from "./share-details/share-details-dates-section";
+import { ShareDetailsFilesList } from "./share-details/share-details-files-list";
+import { ShareDetailsInfoSection } from "./share-details/share-details-info-section";
+import { ShareDetailsLinksSection } from "./share-details/share-details-links-section";
+import { ShareDetailsQrSection } from "./share-details/share-details-qr-section";
+import { ShareDetailsSecuritySection } from "./share-details/share-details-security-section";
 import { ShareExpirationModal } from "./share-expiration-modal";
 import { ShareSecurityModal } from "./share-security-modal";
 
@@ -63,7 +63,6 @@ export function ShareDetailsModal({
   onSuccess,
 }: ShareDetailsModalProps) {
   const t = useTranslations();
-  const locale = useLocale();
   const queryClient = useQueryClient();
   const [editingField, setEditingField] = useState<{ field: "name" | "description" } | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -72,7 +71,6 @@ export function ShareDetailsModal({
   const [showSecurityModal, setShowSecurityModal] = useState(false);
   const [showExpirationModal, setShowExpirationModal] = useState(false);
   const [showQrCodeModal, setShowQrCodeModal] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const shareQuery = useQuery({
@@ -92,7 +90,7 @@ export function ShareDetailsModal({
     queryClient.invalidateQueries({ queryKey: queryKeys.shares.all });
   };
 
-  // Trigger a refetch when the parent signals a refresh via refreshTrigger
+  // invalidateShare is stable (reads queryClient + shareId which are stable references)
   useEffect(() => {
     if (refreshTrigger) {
       invalidateShare();
@@ -109,15 +107,6 @@ export function ShareDetailsModal({
   useEffect(() => {
     setPendingChanges({});
   }, [share]);
-
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return t("shareDetails.notAvailable");
-    try {
-      return formatDateTime(dateString, "table", locale);
-    } catch {
-      return t("shareDetails.invalidDate");
-    }
-  };
 
   const startEdit = (field: "name" | "description", currentValue: string) => {
     setEditingField({ field });
@@ -182,61 +171,6 @@ export function ShareDetailsModal({
     return field === "name" ? share?.name : share?.description;
   };
 
-  const handleCopyLink = () => {
-    if (share?.alias?.alias) {
-      const link = `${window.location.origin}/s/${share.alias.alias}`;
-      navigator.clipboard.writeText(link);
-      toast.success(t("shareDetails.linkCopied"));
-    }
-  };
-
-  const handleOpenLink = () => {
-    if (share?.alias?.alias) {
-      const link = `${window.location.origin}/s/${share.alias.alias}`;
-      window.open(link, "_blank");
-    }
-  };
-
-  const downloadQRCode = () => {
-    setIsDownloading(true);
-
-    const svg = document.getElementById("share-details-qr-code");
-    if (!svg) {
-      setIsDownloading(false);
-      return;
-    }
-
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    const padding = 20;
-    canvas.width = 200 + padding * 2;
-    canvas.height = 200 + padding * 2;
-
-    if (ctx) {
-      ctx.fillStyle = "#FFFFFF";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      const svgData = new XMLSerializer().serializeToString(svg);
-      const img = new Image();
-
-      img.onload = () => {
-        ctx.drawImage(img, padding, padding, 200, 200);
-
-        const link = document.createElement("a");
-        link.download = `${share?.name?.replace(/[^a-z0-9]/gi, "-").toLowerCase() || "share"}-qr-code.png`;
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-
-        setIsDownloading(false);
-      };
-
-      img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
-    } else {
-      setIsDownloading(false);
-    }
-  };
-
   const handleLinkGenerated = () => {
     setShowLinkModal(false);
     invalidateShare();
@@ -286,17 +220,19 @@ export function ShareDetailsModal({
               <div className="space-y-4">
                 <div className="grid grid-cols-3 gap-3">
                   <div className="text-center p-2 bg-muted/30 rounded-lg">
-                    <p className="text-lg font-semibold text-green-600">{share.views || 0}</p>
+                    <p className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
+                      {share.views || 0}
+                    </p>
                     <p className="text-xs text-muted-foreground">{t("shareDetails.views")}</p>
                   </div>
                   <div className="text-center p-2 bg-muted/30 rounded-lg">
-                    <p className="text-lg font-semibold text-green-600">
+                    <p className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
                       {share.files?.length || 0}
                     </p>
                     <p className="text-xs text-muted-foreground">{t("shareDetails.files")}</p>
                   </div>
                   <div className="text-center p-2 bg-muted/30 rounded-lg">
-                    <p className="text-lg font-semibold text-green-600">
+                    <p className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
                       {share.recipients?.length || 0}
                     </p>
                     <p className="text-xs text-muted-foreground">{t("shareDetails.recipients")}</p>
@@ -321,184 +257,31 @@ export function ShareDetailsModal({
                   />
 
                   {shareLink && (
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2 border-b pb-2">
-                        <button
-                          type="button"
-                          className="text-base font-medium text-foreground cursor-pointer bg-transparent border-0 p-0"
-                          onClick={() => setShowQrCodeModal(true)}
-                        >
-                          {t("shareDetails.qrCode", { defaultValue: "QR Code" })}
-                        </button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-5 w-5 text-muted-foreground hover:text-foreground"
-                          onClick={downloadQRCode}
-                          disabled={isDownloading}
-                          title={t("shareDetails.downloadQrCode")}
-                        >
-                          <Download className="h-3 w-3" />
-                        </Button>
-                      </div>
-                      <div className="flex flex-col items-start justify-start ">
-                        <button
-                          type="button"
-                          className="p-2 bg-white rounded-lg cursor-pointer hover:opacity-80 transition-opacity duration-300 border-0"
-                          onClick={() => setShowQrCodeModal(true)}
-                          title={t("shareDetails.clickToEnlargeQrCode", {
-                            defaultValue: "Click to enlarge QR Code",
-                          })}
-                        >
-                          <LazyQRCode
-                            id="share-details-qr-code"
-                            value={shareLink}
-                            size={100}
-                            level="H"
-                            fgColor="#000000"
-                            bgColor="#FFFFFF"
-                          />
-                        </button>
-                      </div>
-                    </div>
+                    <ShareDetailsQrSection
+                      shareLink={shareLink}
+                      shareName={share.name ?? undefined}
+                      onShowQrCode={() => setShowQrCodeModal(true)}
+                    />
                   )}
                 </div>
 
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 border-b pb-2">
-                    <h3 className="text-base font-medium text-foreground">
-                      {t("shareDetails.shareLink")}
-                    </h3>
-                    {onGenerateLink && (
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-5 w-5 text-muted-foreground hover:text-foreground"
-                        onClick={() => setShowLinkModal(true)}
-                        title={
-                          shareLink ? t("shareDetails.editLink") : t("shareDetails.generateLink")
-                        }
-                      >
-                        <Pencil className="h-3 w-3" />
-                      </Button>
-                    )}
-                  </div>
-                  {shareLink ? (
-                    <div className="flex gap-2">
-                      <Input
-                        value={shareLink}
-                        readOnly
-                        className="flex-1 bg-muted/30 text-sm h-8"
-                      />
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={handleCopyLink}
-                        title={t("shareDetails.copyLink")}
-                      >
-                        <Copy className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={handleOpenLink}
-                        title={t("shareDetails.openLink")}
-                      >
-                        <ExternalLink className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-between p-2 bg-muted/20 rounded-lg">
-                      <p className="text-sm text-muted-foreground">{t("shareDetails.noLink")}</p>
-                    </div>
-                  )}
-                </div>
+                <ShareDetailsLinksSection
+                  shareLink={shareLink}
+                  onEditLink={onGenerateLink ? () => setShowLinkModal(true) : undefined}
+                />
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 border-b pb-2">
-                      <h3 className="text-base font-medium text-foreground">
-                        {t("shareDetails.dates")}
-                      </h3>
-                      {onUpdateExpiration && (
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-5 w-5 text-muted-foreground hover:text-foreground"
-                          onClick={() => setShowExpirationModal(true)}
-                          title={t("shareDetails.editExpiration")}
-                        >
-                          <Pencil className="h-3 w-3" />
-                        </Button>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <div>
-                        <div className="text-xs font-medium text-muted-foreground">
-                          {t("shareDetails.created")}
-                        </div>
-                        <div className="text-sm">{formatDate(share.createdAt)}</div>
-                      </div>
-                      <div>
-                        <div className="text-xs font-medium text-muted-foreground">
-                          {t("shareDetails.expires")}
-                        </div>
-                        <div className="text-sm">
-                          {share.expiration
-                            ? formatDate(share.expiration)
-                            : t("shareDetails.never")}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <ShareDetailsDatesSection
+                    share={share}
+                    onEditExpiration={
+                      onUpdateExpiration ? () => setShowExpirationModal(true) : undefined
+                    }
+                  />
 
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 border-b pb-2">
-                      <h3 className="text-base font-medium text-foreground">
-                        {t("shareDetails.security")}
-                      </h3>
-                      {onUpdateSecurity && (
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-5 w-5 text-muted-foreground hover:text-foreground"
-                          onClick={() => setShowSecurityModal(true)}
-                          title={t("shareDetails.editSecurity")}
-                        >
-                          <Pencil className="h-3 w-3" />
-                        </Button>
-                      )}
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      {share.security?.hasPassword ? (
-                        <Badge
-                          variant="secondary"
-                          className="bg-yellow-500/20 text-yellow-700 border-yellow-200 w-fit"
-                        >
-                          <Lock className="h-3 w-3 me-1" />
-                          {t("shareDetails.passwordProtected")}
-                        </Badge>
-                      ) : (
-                        <Badge
-                          variant="secondary"
-                          className="bg-green-500/20 text-green-700 border-green-200 w-fit"
-                        >
-                          <LockOpen className="h-3 w-3 me-1" />
-                          {t("shareDetails.publicAccess")}
-                        </Badge>
-                      )}
-                      {share.security?.maxViews && (
-                        <Badge
-                          variant="secondary"
-                          className="bg-blue-500/20 text-blue-700 border-blue-200 w-fit"
-                        >
-                          {t("shareDetails.maxViews")} {share.security.maxViews}
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
+                  <ShareDetailsSecuritySection
+                    share={share}
+                    onEditSecurity={onUpdateSecurity ? () => setShowSecurityModal(true) : undefined}
+                  />
                 </div>
 
                 {share.files && share.files.length > 0 && (
@@ -516,14 +299,10 @@ export function ShareDetailsModal({
                     </h3>
                     <div className="flex flex-wrap gap-1">
                       {share.recipients.map((recipient: ShareRecipient) => (
-                        <Badge
-                          key={recipient.id}
-                          variant="secondary"
-                          className="bg-blue-500/20 text-blue-700 border-blue-200 text-xs"
-                        >
+                        <StatusBadge key={recipient.id} variant="info">
                           <Mail className="h-3 w-3 me-1" />
                           {recipient.email}
-                        </Badge>
+                        </StatusBadge>
                       ))}
                     </div>
                   </div>

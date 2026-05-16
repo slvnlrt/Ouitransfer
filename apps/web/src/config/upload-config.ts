@@ -4,7 +4,7 @@
  */
 export const UPLOAD_CONFIG = {
   /**
-   * Size threshold for multipart upload (100MB)
+   * Size threshold for multipart upload (50MB)
    * Files >= this size will use multipart upload
    * Files < this size will use simple PUT upload
    */

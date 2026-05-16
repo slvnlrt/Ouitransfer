@@ -66,7 +66,7 @@ export function EditableField({
         <Button
           size="icon"
           variant="ghost"
-          className="h-6 w-6 text-green-600 hover:text-green-700 flex-shrink-0"
+          className="h-6 w-6 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex-shrink-0"
           onClick={(e) => {
             e.stopPropagation();
             onSaveEdit();
@@ -77,7 +77,7 @@ export function EditableField({
         <Button
           size="icon"
           variant="ghost"
-          className="h-6 w-6 text-red-600 hover:text-red-700 flex-shrink-0"
+          className="h-6 w-6 text-destructive hover:text-destructive flex-shrink-0"
           onClick={(e) => {
             e.stopPropagation();
             onCancelEdit();

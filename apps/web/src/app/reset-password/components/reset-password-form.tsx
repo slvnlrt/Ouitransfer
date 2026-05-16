@@ -48,7 +48,7 @@ export function ResetPasswordForm({
                     onClick={onTogglePassword}
                     className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
-                    {isPasswordVisible ? <Eye size={20} /> : <EyeOff size={20} />}
+                    {isPasswordVisible ? <Eye className="size-5" /> : <EyeOff className="size-5" />}
                   </button>
                 </div>
               </FormControl>
@@ -77,7 +77,11 @@ export function ResetPasswordForm({
                     onClick={onToggleConfirmPassword}
                     className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
-                    {isConfirmPasswordVisible ? <Eye size={20} /> : <EyeOff size={20} />}
+                    {isConfirmPasswordVisible ? (
+                      <Eye className="size-5" />
+                    ) : (
+                      <EyeOff className="size-5" />
+                    )}
                   </button>
                 </div>
               </FormControl>

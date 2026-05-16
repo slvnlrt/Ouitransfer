@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { DynamicIcon } from "@/components/ui/dynamic-icon";
@@ -12,6 +13,7 @@ interface MultiProviderButtonsProps {
 }
 
 export function MultiProviderButtons({ showSeparator = true }: MultiProviderButtonsProps) {
+  const t = useTranslations();
   const { firstAccess } = useAppInfo();
   const { data: providers = [], isLoading: loading } = useEnabledProviders({
     enabled: !firstAccess,
@@ -19,7 +21,7 @@ export function MultiProviderButtons({ showSeparator = true }: MultiProviderButt
 
   const handleProviderLogin = (provider: EnabledAuthProvider) => {
     if (!provider.authUrl) {
-      toast.error(`${provider.displayName} is not properly configured`);
+      toast.error(t("login.providerNotConfigured", { name: provider.displayName }));
       return;
     }
 
@@ -50,7 +52,9 @@ export function MultiProviderButtons({ showSeparator = true }: MultiProviderButt
             <span className="w-full border-t" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+            <span className="bg-background px-2 text-muted-foreground">
+              {t("login.orContinueWith")}
+            </span>
           </div>
         </div>
       )}
@@ -66,7 +70,7 @@ export function MultiProviderButtons({ showSeparator = true }: MultiProviderButt
           >
             <div className="flex items-center gap-2">
               {provider.icon && <DynamicIcon name={provider.icon} className="w-5 h-5" />}
-              <span>Continue with {provider.displayName}</span>
+              <span>{t("login.continueWith", { name: provider.displayName })}</span>
             </div>
           </Button>
         ))}

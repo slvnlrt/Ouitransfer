@@ -25,11 +25,11 @@ export function UsersHeader({ onCreateUser, onGenerateInvite }: UsersHeaderProps
         </div>
         <div className="flex gap-2">
           <Button variant="outline" className="font-semibold" onClick={onGenerateInvite}>
-            <LinkIcon size={18} />
+            <LinkIcon className="size-[18px]" />
             {t("users.invite.button")}
           </Button>
           <Button className="font-semibold" onClick={onCreateUser}>
-            <UserPlus size={18} />
+            <UserPlus className="size-[18px]" />
             {t("users.header.addUser")}
           </Button>
         </div>
@@ -40,7 +40,7 @@ export function UsersHeader({ onCreateUser, onGenerateInvite }: UsersHeaderProps
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
               <Link href="/dashboard" className="flex items-center">
-                <LayoutDashboard size={20} className="me-2" />
+                <LayoutDashboard className="size-5 me-2" />
                 {t("common.dashboard")}
               </Link>
             </BreadcrumbLink>
@@ -48,7 +48,7 @@ export function UsersHeader({ onCreateUser, onGenerateInvite }: UsersHeaderProps
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <span className="flex items-center gap-2">
-              <Users size={20} /> {t("users.header.management")}
+              <Users className="size-5" /> {t("users.header.management")}
             </span>
           </BreadcrumbItem>
         </BreadcrumbList>

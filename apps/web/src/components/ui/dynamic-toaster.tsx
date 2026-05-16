@@ -12,7 +12,7 @@ export function DynamicToaster() {
     <Toaster
       position="top-right"
       expand={false}
-      richColors={theme === "dark" ? true : false}
+      richColors={theme === "dark"}
       closeButton={false}
       theme={currentTheme as "light" | "dark"}
     />

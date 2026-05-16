@@ -4,7 +4,6 @@ import { Eye, EyeOff, Lock, LockOpen } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader } from "@/components/ui/loader";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { Switch } from "@/components/ui/switch";
 import { updateSharePassword } from "@/http/endpoints";
 import type { Share } from "@/http/endpoints/shares/types";
@@ -130,21 +130,15 @@ export function ShareSecurityModal({
             </h3>
             <div className="flex gap-2">
               {share?.security?.hasPassword ? (
-                <Badge
-                  variant="secondary"
-                  className="bg-yellow-500/20 text-yellow-800 border-yellow-300 dark:bg-yellow-500/10 dark:text-yellow-400 dark:border-yellow-500/20"
-                >
+                <StatusBadge variant="warning">
                   <Lock className="h-3 w-3 me-1" />
                   {t("shareDetails.passwordProtected")}
-                </Badge>
+                </StatusBadge>
               ) : (
-                <Badge
-                  variant="secondary"
-                  className="bg-green-500/20 text-green-800 border-green-300 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20"
-                >
+                <StatusBadge variant="success">
                   <LockOpen className="h-3 w-3 me-1" />
                   {t("shareDetails.publicAccess")}
-                </Badge>
+                </StatusBadge>
               )}
             </div>
           </div>
@@ -157,7 +151,7 @@ export function ShareSecurityModal({
                 onCheckedChange={handlePasswordToggle}
               />
               <Label htmlFor="password-protection" className="flex items-center gap-2">
-                <Lock size={16} />
+                <Lock className="size-4" />
                 {t("shareSecurity.passwordProtection")}
               </Label>
             </div>

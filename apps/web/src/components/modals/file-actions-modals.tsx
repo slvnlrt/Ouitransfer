@@ -48,7 +48,7 @@ export function FileActionsModals({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Pencil size={20} />
+              <Pencil className="size-5" />
               {t("fileActions.editFile")}
             </DialogTitle>
           </DialogHeader>
@@ -105,7 +105,7 @@ export function FileActionsModals({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Trash2 size={20} />
+              <Trash2 className="size-5" />
               {t("fileActions.deleteFile")}
             </DialogTitle>
           </DialogHeader>

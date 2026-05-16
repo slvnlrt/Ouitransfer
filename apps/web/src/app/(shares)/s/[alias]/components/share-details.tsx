@@ -133,7 +133,7 @@ export function ShareDetails({
                         className="flex items-center gap-1 cursor-pointer"
                         onClick={() => navigateToFolder()}
                       >
-                        <Share size={16} />
+                        <Share className="size-4" />
                         {t("folderActions.rootFolder")}
                       </BreadcrumbLink>
                     </BreadcrumbItem>

@@ -48,7 +48,7 @@ export function DeleteConfirmationModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-destructive">
-            <Trash2 size={20} />
+            <Trash2 className="size-5" />
             {title}
           </DialogTitle>
         </DialogHeader>

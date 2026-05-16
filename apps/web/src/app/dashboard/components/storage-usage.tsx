@@ -28,7 +28,7 @@ export function StorageUsage({ diskSpace, diskSpaceError, onRetry }: StorageUsag
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold flex items-center gap-2">
-                <DatabaseZap className="text-gray-500" size={24} />
+                <DatabaseZap className="text-muted-foreground size-6" />
                 {t("storageUsage.title")}
               </h2>
               <span className="text-sm text-muted-foreground">{t("storageUsage.total")}: --</span>
@@ -57,13 +57,13 @@ export function StorageUsage({ diskSpace, diskSpaceError, onRetry }: StorageUsag
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold flex items-center gap-2">
-                <DatabaseZap className="text-gray-500" size={24} />
+                <DatabaseZap className="text-muted-foreground size-6" />
                 {t("storageUsage.title")}
               </h2>
               <span className="text-sm text-muted-foreground">{t("storageUsage.total")}: --</span>
             </div>
             <div className="flex flex-col gap-2">
-              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+              <div className="h-3 bg-muted rounded animate-pulse" />
               <div className="flex justify-between text-sm text-muted-foreground">
                 <span>{t("storageUsage.loading")}</span>
                 <span>{t("storageUsage.loading")}</span>
@@ -81,12 +81,9 @@ export function StorageUsage({ diskSpace, diskSpaceError, onRetry }: StorageUsag
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold flex items-center gap-2">
-              <DatabaseZap className="text-gray-500" size={24} />
+              <DatabaseZap className="text-muted-foreground size-6" />
               {t("storageUsage.title")}
             </h2>
-            <span className="text-sm text-muted-foreground">
-              {t("storageUsage.total")}: {formatStorageSize(diskSpace?.diskSizeGB || 0)}
-            </span>
           </div>
           <div className="flex flex-col gap-2">
             <Progress

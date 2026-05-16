@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { getTranslations } from "next-intl/server";
 
+import { getAppInfo, getBaseUrl } from "@/lib/app-info";
 import { logger } from "@/lib/logger";
 
 interface LayoutProps {
@@ -27,33 +27,6 @@ async function getShareMetadata(alias: string) {
     });
     return null;
   }
-}
-
-async function getAppInfo() {
-  try {
-    const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3333";
-    const response = await fetch(`${API_BASE_URL}/app/info`, {
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      return { appName: "OUITRANSFER", appDescription: "File sharing platform", appLogo: null };
-    }
-
-    return await response.json();
-  } catch (error) {
-    logger.error("Error fetching app info:", {
-      err: error instanceof Error ? error.message : String(error),
-    });
-    return { appName: "OUITRANSFER", appDescription: "File sharing platform", appLogo: null };
-  }
-}
-
-async function getBaseUrl(): Promise<string> {
-  const headersList = await headers();
-  const protocol = headersList.get("x-forwarded-proto") || "http";
-  const host = headersList.get("x-forwarded-host") || headersList.get("host") || "localhost:3000";
-  return `${protocol}://${host}`;
 }
 
 export async function generateMetadata({
@@ -107,6 +80,6 @@ export async function generateMetadata({
   };
 }
 
-export default function DashboardLayout({ children }: LayoutProps) {
+export default function PublicShareLayout({ children }: LayoutProps) {
   return <>{children}</>;
 }

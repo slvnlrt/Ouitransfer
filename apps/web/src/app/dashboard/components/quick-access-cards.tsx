@@ -11,19 +11,19 @@ export function QuickAccessCards() {
   const QUICK_ACCESS_ITEMS = [
     {
       title: t("quickAccess.files.title"),
-      icon: <Folders size={24} />,
+      icon: <Folders className="size-6" />,
       description: t("quickAccess.files.description"),
       path: "/files",
     },
     {
       title: t("quickAccess.shares.title"),
-      icon: <Share2 size={24} />,
+      icon: <Share2 className="size-6" />,
       description: t("quickAccess.shares.description"),
       path: "/shares",
     },
     {
       title: t("quickAccess.reverseShares.title"),
-      icon: <MonitorDown size={24} />,
+      icon: <MonitorDown className="size-6" />,
       description: t("quickAccess.reverseShares.description"),
       path: "/reverse-shares",
     },

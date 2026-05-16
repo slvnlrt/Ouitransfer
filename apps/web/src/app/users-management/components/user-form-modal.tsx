@@ -43,7 +43,7 @@ export function UserFormModal({
           <form onSubmit={formMethods.handleSubmit(onSubmit)}>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 mb-2">
-                <UserPlus size={24} className="me-1" />
+                <UserPlus className="size-6 me-1" />
                 {modalMode === "create" ? t("users.form.titleCreate") : t("users.form.titleEdit")}
               </DialogTitle>
             </DialogHeader>

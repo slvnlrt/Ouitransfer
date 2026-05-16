@@ -2,10 +2,13 @@ import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import type { FileItem, FolderItem } from "@/components/tables/files-table-types";
-import { deleteFile, updateFile } from "@/http/endpoints";
-import { deleteFolder, registerFolder, updateFolder } from "@/http/endpoints/folders";
+import { deleteFile } from "@/http/endpoints";
+import { deleteFolder } from "@/http/endpoints/folders";
 import { getCachedDownloadUrl } from "@/lib/download-url-cache";
 import { logger } from "@/lib/logger";
+import { getFolderFilesWithPath } from "@/utils/folder-traversal";
+import { useFileCrud } from "./use-file-crud";
+import { useFolderCrud } from "./use-folder-crud";
 
 type FileToRename = Pick<FileItem, "id" | "name" | "description">;
 type FileToDelete = Pick<FileItem, "id" | "name">;
@@ -109,89 +112,28 @@ export function useEnhancedFileManager(
 ) {
   const t = useTranslations();
 
-  const [previewFile, setPreviewFile] = useState<PreviewFile | null>(null);
-  const [fileToRename, setFileToRename] = useState<FileToRename | null>(null);
-  const [fileToDelete, setFileToDelete] = useState<FileToDelete | null>(null);
-  const [fileToShare, setFileToShare] = useState<FileToShare | null>(null);
-  const [filesToDelete, setFilesToDelete] = useState<BulkFile[] | null>(null);
-  const [filesToShare, setFilesToShare] = useState<BulkFile[] | null>(null);
-  const [filesToDownload, setFilesToDownload] = useState<BulkFile[] | null>(null);
-  const [foldersToDelete, setFoldersToDelete] = useState<FolderItem[] | null>(null);
-
-  const [folderToDelete, setFolderToDelete] = useState<FolderToDelete | null>(null);
-  const [folderToRename, setFolderToRename] = useState<FolderToRename | null>(null);
-  const [folderToShare, setFolderToShare] = useState<FolderToShare | null>(null);
-  const [isCreateFolderModalOpen, setCreateFolderModalOpen] = useState(false);
-  const [isBulkDownloadModalOpen, setBulkDownloadModalOpen] = useState(false);
+  // --- Selection callback management ---
   const [clearSelectionCallback, setClearSelectionCallbackState] = useState<(() => void) | null>(
     null,
   );
-
-  const [foldersToShare, setFoldersToShare] = useState<FolderItem[] | null>(null);
-  const [foldersToDownload, setFoldersToDownload] = useState<FolderItem[] | null>(null);
-
   const setClearSelectionCallback = useCallback((callback: () => void) => {
     setClearSelectionCallbackState(() => callback);
   }, []);
 
-  const handleDownload = async (objectName: string, fileName: string) => {
-    try {
-      const loadingToast = toast.loading(t("share.messages.downloadStarted"));
-      const url = await getCachedDownloadUrl(objectName);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+  // --- Compose sub-hooks ---
+  const fileCrud = useFileCrud(handleImmediateUpdate);
+  const folderCrud = useFolderCrud(onRefresh, handleImmediateUpdate, clearSelectionCallback);
 
-      toast.dismiss(loadingToast);
-      toast.success(t("shareManager.downloadSuccess"));
-    } catch (error) {
-      logger.error("[FileManager] Download failed", {
-        fileName,
-        err: error instanceof Error ? error.message : String(error),
-      });
-      toast.error(t("share.errors.downloadFailed"));
-    }
-  };
+  // --- Bulk operation state (coordinates across file + folder concerns) ---
+  const [filesToDelete, setFilesToDelete] = useState<BulkFile[] | null>(null);
+  const [filesToShare, setFilesToShare] = useState<BulkFile[] | null>(null);
+  const [filesToDownload, setFilesToDownload] = useState<BulkFile[] | null>(null);
+  const [foldersToDelete, setFoldersToDelete] = useState<FolderItem[] | null>(null);
+  const [foldersToShare, setFoldersToShare] = useState<FolderItem[] | null>(null);
+  const [foldersToDownload, setFoldersToDownload] = useState<FolderItem[] | null>(null);
+  const [isBulkDownloadModalOpen, setBulkDownloadModalOpen] = useState(false);
 
-  const handleRename = async (fileId: string, newName: string, description?: string) => {
-    try {
-      await updateFile(fileId, {
-        name: newName,
-        description: description || null,
-      });
-      toast.success(t("files.updateSuccess"));
-      setFileToRename(null);
-    } catch (error) {
-      logger.error("Failed to update file", {
-        fileId,
-        err: error instanceof Error ? error.message : String(error),
-      });
-      toast.error(t("files.updateError"));
-    }
-  };
-
-  const handleDelete = async (fileId: string) => {
-    try {
-      // Optimistic update - remove from UI immediately
-      if (handleImmediateUpdate) {
-        handleImmediateUpdate(fileId, "file", "__DELETE__");
-      }
-
-      await deleteFile(fileId);
-      toast.success(t("files.deleteSuccess"));
-      setFileToDelete(null);
-    } catch (error) {
-      logger.error("Failed to delete file", {
-        fileId,
-        err: error instanceof Error ? error.message : String(error),
-      });
-      toast.error(t("files.deleteError"));
-    }
-  };
-
+  // --- Bulk operation handlers ---
   const handleBulkDelete = (files: BulkFile[], folders?: FolderItem[]) => {
     setFilesToDelete(files.length > 0 ? files : null);
     setFoldersToDelete(folders && folders.length > 0 ? folders : null);
@@ -235,31 +177,6 @@ export function useEnhancedFileManager(
         // Collect all files including those in folders recursively
         const allFilesToDownload: Array<{ url: string; name: string }> = [];
 
-        // Helper function to get all files in a folder recursively with paths
-        const getFolderFilesWithPath = (
-          targetFolderId: string,
-          currentPath: string = "",
-        ): Array<{ file: BulkFile; path: string }> => {
-          if (!allFiles || !allFolders) return [];
-
-          const filesWithPath: Array<{ file: BulkFile; path: string }> = [];
-
-          // Get direct files in this folder
-          const directFiles = allFiles.filter((f) => f.folderId === targetFolderId);
-          directFiles.forEach((file) => {
-            filesWithPath.push({ file, path: currentPath });
-          });
-
-          // Get subfolders and process them recursively
-          const subfolders = allFolders.filter((f) => f.parentId === targetFolderId);
-          for (const subfolder of subfolders) {
-            const subfolderPath = currentPath ? `${currentPath}/${subfolder.name}` : subfolder.name;
-            filesWithPath.push(...getFolderFilesWithPath(subfolder.id, subfolderPath));
-          }
-
-          return filesWithPath;
-        };
-
         // Get presigned URLs for direct files (not in folders)
         const directFileItems = await Promise.all(
           files.map(async (file) => {
@@ -272,12 +189,15 @@ export function useEnhancedFileManager(
         );
         allFilesToDownload.push(...directFileItems);
 
-        // Get presigned URLs for files in selected folders
+        // Get presigned URLs for files in selected folders using shared utility
         for (const folder of folders) {
-          const folderFilesWithPath = getFolderFilesWithPath(folder.id, folder.name);
+          const folderFiles =
+            allFiles && allFolders
+              ? getFolderFilesWithPath(folder.id, allFiles, allFolders, folder.name)
+              : [];
 
           const folderFileItems = await Promise.all(
-            folderFilesWithPath.map(async ({ file, path }) => {
+            folderFiles.map(async ({ file, path }) => {
               const url = await getCachedDownloadUrl(file.objectName);
               return {
                 url,
@@ -363,77 +283,35 @@ export function useEnhancedFileManager(
     }
   };
 
-  const handleCreateFolder = async (
-    data: { name: string; description?: string },
-    parentId?: string,
-  ) => {
-    try {
-      const folderData = {
-        name: data.name,
-        description: data.description,
-        objectName: `folders/${Date.now()}-${data.name}`,
-        parentId: parentId || undefined,
-      };
-
-      await registerFolder(folderData);
-      toast.success(t("folderActions.folderCreated"));
-      setCreateFolderModalOpen(false);
-      await onRefresh();
-    } catch (error) {
-      logger.error("Error creating folder", {
-        name: data.name,
-        err: error instanceof Error ? error.message : String(error),
-      });
-      toast.error(t("folderActions.createFolderError"));
-      throw error;
-    }
-  };
-
-  const handleFolderRename = async (folderId: string, newName: string, description?: string) => {
-    try {
-      await updateFolder(folderId, { name: newName, description });
-      toast.success(t("folderActions.folderRenamed"));
-      setFolderToRename(null);
-      await onRefresh();
-    } catch (error) {
-      logger.error("Error renaming folder", {
-        folderId,
-        err: error instanceof Error ? error.message : String(error),
-      });
-      toast.error(t("folderActions.renameFolderError"));
-    }
-  };
-
-  const handleFolderDelete = async (folderId: string) => {
-    try {
-      if (handleImmediateUpdate) {
-        handleImmediateUpdate(folderId, "folder", "__DELETE__");
-      }
-
-      await deleteFolder(folderId);
-      toast.success(t("folderActions.folderDeleted"));
-      setFolderToDelete(null);
-      if (clearSelectionCallback) {
-        clearSelectionCallback();
-      }
-    } catch (error) {
-      logger.error("Error deleting folder", {
-        folderId,
-        err: error instanceof Error ? error.message : String(error),
-      });
-      toast.error(t("folderActions.deleteFolderError"));
-    }
-  };
-
+  // --- Return unified interface (consumers don't change) ---
   return {
-    previewFile,
-    setPreviewFile,
-    fileToRename,
-    setFileToRename,
-    fileToDelete,
-    setFileToDelete,
-    fileToShare,
-    setFileToShare,
+    // File CRUD (from sub-hook)
+    previewFile: fileCrud.previewFile,
+    setPreviewFile: fileCrud.setPreviewFile,
+    fileToRename: fileCrud.fileToRename,
+    setFileToRename: fileCrud.setFileToRename,
+    fileToDelete: fileCrud.fileToDelete,
+    setFileToDelete: fileCrud.setFileToDelete,
+    fileToShare: fileCrud.fileToShare,
+    setFileToShare: fileCrud.setFileToShare,
+    handleDownload: fileCrud.handleDownload,
+    handleRename: fileCrud.handleRename,
+    handleDelete: fileCrud.handleDelete,
+
+    // Folder CRUD (from sub-hook)
+    folderToDelete: folderCrud.folderToDelete,
+    setFolderToDelete: folderCrud.setFolderToDelete,
+    folderToRename: folderCrud.folderToRename,
+    setFolderToRename: folderCrud.setFolderToRename,
+    folderToShare: folderCrud.folderToShare,
+    setFolderToShare: folderCrud.setFolderToShare,
+    isCreateFolderModalOpen: folderCrud.isCreateFolderModalOpen,
+    setCreateFolderModalOpen: folderCrud.setCreateFolderModalOpen,
+    handleCreateFolder: folderCrud.handleCreateFolder,
+    handleFolderRename: folderCrud.handleFolderRename,
+    handleFolderDelete: folderCrud.handleFolderDelete,
+
+    // Bulk operations (local to orchestrator)
     filesToDelete,
     setFilesToDelete,
     filesToShare,
@@ -444,27 +322,12 @@ export function useEnhancedFileManager(
     setFoldersToDelete,
     isBulkDownloadModalOpen,
     setBulkDownloadModalOpen,
-    handleDownload,
-    handleRename,
-    handleDelete,
     handleBulkDelete,
     handleBulkShare,
     handleBulkDownload,
     handleBulkDownloadWithZip,
     handleDeleteBulk,
     handleShareBulkSuccess,
-
-    folderToDelete,
-    setFolderToDelete,
-    folderToRename,
-    setFolderToRename,
-    folderToShare,
-    setFolderToShare,
-    isCreateFolderModalOpen,
-    setCreateFolderModalOpen,
-    handleCreateFolder,
-    handleFolderRename,
-    handleFolderDelete,
 
     foldersToShare,
     setFoldersToShare,

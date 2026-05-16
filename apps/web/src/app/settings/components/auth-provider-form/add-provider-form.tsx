@@ -193,8 +193,8 @@ export function AddProviderForm({
         </h3>
       </div>
 
-      <div className="bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-        <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
+      <div className="bg-accent border border-border rounded-lg p-3">
+        <div className="flex items-center gap-2 text-accent-foreground">
           <span>
             <Info className="h-4 w-4" />
           </span>

@@ -26,7 +26,7 @@ export function ReverseSharesHeader() {
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
               <Link href="/dashboard" className="flex items-center">
-                <LayoutDashboard size={20} className="me-2" />
+                <LayoutDashboard className="size-5 me-2" />
                 {t("common.dashboard")}
               </Link>
             </BreadcrumbLink>
@@ -34,7 +34,7 @@ export function ReverseSharesHeader() {
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <span className="flex items-center gap-2">
-              <MonitorDown size={20} /> {t("reverseShares.pageTitle")}
+              <MonitorDown className="size-5" /> {t("reverseShares.pageTitle")}
             </span>
           </BreadcrumbItem>
         </BreadcrumbList>

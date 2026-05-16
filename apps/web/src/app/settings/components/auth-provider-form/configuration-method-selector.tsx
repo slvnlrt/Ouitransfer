@@ -27,7 +27,7 @@ export function ConfigurationMethodSelector({
 
   return (
     <div className="space-y-4">
-      <div className="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-lg p-4">
+      <div className="bg-muted/50 border border-border rounded-lg p-4">
         <h4 className="text-sm font-medium mb-3">{t("authProviders.form.configurationMethod")}</h4>
         <div className="space-y-3">
           <div className="flex items-center space-x-2">
@@ -133,8 +133,8 @@ export function ConfigurationMethodSelector({
               onChange={(e) => onUpdate({ userInfoEndpoint: e.target.value })}
             />
           </div>
-          <div className="bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-            <div className="flex items-start gap-2 text-blue-700 dark:text-blue-300">
+          <div className="bg-accent border border-border rounded-lg p-3">
+            <div className="flex items-start gap-2 text-accent-foreground">
               <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
               <div className="text-xs">
                 <p className="font-medium">{t("authProviders.info.manualConfigTitle")}</p>

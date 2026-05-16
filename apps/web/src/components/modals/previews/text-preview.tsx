@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Spinner } from "@/components/ui/spinner";
 import { getFileExtension } from "@/utils/file-types";
 
 interface TextPreviewProps {
@@ -19,7 +20,7 @@ export function TextPreview({ content, fileName, isLoading }: TextPreviewProps) 
         <div className="w-full border rounded-lg overflow-hidden bg-card">
           <div className="flex items-center justify-center h-32">
             <div className="flex flex-col items-center gap-2">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
+              <Spinner size="md" />
               <p className="text-sm text-muted-foreground">{t("filePreview.loading")}</p>
             </div>
           </div>

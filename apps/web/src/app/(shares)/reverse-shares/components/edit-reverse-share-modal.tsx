@@ -1,23 +1,11 @@
 "use client";
 
-import {
-  Calendar,
-  ChevronDown,
-  ChevronUp,
-  Eye,
-  File,
-  Files,
-  Lock,
-  Pencil,
-  Settings,
-  User,
-} from "lucide-react";
+import { Pencil } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
-import { type UseFormReturn, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -26,58 +14,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Form } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import type { UpdateReverseShareBody } from "@/http/endpoints/reverse-shares/types";
 import type { ReverseShare } from "../hooks/use-reverse-shares";
-import { FileSizeInput } from "./file-size-input";
-import { FileTypesTagsInput } from "./file-types-tags-input";
-
-const DEFAULT_VALUES = {
-  EMPTY_STRING: "",
-  ZERO_STRING: "0",
-  PAGE_LAYOUT: "DEFAULT" as const,
-} as const;
-
-interface EditReverseShareFormData {
-  name: string;
-  description?: string;
-  expiration?: string;
-  maxFiles?: string;
-  maxFileSize?: string;
-  allowedFileTypes?: string;
-  pageLayout?: "DEFAULT" | "WETRANSFER";
-  nameFieldRequired: "HIDDEN" | "OPTIONAL" | "REQUIRED";
-  emailFieldRequired: "HIDDEN" | "OPTIONAL" | "REQUIRED";
-  hasExpiration: boolean;
-  hasFileLimits: boolean;
-  hasFieldRequirements: boolean;
-  hasPassword: boolean;
-  password?: string;
-  isActive: boolean;
-  noFilesLimit: boolean;
-  noSizeLimit: boolean;
-  allFileTypes: boolean;
-}
+import { BasicInfoSection } from "./edit-reverse-share/basic-info-section";
+import { ExpirationSection } from "./edit-reverse-share/expiration-section";
+import { FieldRequirementsSection } from "./edit-reverse-share/field-requirements-section";
+import { FileLimitsSection } from "./edit-reverse-share/file-limits-section";
+import { PasswordSection } from "./edit-reverse-share/password-section";
+import { DEFAULT_VALUES, type EditReverseShareFormData } from "./edit-reverse-share/types";
 
 interface EditReverseShareModalProps {
   reverseShare: ReverseShare | null;
@@ -193,518 +139,6 @@ function buildUpdatePayload(data: EditReverseShareFormData, id: string): UpdateR
   return payload;
 }
 
-function createToggleButton(
-  isExpanded: boolean,
-  onToggle: () => void,
-  icon: React.ReactNode,
-  label: string,
-) {
-  return (
-    <div className="flex items-center gap-1">
-      <Label className="flex items-center gap-2">
-        {icon}
-        {label}
-      </Label>
-      <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={onToggle}>
-        {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-      </Button>
-    </div>
-  );
-}
-
-function createLimitCheckbox(
-  id: string,
-  checked: boolean,
-  onChange: (checked: boolean) => void,
-  label: string,
-) {
-  return (
-    <div className="flex items-center gap-2">
-      <Checkbox id={id} checked={checked} onCheckedChange={(checked) => onChange(!!checked)} />
-      <label htmlFor={id} className="text-sm text-muted-foreground cursor-pointer">
-        {label}
-      </label>
-    </div>
-  );
-}
-
-type T = ReturnType<typeof useTranslations>;
-
-function BasicInfoSection({ form, t }: { form: UseFormReturn<EditReverseShareFormData>; t: T }) {
-  return (
-    <div className="space-y-4">
-      <FormField
-        control={form.control}
-        name="name"
-        rules={{ required: t("validation.required") }}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{t("reverseShares.form.name.label")}</FormLabel>
-            <FormControl>
-              <Input placeholder={t("reverseShares.form.name.placeholder")} {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="description"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{t("reverseShares.form.description.label")}</FormLabel>
-            <FormControl>
-              <Textarea
-                placeholder={t("reverseShares.form.description.placeholder")}
-                rows={3}
-                {...field}
-              />
-            </FormControl>
-            <FormDescription className="text-xs">
-              {t("reverseShares.form.description.description")}
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="pageLayout"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="flex items-center gap-2">
-              <Settings size={16} />
-              {t("reverseShares.form.pageLayout.label")}
-            </FormLabel>
-            <Select onValueChange={field.onChange} value={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder={t("reverseShares.form.pageLayout.placeholder")} />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                <SelectItem value="DEFAULT">
-                  {t("reverseShares.form.pageLayout.options.default")}
-                </SelectItem>
-                <SelectItem value="WETRANSFER">
-                  {t("reverseShares.form.pageLayout.options.wetransfer")}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            <FormDescription className="text-xs">
-              {t("reverseShares.form.pageLayout.description")}
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="isActive"
-        render={({ field }) => (
-          <FormItem className="flex items-center justify-between rounded-lg border p-3">
-            <div className="space-y-0.5">
-              <FormLabel>{t("reverseShares.form.status.label")}</FormLabel>
-              <FormDescription className="text-xs">
-                {t("reverseShares.form.status.description")}
-              </FormDescription>
-            </div>
-            <FormControl>
-              <Switch checked={field.value} onCheckedChange={field.onChange} />
-            </FormControl>
-          </FormItem>
-        )}
-      />
-    </div>
-  );
-}
-
-function ExpirationSection({
-  form,
-  t,
-  hasExpiration,
-}: {
-  form: UseFormReturn<EditReverseShareFormData>;
-  t: T;
-  hasExpiration: boolean;
-}) {
-  const toggleExpiration = () => {
-    const newValue = !hasExpiration;
-    form.setValue("hasExpiration", newValue);
-    if (!newValue) {
-      form.setValue("expiration", DEFAULT_VALUES.EMPTY_STRING);
-    }
-  };
-
-  return (
-    <div className="space-y-4">
-      {createToggleButton(
-        hasExpiration,
-        toggleExpiration,
-        <Calendar size={16} />,
-        t("reverseShares.form.expiration.configure"),
-      )}
-
-      {hasExpiration && (
-        <FormField
-          control={form.control}
-          name="expiration"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("reverseShares.form.expiration.label")}</FormLabel>
-              <FormControl>
-                <Input type="datetime-local" {...field} />
-              </FormControl>
-              <FormDescription className="text-xs">
-                {t("reverseShares.form.expiration.description")}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      )}
-    </div>
-  );
-}
-
-function FileLimitsSection({
-  form,
-  t,
-  hasFileLimits,
-  noFilesLimit,
-  noSizeLimit,
-  allFileTypes,
-}: {
-  form: UseFormReturn<EditReverseShareFormData>;
-  t: T;
-  hasFileLimits: boolean;
-  noFilesLimit: boolean;
-  noSizeLimit: boolean;
-  allFileTypes: boolean;
-}) {
-  const toggleFileLimits = () => {
-    const newValue = !hasFileLimits;
-    form.setValue("hasFileLimits", newValue);
-    if (!newValue) {
-      form.setValue("maxFiles", DEFAULT_VALUES.ZERO_STRING);
-      form.setValue("maxFileSize", DEFAULT_VALUES.ZERO_STRING);
-      form.setValue("allowedFileTypes", DEFAULT_VALUES.EMPTY_STRING);
-    }
-  };
-
-  return (
-    <div className="space-y-4">
-      {createToggleButton(
-        hasFileLimits,
-        toggleFileLimits,
-        <File size={16} />,
-        t("reverseShares.form.fileLimits.configure"),
-      )}
-
-      {hasFileLimits && (
-        <div className="space-y-4">
-          <FormField
-            control={form.control}
-            name="maxFiles"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2">
-                  <Eye size={16} />
-                  {t("reverseShares.form.maxFiles.label")}
-                </FormLabel>
-                <div className="space-y-3">
-                  {createLimitCheckbox(
-                    "no-files-limit-edit",
-                    noFilesLimit,
-                    (checked) => {
-                      form.setValue("noFilesLimit", checked);
-                      if (checked) field.onChange(DEFAULT_VALUES.ZERO_STRING);
-                    },
-                    t("reverseShares.labels.noFilesLimit"),
-                  )}
-                  {!noFilesLimit && (
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min="1"
-                        placeholder={t("reverseShares.form.maxFiles.placeholder")}
-                        {...field}
-                      />
-                    </FormControl>
-                  )}
-                </div>
-                <FormDescription className="text-xs">
-                  {t("reverseShares.form.maxFiles.description")}
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="maxFileSize"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2">
-                  <Files size={16} />
-                  {t("reverseShares.form.maxFileSize.label")}
-                </FormLabel>
-                <div className="space-y-3">
-                  {createLimitCheckbox(
-                    "no-size-limit-edit",
-                    noSizeLimit,
-                    (checked) => {
-                      form.setValue("noSizeLimit", checked);
-                      if (checked) field.onChange(DEFAULT_VALUES.ZERO_STRING);
-                    },
-                    t("reverseShares.labels.noSizeLimit"),
-                  )}
-                  {!noSizeLimit && (
-                    <FormControl>
-                      <FileSizeInput
-                        value={field.value || DEFAULT_VALUES.EMPTY_STRING}
-                        onChange={field.onChange}
-                        placeholder={t("reverseShares.form.maxFileSize.placeholder")}
-                      />
-                    </FormControl>
-                  )}
-                </div>
-                <FormDescription className="text-xs">
-                  {t("reverseShares.form.maxFileSize.description")}
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="allowedFileTypes"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("reverseShares.form.allowedFileTypes.label")}</FormLabel>
-                <div className="space-y-3">
-                  {createLimitCheckbox(
-                    "all-file-types-edit",
-                    allFileTypes,
-                    (checked) => {
-                      form.setValue("allFileTypes", checked);
-                      if (checked) field.onChange(DEFAULT_VALUES.EMPTY_STRING);
-                    },
-                    t("reverseShares.labels.allFileTypes"),
-                  )}
-                  {!allFileTypes && (
-                    <FormControl>
-                      <FileTypesTagsInput
-                        value={field.value ? field.value.split(",").filter(Boolean) : []}
-                        onChange={(tags) => field.onChange(tags.join(","))}
-                        placeholder="jpg png pdf docx"
-                      />
-                    </FormControl>
-                  )}
-                </div>
-                <FormDescription className="text-xs">
-                  {t("reverseShares.labels.fileTypesHelp")}
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-      )}
-    </div>
-  );
-}
-
-function PasswordSection({
-  form,
-  t,
-  hasPassword,
-}: {
-  form: UseFormReturn<EditReverseShareFormData>;
-  t: T;
-  hasPassword: boolean;
-}) {
-  const togglePassword = () => {
-    const newValue = !hasPassword;
-    form.setValue("hasPassword", newValue);
-    if (!newValue) {
-      form.setValue("password", DEFAULT_VALUES.EMPTY_STRING);
-    }
-  };
-
-  return (
-    <div className="space-y-4">
-      {createToggleButton(
-        hasPassword,
-        togglePassword,
-        <Lock size={16} />,
-        t("reverseShares.form.password.configurePassword"),
-      )}
-
-      {hasPassword && (
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("reverseShares.modals.password.password")}</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={t("reverseShares.form.password.passwordPlaceholder")}
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription className="text-xs">
-                {t("reverseShares.form.password.passwordHelp")}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      )}
-    </div>
-  );
-}
-
-function FieldRequirementsSection({
-  form,
-  t,
-  hasFieldRequirements,
-}: {
-  form: UseFormReturn<EditReverseShareFormData>;
-  t: T;
-  hasFieldRequirements: boolean;
-}) {
-  const toggleFieldRequirements = () => {
-    const newValue = !hasFieldRequirements;
-    form.setValue("hasFieldRequirements", newValue);
-  };
-
-  return (
-    <div className="space-y-4">
-      {createToggleButton(
-        hasFieldRequirements,
-        toggleFieldRequirements,
-        <User size={16} />,
-        t("reverseShares.form.fieldRequirements.title"),
-      )}
-
-      {hasFieldRequirements && (
-        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="nameFieldRequired"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2 font-medium">
-                    <User size={14} />
-                    {t("reverseShares.form.nameFieldRequired.label")}
-                  </FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="bg-white dark:bg-gray-900">
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="HIDDEN">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-gray-400" />
-                          {t("reverseShares.labels.fieldOptions.hidden")}
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="OPTIONAL">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-blue-500" />
-                          {t("reverseShares.labels.fieldOptions.optional")}
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="REQUIRED">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-red-500" />
-                          {t("reverseShares.labels.fieldOptions.required")}
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="emailFieldRequired"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2 font-medium">
-                    <User size={14} />
-                    {t("reverseShares.form.emailFieldRequired.label")}
-                  </FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="bg-white dark:bg-gray-900">
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="HIDDEN">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-gray-400" />
-                          {t("reverseShares.labels.fieldOptions.hidden")}
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="OPTIONAL">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-blue-500" />
-                          {t("reverseShares.labels.fieldOptions.optional")}
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="REQUIRED">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-red-500" />
-                          {t("reverseShares.labels.fieldOptions.required")}
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="text-xs text-muted-foreground bg-blue-50 dark:bg-blue-950/20 p-3 rounded-md border border-blue-200 dark:border-blue-800">
-            <div className="flex items-start gap-2">
-              <Settings size={12} className="mt-0.5 text-blue-600 dark:text-blue-400" />
-              <div className="space-y-1">
-                <p className="font-medium text-blue-900 dark:text-blue-100">Field Configuration:</p>
-                <ul className="space-y-0.5 text-blue-800 dark:text-blue-200">
-                  <li>
-                    • <strong>Hidden:</strong> Field won't appear in the upload form
-                  </li>
-                  <li>
-                    • <strong>Optional:</strong> Field appears but isn't required
-                  </li>
-                  <li>
-                    • <strong>Required:</strong> Field appears and must be filled
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
 export function EditReverseShareModal({
   reverseShare,
   isOpen,
@@ -750,7 +184,7 @@ export function EditReverseShareModal({
       <DialogContent className="sm:max-w-[500px] md:max-w-[650px] max-h-[85vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Pencil size={20} />
+            <Pencil className="size-5" />
             {t("reverseShares.modals.edit.title")}
           </DialogTitle>
           <DialogDescription>{t("reverseShares.modals.edit.description")}</DialogDescription>
@@ -759,24 +193,22 @@ export function EditReverseShareModal({
         <div className="overflow-y-auto max-h-[calc(85vh-140px)] py-2">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-              <BasicInfoSection form={form} t={t} />
+              <BasicInfoSection form={form} />
               <Separator />
-              <ExpirationSection form={form} t={t} hasExpiration={watchedValues.hasExpiration} />
+              <ExpirationSection form={form} hasExpiration={watchedValues.hasExpiration} />
               <Separator />
               <FileLimitsSection
                 form={form}
-                t={t}
                 hasFileLimits={watchedValues.hasFileLimits}
                 noFilesLimit={watchedValues.noFilesLimit}
                 noSizeLimit={watchedValues.noSizeLimit}
                 allFileTypes={watchedValues.allFileTypes}
               />
               <Separator />
-              <PasswordSection form={form} t={t} hasPassword={watchedValues.hasPassword} />
+              <PasswordSection form={form} hasPassword={watchedValues.hasPassword} />
               <Separator />
               <FieldRequirementsSection
                 form={form}
-                t={t}
                 hasFieldRequirements={watchedValues.hasFieldRequirements}
               />
 

@@ -19,7 +19,7 @@ export function UserDeleteModal({ isOpen, onClose, user, onConfirm }: UserDelete
       <DialogContent>
         <DialogHeader className="flex flex-col gap-1">
           <DialogTitle className="flex items-center gap-2 font-semibold">
-            <Trash2 size={24} className="me-1" />
+            <Trash2 className="size-6 me-1" />
             {t("users.delete.title")}
           </DialogTitle>
         </DialogHeader>

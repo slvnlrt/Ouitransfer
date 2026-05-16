@@ -48,7 +48,7 @@ export function FileManagerLayout({
                   <BreadcrumbItem>
                     <BreadcrumbLink asChild>
                       <Link href="/dashboard" className="flex items-center">
-                        <LayoutDashboard size={20} className="me-2" />
+                        <LayoutDashboard className="size-5 me-2" />
                         {t("navigation.dashboard")}
                       </Link>
                     </BreadcrumbLink>

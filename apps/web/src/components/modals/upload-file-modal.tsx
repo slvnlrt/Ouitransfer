@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, CloudUpload, Loader, Trash2, TriangleAlert, X } from "lucide-react";
+import { CloudUpload, RotateCcw, Trash2, TriangleAlert, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -12,15 +12,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { FileTypeIcon } from "@/components/ui/file-type-icon";
 import { Progress } from "@/components/ui/progress";
+import { Spinner } from "@/components/ui/spinner";
+import { StatusIcon } from "@/components/ui/status-icon";
+import { useFileUpload } from "@/hooks/use-file-upload";
 import { useStorageCheck } from "@/hooks/use-storage-check";
-import { useUppyUpload } from "@/hooks/useUppyUpload";
-import { checkFile, getFilePresignedUrl, registerFile } from "@/http/endpoints";
 import { logger } from "@/lib/logger";
-import { getFileIcon } from "@/utils/file-icons";
-import { generateSafeFileName } from "@/utils/file-utils";
 import { formatFileSize } from "@/utils/format-file-size";
-import getErrorData from "@/utils/getErrorData";
 
 interface UploadFileModalProps {
   isOpen: boolean;
@@ -49,7 +48,7 @@ function ConfirmationModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <TriangleAlert size={20} className="text-amber-500" />
+            <TriangleAlert className="size-5 text-amber-500" />
             {t("uploadFile.confirmCancel.title")}
           </DialogTitle>
         </DialogHeader>
@@ -100,73 +99,7 @@ export function UploadFileModal({
     clearAll,
     fileUploads,
     isUploading,
-  } = useUppyUpload({
-    onValidate: async (file) => {
-      const fileName = file.name;
-      const extension = fileName.split(".").pop() || "";
-      const safeObjectName = generateSafeFileName(fileName);
-
-      try {
-        await checkFile({
-          name: fileName,
-          objectName: safeObjectName,
-          size: file.size,
-          extension: extension,
-          folderId: currentFolderId,
-        });
-      } catch (error) {
-        logger.error("File check failed:", {
-          err: error instanceof Error ? error.message : String(error),
-        });
-        const errorData = getErrorData(error);
-        let errorMessage = t("uploadFile.error");
-
-        if (errorData.code === "fileSizeExceeded") {
-          errorMessage = t(`uploadFile.${errorData.code}`, { maxsizemb: errorData.details || "0" });
-        } else if (errorData.code === "insufficientStorage") {
-          errorMessage = t(`uploadFile.${errorData.code}`, {
-            availablespace: errorData.details || "0",
-          });
-        } else if (errorData.code) {
-          errorMessage = t(`uploadFile.${errorData.code}`);
-        }
-
-        toast.error(errorMessage);
-        throw new Error(errorMessage);
-      }
-    },
-    onBeforeUpload: async (file) => {
-      const safeObjectName = generateSafeFileName(file.name);
-      return safeObjectName;
-    },
-    getPresignedUrl: async (objectName, extension) => {
-      // Extract filename without extension (backend will add it)
-      const filenameWithoutExt = objectName.replace(`.${extension}`, "");
-
-      const response = await getFilePresignedUrl({
-        filename: filenameWithoutExt,
-        extension,
-      });
-
-      // IMPORTANT: Use the objectName returned by backend, not the one we generated!
-      // The backend generates: userId/timestamp-random-filename.extension
-      const actualObjectName = response.data.objectName;
-
-      return { url: response.data.url, method: "PUT", actualObjectName };
-    },
-    onAfterUpload: async (_fileId, file, objectName) => {
-      const fileName = file.name;
-      const extension = fileName.split(".").pop() || "";
-
-      await registerFile({
-        name: fileName,
-        objectName,
-        size: file.size,
-        extension,
-        folderId: currentFolderId,
-      });
-    },
-  });
+  } = useFileUpload({ currentFolderId });
 
   // Monitor upload completion and call onSuccess when all done
   useEffect(() => {
@@ -238,26 +171,6 @@ export function UploadFileModal({
     if (files.length > 0) {
       addFiles(Array.from(files));
       hasShownSuccessToastRef.current = false; // Reset when adding new files
-    }
-  };
-
-  const renderFileIcon = (fileName: string) => {
-    const { icon: FileIcon, color } = getFileIcon(fileName);
-    return <FileIcon size={24} className={color} />;
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "uploading":
-        return <Loader size={16} className="animate-spin text-blue-500" />;
-      case "success":
-        return <Check size={16} className="text-green-500" />;
-      case "error":
-        return <X size={16} className="text-red-500" />;
-      case "cancelled":
-        return <X size={16} className="text-muted-foreground" />;
-      default:
-        return null;
     }
   };
 
@@ -354,7 +267,7 @@ export function UploadFileModal({
               onDrop={handleDrop}
             >
               <div className="flex flex-col items-center gap-2">
-                <CloudUpload size={32} className="text-muted-foreground" />
+                <CloudUpload className="size-8 text-muted-foreground" />
                 <p className="text-foreground text-center">{t("uploadFile.selectMultipleFiles")}</p>
                 <p className="text-sm text-muted-foreground">{t("uploadFile.dragAndDrop")}</p>
               </div>
@@ -375,7 +288,7 @@ export function UploadFileModal({
                           className="w-10 h-10 rounded object-cover"
                         />
                       ) : (
-                        renderFileIcon(upload.file.name)
+                        <FileTypeIcon fileName={upload.file.name} className="size-6" />
                       )}
                     </div>
 
@@ -384,7 +297,7 @@ export function UploadFileModal({
                         <p className="text-sm font-medium truncate text-foreground">
                           {upload.file.name}
                         </p>
-                        {getStatusIcon(upload.status)}
+                        <StatusIcon status={upload.status} />
                       </div>
                       <p className="text-xs text-muted-foreground">
                         {formatFileSize(upload.file.size)}
@@ -410,7 +323,7 @@ export function UploadFileModal({
                           onClick={() => cancelUpload(upload.id)}
                           className="h-8 w-8 p-0"
                         >
-                          <X size={14} />
+                          <X className="size-3.5" />
                         </Button>
                       ) : upload.status === "success" ? null : upload.status === "error" ? (
                         <div className="flex gap-1">
@@ -421,7 +334,7 @@ export function UploadFileModal({
                             className="h-8 w-8 p-0"
                             title={t("uploadFile.retry")}
                           >
-                            <Loader size={14} />
+                            <RotateCcw className="size-3.5" />
                           </Button>
                           <Button
                             variant="ghost"
@@ -429,7 +342,7 @@ export function UploadFileModal({
                             onClick={() => removeFile(upload.id)}
                             className="h-8 w-8 p-0"
                           >
-                            <Trash2 size={14} />
+                            <Trash2 className="size-3.5" />
                           </Button>
                         </div>
                       ) : (
@@ -439,7 +352,7 @@ export function UploadFileModal({
                           onClick={() => removeFile(upload.id)}
                           className="h-8 w-8 p-0"
                         >
-                          <Trash2 size={14} />
+                          <Trash2 className="size-3.5" />
                         </Button>
                       )}
                     </div>
@@ -460,7 +373,7 @@ export function UploadFileModal({
                 onClick={handleStartUpload}
               >
                 {isUploading || isCheckingStorage ? (
-                  <Loader className="h-4 w-4 animate-spin" />
+                  <Spinner size="sm" />
                 ) : (
                   <CloudUpload className="h-4 w-4" />
                 )}

@@ -195,7 +195,7 @@ export function ReverseShareCard({
                   <Button
                     size="icon"
                     variant="ghost"
-                    className="h-6 w-6 text-green-600 hover:text-green-700"
+                    className="h-6 w-6 text-emerald-600 hover:text-emerald-700"
                     onClick={saveEdit}
                   >
                     <Check className="h-3 w-3" />
@@ -203,7 +203,7 @@ export function ReverseShareCard({
                   <Button
                     size="icon"
                     variant="ghost"
-                    className="h-6 w-6 text-red-600 hover:text-red-700"
+                    className="h-6 w-6 text-destructive hover:text-destructive"
                     onClick={cancelEdit}
                   >
                     <X className="h-3 w-3" />
@@ -357,7 +357,7 @@ export function ReverseShareCard({
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-5 w-5 text-green-600 hover:text-green-700"
+                className="h-5 w-5 text-emerald-600 hover:text-emerald-700"
                 onClick={saveEdit}
               >
                 <Check className="h-3 w-3" />
@@ -365,7 +365,7 @@ export function ReverseShareCard({
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-5 w-5 text-red-600 hover:text-red-700"
+                className="h-5 w-5 text-destructive hover:text-destructive"
                 onClick={cancelEdit}
               >
                 <X className="h-3 w-3" />
@@ -440,7 +440,7 @@ export function ReverseShareCard({
               title={t("reverseShares.actions.viewFiles")}
             >
               <div className="flex flex-col items-center gap-1">
-                <File className="h-4 w-4 text-blue-600" />
+                <File className="h-4 w-4 text-primary" />
                 <p className="text-xs font-medium text-foreground leading-none">{fileCount}</p>
                 <p className="text-xs text-muted-foreground">{t("reverseShares.labels.files")}</p>
               </div>
@@ -449,7 +449,7 @@ export function ReverseShareCard({
             {/* Size */}
             <div className="bg-muted/20 rounded-md p-2 text-center border border-border/50">
               <div className="flex items-center justify-center mb-2">
-                <FileQuestion className="h-4 w-4 text-green-600" />
+                <FileQuestion className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
               </div>
               <p className="text-xs font-medium text-foreground leading-none">
                 {formatFileSize(totalSize)}
@@ -468,9 +468,9 @@ export function ReverseShareCard({
                 >
                   <div className="flex flex-col items-center gap-1">
                     {reverseShare.isActive ? (
-                      <ToggleRight className="h-4 w-4 text-green-600" />
+                      <ToggleRight className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                     ) : (
-                      <ToggleLeft className="h-4 w-4 text-red-600" />
+                      <ToggleLeft className="h-4 w-4 text-destructive" />
                     )}
                     <p className="text-xs font-medium leading-none">
                       {reverseShare.isActive
@@ -486,9 +486,9 @@ export function ReverseShareCard({
                 <div className="p-2 text-center">
                   <div className="flex flex-col items-center gap-1">
                     {reverseShare.isActive ? (
-                      <ToggleRight className="h-4 w-4 text-green-600" />
+                      <ToggleRight className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                     ) : (
-                      <ToggleLeft className="h-4 w-4 text-red-600" />
+                      <ToggleLeft className="h-4 w-4 text-destructive" />
                     )}
                     <p className="text-xs font-medium leading-none">
                       {reverseShare.isActive
@@ -514,9 +514,9 @@ export function ReverseShareCard({
                 >
                   <div className="flex flex-col items-center gap-1">
                     {hasPassword ? (
-                      <Lock className="h-4 w-4 text-yellow-600" />
+                      <Lock className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
                     ) : (
-                      <LockOpen className="h-4 w-4 text-green-600" />
+                      <LockOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                     )}
                     <p className="text-xs font-medium leading-none">
                       {hasPassword
@@ -532,9 +532,9 @@ export function ReverseShareCard({
                 <div className="p-2 text-center">
                   <div className="flex flex-col items-center gap-1">
                     {hasPassword ? (
-                      <Lock className="h-4 w-4 text-yellow-600" />
+                      <Lock className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
                     ) : (
-                      <LockOpen className="h-4 w-4 text-green-600" />
+                      <LockOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                     )}
                     <p className="text-xs font-medium leading-none">
                       {hasPassword

@@ -78,8 +78,7 @@ export function FileTypesTagsInput({
           variant="outline"
           className={cn(
             "flex items-center gap-1 ps-2 pe-1 h-6 text-xs mt-[1px] rounded-[6px]",
-            "bg-slate-300 text-gray-800 border-slate-200  hover:text-gray-800",
-            "dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700",
+            "bg-secondary text-secondary-foreground border-border hover:text-secondary-foreground",
             "hover:cursor-default",
           )}
         >

@@ -2,8 +2,7 @@
 
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { LoadingScreen } from "@/components/layout/loading-screen";
-import { Navbar } from "@/components/layout/navbar";
-import { DefaultFooter } from "@/components/ui/default-footer";
+import { PageLayout } from "@/components/layout/page-layout";
 import { PasswordForm } from "./components/password-form";
 import { ProfileForm } from "./components/profile-form";
 import { ProfileHeader } from "./components/profile-header";
@@ -20,36 +19,32 @@ export default function ProfilePage() {
 
   return (
     <ProtectedRoute>
-      <div className="w-full h-screen flex flex-col">
-        <Navbar />
-        <div className="flex-1 max-w-7xl mx-auto w-full px-6 py-8">
+      <PageLayout>
+        <div className="flex flex-col gap-8">
+          <ProfileHeader />
           <div className="flex flex-col gap-8">
-            <ProfileHeader />
-            <div className="flex flex-col gap-8">
-              <ProfilePicture
-                userData={profile.userData}
-                onImageChange={profile.handleImageChange}
-                onImageRemove={profile.handleImageRemove}
-              />
-              <ProfileForm form={profile.profileForm} onSubmit={profile.onProfileSubmit} />
-              <PasswordForm
-                form={profile.passwordForm}
-                isConfirmPasswordVisible={profile.isConfirmPasswordVisible}
-                isNewPasswordVisible={profile.isNewPasswordVisible}
-                onSubmit={profile.onPasswordSubmit}
-                onToggleConfirmPassword={() =>
-                  profile.setIsConfirmPasswordVisible(!profile.isConfirmPasswordVisible)
-                }
-                onToggleNewPassword={() =>
-                  profile.setIsNewPasswordVisible(!profile.isNewPasswordVisible)
-                }
-              />
-              <TwoFactorForm />
-            </div>
+            <ProfilePicture
+              userData={profile.userData}
+              onImageChange={profile.handleImageChange}
+              onImageRemove={profile.handleImageRemove}
+            />
+            <ProfileForm form={profile.profileForm} onSubmit={profile.onProfileSubmit} />
+            <PasswordForm
+              form={profile.passwordForm}
+              isConfirmPasswordVisible={profile.isConfirmPasswordVisible}
+              isNewPasswordVisible={profile.isNewPasswordVisible}
+              onSubmit={profile.onPasswordSubmit}
+              onToggleConfirmPassword={() =>
+                profile.setIsConfirmPasswordVisible(!profile.isConfirmPasswordVisible)
+              }
+              onToggleNewPassword={() =>
+                profile.setIsNewPasswordVisible(!profile.isNewPasswordVisible)
+              }
+            />
+            <TwoFactorForm />
           </div>
         </div>
-        <DefaultFooter />
-      </div>
+      </PageLayout>
     </ProtectedRoute>
   );
 }

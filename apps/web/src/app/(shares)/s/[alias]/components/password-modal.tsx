@@ -27,7 +27,7 @@ export function PasswordModal({
         <DialogHeader className="flex flex-col gap-1">
           <DialogTitle>{t("share.password.title")}</DialogTitle>
           <div className="flex items-center gap-2 text-warning text-sm">
-            <Lock size={16} />
+            <Lock className="size-4" />
             <p>{t("share.password.protected")}</p>
           </div>
           {isError && (

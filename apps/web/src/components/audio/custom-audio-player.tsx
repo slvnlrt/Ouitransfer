@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { logger } from "@/lib/logger";
 import { formatTime } from "@/utils/format-time";
-import WaveformVisualizer from "./waveform-visualizer";
+import { WaveformVisualizer } from "./waveform-visualizer";
 
 interface CustomAudioPlayerProps {
   src: string;

@@ -32,7 +32,7 @@ export default function ResetPasswordPage() {
         <div className="relative z-10 w-full max-w-md space-y-4 px-4 py-12">
           <motion.div
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-2xl border border-default-200 bg-black/20 p-8"
+            className="rounded-2xl border border-border bg-background/20 p-8"
             initial={{ opacity: 0, y: 20 }}
           >
             <ResetPasswordHeader />

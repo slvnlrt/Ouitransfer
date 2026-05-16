@@ -6,10 +6,26 @@ import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
+import { Spinner } from "@/components/ui/spinner";
 import { getCurrentUser } from "@/http/endpoints";
 import { logger } from "@/lib/logger";
 import { queryKeys } from "@/lib/query-keys";
 
+/**
+ * OAuth callback landing page.
+ *
+ * The normal OAuth flow never reaches this page — the server-side callback
+ * handler (`/api/auth/providers/:provider/callback`) sets httpOnly cookies
+ * and redirects directly to `/dashboard`.
+ *
+ * This page exists as a safety net for:
+ * 1. Error redirects from the server (query param `?error=...`)
+ * 2. Edge cases where the browser lands here after the server has already
+ *    set the auth cookies — we verify the session and redirect to dashboard.
+ *
+ * SECURITY: Auth tokens are NEVER set via `document.cookie`. The httpOnly
+ * cookie is set exclusively by the Fastify server.
+ */
 export default function AuthCallbackPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -17,76 +33,60 @@ export default function AuthCallbackPage() {
   const t = useTranslations();
 
   useEffect(() => {
-    const token = searchParams.get("token");
     const error = searchParams.get("error");
 
     if (error) {
-      let errorMessage = "Authentication failed";
+      const errorKey = [
+        "oauth_error",
+        "missing_parameters",
+        "missing_code",
+        "registration_disabled",
+        "provider_disabled",
+        "state_expired",
+        "account_inactive",
+        "no_email",
+        "token_exchange_failed",
+        "missing_user_info",
+      ].includes(error)
+        ? `auth.callback.errors.${error}`
+        : "auth.authenticationFailed";
 
-      switch (error) {
-        case "oauth_error":
-          errorMessage = "OAuth authentication failed";
-          break;
-        case "missing_parameters":
-          errorMessage = "Missing authentication parameters";
-          break;
-        case "registration_disabled":
-          errorMessage = "Registration is disabled for this provider";
-          break;
-        case "provider_disabled":
-          errorMessage = "This authentication provider is disabled";
-          break;
-        case "state_expired":
-          errorMessage = "Authentication session expired";
-          break;
-        case "account_inactive":
-          errorMessage = "Your account is inactive";
-          break;
-        default:
-          errorMessage = "Authentication failed";
-      }
-
-      toast.error(errorMessage);
+      toast.error(t(errorKey as Parameters<typeof t>[0]));
       router.push("/login");
       return;
     }
 
-    if (token) {
-      // biome-ignore lint/suspicious/noDocumentCookie: Cookie Store API has poor browser support; direct assignment is the only cross-browser option here
-      document.cookie = `token=${token}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=lax`;
-
-      // Fetch user data and seed TQ cache so AuthProvider derives state
-      const fetchUserData = async () => {
-        try {
-          const response = await getCurrentUser();
-          if (response?.data?.user) {
-            queryClient.setQueryData(queryKeys.auth.currentUser(), response.data);
-            toast.success(t("auth.successfullyAuthenticated"));
-            router.push("/dashboard");
-          } else {
-            throw new Error("No user data received");
-          }
-        } catch (error) {
-          logger.error("Error fetching user data:", {
-            err: error instanceof Error ? error.message : String(error),
-          });
-          toast.error(t("auth.authenticationFailed"));
+    // The server-side OAuth callback sets httpOnly cookies and redirects
+    // to /dashboard. If the browser lands here, verify the session exists
+    // (cookies are sent automatically) and redirect.
+    const verifySession = async () => {
+      try {
+        const response = await getCurrentUser();
+        if (response?.data?.user) {
+          queryClient.setQueryData(queryKeys.auth.currentUser(), response.data);
+          toast.success(t("auth.successfullyAuthenticated"));
+          router.push("/dashboard");
+        } else {
+          // No active session — redirect to login
           router.push("/login");
         }
-      };
+      } catch (err) {
+        logger.error("Auth callback session verification failed:", {
+          err: err instanceof Error ? err.message : String(err),
+        });
+        toast.error(t("auth.authenticationFailed"));
+        router.push("/login");
+      }
+    };
 
-      fetchUserData();
-      return;
-    }
-
-    router.push("/login");
+    verifySession();
   }, [router, searchParams, queryClient, t]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-        <p className="text-muted-foreground">Processing authentication...</p>
+        <Spinner size="lg" className="mx-auto mb-4" />
+        <p className="text-muted-foreground">{t("login.processing")}</p>
       </div>
     </div>
   );

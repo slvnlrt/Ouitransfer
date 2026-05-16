@@ -12,7 +12,21 @@
     },
     "authenticationFailed": "身份验证失败",
     "successfullyAuthenticated": "身份验证成功！",
-    "sessionExpired": "Your session has expired. Please sign in again."
+    "sessionExpired": "Your session has expired. Please sign in again.",
+    "callback": {
+      "errors": {
+        "oauth_error": "OAuth authentication failed",
+        "missing_parameters": "Missing authentication parameters",
+        "missing_code": "Missing authorization code",
+        "registration_disabled": "Registration is disabled for this provider",
+        "provider_disabled": "This authentication provider is disabled",
+        "state_expired": "Authentication session expired",
+        "account_inactive": "Your account is inactive",
+        "no_email": "No email address found in your account",
+        "token_exchange_failed": "Failed to authenticate with provider",
+        "missing_user_info": "Incomplete user information from provider"
+      }
+    }
   },
   "authProviders": {
     "title": "身份验证提供商",
@@ -341,7 +355,8 @@
     "pdfPreviewNotAvailable": "PDF预览不可用。请尝试备用视图或下载。",
     "tryAlternativeView": "尝试备用视图",
     "loadingAlternative": "加载备用视图中...",
-    "loadingAudio": "音频加载中..."
+    "loadingAudio": "音频加载中...",
+    "downloading": "Downloading..."
   },
   "fileSelector": {
     "availableFiles": "可用文件 ({count})",
@@ -408,7 +423,15 @@
       "moveItemsFailed": "移动项目失败，请重试。",
       "cannotMoveHere": "无法将项目移动到此位置"
     },
-    "openFolder": "打开文件夹"
+    "openFolder": "打开文件夹",
+    "drag": {
+      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
+      "fileMoved": "File \"{name}\" moved to \"{target}\"",
+      "itemsMoved": "{count} items moved to \"{target}\"",
+      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
+      "fileMovedToRoot": "File \"{name}\" moved to root folder",
+      "itemsMovedToRoot": "{count} items moved to root folder"
+    }
   },
   "filesTable": {
     "ariaLabel": "文件表格",
@@ -546,7 +569,10 @@
     "pageTitle": "登录",
     "or": "或",
     "continueWithSSO": "使用SSO继续",
-    "processing": "正在处理认证..."
+    "processing": "正在处理认证...",
+    "orContinueWith": "Or continue with",
+    "continueWith": "Continue with {name}",
+    "providerNotConfigured": "{name} is not properly configured"
   },
   "logo": {
     "labels": {
@@ -901,7 +927,8 @@
         "editError": "更新文件时出错",
         "previewNotAvailable": "预览不可用",
         "notAvailable": "不可用",
-        "invalidDate": "无效日期"
+        "invalidDate": "无效日期",
+        "downloading": "Downloading..."
       },
       "alias": {
         "editTitle": "编辑别名",
@@ -988,7 +1015,8 @@
           "failed": "复制操作失败。请重试。",
           "aborted": "由于超时，复制操作已取消。"
         },
-        "invalidDate": "无效日期"
+        "invalidDate": "无效日期",
+        "downloading": "Downloading..."
       }
     },
     "form": {
@@ -1056,7 +1084,11 @@
       },
       "fieldRequirements": {
         "title": "现场要求",
-        "description": "配置在上传表单中显示哪些字段"
+        "description": "配置在上传表单中显示哪些字段",
+        "configurationTitle": "Field Configuration:",
+        "hiddenDescription": "Hidden: Field won't appear in the upload form",
+        "optionalDescription": "Optional: Field will appear but isn't mandatory",
+        "requiredDescription": "Required: Field must be filled before upload"
       },
       "nameFieldRequired": {
         "label": "名称字段要求",
@@ -1874,7 +1906,11 @@
       "description": "松开以上传您的文件"
     },
     "pasteSuccess": "{count, plural, =1 {图片已成功粘贴并上传} other {# 张图片已成功粘贴并上传}}",
-    "filesQueued": "{count, plural, one {# 文件正在等待上传} other {# 文件正在等待上传}}"
+    "filesQueued": "{count, plural, one {# 文件正在等待上传} other {# 文件正在等待上传}}",
+    "errors": {
+      "addFileFailed": "Failed to add {name}: {error}",
+      "uploadFailed": "Upload failed"
+    }
   },
   "users": {
     "modes": {
@@ -1958,7 +1994,8 @@
       "expiresIn": "15分钟后过期",
       "close": "关闭",
       "errors": {
-        "generateFailed": "生成邀请链接失败"
+        "generateFailed": "生成邀请链接失败",
+        "copyFailed": "Failed to copy link"
       }
     }
   },
@@ -2035,5 +2072,11 @@
       "createFailed": "创建账户失败。请重试。"
     },
     "pageTitle": "创建账户"
+  },
+  "filesTree": {
+    "noItems": "No items to display"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Change language"
   }
 }

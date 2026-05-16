@@ -55,7 +55,7 @@ export function BulkDownloadModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Download size={20} />
+            <Download className="size-5" />
             {t("bulkDownload.title")}
           </DialogTitle>
         </DialogHeader>

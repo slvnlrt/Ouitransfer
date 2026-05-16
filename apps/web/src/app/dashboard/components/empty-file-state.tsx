@@ -8,8 +8,8 @@ export function EmptyFilesState({ onUpload }: { onUpload: () => void }) {
 
   return (
     <div className="text-center py-6 flex flex-col items-center gap-2">
-      <FolderOpen className="h-10 w-10 text-gray-500" />
-      <p className="text-gray-500">{t("recentFiles.noFiles")}</p>
+      <FolderOpen className="h-10 w-10 text-muted-foreground" />
+      <p className="text-muted-foreground">{t("recentFiles.noFiles")}</p>
       <Button variant="secondary" size="sm" onClick={onUpload}>
         <CloudUpload className="h-4 w-4" />
         {t("recentFiles.uploadFile")}

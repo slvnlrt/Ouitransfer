@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
-import { type FileUploadState, useUppyUpload } from "@/hooks/useUppyUpload";
+import { type FileUploadState, useUppyUpload } from "@/hooks/use-uppy-upload";
 import {
   abortMultipartUploadByAlias,
   completeMultipartUploadByAlias,
@@ -236,9 +236,9 @@ export function FileUploadSection({
 
   const getDragActiveStyles = () => {
     if (isDragActive) {
-      return "border-green-500 bg-blue-50 dark:bg-green-950/20";
+      return "border-green-500 bg-primary/5";
     }
-    return "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500";
+    return "border-border hover:border-border/70";
   };
 
   const getDropzoneStyles = () => {
@@ -261,7 +261,7 @@ export function FileUploadSection({
     const remainingFiles = calculateRemainingFiles();
 
     return (
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-sm text-muted-foreground">
         {reverseShare.allowedFileTypes && (
           <>
             {t("reverseShares.upload.fileDropzone.acceptedTypes", {
@@ -292,7 +292,7 @@ export function FileUploadSection({
       return (
         <Badge
           variant="default"
-          className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+          className="bg-emerald-500/20 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800"
         >
           <Check className="h-3 w-3 me-1" />
           {t("reverseShares.upload.fileList.statusUploaded")}
@@ -308,16 +308,11 @@ export function FileUploadSection({
   };
 
   const renderFileItem = (upload: FileUploadState) => (
-    <div
-      key={upload.id}
-      className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
-    >
-      <File className="h-5 w-5 text-gray-500 flex-shrink-0" />
+    <div key={upload.id} className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+      <File className="h-5 w-5 text-muted-foreground flex-shrink-0" />
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-          {upload.file.name}
-        </p>
-        <p className="text-xs text-gray-500">{formatFileSize(upload.file.size)}</p>
+        <p className="text-sm font-medium text-foreground truncate">{upload.file.name}</p>
+        <p className="text-xs text-muted-foreground">{formatFileSize(upload.file.size)}</p>
         {upload.status === "uploading" && <Progress value={upload.progress} className="mt-2 h-2" />}
         {upload.status === "error" && upload.error && (
           <p className="text-xs text-red-500 mt-1">{upload.error}</p>
@@ -364,8 +359,8 @@ export function FileUploadSection({
     <div className="space-y-6">
       <div {...getRootProps()} className={getDropzoneStyles()}>
         <input {...getInputProps()} />
-        <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+        <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+        <h3 className="text-lg font-medium text-foreground mb-2">
           {isDragActive
             ? t("reverseShares.upload.fileDropzone.dragActive")
             : t("reverseShares.upload.fileDropzone.dragInactive")}
@@ -375,7 +370,7 @@ export function FileUploadSection({
 
       {fileUploads.length > 0 && (
         <div className="space-y-2">
-          <h4 className="font-medium text-gray-900 dark:text-white">
+          <h4 className="font-medium text-foreground">
             {t("reverseShares.upload.fileList.title")}
           </h4>
           {fileUploads.map(renderFileItem)}
@@ -444,7 +439,7 @@ export function FileUploadSection({
       <Button
         onClick={handleUpload}
         disabled={!canUpload}
-        className="w-full text-white"
+        className="w-full text-primary-foreground"
         size="lg"
         variant="default"
       >
@@ -454,11 +449,11 @@ export function FileUploadSection({
       </Button>
 
       {allFilesProcessed && hasSuccessfulUploads && (
-        <div className="text-center p-4 bg-green-50 dark:bg-green-950/20 rounded-lg">
-          <p className="text-green-800 dark:text-green-200 font-medium">
+        <div className="text-center p-4 bg-emerald-500/10 rounded-lg">
+          <p className="text-emerald-800 dark:text-emerald-200 font-medium">
             {t("reverseShares.upload.success.title")}
           </p>
-          <p className="text-sm text-green-600 dark:text-green-300 mt-1">
+          <p className="text-sm text-emerald-600 dark:text-emerald-300 mt-1">
             {t("reverseShares.upload.success.description")}
           </p>
         </div>

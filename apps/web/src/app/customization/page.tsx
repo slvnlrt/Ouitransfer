@@ -1,3 +1,7 @@
+// TODO: Server component candidate — this page only renders 5 form components.
+// Could be a server component with each *PickerForm as a client island,
+// using getTranslations() from next-intl/server instead of useTranslations().
+// ProtectedRoute and FileManagerLayout would need server-compatible alternatives.
 "use client";
 
 import { Palette } from "lucide-react";
@@ -18,7 +22,7 @@ export default function CustomizationPage() {
     <ProtectedRoute>
       <FileManagerLayout
         breadcrumbLabel={t("customization.breadcrumb")}
-        icon={<Palette size={20} />}
+        icon={<Palette className="size-5" />}
         title={t("customization.pageTitle")}
       >
         <div className="flex flex-col gap-6">

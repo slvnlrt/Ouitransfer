@@ -12,7 +12,21 @@
     },
     "authenticationFailed": "Ошибка аутентификации",
     "successfullyAuthenticated": "Успешно аутентифицирован!",
-    "sessionExpired": "Ваша сессия истекла. Пожалуйста, войдите снова."
+    "sessionExpired": "Ваша сессия истекла. Пожалуйста, войдите снова.",
+    "callback": {
+      "errors": {
+        "oauth_error": "OAuth authentication failed",
+        "missing_parameters": "Missing authentication parameters",
+        "missing_code": "Missing authorization code",
+        "registration_disabled": "Registration is disabled for this provider",
+        "provider_disabled": "This authentication provider is disabled",
+        "state_expired": "Authentication session expired",
+        "account_inactive": "Your account is inactive",
+        "no_email": "No email address found in your account",
+        "token_exchange_failed": "Failed to authenticate with provider",
+        "missing_user_info": "Incomplete user information from provider"
+      }
+    }
   },
   "authProviders": {
     "title": "Провайдеры аутентификации",
@@ -341,7 +355,8 @@
     "pdfPreviewNotAvailable": "Предварительный просмотр PDF недоступен. Попробуйте альтернативный вид или скачайте.",
     "tryAlternativeView": "Попробовать альтернативный вид",
     "loadingAlternative": "Загрузка альтернативного вида...",
-    "loadingAudio": "Загрузка аудио..."
+    "loadingAudio": "Загрузка аудио...",
+    "downloading": "Downloading..."
   },
   "fileSelector": {
     "availableFiles": "Доступные Файлы ({count})",
@@ -408,7 +423,15 @@
       "moveItemsFailed": "Не удалось переместить элементы. Попробуйте еще раз.",
       "cannotMoveHere": "Невозможно переместить элементы в это место"
     },
-    "openFolder": "Открыть папку"
+    "openFolder": "Открыть папку",
+    "drag": {
+      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
+      "fileMoved": "File \"{name}\" moved to \"{target}\"",
+      "itemsMoved": "{count} items moved to \"{target}\"",
+      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
+      "fileMovedToRoot": "File \"{name}\" moved to root folder",
+      "itemsMovedToRoot": "{count} items moved to root folder"
+    }
   },
   "filesTable": {
     "ariaLabel": "Таблица файлов",
@@ -546,7 +569,10 @@
     "pageTitle": "Вход",
     "or": "или",
     "continueWithSSO": "Продолжить с SSO",
-    "processing": "Обработка аутентификации..."
+    "processing": "Обработка аутентификации...",
+    "orContinueWith": "Or continue with",
+    "continueWith": "Continue with {name}",
+    "providerNotConfigured": "{name} is not properly configured"
   },
   "logo": {
     "labels": {
@@ -901,7 +927,8 @@
         "editError": "Ошибка при обновлении файла",
         "previewNotAvailable": "Предпросмотр недоступен",
         "notAvailable": "Недоступно",
-        "invalidDate": "Неверная дата"
+        "invalidDate": "Неверная дата",
+        "downloading": "Downloading..."
       },
       "alias": {
         "editTitle": "Редактировать псевдоним",
@@ -988,7 +1015,8 @@
           "failed": "Ошибка операции копирования. Пожалуйста, попробуйте еще раз.",
           "aborted": "Операция копирования была отменена из-за истечения времени ожидания."
         },
-        "invalidDate": "Неверная дата"
+        "invalidDate": "Неверная дата",
+        "downloading": "Downloading..."
       }
     },
     "form": {
@@ -1056,7 +1084,11 @@
       },
       "fieldRequirements": {
         "title": "Полевые требования",
-        "description": "Настройте, какие поля показаны в форме загрузки"
+        "description": "Настройте, какие поля показаны в форме загрузки",
+        "configurationTitle": "Field Configuration:",
+        "hiddenDescription": "Hidden: Field won't appear in the upload form",
+        "optionalDescription": "Optional: Field will appear but isn't mandatory",
+        "requiredDescription": "Required: Field must be filled before upload"
       },
       "nameFieldRequired": {
         "label": "Требование поля имени",
@@ -1874,7 +1906,11 @@
       "description": "Отпустите, чтобы загрузить файлы"
     },
     "pasteSuccess": "{count, plural, =1 {Изображение вставлено и успешно загружено} other {# изображений вставлено и успешно загружено}}",
-    "filesQueued": "{count, plural, one {# файл в очереди для загрузки} other {# файлов в очереди для загрузки}}"
+    "filesQueued": "{count, plural, one {# файл в очереди для загрузки} other {# файлов в очереди для загрузки}}",
+    "errors": {
+      "addFileFailed": "Failed to add {name}: {error}",
+      "uploadFailed": "Upload failed"
+    }
   },
   "users": {
     "modes": {
@@ -1958,7 +1994,8 @@
       "expiresIn": "Истекает через 15 минут",
       "close": "Закрыть",
       "errors": {
-        "generateFailed": "Не удалось создать ссылку приглашения"
+        "generateFailed": "Не удалось создать ссылку приглашения",
+        "copyFailed": "Failed to copy link"
       }
     }
   },
@@ -2035,5 +2072,11 @@
       "createFailed": "Не удалось создать учетную запись. Пожалуйста, попробуйте еще раз."
     },
     "pageTitle": "Создать учетную запись"
+  },
+  "filesTree": {
+    "noItems": "No items to display"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Change language"
   }
 }

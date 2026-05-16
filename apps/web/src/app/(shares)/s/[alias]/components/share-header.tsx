@@ -11,7 +11,7 @@ export function ShareHeader() {
   const t = useTranslations();
 
   return (
-    <header className="w-full px-6 border-b border-default-200/50 bg-background/70 backdrop-blur-sm">
+    <header className="w-full px-6 border-b border-border/50 bg-background/70 backdrop-blur-sm">
       <div className="mx-auto max-w-5xl sm:p-0 h-16 flex items-center justify-between">
         <Link className="flex items-center gap-2" href="/">
           {appLogo && (

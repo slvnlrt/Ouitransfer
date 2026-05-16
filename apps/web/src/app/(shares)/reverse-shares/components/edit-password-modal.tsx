@@ -112,7 +112,7 @@ export function EditPasswordModal({
       <DialogContent className="sm:max-w-[450px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Lock size={20} />
+            <Lock className="size-5" />
             {t("reverseShares.modals.password.title")}
           </DialogTitle>
           <DialogDescription>{t("reverseShares.modals.password.description")}</DialogDescription>
@@ -129,9 +129,9 @@ export function EditPasswordModal({
                   <div className="space-y-0.5">
                     <FormLabel className="flex items-center gap-2">
                       {field.value ? (
-                        <Lock className="h-4 w-4 text-yellow-600" />
+                        <Lock className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
                       ) : (
-                        <LockOpen className="h-4 w-4 text-green-600" />
+                        <LockOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                       )}
                       {t("reverseShares.modals.password.hasPassword")}
                     </FormLabel>

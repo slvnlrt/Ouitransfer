@@ -34,7 +34,7 @@ export function SystemHealth({ healthData, healthError }: SystemHealthProps) {
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold flex items-center gap-2">
-                <Activity className="text-gray-500" size={24} />
+                <Activity className="text-muted-foreground size-6" />
                 {t("systemHealth.title")}
               </h2>
             </div>
@@ -58,14 +58,14 @@ export function SystemHealth({ healthData, healthError }: SystemHealthProps) {
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold flex items-center gap-2">
-                <Activity className="text-gray-500" size={24} />
+                <Activity className="text-muted-foreground size-6" />
                 {t("systemHealth.title")}
               </h2>
-              <div className="h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+              <div className="h-4 w-20 bg-muted rounded animate-pulse" />
             </div>
             <div className="flex flex-col gap-2">
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+              <div className="h-4 bg-muted rounded animate-pulse" />
+              <div className="h-4 bg-muted rounded animate-pulse" />
             </div>
           </div>
         </CardContent>
@@ -111,7 +111,7 @@ export function SystemHealth({ healthData, healthError }: SystemHealthProps) {
           {/* Header */}
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold flex items-center gap-2">
-              <Activity className="text-gray-500" size={24} />
+              <Activity className="text-muted-foreground size-6" />
               {t("systemHealth.title")}
             </h2>
             <span className={`flex items-center gap-1.5 text-sm font-medium ${statusColor}`}>
@@ -128,7 +128,7 @@ export function SystemHealth({ healthData, healthError }: SystemHealthProps) {
             {/* Database */}
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-muted-foreground">
-                <Database size={16} aria-hidden="true" />
+                <Database className="size-4" aria-hidden="true" />
                 {t("systemHealth.checks.database")}
               </span>
               <span
@@ -143,7 +143,7 @@ export function SystemHealth({ healthData, healthError }: SystemHealthProps) {
             {/* Storage */}
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-muted-foreground">
-                <HardDrive size={16} aria-hidden="true" />
+                <HardDrive className="size-4" aria-hidden="true" />
                 {t("systemHealth.checks.storage")}
               </span>
               <span

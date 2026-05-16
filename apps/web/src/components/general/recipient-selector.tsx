@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
 import { useSecureConfigValue } from "@/hooks/use-secure-configs";
 import { addRecipients, notifyRecipients, removeRecipients } from "@/http/endpoints";
 
@@ -188,7 +189,7 @@ export function RecipientSelector({
           >
             {isAddingRecipient ? (
               <div className="flex items-center gap-2">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent" />
+                <Spinner size="sm" className="border-background border-t-transparent" />
                 {t("common.loading")}
               </div>
             ) : (
@@ -226,10 +227,10 @@ export function RecipientSelector({
         </div>
 
         {hasSelection && (
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 bg-accent border border-border rounded-lg">
             <div className="flex items-center gap-2">
-              <Check className="h-4 w-4 text-blue-600" />
-              <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
+              <Check className="h-4 w-4 text-accent-foreground" />
+              <span className="text-sm font-medium text-accent-foreground">
                 {t("recipientSelector.selectedCount", { count: selectedForAction.size })}
               </span>
             </div>
@@ -298,7 +299,7 @@ export function RecipientSelector({
                     <div
                       key={index}
                       className={`flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors ${
-                        isSelected ? "bg-blue-50 dark:bg-blue-950/30" : ""
+                        isSelected ? "bg-accent/50" : ""
                       }`}
                     >
                       <Checkbox
@@ -321,7 +322,7 @@ export function RecipientSelector({
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/30"
+                            className="h-8 w-8 p-0 text-primary hover:text-primary hover:bg-primary/10"
                             onClick={async () => {
                               const link = `${window.location.origin}/s/${shareAlias}`;
                               const loadingToast = toast.loading(

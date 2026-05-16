@@ -12,7 +12,21 @@
     },
     "authenticationFailed": "認証に失敗しました",
     "successfullyAuthenticated": "認証に成功しました！",
-    "sessionExpired": "Your session has expired. Please sign in again."
+    "sessionExpired": "Your session has expired. Please sign in again.",
+    "callback": {
+      "errors": {
+        "oauth_error": "OAuth authentication failed",
+        "missing_parameters": "Missing authentication parameters",
+        "missing_code": "Missing authorization code",
+        "registration_disabled": "Registration is disabled for this provider",
+        "provider_disabled": "This authentication provider is disabled",
+        "state_expired": "Authentication session expired",
+        "account_inactive": "Your account is inactive",
+        "no_email": "No email address found in your account",
+        "token_exchange_failed": "Failed to authenticate with provider",
+        "missing_user_info": "Incomplete user information from provider"
+      }
+    }
   },
   "authProviders": {
     "title": "認証プロバイダー",
@@ -341,7 +355,8 @@
     "pdfPreviewNotAvailable": "PDFプレビューは利用できません。代替ビューを試すかダウンロードしてください。",
     "tryAlternativeView": "代替ビューを試す",
     "loadingAlternative": "代替ビューを読み込み中...",
-    "loadingAudio": "オーディオを読み込み中..."
+    "loadingAudio": "オーディオを読み込み中...",
+    "downloading": "Downloading..."
   },
   "fileSelector": {
     "availableFiles": "利用可能なファイル ({count})",
@@ -408,7 +423,15 @@
       "moveItemsFailed": "アイテムの移動に失敗しました。もう一度お試しください。",
       "cannotMoveHere": "この場所にアイテムを移動できません"
     },
-    "openFolder": "フォルダを開く"
+    "openFolder": "フォルダを開く",
+    "drag": {
+      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
+      "fileMoved": "File \"{name}\" moved to \"{target}\"",
+      "itemsMoved": "{count} items moved to \"{target}\"",
+      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
+      "fileMovedToRoot": "File \"{name}\" moved to root folder",
+      "itemsMovedToRoot": "{count} items moved to root folder"
+    }
   },
   "filesTable": {
     "ariaLabel": "ファイルテーブル",
@@ -546,7 +569,10 @@
     "pageTitle": "ログイン",
     "or": "または",
     "continueWithSSO": "SSOで続行",
-    "processing": "認証処理中..."
+    "processing": "認証処理中...",
+    "orContinueWith": "Or continue with",
+    "continueWith": "Continue with {name}",
+    "providerNotConfigured": "{name} is not properly configured"
   },
   "logo": {
     "labels": {
@@ -901,7 +927,8 @@
         "editError": "ファイルの更新に失敗しました",
         "previewNotAvailable": "プレビューは利用できません",
         "notAvailable": "利用不可",
-        "invalidDate": "無効な日付"
+        "invalidDate": "無効な日付",
+        "downloading": "Downloading..."
       },
       "alias": {
         "editTitle": "エイリアスを編集",
@@ -988,7 +1015,8 @@
           "failed": "コピー操作に失敗しました。もう一度お試しください。",
           "aborted": "タイムアウトによりコピー操作がキャンセルされました。"
         },
-        "invalidDate": "無効な日付"
+        "invalidDate": "無効な日付",
+        "downloading": "Downloading..."
       }
     },
     "form": {
@@ -1056,7 +1084,11 @@
       },
       "fieldRequirements": {
         "title": "フィールド要件",
-        "description": "アップロードフォームに表示されるフィールドを構成します"
+        "description": "アップロードフォームに表示されるフィールドを構成します",
+        "configurationTitle": "Field Configuration:",
+        "hiddenDescription": "Hidden: Field won't appear in the upload form",
+        "optionalDescription": "Optional: Field will appear but isn't mandatory",
+        "requiredDescription": "Required: Field must be filled before upload"
       },
       "nameFieldRequired": {
         "label": "名前フィールドの要件",
@@ -1874,7 +1906,11 @@
       "description": "ファイルをアップロードするにはリリースしてください"
     },
     "pasteSuccess": "{count, plural, =1 {画像が貼り付けられ、正常にアップロードされました} other {#個の画像が貼り付けられ、正常にアップロードされました}}",
-    "filesQueued": "{count, plural, one {# ファイルがアップロード待ち} other {# ファイルがアップロード待ち}}"
+    "filesQueued": "{count, plural, one {# ファイルがアップロード待ち} other {# ファイルがアップロード待ち}}",
+    "errors": {
+      "addFileFailed": "Failed to add {name}: {error}",
+      "uploadFailed": "Upload failed"
+    }
   },
   "users": {
     "modes": {
@@ -1958,7 +1994,8 @@
       "expiresIn": "15分で期限切れ",
       "close": "閉じる",
       "errors": {
-        "generateFailed": "招待リンクの生成に失敗しました"
+        "generateFailed": "招待リンクの生成に失敗しました",
+        "copyFailed": "Failed to copy link"
       }
     }
   },
@@ -2035,5 +2072,11 @@
       "createFailed": "アカウントの作成に失敗しました。もう一度お試しください。"
     },
     "pageTitle": "アカウントを作成"
+  },
+  "filesTree": {
+    "noItems": "No items to display"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Change language"
   }
 }

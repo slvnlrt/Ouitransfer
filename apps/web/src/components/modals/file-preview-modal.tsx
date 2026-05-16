@@ -56,7 +56,7 @@ export function FilePreviewModal({
           <DialogTitle className="flex items-center gap-2">
             {(() => {
               const FileIcon = getFileIcon(file.name).icon;
-              return <FileIcon size={24} />;
+              return <FileIcon className="size-6" />;
             })()}
             <span className="truncate">{file.name}</span>
           </DialogTitle>

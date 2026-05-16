@@ -1,18 +1,15 @@
 "use client";
 
-import { CloudUpload, Loader, X } from "lucide-react";
+import { CloudUpload, RotateCcw, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { FileTypeIcon } from "@/components/ui/file-type-icon";
 import { Progress } from "@/components/ui/progress";
-import { useUppyUpload } from "@/hooks/useUppyUpload";
-import { checkFile, getFilePresignedUrl, registerFile } from "@/http/endpoints";
-import { logger } from "@/lib/logger";
-import { getFileIcon } from "@/utils/file-icons";
-import { generateSafeFileName } from "@/utils/file-utils";
+import { StatusIcon } from "@/components/ui/status-icon";
+import { useFileUpload } from "@/hooks/use-file-upload";
 import { formatFileSize } from "@/utils/format-file-size";
-import getErrorData from "@/utils/getErrorData";
 
 interface GlobalDropZoneProps {
   onSuccess?: () => void;
@@ -24,69 +21,8 @@ export function GlobalDropZone({ onSuccess, children, currentFolderId }: GlobalD
   const t = useTranslations();
   const [isDragOver, setIsDragOver] = useState(false);
 
-  const { addFiles, startUpload, fileUploads, removeFile, retryUpload } = useUppyUpload({
-    onValidate: async (file) => {
-      const fileName = file.name;
-      const extension = fileName.split(".").pop() || "";
-      const safeObjectName = generateSafeFileName(fileName);
-
-      try {
-        await checkFile({
-          name: fileName,
-          objectName: safeObjectName,
-          size: file.size,
-          extension: extension,
-          folderId: currentFolderId,
-        });
-      } catch (error) {
-        logger.error("File check failed:", {
-          err: error instanceof Error ? error.message : String(error),
-        });
-        const errorData = getErrorData(error);
-        let errorMessage = t("uploadFile.error");
-
-        if (errorData.code === "fileSizeExceeded") {
-          errorMessage = t(`uploadFile.${errorData.code}`, { maxsizemb: errorData.details || "0" });
-        } else if (errorData.code === "insufficientStorage") {
-          errorMessage = t(`uploadFile.${errorData.code}`, {
-            availablespace: errorData.details || "0",
-          });
-        } else if (errorData.code) {
-          errorMessage = t(`uploadFile.${errorData.code}`);
-        }
-
-        toast.error(errorMessage);
-        throw new Error(errorMessage);
-      }
-    },
-    onBeforeUpload: async (file) => {
-      const safeObjectName = generateSafeFileName(file.name);
-      return safeObjectName;
-    },
-    getPresignedUrl: async (objectName, extension) => {
-      const response = await getFilePresignedUrl({
-        filename: objectName.replace(`.${extension}`, ""),
-        extension,
-      });
-
-      // IMPORTANT: Use the objectName returned by backend, not the one we generated!
-      // The backend generates: userId/timestamp-random-filename.extension
-      const actualObjectName = response.data.objectName;
-
-      return { url: response.data.url, method: "PUT", actualObjectName };
-    },
-    onAfterUpload: async (_fileId, file, objectName) => {
-      const fileName = file.name;
-      const extension = fileName.split(".").pop() || "";
-
-      await registerFile({
-        name: fileName,
-        objectName,
-        size: file.size,
-        extension,
-        folderId: currentFolderId,
-      });
-    },
+  const { addFiles, startUpload, fileUploads, removeFile, retryUpload } = useFileUpload({
+    currentFolderId,
   });
 
   // Monitor upload completion separately from the hook
@@ -236,36 +172,18 @@ export function GlobalDropZone({ onSuccess, children, currentFolderId }: GlobalD
     };
   }, [handleDragOver, handleDragLeave, handleDrop, handlePaste]);
 
-  const renderFileIcon = (fileName: string) => {
-    const { icon: FileIcon, color } = getFileIcon(fileName);
-    return <FileIcon size={16} className={color} />;
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "uploading":
-        return <Loader size={14} className="animate-spin text-blue-500" />;
-      case "success":
-        return <CloudUpload size={14} className="text-green-500" />;
-      case "error":
-        return <X size={14} className="text-red-500" />;
-      default:
-        return null;
-    }
-  };
-
   return (
     <>
       {children}
 
       {isDragOver && (
-        <div className="fixed inset-0 z-50 dark:bg-black/80 bg-white/90 border-2 border-dashed dark:border-primary/50 border-primary/90 rounded-lg m-1 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 bg-background/90 border-2 border-dashed border-primary/90 rounded-lg m-1 flex items-center justify-center">
           <div className="text-center">
-            <CloudUpload size={64} className="text-primary mx-auto mb-4" />
+            <CloudUpload className="size-16 text-primary mx-auto mb-4" />
             <h3 className="text-2xl font-bold text-primary mb-2">
               {t("uploadFile.globalDrop.title")}
             </h3>
-            <p className="text-lg dark:text-muted-foreground text-black">
+            <p className="text-lg text-muted-foreground">
               {t("uploadFile.globalDrop.description")}
             </p>
           </div>
@@ -279,12 +197,14 @@ export function GlobalDropZone({ onSuccess, children, currentFolderId }: GlobalD
               key={upload.id}
               className="bg-background border rounded-lg shadow-lg p-3 flex items-center gap-3"
             >
-              <div className="flex-shrink-0">{renderFileIcon(upload.file.name)}</div>
+              <div className="flex-shrink-0">
+                <FileTypeIcon fileName={upload.file.name} />
+              </div>
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-medium truncate">{upload.file.name}</p>
-                  {getStatusIcon(upload.status)}
+                  <StatusIcon status={upload.status} sizeClass="size-3.5" />
                 </div>
                 <p className="text-xs text-muted-foreground">{formatFileSize(upload.file.size)}</p>
 
@@ -310,7 +230,7 @@ export function GlobalDropZone({ onSuccess, children, currentFolderId }: GlobalD
                       className="h-6 w-6 p-0"
                       title={t("uploadFile.retry")}
                     >
-                      <Loader size={12} />
+                      <RotateCcw className="size-3" />
                     </Button>
                     <Button
                       variant="ghost"
@@ -318,7 +238,15 @@ export function GlobalDropZone({ onSuccess, children, currentFolderId }: GlobalD
                       onClick={() => removeFile(upload.id)}
                       className="h-6 w-6 p-0"
                     >
-                      <X size={12} />
+                      <X className="size-3" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeFile(upload.id)}
+                      className="h-6 w-6 p-0"
+                    >
+                      <X className="size-3" />
                     </Button>
                   </div>
                 ) : upload.status === "success" ? null : (
@@ -328,7 +256,7 @@ export function GlobalDropZone({ onSuccess, children, currentFolderId }: GlobalD
                     onClick={() => removeFile(upload.id)}
                     className="h-6 w-6 p-0"
                   >
-                    <X size={12} />
+                    <X className="size-3" />
                   </Button>
                 )}
               </div>

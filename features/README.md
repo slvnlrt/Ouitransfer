@@ -1,0 +1,91 @@
+# Features — Active Development
+
+This directory tracks all feature development for Ouitransfer (post-refactor phase).
+
+## Workstreams
+
+### 5.x — New Features
+
+| # | Feature | Status | Depends on |
+|---|---------|--------|------------|
+| 5.1 | [Per-User Storage Quotas](specs/5.1-quotas.md) | Not started | — |
+| 5.4 | [Groups](specs/5.4-groups.md) | Not started | 5.1 |
+| 5.2 | [Automatic Cleanup of Expired Content](specs/5.2-cleanup.md) | Not started | — |
+| 5.3 | [LDAP / Active Directory Sync](specs/5.3-ldap.md) | Not started | 5.4 |
+
+### 6.x — UI Overhaul
+
+| # | Feature | Status | Depends on |
+|---|---------|--------|------------|
+| 6.1 | [UI Code Audit](specs/6.1-ui-audit.md) | Done | — |
+| 6.2 | [UI Code Quality Fixes](specs/6.2-ui-fixes.md) | Done | 6.1 |
+| 6.3 | [Visual Redesign](specs/6.3-visual-redesign.md) | Not started | 6.2 |
+
+### Status Legend
+
+| Status | Meaning |
+|--------|---------|
+| Not started | Nothing done yet |
+| Spec | Open questions resolved, spec finalized |
+| Planning | Implementation plan written |
+| In progress | Implementation underway |
+| In review | Review done, corrections in progress |
+| Done | All findings fixed, validated |
+
+## Implementation Order
+
+### Features (5.x)
+
+```
+5.1 Quotas  →  5.4 Groups  →  5.3 LDAP/AD sync
+
+5.2 Auto-cleanup (independent — can run in parallel)
+```
+
+### UI (6.x)
+
+```
+6.1 Audit  →  6.2 Fixes  →  6.3 Visual Redesign
+```
+
+The 6.x track is independent from 5.x — both can run in parallel.
+
+## Workflow
+
+```
+1. Spec        → specs/X.Y-name.md     (design, open questions → decisions)
+2. Plan        → plans/X.Y-name.md     (tasks, batches, order)
+3. Implement   → subagents, commits
+4. Review      → reviews/X.Y-name.md   (findings with checkboxes)
+5. Fix ALL     → address every finding, check them off in review file
+6. Done        → update status table above
+```
+
+Key rules:
+- The **review file IS the post-review TODO** — no separate file. Each finding is a checkbox.
+- A feature is **not Done until every checkbox in the review is checked**.
+- Findings are rated Critical / Important / Minor — ALL must be fixed, none are optional.
+
+## Naming Convention
+
+Same base name across directories — the folder gives context:
+```
+specs/5.1-quotas.md       ← what to build (design + decisions)
+plans/5.1-quotas.md       ← how to build it (tasks, batches)
+reviews/5.1-quotas.md     ← review findings (checklist)
+```
+
+## Directory Structure
+
+```
+features/
+  README.md         ← this file — orientation and status
+  SESSIONS.md       ← session log (date + bullet points)
+  specs/            ← one file per feature (requirements + decisions)
+  plans/            ← implementation plans (tasks, batches, order)
+  reviews/          ← review findings (checkboxes = post-review TODO)
+```
+
+## Current Focus
+
+6.3 — Visual Redesign (spec phase — new identity, color palette, wow factor)

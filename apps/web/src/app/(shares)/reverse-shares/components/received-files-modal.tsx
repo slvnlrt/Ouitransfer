@@ -22,6 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   copyReverseShareFileToUserFiles,
@@ -85,9 +86,7 @@ export function ReceivedFilesModal({
 
   const handleDownload = async (file: ReverseShareFile) => {
     try {
-      const loadingToast = toast.loading(
-        t("reverseShares.modals.receivedFiles.downloading") || "Downloading...",
-      );
+      const loadingToast = toast.loading(t("reverseShares.modals.receivedFiles.downloading"));
       const response = await downloadReverseShareFile(file.id);
 
       const link = document.createElement("a");
@@ -381,7 +380,7 @@ export function ReceivedFilesModal({
         <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <File size={20} />
+              <File className="size-5" />
               {t("reverseShares.modals.receivedFiles.title")}
             </DialogTitle>
             <DialogDescription>
@@ -434,7 +433,7 @@ export function ReceivedFilesModal({
                         disabled={bulkCopying}
                       >
                         {bulkCopying ? (
-                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
+                          <Spinner size="sm" />
                         ) : (
                           <ClipboardCopy className="h-4 w-4" />
                         )}
@@ -446,7 +445,7 @@ export function ReceivedFilesModal({
                         disabled={bulkDeleting}
                       >
                         {bulkDeleting ? (
-                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-red-600 border-t-transparent"></div>
+                          <Spinner size="sm" className="border-red-600 border-t-transparent" />
                         ) : (
                           <Trash2 className="h-4 w-4" />
                         )}
@@ -578,7 +577,7 @@ export function ReceivedFilesModal({
             </Button>
             <Button variant="destructive" onClick={confirmBulkDelete} disabled={bulkDeleting}>
               {bulkDeleting ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent me-2" />
+                <Spinner size="sm" className="border-white border-t-transparent me-2" />
               ) : null}
               {t("reverseShares.modals.receivedFiles.bulkDeleteConfirmButton", {
                 count: filesToDeleteBulk.length,

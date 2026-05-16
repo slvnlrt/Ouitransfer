@@ -43,11 +43,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { useTrustedDevices } from "../hooks/use-trusted-devices";
 import { useTwoFactor } from "../hooks/use-two-factor";
 
 export function TwoFactorForm() {
   const t = useTranslations();
+  const { copy } = useCopyToClipboard();
   const {
     isLoading,
     status,
@@ -126,7 +128,7 @@ export function TwoFactorForm() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             {status.enabled ? (
-              <ShieldCheck className="h-5 w-5 text-green-600" />
+              <ShieldCheck className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
             ) : (
               <Shield className="h-5 w-5" />
             )}
@@ -356,7 +358,7 @@ export function TwoFactorForm() {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => navigator.clipboard.writeText(setupData.manualEntryKey)}
+                    onClick={() => copy(setupData.manualEntryKey)}
                   >
                     <Copy className="h-4 w-4" />
                   </Button>

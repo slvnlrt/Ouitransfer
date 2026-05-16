@@ -4,17 +4,12 @@ import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
-import {
-  addRecipients,
-  createShareAlias,
-  deleteShare,
-  notifyRecipients,
-  updateShare,
-} from "@/http/endpoints";
+import { createShareAlias, updateShare } from "@/http/endpoints";
 import { updateFolder } from "@/http/endpoints/folders";
 import type { Share, UpdateShareBody } from "@/http/endpoints/shares/types";
-import { getCachedDownloadUrl } from "@/lib/download-url-cache";
-import { logger } from "@/lib/logger";
+import { useShareDelete } from "./use-share-delete";
+import { useShareDownload } from "./use-share-download";
+import { useShareRecipients } from "./use-share-recipients";
 
 export interface ShareManagerHook {
   shareToDelete: Share | null;
@@ -58,61 +53,28 @@ export interface ShareManagerHook {
 
 export function useShareManager(onSuccess: () => void) {
   const t = useTranslations();
-  const [shareToDelete, setShareToDelete] = useState<Share | null>(null);
+
+  // --- Selection callback management ---
+  const [clearSelectionCallback, setClearSelectionCallbackState] = useState<(() => void) | null>(
+    null,
+  );
+  const setClearSelectionCallback = useCallback((callback: () => void) => {
+    setClearSelectionCallbackState(() => callback);
+  }, []);
+
+  // --- Compose sub-hooks ---
+  const deletion = useShareDelete(onSuccess, clearSelectionCallback);
+  const download = useShareDownload(clearSelectionCallback);
+  const recipients = useShareRecipients(onSuccess);
+
+  // --- Edit/modal state (remaining responsibilities in orchestrator) ---
   const [shareToEdit, setShareToEdit] = useState<Share | null>(null);
   const [shareToManageFiles, setShareToManageFiles] = useState<Share | null>(null);
-  const [shareToManageRecipients, setShareToManageRecipients] = useState<Share | null>(null);
   const [shareToManageSecurity, setShareToManageSecurity] = useState<Share | null>(null);
   const [shareToManageExpiration, setShareToManageExpiration] = useState<Share | null>(null);
   const [shareToViewDetails, setShareToViewDetails] = useState<Share | null>(null);
   const [shareToGenerateLink, setShareToGenerateLink] = useState<Share | null>(null);
   const [shareToViewQrCode, setShareToViewQrCode] = useState<Share | null>(null);
-  const [sharesToDelete, setSharesToDelete] = useState<Share[] | null>(null);
-  const [clearSelectionCallback, setClearSelectionCallbackState] = useState<(() => void) | null>(
-    null,
-  );
-
-  const setClearSelectionCallback = useCallback((callback: () => void) => {
-    setClearSelectionCallbackState(() => callback);
-  }, []);
-
-  const handleDelete = async (shareId: string) => {
-    try {
-      await deleteShare(shareId);
-      toast.success(t("shareManager.deleteSuccess"));
-      onSuccess();
-      setShareToDelete(null);
-    } catch {
-      toast.error(t("shareManager.deleteError"));
-    }
-  };
-
-  const handleBulkDelete = (shares: Share[]) => {
-    setSharesToDelete(shares);
-  };
-
-  const handleDeleteBulk = async () => {
-    if (!sharesToDelete) return;
-
-    const loadingToast = toast.loading(
-      t("shareManager.bulkDeleteLoading", { count: sharesToDelete.length }),
-    );
-
-    try {
-      await Promise.all(sharesToDelete.map((share) => deleteShare(share.id)));
-      toast.dismiss(loadingToast);
-      toast.success(t("shareManager.bulkDeleteSuccess", { count: sharesToDelete.length }));
-      setSharesToDelete(null);
-      onSuccess();
-
-      if (clearSelectionCallback) {
-        clearSelectionCallback();
-      }
-    } catch {
-      toast.dismiss(loadingToast);
-      toast.error(t("shareManager.bulkDeleteError"));
-    }
-  };
 
   const handleEdit = async (shareId: string, data: Omit<UpdateShareBody, "id">) => {
     try {
@@ -163,17 +125,6 @@ export function useShareManager(onSuccess: () => void) {
     }
   };
 
-  const handleManageRecipients = async (shareId: string, recipients: string[]) => {
-    try {
-      await addRecipients(shareId, { emails: recipients });
-      toast.success(t("shareManager.recipientsUpdateSuccess"));
-      onSuccess();
-      setShareToManageRecipients(null);
-    } catch {
-      toast.error(t("shareManager.recipientsUpdateError"));
-    }
-  };
-
   const handleGenerateLink = async (shareId: string, alias: string) => {
     try {
       await createShareAlias(shareId, { alias });
@@ -185,201 +136,61 @@ export function useShareManager(onSuccess: () => void) {
     }
   };
 
-  const handleNotifyRecipients = async (share: Share) => {
-    const link = `${window.location.origin}/s/${share.alias?.alias}`;
-    const loadingToast = toast.loading(t("shareManager.notifyLoading"));
-
+  const handleEditFolder = async (folderId: string, newName: string, description?: string) => {
     try {
-      await notifyRecipients(share.id, { shareLink: link });
-      toast.dismiss(loadingToast);
-      toast.success(t("shareManager.notifySuccess"));
+      await updateFolder(folderId, { name: newName, description });
+      toast.success(t("shareManager.updateSuccess"));
+      onSuccess();
     } catch {
-      toast.dismiss(loadingToast);
-      toast.error(t("shareManager.notifyError"));
+      toast.error(t("shareManager.updateError"));
     }
   };
 
-  const handleBulkDownloadWithZip = async (shares: Share[], zipName: string) => {
-    try {
-      if (shares.length === 1) {
-        const share = shares[0];
-
-        const allItems: Array<{
-          objectName?: string;
-          name: string;
-          id?: string;
-          type?: "file" | "folder";
-        }> = [];
-
-        if (share.files) {
-          share.files.forEach((file) => {
-            if (!file.folderId) {
-              allItems.push({
-                objectName: file.objectName,
-                name: file.name,
-                type: "file",
-              });
-            }
-          });
-        }
-
-        if (share.folders) {
-          const folderIds = new Set(share.folders.map((f) => f.id));
-          share.folders.forEach((folder) => {
-            if (!folder.parentId || !folderIds.has(folder.parentId)) {
-              allItems.push({
-                id: folder.id,
-                name: folder.name,
-                type: "folder",
-              });
-            }
-          });
-        }
-
-        if (allItems.length === 0) {
-          toast.error(t("shareManager.noFilesToDownload"));
-          return;
-        }
-
-        const loadingToast = toast.loading(t("shareManager.preparingDownload"));
-
-        try {
-          // Get presigned URLs for all files
-          const downloadItems = await Promise.all(
-            allItems
-              .filter((item) => item.type === "file" && item.objectName)
-              .map(async (item) => {
-                const url = await getCachedDownloadUrl(item.objectName!);
-                return {
-                  url,
-                  name: item.name,
-                };
-              }),
-          );
-
-          if (downloadItems.length === 0) {
-            toast.dismiss(loadingToast);
-            toast.error(t("shareManager.noFilesToDownload"));
-            return;
-          }
-
-          // Create ZIP with all files
-          const { downloadFilesAsZip } = await import("@/utils/zip-download");
-          await downloadFilesAsZip(
-            downloadItems,
-            zipName.endsWith(".zip") ? zipName : `${zipName}.zip`,
-          );
-
-          toast.dismiss(loadingToast);
-          toast.success(t("shareManager.zipDownloadSuccess"));
-
-          if (clearSelectionCallback) {
-            clearSelectionCallback();
-          }
-        } catch (error) {
-          toast.dismiss(loadingToast);
-          toast.error(t("shareManager.zipDownloadError"));
-          throw error;
-        }
-      } else {
-        toast.error(t("shareManager.errors.multipleDownloadNotSupported"));
-      }
-    } catch (error) {
-      logger.error("Error creating ZIP", {
-        err: error instanceof Error ? error.message : String(error),
-      });
-    }
-  };
-
-  const handleBulkDownload = (shares: Share[]) => {
-    const zipName =
-      shares.length === 1
-        ? `${shares[0].name || t("shareManager.defaultShareName")}.zip`
-        : t("shareManager.multipleSharesZipName", { count: shares.length });
-    handleBulkDownloadWithZip(shares, zipName);
-  };
-
-  const handleDownloadShareFiles = async (share: Share) => {
-    const totalFiles = share.files?.length || 0;
-    const totalFolders = share.folders?.length || 0;
-
-    if (totalFiles === 0 && totalFolders === 0) {
-      toast.error(t("shareManager.noFilesToDownload"));
-      return;
-    }
-
-    if (totalFiles === 1 && totalFolders === 0) {
-      const file = share.files[0];
-      try {
-        const loadingToast = toast.loading(t("shareManager.downloading"));
-        const url = await getCachedDownloadUrl(file.objectName);
-
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = file.name;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        toast.dismiss(loadingToast);
-        toast.success(t("shareManager.downloadSuccess"));
-      } catch (error) {
-        logger.error("Download error", {
-          err: error instanceof Error ? error.message : String(error),
-        });
-        toast.error(t("shareManager.downloadError"));
-      }
-    } else {
-      const zipName = `${share.name || t("shareManager.defaultShareName")}.zip`;
-      await handleBulkDownloadWithZip([share], zipName);
-    }
-  };
-
+  // --- Return unified interface (consumers don't change) ---
   return {
-    shareToDelete,
+    // Delete operations (from sub-hook)
+    shareToDelete: deletion.shareToDelete,
+    sharesToDelete: deletion.sharesToDelete,
+    setShareToDelete: deletion.setShareToDelete,
+    setSharesToDelete: deletion.setSharesToDelete,
+    handleDelete: deletion.handleDelete,
+    handleBulkDelete: deletion.handleBulkDelete,
+    handleDeleteBulk: deletion.handleDeleteBulk,
+
+    // Download operations (from sub-hook)
+    handleBulkDownload: download.handleBulkDownload,
+    handleDownloadShareFiles: download.handleDownloadShareFiles,
+    handleBulkDownloadWithZip: download.handleBulkDownloadWithZip,
+
+    // Recipient operations (from sub-hook)
+    shareToManageRecipients: recipients.shareToManageRecipients,
+    setShareToManageRecipients: recipients.setShareToManageRecipients,
+    handleManageRecipients: recipients.handleManageRecipients,
+    handleNotifyRecipients: recipients.handleNotifyRecipients,
+
+    // Edit/modal state (orchestrator-local)
     shareToEdit,
     shareToManageFiles,
-    shareToManageRecipients,
     shareToManageSecurity,
     shareToManageExpiration,
     shareToViewDetails,
     shareToGenerateLink,
     shareToViewQrCode,
-    sharesToDelete,
-    setShareToDelete,
     setShareToEdit,
     setShareToManageFiles,
-    setShareToManageRecipients,
     setShareToManageSecurity,
     setShareToManageExpiration,
     setShareToViewDetails,
     setShareToGenerateLink,
     setShareToViewQrCode,
-    setSharesToDelete,
-    handleDelete,
-    handleBulkDelete,
-    handleDeleteBulk,
     handleEdit,
     handleUpdateName,
     handleUpdateDescription,
     handleUpdateSecurity,
     handleUpdateExpiration,
     handleManageFiles,
-    handleManageRecipients,
     handleGenerateLink,
-    handleNotifyRecipients,
-    handleBulkDownload,
-    handleDownloadShareFiles,
-    handleBulkDownloadWithZip,
     setClearSelectionCallback,
-    handleEditFolder: async (folderId: string, newName: string, description?: string) => {
-      try {
-        await updateFolder(folderId, { name: newName, description });
-        toast.success(t("shareManager.updateSuccess"));
-        onSuccess();
-      } catch {
-        toast.error(t("shareManager.updateError"));
-      }
-    },
+    handleEditFolder,
   };
 }

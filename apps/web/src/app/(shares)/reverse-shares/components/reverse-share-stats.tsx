@@ -15,19 +15,19 @@ export function ReverseShareStats({ filesCount, maxFiles, isActive }: ReverseSha
   return (
     <div className="grid grid-cols-3 gap-3">
       <div className="text-center p-2 bg-muted/30 rounded-lg">
-        <p className="text-lg font-semibold text-green-600">{filesCount}</p>
+        <p className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">{filesCount}</p>
         <p className="text-xs text-muted-foreground">{t("reverseShares.labels.filesReceived")}</p>
       </div>
       <div className="text-center p-2 bg-muted/30 rounded-lg">
-        <p className="text-lg font-semibold text-blue-600">{maxFiles || "∞"}</p>
+        <p className="text-lg font-semibold text-primary">{maxFiles || "∞"}</p>
         <p className="text-xs text-muted-foreground">{t("reverseShares.labels.fileLimit")}</p>
       </div>
       <div className="text-center p-2 bg-muted/30 rounded-lg">
         <div className="flex items-center justify-center gap-1">
           {isActive ? (
-            <ToggleRight className="h-5 w-5 text-green-600" />
+            <ToggleRight className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
           ) : (
-            <ToggleLeft className="h-5 w-5 text-red-600" />
+            <ToggleLeft className="h-5 w-5 text-destructive" />
           )}
         </div>
         <p className="text-xs text-muted-foreground">

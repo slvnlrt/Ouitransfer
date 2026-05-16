@@ -99,7 +99,7 @@ export function GenerateAliasModal({
       <DialogContent className="sm:max-w-lg max-w-[95vw] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Link size={20} />
+            <Link className="size-5" />
             {hasExistingAlias
               ? t("reverseShares.modals.alias.editTitle")
               : t("reverseShares.modals.alias.createTitle")}

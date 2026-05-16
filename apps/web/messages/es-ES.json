@@ -12,7 +12,21 @@
     },
     "authenticationFailed": "Autenticación fallida",
     "successfullyAuthenticated": "¡Autenticado exitosamente!",
-    "sessionExpired": "Tu sesión ha expirado. Por favor, inicia sesión de nuevo."
+    "sessionExpired": "Tu sesión ha expirado. Por favor, inicia sesión de nuevo.",
+    "callback": {
+      "errors": {
+        "oauth_error": "OAuth authentication failed",
+        "missing_parameters": "Missing authentication parameters",
+        "missing_code": "Missing authorization code",
+        "registration_disabled": "Registration is disabled for this provider",
+        "provider_disabled": "This authentication provider is disabled",
+        "state_expired": "Authentication session expired",
+        "account_inactive": "Your account is inactive",
+        "no_email": "No email address found in your account",
+        "token_exchange_failed": "Failed to authenticate with provider",
+        "missing_user_info": "Incomplete user information from provider"
+      }
+    }
   },
   "contextMenu": {
     "newFolder": "Nueva carpeta",
@@ -345,7 +359,8 @@
     "pdfPreviewNotAvailable": "La vista previa del PDF no está disponible. Pruebe la vista alternativa o descargue.",
     "tryAlternativeView": "Probar Vista Alternativa",
     "loadingAlternative": "Cargando vista alternativa...",
-    "loadingAudio": "Cargando audio..."
+    "loadingAudio": "Cargando audio...",
+    "downloading": "Downloading..."
   },
   "fileSelector": {
     "availableFiles": "Archivos Disponibles ({count})",
@@ -412,7 +427,15 @@
       "moveItemsFailed": "Error al mover elementos. Por favor, inténtelo de nuevo.",
       "cannotMoveHere": "No se pueden mover elementos a esta ubicación"
     },
-    "openFolder": "Abrir carpeta"
+    "openFolder": "Abrir carpeta",
+    "drag": {
+      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
+      "fileMoved": "File \"{name}\" moved to \"{target}\"",
+      "itemsMoved": "{count} items moved to \"{target}\"",
+      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
+      "fileMovedToRoot": "File \"{name}\" moved to root folder",
+      "itemsMovedToRoot": "{count} items moved to root folder"
+    }
   },
   "filesTable": {
     "ariaLabel": "Tabla de archivos",
@@ -550,7 +573,10 @@
     "pageTitle": "Iniciar sesión",
     "or": "ou",
     "continueWithSSO": "Continuar com SSO",
-    "processing": "Processando autenticação..."
+    "processing": "Processando autenticação...",
+    "orContinueWith": "Or continue with",
+    "continueWith": "Continue with {name}",
+    "providerNotConfigured": "{name} is not properly configured"
   },
   "logo": {
     "labels": {
@@ -905,7 +931,8 @@
         "editError": "Error al actualizar archivo",
         "previewNotAvailable": "Vista previa no disponible",
         "notAvailable": "No disponible",
-        "invalidDate": "Fecha inválida"
+        "invalidDate": "Fecha inválida",
+        "downloading": "Downloading..."
       },
       "alias": {
         "editTitle": "Editar Alias",
@@ -992,7 +1019,8 @@
           "timeout": "La operación de copia expiró. Por favor, inténtalo de nuevo con un archivo más pequeño o verifica tu conexión.",
           "failed": "La operación de copia falló. Por favor, inténtalo de nuevo.",
           "aborted": "La operación de copia fue cancelada debido al tiempo de espera."
-        }
+        },
+        "downloading": "Downloading..."
       }
     },
     "form": {
@@ -1060,7 +1088,11 @@
       },
       "fieldRequirements": {
         "title": "Requisitos de campo",
-        "description": "Configurar qué campos se muestran en el formulario de carga"
+        "description": "Configurar qué campos se muestran en el formulario de carga",
+        "configurationTitle": "Field Configuration:",
+        "hiddenDescription": "Hidden: Field won't appear in the upload form",
+        "optionalDescription": "Optional: Field will appear but isn't mandatory",
+        "requiredDescription": "Required: Field must be filled before upload"
       },
       "nameFieldRequired": {
         "label": "Requisito de campo de nombre",
@@ -1878,7 +1910,11 @@
       "description": "Suelta para subir tus archivos"
     },
     "pasteSuccess": "{count, plural, =1 {Imagen pegada y subida exitosamente} other {# imágenes pegadas y subidas exitosamente}}",
-    "filesQueued": "{count, plural, one {# archivo en cola para subir} other {# archivos en cola para subir}}"
+    "filesQueued": "{count, plural, one {# archivo en cola para subir} other {# archivos en cola para subir}}",
+    "errors": {
+      "addFileFailed": "Failed to add {name}: {error}",
+      "uploadFailed": "Upload failed"
+    }
   },
   "users": {
     "modes": {
@@ -1962,7 +1998,8 @@
       "expiresIn": "Expira en 15 minutos",
       "close": "Cerrar",
       "errors": {
-        "generateFailed": "Error al generar el enlace de invitación"
+        "generateFailed": "Error al generar el enlace de invitación",
+        "copyFailed": "Failed to copy link"
       }
     }
   },
@@ -2035,5 +2072,11 @@
       "createFailed": "Error al crear la cuenta. Por favor, inténtalo de nuevo."
     },
     "pageTitle": "Crear Cuenta"
+  },
+  "filesTree": {
+    "noItems": "No items to display"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Change language"
   }
 }

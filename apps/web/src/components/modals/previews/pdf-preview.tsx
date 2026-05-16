@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Spinner } from "@/components/ui/spinner";
 
 interface PdfPreviewProps {
   src: string;
@@ -32,7 +33,7 @@ export function PdfPreview({
         ) : pdfLoadFailed ? (
           <div className="flex items-center justify-center h-full min-h-[600px]">
             <div className="flex flex-col items-center gap-4">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+              <Spinner size="lg" />
               <p className="text-muted-foreground">{t("filePreview.loadingAlternative")}</p>
             </div>
           </div>
