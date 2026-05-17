@@ -1,7 +1,7 @@
 "use client";
 
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -14,6 +14,7 @@ import { completeTwoFactorLogin } from "@/http/endpoints/auth/two-factor";
 import type { LoginResponse } from "@/http/endpoints/auth/two-factor/types";
 import type { GetCurrentUser200 } from "@/http/endpoints/auth/types";
 import { queryKeys } from "@/lib/query-keys";
+import { parseApiError } from "@/utils/api-error";
 import type { LoginFormValues } from "../schemas/schema";
 
 const loginSchema = z.object({
@@ -149,8 +150,11 @@ export function useLogin() {
         router.replace("/dashboard");
       }
     } catch (err) {
-      if (axios.isAxiosError(err) && err.response?.data?.error) {
-        setError(t(`errors.${err.response.data.error}`));
+      const apiError = parseApiError(err);
+      if (apiError.isNetworkError) {
+        setError(t("errors.networkError"));
+      } else if (apiError.code === ErrorCodes.UNAUTHORIZED) {
+        setError(t("errors.invalidCredentials"));
       } else {
         setError(t("errors.unexpectedError"));
       }
@@ -185,8 +189,9 @@ export function useLogin() {
       queryClient.invalidateQueries({ queryKey: queryKeys.auth.currentUser() });
       router.replace("/dashboard");
     } catch (err) {
-      if (axios.isAxiosError(err) && err.response?.data?.error) {
-        setError(err.response.data.error);
+      const apiError = parseApiError(err);
+      if (apiError.isNetworkError) {
+        setError(t("errors.networkError"));
       } else {
         setError(t("twoFactor.errors.invalidTwoFactorCode"));
       }

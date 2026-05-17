@@ -15,16 +15,16 @@
     "sessionExpired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.",
     "callback": {
       "errors": {
-        "oauth_error": "OAuth authentication failed",
-        "missing_parameters": "Missing authentication parameters",
-        "missing_code": "Missing authorization code",
-        "registration_disabled": "Registration is disabled for this provider",
-        "provider_disabled": "This authentication provider is disabled",
-        "state_expired": "Authentication session expired",
-        "account_inactive": "Your account is inactive",
-        "no_email": "No email address found in your account",
-        "token_exchange_failed": "Failed to authenticate with provider",
-        "missing_user_info": "Incomplete user information from provider"
+        "oauth_error": "OAuth-Authentifizierung fehlgeschlagen",
+        "missing_parameters": "Fehlende Authentifizierungsparameter",
+        "missing_code": "Fehlender Autorisierungscode",
+        "registration_disabled": "Die Registrierung ist für diesen Anbieter deaktiviert",
+        "provider_disabled": "Dieser Authentifizierungsanbieter ist deaktiviert",
+        "state_expired": "Authentifizierungssitzung abgelaufen",
+        "account_inactive": "Ihr Konto ist inaktiv",
+        "no_email": "Keine E-Mail-Adresse in Ihrem Konto gefunden",
+        "token_exchange_failed": "Authentifizierung beim Anbieter fehlgeschlagen",
+        "missing_user_info": "Unvollständige Benutzerinformationen vom Anbieter"
       }
     }
   },
@@ -251,6 +251,46 @@
     "recentFiles": {
       "description": "Ihre zuletzt hochgeladenen Dateien",
       "title": "Kürzlich genutzte Dateien"
+    },
+    "systemStatus": {
+      "title": "Systemstatus",
+      "refresh": "Aktualisieren",
+      "status": {
+        "healthy": "Betriebsbereit",
+        "degraded": "Eingeschränkt",
+        "unhealthy": "Nicht verfügbar"
+      },
+      "checks": {
+        "database": "Datenbank",
+        "storage": "Speicher",
+        "ok": "OK",
+        "error": "Fehler",
+        "notConfigured": "Nicht konfiguriert"
+      },
+      "uptime": "Betriebszeit",
+      "diskSpace": {
+        "label": "Speicherplatz",
+        "ariaLabel": "Fortschrittsbalken der Speicherplatznutzung"
+      },
+      "quota": {
+        "label": "Speicherkontingent",
+        "ariaLabel": "Fortschrittsbalken des Speicherkontingents",
+        "notConfigured": "Kontingente nicht konfiguriert"
+      },
+      "metrics": {
+        "users": "Benutzer",
+        "files": "Dateien",
+        "shares": "Freigaben",
+        "reverseShares": "Empfangsfreigaben",
+        "myFiles": "Meine Dateien",
+        "activeShares": "Aktive Freigaben"
+      },
+      "errors": {
+        "title": "Status nicht verfügbar",
+        "fetchFailed": "Der Systemstatus konnte nicht abgerufen werden. Bitte versuchen Sie es später erneut.",
+        "diskSpaceError": "Speicherplatzinformationen konnten nicht abgerufen werden.",
+        "statsError": "Plattformstatistiken konnten nicht geladen werden."
+      }
     }
   },
   "deleteConfirmation": {
@@ -298,6 +338,7 @@
   },
   "errors": {
     "invalidCredentials": "Ungültige E-Mail oder Passwort",
+    "networkError": "Server nicht erreichbar. Bitte überprüfen Sie Ihre Verbindung.",
     "userNotFound": "Benutzer nicht gefunden",
     "accountLocked": "Konto gesperrt. Bitte versuchen Sie es später erneut",
     "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut",
@@ -356,7 +397,7 @@
     "tryAlternativeView": "Alternative Ansicht Versuchen",
     "loadingAlternative": "Lade alternative Ansicht...",
     "loadingAudio": "Audio wird geladen...",
-    "downloading": "Downloading..."
+    "downloading": "Wird heruntergeladen..."
   },
   "fileSelector": {
     "availableFiles": "Verfügbare Dateien ({count})",
@@ -425,12 +466,12 @@
     },
     "openFolder": "Ordner öffnen",
     "drag": {
-      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
-      "fileMoved": "File \"{name}\" moved to \"{target}\"",
-      "itemsMoved": "{count} items moved to \"{target}\"",
-      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
-      "fileMovedToRoot": "File \"{name}\" moved to root folder",
-      "itemsMovedToRoot": "{count} items moved to root folder"
+      "folderMoved": "Ordner „{name}“ nach „{target}“ verschoben",
+      "fileMoved": "Datei „{name}“ nach „{target}“ verschoben",
+      "itemsMoved": "{count} Elemente nach „{target}“ verschoben",
+      "folderMovedToRoot": "Ordner „{name}“ in den Stammordner verschoben",
+      "fileMovedToRoot": "Datei „{name}“ in den Stammordner verschoben",
+      "itemsMovedToRoot": "{count} Elemente in den Stammordner verschoben"
     }
   },
   "filesTable": {
@@ -570,9 +611,9 @@
     "or": "oder",
     "continueWithSSO": "Mit SSO fortfahren",
     "processing": "Authentifizierung wird verarbeitet...",
-    "orContinueWith": "Or continue with",
-    "continueWith": "Continue with {name}",
-    "providerNotConfigured": "{name} is not properly configured"
+    "orContinueWith": "Oder fortfahren mit",
+    "continueWith": "Fortfahren mit {name}",
+    "providerNotConfigured": "{name} ist nicht richtig konfiguriert"
   },
   "logo": {
     "labels": {
@@ -928,7 +969,7 @@
         "previewNotAvailable": "Vorschau nicht verfügbar",
         "notAvailable": "Nicht verfügbar",
         "invalidDate": "Ungültiges Datum",
-        "downloading": "Downloading..."
+        "downloading": "Wird heruntergeladen..."
       },
       "alias": {
         "editTitle": "Alias bearbeiten",
@@ -1016,7 +1057,7 @@
           "failed": "Kopiervorgang fehlgeschlagen. Bitte versuchen Sie es erneut.",
           "aborted": "Kopiervorgang wurde wegen Zeitüberschreitung abgebrochen."
         },
-        "downloading": "Downloading..."
+        "downloading": "Wird heruntergeladen..."
       }
     },
     "form": {
@@ -1085,10 +1126,10 @@
       "fieldRequirements": {
         "title": "Feldanforderungen",
         "description": "Konfigurieren Sie, welche Felder im Upload -Formular angezeigt werden",
-        "configurationTitle": "Field Configuration:",
-        "hiddenDescription": "Hidden: Field won't appear in the upload form",
-        "optionalDescription": "Optional: Field will appear but isn't mandatory",
-        "requiredDescription": "Required: Field must be filled before upload"
+        "configurationTitle": "Feldkonfiguration:",
+        "hiddenDescription": "Versteckt: Das Feld erscheint nicht im Upload-Formular",
+        "optionalDescription": "Optional: Das Feld wird angezeigt, ist aber nicht erforderlich",
+        "requiredDescription": "Erforderlich: Das Feld muss vor dem Upload ausgefüllt werden"
       },
       "nameFieldRequired": {
         "label": "Namensfeldbedarf",
@@ -1370,6 +1411,10 @@
       "hideVersion": {
         "title": "Version Ausblenden",
         "description": "Die OUITRANSFER-Version in der Fußzeile aller Seiten ausblenden"
+      },
+      "embedSecret": {
+        "title": "Einbettungsschlüssel",
+        "description": "Geheimer Schlüssel zum Signieren von Einbettungstoken für die sichere Dateieinbettung"
       }
     },
     "buttons": {
@@ -1677,40 +1722,6 @@
     "selectShare": "Freigabe {shareName} auswählen",
     "folderCount": "Ordner"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "Speichernutzung",
-    "ariaLabel": "Fortschrittsbalken der Speichernutzung",
-    "used": "genutzt",
-    "available": "verfügbar",
-    "total": "Gesamt",
-    "loading": "Wird geladen...",
-    "retry": "Wiederholen",
-    "errors": {
-      "title": "Speicherinformationen nicht verfügbar",
-      "detectionFailed": "Speicherplatz konnte nicht erkannt werden. Dies kann an Systemkonfigurationsproblemen oder unzureichenden Berechtigungen liegen.",
-      "serverError": "Serverfehler beim Abrufen der Speicherinformationen. Bitte versuchen Sie es später erneut.",
-      "unknown": "Ein unerwarteter Fehler ist beim Laden der Speicherinformationen aufgetreten."
-    }
-  },
   "theme": {
     "toggle": "Design umschalten",
     "light": "Hell",
@@ -1891,7 +1902,7 @@
     "error": "Fehler beim Hochladen der Datei",
     "fileSizeExceeded": "Die Dateigröße überschreitet das Limit von {maxsizemb}MB.",
     "insufficientStorage": "Unzureichender Speicherplatz. Sie haben {availablespace}MB verfügbar.",
-    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
+    "storageFull": "Nicht genügend Speicherplatz. Verfügbar: {available} GB, benötigt: {required} GB.",
     "unauthorized": "Nicht autorisiert: Ein gültiger Token ist erforderlich, um auf diese Ressource zuzugreifen.",
     "confirmCancel": {
       "title": "Uploads Abbrechen",
@@ -1908,8 +1919,10 @@
     "pasteSuccess": "{count, plural, =1 {Bild erfolgreich eingefügt und hochgeladen} other {# Bilder erfolgreich eingefügt und hochgeladen}}",
     "filesQueued": "{count, plural, one {# Datei in der Warteschlange} other {# Dateien in der Warteschlange}}",
     "errors": {
-      "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed"
+      "addFileFailed": "Fehler beim Hinzufügen von {name}: {error}",
+      "uploadFailed": "Upload fehlgeschlagen",
+      "networkError": "Server nicht erreichbar. Bitte überprüfen Sie Ihre Verbindung.",
+      "storageUnavailable": "Der Speicherdienst ist nicht verfügbar. Bitte versuchen Sie es später erneut."
     }
   },
   "users": {
@@ -1995,7 +2008,7 @@
       "close": "Schließen",
       "errors": {
         "generateFailed": "Fehler beim Generieren des Einladungslinks",
-        "copyFailed": "Failed to copy link"
+        "copyFailed": "Link konnte nicht kopiert werden"
       }
     }
   },
@@ -2074,9 +2087,9 @@
     "pageTitle": "Konto erstellen"
   },
   "filesTree": {
-    "noItems": "No items to display"
+    "noItems": "Keine Elemente vorhanden"
   },
   "languageSwitcher": {
-    "changeLanguage": "Change language"
+    "changeLanguage": "Sprache ändern"
   }
 }

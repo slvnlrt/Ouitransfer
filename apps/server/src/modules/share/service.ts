@@ -1,12 +1,12 @@
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import type { Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { prisma } from "../../shared/prisma.js";
 import {
+  AppError,
   ConflictError,
   ForbiddenError,
-  GoneError,
   NotFoundError,
-  UnauthorizedError,
   ValidationError,
 } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
@@ -165,21 +165,21 @@ export class ShareService {
     }
 
     if (share.expiration && new Date() > new Date(share.expiration)) {
-      throw new GoneError("Share has expired");
+      throw new AppError(410, "Share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 
     if (share.security?.maxViews && share.views >= share.security.maxViews) {
-      throw new GoneError("Share has reached maximum views");
+      throw new AppError(410, "Share has reached maximum views", ErrorCodes.MAX_VIEWS_REACHED);
     }
 
     if (share.security?.password && !password) {
-      throw new UnauthorizedError("Password required");
+      throw new AppError(401, "Password required", ErrorCodes.PASSWORD_REQUIRED);
     }
 
     if (share.security?.password && password) {
       const isPasswordValid = await bcrypt.compare(password, share.security.password);
       if (!isPasswordValid) {
-        throw new UnauthorizedError("Invalid password");
+        throw new AppError(401, "Invalid password", ErrorCodes.INVALID_PASSWORD);
       }
     }
 

@@ -255,6 +255,46 @@
     "recentFiles": {
       "title": "Recent Files",
       "description": "Your most recently uploaded files"
+    },
+    "systemStatus": {
+      "title": "System Status",
+      "refresh": "Refresh",
+      "status": {
+        "healthy": "Healthy",
+        "degraded": "Degraded",
+        "unhealthy": "Unhealthy"
+      },
+      "checks": {
+        "database": "Database",
+        "storage": "Storage",
+        "ok": "OK",
+        "error": "Error",
+        "notConfigured": "Not configured"
+      },
+      "uptime": "Uptime",
+      "diskSpace": {
+        "label": "Disk Space",
+        "ariaLabel": "Disk space usage progress bar"
+      },
+      "quota": {
+        "label": "Storage Quota",
+        "ariaLabel": "Storage quota progress bar",
+        "notConfigured": "Quotas not configured"
+      },
+      "metrics": {
+        "users": "Users",
+        "files": "Files",
+        "shares": "Shares",
+        "reverseShares": "Reverse Shares",
+        "myFiles": "My files",
+        "activeShares": "Active shares"
+      },
+      "errors": {
+        "title": "Status unavailable",
+        "fetchFailed": "Unable to retrieve system status. Please try again later.",
+        "diskSpaceError": "Unable to retrieve disk space information.",
+        "statsError": "Unable to load platform statistics."
+      }
     }
   },
   "deleteConfirmation": {
@@ -302,6 +342,7 @@
   },
   "errors": {
     "invalidCredentials": "Invalid email or password",
+    "networkError": "Unable to reach the server. Please check your connection.",
     "userNotFound": "User not found",
     "accountLocked": "Account locked. Please try again later",
     "unexpectedError": "An unexpected error occurred. Please try again",
@@ -1423,6 +1464,10 @@
       "passwordAuthEnabled": {
         "title": "Password Authentication",
         "description": "Enable or disable password-based authentication"
+      },
+      "embedSecret": {
+        "title": "Embed Secret",
+        "description": "Secret used to sign embed tokens for secure file embedding"
       }
     },
     "buttons": {
@@ -1730,40 +1775,6 @@
     "selectAll": "Select all",
     "selectShare": "Select share {shareName}"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "Storage Usage",
-    "ariaLabel": "Storage usage progress bar",
-    "used": "used",
-    "available": "available",
-    "total": "Total",
-    "loading": "Loading...",
-    "retry": "Retry",
-    "errors": {
-      "title": "Storage information unavailable",
-      "detectionFailed": "Unable to detect disk space. This may be due to system configuration issues or insufficient permissions.",
-      "serverError": "Server error occurred while retrieving storage information. Please try again later.",
-      "unknown": "An unexpected error occurred while loading storage information."
-    }
-  },
   "theme": {
     "toggle": "Toggle theme",
     "light": "Light",
@@ -1962,7 +1973,9 @@
     "pasteSuccess": "{count, plural, =1 {Image pasted and uploaded successfully} other {# images pasted and uploaded successfully}}",
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed"
+      "uploadFailed": "Upload failed",
+      "networkError": "Unable to reach the server. Please check your connection.",
+      "storageUnavailable": "Storage service is unavailable. Please try again later."
     }
   },
   "users": {

@@ -180,7 +180,7 @@ export function EditProviderForm({
       <CallbackUrlDisplay providerName={formData.name || "provider"} />
 
       {!isOfficial && (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <Label className="mb-2 block">{t("authProviders.form.providerName")} *</Label>
             <Input
@@ -201,7 +201,7 @@ export function EditProviderForm({
       )}
 
       {!isOfficial && (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <Label className="mb-2 block">{t("authProviders.form.type")}</Label>
             <select
@@ -381,7 +381,7 @@ export function EditProviderForm({
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <Label className="mb-2 block">{t("authProviders.form.clientId")} *</Label>
           <Input

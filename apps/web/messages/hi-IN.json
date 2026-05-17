@@ -15,16 +15,16 @@
     "sessionExpired": "Your session has expired. Please sign in again.",
     "callback": {
       "errors": {
-        "oauth_error": "OAuth authentication failed",
-        "missing_parameters": "Missing authentication parameters",
-        "missing_code": "Missing authorization code",
-        "registration_disabled": "Registration is disabled for this provider",
-        "provider_disabled": "This authentication provider is disabled",
-        "state_expired": "Authentication session expired",
-        "account_inactive": "Your account is inactive",
-        "no_email": "No email address found in your account",
-        "token_exchange_failed": "Failed to authenticate with provider",
-        "missing_user_info": "Incomplete user information from provider"
+        "oauth_error": "OAuth प्रमाणीकरण विफल रहा",
+        "missing_parameters": "प्रमाणीकरण पैरामीटर गायब हैं",
+        "missing_code": "प्राधिकरण कोड गायब है",
+        "registration_disabled": "इस प्रदाता के लिए पंजीकरण अक्षम है",
+        "provider_disabled": "यह प्रमाणीकरण प्रदाता अक्षम है",
+        "state_expired": "प्रमाणीकरण सत्र समाप्त हो गया",
+        "account_inactive": "आपका खाता निष्क्रिय है",
+        "no_email": "आपके खाते में कोई ईमेल पता नहीं मिला",
+        "token_exchange_failed": "प्रदाता के साथ प्रमाणीकरण विफल रहा",
+        "missing_user_info": "प्रदाता से अपूर्ण उपयोगकर्ता जानकारी"
       }
     }
   },
@@ -54,7 +54,7 @@
       "displayName": "प्रदर्शन नाम",
       "displayNamePlaceholder": "उदा., मेरी कंपनी एसएसओ",
       "type": "प्रकार",
-      "typeOidc": "ओआईडीसी (OpenID Connect)",
+      "typeOidc": "OIDC (OpenID Connect)",
       "typeOauth2": "OAuth 2.0",
       "icon": "आइकन",
       "iconPlaceholder": "एक आइकन चुनें",
@@ -251,6 +251,46 @@
     "recentFiles": {
       "description": "आपकी हाल ही में अपलोड की गई फ़ाइलें",
       "title": "हाल की फ़ाइलें"
+    },
+    "systemStatus": {
+      "title": "सिस्टम स्थिति",
+      "refresh": "रीफ़्रेश",
+      "status": {
+        "healthy": "सामान्य",
+        "degraded": "अवनत",
+        "unhealthy": "अनुपलब्ध"
+      },
+      "checks": {
+        "database": "डेटाबेस",
+        "storage": "स्टोरेज",
+        "ok": "ठीक है",
+        "error": "त्रुटि",
+        "notConfigured": "कॉन्फ़िगर नहीं किया गया"
+      },
+      "uptime": "अपटाइम",
+      "diskSpace": {
+        "label": "डिस्क स्पेस",
+        "ariaLabel": "डिस्क स्पेस उपयोग प्रगति बार"
+      },
+      "quota": {
+        "label": "स्टोरेज कोटा",
+        "ariaLabel": "स्टोरेज कोटा प्रगति बार",
+        "notConfigured": "कोटा कॉन्फ़िगर नहीं किया गया"
+      },
+      "metrics": {
+        "users": "उपयोगकर्ता",
+        "files": "फ़ाइलें",
+        "shares": "साझाकरण",
+        "reverseShares": "रिवर्स साझाकरण",
+        "myFiles": "मेरी फ़ाइलें",
+        "activeShares": "सक्रिय साझाकरण"
+      },
+      "errors": {
+        "title": "स्थिति अनुपलब्ध",
+        "fetchFailed": "सिस्टम स्थिति प्राप्त नहीं हो सकी। कृपया बाद में पुनः प्रयास करें।",
+        "diskSpaceError": "डिस्क स्पेस की जानकारी प्राप्त नहीं हो सकी।",
+        "statsError": "प्लेटफ़ॉर्म आँकड़े लोड नहीं हो सके।"
+      }
     }
   },
   "deleteConfirmation": {
@@ -298,6 +338,7 @@
   },
   "errors": {
     "invalidCredentials": "गलत ईमेल या पासवर्ड",
+    "networkError": "सर्वर से कनेक्ट नहीं हो पा रहा है। कृपया अपना कनेक्शन जाँचें।",
     "userNotFound": "उपयोगकर्ता नहीं मिला",
     "accountLocked": "खाता लॉक है। कृपया बाद में प्रयास करें",
     "unexpectedError": "एक अप्रत्याशित त्रुटि हुई। कृपया पुनः प्रयास करें",
@@ -356,7 +397,7 @@
     "tryAlternativeView": "वैकल्पिक दृश्य आज़माएं",
     "loadingAlternative": "वैकल्पिक दृश्य लोड हो रहा है...",
     "loadingAudio": "ऑडियो लोड हो रहा है...",
-    "downloading": "Downloading..."
+    "downloading": "डाउनलोड हो रहा है..."
   },
   "fileSelector": {
     "availableFiles": "उपलब्ध फाइलें ({count})",
@@ -425,12 +466,12 @@
     },
     "openFolder": "फ़ोल्डर खोलें",
     "drag": {
-      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
-      "fileMoved": "File \"{name}\" moved to \"{target}\"",
-      "itemsMoved": "{count} items moved to \"{target}\"",
-      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
-      "fileMovedToRoot": "File \"{name}\" moved to root folder",
-      "itemsMovedToRoot": "{count} items moved to root folder"
+      "folderMoved": "फ़ोल्डर \"{name}\" को \"{target}\" में ले जाया गया",
+      "fileMoved": "फ़ाइल \"{name}\" को \"{target}\" में ले जाया गया",
+      "itemsMoved": "{count} आइटम \"{target}\" में ले जाए गए",
+      "folderMovedToRoot": "फ़ोल्डर \"{name}\" को मूल फ़ोल्डर में ले जाया गया",
+      "fileMovedToRoot": "फ़ाइल \"{name}\" को मूल फ़ोल्डर में ले जाया गया",
+      "itemsMovedToRoot": "{count} आइटम मूल फ़ोल्डर में ले जाए गए"
     }
   },
   "filesTable": {
@@ -570,9 +611,9 @@
     "or": "ou",
     "continueWithSSO": "Continuar com SSO",
     "processing": "Processando autenticação...",
-    "orContinueWith": "Or continue with",
-    "continueWith": "Continue with {name}",
-    "providerNotConfigured": "{name} is not properly configured"
+    "orContinueWith": "या इसके साथ जारी रखें",
+    "continueWith": "{name} के साथ जारी रखें",
+    "providerNotConfigured": "{name} ठीक से कॉन्फ़िगर नहीं किया गया है"
   },
   "logo": {
     "labels": {
@@ -928,7 +969,7 @@
         "previewNotAvailable": "पूर्वावलोकन उपलब्ध नहीं है",
         "notAvailable": "उपलब्ध नहीं है",
         "invalidDate": "अमान्य तिथि",
-        "downloading": "Downloading..."
+        "downloading": "डाउनलोड हो रहा है..."
       },
       "alias": {
         "editTitle": "उपनाम संपादित करें",
@@ -1016,7 +1057,7 @@
           "aborted": "टाइमआउट के कारण कॉपी ऑपरेशन रद्द कर दिया गया।"
         },
         "invalidDate": "अमान्य दिनांक",
-        "downloading": "Downloading..."
+        "downloading": "डाउनलोड हो रहा है..."
       }
     },
     "form": {
@@ -1085,10 +1126,10 @@
       "fieldRequirements": {
         "title": "क्षेत्र आवश्यकताएँ",
         "description": "कॉन्फ़िगर करें कि कौन से फ़ील्ड अपलोड फॉर्म में दिखाए गए हैं",
-        "configurationTitle": "Field Configuration:",
-        "hiddenDescription": "Hidden: Field won't appear in the upload form",
-        "optionalDescription": "Optional: Field will appear but isn't mandatory",
-        "requiredDescription": "Required: Field must be filled before upload"
+        "configurationTitle": "फ़ील्ड कॉन्फ़िगरेशन:",
+        "hiddenDescription": "छिपा हुआ: फ़ील्ड अपलोड फ़ॉर्म में नहीं दिखेगा",
+        "optionalDescription": "वैकल्पिक: फ़ील्ड दिखेगा लेकिन अनिवार्य नहीं है",
+        "requiredDescription": "अनिवार्य: अपलोड से पहले फ़ील्ड भरना आवश्यक है"
       },
       "nameFieldRequired": {
         "label": "नाम क्षेत्र की आवश्यकता",
@@ -1354,8 +1395,8 @@
         "description": "SMTP कनेक्शन सुरक्षा विधि - स्वचालित (अनुशंसित), SSL, STARTTLS, या कोई नहीं (असुरक्षित)",
         "options": {
           "auto": "स्वचालित (अनुशंसित)",
-          "ssl": "SSL (पोर्ट 465)",
-          "tls": "STARTTLS (पोर्ट 587)",
+          "ssl": "SSL (Port 465)",
+          "tls": "STARTTLS (Port 587)",
           "none": "कोई नहीं (असुरक्षित)"
         }
       },
@@ -1370,6 +1411,10 @@
       "hideVersion": {
         "title": "संस्करण छुपाएं",
         "description": "सभी पृष्ठों के फुटर में OUITRANSFER संस्करण छुपाएं"
+      },
+      "embedSecret": {
+        "title": "एम्बेड सीक्रेट",
+        "description": "सुरक्षित फ़ाइल एम्बेडिंग के लिए एम्बेड टोकन पर हस्ताक्षर करने के लिए उपयोग की जाने वाली गुप्त कुंजी"
       }
     },
     "buttons": {
@@ -1677,40 +1722,6 @@
     "selectShare": "साझाकरण {shareName} चुनें",
     "folderCount": "फ़ोल्डर"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "स्टोरेज उपयोग",
-    "ariaLabel": "स्टोरेज उपयोग प्रगति पट्टी",
-    "used": "उपयोग किया गया",
-    "available": "उपलब्ध",
-    "total": "कुल",
-    "loading": "लोड हो रहा है...",
-    "retry": "पुनः प्रयास करें",
-    "errors": {
-      "title": "स्टोरेज जानकारी अनुपलब्ध",
-      "detectionFailed": "डिस्क स्पेस का पता लगाने में असमर्थ। यह सिस्टम कॉन्फ़िगरेशन समस्याओं या अपर्याप्त अनुमतियों के कारण हो सकता है।",
-      "serverError": "स्टोरेज जानकारी प्राप्त करते समय सर्वर त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।",
-      "unknown": "स्टोरेज जानकारी लोड करते समय एक अनपेक्षित त्रुटि हुई।"
-    }
-  },
   "theme": {
     "toggle": "थीम टॉगल करें",
     "light": "लाइट",
@@ -1891,7 +1902,7 @@
     "error": "फ़ाइल अपलोड करने में विफल",
     "fileSizeExceeded": "फ़ाइल का आकार {maxsizemb}MB की सीमा से अधिक है।",
     "insufficientStorage": "अपर्याप्त संग्रहण स्थान। आपके पास {availablespace}MB उपलब्ध है।",
-    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
+    "storageFull": "पर्याप्त संग्रहण स्थान नहीं है। उपलब्ध: {available} GB, आवश्यक: {required} GB।",
     "unauthorized": "अनधिकृत: इस संसाधन तक पहुंचने के लिए एक वैध टोकन आवश्यक है।",
     "confirmCancel": {
       "title": "अपलोड रद्द करें",
@@ -1908,8 +1919,10 @@
     "pasteSuccess": "{count, plural, =1 {छवि सफलतापूर्वक चिपकाई और अपलोड की गई} other {# छवियाँ सफलतापूर्वक चिपकाई और अपलोड की गईं}}",
     "filesQueued": "{count, plural, one {# फ़ाइल अपलोड के लिए इंतजार में है} other {# फ़ाइलें अपलोड के लिए इंतजार में हैं}}",
     "errors": {
-      "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed"
+      "addFileFailed": "{name} जोड़ने में विफल: {error}",
+      "uploadFailed": "अपलोड विफल",
+      "networkError": "सर्वर से कनेक्ट नहीं हो पा रहा है। कृपया अपना कनेक्शन जाँचें।",
+      "storageUnavailable": "स्टोरेज सेवा अनुपलब्ध है। कृपया बाद में पुनः प्रयास करें।"
     }
   },
   "users": {
@@ -1995,7 +2008,7 @@
       "close": "बंद करें",
       "errors": {
         "generateFailed": "आमंत्रण लिंक जनरेट करने में विफल",
-        "copyFailed": "Failed to copy link"
+        "copyFailed": "लिंक कॉपी करने में विफल"
       }
     }
   },
@@ -2074,9 +2087,9 @@
     "pageTitle": "खाता बनाएं"
   },
   "filesTree": {
-    "noItems": "No items to display"
+    "noItems": "प्रदर्शित करने के लिए कोई आइटम नहीं"
   },
   "languageSwitcher": {
-    "changeLanguage": "Change language"
+    "changeLanguage": "भाषा बदलें"
   }
 }

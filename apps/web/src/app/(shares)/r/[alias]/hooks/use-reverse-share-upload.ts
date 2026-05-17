@@ -1,7 +1,7 @@
 "use client";
 
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -10,7 +10,8 @@ import { toast } from "sonner";
 import { getReverseShareForUploadByAlias } from "@/http/endpoints";
 import { logger } from "@/lib/logger";
 import { queryKeys } from "@/lib/query-keys";
-import { ERROR_MESSAGES, type ErrorType, HTTP_STATUS } from "../constants";
+import { parseApiError } from "@/utils/api-error";
+import type { ErrorType } from "../constants";
 import type { ReverseShareInfo } from "../types";
 
 interface UseReverseShareUploadProps {
@@ -18,22 +19,23 @@ interface UseReverseShareUploadProps {
 }
 
 /**
- * Extracts an ErrorType from an axios error response.
- * Returns null for 401 errors (handled separately via password modal).
+ * Extracts an ErrorType from an error response.
+ * Returns null for password-required/invalid-password errors (handled separately via password modal).
  */
 function deriveErrorType(error: unknown): ErrorType {
-  if (!axios.isAxiosError(error)) return "generic";
-
-  const status = error.response?.status;
-  switch (status) {
-    case HTTP_STATUS.UNAUTHORIZED:
+  const apiError = parseApiError(error);
+  switch (apiError.code) {
+    case ErrorCodes.PASSWORD_REQUIRED:
+    case ErrorCodes.INVALID_PASSWORD:
       // 401 is handled by the password modal flow, not as a page-level error
       return null;
-    case HTTP_STATUS.NOT_FOUND:
+    case ErrorCodes.NOT_FOUND:
       return "notFound";
-    case HTTP_STATUS.FORBIDDEN:
+    case ErrorCodes.SHARE_INACTIVE:
+    case ErrorCodes.FORBIDDEN:
       return "inactive";
-    case HTTP_STATUS.GONE:
+    case ErrorCodes.SHARE_EXPIRED:
+    case ErrorCodes.GONE:
       return "expired";
     default:
       return "generic";
@@ -41,25 +43,17 @@ function deriveErrorType(error: unknown): ErrorType {
 }
 
 /**
- * Checks whether an axios error is a 401 requiring a password.
+ * Checks whether an error is a password-required response.
  */
 function isPasswordRequired(error: unknown): boolean {
-  if (!axios.isAxiosError(error)) return false;
-  return (
-    error.response?.status === HTTP_STATUS.UNAUTHORIZED &&
-    error.response?.data?.error === ERROR_MESSAGES.PASSWORD_REQUIRED
-  );
+  return parseApiError(error).code === ErrorCodes.PASSWORD_REQUIRED;
 }
 
 /**
- * Checks whether an axios error is a 401 with an invalid password.
+ * Checks whether an error is an invalid-password response.
  */
 function isInvalidPassword(error: unknown): boolean {
-  if (!axios.isAxiosError(error)) return false;
-  return (
-    error.response?.status === HTTP_STATUS.UNAUTHORIZED &&
-    error.response?.data?.error === ERROR_MESSAGES.INVALID_PASSWORD
-  );
+  return parseApiError(error).code === ErrorCodes.INVALID_PASSWORD;
 }
 
 export function useReverseShareUpload({ alias }: UseReverseShareUploadProps) {

@@ -1,16 +1,9 @@
 import crypto from "node:crypto";
-
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import type { Prisma } from "@prisma/client";
 import { env } from "../../env.js";
 import { prisma } from "../../shared/prisma.js";
-import {
-  AppError,
-  ForbiddenError,
-  GoneError,
-  NotFoundError,
-  UnauthorizedError,
-  ValidationError,
-} from "../../utils/app-error.js";
+import { AppError, ForbiddenError, NotFoundError, ValidationError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { sanitizeFilename } from "../../utils/sanitize-filename.js";
 import { isMimeTypeConsistent } from "../../utils/validate-file-content.js";
@@ -54,23 +47,23 @@ export class ReverseShareUploadService {
     }
 
     if (!reverseShare.isActive) {
-      throw new GoneError("Reverse share is inactive");
+      throw new AppError(403, "Reverse share is inactive", ErrorCodes.SHARE_INACTIVE);
     }
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
-      throw new GoneError("Reverse share has expired");
+      throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 
     if (reverseShare.password) {
       if (!password) {
-        throw new UnauthorizedError("Password required");
+        throw new AppError(401, "Password required", ErrorCodes.PASSWORD_REQUIRED);
       }
       const isValidPassword = await this.reverseShareRepository.comparePassword(
         password,
         reverseShare.password,
       );
       if (!isValidPassword) {
-        throw new UnauthorizedError("Invalid password");
+        throw new AppError(401, "Invalid password", ErrorCodes.INVALID_PASSWORD);
       }
     }
 
@@ -108,23 +101,23 @@ export class ReverseShareUploadService {
     }
 
     if (!reverseShare.isActive) {
-      throw new GoneError("Reverse share is inactive");
+      throw new AppError(403, "Reverse share is inactive", ErrorCodes.SHARE_INACTIVE);
     }
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
-      throw new GoneError("Reverse share has expired");
+      throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 
     if (reverseShare.password) {
       if (!password) {
-        throw new UnauthorizedError("Password required");
+        throw new AppError(401, "Password required", ErrorCodes.PASSWORD_REQUIRED);
       }
       const isValidPassword = await this.reverseShareRepository.comparePassword(
         password,
         reverseShare.password,
       );
       if (!isValidPassword) {
-        throw new UnauthorizedError("Invalid password");
+        throw new AppError(401, "Invalid password", ErrorCodes.INVALID_PASSWORD);
       }
     }
 
@@ -162,23 +155,23 @@ export class ReverseShareUploadService {
     }
 
     if (!reverseShare.isActive) {
-      throw new GoneError("Reverse share is inactive");
+      throw new AppError(403, "Reverse share is inactive", ErrorCodes.SHARE_INACTIVE);
     }
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
-      throw new GoneError("Reverse share has expired");
+      throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 
     if (reverseShare.password) {
       if (!password) {
-        throw new UnauthorizedError("Password required");
+        throw new AppError(401, "Password required", ErrorCodes.PASSWORD_REQUIRED);
       }
       const isValidPassword = await this.reverseShareRepository.comparePassword(
         password,
         reverseShare.password,
       );
       if (!isValidPassword) {
-        throw new UnauthorizedError("Invalid password");
+        throw new AppError(401, "Invalid password", ErrorCodes.INVALID_PASSWORD);
       }
     }
 
@@ -232,23 +225,23 @@ export class ReverseShareUploadService {
     }
 
     if (!reverseShare.isActive) {
-      throw new GoneError("Reverse share is inactive");
+      throw new AppError(403, "Reverse share is inactive", ErrorCodes.SHARE_INACTIVE);
     }
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
-      throw new GoneError("Reverse share has expired");
+      throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 
     if (reverseShare.password) {
       if (!password) {
-        throw new UnauthorizedError("Password required");
+        throw new AppError(401, "Password required", ErrorCodes.PASSWORD_REQUIRED);
       }
       const isValidPassword = await this.reverseShareRepository.comparePassword(
         password,
         reverseShare.password,
       );
       if (!isValidPassword) {
-        throw new UnauthorizedError("Invalid password");
+        throw new AppError(401, "Invalid password", ErrorCodes.INVALID_PASSWORD);
       }
     }
 
@@ -305,7 +298,12 @@ export class ReverseShareUploadService {
     const maxFileSize = BigInt(await getConfigValue("maxFileSize"));
     if (file.size > maxFileSize) {
       const maxSizeMB = Number(maxFileSize) / (1024 * 1024);
-      throw new ValidationError(`File size exceeds the maximum allowed size of ${maxSizeMB}MB`);
+      throw new AppError(
+        400,
+        `File size exceeds the maximum allowed size of ${maxSizeMB.toFixed(0)}MB`,
+        ErrorCodes.FILE_SIZE_EXCEEDED,
+        { maxSizeMB: maxSizeMB.toFixed(0) },
+      );
     }
 
     const maxTotalStorage = BigInt(await getConfigValue("maxTotalStoragePerUser"));
@@ -322,8 +320,11 @@ export class ReverseShareUploadService {
 
     if (currentStorage + file.size > maxTotalStorage) {
       const availableSpace = Number(maxTotalStorage - currentStorage) / (1024 * 1024);
-      throw new ValidationError(
+      throw new AppError(
+        400,
         `Insufficient storage space. You have ${availableSpace.toFixed(2)}MB available`,
+        ErrorCodes.INSUFFICIENT_STORAGE,
+        { availableSpaceMB: availableSpace.toFixed(2) },
       );
     }
 
@@ -379,7 +380,7 @@ export class ReverseShareUploadService {
         if (retries >= maxRetries) {
           const message = error instanceof Error ? error.message : String(error);
           getLogger().error({ maxRetries, error: message }, "File copy exhausted retries");
-          throw new AppError(500, "File copy failed", "COPY_FAILED");
+          throw new AppError(500, "File copy failed", ErrorCodes.COPY_FAILED);
         }
 
         const delay = Math.min(1000 * 2 ** (retries - 1), 10_000);

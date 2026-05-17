@@ -15,16 +15,16 @@
     "sessionExpired": "Twoja sesja wygasła. Zaloguj się ponownie.",
     "callback": {
       "errors": {
-        "oauth_error": "OAuth authentication failed",
-        "missing_parameters": "Missing authentication parameters",
-        "missing_code": "Missing authorization code",
-        "registration_disabled": "Registration is disabled for this provider",
-        "provider_disabled": "This authentication provider is disabled",
-        "state_expired": "Authentication session expired",
-        "account_inactive": "Your account is inactive",
-        "no_email": "No email address found in your account",
-        "token_exchange_failed": "Failed to authenticate with provider",
-        "missing_user_info": "Incomplete user information from provider"
+        "oauth_error": "Uwierzytelnianie OAuth nie powiodło się",
+        "missing_parameters": "Brakujące parametry uwierzytelniania",
+        "missing_code": "Brakujący kod autoryzacji",
+        "registration_disabled": "Rejestracja jest wyłączona dla tego dostawcy",
+        "provider_disabled": "Ten dostawca uwierzytelniania jest wyłączony",
+        "state_expired": "Sesja uwierzytelniania wygasła",
+        "account_inactive": "Twoje konto jest nieaktywne",
+        "no_email": "Nie znaleziono adresu e-mail na Twoim koncie",
+        "token_exchange_failed": "Uwierzytelnianie u dostawcy nie powiodło się",
+        "missing_user_info": "Niekompletne informacje o użytkowniku od dostawcy"
       }
     }
   },
@@ -251,6 +251,46 @@
     "recentFiles": {
       "title": "Ostatnie pliki",
       "description": "Twoje ostatnio przesłane pliki"
+    },
+    "systemStatus": {
+      "title": "Stan systemu",
+      "refresh": "Odśwież",
+      "status": {
+        "healthy": "Sprawny",
+        "degraded": "Ograniczony",
+        "unhealthy": "Niedostępny"
+      },
+      "checks": {
+        "database": "Baza danych",
+        "storage": "Magazyn",
+        "ok": "OK",
+        "error": "Błąd",
+        "notConfigured": "Nie skonfigurowano"
+      },
+      "uptime": "Czas pracy",
+      "diskSpace": {
+        "label": "Przestrzeń dyskowa",
+        "ariaLabel": "Pasek postępu wykorzystania przestrzeni dyskowej"
+      },
+      "quota": {
+        "label": "Limit przestrzeni",
+        "ariaLabel": "Pasek postępu limitu przestrzeni",
+        "notConfigured": "Limity nie skonfigurowane"
+      },
+      "metrics": {
+        "users": "Użytkownicy",
+        "files": "Pliki",
+        "shares": "Udostępnienia",
+        "reverseShares": "Odwrócone udostępnienia",
+        "myFiles": "Moje pliki",
+        "activeShares": "Aktywne udostępnienia"
+      },
+      "errors": {
+        "title": "Status niedostępny",
+        "fetchFailed": "Nie udało się pobrać stanu systemu. Spróbuj ponownie później.",
+        "diskSpaceError": "Nie udało się pobrać informacji o przestrzeni dyskowej.",
+        "statsError": "Nie udało się załadować statystyk platformy."
+      }
     }
   },
   "deleteConfirmation": {
@@ -298,6 +338,7 @@
   },
   "errors": {
     "invalidCredentials": "Nieprawidłowy adres e-mail lub hasło",
+    "networkError": "Nie można połączyć się z serwerem. Sprawdź połączenie.",
     "userNotFound": "Użytkownik nie znaleziony",
     "accountLocked": "Konto zablokowane. Spróbuj ponownie później",
     "unexpectedError": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
@@ -356,7 +397,7 @@
     "tryAlternativeView": "Spróbuj alternatywnego widoku",
     "loadingAlternative": "Ładowanie alternatywnego widoku...",
     "loadingAudio": "Ładowanie audio...",
-    "downloading": "Downloading..."
+    "downloading": "Pobieranie..."
   },
   "fileSelector": {
     "availableFiles": "Dostępne pliki ({count})",
@@ -425,12 +466,12 @@
     },
     "openFolder": "Otwórz folder",
     "drag": {
-      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
-      "fileMoved": "File \"{name}\" moved to \"{target}\"",
-      "itemsMoved": "{count} items moved to \"{target}\"",
-      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
-      "fileMovedToRoot": "File \"{name}\" moved to root folder",
-      "itemsMovedToRoot": "{count} items moved to root folder"
+      "folderMoved": "Folder „{name}” przeniesiony do „{target}”",
+      "fileMoved": "Plik „{name}” przeniesiony do „{target}”",
+      "itemsMoved": "{count} elementów przeniesiono do „{target}”",
+      "folderMovedToRoot": "Folder „{name}” przeniesiony do folderu głównego",
+      "fileMovedToRoot": "Plik „{name}” przeniesiony do folderu głównego",
+      "itemsMovedToRoot": "{count} elementów przeniesiono do folderu głównego"
     }
   },
   "filesTable": {
@@ -570,9 +611,9 @@
     "or": "lub",
     "continueWithSSO": "Kontynuuj z SSO",
     "processing": "Przetwarzanie uwierzytelnienia...",
-    "orContinueWith": "Or continue with",
-    "continueWith": "Continue with {name}",
-    "providerNotConfigured": "{name} is not properly configured"
+    "orContinueWith": "Lub kontynuuj za pomocą",
+    "continueWith": "Kontynuuj za pomocą {name}",
+    "providerNotConfigured": "{name} nie jest poprawnie skonfigurowany"
   },
   "logo": {
     "labels": {
@@ -928,7 +969,7 @@
         "previewNotAvailable": "Podgląd niedostępny",
         "notAvailable": "Niedostępne",
         "invalidDate": "Nieprawidłowa data",
-        "downloading": "Downloading..."
+        "downloading": "Pobieranie..."
       },
       "alias": {
         "editTitle": "Edytuj alias",
@@ -1016,7 +1057,7 @@
           "aborted": "Operacja kopiowania została anulowana z powodu przekroczenia limitu czasu."
         },
         "invalidDate": "Nieprawidłowa data",
-        "downloading": "Downloading..."
+        "downloading": "Pobieranie..."
       }
     },
     "form": {
@@ -1085,10 +1126,10 @@
       "fieldRequirements": {
         "title": "Wymagania terenowe",
         "description": "Skonfiguruj, które pola są pokazane w formularzu przesyłania",
-        "configurationTitle": "Field Configuration:",
-        "hiddenDescription": "Hidden: Field won't appear in the upload form",
-        "optionalDescription": "Optional: Field will appear but isn't mandatory",
-        "requiredDescription": "Required: Field must be filled before upload"
+        "configurationTitle": "Konfiguracja pól:",
+        "hiddenDescription": "Ukryte: Pole nie pojawi się w formularzu przesyłania",
+        "optionalDescription": "Opcjonalne: Pole pojawi się, ale nie jest wymagane",
+        "requiredDescription": "Wymagane: Pole musi zostać wypełnione przed przesłaniem"
       },
       "nameFieldRequired": {
         "label": "Nazwa Wymagania pola",
@@ -1370,6 +1411,10 @@
       "hideVersion": {
         "title": "Ukryj Wersję",
         "description": "Ukryj wersję OUITRANSFER w stopce wszystkich stron"
+      },
+      "embedSecret": {
+        "title": "Klucz osadzania",
+        "description": "Tajny klucz używany do podpisywania tokenów osadzania w celu bezpiecznego osadzania plików"
       }
     },
     "buttons": {
@@ -1677,40 +1722,6 @@
     "selectShare": "Wybierz udostępnienie {shareName}",
     "folderCount": "foldery"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "Użycie pamięci",
-    "ariaLabel": "Pasek postępu użycia pamięci",
-    "used": "użyte",
-    "available": "dostępne",
-    "total": "Razem",
-    "loading": "Ładowanie...",
-    "retry": "Spróbuj ponownie",
-    "errors": {
-      "title": "Informacje o pamięci niedostępne",
-      "detectionFailed": "Nie można wykryć miejsca na dysku. Może to być spowodowane problemami z konfiguracją systemu lub niewystarczającymi uprawnieniami.",
-      "serverError": "Wystąpił błąd serwera podczas pobierania informacji o pamięci. Spróbuj ponownie później.",
-      "unknown": "Wystąpił nieoczekiwany błąd podczas ładowania informacji o pamięci."
-    }
-  },
   "theme": {
     "toggle": "Przełącz motyw",
     "light": "Jasny",
@@ -1891,7 +1902,7 @@
     "error": "Nie udało się przesłać pliku",
     "fileSizeExceeded": "Rozmiar pliku przekracza limit {maxsizemb}MB.",
     "insufficientStorage": "Niewystarczająca ilość miejsca na dysku. Masz {availablespace}MB dostępnych.",
-    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
+    "storageFull": "Za mało miejsca na dysku. Dostępne: {available} GB, wymagane: {required} GB.",
     "unauthorized": "Nieautoryzowany: wymagany jest ważny token do dostępu do tego zasobu.",
     "confirmCancel": {
       "title": "Anuluj przesyłanie",
@@ -1908,8 +1919,10 @@
     "pasteSuccess": "{count, plural, =1 {Obraz wklejony i przesłany pomyślnie} other {# obrazy wklejone i przesłane pomyślnie}}",
     "filesQueued": "{count, plural, one {# plik w kolejce do przesyłania} other {# pliki w kolejce do przesyłania}}",
     "errors": {
-      "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed"
+      "addFileFailed": "Nie udało się dodać {name}: {error}",
+      "uploadFailed": "Przesyłanie nie powiodło się",
+      "networkError": "Nie można połączyć się z serwerem. Sprawdź połączenie.",
+      "storageUnavailable": "Usługa przechowywania jest niedostępna. Spróbuj ponownie później."
     }
   },
   "users": {
@@ -1995,7 +2008,7 @@
       "close": "Zamknij",
       "errors": {
         "generateFailed": "Nie udało się wygenerować linku zaproszenia",
-        "copyFailed": "Failed to copy link"
+        "copyFailed": "Nie udało się skopiować linku"
       }
     }
   },
@@ -2074,9 +2087,9 @@
     "pageTitle": "Utwórz konto"
   },
   "filesTree": {
-    "noItems": "No items to display"
+    "noItems": "Brak elementów do wyświetlenia"
   },
   "languageSwitcher": {
-    "changeLanguage": "Change language"
+    "changeLanguage": "Zmień język"
   }
 }

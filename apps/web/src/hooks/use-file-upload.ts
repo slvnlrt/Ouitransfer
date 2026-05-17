@@ -1,3 +1,4 @@
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { toast } from "sonner";
@@ -5,8 +6,8 @@ import { toast } from "sonner";
 import { type UseUppyUploadOptions, useUppyUpload } from "@/hooks/use-uppy-upload";
 import { checkFile, getFilePresignedUrl, registerFile } from "@/http/endpoints";
 import { logger } from "@/lib/logger";
+import { parseApiError } from "@/utils/api-error";
 import { generateSafeFileName } from "@/utils/file-utils";
-import getErrorData from "@/utils/getErrorData";
 
 interface UseFileUploadOptions {
   /** Folder ID that uploaded files should be placed into. */
@@ -43,19 +44,17 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
           logger.error("File check failed:", {
             err: error instanceof Error ? error.message : String(error),
           });
-          const errorData = getErrorData(error);
+          const apiError = parseApiError(error);
           let errorMessage = t("uploadFile.error");
 
-          if (errorData.code === "fileSizeExceeded") {
-            errorMessage = t(`uploadFile.${errorData.code}`, {
-              maxsizemb: errorData.details || "0",
+          if (apiError.code === ErrorCodes.FILE_SIZE_EXCEEDED) {
+            errorMessage = t("uploadFile.fileSizeExceeded", {
+              maxsizemb: String(apiError.details?.maxSizeMB ?? "0"),
             });
-          } else if (errorData.code === "insufficientStorage") {
-            errorMessage = t(`uploadFile.${errorData.code}`, {
-              availablespace: errorData.details || "0",
+          } else if (apiError.code === ErrorCodes.INSUFFICIENT_STORAGE) {
+            errorMessage = t("uploadFile.insufficientStorage", {
+              availablespace: String(apiError.details?.availableSpaceMB ?? "0"),
             });
-          } else if (errorData.code) {
-            errorMessage = t(`uploadFile.${errorData.code}`);
           }
 
           toast.error(errorMessage);

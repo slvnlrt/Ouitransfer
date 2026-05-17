@@ -49,9 +49,9 @@ export function RadiusPickerForm() {
   };
 
   return (
-    <Card className="p-6 gap-0">
+    <Card>
       <CardHeader
-        className="flex flex-row items-center justify-between cursor-pointer p-0"
+        className="flex flex-row items-center justify-between cursor-pointer py-0"
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
         <div className="flex flex-row items-center gap-8">
@@ -67,7 +67,7 @@ export function RadiusPickerForm() {
           <ChevronUp className="text-muted-foreground" />
         )}
       </CardHeader>
-      <CardContent className={`${isCollapsed ? "hidden" : "block"} px-0`}>
+      <CardContent className={isCollapsed ? "hidden" : "block"}>
         <Separator className="my-6" />
         <div className="flex flex-col gap-4">
           <div className="space-y-2 mb-3">

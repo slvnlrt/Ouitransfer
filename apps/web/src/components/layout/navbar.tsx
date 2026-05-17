@@ -45,7 +45,11 @@ export function Navbar() {
     try {
       await logoutAPI();
       logout();
-      router.push("/login");
+      // Hard redirect to clear all client-side state (query caches, closures, etc.)
+      // Soft navigation (router.push) causes a race condition with RedirectHandler:
+      // removeQueries → isAuthenticated=null → LoadingScreen blocks the app
+      // while queries refetch, potentially leaving the user stuck.
+      window.location.href = "/login";
     } catch (err) {
       logger.error("Error logging out:", { err: err instanceof Error ? err.message : String(err) });
     }
@@ -68,6 +72,9 @@ export function Navbar() {
                   alt={t("navbar.logoAlt")}
                   className="h-8 w-8 object-contain rounded"
                   src={appLogo}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
                 />
               )}
               <p className="font-semibold text-xl tracking-tight">{appName}</p>

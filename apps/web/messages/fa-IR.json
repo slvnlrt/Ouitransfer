@@ -15,16 +15,16 @@
     "sessionExpired": "Your session has expired. Please sign in again.",
     "callback": {
       "errors": {
-        "oauth_error": "OAuth authentication failed",
-        "missing_parameters": "Missing authentication parameters",
-        "missing_code": "Missing authorization code",
-        "registration_disabled": "Registration is disabled for this provider",
-        "provider_disabled": "This authentication provider is disabled",
-        "state_expired": "Authentication session expired",
-        "account_inactive": "Your account is inactive",
-        "no_email": "No email address found in your account",
-        "token_exchange_failed": "Failed to authenticate with provider",
-        "missing_user_info": "Incomplete user information from provider"
+        "oauth_error": "احراز هویت OAuth ناموفق بود",
+        "missing_parameters": "پارامترهای احراز هویت موجود نیست",
+        "missing_code": "کد مجوز موجود نیست",
+        "registration_disabled": "ثبت‌نام برای این ارائه‌دهنده غیرفعال است",
+        "provider_disabled": "این ارائه‌دهنده احراز هویت غیرفعال است",
+        "state_expired": "نشست احراز هویت منقضی شده است",
+        "account_inactive": "حساب کاربری شما غیرفعال است",
+        "no_email": "آدرس ایمیلی در حساب شما یافت نشد",
+        "token_exchange_failed": "احراز هویت با ارائه‌دهنده ناموفق بود",
+        "missing_user_info": "اطلاعات کاربری ناقص از ارائه‌دهنده"
       }
     }
   },
@@ -255,6 +255,46 @@
     "recentFiles": {
       "title": "فایل‌های اخیر",
       "description": "آخرین فایل‌های بارگذاری‌شده شما"
+    },
+    "systemStatus": {
+      "title": "وضعیت سیستم",
+      "refresh": "بازخوانی",
+      "status": {
+        "healthy": "سالم",
+        "degraded": "کاهش‌یافته",
+        "unhealthy": "ناسالم"
+      },
+      "checks": {
+        "database": "پایگاه داده",
+        "storage": "ذخیره‌سازی",
+        "ok": "تأیید",
+        "error": "خطا",
+        "notConfigured": "پیکربندی نشده"
+      },
+      "uptime": "مدت فعالیت",
+      "diskSpace": {
+        "label": "فضای دیسک",
+        "ariaLabel": "نوار پیشرفت استفاده از فضای دیسک"
+      },
+      "quota": {
+        "label": "سهمیه ذخیره‌سازی",
+        "ariaLabel": "نوار پیشرفت سهمیه ذخیره‌سازی",
+        "notConfigured": "سهمیه‌ها پیکربندی نشده"
+      },
+      "metrics": {
+        "users": "کاربران",
+        "files": "فایل‌ها",
+        "shares": "اشتراک‌ها",
+        "reverseShares": "اشتراک‌های معکوس",
+        "myFiles": "فایل‌های من",
+        "activeShares": "اشتراک‌های فعال"
+      },
+      "errors": {
+        "title": "وضعیت در دسترس نیست",
+        "fetchFailed": "دریافت وضعیت سیستم ممکن نیست. لطفاً بعداً دوباره تلاش کنید.",
+        "diskSpaceError": "دریافت اطلاعات فضای دیسک ممکن نیست.",
+        "statsError": "بارگذاری آمار پلتفرم ممکن نیست."
+      }
     }
   },
   "deleteConfirmation": {
@@ -302,6 +342,7 @@
   },
   "errors": {
     "invalidCredentials": "ایمیل یا گذرواژه نامعتبر است",
+    "networkError": "اتصال به سرور ممکن نیست. لطفاً اتصال خود را بررسی کنید.",
     "userNotFound": "کاربر یافت نشد",
     "accountLocked": "حساب کاربری قفل شده است. لطفاً بعداً دوباره امتحان کنید",
     "unexpectedError": "خطای غیرمنتظره‌ای رخ داد. لطفاً دوباره امتحان کنید",
@@ -360,7 +401,7 @@
     "tryAlternativeView": "امتحان نمایش جایگزین",
     "loadingAlternative": "در حال بارگذاری نمایش جایگزین...",
     "loadingAudio": "در حال بارگذاری صوت...",
-    "downloading": "Downloading..."
+    "downloading": "در حال دانلود..."
   },
   "fileSelector": {
     "availableFiles": "فایل‌های موجود ({count})",
@@ -429,12 +470,12 @@
       "grid": "شبکه"
     },
     "drag": {
-      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
-      "fileMoved": "File \"{name}\" moved to \"{target}\"",
-      "itemsMoved": "{count} items moved to \"{target}\"",
-      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
-      "fileMovedToRoot": "File \"{name}\" moved to root folder",
-      "itemsMovedToRoot": "{count} items moved to root folder"
+      "folderMoved": "پوشه \"{name}\" به \"{target}\" منتقل شد",
+      "fileMoved": "فایل \"{name}\" به \"{target}\" منتقل شد",
+      "itemsMoved": "{count} مورد به \"{target}\" منتقل شد",
+      "folderMovedToRoot": "پوشه \"{name}\" به پوشه اصلی منتقل شد",
+      "fileMovedToRoot": "فایل \"{name}\" به پوشه اصلی منتقل شد",
+      "itemsMovedToRoot": "{count} مورد به پوشه اصلی منتقل شد"
     }
   },
   "filesTable": {
@@ -574,9 +615,9 @@
     "or": "یا",
     "continueWithSSO": "ادامه با SSO",
     "processing": "در حال پردازش احراز هویت...",
-    "orContinueWith": "Or continue with",
-    "continueWith": "Continue with {name}",
-    "providerNotConfigured": "{name} is not properly configured"
+    "orContinueWith": "یا ادامه دهید با",
+    "continueWith": "ادامه با {name}",
+    "providerNotConfigured": "{name} به درستی پیکربندی نشده است"
   },
   "logo": {
     "labels": {
@@ -932,7 +973,7 @@
         "previewNotAvailable": "پیش‌نمایش در دسترس نیست",
         "notAvailable": "ناموجود",
         "invalidDate": "تاریخ نامعتبر",
-        "downloading": "Downloading..."
+        "downloading": "در حال دانلود..."
       },
       "alias": {
         "editTitle": "ویرایش نام مستعار",
@@ -1020,7 +1061,7 @@
           "failed": "عملیات کپی ناموفق بود. لطفاً دوباره تلاش کنید.",
           "aborted": "عملیات کپی به دلیل اتمام مهلت زمانی لغو شد."
         },
-        "downloading": "Downloading..."
+        "downloading": "در حال دانلود..."
       }
     },
     "form": {
@@ -1092,10 +1133,10 @@
       "fieldRequirements": {
         "title": "الزامات فیلدها",
         "description": "مشخص کنید کدام فیلدها در فرم بارگذاری نمایش داده شوند",
-        "configurationTitle": "Field Configuration:",
-        "hiddenDescription": "Hidden: Field won't appear in the upload form",
-        "optionalDescription": "Optional: Field will appear but isn't mandatory",
-        "requiredDescription": "Required: Field must be filled before upload"
+        "configurationTitle": "پیکربندی فیلدها:",
+        "hiddenDescription": "پنهان: فیلد در فرم آپلود نمایش داده نمی‌شود",
+        "optionalDescription": "اختیاری: فیلد نمایش داده می‌شود اما اجباری نیست",
+        "requiredDescription": "اجباری: فیلد باید قبل از آپلود تکمیل شود"
       },
       "submit": "ایجاد لینک دریافت"
     },
@@ -1322,8 +1363,8 @@
         "description": "روش امنیت اتصال SMTP - خودکار (توصیه می‌شود)، SSL، STARTTLS یا هیچ (ناامن)",
         "options": {
           "auto": "خودکار (توصیه می‌شود)",
-          "ssl": "SSL (پورت ۴۶۵)",
-          "tls": "STARTTLS (پورت ۵۸۷)",
+          "ssl": "SSL (Port 465)",
+          "tls": "STARTTLS (Port 587)",
           "none": "هیچ (ناامن)"
         }
       },
@@ -1374,6 +1415,10 @@
       "passwordAuthEnabled": {
         "title": "احراز هویت با گذرواژه",
         "description": "فعال یا غیرفعال کردن احراز هویت مبتنی بر گذرواژه"
+      },
+      "embedSecret": {
+        "title": "کلید جاسازی",
+        "description": "کلید محرمانه‌ای که برای امضای توکن‌های جاسازی برای نمایش امن فایل‌ها استفاده می‌شود"
       }
     },
     "buttons": {
@@ -1681,40 +1726,6 @@
     "selectAll": "انتخاب همه",
     "selectShare": "انتخاب اشتراک {shareName}"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "استفاده از ذخیره‌سازی",
-    "ariaLabel": "نوار پیشرفت استفاده از ذخیره‌سازی",
-    "used": "استفاده شده",
-    "available": "موجود",
-    "total": "کل",
-    "loading": "در حال بارگذاری...",
-    "retry": "تلاش مجدد",
-    "errors": {
-      "title": "اطلاعات ذخیره‌سازی در دسترس نیست",
-      "detectionFailed": "تشخیص فضای دیسک ممکن نیست. این ممکن است به دلیل مشکلات پیکربندی سیستم یا مجوزهای ناکافی باشد.",
-      "serverError": "خطای سرور هنگام دریافت اطلاعات ذخیره‌سازی. لطفاً بعداً دوباره امتحان کنید.",
-      "unknown": "خطای غیرمنتظره‌ای هنگام بارگذاری اطلاعات ذخیره‌سازی رخ داد."
-    }
-  },
   "theme": {
     "toggle": "تغییر تم",
     "light": "روشن",
@@ -1896,7 +1907,7 @@
     "error": "بارگذاری فایل ناموفق بود",
     "fileSizeExceeded": "حجم فایل از محدودیت {maxsizemb}MB تجاوز می‌کند.",
     "insufficientStorage": "فضای ذخیره‌سازی کافی نیست. شما {availablespace}MB فضای موجود دارید.",
-    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
+    "storageFull": "فضای ذخیره‌سازی کافی نیست. موجود: {available} گیگابایت، مورد نیاز: {required} گیگابایت.",
     "unauthorized": "غیرمجاز: برای دسترسی به این منبع به یک توکن معتبر نیاز است.",
     "globalDrop": {
       "title": "فایل‌ها را برای بارگذاری رها کنید",
@@ -1912,8 +1923,10 @@
     },
     "pasteSuccess": "{count, plural, =1 {تصویر چسبانده و با موفقیت بارگذاری شد} other {# تصویر چسبانده و با موفقیت بارگذاری شد}}",
     "errors": {
-      "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed"
+      "addFileFailed": "افزودن {name} ناموفق بود: {error}",
+      "uploadFailed": "آپلود ناموفق بود",
+      "networkError": "اتصال به سرور ممکن نیست. لطفاً اتصال خود را بررسی کنید.",
+      "storageUnavailable": "سرویس ذخیره‌سازی در دسترس نیست. لطفاً بعداً دوباره تلاش کنید."
     }
   },
   "users": {
@@ -1999,7 +2012,7 @@
       "close": "بستن",
       "errors": {
         "generateFailed": "تولید لینک دعوت ناموفق بود",
-        "copyFailed": "Failed to copy link"
+        "copyFailed": "کپی لینک ناموفق بود"
       }
     }
   },
@@ -2074,9 +2087,9 @@
     "pageTitle": "ایجاد حساب"
   },
   "filesTree": {
-    "noItems": "No items to display"
+    "noItems": "موردی برای نمایش وجود ندارد"
   },
   "languageSwitcher": {
-    "changeLanguage": "Change language"
+    "changeLanguage": "تغییر زبان"
   }
 }

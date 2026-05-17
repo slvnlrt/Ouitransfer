@@ -7,27 +7,22 @@ import { ProtectedRoute } from "@/components/auth/protected-route";
 import { GlobalDropZone } from "@/components/general/global-drop-zone";
 import { FileManagerLayout } from "@/components/layout/file-manager-layout";
 import { LoadingScreen } from "@/components/layout/loading-screen";
-import { useAuth } from "@/contexts/auth-context";
 import { QuickAccessCards } from "./components/quick-access-cards";
 import { RecentFiles } from "./components/recent-files";
 import { RecentShares } from "./components/recent-shares";
-import { StorageUsage } from "./components/storage-usage";
-import { SystemHealth } from "./components/system-health";
+import { SystemStatus } from "./components/system-status";
 import { useDashboard } from "./hooks/use-dashboard";
 import { DashboardModals } from "./modals/dashboard-modals";
 
 export default function DashboardPage() {
   const t = useTranslations();
-  const { isAdmin } = useAuth();
 
   const {
     isLoading,
-    diskSpace,
-    diskSpaceError,
-    healthData,
-    healthError,
     recentFiles,
     recentShares,
+    totalFileCount,
+    totalShareCount,
     modals,
     fileManager,
     shareManager,
@@ -39,10 +34,6 @@ export default function DashboardPage() {
     return <LoadingScreen />;
   }
 
-  const handleRetryDiskSpace = async () => {
-    await loadDashboardData();
-  };
-
   return (
     <ProtectedRoute>
       <GlobalDropZone onSuccess={loadDashboardData}>
@@ -52,14 +43,7 @@ export default function DashboardPage() {
           showBreadcrumb={false}
           title={t("dashboard.pageTitle")}
         >
-          <div className={isAdmin ? "grid grid-cols-1 gap-6 md:grid-cols-2" : undefined}>
-            <StorageUsage
-              diskSpace={diskSpace}
-              diskSpaceError={diskSpaceError}
-              onRetry={handleRetryDiskSpace}
-            />
-            {isAdmin && <SystemHealth healthData={healthData} healthError={healthError} />}
-          </div>
+          <SystemStatus fileCount={totalFileCount} activeShareCount={totalShareCount} />
           <QuickAccessCards />
 
           <div className="flex flex-col gap-6">

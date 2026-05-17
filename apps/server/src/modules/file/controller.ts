@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import type { FastifyReply, FastifyRequest } from "fastify";
-
 import { env } from "../../env.js";
 import { prisma } from "../../shared/prisma.js";
 import {
@@ -125,7 +125,12 @@ export class FileController {
     const maxFileSize = BigInt(await getConfigValue("maxFileSize"));
     if (BigInt(input.size) > maxFileSize) {
       const maxSizeMB = Number(maxFileSize) / (1024 * 1024);
-      throw new ValidationError(`File size exceeds the maximum allowed size of ${maxSizeMB}MB`);
+      throw new AppError(
+        400,
+        `File size exceeds the maximum allowed size of ${maxSizeMB.toFixed(0)}MB`,
+        ErrorCodes.FILE_SIZE_EXCEEDED,
+        { maxSizeMB: maxSizeMB.toFixed(0) },
+      );
     }
 
     const maxTotalStorage = BigInt(await getConfigValue("maxTotalStoragePerUser"));
@@ -139,8 +144,11 @@ export class FileController {
 
     if (currentStorage + BigInt(input.size) > maxTotalStorage) {
       const availableSpace = Number(maxTotalStorage - currentStorage) / (1024 * 1024);
-      throw new ValidationError(
+      throw new AppError(
+        400,
         `Insufficient storage space. You have ${availableSpace.toFixed(2)}MB available`,
+        ErrorCodes.INSUFFICIENT_STORAGE,
+        { availableSpaceMB: availableSpace.toFixed(2) },
       );
     }
 
@@ -201,7 +209,12 @@ export class FileController {
     const maxFileSize = BigInt(await getConfigValue("maxFileSize"));
     if (BigInt(input.size) > maxFileSize) {
       const maxSizeMB = Number(maxFileSize) / (1024 * 1024);
-      throw new ValidationError(`File size exceeds the maximum allowed size of ${maxSizeMB}MB`);
+      throw new AppError(
+        400,
+        `File size exceeds the maximum allowed size of ${maxSizeMB.toFixed(0)}MB`,
+        ErrorCodes.FILE_SIZE_EXCEEDED,
+        { maxSizeMB: maxSizeMB.toFixed(0) },
+      );
     }
 
     const maxTotalStorage = BigInt(await getConfigValue("maxTotalStoragePerUser"));
@@ -215,8 +228,11 @@ export class FileController {
 
     if (currentStorage + BigInt(input.size) > maxTotalStorage) {
       const availableSpace = Number(maxTotalStorage - currentStorage) / (1024 * 1024);
-      throw new ValidationError(
+      throw new AppError(
+        400,
         `Insufficient storage space. You have ${availableSpace.toFixed(2)}MB available`,
+        ErrorCodes.INSUFFICIENT_STORAGE,
+        { availableSpaceMB: availableSpace.toFixed(2) },
       );
     }
 

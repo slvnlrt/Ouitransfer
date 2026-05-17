@@ -15,16 +15,16 @@
     "sessionExpired": "Your session has expired. Please sign in again.",
     "callback": {
       "errors": {
-        "oauth_error": "OAuth authentication failed",
-        "missing_parameters": "Missing authentication parameters",
-        "missing_code": "Missing authorization code",
-        "registration_disabled": "Registration is disabled for this provider",
-        "provider_disabled": "This authentication provider is disabled",
-        "state_expired": "Authentication session expired",
-        "account_inactive": "Your account is inactive",
-        "no_email": "No email address found in your account",
-        "token_exchange_failed": "Failed to authenticate with provider",
-        "missing_user_info": "Incomplete user information from provider"
+        "oauth_error": "Xác thực OAuth thất bại",
+        "missing_parameters": "Thiếu tham số xác thực",
+        "missing_code": "Thiếu mã ủy quyền",
+        "registration_disabled": "Đăng ký đã bị vô hiệu hóa cho nhà cung cấp này",
+        "provider_disabled": "Nhà cung cấp xác thực này đã bị vô hiệu hóa",
+        "state_expired": "Phiên xác thực đã hết hạn",
+        "account_inactive": "Tài khoản của bạn không hoạt động",
+        "no_email": "Không tìm thấy địa chỉ email trong tài khoản của bạn",
+        "token_exchange_failed": "Xác thực với nhà cung cấp thất bại",
+        "missing_user_info": "Thông tin người dùng không đầy đủ từ nhà cung cấp"
       }
     }
   },
@@ -255,6 +255,46 @@
     "recentFiles": {
       "title": "Tệp gần đây",
       "description": "Các tệp được tải lên gần đây nhất của bạn"
+    },
+    "systemStatus": {
+      "title": "Trạng thái hệ thống",
+      "refresh": "Làm mới",
+      "status": {
+        "healthy": "Hoạt động bình thường",
+        "degraded": "Suy giảm",
+        "unhealthy": "Không khả dụng"
+      },
+      "checks": {
+        "database": "Cơ sở dữ liệu",
+        "storage": "Lưu trữ",
+        "ok": "OK",
+        "error": "Lỗi",
+        "notConfigured": "Chưa cấu hình"
+      },
+      "uptime": "Thời gian hoạt động",
+      "diskSpace": {
+        "label": "Dung lượng đĩa",
+        "ariaLabel": "Thanh tiến trình sử dụng dung lượng đĩa"
+      },
+      "quota": {
+        "label": "Hạn mức lưu trữ",
+        "ariaLabel": "Thanh tiến trình hạn mức lưu trữ",
+        "notConfigured": "Hạn mức chưa được cấu hình"
+      },
+      "metrics": {
+        "users": "Người dùng",
+        "files": "Tệp",
+        "shares": "Chia sẻ",
+        "reverseShares": "Chia sẻ ngược",
+        "myFiles": "Tệp của tôi",
+        "activeShares": "Chia sẻ đang hoạt động"
+      },
+      "errors": {
+        "title": "Không thể hiển thị trạng thái",
+        "fetchFailed": "Không thể lấy trạng thái hệ thống. Vui lòng thử lại sau.",
+        "diskSpaceError": "Không thể lấy thông tin dung lượng đĩa.",
+        "statsError": "Không thể tải thống kê nền tảng."
+      }
     }
   },
   "deleteConfirmation": {
@@ -302,6 +342,7 @@
   },
   "errors": {
     "invalidCredentials": "Email hoặc mật khẩu không hợp lệ",
+    "networkError": "Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối của bạn.",
     "userNotFound": "Không tìm thấy người dùng",
     "accountLocked": "Tài khoản bị khóa. Vui lòng thử lại sau",
     "unexpectedError": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại",
@@ -360,7 +401,7 @@
     "tryAlternativeView": "Thử chế độ xem thay thế",
     "loadingAlternative": "Đang tải chế độ xem thay thế...",
     "loadingAudio": "Đang tải âm thanh...",
-    "downloading": "Downloading..."
+    "downloading": "Đang tải xuống..."
   },
   "fileSelector": {
     "availableFiles": "Tệp có sẵn ({count})",
@@ -429,12 +470,12 @@
       "grid": "Lưới"
     },
     "drag": {
-      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
-      "fileMoved": "File \"{name}\" moved to \"{target}\"",
-      "itemsMoved": "{count} items moved to \"{target}\"",
-      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
-      "fileMovedToRoot": "File \"{name}\" moved to root folder",
-      "itemsMovedToRoot": "{count} items moved to root folder"
+      "folderMoved": "Đã di chuyển thư mục \"{name}\" đến \"{target}\"",
+      "fileMoved": "Đã di chuyển tệp \"{name}\" đến \"{target}\"",
+      "itemsMoved": "Đã di chuyển {count} mục đến \"{target}\"",
+      "folderMovedToRoot": "Đã di chuyển thư mục \"{name}\" đến thư mục gốc",
+      "fileMovedToRoot": "Đã di chuyển tệp \"{name}\" đến thư mục gốc",
+      "itemsMovedToRoot": "Đã di chuyển {count} mục đến thư mục gốc"
     }
   },
   "filesTable": {
@@ -574,9 +615,9 @@
     "or": "hoặc",
     "continueWithSSO": "Tiếp tục với SSO",
     "processing": "Đang xử lý xác thực...",
-    "orContinueWith": "Or continue with",
-    "continueWith": "Continue with {name}",
-    "providerNotConfigured": "{name} is not properly configured"
+    "orContinueWith": "Hoặc tiếp tục với",
+    "continueWith": "Tiếp tục với {name}",
+    "providerNotConfigured": "{name} chưa được cấu hình đúng"
   },
   "logo": {
     "labels": {
@@ -932,7 +973,7 @@
         "previewNotAvailable": "Không có bản xem trước",
         "notAvailable": "Không có sẵn",
         "invalidDate": "Ngày không hợp lệ",
-        "downloading": "Downloading..."
+        "downloading": "Đang tải xuống..."
       },
       "alias": {
         "editTitle": "Chỉnh sửa bí danh",
@@ -1020,7 +1061,7 @@
           "failed": "Thao tác sao chép không thành công. Vui lòng thử lại.",
           "aborted": "Thao tác sao chép đã bị hủy do hết thời gian chờ."
         },
-        "downloading": "Downloading..."
+        "downloading": "Đang tải xuống..."
       }
     },
     "form": {
@@ -1092,10 +1133,10 @@
       "fieldRequirements": {
         "title": "Yêu cầu trường",
         "description": "Định cấu hình các trường được hiển thị trong biểu mẫu tải lên",
-        "configurationTitle": "Field Configuration:",
-        "hiddenDescription": "Hidden: Field won't appear in the upload form",
-        "optionalDescription": "Optional: Field will appear but isn't mandatory",
-        "requiredDescription": "Required: Field must be filled before upload"
+        "configurationTitle": "Cấu hình trường:",
+        "hiddenDescription": "Ẩn: Trường sẽ không hiển thị trong biểu mẫu tải lên",
+        "optionalDescription": "Tùy chọn: Trường sẽ hiển thị nhưng không bắt buộc",
+        "requiredDescription": "Bắt buộc: Trường phải được điền trước khi tải lên"
       },
       "submit": "Tạo liên kết nhận"
     },
@@ -1322,8 +1363,8 @@
         "description": "Phương thức bảo mật kết nối SMTP - Tự động (được khuyến nghị), SSL, STARTTLS hoặc Không có (không an toàn)",
         "options": {
           "auto": "Tự động (Được khuyến nghị)",
-          "ssl": "SSL (Cổng 465)",
-          "tls": "STARTTLS (Cổng 587)",
+          "ssl": "SSL (Port 465)",
+          "tls": "STARTTLS (Port 587)",
           "none": "Không có (Không an toàn)"
         }
       },
@@ -1374,6 +1415,10 @@
       "passwordAuthEnabled": {
         "title": "Xác thực bằng mật khẩu",
         "description": "Bật hoặc tắt xác thực dựa trên mật khẩu"
+      },
+      "embedSecret": {
+        "title": "Khóa nhúng",
+        "description": "Khóa bí mật dùng để ký mã thông báo nhúng cho việc nhúng tệp an toàn"
       }
     },
     "buttons": {
@@ -1681,40 +1726,6 @@
     "selectAll": "Chọn tất cả",
     "selectShare": "Chọn chia sẻ {shareName}"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "Sử dụng bộ nhớ",
-    "ariaLabel": "Thanh tiến trình sử dụng bộ nhớ",
-    "used": "đã sử dụng",
-    "available": "có sẵn",
-    "total": "Tổng",
-    "loading": "Đang tải...",
-    "retry": "Thử lại",
-    "errors": {
-      "title": "Thông tin bộ nhớ không có sẵn",
-      "detectionFailed": "Không thể phát hiện dung lượng đĩa. Điều này có thể do sự cố cấu hình hệ thống hoặc quyền không đủ.",
-      "serverError": "Đã xảy ra lỗi máy chủ khi truy xuất thông tin bộ nhớ. Vui lòng thử lại sau.",
-      "unknown": "Đã xảy ra lỗi không mong muốn khi tải thông tin bộ nhớ."
-    }
-  },
   "theme": {
     "toggle": "Chuyển đổi chủ đề",
     "light": "Sáng",
@@ -1896,7 +1907,7 @@
     "error": "Không thể tải lên tệp",
     "fileSizeExceeded": "Kích thước tệp vượt quá giới hạn {maxsizemb}MB.",
     "insufficientStorage": "Không đủ dung lượng lưu trữ. Bạn còn {availablespace}MB.",
-    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
+    "storageFull": "Không đủ dung lượng lưu trữ. Khả dụng: {available} GB, cần: {required} GB.",
     "unauthorized": "Không được phép: cần có mã thông báo hợp lệ để truy cập tài nguyên này.",
     "globalDrop": {
       "title": "Thả tệp để tải lên",
@@ -1912,8 +1923,10 @@
     },
     "pasteSuccess": "{count, plural, =1 {Hình ảnh đã được dán và tải lên thành công} other {# hình ảnh đã được dán và tải lên thành công}}",
     "errors": {
-      "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed"
+      "addFileFailed": "Thêm {name} thất bại: {error}",
+      "uploadFailed": "Tải lên thất bại",
+      "networkError": "Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối của bạn.",
+      "storageUnavailable": "Dịch vụ lưu trữ không khả dụng. Vui lòng thử lại sau."
     }
   },
   "users": {
@@ -1999,7 +2012,7 @@
       "close": "Đóng",
       "errors": {
         "generateFailed": "Không thể tạo liên kết mời",
-        "copyFailed": "Failed to copy link"
+        "copyFailed": "Sao chép liên kết thất bại"
       }
     }
   },
@@ -2074,9 +2087,9 @@
     "pageTitle": "Tạo Tài Khoản"
   },
   "filesTree": {
-    "noItems": "No items to display"
+    "noItems": "Không có mục nào để hiển thị"
   },
   "languageSwitcher": {
-    "changeLanguage": "Change language"
+    "changeLanguage": "Đổi ngôn ngữ"
   }
 }

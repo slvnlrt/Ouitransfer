@@ -15,16 +15,16 @@
     "sessionExpired": "Je sessie is verlopen. Log opnieuw in.",
     "callback": {
       "errors": {
-        "oauth_error": "OAuth authentication failed",
-        "missing_parameters": "Missing authentication parameters",
-        "missing_code": "Missing authorization code",
-        "registration_disabled": "Registration is disabled for this provider",
-        "provider_disabled": "This authentication provider is disabled",
-        "state_expired": "Authentication session expired",
-        "account_inactive": "Your account is inactive",
-        "no_email": "No email address found in your account",
-        "token_exchange_failed": "Failed to authenticate with provider",
-        "missing_user_info": "Incomplete user information from provider"
+        "oauth_error": "OAuth-authenticatie mislukt",
+        "missing_parameters": "Ontbrekende authenticatieparameters",
+        "missing_code": "Ontbrekende autorisatiecode",
+        "registration_disabled": "Registratie is uitgeschakeld voor deze provider",
+        "provider_disabled": "Deze authenticatieprovider is uitgeschakeld",
+        "state_expired": "Authenticatiesessie verlopen",
+        "account_inactive": "Uw account is inactief",
+        "no_email": "Geen e-mailadres gevonden in uw account",
+        "token_exchange_failed": "Authenticatie bij de provider mislukt",
+        "missing_user_info": "Onvolledige gebruikersinformatie van de provider"
       }
     }
   },
@@ -251,6 +251,46 @@
     "recentFiles": {
       "description": "Uw meest recent geüploade bestanden",
       "title": "Recente Bestanden"
+    },
+    "systemStatus": {
+      "title": "Systeemstatus",
+      "refresh": "Vernieuwen",
+      "status": {
+        "healthy": "Operationeel",
+        "degraded": "Beperkt",
+        "unhealthy": "Niet beschikbaar"
+      },
+      "checks": {
+        "database": "Database",
+        "storage": "Opslag",
+        "ok": "OK",
+        "error": "Fout",
+        "notConfigured": "Niet geconfigureerd"
+      },
+      "uptime": "Uptime",
+      "diskSpace": {
+        "label": "Schijfruimte",
+        "ariaLabel": "Voortgangsbalk van schijfruimtegebruik"
+      },
+      "quota": {
+        "label": "Opslagquotum",
+        "ariaLabel": "Voortgangsbalk van opslagquotum",
+        "notConfigured": "Quota's niet geconfigureerd"
+      },
+      "metrics": {
+        "users": "Gebruikers",
+        "files": "Bestanden",
+        "shares": "Delingen",
+        "reverseShares": "Omgekeerde delingen",
+        "myFiles": "Mijn bestanden",
+        "activeShares": "Actieve delingen"
+      },
+      "errors": {
+        "title": "Status niet beschikbaar",
+        "fetchFailed": "Kan de systeemstatus niet ophalen. Probeer het later opnieuw.",
+        "diskSpaceError": "Kan schijfruimte-informatie niet ophalen.",
+        "statsError": "Kan platformstatistieken niet laden."
+      }
     }
   },
   "deleteConfirmation": {
@@ -298,6 +338,7 @@
   },
   "errors": {
     "invalidCredentials": "Ongeldig e-mail of wachtwoord",
+    "networkError": "Kan de server niet bereiken. Controleer uw verbinding.",
     "userNotFound": "Gebruiker niet gevonden",
     "accountLocked": "Account vergrendeld. Probeer het later opnieuw",
     "unexpectedError": "Er is een onverwachte fout opgetreden. Probeer het opnieuw",
@@ -356,7 +397,7 @@
     "tryAlternativeView": "Alternatieve Weergave Proberen",
     "loadingAlternative": "Alternatieve weergave laden...",
     "loadingAudio": "Audio laden...",
-    "downloading": "Downloading..."
+    "downloading": "Downloaden..."
   },
   "fileSelector": {
     "availableFiles": "Beschikbare Bestanden ({count})",
@@ -425,12 +466,12 @@
     },
     "openFolder": "Map openen",
     "drag": {
-      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
-      "fileMoved": "File \"{name}\" moved to \"{target}\"",
-      "itemsMoved": "{count} items moved to \"{target}\"",
-      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
-      "fileMovedToRoot": "File \"{name}\" moved to root folder",
-      "itemsMovedToRoot": "{count} items moved to root folder"
+      "folderMoved": "Map \"{name}\" verplaatst naar \"{target}\"",
+      "fileMoved": "Bestand \"{name}\" verplaatst naar \"{target}\"",
+      "itemsMoved": "{count} items verplaatst naar \"{target}\"",
+      "folderMovedToRoot": "Map \"{name}\" verplaatst naar de hoofdmap",
+      "fileMovedToRoot": "Bestand \"{name}\" verplaatst naar de hoofdmap",
+      "itemsMovedToRoot": "{count} items verplaatst naar de hoofdmap"
     }
   },
   "filesTable": {
@@ -570,9 +611,9 @@
     "or": "ou",
     "continueWithSSO": "Continuar com SSO",
     "processing": "Processando autenticação...",
-    "orContinueWith": "Or continue with",
-    "continueWith": "Continue with {name}",
-    "providerNotConfigured": "{name} is not properly configured"
+    "orContinueWith": "Of doorgaan met",
+    "continueWith": "Doorgaan met {name}",
+    "providerNotConfigured": "{name} is niet juist geconfigureerd"
   },
   "logo": {
     "labels": {
@@ -928,7 +969,7 @@
         "previewNotAvailable": "Voorvertoning niet beschikbaar",
         "notAvailable": "Niet beschikbaar",
         "invalidDate": "Ongeldige datum",
-        "downloading": "Downloading..."
+        "downloading": "Downloaden..."
       },
       "alias": {
         "editTitle": "Alias Bewerken",
@@ -1016,7 +1057,7 @@
           "aborted": "Kopieeroperatie is geannuleerd vanwege een time-out."
         },
         "invalidDate": "Ongeldige datum",
-        "downloading": "Downloading..."
+        "downloading": "Downloaden..."
       }
     },
     "form": {
@@ -1085,10 +1126,10 @@
       "fieldRequirements": {
         "title": "Veldvereisten",
         "description": "Configureer welke velden worden weergegeven in het uploadformulier",
-        "configurationTitle": "Field Configuration:",
-        "hiddenDescription": "Hidden: Field won't appear in the upload form",
-        "optionalDescription": "Optional: Field will appear but isn't mandatory",
-        "requiredDescription": "Required: Field must be filled before upload"
+        "configurationTitle": "Veldconfiguratie:",
+        "hiddenDescription": "Verborgen: Het veld verschijnt niet in het uploadformulier",
+        "optionalDescription": "Optioneel: Het veld wordt weergegeven maar is niet verplicht",
+        "requiredDescription": "Verplicht: Het veld moet worden ingevuld vóór het uploaden"
       },
       "nameFieldRequired": {
         "label": "Naam veldvereiste",
@@ -1354,8 +1395,8 @@
         "description": "SMTP verbindingsbeveiligingsmethode - Auto (aanbevolen), SSL, STARTTLS, of Geen (onveilig)",
         "options": {
           "auto": "Auto (Aanbevolen)",
-          "ssl": "SSL (Poort 465)",
-          "tls": "STARTTLS (Poort 587)",
+          "ssl": "SSL (Port 465)",
+          "tls": "STARTTLS (Port 587)",
           "none": "Geen (Onveilig)"
         }
       },
@@ -1370,6 +1411,10 @@
       "hideVersion": {
         "title": "Versie Verbergen",
         "description": "Verberg de OUITRANSFER-versie in de voettekst van alle pagina's"
+      },
+      "embedSecret": {
+        "title": "Insluitsleutel",
+        "description": "Geheime sleutel voor het ondertekenen van insluittokens voor veilige bestandsinsluiting"
       }
     },
     "buttons": {
@@ -1677,40 +1722,6 @@
     "selectShare": "Deel {shareName} selecteren",
     "folderCount": "mappen"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "Opslaggebruik",
-    "ariaLabel": "Opslaggebruik voortgangsbalk",
-    "used": "gebruikt",
-    "available": "beschikbaar",
-    "total": "Totaal",
-    "loading": "Laden...",
-    "retry": "Opnieuw proberen",
-    "errors": {
-      "title": "Opslaginformatie niet beschikbaar",
-      "detectionFailed": "Kan schijfruimte niet detecteren. Dit kan komen door systeemconfiguratieproblemen of onvoldoende rechten.",
-      "serverError": "Er is een serverfout opgetreden bij het ophalen van opslaginformatie. Probeer het later opnieuw.",
-      "unknown": "Er is een onverwachte fout opgetreden bij het laden van opslaginformatie."
-    }
-  },
   "theme": {
     "toggle": "Thema wisselen",
     "light": "Licht",
@@ -1891,7 +1902,7 @@
     "error": "Bestand uploaden mislukt",
     "fileSizeExceeded": "Bestandsgrootte overschrijdt de limiet van {maxsizemb}MB.",
     "insufficientStorage": "Onvoldoende opslagruimte. U heeft {availablespace}MB beschikbaar.",
-    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
+    "storageFull": "Onvoldoende opslagruimte. Beschikbaar: {available} GB, vereist: {required} GB.",
     "unauthorized": "Niet geautoriseerd: een geldig token is vereist om toegang te krijgen tot deze bron.",
     "confirmCancel": {
       "title": "Uploads Annuleren",
@@ -1908,8 +1919,10 @@
     "pasteSuccess": "{count, plural, =1 {Afbeelding geplakt en succesvol geüpload} other {# afbeeldingen geplakt en succesvol geüpload}}",
     "filesQueued": "{count, plural, one {# bestand in de wachtrij voor upload} other {# bestanden in de wachtrij voor upload}}",
     "errors": {
-      "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed"
+      "addFileFailed": "Fout bij toevoegen van {name}: {error}",
+      "uploadFailed": "Upload mislukt",
+      "networkError": "Kan de server niet bereiken. Controleer uw verbinding.",
+      "storageUnavailable": "De opslagdienst is niet beschikbaar. Probeer het later opnieuw."
     }
   },
   "users": {
@@ -1995,7 +2008,7 @@
       "close": "Sluiten",
       "errors": {
         "generateFailed": "Genereren van uitnodigingslink mislukt",
-        "copyFailed": "Failed to copy link"
+        "copyFailed": "Link kopiëren mislukt"
       }
     }
   },
@@ -2074,9 +2087,9 @@
     "pageTitle": "Account Aanmaken"
   },
   "filesTree": {
-    "noItems": "No items to display"
+    "noItems": "Geen items om weer te geven"
   },
   "languageSwitcher": {
-    "changeLanguage": "Change language"
+    "changeLanguage": "Taal wijzigen"
   }
 }

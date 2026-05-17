@@ -15,16 +15,16 @@
     "sessionExpired": "Tu sesión ha expirado. Por favor, inicia sesión de nuevo.",
     "callback": {
       "errors": {
-        "oauth_error": "OAuth authentication failed",
-        "missing_parameters": "Missing authentication parameters",
-        "missing_code": "Missing authorization code",
-        "registration_disabled": "Registration is disabled for this provider",
-        "provider_disabled": "This authentication provider is disabled",
-        "state_expired": "Authentication session expired",
-        "account_inactive": "Your account is inactive",
-        "no_email": "No email address found in your account",
-        "token_exchange_failed": "Failed to authenticate with provider",
-        "missing_user_info": "Incomplete user information from provider"
+        "oauth_error": "Error de autenticación OAuth",
+        "missing_parameters": "Parámetros de autenticación faltantes",
+        "missing_code": "Código de autorización faltante",
+        "registration_disabled": "El registro está deshabilitado para este proveedor",
+        "provider_disabled": "Este proveedor de autenticación está deshabilitado",
+        "state_expired": "Sesión de autenticación expirada",
+        "account_inactive": "Tu cuenta está inactiva",
+        "no_email": "No se encontró una dirección de correo electrónico en tu cuenta",
+        "token_exchange_failed": "Error al autenticar con el proveedor",
+        "missing_user_info": "Información de usuario incompleta del proveedor"
       }
     }
   },
@@ -255,6 +255,46 @@
     "recentFiles": {
       "description": "Tus archivos subidos más recientemente",
       "title": "Archivos Recientes"
+    },
+    "systemStatus": {
+      "title": "Estado del sistema",
+      "refresh": "Actualizar",
+      "status": {
+        "healthy": "Operativo",
+        "degraded": "Degradado",
+        "unhealthy": "Fuera de servicio"
+      },
+      "checks": {
+        "database": "Base de datos",
+        "storage": "Almacenamiento",
+        "ok": "OK",
+        "error": "Error",
+        "notConfigured": "No configurado"
+      },
+      "uptime": "Tiempo activo",
+      "diskSpace": {
+        "label": "Espacio en disco",
+        "ariaLabel": "Barra de progreso del uso de espacio en disco"
+      },
+      "quota": {
+        "label": "Cuota de almacenamiento",
+        "ariaLabel": "Barra de progreso de la cuota de almacenamiento",
+        "notConfigured": "Cuotas no configuradas"
+      },
+      "metrics": {
+        "users": "Usuarios",
+        "files": "Archivos",
+        "shares": "Comparticiones",
+        "reverseShares": "Comparticiones inversas",
+        "myFiles": "Mis archivos",
+        "activeShares": "Comparticiones activas"
+      },
+      "errors": {
+        "title": "Estado no disponible",
+        "fetchFailed": "No se pudo recuperar el estado del sistema. Inténtelo de nuevo más tarde.",
+        "diskSpaceError": "No se pudo recuperar la información de espacio en disco.",
+        "statsError": "No se pudieron cargar las estadísticas de la plataforma."
+      }
     }
   },
   "deleteConfirmation": {
@@ -302,6 +342,7 @@
   },
   "errors": {
     "invalidCredentials": "Correo electrónico o contraseña inválidos",
+    "networkError": "No se puede conectar con el servidor. Compruebe su conexión.",
     "userNotFound": "Usuario no encontrado",
     "accountLocked": "Cuenta bloqueada. Por favor, inténtalo de nuevo más tarde",
     "unexpectedError": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo",
@@ -360,7 +401,7 @@
     "tryAlternativeView": "Probar Vista Alternativa",
     "loadingAlternative": "Cargando vista alternativa...",
     "loadingAudio": "Cargando audio...",
-    "downloading": "Downloading..."
+    "downloading": "Descargando..."
   },
   "fileSelector": {
     "availableFiles": "Archivos Disponibles ({count})",
@@ -429,12 +470,12 @@
     },
     "openFolder": "Abrir carpeta",
     "drag": {
-      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
-      "fileMoved": "File \"{name}\" moved to \"{target}\"",
-      "itemsMoved": "{count} items moved to \"{target}\"",
-      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
-      "fileMovedToRoot": "File \"{name}\" moved to root folder",
-      "itemsMovedToRoot": "{count} items moved to root folder"
+      "folderMoved": "Carpeta «{name}» movida a «{target}»",
+      "fileMoved": "Archivo «{name}» movido a «{target}»",
+      "itemsMoved": "{count} elementos movidos a «{target}»",
+      "folderMovedToRoot": "Carpeta «{name}» movida a la carpeta raíz",
+      "fileMovedToRoot": "Archivo «{name}» movido a la carpeta raíz",
+      "itemsMovedToRoot": "{count} elementos movidos a la carpeta raíz"
     }
   },
   "filesTable": {
@@ -574,9 +615,9 @@
     "or": "ou",
     "continueWithSSO": "Continuar com SSO",
     "processing": "Processando autenticação...",
-    "orContinueWith": "Or continue with",
-    "continueWith": "Continue with {name}",
-    "providerNotConfigured": "{name} is not properly configured"
+    "orContinueWith": "O continuar con",
+    "continueWith": "Continuar con {name}",
+    "providerNotConfigured": "{name} no está correctamente configurado"
   },
   "logo": {
     "labels": {
@@ -932,7 +973,7 @@
         "previewNotAvailable": "Vista previa no disponible",
         "notAvailable": "No disponible",
         "invalidDate": "Fecha inválida",
-        "downloading": "Downloading..."
+        "downloading": "Descargando..."
       },
       "alias": {
         "editTitle": "Editar Alias",
@@ -1020,7 +1061,7 @@
           "failed": "La operación de copia falló. Por favor, inténtalo de nuevo.",
           "aborted": "La operación de copia fue cancelada debido al tiempo de espera."
         },
-        "downloading": "Downloading..."
+        "downloading": "Descargando..."
       }
     },
     "form": {
@@ -1089,10 +1130,10 @@
       "fieldRequirements": {
         "title": "Requisitos de campo",
         "description": "Configurar qué campos se muestran en el formulario de carga",
-        "configurationTitle": "Field Configuration:",
-        "hiddenDescription": "Hidden: Field won't appear in the upload form",
-        "optionalDescription": "Optional: Field will appear but isn't mandatory",
-        "requiredDescription": "Required: Field must be filled before upload"
+        "configurationTitle": "Configuración de campos:",
+        "hiddenDescription": "Oculto: El campo no aparecerá en el formulario de subida",
+        "optionalDescription": "Opcional: El campo aparecerá pero no es obligatorio",
+        "requiredDescription": "Obligatorio: El campo debe completarse antes de la subida"
       },
       "nameFieldRequired": {
         "label": "Requisito de campo de nombre",
@@ -1362,8 +1403,8 @@
         "description": "Método de seguridad de conexión SMTP - Auto (recomendado), SSL, STARTTLS o Ninguno (inseguro)",
         "options": {
           "auto": "Auto (Recomendado)",
-          "ssl": "SSL (Puerto 465)",
-          "tls": "STARTTLS (Puerto 587)",
+          "ssl": "SSL (Port 465)",
+          "tls": "STARTTLS (Port 587)",
           "none": "Ninguno (Inseguro)"
         }
       },
@@ -1374,6 +1415,10 @@
       "hideVersion": {
         "title": "Ocultar Versión",
         "description": "Ocultar la versión de OUITRANSFER en el pie de página de todas las páginas"
+      },
+      "embedSecret": {
+        "title": "Clave de incrustación",
+        "description": "Clave secreta utilizada para firmar tokens de incrustación para la inserción segura de archivos"
       }
     },
     "buttons": {
@@ -1681,40 +1726,6 @@
     "selectAll": "Seleccionar todo",
     "selectShare": "Seleccionar compartido {shareName}"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "Uso de almacenamiento",
-    "ariaLabel": "Barra de progreso del uso de almacenamiento",
-    "used": "usados",
-    "available": "disponible",
-    "total": "Total",
-    "loading": "Cargando...",
-    "retry": "Reintentar",
-    "errors": {
-      "title": "Información de almacenamiento no disponible",
-      "detectionFailed": "No se pudo detectar el espacio en disco. Esto puede deberse a problemas de configuración del sistema o permisos insuficientes.",
-      "serverError": "Ocurrió un error del servidor al recuperar la información de almacenamiento. Por favor, inténtelo de nuevo más tarde.",
-      "unknown": "Ocurrió un error inesperado al cargar la información de almacenamiento."
-    }
-  },
   "theme": {
     "toggle": "Cambiar tema",
     "light": "Claro",
@@ -1895,7 +1906,7 @@
     "error": "Error al subir el archivo",
     "fileSizeExceeded": "El tamaño del archivo excede el límite de {maxsizemb}MB.",
     "insufficientStorage": "Espacio de almacenamiento insuficiente. Tiene {availablespace}MB disponibles.",
-    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
+    "storageFull": "Espacio de almacenamiento insuficiente. Disponible: {available} GB, requerido: {required} GB.",
     "unauthorized": "No autorizado: se requiere un token válido para acceder a este recurso.",
     "confirmCancel": {
       "title": "Cancelar Subidas",
@@ -1912,8 +1923,10 @@
     "pasteSuccess": "{count, plural, =1 {Imagen pegada y subida exitosamente} other {# imágenes pegadas y subidas exitosamente}}",
     "filesQueued": "{count, plural, one {# archivo en cola para subir} other {# archivos en cola para subir}}",
     "errors": {
-      "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed"
+      "addFileFailed": "Error al agregar {name}: {error}",
+      "uploadFailed": "Error en la subida",
+      "networkError": "No se puede conectar con el servidor. Compruebe su conexión.",
+      "storageUnavailable": "El servicio de almacenamiento no está disponible. Inténtelo de nuevo más tarde."
     }
   },
   "users": {
@@ -1999,7 +2012,7 @@
       "close": "Cerrar",
       "errors": {
         "generateFailed": "Error al generar el enlace de invitación",
-        "copyFailed": "Failed to copy link"
+        "copyFailed": "Error al copiar el enlace"
       }
     }
   },
@@ -2074,9 +2087,9 @@
     "pageTitle": "Crear Cuenta"
   },
   "filesTree": {
-    "noItems": "No items to display"
+    "noItems": "No hay elementos para mostrar"
   },
   "languageSwitcher": {
-    "changeLanguage": "Change language"
+    "changeLanguage": "Cambiar idioma"
   }
 }

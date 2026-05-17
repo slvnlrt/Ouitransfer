@@ -15,16 +15,16 @@
     "sessionExpired": "Your session has expired. Please sign in again.",
     "callback": {
       "errors": {
-        "oauth_error": "OAuth authentication failed",
-        "missing_parameters": "Missing authentication parameters",
-        "missing_code": "Missing authorization code",
-        "registration_disabled": "Registration is disabled for this provider",
-        "provider_disabled": "This authentication provider is disabled",
-        "state_expired": "Authentication session expired",
-        "account_inactive": "Your account is inactive",
-        "no_email": "No email address found in your account",
-        "token_exchange_failed": "Failed to authenticate with provider",
-        "missing_user_info": "Incomplete user information from provider"
+        "oauth_error": "OAuth 认证失败",
+        "missing_parameters": "缺少认证参数",
+        "missing_code": "缺少授权码",
+        "registration_disabled": "此提供商的注册已禁用",
+        "provider_disabled": "此认证提供商已禁用",
+        "state_expired": "认证会话已过期",
+        "account_inactive": "您的账户处于非活跃状态",
+        "no_email": "在您的账户中未找到电子邮件地址",
+        "token_exchange_failed": "与提供商认证失败",
+        "missing_user_info": "从提供商获取的用户信息不完整"
       }
     }
   },
@@ -251,6 +251,46 @@
     "recentFiles": {
       "description": "您最近上传的文件",
       "title": "最近文件"
+    },
+    "systemStatus": {
+      "title": "系统状态",
+      "refresh": "刷新",
+      "status": {
+        "healthy": "正常",
+        "degraded": "降级",
+        "unhealthy": "异常"
+      },
+      "checks": {
+        "database": "数据库",
+        "storage": "存储",
+        "ok": "正常",
+        "error": "错误",
+        "notConfigured": "未配置"
+      },
+      "uptime": "运行时间",
+      "diskSpace": {
+        "label": "磁盘空间",
+        "ariaLabel": "磁盘空间使用进度条"
+      },
+      "quota": {
+        "label": "存储配额",
+        "ariaLabel": "存储配额进度条",
+        "notConfigured": "配额未配置"
+      },
+      "metrics": {
+        "users": "用户",
+        "files": "文件",
+        "shares": "共享",
+        "reverseShares": "反向共享",
+        "myFiles": "我的文件",
+        "activeShares": "活跃共享"
+      },
+      "errors": {
+        "title": "状态不可用",
+        "fetchFailed": "无法获取系统状态。请稍后再试。",
+        "diskSpaceError": "无法获取磁盘空间信息。",
+        "statsError": "无法加载平台统计数据。"
+      }
     }
   },
   "deleteConfirmation": {
@@ -298,6 +338,7 @@
   },
   "errors": {
     "invalidCredentials": "电子邮件或密码错误",
+    "networkError": "无法连接到服务器。请检查您的网络连接。",
     "userNotFound": "未找到用户",
     "accountLocked": "账户已锁定。请稍后再试",
     "unexpectedError": "发生意外错误。请重试",
@@ -356,7 +397,7 @@
     "tryAlternativeView": "尝试备用视图",
     "loadingAlternative": "加载备用视图中...",
     "loadingAudio": "音频加载中...",
-    "downloading": "Downloading..."
+    "downloading": "下载中..."
   },
   "fileSelector": {
     "availableFiles": "可用文件 ({count})",
@@ -425,12 +466,12 @@
     },
     "openFolder": "打开文件夹",
     "drag": {
-      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
-      "fileMoved": "File \"{name}\" moved to \"{target}\"",
-      "itemsMoved": "{count} items moved to \"{target}\"",
-      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
-      "fileMovedToRoot": "File \"{name}\" moved to root folder",
-      "itemsMovedToRoot": "{count} items moved to root folder"
+      "folderMoved": "文件夹“{name}”已移动到“{target}”",
+      "fileMoved": "文件“{name}”已移动到“{target}”",
+      "itemsMoved": "{count} 个项目已移动到“{target}”",
+      "folderMovedToRoot": "文件夹“{name}”已移动到根目录",
+      "fileMovedToRoot": "文件“{name}”已移动到根目录",
+      "itemsMovedToRoot": "{count} 个项目已移动到根目录"
     }
   },
   "filesTable": {
@@ -570,9 +611,9 @@
     "or": "或",
     "continueWithSSO": "使用SSO继续",
     "processing": "正在处理认证...",
-    "orContinueWith": "Or continue with",
-    "continueWith": "Continue with {name}",
-    "providerNotConfigured": "{name} is not properly configured"
+    "orContinueWith": "或通过以下方式继续",
+    "continueWith": "通过 {name} 继续",
+    "providerNotConfigured": "{name} 未正确配置"
   },
   "logo": {
     "labels": {
@@ -928,7 +969,7 @@
         "previewNotAvailable": "预览不可用",
         "notAvailable": "不可用",
         "invalidDate": "无效日期",
-        "downloading": "Downloading..."
+        "downloading": "下载中..."
       },
       "alias": {
         "editTitle": "编辑别名",
@@ -1016,7 +1057,7 @@
           "aborted": "由于超时，复制操作已取消。"
         },
         "invalidDate": "无效日期",
-        "downloading": "Downloading..."
+        "downloading": "下载中..."
       }
     },
     "form": {
@@ -1085,10 +1126,10 @@
       "fieldRequirements": {
         "title": "现场要求",
         "description": "配置在上传表单中显示哪些字段",
-        "configurationTitle": "Field Configuration:",
-        "hiddenDescription": "Hidden: Field won't appear in the upload form",
-        "optionalDescription": "Optional: Field will appear but isn't mandatory",
-        "requiredDescription": "Required: Field must be filled before upload"
+        "configurationTitle": "字段配置：",
+        "hiddenDescription": "隐藏：字段不会显示在上传表单中",
+        "optionalDescription": "可选：字段会显示但不是必填项",
+        "requiredDescription": "必填：上传前必须填写该字段"
       },
       "nameFieldRequired": {
         "label": "名称字段要求",
@@ -1354,8 +1395,8 @@
         "description": "SMTP连接安全方法 - 自动（推荐）、SSL、STARTTLS或无（不安全）",
         "options": {
           "auto": "自动（推荐）",
-          "ssl": "SSL（端口465）",
-          "tls": "STARTTLS（端口587）",
+          "ssl": "SSL (Port 465)",
+          "tls": "STARTTLS (Port 587)",
           "none": "无（不安全）"
         }
       },
@@ -1370,6 +1411,10 @@
       "hideVersion": {
         "title": "隐藏版本",
         "description": "在所有页面的页脚中隐藏OUITRANSFER版本"
+      },
+      "embedSecret": {
+        "title": "嵌入密钥",
+        "description": "用于签署嵌入令牌以实现安全文件嵌入的密钥"
       }
     },
     "buttons": {
@@ -1677,40 +1722,6 @@
     "selectShare": "选择共享 {shareName}",
     "folderCount": "文件夹"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "存储使用情况",
-    "ariaLabel": "存储使用进度条",
-    "used": "已使用：",
-    "available": "可用",
-    "total": "总计",
-    "loading": "加载中...",
-    "retry": "重试",
-    "errors": {
-      "title": "存储信息不可用",
-      "detectionFailed": "无法检测磁盘空间。这可能是由于系统配置问题或权限不足。",
-      "serverError": "检索存储信息时发生服务器错误。请稍后重试。",
-      "unknown": "加载存储信息时发生意外错误。"
-    }
-  },
   "theme": {
     "toggle": "切换主题",
     "light": "明亮",
@@ -1891,7 +1902,7 @@
     "error": "文件上传失败",
     "fileSizeExceeded": "文件大小超过 {maxsizemb}MB 限制。",
     "insufficientStorage": "存储空间不足。您有 {availablespace}MB 可用空间。",
-    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
+    "storageFull": "存储空间不足。可用：{available}GB，需要：{required}GB。",
     "unauthorized": "未授权：需要有效的令牌才能访问此资源。",
     "confirmCancel": {
       "title": "取消上传",
@@ -1908,8 +1919,10 @@
     "pasteSuccess": "{count, plural, =1 {图片已成功粘贴并上传} other {# 张图片已成功粘贴并上传}}",
     "filesQueued": "{count, plural, one {# 文件正在等待上传} other {# 文件正在等待上传}}",
     "errors": {
-      "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed"
+      "addFileFailed": "添加 {name} 失败：{error}",
+      "uploadFailed": "上传失败",
+      "networkError": "无法连接到服务器。请检查您的网络连接。",
+      "storageUnavailable": "存储服务不可用。请稍后再试。"
     }
   },
   "users": {
@@ -1995,7 +2008,7 @@
       "close": "关闭",
       "errors": {
         "generateFailed": "生成邀请链接失败",
-        "copyFailed": "Failed to copy link"
+        "copyFailed": "复制链接失败"
       }
     }
   },
@@ -2074,9 +2087,9 @@
     "pageTitle": "创建账户"
   },
   "filesTree": {
-    "noItems": "No items to display"
+    "noItems": "没有可显示的项目"
   },
   "languageSwitcher": {
-    "changeLanguage": "Change language"
+    "changeLanguage": "切换语言"
   }
 }

@@ -15,16 +15,16 @@
     "sessionExpired": "Ваша сесія закінчилася. Будь ласка, увійдіть знову.",
     "callback": {
       "errors": {
-        "oauth_error": "OAuth authentication failed",
-        "missing_parameters": "Missing authentication parameters",
-        "missing_code": "Missing authorization code",
-        "registration_disabled": "Registration is disabled for this provider",
-        "provider_disabled": "This authentication provider is disabled",
-        "state_expired": "Authentication session expired",
-        "account_inactive": "Your account is inactive",
-        "no_email": "No email address found in your account",
-        "token_exchange_failed": "Failed to authenticate with provider",
-        "missing_user_info": "Incomplete user information from provider"
+        "oauth_error": "Помилка автентифікації OAuth",
+        "missing_parameters": "Відсутні параметри автентифікації",
+        "missing_code": "Відсутній код авторизації",
+        "registration_disabled": "Реєстрація вимкнена для цього провайдера",
+        "provider_disabled": "Цей провайдер автентифікації вимкнений",
+        "state_expired": "Сесія автентифікації закінчилася",
+        "account_inactive": "Ваш обліковий запис неактивний",
+        "no_email": "Електронну адресу не знайдено у вашому обліковому записі",
+        "token_exchange_failed": "Помилка автентифікації у провайдера",
+        "missing_user_info": "Неповна інформація про користувача від провайдера"
       }
     }
   },
@@ -255,6 +255,46 @@
     "recentFiles": {
       "title": "Останні файли",
       "description": "Ваші найнедавніше завантажені файли"
+    },
+    "systemStatus": {
+      "title": "Стан системи",
+      "refresh": "Оновити",
+      "status": {
+        "healthy": "Працює",
+        "degraded": "Обмежено",
+        "unhealthy": "Недоступно"
+      },
+      "checks": {
+        "database": "База даних",
+        "storage": "Сховище",
+        "ok": "OK",
+        "error": "Помилка",
+        "notConfigured": "Не налаштовано"
+      },
+      "uptime": "Час роботи",
+      "diskSpace": {
+        "label": "Дисковий простір",
+        "ariaLabel": "Індикатор використання дискового простору"
+      },
+      "quota": {
+        "label": "Квота сховища",
+        "ariaLabel": "Індикатор використання квоти сховища",
+        "notConfigured": "Квоти не налаштовані"
+      },
+      "metrics": {
+        "users": "Користувачі",
+        "files": "Файли",
+        "shares": "Спільні використання",
+        "reverseShares": "Зворотні використання",
+        "myFiles": "Мої файли",
+        "activeShares": "Активні використання"
+      },
+      "errors": {
+        "title": "Статус недоступний",
+        "fetchFailed": "Не вдалося отримати стан системи. Спробуйте пізніше.",
+        "diskSpaceError": "Не вдалося отримати інформацію про дисковий простір.",
+        "statsError": "Не вдалося завантажити статистику платформи."
+      }
     }
   },
   "deleteConfirmation": {
@@ -302,6 +342,7 @@
   },
   "errors": {
     "invalidCredentials": "Неправильна електронна пошта або пароль",
+    "networkError": "Не вдається зʼєднатися з сервером. Перевірте підключення.",
     "userNotFound": "Користувача не знайдено",
     "accountLocked": "Акаунт заблоковано. Спробуйте ще раз пізніше",
     "unexpectedError": "Сталася неочікувана помилка. Спробуйте ще раз",
@@ -360,7 +401,7 @@
     "tryAlternativeView": "Спробувати альтернативний перегляд",
     "loadingAlternative": "Завантаження альтернативного перегляду...",
     "loadingAudio": "Завантаження аудіо...",
-    "downloading": "Downloading..."
+    "downloading": "Завантаження..."
   },
   "fileSelector": {
     "availableFiles": "Доступні файли ({count})",
@@ -429,12 +470,12 @@
       "grid": "Сітка"
     },
     "drag": {
-      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
-      "fileMoved": "File \"{name}\" moved to \"{target}\"",
-      "itemsMoved": "{count} items moved to \"{target}\"",
-      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
-      "fileMovedToRoot": "File \"{name}\" moved to root folder",
-      "itemsMovedToRoot": "{count} items moved to root folder"
+      "folderMoved": "Папку «{name}» переміщено до «{target}»",
+      "fileMoved": "Файл «{name}» переміщено до «{target}»",
+      "itemsMoved": "{count} елементів переміщено до «{target}»",
+      "folderMovedToRoot": "Папку «{name}» переміщено до кореневої папки",
+      "fileMovedToRoot": "Файл «{name}» переміщено до кореневої папки",
+      "itemsMovedToRoot": "{count} елементів переміщено до кореневої папки"
     }
   },
   "filesTable": {
@@ -574,9 +615,9 @@
     "or": "або",
     "continueWithSSO": "Продовжити з SSO",
     "processing": "Обробка автентифікації...",
-    "orContinueWith": "Or continue with",
-    "continueWith": "Continue with {name}",
-    "providerNotConfigured": "{name} is not properly configured"
+    "orContinueWith": "Або продовжити через",
+    "continueWith": "Продовжити через {name}",
+    "providerNotConfigured": "{name} не налаштований належним чином"
   },
   "logo": {
     "labels": {
@@ -932,7 +973,7 @@
         "previewNotAvailable": "Попередній перегляд недоступний",
         "notAvailable": "Недоступно",
         "invalidDate": "Неправильна дата",
-        "downloading": "Downloading..."
+        "downloading": "Завантаження..."
       },
       "alias": {
         "editTitle": "Редагувати псевдонім",
@@ -1020,7 +1061,7 @@
           "failed": "Операція копіювання не вдалася. Спробуйте ще раз.",
           "aborted": "Операція копіювання була скасована через перевищення часу очікування."
         },
-        "downloading": "Downloading..."
+        "downloading": "Завантаження..."
       }
     },
     "form": {
@@ -1092,10 +1133,10 @@
       "fieldRequirements": {
         "title": "Вимоги до полів",
         "description": "Налаштуйте, які поля показуються в формі завантаження",
-        "configurationTitle": "Field Configuration:",
-        "hiddenDescription": "Hidden: Field won't appear in the upload form",
-        "optionalDescription": "Optional: Field will appear but isn't mandatory",
-        "requiredDescription": "Required: Field must be filled before upload"
+        "configurationTitle": "Конфігурація полів:",
+        "hiddenDescription": "Приховане: Поле не відображатиметься у формі завантаження",
+        "optionalDescription": "Необов'язкове: Поле відображатиметься, але не є обов'язковим",
+        "requiredDescription": "Обов'язкове: Поле потрібно заповнити перед завантаженням"
       },
       "submit": "Створити посилання для отримання"
     },
@@ -1322,8 +1363,8 @@
         "description": "Метод безпеки SMTP з'єднання - Авто (рекомендується), SSL, STARTTLS або Немає (небезпечно)",
         "options": {
           "auto": "Авто (рекомендується)",
-          "ssl": "SSL (порт 465)",
-          "tls": "STARTTLS (порт 587)",
+          "ssl": "SSL (Port 465)",
+          "tls": "STARTTLS (Port 587)",
           "none": "Немає (небезпечно)"
         }
       },
@@ -1374,6 +1415,10 @@
       "passwordAuthEnabled": {
         "title": "Автентифікація за паролем",
         "description": "Увімкнути або вимкнути автентифікацію на основі пароля"
+      },
+      "embedSecret": {
+        "title": "Ключ вбудовування",
+        "description": "Секретний ключ для підпису токенів вбудовування для безпечного відображення файлів"
       }
     },
     "buttons": {
@@ -1681,40 +1726,6 @@
     "selectAll": "Вибрати все",
     "selectShare": "Вибрати спільне використання {shareName}"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "Використання сховища",
-    "ariaLabel": "Індикатор використання сховища",
-    "used": "використано",
-    "available": "доступно",
-    "total": "Загалом",
-    "loading": "Завантаження...",
-    "retry": "Повторити",
-    "errors": {
-      "title": "Інформація про сховище недоступна",
-      "detectionFailed": "Неможливо визначити дисковий простір. Це може бути через проблеми конфігурації системи або недостатні дозволи.",
-      "serverError": "Сталася помилка сервера під час отримання інформації про сховище. Будь ласка, спробуйте знову пізніше.",
-      "unknown": "Сталася неочікувана помилка під час завантаження інформації про сховище."
-    }
-  },
   "theme": {
     "toggle": "Переключити тему",
     "light": "Світла",
@@ -1896,7 +1907,7 @@
     "error": "Не вдалося завантажити файл",
     "fileSizeExceeded": "Розмір файлу перевищує ліміт {maxsizemb}МБ.",
     "insufficientStorage": "Недостатньо місця для зберігання. У вас доступно {availablespace}МБ.",
-    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
+    "storageFull": "Недостатньо місця для зберігання. Доступно: {available} ГБ, потрібно: {required} ГБ.",
     "unauthorized": "Неавторизовано: для доступу до цього ресурсу потрібний дійсний токен.",
     "globalDrop": {
       "title": "Відпустіть файли для завантаження",
@@ -1912,8 +1923,10 @@
     },
     "pasteSuccess": "{count, plural, =1 {Зображення вставлено і завантажено успішно} few {# зображення вставлено і завантажено успішно} many {# зображень вставлено і завантажено успішно} other {# зображень вставлено і завантажено успішно}}",
     "errors": {
-      "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed"
+      "addFileFailed": "Не вдалося додати {name}: {error}",
+      "uploadFailed": "Помилка завантаження",
+      "networkError": "Не вдається зʼєднатися з сервером. Перевірте підключення.",
+      "storageUnavailable": "Служба зберігання недоступна. Спробуйте пізніше."
     }
   },
   "users": {
@@ -1999,7 +2012,7 @@
       "close": "Закрити",
       "errors": {
         "generateFailed": "Не вдалося створити посилання для запрошення",
-        "copyFailed": "Failed to copy link"
+        "copyFailed": "Не вдалося скопіювати посилання"
       }
     }
   },
@@ -2074,9 +2087,9 @@
     "pageTitle": "Створити обліковий запис"
   },
   "filesTree": {
-    "noItems": "No items to display"
+    "noItems": "Немає елементів для відображення"
   },
   "languageSwitcher": {
-    "changeLanguage": "Change language"
+    "changeLanguage": "Змінити мову"
   }
 }

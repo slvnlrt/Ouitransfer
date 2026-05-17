@@ -15,16 +15,16 @@
     "sessionExpired": "Your session has expired. Please sign in again.",
     "callback": {
       "errors": {
-        "oauth_error": "OAuth authentication failed",
-        "missing_parameters": "Missing authentication parameters",
-        "missing_code": "Missing authorization code",
-        "registration_disabled": "Registration is disabled for this provider",
-        "provider_disabled": "This authentication provider is disabled",
-        "state_expired": "Authentication session expired",
-        "account_inactive": "Your account is inactive",
-        "no_email": "No email address found in your account",
-        "token_exchange_failed": "Failed to authenticate with provider",
-        "missing_user_info": "Incomplete user information from provider"
+        "oauth_error": "فشل مصادقة OAuth",
+        "missing_parameters": "معلمات المصادقة مفقودة",
+        "missing_code": "رمز التفويض مفقود",
+        "registration_disabled": "التسجيل معطل لهذا المزود",
+        "provider_disabled": "مزود المصادقة هذا معطل",
+        "state_expired": "انتهت صلاحية جلسة المصادقة",
+        "account_inactive": "حسابك غير نشط",
+        "no_email": "لم يتم العثور على عنوان بريد إلكتروني في حسابك",
+        "token_exchange_failed": "فشلت المصادقة مع المزود",
+        "missing_user_info": "معلومات المستخدم غير مكتملة من المزود"
       }
     }
   },
@@ -251,6 +251,46 @@
     "recentFiles": {
       "description": "ملفاتك المرفوعة مؤخراً",
       "title": "الملفات الحديثة"
+    },
+    "systemStatus": {
+      "title": "حالة النظام",
+      "refresh": "تحديث",
+      "status": {
+        "healthy": "يعمل بشكل طبيعي",
+        "degraded": "أداء منخفض",
+        "unhealthy": "غير متاح"
+      },
+      "checks": {
+        "database": "قاعدة البيانات",
+        "storage": "التخزين",
+        "ok": "موافق",
+        "error": "خطأ",
+        "notConfigured": "غير مُهيأ"
+      },
+      "uptime": "وقت التشغيل",
+      "diskSpace": {
+        "label": "مساحة القرص",
+        "ariaLabel": "شريط تقدم استخدام مساحة القرص"
+      },
+      "quota": {
+        "label": "حصة التخزين",
+        "ariaLabel": "شريط تقدم حصة التخزين",
+        "notConfigured": "الحصص غير مُهيأة"
+      },
+      "metrics": {
+        "users": "المستخدمون",
+        "files": "الملفات",
+        "shares": "المشاركات",
+        "reverseShares": "المشاركات العكسية",
+        "myFiles": "ملفاتي",
+        "activeShares": "المشاركات النشطة"
+      },
+      "errors": {
+        "title": "الحالة غير متاحة",
+        "fetchFailed": "تعذّر استرجاع حالة النظام. يرجى المحاولة مرة أخرى لاحقاً.",
+        "diskSpaceError": "تعذّر استرجاع معلومات مساحة القرص.",
+        "statsError": "تعذّر تحميل إحصائيات المنصة."
+      }
     }
   },
   "deleteConfirmation": {
@@ -285,7 +325,7 @@
       "downloads": "قائمة التنزيل",
       "active": "نشط",
       "queued": "في قائمة الانتظار",
-      "position": "الموقع {position}",
+      "position": "الموضع {position}",
       "estimatedWait": "الانتظار: {time}",
       "unknownFile": "ملف غير معروف",
       "noDownloads": "لا توجد تنزيلات قيد التقدم",
@@ -298,6 +338,7 @@
   },
   "errors": {
     "invalidCredentials": "بريد إلكتروني أو كلمة مرور غير صحيحة",
+    "networkError": "تعذّر الوصول إلى الخادم. يرجى التحقق من اتصالك.",
     "userNotFound": "المستخدم غير موجود",
     "accountLocked": "تم قفل الحساب. يرجى المحاولة لاحقًا",
     "unexpectedError": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى",
@@ -356,7 +397,7 @@
     "tryAlternativeView": "جرب العرض البديل",
     "loadingAlternative": "جاري تحميل العرض البديل...",
     "loadingAudio": "جاري تحميل الصوت...",
-    "downloading": "Downloading..."
+    "downloading": "جارٍ التنزيل..."
   },
   "fileSelector": {
     "availableFiles": "الملفات المتاحة ({count})",
@@ -425,12 +466,12 @@
     },
     "openFolder": "فتح المجلد",
     "drag": {
-      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
-      "fileMoved": "File \"{name}\" moved to \"{target}\"",
-      "itemsMoved": "{count} items moved to \"{target}\"",
-      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
-      "fileMovedToRoot": "File \"{name}\" moved to root folder",
-      "itemsMovedToRoot": "{count} items moved to root folder"
+      "folderMoved": "تم نقل المجلد \"{name}\" إلى \"{target}\"",
+      "fileMoved": "تم نقل الملف \"{name}\" إلى \"{target}\"",
+      "itemsMoved": "تم نقل {count} عناصر إلى \"{target}\"",
+      "folderMovedToRoot": "تم نقل المجلد \"{name}\" إلى المجلد الجذر",
+      "fileMovedToRoot": "تم نقل الملف \"{name}\" إلى المجلد الجذر",
+      "itemsMovedToRoot": "تم نقل {count} عناصر إلى المجلد الجذر"
     }
   },
   "filesTable": {
@@ -570,9 +611,9 @@
     "or": "أو",
     "continueWithSSO": "متابعة مع تسجيل الدخول الموحد",
     "processing": "جاري معالجة المصادقة...",
-    "orContinueWith": "Or continue with",
-    "continueWith": "Continue with {name}",
-    "providerNotConfigured": "{name} is not properly configured"
+    "orContinueWith": "أو تابع باستخدام",
+    "continueWith": "تابع باستخدام {name}",
+    "providerNotConfigured": "{name} غير مُهيأ بشكل صحيح"
   },
   "logo": {
     "labels": {
@@ -928,7 +969,7 @@
         "previewNotAvailable": "المعاينة غير متوفرة",
         "notAvailable": "غير متوفر",
         "invalidDate": "تاريخ غير صالح",
-        "downloading": "Downloading..."
+        "downloading": "جارٍ التنزيل..."
       },
       "alias": {
         "editTitle": "تحرير الاسم المستعار",
@@ -1016,7 +1057,7 @@
           "aborted": "تم إلغاء عملية النسخ بسبب انتهاء المهلة."
         },
         "invalidDate": "تاريخ غير صحيح",
-        "downloading": "Downloading..."
+        "downloading": "جارٍ التنزيل..."
       }
     },
     "form": {
@@ -1085,10 +1126,10 @@
       "fieldRequirements": {
         "title": "المتطلبات الميدانية",
         "description": "تكوين الحقول المعروضة في نموذج التحميل",
-        "configurationTitle": "Field Configuration:",
-        "hiddenDescription": "Hidden: Field won't appear in the upload form",
-        "optionalDescription": "Optional: Field will appear but isn't mandatory",
-        "requiredDescription": "Required: Field must be filled before upload"
+        "configurationTitle": "تكوين الحقول:",
+        "hiddenDescription": "مخفي: لن يظهر الحقل في نموذج الرفع",
+        "optionalDescription": "اختياري: سيظهر الحقل لكنه ليس إلزاميًا",
+        "requiredDescription": "مطلوب: يجب ملء الحقل قبل الرفع"
       },
       "nameFieldRequired": {
         "label": "اسم حقل الاسم",
@@ -1354,8 +1395,8 @@
         "description": "طريقة أمان اتصال SMTP - تلقائي (موصى به)، SSL، STARTTLS، أو بدون (غير آمن)",
         "options": {
           "auto": "تلقائي (موصى به)",
-          "ssl": "SSL (منفذ 465)",
-          "tls": "STARTTLS (منفذ 587)",
+          "ssl": "SSL (Port 465)",
+          "tls": "STARTTLS (Port 587)",
           "none": "بدون (غير آمن)"
         }
       },
@@ -1370,6 +1411,10 @@
       "hideVersion": {
         "title": "إخفاء الإصدار",
         "description": "إخفاء إصدار OUITRANSFER في تذييل جميع الصفحات"
+      },
+      "embedSecret": {
+        "title": "مفتاح التضمين",
+        "description": "مفتاح سري يُستخدم لتوقيع رموز التضمين لتضمين الملفات بشكل آمن"
       }
     },
     "buttons": {
@@ -1677,40 +1722,6 @@
     "selectShare": "تحديد المشاركة {shareName}",
     "folderCount": "مجلدات"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "استخدام التخزين",
-    "ariaLabel": "شريط تقدم استخدام التخزين",
-    "used": "المستخدمة",
-    "available": "متاح",
-    "total": "الإجمالي",
-    "loading": "جارٍ التحميل...",
-    "retry": "إعادة المحاولة",
-    "errors": {
-      "title": "معلومات التخزين غير متوفرة",
-      "detectionFailed": "تعذر اكتشاف مساحة القرص. قد يكون هذا بسبب مشاكل في إعدادات النظام أو صلاحيات غير كافية.",
-      "serverError": "حدث خطأ في الخادم أثناء استرجاع معلومات التخزين. يرجى المحاولة مرة أخرى لاحقاً.",
-      "unknown": "حدث خطأ غير متوقع أثناء تحميل معلومات التخزين."
-    }
-  },
   "theme": {
     "toggle": "تبديل السمة",
     "light": "فاتح",
@@ -1891,7 +1902,7 @@
     "error": "فشل في رفع الملف",
     "fileSizeExceeded": "حجم الملف يتجاوز الحد الأقصى {maxsizemb}MB.",
     "insufficientStorage": "مساحة تخزين غير كافية. لديك {availablespace}MB متاحة.",
-    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
+    "storageFull": "مساحة التخزين غير كافية. المتاح: {available} جيجابايت، المطلوب: {required} جيجابايت.",
     "unauthorized": "غير مخول: مطلوب رمز صالح للوصول إلى هذا المورد.",
     "confirmCancel": {
       "title": "إلغاء الرفع",
@@ -1908,8 +1919,10 @@
     "pasteSuccess": "{count, plural, =1 {تم لصق الصورة ورفعها بنجاح} other {تم لصق # صور ورفعها بنجاح}}",
     "filesQueued": "{count, plural, one {# ملف في الصف} other {# ملفات في الصف}}",
     "errors": {
-      "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed"
+      "addFileFailed": "فشل إضافة {name}: {error}",
+      "uploadFailed": "فشل الرفع",
+      "networkError": "تعذّر الوصول إلى الخادم. يرجى التحقق من اتصالك.",
+      "storageUnavailable": "خدمة التخزين غير متاحة. يرجى المحاولة مرة أخرى لاحقاً."
     }
   },
   "users": {
@@ -1995,7 +2008,7 @@
       "close": "إغلاق",
       "errors": {
         "generateFailed": "فشل في إنشاء رابط الدعوة",
-        "copyFailed": "Failed to copy link"
+        "copyFailed": "فشل نسخ الرابط"
       }
     }
   },
@@ -2074,9 +2087,9 @@
     "pageTitle": "إنشاء حساب"
   },
   "filesTree": {
-    "noItems": "No items to display"
+    "noItems": "لا توجد عناصر للعرض"
   },
   "languageSwitcher": {
-    "changeLanguage": "Change language"
+    "changeLanguage": "تغيير اللغة"
   }
 }

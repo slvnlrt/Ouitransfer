@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import { statfs } from "node:fs/promises";
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import { env } from "../../env.js";
 import { prisma } from "../../shared/prisma.js";
 import { AppError, ValidationError } from "../../utils/app-error.js";
@@ -108,7 +109,7 @@ export class StorageService {
           throw new AppError(
             503,
             "Unable to determine actual disk space - system configuration issue",
-            "DISK_SPACE_DETECTION_FAILED",
+            ErrorCodes.DISK_SPACE_DETECTION_FAILED,
           );
         }
 
@@ -155,8 +156,8 @@ export class StorageService {
       getLogger().error({ err: error }, "Error getting disk space");
       throw new AppError(
         500,
-        `Failed to get disk space information: ${error instanceof Error ? error.message : String(error)}`,
-        "DISK_SPACE_ERROR",
+        "Failed to retrieve disk space information",
+        ErrorCodes.DISK_SPACE_ERROR,
       );
     }
   }

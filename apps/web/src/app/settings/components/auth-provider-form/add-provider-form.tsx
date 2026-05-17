@@ -213,7 +213,7 @@ export function AddProviderForm({
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <Label className="mb-2 block">{t("authProviders.form.providerName")} *</Label>
           <Input
@@ -232,7 +232,7 @@ export function AddProviderForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <Label className="mb-2 block">{t("authProviders.form.type")}</Label>
           <select
@@ -260,7 +260,7 @@ export function AddProviderForm({
         onUrlUpdate={updateProviderUrl}
       />
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <Label className="mb-2 block">{t("authProviders.form.clientId")} *</Label>
           <Input

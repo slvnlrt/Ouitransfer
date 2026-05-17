@@ -27,9 +27,9 @@ export default function LoginPage() {
         <LanguageSwitcher />
       </div>
 
-      <div className="container mx-auto max-w-7xl px-6 flex-grow">
+      <div className="container mx-auto max-w-7xl px-6 flex-grow flex items-center justify-center">
         <StaticBackgroundLights />
-        <div className="relative flex h-full w-full items-center justify-center">
+        <div className="relative w-full max-w-sm">
           <motion.div
             animate={{ opacity: 1, y: 0 }}
             className="flex w-full max-w-sm flex-col gap-4 rounded-xl bg-card/90 backdrop-blur-sm px-8 pb-10 pt-6 shadow-xl border border-border/60"

@@ -1,10 +1,10 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 
 import { getAllConfigs, getPublicConfigs } from "@/http/endpoints";
 import { queryKeys } from "@/lib/query-keys";
+import { parseApiError } from "@/utils/api-error";
 
 interface Config {
   key: string;
@@ -12,17 +12,6 @@ interface Config {
   type: string;
   group: string;
   updatedAt: string;
-}
-
-/** Extract a human-readable error message from an unknown thrown value. */
-function extractErrorMessage(error: unknown): string {
-  if (axios.isAxiosError(error)) {
-    return error.response?.data?.error ?? error.message;
-  }
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return "Unknown error";
 }
 
 /**
@@ -44,15 +33,15 @@ export function useAdminConfigs() {
     },
   });
 
+  const parsedQueryError = queryError ? parseApiError(queryError) : null;
   const isUnauthorized =
-    queryError != null &&
-    axios.isAxiosError(queryError) &&
-    (queryError.response?.status === 401 || queryError.response?.status === 403);
+    parsedQueryError !== null &&
+    (parsedQueryError.statusCode === 401 || parsedQueryError.statusCode === 403);
 
-  const error: string | null = queryError
+  const error: string | null = parsedQueryError
     ? isUnauthorized
       ? "Access denied: Administrator privileges required"
-      : extractErrorMessage(queryError)
+      : parsedQueryError.message
     : null;
 
   const reload = () => {
@@ -88,7 +77,7 @@ export function useSecureConfigValue(key: string) {
     select: (configs: Config[]): string | null => configs.find((c) => c.key === key)?.value ?? null,
   });
 
-  const error: string | null = queryError ? extractErrorMessage(queryError) : null;
+  const error: string | null = queryError ? parseApiError(queryError).message : null;
 
   const reload = () => {
     queryClient.invalidateQueries({ queryKey: queryKeys.config.public() });

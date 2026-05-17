@@ -7,6 +7,7 @@ import type {
   CheckUploadAllowedResult,
   GetAppInfoResult,
   GetDiskSpaceResult,
+  HealthStatusResult,
   RemoveLogoResult,
   UploadLogoBody,
   UploadLogoResult,
@@ -63,6 +64,16 @@ export const checkHealth = <TData = CheckHealthResult>(
   options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.get(`/api/app/health`, options);
+};
+
+/**
+ * Get simplified system health status (no auth required)
+ * @summary Get system health status
+ */
+export const getHealthStatus = <TData = HealthStatusResult>(
+  options?: AxiosRequestConfig,
+): Promise<TData> => {
+  return apiInstance.get(`/api/app/health-status`, options);
 };
 
 /**

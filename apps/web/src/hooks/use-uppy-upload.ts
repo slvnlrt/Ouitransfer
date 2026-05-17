@@ -21,9 +21,9 @@ type UppyUploadResult = {
   signal?: AbortSignal;
 };
 
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-
 import { UPLOAD_CONFIG } from "@/config/upload-config";
 import {
   abortMultipartUpload,
@@ -32,6 +32,7 @@ import {
   getMultipartPartUrl,
 } from "@/http/endpoints/files";
 import { logger } from "@/lib/logger";
+import { formatErrorForDisplay, parseApiError } from "@/utils/api-error";
 
 /**
  * Custom multipart upload functions for non-authenticated uploads (e.g., reverse shares)
@@ -213,11 +214,16 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
               "Content-Type": file.type || "application/octet-stream",
             },
           };
-        } catch (error) {
-          logger.error("[Upload] Failed to get upload parameters", {
-            err: error instanceof Error ? error.message : String(error),
-          });
-          throw error;
+        } catch (err) {
+          const apiError = parseApiError(err);
+          const errorMsg = apiError.isNetworkError
+            ? t("uploadFile.errors.storageUnavailable")
+            : apiError.message || t("uploadFile.errors.uploadFailed");
+          logger.error("[Upload] Failed to get upload parameters", { err: apiError.code });
+          setFileUploads((prev) =>
+            prev.map((f) => (f.id === file.id ? { ...f, status: "error", error: errorMsg } : f)),
+          );
+          throw err;
         }
       },
 
@@ -268,8 +274,10 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
             key: actualObjectName,
           };
         } catch (error) {
+          const apiError = parseApiError(error);
           logger.error("[Upload:Multipart] Failed to create multipart upload", {
-            err: error instanceof Error ? error.message : String(error),
+            err: apiError.code,
+            isNetworkError: apiError.isNetworkError,
           });
           throw error;
         }
@@ -301,8 +309,10 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
           });
           return parts;
         } catch (error) {
+          const apiError = parseApiError(error);
           logger.warn("[Upload:Multipart] Failed to list parts, starting fresh", {
-            err: error instanceof Error ? error.message : String(error),
+            err: apiError.code,
+            isNetworkError: apiError.isNetworkError,
           });
           return [];
         }
@@ -347,9 +357,11 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
             headers: {},
           };
         } catch (error) {
+          const apiError = parseApiError(error);
           logger.error("[Upload:Multipart] Failed to sign part", {
             partNumber,
-            err: error instanceof Error ? error.message : String(error),
+            err: apiError.code,
+            isNetworkError: apiError.isNetworkError,
           });
           throw error;
         }
@@ -388,8 +400,10 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
 
           return {};
         } catch (error) {
+          const apiError = parseApiError(error);
           logger.error("[Upload:Multipart] Failed to complete multipart upload", {
-            err: error instanceof Error ? error.message : String(error),
+            err: apiError.code,
+            isNetworkError: apiError.isNetworkError,
           });
           throw error;
         }
@@ -415,8 +429,10 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
             });
           }
         } catch (error) {
+          const apiError = parseApiError(error);
           logger.error("[Upload:Multipart] Failed to abort multipart upload", {
-            err: error instanceof Error ? error.message : String(error),
+            err: apiError.code,
+            isNetworkError: apiError.isNetworkError,
           });
           // Don't throw - abort is cleanup, shouldn't fail the operation
         }
@@ -501,11 +517,31 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
       file: UppyFile<Meta, Body> | undefined,
       error: { name: string; message: string; details?: string },
     ) => {
-      logger.error("[Upload] Upload failed", { fileName: file?.name, err: error.message });
+      // Parse the underlying error for better context
+      const apiError = parseApiError(error);
+
+      // Determine user-facing message
+      let userMessage: string;
+      if (apiError.isNetworkError) {
+        // During upload, network error almost always means storage is unreachable
+        userMessage = t("uploadFile.errors.storageUnavailable");
+      } else if (apiError.code === ErrorCodes.STORAGE_UNREACHABLE) {
+        userMessage = t("uploadFile.errors.storageUnavailable");
+      } else {
+        userMessage = apiError.message || t("uploadFile.errors.uploadFailed");
+      }
+
+      const { supportRef } = formatErrorForDisplay(apiError);
+      logger.error("[Upload] Upload failed", {
+        fileName: file?.name,
+        code: apiError.code,
+        supportRef,
+      });
+
       setFileUploads((prev) =>
         prev.map((f) =>
           f.id === file?.id
-            ? { ...f, status: "error", error: error.message || t("uploadFile.errors.uploadFailed") }
+            ? { ...f, status: "error", error: `${userMessage} (${supportRef})` }
             : f,
         ),
       );

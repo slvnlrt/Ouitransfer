@@ -15,16 +15,16 @@
     "sessionExpired": "Your session has expired. Please sign in again.",
     "callback": {
       "errors": {
-        "oauth_error": "OAuth authentication failed",
-        "missing_parameters": "Missing authentication parameters",
-        "missing_code": "Missing authorization code",
-        "registration_disabled": "Registration is disabled for this provider",
-        "provider_disabled": "This authentication provider is disabled",
-        "state_expired": "Authentication session expired",
-        "account_inactive": "Your account is inactive",
-        "no_email": "No email address found in your account",
-        "token_exchange_failed": "Failed to authenticate with provider",
-        "missing_user_info": "Incomplete user information from provider"
+        "oauth_error": "OAuth認証に失敗しました",
+        "missing_parameters": "認証パラメータが不足しています",
+        "missing_code": "認証コードが見つかりません",
+        "registration_disabled": "このプロバイダーでの登録は無効になっています",
+        "provider_disabled": "この認証プロバイダーは無効になっています",
+        "state_expired": "認証セッションの有効期限が切れました",
+        "account_inactive": "アカウントが無効です",
+        "no_email": "アカウントにメールアドレスが見つかりません",
+        "token_exchange_failed": "プロバイダーでの認証に失敗しました",
+        "missing_user_info": "プロバイダーからのユーザー情報が不完全です"
       }
     }
   },
@@ -251,6 +251,46 @@
     "recentFiles": {
       "title": "最近のファイル",
       "description": "最近アップロードされたファイル"
+    },
+    "systemStatus": {
+      "title": "システムステータス",
+      "refresh": "更新",
+      "status": {
+        "healthy": "正常",
+        "degraded": "低下",
+        "unhealthy": "異常"
+      },
+      "checks": {
+        "database": "データベース",
+        "storage": "ストレージ",
+        "ok": "OK",
+        "error": "エラー",
+        "notConfigured": "未設定"
+      },
+      "uptime": "稼働時間",
+      "diskSpace": {
+        "label": "ディスク容量",
+        "ariaLabel": "ディスク使用量の進捗バー"
+      },
+      "quota": {
+        "label": "ストレージ割り当て",
+        "ariaLabel": "ストレージ割り当ての進捗バー",
+        "notConfigured": "割り当て未設定"
+      },
+      "metrics": {
+        "users": "ユーザー",
+        "files": "ファイル",
+        "shares": "共有",
+        "reverseShares": "逆共有",
+        "myFiles": "マイファイル",
+        "activeShares": "有効な共有"
+      },
+      "errors": {
+        "title": "ステータスを取得できません",
+        "fetchFailed": "システムステータスを取得できませんでした。後でもう一度お試しください。",
+        "diskSpaceError": "ディスク容量の情報を取得できませんでした。",
+        "statsError": "プラットフォームの統計情報を読み込めませんでした。"
+      }
     }
   },
   "deleteConfirmation": {
@@ -285,7 +325,7 @@
       "downloads": "ダウンロードキュー",
       "active": "実行中",
       "queued": "待機中",
-      "position": "順番 {position}",
+      "position": "位置 {position}",
       "estimatedWait": "待ち時間: {time}",
       "unknownFile": "不明なファイル",
       "noDownloads": "進行中のダウンロードはありません",
@@ -298,6 +338,7 @@
   },
   "errors": {
     "invalidCredentials": "無効なメールアドレスまたはパスワードです",
+    "networkError": "サーバーに接続できません。接続を確認してください。",
     "userNotFound": "ユーザーが見つかりません",
     "accountLocked": "アカウントがロックされています。後でもう一度お試しください",
     "unexpectedError": "予期しないエラーが発生しました。もう一度お試しください",
@@ -356,7 +397,7 @@
     "tryAlternativeView": "代替ビューを試す",
     "loadingAlternative": "代替ビューを読み込み中...",
     "loadingAudio": "オーディオを読み込み中...",
-    "downloading": "Downloading..."
+    "downloading": "ダウンロード中..."
   },
   "fileSelector": {
     "availableFiles": "利用可能なファイル ({count})",
@@ -425,12 +466,12 @@
     },
     "openFolder": "フォルダを開く",
     "drag": {
-      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
-      "fileMoved": "File \"{name}\" moved to \"{target}\"",
-      "itemsMoved": "{count} items moved to \"{target}\"",
-      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
-      "fileMovedToRoot": "File \"{name}\" moved to root folder",
-      "itemsMovedToRoot": "{count} items moved to root folder"
+      "folderMoved": "フォルダ「{name}」を「{target}」に移動しました",
+      "fileMoved": "ファイル「{name}」を「{target}」に移動しました",
+      "itemsMoved": "{count}件のアイテムを「{target}」に移動しました",
+      "folderMovedToRoot": "フォルダ「{name}」をルートフォルダに移動しました",
+      "fileMovedToRoot": "ファイル「{name}」をルートフォルダに移動しました",
+      "itemsMovedToRoot": "{count}件のアイテムをルートフォルダに移動しました"
     }
   },
   "filesTable": {
@@ -570,9 +611,9 @@
     "or": "または",
     "continueWithSSO": "SSOで続行",
     "processing": "認証処理中...",
-    "orContinueWith": "Or continue with",
-    "continueWith": "Continue with {name}",
-    "providerNotConfigured": "{name} is not properly configured"
+    "orContinueWith": "または以下で続行",
+    "continueWith": "{name}で続行",
+    "providerNotConfigured": "{name}が正しく設定されていません"
   },
   "logo": {
     "labels": {
@@ -928,7 +969,7 @@
         "previewNotAvailable": "プレビューは利用できません",
         "notAvailable": "利用不可",
         "invalidDate": "無効な日付",
-        "downloading": "Downloading..."
+        "downloading": "ダウンロード中..."
       },
       "alias": {
         "editTitle": "エイリアスを編集",
@@ -1016,7 +1057,7 @@
           "aborted": "タイムアウトによりコピー操作がキャンセルされました。"
         },
         "invalidDate": "無効な日付",
-        "downloading": "Downloading..."
+        "downloading": "ダウンロード中..."
       }
     },
     "form": {
@@ -1085,10 +1126,10 @@
       "fieldRequirements": {
         "title": "フィールド要件",
         "description": "アップロードフォームに表示されるフィールドを構成します",
-        "configurationTitle": "Field Configuration:",
-        "hiddenDescription": "Hidden: Field won't appear in the upload form",
-        "optionalDescription": "Optional: Field will appear but isn't mandatory",
-        "requiredDescription": "Required: Field must be filled before upload"
+        "configurationTitle": "フィールド設定：",
+        "hiddenDescription": "非表示：アップロードフォームにフィールドが表示されません",
+        "optionalDescription": "任意：フィールドは表示されますが入力は必須ではありません",
+        "requiredDescription": "必須：アップロード前にフィールドを入力する必要があります"
       },
       "nameFieldRequired": {
         "label": "名前フィールドの要件",
@@ -1354,8 +1395,8 @@
         "description": "SMTP接続セキュリティ方式 - 自動（推奨）、SSL、STARTTLS、または なし（安全でない）",
         "options": {
           "auto": "自動（推奨）",
-          "ssl": "SSL（ポート465）",
-          "tls": "STARTTLS（ポート587）",
+          "ssl": "SSL (Port 465)",
+          "tls": "STARTTLS (Port 587)",
           "none": "なし（安全でない）"
         }
       },
@@ -1370,6 +1411,10 @@
       "hideVersion": {
         "title": "バージョンを非表示",
         "description": "すべてのページのフッターにあるOUITRANSFERバージョンを非表示にする"
+      },
+      "embedSecret": {
+        "title": "埋め込みシークレット",
+        "description": "安全なファイル埋め込みのための埋め込みトークンの署名に使用されるシークレットキー"
       }
     },
     "buttons": {
@@ -1677,40 +1722,6 @@
     "selectShare": "共有{shareName}を選択",
     "folderCount": "フォルダ"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "ストレージ使用量",
-    "ariaLabel": "ストレージ使用状況のプログレスバー",
-    "used": "使用済み",
-    "available": "利用可能",
-    "total": "合計",
-    "loading": "読み込み中...",
-    "retry": "再試行",
-    "errors": {
-      "title": "ストレージ情報が利用できません",
-      "detectionFailed": "ディスク容量を検出できません。システム設定の問題または権限が不足している可能性があります。",
-      "serverError": "ストレージ情報の取得中にサーバーエラーが発生しました。後でもう一度お試しください。",
-      "unknown": "ストレージ情報の読み込み中に予期せぬエラーが発生しました。"
-    }
-  },
   "theme": {
     "toggle": "テーマを切り替える",
     "light": "ライト",
@@ -1883,7 +1894,7 @@
     "error": "ファイルのアップロードに失敗しました",
     "fileSizeExceeded": "ファイルサイズが制限値 {maxsizemb}MB を超えています。",
     "insufficientStorage": "ストレージ容量が不足しています。利用可能な容量は {availablespace}MB です。",
-    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
+    "storageFull": "ストレージ容量が不足しています。利用可能: {available}GB、必要: {required}GB。",
     "unauthorized": "権限がありません: このリソースにアクセスするには有効なトークンが必要です。",
     "selectMultipleFiles": "複数のファイルを選択するにはクリック",
     "finish": "完了",
@@ -1908,8 +1919,10 @@
     "pasteSuccess": "{count, plural, =1 {画像が貼り付けられ、正常にアップロードされました} other {#個の画像が貼り付けられ、正常にアップロードされました}}",
     "filesQueued": "{count, plural, one {# ファイルがアップロード待ち} other {# ファイルがアップロード待ち}}",
     "errors": {
-      "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed"
+      "addFileFailed": "{name}の追加に失敗しました: {error}",
+      "uploadFailed": "アップロードに失敗しました",
+      "networkError": "サーバーに接続できません。接続を確認してください。",
+      "storageUnavailable": "ストレージサービスが利用できません。後でもう一度お試しください。"
     }
   },
   "users": {
@@ -1995,7 +2008,7 @@
       "close": "閉じる",
       "errors": {
         "generateFailed": "招待リンクの生成に失敗しました",
-        "copyFailed": "Failed to copy link"
+        "copyFailed": "リンクのコピーに失敗しました"
       }
     }
   },
@@ -2074,9 +2087,9 @@
     "pageTitle": "アカウントを作成"
   },
   "filesTree": {
-    "noItems": "No items to display"
+    "noItems": "表示するアイテムがありません"
   },
   "languageSwitcher": {
-    "changeLanguage": "Change language"
+    "changeLanguage": "言語を変更"
   }
 }
