@@ -253,43 +253,43 @@
       "description": "最近アップロードされたファイル"
     },
     "systemStatus": {
-      "title": "System Status",
-      "refresh": "Refresh",
+      "title": "システムステータス",
+      "refresh": "更新",
       "status": {
-        "healthy": "Healthy",
-        "degraded": "Degraded",
-        "unhealthy": "Unhealthy"
+        "healthy": "正常",
+        "degraded": "低下",
+        "unhealthy": "異常"
       },
       "checks": {
-        "database": "Database",
-        "storage": "Storage",
+        "database": "データベース",
+        "storage": "ストレージ",
         "ok": "OK",
-        "error": "Error",
-        "notConfigured": "Not configured"
+        "error": "エラー",
+        "notConfigured": "未設定"
       },
-      "uptime": "Uptime",
+      "uptime": "稼働時間",
       "diskSpace": {
-        "label": "Disk Space",
-        "ariaLabel": "Disk space usage progress bar"
+        "label": "ディスク容量",
+        "ariaLabel": "ディスク使用量の進捗バー"
       },
       "quota": {
-        "label": "Storage Quota",
-        "ariaLabel": "Storage quota progress bar",
-        "notConfigured": "Quotas not configured"
+        "label": "ストレージ割り当て",
+        "ariaLabel": "ストレージ割り当ての進捗バー",
+        "notConfigured": "割り当て未設定"
       },
       "metrics": {
-        "users": "Users",
-        "files": "Files",
-        "shares": "Shares",
-        "reverseShares": "Reverse Shares",
-        "myFiles": "My files",
-        "activeShares": "Active shares"
+        "users": "ユーザー",
+        "files": "ファイル",
+        "shares": "共有",
+        "reverseShares": "逆共有",
+        "myFiles": "マイファイル",
+        "activeShares": "有効な共有"
       },
       "errors": {
-        "title": "Status unavailable",
-        "fetchFailed": "Unable to retrieve system status. Please try again later.",
-        "diskSpaceError": "Unable to retrieve disk space information.",
-        "statsError": "Unable to load platform statistics."
+        "title": "ステータスを取得できません",
+        "fetchFailed": "システムステータスを取得できませんでした。後でもう一度お試しください。",
+        "diskSpaceError": "ディスク容量の情報を取得できませんでした。",
+        "statsError": "プラットフォームの統計情報を読み込めませんでした。"
       }
     }
   },
@@ -338,7 +338,7 @@
   },
   "errors": {
     "invalidCredentials": "無効なメールアドレスまたはパスワードです",
-    "networkError": "Unable to reach the server. Please check your connection.",
+    "networkError": "サーバーに接続できません。接続を確認してください。",
     "userNotFound": "ユーザーが見つかりません",
     "accountLocked": "アカウントがロックされています。後でもう一度お試しください",
     "unexpectedError": "予期しないエラーが発生しました。もう一度お試しください",
@@ -1413,8 +1413,8 @@
         "description": "すべてのページのフッターにあるOUITRANSFERバージョンを非表示にする"
       },
       "embedSecret": {
-        "title": "Embed Secret",
-        "description": "Secret used to sign embed tokens for secure file embedding"
+        "title": "埋め込みシークレット",
+        "description": "安全なファイル埋め込みのための埋め込みトークンの署名に使用されるシークレットキー"
       }
     },
     "buttons": {
@@ -1955,8 +1955,8 @@
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
       "uploadFailed": "Upload failed",
-      "networkError": "Unable to reach the server. Please check your connection.",
-      "storageUnavailable": "Storage service is unavailable. Please try again later."
+      "networkError": "サーバーに接続できません。接続を確認してください。",
+      "storageUnavailable": "ストレージサービスが利用できません。後でもう一度お試しください。"
     }
   },
   "users": {

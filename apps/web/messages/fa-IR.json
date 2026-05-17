@@ -257,43 +257,43 @@
       "description": "آخرین فایل‌های بارگذاری‌شده شما"
     },
     "systemStatus": {
-      "title": "System Status",
-      "refresh": "Refresh",
+      "title": "وضعیت سیستم",
+      "refresh": "بازخوانی",
       "status": {
-        "healthy": "Healthy",
-        "degraded": "Degraded",
-        "unhealthy": "Unhealthy"
+        "healthy": "سالم",
+        "degraded": "کاهش‌یافته",
+        "unhealthy": "ناسالم"
       },
       "checks": {
-        "database": "Database",
-        "storage": "Storage",
-        "ok": "OK",
-        "error": "Error",
-        "notConfigured": "Not configured"
+        "database": "پایگاه داده",
+        "storage": "ذخیره‌سازی",
+        "ok": "تأیید",
+        "error": "خطا",
+        "notConfigured": "پیکربندی نشده"
       },
-      "uptime": "Uptime",
+      "uptime": "مدت فعالیت",
       "diskSpace": {
-        "label": "Disk Space",
-        "ariaLabel": "Disk space usage progress bar"
+        "label": "فضای دیسک",
+        "ariaLabel": "نوار پیشرفت استفاده از فضای دیسک"
       },
       "quota": {
-        "label": "Storage Quota",
-        "ariaLabel": "Storage quota progress bar",
-        "notConfigured": "Quotas not configured"
+        "label": "سهمیه ذخیره‌سازی",
+        "ariaLabel": "نوار پیشرفت سهمیه ذخیره‌سازی",
+        "notConfigured": "سهمیه‌ها پیکربندی نشده"
       },
       "metrics": {
-        "users": "Users",
-        "files": "Files",
-        "shares": "Shares",
-        "reverseShares": "Reverse Shares",
-        "myFiles": "My files",
-        "activeShares": "Active shares"
+        "users": "کاربران",
+        "files": "فایل‌ها",
+        "shares": "اشتراک‌ها",
+        "reverseShares": "اشتراک‌های معکوس",
+        "myFiles": "فایل‌های من",
+        "activeShares": "اشتراک‌های فعال"
       },
       "errors": {
-        "title": "Status unavailable",
-        "fetchFailed": "Unable to retrieve system status. Please try again later.",
-        "diskSpaceError": "Unable to retrieve disk space information.",
-        "statsError": "Unable to load platform statistics."
+        "title": "وضعیت در دسترس نیست",
+        "fetchFailed": "دریافت وضعیت سیستم ممکن نیست. لطفاً بعداً دوباره تلاش کنید.",
+        "diskSpaceError": "دریافت اطلاعات فضای دیسک ممکن نیست.",
+        "statsError": "بارگذاری آمار پلتفرم ممکن نیست."
       }
     }
   },
@@ -342,7 +342,7 @@
   },
   "errors": {
     "invalidCredentials": "ایمیل یا گذرواژه نامعتبر است",
-    "networkError": "Unable to reach the server. Please check your connection.",
+    "networkError": "اتصال به سرور ممکن نیست. لطفاً اتصال خود را بررسی کنید.",
     "userNotFound": "کاربر یافت نشد",
     "accountLocked": "حساب کاربری قفل شده است. لطفاً بعداً دوباره امتحان کنید",
     "unexpectedError": "خطای غیرمنتظره‌ای رخ داد. لطفاً دوباره امتحان کنید",
@@ -1417,8 +1417,8 @@
         "description": "فعال یا غیرفعال کردن احراز هویت مبتنی بر گذرواژه"
       },
       "embedSecret": {
-        "title": "Embed Secret",
-        "description": "Secret used to sign embed tokens for secure file embedding"
+        "title": "کلید جاسازی",
+        "description": "کلید محرمانه‌ای که برای امضای توکن‌های جاسازی برای نمایش امن فایل‌ها استفاده می‌شود"
       }
     },
     "buttons": {
@@ -1959,8 +1959,8 @@
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
       "uploadFailed": "Upload failed",
-      "networkError": "Unable to reach the server. Please check your connection.",
-      "storageUnavailable": "Storage service is unavailable. Please try again later."
+      "networkError": "اتصال به سرور ممکن نیست. لطفاً اتصال خود را بررسی کنید.",
+      "storageUnavailable": "سرویس ذخیره‌سازی در دسترس نیست. لطفاً بعداً دوباره تلاش کنید."
     }
   },
   "users": {

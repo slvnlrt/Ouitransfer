@@ -257,43 +257,43 @@
       "description": "Các tệp được tải lên gần đây nhất của bạn"
     },
     "systemStatus": {
-      "title": "System Status",
-      "refresh": "Refresh",
+      "title": "Trạng thái hệ thống",
+      "refresh": "Làm mới",
       "status": {
-        "healthy": "Healthy",
-        "degraded": "Degraded",
-        "unhealthy": "Unhealthy"
+        "healthy": "Hoạt động bình thường",
+        "degraded": "Suy giảm",
+        "unhealthy": "Không khả dụng"
       },
       "checks": {
-        "database": "Database",
-        "storage": "Storage",
+        "database": "Cơ sở dữ liệu",
+        "storage": "Lưu trữ",
         "ok": "OK",
-        "error": "Error",
-        "notConfigured": "Not configured"
+        "error": "Lỗi",
+        "notConfigured": "Chưa cấu hình"
       },
-      "uptime": "Uptime",
+      "uptime": "Thời gian hoạt động",
       "diskSpace": {
-        "label": "Disk Space",
-        "ariaLabel": "Disk space usage progress bar"
+        "label": "Dung lượng đĩa",
+        "ariaLabel": "Thanh tiến trình sử dụng dung lượng đĩa"
       },
       "quota": {
-        "label": "Storage Quota",
-        "ariaLabel": "Storage quota progress bar",
-        "notConfigured": "Quotas not configured"
+        "label": "Hạn mức lưu trữ",
+        "ariaLabel": "Thanh tiến trình hạn mức lưu trữ",
+        "notConfigured": "Hạn mức chưa được cấu hình"
       },
       "metrics": {
-        "users": "Users",
-        "files": "Files",
-        "shares": "Shares",
-        "reverseShares": "Reverse Shares",
-        "myFiles": "My files",
-        "activeShares": "Active shares"
+        "users": "Người dùng",
+        "files": "Tệp",
+        "shares": "Chia sẻ",
+        "reverseShares": "Chia sẻ ngược",
+        "myFiles": "Tệp của tôi",
+        "activeShares": "Chia sẻ đang hoạt động"
       },
       "errors": {
-        "title": "Status unavailable",
-        "fetchFailed": "Unable to retrieve system status. Please try again later.",
-        "diskSpaceError": "Unable to retrieve disk space information.",
-        "statsError": "Unable to load platform statistics."
+        "title": "Không thể hiển thị trạng thái",
+        "fetchFailed": "Không thể lấy trạng thái hệ thống. Vui lòng thử lại sau.",
+        "diskSpaceError": "Không thể lấy thông tin dung lượng đĩa.",
+        "statsError": "Không thể tải thống kê nền tảng."
       }
     }
   },
@@ -342,7 +342,7 @@
   },
   "errors": {
     "invalidCredentials": "Email hoặc mật khẩu không hợp lệ",
-    "networkError": "Unable to reach the server. Please check your connection.",
+    "networkError": "Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối của bạn.",
     "userNotFound": "Không tìm thấy người dùng",
     "accountLocked": "Tài khoản bị khóa. Vui lòng thử lại sau",
     "unexpectedError": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại",
@@ -1417,8 +1417,8 @@
         "description": "Bật hoặc tắt xác thực dựa trên mật khẩu"
       },
       "embedSecret": {
-        "title": "Embed Secret",
-        "description": "Secret used to sign embed tokens for secure file embedding"
+        "title": "Khóa nhúng",
+        "description": "Khóa bí mật dùng để ký mã thông báo nhúng cho việc nhúng tệp an toàn"
       }
     },
     "buttons": {
@@ -1959,8 +1959,8 @@
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
       "uploadFailed": "Upload failed",
-      "networkError": "Unable to reach the server. Please check your connection.",
-      "storageUnavailable": "Storage service is unavailable. Please try again later."
+      "networkError": "Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối của bạn.",
+      "storageUnavailable": "Dịch vụ lưu trữ không khả dụng. Vui lòng thử lại sau."
     }
   },
   "users": {

@@ -257,43 +257,43 @@
       "description": "Τα πιο πρόσφατα μεταφορτωμένα αρχεία σας"
     },
     "systemStatus": {
-      "title": "System Status",
-      "refresh": "Refresh",
+      "title": "Κατάσταση Συστήματος",
+      "refresh": "Ανανέωση",
       "status": {
-        "healthy": "Healthy",
-        "degraded": "Degraded",
-        "unhealthy": "Unhealthy"
+        "healthy": "Λειτουργικό",
+        "degraded": "Υποβαθμισμένο",
+        "unhealthy": "Μη διαθέσιμο"
       },
       "checks": {
-        "database": "Database",
-        "storage": "Storage",
+        "database": "Βάση δεδομένων",
+        "storage": "Αποθήκευση",
         "ok": "OK",
-        "error": "Error",
-        "notConfigured": "Not configured"
+        "error": "Σφάλμα",
+        "notConfigured": "Δεν έχει ρυθμιστεί"
       },
-      "uptime": "Uptime",
+      "uptime": "Χρόνος λειτουργίας",
       "diskSpace": {
-        "label": "Disk Space",
-        "ariaLabel": "Disk space usage progress bar"
+        "label": "Χώρος δίσκου",
+        "ariaLabel": "Γραμμή προόδου χρήσης χώρου δίσκου"
       },
       "quota": {
-        "label": "Storage Quota",
-        "ariaLabel": "Storage quota progress bar",
-        "notConfigured": "Quotas not configured"
+        "label": "Ποσόστωση αποθήκευσης",
+        "ariaLabel": "Γραμμή προόδου ποσόστωσης αποθήκευσης",
+        "notConfigured": "Οι ποσοστώσεις δεν έχουν ρυθμιστεί"
       },
       "metrics": {
-        "users": "Users",
-        "files": "Files",
-        "shares": "Shares",
-        "reverseShares": "Reverse Shares",
-        "myFiles": "My files",
-        "activeShares": "Active shares"
+        "users": "Χρήστες",
+        "files": "Αρχεία",
+        "shares": "Κοινές χρήσεις",
+        "reverseShares": "Αντίστροφες κοινές χρήσεις",
+        "myFiles": "Τα αρχεία μου",
+        "activeShares": "Ενεργές κοινές χρήσεις"
       },
       "errors": {
-        "title": "Status unavailable",
-        "fetchFailed": "Unable to retrieve system status. Please try again later.",
-        "diskSpaceError": "Unable to retrieve disk space information.",
-        "statsError": "Unable to load platform statistics."
+        "title": "Η κατάσταση δεν είναι διαθέσιμη",
+        "fetchFailed": "Δεν ήταν δυνατή η ανάκτηση της κατάστασης του συστήματος. Δοκιμάστε ξανά αργότερα.",
+        "diskSpaceError": "Δεν ήταν δυνατή η ανάκτηση πληροφοριών χώρου δίσκου.",
+        "statsError": "Δεν ήταν δυνατή η φόρτωση στατιστικών πλατφόρμας."
       }
     }
   },
@@ -342,7 +342,7 @@
   },
   "errors": {
     "invalidCredentials": "Μη έγκυρο email ή κωδικός πρόσβασης",
-    "networkError": "Unable to reach the server. Please check your connection.",
+    "networkError": "Δεν είναι δυνατή η σύνδεση με τον διακομιστή. Ελέγξτε τη σύνδεσή σας.",
     "userNotFound": "Ο χρήστης δεν βρέθηκε",
     "accountLocked": "Ο λογαριασμός είναι κλειδωμένος. Προσπαθήστε αργότερα",
     "unexpectedError": "Παρουσιάστηκε απρόσμενο σφάλμα. Προσπαθήστε ξανά",
@@ -1417,8 +1417,8 @@
         "description": "Ενεργοποίηση ή απενεργοποίηση ελέγχου με κωδικό"
       },
       "embedSecret": {
-        "title": "Embed Secret",
-        "description": "Secret used to sign embed tokens for secure file embedding"
+        "title": "Κλειδί ενσωμάτωσης",
+        "description": "Μυστικό κλειδί που χρησιμοποιείται για την υπογραφή διακριτικών ενσωμάτωσης για ασφαλή ενσωμάτωση αρχείων"
       }
     },
     "buttons": {
@@ -1959,8 +1959,8 @@
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
       "uploadFailed": "Upload failed",
-      "networkError": "Unable to reach the server. Please check your connection.",
-      "storageUnavailable": "Storage service is unavailable. Please try again later."
+      "networkError": "Δεν είναι δυνατή η σύνδεση με τον διακομιστή. Ελέγξτε τη σύνδεσή σας.",
+      "storageUnavailable": "Η υπηρεσία αποθήκευσης δεν είναι διαθέσιμη. Δοκιμάστε ξανά αργότερα."
     }
   },
   "users": {

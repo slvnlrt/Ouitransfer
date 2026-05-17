@@ -253,43 +253,43 @@
       "description": "En son yüklediğiniz dosyalar"
     },
     "systemStatus": {
-      "title": "System Status",
-      "refresh": "Refresh",
+      "title": "Sistem Durumu",
+      "refresh": "Yenile",
       "status": {
-        "healthy": "Healthy",
-        "degraded": "Degraded",
-        "unhealthy": "Unhealthy"
+        "healthy": "Çalışıyor",
+        "degraded": "Kısıtlı",
+        "unhealthy": "Kullanılamıyor"
       },
       "checks": {
-        "database": "Database",
-        "storage": "Storage",
+        "database": "Veritabanı",
+        "storage": "Depolama",
         "ok": "OK",
-        "error": "Error",
-        "notConfigured": "Not configured"
+        "error": "Hata",
+        "notConfigured": "Yapılandırılmamış"
       },
-      "uptime": "Uptime",
+      "uptime": "Çalışma Süresi",
       "diskSpace": {
-        "label": "Disk Space",
-        "ariaLabel": "Disk space usage progress bar"
+        "label": "Disk Alanı",
+        "ariaLabel": "Disk alanı kullanım ilerleme çubuğu"
       },
       "quota": {
-        "label": "Storage Quota",
-        "ariaLabel": "Storage quota progress bar",
-        "notConfigured": "Quotas not configured"
+        "label": "Depolama Kotası",
+        "ariaLabel": "Depolama kotası ilerleme çubuğu",
+        "notConfigured": "Kotalar yapılandırılmamış"
       },
       "metrics": {
-        "users": "Users",
-        "files": "Files",
-        "shares": "Shares",
-        "reverseShares": "Reverse Shares",
-        "myFiles": "My files",
-        "activeShares": "Active shares"
+        "users": "Kullanıcılar",
+        "files": "Dosyalar",
+        "shares": "Paylaşımlar",
+        "reverseShares": "Ters Paylaşımlar",
+        "myFiles": "Dosyalarım",
+        "activeShares": "Aktif paylaşımlar"
       },
       "errors": {
-        "title": "Status unavailable",
-        "fetchFailed": "Unable to retrieve system status. Please try again later.",
-        "diskSpaceError": "Unable to retrieve disk space information.",
-        "statsError": "Unable to load platform statistics."
+        "title": "Durum kullanılamıyor",
+        "fetchFailed": "Sistem durumu alınamadı. Lütfen daha sonra tekrar deneyin.",
+        "diskSpaceError": "Disk alanı bilgisi alınamadı.",
+        "statsError": "Platform istatistikleri yüklenemedi."
       }
     }
   },
@@ -338,7 +338,7 @@
   },
   "errors": {
     "invalidCredentials": "Geçersiz e-posta veya şifre",
-    "networkError": "Unable to reach the server. Please check your connection.",
+    "networkError": "Sunucuya ulaşılamıyor. Bağlantınızı kontrol edin.",
     "userNotFound": "Kullanıcı bulunamadı",
     "accountLocked": "Hesap kilitlendi. Lütfen daha sonra tekrar deneyin",
     "unexpectedError": "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin",
@@ -1413,8 +1413,8 @@
         "description": "Tüm sayfaların alt bilgisinde OUITRANSFER sürümünü gizle"
       },
       "embedSecret": {
-        "title": "Embed Secret",
-        "description": "Secret used to sign embed tokens for secure file embedding"
+        "title": "Gömme Anahtarı",
+        "description": "Güvenli dosya gömme için gömme tokenlarını imzalamak üzere kullanılan gizli anahtar"
       }
     },
     "buttons": {
@@ -1955,8 +1955,8 @@
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
       "uploadFailed": "Upload failed",
-      "networkError": "Unable to reach the server. Please check your connection.",
-      "storageUnavailable": "Storage service is unavailable. Please try again later."
+      "networkError": "Sunucuya ulaşılamıyor. Bağlantınızı kontrol edin.",
+      "storageUnavailable": "Depolama hizmeti kullanılamıyor. Lütfen daha sonra tekrar deneyin."
     }
   },
   "users": {

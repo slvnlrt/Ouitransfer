@@ -253,43 +253,43 @@
       "title": "الملفات الحديثة"
     },
     "systemStatus": {
-      "title": "System Status",
-      "refresh": "Refresh",
+      "title": "حالة النظام",
+      "refresh": "تحديث",
       "status": {
-        "healthy": "Healthy",
-        "degraded": "Degraded",
-        "unhealthy": "Unhealthy"
+        "healthy": "يعمل بشكل طبيعي",
+        "degraded": "أداء منخفض",
+        "unhealthy": "غير متاح"
       },
       "checks": {
-        "database": "Database",
-        "storage": "Storage",
-        "ok": "OK",
-        "error": "Error",
-        "notConfigured": "Not configured"
+        "database": "قاعدة البيانات",
+        "storage": "التخزين",
+        "ok": "موافق",
+        "error": "خطأ",
+        "notConfigured": "غير مُهيأ"
       },
-      "uptime": "Uptime",
+      "uptime": "وقت التشغيل",
       "diskSpace": {
-        "label": "Disk Space",
-        "ariaLabel": "Disk space usage progress bar"
+        "label": "مساحة القرص",
+        "ariaLabel": "شريط تقدم استخدام مساحة القرص"
       },
       "quota": {
-        "label": "Storage Quota",
-        "ariaLabel": "Storage quota progress bar",
-        "notConfigured": "Quotas not configured"
+        "label": "حصة التخزين",
+        "ariaLabel": "شريط تقدم حصة التخزين",
+        "notConfigured": "الحصص غير مُهيأة"
       },
       "metrics": {
-        "users": "Users",
-        "files": "Files",
-        "shares": "Shares",
-        "reverseShares": "Reverse Shares",
-        "myFiles": "My files",
-        "activeShares": "Active shares"
+        "users": "المستخدمون",
+        "files": "الملفات",
+        "shares": "المشاركات",
+        "reverseShares": "المشاركات العكسية",
+        "myFiles": "ملفاتي",
+        "activeShares": "المشاركات النشطة"
       },
       "errors": {
-        "title": "Status unavailable",
-        "fetchFailed": "Unable to retrieve system status. Please try again later.",
-        "diskSpaceError": "Unable to retrieve disk space information.",
-        "statsError": "Unable to load platform statistics."
+        "title": "الحالة غير متاحة",
+        "fetchFailed": "تعذّر استرجاع حالة النظام. يرجى المحاولة مرة أخرى لاحقاً.",
+        "diskSpaceError": "تعذّر استرجاع معلومات مساحة القرص.",
+        "statsError": "تعذّر تحميل إحصائيات المنصة."
       }
     }
   },
@@ -338,7 +338,7 @@
   },
   "errors": {
     "invalidCredentials": "بريد إلكتروني أو كلمة مرور غير صحيحة",
-    "networkError": "Unable to reach the server. Please check your connection.",
+    "networkError": "تعذّر الوصول إلى الخادم. يرجى التحقق من اتصالك.",
     "userNotFound": "المستخدم غير موجود",
     "accountLocked": "تم قفل الحساب. يرجى المحاولة لاحقًا",
     "unexpectedError": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى",
@@ -1413,8 +1413,8 @@
         "description": "إخفاء إصدار OUITRANSFER في تذييل جميع الصفحات"
       },
       "embedSecret": {
-        "title": "Embed Secret",
-        "description": "Secret used to sign embed tokens for secure file embedding"
+        "title": "مفتاح التضمين",
+        "description": "مفتاح سري يُستخدم لتوقيع رموز التضمين لتضمين الملفات بشكل آمن"
       }
     },
     "buttons": {
@@ -1955,8 +1955,8 @@
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
       "uploadFailed": "Upload failed",
-      "networkError": "Unable to reach the server. Please check your connection.",
-      "storageUnavailable": "Storage service is unavailable. Please try again later."
+      "networkError": "تعذّر الوصول إلى الخادم. يرجى التحقق من اتصالك.",
+      "storageUnavailable": "خدمة التخزين غير متاحة. يرجى المحاولة مرة أخرى لاحقاً."
     }
   },
   "users": {

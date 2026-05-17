@@ -253,43 +253,43 @@
       "description": "Twoje ostatnio przesłane pliki"
     },
     "systemStatus": {
-      "title": "System Status",
-      "refresh": "Refresh",
+      "title": "Stan systemu",
+      "refresh": "Odśwież",
       "status": {
-        "healthy": "Healthy",
-        "degraded": "Degraded",
-        "unhealthy": "Unhealthy"
+        "healthy": "Sprawny",
+        "degraded": "Ograniczony",
+        "unhealthy": "Niedostępny"
       },
       "checks": {
-        "database": "Database",
-        "storage": "Storage",
+        "database": "Baza danych",
+        "storage": "Magazyn",
         "ok": "OK",
-        "error": "Error",
-        "notConfigured": "Not configured"
+        "error": "Błąd",
+        "notConfigured": "Nie skonfigurowano"
       },
-      "uptime": "Uptime",
+      "uptime": "Czas pracy",
       "diskSpace": {
-        "label": "Disk Space",
-        "ariaLabel": "Disk space usage progress bar"
+        "label": "Przestrzeń dyskowa",
+        "ariaLabel": "Pasek postępu wykorzystania przestrzeni dyskowej"
       },
       "quota": {
-        "label": "Storage Quota",
-        "ariaLabel": "Storage quota progress bar",
-        "notConfigured": "Quotas not configured"
+        "label": "Limit przestrzeni",
+        "ariaLabel": "Pasek postępu limitu przestrzeni",
+        "notConfigured": "Limity nie skonfigurowane"
       },
       "metrics": {
-        "users": "Users",
-        "files": "Files",
-        "shares": "Shares",
-        "reverseShares": "Reverse Shares",
-        "myFiles": "My files",
-        "activeShares": "Active shares"
+        "users": "Użytkownicy",
+        "files": "Pliki",
+        "shares": "Udostępnienia",
+        "reverseShares": "Odwrócone udostępnienia",
+        "myFiles": "Moje pliki",
+        "activeShares": "Aktywne udostępnienia"
       },
       "errors": {
-        "title": "Status unavailable",
-        "fetchFailed": "Unable to retrieve system status. Please try again later.",
-        "diskSpaceError": "Unable to retrieve disk space information.",
-        "statsError": "Unable to load platform statistics."
+        "title": "Status niedostępny",
+        "fetchFailed": "Nie udało się pobrać stanu systemu. Spróbuj ponownie później.",
+        "diskSpaceError": "Nie udało się pobrać informacji o przestrzeni dyskowej.",
+        "statsError": "Nie udało się załadować statystyk platformy."
       }
     }
   },
@@ -338,7 +338,7 @@
   },
   "errors": {
     "invalidCredentials": "Nieprawidłowy adres e-mail lub hasło",
-    "networkError": "Unable to reach the server. Please check your connection.",
+    "networkError": "Nie można połączyć się z serwerem. Sprawdź połączenie.",
     "userNotFound": "Użytkownik nie znaleziony",
     "accountLocked": "Konto zablokowane. Spróbuj ponownie później",
     "unexpectedError": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
@@ -1413,8 +1413,8 @@
         "description": "Ukryj wersję OUITRANSFER w stopce wszystkich stron"
       },
       "embedSecret": {
-        "title": "Embed Secret",
-        "description": "Secret used to sign embed tokens for secure file embedding"
+        "title": "Klucz osadzania",
+        "description": "Tajny klucz używany do podpisywania tokenów osadzania w celu bezpiecznego osadzania plików"
       }
     },
     "buttons": {
@@ -1955,8 +1955,8 @@
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
       "uploadFailed": "Upload failed",
-      "networkError": "Unable to reach the server. Please check your connection.",
-      "storageUnavailable": "Storage service is unavailable. Please try again later."
+      "networkError": "Nie można połączyć się z serwerem. Sprawdź połączenie.",
+      "storageUnavailable": "Usługa przechowywania jest niedostępna. Spróbuj ponownie później."
     }
   },
   "users": {

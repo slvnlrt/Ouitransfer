@@ -257,43 +257,43 @@
       "description": "ไฟล์ที่อัปโหลดล่าสุดของคุณ"
     },
     "systemStatus": {
-      "title": "System Status",
-      "refresh": "Refresh",
+      "title": "สถานะระบบ",
+      "refresh": "รีเฟรช",
       "status": {
-        "healthy": "Healthy",
-        "degraded": "Degraded",
-        "unhealthy": "Unhealthy"
+        "healthy": "ปกติ",
+        "degraded": "ลดประสิทธิภาพ",
+        "unhealthy": "ไม่พร้อมใช้งาน"
       },
       "checks": {
-        "database": "Database",
-        "storage": "Storage",
+        "database": "ฐานข้อมูล",
+        "storage": "พื้นที่จัดเก็บ",
         "ok": "OK",
-        "error": "Error",
-        "notConfigured": "Not configured"
+        "error": "ข้อผิดพลาด",
+        "notConfigured": "ยังไม่ได้กำหนดค่า"
       },
-      "uptime": "Uptime",
+      "uptime": "เวลาทำงาน",
       "diskSpace": {
-        "label": "Disk Space",
-        "ariaLabel": "Disk space usage progress bar"
+        "label": "พื้นที่ดิสก์",
+        "ariaLabel": "แถบแสดงความคืบหน้าการใช้พื้นที่ดิสก์"
       },
       "quota": {
-        "label": "Storage Quota",
-        "ariaLabel": "Storage quota progress bar",
-        "notConfigured": "Quotas not configured"
+        "label": "โควตาพื้นที่จัดเก็บ",
+        "ariaLabel": "แถบแสดงความคืบหน้าโควตาพื้นที่จัดเก็บ",
+        "notConfigured": "ยังไม่ได้กำหนดโควตา"
       },
       "metrics": {
-        "users": "Users",
-        "files": "Files",
-        "shares": "Shares",
-        "reverseShares": "Reverse Shares",
-        "myFiles": "My files",
-        "activeShares": "Active shares"
+        "users": "ผู้ใช้",
+        "files": "ไฟล์",
+        "shares": "แชร์",
+        "reverseShares": "แชร์ย้อนกลับ",
+        "myFiles": "ไฟล์ของฉัน",
+        "activeShares": "แชร์ที่ใช้งาน"
       },
       "errors": {
-        "title": "Status unavailable",
-        "fetchFailed": "Unable to retrieve system status. Please try again later.",
-        "diskSpaceError": "Unable to retrieve disk space information.",
-        "statsError": "Unable to load platform statistics."
+        "title": "ไม่สามารถแสดงสถานะได้",
+        "fetchFailed": "ไม่สามารถดึงข้อมูลสถานะระบบได้ กรุณาลองใหม่อีกครั้งในภายหลัง",
+        "diskSpaceError": "ไม่สามารถดึงข้อมูลพื้นที่ดิสก์ได้",
+        "statsError": "ไม่สามารถโหลดสถิติแพลตฟอร์มได้"
       }
     }
   },
@@ -342,7 +342,7 @@
   },
   "errors": {
     "invalidCredentials": "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
-    "networkError": "Unable to reach the server. Please check your connection.",
+    "networkError": "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่อของคุณ",
     "userNotFound": "ไม่พบผู้ใช้",
     "accountLocked": "บัญชีถูกล็อค โปรดลองใหม่ในภายหลัง",
     "unexpectedError": "เกิดข้อผิดพลาดที่ไม่คาดคิด โปรดลองใหม่",
@@ -1417,8 +1417,8 @@
         "description": "เปิดหรือปิดใช้งานการยืนยันตัวตนโดยใช้รหัสผ่าน"
       },
       "embedSecret": {
-        "title": "Embed Secret",
-        "description": "Secret used to sign embed tokens for secure file embedding"
+        "title": "คีย์ฝังตัว",
+        "description": "คีย์ลับที่ใช้สำหรับลงนามโทเค็นฝังตัวเพื่อการฝังไฟล์อย่างปลอดภัย"
       }
     },
     "buttons": {
@@ -1959,8 +1959,8 @@
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
       "uploadFailed": "Upload failed",
-      "networkError": "Unable to reach the server. Please check your connection.",
-      "storageUnavailable": "Storage service is unavailable. Please try again later."
+      "networkError": "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่อของคุณ",
+      "storageUnavailable": "บริการจัดเก็บไม่พร้อมใช้งาน กรุณาลองใหม่อีกครั้งในภายหลัง"
     }
   },
   "users": {

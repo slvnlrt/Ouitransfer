@@ -253,43 +253,43 @@
       "description": "Ваши недавно загруженные файлы"
     },
     "systemStatus": {
-      "title": "System Status",
-      "refresh": "Refresh",
+      "title": "Состояние системы",
+      "refresh": "Обновить",
       "status": {
-        "healthy": "Healthy",
-        "degraded": "Degraded",
-        "unhealthy": "Unhealthy"
+        "healthy": "Работает",
+        "degraded": "Ограничено",
+        "unhealthy": "Недоступно"
       },
       "checks": {
-        "database": "Database",
-        "storage": "Storage",
+        "database": "База данных",
+        "storage": "Хранилище",
         "ok": "OK",
-        "error": "Error",
-        "notConfigured": "Not configured"
+        "error": "Ошибка",
+        "notConfigured": "Не настроено"
       },
-      "uptime": "Uptime",
+      "uptime": "Время работы",
       "diskSpace": {
-        "label": "Disk Space",
-        "ariaLabel": "Disk space usage progress bar"
+        "label": "Дисковое пространство",
+        "ariaLabel": "Индикатор использования дискового пространства"
       },
       "quota": {
-        "label": "Storage Quota",
-        "ariaLabel": "Storage quota progress bar",
-        "notConfigured": "Quotas not configured"
+        "label": "Квота хранилища",
+        "ariaLabel": "Индикатор использования квоты хранилища",
+        "notConfigured": "Квоты не настроены"
       },
       "metrics": {
-        "users": "Users",
-        "files": "Files",
-        "shares": "Shares",
-        "reverseShares": "Reverse Shares",
-        "myFiles": "My files",
-        "activeShares": "Active shares"
+        "users": "Пользователи",
+        "files": "Файлы",
+        "shares": "Общие доступы",
+        "reverseShares": "Обратные доступы",
+        "myFiles": "Мои файлы",
+        "activeShares": "Активные доступы"
       },
       "errors": {
-        "title": "Status unavailable",
-        "fetchFailed": "Unable to retrieve system status. Please try again later.",
-        "diskSpaceError": "Unable to retrieve disk space information.",
-        "statsError": "Unable to load platform statistics."
+        "title": "Статус недоступен",
+        "fetchFailed": "Не удалось получить состояние системы. Повторите попытку позже.",
+        "diskSpaceError": "Не удалось получить информацию о дисковом пространстве.",
+        "statsError": "Не удалось загрузить статистику платформы."
       }
     }
   },
@@ -338,7 +338,7 @@
   },
   "errors": {
     "invalidCredentials": "Неверный адрес электронной почты или пароль",
-    "networkError": "Unable to reach the server. Please check your connection.",
+    "networkError": "Не удаётся подключиться к серверу. Проверьте подключение.",
     "userNotFound": "Пользователь не найден",
     "accountLocked": "Аккаунт заблокирован. Пожалуйста, попробуйте позже",
     "unexpectedError": "Произошла непредвиденная ошибка. Пожалуйста, попробуйте еще раз",
@@ -1413,8 +1413,8 @@
         "description": "Скрыть версию OUITRANSFER в нижнем колонтитуле всех страниц"
       },
       "embedSecret": {
-        "title": "Embed Secret",
-        "description": "Secret used to sign embed tokens for secure file embedding"
+        "title": "Ключ встраивания",
+        "description": "Секретный ключ для подписи токенов встраивания при безопасном отображении файлов"
       }
     },
     "buttons": {
@@ -1955,8 +1955,8 @@
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
       "uploadFailed": "Upload failed",
-      "networkError": "Unable to reach the server. Please check your connection.",
-      "storageUnavailable": "Storage service is unavailable. Please try again later."
+      "networkError": "Не удаётся подключиться к серверу. Проверьте подключение.",
+      "storageUnavailable": "Служба хранения недоступна. Повторите попытку позже."
     }
   },
   "users": {

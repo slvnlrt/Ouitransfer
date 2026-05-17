@@ -253,43 +253,43 @@
       "title": "最近文件"
     },
     "systemStatus": {
-      "title": "System Status",
-      "refresh": "Refresh",
+      "title": "系统状态",
+      "refresh": "刷新",
       "status": {
-        "healthy": "Healthy",
-        "degraded": "Degraded",
-        "unhealthy": "Unhealthy"
+        "healthy": "正常",
+        "degraded": "降级",
+        "unhealthy": "异常"
       },
       "checks": {
-        "database": "Database",
-        "storage": "Storage",
-        "ok": "OK",
-        "error": "Error",
-        "notConfigured": "Not configured"
+        "database": "数据库",
+        "storage": "存储",
+        "ok": "正常",
+        "error": "错误",
+        "notConfigured": "未配置"
       },
-      "uptime": "Uptime",
+      "uptime": "运行时间",
       "diskSpace": {
-        "label": "Disk Space",
-        "ariaLabel": "Disk space usage progress bar"
+        "label": "磁盘空间",
+        "ariaLabel": "磁盘空间使用进度条"
       },
       "quota": {
-        "label": "Storage Quota",
-        "ariaLabel": "Storage quota progress bar",
-        "notConfigured": "Quotas not configured"
+        "label": "存储配额",
+        "ariaLabel": "存储配额进度条",
+        "notConfigured": "配额未配置"
       },
       "metrics": {
-        "users": "Users",
-        "files": "Files",
-        "shares": "Shares",
-        "reverseShares": "Reverse Shares",
-        "myFiles": "My files",
-        "activeShares": "Active shares"
+        "users": "用户",
+        "files": "文件",
+        "shares": "共享",
+        "reverseShares": "反向共享",
+        "myFiles": "我的文件",
+        "activeShares": "活跃共享"
       },
       "errors": {
-        "title": "Status unavailable",
-        "fetchFailed": "Unable to retrieve system status. Please try again later.",
-        "diskSpaceError": "Unable to retrieve disk space information.",
-        "statsError": "Unable to load platform statistics."
+        "title": "状态不可用",
+        "fetchFailed": "无法获取系统状态。请稍后再试。",
+        "diskSpaceError": "无法获取磁盘空间信息。",
+        "statsError": "无法加载平台统计数据。"
       }
     }
   },
@@ -338,7 +338,7 @@
   },
   "errors": {
     "invalidCredentials": "电子邮件或密码错误",
-    "networkError": "Unable to reach the server. Please check your connection.",
+    "networkError": "无法连接到服务器。请检查您的网络连接。",
     "userNotFound": "未找到用户",
     "accountLocked": "账户已锁定。请稍后再试",
     "unexpectedError": "发生意外错误。请重试",
@@ -1413,8 +1413,8 @@
         "description": "在所有页面的页脚中隐藏OUITRANSFER版本"
       },
       "embedSecret": {
-        "title": "Embed Secret",
-        "description": "Secret used to sign embed tokens for secure file embedding"
+        "title": "嵌入密钥",
+        "description": "用于签署嵌入令牌以实现安全文件嵌入的密钥"
       }
     },
     "buttons": {
@@ -1955,8 +1955,8 @@
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
       "uploadFailed": "Upload failed",
-      "networkError": "Unable to reach the server. Please check your connection.",
-      "storageUnavailable": "Storage service is unavailable. Please try again later."
+      "networkError": "无法连接到服务器。请检查您的网络连接。",
+      "storageUnavailable": "存储服务不可用。请稍后再试。"
     }
   },
   "users": {

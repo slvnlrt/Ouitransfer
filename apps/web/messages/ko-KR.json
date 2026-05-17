@@ -253,43 +253,43 @@
       "title": "최근 파일"
     },
     "systemStatus": {
-      "title": "System Status",
-      "refresh": "Refresh",
+      "title": "시스템 상태",
+      "refresh": "새로고침",
       "status": {
-        "healthy": "Healthy",
-        "degraded": "Degraded",
-        "unhealthy": "Unhealthy"
+        "healthy": "정상",
+        "degraded": "저하됨",
+        "unhealthy": "비정상"
       },
       "checks": {
-        "database": "Database",
-        "storage": "Storage",
+        "database": "데이터베이스",
+        "storage": "스토리지",
         "ok": "OK",
-        "error": "Error",
-        "notConfigured": "Not configured"
+        "error": "오류",
+        "notConfigured": "미설정"
       },
-      "uptime": "Uptime",
+      "uptime": "가동 시간",
       "diskSpace": {
-        "label": "Disk Space",
-        "ariaLabel": "Disk space usage progress bar"
+        "label": "디스크 공간",
+        "ariaLabel": "디스크 공간 사용량 진행률 표시줄"
       },
       "quota": {
-        "label": "Storage Quota",
-        "ariaLabel": "Storage quota progress bar",
-        "notConfigured": "Quotas not configured"
+        "label": "스토리지 할당량",
+        "ariaLabel": "스토리지 할당량 진행률 표시줄",
+        "notConfigured": "할당량 미설정"
       },
       "metrics": {
-        "users": "Users",
-        "files": "Files",
-        "shares": "Shares",
-        "reverseShares": "Reverse Shares",
-        "myFiles": "My files",
-        "activeShares": "Active shares"
+        "users": "사용자",
+        "files": "파일",
+        "shares": "공유",
+        "reverseShares": "역방향 공유",
+        "myFiles": "내 파일",
+        "activeShares": "활성 공유"
       },
       "errors": {
-        "title": "Status unavailable",
-        "fetchFailed": "Unable to retrieve system status. Please try again later.",
-        "diskSpaceError": "Unable to retrieve disk space information.",
-        "statsError": "Unable to load platform statistics."
+        "title": "상태를 확인할 수 없습니다",
+        "fetchFailed": "시스템 상태를 가져올 수 없습니다. 나중에 다시 시도해 주세요.",
+        "diskSpaceError": "디스크 공간 정보를 가져올 수 없습니다.",
+        "statsError": "플랫폼 통계를 불러올 수 없습니다."
       }
     }
   },
@@ -338,7 +338,7 @@
   },
   "errors": {
     "invalidCredentials": "잘못된 이메일 또는 비밀번호입니다",
-    "networkError": "Unable to reach the server. Please check your connection.",
+    "networkError": "서버에 연결할 수 없습니다. 연결 상태를 확인해 주세요.",
     "userNotFound": "사용자를 찾을 수 없습니다",
     "accountLocked": "계정이 잠겼습니다. 나중에 다시 시도하세요",
     "unexpectedError": "예기치 않은 오류가 발생했습니다. 다시 시도해주세요",
@@ -1413,8 +1413,8 @@
         "description": "모든 페이지의 바닥글에서 OUITRANSFER 버전 숨기기"
       },
       "embedSecret": {
-        "title": "Embed Secret",
-        "description": "Secret used to sign embed tokens for secure file embedding"
+        "title": "임베드 시크릿",
+        "description": "안전한 파일 임베딩을 위한 임베드 토큰 서명에 사용되는 시크릿 키"
       }
     },
     "buttons": {
@@ -1955,8 +1955,8 @@
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
       "uploadFailed": "Upload failed",
-      "networkError": "Unable to reach the server. Please check your connection.",
-      "storageUnavailable": "Storage service is unavailable. Please try again later."
+      "networkError": "서버에 연결할 수 없습니다. 연결 상태를 확인해 주세요.",
+      "storageUnavailable": "스토리지 서비스를 사용할 수 없습니다. 나중에 다시 시도해 주세요."
     }
   },
   "users": {

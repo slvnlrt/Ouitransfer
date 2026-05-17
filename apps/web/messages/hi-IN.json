@@ -253,43 +253,43 @@
       "title": "हाल की फ़ाइलें"
     },
     "systemStatus": {
-      "title": "System Status",
-      "refresh": "Refresh",
+      "title": "सिस्टम स्थिति",
+      "refresh": "रीफ़्रेश",
       "status": {
-        "healthy": "Healthy",
-        "degraded": "Degraded",
-        "unhealthy": "Unhealthy"
+        "healthy": "सामान्य",
+        "degraded": "अवनत",
+        "unhealthy": "अनुपलब्ध"
       },
       "checks": {
-        "database": "Database",
-        "storage": "Storage",
-        "ok": "OK",
-        "error": "Error",
-        "notConfigured": "Not configured"
+        "database": "डेटाबेस",
+        "storage": "स्टोरेज",
+        "ok": "ठीक है",
+        "error": "त्रुटि",
+        "notConfigured": "कॉन्फ़िगर नहीं किया गया"
       },
-      "uptime": "Uptime",
+      "uptime": "अपटाइम",
       "diskSpace": {
-        "label": "Disk Space",
-        "ariaLabel": "Disk space usage progress bar"
+        "label": "डिस्क स्पेस",
+        "ariaLabel": "डिस्क स्पेस उपयोग प्रगति बार"
       },
       "quota": {
-        "label": "Storage Quota",
-        "ariaLabel": "Storage quota progress bar",
-        "notConfigured": "Quotas not configured"
+        "label": "स्टोरेज कोटा",
+        "ariaLabel": "स्टोरेज कोटा प्रगति बार",
+        "notConfigured": "कोटा कॉन्फ़िगर नहीं किया गया"
       },
       "metrics": {
-        "users": "Users",
-        "files": "Files",
-        "shares": "Shares",
-        "reverseShares": "Reverse Shares",
-        "myFiles": "My files",
-        "activeShares": "Active shares"
+        "users": "उपयोगकर्ता",
+        "files": "फ़ाइलें",
+        "shares": "साझाकरण",
+        "reverseShares": "रिवर्स साझाकरण",
+        "myFiles": "मेरी फ़ाइलें",
+        "activeShares": "सक्रिय साझाकरण"
       },
       "errors": {
-        "title": "Status unavailable",
-        "fetchFailed": "Unable to retrieve system status. Please try again later.",
-        "diskSpaceError": "Unable to retrieve disk space information.",
-        "statsError": "Unable to load platform statistics."
+        "title": "स्थिति अनुपलब्ध",
+        "fetchFailed": "सिस्टम स्थिति प्राप्त नहीं हो सकी। कृपया बाद में पुनः प्रयास करें।",
+        "diskSpaceError": "डिस्क स्पेस की जानकारी प्राप्त नहीं हो सकी।",
+        "statsError": "प्लेटफ़ॉर्म आँकड़े लोड नहीं हो सके।"
       }
     }
   },
@@ -338,7 +338,7 @@
   },
   "errors": {
     "invalidCredentials": "गलत ईमेल या पासवर्ड",
-    "networkError": "Unable to reach the server. Please check your connection.",
+    "networkError": "सर्वर से कनेक्ट नहीं हो पा रहा है। कृपया अपना कनेक्शन जाँचें।",
     "userNotFound": "उपयोगकर्ता नहीं मिला",
     "accountLocked": "खाता लॉक है। कृपया बाद में प्रयास करें",
     "unexpectedError": "एक अप्रत्याशित त्रुटि हुई। कृपया पुनः प्रयास करें",
@@ -1413,8 +1413,8 @@
         "description": "सभी पृष्ठों के फुटर में OUITRANSFER संस्करण छुपाएं"
       },
       "embedSecret": {
-        "title": "Embed Secret",
-        "description": "Secret used to sign embed tokens for secure file embedding"
+        "title": "एम्बेड सीक्रेट",
+        "description": "सुरक्षित फ़ाइल एम्बेडिंग के लिए एम्बेड टोकन पर हस्ताक्षर करने के लिए उपयोग की जाने वाली गुप्त कुंजी"
       }
     },
     "buttons": {
@@ -1955,8 +1955,8 @@
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
       "uploadFailed": "Upload failed",
-      "networkError": "Unable to reach the server. Please check your connection.",
-      "storageUnavailable": "Storage service is unavailable. Please try again later."
+      "networkError": "सर्वर से कनेक्ट नहीं हो पा रहा है। कृपया अपना कनेक्शन जाँचें।",
+      "storageUnavailable": "स्टोरेज सेवा अनुपलब्ध है। कृपया बाद में पुनः प्रयास करें।"
     }
   },
   "users": {

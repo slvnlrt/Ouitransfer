@@ -257,43 +257,43 @@
       "description": "הקבצים שהועלו לאחרונה"
     },
     "systemStatus": {
-      "title": "System Status",
-      "refresh": "Refresh",
+      "title": "מצב המערכת",
+      "refresh": "רענון",
       "status": {
-        "healthy": "Healthy",
-        "degraded": "Degraded",
-        "unhealthy": "Unhealthy"
+        "healthy": "תקין",
+        "degraded": "מוגבל",
+        "unhealthy": "לא זמין"
       },
       "checks": {
-        "database": "Database",
-        "storage": "Storage",
-        "ok": "OK",
-        "error": "Error",
-        "notConfigured": "Not configured"
+        "database": "מסד נתונים",
+        "storage": "אחסון",
+        "ok": "תקין",
+        "error": "שגיאה",
+        "notConfigured": "לא מוגדר"
       },
-      "uptime": "Uptime",
+      "uptime": "זמן פעילות",
       "diskSpace": {
-        "label": "Disk Space",
-        "ariaLabel": "Disk space usage progress bar"
+        "label": "שטח דיסק",
+        "ariaLabel": "סרגל התקדמות של שימוש בשטח דיסק"
       },
       "quota": {
-        "label": "Storage Quota",
-        "ariaLabel": "Storage quota progress bar",
-        "notConfigured": "Quotas not configured"
+        "label": "מכסת אחסון",
+        "ariaLabel": "סרגל התקדמות של מכסת אחסון",
+        "notConfigured": "מכסות לא מוגדרות"
       },
       "metrics": {
-        "users": "Users",
-        "files": "Files",
-        "shares": "Shares",
-        "reverseShares": "Reverse Shares",
-        "myFiles": "My files",
-        "activeShares": "Active shares"
+        "users": "משתמשים",
+        "files": "קבצים",
+        "shares": "שיתופים",
+        "reverseShares": "שיתופים הפוכים",
+        "myFiles": "הקבצים שלי",
+        "activeShares": "שיתופים פעילים"
       },
       "errors": {
-        "title": "Status unavailable",
-        "fetchFailed": "Unable to retrieve system status. Please try again later.",
-        "diskSpaceError": "Unable to retrieve disk space information.",
-        "statsError": "Unable to load platform statistics."
+        "title": "המצב אינו זמין",
+        "fetchFailed": "לא ניתן לאחזר את מצב המערכת. נסה שוב מאוחר יותר.",
+        "diskSpaceError": "לא ניתן לאחזר מידע על שטח הדיסק.",
+        "statsError": "לא ניתן לטעון סטטיסטיקות הפלטפורמה."
       }
     }
   },
@@ -342,7 +342,7 @@
   },
   "errors": {
     "invalidCredentials": "דוא\"ל או סיסמה לא חוקיים",
-    "networkError": "Unable to reach the server. Please check your connection.",
+    "networkError": "לא ניתן להגיע לשרת. בדוק את החיבור שלך.",
     "userNotFound": "משתמש לא נמצא",
     "accountLocked": "החשבון נעול. אנא נסה שוב מאוחר יותר",
     "unexpectedError": "אירעה שגיאה בלתי צפויה. אנא נסה שוב",
@@ -1417,8 +1417,8 @@
         "description": "הפעל או השבת אימות מבוסס סיסמה"
       },
       "embedSecret": {
-        "title": "Embed Secret",
-        "description": "Secret used to sign embed tokens for secure file embedding"
+        "title": "מפתח הטמעה",
+        "description": "מפתח סודי המשמש לחתימת אסימוני הטמעה להצגת קבצים מאובטחת"
       }
     },
     "buttons": {
@@ -1959,8 +1959,8 @@
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
       "uploadFailed": "Upload failed",
-      "networkError": "Unable to reach the server. Please check your connection.",
-      "storageUnavailable": "Storage service is unavailable. Please try again later."
+      "networkError": "לא ניתן להגיע לשרת. בדוק את החיבור שלך.",
+      "storageUnavailable": "שירות האחסון אינו זמין. נסה שוב מאוחר יותר."
     }
   },
   "users": {

@@ -257,43 +257,43 @@
       "description": "Dina senast uppladdade filer"
     },
     "systemStatus": {
-      "title": "System Status",
-      "refresh": "Refresh",
+      "title": "Systemstatus",
+      "refresh": "Uppdatera",
       "status": {
-        "healthy": "Healthy",
-        "degraded": "Degraded",
-        "unhealthy": "Unhealthy"
+        "healthy": "Fungerar",
+        "degraded": "Begränsad",
+        "unhealthy": "Ej tillgänglig"
       },
       "checks": {
-        "database": "Database",
-        "storage": "Storage",
+        "database": "Databas",
+        "storage": "Lagring",
         "ok": "OK",
-        "error": "Error",
-        "notConfigured": "Not configured"
+        "error": "Fel",
+        "notConfigured": "Ej konfigurerad"
       },
-      "uptime": "Uptime",
+      "uptime": "Drifttid",
       "diskSpace": {
-        "label": "Disk Space",
-        "ariaLabel": "Disk space usage progress bar"
+        "label": "Diskutrymme",
+        "ariaLabel": "Förloppsindikator för diskutrymmesanvändning"
       },
       "quota": {
-        "label": "Storage Quota",
-        "ariaLabel": "Storage quota progress bar",
-        "notConfigured": "Quotas not configured"
+        "label": "Lagringskvot",
+        "ariaLabel": "Förloppsindikator för lagringskvot",
+        "notConfigured": "Kvoter ej konfigurerade"
       },
       "metrics": {
-        "users": "Users",
-        "files": "Files",
-        "shares": "Shares",
-        "reverseShares": "Reverse Shares",
-        "myFiles": "My files",
-        "activeShares": "Active shares"
+        "users": "Användare",
+        "files": "Filer",
+        "shares": "Delningar",
+        "reverseShares": "Omvända delningar",
+        "myFiles": "Mina filer",
+        "activeShares": "Aktiva delningar"
       },
       "errors": {
-        "title": "Status unavailable",
-        "fetchFailed": "Unable to retrieve system status. Please try again later.",
-        "diskSpaceError": "Unable to retrieve disk space information.",
-        "statsError": "Unable to load platform statistics."
+        "title": "Status ej tillgänglig",
+        "fetchFailed": "Det gick inte att hämta systemstatus. Försök igen senare.",
+        "diskSpaceError": "Det gick inte att hämta information om diskutrymme.",
+        "statsError": "Det gick inte att ladda plattformsstatistik."
       }
     }
   },
@@ -342,7 +342,7 @@
   },
   "errors": {
     "invalidCredentials": "Ogiltig e-postadress eller lösenord",
-    "networkError": "Unable to reach the server. Please check your connection.",
+    "networkError": "Kan inte nå servern. Kontrollera din anslutning.",
     "userNotFound": "Användaren hittades inte",
     "accountLocked": "Konto låst. Försök igen senare",
     "unexpectedError": "Ett oväntat fel inträffade. Försök igen",
@@ -1417,8 +1417,8 @@
         "description": "Aktivera eller inaktivera lösenordsbaserad autentisering"
       },
       "embedSecret": {
-        "title": "Embed Secret",
-        "description": "Secret used to sign embed tokens for secure file embedding"
+        "title": "Inbäddningsnyckel",
+        "description": "Hemlig nyckel som används för att signera inbäddningstoken för säker filinbäddning"
       }
     },
     "buttons": {
@@ -1959,8 +1959,8 @@
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
       "uploadFailed": "Upload failed",
-      "networkError": "Unable to reach the server. Please check your connection.",
-      "storageUnavailable": "Storage service is unavailable. Please try again later."
+      "networkError": "Kan inte nå servern. Kontrollera din anslutning.",
+      "storageUnavailable": "Lagringstjänsten är inte tillgänglig. Försök igen senare."
     }
   },
   "users": {

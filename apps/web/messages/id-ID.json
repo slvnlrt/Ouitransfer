@@ -257,43 +257,43 @@
       "description": "File yang baru saja Anda unggah"
     },
     "systemStatus": {
-      "title": "System Status",
-      "refresh": "Refresh",
+      "title": "Status Sistem",
+      "refresh": "Segarkan",
       "status": {
-        "healthy": "Healthy",
-        "degraded": "Degraded",
-        "unhealthy": "Unhealthy"
+        "healthy": "Normal",
+        "degraded": "Terdegradasi",
+        "unhealthy": "Tidak tersedia"
       },
       "checks": {
         "database": "Database",
-        "storage": "Storage",
+        "storage": "Penyimpanan",
         "ok": "OK",
         "error": "Error",
-        "notConfigured": "Not configured"
+        "notConfigured": "Belum dikonfigurasi"
       },
-      "uptime": "Uptime",
+      "uptime": "Waktu aktif",
       "diskSpace": {
-        "label": "Disk Space",
-        "ariaLabel": "Disk space usage progress bar"
+        "label": "Ruang Disk",
+        "ariaLabel": "Bilah progres penggunaan ruang disk"
       },
       "quota": {
-        "label": "Storage Quota",
-        "ariaLabel": "Storage quota progress bar",
-        "notConfigured": "Quotas not configured"
+        "label": "Kuota Penyimpanan",
+        "ariaLabel": "Bilah progres kuota penyimpanan",
+        "notConfigured": "Kuota belum dikonfigurasi"
       },
       "metrics": {
-        "users": "Users",
-        "files": "Files",
-        "shares": "Shares",
-        "reverseShares": "Reverse Shares",
-        "myFiles": "My files",
-        "activeShares": "Active shares"
+        "users": "Pengguna",
+        "files": "File",
+        "shares": "Berbagi",
+        "reverseShares": "Berbagi Terbalik",
+        "myFiles": "File saya",
+        "activeShares": "Berbagi aktif"
       },
       "errors": {
-        "title": "Status unavailable",
-        "fetchFailed": "Unable to retrieve system status. Please try again later.",
-        "diskSpaceError": "Unable to retrieve disk space information.",
-        "statsError": "Unable to load platform statistics."
+        "title": "Status tidak tersedia",
+        "fetchFailed": "Tidak dapat mengambil status sistem. Silakan coba lagi nanti.",
+        "diskSpaceError": "Tidak dapat mengambil informasi ruang disk.",
+        "statsError": "Tidak dapat memuat statistik platform."
       }
     }
   },
@@ -342,7 +342,7 @@
   },
   "errors": {
     "invalidCredentials": "Email atau kata sandi salah",
-    "networkError": "Unable to reach the server. Please check your connection.",
+    "networkError": "Tidak dapat terhubung ke server. Periksa koneksi Anda.",
     "userNotFound": "Pengguna tidak ditemukan",
     "accountLocked": "Akun terkunci. Silakan coba lagi nanti",
     "unexpectedError": "Terjadi kesalahan tak terduga. Silakan coba lagi",
@@ -1417,8 +1417,8 @@
         "description": "Aktifkan atau nonaktifkan autentikasi berbasis kata sandi"
       },
       "embedSecret": {
-        "title": "Embed Secret",
-        "description": "Secret used to sign embed tokens for secure file embedding"
+        "title": "Kunci Embed",
+        "description": "Kunci rahasia yang digunakan untuk menandatangani token embed untuk penyematan file yang aman"
       }
     },
     "buttons": {
@@ -1959,8 +1959,8 @@
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
       "uploadFailed": "Upload failed",
-      "networkError": "Unable to reach the server. Please check your connection.",
-      "storageUnavailable": "Storage service is unavailable. Please try again later."
+      "networkError": "Tidak dapat terhubung ke server. Periksa koneksi Anda.",
+      "storageUnavailable": "Layanan penyimpanan tidak tersedia. Silakan coba lagi nanti."
     }
   },
   "users": {

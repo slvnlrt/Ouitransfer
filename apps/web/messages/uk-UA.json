@@ -257,43 +257,43 @@
       "description": "Ваші найнедавніше завантажені файли"
     },
     "systemStatus": {
-      "title": "System Status",
-      "refresh": "Refresh",
+      "title": "Стан системи",
+      "refresh": "Оновити",
       "status": {
-        "healthy": "Healthy",
-        "degraded": "Degraded",
-        "unhealthy": "Unhealthy"
+        "healthy": "Працює",
+        "degraded": "Обмежено",
+        "unhealthy": "Недоступно"
       },
       "checks": {
-        "database": "Database",
-        "storage": "Storage",
+        "database": "База даних",
+        "storage": "Сховище",
         "ok": "OK",
-        "error": "Error",
-        "notConfigured": "Not configured"
+        "error": "Помилка",
+        "notConfigured": "Не налаштовано"
       },
-      "uptime": "Uptime",
+      "uptime": "Час роботи",
       "diskSpace": {
-        "label": "Disk Space",
-        "ariaLabel": "Disk space usage progress bar"
+        "label": "Дисковий простір",
+        "ariaLabel": "Індикатор використання дискового простору"
       },
       "quota": {
-        "label": "Storage Quota",
-        "ariaLabel": "Storage quota progress bar",
-        "notConfigured": "Quotas not configured"
+        "label": "Квота сховища",
+        "ariaLabel": "Індикатор використання квоти сховища",
+        "notConfigured": "Квоти не налаштовані"
       },
       "metrics": {
-        "users": "Users",
-        "files": "Files",
-        "shares": "Shares",
-        "reverseShares": "Reverse Shares",
-        "myFiles": "My files",
-        "activeShares": "Active shares"
+        "users": "Користувачі",
+        "files": "Файли",
+        "shares": "Спільні використання",
+        "reverseShares": "Зворотні використання",
+        "myFiles": "Мої файли",
+        "activeShares": "Активні використання"
       },
       "errors": {
-        "title": "Status unavailable",
-        "fetchFailed": "Unable to retrieve system status. Please try again later.",
-        "diskSpaceError": "Unable to retrieve disk space information.",
-        "statsError": "Unable to load platform statistics."
+        "title": "Статус недоступний",
+        "fetchFailed": "Не вдалося отримати стан системи. Спробуйте пізніше.",
+        "diskSpaceError": "Не вдалося отримати інформацію про дисковий простір.",
+        "statsError": "Не вдалося завантажити статистику платформи."
       }
     }
   },
@@ -342,7 +342,7 @@
   },
   "errors": {
     "invalidCredentials": "Неправильна електронна пошта або пароль",
-    "networkError": "Unable to reach the server. Please check your connection.",
+    "networkError": "Не вдається зʼєднатися з сервером. Перевірте підключення.",
     "userNotFound": "Користувача не знайдено",
     "accountLocked": "Акаунт заблоковано. Спробуйте ще раз пізніше",
     "unexpectedError": "Сталася неочікувана помилка. Спробуйте ще раз",
@@ -1417,8 +1417,8 @@
         "description": "Увімкнути або вимкнути автентифікацію на основі пароля"
       },
       "embedSecret": {
-        "title": "Embed Secret",
-        "description": "Secret used to sign embed tokens for secure file embedding"
+        "title": "Ключ вбудовування",
+        "description": "Секретний ключ для підпису токенів вбудовування для безпечного відображення файлів"
       }
     },
     "buttons": {
@@ -1959,8 +1959,8 @@
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
       "uploadFailed": "Upload failed",
-      "networkError": "Unable to reach the server. Please check your connection.",
-      "storageUnavailable": "Storage service is unavailable. Please try again later."
+      "networkError": "Не вдається зʼєднатися з сервером. Перевірте підключення.",
+      "storageUnavailable": "Служба зберігання недоступна. Спробуйте пізніше."
     }
   },
   "users": {

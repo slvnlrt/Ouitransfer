@@ -253,43 +253,43 @@
       "title": "Recente Bestanden"
     },
     "systemStatus": {
-      "title": "System Status",
-      "refresh": "Refresh",
+      "title": "Systeemstatus",
+      "refresh": "Vernieuwen",
       "status": {
-        "healthy": "Healthy",
-        "degraded": "Degraded",
-        "unhealthy": "Unhealthy"
+        "healthy": "Operationeel",
+        "degraded": "Beperkt",
+        "unhealthy": "Niet beschikbaar"
       },
       "checks": {
         "database": "Database",
-        "storage": "Storage",
+        "storage": "Opslag",
         "ok": "OK",
-        "error": "Error",
-        "notConfigured": "Not configured"
+        "error": "Fout",
+        "notConfigured": "Niet geconfigureerd"
       },
       "uptime": "Uptime",
       "diskSpace": {
-        "label": "Disk Space",
-        "ariaLabel": "Disk space usage progress bar"
+        "label": "Schijfruimte",
+        "ariaLabel": "Voortgangsbalk van schijfruimtegebruik"
       },
       "quota": {
-        "label": "Storage Quota",
-        "ariaLabel": "Storage quota progress bar",
-        "notConfigured": "Quotas not configured"
+        "label": "Opslagquotum",
+        "ariaLabel": "Voortgangsbalk van opslagquotum",
+        "notConfigured": "Quota's niet geconfigureerd"
       },
       "metrics": {
-        "users": "Users",
-        "files": "Files",
-        "shares": "Shares",
-        "reverseShares": "Reverse Shares",
-        "myFiles": "My files",
-        "activeShares": "Active shares"
+        "users": "Gebruikers",
+        "files": "Bestanden",
+        "shares": "Delingen",
+        "reverseShares": "Omgekeerde delingen",
+        "myFiles": "Mijn bestanden",
+        "activeShares": "Actieve delingen"
       },
       "errors": {
-        "title": "Status unavailable",
-        "fetchFailed": "Unable to retrieve system status. Please try again later.",
-        "diskSpaceError": "Unable to retrieve disk space information.",
-        "statsError": "Unable to load platform statistics."
+        "title": "Status niet beschikbaar",
+        "fetchFailed": "Kan de systeemstatus niet ophalen. Probeer het later opnieuw.",
+        "diskSpaceError": "Kan schijfruimte-informatie niet ophalen.",
+        "statsError": "Kan platformstatistieken niet laden."
       }
     }
   },
@@ -338,7 +338,7 @@
   },
   "errors": {
     "invalidCredentials": "Ongeldig e-mail of wachtwoord",
-    "networkError": "Unable to reach the server. Please check your connection.",
+    "networkError": "Kan de server niet bereiken. Controleer uw verbinding.",
     "userNotFound": "Gebruiker niet gevonden",
     "accountLocked": "Account vergrendeld. Probeer het later opnieuw",
     "unexpectedError": "Er is een onverwachte fout opgetreden. Probeer het opnieuw",
@@ -1413,8 +1413,8 @@
         "description": "Verberg de OUITRANSFER-versie in de voettekst van alle pagina's"
       },
       "embedSecret": {
-        "title": "Embed Secret",
-        "description": "Secret used to sign embed tokens for secure file embedding"
+        "title": "Insluitsleutel",
+        "description": "Geheime sleutel voor het ondertekenen van insluittokens voor veilige bestandsinsluiting"
       }
     },
     "buttons": {
@@ -1955,8 +1955,8 @@
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
       "uploadFailed": "Upload failed",
-      "networkError": "Unable to reach the server. Please check your connection.",
-      "storageUnavailable": "Storage service is unavailable. Please try again later."
+      "networkError": "Kan de server niet bereiken. Controleer uw verbinding.",
+      "storageUnavailable": "De opslagdienst is niet beschikbaar. Probeer het later opnieuw."
     }
   },
   "users": {
