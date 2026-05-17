@@ -15,16 +15,16 @@
     "sessionExpired": "Η συνεδρία σας έληξε. Παρακαλώ συνδεθείτε ξανά.",
     "callback": {
       "errors": {
-        "oauth_error": "OAuth authentication failed",
-        "missing_parameters": "Missing authentication parameters",
-        "missing_code": "Missing authorization code",
-        "registration_disabled": "Registration is disabled for this provider",
-        "provider_disabled": "This authentication provider is disabled",
-        "state_expired": "Authentication session expired",
-        "account_inactive": "Your account is inactive",
-        "no_email": "No email address found in your account",
-        "token_exchange_failed": "Failed to authenticate with provider",
-        "missing_user_info": "Incomplete user information from provider"
+        "oauth_error": "Η ταυτοποίηση OAuth απέτυχε",
+        "missing_parameters": "Λείπουν παράμετροι ταυτοποίησης",
+        "missing_code": "Λείπει ο κωδικός εξουσιοδότησης",
+        "registration_disabled": "Η εγγραφή είναι απενεργοποιημένη για αυτόν τον πάροχο",
+        "provider_disabled": "Αυτός ο πάροχος ταυτοποίησης είναι απενεργοποιημένος",
+        "state_expired": "Η συνεδρία ταυτοποίησης έληξε",
+        "account_inactive": "Ο λογαριασμός σας είναι ανενεργός",
+        "no_email": "Δε βρέθηκε διεύθυνση email στον λογαριασμό σας",
+        "token_exchange_failed": "Η ταυτοποίηση με τον πάροχο απέτυχε",
+        "missing_user_info": "Ελλιπείς πληροφορίες χρήστη από τον πάροχο"
       }
     }
   },
@@ -401,7 +401,7 @@
     "tryAlternativeView": "Δοκιμάστε εναλλακτική προβολή",
     "loadingAlternative": "Φόρτωση εναλλακτικής προβολής...",
     "loadingAudio": "Φόρτωση ήχου...",
-    "downloading": "Downloading..."
+    "downloading": "Λήψη..."
   },
   "fileSelector": {
     "availableFiles": "Διαθέσιμα αρχεία ({count})",
@@ -470,12 +470,12 @@
       "grid": "Πλέγμα"
     },
     "drag": {
-      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
-      "fileMoved": "File \"{name}\" moved to \"{target}\"",
-      "itemsMoved": "{count} items moved to \"{target}\"",
-      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
-      "fileMovedToRoot": "File \"{name}\" moved to root folder",
-      "itemsMovedToRoot": "{count} items moved to root folder"
+      "folderMoved": "Ο φάκελος «{name}» μεταφέρθηκε στο «{target}»",
+      "fileMoved": "Το αρχείο «{name}» μεταφέρθηκε στο «{target}»",
+      "itemsMoved": "{count} στοιχεία μεταφέρθηκαν στο «{target}»",
+      "folderMovedToRoot": "Ο φάκελος «{name}» μεταφέρθηκε στον ριζικό φάκελο",
+      "fileMovedToRoot": "Το αρχείο «{name}» μεταφέρθηκε στον ριζικό φάκελο",
+      "itemsMovedToRoot": "{count} στοιχεία μεταφέρθηκαν στον ριζικό φάκελο"
     }
   },
   "filesTable": {
@@ -615,9 +615,9 @@
     "or": "ή",
     "continueWithSSO": "Συνέχεια με SSO",
     "processing": "Επεξεργασία ελέγχου ταυτότητας...",
-    "orContinueWith": "Or continue with",
-    "continueWith": "Continue with {name}",
-    "providerNotConfigured": "{name} is not properly configured"
+    "orContinueWith": "Ή συνεχίστε με",
+    "continueWith": "Συνέχεια με {name}",
+    "providerNotConfigured": "Το {name} δεν είναι σωστά ρυθμισμένο"
   },
   "logo": {
     "labels": {
@@ -973,7 +973,7 @@
         "previewNotAvailable": "Η προεπισκόπηση δεν είναι διαθέσιμη",
         "notAvailable": "Μ/Δ",
         "invalidDate": "Μη έγκυρη ημερομηνία",
-        "downloading": "Downloading..."
+        "downloading": "Λήψη..."
       },
       "alias": {
         "editTitle": "Επεξεργασία ψευδωνύμου",
@@ -1061,7 +1061,7 @@
           "failed": "Η αντιγραφή απέτυχε. Προσπαθήστε ξανά.",
           "aborted": "Η αντιγραφή ακυρώθηκε λόγω λήξης χρονικού ορίου."
         },
-        "downloading": "Downloading..."
+        "downloading": "Λήψη..."
       }
     },
     "form": {
@@ -1133,10 +1133,10 @@
       "fieldRequirements": {
         "title": "Απαιτήσεις πεδίων",
         "description": "Ρυθμίστε ποια πεδία θα εμφανίζονται στη φόρμα μεταφόρτωσης",
-        "configurationTitle": "Field Configuration:",
-        "hiddenDescription": "Hidden: Field won't appear in the upload form",
-        "optionalDescription": "Optional: Field will appear but isn't mandatory",
-        "requiredDescription": "Required: Field must be filled before upload"
+        "configurationTitle": "Ρύθμιση πεδίων:",
+        "hiddenDescription": "Κρυφό: Το πεδίο δεν θα εμφανιστεί στη φόρμα μεταφόρτωσης",
+        "optionalDescription": "Προαιρετικό: Το πεδίο θα εμφανιστεί αλλά δεν είναι υποχρεωτικό",
+        "requiredDescription": "Υποχρεωτικό: Το πεδίο πρέπει να συμπληρωθεί πριν τη μεταφόρτωση"
       },
       "submit": "Δημιουργία συνδέσμου λήψης"
     },
@@ -1907,7 +1907,7 @@
     "error": "Αποτυχία μεταφόρτωσης αρχείου",
     "fileSizeExceeded": "Το μέγεθος αρχείου υπερβαίνει το όριο {maxsizemb}MB.",
     "insufficientStorage": "Ανεπαρκής χώρος αποθήκευσης. Διαθέσιμα {availablespace}MB.",
-    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
+    "storageFull": "Ανεπαρκής χώρος αποθήκευσης. Διαθέσιμα: {available} GB, απαιτούνται: {required} GB.",
     "unauthorized": "Μη εξουσιοδοτημένο: απαιτείται έγκυρο διακριτικό για πρόσβαση σε αυτόν τον πόρο.",
     "globalDrop": {
       "title": "Αφήστε αρχεία για μεταφόρτωση",
@@ -1923,8 +1923,8 @@
     },
     "pasteSuccess": "{count, plural, =1 {Η εικόνα επικολλήθηκε και μεταφορτώθηκε με επιτυχία} other {# εικόνες επικολλήθηκαν και μεταφορτώθηκαν με επιτυχία}}",
     "errors": {
-      "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed",
+      "addFileFailed": "Αποτυχία προσθήκης {name}: {error}",
+      "uploadFailed": "Η μεταφόρτωση απέτυχε",
       "networkError": "Δεν είναι δυνατή η σύνδεση με τον διακομιστή. Ελέγξτε τη σύνδεσή σας.",
       "storageUnavailable": "Η υπηρεσία αποθήκευσης δεν είναι διαθέσιμη. Δοκιμάστε ξανά αργότερα."
     }
@@ -2012,7 +2012,7 @@
       "close": "Κλείσιμο",
       "errors": {
         "generateFailed": "Αποτυχία δημιουργίας συνδέσμου πρόσκλησης",
-        "copyFailed": "Failed to copy link"
+        "copyFailed": "Αποτυχία αντιγραφής του συνδέσμου"
       }
     }
   },
@@ -2087,9 +2087,9 @@
     "pageTitle": "Δημιουργία λογαριασμού"
   },
   "filesTree": {
-    "noItems": "No items to display"
+    "noItems": "Δεν υπάρχουν στοιχεία προς εμφάνιση"
   },
   "languageSwitcher": {
-    "changeLanguage": "Change language"
+    "changeLanguage": "Αλλαγή γλώσσας"
   }
 }

@@ -15,16 +15,16 @@
     "sessionExpired": "Ваша сессия истекла. Пожалуйста, войдите снова.",
     "callback": {
       "errors": {
-        "oauth_error": "OAuth authentication failed",
-        "missing_parameters": "Missing authentication parameters",
-        "missing_code": "Missing authorization code",
-        "registration_disabled": "Registration is disabled for this provider",
-        "provider_disabled": "This authentication provider is disabled",
-        "state_expired": "Authentication session expired",
-        "account_inactive": "Your account is inactive",
-        "no_email": "No email address found in your account",
-        "token_exchange_failed": "Failed to authenticate with provider",
-        "missing_user_info": "Incomplete user information from provider"
+        "oauth_error": "Ошибка аутентификации OAuth",
+        "missing_parameters": "Отсутствуют параметры аутентификации",
+        "missing_code": "Отсутствует код авторизации",
+        "registration_disabled": "Регистрация отключена для этого провайдера",
+        "provider_disabled": "Этот провайдер аутентификации отключён",
+        "state_expired": "Сессия аутентификации истекла",
+        "account_inactive": "Ваш аккаунт неактивен",
+        "no_email": "Адрес электронной почты не найден в вашем аккаунте",
+        "token_exchange_failed": "Ошибка аутентификации у провайдера",
+        "missing_user_info": "Неполная информация о пользователе от провайдера"
       }
     }
   },
@@ -397,7 +397,7 @@
     "tryAlternativeView": "Попробовать альтернативный вид",
     "loadingAlternative": "Загрузка альтернативного вида...",
     "loadingAudio": "Загрузка аудио...",
-    "downloading": "Downloading..."
+    "downloading": "Загрузка..."
   },
   "fileSelector": {
     "availableFiles": "Доступные Файлы ({count})",
@@ -466,12 +466,12 @@
     },
     "openFolder": "Открыть папку",
     "drag": {
-      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
-      "fileMoved": "File \"{name}\" moved to \"{target}\"",
-      "itemsMoved": "{count} items moved to \"{target}\"",
-      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
-      "fileMovedToRoot": "File \"{name}\" moved to root folder",
-      "itemsMovedToRoot": "{count} items moved to root folder"
+      "folderMoved": "Папка «{name}» перемещена в «{target}»",
+      "fileMoved": "Файл «{name}» перемещён в «{target}»",
+      "itemsMoved": "{count} элементов перемещено в «{target}»",
+      "folderMovedToRoot": "Папка «{name}» перемещена в корневую папку",
+      "fileMovedToRoot": "Файл «{name}» перемещён в корневую папку",
+      "itemsMovedToRoot": "{count} элементов перемещено в корневую папку"
     }
   },
   "filesTable": {
@@ -611,9 +611,9 @@
     "or": "или",
     "continueWithSSO": "Продолжить с SSO",
     "processing": "Обработка аутентификации...",
-    "orContinueWith": "Or continue with",
-    "continueWith": "Continue with {name}",
-    "providerNotConfigured": "{name} is not properly configured"
+    "orContinueWith": "Или продолжить через",
+    "continueWith": "Продолжить через {name}",
+    "providerNotConfigured": "{name} не настроен должным образом"
   },
   "logo": {
     "labels": {
@@ -969,7 +969,7 @@
         "previewNotAvailable": "Предпросмотр недоступен",
         "notAvailable": "Недоступно",
         "invalidDate": "Неверная дата",
-        "downloading": "Downloading..."
+        "downloading": "Загрузка..."
       },
       "alias": {
         "editTitle": "Редактировать псевдоним",
@@ -1057,7 +1057,7 @@
           "aborted": "Операция копирования была отменена из-за истечения времени ожидания."
         },
         "invalidDate": "Неверная дата",
-        "downloading": "Downloading..."
+        "downloading": "Загрузка..."
       }
     },
     "form": {
@@ -1126,10 +1126,10 @@
       "fieldRequirements": {
         "title": "Полевые требования",
         "description": "Настройте, какие поля показаны в форме загрузки",
-        "configurationTitle": "Field Configuration:",
-        "hiddenDescription": "Hidden: Field won't appear in the upload form",
-        "optionalDescription": "Optional: Field will appear but isn't mandatory",
-        "requiredDescription": "Required: Field must be filled before upload"
+        "configurationTitle": "Конфигурация полей:",
+        "hiddenDescription": "Скрытое: Поле не будет отображаться в форме загрузки",
+        "optionalDescription": "Необязательное: Поле будет отображаться, но не обязательно к заполнению",
+        "requiredDescription": "Обязательное: Поле должно быть заполнено перед загрузкой"
       },
       "nameFieldRequired": {
         "label": "Требование поля имени",
@@ -1395,8 +1395,8 @@
         "description": "Метод безопасности SMTP-соединения - Авто (рекомендуется), SSL, STARTTLS или Нет (небезопасно)",
         "options": {
           "auto": "Авто (Рекомендуется)",
-          "ssl": "SSL (Порт 465)",
-          "tls": "STARTTLS (Порт 587)",
+          "ssl": "SSL (Port 465)",
+          "tls": "STARTTLS (Port 587)",
           "none": "Нет (Небезопасно)"
         }
       },
@@ -1902,7 +1902,7 @@
     "error": "Не удалось загрузить файл",
     "fileSizeExceeded": "Размер файла превышает лимит в {maxsizemb}МБ.",
     "insufficientStorage": "Недостаточно места для хранения. У вас доступно {availablespace}МБ.",
-    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
+    "storageFull": "Недостаточно места для хранения. Доступно: {available} ГБ, требуется: {required} ГБ.",
     "unauthorized": "Не авторизовано: для доступа к этому ресурсу требуется действительный токен.",
     "confirmCancel": {
       "title": "Отменить Загрузку",
@@ -1919,8 +1919,8 @@
     "pasteSuccess": "{count, plural, =1 {Изображение вставлено и успешно загружено} other {# изображений вставлено и успешно загружено}}",
     "filesQueued": "{count, plural, one {# файл в очереди для загрузки} other {# файлов в очереди для загрузки}}",
     "errors": {
-      "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed",
+      "addFileFailed": "Не удалось добавить {name}: {error}",
+      "uploadFailed": "Ошибка загрузки",
       "networkError": "Не удаётся подключиться к серверу. Проверьте подключение.",
       "storageUnavailable": "Служба хранения недоступна. Повторите попытку позже."
     }
@@ -2008,7 +2008,7 @@
       "close": "Закрыть",
       "errors": {
         "generateFailed": "Не удалось создать ссылку приглашения",
-        "copyFailed": "Failed to copy link"
+        "copyFailed": "Не удалось скопировать ссылку"
       }
     }
   },
@@ -2087,9 +2087,9 @@
     "pageTitle": "Создать учетную запись"
   },
   "filesTree": {
-    "noItems": "No items to display"
+    "noItems": "Нет элементов для отображения"
   },
   "languageSwitcher": {
-    "changeLanguage": "Change language"
+    "changeLanguage": "Изменить язык"
   }
 }

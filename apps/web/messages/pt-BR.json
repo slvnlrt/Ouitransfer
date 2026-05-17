@@ -15,16 +15,16 @@
     "sessionExpired": "Sua sessão expirou. Por favor, faça login novamente.",
     "callback": {
       "errors": {
-        "oauth_error": "OAuth authentication failed",
-        "missing_parameters": "Missing authentication parameters",
-        "missing_code": "Missing authorization code",
-        "registration_disabled": "Registration is disabled for this provider",
-        "provider_disabled": "This authentication provider is disabled",
-        "state_expired": "Authentication session expired",
-        "account_inactive": "Your account is inactive",
-        "no_email": "No email address found in your account",
-        "token_exchange_failed": "Failed to authenticate with provider",
-        "missing_user_info": "Incomplete user information from provider"
+        "oauth_error": "Falha na autenticação OAuth",
+        "missing_parameters": "Parâmetros de autenticação ausentes",
+        "missing_code": "Código de autorização ausente",
+        "registration_disabled": "O registro está desativado para este provedor",
+        "provider_disabled": "Este provedor de autenticação está desativado",
+        "state_expired": "Sessão de autenticação expirada",
+        "account_inactive": "Sua conta está inativa",
+        "no_email": "Nenhum endereço de e-mail encontrado em sua conta",
+        "token_exchange_failed": "Falha ao autenticar com o provedor",
+        "missing_user_info": "Informações de usuário incompletas do provedor"
       }
     }
   },
@@ -401,7 +401,7 @@
     "tryAlternativeView": "Tentar Visualização Alternativa",
     "loadingAlternative": "Carregando visualização alternativa...",
     "loadingAudio": "Carregando áudio...",
-    "downloading": "Downloading..."
+    "downloading": "Baixando..."
   },
   "fileSelector": {
     "availableFiles": "Arquivos Disponíveis ({count})",
@@ -470,12 +470,12 @@
     },
     "openFolder": "Abrir pasta",
     "drag": {
-      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
-      "fileMoved": "File \"{name}\" moved to \"{target}\"",
-      "itemsMoved": "{count} items moved to \"{target}\"",
-      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
-      "fileMovedToRoot": "File \"{name}\" moved to root folder",
-      "itemsMovedToRoot": "{count} items moved to root folder"
+      "folderMoved": "Pasta \"{name}\" movida para \"{target}\"",
+      "fileMoved": "Arquivo \"{name}\" movido para \"{target}\"",
+      "itemsMoved": "{count} itens movidos para \"{target}\"",
+      "folderMovedToRoot": "Pasta \"{name}\" movida para a pasta raiz",
+      "fileMovedToRoot": "Arquivo \"{name}\" movido para a pasta raiz",
+      "itemsMovedToRoot": "{count} itens movidos para a pasta raiz"
     }
   },
   "filesTable": {
@@ -615,9 +615,9 @@
     "or": "ou",
     "continueWithSSO": "Continuar com SSO",
     "processing": "Processando autenticação...",
-    "orContinueWith": "Or continue with",
-    "continueWith": "Continue with {name}",
-    "providerNotConfigured": "{name} is not properly configured"
+    "orContinueWith": "Ou continue com",
+    "continueWith": "Continuar com {name}",
+    "providerNotConfigured": "{name} não está configurado corretamente"
   },
   "logo": {
     "labels": {
@@ -973,7 +973,7 @@
         "previewNotAvailable": "Visualização não disponível",
         "notAvailable": "Não disponível",
         "invalidDate": "Data inválida",
-        "downloading": "Downloading..."
+        "downloading": "Baixando..."
       },
       "alias": {
         "editTitle": "Editar Alias",
@@ -1061,7 +1061,7 @@
           "aborted": "A operação de cópia foi cancelada devido ao tempo limite."
         },
         "invalidDate": "Data inválida",
-        "downloading": "Downloading..."
+        "downloading": "Baixando..."
       }
     },
     "form": {
@@ -1130,10 +1130,10 @@
       "fieldRequirements": {
         "title": "Requisitos de campo",
         "description": "Configure quais campos são mostrados no formulário de upload",
-        "configurationTitle": "Field Configuration:",
-        "hiddenDescription": "Hidden: Field won't appear in the upload form",
-        "optionalDescription": "Optional: Field will appear but isn't mandatory",
-        "requiredDescription": "Required: Field must be filled before upload"
+        "configurationTitle": "Configuração de campos:",
+        "hiddenDescription": "Oculto: O campo não aparecerá no formulário de upload",
+        "optionalDescription": "Opcional: O campo aparecerá, mas não é obrigatório",
+        "requiredDescription": "Obrigatório: O campo deve ser preenchido antes do upload"
       },
       "nameFieldRequired": {
         "label": "Nome Requisito de campo",
@@ -1407,8 +1407,8 @@
         "description": "Método de segurança da conexão SMTP - Auto (recomendado), SSL, STARTTLS ou Nenhum (inseguro)",
         "options": {
           "auto": "Auto (Recomendado)",
-          "ssl": "SSL (Porta 465)",
-          "tls": "STARTTLS (Porta 587)",
+          "ssl": "SSL (Port 465)",
+          "tls": "STARTTLS (Port 587)",
           "none": "Nenhum (Inseguro)"
         }
       },
@@ -1906,7 +1906,7 @@
     "error": "Falha ao enviar arquivo",
     "fileSizeExceeded": "O tamanho do arquivo excede o limite de {maxsizemb}MB.",
     "insufficientStorage": "Espaço de armazenamento insuficiente. Você tem {availablespace}MB disponíveis.",
-    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
+    "storageFull": "Espaço de armazenamento insuficiente. Disponível: {available} GB, necessário: {required} GB.",
     "unauthorized": "Não autorizado: um token válido é necessário para acessar este recurso.",
     "globalDrop": {
       "title": "Solte arquivos para enviar",
@@ -1923,8 +1923,8 @@
     "pasteSuccess": "{count, plural, =1 {Imagem colada e enviada com sucesso} other {# imagens coladas e enviadas com sucesso}}",
     "filesQueued": "{count, plural, one {# arquivo na fila para upload} other {# arquivos na fila para upload}}",
     "errors": {
-      "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed",
+      "addFileFailed": "Falha ao adicionar {name}: {error}",
+      "uploadFailed": "Falha no upload",
       "networkError": "Não foi possível conectar ao servidor. Verifique sua conexão.",
       "storageUnavailable": "O serviço de armazenamento está indisponível. Tente novamente mais tarde."
     }
@@ -2012,7 +2012,7 @@
       "close": "Fechar",
       "errors": {
         "generateFailed": "Falha ao gerar link de convite",
-        "copyFailed": "Failed to copy link"
+        "copyFailed": "Falha ao copiar o link"
       }
     }
   },
@@ -2087,9 +2087,9 @@
     "bbcodeDescription": "Use este código para incorporar a mídia em fóruns que suportam BBCode"
   },
   "filesTree": {
-    "noItems": "No items to display"
+    "noItems": "Nenhum item para exibir"
   },
   "languageSwitcher": {
-    "changeLanguage": "Change language"
+    "changeLanguage": "Alterar idioma"
   }
 }

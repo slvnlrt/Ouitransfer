@@ -15,16 +15,16 @@
     "sessionExpired": "Your session has expired. Please sign in again.",
     "callback": {
       "errors": {
-        "oauth_error": "OAuth authentication failed",
-        "missing_parameters": "Missing authentication parameters",
-        "missing_code": "Missing authorization code",
-        "registration_disabled": "Registration is disabled for this provider",
-        "provider_disabled": "This authentication provider is disabled",
-        "state_expired": "Authentication session expired",
-        "account_inactive": "Your account is inactive",
-        "no_email": "No email address found in your account",
-        "token_exchange_failed": "Failed to authenticate with provider",
-        "missing_user_info": "Incomplete user information from provider"
+        "oauth_error": "OAuth 인증에 실패했습니다",
+        "missing_parameters": "인증 매개변수가 누락되었습니다",
+        "missing_code": "인증 코드가 누락되었습니다",
+        "registration_disabled": "이 공급자의 등록이 비활성화되어 있습니다",
+        "provider_disabled": "이 인증 공급자가 비활성화되어 있습니다",
+        "state_expired": "인증 세션이 만료되었습니다",
+        "account_inactive": "계정이 비활성 상태입니다",
+        "no_email": "계정에서 이메일 주소를 찾을 수 없습니다",
+        "token_exchange_failed": "공급자 인증에 실패했습니다",
+        "missing_user_info": "공급자로부터 받은 사용자 정보가 불완전합니다"
       }
     }
   },
@@ -325,7 +325,7 @@
       "downloads": "다운로드 대기열",
       "active": "진행 중",
       "queued": "대기 중",
-      "position": "순서 {position}",
+      "position": "위치 {position}",
       "estimatedWait": "대기: {time}",
       "unknownFile": "알 수 없는 파일",
       "noDownloads": "진행 중인 다운로드 없음",
@@ -397,7 +397,7 @@
     "tryAlternativeView": "대체 보기 시도",
     "loadingAlternative": "대체 보기 로딩 중...",
     "loadingAudio": "오디오 로딩 중...",
-    "downloading": "Downloading..."
+    "downloading": "다운로드 중..."
   },
   "fileSelector": {
     "availableFiles": "사용 가능한 파일 ({count})",
@@ -466,12 +466,12 @@
     },
     "openFolder": "폴더 열기",
     "drag": {
-      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
-      "fileMoved": "File \"{name}\" moved to \"{target}\"",
-      "itemsMoved": "{count} items moved to \"{target}\"",
-      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
-      "fileMovedToRoot": "File \"{name}\" moved to root folder",
-      "itemsMovedToRoot": "{count} items moved to root folder"
+      "folderMoved": "폴더 \"{name}\"을(를) \"{target}\"(으)로 이동했습니다",
+      "fileMoved": "파일 \"{name}\"을(를) \"{target}\"(으)로 이동했습니다",
+      "itemsMoved": "{count}개 항목을 \"{target}\"(으)로 이동했습니다",
+      "folderMovedToRoot": "폴더 \"{name}\"을(를) 루트 폴더로 이동했습니다",
+      "fileMovedToRoot": "파일 \"{name}\"을(를) 루트 폴더로 이동했습니다",
+      "itemsMovedToRoot": "{count}개 항목을 루트 폴더로 이동했습니다"
     }
   },
   "filesTable": {
@@ -611,9 +611,9 @@
     "or": "또는",
     "continueWithSSO": "SSO로 계속하기",
     "processing": "인증 처리 중...",
-    "orContinueWith": "Or continue with",
-    "continueWith": "Continue with {name}",
-    "providerNotConfigured": "{name} is not properly configured"
+    "orContinueWith": "또는 다음으로 계속",
+    "continueWith": "{name}(으)로 계속",
+    "providerNotConfigured": "{name}이(가) 올바르게 구성되지 않았습니다"
   },
   "logo": {
     "labels": {
@@ -969,7 +969,7 @@
         "previewNotAvailable": "미리보기 불가",
         "notAvailable": "사용 불가",
         "invalidDate": "잘못된 날짜",
-        "downloading": "Downloading..."
+        "downloading": "다운로드 중..."
       },
       "alias": {
         "editTitle": "별칭 편집",
@@ -1057,7 +1057,7 @@
           "aborted": "시간 초과로 인해 복사 작업이 취소되었습니다."
         },
         "invalidDate": "잘못된 날짜",
-        "downloading": "Downloading..."
+        "downloading": "다운로드 중..."
       }
     },
     "form": {
@@ -1126,10 +1126,10 @@
       "fieldRequirements": {
         "title": "필드 요구 사항",
         "description": "업로드 양식으로 표시되는 필드를 구성하십시오",
-        "configurationTitle": "Field Configuration:",
-        "hiddenDescription": "Hidden: Field won't appear in the upload form",
-        "optionalDescription": "Optional: Field will appear but isn't mandatory",
-        "requiredDescription": "Required: Field must be filled before upload"
+        "configurationTitle": "필드 구성:",
+        "hiddenDescription": "숨김: 업로드 양식에 필드가 표시되지 않습니다",
+        "optionalDescription": "선택: 필드가 표시되지만 필수가 아닙니다",
+        "requiredDescription": "필수: 업로드 전에 필드를 입력해야 합니다"
       },
       "nameFieldRequired": {
         "label": "이름 필드 요구 사항",
@@ -1395,8 +1395,8 @@
         "description": "SMTP 연결 보안 방식 - 자동 (권장), SSL, STARTTLS 또는 없음 (비보안)",
         "options": {
           "auto": "자동 (권장)",
-          "ssl": "SSL (포트 465)",
-          "tls": "STARTTLS (포트 587)",
+          "ssl": "SSL (Port 465)",
+          "tls": "STARTTLS (Port 587)",
           "none": "없음 (비보안)"
         }
       },
@@ -1902,7 +1902,7 @@
     "error": "파일 업로드에 실패했습니다",
     "fileSizeExceeded": "파일 크기가 {maxsizemb}MB 제한을 초과합니다.",
     "insufficientStorage": "저장 공간이 부족합니다. {availablespace}MB 사용 가능합니다.",
-    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
+    "storageFull": "저장 공간이 부족합니다. 사용 가능: {available}GB, 필요: {required}GB.",
     "unauthorized": "권한 없음: 이 리소스에 액세스하려면 유효한 토큰이 필요합니다.",
     "confirmCancel": {
       "title": "업로드 취소",
@@ -1919,8 +1919,8 @@
     "pasteSuccess": "{count, plural, =1 {이미지가 성공적으로 붙여넣기 및 업로드되었습니다} other {# 개의 이미지가 성공적으로 붙여넣기 및 업로드되었습니다}}",
     "filesQueued": "{count, plural, one {# 파일이 업로드 대기 중} other {# 파일이 업로드 대기 중}}",
     "errors": {
-      "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed",
+      "addFileFailed": "{name} 추가 실패: {error}",
+      "uploadFailed": "업로드 실패",
       "networkError": "서버에 연결할 수 없습니다. 연결 상태를 확인해 주세요.",
       "storageUnavailable": "스토리지 서비스를 사용할 수 없습니다. 나중에 다시 시도해 주세요."
     }
@@ -2008,7 +2008,7 @@
       "close": "닫기",
       "errors": {
         "generateFailed": "초대 링크 생성 실패",
-        "copyFailed": "Failed to copy link"
+        "copyFailed": "링크 복사 실패"
       }
     }
   },
@@ -2087,9 +2087,9 @@
     "pageTitle": "계정 만들기"
   },
   "filesTree": {
-    "noItems": "No items to display"
+    "noItems": "표시할 항목이 없습니다"
   },
   "languageSwitcher": {
-    "changeLanguage": "Change language"
+    "changeLanguage": "언어 변경"
   }
 }

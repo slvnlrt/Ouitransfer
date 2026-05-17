@@ -15,16 +15,16 @@
     "sessionExpired": "Your session has expired. Please sign in again.",
     "callback": {
       "errors": {
-        "oauth_error": "OAuth authentication failed",
-        "missing_parameters": "Missing authentication parameters",
-        "missing_code": "Missing authorization code",
-        "registration_disabled": "Registration is disabled for this provider",
-        "provider_disabled": "This authentication provider is disabled",
-        "state_expired": "Authentication session expired",
-        "account_inactive": "Your account is inactive",
-        "no_email": "No email address found in your account",
-        "token_exchange_failed": "Failed to authenticate with provider",
-        "missing_user_info": "Incomplete user information from provider"
+        "oauth_error": "אימות OAuth נכשל",
+        "missing_parameters": "פרמטרי אימות חסרים",
+        "missing_code": "קוד הרשאה חסר",
+        "registration_disabled": "ההרשמה מושבתת עבור ספק זה",
+        "provider_disabled": "ספק אימות זה מושבת",
+        "state_expired": "פג תוקף הפגישה לאימות",
+        "account_inactive": "החשבון שלך אינו פעיל",
+        "no_email": "לא נמצאה כתובת דוא\"ל בחשבון שלך",
+        "token_exchange_failed": "האימות מול הספק נכשל",
+        "missing_user_info": "מידע משתמש חלקי מהספק"
       }
     }
   },
@@ -401,7 +401,7 @@
     "tryAlternativeView": "נסה תצוגה חלופית",
     "loadingAlternative": "טוען תצוגה חלופית...",
     "loadingAudio": "טוען אודיו...",
-    "downloading": "Downloading..."
+    "downloading": "מוריד..."
   },
   "fileSelector": {
     "availableFiles": "קבצים זמינים ({count})",
@@ -470,12 +470,12 @@
       "grid": "רשת"
     },
     "drag": {
-      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
-      "fileMoved": "File \"{name}\" moved to \"{target}\"",
-      "itemsMoved": "{count} items moved to \"{target}\"",
-      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
-      "fileMovedToRoot": "File \"{name}\" moved to root folder",
-      "itemsMovedToRoot": "{count} items moved to root folder"
+      "folderMoved": "התיקייה \"{name}\" הועברה אל \"{target}\"",
+      "fileMoved": "הקובץ \"{name}\" הועבר אל \"{target}\"",
+      "itemsMoved": "{count} פריטים הועברו אל \"{target}\"",
+      "folderMovedToRoot": "התיקייה \"{name}\" הועברה לתיקיית השורש",
+      "fileMovedToRoot": "הקובץ \"{name}\" הועבר לתיקיית השורש",
+      "itemsMovedToRoot": "{count} פריטים הועברו לתיקיית השורש"
     }
   },
   "filesTable": {
@@ -615,9 +615,9 @@
     "or": "או",
     "continueWithSSO": "המשך עם SSO",
     "processing": "מעבד אימות...",
-    "orContinueWith": "Or continue with",
-    "continueWith": "Continue with {name}",
-    "providerNotConfigured": "{name} is not properly configured"
+    "orContinueWith": "או המשך באמצעות",
+    "continueWith": "המשך באמצעות {name}",
+    "providerNotConfigured": "{name} אינו מוגדר כראוי"
   },
   "logo": {
     "labels": {
@@ -973,7 +973,7 @@
         "previewNotAvailable": "תצוגה מקדימה אינה זמינה",
         "notAvailable": "לא זמין",
         "invalidDate": "תאריך לא חוקי",
-        "downloading": "Downloading..."
+        "downloading": "מוריד..."
       },
       "alias": {
         "editTitle": "ערוך כינוי",
@@ -1061,7 +1061,7 @@
           "failed": "פעולת העתקה נכשלה. אנא נסה שוב.",
           "aborted": "פעולת העתקה בוטלה עקב פג זמן."
         },
-        "downloading": "Downloading..."
+        "downloading": "מוריד..."
       }
     },
     "form": {
@@ -1133,10 +1133,10 @@
       "fieldRequirements": {
         "title": "דרישות שדות",
         "description": "הגדר אילו שדות מוצגים בטופס ההעלאה",
-        "configurationTitle": "Field Configuration:",
-        "hiddenDescription": "Hidden: Field won't appear in the upload form",
-        "optionalDescription": "Optional: Field will appear but isn't mandatory",
-        "requiredDescription": "Required: Field must be filled before upload"
+        "configurationTitle": "הגדרת שדות:",
+        "hiddenDescription": "מוסתר: השדה לא יופיע בטופס ההעלאה",
+        "optionalDescription": "אופציונלי: השדה יוצג אך אינו חובה",
+        "requiredDescription": "חובה: יש למלא את השדה לפני ההעלאה"
       },
       "submit": "צור קישור קבלה"
     },
@@ -1304,7 +1304,7 @@
         "description": "תצורת אחסון קבצים"
       },
       "oidc": {
-        "title": "OpenID Connect (ספקי אימות)",
+        "title": "OpenID Connect (SSO)",
         "description": "הגדר אימות SSO באמצעות OpenID Connect"
       }
     },
@@ -1363,8 +1363,8 @@
         "description": "שיטת אבטחת חיבור SMTP - אוטומטי (מומלץ), SSL, STARTTLS, או ללא (לא מאובטח)",
         "options": {
           "auto": "אוטומטי (מומלץ)",
-          "ssl": "SSL (פורט 465)",
-          "tls": "STARTTLS (פורט 587)",
+          "ssl": "SSL (Port 465)",
+          "tls": "STARTTLS (Port 587)",
           "none": "ללא (לא מאובטח)"
         }
       },
@@ -1907,7 +1907,7 @@
     "error": "נכשל בהעלאת קובץ",
     "fileSizeExceeded": "גודל הקובץ חורג מהגבול של {maxsizemb}MB.",
     "insufficientStorage": "אין מספיק שטח אחסון. יש לך {availablespace}MB זמינים.",
-    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
+    "storageFull": "אין מספיק שטח אחסון. זמין: {available} ג'יגה-בייט, נדרש: {required} ג'יגה-בייט.",
     "unauthorized": "לא מורשה: נדרש טוקן חוקי כדי לגשת למשאב הזה.",
     "globalDrop": {
       "title": "שחרר קבצים להעלאה",
@@ -1923,8 +1923,8 @@
     },
     "pasteSuccess": "{count, plural, =1 {תמונה הודבקה והועלתה בהצלחה} other {# תמונות הודבקו והועלו בהצלחה}}",
     "errors": {
-      "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed",
+      "addFileFailed": "הוספת {name} נכשלה: {error}",
+      "uploadFailed": "ההעלאה נכשלה",
       "networkError": "לא ניתן להגיע לשרת. בדוק את החיבור שלך.",
       "storageUnavailable": "שירות האחסון אינו זמין. נסה שוב מאוחר יותר."
     }
@@ -2012,7 +2012,7 @@
       "close": "סגור",
       "errors": {
         "generateFailed": "נכשל ביצירת קישור הזמנה",
-        "copyFailed": "Failed to copy link"
+        "copyFailed": "העתקת הקישור נכשלה"
       }
     }
   },
@@ -2087,9 +2087,9 @@
     "pageTitle": "צור חשבון"
   },
   "filesTree": {
-    "noItems": "No items to display"
+    "noItems": "אין פריטים להצגה"
   },
   "languageSwitcher": {
-    "changeLanguage": "Change language"
+    "changeLanguage": "שנה שפה"
   }
 }

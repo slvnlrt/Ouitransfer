@@ -15,16 +15,16 @@
     "sessionExpired": "Your session has expired. Please sign in again.",
     "callback": {
       "errors": {
-        "oauth_error": "OAuth authentication failed",
-        "missing_parameters": "Missing authentication parameters",
-        "missing_code": "Missing authorization code",
-        "registration_disabled": "Registration is disabled for this provider",
-        "provider_disabled": "This authentication provider is disabled",
-        "state_expired": "Authentication session expired",
-        "account_inactive": "Your account is inactive",
-        "no_email": "No email address found in your account",
-        "token_exchange_failed": "Failed to authenticate with provider",
-        "missing_user_info": "Incomplete user information from provider"
+        "oauth_error": "การยืนยันตัวตน OAuth ล้มเหลว",
+        "missing_parameters": "พารามิเตอร์การยืนยันตัวตนหายไป",
+        "missing_code": "รหัสการอนุญาตหายไป",
+        "registration_disabled": "การลงทะเบียนถูกปิดใช้งานสำหรับผู้ให้บริการนี้",
+        "provider_disabled": "ผู้ให้บริการการยืนยันตัวตนนี้ถูกปิดใช้งาน",
+        "state_expired": "เซสชันการยืนยันตัวตนหมดอายุ",
+        "account_inactive": "บัญชีของคุณไม่ได้ใช้งาน",
+        "no_email": "ไม่พบที่อยู่อีเมลในบัญชีของคุณ",
+        "token_exchange_failed": "การยืนยันตัวตนกับผู้ให้บริการล้มเหลว",
+        "missing_user_info": "ข้อมูลผู้ใช้จากผู้ให้บริการไม่สมบูรณ์"
       }
     }
   },
@@ -401,7 +401,7 @@
     "tryAlternativeView": "ลองมุมมองอื่น",
     "loadingAlternative": "กำลังโหลดมุมมองอื่น...",
     "loadingAudio": "กำลังโหลดเสียง...",
-    "downloading": "Downloading..."
+    "downloading": "กำลังดาวน์โหลด..."
   },
   "fileSelector": {
     "availableFiles": "ไฟล์ที่พร้อมใช้งาน ({count})",
@@ -470,12 +470,12 @@
       "grid": "กริด"
     },
     "drag": {
-      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
-      "fileMoved": "File \"{name}\" moved to \"{target}\"",
-      "itemsMoved": "{count} items moved to \"{target}\"",
-      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
-      "fileMovedToRoot": "File \"{name}\" moved to root folder",
-      "itemsMovedToRoot": "{count} items moved to root folder"
+      "folderMoved": "ย้ายโฟลเดอร์ \"{name}\" ไปยัง \"{target}\" แล้ว",
+      "fileMoved": "ย้ายไฟล์ \"{name}\" ไปยัง \"{target}\" แล้ว",
+      "itemsMoved": "ย้าย {count} รายการไปยัง \"{target}\" แล้ว",
+      "folderMovedToRoot": "ย้ายโฟลเดอร์ \"{name}\" ไปยังโฟลเดอร์หลักแล้ว",
+      "fileMovedToRoot": "ย้ายไฟล์ \"{name}\" ไปยังโฟลเดอร์หลักแล้ว",
+      "itemsMovedToRoot": "ย้าย {count} รายการไปยังโฟลเดอร์หลักแล้ว"
     }
   },
   "filesTable": {
@@ -615,9 +615,9 @@
     "or": "หรือ",
     "continueWithSSO": "ดำเนินการต่อด้วย SSO",
     "processing": "กำลังประมวลผลการยืนยันตัวตน...",
-    "orContinueWith": "Or continue with",
-    "continueWith": "Continue with {name}",
-    "providerNotConfigured": "{name} is not properly configured"
+    "orContinueWith": "หรือดำเนินการต่อด้วย",
+    "continueWith": "ดำเนินการต่อด้วย {name}",
+    "providerNotConfigured": "{name} ยังไม่ได้กำหนดค่าอย่างถูกต้อง"
   },
   "logo": {
     "labels": {
@@ -973,7 +973,7 @@
         "previewNotAvailable": "ไม่มีตัวอย่างพร้อมใช้งาน",
         "notAvailable": "ไม่พร้อมใช้งาน",
         "invalidDate": "วันที่ไม่ถูกต้อง",
-        "downloading": "Downloading..."
+        "downloading": "กำลังดาวน์โหลด..."
       },
       "alias": {
         "editTitle": "แก้ไขนามแฝง",
@@ -1061,7 +1061,7 @@
           "failed": "การคัดลอกล้มเหลว โปรดลองใหม่",
           "aborted": "การคัดลอกถูกยกเลิกเนื่องจากหมดเวลา"
         },
-        "downloading": "Downloading..."
+        "downloading": "กำลังดาวน์โหลด..."
       }
     },
     "form": {
@@ -1133,10 +1133,10 @@
       "fieldRequirements": {
         "title": "ข้อกำหนดฟิลด์",
         "description": "ตั้งค่าฟิลด์ใดที่จะแสดงในแบบฟอร์มการอัปโหลด",
-        "configurationTitle": "Field Configuration:",
-        "hiddenDescription": "Hidden: Field won't appear in the upload form",
-        "optionalDescription": "Optional: Field will appear but isn't mandatory",
-        "requiredDescription": "Required: Field must be filled before upload"
+        "configurationTitle": "การตั้งค่าฟิลด์:",
+        "hiddenDescription": "ซ่อน: ฟิลด์จะไม่ปรากฏในแบบฟอร์มอัปโหลด",
+        "optionalDescription": "ทางเลือก: ฟิลด์จะปรากฏแต่ไม่บังคับ",
+        "requiredDescription": "จำเป็น: ต้องกรอกฟิลด์ก่อนอัปโหลด"
       },
       "submit": "สร้างลิงค์การรับ"
     },
@@ -1363,8 +1363,8 @@
         "description": "วิธีการความปลอดภัยการเชื่อมต่อ SMTP - Auto (แนะนำ) SSL STARTTLS หรือ None (ไม่ปลอดภัย)",
         "options": {
           "auto": "Auto (แนะนำ)",
-          "ssl": "SSL (พอร์ต 465)",
-          "tls": "STARTTLS (พอร์ต 587)",
+          "ssl": "SSL (Port 465)",
+          "tls": "STARTTLS (Port 587)",
           "none": "ไม่มี (ไม่ปลอดภัย)"
         }
       },
@@ -1907,7 +1907,7 @@
     "error": "ไม่สามารถอัปโหลดไฟล์",
     "fileSizeExceeded": "ขนาดไฟล์เกินขีดจำกัด {maxsizemb}MB",
     "insufficientStorage": "พื้นที่จัดเก็บไม่เพียงพอ คุณมีพื้นที่ว่าง {availablespace}MB",
-    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
+    "storageFull": "พื้นที่จัดเก็บไม่เพียงพอ ใช้ได้: {available} GB, ต้องการ: {required} GB",
     "unauthorized": "ไม่ได้รับอนุญาต: ต้องมีโทเค็นที่ถูกต้องเพื่อเข้าถึงทรัพยากรนี้",
     "globalDrop": {
       "title": "วางไฟล์เพื่ออัปโหลด",
@@ -1923,8 +1923,8 @@
     },
     "pasteSuccess": "{count, plural, =1 {วางและอัปโหลดรูปภาพเรียบร้อยแล้ว} other {วางและอัปโหลด # รูปภาพเรียบร้อยแล้ว}}",
     "errors": {
-      "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed",
+      "addFileFailed": "เพิ่ม {name} ไม่สำเร็จ: {error}",
+      "uploadFailed": "การอัปโหลดล้มเหลว",
       "networkError": "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่อของคุณ",
       "storageUnavailable": "บริการจัดเก็บไม่พร้อมใช้งาน กรุณาลองใหม่อีกครั้งในภายหลัง"
     }
@@ -2012,7 +2012,7 @@
       "close": "ปิด",
       "errors": {
         "generateFailed": "ไม่สามารถสร้างลิงค์เชิญ",
-        "copyFailed": "Failed to copy link"
+        "copyFailed": "คัดลอกลิงก์ไม่สำเร็จ"
       }
     }
   },
@@ -2087,9 +2087,9 @@
     "pageTitle": "สร้างบัญชี"
   },
   "filesTree": {
-    "noItems": "No items to display"
+    "noItems": "ไม่มีรายการที่จะแสดง"
   },
   "languageSwitcher": {
-    "changeLanguage": "Change language"
+    "changeLanguage": "เปลี่ยนภาษา"
   }
 }

@@ -15,16 +15,16 @@
     "sessionExpired": "Your session has expired. Please sign in again.",
     "callback": {
       "errors": {
-        "oauth_error": "OAuth authentication failed",
-        "missing_parameters": "Missing authentication parameters",
-        "missing_code": "Missing authorization code",
-        "registration_disabled": "Registration is disabled for this provider",
-        "provider_disabled": "This authentication provider is disabled",
-        "state_expired": "Authentication session expired",
-        "account_inactive": "Your account is inactive",
-        "no_email": "No email address found in your account",
-        "token_exchange_failed": "Failed to authenticate with provider",
-        "missing_user_info": "Incomplete user information from provider"
+        "oauth_error": "Autentikasi OAuth gagal",
+        "missing_parameters": "Parameter autentikasi tidak lengkap",
+        "missing_code": "Kode otorisasi tidak ditemukan",
+        "registration_disabled": "Pendaftaran dinonaktifkan untuk penyedia ini",
+        "provider_disabled": "Penyedia autentikasi ini dinonaktifkan",
+        "state_expired": "Sesi autentikasi telah kedaluwarsa",
+        "account_inactive": "Akun Anda tidak aktif",
+        "no_email": "Alamat email tidak ditemukan di akun Anda",
+        "token_exchange_failed": "Autentikasi dengan penyedia gagal",
+        "missing_user_info": "Informasi pengguna tidak lengkap dari penyedia"
       }
     }
   },
@@ -401,7 +401,7 @@
     "tryAlternativeView": "Coba Tampilan Alternatif",
     "loadingAlternative": "Memuat tampilan alternatif...",
     "loadingAudio": "Memuat audio...",
-    "downloading": "Downloading..."
+    "downloading": "Mengunduh..."
   },
   "fileSelector": {
     "availableFiles": "File Tersedia ({count})",
@@ -470,12 +470,12 @@
       "grid": "Grid"
     },
     "drag": {
-      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
-      "fileMoved": "File \"{name}\" moved to \"{target}\"",
-      "itemsMoved": "{count} items moved to \"{target}\"",
-      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
-      "fileMovedToRoot": "File \"{name}\" moved to root folder",
-      "itemsMovedToRoot": "{count} items moved to root folder"
+      "folderMoved": "Folder \"{name}\" dipindahkan ke \"{target}\"",
+      "fileMoved": "File \"{name}\" dipindahkan ke \"{target}\"",
+      "itemsMoved": "{count} item dipindahkan ke \"{target}\"",
+      "folderMovedToRoot": "Folder \"{name}\" dipindahkan ke folder akar",
+      "fileMovedToRoot": "File \"{name}\" dipindahkan ke folder akar",
+      "itemsMovedToRoot": "{count} item dipindahkan ke folder akar"
     }
   },
   "filesTable": {
@@ -615,9 +615,9 @@
     "or": "atau",
     "continueWithSSO": "Lanjutkan dengan SSO",
     "processing": "Memproses autentikasi...",
-    "orContinueWith": "Or continue with",
-    "continueWith": "Continue with {name}",
-    "providerNotConfigured": "{name} is not properly configured"
+    "orContinueWith": "Atau lanjutkan dengan",
+    "continueWith": "Lanjutkan dengan {name}",
+    "providerNotConfigured": "{name} tidak dikonfigurasi dengan benar"
   },
   "logo": {
     "labels": {
@@ -973,7 +973,7 @@
         "previewNotAvailable": "Pratinjau tidak tersedia",
         "notAvailable": "Tidak tersedia",
         "invalidDate": "Tanggal tidak valid",
-        "downloading": "Downloading..."
+        "downloading": "Mengunduh..."
       },
       "alias": {
         "editTitle": "Edit Alias",
@@ -1061,7 +1061,7 @@
           "failed": "Operasi penyalinan gagal. Silakan coba lagi.",
           "aborted": "Operasi penyalinan dibatalkan karena habis waktu."
         },
-        "downloading": "Downloading..."
+        "downloading": "Mengunduh..."
       }
     },
     "form": {
@@ -1133,10 +1133,10 @@
       "fieldRequirements": {
         "title": "Persyaratan Bidang",
         "description": "Konfigurasi bidang mana yang ditampilkan dalam formulir unggah",
-        "configurationTitle": "Field Configuration:",
-        "hiddenDescription": "Hidden: Field won't appear in the upload form",
-        "optionalDescription": "Optional: Field will appear but isn't mandatory",
-        "requiredDescription": "Required: Field must be filled before upload"
+        "configurationTitle": "Konfigurasi bidang:",
+        "hiddenDescription": "Tersembunyi: Bidang tidak akan muncul di formulir unggah",
+        "optionalDescription": "Opsional: Bidang akan muncul tetapi tidak wajib",
+        "requiredDescription": "Wajib: Bidang harus diisi sebelum mengunggah"
       },
       "submit": "Buat Tautan Terima"
     },
@@ -1907,7 +1907,7 @@
     "error": "Gagal mengunggah file",
     "fileSizeExceeded": "Ukuran file melebihi batas {maxsizemb}MB.",
     "insufficientStorage": "Ruang penyimpanan tidak mencukupi. Anda memiliki {availablespace}MB yang tersedia.",
-    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
+    "storageFull": "Ruang penyimpanan tidak cukup. Tersedia: {available} GB, dibutuhkan: {required} GB.",
     "unauthorized": "Tidak berwenang: token yang valid diperlukan untuk mengakses sumber daya ini.",
     "globalDrop": {
       "title": "Lepaskan file untuk mengunggah",
@@ -1923,8 +1923,8 @@
     },
     "pasteSuccess": "{count, plural, =1 {Gambar berhasil ditempel dan diunggah} other {# gambar berhasil ditempel dan diunggah}}",
     "errors": {
-      "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed",
+      "addFileFailed": "Gagal menambahkan {name}: {error}",
+      "uploadFailed": "Unggahan gagal",
       "networkError": "Tidak dapat terhubung ke server. Periksa koneksi Anda.",
       "storageUnavailable": "Layanan penyimpanan tidak tersedia. Silakan coba lagi nanti."
     }
@@ -2012,7 +2012,7 @@
       "close": "Tutup",
       "errors": {
         "generateFailed": "Gagal membuat tautan undangan",
-        "copyFailed": "Failed to copy link"
+        "copyFailed": "Gagal menyalin tautan"
       }
     }
   },
@@ -2087,9 +2087,9 @@
     "pageTitle": "Buat Akun"
   },
   "filesTree": {
-    "noItems": "No items to display"
+    "noItems": "Tidak ada item untuk ditampilkan"
   },
   "languageSwitcher": {
-    "changeLanguage": "Change language"
+    "changeLanguage": "Ubah bahasa"
   }
 }

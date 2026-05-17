@@ -15,16 +15,16 @@
     "sessionExpired": "Oturumunuz sona erdi. Lütfen tekrar giriş yapın.",
     "callback": {
       "errors": {
-        "oauth_error": "OAuth authentication failed",
-        "missing_parameters": "Missing authentication parameters",
-        "missing_code": "Missing authorization code",
-        "registration_disabled": "Registration is disabled for this provider",
-        "provider_disabled": "This authentication provider is disabled",
-        "state_expired": "Authentication session expired",
-        "account_inactive": "Your account is inactive",
-        "no_email": "No email address found in your account",
-        "token_exchange_failed": "Failed to authenticate with provider",
-        "missing_user_info": "Incomplete user information from provider"
+        "oauth_error": "OAuth kimlik doğrulaması başarısız oldu",
+        "missing_parameters": "Eksik kimlik doğrulama parametreleri",
+        "missing_code": "Eksik yetkilendirme kodu",
+        "registration_disabled": "Bu sağlayıcı için kayıt devre dışı bırakıldı",
+        "provider_disabled": "Bu kimlik doğrulama sağlayıcısı devre dışı bırakıldı",
+        "state_expired": "Kimlik doğrulama oturumu süresi doldu",
+        "account_inactive": "Hesabınız etkin değil",
+        "no_email": "Hesabınızda e-posta adresi bulunamadı",
+        "token_exchange_failed": "Sağlayıcı ile kimlik doğrulaması başarısız oldu",
+        "missing_user_info": "Sağlayıcıdan eksik kullanıcı bilgisi"
       }
     }
   },
@@ -397,7 +397,7 @@
     "tryAlternativeView": "Alternatif Görünümü Dene",
     "loadingAlternative": "Alternatif görünüm yükleniyor...",
     "loadingAudio": "Ses yükleniyor...",
-    "downloading": "Downloading..."
+    "downloading": "İndiriliyor..."
   },
   "fileSelector": {
     "availableFiles": "Mevcut Dosyalar ({count})",
@@ -466,12 +466,12 @@
     },
     "openFolder": "Klasörü aç",
     "drag": {
-      "folderMoved": "Folder \"{name}\" moved to \"{target}\"",
-      "fileMoved": "File \"{name}\" moved to \"{target}\"",
-      "itemsMoved": "{count} items moved to \"{target}\"",
-      "folderMovedToRoot": "Folder \"{name}\" moved to root folder",
-      "fileMovedToRoot": "File \"{name}\" moved to root folder",
-      "itemsMovedToRoot": "{count} items moved to root folder"
+      "folderMoved": "\"{name}\" klasörü \"{target}\" konumuna taşındı",
+      "fileMoved": "\"{name}\" dosyası \"{target}\" konumuna taşındı",
+      "itemsMoved": "{count} öğe \"{target}\" konumuna taşındı",
+      "folderMovedToRoot": "\"{name}\" klasörü kök klasöre taşındı",
+      "fileMovedToRoot": "\"{name}\" dosyası kök klasöre taşındı",
+      "itemsMovedToRoot": "{count} öğe kök klasöre taşındı"
     }
   },
   "filesTable": {
@@ -611,9 +611,9 @@
     "or": "ou",
     "continueWithSSO": "Continuar com SSO",
     "processing": "Processando autenticação...",
-    "orContinueWith": "Or continue with",
-    "continueWith": "Continue with {name}",
-    "providerNotConfigured": "{name} is not properly configured"
+    "orContinueWith": "Veya şununla devam edin",
+    "continueWith": "{name} ile devam et",
+    "providerNotConfigured": "{name} düzgün yapılandırılmamış"
   },
   "logo": {
     "labels": {
@@ -969,7 +969,7 @@
         "previewNotAvailable": "Önizleme mevcut değil",
         "notAvailable": "Mevcut değil",
         "invalidDate": "Geçersiz tarih",
-        "downloading": "Downloading..."
+        "downloading": "İndiriliyor..."
       },
       "alias": {
         "editTitle": "Takma Adı Düzenle",
@@ -1057,7 +1057,7 @@
           "aborted": "Kopyalama işlemi zaman aşımı nedeniyle iptal edildi."
         },
         "invalidDate": "Geçersiz tarih",
-        "downloading": "Downloading..."
+        "downloading": "İndiriliyor..."
       }
     },
     "form": {
@@ -1126,10 +1126,10 @@
       "fieldRequirements": {
         "title": "Saha Gereksinimleri",
         "description": "Hangi alanların yükleme formunda gösterildiğini yapılandırın",
-        "configurationTitle": "Field Configuration:",
-        "hiddenDescription": "Hidden: Field won't appear in the upload form",
-        "optionalDescription": "Optional: Field will appear but isn't mandatory",
-        "requiredDescription": "Required: Field must be filled before upload"
+        "configurationTitle": "Alan yapılandırması:",
+        "hiddenDescription": "Gizli: Alan yükleme formunda görünmeyecek",
+        "optionalDescription": "İsteğe bağlı: Alan görünecek ancak zorunlu değil",
+        "requiredDescription": "Zorunlu: Yüklemeden önce alan doldurulmalıdır"
       },
       "nameFieldRequired": {
         "label": "İsim alanı gereksinimi",
@@ -1902,7 +1902,7 @@
     "error": "Dosya yükleme başarısız",
     "fileSizeExceeded": "Dosya boyutu {maxsizemb}MB sınırını aşıyor.",
     "insufficientStorage": "Yetersiz depolama alanı. {availablespace}MB kullanılabilir alanınız var.",
-    "storageFull": "Not enough storage space. Available: {available}GB, required: {required}GB.",
+    "storageFull": "Yetersiz depolama alanı. Kullanılabilir: {available} GB, gerekli: {required} GB.",
     "unauthorized": "Yetkisiz: Bu kaynağa erişmek için geçerli bir token gereklidir.",
     "confirmCancel": {
       "title": "Yüklemeleri İptal Et",
@@ -1919,8 +1919,8 @@
     "pasteSuccess": "{count, plural, =1 {Görüntü yapıştırıldı ve başarıyla yüklendi} other {# görüntü yapıştırıldı ve başarıyla yüklendi}}",
     "filesQueued": "{count, plural, one {# dosya yükleme için bekliyor} other {# dosya yükleme için bekliyor}}",
     "errors": {
-      "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed",
+      "addFileFailed": "{name} eklenemedi: {error}",
+      "uploadFailed": "Yükleme başarısız oldu",
       "networkError": "Sunucuya ulaşılamıyor. Bağlantınızı kontrol edin.",
       "storageUnavailable": "Depolama hizmeti kullanılamıyor. Lütfen daha sonra tekrar deneyin."
     }
@@ -2008,7 +2008,7 @@
       "close": "Kapat",
       "errors": {
         "generateFailed": "Davet bağlantısı oluşturulamadı",
-        "copyFailed": "Failed to copy link"
+        "copyFailed": "Bağlantı kopyalanamadı"
       }
     }
   },
@@ -2087,9 +2087,9 @@
     "pageTitle": "Hesap Oluştur"
   },
   "filesTree": {
-    "noItems": "No items to display"
+    "noItems": "Görüntülenecek öğe yok"
   },
   "languageSwitcher": {
-    "changeLanguage": "Change language"
+    "changeLanguage": "Dili değiştir"
   }
 }
