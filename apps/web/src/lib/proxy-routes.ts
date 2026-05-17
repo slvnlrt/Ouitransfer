@@ -84,6 +84,7 @@ export const routes: RouteConfig[] = [
   // ADMIN
   // ═══════════════════════════════════════════════════════════════
   r("GET", "admin/audit-logs", "/admin/audit-logs", { query: true }),
+  r("GET", "admin/stats", "/admin/stats"),
 
   // ═══════════════════════════════════════════════════════════════
   // APP
@@ -93,6 +94,7 @@ export const routes: RouteConfig[] = [
   r("GET", "app/configs", "/app/configs"),
   r("GET", "app/disk-space", "/storage/disk-space"),
   r("GET", "app/health", "/health"),
+  r("GET", "app/health-status", "/health/status"),
   r("GET", "app/info", "/app/info"),
   r("DELETE", "app/remove-logo", "/app/logo"),
   r("GET", "app/system-info", "/app/system-info"),

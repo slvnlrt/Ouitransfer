@@ -18,7 +18,8 @@
     "apps/web": {
       "entry": [
         "src/app/**/{layout,page,loading,error,not-found}.{ts,tsx}",
-        "src/components/ui/*.{ts,tsx}"
+        "src/components/ui/*.{ts,tsx}",
+        "src/http/endpoints/index.ts"
       ],
       "project": ["src/**/*.{ts,tsx}"],
       "ignoreDependencies": ["@vitest/coverage-v8", "postcss", "tw-animate-css", "tailwindcss"]

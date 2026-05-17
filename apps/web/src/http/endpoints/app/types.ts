@@ -53,6 +53,11 @@ export interface UploadLogoBody {
   file?: unknown;
 }
 
+export interface HealthStatus200 {
+  status: "healthy" | "degraded" | "unhealthy";
+}
+
+export type HealthStatusResult = AxiosResponse<HealthStatus200>;
 export type GetAppInfoResult = AxiosResponse<GetAppInfo200>;
 export type UploadLogoResult = AxiosResponse<UploadLogo200>;
 export type RemoveLogoResult = AxiosResponse<RemoveLogo200>;

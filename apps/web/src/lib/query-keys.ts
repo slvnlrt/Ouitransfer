@@ -75,11 +75,17 @@ export const queryKeys = {
     info: () => [...queryKeys.app.all, "info"] as const,
     diskSpace: () => [...queryKeys.app.all, "diskSpace"] as const,
     health: () => [...queryKeys.app.all, "health"] as const,
+    healthStatus: () => [...queryKeys.app.all, "healthStatus"] as const,
     systemInfo: () => [...queryKeys.app.all, "systemInfo"] as const,
   },
 
   invite: {
     all: ["invite"] as const,
     validate: (token: string) => [...queryKeys.invite.all, "validate", token] as const,
+  },
+
+  admin: {
+    all: ["admin"] as const,
+    stats: () => [...queryKeys.admin.all, "stats"] as const,
   },
 } as const;
