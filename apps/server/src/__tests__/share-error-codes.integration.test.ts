@@ -85,7 +85,7 @@ describe("Share error codes — integration (Task 4)", () => {
     app.register(shareRoutes);
     await app.ready();
 
-    prismaModule = (await import("../shared/prisma.js")) as typeof prismaModule;
+    prismaModule = (await import("../shared/prisma.js")) as unknown as typeof prismaModule;
   });
 
   afterAll(async () => {
