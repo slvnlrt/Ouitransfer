@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -10,6 +9,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { resetPassword } from "@/http/endpoints";
+import { parseApiError } from "@/utils/api-error";
 
 const createSchema = (t: (key: string) => string) =>
   z
@@ -49,7 +49,10 @@ export function useResetPassword() {
       toast.success(t("resetPassword.messages.success"));
       router.push("/login");
     } catch (err) {
-      if (axios.isAxiosError(err) && err.response?.data?.error) {
+      const apiError = parseApiError(err);
+      if (apiError.isNetworkError) {
+        toast.error(t("errors.networkError"));
+      } else if (apiError.statusCode > 0) {
         toast.error(t("resetPassword.errors.serverError"));
       } else {
         toast.error(t("common.unexpectedError"));

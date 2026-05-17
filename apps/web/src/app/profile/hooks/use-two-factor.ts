@@ -1,7 +1,6 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -17,15 +16,7 @@ import {
 import type { TwoFactorSetupResponse } from "@/http/endpoints/auth/two-factor/types";
 import { logger } from "@/lib/logger";
 import { queryKeys } from "@/lib/query-keys";
-
-/**
- * Extract a user-facing error message from an Axios error, or return `undefined`
- * so the caller can fall back to a generic i18n message.
- */
-function extractServerError(error: unknown): string | undefined {
-  if (!axios.isAxiosError(error)) return undefined;
-  return error.response?.data?.error || undefined;
-}
+import { parseApiError } from "@/utils/api-error";
 
 export function useTwoFactor() {
   const t = useTranslations();
@@ -65,8 +56,12 @@ export function useTwoFactor() {
       logger.error("Failed to generate 2FA setup", {
         err: error instanceof Error ? error.message : String(error),
       });
-      const serverMsg = extractServerError(error);
-      toast.error(serverMsg ?? t("twoFactor.messages.setupFailed"));
+      const apiError = parseApiError(error);
+      if (apiError.isNetworkError) {
+        toast.error(t("errors.networkError"));
+      } else {
+        toast.error(t("twoFactor.messages.setupFailed"));
+      }
     },
   });
 
@@ -100,8 +95,12 @@ export function useTwoFactor() {
       logger.error("Failed to verify 2FA setup", {
         err: error instanceof Error ? error.message : String(error),
       });
-      const serverMsg = extractServerError(error);
-      toast.error(serverMsg ?? t("twoFactor.messages.verificationFailed"));
+      const apiError = parseApiError(error);
+      if (apiError.isNetworkError) {
+        toast.error(t("errors.networkError"));
+      } else {
+        toast.error(t("twoFactor.messages.verificationFailed"));
+      }
     },
   });
 
@@ -144,8 +143,12 @@ export function useTwoFactor() {
       logger.error("Failed to disable 2FA", {
         err: error instanceof Error ? error.message : String(error),
       });
-      const serverMsg = extractServerError(error);
-      toast.error(serverMsg ?? t("twoFactor.messages.disableFailed"));
+      const apiError = parseApiError(error);
+      if (apiError.isNetworkError) {
+        toast.error(t("errors.networkError"));
+      } else {
+        toast.error(t("twoFactor.messages.disableFailed"));
+      }
     },
   });
 
@@ -165,8 +168,12 @@ export function useTwoFactor() {
       logger.error("Failed to generate backup codes", {
         err: error instanceof Error ? error.message : String(error),
       });
-      const serverMsg = extractServerError(error);
-      toast.error(serverMsg ?? t("twoFactor.messages.backupCodesFailed"));
+      const apiError = parseApiError(error);
+      if (apiError.isNetworkError) {
+        toast.error(t("errors.networkError"));
+      } else {
+        toast.error(t("twoFactor.messages.backupCodesFailed"));
+      }
     },
   });
 

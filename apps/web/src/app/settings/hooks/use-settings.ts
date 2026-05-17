@@ -1,8 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import { useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -13,6 +13,7 @@ import { useAppInfo } from "@/contexts/app-info-context";
 import { useAdminConfigs } from "@/hooks/use-secure-configs";
 import { bulkUpdateConfigs } from "@/http/endpoints";
 import { queryKeys } from "@/lib/query-keys";
+import { parseApiError } from "@/utils/api-error";
 import type { Config, ConfigType, GroupFormData } from "../types";
 
 const createSchemas = () => ({
@@ -182,15 +183,13 @@ export function useSettings() {
 
       await refreshAppInfo();
     } catch (error: unknown) {
-      const errorMessage = axios.isAxiosError(error)
-        ? error.response?.data?.error || error.message || ""
-        : error instanceof Error
-          ? error.message
-          : "";
-
-      if (
-        errorMessage.includes("password authentication") ||
-        errorMessage.includes("authentication provider")
+      const apiError = parseApiError(error);
+      if (apiError.isNetworkError) {
+        toast.error(t("errors.networkError"));
+      } else if (
+        apiError.code === ErrorCodes.VALIDATION_ERROR &&
+        (apiError.message.includes("password authentication") ||
+          apiError.message.includes("authentication provider"))
       ) {
         toast.error(t("settings.errors.passwordAuthRequiresProvider"));
       } else {

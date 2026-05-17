@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
@@ -11,6 +10,7 @@ import { z } from "zod";
 
 import { getAuthConfig, requestPasswordReset } from "@/http/endpoints";
 import { queryKeys } from "@/lib/query-keys";
+import { parseApiError } from "@/utils/api-error";
 
 export type ForgotPasswordFormData = {
   email: string;
@@ -53,8 +53,9 @@ export function useForgotPassword() {
       toast.success(t("forgotPassword.resetInstructions"));
       router.push("/login");
     } catch (err) {
-      if (axios.isAxiosError(err) && err.response?.data?.message) {
-        toast.error(t(err.response.data.message));
+      const apiError = parseApiError(err);
+      if (apiError.isNetworkError) {
+        toast.error(t("errors.networkError"));
       } else {
         toast.error(t("common.unexpectedError"));
       }
