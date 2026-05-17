@@ -4,6 +4,7 @@ import fastifyMultipart from "@fastify/multipart";
 import { buildApp } from "./app.js";
 import { directoriesConfig } from "./config/directories.config.js";
 import { env } from "./env.js";
+import { adminRoutes } from "./modules/admin/routes.js";
 import { appRoutes } from "./modules/app/routes.js";
 import { auditRoutes } from "./modules/audit/routes.js";
 import { cleanupOldAttempts } from "./modules/auth/login-attempts.service.js";
@@ -83,6 +84,7 @@ async function startServer() {
   app.register(storageRoutes);
   app.register(appRoutes);
   app.register(auditRoutes);
+  app.register(adminRoutes);
   app.register(healthRoutes);
   app.register(s3StorageRoutes);
 
