@@ -1,9 +1,9 @@
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import type { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 import {
   hasZodFastifySchemaValidationErrors,
   isResponseSerializationError,
 } from "fastify-type-provider-zod";
-
 import { AppError } from "./app-error.js";
 
 /**
@@ -49,7 +49,7 @@ function handlePrismaError(error: PrismaKnownError): ErrorResponse {
       const target = (error.meta?.target as string[] | undefined)?.join(", ") ?? "field";
       return {
         error: "Conflict",
-        code: "UNIQUE_CONSTRAINT",
+        code: ErrorCodes.UNIQUE_CONSTRAINT,
         statusCode: 409,
         timestamp: new Date().toISOString(),
         details: { target },
@@ -59,7 +59,7 @@ function handlePrismaError(error: PrismaKnownError): ErrorResponse {
       // Record not found
       return {
         error: "Not Found",
-        code: "RECORD_NOT_FOUND",
+        code: ErrorCodes.RECORD_NOT_FOUND,
         statusCode: 404,
         timestamp: new Date().toISOString(),
       };
@@ -67,7 +67,7 @@ function handlePrismaError(error: PrismaKnownError): ErrorResponse {
       // Foreign key constraint violation
       return {
         error: "Conflict",
-        code: "FOREIGN_KEY_CONSTRAINT",
+        code: ErrorCodes.FOREIGN_KEY_CONSTRAINT,
         statusCode: 409,
         timestamp: new Date().toISOString(),
       };
@@ -75,14 +75,14 @@ function handlePrismaError(error: PrismaKnownError): ErrorResponse {
       // Relation violation
       return {
         error: "Conflict",
-        code: "RELATION_VIOLATION",
+        code: ErrorCodes.RELATION_VIOLATION,
         statusCode: 409,
         timestamp: new Date().toISOString(),
       };
     default:
       return {
         error: "Internal Server Error",
-        code: "DATABASE_ERROR",
+        code: ErrorCodes.DATABASE_ERROR,
         statusCode: 500,
         timestamp: new Date().toISOString(),
       };
@@ -110,7 +110,7 @@ function handleZodValidationError(
 
   return {
     error: "Validation Error",
-    code: "VALIDATION_ERROR",
+    code: ErrorCodes.VALIDATION_ERROR,
     statusCode: 400,
     timestamp: new Date().toISOString(),
     details: { issues },
@@ -181,7 +181,7 @@ export function globalErrorHandler(
     // This is a server-side bug — don't expose details to client
     response = {
       error: "Internal Server Error",
-      code: "RESPONSE_SERIALIZATION_ERROR",
+      code: ErrorCodes.RESPONSE_SERIALIZATION_ERROR,
       statusCode: 500,
       timestamp: new Date().toISOString(),
     };
@@ -193,7 +193,7 @@ export function globalErrorHandler(
   if (isJwtError(error)) {
     response = {
       error: "Unauthorized",
-      code: "AUTHENTICATION_ERROR",
+      code: ErrorCodes.AUTHENTICATION_ERROR,
       statusCode: 401,
       timestamp: new Date().toISOString(),
     };
@@ -213,7 +213,7 @@ export function globalErrorHandler(
   if (fastifyError.statusCode && fastifyError.statusCode >= 400 && fastifyError.statusCode < 600) {
     response = {
       error: fastifyError.message || http4xxMessage(fastifyError.statusCode),
-      code: fastifyError.code || "FASTIFY_ERROR",
+      code: fastifyError.code || ErrorCodes.FASTIFY_ERROR,
       statusCode: fastifyError.statusCode,
       timestamp: new Date().toISOString(),
     };
@@ -231,7 +231,7 @@ export function globalErrorHandler(
   // 6. Unknown / unexpected errors — generic 500
   response = {
     error: "Internal Server Error",
-    code: "INTERNAL_ERROR",
+    code: ErrorCodes.INTERNAL_ERROR,
     statusCode: 500,
     timestamp: new Date().toISOString(),
   };
@@ -248,7 +248,7 @@ export function globalErrorHandler(
 export function globalNotFoundHandler(_request: FastifyRequest, reply: FastifyReply): void {
   const response: ErrorResponse = {
     error: "Not Found",
-    code: "NOT_FOUND",
+    code: ErrorCodes.NOT_FOUND,
     statusCode: 404,
     timestamp: new Date().toISOString(),
   };
