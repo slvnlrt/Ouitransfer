@@ -1413,6 +1413,10 @@
       "passwordAuthEnabled": {
         "title": "Автентифікація за паролем",
         "description": "Увімкнути або вимкнути автентифікацію на основі пароля"
+      },
+      "embedSecret": {
+        "title": "Embed Secret",
+        "description": "Secret used to sign embed tokens for secure file embedding"
       }
     },
     "buttons": {
@@ -1952,7 +1956,9 @@
     "pasteSuccess": "{count, plural, =1 {Зображення вставлено і завантажено успішно} few {# зображення вставлено і завантажено успішно} many {# зображень вставлено і завантажено успішно} other {# зображень вставлено і завантажено успішно}}",
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed"
+      "uploadFailed": "Upload failed",
+      "networkError": "Unable to reach the server. Please check your connection.",
+      "storageUnavailable": "Storage service is unavailable. Please try again later."
     }
   },
   "users": {

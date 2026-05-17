@@ -1413,6 +1413,10 @@
       "passwordAuthEnabled": {
         "title": "การยืนยันตัวตนด้วยรหัสผ่าน",
         "description": "เปิดหรือปิดใช้งานการยืนยันตัวตนโดยใช้รหัสผ่าน"
+      },
+      "embedSecret": {
+        "title": "Embed Secret",
+        "description": "Secret used to sign embed tokens for secure file embedding"
       }
     },
     "buttons": {
@@ -1952,7 +1956,9 @@
     "pasteSuccess": "{count, plural, =1 {วางและอัปโหลดรูปภาพเรียบร้อยแล้ว} other {วางและอัปโหลด # รูปภาพเรียบร้อยแล้ว}}",
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed"
+      "uploadFailed": "Upload failed",
+      "networkError": "Unable to reach the server. Please check your connection.",
+      "storageUnavailable": "Storage service is unavailable. Please try again later."
     }
   },
   "users": {

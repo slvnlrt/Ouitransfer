@@ -1409,6 +1409,10 @@
       "hideVersion": {
         "title": "隐藏版本",
         "description": "在所有页面的页脚中隐藏OUITRANSFER版本"
+      },
+      "embedSecret": {
+        "title": "Embed Secret",
+        "description": "Secret used to sign embed tokens for secure file embedding"
       }
     },
     "buttons": {
@@ -1948,7 +1952,9 @@
     "filesQueued": "{count, plural, one {# 文件正在等待上传} other {# 文件正在等待上传}}",
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed"
+      "uploadFailed": "Upload failed",
+      "networkError": "Unable to reach the server. Please check your connection.",
+      "storageUnavailable": "Storage service is unavailable. Please try again later."
     }
   },
   "users": {

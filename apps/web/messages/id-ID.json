@@ -1413,6 +1413,10 @@
       "passwordAuthEnabled": {
         "title": "Autentikasi Kata Sandi",
         "description": "Aktifkan atau nonaktifkan autentikasi berbasis kata sandi"
+      },
+      "embedSecret": {
+        "title": "Embed Secret",
+        "description": "Secret used to sign embed tokens for secure file embedding"
       }
     },
     "buttons": {
@@ -1952,7 +1956,9 @@
     "pasteSuccess": "{count, plural, =1 {Gambar berhasil ditempel dan diunggah} other {# gambar berhasil ditempel dan diunggah}}",
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed"
+      "uploadFailed": "Upload failed",
+      "networkError": "Unable to reach the server. Please check your connection.",
+      "storageUnavailable": "Storage service is unavailable. Please try again later."
     }
   },
   "users": {

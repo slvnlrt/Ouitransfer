@@ -1409,6 +1409,10 @@
       "hideVersion": {
         "title": "버전 숨기기",
         "description": "모든 페이지의 바닥글에서 OUITRANSFER 버전 숨기기"
+      },
+      "embedSecret": {
+        "title": "Embed Secret",
+        "description": "Secret used to sign embed tokens for secure file embedding"
       }
     },
     "buttons": {
@@ -1948,7 +1952,9 @@
     "filesQueued": "{count, plural, one {# 파일이 업로드 대기 중} other {# 파일이 업로드 대기 중}}",
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed"
+      "uploadFailed": "Upload failed",
+      "networkError": "Unable to reach the server. Please check your connection.",
+      "storageUnavailable": "Storage service is unavailable. Please try again later."
     }
   },
   "users": {

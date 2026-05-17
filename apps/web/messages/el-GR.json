@@ -1413,6 +1413,10 @@
       "passwordAuthEnabled": {
         "title": "Έλεγχος με κωδικό πρόσβασης",
         "description": "Ενεργοποίηση ή απενεργοποίηση ελέγχου με κωδικό"
+      },
+      "embedSecret": {
+        "title": "Embed Secret",
+        "description": "Secret used to sign embed tokens for secure file embedding"
       }
     },
     "buttons": {
@@ -1952,7 +1956,9 @@
     "pasteSuccess": "{count, plural, =1 {Η εικόνα επικολλήθηκε και μεταφορτώθηκε με επιτυχία} other {# εικόνες επικολλήθηκαν και μεταφορτώθηκαν με επιτυχία}}",
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed"
+      "uploadFailed": "Upload failed",
+      "networkError": "Unable to reach the server. Please check your connection.",
+      "storageUnavailable": "Storage service is unavailable. Please try again later."
     }
   },
   "users": {

@@ -1412,6 +1412,10 @@
       "hideVersion": {
         "title": "Masquer la Version",
         "description": "Masquer la version de OUITRANSFER dans le pied de page de toutes les pages"
+      },
+      "embedSecret": {
+        "title": "Embed Secret",
+        "description": "Secret used to sign embed tokens for secure file embedding"
       }
     },
     "buttons": {
@@ -1948,7 +1952,9 @@
     "filesQueued": "{count, plural, one {# fichier en attente de téléchargement} other {# fichiers en attente de téléchargement}}",
     "errors": {
       "addFileFailed": "Failed to add {name}: {error}",
-      "uploadFailed": "Upload failed"
+      "uploadFailed": "Upload failed",
+      "networkError": "Unable to reach the server. Please check your connection.",
+      "storageUnavailable": "Storage service is unavailable. Please try again later."
     }
   },
   "users": {
