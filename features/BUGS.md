@@ -159,7 +159,7 @@ Pas d'investigation approfondie effectuée. La page settings utilise `PageLayout
 
 > Tous les bugs ont été résolus dans le cadre de la feature 7.1 (Error Handling & Dashboard Redesign).
 > B-1/B-4 résolus par le remplacement de SystemHealth+StorageUsage par le composant unifié SystemStatus.
-> B-3 résolu par l'intégration de parseApiError dans use-uppy-upload (détection réseau + stockage).
+> B-3 résolu par l'intégration de parseApiError dans use-uppy-upload (détection réseau + stockage) + détection des erreurs XHR réseau Uppy (error.source.status === 0).
 > B-2 résolu par ajout des clés i18n manquantes dans les 23 locales.
 > B-5 résolu par ajout de breakpoints responsive aux grids des formulaires auth-provider.
 > B-6 résolu par ajout d'un handler onError sur l'image logo dans la navbar.

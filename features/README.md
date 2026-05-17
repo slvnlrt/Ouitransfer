@@ -94,4 +94,4 @@ features/
 
 ## Current Focus
 
-7.1 Error Handling & Dashboard Redesign — implementation complete, in review. Then: 5.x features (quotas, cleanup, groups, LDAP)
+7.1 Error Handling & Dashboard Redesign — Done. Next: 5.x features (quotas, cleanup, groups, LDAP)
