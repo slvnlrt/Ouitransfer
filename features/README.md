@@ -25,7 +25,7 @@ This directory tracks all feature development for Ouitransfer (post-refactor pha
 
 | # | Feature | Status | Depends on |
 |---|---------|--------|------------|
-| 7.1 | [Error Handling & Dashboard Redesign](specs/7.1-error-handling-dashboard.md) | In review | — |
+| 7.1 | [Error Handling & Dashboard Redesign](specs/7.1-error-handling-dashboard.md) | Done | — |
 
 ### Status Legend
 
