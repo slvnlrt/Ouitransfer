@@ -255,6 +255,45 @@
     "recentFiles": {
       "title": "Senaste filer",
       "description": "Dina senast uppladdade filer"
+    },
+    "systemStatus": {
+      "title": "System Status",
+      "refresh": "Refresh",
+      "status": {
+        "healthy": "Healthy",
+        "degraded": "Degraded",
+        "unhealthy": "Unhealthy"
+      },
+      "checks": {
+        "database": "Database",
+        "storage": "Storage",
+        "ok": "OK",
+        "error": "Error",
+        "notConfigured": "Not configured"
+      },
+      "uptime": "Uptime",
+      "diskSpace": {
+        "label": "Disk Space",
+        "ariaLabel": "Disk space usage progress bar"
+      },
+      "quota": {
+        "label": "Storage Quota",
+        "ariaLabel": "Storage quota progress bar",
+        "notConfigured": "Quotas not configured"
+      },
+      "metrics": {
+        "users": "Users",
+        "files": "Files",
+        "shares": "Shares",
+        "reverseShares": "Reverse Shares",
+        "myFiles": "My files",
+        "activeShares": "Active shares"
+      },
+      "errors": {
+        "title": "Status unavailable",
+        "fetchFailed": "Unable to retrieve system status. Please try again later.",
+        "diskSpaceError": "Unable to retrieve disk space information."
+      }
     }
   },
   "deleteConfirmation": {
