@@ -337,6 +337,7 @@
   },
   "errors": {
     "invalidCredentials": "Ongeldig e-mail of wachtwoord",
+    "networkError": "Unable to reach the server. Please check your connection.",
     "userNotFound": "Gebruiker niet gevonden",
     "accountLocked": "Account vergrendeld. Probeer het later opnieuw",
     "unexpectedError": "Er is een onverwachte fout opgetreden. Probeer het opnieuw",

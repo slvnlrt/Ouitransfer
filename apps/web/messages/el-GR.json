@@ -341,6 +341,7 @@
   },
   "errors": {
     "invalidCredentials": "Μη έγκυρο email ή κωδικός πρόσβασης",
+    "networkError": "Unable to reach the server. Please check your connection.",
     "userNotFound": "Ο χρήστης δεν βρέθηκε",
     "accountLocked": "Ο λογαριασμός είναι κλειδωμένος. Προσπαθήστε αργότερα",
     "unexpectedError": "Παρουσιάστηκε απρόσμενο σφάλμα. Προσπαθήστε ξανά",

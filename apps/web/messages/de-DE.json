@@ -337,6 +337,7 @@
   },
   "errors": {
     "invalidCredentials": "Ungültige E-Mail oder Passwort",
+    "networkError": "Unable to reach the server. Please check your connection.",
     "userNotFound": "Benutzer nicht gefunden",
     "accountLocked": "Konto gesperrt. Bitte versuchen Sie es später erneut",
     "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut",

@@ -337,6 +337,7 @@
   },
   "errors": {
     "invalidCredentials": "無効なメールアドレスまたはパスワードです",
+    "networkError": "Unable to reach the server. Please check your connection.",
     "userNotFound": "ユーザーが見つかりません",
     "accountLocked": "アカウントがロックされています。後でもう一度お試しください",
     "unexpectedError": "予期しないエラーが発生しました。もう一度お試しください",

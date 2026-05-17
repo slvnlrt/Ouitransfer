@@ -337,6 +337,7 @@
   },
   "errors": {
     "invalidCredentials": "Неверный адрес электронной почты или пароль",
+    "networkError": "Unable to reach the server. Please check your connection.",
     "userNotFound": "Пользователь не найден",
     "accountLocked": "Аккаунт заблокирован. Пожалуйста, попробуйте позже",
     "unexpectedError": "Произошла непредвиденная ошибка. Пожалуйста, попробуйте еще раз",

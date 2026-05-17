@@ -50,12 +50,13 @@ export function usePublicShare() {
   });
 
   // --- React to non-password query errors ---
+  // biome-ignore lint/correctness/useExhaustiveDependencies: t is stable from next-intl; including it risks re-firing the error toast
   useEffect(() => {
     if (!shareQuery.error) return;
     if (!isPasswordRequired(shareQuery.error)) {
       toast.error(t("share.errors.loadFailed"));
     }
-  }, [shareQuery.error, t]);
+  }, [shareQuery.error]);
 
   // --- Password submit mutation ---
   const passwordMutation = useMutation({

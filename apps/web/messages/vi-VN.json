@@ -341,6 +341,7 @@
   },
   "errors": {
     "invalidCredentials": "Email hoặc mật khẩu không hợp lệ",
+    "networkError": "Unable to reach the server. Please check your connection.",
     "userNotFound": "Không tìm thấy người dùng",
     "accountLocked": "Tài khoản bị khóa. Vui lòng thử lại sau",
     "unexpectedError": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại",

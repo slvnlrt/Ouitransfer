@@ -341,6 +341,7 @@
   },
   "errors": {
     "invalidCredentials": "Email atau kata sandi salah",
+    "networkError": "Unable to reach the server. Please check your connection.",
     "userNotFound": "Pengguna tidak ditemukan",
     "accountLocked": "Akun terkunci. Silakan coba lagi nanti",
     "unexpectedError": "Terjadi kesalahan tak terduga. Silakan coba lagi",

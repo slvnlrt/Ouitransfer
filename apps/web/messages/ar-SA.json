@@ -337,6 +337,7 @@
   },
   "errors": {
     "invalidCredentials": "بريد إلكتروني أو كلمة مرور غير صحيحة",
+    "networkError": "Unable to reach the server. Please check your connection.",
     "userNotFound": "المستخدم غير موجود",
     "accountLocked": "تم قفل الحساب. يرجى المحاولة لاحقًا",
     "unexpectedError": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى",

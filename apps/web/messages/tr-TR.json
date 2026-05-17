@@ -337,6 +337,7 @@
   },
   "errors": {
     "invalidCredentials": "Geçersiz e-posta veya şifre",
+    "networkError": "Unable to reach the server. Please check your connection.",
     "userNotFound": "Kullanıcı bulunamadı",
     "accountLocked": "Hesap kilitlendi. Lütfen daha sonra tekrar deneyin",
     "unexpectedError": "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin",

@@ -32,7 +32,7 @@ import {
   getMultipartPartUrl,
 } from "@/http/endpoints/files";
 import { logger } from "@/lib/logger";
-import { ClientErrorCodes, formatErrorForDisplay, parseApiError } from "@/utils/api-error";
+import { formatErrorForDisplay, parseApiError } from "@/utils/api-error";
 
 /**
  * Custom multipart upload functions for non-authenticated uploads (e.g., reverse shares)
@@ -522,7 +522,7 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
 
       // Determine user-facing message
       let userMessage: string;
-      if (apiError.isNetworkError || apiError.code === ClientErrorCodes.NETWORK_ERROR) {
+      if (apiError.isNetworkError) {
         userMessage = t("uploadFile.errors.networkError");
       } else if (apiError.code === ErrorCodes.STORAGE_UNREACHABLE) {
         userMessage = t("uploadFile.errors.storageUnavailable");

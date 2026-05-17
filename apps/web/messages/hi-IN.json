@@ -337,6 +337,7 @@
   },
   "errors": {
     "invalidCredentials": "गलत ईमेल या पासवर्ड",
+    "networkError": "Unable to reach the server. Please check your connection.",
     "userNotFound": "उपयोगकर्ता नहीं मिला",
     "accountLocked": "खाता लॉक है। कृपया बाद में प्रयास करें",
     "unexpectedError": "एक अप्रत्याशित त्रुटि हुई। कृपया पुनः प्रयास करें",
