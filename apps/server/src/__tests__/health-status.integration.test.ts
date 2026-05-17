@@ -17,17 +17,38 @@ vi.mock("../shared/prisma.js", () => ({
   },
 }));
 
+/**
+ * Mutable storage stub — starts as null (storage not configured).
+ * The "storage unreachable" describe block enables it by setting s3Enabled = true
+ * and making send() throw.
+ *
+ * We use explicit getters so that Vitest's ESM live-binding layer always reads
+ * the current value on each import access.
+ */
+const storageState = {
+  s3Enabled: false,
+  sendImpl: vi.fn().mockResolvedValue({}),
+};
+
 // Mock storage config — storage not configured by default
-vi.mock("../config/storage.config.js", () => ({
-  s3Client: null,
-  bucketName: "",
-  isExternalS3: false,
-  isInternalStorage: false,
-  rejectUnauthorized: true,
-  storageConfig: {},
-  createPublicS3Client: vi.fn().mockReturnValue(null),
-  ensureBucket: vi.fn().mockResolvedValue(undefined),
-}));
+vi.mock("../config/storage.config.js", () => {
+  const stub = {
+    get s3Client() {
+      if (!storageState.s3Enabled) return null;
+      return { send: storageState.sendImpl };
+    },
+    get bucketName() {
+      return storageState.s3Enabled ? "test-bucket" : "";
+    },
+    isExternalS3: false,
+    isInternalStorage: false,
+    rejectUnauthorized: true,
+    storageConfig: {},
+    createPublicS3Client: vi.fn().mockReturnValue(null),
+    ensureBucket: vi.fn().mockResolvedValue(undefined),
+  };
+  return stub;
+});
 
 // Mock logger utility — avoid "Logger not initialized" error in tests
 vi.mock("../utils/logger.js", () => ({
@@ -134,6 +155,41 @@ describe("GET /health/status — degraded (DB failure)", () => {
     const body = response.json<{ status: string }>();
     // DB fails, storage not configured → only storage "ok" (not configured treated as ok),
     // DB fails → degraded
-    expect(body.status).toMatch(/^(degraded|unhealthy)$/);
+    expect(body.status).toBe("degraded");
+  });
+});
+
+describe("GET /health/status — degraded (storage unreachable)", () => {
+  const app = fastify({ logger: false });
+
+  beforeAll(async () => {
+    // Enable storage so the controller reaches the HeadBucketCommand branch,
+    // but make send() throw to simulate an unreachable storage endpoint
+    storageState.s3Enabled = true;
+    storageState.sendImpl.mockRejectedValue(new Error("Connection refused"));
+
+    app.setValidatorCompiler(validatorCompiler);
+    app.setSerializerCompiler(serializerCompiler);
+    app.register(healthRoutes);
+    await app.ready();
+  });
+
+  afterAll(async () => {
+    // Restore storage to "not configured" state for isolation
+    storageState.s3Enabled = false;
+    storageState.sendImpl.mockResolvedValue({});
+    await app.close();
+  });
+
+  it("returns degraded when storage is configured but unreachable", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/health/status",
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = response.json<{ status: string }>();
+    // DB succeeds, storage configured but throws → storage "error" → degraded
+    expect(body.status).toBe("degraded");
   });
 });

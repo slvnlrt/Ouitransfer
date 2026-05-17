@@ -152,7 +152,7 @@ describe("Health endpoint — degraded state", () => {
     await app.close();
   });
 
-  it("GET /health returns 503 when database check fails", async () => {
+  it("GET /health returns 200 when database check fails (status field is degraded)", async () => {
     const { prisma } = await import("../shared/prisma.js");
     vi.mocked(prisma.$queryRaw).mockRejectedValueOnce(new Error("DB connection failed"));
 
@@ -161,7 +161,7 @@ describe("Health endpoint — degraded state", () => {
       url: "/health",
     });
 
-    expect(response.statusCode).toBe(503);
+    expect(response.statusCode).toBe(200);
 
     const body = response.json<{
       status: string;
@@ -193,7 +193,7 @@ describe("Health endpoint — both DB and storage degraded", () => {
     await app.close();
   });
 
-  it("GET /health returns 503 with both database and storage errors", async () => {
+  it("GET /health returns 200 with both database and storage errors (status field is degraded)", async () => {
     const { prisma } = await import("../shared/prisma.js");
     vi.mocked(prisma.$queryRaw).mockRejectedValueOnce(new Error("DB connection failed"));
     storageState.sendImpl.mockRejectedValueOnce(new Error("S3 connection failed"));
@@ -203,7 +203,7 @@ describe("Health endpoint — both DB and storage degraded", () => {
       url: "/health",
     });
 
-    expect(response.statusCode).toBe(503);
+    expect(response.statusCode).toBe(200);
 
     const body = response.json<{
       status: string;

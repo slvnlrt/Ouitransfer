@@ -156,8 +156,8 @@ export class StorageService {
       getLogger().error({ err: error }, "Error getting disk space");
       throw new AppError(
         500,
-        `Failed to get disk space information: ${error instanceof Error ? error.message : String(error)}`,
-        "DISK_SPACE_ERROR",
+        "Failed to retrieve disk space information",
+        ErrorCodes.DISK_SPACE_ERROR,
       );
     }
   }

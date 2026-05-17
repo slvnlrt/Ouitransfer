@@ -25,17 +25,15 @@ export async function healthRoutes(app: FastifyInstance) {
         tags: ["Health"],
         operationId: "checkHealth",
         summary: "Check API Health",
-        description:
-          "Returns health status including database and storage checks. 200 when healthy, 503 when degraded.",
+        description: "Returns health status including database and storage checks.",
         response: {
           200: healthResponseSchema,
-          503: healthResponseSchema,
         },
       },
     },
     async (_request, reply) => {
       const result = await healthController.check();
-      const statusCode = result.status === "healthy" ? 200 : 503;
+      const statusCode = 200;
       return reply.code(statusCode).send(result);
     },
   );

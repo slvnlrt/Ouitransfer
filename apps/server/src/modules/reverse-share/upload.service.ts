@@ -380,7 +380,7 @@ export class ReverseShareUploadService {
         if (retries >= maxRetries) {
           const message = error instanceof Error ? error.message : String(error);
           getLogger().error({ maxRetries, error: message }, "File copy exhausted retries");
-          throw new AppError(500, "File copy failed", "COPY_FAILED");
+          throw new AppError(500, "File copy failed", ErrorCodes.COPY_FAILED);
         }
 
         const delay = Math.min(1000 * 2 ** (retries - 1), 10_000);
