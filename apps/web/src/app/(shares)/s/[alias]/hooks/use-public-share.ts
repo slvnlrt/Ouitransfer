@@ -1,7 +1,7 @@
 "use client";
 
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -10,23 +10,22 @@ import { getShareByAlias } from "@/http/endpoints/index";
 import type { Share } from "@/http/endpoints/shares/types";
 import { logger } from "@/lib/logger";
 import { queryKeys } from "@/lib/query-keys";
+import { parseApiError } from "@/utils/api-error";
 import { usePublicShareDownload } from "./use-public-share-download";
 import { usePublicShareNavigation } from "./use-public-share-navigation";
 
 /**
- * Checks whether an axios error is a "Password required" 401.
+ * Checks whether an error is a "Password required" response.
  */
 function isPasswordRequired(error: unknown): boolean {
-  if (!axios.isAxiosError(error)) return false;
-  return error.response?.data?.error === "Password required";
+  return parseApiError(error).code === ErrorCodes.PASSWORD_REQUIRED;
 }
 
 /**
- * Checks whether an axios error is an "Invalid password" 401.
+ * Checks whether an error is an "Invalid password" response.
  */
 function isInvalidPassword(error: unknown): boolean {
-  if (!axios.isAxiosError(error)) return false;
-  return error.response?.data?.error === "Invalid password";
+  return parseApiError(error).code === ErrorCodes.INVALID_PASSWORD;
 }
 
 export function usePublicShare() {

@@ -1,15 +1,3 @@
-export const HTTP_STATUS = {
-  UNAUTHORIZED: 401,
-  FORBIDDEN: 403,
-  NOT_FOUND: 404,
-  GONE: 410,
-} as const;
-
-export const ERROR_MESSAGES = {
-  PASSWORD_REQUIRED: "Password required",
-  INVALID_PASSWORD: "Invalid password",
-} as const;
-
 export type ErrorType = "inactive" | "notFound" | "expired" | "generic" | null;
 
 export const STATUS_VARIANTS = {

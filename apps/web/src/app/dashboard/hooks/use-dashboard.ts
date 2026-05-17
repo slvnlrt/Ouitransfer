@@ -1,7 +1,7 @@
 "use client";
 
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -13,6 +13,7 @@ import { checkHealth, getDiskSpace, listFiles, listUserShares } from "@/http/end
 import type { Share } from "@/http/endpoints/shares/types";
 import { mapApiFiles } from "@/lib/api-mappers";
 import { queryKeys } from "@/lib/query-keys";
+import { parseApiError } from "@/utils/api-error";
 
 export function useDashboard() {
   const t = useTranslations();
@@ -57,17 +58,10 @@ export function useDashboard() {
     const error = diskSpaceQuery.error;
     if (!error) return null;
 
-    if (axios.isAxiosError(error)) {
-      if (
-        error.response?.status === 503 &&
-        error.response?.data?.code === "DISK_SPACE_DETECTION_FAILED"
-      ) {
-        return "disk_detection_failed";
-      }
-      if (error.response?.status !== undefined && error.response.status >= 500) {
-        return "server_error";
-      }
-    }
+    const apiError = parseApiError(error);
+    if (apiError.isNetworkError) return "network_error";
+    if (apiError.code === ErrorCodes.DISK_SPACE_DETECTION_FAILED) return "disk_detection_failed";
+    if (apiError.statusCode >= 500) return "server_error";
     return "unknown_error";
   }, [diskSpaceQuery.error]);
 
