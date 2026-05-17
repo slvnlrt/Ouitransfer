@@ -19,7 +19,7 @@ This directory tracks all feature development for Ouitransfer (post-refactor pha
 |---|---------|--------|------------|
 | 6.1 | [UI Code Audit](specs/6.1-ui-audit.md) | Done | — |
 | 6.2 | [UI Code Quality Fixes](specs/6.2-ui-fixes.md) | Done | 6.1 |
-| 6.3 | [Visual Redesign](specs/6.3-visual-redesign.md) | In progress | 6.2 |
+| 6.3 | [Visual Redesign](specs/6.3-visual-redesign.md) | Done | 6.2 |
 
 ### Status Legend
 
@@ -88,4 +88,4 @@ features/
 
 ## Current Focus
 
-6.3 — Visual Redesign (spec phase — new identity, color palette, wow factor)
+6.x UI Overhaul — COMPLETE. Next: 5.x features (quotas, cleanup, groups, LDAP)

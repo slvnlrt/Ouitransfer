@@ -24,3 +24,21 @@
   - T10: Icon picker rewrite (lazy-loading, ~95% bundle reduction)
 - All tests passing (205/205), type-check clean
 - 6.2 marked Done, next: 6.3 Visual Redesign
+
+## 2026-05-17
+- Completed 6.3 Visual Redesign:
+  - T1: Theme foundation — indigo palette (hue 265), Inter font, 0.625rem radius
+  - T2: Background effect — 3-blob gradient mesh, 20-25s drift, warm accent; fixed StaticBackgroundLights hardcoded green
+  - T3: Navigation — removed backdrop-blur, solid bg + shadow-sm, refined typography
+  - T4: Landing page — slower icon glow, refined partner card, solid tagline
+  - T5: Auth pages — rounded-xl cards, reduced blur, stronger shadows
+  - T6: Dashboard cards — hover lift, shadow transitions, refined icon containers
+  - T7: Loading screen — calmer opacity pulse + expanding bar animation
+  - T8: Button/Input — scoped transitions, focus ring animation, hover scale
+  - T9: Modal/dropdown — backdrop blur[2px], bg-black/60, slide-from-bottom
+  - T10: Empty/error states — entrance animations (fade+translate)
+  - T11: Dark mode polish pass — blue-tinted neutrals verified
+- Review: 3 Critical + 4 Important + 8 Minor → all resolved
+  - Fixed: auth input blur, button foreground token, home navbar, chart consistency, transition scoping, input ring transition, share page headers, icon glow timing, card translate, partner card opacity
+- 6.x UI Overhaul complete (6.1 audit → 6.2 fixes → 6.3 redesign)
+- Next: 5.x features (quotas, cleanup, groups, LDAP)
