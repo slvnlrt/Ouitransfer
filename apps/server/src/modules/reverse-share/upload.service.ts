@@ -3,14 +3,7 @@ import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import type { Prisma } from "@prisma/client";
 import { env } from "../../env.js";
 import { prisma } from "../../shared/prisma.js";
-import {
-  AppError,
-  ForbiddenError,
-  GoneError,
-  NotFoundError,
-  UnauthorizedError,
-  ValidationError,
-} from "../../utils/app-error.js";
+import { AppError, ForbiddenError, NotFoundError, ValidationError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { sanitizeFilename } from "../../utils/sanitize-filename.js";
 import { isMimeTypeConsistent } from "../../utils/validate-file-content.js";
@@ -54,23 +47,23 @@ export class ReverseShareUploadService {
     }
 
     if (!reverseShare.isActive) {
-      throw new GoneError("Reverse share is inactive");
+      throw new AppError(403, "Reverse share is inactive", ErrorCodes.SHARE_INACTIVE);
     }
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
-      throw new GoneError("Reverse share has expired");
+      throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 
     if (reverseShare.password) {
       if (!password) {
-        throw new UnauthorizedError("Password required");
+        throw new AppError(401, "Password required", ErrorCodes.PASSWORD_REQUIRED);
       }
       const isValidPassword = await this.reverseShareRepository.comparePassword(
         password,
         reverseShare.password,
       );
       if (!isValidPassword) {
-        throw new UnauthorizedError("Invalid password");
+        throw new AppError(401, "Invalid password", ErrorCodes.INVALID_PASSWORD);
       }
     }
 
@@ -108,23 +101,23 @@ export class ReverseShareUploadService {
     }
 
     if (!reverseShare.isActive) {
-      throw new GoneError("Reverse share is inactive");
+      throw new AppError(403, "Reverse share is inactive", ErrorCodes.SHARE_INACTIVE);
     }
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
-      throw new GoneError("Reverse share has expired");
+      throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 
     if (reverseShare.password) {
       if (!password) {
-        throw new UnauthorizedError("Password required");
+        throw new AppError(401, "Password required", ErrorCodes.PASSWORD_REQUIRED);
       }
       const isValidPassword = await this.reverseShareRepository.comparePassword(
         password,
         reverseShare.password,
       );
       if (!isValidPassword) {
-        throw new UnauthorizedError("Invalid password");
+        throw new AppError(401, "Invalid password", ErrorCodes.INVALID_PASSWORD);
       }
     }
 
@@ -162,23 +155,23 @@ export class ReverseShareUploadService {
     }
 
     if (!reverseShare.isActive) {
-      throw new GoneError("Reverse share is inactive");
+      throw new AppError(403, "Reverse share is inactive", ErrorCodes.SHARE_INACTIVE);
     }
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
-      throw new GoneError("Reverse share has expired");
+      throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 
     if (reverseShare.password) {
       if (!password) {
-        throw new UnauthorizedError("Password required");
+        throw new AppError(401, "Password required", ErrorCodes.PASSWORD_REQUIRED);
       }
       const isValidPassword = await this.reverseShareRepository.comparePassword(
         password,
         reverseShare.password,
       );
       if (!isValidPassword) {
-        throw new UnauthorizedError("Invalid password");
+        throw new AppError(401, "Invalid password", ErrorCodes.INVALID_PASSWORD);
       }
     }
 
@@ -232,23 +225,23 @@ export class ReverseShareUploadService {
     }
 
     if (!reverseShare.isActive) {
-      throw new GoneError("Reverse share is inactive");
+      throw new AppError(403, "Reverse share is inactive", ErrorCodes.SHARE_INACTIVE);
     }
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
-      throw new GoneError("Reverse share has expired");
+      throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 
     if (reverseShare.password) {
       if (!password) {
-        throw new UnauthorizedError("Password required");
+        throw new AppError(401, "Password required", ErrorCodes.PASSWORD_REQUIRED);
       }
       const isValidPassword = await this.reverseShareRepository.comparePassword(
         password,
         reverseShare.password,
       );
       if (!isValidPassword) {
-        throw new UnauthorizedError("Invalid password");
+        throw new AppError(401, "Invalid password", ErrorCodes.INVALID_PASSWORD);
       }
     }
 
