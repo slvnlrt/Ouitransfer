@@ -21,6 +21,12 @@ This directory tracks all feature development for Ouitransfer (post-refactor pha
 | 6.2 | [UI Code Quality Fixes](specs/6.2-ui-fixes.md) | Done | 6.1 |
 | 6.3 | [Visual Redesign](specs/6.3-visual-redesign.md) | Done | 6.2 |
 
+### 7.x — Error Handling & Polish
+
+| # | Feature | Status | Depends on |
+|---|---------|--------|------------|
+| 7.1 | [Error Handling & Dashboard Redesign](specs/7.1-error-handling-dashboard.md) | Spec | — |
+
 ### Status Legend
 
 | Status | Meaning |
@@ -88,4 +94,4 @@ features/
 
 ## Current Focus
 
-6.x UI Overhaul — COMPLETE. Next: 5.x features (quotas, cleanup, groups, LDAP)
+7.1 Error Handling & Dashboard Redesign — in progress. Then: 5.x features (quotas, cleanup, groups, LDAP)
