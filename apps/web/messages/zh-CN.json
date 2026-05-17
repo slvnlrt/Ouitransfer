@@ -1722,40 +1722,6 @@
     "selectShare": "选择共享 {shareName}",
     "folderCount": "文件夹"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "存储使用情况",
-    "ariaLabel": "存储使用进度条",
-    "used": "已使用：",
-    "available": "可用",
-    "total": "总计",
-    "loading": "加载中...",
-    "retry": "重试",
-    "errors": {
-      "title": "存储信息不可用",
-      "detectionFailed": "无法检测磁盘空间。这可能是由于系统配置问题或权限不足。",
-      "serverError": "检索存储信息时发生服务器错误。请稍后重试。",
-      "unknown": "加载存储信息时发生意外错误。"
-    }
-  },
   "theme": {
     "toggle": "切换主题",
     "light": "明亮",

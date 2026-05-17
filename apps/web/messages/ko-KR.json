@@ -1722,40 +1722,6 @@
     "selectShare": "공유 {shareName} 선택",
     "folderCount": "폴더"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "스토리지 사용량",
-    "ariaLabel": "스토리지 사용량 진행 바",
-    "used": "사용됨",
-    "available": "사용 가능",
-    "total": "총계",
-    "loading": "로딩 중...",
-    "retry": "다시 시도",
-    "errors": {
-      "title": "스토리지 정보를 사용할 수 없음",
-      "detectionFailed": "디스크 공간을 감지할 수 없습니다. 시스템 구성 문제 또는 권한이 부족한 것이 원인일 수 있습니다.",
-      "serverError": "스토리지 정보를 검색하는 중에 서버 오류가 발생했습니다. 나중에 다시 시도해 주세요.",
-      "unknown": "스토리지 정보를 로드하는 중에 예기치 않은 오류가 발생했습니다."
-    }
-  },
   "theme": {
     "toggle": "테마 전환",
     "light": "라이트",

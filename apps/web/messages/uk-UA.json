@@ -1726,40 +1726,6 @@
     "selectAll": "Вибрати все",
     "selectShare": "Вибрати спільне використання {shareName}"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "Використання сховища",
-    "ariaLabel": "Індикатор використання сховища",
-    "used": "використано",
-    "available": "доступно",
-    "total": "Загалом",
-    "loading": "Завантаження...",
-    "retry": "Повторити",
-    "errors": {
-      "title": "Інформація про сховище недоступна",
-      "detectionFailed": "Неможливо визначити дисковий простір. Це може бути через проблеми конфігурації системи або недостатні дозволи.",
-      "serverError": "Сталася помилка сервера під час отримання інформації про сховище. Будь ласка, спробуйте знову пізніше.",
-      "unknown": "Сталася неочікувана помилка під час завантаження інформації про сховище."
-    }
-  },
   "theme": {
     "toggle": "Переключити тему",
     "light": "Світла",

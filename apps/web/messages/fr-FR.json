@@ -1722,40 +1722,6 @@
     "selectShare": "Sélectionner le partage {shareName}",
     "folderCount": "dossiers"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "Utilisation du Stockage",
-    "ariaLabel": "Barre de progression de l'utilisation du stockage",
-    "used": "utilisé",
-    "available": "disponible",
-    "total": "Total",
-    "loading": "Chargement...",
-    "retry": "Réessayer",
-    "errors": {
-      "title": "Informations de stockage non disponibles",
-      "detectionFailed": "Impossible de détecter l'espace disque. Cela peut être dû à des problèmes de configuration système ou à des permissions insuffisantes.",
-      "serverError": "Une erreur serveur s'est produite lors de la récupération des informations de stockage. Veuillez réessayer plus tard.",
-      "unknown": "Une erreur inattendue s'est produite lors du chargement des informations de stockage."
-    }
-  },
   "theme": {
     "toggle": "Changer le thème",
     "light": "Clair",

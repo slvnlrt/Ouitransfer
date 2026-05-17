@@ -1726,40 +1726,6 @@
     "selectAll": "Chọn tất cả",
     "selectShare": "Chọn chia sẻ {shareName}"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "Sử dụng bộ nhớ",
-    "ariaLabel": "Thanh tiến trình sử dụng bộ nhớ",
-    "used": "đã sử dụng",
-    "available": "có sẵn",
-    "total": "Tổng",
-    "loading": "Đang tải...",
-    "retry": "Thử lại",
-    "errors": {
-      "title": "Thông tin bộ nhớ không có sẵn",
-      "detectionFailed": "Không thể phát hiện dung lượng đĩa. Điều này có thể do sự cố cấu hình hệ thống hoặc quyền không đủ.",
-      "serverError": "Đã xảy ra lỗi máy chủ khi truy xuất thông tin bộ nhớ. Vui lòng thử lại sau.",
-      "unknown": "Đã xảy ra lỗi không mong muốn khi tải thông tin bộ nhớ."
-    }
-  },
   "theme": {
     "toggle": "Chuyển đổi chủ đề",
     "light": "Sáng",

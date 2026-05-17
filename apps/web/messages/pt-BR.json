@@ -1726,40 +1726,6 @@
     },
     "folderCount": "pastas"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "Uso de armazenamento",
-    "ariaLabel": "Barra de progresso do uso de armazenamento",
-    "used": "usado",
-    "available": "disponível",
-    "total": "Total",
-    "loading": "Carregando...",
-    "retry": "Tentar novamente",
-    "errors": {
-      "title": "Informações de armazenamento indisponíveis",
-      "detectionFailed": "Não foi possível detectar o espaço em disco. Isso pode ser devido a problemas de configuração do sistema ou permissões insuficientes.",
-      "serverError": "Ocorreu um erro no servidor ao recuperar as informações de armazenamento. Por favor, tente novamente mais tarde.",
-      "unknown": "Ocorreu um erro inesperado ao carregar as informações de armazenamento."
-    }
-  },
   "theme": {
     "toggle": "Alternar tema",
     "light": "Claro",

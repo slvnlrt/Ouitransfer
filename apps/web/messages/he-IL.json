@@ -1726,40 +1726,6 @@
     "selectAll": "בחר הכל",
     "selectShare": "בחר שיתוף {shareName}"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "שימוש באחסון",
-    "ariaLabel": "פס התקדמות שימוש באחסון",
-    "used": "משומש",
-    "available": "זמין",
-    "total": "סה\"כ",
-    "loading": "טוען...",
-    "retry": "נסה שוב",
-    "errors": {
-      "title": "מידע אחסון לא זמין",
-      "detectionFailed": "לא ניתן לזהות שטח דיסק. זה יכול להיות בגלל בעיות תצורת מערכת או הרשאות לא מספקות.",
-      "serverError": "שגיאת שרת אירעה בעת קבלת מידע אחסון. אנא נסה שוב מאוחר יותר.",
-      "unknown": "אירעה שגיאה בלתי צפויה בעת טעינת מידע אחסון."
-    }
-  },
   "theme": {
     "toggle": "החלף נושא",
     "light": "בהיר",

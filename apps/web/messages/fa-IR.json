@@ -1726,40 +1726,6 @@
     "selectAll": "انتخاب همه",
     "selectShare": "انتخاب اشتراک {shareName}"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "استفاده از ذخیره‌سازی",
-    "ariaLabel": "نوار پیشرفت استفاده از ذخیره‌سازی",
-    "used": "استفاده شده",
-    "available": "موجود",
-    "total": "کل",
-    "loading": "در حال بارگذاری...",
-    "retry": "تلاش مجدد",
-    "errors": {
-      "title": "اطلاعات ذخیره‌سازی در دسترس نیست",
-      "detectionFailed": "تشخیص فضای دیسک ممکن نیست. این ممکن است به دلیل مشکلات پیکربندی سیستم یا مجوزهای ناکافی باشد.",
-      "serverError": "خطای سرور هنگام دریافت اطلاعات ذخیره‌سازی. لطفاً بعداً دوباره امتحان کنید.",
-      "unknown": "خطای غیرمنتظره‌ای هنگام بارگذاری اطلاعات ذخیره‌سازی رخ داد."
-    }
-  },
   "theme": {
     "toggle": "تغییر تم",
     "light": "روشن",

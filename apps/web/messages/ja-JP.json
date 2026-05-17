@@ -1722,40 +1722,6 @@
     "selectShare": "共有{shareName}を選択",
     "folderCount": "フォルダ"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "ストレージ使用量",
-    "ariaLabel": "ストレージ使用状況のプログレスバー",
-    "used": "使用済み",
-    "available": "利用可能",
-    "total": "合計",
-    "loading": "読み込み中...",
-    "retry": "再試行",
-    "errors": {
-      "title": "ストレージ情報が利用できません",
-      "detectionFailed": "ディスク容量を検出できません。システム設定の問題または権限が不足している可能性があります。",
-      "serverError": "ストレージ情報の取得中にサーバーエラーが発生しました。後でもう一度お試しください。",
-      "unknown": "ストレージ情報の読み込み中に予期せぬエラーが発生しました。"
-    }
-  },
   "theme": {
     "toggle": "テーマを切り替える",
     "light": "ライト",

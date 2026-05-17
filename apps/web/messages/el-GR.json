@@ -1726,40 +1726,6 @@
     "selectAll": "Επιλογή όλων",
     "selectShare": "Επιλογή κοινής χρήσης {shareName}"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "Χρήση αποθήκευσης",
-    "ariaLabel": "Γραμμή προόδου χρήσης αποθήκευσης",
-    "used": "χρησιμοποιημένο",
-    "available": "διαθέσιμο",
-    "total": "Σύνολο",
-    "loading": "Φόρτωση...",
-    "retry": "Δοκιμή ξανά",
-    "errors": {
-      "title": "Οι πληροφορίες αποθήκευσης δεν είναι διαθέσιμες",
-      "detectionFailed": "Δεν είναι δυνατός ο εντοπισμός του χώρου δίσκου. Ίσως οφείλεται σε ρυθμίσεις συστήματος ή ανεπαρκή δικαιώματα.",
-      "serverError": "Προέκυψε σφάλμα διακομιστή κατά την ανάκτηση πληροφοριών αποθήκευσης. Δοκιμάστε αργότερα.",
-      "unknown": "Προέκυψε απρόσμενο σφάλμα κατά τη φόρτωση πληροφοριών αποθήκευσης."
-    }
-  },
   "theme": {
     "toggle": "Εναλλαγή θέματος",
     "light": "Φωτεινό",

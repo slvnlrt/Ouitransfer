@@ -1726,40 +1726,6 @@
     "selectAll": "เลือกทั้งหมด",
     "selectShare": "เลือกแชร์ {shareName}"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "การใช้ที่จัดเก็บ",
-    "ariaLabel": "แถบความคืบหน้าการใช้ที่จัดเก็บ",
-    "used": "ใช้แล้ว",
-    "available": "พร้อมใช้งาน",
-    "total": "ทั้งหมด",
-    "loading": "กำลังโหลด...",
-    "retry": "ลองใหม่",
-    "errors": {
-      "title": "ข้อมูลการจัดเก็บไม่พร้อมใช้งาน",
-      "detectionFailed": "ไม่สามารถตรวจหาพื้นที่ดิสก์ อาจเนื่องจากปัญหาการตั้งค่าระบบหรือสิทธิ์ไม่เพียงพอ",
-      "serverError": "เกิดข้อผิดพลาดของเซิร์ฟเวอร์ขณะดึงข้อมูลการจัดเก็บ โปรดลองใหม่ภายหลัง",
-      "unknown": "เกิดข้อผิดพลาดที่ไม่คาดคิดขณะโหลดข้อมูลการจัดเก็บ"
-    }
-  },
   "theme": {
     "toggle": "สลับธีม",
     "light": "สว่าง",

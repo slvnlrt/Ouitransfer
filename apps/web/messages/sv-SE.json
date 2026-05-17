@@ -1726,40 +1726,6 @@
     "selectAll": "Välj alla",
     "selectShare": "Välj delning {shareName}"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "Användning av lagring",
-    "ariaLabel": "Förloppsindikator för lagringsanvändning",
-    "used": "begagnad",
-    "available": "tillgänglig",
-    "total": "Total",
-    "loading": "Belastning...",
-    "retry": "Försöka igen",
-    "errors": {
-      "title": "Lagringsinformation är inte tillgänglig",
-      "detectionFailed": "Det gick inte att upptäcka diskutrymme. Detta kan bero på systemkonfigurationsproblem eller otillräckliga behörigheter.",
-      "serverError": "Serverfel uppstod vid hämtning av lagringsinformation. Försök igen senare.",
-      "unknown": "Ett oväntat fel inträffade när lagringsinformation laddades."
-    }
-  },
   "theme": {
     "toggle": "Växla tema",
     "light": "Ljus",

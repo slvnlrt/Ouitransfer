@@ -1722,40 +1722,6 @@
     "selectShare": "Paylaşım {shareName} seç",
     "folderCount": "klasörler"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "Depolama Kullanımı",
-    "ariaLabel": "Depolama kullanım ilerleme çubuğu",
-    "used": "kullanıldı",
-    "available": "kullanılabilir",
-    "total": "Toplam",
-    "loading": "Yükleniyor...",
-    "retry": "Tekrar Dene",
-    "errors": {
-      "title": "Depolama bilgisi kullanılamıyor",
-      "detectionFailed": "Disk alanı tespit edilemiyor. Bu, sistem yapılandırma sorunlarından veya yetersiz izinlerden kaynaklanıyor olabilir.",
-      "serverError": "Depolama bilgisi alınırken sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.",
-      "unknown": "Depolama bilgisi yüklenirken beklenmeyen bir hata oluştu."
-    }
-  },
   "theme": {
     "toggle": "Temayı değiştir",
     "light": "Açık",

@@ -1722,40 +1722,6 @@
     "selectShare": "Freigabe {shareName} auswählen",
     "folderCount": "Ordner"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "Speichernutzung",
-    "ariaLabel": "Fortschrittsbalken der Speichernutzung",
-    "used": "genutzt",
-    "available": "verfügbar",
-    "total": "Gesamt",
-    "loading": "Wird geladen...",
-    "retry": "Wiederholen",
-    "errors": {
-      "title": "Speicherinformationen nicht verfügbar",
-      "detectionFailed": "Speicherplatz konnte nicht erkannt werden. Dies kann an Systemkonfigurationsproblemen oder unzureichenden Berechtigungen liegen.",
-      "serverError": "Serverfehler beim Abrufen der Speicherinformationen. Bitte versuchen Sie es später erneut.",
-      "unknown": "Ein unerwarteter Fehler ist beim Laden der Speicherinformationen aufgetreten."
-    }
-  },
   "theme": {
     "toggle": "Design umschalten",
     "light": "Hell",

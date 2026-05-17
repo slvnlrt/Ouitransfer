@@ -1726,40 +1726,6 @@
     "selectAll": "Seleccionar todo",
     "selectShare": "Seleccionar compartido {shareName}"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "Uso de almacenamiento",
-    "ariaLabel": "Barra de progreso del uso de almacenamiento",
-    "used": "usados",
-    "available": "disponible",
-    "total": "Total",
-    "loading": "Cargando...",
-    "retry": "Reintentar",
-    "errors": {
-      "title": "Información de almacenamiento no disponible",
-      "detectionFailed": "No se pudo detectar el espacio en disco. Esto puede deberse a problemas de configuración del sistema o permisos insuficientes.",
-      "serverError": "Ocurrió un error del servidor al recuperar la información de almacenamiento. Por favor, inténtelo de nuevo más tarde.",
-      "unknown": "Ocurrió un error inesperado al cargar la información de almacenamiento."
-    }
-  },
   "theme": {
     "toggle": "Cambiar tema",
     "light": "Claro",

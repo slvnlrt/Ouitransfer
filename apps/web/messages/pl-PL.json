@@ -1722,40 +1722,6 @@
     "selectShare": "Wybierz udostępnienie {shareName}",
     "folderCount": "foldery"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "Użycie pamięci",
-    "ariaLabel": "Pasek postępu użycia pamięci",
-    "used": "użyte",
-    "available": "dostępne",
-    "total": "Razem",
-    "loading": "Ładowanie...",
-    "retry": "Spróbuj ponownie",
-    "errors": {
-      "title": "Informacje o pamięci niedostępne",
-      "detectionFailed": "Nie można wykryć miejsca na dysku. Może to być spowodowane problemami z konfiguracją systemu lub niewystarczającymi uprawnieniami.",
-      "serverError": "Wystąpił błąd serwera podczas pobierania informacji o pamięci. Spróbuj ponownie później.",
-      "unknown": "Wystąpił nieoczekiwany błąd podczas ładowania informacji o pamięci."
-    }
-  },
   "theme": {
     "toggle": "Przełącz motyw",
     "light": "Jasny",

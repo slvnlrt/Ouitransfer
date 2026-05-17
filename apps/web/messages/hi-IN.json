@@ -1722,40 +1722,6 @@
     "selectShare": "साझाकरण {shareName} चुनें",
     "folderCount": "फ़ोल्डर"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "स्टोरेज उपयोग",
-    "ariaLabel": "स्टोरेज उपयोग प्रगति पट्टी",
-    "used": "उपयोग किया गया",
-    "available": "उपलब्ध",
-    "total": "कुल",
-    "loading": "लोड हो रहा है...",
-    "retry": "पुनः प्रयास करें",
-    "errors": {
-      "title": "स्टोरेज जानकारी अनुपलब्ध",
-      "detectionFailed": "डिस्क स्पेस का पता लगाने में असमर्थ। यह सिस्टम कॉन्फ़िगरेशन समस्याओं या अपर्याप्त अनुमतियों के कारण हो सकता है।",
-      "serverError": "स्टोरेज जानकारी प्राप्त करते समय सर्वर त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।",
-      "unknown": "स्टोरेज जानकारी लोड करते समय एक अनपेक्षित त्रुटि हुई।"
-    }
-  },
   "theme": {
     "toggle": "थीम टॉगल करें",
     "light": "लाइट",

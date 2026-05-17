@@ -1775,40 +1775,6 @@
     "selectAll": "Select all",
     "selectShare": "Select share {shareName}"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "Storage Usage",
-    "ariaLabel": "Storage usage progress bar",
-    "used": "used",
-    "available": "available",
-    "total": "Total",
-    "loading": "Loading...",
-    "retry": "Retry",
-    "errors": {
-      "title": "Storage information unavailable",
-      "detectionFailed": "Unable to detect disk space. This may be due to system configuration issues or insufficient permissions.",
-      "serverError": "Server error occurred while retrieving storage information. Please try again later.",
-      "unknown": "An unexpected error occurred while loading storage information."
-    }
-  },
   "theme": {
     "toggle": "Toggle theme",
     "light": "Light",

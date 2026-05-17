@@ -1722,40 +1722,6 @@
     "selectShare": "Deel {shareName} selecteren",
     "folderCount": "mappen"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "Opslaggebruik",
-    "ariaLabel": "Opslaggebruik voortgangsbalk",
-    "used": "gebruikt",
-    "available": "beschikbaar",
-    "total": "Totaal",
-    "loading": "Laden...",
-    "retry": "Opnieuw proberen",
-    "errors": {
-      "title": "Opslaginformatie niet beschikbaar",
-      "detectionFailed": "Kan schijfruimte niet detecteren. Dit kan komen door systeemconfiguratieproblemen of onvoldoende rechten.",
-      "serverError": "Er is een serverfout opgetreden bij het ophalen van opslaginformatie. Probeer het later opnieuw.",
-      "unknown": "Er is een onverwachte fout opgetreden bij het laden van opslaginformatie."
-    }
-  },
   "theme": {
     "toggle": "Thema wisselen",
     "light": "Licht",

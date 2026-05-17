@@ -1722,40 +1722,6 @@
     "selectShare": "تحديد المشاركة {shareName}",
     "folderCount": "مجلدات"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "استخدام التخزين",
-    "ariaLabel": "شريط تقدم استخدام التخزين",
-    "used": "المستخدمة",
-    "available": "متاح",
-    "total": "الإجمالي",
-    "loading": "جارٍ التحميل...",
-    "retry": "إعادة المحاولة",
-    "errors": {
-      "title": "معلومات التخزين غير متوفرة",
-      "detectionFailed": "تعذر اكتشاف مساحة القرص. قد يكون هذا بسبب مشاكل في إعدادات النظام أو صلاحيات غير كافية.",
-      "serverError": "حدث خطأ في الخادم أثناء استرجاع معلومات التخزين. يرجى المحاولة مرة أخرى لاحقاً.",
-      "unknown": "حدث خطأ غير متوقع أثناء تحميل معلومات التخزين."
-    }
-  },
   "theme": {
     "toggle": "تبديل السمة",
     "light": "فاتح",

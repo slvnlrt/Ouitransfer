@@ -1722,40 +1722,6 @@
     "selectShare": "Выбрать общую папку {shareName}",
     "folderCount": "папки"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "Использование хранилища",
-    "ariaLabel": "Индикатор использования хранилища",
-    "used": "Использовано",
-    "available": "Доступно",
-    "total": "Всего",
-    "loading": "Загрузка...",
-    "retry": "Повторить",
-    "errors": {
-      "title": "Информация о хранилище недоступна",
-      "detectionFailed": "Не удалось определить свободное место на диске. Это может быть связано с проблемами конфигурации системы или недостаточными правами доступа.",
-      "serverError": "Произошла ошибка сервера при получении информации о хранилище. Пожалуйста, повторите попытку позже.",
-      "unknown": "Произошла непредвиденная ошибка при загрузке информации о хранилище."
-    }
-  },
   "theme": {
     "toggle": "Переключить тему",
     "light": "Светлая",

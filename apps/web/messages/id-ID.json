@@ -1726,40 +1726,6 @@
     "selectAll": "Pilih semua",
     "selectShare": "Pilih berbagi {shareName}"
   },
-  "systemHealth": {
-    "title": "System Status",
-    "status": {
-      "healthy": "Healthy",
-      "degraded": "Degraded"
-    },
-    "checks": {
-      "database": "Database",
-      "storage": "Storage",
-      "ok": "OK",
-      "error": "Error",
-      "notConfigured": "Not configured"
-    },
-    "uptime": "Uptime",
-    "errors": {
-      "title": "Health status unavailable",
-      "fetchFailed": "Unable to retrieve system health information. Please try again later."
-    }
-  },
-  "storageUsage": {
-    "title": "Penggunaan Penyimpanan",
-    "ariaLabel": "Bar progres penggunaan penyimpanan",
-    "used": "digunakan",
-    "available": "tersedia",
-    "total": "Total",
-    "loading": "Memuat...",
-    "retry": "Coba Lagi",
-    "errors": {
-      "title": "Informasi penyimpanan tidak tersedia",
-      "detectionFailed": "Tidak dapat mendeteksi ruang disk. Ini mungkin disebabkan oleh masalah konfigurasi sistem atau izin yang tidak cukup.",
-      "serverError": "Terjadi kesalahan server saat mengambil informasi penyimpanan. Silakan coba lagi nanti.",
-      "unknown": "Terjadi kesalahan tak terduga saat memuat informasi penyimpanan."
-    }
-  },
   "theme": {
     "toggle": "Alih tema",
     "light": "Terang",
