@@ -12,5 +12,6 @@ export const ErrorResponseSchema = z.object({
   error: z.string(),
   code: z.string().optional(),
   statusCode: z.number().optional(),
+  timestamp: z.string().optional(),
   details: z.unknown().optional(),
 });

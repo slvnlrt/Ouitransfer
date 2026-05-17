@@ -135,6 +135,7 @@ describe("globalErrorHandler — AppError domain errors", () => {
     expect(sent.code).toBe("ALREADY_EXISTS");
     expect(sent.error).toBe("Already exists");
     expect(sent.details).toBeUndefined();
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 
   it("includes details when present", () => {
@@ -149,6 +150,7 @@ describe("globalErrorHandler — AppError domain errors", () => {
     expect(sent.statusCode).toBe(400);
     expect(sent.code).toBe("VALIDATION_ERROR");
     expect(sent.details).toEqual({ fields: ["email"] });
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 
   it("handles NotFoundError correctly", () => {
@@ -161,6 +163,7 @@ describe("globalErrorHandler — AppError domain errors", () => {
     expect(reply.status).toHaveBeenCalledWith(404);
     const sent = reply.send.mock.calls[0][0] as ErrorResponse;
     expect(sent.code).toBe("NOT_FOUND");
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 
   it("handles UnauthorizedError correctly", () => {
@@ -173,6 +176,7 @@ describe("globalErrorHandler — AppError domain errors", () => {
     expect(reply.status).toHaveBeenCalledWith(401);
     const sent = reply.send.mock.calls[0][0] as ErrorResponse;
     expect(sent.code).toBe("UNAUTHORIZED");
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 
   it("handles ForbiddenError correctly", () => {
@@ -185,6 +189,7 @@ describe("globalErrorHandler — AppError domain errors", () => {
     expect(reply.status).toHaveBeenCalledWith(403);
     const sent = reply.send.mock.calls[0][0] as ErrorResponse;
     expect(sent.code).toBe("FORBIDDEN");
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 
   it("handles GoneError correctly", () => {
@@ -197,6 +202,7 @@ describe("globalErrorHandler — AppError domain errors", () => {
     expect(reply.status).toHaveBeenCalledWith(410);
     const sent = reply.send.mock.calls[0][0] as ErrorResponse;
     expect(sent.code).toBe("GONE");
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 
   it("logs the full error via request.log.error", () => {
@@ -208,6 +214,18 @@ describe("globalErrorHandler — AppError domain errors", () => {
 
     expect(request.log.error).toHaveBeenCalledOnce();
     expect(request.log.error).toHaveBeenCalledWith({ err: error }, "Request error");
+  });
+
+  it("includes ISO 8601 timestamp in all error responses", () => {
+    const request = makeRequest();
+    const reply = makeReply();
+    const error = new AppError(400, "Test error", "TEST_ERROR");
+
+    invokeErrorHandler(error, request, reply);
+
+    const sent = reply.send.mock.calls[0][0] as ErrorResponse;
+    expect(sent.timestamp).toBeDefined();
+    expect(new Date(sent.timestamp).toISOString()).toBe(sent.timestamp);
   });
 });
 
@@ -236,6 +254,7 @@ describe("globalErrorHandler — Zod validation errors", () => {
       { path: "body.email", message: "Invalid email" },
       { path: "body.name", message: "Required" },
     ]);
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 
   it("calls request.log.error for every error type (Zod)", () => {
@@ -274,6 +293,7 @@ describe("globalErrorHandler — response serialization errors", () => {
     expect(sent.code).toBe("RESPONSE_SERIALIZATION_ERROR");
     expect(sent.error).toBe("Internal Server Error");
     expect(sent.details).toBeUndefined();
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 });
 
@@ -305,6 +325,7 @@ describe("globalErrorHandler — JWT errors", () => {
       expect(sent.statusCode).toBe(401);
       expect(sent.code).toBe("AUTHENTICATION_ERROR");
       expect(sent.error).toBe("Unauthorized");
+      expect(sent.timestamp).toEqual(expect.any(String));
     });
   }
 
@@ -320,6 +341,7 @@ describe("globalErrorHandler — JWT errors", () => {
     const sent = reply.send.mock.calls[0][0] as ErrorResponse;
     expect(sent.statusCode).toBe(401);
     expect(sent.code).toBe("AUTHENTICATION_ERROR");
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 
   it("returns 401 for unknown future FST_JWT_ codes (prefix-based)", () => {
@@ -334,6 +356,7 @@ describe("globalErrorHandler — JWT errors", () => {
     const sent = reply.send.mock.calls[0][0] as ErrorResponse;
     expect(sent.statusCode).toBe(401);
     expect(sent.code).toBe("AUTHENTICATION_ERROR");
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 
   it("does NOT match errors with JWT-like messages but no FST_JWT_/FAST_JWT_ code", () => {
@@ -348,6 +371,7 @@ describe("globalErrorHandler — JWT errors", () => {
 
     const sent = reply.send.mock.calls[0][0] as ErrorResponse;
     expect(sent.code).toBe("INTERNAL_ERROR");
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 });
 
@@ -370,6 +394,7 @@ describe("globalErrorHandler — Prisma P2002 (unique constraint)", () => {
     expect(sent.code).toBe("UNIQUE_CONSTRAINT");
     expect(sent.error).toBe("Conflict");
     expect(sent.details?.target).toBe("email");
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 
   it("uses 'field' as fallback when target is missing", () => {
@@ -383,6 +408,7 @@ describe("globalErrorHandler — Prisma P2002 (unique constraint)", () => {
 
     const sent = reply.send.mock.calls[0][0] as ErrorResponse;
     expect(sent.details?.target).toBe("field");
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 
   it("joins multiple target fields with comma", () => {
@@ -394,6 +420,7 @@ describe("globalErrorHandler — Prisma P2002 (unique constraint)", () => {
 
     const sent = reply.send.mock.calls[0][0] as ErrorResponse;
     expect(sent.details?.target).toBe("firstName, lastName");
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 });
 
@@ -412,6 +439,7 @@ describe("globalErrorHandler — Prisma P2025 (record not found)", () => {
     expect(sent.code).toBe("RECORD_NOT_FOUND");
     expect(sent.error).toBe("Not Found");
     expect(sent.details).toBeUndefined();
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 });
 
@@ -429,6 +457,7 @@ describe("globalErrorHandler — Prisma P2003 (foreign key constraint)", () => {
     expect(sent.statusCode).toBe(409);
     expect(sent.code).toBe("FOREIGN_KEY_CONSTRAINT");
     expect(sent.error).toBe("Conflict");
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 });
 
@@ -445,6 +474,7 @@ describe("globalErrorHandler — Prisma P2014 (relation violation)", () => {
     const sent = reply.send.mock.calls[0][0] as ErrorResponse;
     expect(sent.statusCode).toBe(409);
     expect(sent.code).toBe("RELATION_VIOLATION");
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 });
 
@@ -464,6 +494,7 @@ describe("globalErrorHandler — Prisma unknown code (e.g. P9999)", () => {
     expect(sent.error).toBe("Internal Server Error");
     // Must NOT contain any Prisma-internal details
     expect(sent.details).toBeUndefined();
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 });
 
@@ -489,6 +520,7 @@ describe("globalErrorHandler — Fastify 4xx errors", () => {
     expect(sent.statusCode).toBe(400);
     expect(sent.code).toBe("FST_ERR_VALIDATION");
     expect(sent.error).toBe("Bad Request");
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 
   it("returns 403 with Forbidden message", () => {
@@ -507,6 +539,7 @@ describe("globalErrorHandler — Fastify 4xx errors", () => {
     const sent = reply.send.mock.calls[0][0] as ErrorResponse;
     expect(sent.statusCode).toBe(403);
     expect(sent.error).toBe("Forbidden");
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 
   it("returns 429 with Too Many Requests message", () => {
@@ -525,6 +558,7 @@ describe("globalErrorHandler — Fastify 4xx errors", () => {
     const sent = reply.send.mock.calls[0][0] as ErrorResponse;
     expect(sent.statusCode).toBe(429);
     expect(sent.error).toBe("Rate limit exceeded, retry in 1 minute");
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 
   it("calls request.log.error for Fastify 4xx errors", () => {
@@ -562,6 +596,7 @@ describe("globalErrorHandler — Fastify 5xx errors", () => {
     // The raw internal message must NOT be forwarded to the client
     expect(sent.error).not.toContain("database");
     expect(sent.error).not.toContain("pool");
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 
   it("returns 500 with generic message and logs the full error", () => {
@@ -582,6 +617,7 @@ describe("globalErrorHandler — Fastify 5xx errors", () => {
     expect(sent.error).toBe("Internal Server Error");
     // Logged server-side — full error available for debugging
     expect(request.log.error).toHaveBeenCalledOnce();
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 });
 
@@ -606,6 +642,7 @@ describe("globalErrorHandler — unknown errors", () => {
     // The raw error message must NOT be leaked to the client
     expect(sent.error).not.toContain("something broke");
     expect(sent.details).toBeUndefined();
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 
   it("calls request.log.error so the full error is available server-side", () => {
@@ -633,6 +670,7 @@ describe("globalErrorHandler — unknown errors", () => {
     const sent = reply.send.mock.calls[0][0] as ErrorResponse;
     expect(sent.statusCode).toBe(500);
     expect(sent.code).toBe("INTERNAL_ERROR");
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 });
 
@@ -654,6 +692,7 @@ describe("globalNotFoundHandler", () => {
     expect(sent.code).toBe("NOT_FOUND");
     expect(sent.error).toBe("Not Found");
     expect(sent.details).toBeUndefined();
+    expect(sent.timestamp).toEqual(expect.any(String));
   });
 
   it("does NOT call request.log.error (not an error path)", () => {

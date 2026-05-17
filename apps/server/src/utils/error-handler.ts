@@ -15,6 +15,7 @@ export interface ErrorResponse {
   error: string;
   code: string;
   statusCode: number;
+  timestamp: string;
   details?: Record<string, unknown>;
 }
 
@@ -50,6 +51,7 @@ function handlePrismaError(error: PrismaKnownError): ErrorResponse {
         error: "Conflict",
         code: "UNIQUE_CONSTRAINT",
         statusCode: 409,
+        timestamp: new Date().toISOString(),
         details: { target },
       };
     }
@@ -59,6 +61,7 @@ function handlePrismaError(error: PrismaKnownError): ErrorResponse {
         error: "Not Found",
         code: "RECORD_NOT_FOUND",
         statusCode: 404,
+        timestamp: new Date().toISOString(),
       };
     case "P2003":
       // Foreign key constraint violation
@@ -66,6 +69,7 @@ function handlePrismaError(error: PrismaKnownError): ErrorResponse {
         error: "Conflict",
         code: "FOREIGN_KEY_CONSTRAINT",
         statusCode: 409,
+        timestamp: new Date().toISOString(),
       };
     case "P2014":
       // Relation violation
@@ -73,12 +77,14 @@ function handlePrismaError(error: PrismaKnownError): ErrorResponse {
         error: "Conflict",
         code: "RELATION_VIOLATION",
         statusCode: 409,
+        timestamp: new Date().toISOString(),
       };
     default:
       return {
         error: "Internal Server Error",
         code: "DATABASE_ERROR",
         statusCode: 500,
+        timestamp: new Date().toISOString(),
       };
   }
 }
@@ -106,6 +112,7 @@ function handleZodValidationError(
     error: "Validation Error",
     code: "VALIDATION_ERROR",
     statusCode: 400,
+    timestamp: new Date().toISOString(),
     details: { issues },
   };
 }
@@ -152,6 +159,7 @@ export function globalErrorHandler(
       error: error.message,
       code: error.code,
       statusCode: error.statusCode,
+      timestamp: new Date().toISOString(),
       ...(error.details ? { details: error.details } : {}),
     };
     reply.status(response.statusCode).send(response);
@@ -175,6 +183,7 @@ export function globalErrorHandler(
       error: "Internal Server Error",
       code: "RESPONSE_SERIALIZATION_ERROR",
       statusCode: 500,
+      timestamp: new Date().toISOString(),
     };
     reply.status(response.statusCode).send(response);
     return;
@@ -186,6 +195,7 @@ export function globalErrorHandler(
       error: "Unauthorized",
       code: "AUTHENTICATION_ERROR",
       statusCode: 401,
+      timestamp: new Date().toISOString(),
     };
     reply.status(response.statusCode).send(response);
     return;
@@ -205,6 +215,7 @@ export function globalErrorHandler(
       error: fastifyError.message || http4xxMessage(fastifyError.statusCode),
       code: fastifyError.code || "FASTIFY_ERROR",
       statusCode: fastifyError.statusCode,
+      timestamp: new Date().toISOString(),
     };
 
     // For 4xx client errors, forward the (already-sanitized Fastify) message.
@@ -222,6 +233,7 @@ export function globalErrorHandler(
     error: "Internal Server Error",
     code: "INTERNAL_ERROR",
     statusCode: 500,
+    timestamp: new Date().toISOString(),
   };
   reply.status(response.statusCode).send(response);
 }
@@ -238,6 +250,7 @@ export function globalNotFoundHandler(_request: FastifyRequest, reply: FastifyRe
     error: "Not Found",
     code: "NOT_FOUND",
     statusCode: 404,
+    timestamp: new Date().toISOString(),
   };
   reply.status(404).send(response);
 }
