@@ -68,6 +68,9 @@ export function Navbar() {
                   alt={t("navbar.logoAlt")}
                   className="h-8 w-8 object-contain rounded"
                   src={appLogo}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
                 />
               )}
               <p className="font-semibold text-xl tracking-tight">{appName}</p>
