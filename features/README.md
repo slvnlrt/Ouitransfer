@@ -25,7 +25,7 @@ This directory tracks all feature development for Ouitransfer (post-refactor pha
 
 | # | Feature | Status | Depends on |
 |---|---------|--------|------------|
-| 7.1 | [Error Handling & Dashboard Redesign](specs/7.1-error-handling-dashboard.md) | Spec | — |
+| 7.1 | [Error Handling & Dashboard Redesign](specs/7.1-error-handling-dashboard.md) | In review | — |
 
 ### Status Legend
 
@@ -94,4 +94,4 @@ features/
 
 ## Current Focus
 
-7.1 Error Handling & Dashboard Redesign — in progress. Then: 5.x features (quotas, cleanup, groups, LDAP)
+7.1 Error Handling & Dashboard Redesign — implementation complete, in review. Then: 5.x features (quotas, cleanup, groups, LDAP)

@@ -148,11 +148,18 @@ Pas d'investigation approfondie effectuée. La page settings utilise `PageLayout
 
 ## Priorité de correction
 
-| Bug | Sévérité | Impact |
-|-----|----------|--------|
-| B-3 Upload cassé | **Critique** | Fonctionnalité principale inopérante |
-| B-2 i18n embedSecret | **Haute** | Erreur visible dans settings (toutes locales non-EN) |
-| B-1 Health 503 | **Moyenne** | Dashboard dégradé en dev (RustFS non démarré) |
-| B-6 Logo cassé | **Moyenne** | UX dégradée, image brisée visible |
-| B-4 Grid dashboard | **Basse** | Visuel, pas fonctionnel |
-| B-5 Grid settings | **Basse** | Visuel, pas fonctionnel |
+| Bug | Sévérité | Impact | Statut |
+|-----|----------|--------|--------|
+| B-3 Upload cassé | **Critique** | Fonctionnalité principale inopérante | **Corrigé** (7.1) |
+| B-2 i18n embedSecret | **Haute** | Erreur visible dans settings (toutes locales non-EN) | **Corrigé** (7.1) |
+| B-1 Health 503 | **Moyenne** | Dashboard dégradé en dev (RustFS non démarré) | **Corrigé** (7.1) |
+| B-6 Logo cassé | **Moyenne** | UX dégradée, image brisée visible | **Corrigé** (7.1) |
+| B-4 Grid dashboard | **Basse** | Visuel, pas fonctionnel | **Corrigé** (7.1) |
+| B-5 Grid settings | **Basse** | Visuel, pas fonctionnel | **Corrigé** (7.1) |
+
+> Tous les bugs ont été résolus dans le cadre de la feature 7.1 (Error Handling & Dashboard Redesign).
+> B-1/B-4 résolus par le remplacement de SystemHealth+StorageUsage par le composant unifié SystemStatus.
+> B-3 résolu par l'intégration de parseApiError dans use-uppy-upload (détection réseau + stockage).
+> B-2 résolu par ajout des clés i18n manquantes dans les 23 locales.
+> B-5 résolu par ajout de breakpoints responsive aux grids des formulaires auth-provider.
+> B-6 résolu par ajout d'un handler onError sur l'image logo dans la navbar.
