@@ -19,7 +19,7 @@ This directory tracks all feature development for Ouitransfer (post-refactor pha
 |---|---------|--------|------------|
 | 6.1 | [UI Code Audit](specs/6.1-ui-audit.md) | Done | — |
 | 6.2 | [UI Code Quality Fixes](specs/6.2-ui-fixes.md) | Done | 6.1 |
-| 6.3 | [Visual Redesign](specs/6.3-visual-redesign.md) | Not started | 6.2 |
+| 6.3 | [Visual Redesign](specs/6.3-visual-redesign.md) | In progress | 6.2 |
 
 ### Status Legend
 

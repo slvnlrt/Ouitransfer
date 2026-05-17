@@ -2,6 +2,7 @@
 
 import type { VariantProps } from "class-variance-authority";
 import { AlertCircle } from "lucide-react";
+import { motion } from "motion/react";
 import Link from "next/link";
 import type React from "react";
 import { Button, type buttonVariants } from "@/components/ui/button";
@@ -83,17 +84,33 @@ export function ErrorDisplay({
     </div>
   );
 
+  const motionProps = {
+    initial: { opacity: 0, scale: 0.98 },
+    animate: { opacity: 1, scale: 1 },
+    transition: { duration: 0.2 },
+  };
+
   switch (variant) {
     case "page":
-      return <div className="flex items-center justify-center min-h-[60vh] px-6">{content}</div>;
+      return (
+        <motion.div {...motionProps} className="flex items-center justify-center min-h-[60vh] px-6">
+          {content}
+        </motion.div>
+      );
     case "card":
       return (
-        <Card className="max-w-md">
-          <CardContent className="py-8">{content}</CardContent>
-        </Card>
+        <motion.div {...motionProps}>
+          <Card className="max-w-md">
+            <CardContent className="py-8">{content}</CardContent>
+          </Card>
+        </motion.div>
       );
     case "inline":
-      return <div className="flex items-center justify-center py-12 px-6">{content}</div>;
+      return (
+        <motion.div {...motionProps} className="flex items-center justify-center py-12 px-6">
+          {content}
+        </motion.div>
+      );
     default: {
       const _exhaustive: never = variant;
       return _exhaustive;

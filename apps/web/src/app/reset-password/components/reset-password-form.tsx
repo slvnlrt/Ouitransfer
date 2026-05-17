@@ -41,7 +41,7 @@ export function ResetPasswordForm({
                     type={isPasswordVisible ? "text" : "password"}
                     placeholder={t("resetPassword.form.newPasswordPlaceholder")}
                     disabled={isSubmitting}
-                    className="bg-transparent backdrop-blur-md pe-10"
+                    className="pe-10"
                   />
                   <button
                     type="button"
@@ -70,7 +70,7 @@ export function ResetPasswordForm({
                     type={isConfirmPasswordVisible ? "text" : "password"}
                     placeholder={t("resetPassword.form.confirmPasswordPlaceholder")}
                     disabled={isSubmitting}
-                    className="bg-transparent backdrop-blur-md pe-10"
+                    className="pe-10"
                   />
                   <button
                     type="button"

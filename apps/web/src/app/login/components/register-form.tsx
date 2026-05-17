@@ -86,7 +86,6 @@ export function RegisterForm({ isVisible, onToggleVisibility }: RegisterFormProp
                   {...field}
                   placeholder={t("register.labels.firstName")}
                   disabled={form.formState.isSubmitting}
-                  className="bg-transparent backdrop-blur-md"
                 />
               </FormControl>
               <FormMessage />
@@ -105,7 +104,6 @@ export function RegisterForm({ isVisible, onToggleVisibility }: RegisterFormProp
                   {...field}
                   placeholder={t("register.labels.lastName")}
                   disabled={form.formState.isSubmitting}
-                  className="bg-transparent backdrop-blur-md"
                 />
               </FormControl>
               <FormMessage />
@@ -124,7 +122,6 @@ export function RegisterForm({ isVisible, onToggleVisibility }: RegisterFormProp
                   {...field}
                   placeholder={t("register.labels.username")}
                   disabled={form.formState.isSubmitting}
-                  className="bg-transparent backdrop-blur-md"
                 />
               </FormControl>
               <FormMessage />
@@ -144,7 +141,6 @@ export function RegisterForm({ isVisible, onToggleVisibility }: RegisterFormProp
                   type="email"
                   placeholder={t("register.labels.email")}
                   disabled={form.formState.isSubmitting}
-                  className="bg-transparent backdrop-blur-md"
                 />
               </FormControl>
               <FormMessage />
@@ -165,7 +161,7 @@ export function RegisterForm({ isVisible, onToggleVisibility }: RegisterFormProp
                     type={isVisible ? "text" : "password"}
                     placeholder={t("register.labels.password")}
                     disabled={form.formState.isSubmitting}
-                    className="bg-transparent backdrop-blur-md pe-10"
+                    className="pe-10"
                   />
                   <PasswordVisibilityToggle isVisible={isVisible} onToggle={onToggleVisibility} />
                 </div>

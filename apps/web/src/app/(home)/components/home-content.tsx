@@ -30,15 +30,15 @@ function AnimatedSendIcon() {
       className="relative mb-6"
     >
       <motion.div
-        animate={{ y: [0, -8, 0] }}
-        transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+        animate={{ y: [0, -5, 0] }}
+        transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
       >
         <div className="relative">
           <Send className="size-16 md:size-20 text-primary" strokeWidth={1.5} />
           <motion.div
-            className="absolute inset-0 rounded-full bg-primary/20 blur-xl -z-10"
-            animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0.7, 0.4] }}
-            transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+            className="absolute inset-0 rounded-full bg-primary/15 blur-2xl -z-10"
+            animate={{ scale: [1, 1.08, 1], opacity: [0.3, 0.5, 0.3] }}
+            transition={{ duration: 12, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
           />
         </div>
       </motion.div>
@@ -87,7 +87,7 @@ function EmployeeSection() {
         <Button
           asChild
           size="lg"
-          className="text-base font-semibold px-8 transition-all hover:scale-105 hover:shadow-lg hover:shadow-primary/25"
+          className="text-base font-semibold px-8 transition-all hover:scale-105 hover:shadow-lg hover:shadow-primary/20"
         >
           <Link href="/login">{t("login")}</Link>
         </Button>
@@ -106,7 +106,7 @@ function PartnerSection() {
       transition={{ duration: 0.5, delay: 0.6 }}
       className="flex items-center justify-center"
     >
-      <div className="rounded-xl border border-border/50 bg-background/60 backdrop-blur-md p-8 max-w-md w-full">
+      <div className="rounded-xl border border-border/60 bg-card p-8 shadow-sm max-w-md w-full">
         <h2 className="text-xl font-semibold mb-4">{t("title")}</h2>
         <p className="text-muted-foreground leading-relaxed">{t("description")}</p>
       </div>

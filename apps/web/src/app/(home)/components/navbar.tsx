@@ -11,7 +11,7 @@ export function Navbar() {
   const { appName, appLogo } = useAppInfo();
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/50 bg-background/70 backdrop-blur-sm px-6">
+    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background shadow-sm px-6">
       <div className="container flex h-16 max-w-screen-xl items-center mx-auto">
         <div className="flex flex-1 items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
@@ -25,7 +25,7 @@ export function Navbar() {
                 unoptimized
               />
             )}
-            <p className="font-bold text-2xl">{appName}</p>
+            <p className="font-semibold text-xl tracking-tight">{appName}</p>
           </Link>
           <div className="flex items-center gap-2">
             <LanguageSwitcher />

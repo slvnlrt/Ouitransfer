@@ -34,12 +34,12 @@ export function QuickAccessCards() {
       {QUICK_ACCESS_ITEMS.map((card) => (
         <Card
           key={card.title}
-          className="cursor-pointer group transition-all duration-400 border-border/50 backdrop-blur-sm h-full hover:opacity-80 "
+          className="cursor-pointer group transition-all duration-150 border-border/50 h-full hover:-translate-y-px hover:shadow-md"
           onClick={() => router.push(card.path)}
         >
           <CardContent className="h-full">
             <div className="flex items-center gap-4 h-full">
-              <div className="dark:group-hover:bg-accent group-hover:bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center text-primary/80 group-hover:text-primary dark:bg-accent/60 bg-accent/50 border dark:border-none transition-all duration-400 flex-shrink-0">
+              <div className="dark:group-hover:bg-accent group-hover:bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center text-primary/80 group-hover:text-primary dark:bg-accent/60 bg-primary/5 border dark:border-none transition-all duration-200 flex-shrink-0">
                 {card.icon}
               </div>
               <div className="flex-1 min-w-0">

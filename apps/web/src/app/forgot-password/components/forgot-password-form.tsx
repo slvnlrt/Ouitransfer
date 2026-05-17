@@ -32,7 +32,6 @@ export function ForgotPasswordForm({ form, onSubmit }: ForgotPasswordFormProps) 
                   type="email"
                   placeholder={t("forgotPassword.emailPlaceholder")}
                   disabled={isSubmitting}
-                  className="bg-transparent backdrop-blur-md"
                 />
               </FormControl>
               <FormMessage />

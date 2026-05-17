@@ -11,18 +11,27 @@ export function LoadingScreen() {
   return (
     <div className="fixed inset-0 bg-background">
       <BackgroundLights />
-      <div className="relative flex flex-col items-center justify-center h-full">
+      <div className="relative flex flex-col items-center justify-center h-full gap-4">
+        <motion.span
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          className="text-xl font-semibold text-primary tracking-tight"
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        >
+          {t("common.loading")}
+        </motion.span>
         <motion.div
-          animate={{ scale: [1, 1.1, 1] }}
-          className="flex flex-col items-center gap-4"
+          animate={{ scaleX: [0, 1, 0] }}
+          className="w-12 h-0.5 bg-primary/60 rounded-full"
           transition={{
             duration: 1.5,
             repeat: Infinity,
             ease: "easeInOut",
           }}
-        >
-          <span className="text-xl font-semibold text-primary">{t("common.loading")}</span>
-        </motion.div>
+        />
       </div>
     </div>
   );

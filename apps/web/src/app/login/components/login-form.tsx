@@ -75,7 +75,6 @@ export function LoginForm({
               type="text"
               placeholder={t("login.emailOrUsernamePlaceholder")}
               disabled={isSubmitting}
-              className="bg-transparent backdrop-blur-md"
             />
           </FormControl>
           <FormMessage />
@@ -98,7 +97,7 @@ export function LoginForm({
                 type={isVisible ? "text" : "password"}
                 placeholder={t("login.passwordPlaceholder")}
                 disabled={isSubmitting}
-                className="bg-transparent backdrop-blur-md pe-10"
+                className="pe-10"
               />
               <PasswordVisibilityToggle isVisible={isVisible} onToggle={onToggleVisibility} />
             </div>
