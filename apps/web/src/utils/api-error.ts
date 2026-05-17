@@ -1,5 +1,7 @@
 import axios from "axios";
 
+import { logger } from "@/lib/logger";
+
 export const ClientErrorCodes = {
   NETWORK_ERROR: "NETWORK_ERROR",
   UNKNOWN_ERROR: "UNKNOWN_ERROR",
@@ -30,8 +32,15 @@ export function parseApiError(error: unknown): ApiError {
   // Case 1: Axios error with a response (server responded)
   if (axios.isAxiosError(error) && error.response) {
     const data = error.response.data as Record<string, unknown> | undefined;
+    const serverCode = typeof data?.code === "string" ? data.code : "";
+    if (!serverCode) {
+      logger.warn("[parseApiError] Server returned empty or missing error code", {
+        status: error.response.status,
+        url: error.config?.url,
+      });
+    }
     return {
-      code: (typeof data?.code === "string" && data.code) || ClientErrorCodes.UNKNOWN_ERROR,
+      code: serverCode || ClientErrorCodes.UNKNOWN_ERROR,
       message: (typeof data?.error === "string" && data.error) || error.message || "Request failed",
       statusCode: error.response.status,
       timestamp: (typeof data?.timestamp === "string" && data.timestamp) || now,
@@ -81,7 +90,6 @@ export function parseApiError(error: unknown): ApiError {
  */
 export function formatErrorForDisplay(apiError: ApiError): {
   title: string;
-  description?: string;
   supportRef: string;
 } {
   const time = formatTime(apiError.timestamp);
@@ -89,11 +97,6 @@ export function formatErrorForDisplay(apiError: ApiError): {
 
   return {
     title: apiError.message,
-    description: apiError.details
-      ? Object.entries(apiError.details)
-          .map(([k, v]) => `${k}: ${v}`)
-          .join(", ")
-      : undefined,
     supportRef,
   };
 }

@@ -11,11 +11,13 @@ import type { CheckHealth200, DiskSpaceInfo, HealthStatus200 } from "@/http/endp
 import { queryKeys } from "@/lib/query-keys";
 import { parseApiError } from "@/utils/api-error";
 
+type DashboardError = "network_error" | "server_error" | "fetch_error" | null;
+
 export interface UseSystemStatusResult {
   // User view
   healthStatus: HealthStatus200 | null;
   healthStatusLoading: boolean;
-  healthStatusError: string | null;
+  healthStatusError: DashboardError;
 
   // Admin view
   healthData: CheckHealth200 | null;
@@ -24,13 +26,15 @@ export interface UseSystemStatusResult {
 
   diskSpace: DiskSpaceInfo | null;
   diskSpaceLoading: boolean;
-  diskSpaceError: string | null;
+  diskSpaceError: DashboardError;
 
   adminStats: AdminStats200 | null;
   adminStatsLoading: boolean;
+  adminStatsError: DashboardError;
 
   // Common
   isAdmin: boolean;
+  isRefreshing: boolean;
   refresh: () => void;
 }
 
@@ -66,6 +70,7 @@ export function useSystemStatus(): UseSystemStatusResult {
       const res = await getDiskSpace();
       return res.data;
     },
+    refetchInterval: 60_000,
     enabled: !!isAdmin,
   });
 
@@ -76,20 +81,27 @@ export function useSystemStatus(): UseSystemStatusResult {
       const res = await getAdminStats();
       return res.data;
     },
+    refetchInterval: 60_000,
     enabled: !!isAdmin,
   });
 
   // Error parsing
-  let diskSpaceError: string | null = null;
+  let diskSpaceError: DashboardError = null;
   if (diskSpaceQuery.isError) {
     const apiError = parseApiError(diskSpaceQuery.error);
     diskSpaceError = apiError.isNetworkError ? "network_error" : "server_error";
   }
 
-  let healthStatusError: string | null = null;
+  let healthStatusError: DashboardError = null;
   if (healthStatusQuery.isError) {
     const apiError = parseApiError(healthStatusQuery.error);
     healthStatusError = apiError.isNetworkError ? "network_error" : "fetch_error";
+  }
+
+  let adminStatsError: DashboardError = null;
+  if (adminStatsQuery.isError) {
+    const apiError = parseApiError(adminStatsQuery.error);
+    adminStatsError = apiError.isNetworkError ? "network_error" : "server_error";
   }
 
   const refresh = () => {
@@ -101,6 +113,10 @@ export function useSystemStatus(): UseSystemStatusResult {
       healthStatusQuery.refetch();
     }
   };
+
+  const isRefreshing = isAdmin
+    ? healthQuery.isFetching || diskSpaceQuery.isFetching || adminStatsQuery.isFetching
+    : healthStatusQuery.isFetching;
 
   return {
     healthStatus: healthStatusQuery.data ?? null,
@@ -114,7 +130,9 @@ export function useSystemStatus(): UseSystemStatusResult {
     diskSpaceError,
     adminStats: adminStatsQuery.data ?? null,
     adminStatsLoading: adminStatsQuery.isLoading,
+    adminStatsError,
     isAdmin: !!isAdmin,
+    isRefreshing,
     refresh,
   };
 }

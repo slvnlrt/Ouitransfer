@@ -65,6 +65,10 @@ export function useDashboard() {
   // ── Derived loading state ──────────────────────────────────────────
   const isLoading = filesQuery.isLoading || sharesQuery.isLoading;
 
+  // ── Total counts (full dataset, not the sliced recent lists) ───────
+  const totalFileCount = filesQuery.data?.length ?? 0;
+  const totalShareCount = sharesQuery.data?.length ?? 0;
+
   // ── Refresh via query invalidation ─────────────────────────────────
   const loadDashboardData = async () => {
     try {
@@ -93,6 +97,8 @@ export function useDashboard() {
     isLoading,
     recentFiles,
     recentShares,
+    totalFileCount,
+    totalShareCount,
     modals: {
       isUploadModalOpen,
       isCreateModalOpen,

@@ -21,6 +21,8 @@ export default function DashboardPage() {
     isLoading,
     recentFiles,
     recentShares,
+    totalFileCount,
+    totalShareCount,
     modals,
     fileManager,
     shareManager,
@@ -41,7 +43,7 @@ export default function DashboardPage() {
           showBreadcrumb={false}
           title={t("dashboard.pageTitle")}
         >
-          <SystemStatus />
+          <SystemStatus fileCount={totalFileCount} activeShareCount={totalShareCount} />
           <QuickAccessCards />
 
           <div className="flex flex-col gap-6">

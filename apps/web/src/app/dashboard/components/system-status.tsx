@@ -99,11 +99,17 @@ function UserView({
   healthStatus,
   healthStatusLoading,
   healthStatusError,
+  isRefreshing,
+  fileCount,
+  activeShareCount,
   refresh,
 }: {
   healthStatus: HealthStatus200 | null;
   healthStatusLoading: boolean;
   healthStatusError: string | null;
+  isRefreshing: boolean;
+  fileCount?: number;
+  activeShareCount?: number;
   refresh: () => void;
 }) {
   const t = useTranslations("dashboard.systemStatus");
@@ -139,8 +145,14 @@ function UserView({
                 <Activity className="text-muted-foreground size-6" />
                 {t("title")}
               </h2>
-              <Button variant="ghost" size="icon" onClick={refresh} aria-label={t("refresh")}>
-                <RefreshCw className="size-4" />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={refresh}
+                disabled={isRefreshing}
+                aria-label={t("refresh")}
+              >
+                <RefreshCw className={`size-4 ${isRefreshing ? "animate-spin" : ""}`} />
               </Button>
             </div>
             <ErrorDisplay
@@ -191,8 +203,16 @@ function UserView({
 
           {/* Personal metrics */}
           <div className="grid grid-cols-2 gap-4">
-            <MetricRow icon={FileText} label={t("metrics.myFiles")} value="—" />
-            <MetricRow icon={Share2} label={t("metrics.activeShares")} value="—" />
+            <MetricRow
+              icon={FileText}
+              label={t("metrics.myFiles")}
+              value={fileCount !== undefined ? String(fileCount) : "—"}
+            />
+            <MetricRow
+              icon={Share2}
+              label={t("metrics.activeShares")}
+              value={activeShareCount !== undefined ? String(activeShareCount) : "—"}
+            />
           </div>
         </div>
       </CardContent>
@@ -201,6 +221,32 @@ function UserView({
 }
 
 // ── Admin View ───────────────────────────────────────────────────────────────
+
+function getStorageStatusDisplay(
+  storageStatus: "ok" | "error" | "not_configured",
+  t: (key: string) => string,
+) {
+  switch (storageStatus) {
+    case "ok":
+      return {
+        icon: <CheckCircle2 className="size-3.5 text-green-600 dark:text-green-400" />,
+        className: "text-green-600 dark:text-green-400",
+        label: t("checks.ok"),
+      };
+    case "not_configured":
+      return {
+        icon: <AlertTriangle className="size-3.5 text-amber-600 dark:text-amber-400" />,
+        className: "text-amber-600 dark:text-amber-400",
+        label: t("checks.notConfigured"),
+      };
+    case "error":
+      return {
+        icon: <XCircle className="size-3.5 text-red-600 dark:text-red-400" />,
+        className: "text-red-600 dark:text-red-400",
+        label: t("checks.error"),
+      };
+  }
+}
 
 function AdminView({
   healthData,
@@ -211,6 +257,8 @@ function AdminView({
   diskSpaceError,
   adminStats,
   adminStatsLoading,
+  adminStatsError,
+  isRefreshing,
   refresh,
 }: {
   healthData: CheckHealth200 | null;
@@ -221,12 +269,14 @@ function AdminView({
   diskSpaceError: string | null;
   adminStats: AdminStats200 | null;
   adminStatsLoading: boolean;
+  adminStatsError: string | null;
+  isRefreshing: boolean;
   refresh: () => void;
 }) {
   const t = useTranslations("dashboard.systemStatus");
 
   // Loading skeleton
-  if (healthLoading && diskSpaceLoading && adminStatsLoading) {
+  if (healthLoading || diskSpaceLoading || adminStatsLoading) {
     return (
       <Card className="w-full">
         <CardHeader>
@@ -310,8 +360,14 @@ function AdminView({
           </CardTitle>
           <div className="flex items-center gap-2">
             <StatusBadge status={overallStatus} label={statusLabelMap[overallStatus]} />
-            <Button variant="ghost" size="icon" onClick={refresh} aria-label={t("refresh")}>
-              <RefreshCw className="size-4" />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={refresh}
+              disabled={isRefreshing}
+              aria-label={t("refresh")}
+            >
+              <RefreshCw className={`size-4 ${isRefreshing ? "animate-spin" : ""}`} />
             </Button>
           </div>
         </div>
@@ -349,30 +405,15 @@ function AdminView({
                   <HardDrive className="size-4" aria-hidden="true" />
                   {t("checks.storage")}
                 </span>
-                <span className="flex items-center gap-1">
-                  {healthData.checks.storage === "ok" ? (
-                    <CheckCircle2 className="size-3.5 text-green-600 dark:text-green-400" />
-                  ) : healthData.checks.storage === "not_configured" ? (
-                    <AlertTriangle className="size-3.5 text-amber-600 dark:text-amber-400" />
-                  ) : (
-                    <XCircle className="size-3.5 text-red-600 dark:text-red-400" />
-                  )}
-                  <span
-                    className={
-                      healthData.checks.storage === "ok"
-                        ? "text-green-600 dark:text-green-400"
-                        : healthData.checks.storage === "not_configured"
-                          ? "text-amber-600 dark:text-amber-400"
-                          : "text-red-600 dark:text-red-400"
-                    }
-                  >
-                    {healthData.checks.storage === "ok"
-                      ? t("checks.ok")
-                      : healthData.checks.storage === "not_configured"
-                        ? t("checks.notConfigured")
-                        : t("checks.error")}
-                  </span>
-                </span>
+                {(() => {
+                  const display = getStorageStatusDisplay(healthData.checks.storage, t);
+                  return (
+                    <span className="flex items-center gap-1">
+                      {display.icon}
+                      <span className={display.className}>{display.label}</span>
+                    </span>
+                  );
+                })()}
               </div>
 
               {/* Uptime */}
@@ -414,7 +455,9 @@ function AdminView({
           <Separator />
 
           {/* Platform metrics */}
-          {adminStats ? (
+          {adminStatsError ? (
+            <p className="text-sm text-destructive">{t("errors.statsError")}</p>
+          ) : adminStats ? (
             <div className="grid grid-cols-2 gap-3">
               <MetricRow
                 icon={Users}
@@ -453,7 +496,13 @@ function AdminView({
 
 // ── Main Component ───────────────────────────────────────────────────────────
 
-export function SystemStatus() {
+export function SystemStatus({
+  fileCount,
+  activeShareCount,
+}: {
+  fileCount?: number;
+  activeShareCount?: number;
+} = {}) {
   const status = useSystemStatus();
 
   if (status.isAdmin) {
@@ -467,6 +516,8 @@ export function SystemStatus() {
         diskSpaceError={status.diskSpaceError}
         adminStats={status.adminStats}
         adminStatsLoading={status.adminStatsLoading}
+        adminStatsError={status.adminStatsError}
+        isRefreshing={status.isRefreshing}
         refresh={status.refresh}
       />
     );
@@ -477,6 +528,9 @@ export function SystemStatus() {
       healthStatus={status.healthStatus}
       healthStatusLoading={status.healthStatusLoading}
       healthStatusError={status.healthStatusError}
+      isRefreshing={status.isRefreshing}
+      fileCount={fileCount}
+      activeShareCount={activeShareCount}
       refresh={status.refresh}
     />
   );

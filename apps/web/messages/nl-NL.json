@@ -288,7 +288,8 @@
       "errors": {
         "title": "Status unavailable",
         "fetchFailed": "Unable to retrieve system status. Please try again later.",
-        "diskSpaceError": "Unable to retrieve disk space information."
+        "diskSpaceError": "Unable to retrieve disk space information.",
+        "statsError": "Unable to load platform statistics."
       }
     }
   },
