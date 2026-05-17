@@ -523,7 +523,8 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
       // Determine user-facing message
       let userMessage: string;
       if (apiError.isNetworkError) {
-        userMessage = t("uploadFile.errors.networkError");
+        // During upload, network error almost always means storage is unreachable
+        userMessage = t("uploadFile.errors.storageUnavailable");
       } else if (apiError.code === ErrorCodes.STORAGE_UNREACHABLE) {
         userMessage = t("uploadFile.errors.storageUnavailable");
       } else {

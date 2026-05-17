@@ -79,6 +79,33 @@ describe("parseApiError", () => {
     expect(result.timestamp).toBeDefined();
     expect(new Date(result.timestamp).getTime()).not.toBeNaN();
   });
+
+  it("detects Uppy XHR network errors (storage unreachable)", () => {
+    // Simulate Uppy's error shape: Error with source=XMLHttpRequest
+    const error = new Error("Unknown error");
+    (error as unknown as Record<string, unknown>).source = {
+      readyState: 4,
+      status: 0,
+      responseText: "",
+    };
+    const result = parseApiError(error);
+    expect(result.code).toBe(ClientErrorCodes.NETWORK_ERROR);
+    expect(result.isNetworkError).toBe(true);
+    expect(result.statusCode).toBe(0);
+  });
+
+  it("does NOT treat Error with source but non-zero status as network error", () => {
+    const error = new Error("Bad request");
+    (error as unknown as Record<string, unknown>).source = {
+      readyState: 4,
+      status: 400,
+      responseText: "Bad request",
+    };
+    const result = parseApiError(error);
+    // Should fall through to standard Error handling (Case 3)
+    expect(result.code).toBe(ClientErrorCodes.UNKNOWN_ERROR);
+    expect(result.isNetworkError).toBe(false);
+  });
 });
 
 describe("formatErrorForDisplay", () => {

@@ -63,6 +63,18 @@ export function parseApiError(error: unknown): ApiError {
     };
   }
 
+  // Case 2b: XHR network error (Uppy/S3 direct upload)
+  // Uppy's @uppy/aws-s3 creates Error with source=XMLHttpRequest when XHR fails
+  if (error instanceof Error && isXhrNetworkError(error)) {
+    return {
+      code: ClientErrorCodes.NETWORK_ERROR,
+      message: "Storage service is unreachable",
+      statusCode: 0,
+      timestamp: now,
+      isNetworkError: true,
+    };
+  }
+
   // Case 3: Standard Error
   if (error instanceof Error) {
     return {
@@ -99,6 +111,19 @@ export function formatErrorForDisplay(apiError: ApiError): {
     title: apiError.message,
     supportRef,
   };
+}
+
+/**
+ * Detect XHR-originated network errors from Uppy's S3 plugin.
+ * Uppy creates `new Error('Unknown error')` with `error.source = xhrObject` when
+ * XMLHttpRequest fails (e.g., storage service unreachable).
+ */
+function isXhrNetworkError(error: Error): boolean {
+  const source = (error as unknown as Record<string, unknown>).source;
+  if (source == null || typeof source !== "object") return false;
+  // Duck-type check for XMLHttpRequest: has readyState and status
+  const xhr = source as Record<string, unknown>;
+  return typeof xhr.readyState === "number" && typeof xhr.status === "number" && xhr.status === 0;
 }
 
 function formatTime(isoTimestamp: string): string {
