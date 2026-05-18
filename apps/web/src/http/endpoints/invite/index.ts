@@ -4,9 +4,14 @@ import apiInstance from "@/config/api";
 import type {
   GenerateInviteTokenResponse,
   RegisterWithInviteRequest,
-  RegisterWithInviteResult,
+  RegisterWithInviteResponse,
   ValidateInviteTokenResponse,
 } from "./types";
+
+/**
+ * Invite token endpoints.
+ * All functions return unwrapped response data (not AxiosResponse).
+ */
 
 export const generateInviteToken = async (
   options?: AxiosRequestConfig,
@@ -23,9 +28,10 @@ export const validateInviteToken = async (
   return response.data;
 };
 
-export const registerWithInvite = (
+export const registerWithInvite = async (
   data: RegisterWithInviteRequest,
   options?: AxiosRequestConfig,
-): Promise<RegisterWithInviteResult> => {
-  return apiInstance.post(`/api/register-with-invite`, data, options);
+): Promise<RegisterWithInviteResponse> => {
+  const response = await apiInstance.post(`/api/register-with-invite`, data, options);
+  return response.data;
 };

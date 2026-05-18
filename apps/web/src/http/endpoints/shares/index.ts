@@ -31,6 +31,12 @@ import type {
 } from "./types";
 
 /**
+ * Share management endpoints.
+ * NOTE: URL paths here are frontend proxy paths, not direct server routes.
+ * See apps/web/src/lib/proxy-routes.ts for the rewrite mapping to actual backend endpoints.
+ */
+
+/**
  * Create a new share
  * @summary Create a new share
  */

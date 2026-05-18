@@ -1,5 +1,3 @@
-import type { AxiosResponse } from "axios";
-
 export interface GenerateInviteTokenResponse {
   token: string;
   expiresAt: string;
@@ -28,5 +26,3 @@ export interface RegisterWithInviteResponse {
     email: string;
   };
 }
-
-export type RegisterWithInviteResult = AxiosResponse<RegisterWithInviteResponse>;
