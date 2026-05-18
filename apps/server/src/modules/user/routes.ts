@@ -6,7 +6,7 @@ import { ForbiddenError, UnauthorizedError } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { createPasswordSchema } from "../auth/dto.js";
 import { UserController } from "./controller.js";
-import { UpdateUserSchema, UserResponseSchema } from "./dto.js";
+import { UpdateUserSchema } from "./dto.js";
 import { validatePasswordMiddleware } from "./middleware.js";
 
 export async function userRoutes(app: FastifyInstance) {
@@ -73,6 +73,12 @@ export async function userRoutes(app: FastifyInstance) {
               isActive: z.boolean().describe("User is active"),
               createdAt: z.date().describe("User creation date"),
               updatedAt: z.date().describe("User last update date"),
+              maxFileSizeOverride: z
+                .union([z.string(), z.null()])
+                .describe("Per-user max file size override in bytes"),
+              maxTotalStorageOverride: z
+                .union([z.string(), z.null()])
+                .describe("Per-user max total storage override in bytes"),
             }),
             message: z.string().describe("User registration message"),
           }),
@@ -107,6 +113,12 @@ export async function userRoutes(app: FastifyInstance) {
               isActive: z.boolean().describe("User is active"),
               createdAt: z.date().describe("User creation date"),
               updatedAt: z.date().describe("User last update date"),
+              maxFileSizeOverride: z
+                .union([z.string(), z.null()])
+                .describe("Per-user max file size override in bytes"),
+              maxTotalStorageOverride: z
+                .union([z.string(), z.null()])
+                .describe("Per-user max total storage override in bytes"),
             }),
           ),
           400: ErrorResponseSchema,
@@ -140,6 +152,12 @@ export async function userRoutes(app: FastifyInstance) {
             isActive: z.boolean().describe("User is active"),
             createdAt: z.date().describe("User creation date"),
             updatedAt: z.date().describe("User last update date"),
+            maxFileSizeOverride: z
+              .union([z.string(), z.null()])
+              .describe("Per-user max file size override in bytes"),
+            maxTotalStorageOverride: z
+              .union([z.string(), z.null()])
+              .describe("Per-user max total storage override in bytes"),
           }),
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
@@ -173,6 +191,12 @@ export async function userRoutes(app: FastifyInstance) {
             isActive: z.boolean().describe("User is active"),
             createdAt: z.date().describe("User creation date"),
             updatedAt: z.date().describe("User last update date"),
+            maxFileSizeOverride: z
+              .union([z.string(), z.null()])
+              .describe("Per-user max file size override in bytes"),
+            maxTotalStorageOverride: z
+              .union([z.string(), z.null()])
+              .describe("Per-user max total storage override in bytes"),
           }),
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
@@ -205,6 +229,12 @@ export async function userRoutes(app: FastifyInstance) {
             isActive: z.boolean().describe("User is active"),
             createdAt: z.date().describe("User creation date"),
             updatedAt: z.date().describe("User last update date"),
+            maxFileSizeOverride: z
+              .union([z.string(), z.null()])
+              .describe("Per-user max file size override in bytes"),
+            maxTotalStorageOverride: z
+              .union([z.string(), z.null()])
+              .describe("Per-user max total storage override in bytes"),
           }),
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
@@ -237,6 +267,12 @@ export async function userRoutes(app: FastifyInstance) {
             isActive: z.boolean().describe("User is active"),
             createdAt: z.date().describe("User creation date"),
             updatedAt: z.date().describe("User last update date"),
+            maxFileSizeOverride: z
+              .union([z.string(), z.null()])
+              .describe("Per-user max file size override in bytes"),
+            maxTotalStorageOverride: z
+              .union([z.string(), z.null()])
+              .describe("Per-user max total storage override in bytes"),
           }),
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
@@ -269,6 +305,12 @@ export async function userRoutes(app: FastifyInstance) {
             isActive: z.boolean().describe("User is active"),
             createdAt: z.date().describe("User creation date"),
             updatedAt: z.date().describe("User last update date"),
+            maxFileSizeOverride: z
+              .union([z.string(), z.null()])
+              .describe("Per-user max file size override in bytes"),
+            maxTotalStorageOverride: z
+              .union([z.string(), z.null()])
+              .describe("Per-user max total storage override in bytes"),
           }),
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
@@ -304,6 +346,12 @@ export async function userRoutes(app: FastifyInstance) {
             isActive: z.boolean().describe("User is active"),
             createdAt: z.date().describe("User creation date"),
             updatedAt: z.date().describe("User last update date"),
+            maxFileSizeOverride: z
+              .union([z.string(), z.null()])
+              .describe("Per-user max file size override in bytes"),
+            maxTotalStorageOverride: z
+              .union([z.string(), z.null()])
+              .describe("Per-user max total storage override in bytes"),
           }),
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
@@ -332,7 +380,21 @@ export async function userRoutes(app: FastifyInstance) {
         description: "Upload and update user profile image",
         consumes: ["multipart/form-data"],
         response: {
-          200: UserResponseSchema,
+          200: z.object({
+            id: z.string(),
+            firstName: z.string(),
+            lastName: z.string(),
+            username: z.string(),
+            email: z.string(),
+            image: z.string().nullable(),
+            isAdmin: z.boolean(),
+            isActive: z.boolean(),
+            tokenVersion: z.number(),
+            createdAt: z.date(),
+            updatedAt: z.date(),
+            maxFileSizeOverride: z.union([z.string(), z.null()]),
+            maxTotalStorageOverride: z.union([z.string(), z.null()]),
+          }),
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
         },
@@ -358,7 +420,21 @@ export async function userRoutes(app: FastifyInstance) {
         summary: "Remove user avatar",
         description: "Remove user profile image",
         response: {
-          200: UserResponseSchema,
+          200: z.object({
+            id: z.string(),
+            firstName: z.string(),
+            lastName: z.string(),
+            username: z.string(),
+            email: z.string(),
+            image: z.string().nullable(),
+            isAdmin: z.boolean(),
+            isActive: z.boolean(),
+            tokenVersion: z.number(),
+            createdAt: z.date(),
+            updatedAt: z.date(),
+            maxFileSizeOverride: z.union([z.string(), z.null()]),
+            maxTotalStorageOverride: z.union([z.string(), z.null()]),
+          }),
           401: ErrorResponseSchema,
         },
       },
