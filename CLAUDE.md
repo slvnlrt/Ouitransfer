@@ -137,3 +137,10 @@ Reserve separate agents for tasks requiring distinct architectural decisions or 
 9. **Fastify + Zod route schemas strip unknown properties** — keep route-level and controller-level schemas in sync. Service-layer unit tests don't catch missing fields — use integration tests with `app.inject()`.
 10. **Service-layer tests are necessary but not sufficient** — for security-critical flows, always add at least one `app.inject()` integration test that exercises the full request lifecycle.
 11. **Production-only bugs require production-like testing** — dev mode is too permissive. The E2E workflow (`e2e.yml`) catches SSR, cookie, and build-time issues.
+
+## Context Compression Discipline
+- **Never compress context you're about to use.** If you gathered file contents or code context for an upcoming task (writing a plan, implementing a feature), do NOT compress it before completing that task. Re-reading files wastes tokens and time.
+- **Compress only closed sections** — research that concluded, dead-end exploration, completed implementation steps that won't be revisited.
+- **Compress between phases, not within** — e.g., compress the brainstorming phase AFTER the spec is written and approved, not before. Compress the planning context AFTER the plan is written, not before.
+- **Keep active working context raw** — if you're about to write code, the file contents, schemas, and patterns you just read are your working material. Don't summarize them away.
+- **When in doubt, don't compress** — a slightly longer context is always better than re-reading 10 files.
