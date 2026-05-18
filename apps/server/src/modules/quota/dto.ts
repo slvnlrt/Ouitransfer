@@ -58,6 +58,15 @@ export const QuotaStatusResponseSchema = z.object({
       .nullable()
       .describe("Per-user total storage override (null = inherit)"),
   }),
+  sources: z.object({
+    maxFileSizeSource: z
+      .enum(["user", "group", "global", "admin-default"])
+      .describe("Where the effective max file size limit comes from"),
+    maxTotalStorageSource: z
+      .enum(["user", "group", "global", "admin-default"])
+      .describe("Where the effective max total storage limit comes from"),
+    groupName: z.string().nullable().describe("Name of the user's group (null if none)"),
+  }),
 });
 
 /** Response schema for PATCH /users/:id/quota */

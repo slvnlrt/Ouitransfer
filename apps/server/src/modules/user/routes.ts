@@ -73,6 +73,8 @@ export async function userRoutes(app: FastifyInstance) {
               isActive: z.boolean().describe("User is active"),
               createdAt: z.date().describe("User creation date"),
               updatedAt: z.date().describe("User last update date"),
+              groupId: z.union([z.string(), z.null()]).describe("Group ID the user belongs to"),
+              groupName: z.union([z.string(), z.null()]).describe("Group name (for display)"),
               maxFileSizeOverride: z
                 .union([z.string(), z.null()])
                 .describe("Per-user max file size override in bytes"),
@@ -113,6 +115,8 @@ export async function userRoutes(app: FastifyInstance) {
               isActive: z.boolean().describe("User is active"),
               createdAt: z.date().describe("User creation date"),
               updatedAt: z.date().describe("User last update date"),
+              groupId: z.union([z.string(), z.null()]).describe("Group ID the user belongs to"),
+              groupName: z.union([z.string(), z.null()]).describe("Group name (for display)"),
               maxFileSizeOverride: z
                 .union([z.string(), z.null()])
                 .describe("Per-user max file size override in bytes"),
@@ -152,6 +156,8 @@ export async function userRoutes(app: FastifyInstance) {
             isActive: z.boolean().describe("User is active"),
             createdAt: z.date().describe("User creation date"),
             updatedAt: z.date().describe("User last update date"),
+            groupId: z.union([z.string(), z.null()]).describe("Group ID the user belongs to"),
+            groupName: z.union([z.string(), z.null()]).describe("Group name (for display)"),
             maxFileSizeOverride: z
               .union([z.string(), z.null()])
               .describe("Per-user max file size override in bytes"),
@@ -191,6 +197,8 @@ export async function userRoutes(app: FastifyInstance) {
             isActive: z.boolean().describe("User is active"),
             createdAt: z.date().describe("User creation date"),
             updatedAt: z.date().describe("User last update date"),
+            groupId: z.union([z.string(), z.null()]).describe("Group ID the user belongs to"),
+            groupName: z.union([z.string(), z.null()]).describe("Group name (for display)"),
             maxFileSizeOverride: z
               .union([z.string(), z.null()])
               .describe("Per-user max file size override in bytes"),
@@ -229,6 +237,8 @@ export async function userRoutes(app: FastifyInstance) {
             isActive: z.boolean().describe("User is active"),
             createdAt: z.date().describe("User creation date"),
             updatedAt: z.date().describe("User last update date"),
+            groupId: z.union([z.string(), z.null()]).describe("Group ID the user belongs to"),
+            groupName: z.union([z.string(), z.null()]).describe("Group name (for display)"),
             maxFileSizeOverride: z
               .union([z.string(), z.null()])
               .describe("Per-user max file size override in bytes"),
@@ -267,6 +277,8 @@ export async function userRoutes(app: FastifyInstance) {
             isActive: z.boolean().describe("User is active"),
             createdAt: z.date().describe("User creation date"),
             updatedAt: z.date().describe("User last update date"),
+            groupId: z.union([z.string(), z.null()]).describe("Group ID the user belongs to"),
+            groupName: z.union([z.string(), z.null()]).describe("Group name (for display)"),
             maxFileSizeOverride: z
               .union([z.string(), z.null()])
               .describe("Per-user max file size override in bytes"),
@@ -305,6 +317,8 @@ export async function userRoutes(app: FastifyInstance) {
             isActive: z.boolean().describe("User is active"),
             createdAt: z.date().describe("User creation date"),
             updatedAt: z.date().describe("User last update date"),
+            groupId: z.union([z.string(), z.null()]).describe("Group ID the user belongs to"),
+            groupName: z.union([z.string(), z.null()]).describe("Group name (for display)"),
             maxFileSizeOverride: z
               .union([z.string(), z.null()])
               .describe("Per-user max file size override in bytes"),
@@ -346,6 +360,8 @@ export async function userRoutes(app: FastifyInstance) {
             isActive: z.boolean().describe("User is active"),
             createdAt: z.date().describe("User creation date"),
             updatedAt: z.date().describe("User last update date"),
+            groupId: z.union([z.string(), z.null()]).describe("Group ID the user belongs to"),
+            groupName: z.union([z.string(), z.null()]).describe("Group name (for display)"),
             maxFileSizeOverride: z
               .union([z.string(), z.null()])
               .describe("Per-user max file size override in bytes"),
@@ -392,6 +408,8 @@ export async function userRoutes(app: FastifyInstance) {
             tokenVersion: z.number(),
             createdAt: z.date(),
             updatedAt: z.date(),
+            groupId: z.union([z.string(), z.null()]),
+            groupName: z.union([z.string(), z.null()]),
             maxFileSizeOverride: z.union([z.string(), z.null()]),
             maxTotalStorageOverride: z.union([z.string(), z.null()]),
           }),
@@ -432,6 +450,8 @@ export async function userRoutes(app: FastifyInstance) {
             tokenVersion: z.number(),
             createdAt: z.date(),
             updatedAt: z.date(),
+            groupId: z.union([z.string(), z.null()]),
+            groupName: z.union([z.string(), z.null()]),
             maxFileSizeOverride: z.union([z.string(), z.null()]),
             maxTotalStorageOverride: z.union([z.string(), z.null()]),
           }),

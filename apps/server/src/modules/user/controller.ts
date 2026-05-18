@@ -14,15 +14,21 @@ import { AvatarService } from "./avatar.service.js";
 import { createRegisterUserSchema, UpdateUserSchema } from "./dto.js";
 import { UserService } from "./service.js";
 
-/** Convert Prisma User BigInt fields to JSON-safe strings */
+/** Convert Prisma User BigInt fields to JSON-safe strings and extract group info */
 function serializeUser<
-  T extends { maxFileSizeOverride?: bigint | null; maxTotalStorageOverride?: bigint | null },
+  T extends {
+    maxFileSizeOverride?: bigint | null;
+    maxTotalStorageOverride?: bigint | null;
+    group?: { id: string; name: string } | null;
+  },
 >(user: T) {
+  const { group, ...rest } = user;
   return {
-    ...user,
+    ...rest,
     maxFileSizeOverride: user.maxFileSizeOverride != null ? String(user.maxFileSizeOverride) : null,
     maxTotalStorageOverride:
       user.maxTotalStorageOverride != null ? String(user.maxTotalStorageOverride) : null,
+    groupName: group?.name ?? null,
   };
 }
 

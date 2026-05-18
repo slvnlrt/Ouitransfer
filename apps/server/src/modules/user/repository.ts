@@ -3,17 +3,19 @@ import type { User } from "@prisma/client";
 import { prisma } from "../../shared/prisma.js";
 import type { RegisterUserInput, UpdateUserInput } from "./dto.js";
 
+type UserWithGroup = User & { group: { id: string; name: string } | null };
+
 export interface IUserRepository {
   createUser(data: RegisterUserInput & { password: string }): Promise<User>;
   findUserByEmail(email: string): Promise<User | null>;
-  findUserById(id: string): Promise<User | null>;
+  findUserById(id: string): Promise<UserWithGroup | null>;
   findUserByUsername(username: string): Promise<User | null>;
   findUserByEmailOrUsername(emailOrUsername: string): Promise<User | null>;
-  listUsers(): Promise<User[]>;
-  updateUser(data: UpdateUserInput & { password?: string }): Promise<User>;
-  deleteUser(id: string): Promise<User>;
-  activateUser(id: string): Promise<User>;
-  deactivateUser(id: string): Promise<User>;
+  listUsers(): Promise<UserWithGroup[]>;
+  updateUser(data: UpdateUserInput & { password?: string }): Promise<UserWithGroup>;
+  deleteUser(id: string): Promise<UserWithGroup>;
+  activateUser(id: string): Promise<UserWithGroup>;
+  deactivateUser(id: string): Promise<UserWithGroup>;
 }
 
 export class PrismaUserRepository implements IUserRepository {
@@ -35,8 +37,13 @@ export class PrismaUserRepository implements IUserRepository {
     return prisma.user.findUnique({ where: { email } });
   }
 
-  async findUserById(id: string): Promise<User | null> {
-    return prisma.user.findUnique({ where: { id } });
+  async findUserById(
+    id: string,
+  ): Promise<(User & { group: { id: string; name: string } | null }) | null> {
+    return prisma.user.findUnique({
+      where: { id },
+      include: { group: { select: { id: true, name: true } } },
+    });
   }
 
   async findUserByUsername(username: string): Promise<User | null> {
@@ -51,33 +58,41 @@ export class PrismaUserRepository implements IUserRepository {
     });
   }
 
-  async listUsers(): Promise<User[]> {
-    return prisma.user.findMany();
+  async listUsers(): Promise<(User & { group: { id: string; name: string } | null })[]> {
+    return prisma.user.findMany({
+      include: { group: { select: { id: true, name: true } } },
+    });
   }
 
-  async updateUser(data: UpdateUserInput & { password?: string }): Promise<User> {
+  async updateUser(data: UpdateUserInput & { password?: string }): Promise<UserWithGroup> {
     const { id, ...rest } = data;
     return prisma.user.update({
       where: { id },
       data: rest,
+      include: { group: { select: { id: true, name: true } } },
     });
   }
 
-  async deleteUser(id: string): Promise<User> {
-    return prisma.user.delete({ where: { id } });
+  async deleteUser(id: string): Promise<UserWithGroup> {
+    return prisma.user.delete({
+      where: { id },
+      include: { group: { select: { id: true, name: true } } },
+    });
   }
 
-  async activateUser(id: string): Promise<User> {
+  async activateUser(id: string): Promise<UserWithGroup> {
     return prisma.user.update({
       where: { id },
       data: { isActive: true },
+      include: { group: { select: { id: true, name: true } } },
     });
   }
 
-  async deactivateUser(id: string): Promise<User> {
+  async deactivateUser(id: string): Promise<UserWithGroup> {
     return prisma.user.update({
       where: { id },
       data: { isActive: false },
+      include: { group: { select: { id: true, name: true } } },
     });
   }
 }

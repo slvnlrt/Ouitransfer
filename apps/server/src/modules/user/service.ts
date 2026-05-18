@@ -126,6 +126,7 @@ export class UserService {
         image: imageUrl,
         updatedAt: new Date(),
       },
+      include: { group: { select: { id: true, name: true } } },
     });
     return user;
   }

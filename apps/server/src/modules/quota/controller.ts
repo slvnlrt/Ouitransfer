@@ -20,6 +20,7 @@ export class QuotaController {
         maxFileSizeOverride: status.overrides.maxFileSizeOverride?.toString() ?? null,
         maxTotalStorageOverride: status.overrides.maxTotalStorageOverride?.toString() ?? null,
       },
+      sources: status.sources,
     });
   }
 

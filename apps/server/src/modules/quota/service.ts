@@ -5,12 +5,19 @@ import { QuotaRepository } from "./repository.js";
 
 export type WarningLevel = "none" | "warning" | "critical" | "exceeded";
 
+export type QuotaSource = "user" | "group" | "global" | "admin-default";
+
 export interface EffectiveLimits {
   maxFileSize: bigint;
   maxTotalStorage: bigint;
   overrides: {
     maxFileSizeOverride: bigint | null;
     maxTotalStorageOverride: bigint | null;
+  };
+  sources: {
+    maxFileSizeSource: QuotaSource;
+    maxTotalStorageSource: QuotaSource;
+    groupName: string | null;
   };
 }
 
@@ -25,6 +32,11 @@ export interface QuotaStatus {
     maxFileSizeOverride: bigint | null;
     maxTotalStorageOverride: bigint | null;
   };
+  sources: {
+    maxFileSizeSource: QuotaSource;
+    maxTotalStorageSource: QuotaSource;
+    groupName: string | null;
+  };
 }
 
 export class QuotaService {
@@ -32,7 +44,7 @@ export class QuotaService {
 
   /**
    * Resolve the effective limits for a user.
-   * Resolution order: per-user override → (group placeholder for 5.4) → global default.
+   * Resolution order: per-user override → group override → global default.
    * Admin default is unlimited (0n) when no override is set.
    * null = no override (inherit), 0 = unlimited, >0 = explicit limit in bytes.
    */
@@ -43,6 +55,13 @@ export class QuotaService {
         isAdmin: true,
         maxFileSizeOverride: true,
         maxTotalStorageOverride: true,
+        group: {
+          select: {
+            name: true,
+            maxFileSizeOverride: true,
+            maxTotalStorageOverride: true,
+          },
+        },
       },
     });
 
@@ -50,15 +69,33 @@ export class QuotaService {
       throw new NotFoundError("User not found");
     }
 
-    const maxTotalStorage =
-      user.maxTotalStorageOverride ??
-      // placeholder: group?.maxTotalStorage — will be filled in 5.4 Groups
-      (user.isAdmin ? 0n : BigInt(await getConfigValue("maxTotalStoragePerUser")));
-
     const maxFileSize =
       user.maxFileSizeOverride ??
-      // placeholder: group?.maxFileSize — will be filled in 5.4 Groups
+      user.group?.maxFileSizeOverride ??
       (user.isAdmin ? 0n : BigInt(await getConfigValue("maxFileSize")));
+
+    const maxTotalStorage =
+      user.maxTotalStorageOverride ??
+      user.group?.maxTotalStorageOverride ??
+      (user.isAdmin ? 0n : BigInt(await getConfigValue("maxTotalStoragePerUser")));
+
+    const maxFileSizeSource: QuotaSource =
+      user.maxFileSizeOverride != null
+        ? "user"
+        : user.group?.maxFileSizeOverride != null
+          ? "group"
+          : user.isAdmin
+            ? "admin-default"
+            : "global";
+
+    const maxTotalStorageSource: QuotaSource =
+      user.maxTotalStorageOverride != null
+        ? "user"
+        : user.group?.maxTotalStorageOverride != null
+          ? "group"
+          : user.isAdmin
+            ? "admin-default"
+            : "global";
 
     return {
       maxFileSize,
@@ -66,6 +103,11 @@ export class QuotaService {
       overrides: {
         maxFileSizeOverride: user.maxFileSizeOverride,
         maxTotalStorageOverride: user.maxTotalStorageOverride,
+      },
+      sources: {
+        maxFileSizeSource,
+        maxTotalStorageSource,
+        groupName: user.group?.name ?? null,
       },
     };
   }
@@ -114,6 +156,7 @@ export class QuotaService {
       warningLevel,
       uploadAllowed,
       overrides: limits.overrides,
+      sources: limits.sources,
     };
   }
 }
