@@ -261,7 +261,18 @@ export function UserFormModal({
                         <Label>{t("users.form.quota.maxFileSize")}</Label>
                         <Select
                           value={fileSizeMode}
-                          onValueChange={(value) => setFileSizeMode(value as QuotaMode)}
+                          onValueChange={(value) => {
+                            const mode = value as QuotaMode;
+                            setFileSizeMode(mode);
+                            if (mode === "custom" && (!fileSizeValue || fileSizeValue === "0")) {
+                              const effectiveDefault =
+                                quotaQuery.data?.data.maxFileSize &&
+                                quotaQuery.data.data.maxFileSize !== "0"
+                                  ? quotaQuery.data.data.maxFileSize
+                                  : "1073741824";
+                              setFileSizeValue(effectiveDefault);
+                            }
+                          }}
                         >
                           <SelectTrigger>
                             <SelectValue />
@@ -284,7 +295,21 @@ export function UserFormModal({
                         <Label>{t("users.form.quota.maxTotalStorage")}</Label>
                         <Select
                           value={storageLimitMode}
-                          onValueChange={(value) => setStorageLimitMode(value as QuotaMode)}
+                          onValueChange={(value) => {
+                            const mode = value as QuotaMode;
+                            setStorageLimitMode(mode);
+                            if (
+                              mode === "custom" &&
+                              (!storageLimitValue || storageLimitValue === "0")
+                            ) {
+                              const effectiveDefault =
+                                quotaQuery.data?.data.maxTotalStorage &&
+                                quotaQuery.data.data.maxTotalStorage !== "0"
+                                  ? quotaQuery.data.data.maxTotalStorage
+                                  : "1073741824";
+                              setStorageLimitValue(effectiveDefault);
+                            }
+                          }}
                         >
                           <SelectTrigger>
                             <SelectValue />

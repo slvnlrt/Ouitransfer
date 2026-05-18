@@ -518,6 +518,9 @@ function AdminView({
             <div className="h-8 bg-muted rounded animate-pulse" />
           ) : null}
 
+          {/* Admin personal quota (only when admin has a quota override) */}
+          {diskSpace?.warningLevel !== undefined && <QuotaDisplay diskSpace={diskSpace} />}
+
           <Separator />
 
           {/* Platform metrics */}

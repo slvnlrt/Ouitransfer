@@ -39,7 +39,7 @@ export interface UseSystemStatusResult {
 }
 
 export function useSystemStatus(): UseSystemStatusResult {
-  const { isAdmin } = useAuth();
+  const { isAdmin, user } = useAuth();
 
   // Simplified health status (regular users only)
   const healthStatusQuery = useQuery({
@@ -71,7 +71,7 @@ export function useSystemStatus(): UseSystemStatusResult {
       return res.data;
     },
     refetchInterval: 60_000,
-    enabled: true,
+    enabled: !!user,
   });
 
   // Admin stats (admin only)
