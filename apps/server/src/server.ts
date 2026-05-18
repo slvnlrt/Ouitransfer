@@ -13,6 +13,7 @@ import { authRoutes } from "./modules/auth/routes.js";
 import { authProvidersRoutes } from "./modules/auth-providers/routes.js";
 import { fileRoutes } from "./modules/file/routes.js";
 import { folderRoutes } from "./modules/folder/routes.js";
+import { groupRoutes } from "./modules/group/routes.js";
 import { healthRoutes } from "./modules/health/routes.js";
 import { inviteRoutes } from "./modules/invite/routes.js";
 import { quotaRoutes } from "./modules/quota/routes.js";
@@ -89,6 +90,7 @@ async function startServer() {
   app.register(healthRoutes);
   app.register(s3StorageRoutes);
   app.register(quotaRoutes);
+  app.register(groupRoutes);
 
   if (isInternalStorage) {
     app.log.info("Using internal storage");
