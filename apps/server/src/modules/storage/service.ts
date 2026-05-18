@@ -2,13 +2,14 @@ import fs from "node:fs";
 import { statfs } from "node:fs/promises";
 import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import { env } from "../../env.js";
-import { prisma } from "../../shared/prisma.js";
 import { AppError, ValidationError } from "../../utils/app-error.js";
 import { IS_RUNNING_IN_CONTAINER } from "../../utils/container-detection.js";
 import { getLogger } from "../../utils/logger.js";
-import { getConfigValue } from "../config/service.js";
+import { QuotaService, type WarningLevel } from "../quota/service.js";
 
 export class StorageService {
+  private quotaService = new QuotaService();
+
   private _ensureNumber(value: number, fallback: number = 0): number {
     return Number.isNaN(value) || !Number.isFinite(value) || value < 0 ? fallback : value;
   }
@@ -100,6 +101,9 @@ export class StorageService {
     diskUsedGB: number;
     diskAvailableGB: number;
     uploadAllowed: boolean;
+    warningLevel?: WarningLevel;
+    maxFileSize?: number;
+    percentage?: number;
   }> {
     try {
       if (isAdmin) {
@@ -127,26 +131,25 @@ export class StorageService {
           uploadAllowed: diskAvailableGB > 0.1,
         };
       } else if (userId) {
-        const maxTotalStorage = BigInt(await getConfigValue("maxTotalStoragePerUser"));
-        const maxStorageGB = this._ensureNumber(Number(maxTotalStorage) / (1024 * 1024 * 1024), 10);
+        const status = await this.quotaService.getQuotaStatus(userId);
 
-        const userFiles = await prisma.file.findMany({
-          where: { userId },
-          select: { size: true },
-        });
-
-        const totalUsedStorage = userFiles.reduce((acc, file) => acc + file.size, BigInt(0));
-        const usedStorageGB = this._ensureNumber(
-          Number(totalUsedStorage) / (1024 * 1024 * 1024),
-          0,
-        );
-        const availableStorageGB = this._ensureNumber(maxStorageGB - usedStorageGB, 0);
+        const isUnlimited = status.maxTotalStorage === 0n;
+        const maxStorageGB = isUnlimited
+          ? 0
+          : this._ensureNumber(Number(status.maxTotalStorage) / (1024 * 1024 * 1024), 10);
+        const usedStorageGB = this._ensureNumber(Number(status.used) / (1024 * 1024 * 1024), 0);
+        const availableStorageGB = isUnlimited
+          ? Number.MAX_SAFE_INTEGER
+          : this._ensureNumber(maxStorageGB - usedStorageGB, 0);
 
         return {
           diskSizeGB: Number(maxStorageGB.toFixed(2)),
           diskUsedGB: Number(usedStorageGB.toFixed(2)),
-          diskAvailableGB: Number(availableStorageGB.toFixed(2)),
-          uploadAllowed: availableStorageGB > 0,
+          diskAvailableGB: isUnlimited ? -1 : Number(availableStorageGB.toFixed(2)),
+          uploadAllowed: status.uploadAllowed,
+          warningLevel: status.warningLevel,
+          maxFileSize: status.maxFileSize === 0n ? 0 : Number(status.maxFileSize),
+          percentage: status.percentage,
         };
       }
 
@@ -170,6 +173,9 @@ export class StorageService {
     diskUsedGB: number;
     diskAvailableGB: number;
     uploadAllowed: boolean;
+    warningLevel?: WarningLevel;
+    maxFileSize?: number;
+    percentage?: number;
     fileSizeInfo: {
       bytes: number;
       kb: number;
@@ -179,10 +185,13 @@ export class StorageService {
   }> {
     const diskSpace = await this.getDiskSpace(userId);
     const fileSizeGB = fileSize / (1024 * 1024 * 1024);
+    // diskAvailableGB === -1 signals unlimited quota — upload is always allowed
+    const uploadAllowed =
+      diskSpace.diskAvailableGB === -1 || diskSpace.diskAvailableGB > fileSizeGB;
 
     return {
       ...diskSpace,
-      uploadAllowed: diskSpace.diskAvailableGB > fileSizeGB,
+      uploadAllowed,
       fileSizeInfo: {
         bytes: fileSize,
         kb: Number((fileSize / 1024).toFixed(2)),

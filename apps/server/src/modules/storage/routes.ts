@@ -27,10 +27,21 @@ export async function storageRoutes(app: FastifyInstance) {
         description: "Get server disk space information",
         response: {
           200: z.object({
-            diskSizeGB: z.number().describe("The server disk size in GB"),
-            diskUsedGB: z.number().describe("The server disk used in GB"),
-            diskAvailableGB: z.number().describe("The server disk available in GB"),
+            diskSizeGB: z
+              .number()
+              .describe("Total storage in GB (quota limit for users, disk for admins)"),
+            diskUsedGB: z.number().describe("Storage used in GB"),
+            diskAvailableGB: z.number().describe("Storage available in GB (-1 = unlimited)"),
             uploadAllowed: z.boolean().describe("Whether file upload is allowed"),
+            warningLevel: z
+              .enum(["none", "warning", "critical", "exceeded"])
+              .optional()
+              .describe("Quota warning level (users only)"),
+            maxFileSize: z
+              .number()
+              .optional()
+              .describe("Max single file size in bytes (0 = unlimited, users only)"),
+            percentage: z.number().optional().describe("Percentage of quota used (users only)"),
           }),
           401: ErrorResponseSchema,
           500: ErrorResponseSchema,
@@ -54,10 +65,21 @@ export async function storageRoutes(app: FastifyInstance) {
         }),
         response: {
           200: z.object({
-            diskSizeGB: z.number().describe("The server disk size in GB"),
-            diskUsedGB: z.number().describe("The server disk used in GB"),
-            diskAvailableGB: z.number().describe("The server disk available in GB"),
+            diskSizeGB: z
+              .number()
+              .describe("Total storage in GB (quota limit for users, disk for admins)"),
+            diskUsedGB: z.number().describe("Storage used in GB"),
+            diskAvailableGB: z.number().describe("Storage available in GB (-1 = unlimited)"),
             uploadAllowed: z.boolean().describe("Whether file upload is allowed"),
+            warningLevel: z
+              .enum(["none", "warning", "critical", "exceeded"])
+              .optional()
+              .describe("Quota warning level (users only)"),
+            maxFileSize: z
+              .number()
+              .optional()
+              .describe("Max single file size in bytes (0 = unlimited, users only)"),
+            percentage: z.number().optional().describe("Percentage of quota used (users only)"),
             fileSizeInfo: z.object({
               bytes: z.number(),
               kb: z.number(),
