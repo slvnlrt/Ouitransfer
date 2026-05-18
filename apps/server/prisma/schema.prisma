@@ -25,6 +25,9 @@ model User {
   twoFactorBackupCodes String?
   twoFactorVerified    Boolean @default(false)
 
+  maxFileSizeOverride     BigInt? // Per-user max file size override (bytes). null=inherit, 0=unlimited.
+  maxTotalStorageOverride BigInt? // Per-user max total storage override (bytes). null=inherit, 0=unlimited.
+
   tokenVersion Int @default(0)
 
   files         File[]
