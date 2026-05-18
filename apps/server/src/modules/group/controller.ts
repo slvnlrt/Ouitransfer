@@ -24,7 +24,7 @@ function serializeGroup<
 function serializeMember<T extends { storageUsed?: bigint }>(member: T) {
   return {
     ...member,
-    ...(member.storageUsed !== undefined ? { storageUsed: String(member.storageUsed) } : {}),
+    storageUsed: String(member.storageUsed ?? 0n),
   };
 }
 

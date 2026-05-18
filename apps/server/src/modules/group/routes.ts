@@ -94,8 +94,8 @@ export async function groupRoutes(app: FastifyInstance) {
         summary: "Create Group",
         description: "Create a new group (admin only)",
         body: z.object({
-          name: z.string().describe("Group name (unique, max 100 chars)"),
-          description: z.string().optional().describe("Group description (max 500 chars)"),
+          name: z.string().min(1).max(100).describe("Group name (unique, max 100 chars)"),
+          description: z.string().max(500).optional().describe("Group description (max 500 chars)"),
           maxFileSizeOverride: z
             .union([z.number(), z.string(), z.null()])
             .optional()
@@ -128,8 +128,8 @@ export async function groupRoutes(app: FastifyInstance) {
         description: "Update a group (admin only)",
         params: z.object({ id: z.string() }),
         body: z.object({
-          name: z.string().optional(),
-          description: z.string().nullable().optional(),
+          name: z.string().min(1).max(100).optional(),
+          description: z.string().max(500).nullable().optional(),
           maxFileSizeOverride: z.union([z.number(), z.string(), z.null()]).optional(),
           maxTotalStorageOverride: z.union([z.number(), z.string(), z.null()]).optional(),
         }),

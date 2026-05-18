@@ -15,7 +15,18 @@ export class GroupService {
     if (existing) {
       throw new ConflictError("A group with this name already exists");
     }
-    return this.repository.create(input);
+    try {
+      return await this.repository.create(input);
+    } catch (error: unknown) {
+      if (
+        error instanceof Error &&
+        "code" in error &&
+        (error as { code: string }).code === "P2002"
+      ) {
+        throw new ConflictError("A group with this name already exists");
+      }
+      throw error;
+    }
   }
 
   async getGroupById(id: string) {
@@ -64,7 +75,18 @@ export class GroupService {
       }
     }
 
-    return this.repository.update(id, input);
+    try {
+      return await this.repository.update(id, input);
+    } catch (error: unknown) {
+      if (
+        error instanceof Error &&
+        "code" in error &&
+        (error as { code: string }).code === "P2002"
+      ) {
+        throw new ConflictError("A group with this name already exists");
+      }
+      throw error;
+    }
   }
 
   async deleteGroup(id: string) {
@@ -95,12 +117,16 @@ export class GroupService {
       throw new NotFoundError("User not found");
     }
 
+    // Short-circuit: user is already in this group, no DB write needed
+    if (user.groupId === groupId) {
+      return { previousGroupId: undefined };
+    }
+
     const previousGroupId = user.groupId;
 
-    // Move user to this group (handles already-in-same-group and already-in-different-group)
     await this.repository.addMember(groupId, userId);
 
-    return { previousGroupId: previousGroupId !== groupId ? previousGroupId : undefined };
+    return { previousGroupId: previousGroupId ?? undefined };
   }
 
   async removeMember(groupId: string, userId: string) {
