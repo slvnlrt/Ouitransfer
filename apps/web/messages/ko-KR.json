@@ -349,7 +349,7 @@
     "invalidCredentials": "잘못된 이메일 또는 비밀번호입니다",
     "networkError": "서버에 연결할 수 없습니다. 연결 상태를 확인해 주세요.",
     "userNotFound": "사용자를 찾을 수 없습니다",
-    "accountLocked": "Your account has been temporarily locked due to too many failed login attempts. Please try again in {minutes} minutes.",
+    "accountLocked": "로그인 시도가 너무 많이 실패하여 계정이 일시적으로 잠겼습니다. {minutes}분 후에 다시 시도하세요.",
     "unexpectedError": "예기치 않은 오류가 발생했습니다. 다시 시도해주세요",
     "Invalid password": "잘못된 비밀번호입니다",
     "Invalid two-factor authentication code": "잘못된 2단계 인증 코드입니다",

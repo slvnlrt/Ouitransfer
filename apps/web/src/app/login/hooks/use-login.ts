@@ -157,7 +157,7 @@ export function useLogin() {
         const minutes =
           typeof apiError.details?.remainingMinutes === "number"
             ? apiError.details.remainingMinutes
-            : 15;
+            : 15; // Matches LOCKOUT_DURATION_MINUTES in login-attempts.service.ts
         setError(t("errors.accountLocked", { minutes }));
       } else if (
         apiError.code === ErrorCodes.UNAUTHORIZED ||

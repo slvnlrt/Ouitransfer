@@ -353,7 +353,7 @@
     "invalidCredentials": "Ogiltig e-postadress eller lösenord",
     "networkError": "Kan inte nå servern. Kontrollera din anslutning.",
     "userNotFound": "Användaren hittades inte",
-    "accountLocked": "Your account has been temporarily locked due to too many failed login attempts. Please try again in {minutes} minutes.",
+    "accountLocked": "Ditt konto har tillfälligt låsts på grund av för många misslyckade inloggningsförsök. Försök igen om {minutes} minuter.",
     "unexpectedError": "Ett oväntat fel inträffade. Försök igen",
     "Invalid verification code": "Ogiltig verifieringskod",
     "Two-factor authentication is already enabled": "Tvåfaktorsautentisering är redan aktiverad",

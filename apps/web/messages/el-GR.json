@@ -353,7 +353,7 @@
     "invalidCredentials": "Μη έγκυρο email ή κωδικός πρόσβασης",
     "networkError": "Δεν είναι δυνατή η σύνδεση με τον διακομιστή. Ελέγξτε τη σύνδεσή σας.",
     "userNotFound": "Ο χρήστης δεν βρέθηκε",
-    "accountLocked": "Your account has been temporarily locked due to too many failed login attempts. Please try again in {minutes} minutes.",
+    "accountLocked": "Ο λογαριασμός σας κλειδώθηκε προσωρινά λόγω πολλών αποτυχημένων προσπαθειών σύνδεσης. Δοκιμάστε ξανά σε {minutes} λεπτά.",
     "unexpectedError": "Παρουσιάστηκε απρόσμενο σφάλμα. Προσπαθήστε ξανά",
     "Invalid verification code": "Μη έγκυρος κωδικός επαλήθευσης",
     "Two-factor authentication is already enabled": "Ο έλεγχος ταυτότητας δύο παραγόντων είναι ήδη ενεργός",

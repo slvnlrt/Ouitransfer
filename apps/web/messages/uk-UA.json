@@ -353,7 +353,7 @@
     "invalidCredentials": "Неправильна електронна пошта або пароль",
     "networkError": "Не вдається зʼєднатися з сервером. Перевірте підключення.",
     "userNotFound": "Користувача не знайдено",
-    "accountLocked": "Your account has been temporarily locked due to too many failed login attempts. Please try again in {minutes} minutes.",
+    "accountLocked": "Ваш акаунт тимчасово заблоковано через занадто багато невдалих спроб входу. Будь ласка, спробуйте знову через {minutes} хвилин.",
     "unexpectedError": "Сталася неочікувана помилка. Спробуйте ще раз",
     "Invalid verification code": "Неправильний код підтвердження",
     "Two-factor authentication is already enabled": "Двофакторна автентифікація вже увімкнена",

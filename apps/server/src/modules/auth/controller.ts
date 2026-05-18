@@ -1,3 +1,4 @@
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import {
   REFRESH_TOKEN_COOKIE_NAME,
@@ -5,7 +6,7 @@ import {
   REFRESH_TOKEN_MAX_AGE,
 } from "../../config/auth.config.js";
 import { env } from "../../env.js";
-import { UnauthorizedError } from "../../utils/app-error.js";
+import { AppError, UnauthorizedError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
 import { getConfigValue } from "../config/service.js";
@@ -41,8 +42,10 @@ export class AuthController {
       result = await this.authService.login(input, userAgent, ipAddress);
     } catch (err) {
       // Audit failed login (fire-and-forget)
+      // Use LOGIN_LOCKED for rate-limit lockouts to distinguish from credential failures
+      const isLockout = err instanceof AppError && err.code === ErrorCodes.ACCOUNT_LOCKED;
       logAuditEvent({
-        action: "LOGIN_FAILURE",
+        action: isLockout ? "LOGIN_LOCKED" : "LOGIN_FAILURE",
         ipAddress,
         userAgent,
         metadata: { emailOrUsername: input.emailOrUsername },

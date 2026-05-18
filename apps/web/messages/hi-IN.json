@@ -349,7 +349,7 @@
     "invalidCredentials": "गलत ईमेल या पासवर्ड",
     "networkError": "सर्वर से कनेक्ट नहीं हो पा रहा है। कृपया अपना कनेक्शन जाँचें।",
     "userNotFound": "उपयोगकर्ता नहीं मिला",
-    "accountLocked": "Your account has been temporarily locked due to too many failed login attempts. Please try again in {minutes} minutes.",
+    "accountLocked": "बहुत अधिक विफल लॉगिन प्रयासों के कारण आपका खाता अस्थायी रूप से लॉक कर दिया गया है। कृपया {minutes} मिनट बाद पुनः प्रयास करें।",
     "unexpectedError": "एक अप्रत्याशित त्रुटि हुई। कृपया पुनः प्रयास करें",
     "Invalid password": "अमान्य पासवर्ड",
     "Invalid two-factor authentication code": "अमान्य दो-कारक प्रमाणीकरण कोड",

@@ -353,7 +353,7 @@
     "invalidCredentials": "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
     "networkError": "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่อของคุณ",
     "userNotFound": "ไม่พบผู้ใช้",
-    "accountLocked": "Your account has been temporarily locked due to too many failed login attempts. Please try again in {minutes} minutes.",
+    "accountLocked": "บัญชีของคุณถูกล็อคชั่วคราวเนื่องจากพยายามเข้าสู่ระบบล้มเหลวหลายครั้ง กรุณาลองใหม่ในอีก {minutes} นาที",
     "unexpectedError": "เกิดข้อผิดพลาดที่ไม่คาดคิด โปรดลองใหม่",
     "Invalid verification code": "รหัสการยืนยันไม่ถูกต้อง",
     "Two-factor authentication is already enabled": "เปิดใช้งานการยืนยันตัวตนสองปัจจัยแล้ว",

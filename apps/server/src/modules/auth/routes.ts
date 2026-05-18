@@ -80,6 +80,8 @@ export async function authRoutes(app: FastifyInstance) {
             }),
           ]),
           400: ErrorResponseSchema,
+          401: ErrorResponseSchema,
+          403: ErrorResponseSchema,
         },
       },
     },

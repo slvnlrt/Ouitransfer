@@ -16,6 +16,7 @@ const AUDIT_ACTIONS = [
   "USER_CREATE",
   "USER_DELETE",
   "ACCOUNT_LOCKED",
+  "LOGIN_LOCKED",
 ] as const;
 
 export const AuditActionSchema = z.enum(AUDIT_ACTIONS);

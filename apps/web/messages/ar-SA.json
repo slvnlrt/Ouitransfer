@@ -349,7 +349,7 @@
     "invalidCredentials": "بريد إلكتروني أو كلمة مرور غير صحيحة",
     "networkError": "تعذّر الوصول إلى الخادم. يرجى التحقق من اتصالك.",
     "userNotFound": "المستخدم غير موجود",
-    "accountLocked": "Your account has been temporarily locked due to too many failed login attempts. Please try again in {minutes} minutes.",
+    "accountLocked": "تم قفل حسابك مؤقتاً بسبب كثرة محاولات تسجيل الدخول الفاشلة. يرجى المحاولة مرة أخرى بعد {minutes} دقيقة.",
     "unexpectedError": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى",
     "Invalid password": "كلمة المرور غير صحيحة",
     "Invalid two-factor authentication code": "رمز المصادقة الثنائية غير صحيح",
