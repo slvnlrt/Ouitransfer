@@ -153,7 +153,10 @@ export function useLogin() {
       const apiError = parseApiError(err);
       if (apiError.isNetworkError) {
         setError(t("errors.networkError"));
-      } else if (apiError.code === ErrorCodes.UNAUTHORIZED) {
+      } else if (
+        apiError.code === ErrorCodes.UNAUTHORIZED ||
+        apiError.code === ErrorCodes.VALIDATION_ERROR
+      ) {
         setError(t("errors.invalidCredentials"));
       } else {
         setError(t("errors.unexpectedError"));
