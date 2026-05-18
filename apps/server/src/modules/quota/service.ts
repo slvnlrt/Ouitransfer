@@ -117,3 +117,6 @@ export class QuotaService {
     };
   }
 }
+
+/** Singleton instance — import this instead of instantiating `new QuotaService()`. */
+export const quotaService = new QuotaService();

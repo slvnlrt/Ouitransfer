@@ -17,6 +17,14 @@ const quotaOverrideField = z.union([z.number(), z.string(), z.null()]).transform
   }
   try {
     const n = BigInt(str);
+    const ONE_PB = 1125899906842624n; // 2^50 bytes = 1 PB
+    if (n > ONE_PB) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Quota value must not exceed 1 PB",
+      });
+      return z.NEVER;
+    }
     return n;
   } catch {
     ctx.addIssue({

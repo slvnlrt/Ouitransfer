@@ -5,11 +5,30 @@ import { env } from "../../env.js";
 import { AppError, ValidationError } from "../../utils/app-error.js";
 import { IS_RUNNING_IN_CONTAINER } from "../../utils/container-detection.js";
 import { getLogger } from "../../utils/logger.js";
-import { QuotaService, type WarningLevel } from "../quota/service.js";
+import { quotaService, type WarningLevel } from "../quota/service.js";
+
+export type AdminDiskSpace = {
+  kind: "admin";
+  diskSizeGB: number;
+  diskUsedGB: number;
+  diskAvailableGB: number;
+  uploadAllowed: boolean;
+};
+
+export type UserDiskSpace = {
+  kind: "user";
+  diskSizeGB: number;
+  diskUsedGB: number;
+  diskAvailableGB: number;
+  uploadAllowed: boolean;
+  warningLevel: WarningLevel;
+  maxFileSize: number;
+  percentage: number;
+};
+
+export type DiskSpaceResult = AdminDiskSpace | UserDiskSpace;
 
 export class StorageService {
-  private quotaService = new QuotaService();
-
   private _ensureNumber(value: number, fallback: number = 0): number {
     return Number.isNaN(value) || !Number.isFinite(value) || value < 0 ? fallback : value;
   }
@@ -93,18 +112,7 @@ export class StorageService {
     return null;
   }
 
-  async getDiskSpace(
-    userId?: string,
-    isAdmin?: boolean,
-  ): Promise<{
-    diskSizeGB: number;
-    diskUsedGB: number;
-    diskAvailableGB: number;
-    uploadAllowed: boolean;
-    warningLevel?: WarningLevel;
-    maxFileSize?: number;
-    percentage?: number;
-  }> {
+  async getDiskSpace(userId?: string, isAdmin?: boolean): Promise<DiskSpaceResult> {
     try {
       if (isAdmin) {
         const diskInfo = await this._getDiskSpaceMultiplePaths();
@@ -125,13 +133,14 @@ export class StorageService {
         const diskAvailableGB = this._ensureNumber(available / (1024 * 1024 * 1024), 0);
 
         return {
+          kind: "admin",
           diskSizeGB: Number(diskSizeGB.toFixed(2)),
           diskUsedGB: Number(diskUsedGB.toFixed(2)),
           diskAvailableGB: Number(diskAvailableGB.toFixed(2)),
           uploadAllowed: diskAvailableGB > 0.1,
         };
       } else if (userId) {
-        const status = await this.quotaService.getQuotaStatus(userId);
+        const status = await quotaService.getQuotaStatus(userId);
 
         const isUnlimited = status.maxTotalStorage === 0n;
         const maxStorageGB = isUnlimited
@@ -143,6 +152,7 @@ export class StorageService {
           : this._ensureNumber(maxStorageGB - usedStorageGB, 0);
 
         return {
+          kind: "user",
           diskSizeGB: Number(maxStorageGB.toFixed(2)),
           diskUsedGB: Number(usedStorageGB.toFixed(2)),
           diskAvailableGB: isUnlimited ? -1 : Number(availableStorageGB.toFixed(2)),
@@ -168,21 +178,16 @@ export class StorageService {
   async checkUploadAllowed(
     fileSize: number,
     userId?: string,
-  ): Promise<{
-    diskSizeGB: number;
-    diskUsedGB: number;
-    diskAvailableGB: number;
-    uploadAllowed: boolean;
-    warningLevel?: WarningLevel;
-    maxFileSize?: number;
-    percentage?: number;
-    fileSizeInfo: {
-      bytes: number;
-      kb: number;
-      mb: number;
-      gb: number;
-    };
-  }> {
+  ): Promise<
+    DiskSpaceResult & {
+      fileSizeInfo: {
+        bytes: number;
+        kb: number;
+        mb: number;
+        gb: number;
+      };
+    }
+  > {
     const diskSpace = await this.getDiskSpace(userId);
     const fileSizeGB = fileSize / (1024 * 1024 * 1024);
     // diskAvailableGB === -1 signals unlimited quota — upload is always allowed

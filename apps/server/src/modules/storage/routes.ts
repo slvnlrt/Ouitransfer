@@ -27,6 +27,7 @@ export async function storageRoutes(app: FastifyInstance) {
         description: "Get server disk space information",
         response: {
           200: z.object({
+            kind: z.enum(["admin", "user"]).describe("Discriminator: 'admin' or 'user' disk space"),
             diskSizeGB: z
               .number()
               .describe("Total storage in GB (quota limit for users, disk for admins)"),
@@ -65,6 +66,7 @@ export async function storageRoutes(app: FastifyInstance) {
         }),
         response: {
           200: z.object({
+            kind: z.enum(["admin", "user"]).describe("Discriminator: 'admin' or 'user' disk space"),
             diskSizeGB: z
               .number()
               .describe("Total storage in GB (quota limit for users, disk for admins)"),

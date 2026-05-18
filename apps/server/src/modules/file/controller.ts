@@ -18,7 +18,7 @@ import {
 import { sanitizeFilename } from "../../utils/sanitize-filename.js";
 import { isMimeTypeConsistent, verifyMagicBytes } from "../../utils/validate-file-content.js";
 import { validateObjectName } from "../../utils/validate-object-name.js";
-import { QuotaService } from "../quota/service.js";
+import { quotaService } from "../quota/service.js";
 import {
   type CheckFileInput,
   CheckFileSchema,
@@ -34,7 +34,6 @@ import { FileService } from "./service.js";
 
 export class FileController {
   private fileService = new FileService();
-  private quotaService = new QuotaService();
 
   async getPresignedUrl(request: FastifyRequest, reply: FastifyReply): Promise<void> {
     const { filename, extension } = request.query as { filename: string; extension: string };
@@ -56,7 +55,7 @@ export class FileController {
 
     const url = await this.fileService.getPresignedPutUrl(objectName, expires);
 
-    const limits = await this.quotaService.resolveEffectiveLimits(userId);
+    const limits = await quotaService.resolveEffectiveLimits(userId);
     const maxFileSize = limits.maxFileSize === 0n ? 0 : Number(limits.maxFileSize);
 
     return reply.status(200).send({ url, objectName, maxFileSize });
@@ -124,7 +123,7 @@ export class FileController {
       }
     }
 
-    const limits = await this.quotaService.resolveEffectiveLimits(userId);
+    const limits = await quotaService.resolveEffectiveLimits(userId);
 
     // Per-file size check (skip if unlimited)
     if (limits.maxFileSize > 0n && BigInt(input.size) > limits.maxFileSize) {
@@ -139,7 +138,7 @@ export class FileController {
 
     // Total storage check (skip if unlimited)
     if (limits.maxTotalStorage > 0n) {
-      const currentStorage = await this.quotaService.calculateStorageUsed(userId);
+      const currentStorage = await quotaService.calculateStorageUsed(userId);
       if (currentStorage + BigInt(input.size) > limits.maxTotalStorage) {
         const availableSpace = Number(limits.maxTotalStorage - currentStorage) / (1024 * 1024);
         throw new AppError(
@@ -205,7 +204,7 @@ export class FileController {
 
     const input: CheckFileInput = CheckFileSchema.parse(request.body);
 
-    const limits = await this.quotaService.resolveEffectiveLimits(userId);
+    const limits = await quotaService.resolveEffectiveLimits(userId);
 
     // Per-file size check (skip if unlimited)
     if (limits.maxFileSize > 0n && BigInt(input.size) > limits.maxFileSize) {
@@ -220,7 +219,7 @@ export class FileController {
 
     // Total storage check (skip if unlimited)
     if (limits.maxTotalStorage > 0n) {
-      const currentStorage = await this.quotaService.calculateStorageUsed(userId);
+      const currentStorage = await quotaService.calculateStorageUsed(userId);
       if (currentStorage + BigInt(input.size) > limits.maxTotalStorage) {
         const availableSpace = Number(limits.maxTotalStorage - currentStorage) / (1024 * 1024);
         throw new AppError(

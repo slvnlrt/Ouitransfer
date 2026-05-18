@@ -10,7 +10,7 @@ import { isMimeTypeConsistent } from "../../utils/validate-file-content.js";
 import { validateObjectName } from "../../utils/validate-object-name.js";
 import { EmailService } from "../email/service.js";
 import { FileService } from "../file/service.js";
-import { QuotaService } from "../quota/service.js";
+import { quotaService } from "../quota/service.js";
 import { UserService } from "../user/service.js";
 import type { UploadToReverseShareInput } from "./dto.js";
 import { ReverseShareRepository } from "./repository.js";
@@ -26,7 +26,6 @@ type ReverseShareWithCreator = Prisma.ReverseShareGetPayload<{
 export class ReverseShareUploadService {
   private reverseShareRepository = new ReverseShareRepository();
   private fileService = new FileService();
-  private quotaService = new QuotaService();
   private emailService = new EmailService();
   private userService = new UserService();
 
@@ -296,7 +295,7 @@ export class ReverseShareUploadService {
       throw new ForbiddenError("Unauthorized to copy this file");
     }
 
-    const limits = await this.quotaService.resolveEffectiveLimits(creatorId);
+    const limits = await quotaService.resolveEffectiveLimits(creatorId);
 
     // Per-file size check (skip if unlimited)
     if (limits.maxFileSize > 0n && file.size > limits.maxFileSize) {
@@ -311,7 +310,7 @@ export class ReverseShareUploadService {
 
     // Total storage check (skip if unlimited)
     if (limits.maxTotalStorage > 0n) {
-      const currentStorage = await this.quotaService.calculateStorageUsed(creatorId);
+      const currentStorage = await quotaService.calculateStorageUsed(creatorId);
       if (currentStorage + file.size > limits.maxTotalStorage) {
         const availableSpace = Number(limits.maxTotalStorage - currentStorage) / (1024 * 1024);
         throw new AppError(

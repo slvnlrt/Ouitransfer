@@ -81,6 +81,10 @@ describe("QuotaRepository", () => {
     const result = await repository.calculateStorageUsed("user-empty");
 
     expect(result).toBe(0n);
+    expect(prisma.file.aggregate).toHaveBeenCalledWith({
+      _sum: { size: true },
+      where: { userId: "user-empty" },
+    });
   });
 
   it("counts only ReverseShareFiles owned by user via ReverseShare.creatorId", async () => {
