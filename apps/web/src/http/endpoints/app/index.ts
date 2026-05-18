@@ -17,9 +17,7 @@ import type {
  * Get application base information
  * @summary Get application base information
  */
-export const getAppInfo = <TData = GetAppInfoResult>(
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
+export const getAppInfo = (options?: AxiosRequestConfig): Promise<GetAppInfoResult> => {
   return apiInstance.get(`/api/app/info`, options);
 };
 
@@ -27,10 +25,10 @@ export const getAppInfo = <TData = GetAppInfoResult>(
  * Upload a new app logo (admin only)
  * @summary Upload app logo
  */
-export const uploadLogo = <TData = UploadLogoResult>(
+export const uploadLogo = (
   uploadLogoBody: UploadLogoBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<UploadLogoResult> => {
   const formData = new FormData();
 
   if (uploadLogoBody.file !== undefined) {
@@ -50,9 +48,7 @@ export const uploadLogo = <TData = UploadLogoResult>(
  * Remove the current app logo (admin only)
  * @summary Remove app logo
  */
-export const removeLogo = <TData = RemoveLogoResult>(
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
+export const removeLogo = (options?: AxiosRequestConfig): Promise<RemoveLogoResult> => {
   return apiInstance.delete(`/api/app/remove-logo`, options);
 };
 
@@ -60,9 +56,7 @@ export const removeLogo = <TData = RemoveLogoResult>(
  * Returns the health status of the API
  * @summary Check API Health
  */
-export const checkHealth = <TData = CheckHealthResult>(
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
+export const checkHealth = (options?: AxiosRequestConfig): Promise<CheckHealthResult> => {
   return apiInstance.get(`/api/app/health`, options);
 };
 
@@ -70,9 +64,7 @@ export const checkHealth = <TData = CheckHealthResult>(
  * Get simplified system health status (no auth required)
  * @summary Get system health status
  */
-export const getHealthStatus = <TData = HealthStatusResult>(
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
+export const getHealthStatus = (options?: AxiosRequestConfig): Promise<HealthStatusResult> => {
   return apiInstance.get(`/api/app/health-status`, options);
 };
 
@@ -80,9 +72,7 @@ export const getHealthStatus = <TData = HealthStatusResult>(
  * Get server disk space information
  * @summary Get server disk space information
  */
-export const getDiskSpace = <TData = GetDiskSpaceResult>(
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
+export const getDiskSpace = (options?: AxiosRequestConfig): Promise<GetDiskSpaceResult> => {
   return apiInstance.get(`/api/app/disk-space`, options);
 };
 
@@ -90,10 +80,10 @@ export const getDiskSpace = <TData = GetDiskSpaceResult>(
  * Check if file upload is allowed based on available space (fileSize in bytes)
  * @summary Check if file upload is allowed
  */
-export const checkUploadAllowed = <TData = CheckUploadAllowedResult>(
+export const checkUploadAllowed = (
   params: CheckUploadAllowedParams,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<CheckUploadAllowedResult> => {
   return apiInstance.get(`/api/app/check-upload`, {
     ...options,
     params: { ...params, ...options?.params },

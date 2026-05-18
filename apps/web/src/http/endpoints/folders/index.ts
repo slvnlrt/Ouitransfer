@@ -16,10 +16,10 @@ import type {
  * Registers folder metadata in the database
  * @summary Register Folder Metadata
  */
-export const registerFolder = <TData = RegisterFolderResult>(
+export const registerFolder = (
   registerFolderBody: RegisterFolderBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<RegisterFolderResult> => {
   return apiInstance.post(`/api/folders`, registerFolderBody, options);
 };
 
@@ -27,9 +27,7 @@ export const registerFolder = <TData = RegisterFolderResult>(
  * Lists user folders with optional recursive structure
  * @summary List Folders
  */
-export const listFolders = <TData = ListFoldersResult>(
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
+export const listFolders = (options?: AxiosRequestConfig): Promise<ListFoldersResult> => {
   return apiInstance.get(`/api/folders`, options);
 };
 
@@ -37,11 +35,11 @@ export const listFolders = <TData = ListFoldersResult>(
  * Updates folder metadata
  * @summary Update Folder
  */
-export const updateFolder = <TData = UpdateFolderResult>(
+export const updateFolder = (
   id: string,
   updateFolderBody: UpdateFolderBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<UpdateFolderResult> => {
   return apiInstance.patch(`/api/folders/${id}`, updateFolderBody, options);
 };
 
@@ -49,11 +47,11 @@ export const updateFolder = <TData = UpdateFolderResult>(
  * Moves folder to different parent
  * @summary Move Folder
  */
-export const moveFolder = <TData = MoveFolderResult>(
+export const moveFolder = (
   id: string,
   moveFolderBody: MoveFolderBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<MoveFolderResult> => {
   return apiInstance.put(`/api/folders/${id}/move`, moveFolderBody, options);
 };
 
@@ -61,9 +59,9 @@ export const moveFolder = <TData = MoveFolderResult>(
  * Deletes a folder
  * @summary Delete Folder
  */
-export const deleteFolder = <TData = DeleteFolderResult>(
+export const deleteFolder = (
   id: string,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<DeleteFolderResult> => {
   return apiInstance.delete(`/api/folders/${id}`, options);
 };

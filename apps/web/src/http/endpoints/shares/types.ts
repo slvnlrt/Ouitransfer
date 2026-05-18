@@ -128,6 +128,14 @@ export interface NotifyRecipients200 {
   notifiedRecipients: string[];
 }
 
+export interface AddFolders200 {
+  share: Share;
+}
+
+export interface RemoveFolders200 {
+  share: Share;
+}
+
 export interface CreateShareBody {
   name?: string;
   description?: string;
@@ -198,3 +206,5 @@ export type RemoveRecipientsResult = AxiosResponse<RemoveRecipients200>;
 export type CreateShareAliasResult = AxiosResponse<CreateShareAlias200>;
 export type GetShareByAliasResult = AxiosResponse<GetShareByAlias200>;
 export type NotifyRecipientsResult = AxiosResponse<NotifyRecipients200>;
+export type AddFoldersResult = AxiosResponse<AddFolders200>;
+export type RemoveFoldersResult = AxiosResponse<RemoveFolders200>;

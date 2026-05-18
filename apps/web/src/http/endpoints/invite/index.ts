@@ -4,28 +4,28 @@ import apiInstance from "@/config/api";
 import type {
   GenerateInviteTokenResponse,
   RegisterWithInviteRequest,
-  RegisterWithInviteResponse,
+  RegisterWithInviteResult,
   ValidateInviteTokenResponse,
 } from "./types";
 
-export const generateInviteToken = async <TData = GenerateInviteTokenResponse>(
+export const generateInviteToken = async (
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<GenerateInviteTokenResponse> => {
   const response = await apiInstance.post(`/api/invite-tokens`, undefined, options);
   return response.data;
 };
 
-export const validateInviteToken = async <TData = ValidateInviteTokenResponse>(
+export const validateInviteToken = async (
   token: string,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<ValidateInviteTokenResponse> => {
   const response = await apiInstance.get(`/api/invite-tokens/${token}`, options);
   return response.data;
 };
 
-export const registerWithInvite = <TData = RegisterWithInviteResponse>(
+export const registerWithInvite = (
   data: RegisterWithInviteRequest,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<RegisterWithInviteResult> => {
   return apiInstance.post(`/api/register-with-invite`, data, options);
 };

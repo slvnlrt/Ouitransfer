@@ -22,10 +22,10 @@ import type {
  * Register a new user (admin only)
  * @summary Register New User
  */
-export const registerUser = <TData = RegisterUserResult>(
+export const registerUser = (
   registerUserBody: RegisterUserBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<RegisterUserResult> => {
   return apiInstance.post(`/api/users/register`, registerUserBody, options);
 };
 
@@ -33,9 +33,7 @@ export const registerUser = <TData = RegisterUserResult>(
  * List all users (admin only)
  * @summary List All Users
  */
-export const listUsers = <TData = ListUsersResult>(
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
+export const listUsers = (options?: AxiosRequestConfig): Promise<ListUsersResult> => {
   return apiInstance.get(`/api/users/list`, options);
 };
 
@@ -43,10 +41,10 @@ export const listUsers = <TData = ListUsersResult>(
  * Update user data (admin only)
  * @summary Update User Data
  */
-export const updateUser = <TData = UpdateUserResult>(
+export const updateUser = (
   updateUserBody: UpdateUserBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<UpdateUserResult> => {
   return apiInstance.put(`/api/users/update`, updateUserBody, options);
 };
 
@@ -54,10 +52,7 @@ export const updateUser = <TData = UpdateUserResult>(
  * Delete a user (admin only)
  * @summary Delete User
  */
-export const deleteUser = <TData = DeleteUserResult>(
-  id: string,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
+export const deleteUser = (id: string, options?: AxiosRequestConfig): Promise<DeleteUserResult> => {
   return apiInstance.delete(`/api/users/delete/${id}`, options);
 };
 
@@ -65,10 +60,10 @@ export const deleteUser = <TData = DeleteUserResult>(
  * Activate a user (admin only)
  * @summary Activate User
  */
-export const activateUser = <TData = ActivateUserResult>(
+export const activateUser = (
   id: string,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<ActivateUserResult> => {
   return apiInstance.patch(`/api/users/activate/${id}`, undefined, options);
 };
 
@@ -76,10 +71,10 @@ export const activateUser = <TData = ActivateUserResult>(
  * Deactivate a user (admin only)
  * @summary Deactivate User
  */
-export const deactivateUser = <TData = DeactivateUserResult>(
+export const deactivateUser = (
   id: string,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<DeactivateUserResult> => {
   return apiInstance.patch(`/api/users/deactivate/${id}`, undefined, options);
 };
 
@@ -87,10 +82,10 @@ export const deactivateUser = <TData = DeactivateUserResult>(
  * Upload and update user profile image
  * @summary Upload user avatar
  */
-export const uploadAvatar = <TData = UploadAvatarResult>(
+export const uploadAvatar = (
   uploadAvatarBody: UploadAvatarBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<UploadAvatarResult> => {
   const formData = new FormData();
 
   if (uploadAvatarBody.file !== undefined) {
@@ -110,9 +105,7 @@ export const uploadAvatar = <TData = UploadAvatarResult>(
  * Remove user profile image
  * @summary Remove user avatar
  */
-export const removeAvatar = <TData = RemoveAvatarResult>(
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
+export const removeAvatar = (options?: AxiosRequestConfig): Promise<RemoveAvatarResult> => {
   return apiInstance.delete(`/api/users/avatar/remove`, options);
 };
 
@@ -120,10 +113,10 @@ export const removeAvatar = <TData = RemoveAvatarResult>(
  * Get quota status for a user (admin only)
  * @summary Get User Quota
  */
-export const getUserQuota = <TData = GetUserQuotaResult>(
+export const getUserQuota = (
   id: string,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<GetUserQuotaResult> => {
   return apiInstance.get(`/api/users/quota/${id}`, options);
 };
 
@@ -131,10 +124,10 @@ export const getUserQuota = <TData = GetUserQuotaResult>(
  * Update quota overrides for a user (admin only)
  * @summary Update User Quota
  */
-export const updateUserQuota = <TData = UpdateUserQuotaResult>(
+export const updateUserQuota = (
   id: string,
   body: UpdateQuotaBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<UpdateUserQuotaResult> => {
   return apiInstance.patch(`/api/users/quota/${id}`, body, options);
 };

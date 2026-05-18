@@ -7,9 +7,7 @@ import type { BulkUpdateConfigsBody, BulkUpdateConfigsResult, GetAllConfigsResul
  * List public configurations (excludes sensitive data)
  * @summary List public configurations
  */
-export const getPublicConfigs = <TData = GetAllConfigsResult>(
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
+export const getPublicConfigs = (options?: AxiosRequestConfig): Promise<GetAllConfigsResult> => {
   return apiInstance.get(`/api/app/configs/public`, options);
 };
 
@@ -17,9 +15,7 @@ export const getPublicConfigs = <TData = GetAllConfigsResult>(
  * List all configurations (admin only)
  * @summary List all configurations
  */
-export const getAllConfigs = <TData = GetAllConfigsResult>(
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
+export const getAllConfigs = (options?: AxiosRequestConfig): Promise<GetAllConfigsResult> => {
   return apiInstance.get(`/api/app/configs`, options);
 };
 
@@ -27,9 +23,9 @@ export const getAllConfigs = <TData = GetAllConfigsResult>(
  * Bulk update configuration values (admin only)
  * @summary Bulk update configuration values
  */
-export const bulkUpdateConfigs = <TData = BulkUpdateConfigsResult>(
+export const bulkUpdateConfigs = (
   bulkUpdateConfigsBody: BulkUpdateConfigsBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<BulkUpdateConfigsResult> => {
   return apiInstance.patch(`api/config/update/bulk`, bulkUpdateConfigsBody, options);
 };

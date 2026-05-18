@@ -33,10 +33,10 @@ import type {
  * Generates a pre-signed URL for direct upload to S3-compatible storage
  * @summary Get Presigned URL for File
  */
-export const getFilePresignedUrl = <TData = GetPresignedUrlResult>(
+export const getFilePresignedUrl = (
   params: GetPresignedUrlParams,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<GetPresignedUrlResult> => {
   return apiInstance.get(`/api/files/presigned-url`, {
     ...options,
     params: { ...params, ...options?.params },
@@ -47,10 +47,10 @@ export const getFilePresignedUrl = <TData = GetPresignedUrlResult>(
  * Checks if the file meets constraints like MAX_FILESIZE
  * @summary Check file for constraints
  */
-export const checkFile = <TData = CheckFileResult>(
+export const checkFile = (
   CheckFileBody: CheckFileBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<CheckFileResult> => {
   return apiInstance.post(`/api/files/check`, CheckFileBody, options);
 };
 
@@ -58,10 +58,10 @@ export const checkFile = <TData = CheckFileResult>(
  * Registers file metadata in the database
  * @summary Register File Metadata
  */
-export const registerFile = <TData = RegisterFileResult>(
+export const registerFile = (
   registerFileBody: RegisterFileBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<RegisterFileResult> => {
   return apiInstance.post(`/api/files`, registerFileBody, options);
 };
 
@@ -69,10 +69,10 @@ export const registerFile = <TData = RegisterFileResult>(
  * Lists user files
  * @summary List Files
  */
-export const listFiles = <TData = ListFilesResult>(
+export const listFiles = (
   params: { folderId?: string; recursive?: boolean } = {},
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<ListFilesResult> => {
   const queryParams = {
     ...params,
     recursive: params.recursive !== undefined ? params.recursive.toString() : undefined,
@@ -88,11 +88,11 @@ export const listFiles = <TData = ListFilesResult>(
  * Generates a pre-signed URL for downloading a private file
  * @summary Get Download URL
  */
-export const getDownloadUrl = <TData = GetDownloadUrlResult>(
+export const getDownloadUrl = (
   objectName: string,
   password?: string,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<GetDownloadUrlResult> => {
   const body: { objectName: string; password?: string } = { objectName };
   if (password) {
     body.password = password;
@@ -104,10 +104,7 @@ export const getDownloadUrl = <TData = GetDownloadUrlResult>(
  * Deletes a user file
  * @summary Delete File
  */
-export const deleteFile = <TData = DeleteFileResult>(
-  id: string,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
+export const deleteFile = (id: string, options?: AxiosRequestConfig): Promise<DeleteFileResult> => {
   return apiInstance.delete(`/api/files/${id}`, options);
 };
 
@@ -115,11 +112,11 @@ export const deleteFile = <TData = DeleteFileResult>(
  * Updates file metadata in the database
  * @summary Update File Metadata
  */
-export const updateFile = <TData = UpdateFileResult>(
+export const updateFile = (
   id: string,
   updateFileBody: UpdateFileBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<UpdateFileResult> => {
   return apiInstance.patch(`/api/files/${id}`, updateFileBody, options);
 };
 
@@ -127,11 +124,11 @@ export const updateFile = <TData = UpdateFileResult>(
  * Moves a file to a different folder
  * @summary Move File
  */
-export const moveFile = <TData = MoveFileResult>(
+export const moveFile = (
   id: string,
   moveFileBody: MoveFileBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<MoveFileResult> => {
   return apiInstance.put(`/api/files/${id}/move`, moveFileBody, options);
 };
 
@@ -139,10 +136,10 @@ export const moveFile = <TData = MoveFileResult>(
  * Creates a multipart upload session
  * @summary Create Multipart Upload
  */
-export const createMultipartUpload = <TData = CreateMultipartUploadResult>(
+export const createMultipartUpload = (
   createMultipartUploadBody: CreateMultipartUploadBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<CreateMultipartUploadResult> => {
   return apiInstance.post(`/api/files/multipart/create`, createMultipartUploadBody, options);
 };
 
@@ -150,10 +147,10 @@ export const createMultipartUpload = <TData = CreateMultipartUploadResult>(
  * Gets a presigned URL for uploading a specific part
  * @summary Get Multipart Part URL
  */
-export const getMultipartPartUrl = <TData = GetMultipartPartUrlResult>(
+export const getMultipartPartUrl = (
   params: GetMultipartPartUrlParams,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<GetMultipartPartUrlResult> => {
   return apiInstance.get(`/api/files/multipart/part-url`, {
     ...options,
     params: { ...params, ...options?.params },
@@ -164,10 +161,10 @@ export const getMultipartPartUrl = <TData = GetMultipartPartUrlResult>(
  * Completes a multipart upload
  * @summary Complete Multipart Upload
  */
-export const completeMultipartUpload = <TData = CompleteMultipartUploadResult>(
+export const completeMultipartUpload = (
   completeMultipartUploadBody: CompleteMultipartUploadBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<CompleteMultipartUploadResult> => {
   return apiInstance.post(`/api/files/multipart/complete`, completeMultipartUploadBody, options);
 };
 
@@ -175,10 +172,10 @@ export const completeMultipartUpload = <TData = CompleteMultipartUploadResult>(
  * Aborts a multipart upload
  * @summary Abort Multipart Upload
  */
-export const abortMultipartUpload = <TData = AbortMultipartUploadResult>(
+export const abortMultipartUpload = (
   abortMultipartUploadBody: AbortMultipartUploadBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<AbortMultipartUploadResult> => {
   return apiInstance.post(`/api/files/multipart/abort`, abortMultipartUploadBody, options);
 };
 
@@ -186,10 +183,10 @@ export const abortMultipartUpload = <TData = AbortMultipartUploadResult>(
  * Lists already-uploaded parts for a multipart upload (enables upload resume)
  * @summary List Multipart Parts
  */
-export const listMultipartParts = <TData = ListMultipartPartsResult>(
+export const listMultipartParts = (
   params: ListMultipartPartsParams,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<ListMultipartPartsResult> => {
   return apiInstance.get(`/api/files/multipart/list-parts`, {
     ...options,
     params: { ...params, ...options?.params },
@@ -200,9 +197,9 @@ export const listMultipartParts = <TData = ListMultipartPartsResult>(
  * Generates a signed embed token for a file in a share
  * @summary Generate Embed Token
  */
-export const generateEmbedToken = <TData = GenerateEmbedTokenResult>(
+export const generateEmbedToken = (
   generateEmbedTokenBody: GenerateEmbedTokenBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<GenerateEmbedTokenResult> => {
   return apiInstance.post(`/api/files/embed-token`, generateEmbedTokenBody, options);
 };

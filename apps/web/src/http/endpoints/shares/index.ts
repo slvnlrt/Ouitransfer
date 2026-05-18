@@ -4,6 +4,7 @@ import apiInstance from "@/config/api";
 import type {
   AddFilesBody,
   AddFilesResult,
+  AddFoldersResult,
   AddRecipientsBody,
   AddRecipientsResult,
   CreateShareAliasBody,
@@ -20,6 +21,7 @@ import type {
   NotifyRecipientsResult,
   RemoveFilesBody,
   RemoveFilesResult,
+  RemoveFoldersResult,
   RemoveRecipientsBody,
   RemoveRecipientsResult,
   UpdateShareBody,
@@ -32,10 +34,10 @@ import type {
  * Create a new share
  * @summary Create a new share
  */
-export const createShare = <TData = CreateShareResult>(
+export const createShare = (
   createShareBody: CreateShareBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<CreateShareResult> => {
   return apiInstance.post(`/api/shares/create`, createShareBody, options);
 };
 
@@ -43,10 +45,10 @@ export const createShare = <TData = CreateShareResult>(
  * Update a share
  * @summary Update a share
  */
-export const updateShare = <TData = UpdateShareResult>(
+export const updateShare = (
   updateShareBody: UpdateShareBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<UpdateShareResult> => {
   return apiInstance.put(`/api/shares/update`, updateShareBody, options);
 };
 
@@ -54,9 +56,7 @@ export const updateShare = <TData = UpdateShareResult>(
  * List all shares created by the authenticated user
  * @summary List all shares created by the authenticated user
  */
-export const listUserShares = <TData = ListUserSharesResult>(
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
+export const listUserShares = (options?: AxiosRequestConfig): Promise<ListUserSharesResult> => {
   return apiInstance.get(`/api/shares/list`, options);
 };
 
@@ -64,11 +64,11 @@ export const listUserShares = <TData = ListUserSharesResult>(
  * Get a share by ID (no password)
  * @summary Get a share by ID
  */
-export const getShare = <TData = GetShareResult>(
+export const getShare = (
   shareId: string,
   params?: GetShareParams,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<GetShareResult> => {
   if (params?.password) {
     // Password-protected shares use the POST /access endpoint
     return apiInstance.post(
@@ -84,21 +84,21 @@ export const getShare = <TData = GetShareResult>(
  * Delete a share
  * @summary Delete a share
  */
-export const deleteShare = <TData = DeleteShareResult>(
+export const deleteShare = (
   id: string,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<DeleteShareResult> => {
   return apiInstance.delete(`/api/shares/delete/${id}`, options);
 };
 
 /**
  * @summary Update share password
  */
-export const updateSharePassword = <TData = UpdateSharePasswordResult>(
+export const updateSharePassword = (
   shareId: string,
   updateSharePasswordBody: UpdateSharePasswordBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<UpdateSharePasswordResult> => {
   return apiInstance.patch(
     `api/shares/password/update/${shareId}`,
     updateSharePasswordBody,
@@ -109,22 +109,22 @@ export const updateSharePassword = <TData = UpdateSharePasswordResult>(
 /**
  * @summary Add files to share
  */
-export const addFiles = <TData = AddFilesResult>(
+export const addFiles = (
   shareId: string,
   addFilesBody: AddFilesBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<AddFilesResult> => {
   return apiInstance.post(`/api/shares/files/add/${shareId}`, addFilesBody, options);
 };
 
 /**
  * @summary Remove files from share
  */
-export const removeFiles = <TData = RemoveFilesResult>(
+export const removeFiles = (
   shareId: string,
   removeFilesBody: RemoveFilesBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<RemoveFilesResult> => {
   return apiInstance.delete(`/api/shares/files/remove/${shareId}`, {
     data: removeFilesBody,
     ...options,
@@ -134,11 +134,11 @@ export const removeFiles = <TData = RemoveFilesResult>(
 /**
  * @summary Add recipients to a share
  */
-export const addRecipients = <TData = AddRecipientsResult>(
+export const addRecipients = (
   shareId: string,
   addRecipientsBody: AddRecipientsBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<AddRecipientsResult> => {
   return apiInstance.post(`/api/shares/recipients/add/${shareId}`, addRecipientsBody, options);
 };
 
@@ -146,11 +146,11 @@ export const addRecipients = <TData = AddRecipientsResult>(
  * Remove recipients from a share
  * @summary Remove recipients from a share
  */
-export const removeRecipients = <TData = RemoveRecipientsResult>(
+export const removeRecipients = (
   shareId: string,
   removeRecipientsBody: RemoveRecipientsBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<RemoveRecipientsResult> => {
   return apiInstance.delete(`/api/shares/recipients/remove/${shareId}`, {
     data: removeRecipientsBody,
     ...options,
@@ -160,22 +160,22 @@ export const removeRecipients = <TData = RemoveRecipientsResult>(
 /**
  * @summary Create or update share alias
  */
-export const createShareAlias = <TData = CreateShareAliasResult>(
+export const createShareAlias = (
   shareId: string,
   createShareAliasBody: CreateShareAliasBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<CreateShareAliasResult> => {
   return apiInstance.post(`/api/shares/alias/create/${shareId}`, createShareAliasBody, options);
 };
 
 /**
  * @summary Get share by alias
  */
-export const getShareByAlias = <TData = GetShareByAliasResult>(
+export const getShareByAlias = (
   alias: string,
   params?: GetShareByAliasParams,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<GetShareByAliasResult> => {
   if (params?.password) {
     // Password-protected shares use the POST /access endpoint
     return apiInstance.post(
@@ -191,11 +191,11 @@ export const getShareByAlias = <TData = GetShareByAliasResult>(
  * Send email notification with share link to all recipients
  * @summary Send email notification to share recipients
  */
-export const notifyRecipients = <TData = NotifyRecipientsResult>(
+export const notifyRecipients = (
   shareId: string,
   notifyRecipientsBody: NotifyRecipientsBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<NotifyRecipientsResult> => {
   return apiInstance.post(
     `/api/shares/recipients/notify/${shareId}`,
     notifyRecipientsBody,
@@ -206,22 +206,22 @@ export const notifyRecipients = <TData = NotifyRecipientsResult>(
 /**
  * @summary Add folders to share
  */
-export const addFolders = <TData = unknown>(
+export const addFolders = (
   shareId: string,
   addFoldersBody: { folders: string[] },
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<AddFoldersResult> => {
   return apiInstance.post(`/api/shares/folders/add/${shareId}`, addFoldersBody, options);
 };
 
 /**
  * @summary Remove folders from share
  */
-export const removeFolders = <TData = unknown>(
+export const removeFolders = (
   shareId: string,
   removeFoldersBody: { folders: string[] },
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<RemoveFoldersResult> => {
   return apiInstance.delete(`/api/shares/folders/remove/${shareId}`, {
     data: removeFoldersBody,
     ...options,

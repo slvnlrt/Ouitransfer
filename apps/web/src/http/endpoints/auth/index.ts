@@ -22,80 +22,71 @@ import type {
   UpdateProvidersOrderResult,
 } from "./types";
 
-export const login = <TData = LoginResult>(
-  loginBody: LoginBody,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
+export const login = (loginBody: LoginBody, options?: AxiosRequestConfig): Promise<LoginResult> => {
   return apiInstance.post(`/api/auth/login`, loginBody, options);
 };
 
-export const logout = <TData = LogoutResult>(options?: AxiosRequestConfig): Promise<TData> => {
+export const logout = (options?: AxiosRequestConfig): Promise<LogoutResult> => {
   return apiInstance.post(`/api/auth/logout`, undefined, options);
 };
 
-export const requestPasswordReset = <TData = RequestPasswordResetResult>(
+export const requestPasswordReset = (
   requestPasswordResetBody: RequestPasswordResetBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<RequestPasswordResetResult> => {
   return apiInstance.post(`/api/auth/forgot-password`, requestPasswordResetBody, options);
 };
 
-export const resetPassword = <TData = ResetPasswordResult>(
+export const resetPassword = (
   resetPasswordBody: ResetPasswordBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<ResetPasswordResult> => {
   return apiInstance.post(`/api/auth/reset-password`, resetPasswordBody, options);
 };
 
-export const getCurrentUser = <TData = GetCurrentUserResult>(
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
+export const getCurrentUser = (options?: AxiosRequestConfig): Promise<GetCurrentUserResult> => {
   return apiInstance.get(`/api/auth/me`, options);
 };
 
-export const getEnabledProviders = <TData = GetEnabledProvidersResult>(
+export const getEnabledProviders = (
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<GetEnabledProvidersResult> => {
   return apiInstance.get(`/api/auth/providers`, options);
 };
 
-export const getAllProviders = <TData = GetAllProvidersResult>(
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
+export const getAllProviders = (options?: AxiosRequestConfig): Promise<GetAllProvidersResult> => {
   return apiInstance.get(`/api/auth/providers/all`, options);
 };
 
-export const createProvider = <TData = CreateProviderResult>(
+export const createProvider = (
   newProvider: NewProvider,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<CreateProviderResult> => {
   return apiInstance.post(`/api/auth/providers`, newProvider, options);
 };
 
-export const updateProvider = <TData = UpdateProviderResult>(
+export const updateProvider = (
   id: string,
   updates: Partial<AuthProvider>,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<UpdateProviderResult> => {
   return apiInstance.put(`/api/auth/providers/manage/${id}`, updates, options);
 };
 
-export const deleteProvider = <TData = DeleteProviderResult>(
+export const deleteProvider = (
   id: string,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<DeleteProviderResult> => {
   return apiInstance.delete(`/api/auth/providers/manage/${id}`, options);
 };
 
-export const updateProvidersOrder = <TData = UpdateProvidersOrderResult>(
+export const updateProvidersOrder = (
   updateProvidersOrderBody: UpdateProvidersOrderBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<UpdateProvidersOrderResult> => {
   return apiInstance.put(`/api/auth/providers/order`, updateProvidersOrderBody, options);
 };
 
-export const getAuthConfig = <TData = GetAuthConfigResult>(
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
+export const getAuthConfig = (options?: AxiosRequestConfig): Promise<GetAuthConfigResult> => {
   return apiInstance.get(`/api/auth/config`, options);
 };

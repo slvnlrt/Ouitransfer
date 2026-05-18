@@ -33,10 +33,10 @@ import type {
  * Create a new reverse share
  * @summary Create Reverse Share
  */
-export const createReverseShare = <TData = CreateReverseShareResult>(
+export const createReverseShare = (
   createReverseShareBody: CreateReverseShareBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<CreateReverseShareResult> => {
   return apiInstance.post(`/api/reverse-shares/create`, createReverseShareBody, options);
 };
 
@@ -44,9 +44,9 @@ export const createReverseShare = <TData = CreateReverseShareResult>(
  * List all reverse shares created by the authenticated user
  * @summary List User's Reverse Shares
  */
-export const listUserReverseShares = <TData = ListUserReverseSharesResult>(
+export const listUserReverseShares = (
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<ListUserReverseSharesResult> => {
   return apiInstance.get(`/api/reverse-shares/list`, options);
 };
 
@@ -54,10 +54,10 @@ export const listUserReverseShares = <TData = ListUserReverseSharesResult>(
  * Update a reverse share
  * @summary Update Reverse Share
  */
-export const updateReverseShare = <TData = UpdateReverseShareResult>(
+export const updateReverseShare = (
   updateReverseShareBody: UpdateReverseShareBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<UpdateReverseShareResult> => {
   return apiInstance.put(`/api/reverse-shares/update`, updateReverseShareBody, options);
 };
 
@@ -65,11 +65,11 @@ export const updateReverseShare = <TData = UpdateReverseShareResult>(
  * Update reverse share password
  * @summary Update Reverse Share Password
  */
-export const updateReverseSharePassword = <TData = UpdateReverseSharePasswordResult>(
+export const updateReverseSharePassword = (
   id: string,
   updateReverseSharePasswordBody: UpdateReverseSharePasswordBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<UpdateReverseSharePasswordResult> => {
   return apiInstance.put(
     `/api/reverse-shares/password/${id}`,
     updateReverseSharePasswordBody,
@@ -81,10 +81,10 @@ export const updateReverseSharePassword = <TData = UpdateReverseSharePasswordRes
  * Delete a reverse share
  * @summary Delete Reverse Share
  */
-export const deleteReverseShare = <TData = DeleteReverseShareResult>(
+export const deleteReverseShare = (
   id: string,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<DeleteReverseShareResult> => {
   return apiInstance.delete(`/api/reverse-shares/delete/${id}`, options);
 };
 
@@ -92,11 +92,11 @@ export const deleteReverseShare = <TData = DeleteReverseShareResult>(
  * Get reverse share information for upload by alias (public endpoint)
  * @summary Get Reverse Share for Upload by Alias (Public)
  */
-export const getReverseShareForUploadByAlias = <TData = GetReverseShareForUploadResult>(
+export const getReverseShareForUploadByAlias = (
   alias: string,
   params?: GetReverseShareForUploadParams,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<GetReverseShareForUploadResult> => {
   if (params?.password) {
     // Password-protected reverse shares use the POST /access endpoint
     return apiInstance.post(
@@ -112,12 +112,12 @@ export const getReverseShareForUploadByAlias = <TData = GetReverseShareForUpload
  * Get presigned URL for upload to reverse share by alias (public endpoint)
  * @summary Get Presigned URL for File Upload by Alias (Public)
  */
-export const getPresignedUrlForUploadByAlias = <TData = GetPresignedUrlResult>(
+export const getPresignedUrlForUploadByAlias = (
   alias: string,
   getPresignedUrlBody: GetPresignedUrlBody,
   params?: RegisterFileUploadParams,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<GetPresignedUrlResult> => {
   const body = {
     ...getPresignedUrlBody,
     ...(params?.password ? { password: params.password } : {}),
@@ -129,12 +129,12 @@ export const getPresignedUrlForUploadByAlias = <TData = GetPresignedUrlResult>(
  * Register file upload completion by alias (public endpoint)
  * @summary Register File Upload Completion by Alias (Public)
  */
-export const registerFileUploadByAlias = <TData = RegisterFileUploadResult>(
+export const registerFileUploadByAlias = (
   alias: string,
   registerFileUploadBody: RegisterFileUploadBody,
   params?: RegisterFileUploadParams,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<RegisterFileUploadResult> => {
   const body = {
     ...registerFileUploadBody,
     ...(params?.password ? { password: params.password } : {}),
@@ -146,10 +146,10 @@ export const registerFileUploadByAlias = <TData = RegisterFileUploadResult>(
  * Download file from reverse share
  * @summary Download File from Reverse Share
  */
-export const downloadReverseShareFile = <TData = GetPresignedUrlResult>(
+export const downloadReverseShareFile = (
   fileId: string,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<GetPresignedUrlResult> => {
   return apiInstance.get(`/api/reverse-shares/files/download/${fileId}`, options);
 };
 
@@ -157,10 +157,10 @@ export const downloadReverseShareFile = <TData = GetPresignedUrlResult>(
  * Delete file from reverse share
  * @summary Delete File from Reverse Share
  */
-export const deleteReverseShareFile = <TData = DeleteReverseShareFileByIdResult>(
+export const deleteReverseShareFile = (
   fileId: string,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<DeleteReverseShareFileByIdResult> => {
   return apiInstance.delete(`/api/reverse-shares/files/${fileId}`, options);
 };
 
@@ -168,11 +168,11 @@ export const deleteReverseShareFile = <TData = DeleteReverseShareFileByIdResult>
  * Create or update reverse share alias
  * @summary Create or update reverse share alias
  */
-export const createReverseShareAlias = <TData = CreateReverseShareAliasResult>(
+export const createReverseShareAlias = (
   reverseShareId: string,
   createAliasBody: { alias: string },
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<CreateReverseShareAliasResult> => {
   return apiInstance.post(`/api/reverse-shares/${reverseShareId}/alias`, createAliasBody, options);
 };
 
@@ -180,11 +180,11 @@ export const createReverseShareAlias = <TData = CreateReverseShareAliasResult>(
  * Update file from reverse share
  * @summary Update File from Reverse Share
  */
-export const updateReverseShareFile = <TData = UpdateReverseShareFileResult>(
+export const updateReverseShareFile = (
   fileId: string,
   updateReverseShareFileBody: UpdateReverseShareFileBody,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<UpdateReverseShareFileResult> => {
   return apiInstance.put(
     `/api/reverse-shares/files/${fileId}`,
     updateReverseShareFileBody,
@@ -196,10 +196,10 @@ export const updateReverseShareFile = <TData = UpdateReverseShareFileResult>(
  * Copy file from reverse share to user files
  * @summary Copy File from Reverse Share to User Files
  */
-export const copyReverseShareFileToUserFiles = <TData = CopyReverseShareFileResult>(
+export const copyReverseShareFileToUserFiles = (
   fileId: string,
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<CopyReverseShareFileResult> => {
   return apiInstance.post(`/api/reverse-shares/files/${fileId}/copy`, undefined, options);
 };
 
@@ -207,12 +207,12 @@ export const copyReverseShareFileToUserFiles = <TData = CopyReverseShareFileResu
  * Create a multipart upload for reverse share (public endpoint)
  * @summary Create Multipart Upload for Reverse Share (Public)
  */
-export const createMultipartUploadByAlias = <TData = CreateMultipartUploadByAliasResult>(
+export const createMultipartUploadByAlias = (
   alias: string,
   body: { filename: string; extension: string },
   params?: { password?: string },
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<CreateMultipartUploadByAliasResult> => {
   const requestBody = { ...body, ...(params?.password ? { password: params.password } : {}) };
   return apiInstance.post(
     `/api/reverse-shares/alias/${alias}/multipart/create`,
@@ -226,11 +226,11 @@ export const createMultipartUploadByAlias = <TData = CreateMultipartUploadByAlia
  * Changed from GET to POST to send password in body instead of query params
  * @summary Get Multipart Part URL for Reverse Share (Public)
  */
-export const getMultipartPartUrlByAlias = <TData = GetMultipartPartUrlByAliasResult>(
+export const getMultipartPartUrlByAlias = (
   alias: string,
   params: { uploadId: string; objectName: string; partNumber: string; password?: string },
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<GetMultipartPartUrlByAliasResult> => {
   const { uploadId, objectName, partNumber, password } = params;
   const body: { uploadId: string; objectName: string; partNumber: string; password?: string } = {
     uploadId,
@@ -247,7 +247,7 @@ export const getMultipartPartUrlByAlias = <TData = GetMultipartPartUrlByAliasRes
  * Complete a multipart upload for reverse share (public endpoint)
  * @summary Complete Multipart Upload for Reverse Share (Public)
  */
-export const completeMultipartUploadByAlias = <TData = CompleteMultipartUploadByAliasResult>(
+export const completeMultipartUploadByAlias = (
   alias: string,
   body: {
     uploadId: string;
@@ -256,7 +256,7 @@ export const completeMultipartUploadByAlias = <TData = CompleteMultipartUploadBy
   },
   params?: { password?: string },
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<CompleteMultipartUploadByAliasResult> => {
   const requestBody = { ...body, ...(params?.password ? { password: params.password } : {}) };
   return apiInstance.post(
     `/api/reverse-shares/alias/${alias}/multipart/complete`,
@@ -269,12 +269,12 @@ export const completeMultipartUploadByAlias = <TData = CompleteMultipartUploadBy
  * Abort a multipart upload for reverse share (public endpoint)
  * @summary Abort Multipart Upload for Reverse Share (Public)
  */
-export const abortMultipartUploadByAlias = <TData = AbortMultipartUploadByAliasResult>(
+export const abortMultipartUploadByAlias = (
   alias: string,
   body: { uploadId: string; objectName: string },
   params?: { password?: string },
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<AbortMultipartUploadByAliasResult> => {
   const requestBody = { ...body, ...(params?.password ? { password: params.password } : {}) };
   return apiInstance.post(
     `/api/reverse-shares/alias/${alias}/multipart/abort`,
@@ -287,12 +287,12 @@ export const abortMultipartUploadByAlias = <TData = AbortMultipartUploadByAliasR
  * List already-uploaded parts for a multipart upload to a reverse share (public endpoint)
  * @summary List Multipart Parts for Reverse Share (Public)
  */
-export const listMultipartPartsByAlias = <TData = ListMultipartPartsByAliasResult>(
+export const listMultipartPartsByAlias = (
   alias: string,
   body: { uploadId: string; objectName: string },
   params?: { password?: string },
   options?: AxiosRequestConfig,
-): Promise<TData> => {
+): Promise<ListMultipartPartsByAliasResult> => {
   const requestBody = { ...body, ...(params?.password ? { password: params.password } : {}) };
   return apiInstance.post(
     `/api/reverse-shares/alias/${alias}/multipart/list-parts`,
