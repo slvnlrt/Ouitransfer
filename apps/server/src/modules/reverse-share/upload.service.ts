@@ -8,9 +8,9 @@ import { getLogger } from "../../utils/logger.js";
 import { sanitizeFilename } from "../../utils/sanitize-filename.js";
 import { isMimeTypeConsistent } from "../../utils/validate-file-content.js";
 import { validateObjectName } from "../../utils/validate-object-name.js";
-import { getConfigValue } from "../config/service.js";
 import { EmailService } from "../email/service.js";
 import { FileService } from "../file/service.js";
+import { QuotaService } from "../quota/service.js";
 import { UserService } from "../user/service.js";
 import type { UploadToReverseShareInput } from "./dto.js";
 import { ReverseShareRepository } from "./repository.js";
@@ -26,6 +26,7 @@ type ReverseShareWithCreator = Prisma.ReverseShareGetPayload<{
 export class ReverseShareUploadService {
   private reverseShareRepository = new ReverseShareRepository();
   private fileService = new FileService();
+  private quotaService = new QuotaService();
   private emailService = new EmailService();
   private userService = new UserService();
 
@@ -295,9 +296,11 @@ export class ReverseShareUploadService {
       throw new ForbiddenError("Unauthorized to copy this file");
     }
 
-    const maxFileSize = BigInt(await getConfigValue("maxFileSize"));
-    if (file.size > maxFileSize) {
-      const maxSizeMB = Number(maxFileSize) / (1024 * 1024);
+    const limits = await this.quotaService.resolveEffectiveLimits(creatorId);
+
+    // Per-file size check (skip if unlimited)
+    if (limits.maxFileSize > 0n && file.size > limits.maxFileSize) {
+      const maxSizeMB = Number(limits.maxFileSize) / (1024 * 1024);
       throw new AppError(
         400,
         `File size exceeds the maximum allowed size of ${maxSizeMB.toFixed(0)}MB`,
@@ -306,26 +309,18 @@ export class ReverseShareUploadService {
       );
     }
 
-    const maxTotalStorage = BigInt(await getConfigValue("maxTotalStoragePerUser"));
-
-    const userFiles = await prisma.file.findMany({
-      where: { userId: creatorId },
-      select: { size: true },
-    });
-
-    const currentStorage = userFiles.reduce(
-      (acc: bigint, userFile: { size: bigint }) => acc + userFile.size,
-      BigInt(0),
-    );
-
-    if (currentStorage + file.size > maxTotalStorage) {
-      const availableSpace = Number(maxTotalStorage - currentStorage) / (1024 * 1024);
-      throw new AppError(
-        400,
-        `Insufficient storage space. You have ${availableSpace.toFixed(2)}MB available`,
-        ErrorCodes.INSUFFICIENT_STORAGE,
-        { availableSpaceMB: availableSpace.toFixed(2) },
-      );
+    // Total storage check (skip if unlimited)
+    if (limits.maxTotalStorage > 0n) {
+      const currentStorage = await this.quotaService.calculateStorageUsed(creatorId);
+      if (currentStorage + file.size > limits.maxTotalStorage) {
+        const availableSpace = Number(limits.maxTotalStorage - currentStorage) / (1024 * 1024);
+        throw new AppError(
+          400,
+          `Insufficient storage space. You have ${availableSpace.toFixed(2)}MB available`,
+          ErrorCodes.INSUFFICIENT_STORAGE,
+          { availableSpaceMB: availableSpace.toFixed(2) },
+        );
+      }
     }
 
     const newObjectName = `${creatorId}/${Date.now()}-${file.name}`;
