@@ -8,7 +8,7 @@ This directory tracks all feature development for Ouitransfer (post-refactor pha
 
 | # | Feature | Status | Depends on |
 |---|---------|--------|------------|
-| 5.1 | [Per-User Storage Quotas](specs/5.1-quotas.md) | Not started | — |
+| 5.1 | [Per-User Storage Quotas](specs/5.1-quotas.md) | In review | — |
 | 5.4 | [Groups](specs/5.4-groups.md) | Not started | 5.1 |
 | 5.2 | [Automatic Cleanup of Expired Content](specs/5.2-cleanup.md) | Not started | — |
 | 5.3 | [LDAP / Active Directory Sync](specs/5.3-ldap.md) | Not started | 5.4 |
