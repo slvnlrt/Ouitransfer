@@ -20,8 +20,22 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vites
 // ── Mock Prisma ──────────────────────────────────────────────────────────────
 vi.mock("../shared/prisma.js", () => ({
   prisma: {
-    user: { count: vi.fn().mockResolvedValue(0) },
+    user: {
+      count: vi.fn().mockResolvedValue(0),
+      findUnique: vi.fn().mockResolvedValue({
+        isAdmin: false,
+        maxFileSizeOverride: null,
+        maxTotalStorageOverride: null,
+      }),
+    },
     file: {
+      aggregate: vi.fn().mockResolvedValue({
+        _sum: { size: BigInt(0) },
+        _count: 0,
+        _avg: {},
+        _min: {},
+        _max: {},
+      }),
       findMany: vi.fn().mockResolvedValue([]),
       create: vi.fn().mockResolvedValue({
         id: "file-new",
@@ -39,6 +53,15 @@ vi.mock("../shared/prisma.js", () => ({
     folder: {
       findFirst: vi.fn().mockResolvedValue(null),
       findMany: vi.fn().mockResolvedValue([]),
+    },
+    reverseShareFile: {
+      aggregate: vi.fn().mockResolvedValue({
+        _sum: { size: null },
+        _count: 0,
+        _avg: {},
+        _min: {},
+        _max: {},
+      }),
     },
   },
 }));

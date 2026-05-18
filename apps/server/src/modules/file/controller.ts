@@ -18,7 +18,7 @@ import {
 import { sanitizeFilename } from "../../utils/sanitize-filename.js";
 import { isMimeTypeConsistent, verifyMagicBytes } from "../../utils/validate-file-content.js";
 import { validateObjectName } from "../../utils/validate-object-name.js";
-import { getConfigValue } from "../config/service.js";
+import { QuotaService } from "../quota/service.js";
 import {
   type CheckFileInput,
   CheckFileSchema,
@@ -34,6 +34,7 @@ import { FileService } from "./service.js";
 
 export class FileController {
   private fileService = new FileService();
+  private quotaService = new QuotaService();
 
   async getPresignedUrl(request: FastifyRequest, reply: FastifyReply): Promise<void> {
     const { filename, extension } = request.query as { filename: string; extension: string };
@@ -55,7 +56,8 @@ export class FileController {
 
     const url = await this.fileService.getPresignedPutUrl(objectName, expires);
 
-    const maxFileSize = Number(await getConfigValue("maxFileSize"));
+    const limits = await this.quotaService.resolveEffectiveLimits(userId);
+    const maxFileSize = limits.maxFileSize === 0n ? 0 : Number(limits.maxFileSize);
 
     return reply.status(200).send({ url, objectName, maxFileSize });
   }
@@ -122,9 +124,11 @@ export class FileController {
       }
     }
 
-    const maxFileSize = BigInt(await getConfigValue("maxFileSize"));
-    if (BigInt(input.size) > maxFileSize) {
-      const maxSizeMB = Number(maxFileSize) / (1024 * 1024);
+    const limits = await this.quotaService.resolveEffectiveLimits(userId);
+
+    // Per-file size check (skip if unlimited)
+    if (limits.maxFileSize > 0n && BigInt(input.size) > limits.maxFileSize) {
+      const maxSizeMB = Number(limits.maxFileSize) / (1024 * 1024);
       throw new AppError(
         400,
         `File size exceeds the maximum allowed size of ${maxSizeMB.toFixed(0)}MB`,
@@ -133,23 +137,18 @@ export class FileController {
       );
     }
 
-    const maxTotalStorage = BigInt(await getConfigValue("maxTotalStoragePerUser"));
-
-    const userFiles = await prisma.file.findMany({
-      where: { userId },
-      select: { size: true },
-    });
-
-    const currentStorage = userFiles.reduce((acc, file) => acc + file.size, BigInt(0));
-
-    if (currentStorage + BigInt(input.size) > maxTotalStorage) {
-      const availableSpace = Number(maxTotalStorage - currentStorage) / (1024 * 1024);
-      throw new AppError(
-        400,
-        `Insufficient storage space. You have ${availableSpace.toFixed(2)}MB available`,
-        ErrorCodes.INSUFFICIENT_STORAGE,
-        { availableSpaceMB: availableSpace.toFixed(2) },
-      );
+    // Total storage check (skip if unlimited)
+    if (limits.maxTotalStorage > 0n) {
+      const currentStorage = await this.quotaService.calculateStorageUsed(userId);
+      if (currentStorage + BigInt(input.size) > limits.maxTotalStorage) {
+        const availableSpace = Number(limits.maxTotalStorage - currentStorage) / (1024 * 1024);
+        throw new AppError(
+          400,
+          `Insufficient storage space. You have ${availableSpace.toFixed(2)}MB available`,
+          ErrorCodes.INSUFFICIENT_STORAGE,
+          { availableSpaceMB: availableSpace.toFixed(2) },
+        );
+      }
     }
 
     if (input.folderId) {
@@ -206,9 +205,11 @@ export class FileController {
 
     const input: CheckFileInput = CheckFileSchema.parse(request.body);
 
-    const maxFileSize = BigInt(await getConfigValue("maxFileSize"));
-    if (BigInt(input.size) > maxFileSize) {
-      const maxSizeMB = Number(maxFileSize) / (1024 * 1024);
+    const limits = await this.quotaService.resolveEffectiveLimits(userId);
+
+    // Per-file size check (skip if unlimited)
+    if (limits.maxFileSize > 0n && BigInt(input.size) > limits.maxFileSize) {
+      const maxSizeMB = Number(limits.maxFileSize) / (1024 * 1024);
       throw new AppError(
         400,
         `File size exceeds the maximum allowed size of ${maxSizeMB.toFixed(0)}MB`,
@@ -217,23 +218,18 @@ export class FileController {
       );
     }
 
-    const maxTotalStorage = BigInt(await getConfigValue("maxTotalStoragePerUser"));
-
-    const userFiles = await prisma.file.findMany({
-      where: { userId },
-      select: { size: true },
-    });
-
-    const currentStorage = userFiles.reduce((acc, file) => acc + file.size, BigInt(0));
-
-    if (currentStorage + BigInt(input.size) > maxTotalStorage) {
-      const availableSpace = Number(maxTotalStorage - currentStorage) / (1024 * 1024);
-      throw new AppError(
-        400,
-        `Insufficient storage space. You have ${availableSpace.toFixed(2)}MB available`,
-        ErrorCodes.INSUFFICIENT_STORAGE,
-        { availableSpaceMB: availableSpace.toFixed(2) },
-      );
+    // Total storage check (skip if unlimited)
+    if (limits.maxTotalStorage > 0n) {
+      const currentStorage = await this.quotaService.calculateStorageUsed(userId);
+      if (currentStorage + BigInt(input.size) > limits.maxTotalStorage) {
+        const availableSpace = Number(limits.maxTotalStorage - currentStorage) / (1024 * 1024);
+        throw new AppError(
+          400,
+          `Insufficient storage space. You have ${availableSpace.toFixed(2)}MB available`,
+          ErrorCodes.INSUFFICIENT_STORAGE,
+          { availableSpaceMB: availableSpace.toFixed(2) },
+        );
+      }
     }
 
     // Check for duplicate filename and provide the suggested unique name
