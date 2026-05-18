@@ -1,19 +1,38 @@
-import type { FastifyInstance } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 
+import { ForbiddenError, UnauthorizedError } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
-import { QuotaStatusResponseSchema, UpdateQuotaResponseSchema, UpdateQuotaSchema } from "./dto.js";
+import { QuotaController } from "./controller.js";
+import { QuotaStatusResponseSchema, UpdateQuotaResponseSchema } from "./dto.js";
 
-// TODO(task-5): Replace stubs with full implementations and wire up QuotaController
-export async function quotaRoutes(app: FastifyInstance): Promise<void> {
+export async function quotaRoutes(app: FastifyInstance) {
+  const quotaController = new QuotaController();
+
+  // Admin-only preValidation (same pattern as user routes)
+  const preValidation = async (request: FastifyRequest) => {
+    try {
+      await request.jwtVerify();
+    } catch (_err) {
+      throw new UnauthorizedError(
+        "Unauthorized: a valid token is required to access this resource.",
+      );
+    }
+    if (!request.user.isAdmin) {
+      throw new ForbiddenError("Access restricted to administrators");
+    }
+  };
+
   app.get(
     "/users/:id/quota",
     {
+      preValidation,
       schema: {
         tags: ["Quota"],
         operationId: "getUserQuota",
-        summary: "Get User Quota",
-        description: "Get quota status for a user (admin only)",
+        summary: "Get user quota status",
+        description:
+          "Get effective limits, current usage, and warning level for a user (admin only)",
         params: z.object({ id: z.string().describe("User ID") }),
         response: {
           200: QuotaStatusResponseSchema,
@@ -23,21 +42,30 @@ export async function quotaRoutes(app: FastifyInstance): Promise<void> {
         },
       },
     },
-    async () => {
-      // TODO(task-5): implement handler
-    },
+    quotaController.getUserQuota.bind(quotaController),
   );
 
   app.patch(
     "/users/:id/quota",
     {
+      preValidation,
       schema: {
         tags: ["Quota"],
         operationId: "updateUserQuota",
-        summary: "Update User Quota Overrides",
-        description: "Set per-user quota overrides (admin only)",
+        summary: "Update user quota overrides",
+        description:
+          "Set per-user quota overrides. null = clear (inherit), 0 = unlimited, >0 = explicit limit in bytes (admin only)",
         params: z.object({ id: z.string().describe("User ID") }),
-        body: UpdateQuotaSchema,
+        body: z.object({
+          maxFileSizeOverride: z
+            .union([z.number(), z.string(), z.null()])
+            .optional()
+            .describe("Per-user file size override"),
+          maxTotalStorageOverride: z
+            .union([z.number(), z.string(), z.null()])
+            .optional()
+            .describe("Per-user total storage override"),
+        }),
         response: {
           200: UpdateQuotaResponseSchema,
           400: ErrorResponseSchema,
@@ -47,8 +75,6 @@ export async function quotaRoutes(app: FastifyInstance): Promise<void> {
         },
       },
     },
-    async () => {
-      // TODO(task-5): implement handler
-    },
+    quotaController.updateUserQuota.bind(quotaController),
   );
 }
