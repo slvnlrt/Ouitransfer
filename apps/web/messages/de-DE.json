@@ -273,9 +273,18 @@
         "ariaLabel": "Fortschrittsbalken der Speicherplatznutzung"
       },
       "quota": {
-        "label": "Speicherkontingent",
-        "ariaLabel": "Fortschrittsbalken des Speicherkontingents",
-        "notConfigured": "Kontingente nicht konfiguriert"
+        "label": "Speicherplatz-Kontingent",
+        "ariaLabel": "Fortschrittsleiste für Speicherplatz-Kontingent",
+        "notConfigured": "Kontingente nicht konfiguriert",
+        "unlimited": "Unlimited",
+        "used": "{used} of {total} used",
+        "usedOnly": "{used} used",
+        "exceeded": {
+          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+        },
+        "warning": {
+          "banner": "You are using {percentage}% of your storage quota."
+        }
       },
       "metrics": {
         "users": "Benutzer",
@@ -1968,7 +1977,17 @@
       "roleUser": "Benutzer",
       "roleAdmin": "Administrator",
       "create": "Erstellen",
-      "save": "Speichern"
+      "save": "Speichern",
+      "quota": {
+        "title": "Storage Quotas",
+        "maxFileSize": "Max File Size",
+        "maxTotalStorage": "Max Total Storage",
+        "inherit": "Use default",
+        "unlimited": "Unlimited",
+        "custom": "Custom",
+        "saveSuccess": "Quota updated successfully",
+        "saveError": "Failed to update quota"
+      }
     },
     "status": {
       "title": "Statusänderung bestätigen",

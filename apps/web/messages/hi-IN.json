@@ -274,8 +274,17 @@
       },
       "quota": {
         "label": "स्टोरेज कोटा",
-        "ariaLabel": "स्टोरेज कोटा प्रगति बार",
-        "notConfigured": "कोटा कॉन्फ़िगर नहीं किया गया"
+        "ariaLabel": "स्टोरेज कोटा प्रगति पट्टी",
+        "notConfigured": "कोटा कॉन्फ़िगर नहीं किए गए",
+        "unlimited": "Unlimited",
+        "used": "{used} of {total} used",
+        "usedOnly": "{used} used",
+        "exceeded": {
+          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+        },
+        "warning": {
+          "banner": "You are using {percentage}% of your storage quota."
+        }
       },
       "metrics": {
         "users": "उपयोगकर्ता",
@@ -1968,7 +1977,17 @@
       "roleUser": "उपयोगकर्ता",
       "roleAdmin": "व्यवस्थापक",
       "create": "बनाएं",
-      "save": "सहेजें"
+      "save": "सहेजें",
+      "quota": {
+        "title": "Storage Quotas",
+        "maxFileSize": "Max File Size",
+        "maxTotalStorage": "Max Total Storage",
+        "inherit": "Use default",
+        "unlimited": "Unlimited",
+        "custom": "Custom",
+        "saveSuccess": "Quota updated successfully",
+        "saveError": "Failed to update quota"
+      }
     },
     "status": {
       "title": "स्थिति परिवर्तन की पुष्टि करें",

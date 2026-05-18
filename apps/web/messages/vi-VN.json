@@ -277,9 +277,18 @@
         "ariaLabel": "Thanh tiến trình sử dụng dung lượng đĩa"
       },
       "quota": {
-        "label": "Hạn mức lưu trữ",
-        "ariaLabel": "Thanh tiến trình hạn mức lưu trữ",
-        "notConfigured": "Hạn mức chưa được cấu hình"
+        "label": "Hạn ngạch lưu trữ",
+        "ariaLabel": "Thanh tiến trình hạn ngạch lưu trữ",
+        "notConfigured": "Hạn ngạch chưa được cấu hình",
+        "unlimited": "Unlimited",
+        "used": "{used} of {total} used",
+        "usedOnly": "{used} used",
+        "exceeded": {
+          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+        },
+        "warning": {
+          "banner": "You are using {percentage}% of your storage quota."
+        }
       },
       "metrics": {
         "users": "Người dùng",
@@ -1972,7 +1981,17 @@
       "roleUser": "Người dùng",
       "roleAdmin": "Quản trị viên",
       "create": "Tạo",
-      "save": "Lưu"
+      "save": "Lưu",
+      "quota": {
+        "title": "Storage Quotas",
+        "maxFileSize": "Max File Size",
+        "maxTotalStorage": "Max Total Storage",
+        "inherit": "Use default",
+        "unlimited": "Unlimited",
+        "custom": "Custom",
+        "saveSuccess": "Quota updated successfully",
+        "saveError": "Failed to update quota"
+      }
     },
     "status": {
       "title": "Xác nhận thay đổi trạng thái",

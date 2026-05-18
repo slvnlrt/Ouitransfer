@@ -278,8 +278,17 @@
       },
       "quota": {
         "label": "Kuota Penyimpanan",
-        "ariaLabel": "Bilah progres kuota penyimpanan",
-        "notConfigured": "Kuota belum dikonfigurasi"
+        "ariaLabel": "Bilah kemajuan kuota penyimpanan",
+        "notConfigured": "Kuota tidak dikonfigurasi",
+        "unlimited": "Unlimited",
+        "used": "{used} of {total} used",
+        "usedOnly": "{used} used",
+        "exceeded": {
+          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+        },
+        "warning": {
+          "banner": "You are using {percentage}% of your storage quota."
+        }
       },
       "metrics": {
         "users": "Pengguna",
@@ -1972,7 +1981,17 @@
       "roleUser": "Pengguna",
       "roleAdmin": "Admin",
       "create": "Buat",
-      "save": "Simpan"
+      "save": "Simpan",
+      "quota": {
+        "title": "Storage Quotas",
+        "maxFileSize": "Max File Size",
+        "maxTotalStorage": "Max Total Storage",
+        "inherit": "Use default",
+        "unlimited": "Unlimited",
+        "custom": "Custom",
+        "saveSuccess": "Quota updated successfully",
+        "saveError": "Failed to update quota"
+      }
     },
     "status": {
       "title": "Konfirmasi Perubahan Status",

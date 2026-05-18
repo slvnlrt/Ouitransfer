@@ -12,6 +12,9 @@ export interface DiskSpaceInfo {
   diskUsedGB: number;
   diskAvailableGB: number;
   uploadAllowed: boolean;
+  warningLevel?: "none" | "warning" | "critical" | "exceeded";
+  maxFileSize?: number;
+  percentage?: number;
 }
 
 export interface CheckHealth200 {

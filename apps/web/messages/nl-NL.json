@@ -274,8 +274,17 @@
       },
       "quota": {
         "label": "Opslagquotum",
-        "ariaLabel": "Voortgangsbalk van opslagquotum",
-        "notConfigured": "Quota's niet geconfigureerd"
+        "ariaLabel": "Voortgangsbalk voor opslagquotum",
+        "notConfigured": "Quota's niet geconfigureerd",
+        "unlimited": "Unlimited",
+        "used": "{used} of {total} used",
+        "usedOnly": "{used} used",
+        "exceeded": {
+          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+        },
+        "warning": {
+          "banner": "You are using {percentage}% of your storage quota."
+        }
       },
       "metrics": {
         "users": "Gebruikers",
@@ -1968,7 +1977,17 @@
       "roleUser": "Gebruiker",
       "roleAdmin": "Beheerder",
       "create": "Aanmaken",
-      "save": "Opslaan"
+      "save": "Opslaan",
+      "quota": {
+        "title": "Storage Quotas",
+        "maxFileSize": "Max File Size",
+        "maxTotalStorage": "Max Total Storage",
+        "inherit": "Use default",
+        "unlimited": "Unlimited",
+        "custom": "Custom",
+        "saveSuccess": "Quota updated successfully",
+        "saveError": "Failed to update quota"
+      }
     },
     "status": {
       "title": "Status Wijziging Bevestigen",

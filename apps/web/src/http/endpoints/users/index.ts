@@ -5,11 +5,14 @@ import type {
   ActivateUserResult,
   DeactivateUserResult,
   DeleteUserResult,
+  GetUserQuotaResult,
   ListUsersResult,
   RegisterUserBody,
   RegisterUserResult,
   RemoveAvatarResult,
+  UpdateQuotaBody,
   UpdateUserBody,
+  UpdateUserQuotaResult,
   UpdateUserResult,
   UploadAvatarBody,
   UploadAvatarResult,
@@ -111,4 +114,27 @@ export const removeAvatar = <TData = RemoveAvatarResult>(
   options?: AxiosRequestConfig,
 ): Promise<TData> => {
   return apiInstance.delete(`/api/users/avatar/remove`, options);
+};
+
+/**
+ * Get quota status for a user (admin only)
+ * @summary Get User Quota
+ */
+export const getUserQuota = <TData = GetUserQuotaResult>(
+  id: string,
+  options?: AxiosRequestConfig,
+): Promise<TData> => {
+  return apiInstance.get(`/api/users/quota/${id}`, options);
+};
+
+/**
+ * Update quota overrides for a user (admin only)
+ * @summary Update User Quota
+ */
+export const updateUserQuota = <TData = UpdateUserQuotaResult>(
+  id: string,
+  body: UpdateQuotaBody,
+  options?: AxiosRequestConfig,
+): Promise<TData> => {
+  return apiInstance.patch(`/api/users/quota/${id}`, body, options);
 };

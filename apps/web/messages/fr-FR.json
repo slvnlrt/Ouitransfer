@@ -275,7 +275,16 @@
       "quota": {
         "label": "Quota de stockage",
         "ariaLabel": "Barre de progression du quota de stockage",
-        "notConfigured": "Quotas non configurés"
+        "notConfigured": "Quotas non configurés",
+        "unlimited": "Unlimited",
+        "used": "{used} of {total} used",
+        "usedOnly": "{used} used",
+        "exceeded": {
+          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+        },
+        "warning": {
+          "banner": "You are using {percentage}% of your storage quota."
+        }
       },
       "metrics": {
         "users": "Utilisateurs",
@@ -1968,7 +1977,17 @@
       "roleUser": "Utilisateur",
       "roleAdmin": "Administrateur",
       "create": "Créer",
-      "save": "Enregistrer"
+      "save": "Enregistrer",
+      "quota": {
+        "title": "Storage Quotas",
+        "maxFileSize": "Max File Size",
+        "maxTotalStorage": "Max Total Storage",
+        "inherit": "Use default",
+        "unlimited": "Unlimited",
+        "custom": "Custom",
+        "saveSuccess": "Quota updated successfully",
+        "saveError": "Failed to update quota"
+      }
     },
     "status": {
       "title": "Confirmer le Changement de Statut",

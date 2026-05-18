@@ -392,6 +392,8 @@ export const routes: RouteConfig[] = [
   // ═══════════════════════════════════════════════════════════════
   r("POST", "users/avatar/upload", "/users/avatar", { body: "raw" }),
   r("DELETE", "users/avatar/remove", "/users/avatar"),
+  r("GET", "users/quota/:id", "/users/:id/quota"),
+  r("PATCH", "users/quota/:id", "/users/:id/quota"),
   r("PATCH", "users/activate/:id", "/users/:id/activate"),
   r("PATCH", "users/deactivate/:id", "/users/:id/deactivate"),
   r("DELETE", "users/delete/:id", "/users/:id"),

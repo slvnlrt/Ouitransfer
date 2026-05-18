@@ -274,8 +274,17 @@
       },
       "quota": {
         "label": "Квота хранилища",
-        "ariaLabel": "Индикатор использования квоты хранилища",
-        "notConfigured": "Квоты не настроены"
+        "ariaLabel": "Полоса прогресса квоты хранилища",
+        "notConfigured": "Квоты не настроены",
+        "unlimited": "Unlimited",
+        "used": "{used} of {total} used",
+        "usedOnly": "{used} used",
+        "exceeded": {
+          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+        },
+        "warning": {
+          "banner": "You are using {percentage}% of your storage quota."
+        }
       },
       "metrics": {
         "users": "Пользователи",
@@ -1968,7 +1977,17 @@
       "roleUser": "Пользователь",
       "roleAdmin": "Администратор",
       "create": "Создать",
-      "save": "Сохранить"
+      "save": "Сохранить",
+      "quota": {
+        "title": "Storage Quotas",
+        "maxFileSize": "Max File Size",
+        "maxTotalStorage": "Max Total Storage",
+        "inherit": "Use default",
+        "unlimited": "Unlimited",
+        "custom": "Custom",
+        "saveSuccess": "Quota updated successfully",
+        "saveError": "Failed to update quota"
+      }
     },
     "status": {
       "title": "Подтверждение изменения статуса",

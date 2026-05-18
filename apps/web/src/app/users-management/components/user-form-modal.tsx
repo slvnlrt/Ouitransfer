@@ -1,6 +1,10 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Save, UserPlus } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
+import { FileSizeInput } from "@/app/settings/components/file-size-input";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,7 +23,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { updateUserQuota } from "@/http/endpoints/users";
+import { queryKeys } from "@/lib/query-keys";
 import type { UserFormModalProps } from "../types";
+
+type QuotaMode = "inherit" | "unlimited" | "custom";
+
+function getInitialMode(override: string | null | undefined): QuotaMode {
+  if (override === null || override === undefined) return "inherit";
+  if (override === "0") return "unlimited";
+  return "custom";
+}
 
 export function UserFormModal({
   isOpen,
@@ -30,11 +45,59 @@ export function UserFormModal({
   onSubmit,
 }: UserFormModalProps) {
   const t = useTranslations();
+  const queryClient = useQueryClient();
   const {
     register,
     formState: { errors, isSubmitting },
     control,
   } = formMethods;
+
+  const [fileSizeMode, setFileSizeMode] = useState<QuotaMode>("inherit");
+  const [fileSizeValue, setFileSizeValue] = useState("0");
+  const [storageLimitMode, setStorageLimitMode] = useState<QuotaMode>("inherit");
+  const [storageLimitValue, setStorageLimitValue] = useState("0");
+
+  useEffect(() => {
+    if (modalMode === "edit" && selectedUser) {
+      const fsOverride = selectedUser.maxFileSizeOverride;
+      const stOverride = selectedUser.maxTotalStorageOverride;
+
+      setFileSizeMode(getInitialMode(fsOverride));
+      setFileSizeValue(fsOverride && fsOverride !== "0" ? fsOverride : "0");
+
+      setStorageLimitMode(getInitialMode(stOverride));
+      setStorageLimitValue(stOverride && stOverride !== "0" ? stOverride : "0");
+    } else {
+      setFileSizeMode("inherit");
+      setFileSizeValue("0");
+      setStorageLimitMode("inherit");
+      setStorageLimitValue("0");
+    }
+  }, [selectedUser, isOpen, modalMode]);
+
+  const quotaMutation = useMutation({
+    mutationFn: async () => {
+      if (!selectedUser) return;
+      const body: Record<string, string | null> = {};
+
+      if (fileSizeMode === "inherit") body.maxFileSizeOverride = null;
+      else if (fileSizeMode === "unlimited") body.maxFileSizeOverride = "0";
+      else body.maxFileSizeOverride = fileSizeValue;
+
+      if (storageLimitMode === "inherit") body.maxTotalStorageOverride = null;
+      else if (storageLimitMode === "unlimited") body.maxTotalStorageOverride = "0";
+      else body.maxTotalStorageOverride = storageLimitValue;
+
+      await updateUserQuota(selectedUser.id, body);
+    },
+    onSuccess: () => {
+      toast.success(t("users.form.quota.saveSuccess"));
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
+    },
+    onError: () => {
+      toast.error(t("users.form.quota.saveError"));
+    },
+  });
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -139,6 +202,77 @@ export function UserFormModal({
                       )}
                     />
                   </div>
+                )}
+
+                {modalMode === "edit" && (
+                  <>
+                    <Separator />
+                    <div className="flex flex-col gap-4">
+                      <p className="text-sm font-medium">{t("users.form.quota.title")}</p>
+
+                      {/* Max File Size */}
+                      <div className="space-y-2">
+                        <Label>{t("users.form.quota.maxFileSize")}</Label>
+                        <Select
+                          value={fileSizeMode}
+                          onValueChange={(value) => setFileSizeMode(value as QuotaMode)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="inherit">{t("users.form.quota.inherit")}</SelectItem>
+                            <SelectItem value="unlimited">
+                              {t("users.form.quota.unlimited")}
+                            </SelectItem>
+                            <SelectItem value="custom">{t("users.form.quota.custom")}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {fileSizeMode === "custom" && (
+                          <FileSizeInput value={fileSizeValue} onChange={setFileSizeValue} />
+                        )}
+                      </div>
+
+                      {/* Max Total Storage */}
+                      <div className="space-y-2">
+                        <Label>{t("users.form.quota.maxTotalStorage")}</Label>
+                        <Select
+                          value={storageLimitMode}
+                          onValueChange={(value) => setStorageLimitMode(value as QuotaMode)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="inherit">{t("users.form.quota.inherit")}</SelectItem>
+                            <SelectItem value="unlimited">
+                              {t("users.form.quota.unlimited")}
+                            </SelectItem>
+                            <SelectItem value="custom">{t("users.form.quota.custom")}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {storageLimitMode === "custom" && (
+                          <FileSizeInput
+                            value={storageLimitValue}
+                            onChange={setStorageLimitValue}
+                          />
+                        )}
+                      </div>
+
+                      <div className="flex justify-end">
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          disabled={quotaMutation.isPending}
+                          onClick={() => quotaMutation.mutate()}
+                        >
+                          <Save className="h-4 w-4" />
+                          {t("users.form.quota.title")}
+                        </Button>
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
             </div>

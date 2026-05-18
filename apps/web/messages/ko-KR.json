@@ -273,9 +273,18 @@
         "ariaLabel": "디스크 공간 사용량 진행률 표시줄"
       },
       "quota": {
-        "label": "스토리지 할당량",
-        "ariaLabel": "스토리지 할당량 진행률 표시줄",
-        "notConfigured": "할당량 미설정"
+        "label": "저장소 할당량",
+        "ariaLabel": "저장소 할당량 진행률 표시줄",
+        "notConfigured": "할당량이 구성되지 않음",
+        "unlimited": "Unlimited",
+        "used": "{used} of {total} used",
+        "usedOnly": "{used} used",
+        "exceeded": {
+          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+        },
+        "warning": {
+          "banner": "You are using {percentage}% of your storage quota."
+        }
       },
       "metrics": {
         "users": "사용자",
@@ -1968,7 +1977,17 @@
       "roleUser": "사용자",
       "roleAdmin": "관리자",
       "create": "생성",
-      "save": "저장"
+      "save": "저장",
+      "quota": {
+        "title": "Storage Quotas",
+        "maxFileSize": "Max File Size",
+        "maxTotalStorage": "Max Total Storage",
+        "inherit": "Use default",
+        "unlimited": "Unlimited",
+        "custom": "Custom",
+        "saveSuccess": "Quota updated successfully",
+        "saveError": "Failed to update quota"
+      }
     },
     "status": {
       "title": "상태 변경 확인",

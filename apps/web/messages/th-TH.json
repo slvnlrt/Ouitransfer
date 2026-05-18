@@ -277,9 +277,18 @@
         "ariaLabel": "แถบแสดงความคืบหน้าการใช้พื้นที่ดิสก์"
       },
       "quota": {
-        "label": "โควตาพื้นที่จัดเก็บ",
-        "ariaLabel": "แถบแสดงความคืบหน้าโควตาพื้นที่จัดเก็บ",
-        "notConfigured": "ยังไม่ได้กำหนดโควตา"
+        "label": "โควตาพื้นที่เก็บข้อมูล",
+        "ariaLabel": "แถบความคืบหน้าโควตาพื้นที่เก็บข้อมูล",
+        "notConfigured": "โควตาไม่ได้รับการกำหนดค่า",
+        "unlimited": "Unlimited",
+        "used": "{used} of {total} used",
+        "usedOnly": "{used} used",
+        "exceeded": {
+          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+        },
+        "warning": {
+          "banner": "You are using {percentage}% of your storage quota."
+        }
       },
       "metrics": {
         "users": "ผู้ใช้",
@@ -1972,7 +1981,17 @@
       "roleUser": "ผู้ใช้",
       "roleAdmin": "ผู้ดูแลระบบ",
       "create": "สร้าง",
-      "save": "บันทึก"
+      "save": "บันทึก",
+      "quota": {
+        "title": "Storage Quotas",
+        "maxFileSize": "Max File Size",
+        "maxTotalStorage": "Max Total Storage",
+        "inherit": "Use default",
+        "unlimited": "Unlimited",
+        "custom": "Custom",
+        "saveSuccess": "Quota updated successfully",
+        "saveError": "Failed to update quota"
+      }
     },
     "status": {
       "title": "ยืนยันการเปลี่ยนสถานะ",

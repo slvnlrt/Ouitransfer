@@ -275,7 +275,16 @@
       "quota": {
         "label": "存储配额",
         "ariaLabel": "存储配额进度条",
-        "notConfigured": "配额未配置"
+        "notConfigured": "配额未配置",
+        "unlimited": "Unlimited",
+        "used": "{used} of {total} used",
+        "usedOnly": "{used} used",
+        "exceeded": {
+          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+        },
+        "warning": {
+          "banner": "You are using {percentage}% of your storage quota."
+        }
       },
       "metrics": {
         "users": "用户",
@@ -1968,7 +1977,17 @@
       "roleUser": "用户",
       "roleAdmin": "管理员",
       "create": "创建",
-      "save": "保存"
+      "save": "保存",
+      "quota": {
+        "title": "Storage Quotas",
+        "maxFileSize": "Max File Size",
+        "maxTotalStorage": "Max Total Storage",
+        "inherit": "Use default",
+        "unlimited": "Unlimited",
+        "custom": "Custom",
+        "saveSuccess": "Quota updated successfully",
+        "saveError": "Failed to update quota"
+      }
     },
     "status": {
       "title": "确认状态更改",

@@ -277,9 +277,18 @@
         "ariaLabel": "Barra de progreso del uso de espacio en disco"
       },
       "quota": {
-        "label": "Cuota de almacenamiento",
-        "ariaLabel": "Barra de progreso de la cuota de almacenamiento",
-        "notConfigured": "Cuotas no configuradas"
+        "label": "Cuota de Almacenamiento",
+        "ariaLabel": "Barra de progreso de cuota de almacenamiento",
+        "notConfigured": "Cuotas no configuradas",
+        "unlimited": "Unlimited",
+        "used": "{used} of {total} used",
+        "usedOnly": "{used} used",
+        "exceeded": {
+          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+        },
+        "warning": {
+          "banner": "You are using {percentage}% of your storage quota."
+        }
       },
       "metrics": {
         "users": "Usuarios",
@@ -1972,7 +1981,17 @@
       "roleUser": "Usuario",
       "roleAdmin": "Administrador",
       "create": "Crear",
-      "save": "Guardar"
+      "save": "Guardar",
+      "quota": {
+        "title": "Storage Quotas",
+        "maxFileSize": "Max File Size",
+        "maxTotalStorage": "Max Total Storage",
+        "inherit": "Use default",
+        "unlimited": "Unlimited",
+        "custom": "Custom",
+        "saveSuccess": "Quota updated successfully",
+        "saveError": "Failed to update quota"
+      }
     },
     "status": {
       "title": "Confirmar cambio de estado",

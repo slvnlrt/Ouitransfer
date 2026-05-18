@@ -63,7 +63,7 @@ export function useSystemStatus(): UseSystemStatusResult {
     enabled: !!isAdmin,
   });
 
-  // Disk space (admin only)
+  // Disk space (all users — non-admins get quota data from the same endpoint)
   const diskSpaceQuery = useQuery({
     queryKey: queryKeys.app.diskSpace(),
     queryFn: async () => {
@@ -71,7 +71,7 @@ export function useSystemStatus(): UseSystemStatusResult {
       return res.data;
     },
     refetchInterval: 60_000,
-    enabled: !!isAdmin,
+    enabled: true,
   });
 
   // Admin stats (admin only)
@@ -105,9 +105,9 @@ export function useSystemStatus(): UseSystemStatusResult {
   }
 
   const refresh = () => {
+    diskSpaceQuery.refetch();
     if (isAdmin) {
       healthQuery.refetch();
-      diskSpaceQuery.refetch();
       adminStatsQuery.refetch();
     } else {
       healthStatusQuery.refetch();
@@ -116,7 +116,7 @@ export function useSystemStatus(): UseSystemStatusResult {
 
   const isRefreshing = isAdmin
     ? healthQuery.isFetching || diskSpaceQuery.isFetching || adminStatsQuery.isFetching
-    : healthStatusQuery.isFetching;
+    : healthStatusQuery.isFetching || diskSpaceQuery.isFetching;
 
   return {
     healthStatus: healthStatusQuery.data ?? null,

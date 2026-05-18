@@ -277,9 +277,18 @@
         "ariaLabel": "Індикатор використання дискового простору"
       },
       "quota": {
-        "label": "Квота сховища",
-        "ariaLabel": "Індикатор використання квоти сховища",
-        "notConfigured": "Квоти не налаштовані"
+        "label": "Квота зберігання",
+        "ariaLabel": "Смуга прогресу квоти зберігання",
+        "notConfigured": "Квоти не налаштовані",
+        "unlimited": "Unlimited",
+        "used": "{used} of {total} used",
+        "usedOnly": "{used} used",
+        "exceeded": {
+          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+        },
+        "warning": {
+          "banner": "You are using {percentage}% of your storage quota."
+        }
       },
       "metrics": {
         "users": "Користувачі",
@@ -1972,7 +1981,17 @@
       "roleUser": "Користувач",
       "roleAdmin": "Адміністратор",
       "create": "Створити",
-      "save": "Зберегти"
+      "save": "Зберегти",
+      "quota": {
+        "title": "Storage Quotas",
+        "maxFileSize": "Max File Size",
+        "maxTotalStorage": "Max Total Storage",
+        "inherit": "Use default",
+        "unlimited": "Unlimited",
+        "custom": "Custom",
+        "saveSuccess": "Quota updated successfully",
+        "saveError": "Failed to update quota"
+      }
     },
     "status": {
       "title": "Підтвердити зміну статусу",

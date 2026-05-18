@@ -14,6 +14,8 @@ export interface BaseUser {
 
 export interface User extends BaseUser {
   image: string | null;
+  maxFileSizeOverride?: string | null;
+  maxTotalStorageOverride?: string | null;
 }
 
 export type LoginUser = BaseUser;
