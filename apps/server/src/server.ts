@@ -15,6 +15,7 @@ import { fileRoutes } from "./modules/file/routes.js";
 import { folderRoutes } from "./modules/folder/routes.js";
 import { healthRoutes } from "./modules/health/routes.js";
 import { inviteRoutes } from "./modules/invite/routes.js";
+import { quotaRoutes } from "./modules/quota/routes.js";
 import { reverseShareRoutes } from "./modules/reverse-share/routes.js";
 import { s3StorageRoutes } from "./modules/s3-storage/routes.js";
 import { shareRoutes } from "./modules/share/routes.js";
@@ -87,6 +88,7 @@ async function startServer() {
   app.register(adminRoutes);
   app.register(healthRoutes);
   app.register(s3StorageRoutes);
+  app.register(quotaRoutes);
 
   if (isInternalStorage) {
     app.log.info("Using internal storage");
