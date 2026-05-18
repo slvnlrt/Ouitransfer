@@ -276,14 +276,14 @@
         "label": "Quota de stockage",
         "ariaLabel": "Barre de progression du quota de stockage",
         "notConfigured": "Quotas non configurés",
-        "unlimited": "Unlimited",
-        "used": "{used} of {total} used",
-        "usedOnly": "{used} used",
+        "unlimited": "Illimité",
+        "used": "{used} sur {total} utilisé",
+        "usedOnly": "{used} utilisé",
         "exceeded": {
-          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+          "banner": "Votre quota de stockage est dépassé. Vous ne pouvez pas télécharger de nouveaux fichiers tant que vous n'avez pas libéré de l'espace en supprimant des fichiers ou des partages existants."
         },
         "warning": {
-          "banner": "You are using {percentage}% of your storage quota."
+          "banner": "Vous utilisez {percentage}% de votre quota de stockage."
         }
       },
       "metrics": {
@@ -1979,18 +1979,18 @@
       "create": "Créer",
       "save": "Enregistrer",
       "quota": {
-        "title": "Storage Quotas",
-        "maxFileSize": "Max File Size",
-        "maxTotalStorage": "Max Total Storage",
-        "inherit": "Use default",
-        "unlimited": "Unlimited",
-        "custom": "Custom",
-        "saveSuccess": "Quota updated successfully",
-        "saveError": "Failed to update quota",
-        "currentUsage": "Current Usage",
-        "effectiveMaxFileSize": "Effective Max File Size",
-        "effectiveMaxStorage": "Effective Max Storage",
-        "usagePercent": "Usage"
+        "title": "Quotas de stockage",
+        "maxFileSize": "Taille maximale de fichier",
+        "maxTotalStorage": "Stockage total maximum",
+        "inherit": "Utiliser la valeur par défaut",
+        "unlimited": "Illimité",
+        "custom": "Personnalisé",
+        "saveSuccess": "Quota mis à jour avec succès",
+        "saveError": "Échec de la mise à jour du quota",
+        "currentUsage": "Utilisation actuelle",
+        "effectiveMaxFileSize": "Taille maximale de fichier effective",
+        "effectiveMaxStorage": "Stockage total maximum effectif",
+        "usagePercent": "Utilisation"
       }
     },
     "status": {

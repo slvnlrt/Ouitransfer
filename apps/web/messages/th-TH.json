@@ -277,17 +277,17 @@
         "ariaLabel": "แถบแสดงความคืบหน้าการใช้พื้นที่ดิสก์"
       },
       "quota": {
-        "label": "โควตาพื้นที่เก็บข้อมูล",
-        "ariaLabel": "แถบความคืบหน้าโควตาพื้นที่เก็บข้อมูล",
-        "notConfigured": "โควตาไม่ได้รับการกำหนดค่า",
-        "unlimited": "Unlimited",
-        "used": "{used} of {total} used",
-        "usedOnly": "{used} used",
+        "label": "โควต้าพื้นที่จัดเก็บ",
+        "ariaLabel": "แถบความคืบหน้าของโควต้าพื้นที่จัดเก็บ",
+        "notConfigured": "ยังไม่ได้กำหนดค่าโควต้า",
+        "unlimited": "ไม่จำกัด",
+        "used": "ใช้แล้ว {used} จาก {total}",
+        "usedOnly": "ใช้แล้ว {used}",
         "exceeded": {
-          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+          "banner": "โควต้าพื้นที่จัดเก็บของคุณเกินกำหนด คุณไม่สามารถอัปโหลดไฟล์ใหม่ได้จนกว่าจะเพิ่มพื้นที่ว่างโดยลบไฟล์หรือการแชร์ที่มีอยู่"
         },
         "warning": {
-          "banner": "You are using {percentage}% of your storage quota."
+          "banner": "คุณใช้โควต้าพื้นที่จัดเก็บ {percentage}% แล้ว"
         }
       },
       "metrics": {
@@ -1983,18 +1983,18 @@
       "create": "สร้าง",
       "save": "บันทึก",
       "quota": {
-        "title": "Storage Quotas",
-        "maxFileSize": "Max File Size",
-        "maxTotalStorage": "Max Total Storage",
-        "inherit": "Use default",
-        "unlimited": "Unlimited",
-        "custom": "Custom",
-        "saveSuccess": "Quota updated successfully",
-        "saveError": "Failed to update quota",
-        "currentUsage": "Current Usage",
-        "effectiveMaxFileSize": "Effective Max File Size",
-        "effectiveMaxStorage": "Effective Max Storage",
-        "usagePercent": "Usage"
+        "title": "โควต้าพื้นที่จัดเก็บ",
+        "maxFileSize": "ขนาดไฟล์สูงสุด",
+        "maxTotalStorage": "พื้นที่จัดเก็บรวมสูงสุด",
+        "inherit": "ใช้ค่าเริ่มต้น",
+        "unlimited": "ไม่จำกัด",
+        "custom": "กำหนดเอง",
+        "saveSuccess": "อัปเดตโควต้าเรียบร้อยแล้ว",
+        "saveError": "ไม่สามารถอัปเดตโควต้าได้",
+        "currentUsage": "การใช้งานปัจจุบัน",
+        "effectiveMaxFileSize": "ขนาดไฟล์สูงสุดที่มีผล",
+        "effectiveMaxStorage": "พื้นที่จัดเก็บรวมสูงสุดที่มีผล",
+        "usagePercent": "การใช้งาน"
       }
     },
     "status": {

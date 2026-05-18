@@ -273,17 +273,17 @@
         "ariaLabel": "Pasek postępu wykorzystania przestrzeni dyskowej"
       },
       "quota": {
-        "label": "Limit Pamięci",
+        "label": "Limit pamięci",
         "ariaLabel": "Pasek postępu limitu pamięci",
-        "notConfigured": "Limity nie skonfigurowane",
-        "unlimited": "Unlimited",
-        "used": "{used} of {total} used",
-        "usedOnly": "{used} used",
+        "notConfigured": "Limity nie są skonfigurowane",
+        "unlimited": "Bez limitu",
+        "used": "{used} z {total} wykorzystano",
+        "usedOnly": "{used} wykorzystano",
         "exceeded": {
-          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+          "banner": "Twój limit pamięci został przekroczony. Nie możesz przesyłać nowych plików, dopóki nie zwolnisz miejsca, usuwając istniejące pliki lub udostępnienia."
         },
         "warning": {
-          "banner": "You are using {percentage}% of your storage quota."
+          "banner": "Używasz {percentage}% swojego limitu pamięci."
         }
       },
       "metrics": {
@@ -1979,18 +1979,18 @@
       "create": "Utwórz",
       "save": "Zapisz",
       "quota": {
-        "title": "Storage Quotas",
-        "maxFileSize": "Max File Size",
-        "maxTotalStorage": "Max Total Storage",
-        "inherit": "Use default",
-        "unlimited": "Unlimited",
-        "custom": "Custom",
-        "saveSuccess": "Quota updated successfully",
-        "saveError": "Failed to update quota",
-        "currentUsage": "Current Usage",
-        "effectiveMaxFileSize": "Effective Max File Size",
-        "effectiveMaxStorage": "Effective Max Storage",
-        "usagePercent": "Usage"
+        "title": "Limity pamięci",
+        "maxFileSize": "Maksymalny rozmiar pliku",
+        "maxTotalStorage": "Maksymalna łączna pamięć",
+        "inherit": "Użyj domyślnej",
+        "unlimited": "Bez limitu",
+        "custom": "Niestandardowy",
+        "saveSuccess": "Limit zaktualizowany pomyślnie",
+        "saveError": "Nie udało się zaktualizować limitu",
+        "currentUsage": "Bieżące użycie",
+        "effectiveMaxFileSize": "Efektywny maksymalny rozmiar pliku",
+        "effectiveMaxStorage": "Efektywna maksymalna łączna pamięć",
+        "usagePercent": "Użycie"
       }
     },
     "status": {

@@ -274,16 +274,16 @@
       },
       "quota": {
         "label": "Opslagquotum",
-        "ariaLabel": "Voortgangsbalk voor opslagquotum",
+        "ariaLabel": "Voortgangsbalk opslagquotum",
         "notConfigured": "Quota's niet geconfigureerd",
-        "unlimited": "Unlimited",
-        "used": "{used} of {total} used",
-        "usedOnly": "{used} used",
+        "unlimited": "Onbeperkt",
+        "used": "{used} van {total} gebruikt",
+        "usedOnly": "{used} gebruikt",
         "exceeded": {
-          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+          "banner": "Uw opslagquotum is overschreden. U kunt geen nieuwe bestanden uploaden totdat u ruimte vrijmaakt door bestaande bestanden of shares te verwijderen."
         },
         "warning": {
-          "banner": "You are using {percentage}% of your storage quota."
+          "banner": "U gebruikt {percentage}% van uw opslagquotum."
         }
       },
       "metrics": {
@@ -1979,18 +1979,18 @@
       "create": "Aanmaken",
       "save": "Opslaan",
       "quota": {
-        "title": "Storage Quotas",
-        "maxFileSize": "Max File Size",
-        "maxTotalStorage": "Max Total Storage",
-        "inherit": "Use default",
-        "unlimited": "Unlimited",
-        "custom": "Custom",
-        "saveSuccess": "Quota updated successfully",
-        "saveError": "Failed to update quota",
-        "currentUsage": "Current Usage",
-        "effectiveMaxFileSize": "Effective Max File Size",
-        "effectiveMaxStorage": "Effective Max Storage",
-        "usagePercent": "Usage"
+        "title": "Opslagquota",
+        "maxFileSize": "Maximale bestandsgrootte",
+        "maxTotalStorage": "Maximale totale opslag",
+        "inherit": "Standaard gebruiken",
+        "unlimited": "Onbeperkt",
+        "custom": "Aangepast",
+        "saveSuccess": "Quotum succesvol bijgewerkt",
+        "saveError": "Bijwerken van quotum mislukt",
+        "currentUsage": "Huidig gebruik",
+        "effectiveMaxFileSize": "Effectieve maximale bestandsgrootte",
+        "effectiveMaxStorage": "Effectieve maximale totale opslag",
+        "usagePercent": "Gebruik"
       }
     },
     "status": {

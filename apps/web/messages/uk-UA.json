@@ -277,17 +277,17 @@
         "ariaLabel": "Індикатор використання дискового простору"
       },
       "quota": {
-        "label": "Квота зберігання",
-        "ariaLabel": "Смуга прогресу квоти зберігання",
+        "label": "Квота сховища",
+        "ariaLabel": "Індикатор квоти сховища",
         "notConfigured": "Квоти не налаштовані",
-        "unlimited": "Unlimited",
-        "used": "{used} of {total} used",
-        "usedOnly": "{used} used",
+        "unlimited": "Без обмежень",
+        "used": "Використано {used} з {total}",
+        "usedOnly": "Використано {used}",
         "exceeded": {
-          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+          "banner": "Квоту сховища перевищено. Ви не можете завантажувати нові файли, поки не звільните місце, видаливши наявні файли або спільні доступи."
         },
         "warning": {
-          "banner": "You are using {percentage}% of your storage quota."
+          "banner": "Ви використовуєте {percentage}% своєї квоти сховища."
         }
       },
       "metrics": {
@@ -1983,18 +1983,18 @@
       "create": "Створити",
       "save": "Зберегти",
       "quota": {
-        "title": "Storage Quotas",
-        "maxFileSize": "Max File Size",
-        "maxTotalStorage": "Max Total Storage",
-        "inherit": "Use default",
-        "unlimited": "Unlimited",
-        "custom": "Custom",
-        "saveSuccess": "Quota updated successfully",
-        "saveError": "Failed to update quota",
-        "currentUsage": "Current Usage",
-        "effectiveMaxFileSize": "Effective Max File Size",
-        "effectiveMaxStorage": "Effective Max Storage",
-        "usagePercent": "Usage"
+        "title": "Квоти сховища",
+        "maxFileSize": "Максимальний розмір файлу",
+        "maxTotalStorage": "Максимальний загальний обсяг сховища",
+        "inherit": "Використовувати за замовчуванням",
+        "unlimited": "Без обмежень",
+        "custom": "Власний",
+        "saveSuccess": "Квоту успішно оновлено",
+        "saveError": "Не вдалося оновити квоту",
+        "currentUsage": "Поточне використання",
+        "effectiveMaxFileSize": "Фактичний максимальний розмір файлу",
+        "effectiveMaxStorage": "Фактичний максимальний загальний обсяг",
+        "usagePercent": "Використання"
       }
     },
     "status": {

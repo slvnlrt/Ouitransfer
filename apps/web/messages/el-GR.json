@@ -277,17 +277,17 @@
         "ariaLabel": "Γραμμή προόδου χρήσης χώρου δίσκου"
       },
       "quota": {
-        "label": "Όριο Αποθήκευσης",
+        "label": "Όριο αποθήκευσης",
         "ariaLabel": "Γραμμή προόδου ορίου αποθήκευσης",
         "notConfigured": "Τα όρια δεν έχουν ρυθμιστεί",
-        "unlimited": "Unlimited",
-        "used": "{used} of {total} used",
-        "usedOnly": "{used} used",
+        "unlimited": "Απεριόριστο",
+        "used": "{used} από {total} χρησιμοποιούνται",
+        "usedOnly": "{used} χρησιμοποιούνται",
         "exceeded": {
-          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+          "banner": "Το όριο αποθήκευσής σας έχει υπερβληθεί. Δεν μπορείτε να ανεβάσετε νέα αρχεία έως ότου ελευθερώσετε χώρο διαγράφοντας υπάρχοντα αρχεία ή κοινοποιήσεις."
         },
         "warning": {
-          "banner": "You are using {percentage}% of your storage quota."
+          "banner": "Χρησιμοποιείτε το {percentage}% του ορίου αποθήκευσής σας."
         }
       },
       "metrics": {
@@ -1983,18 +1983,18 @@
       "create": "Δημιουργία",
       "save": "Αποθήκευση",
       "quota": {
-        "title": "Storage Quotas",
-        "maxFileSize": "Max File Size",
-        "maxTotalStorage": "Max Total Storage",
-        "inherit": "Use default",
-        "unlimited": "Unlimited",
-        "custom": "Custom",
-        "saveSuccess": "Quota updated successfully",
-        "saveError": "Failed to update quota",
-        "currentUsage": "Current Usage",
-        "effectiveMaxFileSize": "Effective Max File Size",
-        "effectiveMaxStorage": "Effective Max Storage",
-        "usagePercent": "Usage"
+        "title": "Όρια αποθήκευσης",
+        "maxFileSize": "Μέγιστο μέγεθος αρχείου",
+        "maxTotalStorage": "Μέγιστος συνολικός χώρος",
+        "inherit": "Χρήση προεπιλογής",
+        "unlimited": "Απεριόριστο",
+        "custom": "Προσαρμοσμένο",
+        "saveSuccess": "Το όριο ενημερώθηκε επιτυχώς",
+        "saveError": "Αποτυχία ενημέρωσης ορίου",
+        "currentUsage": "Τρέχουσα χρήση",
+        "effectiveMaxFileSize": "Ενεργό μέγιστο μέγεθος αρχείου",
+        "effectiveMaxStorage": "Ενεργός μέγιστος συνολικός χώρος",
+        "usagePercent": "Χρήση"
       }
     },
     "status": {

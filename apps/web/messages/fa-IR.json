@@ -280,14 +280,14 @@
         "label": "سهمیه ذخیره‌سازی",
         "ariaLabel": "نوار پیشرفت سهمیه ذخیره‌سازی",
         "notConfigured": "سهمیه‌ها پیکربندی نشده‌اند",
-        "unlimited": "Unlimited",
-        "used": "{used} of {total} used",
-        "usedOnly": "{used} used",
+        "unlimited": "نامحدود",
+        "used": "{used} از {total} استفاده شده",
+        "usedOnly": "{used} استفاده شده",
         "exceeded": {
-          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+          "banner": "سهمیه ذخیره‌سازی شما تجاوز کرده است. تا زمانی که با حذف فایل‌ها یا اشتراک‌گذاری‌های موجود فضا آزاد نکنید، نمی‌توانید فایل جدید بارگذاری کنید."
         },
         "warning": {
-          "banner": "You are using {percentage}% of your storage quota."
+          "banner": "شما {percentage}% از سهمیه ذخیره‌سازی خود را استفاده می‌کنید."
         }
       },
       "metrics": {
@@ -1983,18 +1983,18 @@
       "create": "ایجاد",
       "save": "ذخیره",
       "quota": {
-        "title": "Storage Quotas",
-        "maxFileSize": "Max File Size",
-        "maxTotalStorage": "Max Total Storage",
-        "inherit": "Use default",
-        "unlimited": "Unlimited",
-        "custom": "Custom",
-        "saveSuccess": "Quota updated successfully",
-        "saveError": "Failed to update quota",
-        "currentUsage": "Current Usage",
-        "effectiveMaxFileSize": "Effective Max File Size",
-        "effectiveMaxStorage": "Effective Max Storage",
-        "usagePercent": "Usage"
+        "title": "سهمیه‌های ذخیره‌سازی",
+        "maxFileSize": "حداکثر اندازه فایل",
+        "maxTotalStorage": "حداکثر فضای ذخیره‌سازی کل",
+        "inherit": "استفاده از پیش‌فرض",
+        "unlimited": "نامحدود",
+        "custom": "سفارشی",
+        "saveSuccess": "سهمیه با موفقیت به‌روزرسانی شد",
+        "saveError": "خطا در به‌روزرسانی سهمیه",
+        "currentUsage": "مصرف فعلی",
+        "effectiveMaxFileSize": "حداکثر اندازه فایل مؤثر",
+        "effectiveMaxStorage": "حداکثر فضای ذخیره‌سازی کل مؤثر",
+        "usagePercent": "مصرف"
       }
     },
     "status": {

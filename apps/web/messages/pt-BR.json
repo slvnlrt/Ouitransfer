@@ -277,17 +277,17 @@
         "ariaLabel": "Barra de progresso do uso de espaço em disco"
       },
       "quota": {
-        "label": "Cota de Armazenamento",
-        "ariaLabel": "Barra de progresso de cota de armazenamento",
+        "label": "Cota de armazenamento",
+        "ariaLabel": "Barra de progresso da cota de armazenamento",
         "notConfigured": "Cotas não configuradas",
-        "unlimited": "Unlimited",
-        "used": "{used} of {total} used",
-        "usedOnly": "{used} used",
+        "unlimited": "Ilimitado",
+        "used": "{used} de {total} utilizado",
+        "usedOnly": "{used} utilizado",
         "exceeded": {
-          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+          "banner": "Sua cota de armazenamento foi excedida. Você não pode fazer upload de novos arquivos até liberar espaço excluindo arquivos ou compartilhamentos existentes."
         },
         "warning": {
-          "banner": "You are using {percentage}% of your storage quota."
+          "banner": "Você está usando {percentage}% da sua cota de armazenamento."
         }
       },
       "metrics": {
@@ -1983,18 +1983,18 @@
       "create": "Criar",
       "save": "Salvar",
       "quota": {
-        "title": "Storage Quotas",
-        "maxFileSize": "Max File Size",
-        "maxTotalStorage": "Max Total Storage",
-        "inherit": "Use default",
-        "unlimited": "Unlimited",
-        "custom": "Custom",
-        "saveSuccess": "Quota updated successfully",
-        "saveError": "Failed to update quota",
-        "currentUsage": "Current Usage",
-        "effectiveMaxFileSize": "Effective Max File Size",
-        "effectiveMaxStorage": "Effective Max Storage",
-        "usagePercent": "Usage"
+        "title": "Cotas de armazenamento",
+        "maxFileSize": "Tamanho máximo de arquivo",
+        "maxTotalStorage": "Armazenamento total máximo",
+        "inherit": "Usar padrão",
+        "unlimited": "Ilimitado",
+        "custom": "Personalizado",
+        "saveSuccess": "Cota atualizada com sucesso",
+        "saveError": "Falha ao atualizar a cota",
+        "currentUsage": "Uso atual",
+        "effectiveMaxFileSize": "Tamanho máximo de arquivo efetivo",
+        "effectiveMaxStorage": "Armazenamento total máximo efetivo",
+        "usagePercent": "Uso"
       }
     },
     "status": {

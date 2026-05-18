@@ -273,17 +273,17 @@
         "ariaLabel": "شريط تقدم استخدام مساحة القرص"
       },
       "quota": {
-        "label": "حد التخزين",
-        "ariaLabel": "شريط تقدم حد التخزين",
-        "notConfigured": "الحدود غير مُعدَّة",
-        "unlimited": "Unlimited",
-        "used": "{used} of {total} used",
-        "usedOnly": "{used} used",
+        "label": "حصة التخزين",
+        "ariaLabel": "شريط تقدم حصة التخزين",
+        "notConfigured": "الحصص غير مُهيأة",
+        "unlimited": "غير محدود",
+        "used": "{used} من {total} مستخدم",
+        "usedOnly": "{used} مستخدم",
         "exceeded": {
-          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+          "banner": "لقد تجاوزت حصة التخزين الخاصة بك. لا يمكنك رفع ملفات جديدة حتى تحرر مساحة بحذف الملفات أو المشاركات الموجودة."
         },
         "warning": {
-          "banner": "You are using {percentage}% of your storage quota."
+          "banner": "أنت تستخدم {percentage}% من حصة التخزين الخاصة بك."
         }
       },
       "metrics": {
@@ -1979,18 +1979,18 @@
       "create": "إنشاء",
       "save": "حفظ",
       "quota": {
-        "title": "Storage Quotas",
-        "maxFileSize": "Max File Size",
-        "maxTotalStorage": "Max Total Storage",
-        "inherit": "Use default",
-        "unlimited": "Unlimited",
-        "custom": "Custom",
-        "saveSuccess": "Quota updated successfully",
-        "saveError": "Failed to update quota",
-        "currentUsage": "Current Usage",
-        "effectiveMaxFileSize": "Effective Max File Size",
-        "effectiveMaxStorage": "Effective Max Storage",
-        "usagePercent": "Usage"
+        "title": "حصص التخزين",
+        "maxFileSize": "الحجم الأقصى للملف",
+        "maxTotalStorage": "إجمالي التخزين الأقصى",
+        "inherit": "استخدام الإعداد الافتراضي",
+        "unlimited": "غير محدود",
+        "custom": "مخصص",
+        "saveSuccess": "تم تحديث الحصة بنجاح",
+        "saveError": "فشل تحديث الحصة",
+        "currentUsage": "الاستخدام الحالي",
+        "effectiveMaxFileSize": "الحجم الأقصى الفعلي للملف",
+        "effectiveMaxStorage": "إجمالي التخزين الأقصى الفعلي",
+        "usagePercent": "الاستخدام"
       }
     },
     "status": {

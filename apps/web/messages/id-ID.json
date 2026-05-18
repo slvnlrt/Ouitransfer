@@ -279,15 +279,15 @@
       "quota": {
         "label": "Kuota Penyimpanan",
         "ariaLabel": "Bilah kemajuan kuota penyimpanan",
-        "notConfigured": "Kuota tidak dikonfigurasi",
-        "unlimited": "Unlimited",
-        "used": "{used} of {total} used",
-        "usedOnly": "{used} used",
+        "notConfigured": "Kuota belum dikonfigurasi",
+        "unlimited": "Tidak terbatas",
+        "used": "{used} dari {total} digunakan",
+        "usedOnly": "{used} digunakan",
         "exceeded": {
-          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+          "banner": "Kuota penyimpanan Anda telah terlampaui. Anda tidak dapat mengunggah file baru sampai Anda mengosongkan ruang dengan menghapus file atau berbagi yang ada."
         },
         "warning": {
-          "banner": "You are using {percentage}% of your storage quota."
+          "banner": "Anda menggunakan {percentage}% dari kuota penyimpanan Anda."
         }
       },
       "metrics": {
@@ -1983,18 +1983,18 @@
       "create": "Buat",
       "save": "Simpan",
       "quota": {
-        "title": "Storage Quotas",
-        "maxFileSize": "Max File Size",
-        "maxTotalStorage": "Max Total Storage",
-        "inherit": "Use default",
-        "unlimited": "Unlimited",
-        "custom": "Custom",
-        "saveSuccess": "Quota updated successfully",
-        "saveError": "Failed to update quota",
-        "currentUsage": "Current Usage",
-        "effectiveMaxFileSize": "Effective Max File Size",
-        "effectiveMaxStorage": "Effective Max Storage",
-        "usagePercent": "Usage"
+        "title": "Kuota Penyimpanan",
+        "maxFileSize": "Ukuran File Maksimum",
+        "maxTotalStorage": "Total Penyimpanan Maksimum",
+        "inherit": "Gunakan default",
+        "unlimited": "Tidak terbatas",
+        "custom": "Kustom",
+        "saveSuccess": "Kuota berhasil diperbarui",
+        "saveError": "Gagal memperbarui kuota",
+        "currentUsage": "Penggunaan Saat Ini",
+        "effectiveMaxFileSize": "Ukuran File Maksimum Efektif",
+        "effectiveMaxStorage": "Total Penyimpanan Maksimum Efektif",
+        "usagePercent": "Penggunaan"
       }
     },
     "status": {

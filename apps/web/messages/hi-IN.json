@@ -274,16 +274,16 @@
       },
       "quota": {
         "label": "स्टोरेज कोटा",
-        "ariaLabel": "स्टोरेज कोटा प्रगति पट्टी",
-        "notConfigured": "कोटा कॉन्फ़िगर नहीं किए गए",
-        "unlimited": "Unlimited",
-        "used": "{used} of {total} used",
-        "usedOnly": "{used} used",
+        "ariaLabel": "स्टोरेज कोटा प्रगति बार",
+        "notConfigured": "कोटा कॉन्फ़िगर नहीं किया गया",
+        "unlimited": "असीमित",
+        "used": "{used} में से {total} उपयोग किया",
+        "usedOnly": "{used} उपयोग किया",
         "exceeded": {
-          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+          "banner": "आपका स्टोरेज कोटा पार हो गया है। आप तब तक नई फ़ाइलें अपलोड नहीं कर सकते जब तक आप मौजूदा फ़ाइलें या शेयर हटाकर जगह खाली नहीं करते।"
         },
         "warning": {
-          "banner": "You are using {percentage}% of your storage quota."
+          "banner": "आप अपने स्टोरेज कोटा का {percentage}% उपयोग कर रहे हैं।"
         }
       },
       "metrics": {
@@ -1979,18 +1979,18 @@
       "create": "बनाएं",
       "save": "सहेजें",
       "quota": {
-        "title": "Storage Quotas",
-        "maxFileSize": "Max File Size",
-        "maxTotalStorage": "Max Total Storage",
-        "inherit": "Use default",
-        "unlimited": "Unlimited",
-        "custom": "Custom",
-        "saveSuccess": "Quota updated successfully",
-        "saveError": "Failed to update quota",
-        "currentUsage": "Current Usage",
-        "effectiveMaxFileSize": "Effective Max File Size",
-        "effectiveMaxStorage": "Effective Max Storage",
-        "usagePercent": "Usage"
+        "title": "स्टोरेज कोटा",
+        "maxFileSize": "अधिकतम फ़ाइल आकार",
+        "maxTotalStorage": "अधिकतम कुल स्टोरेज",
+        "inherit": "डिफ़ॉल्ट उपयोग करें",
+        "unlimited": "असीमित",
+        "custom": "कस्टम",
+        "saveSuccess": "कोटा सफलतापूर्वक अपडेट किया गया",
+        "saveError": "कोटा अपडेट करने में विफल",
+        "currentUsage": "वर्तमान उपयोग",
+        "effectiveMaxFileSize": "प्रभावी अधिकतम फ़ाइल आकार",
+        "effectiveMaxStorage": "प्रभावी अधिकतम कुल स्टोरेज",
+        "usagePercent": "उपयोग"
       }
     },
     "status": {

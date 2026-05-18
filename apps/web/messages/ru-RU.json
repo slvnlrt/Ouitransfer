@@ -274,16 +274,16 @@
       },
       "quota": {
         "label": "Квота хранилища",
-        "ariaLabel": "Полоса прогресса квоты хранилища",
+        "ariaLabel": "Индикатор квоты хранилища",
         "notConfigured": "Квоты не настроены",
-        "unlimited": "Unlimited",
-        "used": "{used} of {total} used",
-        "usedOnly": "{used} used",
+        "unlimited": "Без ограничений",
+        "used": "Использовано {used} из {total}",
+        "usedOnly": "Использовано {used}",
         "exceeded": {
-          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+          "banner": "Квота хранилища превышена. Вы не можете загружать новые файлы, пока не освободите место, удалив существующие файлы или общие папки."
         },
         "warning": {
-          "banner": "You are using {percentage}% of your storage quota."
+          "banner": "Вы используете {percentage}% своей квоты хранилища."
         }
       },
       "metrics": {
@@ -1979,18 +1979,18 @@
       "create": "Создать",
       "save": "Сохранить",
       "quota": {
-        "title": "Storage Quotas",
-        "maxFileSize": "Max File Size",
-        "maxTotalStorage": "Max Total Storage",
-        "inherit": "Use default",
-        "unlimited": "Unlimited",
-        "custom": "Custom",
-        "saveSuccess": "Quota updated successfully",
-        "saveError": "Failed to update quota",
-        "currentUsage": "Current Usage",
-        "effectiveMaxFileSize": "Effective Max File Size",
-        "effectiveMaxStorage": "Effective Max Storage",
-        "usagePercent": "Usage"
+        "title": "Квоты хранилища",
+        "maxFileSize": "Максимальный размер файла",
+        "maxTotalStorage": "Максимальный общий объём хранилища",
+        "inherit": "Использовать по умолчанию",
+        "unlimited": "Без ограничений",
+        "custom": "Настраиваемый",
+        "saveSuccess": "Квота успешно обновлена",
+        "saveError": "Не удалось обновить квоту",
+        "currentUsage": "Текущее использование",
+        "effectiveMaxFileSize": "Эффективный максимальный размер файла",
+        "effectiveMaxStorage": "Эффективный максимальный общий объём",
+        "usagePercent": "Использование"
       }
     },
     "status": {

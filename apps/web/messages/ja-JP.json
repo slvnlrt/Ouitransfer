@@ -274,16 +274,16 @@
       },
       "quota": {
         "label": "ストレージクォータ",
-        "ariaLabel": "ストレージクォータプログレスバー",
-        "notConfigured": "クォータが設定されていません",
-        "unlimited": "Unlimited",
-        "used": "{used} of {total} used",
-        "usedOnly": "{used} used",
+        "ariaLabel": "ストレージクォータのプログレスバー",
+        "notConfigured": "クォータは設定されていません",
+        "unlimited": "無制限",
+        "used": "{total}中{used}を使用",
+        "usedOnly": "{used}を使用",
         "exceeded": {
-          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+          "banner": "ストレージクォータを超過しています。既存のファイルまたは共有を削除して空き容量を確保するまで、新しいファイルをアップロードできません。"
         },
         "warning": {
-          "banner": "You are using {percentage}% of your storage quota."
+          "banner": "ストレージクォータの{percentage}%を使用しています。"
         }
       },
       "metrics": {
@@ -1979,18 +1979,18 @@
       "create": "作成",
       "save": "保存",
       "quota": {
-        "title": "Storage Quotas",
-        "maxFileSize": "Max File Size",
-        "maxTotalStorage": "Max Total Storage",
-        "inherit": "Use default",
-        "unlimited": "Unlimited",
-        "custom": "Custom",
-        "saveSuccess": "Quota updated successfully",
-        "saveError": "Failed to update quota",
-        "currentUsage": "Current Usage",
-        "effectiveMaxFileSize": "Effective Max File Size",
-        "effectiveMaxStorage": "Effective Max Storage",
-        "usagePercent": "Usage"
+        "title": "ストレージクォータ",
+        "maxFileSize": "最大ファイルサイズ",
+        "maxTotalStorage": "最大合計ストレージ",
+        "inherit": "デフォルトを使用",
+        "unlimited": "無制限",
+        "custom": "カスタム",
+        "saveSuccess": "クォータを更新しました",
+        "saveError": "クォータの更新に失敗しました",
+        "currentUsage": "現在の使用量",
+        "effectiveMaxFileSize": "有効な最大ファイルサイズ",
+        "effectiveMaxStorage": "有効な最大合計ストレージ",
+        "usagePercent": "使用率"
       }
     },
     "status": {

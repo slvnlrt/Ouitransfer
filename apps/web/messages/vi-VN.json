@@ -277,17 +277,17 @@
         "ariaLabel": "Thanh tiến trình sử dụng dung lượng đĩa"
       },
       "quota": {
-        "label": "Hạn ngạch lưu trữ",
-        "ariaLabel": "Thanh tiến trình hạn ngạch lưu trữ",
-        "notConfigured": "Hạn ngạch chưa được cấu hình",
-        "unlimited": "Unlimited",
-        "used": "{used} of {total} used",
-        "usedOnly": "{used} used",
+        "label": "Hạn mức lưu trữ",
+        "ariaLabel": "Thanh tiến trình hạn mức lưu trữ",
+        "notConfigured": "Chưa cấu hình hạn mức",
+        "unlimited": "Không giới hạn",
+        "used": "Đã dùng {used} trên {total}",
+        "usedOnly": "Đã dùng {used}",
         "exceeded": {
-          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+          "banner": "Hạn mức lưu trữ của bạn đã bị vượt quá. Bạn không thể tải lên tệp mới cho đến khi giải phóng dung lượng bằng cách xóa các tệp hoặc chia sẻ hiện có."
         },
         "warning": {
-          "banner": "You are using {percentage}% of your storage quota."
+          "banner": "Bạn đang sử dụng {percentage}% hạn mức lưu trữ của mình."
         }
       },
       "metrics": {
@@ -1983,18 +1983,18 @@
       "create": "Tạo",
       "save": "Lưu",
       "quota": {
-        "title": "Storage Quotas",
-        "maxFileSize": "Max File Size",
-        "maxTotalStorage": "Max Total Storage",
-        "inherit": "Use default",
-        "unlimited": "Unlimited",
-        "custom": "Custom",
-        "saveSuccess": "Quota updated successfully",
-        "saveError": "Failed to update quota",
-        "currentUsage": "Current Usage",
-        "effectiveMaxFileSize": "Effective Max File Size",
-        "effectiveMaxStorage": "Effective Max Storage",
-        "usagePercent": "Usage"
+        "title": "Hạn mức lưu trữ",
+        "maxFileSize": "Kích thước tệp tối đa",
+        "maxTotalStorage": "Tổng dung lượng lưu trữ tối đa",
+        "inherit": "Sử dụng mặc định",
+        "unlimited": "Không giới hạn",
+        "custom": "Tùy chỉnh",
+        "saveSuccess": "Cập nhật hạn mức thành công",
+        "saveError": "Không thể cập nhật hạn mức",
+        "currentUsage": "Mức sử dụng hiện tại",
+        "effectiveMaxFileSize": "Kích thước tệp tối đa thực tế",
+        "effectiveMaxStorage": "Tổng dung lượng lưu trữ tối đa thực tế",
+        "usagePercent": "Mức sử dụng"
       }
     },
     "status": {
