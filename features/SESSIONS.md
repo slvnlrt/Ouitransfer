@@ -56,3 +56,27 @@
 - Fixed pre-existing bug: `just db-dev-init` now seeds after schema push
 - Reported B-7: login shows "unexpected error" for short passwords (400 validation not handled)
 - Next: 5.4 Groups (depends on 5.1) or 5.2 Auto-cleanup (independent)
+
+## 2026-05-18 (session 2) — B-7 Bug Fix + Technical Debt
+- Fixed B-7: login VALIDATION_ERROR → "invalid credentials" (no password policy leak)
+  - Security principle: login forms must never divulge password policy info
+  - Added regression test for VALIDATION_ERROR → invalidCredentials
+- Resolved TD-2: ACCOUNT_LOCKED error code for login lockout
+  - Added `ACCOUNT_LOCKED` to shared error codes
+  - Server: `AppError(403, ..., ACCOUNT_LOCKED, { remainingMinutes })` replaces `ForbiddenError`
+  - Frontend: dedicated lockout message with `{minutes}` in all 23 locales (native translations)
+  - Added `LOGIN_LOCKED` audit action (distinct from `LOGIN_FAILURE`)
+  - `app.inject()` integration test verifying wire format
+  - Added 401/403 response schemas to login, 2FA login, and reset-password routes
+- Resolved TD-1: removed unsafe `<TData>` generic from 88 API endpoint functions (10 files)
+  - All functions now use concrete `Promise<ResultType>` return types
+  - Normalized `two-factor/index.ts` to match standard pattern (6 functions)
+  - Standardized `invite/index.ts` (all 3 functions unwrap `.data`)
+  - Fixed `AddFiles200` type (`SimpleShare` → `Share`)
+  - Fixed Login200 type (union: user response | 2FA challenge), removed `as LoginResponse` cast
+  - Added convention documentation in barrel export
+- Final review: principal-level review caught 5 Important + 5 Minor findings, all addressed
+- Opened TD-3: 2FA brute-force gap (completeTwoFactorLogin bypasses per-account lockout)
+- Tests: 255 server + 221 web, both type-checks clean
+- 8 commits total (eaedb68..dd02dce)
+- Next: 5.x features (groups, auto-cleanup, LDAP)

@@ -164,16 +164,12 @@ Pas d'investigation approfondie effectuée. La page settings utilise `PageLayout
 **Symptôme :** Sur la page `/login`, saisir un mot de passe de moins de 8 caractères et soumettre affiche "Erreur inattendue" (ou équivalent i18n). Le serveur retourne un 400 Bad Request (mot de passe trop court — validation Zod côté route).
 
 **Analyse :**
-Le schéma Zod de la route `/auth/login` exige un `password` avec `min(passwordMinLength)` (8 par défaut via AppConfig). Quand le mot de passe est trop court, Fastify retourne une 400 avec un code de validation Zod. Le frontend ne reconnaît pas ce code comme une erreur de validation de formulaire et affiche un message d'erreur générique au lieu d'un message inline sous le champ password.
+Le schéma Zod de la route `/auth/login` exige un `password` avec `min(passwordMinLength)` (8 par défaut via AppConfig). Quand le mot de passe est trop court, Fastify retourne une 400 avec `VALIDATION_ERROR`. Le hook `use-login.ts` ne gérait que `UNAUTHORIZED` dans son catch — `VALIDATION_ERROR` tombait dans le `else` et affichait "erreur inattendue".
 
-**Pistes :**
-- Le formulaire de login côté frontend devrait avoir sa propre validation Zod avec `min(8)` (ou récupérer `passwordMinLength` depuis la config publique) pour bloquer la soumission avant l'appel API.
-- Alternativement, le handler d'erreur du formulaire de login devrait mapper les erreurs 400 de validation vers des messages inline sur les champs concernés.
+**Correction :** Ajout de `|| apiError.code === ErrorCodes.VALIDATION_ERROR` dans la condition qui affiche "identifiants invalides". Le formulaire de login ne doit JAMAIS divulguer d'information sur la politique de mot de passe (pas de min-length côté client, pas de message distinct) — c'est une mesure de sécurité.
 
-**Fichiers probables :**
-- `apps/web/src/app/login/` (formulaire de login, hook, validation)
-- `apps/server/src/modules/auth/routes.ts` (schéma de validation)
-- `apps/server/src/modules/auth/dto.ts` (createPasswordSchema)
+**Fichiers modifiés :**
+- `apps/web/src/app/login/hooks/use-login.ts` (ligne 156-158)
 
 ---
 
@@ -185,7 +181,7 @@ Le schéma Zod de la route `/auth/login` exige un `password` avec `min(passwordM
 | B-2 i18n embedSecret | **Haute** | Erreur visible dans settings (toutes locales non-EN) | **Corrigé** (7.1) |
 | B-1 Health 503 | **Moyenne** | Dashboard dégradé en dev (RustFS non démarré) | **Corrigé** (7.1) |
 | B-6 Logo cassé | **Moyenne** | UX dégradée, image brisée visible | **Corrigé** (7.1) |
-| B-7 Login validation | **Moyenne** | UX dégradée, message d'erreur non informatif | À corriger |
+| B-7 Login validation | **Moyenne** | UX dégradée, message d'erreur non informatif | **Corrigé** (B-7/TD) |
 | B-4 Grid dashboard | **Basse** | Visuel, pas fonctionnel | **Corrigé** (7.1) |
 | B-5 Grid settings | **Basse** | Visuel, pas fonctionnel | **Corrigé** (7.1) |
 
@@ -195,3 +191,4 @@ Le schéma Zod de la route `/auth/login` exige un `password` avec `min(passwordM
 > B-2 résolu par ajout des clés i18n manquantes dans les 23 locales.
 > B-5 résolu par ajout de breakpoints responsive aux grids des formulaires auth-provider.
 > B-6 résolu par ajout d'un handler onError sur l'image logo dans la navbar.
+> B-7 résolu dans la session B-7/TD : VALIDATION_ERROR traité comme "identifiants invalides" (pas de divulgation de politique mdp).

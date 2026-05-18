@@ -55,7 +55,7 @@ A comprehensive 8-dimension audit scored the codebase at 4.3/10. Nine remediatio
 Key outcomes:
 - **Security**: CSRF, JWT signed cookies, brute-force lockout, refresh token rotation, CSP headers, MIME validation
 - **Architecture**: ESM migration, pnpm workspace, Turborepo, packages/shared + packages/config
-- **Code quality**: Biome (noExplicitAny enforced), AppError hierarchy, Pino logging, 420+ tests
+- **Code quality**: Biome (noExplicitAny enforced), AppError hierarchy, Pino logging, 476 tests (255 server + 221 web)
 - **Frontend**: TanStack Query, error boundaries, code splitting, a11y (skip-to-content, RTL, route announcer)
 - **Infrastructure**: 3-container Docker Compose, health endpoint with DB+S3 checks, CI pipeline
 - **Dependencies**: 10 packages removed, framer-motion → motion, icons consolidated to lucide-react
@@ -72,25 +72,30 @@ All planning and tracking lives in `features/`. See [`features/README.md`](featu
 features/
   README.md           ← orientation, status table, workflow
   SESSIONS.md         ← session log (date + bullet points)
+  BUGS.md             ← bug reports and resolution status
+  TECHNICAL-DEBT.md   ← tracked technical debt items
   specs/              ← one file per feature (design + decisions)
-    5.1-quotas.md       Per-User Storage Quotas
+    5.1-quotas.md       Per-User Storage Quotas (Done)
     5.2-cleanup.md      Automatic Cleanup of Expired Content
     5.3-ldap.md         LDAP / Active Directory Sync
     5.4-groups.md       Groups
-    6.1-ui-audit.md     UI Code Audit
-    6.2-ui-fixes.md     UI Code Quality Fixes
-    6.3-visual-redesign.md  Visual Redesign (new identity)
+    6.1-ui-audit.md     UI Code Audit (Done)
+    6.2-ui-fixes.md     UI Code Quality Fixes (Done)
+    6.3-visual-redesign.md  Visual Redesign (Done)
+    7.1-error-handling-dashboard.md  Error Handling & Dashboard (Done)
   plans/              ← implementation plans (tasks, batches)
   reviews/            ← review findings (checkboxes = post-review TODO)
 ```
 
 ### Workstreams
 
-**5.x — New Features**: Quotas → Groups → LDAP/AD (sequential dependency). Auto-cleanup is independent.
+**5.x — New Features**: 5.1 Quotas (Done) → 5.4 Groups → 5.3 LDAP/AD (sequential dependency). 5.2 Auto-cleanup is independent.
 
-**6.x — UI Overhaul**: Audit → Fixes → Visual Redesign (sequential). Independent from 5.x, can run in parallel.
+**6.x — UI Overhaul**: Done (6.1 audit → 6.2 fixes → 6.3 redesign). Smart, sober, corporate look with indigo palette (hue 265).
 
-The visual redesign (6.3) aims for a **smart, sober, corporate** look with **wow factor** — replacing the current green palette with a new identity that signals the project's fresh direction.
+**7.x — Error Handling & Polish**: 7.1 Done. Error handling, dashboard redesign, bug fixes B-1 through B-6.
+
+**Bugs & Tech Debt**: B-7 (login validation) + TD-1 (unsafe TData generics) + TD-2 (ACCOUNT_LOCKED) all resolved. TD-3 (2FA brute-force gap) tracked in `TECHNICAL-DEBT.md`.
 
 ## Important: No Production, No Legacy
 The app is **not in production** and has no existing users. This means:

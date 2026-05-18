@@ -94,4 +94,5 @@ features/
 
 ## Current Focus
 
-7.1 Error Handling & Dashboard Redesign — Done. Next: 5.x features (quotas, cleanup, groups, LDAP)
+B-7 bug + TD-1/TD-2 technical debt — Done. TD-3 (2FA brute-force gap) tracked in `TECHNICAL-DEBT.md`.
+Next: 5.x features (5.4 Groups → 5.3 LDAP, or 5.2 Auto-cleanup independently)

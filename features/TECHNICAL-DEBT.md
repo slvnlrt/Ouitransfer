@@ -5,45 +5,42 @@ but must be addressed. Each item includes context and the fix needed.
 
 ---
 
-## TD-1 — API endpoint return types are type-unsafe (I-7 from 7.1 review)
+## ~~TD-1 — API endpoint return types are type-unsafe (I-7 from 7.1 review)~~ ✅ RESOLVED
 
-**Pattern:** All API client functions in `apps/web/src/http/endpoints/` use a generic
-`<TData = AxiosResponse<X>>` pattern that casts `axios.get()` return through `unknown`.
-If a caller overrides `TData`, the cast is a lie — TypeScript won't catch mismatches.
-
-**Example:** `apps/web/src/http/endpoints/admin/index.ts:9-13`
-
-```ts
-export const getAdminStats = <TData = AdminStatsResult>(
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  return apiInstance.get("/api/admin/stats", options);
-};
-```
-
-**Fix:** Remove the generic `TData` parameter. Return `Promise<AxiosResponse<AdminStats200>>`
-directly. Apply to all endpoint files. This is a mechanical refactor across ~15 files.
-
-**Found during:** 7.1 review (finding I-7)
-**Severity:** Low — no runtime bug today, but a type-safety footgun
+Resolved in B-7/TD session. Commits `fe94cef`, `1e1f508`, `7ea7cfa`, `ae0b451`.
+Removed unsafe `<TData>` generic from 88 endpoint functions across 10 files.
+Normalized two-factor and invite patterns. All endpoint functions now use concrete return types.
 
 ---
 
-## TD-2 — Account lockout throws ForbiddenError without specific error code
+## ~~TD-2 — Account lockout throws ForbiddenError without specific error code~~ ✅ RESOLVED
 
-**Context:** `apps/server/src/modules/auth/service.ts:41-44` throws:
-```ts
-throw new ForbiddenError(
-  `Account temporarily locked. Try again in ${lockStatus.remainingMinutes} minutes.`,
-);
-```
+Resolved in B-7/TD session. Commits `564cb42`, `fba3c43`, `dd02dce`.
+Added `ACCOUNT_LOCKED` error code, frontend lockout message with `{minutes}` placeholder
+in all 23 locales, `app.inject()` integration test, `LOGIN_LOCKED` audit action,
+and 401/403 response schemas on auth routes.
 
-This uses the generic `FORBIDDEN` code. The frontend cannot distinguish "account locked"
-from "access denied" without matching on the English message string.
+---
+
+## TD-3 — 2FA brute-force gap: no per-account rate limiting on TOTP verification
+
+**Context:** `apps/server/src/modules/auth/service.ts` — `completeTwoFactorLogin()` throws
+`UnauthorizedError` on invalid TOTP/backup codes but does NOT call `recordLoginAttempt()`
+from `login-attempts.service.ts`. This means the per-account lockout mechanism (10 failed
+attempts → 15-minute lock) is bypassed for the 2FA step.
+
+The route-level `rateLimit: { max: 5, timeWindow: "1 minute" }` on `/auth/2fa/login`
+(`apps/server/src/modules/auth/routes.ts`) is per-IP only, trivially defeated by rotating IPs.
+
+An attacker who obtains valid credentials (email + password) receives a `challengeToken` and
+can then brute-force the 6-digit TOTP code without triggering account lockout.
 
 **Fix:**
-1. Add `ACCOUNT_LOCKED` to `packages/shared/src/error-codes.ts`
-2. Replace with `throw new AppError(403, "Account temporarily locked...", ErrorCodes.ACCOUNT_LOCKED, { remainingMinutes: lockStatus.remainingMinutes })`
-3. Frontend login hook can then match on `ErrorCodes.ACCOUNT_LOCKED` and show the remaining time from `details`
+1. Call `recordLoginAttempt(emailOrUsername, clientIp)` in `completeTwoFactorLogin()` on
+   TOTP/backup code failure (before throwing `UnauthorizedError`)
+2. Check `isAccountLocked()` at the start of `completeTwoFactorLogin()` — same pattern as
+   the password login path
+3. Add integration test verifying that failed 2FA attempts trigger lockout after threshold
 
-**Severity:** Medium — affects login UX and i18n correctness
+**Found during:** B-7/TD session final review (finding I-5)
+**Severity:** Medium — security gap, but requires valid credentials as prerequisite
