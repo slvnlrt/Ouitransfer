@@ -194,6 +194,25 @@ describe("useLogin — ACCOUNT_LOCKED error handling (TD-2)", () => {
     expect(lastTCall?.key).not.toBe("errors.networkError");
   });
 
+  it("shows invalidCredentials for VALIDATION_ERROR (B-7 — no password policy leak)", async () => {
+    mockLogin.mockRejectedValue(new Error("400"));
+    mockParseApiError.mockReturnValue({
+      ...makeApiError(ErrorCodes.VALIDATION_ERROR),
+      statusCode: 400,
+    });
+
+    const { result } = renderHook(() => useLogin(), { wrapper: createWrapper() });
+
+    await act(async () => {
+      await result.current.onSubmit({
+        emailOrUsername: "user@test.com",
+        password: "short",
+      });
+    });
+
+    expect(lastTCall?.key).toBe("errors.invalidCredentials");
+  });
+
   it("still shows errors.invalidCredentials for UNAUTHORIZED errors (regression)", async () => {
     mockLogin.mockRejectedValue(new Error("401"));
     mockParseApiError.mockReturnValue({

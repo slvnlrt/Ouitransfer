@@ -15,6 +15,8 @@ const AUDIT_ACTIONS = [
   "ADMIN_CONFIG_CHANGE",
   "USER_CREATE",
   "USER_DELETE",
+  // ACCOUNT_LOCKED: emitted by login-attempts.service when the lockout threshold is reached
+  // LOGIN_LOCKED: emitted by auth/controller when a login attempt is made while already locked
   "ACCOUNT_LOCKED",
   "LOGIN_LOCKED",
 ] as const;

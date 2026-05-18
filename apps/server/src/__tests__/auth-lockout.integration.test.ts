@@ -130,6 +130,16 @@ describe("POST /api/auth/login — account lockout integration (TD-2)", () => {
     expect(body.error).toContain("locked");
     expect(body.details).toEqual({ remainingMinutes: 12 });
     expect(body.statusCode).toBe(403);
+
+    // Verify audit logged LOGIN_LOCKED (not LOGIN_FAILURE) for lockout attempts
+    const { prisma } = await import("../shared/prisma.js");
+    expect(vi.mocked(prisma.auditLog.create)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          action: "LOGIN_LOCKED",
+        }),
+      }),
+    );
   });
 
   it("preserves details through Fastify serialization", async () => {

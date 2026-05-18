@@ -6,23 +6,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { z } from "zod";
 
 import { useAuth } from "@/contexts/auth-context";
 import { getAuthConfig, login } from "@/http/endpoints";
 import { completeTwoFactorLogin } from "@/http/endpoints/auth/two-factor";
-import type { LoginResponse } from "@/http/endpoints/auth/two-factor/types";
 import type { GetCurrentUser200 } from "@/http/endpoints/auth/types";
 import { queryKeys } from "@/lib/query-keys";
 import { parseApiError } from "@/utils/api-error";
 import type { LoginFormValues } from "../schemas/schema";
-
-const loginSchema = z.object({
-  emailOrUsername: z.string(),
-  password: z.string(),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
 
 export function useLogin() {
   const router = useRouter();
@@ -130,22 +121,30 @@ export function useLogin() {
         emailOrUsername: data.emailOrUsername,
         password: data.password as string,
       });
-      const loginData = response.data as LoginResponse;
+      const loginData = response.data;
 
-      if (loginData.requiresTwoFactor && loginData.challengeToken) {
+      if (
+        "requiresTwoFactor" in loginData &&
+        loginData.requiresTwoFactor &&
+        "challengeToken" in loginData
+      ) {
         setRequiresTwoFactor(true);
         setTwoFactorChallengeToken(loginData.challengeToken);
         return;
       }
 
-      if (loginData.user) {
+      if ("user" in loginData) {
         // The login response has user data — seed the TQ cache with it.
-        // LoginUser lacks `image`, so fill it in. The currentUser query shape
-        // is GetCurrentUser200 = { user: User }.
-        const user = { ...loginData.user, image: null as string | null };
+        // The login route's Zod schema does not include `image`, so the server
+        // strips it during serialization. We set `image: null` here; the
+        // background currentUser refetch below will fetch the full profile.
+        const rawUser = loginData.user;
+        const user: GetCurrentUser200["user"] = {
+          ...rawUser,
+          image: null,
+        };
         setAuthUserData({ user });
-        // Also kick off a background refetch so we get the full user
-        // (including image) from getCurrentUser.
+        // Background refetch for freshest data (including image)
         queryClient.invalidateQueries({ queryKey: queryKeys.auth.currentUser() });
         router.replace("/dashboard");
       }

@@ -36,9 +36,17 @@ export interface GetCurrentUser200 {
   user: User;
 }
 
-export interface Login200 {
+export interface LoginUserResponse {
   user: LoginUser;
 }
+
+export interface LoginTwoFactorResponse {
+  requiresTwoFactor: boolean;
+  challengeToken: string;
+  message: string;
+}
+
+export type Login200 = LoginUserResponse | LoginTwoFactorResponse;
 
 export interface LoginBody {
   emailOrUsername: string;
