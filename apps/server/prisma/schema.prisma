@@ -28,6 +28,9 @@ model User {
   maxFileSizeOverride     BigInt? // Per-user max file size override (bytes). null=inherit, 0=unlimited.
   maxTotalStorageOverride BigInt? // Per-user max total storage override (bytes). null=inherit, 0=unlimited.
 
+  groupId String?
+  group   Group?  @relation(fields: [groupId], references: [id], onDelete: SetNull)
+
   tokenVersion Int @default(0)
 
   files         File[]
@@ -41,6 +44,26 @@ model User {
   refreshTokens  RefreshToken[]
 
   @@map("users")
+}
+
+model Group {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+
+  // Per-member quota inheritance (null = inherit global, 0 = unlimited, >0 = bytes)
+  maxFileSizeOverride     BigInt?
+  maxTotalStorageOverride BigInt?
+
+  // Future LDAP mapping (5.3) — DN of the AD group mapped to this group
+  ldapDn String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members User[]
+
+  @@map("groups")
 }
 
 model File {
