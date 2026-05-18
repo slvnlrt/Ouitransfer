@@ -157,7 +157,39 @@ Pas d'investigation approfondie effectuée. La page settings utilise `PageLayout
 | B-4 Grid dashboard | **Basse** | Visuel, pas fonctionnel | **Corrigé** (7.1) |
 | B-5 Grid settings | **Basse** | Visuel, pas fonctionnel | **Corrigé** (7.1) |
 
-> Tous les bugs ont été résolus dans le cadre de la feature 7.1 (Error Handling & Dashboard Redesign).
+---
+
+## B-7 — Login : "Erreur inattendue" quand mot de passe < 8 caractères
+
+**Symptôme :** Sur la page `/login`, saisir un mot de passe de moins de 8 caractères et soumettre affiche "Erreur inattendue" (ou équivalent i18n). Le serveur retourne un 400 Bad Request (mot de passe trop court — validation Zod côté route).
+
+**Analyse :**
+Le schéma Zod de la route `/auth/login` exige un `password` avec `min(passwordMinLength)` (8 par défaut via AppConfig). Quand le mot de passe est trop court, Fastify retourne une 400 avec un code de validation Zod. Le frontend ne reconnaît pas ce code comme une erreur de validation de formulaire et affiche un message d'erreur générique au lieu d'un message inline sous le champ password.
+
+**Pistes :**
+- Le formulaire de login côté frontend devrait avoir sa propre validation Zod avec `min(8)` (ou récupérer `passwordMinLength` depuis la config publique) pour bloquer la soumission avant l'appel API.
+- Alternativement, le handler d'erreur du formulaire de login devrait mapper les erreurs 400 de validation vers des messages inline sur les champs concernés.
+
+**Fichiers probables :**
+- `apps/web/src/app/login/` (formulaire de login, hook, validation)
+- `apps/server/src/modules/auth/routes.ts` (schéma de validation)
+- `apps/server/src/modules/auth/dto.ts` (createPasswordSchema)
+
+---
+
+## Priorité de correction
+
+| Bug | Sévérité | Impact | Statut |
+|-----|----------|--------|--------|
+| B-3 Upload cassé | **Critique** | Fonctionnalité principale inopérante | **Corrigé** (7.1) |
+| B-2 i18n embedSecret | **Haute** | Erreur visible dans settings (toutes locales non-EN) | **Corrigé** (7.1) |
+| B-1 Health 503 | **Moyenne** | Dashboard dégradé en dev (RustFS non démarré) | **Corrigé** (7.1) |
+| B-6 Logo cassé | **Moyenne** | UX dégradée, image brisée visible | **Corrigé** (7.1) |
+| B-7 Login validation | **Moyenne** | UX dégradée, message d'erreur non informatif | À corriger |
+| B-4 Grid dashboard | **Basse** | Visuel, pas fonctionnel | **Corrigé** (7.1) |
+| B-5 Grid settings | **Basse** | Visuel, pas fonctionnel | **Corrigé** (7.1) |
+
+> Tous les bugs B-1 à B-6 ont été résolus dans le cadre de la feature 7.1 (Error Handling & Dashboard Redesign).
 > B-1/B-4 résolus par le remplacement de SystemHealth+StorageUsage par le composant unifié SystemStatus.
 > B-3 résolu par l'intégration de parseApiError dans use-uppy-upload (détection réseau + stockage) + détection des erreurs XHR réseau Uppy (error.source.status === 0).
 > B-2 résolu par ajout des clés i18n manquantes dans les 23 locales.

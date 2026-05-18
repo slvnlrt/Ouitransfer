@@ -42,3 +42,17 @@
   - Fixed: auth input blur, button foreground token, home navbar, chart consistency, transition scoping, input ring transition, share page headers, icon glow timing, card translate, partner card opacity
 - 6.x UI Overhaul complete (6.1 audit → 6.2 fixes → 6.3 redesign)
 - Next: 5.x features (quotas, cleanup, groups, LDAP)
+
+## 2026-05-18
+- Completed 5.1 Per-User Storage Quotas (spec → plan → implementation → review → fixes)
+  - Schema: `maxFileSizeOverride BigInt?`, `maxTotalStorageOverride BigInt?` on User model
+  - New `modules/quota/` (repository, service, controller, routes, dto) with `resolveEffectiveLimits(userId)`
+  - Refactored 3 copy-pasted enforcement points to use QuotaService
+  - Admin endpoints: GET/PATCH `/users/:id/quota`
+  - Frontend: functional quota widget, warning banners, admin per-user quota management
+  - i18n: 20 new keys translated in all 23 locales
+  - Tests: 250 server (16 unit + 9 integration new) + 215 web
+  - Review: 9 Important + 12 Minor findings → all resolved
+- Fixed pre-existing bug: `just db-dev-init` now seeds after schema push
+- Reported B-7: login shows "unexpected error" for short passwords (400 validation not handled)
+- Next: 5.4 Groups (depends on 5.1) or 5.2 Auto-cleanup (independent)
