@@ -140,11 +140,12 @@ describe("Quota enforcement integration tests", () => {
     return app.signCookie(jwt);
   }
 
-  async function getCsrf(): Promise<{ csrfToken: string; csrfCookie: string | undefined }> {
+  async function getCsrf(): Promise<{ csrfToken: string; csrfCookie: string }> {
     const csrfRes = await app.inject({ method: "GET", url: "/csrf-token" });
     const { token: csrfToken } = csrfRes.json();
     const csrfCookie = csrfRes.cookies.find((c: { name: string }) => c.name === "_csrf");
-    return { csrfToken, csrfCookie: csrfCookie?.value };
+    if (!csrfCookie?.value) throw new Error("Test fixture error: _csrf cookie not found");
+    return { csrfToken, csrfCookie: csrfCookie.value };
   }
 
   async function postFile(
@@ -479,8 +480,8 @@ describe("Quota enforcement integration tests", () => {
       expect(body.warningLevel).toBeDefined();
       expect(body.warningLevel).toBe("warning");
       expect(body.percentage).toBeDefined();
-      // BigInt division: (860 * 100) / 1024 = 83 (integer truncation before Math.round)
-      expect(body.percentage).toBe(83);
+      // 860 MB / 1024 MB * 100 = 83.984% → Math.round → 84
+      expect(body.percentage).toBe(84);
       expect(body.maxFileSize).toBeDefined();
       expect(body.maxFileSize).toBe(100 * 1024 * 1024); // 100 MB
       expect(body.uploadAllowed).toBe(true);
@@ -496,8 +497,8 @@ describe("Quota enforcement integration tests", () => {
       const targetUserId = "user-to-query";
 
       vi.mocked(prisma.user.count).mockResolvedValue(1);
-      // Controller calls findUnique for target user (for overrides)
-      // QuotaService.resolveEffectiveLimits also calls findUnique for same user
+      // QuotaService.resolveEffectiveLimits calls findUnique for the target user
+      // (overrides now come from the service's EffectiveLimits, not a separate controller query)
       vi.mocked(prisma.user.findUnique).mockResolvedValue({
         isAdmin: false,
         maxFileSizeOverride: null,
@@ -604,6 +605,33 @@ describe("Quota enforcement integration tests", () => {
         headers: {
           cookie: `token=${regularToken}`,
         },
+      });
+
+      expect(res.statusCode).toBe(403);
+      const body = res.json();
+      expect(body.error).toBeDefined();
+    });
+
+    it("rejects non-admin PATCH to quota endpoints", async () => {
+      const { prisma } = await import("../shared/prisma.js");
+      const regularUserId = "regular-user";
+
+      vi.mocked(prisma.user.count).mockResolvedValue(1);
+
+      const regularToken = signTestToken(regularUserId, false);
+      const { csrfToken, csrfCookie } = await getCsrf();
+
+      const res = await app.inject({
+        method: "PATCH",
+        url: `/users/${regularUserId}/quota`,
+        headers: {
+          "content-type": "application/json",
+          cookie: `token=${regularToken}; _csrf=${csrfCookie}`,
+          "x-csrf-token": csrfToken,
+        },
+        payload: JSON.stringify({
+          maxFileSizeOverride: "1073741824",
+        }),
       });
 
       expect(res.statusCode).toBe(403);

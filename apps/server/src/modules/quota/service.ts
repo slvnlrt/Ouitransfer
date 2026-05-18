@@ -8,6 +8,10 @@ export type WarningLevel = "none" | "warning" | "critical" | "exceeded";
 export interface EffectiveLimits {
   maxFileSize: bigint;
   maxTotalStorage: bigint;
+  overrides: {
+    maxFileSizeOverride: bigint | null;
+    maxTotalStorageOverride: bigint | null;
+  };
 }
 
 export interface QuotaStatus {
@@ -17,6 +21,10 @@ export interface QuotaStatus {
   percentage: number;
   warningLevel: WarningLevel;
   uploadAllowed: boolean;
+  overrides: {
+    maxFileSizeOverride: bigint | null;
+    maxTotalStorageOverride: bigint | null;
+  };
 }
 
 export class QuotaService {
@@ -52,7 +60,14 @@ export class QuotaService {
       // placeholder: group?.maxFileSize — will be filled in 5.4 Groups
       (user.isAdmin ? 0n : BigInt(await getConfigValue("maxFileSize")));
 
-    return { maxFileSize, maxTotalStorage };
+    return {
+      maxFileSize,
+      maxTotalStorage,
+      overrides: {
+        maxFileSizeOverride: user.maxFileSizeOverride,
+        maxTotalStorageOverride: user.maxTotalStorageOverride,
+      },
+    };
   }
 
   /**
@@ -75,7 +90,7 @@ export class QuotaService {
 
     let percentage = 0;
     if (!isUnlimited && limits.maxTotalStorage > 0n) {
-      percentage = Math.round(Number((used * 100n) / limits.maxTotalStorage));
+      percentage = Math.round((Number(used) / Number(limits.maxTotalStorage)) * 100);
     }
 
     let warningLevel: WarningLevel = "none";
@@ -98,6 +113,7 @@ export class QuotaService {
       percentage,
       warningLevel,
       uploadAllowed,
+      overrides: limits.overrides,
     };
   }
 }

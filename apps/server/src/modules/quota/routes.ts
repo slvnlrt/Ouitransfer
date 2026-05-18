@@ -4,7 +4,7 @@ import { z } from "zod";
 import { ForbiddenError, UnauthorizedError } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { QuotaController } from "./controller.js";
-import { QuotaStatusResponseSchema, UpdateQuotaResponseSchema } from "./dto.js";
+import { QuotaStatusResponseSchema, UpdateQuotaResponseSchema, UpdateQuotaSchema } from "./dto.js";
 
 export async function quotaRoutes(app: FastifyInstance) {
   const quotaController = new QuotaController();
@@ -56,16 +56,7 @@ export async function quotaRoutes(app: FastifyInstance) {
         description:
           "Set per-user quota overrides. null = clear (inherit), 0 = unlimited, >0 = explicit limit in bytes (admin only)",
         params: z.object({ id: z.string().describe("User ID") }),
-        body: z.object({
-          maxFileSizeOverride: z
-            .union([z.number(), z.string(), z.null()])
-            .optional()
-            .describe("Per-user file size override"),
-          maxTotalStorageOverride: z
-            .union([z.number(), z.string(), z.null()])
-            .optional()
-            .describe("Per-user total storage override"),
-        }),
+        body: UpdateQuotaSchema,
         response: {
           200: UpdateQuotaResponseSchema,
           400: ErrorResponseSchema,

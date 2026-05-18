@@ -139,7 +139,7 @@ export class StorageService {
           : this._ensureNumber(Number(status.maxTotalStorage) / (1024 * 1024 * 1024), 10);
         const usedStorageGB = this._ensureNumber(Number(status.used) / (1024 * 1024 * 1024), 0);
         const availableStorageGB = isUnlimited
-          ? Number.MAX_SAFE_INTEGER
+          ? 0
           : this._ensureNumber(maxStorageGB - usedStorageGB, 0);
 
         return {

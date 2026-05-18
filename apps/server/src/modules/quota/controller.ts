@@ -2,7 +2,6 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 
 import { prisma } from "../../shared/prisma.js";
 import { NotFoundError } from "../../utils/app-error.js";
-import { UpdateQuotaSchema } from "./dto.js";
 import { QuotaService } from "./service.js";
 
 export class QuotaController {
@@ -10,19 +9,6 @@ export class QuotaController {
 
   async getUserQuota(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as { id: string };
-
-    const user = await prisma.user.findUnique({
-      where: { id },
-      select: {
-        maxFileSizeOverride: true,
-        maxTotalStorageOverride: true,
-      },
-    });
-
-    if (!user) {
-      throw new NotFoundError("User not found");
-    }
-
     const status = await this.quotaService.getQuotaStatus(id);
 
     return reply.send({
@@ -33,15 +19,18 @@ export class QuotaController {
       warningLevel: status.warningLevel,
       uploadAllowed: status.uploadAllowed,
       overrides: {
-        maxFileSizeOverride: user.maxFileSizeOverride?.toString() ?? null,
-        maxTotalStorageOverride: user.maxTotalStorageOverride?.toString() ?? null,
+        maxFileSizeOverride: status.overrides.maxFileSizeOverride?.toString() ?? null,
+        maxTotalStorageOverride: status.overrides.maxTotalStorageOverride?.toString() ?? null,
       },
     });
   }
 
   async updateUserQuota(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as { id: string };
-    const input = UpdateQuotaSchema.parse(request.body);
+    const input = request.body as {
+      maxFileSizeOverride?: bigint | null;
+      maxTotalStorageOverride?: bigint | null;
+    };
 
     const user = await prisma.user.findUnique({ where: { id } });
     if (!user) {

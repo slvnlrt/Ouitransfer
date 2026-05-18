@@ -5,11 +5,26 @@ import { z } from "zod";
  * Accepts number or string input, converts to bigint internally.
  * Null clears the override (inherit from group/global).
  */
-const quotaOverrideField = z.union([z.number(), z.string(), z.null()]).transform((val) => {
+const quotaOverrideField = z.union([z.number(), z.string(), z.null()]).transform((val, ctx) => {
   if (val === null) return null;
-  const n = BigInt(val);
-  if (n < 0n) throw new Error("Quota value must be non-negative");
-  return n;
+  const str = String(val);
+  if (!/^\d+$/.test(str)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Quota value must be a non-negative integer in bytes",
+    });
+    return z.NEVER;
+  }
+  try {
+    const n = BigInt(str);
+    return n;
+  } catch {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Quota value must be a valid integer",
+    });
+    return z.NEVER;
+  }
 });
 
 export const UpdateQuotaSchema = z.object({
