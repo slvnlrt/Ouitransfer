@@ -353,7 +353,7 @@
     "invalidCredentials": "דוא\"ל או סיסמה לא חוקיים",
     "networkError": "לא ניתן להגיע לשרת. בדוק את החיבור שלך.",
     "userNotFound": "משתמש לא נמצא",
-    "accountLocked": "החשבון נעול. אנא נסה שוב מאוחר יותר",
+    "accountLocked": "Your account has been temporarily locked due to too many failed login attempts. Please try again in {minutes} minutes.",
     "unexpectedError": "אירעה שגיאה בלתי צפויה. אנא נסה שוב",
     "Invalid verification code": "קוד אימות לא חוקי",
     "Two-factor authentication is already enabled": "אימות דו-שלבי כבר מופעל",

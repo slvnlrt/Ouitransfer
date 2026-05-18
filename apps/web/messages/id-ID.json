@@ -353,7 +353,7 @@
     "invalidCredentials": "Email atau kata sandi salah",
     "networkError": "Tidak dapat terhubung ke server. Periksa koneksi Anda.",
     "userNotFound": "Pengguna tidak ditemukan",
-    "accountLocked": "Akun terkunci. Silakan coba lagi nanti",
+    "accountLocked": "Your account has been temporarily locked due to too many failed login attempts. Please try again in {minutes} minutes.",
     "unexpectedError": "Terjadi kesalahan tak terduga. Silakan coba lagi",
     "Invalid verification code": "Kode verifikasi tidak valid",
     "Two-factor authentication is already enabled": "Otentikasi dua faktor sudah diaktifkan",

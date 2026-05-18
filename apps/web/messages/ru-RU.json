@@ -349,7 +349,7 @@
     "invalidCredentials": "Неверный адрес электронной почты или пароль",
     "networkError": "Не удаётся подключиться к серверу. Проверьте подключение.",
     "userNotFound": "Пользователь не найден",
-    "accountLocked": "Аккаунт заблокирован. Пожалуйста, попробуйте позже",
+    "accountLocked": "Your account has been temporarily locked due to too many failed login attempts. Please try again in {minutes} minutes.",
     "unexpectedError": "Произошла непредвиденная ошибка. Пожалуйста, попробуйте еще раз",
     "Invalid password": "Неверный пароль",
     "Invalid two-factor authentication code": "Неверный код двухфакторной аутентификации",

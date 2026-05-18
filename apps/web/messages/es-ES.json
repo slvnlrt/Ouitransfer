@@ -353,7 +353,7 @@
     "invalidCredentials": "Correo electrónico o contraseña inválidos",
     "networkError": "No se puede conectar con el servidor. Compruebe su conexión.",
     "userNotFound": "Usuario no encontrado",
-    "accountLocked": "Cuenta bloqueada. Por favor, inténtalo de nuevo más tarde",
+    "accountLocked": "Your account has been temporarily locked due to too many failed login attempts. Please try again in {minutes} minutes.",
     "unexpectedError": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo",
     "Invalid password": "Contraseña inválida",
     "Invalid two-factor authentication code": "Código de autenticación de dos factores inválido",

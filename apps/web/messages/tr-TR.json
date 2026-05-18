@@ -349,7 +349,7 @@
     "invalidCredentials": "Geçersiz e-posta veya şifre",
     "networkError": "Sunucuya ulaşılamıyor. Bağlantınızı kontrol edin.",
     "userNotFound": "Kullanıcı bulunamadı",
-    "accountLocked": "Hesap kilitlendi. Lütfen daha sonra tekrar deneyin",
+    "accountLocked": "Your account has been temporarily locked due to too many failed login attempts. Please try again in {minutes} minutes.",
     "unexpectedError": "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin",
     "Invalid password": "Geçersiz şifre",
     "Invalid two-factor authentication code": "Geçersiz iki faktörlü kimlik doğrulama kodu",

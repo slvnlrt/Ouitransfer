@@ -349,7 +349,7 @@
     "invalidCredentials": "Email o password non validi",
     "networkError": "Impossibile raggiungere il server. Controlla la tua connessione.",
     "userNotFound": "Utente non trovato",
-    "accountLocked": "Account bloccato. Riprova più tardi",
+    "accountLocked": "Your account has been temporarily locked due to too many failed login attempts. Please try again in {minutes} minutes.",
     "unexpectedError": "Si è verificato un errore imprevisto. Riprova",
     "Invalid password": "Password non valida",
     "Invalid two-factor authentication code": "Codice di autenticazione a due fattori non valido",

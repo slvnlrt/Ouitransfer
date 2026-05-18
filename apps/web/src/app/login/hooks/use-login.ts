@@ -153,6 +153,12 @@ export function useLogin() {
       const apiError = parseApiError(err);
       if (apiError.isNetworkError) {
         setError(t("errors.networkError"));
+      } else if (apiError.code === ErrorCodes.ACCOUNT_LOCKED) {
+        const minutes =
+          typeof apiError.details?.remainingMinutes === "number"
+            ? apiError.details.remainingMinutes
+            : 15;
+        setError(t("errors.accountLocked", { minutes }));
       } else if (
         apiError.code === ErrorCodes.UNAUTHORIZED ||
         apiError.code === ErrorCodes.VALIDATION_ERROR

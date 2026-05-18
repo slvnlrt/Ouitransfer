@@ -353,7 +353,7 @@
     "invalidCredentials": "ایمیل یا گذرواژه نامعتبر است",
     "networkError": "اتصال به سرور ممکن نیست. لطفاً اتصال خود را بررسی کنید.",
     "userNotFound": "کاربر یافت نشد",
-    "accountLocked": "حساب کاربری قفل شده است. لطفاً بعداً دوباره امتحان کنید",
+    "accountLocked": "Your account has been temporarily locked due to too many failed login attempts. Please try again in {minutes} minutes.",
     "unexpectedError": "خطای غیرمنتظره‌ای رخ داد. لطفاً دوباره امتحان کنید",
     "Invalid verification code": "کد تأیید نامعتبر است",
     "Two-factor authentication is already enabled": "احراز هویت دو مرحله‌ای قبلاً فعال شده است",

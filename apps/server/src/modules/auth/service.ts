@@ -1,7 +1,9 @@
 import crypto from "node:crypto";
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import bcrypt from "bcryptjs";
 import { prisma } from "../../shared/prisma.js";
 import {
+  AppError,
   ForbiddenError,
   NotFoundError,
   UnauthorizedError,
@@ -39,8 +41,11 @@ export class AuthService {
     // Uses the email/username from the request (works for non-existent accounts too).
     const lockStatus = await isAccountLocked(data.emailOrUsername, clientIp);
     if (lockStatus.locked) {
-      throw new ForbiddenError(
+      throw new AppError(
+        403,
         `Account temporarily locked. Try again in ${lockStatus.remainingMinutes} minutes.`,
+        ErrorCodes.ACCOUNT_LOCKED,
+        { remainingMinutes: lockStatus.remainingMinutes },
       );
     }
 

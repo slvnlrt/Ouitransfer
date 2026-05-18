@@ -353,7 +353,7 @@
     "invalidCredentials": "Invalid email or password",
     "networkError": "Unable to reach the server. Please check your connection.",
     "userNotFound": "User not found",
-    "accountLocked": "Account locked. Please try again later",
+    "accountLocked": "Your account has been temporarily locked due to too many failed login attempts. Please try again in {minutes} minutes.",
     "unexpectedError": "An unexpected error occurred. Please try again",
     "Invalid verification code": "Invalid verification code",
     "Two-factor authentication is already enabled": "Two-factor authentication is already enabled",

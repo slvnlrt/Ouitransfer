@@ -349,7 +349,7 @@
     "invalidCredentials": "Ongeldig e-mail of wachtwoord",
     "networkError": "Kan de server niet bereiken. Controleer uw verbinding.",
     "userNotFound": "Gebruiker niet gevonden",
-    "accountLocked": "Account vergrendeld. Probeer het later opnieuw",
+    "accountLocked": "Your account has been temporarily locked due to too many failed login attempts. Please try again in {minutes} minutes.",
     "unexpectedError": "Er is een onverwachte fout opgetreden. Probeer het opnieuw",
     "Invalid password": "Ongeldig wachtwoord",
     "Invalid two-factor authentication code": "Ongeldige tweefactorauthenticatiecode",
