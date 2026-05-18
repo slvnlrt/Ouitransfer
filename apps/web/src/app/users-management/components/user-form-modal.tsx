@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Save, UserPlus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { updateUserQuota } from "@/http/endpoints/users";
+import { getUserQuota, updateUserQuota } from "@/http/endpoints/users";
 import { queryKeys } from "@/lib/query-keys";
 import type { UserFormModalProps } from "../types";
 
@@ -34,6 +34,14 @@ function getInitialMode(override: string | null | undefined): QuotaMode {
   if (override === null || override === undefined) return "inherit";
   if (override === "0") return "unlimited";
   return "custom";
+}
+
+function formatBytes(bytes: string): string {
+  const n = Number(bytes);
+  if (n === 0) return "0 B";
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(n) / Math.log(1024));
+  return `${(n / 1024 ** i).toFixed(i === 0 ? 0 : 2)} ${units[i]}`;
 }
 
 export function UserFormModal({
@@ -75,9 +83,17 @@ export function UserFormModal({
     }
   }, [selectedUser, isOpen, modalMode]);
 
-  const quotaMutation = useMutation({
-    mutationFn: async () => {
-      if (!selectedUser) return;
+  const quotaQuery = useQuery({
+    queryKey: queryKeys.users.quota(selectedUser?.id ?? ""),
+    queryFn: () => getUserQuota(selectedUser!.id),
+    enabled: modalMode === "edit" && !!selectedUser,
+  });
+
+  const handleFormSubmit = async (data: Parameters<typeof onSubmit>[0]) => {
+    await onSubmit(data);
+
+    // Also save quota changes when in edit mode
+    if (modalMode === "edit" && selectedUser) {
       const body: Record<string, string | null> = {};
 
       if (fileSizeMode === "inherit") body.maxFileSizeOverride = null;
@@ -88,22 +104,21 @@ export function UserFormModal({
       else if (storageLimitMode === "unlimited") body.maxTotalStorageOverride = "0";
       else body.maxTotalStorageOverride = storageLimitValue;
 
-      await updateUserQuota(selectedUser.id, body);
-    },
-    onSuccess: () => {
-      toast.success(t("users.form.quota.saveSuccess"));
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
-    },
-    onError: () => {
-      toast.error(t("users.form.quota.saveError"));
-    },
-  });
+      try {
+        await updateUserQuota(selectedUser.id, body);
+        queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
+        queryClient.invalidateQueries({ queryKey: queryKeys.users.quota(selectedUser.id) });
+      } catch {
+        toast.error(t("users.form.quota.saveError"));
+      }
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <Form {...formMethods}>
-          <form onSubmit={formMethods.handleSubmit(onSubmit)}>
+          <form onSubmit={formMethods.handleSubmit(handleFormSubmit)}>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 mb-2">
                 <UserPlus className="size-6 me-1" />
@@ -210,6 +225,37 @@ export function UserFormModal({
                     <div className="flex flex-col gap-4">
                       <p className="text-sm font-medium">{t("users.form.quota.title")}</p>
 
+                      {quotaQuery.data && (
+                        <div className="text-sm text-muted-foreground space-y-1 rounded-md border p-3">
+                          <div className="flex justify-between">
+                            <span>{t("users.form.quota.currentUsage")}</span>
+                            <span>{formatBytes(quotaQuery.data.data.used)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>{t("users.form.quota.effectiveMaxFileSize")}</span>
+                            <span>
+                              {quotaQuery.data.data.maxFileSize === "0"
+                                ? t("users.form.quota.unlimited")
+                                : formatBytes(quotaQuery.data.data.maxFileSize)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>{t("users.form.quota.effectiveMaxStorage")}</span>
+                            <span>
+                              {quotaQuery.data.data.maxTotalStorage === "0"
+                                ? t("users.form.quota.unlimited")
+                                : formatBytes(quotaQuery.data.data.maxTotalStorage)}
+                            </span>
+                          </div>
+                          {quotaQuery.data.data.maxTotalStorage !== "0" && (
+                            <div className="flex justify-between">
+                              <span>{t("users.form.quota.usagePercent")}</span>
+                              <span>{quotaQuery.data.data.percentage}%</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
                       {/* Max File Size */}
                       <div className="space-y-2">
                         <Label>{t("users.form.quota.maxFileSize")}</Label>
@@ -257,19 +303,6 @@ export function UserFormModal({
                             onChange={setStorageLimitValue}
                           />
                         )}
-                      </div>
-
-                      <div className="flex justify-end">
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          size="sm"
-                          disabled={quotaMutation.isPending}
-                          onClick={() => quotaMutation.mutate()}
-                        >
-                          <Save className="h-4 w-4" />
-                          {t("users.form.quota.title")}
-                        </Button>
                       </div>
                     </div>
                   </>

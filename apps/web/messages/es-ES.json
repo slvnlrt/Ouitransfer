@@ -1990,7 +1990,11 @@
         "unlimited": "Unlimited",
         "custom": "Custom",
         "saveSuccess": "Quota updated successfully",
-        "saveError": "Failed to update quota"
+        "saveError": "Failed to update quota",
+        "currentUsage": "Current Usage",
+        "effectiveMaxFileSize": "Effective Max File Size",
+        "effectiveMaxStorage": "Effective Max Storage",
+        "usagePercent": "Usage"
       }
     },
     "status": {
