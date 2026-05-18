@@ -63,12 +63,6 @@ export interface Share {
   alias: ShareAlias;
 }
 
-export interface SimpleShare {
-  id: string;
-  name: string;
-  description: string | null;
-}
-
 export interface CreateShare201 {
   share: Share;
 }
@@ -106,7 +100,7 @@ export interface AddRecipients200 {
 }
 
 export interface AddFiles200 {
-  share: SimpleShare;
+  share: Share;
 }
 
 export interface ListUserShares200 {

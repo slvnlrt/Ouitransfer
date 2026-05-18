@@ -1,3 +1,5 @@
+import type { AxiosResponse } from "axios";
+
 export interface TwoFactorSetupRequest {
   appName?: string;
 }
@@ -66,3 +68,10 @@ export interface LoginResponse {
   challengeToken?: string;
   message?: string;
 }
+
+export type TwoFactorSetupResult = AxiosResponse<TwoFactorSetupResponse>;
+export type VerifySetupResult = AxiosResponse<VerifySetupResponse>;
+export type DisableTwoFactorResult = AxiosResponse<DisableTwoFactorResponse>;
+export type GenerateBackupCodesResult = AxiosResponse<GenerateBackupCodesResponse>;
+export type GetTwoFactorStatusResult = AxiosResponse<TwoFactorStatus>;
+export type CompleteTwoFactorLoginResult = AxiosResponse<LoginResponse>;

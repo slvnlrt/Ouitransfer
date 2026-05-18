@@ -1,36 +1,45 @@
 import apiInstance from "@/config/api";
 import type {
   CompleteTwoFactorLoginRequest,
+  CompleteTwoFactorLoginResult,
   DisableTwoFactorRequest,
-  DisableTwoFactorResponse,
-  GenerateBackupCodesResponse,
+  DisableTwoFactorResult,
+  GenerateBackupCodesResult,
+  GetTwoFactorStatusResult,
   TwoFactorSetupRequest,
-  TwoFactorSetupResponse,
-  TwoFactorStatus,
+  TwoFactorSetupResult,
   VerifySetupRequest,
-  VerifySetupResponse,
+  VerifySetupResult,
 } from "./types";
 
-export const generate2FASetup = async (data?: TwoFactorSetupRequest) => {
-  return apiInstance.post<TwoFactorSetupResponse>("/api/auth/2fa/setup", data);
+export const generate2FASetup = async (
+  data?: TwoFactorSetupRequest,
+): Promise<TwoFactorSetupResult> => {
+  return apiInstance.post("/api/auth/2fa/setup", data);
 };
 
-export const verifyTwoFactorSetup = async (data: VerifySetupRequest) => {
-  return apiInstance.post<VerifySetupResponse>("/api/auth/2fa/verify-setup", data);
+export const verifyTwoFactorSetup = async (
+  data: VerifySetupRequest,
+): Promise<VerifySetupResult> => {
+  return apiInstance.post("/api/auth/2fa/verify-setup", data);
 };
 
-export const disableTwoFactor = async (data: DisableTwoFactorRequest) => {
-  return apiInstance.post<DisableTwoFactorResponse>("/api/auth/2fa/disable", data);
+export const disableTwoFactor = async (
+  data: DisableTwoFactorRequest,
+): Promise<DisableTwoFactorResult> => {
+  return apiInstance.post("/api/auth/2fa/disable", data);
 };
 
-export const generateBackupCodes = async () => {
-  return apiInstance.post<GenerateBackupCodesResponse>("/api/auth/2fa/backup-codes");
+export const generateBackupCodes = async (): Promise<GenerateBackupCodesResult> => {
+  return apiInstance.post("/api/auth/2fa/backup-codes");
 };
 
-export const getTwoFactorStatus = async () => {
-  return apiInstance.get<TwoFactorStatus>("/api/auth/2fa/status");
+export const getTwoFactorStatus = async (): Promise<GetTwoFactorStatusResult> => {
+  return apiInstance.get("/api/auth/2fa/status");
 };
 
-export const completeTwoFactorLogin = async (data: CompleteTwoFactorLoginRequest) => {
+export const completeTwoFactorLogin = async (
+  data: CompleteTwoFactorLoginRequest,
+): Promise<CompleteTwoFactorLoginResult> => {
   return apiInstance.post("/api/auth/2fa/login", data);
 };

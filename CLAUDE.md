@@ -126,6 +126,7 @@ Findings are rated Critical / Important / Minor — **all must be fixed, none ar
 Reserve separate agents for tasks requiring distinct architectural decisions or large file sets.
 
 ## Rules for Agents
+0. **IMPORTANT: Empty subagent output is a bug, not a signal.** If a subagent returns an empty or near-empty result, it means the Task tool timed out or hit a transport error while the agent was still working. The agent is likely STILL running and making changes (edits, commits). **Do NOT re-dispatch, re-do work, or touch the working tree.** Wait for the agent to finish on its own — it will complete its work independently. Only after confirming the agent is truly done (wait for the agent's actual output message, or ask the user to provide it) should you proceed.
 1. **Consistency over compatibility** — prefer clean implementations, no need to preserve legacy behavior
 2. **One concern per commit** — atomic changes, clear commit messages
 3. **Check for side effects** — search for all callers/importers before changing a function signature
