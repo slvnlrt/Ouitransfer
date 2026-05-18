@@ -188,10 +188,26 @@ export function useLogin() {
         rememberDevice: rememberDevice,
       });
 
-      // 2FA response has user data — seed TQ cache
+      // After successful 2FA, the server MUST return user data.
+      // If it doesn't, that's a server contract violation — fail loudly.
+      const rawUser = response.data.user;
+      if (!rawUser) {
+        throw new Error("2FA login succeeded but server returned no user data");
+      }
+
+      // Map the server response to the User shape expected by setAuthUserData.
+      // LoginResponse.user has `image?: string | null`; User requires `image: string | null`.
       const user = {
-        ...response.data.user,
-        image: response.data.user.image ?? null,
+        id: rawUser.id,
+        firstName: rawUser.firstName,
+        lastName: rawUser.lastName,
+        username: rawUser.username,
+        email: rawUser.email,
+        isAdmin: rawUser.isAdmin,
+        isActive: rawUser.isActive,
+        createdAt: rawUser.createdAt,
+        updatedAt: rawUser.updatedAt,
+        image: rawUser.image ?? null,
       };
       setAuthUserData({ user });
       // Background refetch for freshest data
