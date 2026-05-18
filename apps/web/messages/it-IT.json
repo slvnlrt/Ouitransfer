@@ -275,7 +275,16 @@
       "quota": {
         "label": "Quota di archiviazione",
         "ariaLabel": "Barra di avanzamento della quota di archiviazione",
-        "notConfigured": "Quote non configurate"
+        "notConfigured": "Quote non configurate",
+        "unlimited": "Illimitato",
+        "used": "{used} di {total} utilizzato",
+        "usedOnly": "{used} utilizzato",
+        "exceeded": {
+          "banner": "La tua quota di archiviazione è stata superata. Non puoi caricare nuovi file finché non liberi spazio eliminando file o condivisioni esistenti."
+        },
+        "warning": {
+          "banner": "Stai utilizzando il {percentage}% della tua quota di archiviazione."
+        }
       },
       "metrics": {
         "users": "Utenti",
@@ -1968,7 +1977,21 @@
       "roleUser": "Utente",
       "roleAdmin": "Amministratore",
       "create": "Crea",
-      "save": "Salva"
+      "save": "Salva",
+      "quota": {
+        "title": "Quote di archiviazione",
+        "maxFileSize": "Dimensione massima del file",
+        "maxTotalStorage": "Archiviazione totale massima",
+        "inherit": "Usa valore predefinito",
+        "unlimited": "Illimitato",
+        "custom": "Personalizzato",
+        "saveSuccess": "Quota aggiornata con successo",
+        "saveError": "Impossibile aggiornare la quota",
+        "currentUsage": "Utilizzo attuale",
+        "effectiveMaxFileSize": "Dimensione massima del file effettiva",
+        "effectiveMaxStorage": "Archiviazione totale massima effettiva",
+        "usagePercent": "Utilizzo"
+      }
     },
     "status": {
       "title": "Conferma Cambio Stato",

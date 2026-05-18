@@ -50,4 +50,6 @@ export const UserResponseSchema = z.object({
   tokenVersion: z.number(),
   createdAt: z.date(),
   updatedAt: z.date(),
+  maxFileSizeOverride: z.bigint().nullable(),
+  maxTotalStorageOverride: z.bigint().nullable(),
 });

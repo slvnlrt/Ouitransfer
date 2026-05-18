@@ -279,7 +279,16 @@
       "quota": {
         "label": "Storage Quota",
         "ariaLabel": "Storage quota progress bar",
-        "notConfigured": "Quotas not configured"
+        "notConfigured": "Quotas not configured",
+        "unlimited": "Unlimited",
+        "used": "{used} of {total} used",
+        "usedOnly": "{used} used",
+        "exceeded": {
+          "banner": "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
+        },
+        "warning": {
+          "banner": "You are using {percentage}% of your storage quota."
+        }
       },
       "metrics": {
         "users": "Users",
@@ -2021,7 +2030,21 @@
       "roleUser": "User",
       "roleAdmin": "Admin",
       "create": "Create",
-      "save": "Save"
+      "save": "Save",
+      "quota": {
+        "title": "Storage Quotas",
+        "maxFileSize": "Max File Size",
+        "maxTotalStorage": "Max Total Storage",
+        "inherit": "Use default",
+        "unlimited": "Unlimited",
+        "custom": "Custom",
+        "saveSuccess": "Quota updated successfully",
+        "saveError": "Failed to update quota",
+        "currentUsage": "Current Usage",
+        "effectiveMaxFileSize": "Effective Max File Size",
+        "effectiveMaxStorage": "Effective Max Storage",
+        "usagePercent": "Usage"
+      }
     },
     "status": {
       "title": "Confirm Status Change",

@@ -274,8 +274,17 @@
       },
       "quota": {
         "label": "Speicherkontingent",
-        "ariaLabel": "Fortschrittsbalken des Speicherkontingents",
-        "notConfigured": "Kontingente nicht konfiguriert"
+        "ariaLabel": "Fortschrittsbalken für das Speicherkontingent",
+        "notConfigured": "Kontingente nicht konfiguriert",
+        "unlimited": "Unbegrenzt",
+        "used": "{used} von {total} genutzt",
+        "usedOnly": "{used} genutzt",
+        "exceeded": {
+          "banner": "Ihr Speicherkontingent ist überschritten. Sie können keine neuen Dateien hochladen, bis Sie Speicherplatz durch das Löschen vorhandener Dateien oder Freigaben freigeben."
+        },
+        "warning": {
+          "banner": "Sie nutzen {percentage}% Ihres Speicherkontingents."
+        }
       },
       "metrics": {
         "users": "Benutzer",
@@ -1968,7 +1977,21 @@
       "roleUser": "Benutzer",
       "roleAdmin": "Administrator",
       "create": "Erstellen",
-      "save": "Speichern"
+      "save": "Speichern",
+      "quota": {
+        "title": "Speicherkontingente",
+        "maxFileSize": "Maximale Dateigröße",
+        "maxTotalStorage": "Maximaler Gesamtspeicher",
+        "inherit": "Standard verwenden",
+        "unlimited": "Unbegrenzt",
+        "custom": "Benutzerdefiniert",
+        "saveSuccess": "Kontingent erfolgreich aktualisiert",
+        "saveError": "Kontingent konnte nicht aktualisiert werden",
+        "currentUsage": "Aktuelle Nutzung",
+        "effectiveMaxFileSize": "Effektive maximale Dateigröße",
+        "effectiveMaxStorage": "Effektiver maximaler Gesamtspeicher",
+        "usagePercent": "Nutzung"
+      }
     },
     "status": {
       "title": "Statusänderung bestätigen",

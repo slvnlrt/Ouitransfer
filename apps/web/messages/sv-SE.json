@@ -279,7 +279,16 @@
       "quota": {
         "label": "Lagringskvot",
         "ariaLabel": "Förloppsindikator för lagringskvot",
-        "notConfigured": "Kvoter ej konfigurerade"
+        "notConfigured": "Kvoter inte konfigurerade",
+        "unlimited": "Obegränsat",
+        "used": "{used} av {total} används",
+        "usedOnly": "{used} används",
+        "exceeded": {
+          "banner": "Din lagringskvot har överskridits. Du kan inte ladda upp nya filer förrän du frigör utrymme genom att ta bort befintliga filer eller delningar."
+        },
+        "warning": {
+          "banner": "Du använder {percentage}% av din lagringskvot."
+        }
       },
       "metrics": {
         "users": "Användare",
@@ -1972,7 +1981,21 @@
       "roleUser": "Användare",
       "roleAdmin": "Administration",
       "create": "Skapa",
-      "save": "Spara"
+      "save": "Spara",
+      "quota": {
+        "title": "Lagringskvoter",
+        "maxFileSize": "Maximal filstorlek",
+        "maxTotalStorage": "Maximalt totalt lagringsutrymme",
+        "inherit": "Använd standard",
+        "unlimited": "Obegränsat",
+        "custom": "Anpassad",
+        "saveSuccess": "Kvoten uppdaterades",
+        "saveError": "Det gick inte att uppdatera kvoten",
+        "currentUsage": "Aktuell användning",
+        "effectiveMaxFileSize": "Effektiv maximal filstorlek",
+        "effectiveMaxStorage": "Effektivt maximalt totalt lagringsutrymme",
+        "usagePercent": "Användning"
+      }
     },
     "status": {
       "title": "Bekräfta statusändring",

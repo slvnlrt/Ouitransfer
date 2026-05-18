@@ -278,8 +278,17 @@
       },
       "quota": {
         "label": "Kuota Penyimpanan",
-        "ariaLabel": "Bilah progres kuota penyimpanan",
-        "notConfigured": "Kuota belum dikonfigurasi"
+        "ariaLabel": "Bilah kemajuan kuota penyimpanan",
+        "notConfigured": "Kuota belum dikonfigurasi",
+        "unlimited": "Tidak terbatas",
+        "used": "{used} dari {total} digunakan",
+        "usedOnly": "{used} digunakan",
+        "exceeded": {
+          "banner": "Kuota penyimpanan Anda telah terlampaui. Anda tidak dapat mengunggah file baru sampai Anda mengosongkan ruang dengan menghapus file atau berbagi yang ada."
+        },
+        "warning": {
+          "banner": "Anda menggunakan {percentage}% dari kuota penyimpanan Anda."
+        }
       },
       "metrics": {
         "users": "Pengguna",
@@ -1972,7 +1981,21 @@
       "roleUser": "Pengguna",
       "roleAdmin": "Admin",
       "create": "Buat",
-      "save": "Simpan"
+      "save": "Simpan",
+      "quota": {
+        "title": "Kuota Penyimpanan",
+        "maxFileSize": "Ukuran File Maksimum",
+        "maxTotalStorage": "Total Penyimpanan Maksimum",
+        "inherit": "Gunakan default",
+        "unlimited": "Tidak terbatas",
+        "custom": "Kustom",
+        "saveSuccess": "Kuota berhasil diperbarui",
+        "saveError": "Gagal memperbarui kuota",
+        "currentUsage": "Penggunaan Saat Ini",
+        "effectiveMaxFileSize": "Ukuran File Maksimum Efektif",
+        "effectiveMaxStorage": "Total Penyimpanan Maksimum Efektif",
+        "usagePercent": "Penggunaan"
+      }
     },
     "status": {
       "title": "Konfirmasi Perubahan Status",

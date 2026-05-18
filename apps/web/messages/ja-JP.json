@@ -273,9 +273,18 @@
         "ariaLabel": "ディスク使用量の進捗バー"
       },
       "quota": {
-        "label": "ストレージ割り当て",
-        "ariaLabel": "ストレージ割り当ての進捗バー",
-        "notConfigured": "割り当て未設定"
+        "label": "ストレージクォータ",
+        "ariaLabel": "ストレージクォータのプログレスバー",
+        "notConfigured": "クォータは設定されていません",
+        "unlimited": "無制限",
+        "used": "{total}中{used}を使用",
+        "usedOnly": "{used}を使用",
+        "exceeded": {
+          "banner": "ストレージクォータを超過しています。既存のファイルまたは共有を削除して空き容量を確保するまで、新しいファイルをアップロードできません。"
+        },
+        "warning": {
+          "banner": "ストレージクォータの{percentage}%を使用しています。"
+        }
       },
       "metrics": {
         "users": "ユーザー",
@@ -1968,7 +1977,21 @@
       "roleUser": "ユーザー",
       "roleAdmin": "管理者",
       "create": "作成",
-      "save": "保存"
+      "save": "保存",
+      "quota": {
+        "title": "ストレージクォータ",
+        "maxFileSize": "最大ファイルサイズ",
+        "maxTotalStorage": "最大合計ストレージ",
+        "inherit": "デフォルトを使用",
+        "unlimited": "無制限",
+        "custom": "カスタム",
+        "saveSuccess": "クォータを更新しました",
+        "saveError": "クォータの更新に失敗しました",
+        "currentUsage": "現在の使用量",
+        "effectiveMaxFileSize": "有効な最大ファイルサイズ",
+        "effectiveMaxStorage": "有効な最大合計ストレージ",
+        "usagePercent": "使用率"
+      }
     },
     "status": {
       "title": "状態変更の確認",

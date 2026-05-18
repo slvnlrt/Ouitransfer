@@ -278,8 +278,17 @@
       },
       "quota": {
         "label": "מכסת אחסון",
-        "ariaLabel": "סרגל התקדמות של מכסת אחסון",
-        "notConfigured": "מכסות לא מוגדרות"
+        "ariaLabel": "סרגל התקדמות מכסת האחסון",
+        "notConfigured": "מכסות לא מוגדרות",
+        "unlimited": "ללא הגבלה",
+        "used": "{used} מתוך {total} בשימוש",
+        "usedOnly": "{used} בשימוש",
+        "exceeded": {
+          "banner": "מכסת האחסון שלך חרגה. אינך יכול להעלות קבצים חדשים עד שתפנה מקום על ידי מחיקת קבצים או שיתופים קיימים."
+        },
+        "warning": {
+          "banner": "אתה משתמש ב-{percentage}% ממכסת האחסון שלך."
+        }
       },
       "metrics": {
         "users": "משתמשים",
@@ -1972,7 +1981,21 @@
       "roleUser": "משתמש",
       "roleAdmin": "מנהל",
       "create": "צור",
-      "save": "שמור"
+      "save": "שמור",
+      "quota": {
+        "title": "מכסות אחסון",
+        "maxFileSize": "גודל קובץ מקסימלי",
+        "maxTotalStorage": "אחסון כולל מקסימלי",
+        "inherit": "השתמש בברירת המחדל",
+        "unlimited": "ללא הגבלה",
+        "custom": "מותאם אישית",
+        "saveSuccess": "המכסה עודכנה בהצלחה",
+        "saveError": "עדכון המכסה נכשל",
+        "currentUsage": "שימוש נוכחי",
+        "effectiveMaxFileSize": "גודל קובץ מקסימלי בפועל",
+        "effectiveMaxStorage": "אחסון כולל מקסימלי בפועל",
+        "usagePercent": "שימוש"
+      }
     },
     "status": {
       "title": "אשר שינוי סטטוס",

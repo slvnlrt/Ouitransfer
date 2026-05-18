@@ -279,7 +279,16 @@
       "quota": {
         "label": "Hạn mức lưu trữ",
         "ariaLabel": "Thanh tiến trình hạn mức lưu trữ",
-        "notConfigured": "Hạn mức chưa được cấu hình"
+        "notConfigured": "Chưa cấu hình hạn mức",
+        "unlimited": "Không giới hạn",
+        "used": "Đã dùng {used} trên {total}",
+        "usedOnly": "Đã dùng {used}",
+        "exceeded": {
+          "banner": "Hạn mức lưu trữ của bạn đã bị vượt quá. Bạn không thể tải lên tệp mới cho đến khi giải phóng dung lượng bằng cách xóa các tệp hoặc chia sẻ hiện có."
+        },
+        "warning": {
+          "banner": "Bạn đang sử dụng {percentage}% hạn mức lưu trữ của mình."
+        }
       },
       "metrics": {
         "users": "Người dùng",
@@ -1972,7 +1981,21 @@
       "roleUser": "Người dùng",
       "roleAdmin": "Quản trị viên",
       "create": "Tạo",
-      "save": "Lưu"
+      "save": "Lưu",
+      "quota": {
+        "title": "Hạn mức lưu trữ",
+        "maxFileSize": "Kích thước tệp tối đa",
+        "maxTotalStorage": "Tổng dung lượng lưu trữ tối đa",
+        "inherit": "Sử dụng mặc định",
+        "unlimited": "Không giới hạn",
+        "custom": "Tùy chỉnh",
+        "saveSuccess": "Cập nhật hạn mức thành công",
+        "saveError": "Không thể cập nhật hạn mức",
+        "currentUsage": "Mức sử dụng hiện tại",
+        "effectiveMaxFileSize": "Kích thước tệp tối đa thực tế",
+        "effectiveMaxStorage": "Tổng dung lượng lưu trữ tối đa thực tế",
+        "usagePercent": "Mức sử dụng"
+      }
     },
     "status": {
       "title": "Xác nhận thay đổi trạng thái",

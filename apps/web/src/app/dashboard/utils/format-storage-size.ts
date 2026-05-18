@@ -1,4 +1,8 @@
 export const formatStorageSize = (sizeInGB: number) => {
+  if (sizeInGB === 0) {
+    return "0 B";
+  }
+
   if (sizeInGB >= 1) {
     return `${sizeInGB.toFixed(2)} GB`;
   }

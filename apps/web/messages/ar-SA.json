@@ -275,7 +275,16 @@
       "quota": {
         "label": "حصة التخزين",
         "ariaLabel": "شريط تقدم حصة التخزين",
-        "notConfigured": "الحصص غير مُهيأة"
+        "notConfigured": "الحصص غير مُهيأة",
+        "unlimited": "غير محدود",
+        "used": "{used} من {total} مستخدم",
+        "usedOnly": "{used} مستخدم",
+        "exceeded": {
+          "banner": "لقد تجاوزت حصة التخزين الخاصة بك. لا يمكنك رفع ملفات جديدة حتى تحرر مساحة بحذف الملفات أو المشاركات الموجودة."
+        },
+        "warning": {
+          "banner": "أنت تستخدم {percentage}% من حصة التخزين الخاصة بك."
+        }
       },
       "metrics": {
         "users": "المستخدمون",
@@ -1968,7 +1977,21 @@
       "roleUser": "مستخدم",
       "roleAdmin": "مسؤول",
       "create": "إنشاء",
-      "save": "حفظ"
+      "save": "حفظ",
+      "quota": {
+        "title": "حصص التخزين",
+        "maxFileSize": "الحجم الأقصى للملف",
+        "maxTotalStorage": "إجمالي التخزين الأقصى",
+        "inherit": "استخدام الإعداد الافتراضي",
+        "unlimited": "غير محدود",
+        "custom": "مخصص",
+        "saveSuccess": "تم تحديث الحصة بنجاح",
+        "saveError": "فشل تحديث الحصة",
+        "currentUsage": "الاستخدام الحالي",
+        "effectiveMaxFileSize": "الحجم الأقصى الفعلي للملف",
+        "effectiveMaxStorage": "إجمالي التخزين الأقصى الفعلي",
+        "usagePercent": "الاستخدام"
+      }
     },
     "status": {
       "title": "تأكيد تغيير الحالة",

@@ -273,9 +273,18 @@
         "ariaLabel": "Pasek postępu wykorzystania przestrzeni dyskowej"
       },
       "quota": {
-        "label": "Limit przestrzeni",
-        "ariaLabel": "Pasek postępu limitu przestrzeni",
-        "notConfigured": "Limity nie skonfigurowane"
+        "label": "Limit pamięci",
+        "ariaLabel": "Pasek postępu limitu pamięci",
+        "notConfigured": "Limity nie są skonfigurowane",
+        "unlimited": "Bez limitu",
+        "used": "{used} z {total} wykorzystano",
+        "usedOnly": "{used} wykorzystano",
+        "exceeded": {
+          "banner": "Twój limit pamięci został przekroczony. Nie możesz przesyłać nowych plików, dopóki nie zwolnisz miejsca, usuwając istniejące pliki lub udostępnienia."
+        },
+        "warning": {
+          "banner": "Używasz {percentage}% swojego limitu pamięci."
+        }
       },
       "metrics": {
         "users": "Użytkownicy",
@@ -1968,7 +1977,21 @@
       "roleUser": "Użytkownik",
       "roleAdmin": "Administrator",
       "create": "Utwórz",
-      "save": "Zapisz"
+      "save": "Zapisz",
+      "quota": {
+        "title": "Limity pamięci",
+        "maxFileSize": "Maksymalny rozmiar pliku",
+        "maxTotalStorage": "Maksymalna łączna pamięć",
+        "inherit": "Użyj domyślnej",
+        "unlimited": "Bez limitu",
+        "custom": "Niestandardowy",
+        "saveSuccess": "Limit zaktualizowany pomyślnie",
+        "saveError": "Nie udało się zaktualizować limitu",
+        "currentUsage": "Bieżące użycie",
+        "effectiveMaxFileSize": "Efektywny maksymalny rozmiar pliku",
+        "effectiveMaxStorage": "Efektywna maksymalna łączna pamięć",
+        "usagePercent": "Użycie"
+      }
     },
     "status": {
       "title": "Potwierdź zmianę statusu",

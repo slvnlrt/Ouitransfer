@@ -18,7 +18,7 @@ import {
   registerUser,
   updateUser,
 } from "@/http/endpoints";
-import type { User } from "@/http/endpoints/auth/types";
+import type { User } from "@/http/endpoints/users/types";
 import { queryKeys } from "@/lib/query-keys";
 
 const createSchemas = (t: (key: string) => string) => ({

@@ -274,8 +274,17 @@
       },
       "quota": {
         "label": "Opslagquotum",
-        "ariaLabel": "Voortgangsbalk van opslagquotum",
-        "notConfigured": "Quota's niet geconfigureerd"
+        "ariaLabel": "Voortgangsbalk opslagquotum",
+        "notConfigured": "Quota's niet geconfigureerd",
+        "unlimited": "Onbeperkt",
+        "used": "{used} van {total} gebruikt",
+        "usedOnly": "{used} gebruikt",
+        "exceeded": {
+          "banner": "Uw opslagquotum is overschreden. U kunt geen nieuwe bestanden uploaden totdat u ruimte vrijmaakt door bestaande bestanden of shares te verwijderen."
+        },
+        "warning": {
+          "banner": "U gebruikt {percentage}% van uw opslagquotum."
+        }
       },
       "metrics": {
         "users": "Gebruikers",
@@ -1968,7 +1977,21 @@
       "roleUser": "Gebruiker",
       "roleAdmin": "Beheerder",
       "create": "Aanmaken",
-      "save": "Opslaan"
+      "save": "Opslaan",
+      "quota": {
+        "title": "Opslagquota",
+        "maxFileSize": "Maximale bestandsgrootte",
+        "maxTotalStorage": "Maximale totale opslag",
+        "inherit": "Standaard gebruiken",
+        "unlimited": "Onbeperkt",
+        "custom": "Aangepast",
+        "saveSuccess": "Quotum succesvol bijgewerkt",
+        "saveError": "Bijwerken van quotum mislukt",
+        "currentUsage": "Huidig gebruik",
+        "effectiveMaxFileSize": "Effectieve maximale bestandsgrootte",
+        "effectiveMaxStorage": "Effectieve maximale totale opslag",
+        "usagePercent": "Gebruik"
+      }
     },
     "status": {
       "title": "Status Wijziging Bevestigen",

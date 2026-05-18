@@ -279,7 +279,16 @@
       "quota": {
         "label": "Cota de armazenamento",
         "ariaLabel": "Barra de progresso da cota de armazenamento",
-        "notConfigured": "Cotas não configuradas"
+        "notConfigured": "Cotas não configuradas",
+        "unlimited": "Ilimitado",
+        "used": "{used} de {total} utilizado",
+        "usedOnly": "{used} utilizado",
+        "exceeded": {
+          "banner": "Sua cota de armazenamento foi excedida. Você não pode fazer upload de novos arquivos até liberar espaço excluindo arquivos ou compartilhamentos existentes."
+        },
+        "warning": {
+          "banner": "Você está usando {percentage}% da sua cota de armazenamento."
+        }
       },
       "metrics": {
         "users": "Usuários",
@@ -1972,7 +1981,21 @@
       "roleUser": "Usuário",
       "roleAdmin": "Administrador",
       "create": "Criar",
-      "save": "Salvar"
+      "save": "Salvar",
+      "quota": {
+        "title": "Cotas de armazenamento",
+        "maxFileSize": "Tamanho máximo de arquivo",
+        "maxTotalStorage": "Armazenamento total máximo",
+        "inherit": "Usar padrão",
+        "unlimited": "Ilimitado",
+        "custom": "Personalizado",
+        "saveSuccess": "Cota atualizada com sucesso",
+        "saveError": "Falha ao atualizar a cota",
+        "currentUsage": "Uso atual",
+        "effectiveMaxFileSize": "Tamanho máximo de arquivo efetivo",
+        "effectiveMaxStorage": "Armazenamento total máximo efetivo",
+        "usagePercent": "Uso"
+      }
     },
     "status": {
       "title": "Confirmar Alteração de Status",

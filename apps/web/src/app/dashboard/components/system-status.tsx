@@ -93,6 +93,57 @@ function StatusBadge({
   );
 }
 
+// ── Quota Display ─────────────────────────────────────────────────────────────
+
+function QuotaDisplay({ diskSpace }: { diskSpace: DiskSpaceInfo }) {
+  const t = useTranslations("dashboard.systemStatus.quota");
+
+  // Unlimited: no progress bar, just show usage
+  if (diskSpace.diskAvailableGB === -1 || diskSpace.diskSizeGB === 0) {
+    return (
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">{t("label")}</span>
+          <span className="text-muted-foreground">{t("unlimited")}</span>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          {t("usedOnly", { used: formatStorageSize(diskSpace.diskUsedGB) })}
+        </p>
+      </div>
+    );
+  }
+
+  const percentage = diskSpace.percentage ?? 0;
+  const warningLevel = diskSpace.warningLevel ?? "none";
+
+  const progressClassName: Record<string, string> = {
+    none: "",
+    warning: "[&>div]:bg-yellow-500",
+    critical: "[&>div]:bg-orange-500",
+    exceeded: "[&>div]:bg-red-500",
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-muted-foreground">{t("label")}</span>
+        <span className="tabular-nums text-muted-foreground">{percentage}%</span>
+      </div>
+      <Progress
+        value={Math.min(percentage, 100)}
+        className={`w-full h-2 ${progressClassName[warningLevel] ?? ""}`}
+        aria-label={t("ariaLabel")}
+      />
+      <p className="text-xs text-muted-foreground">
+        {t("used", {
+          used: formatStorageSize(diskSpace.diskUsedGB),
+          total: formatStorageSize(diskSpace.diskSizeGB),
+        })}
+      </p>
+    </div>
+  );
+}
+
 // ── User View ────────────────────────────────────────────────────────────────
 
 function UserView({
@@ -102,6 +153,8 @@ function UserView({
   isRefreshing,
   fileCount,
   activeShareCount,
+  diskSpace,
+  diskSpaceLoading,
   refresh,
 }: {
   healthStatus: HealthStatus200 | null;
@@ -110,6 +163,8 @@ function UserView({
   isRefreshing: boolean;
   fileCount?: number;
   activeShareCount?: number;
+  diskSpace: DiskSpaceInfo | null;
+  diskSpaceLoading: boolean;
   refresh: () => void;
 }) {
   const t = useTranslations("dashboard.systemStatus");
@@ -189,15 +244,26 @@ function UserView({
 
           <Separator />
 
-          {/* Quota placeholder */}
-          <div className="flex flex-col gap-2 opacity-50">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">{t("quota.label")}</span>
-              <span className="text-muted-foreground">0%</span>
+          {/* Quota warning banner */}
+          {diskSpace?.warningLevel === "exceeded" && (
+            <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3">
+              <p className="text-sm text-destructive font-medium">{t("quota.exceeded.banner")}</p>
             </div>
-            <Progress value={0} className="w-full h-2" aria-label={t("quota.ariaLabel")} />
-            <p className="text-xs text-muted-foreground">{t("quota.notConfigured")}</p>
-          </div>
+          )}
+          {(diskSpace?.warningLevel === "warning" || diskSpace?.warningLevel === "critical") && (
+            <div className="rounded-lg bg-yellow-500/10 border border-yellow-500/20 p-3">
+              <p className="text-sm text-yellow-700 dark:text-yellow-400">
+                {t("quota.warning.banner", { percentage: diskSpace.percentage ?? 0 })}
+              </p>
+            </div>
+          )}
+
+          {/* Quota display */}
+          {diskSpace ? (
+            <QuotaDisplay diskSpace={diskSpace} />
+          ) : diskSpaceLoading ? (
+            <div className="h-12 bg-muted rounded animate-pulse" />
+          ) : null}
 
           <Separator />
 
@@ -452,6 +518,9 @@ function AdminView({
             <div className="h-8 bg-muted rounded animate-pulse" />
           ) : null}
 
+          {/* Admin personal quota (only when admin has a quota override) */}
+          {diskSpace?.warningLevel !== undefined && <QuotaDisplay diskSpace={diskSpace} />}
+
           <Separator />
 
           {/* Platform metrics */}
@@ -531,6 +600,8 @@ export function SystemStatus({
       isRefreshing={status.isRefreshing}
       fileCount={fileCount}
       activeShareCount={activeShareCount}
+      diskSpace={status.diskSpace}
+      diskSpaceLoading={status.diskSpaceLoading}
       refresh={status.refresh}
     />
   );

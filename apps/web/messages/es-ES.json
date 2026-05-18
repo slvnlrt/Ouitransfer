@@ -279,7 +279,16 @@
       "quota": {
         "label": "Cuota de almacenamiento",
         "ariaLabel": "Barra de progreso de la cuota de almacenamiento",
-        "notConfigured": "Cuotas no configuradas"
+        "notConfigured": "Cuotas no configuradas",
+        "unlimited": "Ilimitado",
+        "used": "{used} de {total} utilizado",
+        "usedOnly": "{used} utilizado",
+        "exceeded": {
+          "banner": "Su cuota de almacenamiento ha sido superada. No puede subir nuevos archivos hasta que libere espacio eliminando archivos o compartidos existentes."
+        },
+        "warning": {
+          "banner": "Está utilizando el {percentage}% de su cuota de almacenamiento."
+        }
       },
       "metrics": {
         "users": "Usuarios",
@@ -1972,7 +1981,21 @@
       "roleUser": "Usuario",
       "roleAdmin": "Administrador",
       "create": "Crear",
-      "save": "Guardar"
+      "save": "Guardar",
+      "quota": {
+        "title": "Cuotas de almacenamiento",
+        "maxFileSize": "Tamaño máximo de archivo",
+        "maxTotalStorage": "Almacenamiento total máximo",
+        "inherit": "Usar predeterminado",
+        "unlimited": "Ilimitado",
+        "custom": "Personalizado",
+        "saveSuccess": "Cuota actualizada correctamente",
+        "saveError": "Error al actualizar la cuota",
+        "currentUsage": "Uso actual",
+        "effectiveMaxFileSize": "Tamaño máximo de archivo efectivo",
+        "effectiveMaxStorage": "Almacenamiento total máximo efectivo",
+        "usagePercent": "Uso"
+      }
     },
     "status": {
       "title": "Confirmar cambio de estado",

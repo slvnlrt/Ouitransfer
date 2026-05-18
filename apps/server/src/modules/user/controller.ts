@@ -14,6 +14,18 @@ import { AvatarService } from "./avatar.service.js";
 import { createRegisterUserSchema, UpdateUserSchema } from "./dto.js";
 import { UserService } from "./service.js";
 
+/** Convert Prisma User BigInt fields to JSON-safe strings */
+function serializeUser<
+  T extends { maxFileSizeOverride?: bigint | null; maxTotalStorageOverride?: bigint | null },
+>(user: T) {
+  return {
+    ...user,
+    maxFileSizeOverride: user.maxFileSizeOverride != null ? String(user.maxFileSizeOverride) : null,
+    maxTotalStorageOverride:
+      user.maxTotalStorageOverride != null ? String(user.maxTotalStorageOverride) : null,
+  };
+}
+
 export class UserController {
   private userService = new UserService();
   private avatarService = new AvatarService();
@@ -68,18 +80,20 @@ export class UserController {
       });
     }
 
-    return reply.status(201).send({ user, message: "User created successfully" });
+    return reply
+      .status(201)
+      .send({ user: serializeUser(user), message: "User created successfully" });
   }
 
   async listUsers(_request: FastifyRequest, reply: FastifyReply) {
     const users = await this.userService.listUsers();
-    return reply.send(users);
+    return reply.send(users.map(serializeUser));
   }
 
   async getUserById(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as { id: string };
     const user = await this.userService.getUserById(id);
-    return reply.send(user);
+    return reply.send(serializeUser(user));
   }
 
   async updateUser(request: FastifyRequest, reply: FastifyReply) {
@@ -97,19 +111,19 @@ export class UserController {
       }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
     }
 
-    return reply.send(updatedUser);
+    return reply.send(serializeUser(updatedUser));
   }
 
   async activateUser(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as { id: string };
     const user = await this.userService.activateUser(id);
-    return reply.send(user);
+    return reply.send(serializeUser(user));
   }
 
   async deactivateUser(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as { id: string };
     const user = await this.userService.deactivateUser(id);
-    return reply.send(user);
+    return reply.send(serializeUser(user));
   }
 
   async deleteUser(request: FastifyRequest, reply: FastifyReply) {
@@ -125,14 +139,14 @@ export class UserController {
       metadata: { deletedUserId: id, email: user.email },
     }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
 
-    return reply.send(user);
+    return reply.send(serializeUser(user));
   }
 
   async updateUserImage(request: FastifyRequest, reply: FastifyReply) {
     const input = UpdateUserSchema.parse(request.body);
     const { id, ...updateData } = input;
     const updatedUser = await this.userService.updateUser(id, updateData);
-    return reply.send(updatedUser);
+    return reply.send(serializeUser(updatedUser));
   }
 
   async uploadAvatar(request: FastifyRequest, reply: FastifyReply) {
@@ -167,7 +181,7 @@ export class UserController {
     const base64Image = await this.avatarService.uploadAvatar(buffer);
     const updatedUser = await this.userService.updateUserImage(userId, base64Image);
 
-    return reply.send(updatedUser);
+    return reply.send(serializeUser(updatedUser));
   }
 
   async removeAvatar(request: FastifyRequest, reply: FastifyReply) {
@@ -178,6 +192,6 @@ export class UserController {
 
     await this.avatarService.deleteAvatar(userId);
     const updatedUser = await this.userService.getUserById(userId);
-    return reply.send(updatedUser);
+    return reply.send(serializeUser(updatedUser));
   }
 }

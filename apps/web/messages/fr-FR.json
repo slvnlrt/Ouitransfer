@@ -275,7 +275,16 @@
       "quota": {
         "label": "Quota de stockage",
         "ariaLabel": "Barre de progression du quota de stockage",
-        "notConfigured": "Quotas non configurés"
+        "notConfigured": "Quotas non configurés",
+        "unlimited": "Illimité",
+        "used": "{used} sur {total} utilisé",
+        "usedOnly": "{used} utilisé",
+        "exceeded": {
+          "banner": "Votre quota de stockage est dépassé. Vous ne pouvez pas télécharger de nouveaux fichiers tant que vous n'avez pas libéré de l'espace en supprimant des fichiers ou des partages existants."
+        },
+        "warning": {
+          "banner": "Vous utilisez {percentage}% de votre quota de stockage."
+        }
       },
       "metrics": {
         "users": "Utilisateurs",
@@ -1968,7 +1977,21 @@
       "roleUser": "Utilisateur",
       "roleAdmin": "Administrateur",
       "create": "Créer",
-      "save": "Enregistrer"
+      "save": "Enregistrer",
+      "quota": {
+        "title": "Quotas de stockage",
+        "maxFileSize": "Taille maximale de fichier",
+        "maxTotalStorage": "Stockage total maximum",
+        "inherit": "Utiliser la valeur par défaut",
+        "unlimited": "Illimité",
+        "custom": "Personnalisé",
+        "saveSuccess": "Quota mis à jour avec succès",
+        "saveError": "Échec de la mise à jour du quota",
+        "currentUsage": "Utilisation actuelle",
+        "effectiveMaxFileSize": "Taille maximale de fichier effective",
+        "effectiveMaxStorage": "Stockage total maximum effectif",
+        "usagePercent": "Utilisation"
+      }
     },
     "status": {
       "title": "Confirmer le Changement de Statut",

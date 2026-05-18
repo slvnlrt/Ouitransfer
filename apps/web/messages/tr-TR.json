@@ -275,7 +275,16 @@
       "quota": {
         "label": "Depolama Kotası",
         "ariaLabel": "Depolama kotası ilerleme çubuğu",
-        "notConfigured": "Kotalar yapılandırılmamış"
+        "notConfigured": "Kotalar yapılandırılmamış",
+        "unlimited": "Sınırsız",
+        "used": "{total} alanından {used} kullanıldı",
+        "usedOnly": "{used} kullanıldı",
+        "exceeded": {
+          "banner": "Depolama kotanız aşıldı. Mevcut dosyaları veya paylaşımları silerek yer açana kadar yeni dosya yükleyemezsiniz."
+        },
+        "warning": {
+          "banner": "Depolama kotanızın {percentage}%'ini kullanıyorsunuz."
+        }
       },
       "metrics": {
         "users": "Kullanıcılar",
@@ -1968,7 +1977,21 @@
       "roleUser": "Kullanıcı",
       "roleAdmin": "Yönetici",
       "create": "Oluştur",
-      "save": "Kaydet"
+      "save": "Kaydet",
+      "quota": {
+        "title": "Depolama Kotaları",
+        "maxFileSize": "Maksimum Dosya Boyutu",
+        "maxTotalStorage": "Maksimum Toplam Depolama",
+        "inherit": "Varsayılanı kullan",
+        "unlimited": "Sınırsız",
+        "custom": "Özel",
+        "saveSuccess": "Kota başarıyla güncellendi",
+        "saveError": "Kota güncellenemedi",
+        "currentUsage": "Mevcut Kullanım",
+        "effectiveMaxFileSize": "Geçerli Maksimum Dosya Boyutu",
+        "effectiveMaxStorage": "Geçerli Maksimum Toplam Depolama",
+        "usagePercent": "Kullanım"
+      }
     },
     "status": {
       "title": "Durum Değişikliğini Onayla",
