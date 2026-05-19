@@ -13,8 +13,6 @@ vi.mock("../../../shared/prisma.js", () => ({
 import { prisma } from "../../../shared/prisma.js";
 import { LdapConfigRepository } from "../config.repository.js";
 
-const mockedPrisma = vi.mocked(prisma);
-
 describe("LdapConfigRepository", () => {
   let repository: LdapConfigRepository;
 
@@ -25,10 +23,10 @@ describe("LdapConfigRepository", () => {
 
   describe("get", () => {
     it("should return null when no config exists", async () => {
-      mockedPrisma.ldapConfig.findFirst.mockResolvedValue(null);
+      vi.mocked(prisma.ldapConfig.findFirst).mockResolvedValue(null);
       const result = await repository.get();
       expect(result).toBeNull();
-      expect(mockedPrisma.ldapConfig.findFirst).toHaveBeenCalledOnce();
+      expect(vi.mocked(prisma.ldapConfig.findFirst)).toHaveBeenCalledOnce();
     });
 
     it("should return config when it exists", async () => {
@@ -49,7 +47,7 @@ describe("LdapConfigRepository", () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      mockedPrisma.ldapConfig.findFirst.mockResolvedValue(config);
+      vi.mocked(prisma.ldapConfig.findFirst).mockResolvedValue(config);
 
       const result = await repository.get();
       expect(result).toEqual(config);
@@ -73,8 +71,8 @@ describe("LdapConfigRepository", () => {
     };
 
     it("should create config when none exists", async () => {
-      mockedPrisma.ldapConfig.findFirst.mockResolvedValue(null);
-      mockedPrisma.ldapConfig.create.mockResolvedValue({
+      vi.mocked(prisma.ldapConfig.findFirst).mockResolvedValue(null);
+      vi.mocked(prisma.ldapConfig.create).mockResolvedValue({
         id: "new-1",
         ...configData,
         appUrl: null,
@@ -84,7 +82,7 @@ describe("LdapConfigRepository", () => {
 
       await repository.upsert(configData);
 
-      expect(mockedPrisma.ldapConfig.create).toHaveBeenCalledWith({
+      expect(vi.mocked(prisma.ldapConfig.create)).toHaveBeenCalledWith({
         data: configData,
       });
     });
@@ -97,15 +95,15 @@ describe("LdapConfigRepository", () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      mockedPrisma.ldapConfig.findFirst.mockResolvedValue(existing);
-      mockedPrisma.ldapConfig.update.mockResolvedValue({
+      vi.mocked(prisma.ldapConfig.findFirst).mockResolvedValue(existing);
+      vi.mocked(prisma.ldapConfig.update).mockResolvedValue({
         ...existing,
         ...configData,
       });
 
       await repository.upsert(configData);
 
-      expect(mockedPrisma.ldapConfig.update).toHaveBeenCalledWith({
+      expect(vi.mocked(prisma.ldapConfig.update)).toHaveBeenCalledWith({
         where: { id: "existing-1" },
         data: configData,
       });

@@ -16,8 +16,6 @@ vi.mock("../../../shared/prisma.js", () => ({
 import { prisma } from "../../../shared/prisma.js";
 import { LdapSyncLogRepository } from "../sync.repository.js";
 
-const mockedPrisma = vi.mocked(prisma);
-
 describe("LdapSyncLogRepository", () => {
   let repository: LdapSyncLogRepository;
 
@@ -42,14 +40,14 @@ describe("LdapSyncLogRepository", () => {
         details: null,
         createdAt: new Date(),
       };
-      mockedPrisma.ldapSyncLog.create.mockResolvedValue(log);
+      vi.mocked(prisma.ldapSyncLog.create).mockResolvedValue(log);
 
       const result = await repository.create({
         trigger: "manual",
         status: "running",
       });
       expect(result).toEqual(log);
-      expect(mockedPrisma.ldapSyncLog.create).toHaveBeenCalledWith({
+      expect(vi.mocked(prisma.ldapSyncLog.create)).toHaveBeenCalledWith({
         data: { trigger: "manual", status: "running" },
       });
     });
@@ -66,7 +64,7 @@ describe("LdapSyncLogRepository", () => {
         usersReactivated: 0,
         details: "[]",
       };
-      mockedPrisma.ldapSyncLog.update.mockResolvedValue({
+      vi.mocked(prisma.ldapSyncLog.update).mockResolvedValue({
         id: "log-1",
         ...completionData,
         trigger: "manual",
@@ -77,7 +75,7 @@ describe("LdapSyncLogRepository", () => {
 
       await repository.complete("log-1", completionData);
 
-      expect(mockedPrisma.ldapSyncLog.update).toHaveBeenCalledWith({
+      expect(vi.mocked(prisma.ldapSyncLog.update)).toHaveBeenCalledWith({
         where: { id: "log-1" },
         data: expect.objectContaining({
           ...completionData,
@@ -89,12 +87,12 @@ describe("LdapSyncLogRepository", () => {
 
   describe("list", () => {
     it("should return paginated logs with total count", async () => {
-      mockedPrisma.ldapSyncLog.findMany.mockResolvedValue([]);
-      mockedPrisma.ldapSyncLog.count.mockResolvedValue(0);
+      vi.mocked(prisma.ldapSyncLog.findMany).mockResolvedValue([]);
+      vi.mocked(prisma.ldapSyncLog.count).mockResolvedValue(0);
 
       const result = await repository.list(20, 0);
       expect(result).toEqual({ logs: [], total: 0 });
-      expect(mockedPrisma.ldapSyncLog.findMany).toHaveBeenCalledWith({
+      expect(vi.mocked(prisma.ldapSyncLog.findMany)).toHaveBeenCalledWith({
         orderBy: { startedAt: "desc" },
         take: 20,
         skip: 0,
@@ -104,7 +102,7 @@ describe("LdapSyncLogRepository", () => {
 
   describe("getById", () => {
     it("should return null for non-existent log", async () => {
-      mockedPrisma.ldapSyncLog.findUnique.mockResolvedValue(null);
+      vi.mocked(prisma.ldapSyncLog.findUnique).mockResolvedValue(null);
       const result = await repository.getById("non-existent");
       expect(result).toBeNull();
     });
@@ -126,11 +124,11 @@ describe("LdapSyncLogRepository", () => {
         details: null,
         createdAt: new Date(),
       };
-      mockedPrisma.ldapSyncLog.findFirst.mockResolvedValue(log);
+      vi.mocked(prisma.ldapSyncLog.findFirst).mockResolvedValue(log);
 
       const result = await repository.getLatest();
       expect(result).toEqual(log);
-      expect(mockedPrisma.ldapSyncLog.findFirst).toHaveBeenCalledWith({
+      expect(vi.mocked(prisma.ldapSyncLog.findFirst)).toHaveBeenCalledWith({
         orderBy: { startedAt: "desc" },
       });
     });
