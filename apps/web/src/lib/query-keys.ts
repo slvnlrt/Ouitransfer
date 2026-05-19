@@ -64,6 +64,12 @@ export const queryKeys = {
     quota: (id: string) => [...queryKeys.users.all, "quota", id] as const,
   },
 
+  groups: {
+    all: ["groups"] as const,
+    list: () => [...queryKeys.groups.all, "list"] as const,
+    detail: (id: string) => [...queryKeys.groups.all, "detail", id] as const,
+  },
+
   config: {
     all: ["config"] as const,
     public: () => [...queryKeys.config.all, "public"] as const,

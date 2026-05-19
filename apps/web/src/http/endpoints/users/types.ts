@@ -13,6 +13,8 @@ export interface User {
   updatedAt: string;
   maxFileSizeOverride: string | null;
   maxTotalStorageOverride: string | null;
+  groupId: string | null;
+  groupName: string | null;
 }
 
 export interface UserWithMessageResponse {

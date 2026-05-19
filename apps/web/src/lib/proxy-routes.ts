@@ -388,6 +388,17 @@ export const routes: RouteConfig[] = [
   r("PUT", "shares/update", "/shares"),
 
   // ═══════════════════════════════════════════════════════════════
+  // GROUPS (4-seg before 3-seg before 2-seg)
+  // ═══════════════════════════════════════════════════════════════
+  r("POST", "groups/:id/members/add", "/groups/:id/members"),
+  r("DELETE", "groups/:id/members/remove/:userId", "/groups/:id/members/:userId"),
+  r("GET", "groups/details/:id", "/groups/:id"),
+  r("PUT", "groups/update/:id", "/groups/:id"),
+  r("DELETE", "groups/delete/:id", "/groups/:id"),
+  r("POST", "groups/create", "/groups"),
+  r("GET", "groups/list", "/groups"),
+
+  // ═══════════════════════════════════════════════════════════════
   // USERS (static 2-seg before dynamic users/:id if any)
   // ═══════════════════════════════════════════════════════════════
   r("POST", "users/avatar/upload", "/users/avatar", { body: "raw" }),
