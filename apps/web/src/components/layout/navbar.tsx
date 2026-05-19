@@ -137,7 +137,7 @@ export function Navbar() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/admin/ldap" className="flex w-full items-center gap-2">
+                      <Link href="/admin/ldap" className="flex items-center gap-2 cursor-pointer">
                         <Server className="h-4 w-4" />
                         {t("navbar.ldap")}
                       </Link>

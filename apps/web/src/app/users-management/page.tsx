@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { ProtectedRoute } from "@/components/auth/protected-route";
@@ -12,6 +12,8 @@ import { PageLayout } from "@/components/layout/page-layout";
 import { Button } from "@/components/ui/button";
 import { getLdapStatus, triggerLdapSync } from "@/http/endpoints/ldap";
 import { queryKeys } from "@/lib/query-keys";
+import { parseApiError } from "@/utils/api-error";
+import { formatRelativeTime } from "@/utils/format-relative-time";
 import { GenerateInviteLinkModal } from "./components/generate-invite-link-modal";
 import { UserManagementModals } from "./components/user-management-modals";
 import { UsersHeader } from "./components/users-header";
@@ -39,6 +41,24 @@ export default function AdminAreaPage() {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   const queryClient = useQueryClient();
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const stopPolling = useCallback(() => {
+    if (pollIntervalRef.current) {
+      clearInterval(pollIntervalRef.current);
+      pollIntervalRef.current = null;
+    }
+    if (pollTimeoutRef.current) {
+      clearTimeout(pollTimeoutRef.current);
+      pollTimeoutRef.current = null;
+    }
+  }, []);
+
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => stopPolling();
+  }, [stopPolling]);
 
   const ldapStatusQuery = useQuery({
     queryKey: queryKeys.ldap.status(),
@@ -54,10 +74,26 @@ export default function AdminAreaPage() {
     onSuccess: () => {
       toast.success(t("ldap.sync.triggered"));
       queryClient.invalidateQueries({ queryKey: queryKeys.ldap.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
+
+      // I-4: Poll for sync completion, then refresh user list
+      stopPolling();
+      pollIntervalRef.current = setInterval(async () => {
+        try {
+          const res = await getLdapStatus();
+          if (!res.data.syncInProgress) {
+            stopPolling();
+            queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
+            queryClient.invalidateQueries({ queryKey: queryKeys.ldap.all });
+          }
+        } catch {
+          stopPolling();
+        }
+      }, 3000);
+      pollTimeoutRef.current = setTimeout(() => stopPolling(), 5 * 60 * 1000);
     },
-    onError: () => {
-      toast.error(t("ldap.sync.error"));
+    onError: (error: unknown) => {
+      const apiError = parseApiError(error);
+      toast.error(apiError.message || t("ldap.sync.error"));
     },
   });
 
@@ -79,8 +115,7 @@ export default function AdminAreaPage() {
               <RefreshCw className="h-4 w-4 text-muted-foreground" />
               {ldapStatus.lastSync ? (
                 <span className="text-sm text-muted-foreground">
-                  {t("ldap.sync.lastSync")}:{" "}
-                  {new Date(ldapStatus.lastSync.startedAt).toLocaleString()}
+                  {t("ldap.sync.lastSync")}: {formatRelativeTime(ldapStatus.lastSync.startedAt, t)}
                   {" — "}
                   {ldapStatus.lastSync.usersCreated} {t("ldap.sync.created").toLowerCase()},{" "}
                   {ldapStatus.lastSync.usersUpdated} {t("ldap.sync.updated").toLowerCase()}

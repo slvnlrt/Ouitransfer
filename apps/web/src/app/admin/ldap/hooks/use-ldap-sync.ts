@@ -2,11 +2,12 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { getLdapStatus, getLdapSyncLogs, triggerLdapSync } from "@/http/endpoints/ldap";
 import type { LdapSyncLog } from "@/http/endpoints/ldap/types";
 import { queryKeys } from "@/lib/query-keys";
+import { parseApiError } from "@/utils/api-error";
 
 const PAGE_SIZE = 10;
 
@@ -16,6 +17,16 @@ export function useLdapSync() {
   const [page, setPage] = useState(0);
   const [selectedLog, setSelectedLog] = useState<LdapSyncLog | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup polling on unmount (I-4)
+  useEffect(() => {
+    return () => {
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+      if (pollTimeoutRef.current) clearTimeout(pollTimeoutRef.current);
+    };
+  }, []);
 
   const statusQuery = useQuery({
     queryKey: queryKeys.ldap.status(),
@@ -37,15 +48,44 @@ export function useLdapSync() {
     },
   });
 
+  const stopPolling = useCallback(() => {
+    if (pollIntervalRef.current) {
+      clearInterval(pollIntervalRef.current);
+      pollIntervalRef.current = null;
+    }
+    if (pollTimeoutRef.current) {
+      clearTimeout(pollTimeoutRef.current);
+      pollTimeoutRef.current = null;
+    }
+  }, []);
+
   const syncMutation = useMutation({
     mutationFn: () => triggerLdapSync(),
     onSuccess: () => {
       toast.success(t("ldap.sync.triggered"));
       queryClient.invalidateQueries({ queryKey: queryKeys.ldap.all });
+
+      // I-4: Poll for sync completion, then refresh user list
+      stopPolling();
+      pollIntervalRef.current = setInterval(async () => {
+        try {
+          const res = await getLdapStatus();
+          if (!res.data.syncInProgress) {
+            stopPolling();
+            queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
+            queryClient.invalidateQueries({ queryKey: queryKeys.ldap.all });
+          }
+        } catch {
+          stopPolling();
+        }
+      }, 3000);
+      // Safety timeout: stop polling after 5 minutes
+      pollTimeoutRef.current = setTimeout(() => stopPolling(), 5 * 60 * 1000);
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : t("ldap.sync.error");
-      toast.error(message);
+      // I-1: Extract structured error from API response
+      const apiError = parseApiError(error);
+      toast.error(apiError.message || t("ldap.sync.error"));
     },
   });
 
@@ -54,9 +94,10 @@ export function useLdapSync() {
     setIsDetailOpen(true);
   };
 
+  // M-7: Delay clearing selectedLog to allow exit animation
   const handleCloseDetail = () => {
     setIsDetailOpen(false);
-    setSelectedLog(null);
+    setTimeout(() => setSelectedLog(null), 200);
   };
 
   return {

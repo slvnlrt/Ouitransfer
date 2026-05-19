@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatDuration, formatRelativeTime } from "@/utils/format-relative-time";
 import type { LdapSyncOperationsProps } from "../types";
 
 const STATUS_VARIANTS: Record<string, "default" | "secondary" | "destructive"> = {
@@ -22,25 +23,8 @@ const STATUS_VARIANTS: Record<string, "default" | "secondary" | "destructive"> =
   running: "secondary",
 };
 
-function formatDuration(startedAt: string, completedAt: string | null): string {
-  if (!completedAt) return "—";
-  const ms = new Date(completedAt).getTime() - new Date(startedAt).getTime();
-  if (ms < 1000) return `${ms}ms`;
-  return `${(ms / 1000).toFixed(1)}s`;
-}
-
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleString();
-}
-
-function formatRelativeTime(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  return `${Math.floor(hours / 24)}d ago`;
 }
 
 export function LdapSyncOperations({
@@ -84,7 +68,7 @@ export function LdapSyncOperations({
             {status.lastSync && (
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground">{t("ldap.sync.lastSync")}:</span>
-                <span>{formatRelativeTime(status.lastSync.startedAt)}</span>
+                <span>{formatRelativeTime(status.lastSync.startedAt, t)}</span>
                 <Badge variant={STATUS_VARIANTS[status.lastSync.status] ?? "secondary"}>
                   {status.lastSync.status}
                 </Badge>

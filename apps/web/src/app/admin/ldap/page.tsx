@@ -1,20 +1,18 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { LoadingScreen } from "@/components/layout/loading-screen";
 import { PageLayout } from "@/components/layout/page-layout";
 import { LdapConfigForm } from "./components/ldap-config-form";
 import { LdapGroupMapping } from "./components/ldap-group-mapping";
+import { LdapHeader } from "./components/ldap-header";
 import { LdapSyncDetailModal } from "./components/ldap-sync-detail-modal";
 import { LdapSyncOperations } from "./components/ldap-sync-operations";
 import { useLdapConfig } from "./hooks/use-ldap-config";
 import { useLdapSync } from "./hooks/use-ldap-sync";
 
 export default function LdapPage() {
-  const t = useTranslations();
   const {
-    config,
     isLoading: isLoadingConfig,
     formMethods,
     isSaving,
@@ -49,14 +47,9 @@ export default function LdapPage() {
     <ProtectedRoute requireAdmin>
       <PageLayout>
         <div className="flex flex-col gap-8">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">{t("ldap.pageTitle")}</h1>
-            <p className="mt-1 text-sm text-muted-foreground">{t("ldap.pageDescription")}</p>
-          </div>
+          <LdapHeader />
           <div className="space-y-6">
             <LdapConfigForm
-              config={config}
-              isLoading={isLoadingConfig}
               isSaving={isSaving}
               isTesting={isTesting}
               testResult={testResult}

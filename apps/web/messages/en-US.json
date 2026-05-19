@@ -562,8 +562,11 @@
       "connection": "Connection",
       "serverUrl": "Server URL",
       "useTls": "Use TLS (LDAPS)",
+      "tlsSkipVerify": "Skip TLS Verification",
+      "tlsSkipVerifyWarning": "Warning: Disabling certificate verification allows man-in-the-middle attacks",
       "bindDn": "Bind DN",
       "bindPassword": "Bind Password",
+      "bindPasswordPlaceholder": "Enter password to test or save new password",
       "search": "Search Settings",
       "searchBase": "Search Base",
       "syncGroupDn": "Sync Group DN",
@@ -623,6 +626,12 @@
       "active": "LDAP/AD sync active",
       "disabled": "LDAP/AD sync disabled",
       "configure": "Configure"
+    },
+    "time": {
+      "justNow": "just now",
+      "minutesAgo": "{minutes}m ago",
+      "hoursAgo": "{hours}h ago",
+      "daysAgo": "{days}d ago"
     }
   },
   "forgotPassword": {
@@ -2230,7 +2239,7 @@
       "inactive": "Inactive",
       "admin": "Admin",
       "userr": "User",
-      "source": "Source",
+      "source": "SOURCE",
       "ldap": "LDAP",
       "local": "Local"
     },

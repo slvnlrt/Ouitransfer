@@ -21,12 +21,15 @@ export function SettingsForm({
 }: SettingsFormProps) {
   const t = useTranslations();
 
+  const hasAuthProviders = Object.keys(groupedConfigs).includes("auth-providers");
+
   const ldapStatusQuery = useQuery({
     queryKey: queryKeys.ldap.status(),
     queryFn: async () => {
       const res = await getLdapStatus();
       return res.data;
     },
+    enabled: hasAuthProviders,
   });
   const ldapStatus = ldapStatusQuery.data;
 
