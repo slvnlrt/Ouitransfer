@@ -98,3 +98,35 @@
   - Two-stage review per task (spec compliance + code quality), all findings resolved
   - 10 commits (d20484d..b3bd82d)
 - Next: 5.3 LDAP/AD sync (depends on 5.4) or 5.2 Auto-cleanup (independent)
+
+## 2026-05-19 / 2026-05-20
+- Completed 5.3 LDAP / Active Directory Sync:
+  - **Brainstorming**: Explored auth provider system, decided on Option B (LDAP as import source, not auth bind), auto invite email + self-service password reset, direct group membership only, skip on conflict, deactivate-never-delete
+  - **Spec**: Written to `features/specs/5.3-ldap.md` — schema (LdapConfig, LdapSyncLog, User.ldapDn), 7 admin-only endpoints, sync engine, scheduler, encryption, frontend admin page, i18n
+  - **Plan**: 4-part plan (`features/plans/5.3-ldap-part{1-4}-*.md`) — 12 tasks across foundation, core, API, and frontend
+  - **Implementation** (12 tasks, subagent-driven):
+    - T1: Foundation — ldapts dependency, Prisma schema (LdapConfig/LdapSyncLog/User.ldapDn), ENCRYPTION_SECRET env, 3 error codes
+    - T2: AES-256-GCM encryption utility (TDD, 7 tests)
+    - T3: Config + Sync Log repositories (TDD, 9 tests)
+    - T4: LDAP client wrapper (ldapts, structured filters, case-insensitive attribute lookup)
+    - T5: Sync service (TDD, 11 tests) — create/update/deactivate/reactivate/skip, group mapping, welcome email
+    - T6: Email (sendLdapWelcomeEmail) + setInterval→setTimeout scheduler
+    - T7: DTOs (Zod) + Controller (7 handlers) + Routes (admin-only) + server.ts registration
+    - T8: Integration tests (33 tests, all 7 endpoints, auth guards, edge cases)
+    - T9: Frontend types, endpoints, proxy routes, query keys
+    - T10: Admin LDAP page (/admin/ldap) — config form, group mapping, sync operations, detail modal
+    - T11: Navbar link, admin paths fix, settings banner, users table LDAP badge, sync indicator
+    - T12: i18n keys (~50 keys across 23 locales)
+  - **Review** (2 parallel agents — server + frontend):
+    - Server: 27 findings (7C, 10I, 10M) in `features/reviews/5.3-ldap-server.md`
+    - Frontend: 18 findings (2C, 7I, 9M) in `features/reviews/5.3-ldap-frontend.md`
+  - **Verification**: 31 confirmed, 12 partially confirmed, 2 false
+  - **All findings fixed** (4 fix commits):
+    - `b6d84e0` fix(server): security — TLS strict, LDAP filter escaping, welcome email wiring, LDAP password reset bypass, atomic user+token, encryption secret validation, batch deactivation, etc.
+    - `dfefb49` fix(server): architecture — setTimeout chain, fire-and-forget boot, route schemas, stale log cleanup, test fixes
+    - `b2f3083` fix(web): critical — Zod form validation, masked password fix, tlsSkipVerify support
+    - `bcbe77b` fix(web): important+minor — breadcrumb header, i18n relative time, sync polling, ARIA, navbar style, modal animation, etc.
+  - **Pre-existing bug fixed**: `/groups-management` added to admin paths
+  - Tests: 349 server (36 files) + web type-check clean + lint clean
+  - 19 commits on `feat/5.3-ldap` branch (be7fc51..bcbe77b)
+- Next: 5.2 Auto-cleanup (independent), or merge 5.3 branch
