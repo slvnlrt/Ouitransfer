@@ -17,7 +17,7 @@
         "src/modules/ldap/sync.scheduler.ts"
       ],
       "project": ["src/**/*.ts"],
-      "ignoreDependencies": ["@vitest/coverage-v8", "ldapts"]
+      "ignoreDependencies": ["@vitest/coverage-v8"]
     },
     "apps/web": {
       "entry": [

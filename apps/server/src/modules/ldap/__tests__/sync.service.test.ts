@@ -20,20 +20,23 @@ vi.mock("../../../shared/prisma.js", () => ({
 }));
 
 vi.mock("../config.repository.js", () => ({
-  LdapConfigRepository: vi.fn().mockImplementation(function () {
+  // biome-ignore lint/suspicious/noExplicitAny: vi mock constructor
+  LdapConfigRepository: vi.fn().mockImplementation(function (this: any) {
     this.get = vi.fn();
   }),
 }));
 
 vi.mock("../sync.repository.js", () => ({
-  LdapSyncLogRepository: vi.fn().mockImplementation(function () {
+  // biome-ignore lint/suspicious/noExplicitAny: vi mock constructor
+  LdapSyncLogRepository: vi.fn().mockImplementation(function (this: any) {
     this.create = vi.fn();
     this.complete = vi.fn();
   }),
 }));
 
 vi.mock("../ldap.client.js", () => ({
-  LdapClient: vi.fn().mockImplementation(function () {
+  // biome-ignore lint/suspicious/noExplicitAny: vi mock constructor
+  LdapClient: vi.fn().mockImplementation(function (this: any) {
     this.connect = vi.fn();
     this.searchSyncGroupMembers = vi.fn();
     this.disconnect = vi.fn();
@@ -45,7 +48,8 @@ vi.mock("../encryption.js", () => ({
 }));
 
 vi.mock("../../email/service.js", () => ({
-  EmailService: vi.fn().mockImplementation(function () {
+  // biome-ignore lint/suspicious/noExplicitAny: vi mock constructor
+  EmailService: vi.fn().mockImplementation(function (this: any) {
     this.sendPasswordResetEmail = vi.fn();
   }),
 }));
