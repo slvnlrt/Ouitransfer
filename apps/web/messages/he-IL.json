@@ -1989,7 +1989,13 @@
       "noMembers": "אין חברים בקבוצה זו.",
       "remove": "הסר",
       "moveWarning": "משתמש זה נמצא כעת בקבוצה \"{groupName}\". הוא יועבר לקבוצה זו.",
-      "storageUsed": "אחסון בשימוש"
+      "storageUsed": "אחסון בשימוש",
+      "memberUser": "משתמש",
+      "memberEmail": "אימייל",
+      "memberStorage": "אחסון",
+      "selectUser": "בחר משתמש...",
+      "add": "הוסף",
+      "userInOtherGroup": "משתמש זה נמצא כעת בקבוצה \"{groupName}\". הוא יועבר."
     },
     "validation": {
       "nameRequired": "שם הקבוצה נדרש"

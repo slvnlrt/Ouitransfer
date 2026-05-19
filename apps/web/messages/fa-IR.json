@@ -1989,7 +1989,13 @@
       "noMembers": "هیچ عضوی در این گروه وجود ندارد.",
       "remove": "حذف",
       "moveWarning": "این کاربر در حال حاضر در گروه \"{groupName}\" است. به این گروه منتقل خواهد شد.",
-      "storageUsed": "فضای استفاده‌شده"
+      "storageUsed": "فضای استفاده‌شده",
+      "memberUser": "کاربر",
+      "memberEmail": "ایمیل",
+      "memberStorage": "فضای ذخیره‌سازی",
+      "selectUser": "یک کاربر انتخاب کنید...",
+      "add": "افزودن",
+      "userInOtherGroup": "این کاربر در حال حاضر در گروه \"{groupName}\" است. جابجا خواهد شد."
     },
     "validation": {
       "nameRequired": "نام گروه الزامی است"

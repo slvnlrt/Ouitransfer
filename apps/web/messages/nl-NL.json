@@ -1985,7 +1985,13 @@
       "noMembers": "Geen leden in deze groep.",
       "remove": "Verwijderen",
       "moveWarning": "Deze gebruiker bevindt zich momenteel in groep \"{groupName}\". Ze worden naar deze groep verplaatst.",
-      "storageUsed": "Gebruikte Opslag"
+      "storageUsed": "Gebruikte Opslag",
+      "memberUser": "Gebruiker",
+      "memberEmail": "E-mail",
+      "memberStorage": "Opslag",
+      "selectUser": "Selecteer een gebruiker...",
+      "add": "Toevoegen",
+      "userInOtherGroup": "Deze gebruiker bevindt zich momenteel in groep \"{groupName}\". Ze worden verplaatst."
     },
     "validation": {
       "nameRequired": "Groepsnaam is vereist"

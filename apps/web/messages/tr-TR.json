@@ -1985,7 +1985,13 @@
       "noMembers": "Bu grupta üye yok.",
       "remove": "Kaldır",
       "moveWarning": "Bu kullanıcı şu anda \"{groupName}\" grubunda. Bu gruba taşınacak.",
-      "storageUsed": "Kullanılan Depolama"
+      "storageUsed": "Kullanılan Depolama",
+      "memberUser": "Kullanıcı",
+      "memberEmail": "E-posta",
+      "memberStorage": "Depolama",
+      "selectUser": "Kullanıcı seçin...",
+      "add": "Ekle",
+      "userInOtherGroup": "Bu kullanıcı şu anda \"{groupName}\" grubunda. Taşınacak."
     },
     "validation": {
       "nameRequired": "Grup adı gereklidir"

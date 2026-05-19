@@ -1989,7 +1989,13 @@
       "noMembers": "No hay miembros en este grupo.",
       "remove": "Eliminar",
       "moveWarning": "Este usuario está actualmente en el grupo \"{groupName}\". Será movido a este grupo.",
-      "storageUsed": "Almacenamiento Usado"
+      "storageUsed": "Almacenamiento Usado",
+      "memberUser": "Usuario",
+      "memberEmail": "Correo electrónico",
+      "memberStorage": "Almacenamiento",
+      "selectUser": "Seleccionar un usuario...",
+      "add": "Agregar",
+      "userInOtherGroup": "Este usuario está actualmente en el grupo \"{groupName}\". Será movido."
     },
     "validation": {
       "nameRequired": "El nombre del grupo es obligatorio"

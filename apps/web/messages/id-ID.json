@@ -1989,7 +1989,13 @@
       "noMembers": "Tidak ada anggota di grup ini.",
       "remove": "Hapus",
       "moveWarning": "Pengguna ini saat ini ada di grup \"{groupName}\". Mereka akan dipindahkan ke grup ini.",
-      "storageUsed": "Penyimpanan Terpakai"
+      "storageUsed": "Penyimpanan Terpakai",
+      "memberUser": "Pengguna",
+      "memberEmail": "Email",
+      "memberStorage": "Penyimpanan",
+      "selectUser": "Pilih pengguna...",
+      "add": "Tambah",
+      "userInOtherGroup": "Pengguna ini saat ini berada di grup \"{groupName}\". Mereka akan dipindahkan."
     },
     "validation": {
       "nameRequired": "Nama grup diperlukan"

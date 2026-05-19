@@ -2038,7 +2038,13 @@
       "noMembers": "No members in this group.",
       "remove": "Remove",
       "moveWarning": "This user is currently in group \"{groupName}\". They will be moved to this group.",
-      "storageUsed": "Storage Used"
+      "storageUsed": "Storage Used",
+      "memberUser": "User",
+      "memberEmail": "Email",
+      "memberStorage": "Storage",
+      "selectUser": "Select a user...",
+      "add": "Add",
+      "userInOtherGroup": "This user is currently in group \"{groupName}\". They will be moved."
     },
     "validation": {
       "nameRequired": "Group name is required"

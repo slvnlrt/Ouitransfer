@@ -1985,7 +1985,13 @@
       "noMembers": "Aucun membre dans ce groupe.",
       "remove": "Retirer",
       "moveWarning": "Cet utilisateur est actuellement dans le groupe \"{groupName}\". Il sera déplacé dans ce groupe.",
-      "storageUsed": "Stockage Utilisé"
+      "storageUsed": "Stockage Utilisé",
+      "memberUser": "Utilisateur",
+      "memberEmail": "Email",
+      "memberStorage": "Stockage",
+      "selectUser": "Sélectionner un utilisateur...",
+      "add": "Ajouter",
+      "userInOtherGroup": "Cet utilisateur est actuellement dans le groupe \"{groupName}\". Il sera déplacé."
     },
     "validation": {
       "nameRequired": "Le nom du groupe est requis"

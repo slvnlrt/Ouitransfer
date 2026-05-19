@@ -1985,7 +1985,13 @@
       "noMembers": "لا يوجد أعضاء في هذه المجموعة.",
       "remove": "إزالة",
       "moveWarning": "هذا المستخدم موجود حالياً في مجموعة \"{groupName}\". سيتم نقله إلى هذه المجموعة.",
-      "storageUsed": "التخزين المستخدم"
+      "storageUsed": "التخزين المستخدم",
+      "memberUser": "المستخدم",
+      "memberEmail": "البريد الإلكتروني",
+      "memberStorage": "التخزين",
+      "selectUser": "اختر مستخدمًا...",
+      "add": "إضافة",
+      "userInOtherGroup": "هذا المستخدم موجود حاليًا في مجموعة \"{groupName}\". سيتم نقله."
     },
     "validation": {
       "nameRequired": "اسم المجموعة مطلوب"

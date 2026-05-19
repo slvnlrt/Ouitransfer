@@ -1989,7 +1989,13 @@
       "noMembers": "Không có thành viên trong nhóm này.",
       "remove": "Xóa",
       "moveWarning": "Người dùng này hiện đang trong nhóm \"{groupName}\". Họ sẽ được chuyển sang nhóm này.",
-      "storageUsed": "Lưu trữ đã dùng"
+      "storageUsed": "Lưu trữ đã dùng",
+      "memberUser": "Người dùng",
+      "memberEmail": "Email",
+      "memberStorage": "Lưu trữ",
+      "selectUser": "Chọn người dùng...",
+      "add": "Thêm",
+      "userInOtherGroup": "Người dùng này hiện đang ở nhóm \"{groupName}\". Họ sẽ được chuyển."
     },
     "validation": {
       "nameRequired": "Tên nhóm là bắt buộc"

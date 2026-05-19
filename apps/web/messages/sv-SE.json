@@ -1989,7 +1989,13 @@
       "noMembers": "Inga medlemmar i den här gruppen.",
       "remove": "Ta bort",
       "moveWarning": "Den här användaren är för närvarande i gruppen \"{groupName}\". De kommer att flyttas till den här gruppen.",
-      "storageUsed": "Använt Lagringsutrymme"
+      "storageUsed": "Använt Lagringsutrymme",
+      "memberUser": "Användare",
+      "memberEmail": "E-post",
+      "memberStorage": "Lagring",
+      "selectUser": "Välj en användare...",
+      "add": "Lägg till",
+      "userInOtherGroup": "Den här användaren är för närvarande i gruppen \"{groupName}\". De kommer att flyttas."
     },
     "validation": {
       "nameRequired": "Gruppnamn krävs"

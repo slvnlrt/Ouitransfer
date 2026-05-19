@@ -1985,7 +1985,13 @@
       "noMembers": "このグループにはメンバーがいません。",
       "remove": "削除",
       "moveWarning": "このユーザーは現在グループ \"{groupName}\" に所属しています。このグループに移動されます。",
-      "storageUsed": "使用済みストレージ"
+      "storageUsed": "使用済みストレージ",
+      "memberUser": "ユーザー",
+      "memberEmail": "メール",
+      "memberStorage": "ストレージ",
+      "selectUser": "ユーザーを選択...",
+      "add": "追加",
+      "userInOtherGroup": "このユーザーは現在グループ\"{groupName}\"に所属しています。移動されます。"
     },
     "validation": {
       "nameRequired": "グループ名は必須です"

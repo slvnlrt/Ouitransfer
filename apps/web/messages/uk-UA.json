@@ -1989,7 +1989,13 @@
       "noMembers": "У цій групі немає учасників.",
       "remove": "Видалити",
       "moveWarning": "Цей користувач зараз знаходиться в групі \"{groupName}\". Він буде переміщений до цієї групи.",
-      "storageUsed": "Використано сховища"
+      "storageUsed": "Використано сховища",
+      "memberUser": "Користувач",
+      "memberEmail": "Email",
+      "memberStorage": "Сховище",
+      "selectUser": "Виберіть користувача...",
+      "add": "Додати",
+      "userInOtherGroup": "Цей користувач вже є в групі \"{groupName}\". Його буде переміщено."
     },
     "validation": {
       "nameRequired": "Назва групи обов'язкова"

@@ -475,7 +475,7 @@ export function ReceivedFilesModal({
                 </div>
               </div>
             ) : (
-              <div className="h-[450px] w-full overflow-y-auto rounded-lg border bg-background shadow-sm [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-muted-foreground/20">
+              <div className="h-[450px] w-full overflow-y-auto rounded-lg border bg-background shadow-sm">
                 <div className="p-1">
                   <Table>
                     <TableHeader>

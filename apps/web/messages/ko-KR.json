@@ -1985,7 +1985,13 @@
       "noMembers": "이 그룹에 멤버가 없습니다.",
       "remove": "제거",
       "moveWarning": "이 사용자는 현재 그룹 \"{groupName}\"에 있습니다. 이 그룹으로 이동됩니다.",
-      "storageUsed": "사용된 저장 공간"
+      "storageUsed": "사용된 저장 공간",
+      "memberUser": "사용자",
+      "memberEmail": "이메일",
+      "memberStorage": "저장소",
+      "selectUser": "사용자 선택...",
+      "add": "추가",
+      "userInOtherGroup": "이 사용자는 현재 \"{groupName}\" 그룹에 있습니다. 이동됩니다."
     },
     "validation": {
       "nameRequired": "그룹 이름이 필요합니다"

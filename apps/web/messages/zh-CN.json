@@ -1985,7 +1985,13 @@
       "noMembers": "此群组中没有成员。",
       "remove": "移除",
       "moveWarning": "该用户当前在群组 \"{groupName}\" 中。他们将被移动到此群组。",
-      "storageUsed": "已用存储"
+      "storageUsed": "已用存储",
+      "memberUser": "用户",
+      "memberEmail": "邮箱",
+      "memberStorage": "存储",
+      "selectUser": "选择用户...",
+      "add": "添加",
+      "userInOtherGroup": "该用户当前在组\"{groupName}\"中。他们将被移动。"
     },
     "validation": {
       "nameRequired": "群组名称为必填项"

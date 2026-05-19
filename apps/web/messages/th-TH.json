@@ -1989,7 +1989,13 @@
       "noMembers": "ไม่มีสมาชิกในกลุ่มนี้",
       "remove": "ลบออก",
       "moveWarning": "ผู้ใช้นี้อยู่ในกลุ่ม \"{groupName}\" อยู่แล้ว พวกเขาจะถูกย้ายไปยังกลุ่มนี้",
-      "storageUsed": "พื้นที่ที่ใช้ไป"
+      "storageUsed": "พื้นที่ที่ใช้ไป",
+      "memberUser": "ผู้ใช้",
+      "memberEmail": "อีเมล",
+      "memberStorage": "พื้นที่เก็บข้อมูล",
+      "selectUser": "เลือกผู้ใช้...",
+      "add": "เพิ่ม",
+      "userInOtherGroup": "ผู้ใช้นี้อยู่ในกลุ่ม \"{groupName}\" อยู่แล้ว พวกเขาจะถูกย้าย"
     },
     "validation": {
       "nameRequired": "ต้องระบุชื่อกลุ่ม"
