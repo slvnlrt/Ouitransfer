@@ -1,7 +1,8 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
+import type { z } from "zod";
 import { NotFoundError, ValidationError } from "../../utils/app-error.js";
 import { LdapConfigRepository } from "./config.repository.js";
-import { LdapConfigSchema, LdapTestSchema, SyncLogsQuerySchema } from "./dto.js";
+import type { LdapConfigSchema, LdapTestSchema, SyncLogsQuerySchema } from "./dto.js";
 import { encrypt } from "./encryption.js";
 import { LdapClient } from "./ldap.client.js";
 import { LdapSyncLogRepository } from "./sync.repository.js";
@@ -34,6 +35,7 @@ export class LdapController {
       displayNameAttribute: config.displayNameAttribute,
       syncIntervalMinutes: config.syncIntervalMinutes,
       useTls: config.useTls,
+      tlsSkipVerify: config.tlsSkipVerify,
       appUrl: config.appUrl,
       createdAt: config.createdAt,
       updatedAt: config.updatedAt,
@@ -41,11 +43,25 @@ export class LdapController {
   }
 
   async updateConfig(request: FastifyRequest, reply: FastifyReply) {
-    const data = LdapConfigSchema.parse(request.body);
+    // Body is already validated by Fastify's schema (LdapConfigSchema in routes.ts)
+    const data = request.body as z.infer<typeof LdapConfigSchema>;
+
+    // I6: appUrl is required when enabling LDAP (used for welcome emails)
+    if (data.enabled && !data.appUrl) {
+      throw new ValidationError(
+        "Application URL is required when LDAP is enabled (used for welcome emails)",
+      );
+    }
 
     // Handle bind password
     let bindPassword: string;
     if (data.bindPassword && data.bindPassword !== MASKED_PASSWORD) {
+      // I5: Validate ENCRYPTION_SECRET is set before attempting to encrypt
+      if (!process.env.ENCRYPTION_SECRET) {
+        throw new ValidationError(
+          "ENCRYPTION_SECRET environment variable must be set to save LDAP configuration with a bind password",
+        );
+      }
       bindPassword = encrypt(data.bindPassword);
     } else {
       const existing = await this.configRepository.get();
@@ -67,6 +83,7 @@ export class LdapController {
       displayNameAttribute: data.displayNameAttribute,
       syncIntervalMinutes: data.syncIntervalMinutes,
       useTls: data.useTls,
+      tlsSkipVerify: data.tlsSkipVerify,
       appUrl: data.appUrl ?? null,
     });
 
@@ -91,6 +108,7 @@ export class LdapController {
       displayNameAttribute: config.displayNameAttribute,
       syncIntervalMinutes: config.syncIntervalMinutes,
       useTls: config.useTls,
+      tlsSkipVerify: config.tlsSkipVerify,
       appUrl: config.appUrl,
       createdAt: config.createdAt,
       updatedAt: config.updatedAt,
@@ -98,13 +116,15 @@ export class LdapController {
   }
 
   async testConnection(request: FastifyRequest, reply: FastifyReply) {
-    const data = LdapTestSchema.parse(request.body);
+    // Body is already validated by Fastify's schema (LdapTestSchema in routes.ts)
+    const data = request.body as z.infer<typeof LdapTestSchema>;
     const client = new LdapClient();
     const result = await client.testConnection({
       serverUrl: data.serverUrl,
       bindDn: data.bindDn,
       bindPassword: data.bindPassword,
       useTls: data.useTls,
+      tlsSkipVerify: data.tlsSkipVerify,
       searchBase: data.searchBase,
       syncGroupDn: data.syncGroupDn,
       usernameAttribute: data.usernameAttribute,
@@ -120,7 +140,8 @@ export class LdapController {
   }
 
   async getSyncLogs(request: FastifyRequest, reply: FastifyReply) {
-    const { limit, offset } = SyncLogsQuerySchema.parse(request.query);
+    // Query is already validated by Fastify's schema
+    const { limit, offset } = request.query as z.infer<typeof SyncLogsQuerySchema>;
     const result = await this.syncLogRepository.list(limit, offset);
     return reply.send(result);
   }
@@ -137,6 +158,11 @@ export class LdapController {
   async getStatus(_request: FastifyRequest, reply: FastifyReply) {
     const config = await this.configRepository.get();
     const lastLog = await this.syncLogRepository.getLatest();
+
+    const warnings: string[] = [];
+    if (!process.env.ENCRYPTION_SECRET && config) {
+      warnings.push("ENCRYPTION_SECRET is not set — LDAP password encryption is unavailable");
+    }
 
     return reply.send({
       configured: !!config,
@@ -156,6 +182,7 @@ export class LdapController {
           }
         : null,
       nextSyncAt: getNextSyncAt(),
+      warnings,
     });
   }
 }

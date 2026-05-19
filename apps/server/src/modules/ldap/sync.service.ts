@@ -15,6 +15,7 @@ interface SyncDetail {
   type: "skip" | "error";
   username: string;
   email?: string;
+  phase?: string;
   message: string;
 }
 
@@ -72,6 +73,7 @@ export class LdapSyncService {
         bindDn: config.bindDn,
         bindPassword,
         useTls: config.useTls,
+        tlsSkipVerify: config.tlsSkipVerify,
       });
 
       const adUsers = await this.ldapClient.searchSyncGroupMembers({
@@ -107,6 +109,7 @@ export class LdapSyncService {
       await this.ldapClient.disconnect();
 
       const message = error instanceof Error ? error.message : "Unknown error";
+      const phase = "sync";
       await this.syncLogRepository.complete(log.id, {
         status: "error",
         usersCreated: 0,
@@ -114,7 +117,7 @@ export class LdapSyncService {
         usersDeactivated: 0,
         usersSkipped: 0,
         usersReactivated: 0,
-        details: JSON.stringify([{ type: "error" as const, username: "", message }]),
+        details: JSON.stringify([{ type: "error" as const, username: "", phase, message }]),
       });
 
       throw error;
@@ -159,23 +162,19 @@ export class LdapSyncService {
       await this.processAdUser(adUser, localByDn, groups, appUrl, stats);
     }
 
-    // Deactivate local LDAP users no longer in AD
-    for (const localUser of localLdapUsers) {
-      if (localUser.isActive && localUser.ldapDn && !adUserDns.has(localUser.ldapDn)) {
-        try {
-          await prisma.user.update({
-            where: { id: localUser.id },
-            data: { isActive: false },
-          });
-          stats.deactivated++;
-          getLogger().info(
-            { userId: localUser.id, username: localUser.username },
-            "LDAP: deactivated user",
-          );
-        } catch (err) {
-          const message = err instanceof Error ? err.message : "Unknown error";
-          stats.details.push({ type: "error", username: localUser.username, message });
-        }
+    // Batch deactivation: find local LDAP users no longer in AD
+    const toDeactivateIds = localLdapUsers
+      .filter((u) => u.isActive && u.ldapDn && !adUserDns.has(u.ldapDn))
+      .map((u) => u.id);
+
+    if (toDeactivateIds.length > 0) {
+      await prisma.user.updateMany({
+        where: { id: { in: toDeactivateIds } },
+        data: { isActive: false },
+      });
+      stats.deactivated = toDeactivateIds.length;
+      for (const u of localLdapUsers.filter((u) => toDeactivateIds.includes(u.id))) {
+        getLogger().info({ userId: u.id, username: u.username }, "LDAP: deactivated user");
       }
     }
 
@@ -254,7 +253,6 @@ export class LdapSyncService {
     }
 
     const isReactivation = changes.isActive === true;
-    const hasOtherChanges = Object.keys(changes).filter((k) => k !== "isActive").length > 0;
 
     if (Object.keys(changes).length === 0) {
       // Nothing changed — skip
@@ -270,8 +268,7 @@ export class LdapSyncService {
       if (isReactivation) {
         stats.reactivated++;
         getLogger().info({ userId: local.id }, "LDAP: reactivated user");
-      }
-      if (hasOtherChanges || (!isReactivation && Object.keys(changes).length > 0)) {
+      } else if (Object.keys(changes).length > 0) {
         stats.updated++;
         getLogger().info({ userId: local.id }, "LDAP: updated user");
       }
@@ -288,41 +285,76 @@ export class LdapSyncService {
     stats: SyncStats,
   ): Promise<void> {
     // Check for email/username conflicts with non-LDAP accounts
-    const conflict = await prisma.user.findUnique({
-      where: { email: adUser.email },
+    const conflict = await prisma.user.findFirst({
+      where: { OR: [{ email: adUser.email }, { username: adUser.username }] },
     });
 
     if (conflict && !conflict.ldapDn) {
-      // Non-LDAP account already owns this email — skip
+      // Non-LDAP account already owns this email or username — skip
       stats.skipped++;
+      const conflictField = conflict.email === adUser.email ? "email" : "username";
       stats.details.push({
         type: "skip",
         username: adUser.username,
         email: adUser.email,
-        message: `Email conflict with existing non-LDAP account (${conflict.username})`,
+        message: `${conflictField.charAt(0).toUpperCase() + conflictField.slice(1)} conflict with existing non-LDAP account (${conflict.username})`,
       });
       return;
     }
 
     try {
-      const newUser = await prisma.user.create({
-        data: {
-          username: adUser.username,
-          email: adUser.email,
-          firstName: parsed.firstName,
-          lastName: parsed.lastName,
-          ldapDn: adUser.dn,
-          isActive: true,
-          groupId: parsed.groupId,
-          password: null,
-        },
+      // Atomic: create user + password reset token in a single transaction
+      const { newUser, resetToken } = await prisma.$transaction(async (tx) => {
+        const user = await tx.user.create({
+          data: {
+            username: adUser.username,
+            email: adUser.email,
+            firstName: parsed.firstName,
+            lastName: parsed.lastName,
+            ldapDn: adUser.dn,
+            isActive: true,
+            groupId: parsed.groupId,
+            password: null,
+          },
+        });
+
+        let token: string | null = null;
+        if (appUrl) {
+          const tokenStr = crypto.randomBytes(32).toString("hex");
+          // NOTE: Password reset tokens are stored in plaintext — this is pre-existing
+          // tech debt affecting the entire password reset system, not just LDAP.
+          // Tracked separately from this PR.
+          await tx.passwordReset.create({
+            data: {
+              userId: user.id,
+              token: tokenStr,
+              expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+            },
+          });
+          token = tokenStr;
+        }
+
+        return { newUser: user, resetToken: token };
       });
 
       stats.created++;
       getLogger().info({ userId: newUser.id, username: newUser.username }, "LDAP: created user");
 
-      // Send welcome email (best-effort)
-      await this.sendWelcomeEmail(newUser, appUrl);
+      // Send welcome email outside transaction (non-fatal)
+      if (resetToken && appUrl) {
+        try {
+          const origin = appUrl.replace(/\/$/, "");
+          await this.emailService.sendLdapWelcomeEmail(newUser.email, resetToken, origin);
+        } catch (err) {
+          stats.details.push({
+            type: "skip",
+            username: adUser.username,
+            email: adUser.email,
+            message: "Welcome email failed (user created successfully)",
+          });
+          getLogger().warn({ userId: newUser.id, err }, "LDAP: failed to send welcome email");
+        }
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
       stats.details.push({
@@ -334,41 +366,22 @@ export class LdapSyncService {
     }
   }
 
-  private async sendWelcomeEmail(
-    user: { id: string; email: string },
-    appUrl: string,
-  ): Promise<void> {
-    if (!appUrl) return;
-
-    try {
-      // Create a password reset token that doubles as an account activation link
-      const token = crypto.randomBytes(32).toString("hex");
-      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-
-      await prisma.passwordReset.create({
-        data: {
-          userId: user.id,
-          token,
-          expiresAt,
-        },
-      });
-
-      const origin = appUrl.replace(/\/$/, "");
-      await this.emailService.sendPasswordResetEmail(user.email, token, origin);
-    } catch (err) {
-      // Non-fatal — log and continue
-      getLogger().warn({ userId: user.id, err }, "LDAP: failed to send welcome email (non-fatal)");
-    }
-  }
-
   // ── Utilities ──────────────────────────────────────────────────────────────
 
   /**
    * Split displayName into firstName (first word) and lastName (rest).
+   * Handles "Last, First" format (common in Active Directory).
    * Falls back to username if displayName is empty.
    */
   parseDisplayName(displayName: string, username: string): { firstName: string; lastName: string } {
     const name = (displayName || username).trim();
+
+    // Handle "Last, First" format (common in AD)
+    const commaIdx = name.indexOf(", ");
+    if (commaIdx !== -1) {
+      return { firstName: name.slice(commaIdx + 2), lastName: name.slice(0, commaIdx) };
+    }
+
     const spaceIdx = name.indexOf(" ");
 
     if (spaceIdx === -1) {

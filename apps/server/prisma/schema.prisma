@@ -405,6 +405,7 @@ model LdapConfig {
   displayNameAttribute String   @default("displayName")
   syncIntervalMinutes  Int      @default(360)
   useTls               Boolean  @default(true)
+  tlsSkipVerify        Boolean  @default(false)
   appUrl               String?  // Base URL for invite emails (e.g., https://transfer.company.com)
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt

@@ -176,13 +176,8 @@ export class AuthService {
   }
 
   async resetPassword(token: string, newPassword: string): Promise<{ userId: string }> {
-    const passwordAuthEnabled = await getConfigValue("passwordAuthEnabled");
-    if (passwordAuthEnabled === "false") {
-      throw new ForbiddenError(
-        "Password authentication is disabled. Password reset is not available.",
-      );
-    }
-
+    // Look up the reset request first to check if user is LDAP-managed.
+    // LDAP users need to set their initial app password even when password auth is disabled.
     const resetRequest = await prisma.passwordReset.findFirst({
       where: {
         token,
@@ -198,6 +193,18 @@ export class AuthService {
 
     if (!resetRequest) {
       throw new UnauthorizedError("Invalid or expired reset token");
+    }
+
+    // Allow password reset for LDAP users even when password auth is disabled
+    // (they need to set their initial app password via the welcome email link)
+    const isLdapUser = !!resetRequest.user.ldapDn;
+    if (!isLdapUser) {
+      const passwordAuthEnabled = await getConfigValue("passwordAuthEnabled");
+      if (passwordAuthEnabled === "false") {
+        throw new ForbiddenError(
+          "Password authentication is disabled. Password reset is not available.",
+        );
+      }
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);

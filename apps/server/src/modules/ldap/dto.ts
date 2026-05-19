@@ -12,6 +12,7 @@ export const LdapConfigSchema = z.object({
   displayNameAttribute: z.string().min(1).default("displayName"),
   syncIntervalMinutes: z.number().int().min(15).max(10080), // 15 min to 7 days
   useTls: z.boolean().default(true),
+  tlsSkipVerify: z.boolean().default(false),
   appUrl: z
     .string()
     .url("Must be a valid URL")
@@ -30,6 +31,7 @@ export const LdapTestSchema = z.object({
   emailAttribute: z.string().min(1).default("mail"),
   displayNameAttribute: z.string().min(1).default("displayName"),
   useTls: z.boolean().default(true),
+  tlsSkipVerify: z.boolean().default(false),
 });
 
 export const SyncLogsQuerySchema = z.object({

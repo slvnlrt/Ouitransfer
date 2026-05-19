@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 
 const ALGORITHM = "aes-256-gcm";
-const IV_LENGTH = 16;
+const IV_LENGTH = 12; // 12 bytes is the recommended IV size for AES-256-GCM (NIST SP 800-38D)
 
 function getEncryptionKey(): Buffer {
   const secret = process.env.ENCRYPTION_SECRET;

@@ -1,4 +1,5 @@
-import { Client } from "ldapts";
+import { AndFilter, Client, EqualityFilter } from "ldapts";
+import { AppError } from "../../utils/app-error.js";
 
 export interface LdapUserEntry {
   dn: string;
@@ -13,6 +14,7 @@ export interface LdapConnectionConfig {
   bindDn: string;
   bindPassword: string;
   useTls: boolean;
+  tlsSkipVerify?: boolean;
 }
 
 export interface LdapSearchConfig {
@@ -23,25 +25,48 @@ export interface LdapSearchConfig {
   displayNameAttribute: string;
 }
 
+/**
+ * Get the value of an LDAP attribute from an entry, using case-insensitive lookup.
+ * LDAP attributes are case-insensitive per RFC 4512.
+ */
+function getEntryAttribute(entry: Record<string, unknown>, attribute: string): string {
+  const lowerAttr = attribute.toLowerCase();
+  for (const key of Object.keys(entry)) {
+    if (key.toLowerCase() === lowerAttr) {
+      return String(entry[key] || "");
+    }
+  }
+  return "";
+}
+
 export class LdapClient {
   private client: Client | null = null;
 
   async connect(config: LdapConnectionConfig): Promise<void> {
     this.client = new Client({
       url: config.serverUrl,
-      tlsOptions: config.useTls ? { rejectUnauthorized: false } : undefined,
+      tlsOptions: config.useTls ? { rejectUnauthorized: !config.tlsSkipVerify } : undefined,
     });
     await this.client.bind(config.bindDn, config.bindPassword);
   }
 
   async searchSyncGroupMembers(config: LdapSearchConfig): Promise<LdapUserEntry[]> {
     if (!this.client) {
-      throw new Error("LDAP client not connected");
+      throw new AppError(500, "LDAP client not connected", "LDAP_CLIENT_NOT_CONNECTED");
     }
+
+    // Use structured filter classes to prevent LDAP injection (RFC 4515 escaping)
+    const filter = new AndFilter({
+      filters: [
+        new EqualityFilter({ attribute: "objectClass", value: "user" }),
+        new EqualityFilter({ attribute: "objectCategory", value: "person" }),
+        new EqualityFilter({ attribute: "memberOf", value: config.syncGroupDn }),
+      ],
+    });
 
     const { searchEntries } = await this.client.search(config.searchBase, {
       scope: "sub",
-      filter: `(&(objectClass=user)(objectCategory=person)(memberOf=${config.syncGroupDn}))`,
+      filter,
       attributes: [
         config.usernameAttribute,
         config.emailAttribute,
@@ -52,6 +77,7 @@ export class LdapClient {
     });
 
     return searchEntries.map((entry) => {
+      const entryRecord = entry as unknown as Record<string, unknown>;
       const memberOf = entry.memberOf;
       const memberOfArray = Array.isArray(memberOf)
         ? memberOf.map(String)
@@ -61,9 +87,9 @@ export class LdapClient {
 
       return {
         dn: String(entry.distinguishedName || entry.dn),
-        username: String(entry[config.usernameAttribute] || ""),
-        email: String(entry[config.emailAttribute] || ""),
-        displayName: String(entry[config.displayNameAttribute] || ""),
+        username: getEntryAttribute(entryRecord, config.usernameAttribute),
+        email: getEntryAttribute(entryRecord, config.emailAttribute),
+        displayName: getEntryAttribute(entryRecord, config.displayNameAttribute),
         memberOf: memberOfArray,
       };
     });
