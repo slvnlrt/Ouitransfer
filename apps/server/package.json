@@ -63,6 +63,7 @@
     "fastify-type-provider-zod": "^4.0.2",
     "file-type": "^22.0.1",
     "jose": "catalog:",
+    "ldapts": "^8.1.7",
     "nodemailer": "^8.0.7",
     "otpauth": "^9.5.0",
     "qrcode": "catalog:",
