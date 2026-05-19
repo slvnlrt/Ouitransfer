@@ -26,16 +26,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { listUsers } from "@/http/endpoints";
+import { formatBytes } from "@/lib/format-bytes";
 import { queryKeys } from "@/lib/query-keys";
 import type { GroupDetailModalProps } from "../types";
-
-function formatBytes(bytes: string): string {
-  const n = Number(bytes);
-  if (n === 0) return "0 B";
-  const units = ["B", "KB", "MB", "GB", "TB"];
-  const i = Math.floor(Math.log(n) / Math.log(1024));
-  return `${(n / 1024 ** i).toFixed(i === 0 ? 0 : 2)} ${units[i]}`;
-}
 
 export function GroupDetailModal({
   isOpen,
@@ -135,7 +128,9 @@ export function GroupDetailModal({
                               <Avatar className="h-8 w-8">
                                 <AvatarImage src={member.image || ""} alt={member.username} />
                                 <AvatarFallback className="bg-primary/10 text-primary font-bold text-sm">
-                                  {member.firstName[0]}
+                                  {member.firstName?.charAt(0) ??
+                                    member.username[0]?.toUpperCase() ??
+                                    "?"}
                                 </AvatarFallback>
                               </Avatar>
                               <span className="font-medium text-sm">{member.username}</span>

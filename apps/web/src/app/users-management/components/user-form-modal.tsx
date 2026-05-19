@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { getUserQuota, updateUserQuota } from "@/http/endpoints/users";
+import { formatBytes } from "@/lib/format-bytes";
 import { queryKeys } from "@/lib/query-keys";
 import type { UserFormModalProps } from "../types";
 
@@ -34,14 +35,6 @@ function getInitialMode(override: string | null | undefined): QuotaMode {
   if (override === null || override === undefined) return "inherit";
   if (override === "0") return "unlimited";
   return "custom";
-}
-
-function formatBytes(bytes: string): string {
-  const n = Number(bytes);
-  if (n === 0) return "0 B";
-  const units = ["B", "KB", "MB", "GB", "TB"];
-  const i = Math.floor(Math.log(n) / Math.log(1024));
-  return `${(n / 1024 ** i).toFixed(i === 0 ? 0 : 2)} ${units[i]}`;
 }
 
 export function UserFormModal({

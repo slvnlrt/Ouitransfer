@@ -201,7 +201,7 @@ export function GroupFormModal({
                 {t("common.cancel")}
               </Button>
               <Button disabled={isSubmitting} type="submit">
-                {modalMode === "create" ? "" : <Save className="h-4 w-4" />}
+                {modalMode === "create" ? null : <Save className="h-4 w-4" />}
                 {modalMode === "create" ? t("groups.form.create") : t("groups.form.save")}
               </Button>
             </DialogFooter>
