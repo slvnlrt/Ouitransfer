@@ -1960,11 +1960,14 @@
       "namePlaceholder": "Voer groepsnaam in",
       "description": "Beschrijving",
       "descriptionPlaceholder": "Optionele beschrijving",
-      "maxFileSize": "Max. Bestandsgrootte",
-      "maxTotalStorage": "Max. Totale Opslag",
-      "inherit": "Erven (globale standaard)",
-      "unlimited": "Onbeperkt",
-      "custom": "Aangepast",
+      "quota": {
+        "title": "Opslagquota",
+        "maxFileSize": "Max. Bestandsgrootte",
+        "maxTotalStorage": "Max. Totale Opslag",
+        "inherit": "Erven (globale standaard)",
+        "unlimited": "Onbeperkt",
+        "custom": "Aangepast"
+      },
       "create": "Groep Aanmaken",
       "save": "Wijzigingen Opslaan"
     },

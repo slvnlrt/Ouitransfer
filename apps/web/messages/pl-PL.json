@@ -1960,11 +1960,14 @@
       "namePlaceholder": "Wprowadź nazwę grupy",
       "description": "Opis",
       "descriptionPlaceholder": "Opcjonalny opis",
-      "maxFileSize": "Maks. Rozmiar Pliku",
-      "maxTotalStorage": "Maks. Całkowita Przestrzeń",
-      "inherit": "Dziedzicz (domyślne globalne)",
-      "unlimited": "Nieograniczone",
-      "custom": "Niestandardowe",
+      "quota": {
+        "title": "Limity przestrzeni",
+        "maxFileSize": "Maks. Rozmiar Pliku",
+        "maxTotalStorage": "Maks. Całkowita Przestrzeń",
+        "inherit": "Dziedzicz (domyślne globalne)",
+        "unlimited": "Nieograniczone",
+        "custom": "Niestandardowe"
+      },
       "create": "Utwórz Grupę",
       "save": "Zapisz Zmiany"
     },

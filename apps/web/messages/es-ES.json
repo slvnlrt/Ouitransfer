@@ -1964,11 +1964,14 @@
       "namePlaceholder": "Introduce el nombre del grupo",
       "description": "Descripción",
       "descriptionPlaceholder": "Descripción opcional",
-      "maxFileSize": "Tamaño Máx. de Archivo",
-      "maxTotalStorage": "Almacenamiento Total Máx.",
-      "inherit": "Heredar (predeterminado global)",
-      "unlimited": "Ilimitado",
-      "custom": "Personalizado",
+      "quota": {
+        "title": "Cuotas de almacenamiento",
+        "maxFileSize": "Tamaño Máx. de Archivo",
+        "maxTotalStorage": "Almacenamiento Total Máx.",
+        "inherit": "Heredar (predeterminado global)",
+        "unlimited": "Ilimitado",
+        "custom": "Personalizado"
+      },
       "create": "Crear Grupo",
       "save": "Guardar Cambios"
     },

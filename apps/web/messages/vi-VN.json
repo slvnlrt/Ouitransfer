@@ -1964,11 +1964,14 @@
       "namePlaceholder": "Nhập tên nhóm",
       "description": "Mô tả",
       "descriptionPlaceholder": "Mô tả tùy chọn",
-      "maxFileSize": "Kích thước tệp tối đa",
-      "maxTotalStorage": "Tổng lưu trữ tối đa",
-      "inherit": "Kế thừa (mặc định toàn cục)",
-      "unlimited": "Không giới hạn",
-      "custom": "Tùy chỉnh",
+      "quota": {
+        "title": "Hạn mức lưu trữ",
+        "maxFileSize": "Kích thước tệp tối đa",
+        "maxTotalStorage": "Tổng lưu trữ tối đa",
+        "inherit": "Kế thừa (mặc định toàn cục)",
+        "unlimited": "Không giới hạn",
+        "custom": "Tùy chỉnh"
+      },
       "create": "Tạo Nhóm",
       "save": "Lưu thay đổi"
     },

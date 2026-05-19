@@ -1960,11 +1960,14 @@
       "namePlaceholder": "Gruppenname eingeben",
       "description": "Beschreibung",
       "descriptionPlaceholder": "Optionale Beschreibung",
-      "maxFileSize": "Max. Dateigröße",
-      "maxTotalStorage": "Max. Gesamtspeicher",
-      "inherit": "Erben (globaler Standard)",
-      "unlimited": "Unbegrenzt",
-      "custom": "Benutzerdefiniert",
+      "quota": {
+        "title": "Speicherkontingente",
+        "maxFileSize": "Max. Dateigröße",
+        "maxTotalStorage": "Max. Gesamtspeicher",
+        "inherit": "Erben (globaler Standard)",
+        "unlimited": "Unbegrenzt",
+        "custom": "Benutzerdefiniert"
+      },
       "create": "Gruppe erstellen",
       "save": "Änderungen speichern"
     },

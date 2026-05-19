@@ -1960,11 +1960,14 @@
       "namePlaceholder": "グループ名を入力",
       "description": "説明",
       "descriptionPlaceholder": "任意の説明",
-      "maxFileSize": "最大ファイルサイズ",
-      "maxTotalStorage": "最大合計ストレージ",
-      "inherit": "継承（グローバルデフォルト）",
-      "unlimited": "無制限",
-      "custom": "カスタム",
+      "quota": {
+        "title": "ストレージクォータ",
+        "maxFileSize": "最大ファイルサイズ",
+        "maxTotalStorage": "最大合計ストレージ",
+        "inherit": "継承（グローバルデフォルト）",
+        "unlimited": "無制限",
+        "custom": "カスタム"
+      },
       "create": "グループを作成",
       "save": "変更を保存"
     },

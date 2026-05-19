@@ -1964,11 +1964,14 @@
       "namePlaceholder": "הזן שם קבוצה",
       "description": "תיאור",
       "descriptionPlaceholder": "תיאור אופציונלי",
-      "maxFileSize": "גודל קובץ מקסימלי",
-      "maxTotalStorage": "אחסון כולל מקסימלי",
-      "inherit": "ירושה (ברירת מחדל גלובלית)",
-      "unlimited": "ללא הגבלה",
-      "custom": "מותאם אישית",
+      "quota": {
+        "title": "מכסות אחסון",
+        "maxFileSize": "גודל קובץ מקסימלי",
+        "maxTotalStorage": "אחסון כולל מקסימלי",
+        "inherit": "ירושה (ברירת מחדל גלובלית)",
+        "unlimited": "ללא הגבלה",
+        "custom": "מותאם אישית"
+      },
       "create": "יצירת קבוצה",
       "save": "שמור שינויים"
     },

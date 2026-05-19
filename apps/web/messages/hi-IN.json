@@ -1960,11 +1960,14 @@
       "namePlaceholder": "समूह का नाम दर्ज करें",
       "description": "विवरण",
       "descriptionPlaceholder": "वैकल्पिक विवरण",
-      "maxFileSize": "अधिकतम फ़ाइल आकार",
-      "maxTotalStorage": "अधिकतम कुल संग्रहण",
-      "inherit": "विरासत में लें (वैश्विक डिफ़ॉल्ट)",
-      "unlimited": "असीमित",
-      "custom": "कस्टम",
+      "quota": {
+        "title": "संग्रहण कोटा",
+        "maxFileSize": "अधिकतम फ़ाइल आकार",
+        "maxTotalStorage": "अधिकतम कुल संग्रहण",
+        "inherit": "विरासत में लें (वैश्विक डिफ़ॉल्ट)",
+        "unlimited": "असीमित",
+        "custom": "कस्टम"
+      },
       "create": "समूह बनाएं",
       "save": "परिवर्तन सहेजें"
     },

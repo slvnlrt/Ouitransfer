@@ -1964,11 +1964,14 @@
       "namePlaceholder": "نام گروه را وارد کنید",
       "description": "توضیحات",
       "descriptionPlaceholder": "توضیحات اختیاری",
-      "maxFileSize": "حداکثر حجم فایل",
-      "maxTotalStorage": "حداکثر فضای کل",
-      "inherit": "به ارث بردن (پیش‌فرض جهانی)",
-      "unlimited": "نامحدود",
-      "custom": "سفارشی",
+      "quota": {
+        "title": "سهمیه‌های ذخیره‌سازی",
+        "maxFileSize": "حداکثر حجم فایل",
+        "maxTotalStorage": "حداکثر فضای کل",
+        "inherit": "به ارث بردن (پیش‌فرض جهانی)",
+        "unlimited": "نامحدود",
+        "custom": "سفارشی"
+      },
       "create": "ایجاد گروه",
       "save": "ذخیره تغییرات"
     },

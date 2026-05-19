@@ -1960,11 +1960,14 @@
       "namePlaceholder": "Grup adını girin",
       "description": "Açıklama",
       "descriptionPlaceholder": "İsteğe bağlı açıklama",
-      "maxFileSize": "Maks. Dosya Boyutu",
-      "maxTotalStorage": "Maks. Toplam Depolama",
-      "inherit": "Miras Al (global varsayılan)",
-      "unlimited": "Sınırsız",
-      "custom": "Özel",
+      "quota": {
+        "title": "Depolama kotaları",
+        "maxFileSize": "Maks. Dosya Boyutu",
+        "maxTotalStorage": "Maks. Toplam Depolama",
+        "inherit": "Miras Al (global varsayılan)",
+        "unlimited": "Sınırsız",
+        "custom": "Özel"
+      },
       "create": "Grup Oluştur",
       "save": "Değişiklikleri Kaydet"
     },

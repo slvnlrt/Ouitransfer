@@ -1964,11 +1964,14 @@
       "namePlaceholder": "Masukkan nama grup",
       "description": "Deskripsi",
       "descriptionPlaceholder": "Deskripsi opsional",
-      "maxFileSize": "Ukuran File Maks.",
-      "maxTotalStorage": "Total Penyimpanan Maks.",
-      "inherit": "Warisi (default global)",
-      "unlimited": "Tidak Terbatas",
-      "custom": "Kustom",
+      "quota": {
+        "title": "Kuota Penyimpanan",
+        "maxFileSize": "Ukuran File Maks.",
+        "maxTotalStorage": "Total Penyimpanan Maks.",
+        "inherit": "Warisi (default global)",
+        "unlimited": "Tidak Terbatas",
+        "custom": "Kustom"
+      },
       "create": "Buat Grup",
       "save": "Simpan Perubahan"
     },

@@ -1960,11 +1960,14 @@
       "namePlaceholder": "Inserisci nome gruppo",
       "description": "Descrizione",
       "descriptionPlaceholder": "Descrizione opzionale",
-      "maxFileSize": "Dim. Max File",
-      "maxTotalStorage": "Archiviazione Totale Max",
-      "inherit": "Eredita (predefinito globale)",
-      "unlimited": "Illimitato",
-      "custom": "Personalizzato",
+      "quota": {
+        "title": "Quote di archiviazione",
+        "maxFileSize": "Dim. Max File",
+        "maxTotalStorage": "Archiviazione Totale Max",
+        "inherit": "Eredita (predefinito globale)",
+        "unlimited": "Illimitato",
+        "custom": "Personalizzato"
+      },
       "create": "Crea Gruppo",
       "save": "Salva Modifiche"
     },

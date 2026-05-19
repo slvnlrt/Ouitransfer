@@ -1964,11 +1964,14 @@
       "namePlaceholder": "Ange gruppnamn",
       "description": "Beskrivning",
       "descriptionPlaceholder": "Valfri beskrivning",
-      "maxFileSize": "Max Filstorlek",
-      "maxTotalStorage": "Max Total Lagring",
-      "inherit": "Ärv (globalt standard)",
-      "unlimited": "Obegränsat",
-      "custom": "Anpassad",
+      "quota": {
+        "title": "Lagringskvoter",
+        "maxFileSize": "Max Filstorlek",
+        "maxTotalStorage": "Max Total Lagring",
+        "inherit": "Ärv (globalt standard)",
+        "unlimited": "Obegränsat",
+        "custom": "Anpassad"
+      },
       "create": "Skapa Grupp",
       "save": "Spara Ändringar"
     },

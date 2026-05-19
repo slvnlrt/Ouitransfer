@@ -2013,11 +2013,14 @@
       "namePlaceholder": "Enter group name",
       "description": "Description",
       "descriptionPlaceholder": "Optional description",
-      "maxFileSize": "Max File Size",
-      "maxTotalStorage": "Max Total Storage",
-      "inherit": "Inherit (global default)",
-      "unlimited": "Unlimited",
-      "custom": "Custom",
+      "quota": {
+        "title": "Storage Quotas",
+        "maxFileSize": "Max File Size",
+        "maxTotalStorage": "Max Total Storage",
+        "inherit": "Inherit (global default)",
+        "unlimited": "Unlimited",
+        "custom": "Custom"
+      },
       "create": "Create Group",
       "save": "Save Changes"
     },

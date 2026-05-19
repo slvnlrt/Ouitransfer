@@ -1960,11 +1960,14 @@
       "namePlaceholder": "Entrez le nom du groupe",
       "description": "Description",
       "descriptionPlaceholder": "Description optionnelle",
-      "maxFileSize": "Taille Max. de Fichier",
-      "maxTotalStorage": "Stockage Total Max.",
-      "inherit": "Hériter (valeur par défaut globale)",
-      "unlimited": "Illimité",
-      "custom": "Personnalisé",
+      "quota": {
+        "title": "Quotas de stockage",
+        "maxFileSize": "Taille Max. de Fichier",
+        "maxTotalStorage": "Stockage Total Max.",
+        "inherit": "Hériter (valeur par défaut globale)",
+        "unlimited": "Illimité",
+        "custom": "Personnalisé"
+      },
       "create": "Créer un Groupe",
       "save": "Enregistrer les Modifications"
     },
