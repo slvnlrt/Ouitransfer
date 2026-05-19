@@ -308,6 +308,82 @@ describe("QuotaService.resolveEffectiveLimits", () => {
     expect(getConfigValue).toHaveBeenCalledWith("maxTotalStoragePerUser");
   });
 
+  it("group override 0n means unlimited (does NOT fall through)", async () => {
+    setupGlobalDefaults();
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      isAdmin: false,
+      maxFileSizeOverride: null,
+      maxTotalStorageOverride: null,
+      group: {
+        name: "Unlimited Group",
+        maxFileSizeOverride: 0n,
+        maxTotalStorageOverride: 0n,
+      },
+    } as never);
+
+    const limits = await service.resolveEffectiveLimits("user-1");
+    expect(limits.maxFileSize).toBe(0n); // unlimited
+    expect(limits.maxTotalStorage).toBe(0n); // unlimited
+    expect(limits.sources.maxFileSizeSource).toBe("group");
+    expect(limits.sources.maxTotalStorageSource).toBe("group");
+    expect(limits.sources.groupName).toBe("Unlimited Group");
+    expect(getConfigValue).not.toHaveBeenCalled();
+  });
+
+  it("admin in group uses group override (not admin-default)", async () => {
+    setupGlobalDefaults();
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      isAdmin: true,
+      maxFileSizeOverride: null,
+      maxTotalStorageOverride: null,
+      group: {
+        name: "Restricted Admins",
+        maxFileSizeOverride: 500_000_000n,
+        maxTotalStorageOverride: 5_000_000_000n,
+      },
+    } as never);
+
+    const limits = await service.resolveEffectiveLimits("user-1");
+    // Group override should be used even for admins (it's not null, so ?? doesn't trigger)
+    expect(limits.maxFileSize).toBe(500_000_000n);
+    expect(limits.maxTotalStorage).toBe(5_000_000_000n);
+    expect(limits.sources.maxFileSizeSource).toBe("group");
+    expect(limits.sources.maxTotalStorageSource).toBe("group");
+  });
+
+  it("admin with no overrides and no group gets unlimited", async () => {
+    setupGlobalDefaults();
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      isAdmin: true,
+      maxFileSizeOverride: null,
+      maxTotalStorageOverride: null,
+      group: null,
+    } as never);
+
+    const limits = await service.resolveEffectiveLimits("user-1");
+    expect(limits.maxFileSize).toBe(0n);
+    expect(limits.maxTotalStorage).toBe(0n);
+    expect(limits.sources.maxFileSizeSource).toBe("admin-default");
+    expect(limits.sources.maxTotalStorageSource).toBe("admin-default");
+  });
+
+  it("user with no group and no overrides falls through to global", async () => {
+    setupGlobalDefaults();
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      isAdmin: false,
+      maxFileSizeOverride: null,
+      maxTotalStorageOverride: null,
+      group: null,
+    } as never);
+
+    const limits = await service.resolveEffectiveLimits("user-1");
+    expect(limits.maxFileSize).toBe(GLOBAL_MAX_FILE_SIZE);
+    expect(limits.maxTotalStorage).toBe(GLOBAL_MAX_TOTAL_STORAGE);
+    expect(limits.sources.maxFileSizeSource).toBe("global");
+    expect(limits.sources.maxTotalStorageSource).toBe("global");
+    expect(limits.sources.groupName).toBeNull();
+  });
+
   it("throws NotFoundError for non-existent user", async () => {
     vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
 
