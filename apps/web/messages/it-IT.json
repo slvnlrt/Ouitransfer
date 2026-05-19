@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Vai al contenuto"
   },
@@ -658,6 +658,7 @@
     "settings": "Impostazioni",
     "usersManagement": "Gestione Utenti",
     "groupsManagement": "Gruppi",
+    "ldap": "LDAP",
     "logout": "Logout",
     "customization": "Personalizzazione"
   },
@@ -2102,7 +2103,10 @@
       "active": "Attivo",
       "inactive": "Inattivo",
       "admin": "Amministratore",
-      "userr": "Utente"
+      "userr": "Utente",
+      "source": "Source",
+      "ldap": "LDAP",
+      "local": "Local"
     },
     "invite": {
       "button": "Genera Link di Invito",
@@ -2202,5 +2206,78 @@
   },
   "languageSwitcher": {
     "changeLanguage": "Cambia lingua"
+  },
+  "ldap": {
+    "pageTitle": "LDAP / Active Directory",
+    "pageDescription": "Configure LDAP synchronization to import users from Active Directory",
+    "config": {
+      "title": "Configuration",
+      "description": "LDAP server connection and attribute mapping settings",
+      "enabled": "Enabled",
+      "connection": "Connection",
+      "serverUrl": "Server URL",
+      "useTls": "Use TLS (LDAPS)",
+      "bindDn": "Bind DN",
+      "bindPassword": "Bind Password",
+      "search": "Search Settings",
+      "searchBase": "Search Base",
+      "syncGroupDn": "Sync Group DN",
+      "attributes": "Attribute Mapping",
+      "usernameAttr": "Username Attribute",
+      "emailAttr": "Email Attribute",
+      "displayNameAttr": "Display Name Attribute",
+      "syncSettings": "Sync Settings",
+      "syncInterval": "Sync Interval (minutes)",
+      "syncIntervalHelp": "Between 15 minutes and 7 days (10080 minutes)",
+      "appUrl": "Application URL",
+      "appUrlHelp": "Used in welcome emails sent to new LDAP users",
+      "members": "members",
+      "save": "Save Configuration",
+      "testConnection": "Test Connection",
+      "saveSuccess": "LDAP configuration saved",
+      "saveError": "Failed to save LDAP configuration",
+      "testSuccess": "Connection test successful",
+      "testError": "Connection test failed"
+    },
+    "groupMapping": {
+      "title": "Group Mapping",
+      "description": "Local groups mapped to Active Directory groups for quota assignment",
+      "manageGroups": "Manage Groups",
+      "groupName": "Group Name",
+      "adGroupDn": "AD Group DN",
+      "noMapping": "No group mapping configured. Set LDAP DNs in group management to map AD groups to local quota groups."
+    },
+    "sync": {
+      "title": "Sync Operations",
+      "description": "Manual sync and synchronization history",
+      "syncNow": "Sync Now",
+      "triggered": "LDAP sync started",
+      "error": "Failed to start LDAP sync",
+      "lastSync": "Last sync",
+      "nextSync": "Next sync",
+      "noHistory": "No sync history yet",
+      "date": "Date",
+      "trigger": "Trigger",
+      "duration": "Duration",
+      "created": "Created",
+      "updated": "Updated",
+      "deactivated": "Deactivated",
+      "reactivated": "Reactivated",
+      "skipped": "Skipped",
+      "status": "Status"
+    },
+    "syncDetail": {
+      "title": "Sync Details",
+      "details": "Skip & Error Details",
+      "type": "Type",
+      "username": "Username",
+      "email": "Email",
+      "message": "Message"
+    },
+    "banner": {
+      "active": "LDAP/AD sync active",
+      "disabled": "LDAP/AD sync disabled",
+      "configure": "Configure"
+    }
   }
 }
