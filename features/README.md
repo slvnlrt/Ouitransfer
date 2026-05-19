@@ -9,7 +9,7 @@ This directory tracks all feature development for Ouitransfer (post-refactor pha
 | # | Feature | Status | Depends on |
 |---|---------|--------|------------|
 | 5.1 | [Per-User Storage Quotas](specs/5.1-quotas.md) | Done | — |
-| 5.4 | [Groups](specs/5.4-groups.md) | Not started | 5.1 |
+| 5.4 | [Groups](specs/5.4-groups.md) | Done | 5.1 |
 | 5.2 | [Automatic Cleanup of Expired Content](specs/5.2-cleanup.md) | Not started | — |
 | 5.3 | [LDAP / Active Directory Sync](specs/5.3-ldap.md) | Not started | 5.4 |
 
@@ -95,4 +95,4 @@ features/
 ## Current Focus
 
 B-7 bug + TD-1/TD-2 technical debt — Done. TD-3 (2FA brute-force gap) tracked in `TECHNICAL-DEBT.md`.
-Next: 5.x features (5.4 Groups → 5.3 LDAP, or 5.2 Auto-cleanup independently)
+5.4 Groups — Done. Next: 5.3 LDAP/AD sync (depends on 5.4), or 5.2 Auto-cleanup (independent)

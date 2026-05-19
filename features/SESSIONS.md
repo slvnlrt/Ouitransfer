@@ -80,3 +80,21 @@
 - Tests: 255 server + 221 web, both type-checks clean
 - 8 commits total (eaedb68..dd02dce)
 - Next: 5.x features (groups, auto-cleanup, LDAP)
+
+## 2026-05-19 — 5.4 Groups
+
+- Completed 5.4 Groups (spec → plan → implementation → review per task)
+  - Schema: new `Group` model (name unique, description, maxFileSizeOverride BigInt?, maxTotalStorageOverride BigInt?, ldapDn String?), User gets `groupId String?` with `onDelete: SetNull`
+  - New `modules/group/` (dto, repository, service, controller, routes) — 7 admin-only endpoints (CRUD + member management)
+  - Quota resolution: `user override ?? group override ?? (admin ? unlimited : global)` with `sources` tracking
+  - User responses enriched with `groupId` + `groupName` across all 9 user routes
+  - Frontend API layer: types, 7 endpoints, 7 proxy routes, query keys
+  - Groups management page (`/groups-management`): table, form modal (with quota tri-state), detail modal (member management with "already in group" warning), delete modal
+  - Navbar: Groups link in admin dropdown
+  - User form modal: group assignment Select + quota source badges
+  - i18n: 70+ new keys translated in all 23 locales
+  - Shared `formatBytes` utility extracted (DRY on 3rd occurrence)
+  - Tests: 289 server (18 group unit + 7 quota group + 9 integration) + web type-check clean
+  - Two-stage review per task (spec compliance + code quality), all findings resolved
+  - 10 commits (d20484d..b3bd82d)
+- Next: 5.3 LDAP/AD sync (depends on 5.4) or 5.2 Auto-cleanup (independent)
