@@ -657,6 +657,7 @@
     "profile": "Profilo",
     "settings": "Impostazioni",
     "usersManagement": "Gestione Utenti",
+    "groupsManagement": "Gruppi",
     "logout": "Logout",
     "customization": "Personalizzazione"
   },
@@ -1934,6 +1935,77 @@
       "storageUnavailable": "Il servizio di archiviazione non è disponibile. Riprova più tardi."
     }
   },
+  "groups": {
+    "header": {
+      "title": "Gruppi",
+      "management": "Gestione Gruppi",
+      "addGroup": "Crea Gruppo"
+    },
+    "table": {
+      "name": "Nome",
+      "description": "Descrizione",
+      "members": "Membri",
+      "maxFileSize": "Dim. Max File",
+      "maxStorage": "Archiviazione Max",
+      "storageUsed": "Archiviazione Usata",
+      "actions": "Azioni",
+      "inherited": "Ereditato",
+      "unlimited": "Illimitato",
+      "empty": "Nessun gruppo ancora. Creane uno per iniziare."
+    },
+    "form": {
+      "titleCreate": "Crea Gruppo",
+      "titleEdit": "Modifica Gruppo",
+      "name": "Nome",
+      "namePlaceholder": "Inserisci nome gruppo",
+      "description": "Descrizione",
+      "descriptionPlaceholder": "Descrizione opzionale",
+      "maxFileSize": "Dim. Max File",
+      "maxTotalStorage": "Archiviazione Totale Max",
+      "inherit": "Eredita (predefinito globale)",
+      "unlimited": "Illimitato",
+      "custom": "Personalizzato",
+      "create": "Crea Gruppo",
+      "save": "Salva Modifiche"
+    },
+    "delete": {
+      "title": "Elimina Gruppo",
+      "confirmationWithMembers": "Questo gruppo ha {count} membro/i. Verranno de-assegnati e le loro quote torneranno ai valori predefiniti globali.",
+      "confirmation": "Sei sicuro di voler eliminare questo gruppo?",
+      "confirm": "Elimina Gruppo"
+    },
+    "detail": {
+      "title": "Dettagli Gruppo",
+      "members": "Membri",
+      "addMember": "Aggiungi Membro",
+      "searchUsers": "Cerca utenti...",
+      "noMembers": "Nessun membro in questo gruppo.",
+      "remove": "Rimuovi",
+      "moveWarning": "Questo utente è attualmente nel gruppo \"{groupName}\". Verrà spostato in questo gruppo.",
+      "storageUsed": "Archiviazione Usata"
+    },
+    "validation": {
+      "nameRequired": "Il nome del gruppo è obbligatorio"
+    },
+    "messages": {
+      "createSuccess": "Gruppo creato con successo",
+      "updateSuccess": "Gruppo aggiornato con successo",
+      "deleteSuccess": "Gruppo eliminato con successo",
+      "memberAdded": "Membro aggiunto al gruppo",
+      "memberRemoved": "Membro rimosso dal gruppo"
+    },
+    "errors": {
+      "submitFailed": "Impossibile {mode} il gruppo",
+      "deleteFailed": "Impossibile eliminare il gruppo",
+      "memberAddFailed": "Impossibile aggiungere il membro",
+      "memberRemoveFailed": "Impossibile rimuovere il membro"
+    },
+    "actions": {
+      "viewDetails": "Visualizza Dettagli",
+      "edit": "Modifica",
+      "delete": "Elimina"
+    }
+  },
   "users": {
     "modes": {
       "create": "crea",
@@ -1976,6 +2048,9 @@
       "role": "Ruolo",
       "roleUser": "Utente",
       "roleAdmin": "Amministratore",
+      "group": "Gruppo",
+      "noGroup": "Nessun Gruppo",
+      "groupSaveError": "Impossibile aggiornare l'assegnazione del gruppo",
       "create": "Crea",
       "save": "Salva",
       "quota": {
@@ -1990,7 +2065,11 @@
         "currentUsage": "Utilizzo attuale",
         "effectiveMaxFileSize": "Dimensione massima del file effettiva",
         "effectiveMaxStorage": "Archiviazione totale massima effettiva",
-        "usagePercent": "Utilizzo"
+        "usagePercent": "Utilizzo",
+        "sourceUser": "Sostituzione utente",
+        "sourceGroup": "Gruppo",
+        "sourceGlobal": "Predefinito globale",
+        "sourceAdminDefault": "Predefinito admin"
       }
     },
     "status": {

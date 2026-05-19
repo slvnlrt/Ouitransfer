@@ -657,6 +657,7 @@
     "profile": "プロフィール",
     "settings": "設定",
     "usersManagement": "ユーザー管理",
+    "groupsManagement": "グループ",
     "logout": "ログアウト",
     "customization": "カスタマイズ"
   },
@@ -1934,6 +1935,77 @@
       "storageUnavailable": "ストレージサービスが利用できません。後でもう一度お試しください。"
     }
   },
+  "groups": {
+    "header": {
+      "title": "グループ",
+      "management": "グループ管理",
+      "addGroup": "グループを作成"
+    },
+    "table": {
+      "name": "名前",
+      "description": "説明",
+      "members": "メンバー",
+      "maxFileSize": "最大ファイルサイズ",
+      "maxStorage": "最大ストレージ",
+      "storageUsed": "使用済みストレージ",
+      "actions": "操作",
+      "inherited": "継承",
+      "unlimited": "無制限",
+      "empty": "グループがまだありません。作成して始めましょう。"
+    },
+    "form": {
+      "titleCreate": "グループを作成",
+      "titleEdit": "グループを編集",
+      "name": "名前",
+      "namePlaceholder": "グループ名を入力",
+      "description": "説明",
+      "descriptionPlaceholder": "任意の説明",
+      "maxFileSize": "最大ファイルサイズ",
+      "maxTotalStorage": "最大合計ストレージ",
+      "inherit": "継承（グローバルデフォルト）",
+      "unlimited": "無制限",
+      "custom": "カスタム",
+      "create": "グループを作成",
+      "save": "変更を保存"
+    },
+    "delete": {
+      "title": "グループを削除",
+      "confirmationWithMembers": "このグループには{count}人のメンバーがいます。メンバーの割り当てが解除され、クォータはグローバルデフォルトに戻ります。",
+      "confirmation": "このグループを削除してよろしいですか？",
+      "confirm": "グループを削除"
+    },
+    "detail": {
+      "title": "グループの詳細",
+      "members": "メンバー",
+      "addMember": "メンバーを追加",
+      "searchUsers": "ユーザーを検索...",
+      "noMembers": "このグループにはメンバーがいません。",
+      "remove": "削除",
+      "moveWarning": "このユーザーは現在グループ \"{groupName}\" に所属しています。このグループに移動されます。",
+      "storageUsed": "使用済みストレージ"
+    },
+    "validation": {
+      "nameRequired": "グループ名は必須です"
+    },
+    "messages": {
+      "createSuccess": "グループが正常に作成されました",
+      "updateSuccess": "グループが正常に更新されました",
+      "deleteSuccess": "グループが正常に削除されました",
+      "memberAdded": "メンバーがグループに追加されました",
+      "memberRemoved": "メンバーがグループから削除されました"
+    },
+    "errors": {
+      "submitFailed": "グループの{mode}に失敗しました",
+      "deleteFailed": "グループの削除に失敗しました",
+      "memberAddFailed": "メンバーの追加に失敗しました",
+      "memberRemoveFailed": "メンバーの削除に失敗しました"
+    },
+    "actions": {
+      "viewDetails": "詳細を表示",
+      "edit": "編集",
+      "delete": "削除"
+    }
+  },
   "users": {
     "modes": {
       "create": "作成",
@@ -1976,6 +2048,9 @@
       "role": "役割",
       "roleUser": "ユーザー",
       "roleAdmin": "管理者",
+      "group": "グループ",
+      "noGroup": "グループなし",
+      "groupSaveError": "グループ割り当ての更新に失敗しました",
       "create": "作成",
       "save": "保存",
       "quota": {
@@ -1990,7 +2065,11 @@
         "currentUsage": "現在の使用量",
         "effectiveMaxFileSize": "有効な最大ファイルサイズ",
         "effectiveMaxStorage": "有効な最大合計ストレージ",
-        "usagePercent": "使用率"
+        "usagePercent": "使用率",
+        "sourceUser": "ユーザー上書き",
+        "sourceGroup": "グループ",
+        "sourceGlobal": "グローバルデフォルト",
+        "sourceAdminDefault": "管理者デフォルト"
       }
     },
     "status": {

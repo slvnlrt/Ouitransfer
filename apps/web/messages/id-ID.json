@@ -662,6 +662,7 @@
     "customization": "Kustomisasi",
     "settings": "Pengaturan",
     "usersManagement": "Manajemen Pengguna",
+    "groupsManagement": "Grup",
     "logout": "Keluar"
   },
   "navigation": {
@@ -1938,6 +1939,77 @@
       "storageUnavailable": "Layanan penyimpanan tidak tersedia. Silakan coba lagi nanti."
     }
   },
+  "groups": {
+    "header": {
+      "title": "Grup",
+      "management": "Manajemen Grup",
+      "addGroup": "Buat Grup"
+    },
+    "table": {
+      "name": "Nama",
+      "description": "Deskripsi",
+      "members": "Anggota",
+      "maxFileSize": "Ukuran File Maks.",
+      "maxStorage": "Penyimpanan Maks.",
+      "storageUsed": "Penyimpanan Terpakai",
+      "actions": "Tindakan",
+      "inherited": "Diwarisi",
+      "unlimited": "Tidak Terbatas",
+      "empty": "Belum ada grup. Buat satu untuk memulai."
+    },
+    "form": {
+      "titleCreate": "Buat Grup",
+      "titleEdit": "Edit Grup",
+      "name": "Nama",
+      "namePlaceholder": "Masukkan nama grup",
+      "description": "Deskripsi",
+      "descriptionPlaceholder": "Deskripsi opsional",
+      "maxFileSize": "Ukuran File Maks.",
+      "maxTotalStorage": "Total Penyimpanan Maks.",
+      "inherit": "Warisi (default global)",
+      "unlimited": "Tidak Terbatas",
+      "custom": "Kustom",
+      "create": "Buat Grup",
+      "save": "Simpan Perubahan"
+    },
+    "delete": {
+      "title": "Hapus Grup",
+      "confirmationWithMembers": "Grup ini memiliki {count} anggota. Mereka akan dibatalkan penugasannya dan kuota mereka akan kembali ke default global.",
+      "confirmation": "Apakah Anda yakin ingin menghapus grup ini?",
+      "confirm": "Hapus Grup"
+    },
+    "detail": {
+      "title": "Detail Grup",
+      "members": "Anggota",
+      "addMember": "Tambah Anggota",
+      "searchUsers": "Cari pengguna...",
+      "noMembers": "Tidak ada anggota di grup ini.",
+      "remove": "Hapus",
+      "moveWarning": "Pengguna ini saat ini ada di grup \"{groupName}\". Mereka akan dipindahkan ke grup ini.",
+      "storageUsed": "Penyimpanan Terpakai"
+    },
+    "validation": {
+      "nameRequired": "Nama grup diperlukan"
+    },
+    "messages": {
+      "createSuccess": "Grup berhasil dibuat",
+      "updateSuccess": "Grup berhasil diperbarui",
+      "deleteSuccess": "Grup berhasil dihapus",
+      "memberAdded": "Anggota ditambahkan ke grup",
+      "memberRemoved": "Anggota dihapus dari grup"
+    },
+    "errors": {
+      "submitFailed": "Gagal {mode} grup",
+      "deleteFailed": "Gagal menghapus grup",
+      "memberAddFailed": "Gagal menambahkan anggota",
+      "memberRemoveFailed": "Gagal menghapus anggota"
+    },
+    "actions": {
+      "viewDetails": "Lihat Detail",
+      "edit": "Edit",
+      "delete": "Hapus"
+    }
+  },
   "users": {
     "modes": {
       "create": "buat",
@@ -1980,6 +2052,9 @@
       "role": "Peran",
       "roleUser": "Pengguna",
       "roleAdmin": "Admin",
+      "group": "Grup",
+      "noGroup": "Tanpa Grup",
+      "groupSaveError": "Gagal memperbarui penetapan grup",
       "create": "Buat",
       "save": "Simpan",
       "quota": {
@@ -1994,7 +2069,11 @@
         "currentUsage": "Penggunaan Saat Ini",
         "effectiveMaxFileSize": "Ukuran File Maksimum Efektif",
         "effectiveMaxStorage": "Total Penyimpanan Maksimum Efektif",
-        "usagePercent": "Penggunaan"
+        "usagePercent": "Penggunaan",
+        "sourceUser": "Penggantian pengguna",
+        "sourceGroup": "Grup",
+        "sourceGlobal": "Default global",
+        "sourceAdminDefault": "Default admin"
       }
     },
     "status": {

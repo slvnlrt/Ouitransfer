@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Palette, Settings, User, Users } from "lucide-react";
+import { Layers, LogOut, Palette, Settings, User, Users } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -125,6 +125,15 @@ export function Navbar() {
                       >
                         <Users className="h-4 w-4" />
                         {t("navbar.usersManagement")}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href="/groups-management"
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
+                        <Layers className="h-4 w-4" />
+                        {t("navbar.groupsManagement")}
                       </Link>
                     </DropdownMenuItem>
                   </>

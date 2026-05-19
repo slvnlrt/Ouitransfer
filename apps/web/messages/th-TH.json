@@ -662,6 +662,7 @@
     "customization": "การปรับแต่ง",
     "settings": "การตั้งค่า",
     "usersManagement": "การจัดการผู้ใช้",
+    "groupsManagement": "กลุ่ม",
     "logout": "ออกจากระบบ"
   },
   "navigation": {
@@ -1938,6 +1939,77 @@
       "storageUnavailable": "บริการจัดเก็บไม่พร้อมใช้งาน กรุณาลองใหม่อีกครั้งในภายหลัง"
     }
   },
+  "groups": {
+    "header": {
+      "title": "กลุ่ม",
+      "management": "การจัดการกลุ่ม",
+      "addGroup": "สร้างกลุ่ม"
+    },
+    "table": {
+      "name": "ชื่อ",
+      "description": "คำอธิบาย",
+      "members": "สมาชิก",
+      "maxFileSize": "ขนาดไฟล์สูงสุด",
+      "maxStorage": "พื้นที่เก็บข้อมูลสูงสุด",
+      "storageUsed": "พื้นที่ที่ใช้ไป",
+      "actions": "การดำเนินการ",
+      "inherited": "สืบทอด",
+      "unlimited": "ไม่จำกัด",
+      "empty": "ยังไม่มีกลุ่ม สร้างกลุ่มเพื่อเริ่มต้น"
+    },
+    "form": {
+      "titleCreate": "สร้างกลุ่ม",
+      "titleEdit": "แก้ไขกลุ่ม",
+      "name": "ชื่อ",
+      "namePlaceholder": "ป้อนชื่อกลุ่ม",
+      "description": "คำอธิบาย",
+      "descriptionPlaceholder": "คำอธิบาย (ไม่บังคับ)",
+      "maxFileSize": "ขนาดไฟล์สูงสุด",
+      "maxTotalStorage": "พื้นที่เก็บข้อมูลรวมสูงสุด",
+      "inherit": "สืบทอด (ค่าเริ่มต้นทั่วโลก)",
+      "unlimited": "ไม่จำกัด",
+      "custom": "กำหนดเอง",
+      "create": "สร้างกลุ่ม",
+      "save": "บันทึกการเปลี่ยนแปลง"
+    },
+    "delete": {
+      "title": "ลบกลุ่ม",
+      "confirmationWithMembers": "กลุ่มนี้มีสมาชิก {count} คน พวกเขาจะถูกยกเลิกการกำหนดและโควตาของพวกเขาจะกลับสู่ค่าเริ่มต้นทั่วโลก",
+      "confirmation": "คุณแน่ใจหรือไม่ว่าต้องการลบกลุ่มนี้?",
+      "confirm": "ลบกลุ่ม"
+    },
+    "detail": {
+      "title": "รายละเอียดกลุ่ม",
+      "members": "สมาชิก",
+      "addMember": "เพิ่มสมาชิก",
+      "searchUsers": "ค้นหาผู้ใช้...",
+      "noMembers": "ไม่มีสมาชิกในกลุ่มนี้",
+      "remove": "ลบออก",
+      "moveWarning": "ผู้ใช้นี้อยู่ในกลุ่ม \"{groupName}\" อยู่แล้ว พวกเขาจะถูกย้ายไปยังกลุ่มนี้",
+      "storageUsed": "พื้นที่ที่ใช้ไป"
+    },
+    "validation": {
+      "nameRequired": "ต้องระบุชื่อกลุ่ม"
+    },
+    "messages": {
+      "createSuccess": "สร้างกลุ่มสำเร็จ",
+      "updateSuccess": "อัปเดตกลุ่มสำเร็จ",
+      "deleteSuccess": "ลบกลุ่มสำเร็จ",
+      "memberAdded": "เพิ่มสมาชิกเข้ากลุ่มแล้ว",
+      "memberRemoved": "ลบสมาชิกออกจากกลุ่มแล้ว"
+    },
+    "errors": {
+      "submitFailed": "ไม่สามารถ {mode} กลุ่มได้",
+      "deleteFailed": "ไม่สามารถลบกลุ่มได้",
+      "memberAddFailed": "ไม่สามารถเพิ่มสมาชิกได้",
+      "memberRemoveFailed": "ไม่สามารถลบสมาชิกได้"
+    },
+    "actions": {
+      "viewDetails": "ดูรายละเอียด",
+      "edit": "แก้ไข",
+      "delete": "ลบ"
+    }
+  },
   "users": {
     "modes": {
       "create": "สร้าง",
@@ -1980,6 +2052,9 @@
       "role": "บทบาท",
       "roleUser": "ผู้ใช้",
       "roleAdmin": "ผู้ดูแลระบบ",
+      "group": "กลุ่ม",
+      "noGroup": "ไม่มีกลุ่ม",
+      "groupSaveError": "ไม่สามารถอัปเดตการมอบหมายกลุ่มได้",
       "create": "สร้าง",
       "save": "บันทึก",
       "quota": {
@@ -1994,7 +2069,11 @@
         "currentUsage": "การใช้งานปัจจุบัน",
         "effectiveMaxFileSize": "ขนาดไฟล์สูงสุดที่มีผล",
         "effectiveMaxStorage": "พื้นที่จัดเก็บรวมสูงสุดที่มีผล",
-        "usagePercent": "การใช้งาน"
+        "usagePercent": "การใช้งาน",
+        "sourceUser": "การแทนที่ผู้ใช้",
+        "sourceGroup": "กลุ่ม",
+        "sourceGlobal": "ค่าเริ่มต้นทั่วโลก",
+        "sourceAdminDefault": "ค่าเริ่มต้นของผู้ดูแลระบบ"
       }
     },
     "status": {

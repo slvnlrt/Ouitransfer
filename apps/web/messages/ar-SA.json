@@ -657,6 +657,7 @@
     "profile": "الملف الشخصي",
     "settings": "الإعدادات",
     "usersManagement": "إدارة المستخدمين",
+    "groupsManagement": "المجموعات",
     "logout": "تسجيل الخروج",
     "customization": "التخصيص"
   },
@@ -1934,6 +1935,77 @@
       "storageUnavailable": "خدمة التخزين غير متاحة. يرجى المحاولة مرة أخرى لاحقاً."
     }
   },
+  "groups": {
+    "header": {
+      "title": "المجموعات",
+      "management": "إدارة المجموعات",
+      "addGroup": "إنشاء مجموعة"
+    },
+    "table": {
+      "name": "الاسم",
+      "description": "الوصف",
+      "members": "الأعضاء",
+      "maxFileSize": "الحد الأقصى لحجم الملف",
+      "maxStorage": "الحد الأقصى للتخزين",
+      "storageUsed": "التخزين المستخدم",
+      "actions": "الإجراءات",
+      "inherited": "موروث",
+      "unlimited": "غير محدود",
+      "empty": "لا توجد مجموعات بعد. أنشئ واحدة للبدء."
+    },
+    "form": {
+      "titleCreate": "إنشاء مجموعة",
+      "titleEdit": "تعديل المجموعة",
+      "name": "الاسم",
+      "namePlaceholder": "أدخل اسم المجموعة",
+      "description": "الوصف",
+      "descriptionPlaceholder": "وصف اختياري",
+      "maxFileSize": "الحد الأقصى لحجم الملف",
+      "maxTotalStorage": "الحد الأقصى للتخزين الكلي",
+      "inherit": "موروث (الإعداد الافتراضي العام)",
+      "unlimited": "غير محدود",
+      "custom": "مخصص",
+      "create": "إنشاء مجموعة",
+      "save": "حفظ التغييرات"
+    },
+    "delete": {
+      "title": "حذف المجموعة",
+      "confirmationWithMembers": "تحتوي هذه المجموعة على {count} عضو/أعضاء. سيتم إلغاء تعيينهم وستعود حصصهم إلى الإعدادات الافتراضية العامة.",
+      "confirmation": "هل أنت متأكد من أنك تريد حذف هذه المجموعة؟",
+      "confirm": "حذف المجموعة"
+    },
+    "detail": {
+      "title": "تفاصيل المجموعة",
+      "members": "الأعضاء",
+      "addMember": "إضافة عضو",
+      "searchUsers": "البحث عن مستخدمين...",
+      "noMembers": "لا يوجد أعضاء في هذه المجموعة.",
+      "remove": "إزالة",
+      "moveWarning": "هذا المستخدم موجود حالياً في مجموعة \"{groupName}\". سيتم نقله إلى هذه المجموعة.",
+      "storageUsed": "التخزين المستخدم"
+    },
+    "validation": {
+      "nameRequired": "اسم المجموعة مطلوب"
+    },
+    "messages": {
+      "createSuccess": "تم إنشاء المجموعة بنجاح",
+      "updateSuccess": "تم تحديث المجموعة بنجاح",
+      "deleteSuccess": "تم حذف المجموعة بنجاح",
+      "memberAdded": "تم إضافة العضو إلى المجموعة",
+      "memberRemoved": "تم إزالة العضو من المجموعة"
+    },
+    "errors": {
+      "submitFailed": "فشل في {mode} المجموعة",
+      "deleteFailed": "فشل في حذف المجموعة",
+      "memberAddFailed": "فشل في إضافة العضو",
+      "memberRemoveFailed": "فشل في إزالة العضو"
+    },
+    "actions": {
+      "viewDetails": "عرض التفاصيل",
+      "edit": "تعديل",
+      "delete": "حذف"
+    }
+  },
   "users": {
     "modes": {
       "create": "إنشاء",
@@ -1976,6 +2048,9 @@
       "role": "الدور",
       "roleUser": "مستخدم",
       "roleAdmin": "مسؤول",
+      "group": "المجموعة",
+      "noGroup": "بدون مجموعة",
+      "groupSaveError": "فشل في تحديث تعيين المجموعة",
       "create": "إنشاء",
       "save": "حفظ",
       "quota": {
@@ -1990,7 +2065,11 @@
         "currentUsage": "الاستخدام الحالي",
         "effectiveMaxFileSize": "الحجم الأقصى الفعلي للملف",
         "effectiveMaxStorage": "إجمالي التخزين الأقصى الفعلي",
-        "usagePercent": "الاستخدام"
+        "usagePercent": "الاستخدام",
+        "sourceUser": "تجاوز المستخدم",
+        "sourceGroup": "المجموعة",
+        "sourceGlobal": "الافتراضي العام",
+        "sourceAdminDefault": "افتراضي المشرف"
       }
     },
     "status": {

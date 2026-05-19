@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { addGroupMember, listGroups, removeGroupMember } from "@/http/endpoints/groups";
 import { getUserQuota, updateUserQuota } from "@/http/endpoints/users";
 import { formatBytes } from "@/lib/format-bytes";
 import { queryKeys } from "@/lib/query-keys";
@@ -35,6 +36,25 @@ function getInitialMode(override: string | null | undefined): QuotaMode {
   if (override === null || override === undefined) return "inherit";
   if (override === "0") return "unlimited";
   return "custom";
+}
+
+function formatSource(
+  source: string,
+  groupName: string | null,
+  t: (key: string) => string,
+): string {
+  switch (source) {
+    case "user":
+      return t("users.form.quota.sourceUser");
+    case "group":
+      return `${t("users.form.quota.sourceGroup")}: ${groupName}`;
+    case "global":
+      return t("users.form.quota.sourceGlobal");
+    case "admin-default":
+      return t("users.form.quota.sourceAdminDefault");
+    default:
+      return "";
+  }
 }
 
 export function UserFormModal({
@@ -76,6 +96,25 @@ export function UserFormModal({
     }
   }, [selectedUser, isOpen, modalMode]);
 
+  const groupsQuery = useQuery({
+    queryKey: queryKeys.groups.list(),
+    queryFn: async () => {
+      const response = await listGroups();
+      return response.data;
+    },
+    enabled: modalMode === "edit",
+  });
+
+  const [selectedGroupId, setSelectedGroupId] = useState<string>("none");
+
+  useEffect(() => {
+    if (modalMode === "edit" && selectedUser) {
+      setSelectedGroupId(selectedUser.groupId ?? "none");
+    } else {
+      setSelectedGroupId("none");
+    }
+  }, [selectedUser, isOpen, modalMode]);
+
   const quotaQuery = useQuery({
     queryKey: queryKeys.users.quota(selectedUser?.id ?? ""),
     queryFn: () => getUserQuota(selectedUser!.id),
@@ -103,6 +142,24 @@ export function UserFormModal({
         queryClient.invalidateQueries({ queryKey: queryKeys.users.quota(selectedUser.id) });
       } catch {
         toast.error(t("users.form.quota.saveError"));
+      }
+
+      // Also update group assignment if changed
+      const currentGroupId = selectedUser.groupId ?? "none";
+      if (selectedGroupId !== currentGroupId) {
+        try {
+          if (selectedGroupId === "none" && selectedUser.groupId) {
+            // Remove from current group
+            await removeGroupMember(selectedUser.groupId, selectedUser.id);
+          } else if (selectedGroupId !== "none") {
+            // Add to new group (moves if already in another)
+            await addGroupMember(selectedGroupId, { userId: selectedUser.id });
+          }
+          queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
+          queryClient.invalidateQueries({ queryKey: queryKeys.groups.all });
+        } catch {
+          toast.error(t("users.form.groupSaveError"));
+        }
       }
     }
   };
@@ -213,6 +270,25 @@ export function UserFormModal({
                 )}
 
                 {modalMode === "edit" && (
+                  <div className="space-y-2">
+                    <Label>{t("users.form.group")}</Label>
+                    <Select value={selectedGroupId} onValueChange={setSelectedGroupId}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">{t("users.form.noGroup")}</SelectItem>
+                        {groupsQuery.data?.map((group) => (
+                          <SelectItem key={group.id} value={group.id}>
+                            {group.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                {modalMode === "edit" && (
                   <>
                     <Separator />
                     <div className="flex flex-col gap-4">
@@ -226,18 +302,36 @@ export function UserFormModal({
                           </div>
                           <div className="flex justify-between">
                             <span>{t("users.form.quota.effectiveMaxFileSize")}</span>
-                            <span>
+                            <span className="flex items-center gap-2">
                               {quotaQuery.data.data.maxFileSize === "0"
                                 ? t("users.form.quota.unlimited")
                                 : formatBytes(quotaQuery.data.data.maxFileSize)}
+                              <span className="text-xs text-muted-foreground">
+                                (
+                                {formatSource(
+                                  quotaQuery.data.data.sources.maxFileSizeSource,
+                                  quotaQuery.data.data.sources.groupName,
+                                  t,
+                                )}
+                                )
+                              </span>
                             </span>
                           </div>
                           <div className="flex justify-between">
                             <span>{t("users.form.quota.effectiveMaxStorage")}</span>
-                            <span>
+                            <span className="flex items-center gap-2">
                               {quotaQuery.data.data.maxTotalStorage === "0"
                                 ? t("users.form.quota.unlimited")
                                 : formatBytes(quotaQuery.data.data.maxTotalStorage)}
+                              <span className="text-xs text-muted-foreground">
+                                (
+                                {formatSource(
+                                  quotaQuery.data.data.sources.maxTotalStorageSource,
+                                  quotaQuery.data.data.sources.groupName,
+                                  t,
+                                )}
+                                )
+                              </span>
                             </span>
                           </div>
                           {quotaQuery.data.data.maxTotalStorage !== "0" && (
@@ -332,7 +426,7 @@ export function UserFormModal({
                 {t("common.cancel")}
               </Button>
               <Button disabled={isSubmitting} type="submit">
-                {modalMode === "create" ? "" : <Save className="h-4 w-4" />}
+                {modalMode === "create" ? null : <Save className="h-4 w-4" />}
                 {modalMode === "create" ? t("users.form.create") : t("users.form.save")}
               </Button>
             </DialogFooter>

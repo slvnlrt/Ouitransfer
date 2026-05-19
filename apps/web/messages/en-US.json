@@ -668,6 +668,7 @@
     "customization": "Customization",
     "settings": "Settings",
     "usersManagement": "User Management",
+    "groupsManagement": "Groups",
     "logout": "Log Out"
   },
   "navigation": {
@@ -1987,6 +1988,77 @@
       "storageUnavailable": "Storage service is unavailable. Please try again later."
     }
   },
+  "groups": {
+    "header": {
+      "title": "Groups",
+      "management": "Groups Management",
+      "addGroup": "Create Group"
+    },
+    "table": {
+      "name": "Name",
+      "description": "Description",
+      "members": "Members",
+      "maxFileSize": "Max File Size",
+      "maxStorage": "Max Storage",
+      "storageUsed": "Storage Used",
+      "actions": "Actions",
+      "inherited": "Inherited",
+      "unlimited": "Unlimited",
+      "empty": "No groups yet. Create one to get started."
+    },
+    "form": {
+      "titleCreate": "Create Group",
+      "titleEdit": "Edit Group",
+      "name": "Name",
+      "namePlaceholder": "Enter group name",
+      "description": "Description",
+      "descriptionPlaceholder": "Optional description",
+      "maxFileSize": "Max File Size",
+      "maxTotalStorage": "Max Total Storage",
+      "inherit": "Inherit (global default)",
+      "unlimited": "Unlimited",
+      "custom": "Custom",
+      "create": "Create Group",
+      "save": "Save Changes"
+    },
+    "delete": {
+      "title": "Delete Group",
+      "confirmationWithMembers": "This group has {count} member(s). They will be unassigned and their quotas will fall back to global defaults.",
+      "confirmation": "Are you sure you want to delete this group?",
+      "confirm": "Delete Group"
+    },
+    "detail": {
+      "title": "Group Details",
+      "members": "Members",
+      "addMember": "Add Member",
+      "searchUsers": "Search users...",
+      "noMembers": "No members in this group.",
+      "remove": "Remove",
+      "moveWarning": "This user is currently in group \"{groupName}\". They will be moved to this group.",
+      "storageUsed": "Storage Used"
+    },
+    "validation": {
+      "nameRequired": "Group name is required"
+    },
+    "messages": {
+      "createSuccess": "Group created successfully",
+      "updateSuccess": "Group updated successfully",
+      "deleteSuccess": "Group deleted successfully",
+      "memberAdded": "Member added to group",
+      "memberRemoved": "Member removed from group"
+    },
+    "errors": {
+      "submitFailed": "Failed to {mode} group",
+      "deleteFailed": "Failed to delete group",
+      "memberAddFailed": "Failed to add member",
+      "memberRemoveFailed": "Failed to remove member"
+    },
+    "actions": {
+      "viewDetails": "View Details",
+      "edit": "Edit",
+      "delete": "Delete"
+    }
+  },
   "users": {
     "modes": {
       "create": "create",
@@ -2029,6 +2101,9 @@
       "role": "Role",
       "roleUser": "User",
       "roleAdmin": "Admin",
+      "group": "Group",
+      "noGroup": "No Group",
+      "groupSaveError": "Failed to update group assignment",
       "create": "Create",
       "save": "Save",
       "quota": {
@@ -2043,7 +2118,11 @@
         "currentUsage": "Current Usage",
         "effectiveMaxFileSize": "Effective Max File Size",
         "effectiveMaxStorage": "Effective Max Storage",
-        "usagePercent": "Usage"
+        "usagePercent": "Usage",
+        "sourceUser": "User override",
+        "sourceGroup": "Group",
+        "sourceGlobal": "Global default",
+        "sourceAdminDefault": "Admin default"
       }
     },
     "status": {

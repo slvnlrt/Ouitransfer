@@ -657,6 +657,7 @@
     "profile": "Profil",
     "settings": "Einstellungen",
     "usersManagement": "Benutzerverwaltung",
+    "groupsManagement": "Gruppen",
     "logout": "Abmelden",
     "customization": "Anpassung"
   },
@@ -1934,6 +1935,77 @@
       "storageUnavailable": "Der Speicherdienst ist nicht verfügbar. Bitte versuchen Sie es später erneut."
     }
   },
+  "groups": {
+    "header": {
+      "title": "Gruppen",
+      "management": "Gruppenverwaltung",
+      "addGroup": "Gruppe erstellen"
+    },
+    "table": {
+      "name": "Name",
+      "description": "Beschreibung",
+      "members": "Mitglieder",
+      "maxFileSize": "Max. Dateigröße",
+      "maxStorage": "Max. Speicher",
+      "storageUsed": "Genutzter Speicher",
+      "actions": "Aktionen",
+      "inherited": "Geerbt",
+      "unlimited": "Unbegrenzt",
+      "empty": "Noch keine Gruppen. Erstellen Sie eine, um zu beginnen."
+    },
+    "form": {
+      "titleCreate": "Gruppe erstellen",
+      "titleEdit": "Gruppe bearbeiten",
+      "name": "Name",
+      "namePlaceholder": "Gruppenname eingeben",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Optionale Beschreibung",
+      "maxFileSize": "Max. Dateigröße",
+      "maxTotalStorage": "Max. Gesamtspeicher",
+      "inherit": "Erben (globaler Standard)",
+      "unlimited": "Unbegrenzt",
+      "custom": "Benutzerdefiniert",
+      "create": "Gruppe erstellen",
+      "save": "Änderungen speichern"
+    },
+    "delete": {
+      "title": "Gruppe löschen",
+      "confirmationWithMembers": "Diese Gruppe hat {count} Mitglied(er). Sie werden abgemeldet und ihre Kontingente fallen auf die globalen Standardwerte zurück.",
+      "confirmation": "Sind Sie sicher, dass Sie diese Gruppe löschen möchten?",
+      "confirm": "Gruppe löschen"
+    },
+    "detail": {
+      "title": "Gruppendetails",
+      "members": "Mitglieder",
+      "addMember": "Mitglied hinzufügen",
+      "searchUsers": "Benutzer suchen...",
+      "noMembers": "Keine Mitglieder in dieser Gruppe.",
+      "remove": "Entfernen",
+      "moveWarning": "Dieser Benutzer befindet sich derzeit in der Gruppe \"{groupName}\". Er wird in diese Gruppe verschoben.",
+      "storageUsed": "Genutzter Speicher"
+    },
+    "validation": {
+      "nameRequired": "Gruppenname ist erforderlich"
+    },
+    "messages": {
+      "createSuccess": "Gruppe erfolgreich erstellt",
+      "updateSuccess": "Gruppe erfolgreich aktualisiert",
+      "deleteSuccess": "Gruppe erfolgreich gelöscht",
+      "memberAdded": "Mitglied zur Gruppe hinzugefügt",
+      "memberRemoved": "Mitglied aus der Gruppe entfernt"
+    },
+    "errors": {
+      "submitFailed": "Fehler beim {mode} der Gruppe",
+      "deleteFailed": "Fehler beim Löschen der Gruppe",
+      "memberAddFailed": "Fehler beim Hinzufügen des Mitglieds",
+      "memberRemoveFailed": "Fehler beim Entfernen des Mitglieds"
+    },
+    "actions": {
+      "viewDetails": "Details anzeigen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen"
+    }
+  },
   "users": {
     "modes": {
       "create": "erstellen",
@@ -1976,6 +2048,9 @@
       "role": "Rolle",
       "roleUser": "Benutzer",
       "roleAdmin": "Administrator",
+      "group": "Gruppe",
+      "noGroup": "Keine Gruppe",
+      "groupSaveError": "Gruppenzuweisung konnte nicht aktualisiert werden",
       "create": "Erstellen",
       "save": "Speichern",
       "quota": {
@@ -1990,7 +2065,11 @@
         "currentUsage": "Aktuelle Nutzung",
         "effectiveMaxFileSize": "Effektive maximale Dateigröße",
         "effectiveMaxStorage": "Effektiver maximaler Gesamtspeicher",
-        "usagePercent": "Nutzung"
+        "usagePercent": "Nutzung",
+        "sourceUser": "Benutzer-Überschreibung",
+        "sourceGroup": "Gruppe",
+        "sourceGlobal": "Globaler Standard",
+        "sourceAdminDefault": "Admin-Standard"
       }
     },
     "status": {

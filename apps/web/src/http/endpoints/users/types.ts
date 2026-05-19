@@ -76,6 +76,11 @@ export interface UserQuotaStatus {
     maxFileSizeOverride: string | null;
     maxTotalStorageOverride: string | null;
   };
+  sources: {
+    maxFileSizeSource: "user" | "group" | "global" | "admin-default";
+    maxTotalStorageSource: "user" | "group" | "global" | "admin-default";
+    groupName: string | null;
+  };
 }
 
 export interface UpdateQuotaBody {

@@ -662,6 +662,7 @@
     "customization": "התאמה אישית",
     "settings": "הגדרות",
     "usersManagement": "ניהול משתמשים",
+    "groupsManagement": "קבוצות",
     "logout": "התנתק"
   },
   "navigation": {
@@ -1938,6 +1939,77 @@
       "storageUnavailable": "שירות האחסון אינו זמין. נסה שוב מאוחר יותר."
     }
   },
+  "groups": {
+    "header": {
+      "title": "קבוצות",
+      "management": "ניהול קבוצות",
+      "addGroup": "יצירת קבוצה"
+    },
+    "table": {
+      "name": "שם",
+      "description": "תיאור",
+      "members": "חברים",
+      "maxFileSize": "גודל קובץ מקסימלי",
+      "maxStorage": "אחסון מקסימלי",
+      "storageUsed": "אחסון בשימוש",
+      "actions": "פעולות",
+      "inherited": "מורש",
+      "unlimited": "ללא הגבלה",
+      "empty": "אין קבוצות עדיין. צור אחת כדי להתחיל."
+    },
+    "form": {
+      "titleCreate": "יצירת קבוצה",
+      "titleEdit": "עריכת קבוצה",
+      "name": "שם",
+      "namePlaceholder": "הזן שם קבוצה",
+      "description": "תיאור",
+      "descriptionPlaceholder": "תיאור אופציונלי",
+      "maxFileSize": "גודל קובץ מקסימלי",
+      "maxTotalStorage": "אחסון כולל מקסימלי",
+      "inherit": "ירושה (ברירת מחדל גלובלית)",
+      "unlimited": "ללא הגבלה",
+      "custom": "מותאם אישית",
+      "create": "יצירת קבוצה",
+      "save": "שמור שינויים"
+    },
+    "delete": {
+      "title": "מחיקת קבוצה",
+      "confirmationWithMembers": "לקבוצה זו יש {count} חבר/חברים. הם יבוטלו ומכסותיהם יחזרו לברירות המחדל הגלובליות.",
+      "confirmation": "האם אתה בטוח שברצונך למחוק קבוצה זו?",
+      "confirm": "מחיקת קבוצה"
+    },
+    "detail": {
+      "title": "פרטי קבוצה",
+      "members": "חברים",
+      "addMember": "הוסף חבר",
+      "searchUsers": "חפש משתמשים...",
+      "noMembers": "אין חברים בקבוצה זו.",
+      "remove": "הסר",
+      "moveWarning": "משתמש זה נמצא כעת בקבוצה \"{groupName}\". הוא יועבר לקבוצה זו.",
+      "storageUsed": "אחסון בשימוש"
+    },
+    "validation": {
+      "nameRequired": "שם הקבוצה נדרש"
+    },
+    "messages": {
+      "createSuccess": "הקבוצה נוצרה בהצלחה",
+      "updateSuccess": "הקבוצה עודכנה בהצלחה",
+      "deleteSuccess": "הקבוצה נמחקה בהצלחה",
+      "memberAdded": "החבר נוסף לקבוצה",
+      "memberRemoved": "החבר הוסר מהקבוצה"
+    },
+    "errors": {
+      "submitFailed": "נכשל ב-{mode} קבוצה",
+      "deleteFailed": "נכשל במחיקת הקבוצה",
+      "memberAddFailed": "נכשל בהוספת החבר",
+      "memberRemoveFailed": "נכשל בהסרת החבר"
+    },
+    "actions": {
+      "viewDetails": "הצג פרטים",
+      "edit": "ערוך",
+      "delete": "מחק"
+    }
+  },
   "users": {
     "modes": {
       "create": "יצירה",
@@ -1980,6 +2052,9 @@
       "role": "תפקיד",
       "roleUser": "משתמש",
       "roleAdmin": "מנהל",
+      "group": "קבוצה",
+      "noGroup": "ללא קבוצה",
+      "groupSaveError": "שגיאה בעדכון הקצאת הקבוצה",
       "create": "צור",
       "save": "שמור",
       "quota": {
@@ -1994,7 +2069,11 @@
         "currentUsage": "שימוש נוכחי",
         "effectiveMaxFileSize": "גודל קובץ מקסימלי בפועל",
         "effectiveMaxStorage": "אחסון כולל מקסימלי בפועל",
-        "usagePercent": "שימוש"
+        "usagePercent": "שימוש",
+        "sourceUser": "עקיפת משתמש",
+        "sourceGroup": "קבוצה",
+        "sourceGlobal": "ברירת מחדל גלובלית",
+        "sourceAdminDefault": "ברירת מחדל מנהל"
       }
     },
     "status": {

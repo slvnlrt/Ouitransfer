@@ -657,6 +657,7 @@
     "profile": "个人资料",
     "settings": "设置",
     "usersManagement": "用户管理",
+    "groupsManagement": "群组",
     "logout": "退出登录",
     "customization": "自定义"
   },
@@ -1934,6 +1935,77 @@
       "storageUnavailable": "存储服务不可用。请稍后再试。"
     }
   },
+  "groups": {
+    "header": {
+      "title": "群组",
+      "management": "群组管理",
+      "addGroup": "创建群组"
+    },
+    "table": {
+      "name": "名称",
+      "description": "描述",
+      "members": "成员",
+      "maxFileSize": "最大文件大小",
+      "maxStorage": "最大存储",
+      "storageUsed": "已用存储",
+      "actions": "操作",
+      "inherited": "继承",
+      "unlimited": "无限制",
+      "empty": "暂无群组。创建一个以开始。"
+    },
+    "form": {
+      "titleCreate": "创建群组",
+      "titleEdit": "编辑群组",
+      "name": "名称",
+      "namePlaceholder": "输入群组名称",
+      "description": "描述",
+      "descriptionPlaceholder": "可选描述",
+      "maxFileSize": "最大文件大小",
+      "maxTotalStorage": "最大总存储",
+      "inherit": "继承（全局默认）",
+      "unlimited": "无限制",
+      "custom": "自定义",
+      "create": "创建群组",
+      "save": "保存更改"
+    },
+    "delete": {
+      "title": "删除群组",
+      "confirmationWithMembers": "该群组有 {count} 名成员。他们将被取消分配，其配额将恢复为全局默认值。",
+      "confirmation": "您确定要删除此群组吗？",
+      "confirm": "删除群组"
+    },
+    "detail": {
+      "title": "群组详情",
+      "members": "成员",
+      "addMember": "添加成员",
+      "searchUsers": "搜索用户...",
+      "noMembers": "此群组中没有成员。",
+      "remove": "移除",
+      "moveWarning": "该用户当前在群组 \"{groupName}\" 中。他们将被移动到此群组。",
+      "storageUsed": "已用存储"
+    },
+    "validation": {
+      "nameRequired": "群组名称为必填项"
+    },
+    "messages": {
+      "createSuccess": "群组创建成功",
+      "updateSuccess": "群组更新成功",
+      "deleteSuccess": "群组删除成功",
+      "memberAdded": "成员已添加到群组",
+      "memberRemoved": "成员已从群组中移除"
+    },
+    "errors": {
+      "submitFailed": "无法{mode}群组",
+      "deleteFailed": "无法删除群组",
+      "memberAddFailed": "无法添加成员",
+      "memberRemoveFailed": "无法移除成员"
+    },
+    "actions": {
+      "viewDetails": "查看详情",
+      "edit": "编辑",
+      "delete": "删除"
+    }
+  },
   "users": {
     "modes": {
       "create": "创建",
@@ -1976,6 +2048,9 @@
       "role": "角色",
       "roleUser": "用户",
       "roleAdmin": "管理员",
+      "group": "群组",
+      "noGroup": "无群组",
+      "groupSaveError": "更新群组分配失败",
       "create": "创建",
       "save": "保存",
       "quota": {
@@ -1990,7 +2065,11 @@
         "currentUsage": "当前使用量",
         "effectiveMaxFileSize": "有效最大文件大小",
         "effectiveMaxStorage": "有效最大总存储空间",
-        "usagePercent": "使用率"
+        "usagePercent": "使用率",
+        "sourceUser": "用户覆盖",
+        "sourceGroup": "群组",
+        "sourceGlobal": "全局默认",
+        "sourceAdminDefault": "管理员默认"
       }
     },
     "status": {

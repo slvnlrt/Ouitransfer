@@ -657,6 +657,7 @@
     "profile": "프로필",
     "settings": "설정",
     "usersManagement": "사용자 관리",
+    "groupsManagement": "그룹",
     "logout": "로그아웃",
     "customization": "사용자 정의"
   },
@@ -1934,6 +1935,77 @@
       "storageUnavailable": "스토리지 서비스를 사용할 수 없습니다. 나중에 다시 시도해 주세요."
     }
   },
+  "groups": {
+    "header": {
+      "title": "그룹",
+      "management": "그룹 관리",
+      "addGroup": "그룹 만들기"
+    },
+    "table": {
+      "name": "이름",
+      "description": "설명",
+      "members": "멤버",
+      "maxFileSize": "최대 파일 크기",
+      "maxStorage": "최대 저장 공간",
+      "storageUsed": "사용된 저장 공간",
+      "actions": "작업",
+      "inherited": "상속됨",
+      "unlimited": "무제한",
+      "empty": "아직 그룹이 없습니다. 하나를 만들어 시작하세요."
+    },
+    "form": {
+      "titleCreate": "그룹 만들기",
+      "titleEdit": "그룹 편집",
+      "name": "이름",
+      "namePlaceholder": "그룹 이름 입력",
+      "description": "설명",
+      "descriptionPlaceholder": "선택적 설명",
+      "maxFileSize": "최대 파일 크기",
+      "maxTotalStorage": "최대 총 저장 공간",
+      "inherit": "상속 (전역 기본값)",
+      "unlimited": "무제한",
+      "custom": "사용자 정의",
+      "create": "그룹 만들기",
+      "save": "변경사항 저장"
+    },
+    "delete": {
+      "title": "그룹 삭제",
+      "confirmationWithMembers": "이 그룹에는 {count}명의 멤버가 있습니다. 멤버 지정이 해제되고 할당량이 전역 기본값으로 돌아갑니다.",
+      "confirmation": "이 그룹을 삭제하시겠습니까?",
+      "confirm": "그룹 삭제"
+    },
+    "detail": {
+      "title": "그룹 세부 정보",
+      "members": "멤버",
+      "addMember": "멤버 추가",
+      "searchUsers": "사용자 검색...",
+      "noMembers": "이 그룹에 멤버가 없습니다.",
+      "remove": "제거",
+      "moveWarning": "이 사용자는 현재 그룹 \"{groupName}\"에 있습니다. 이 그룹으로 이동됩니다.",
+      "storageUsed": "사용된 저장 공간"
+    },
+    "validation": {
+      "nameRequired": "그룹 이름이 필요합니다"
+    },
+    "messages": {
+      "createSuccess": "그룹이 성공적으로 생성되었습니다",
+      "updateSuccess": "그룹이 성공적으로 업데이트되었습니다",
+      "deleteSuccess": "그룹이 성공적으로 삭제되었습니다",
+      "memberAdded": "멤버가 그룹에 추가되었습니다",
+      "memberRemoved": "멤버가 그룹에서 제거되었습니다"
+    },
+    "errors": {
+      "submitFailed": "그룹 {mode}에 실패했습니다",
+      "deleteFailed": "그룹 삭제에 실패했습니다",
+      "memberAddFailed": "멤버 추가에 실패했습니다",
+      "memberRemoveFailed": "멤버 제거에 실패했습니다"
+    },
+    "actions": {
+      "viewDetails": "세부 정보 보기",
+      "edit": "편집",
+      "delete": "삭제"
+    }
+  },
   "users": {
     "modes": {
       "create": "생성",
@@ -1976,6 +2048,9 @@
       "role": "역할",
       "roleUser": "사용자",
       "roleAdmin": "관리자",
+      "group": "그룹",
+      "noGroup": "그룹 없음",
+      "groupSaveError": "그룹 할당 업데이트에 실패했습니다",
       "create": "생성",
       "save": "저장",
       "quota": {
@@ -1990,7 +2065,11 @@
         "currentUsage": "현재 사용량",
         "effectiveMaxFileSize": "유효 최대 파일 크기",
         "effectiveMaxStorage": "유효 최대 총 스토리지",
-        "usagePercent": "사용량"
+        "usagePercent": "사용량",
+        "sourceUser": "사용자 재정의",
+        "sourceGroup": "그룹",
+        "sourceGlobal": "전역 기본값",
+        "sourceAdminDefault": "관리자 기본값"
       }
     },
     "status": {

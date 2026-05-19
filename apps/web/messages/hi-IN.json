@@ -657,6 +657,7 @@
     "profile": "प्रोफ़ाइल",
     "settings": "सेटिंग्स",
     "usersManagement": "उपयोगकर्ता प्रबंधन",
+    "groupsManagement": "समूह",
     "logout": "लॉग आउट",
     "customization": "अनुकूलन"
   },
@@ -1934,6 +1935,77 @@
       "storageUnavailable": "स्टोरेज सेवा अनुपलब्ध है। कृपया बाद में पुनः प्रयास करें।"
     }
   },
+  "groups": {
+    "header": {
+      "title": "समूह",
+      "management": "समूह प्रबंधन",
+      "addGroup": "समूह बनाएं"
+    },
+    "table": {
+      "name": "नाम",
+      "description": "विवरण",
+      "members": "सदस्य",
+      "maxFileSize": "अधिकतम फ़ाइल आकार",
+      "maxStorage": "अधिकतम संग्रहण",
+      "storageUsed": "उपयोग किया गया संग्रहण",
+      "actions": "क्रियाएं",
+      "inherited": "विरासत में मिला",
+      "unlimited": "असीमित",
+      "empty": "अभी तक कोई समूह नहीं। शुरू करने के लिए एक बनाएं।"
+    },
+    "form": {
+      "titleCreate": "समूह बनाएं",
+      "titleEdit": "समूह संपादित करें",
+      "name": "नाम",
+      "namePlaceholder": "समूह का नाम दर्ज करें",
+      "description": "विवरण",
+      "descriptionPlaceholder": "वैकल्पिक विवरण",
+      "maxFileSize": "अधिकतम फ़ाइल आकार",
+      "maxTotalStorage": "अधिकतम कुल संग्रहण",
+      "inherit": "विरासत में लें (वैश्विक डिफ़ॉल्ट)",
+      "unlimited": "असीमित",
+      "custom": "कस्टम",
+      "create": "समूह बनाएं",
+      "save": "परिवर्तन सहेजें"
+    },
+    "delete": {
+      "title": "समूह हटाएं",
+      "confirmationWithMembers": "इस समूह में {count} सदस्य हैं। उन्हें अनसाइन किया जाएगा और उनके कोटा वैश्विक डिफ़ॉल्ट पर वापस आ जाएंगे।",
+      "confirmation": "क्या आप वाकई इस समूह को हटाना चाहते हैं?",
+      "confirm": "समूह हटाएं"
+    },
+    "detail": {
+      "title": "समूह विवरण",
+      "members": "सदस्य",
+      "addMember": "सदस्य जोड़ें",
+      "searchUsers": "उपयोगकर्ता खोजें...",
+      "noMembers": "इस समूह में कोई सदस्य नहीं।",
+      "remove": "हटाएं",
+      "moveWarning": "यह उपयोगकर्ता वर्तमान में समूह \"{groupName}\" में है। उन्हें इस समूह में स्थानांतरित किया जाएगा।",
+      "storageUsed": "उपयोग किया गया संग्रहण"
+    },
+    "validation": {
+      "nameRequired": "समूह का नाम आवश्यक है"
+    },
+    "messages": {
+      "createSuccess": "समूह सफलतापूर्वक बनाया गया",
+      "updateSuccess": "समूह सफलतापूर्वक अपडेट किया गया",
+      "deleteSuccess": "समूह सफलतापूर्वक हटाया गया",
+      "memberAdded": "सदस्य समूह में जोड़ा गया",
+      "memberRemoved": "सदस्य समूह से हटाया गया"
+    },
+    "errors": {
+      "submitFailed": "समूह को {mode} करने में विफल",
+      "deleteFailed": "समूह हटाने में विफल",
+      "memberAddFailed": "सदस्य जोड़ने में विफल",
+      "memberRemoveFailed": "सदस्य हटाने में विफल"
+    },
+    "actions": {
+      "viewDetails": "विवरण देखें",
+      "edit": "संपादित करें",
+      "delete": "हटाएं"
+    }
+  },
   "users": {
     "modes": {
       "create": "बनाएं",
@@ -1976,6 +2048,9 @@
       "role": "भूमिका",
       "roleUser": "उपयोगकर्ता",
       "roleAdmin": "व्यवस्थापक",
+      "group": "समूह",
+      "noGroup": "कोई समूह नहीं",
+      "groupSaveError": "समूह असाइनमेंट अपडेट करने में विफल",
       "create": "बनाएं",
       "save": "सहेजें",
       "quota": {
@@ -1990,7 +2065,11 @@
         "currentUsage": "वर्तमान उपयोग",
         "effectiveMaxFileSize": "प्रभावी अधिकतम फ़ाइल आकार",
         "effectiveMaxStorage": "प्रभावी अधिकतम कुल स्टोरेज",
-        "usagePercent": "उपयोग"
+        "usagePercent": "उपयोग",
+        "sourceUser": "उपयोगकर्ता ओवरराइड",
+        "sourceGroup": "समूह",
+        "sourceGlobal": "वैश्विक डिफ़ॉल्ट",
+        "sourceAdminDefault": "व्यवस्थापक डिफ़ॉल्ट"
       }
     },
     "status": {

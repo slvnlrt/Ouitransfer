@@ -662,6 +662,7 @@
     "customization": "Tùy chỉnh",
     "settings": "Cài đặt",
     "usersManagement": "Quản lý người dùng",
+    "groupsManagement": "Nhóm",
     "logout": "Đăng xuất"
   },
   "navigation": {
@@ -1938,6 +1939,77 @@
       "storageUnavailable": "Dịch vụ lưu trữ không khả dụng. Vui lòng thử lại sau."
     }
   },
+  "groups": {
+    "header": {
+      "title": "Nhóm",
+      "management": "Quản lý Nhóm",
+      "addGroup": "Tạo Nhóm"
+    },
+    "table": {
+      "name": "Tên",
+      "description": "Mô tả",
+      "members": "Thành viên",
+      "maxFileSize": "Kích thước tệp tối đa",
+      "maxStorage": "Lưu trữ tối đa",
+      "storageUsed": "Lưu trữ đã dùng",
+      "actions": "Hành động",
+      "inherited": "Kế thừa",
+      "unlimited": "Không giới hạn",
+      "empty": "Chưa có nhóm nào. Tạo một nhóm để bắt đầu."
+    },
+    "form": {
+      "titleCreate": "Tạo Nhóm",
+      "titleEdit": "Chỉnh sửa Nhóm",
+      "name": "Tên",
+      "namePlaceholder": "Nhập tên nhóm",
+      "description": "Mô tả",
+      "descriptionPlaceholder": "Mô tả tùy chọn",
+      "maxFileSize": "Kích thước tệp tối đa",
+      "maxTotalStorage": "Tổng lưu trữ tối đa",
+      "inherit": "Kế thừa (mặc định toàn cục)",
+      "unlimited": "Không giới hạn",
+      "custom": "Tùy chỉnh",
+      "create": "Tạo Nhóm",
+      "save": "Lưu thay đổi"
+    },
+    "delete": {
+      "title": "Xóa Nhóm",
+      "confirmationWithMembers": "Nhóm này có {count} thành viên. Họ sẽ bị hủy gán và hạn ngạch của họ sẽ trở về mặc định toàn cục.",
+      "confirmation": "Bạn có chắc chắn muốn xóa nhóm này không?",
+      "confirm": "Xóa Nhóm"
+    },
+    "detail": {
+      "title": "Chi tiết Nhóm",
+      "members": "Thành viên",
+      "addMember": "Thêm Thành viên",
+      "searchUsers": "Tìm kiếm người dùng...",
+      "noMembers": "Không có thành viên trong nhóm này.",
+      "remove": "Xóa",
+      "moveWarning": "Người dùng này hiện đang trong nhóm \"{groupName}\". Họ sẽ được chuyển sang nhóm này.",
+      "storageUsed": "Lưu trữ đã dùng"
+    },
+    "validation": {
+      "nameRequired": "Tên nhóm là bắt buộc"
+    },
+    "messages": {
+      "createSuccess": "Nhóm đã được tạo thành công",
+      "updateSuccess": "Nhóm đã được cập nhật thành công",
+      "deleteSuccess": "Nhóm đã được xóa thành công",
+      "memberAdded": "Thành viên đã được thêm vào nhóm",
+      "memberRemoved": "Thành viên đã được xóa khỏi nhóm"
+    },
+    "errors": {
+      "submitFailed": "Không thể {mode} nhóm",
+      "deleteFailed": "Không thể xóa nhóm",
+      "memberAddFailed": "Không thể thêm thành viên",
+      "memberRemoveFailed": "Không thể xóa thành viên"
+    },
+    "actions": {
+      "viewDetails": "Xem Chi tiết",
+      "edit": "Chỉnh sửa",
+      "delete": "Xóa"
+    }
+  },
   "users": {
     "modes": {
       "create": "tạo",
@@ -1980,6 +2052,9 @@
       "role": "Vai trò",
       "roleUser": "Người dùng",
       "roleAdmin": "Quản trị viên",
+      "group": "Nhóm",
+      "noGroup": "Không có Nhóm",
+      "groupSaveError": "Không thể cập nhật phân công nhóm",
       "create": "Tạo",
       "save": "Lưu",
       "quota": {
@@ -1994,7 +2069,11 @@
         "currentUsage": "Mức sử dụng hiện tại",
         "effectiveMaxFileSize": "Kích thước tệp tối đa thực tế",
         "effectiveMaxStorage": "Tổng dung lượng lưu trữ tối đa thực tế",
-        "usagePercent": "Mức sử dụng"
+        "usagePercent": "Mức sử dụng",
+        "sourceUser": "Ghi đè người dùng",
+        "sourceGroup": "Nhóm",
+        "sourceGlobal": "Mặc định toàn cục",
+        "sourceAdminDefault": "Mặc định quản trị viên"
       }
     },
     "status": {

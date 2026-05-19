@@ -657,6 +657,7 @@
     "profile": "Profil",
     "settings": "Ayarlar",
     "usersManagement": "Kullanıcı Yönetimi",
+    "groupsManagement": "Gruplar",
     "logout": "Oturumu Kapat",
     "customization": "Özelleştirme"
   },
@@ -1934,6 +1935,77 @@
       "storageUnavailable": "Depolama hizmeti kullanılamıyor. Lütfen daha sonra tekrar deneyin."
     }
   },
+  "groups": {
+    "header": {
+      "title": "Gruplar",
+      "management": "Grup Yönetimi",
+      "addGroup": "Grup Oluştur"
+    },
+    "table": {
+      "name": "Ad",
+      "description": "Açıklama",
+      "members": "Üyeler",
+      "maxFileSize": "Maks. Dosya Boyutu",
+      "maxStorage": "Maks. Depolama",
+      "storageUsed": "Kullanılan Depolama",
+      "actions": "Eylemler",
+      "inherited": "Miras Alındı",
+      "unlimited": "Sınırsız",
+      "empty": "Henüz grup yok. Başlamak için bir tane oluşturun."
+    },
+    "form": {
+      "titleCreate": "Grup Oluştur",
+      "titleEdit": "Grubu Düzenle",
+      "name": "Ad",
+      "namePlaceholder": "Grup adını girin",
+      "description": "Açıklama",
+      "descriptionPlaceholder": "İsteğe bağlı açıklama",
+      "maxFileSize": "Maks. Dosya Boyutu",
+      "maxTotalStorage": "Maks. Toplam Depolama",
+      "inherit": "Miras Al (global varsayılan)",
+      "unlimited": "Sınırsız",
+      "custom": "Özel",
+      "create": "Grup Oluştur",
+      "save": "Değişiklikleri Kaydet"
+    },
+    "delete": {
+      "title": "Grubu Sil",
+      "confirmationWithMembers": "Bu grubun {count} üyesi var. Atamalarından çıkarılacaklar ve kotaları global varsayılanlara geri dönecek.",
+      "confirmation": "Bu grubu silmek istediğinizden emin misiniz?",
+      "confirm": "Grubu Sil"
+    },
+    "detail": {
+      "title": "Grup Ayrıntıları",
+      "members": "Üyeler",
+      "addMember": "Üye Ekle",
+      "searchUsers": "Kullanıcı ara...",
+      "noMembers": "Bu grupta üye yok.",
+      "remove": "Kaldır",
+      "moveWarning": "Bu kullanıcı şu anda \"{groupName}\" grubunda. Bu gruba taşınacak.",
+      "storageUsed": "Kullanılan Depolama"
+    },
+    "validation": {
+      "nameRequired": "Grup adı gereklidir"
+    },
+    "messages": {
+      "createSuccess": "Grup başarıyla oluşturuldu",
+      "updateSuccess": "Grup başarıyla güncellendi",
+      "deleteSuccess": "Grup başarıyla silindi",
+      "memberAdded": "Üye gruba eklendi",
+      "memberRemoved": "Üye gruptan kaldırıldı"
+    },
+    "errors": {
+      "submitFailed": "Grup {mode} işlemi başarısız oldu",
+      "deleteFailed": "Grup silme işlemi başarısız oldu",
+      "memberAddFailed": "Üye ekleme başarısız oldu",
+      "memberRemoveFailed": "Üye kaldırma başarısız oldu"
+    },
+    "actions": {
+      "viewDetails": "Ayrıntıları Görüntüle",
+      "edit": "Düzenle",
+      "delete": "Sil"
+    }
+  },
   "users": {
     "modes": {
       "create": "Oluştur",
@@ -1976,6 +2048,9 @@
       "role": "Rol",
       "roleUser": "Kullanıcı",
       "roleAdmin": "Yönetici",
+      "group": "Grup",
+      "noGroup": "Grup Yok",
+      "groupSaveError": "Grup ataması güncellenemedi",
       "create": "Oluştur",
       "save": "Kaydet",
       "quota": {
@@ -1990,7 +2065,11 @@
         "currentUsage": "Mevcut Kullanım",
         "effectiveMaxFileSize": "Geçerli Maksimum Dosya Boyutu",
         "effectiveMaxStorage": "Geçerli Maksimum Toplam Depolama",
-        "usagePercent": "Kullanım"
+        "usagePercent": "Kullanım",
+        "sourceUser": "Kullanıcı geçersiz kılma",
+        "sourceGroup": "Grup",
+        "sourceGlobal": "Genel varsayılan",
+        "sourceAdminDefault": "Yönetici varsayılanı"
       }
     },
     "status": {

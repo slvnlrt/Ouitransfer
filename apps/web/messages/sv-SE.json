@@ -662,6 +662,7 @@
     "customization": "Anpassning",
     "settings": "Inställningar",
     "usersManagement": "Användarhantering",
+    "groupsManagement": "Grupper",
     "logout": "Logga ut"
   },
   "navigation": {
@@ -1938,6 +1939,77 @@
       "storageUnavailable": "Lagringstjänsten är inte tillgänglig. Försök igen senare."
     }
   },
+  "groups": {
+    "header": {
+      "title": "Grupper",
+      "management": "Grupphantering",
+      "addGroup": "Skapa Grupp"
+    },
+    "table": {
+      "name": "Namn",
+      "description": "Beskrivning",
+      "members": "Medlemmar",
+      "maxFileSize": "Max Filstorlek",
+      "maxStorage": "Max Lagring",
+      "storageUsed": "Använt Lagringsutrymme",
+      "actions": "Åtgärder",
+      "inherited": "Ärvd",
+      "unlimited": "Obegränsat",
+      "empty": "Inga grupper ännu. Skapa en för att komma igång."
+    },
+    "form": {
+      "titleCreate": "Skapa Grupp",
+      "titleEdit": "Redigera Grupp",
+      "name": "Namn",
+      "namePlaceholder": "Ange gruppnamn",
+      "description": "Beskrivning",
+      "descriptionPlaceholder": "Valfri beskrivning",
+      "maxFileSize": "Max Filstorlek",
+      "maxTotalStorage": "Max Total Lagring",
+      "inherit": "Ärv (globalt standard)",
+      "unlimited": "Obegränsat",
+      "custom": "Anpassad",
+      "create": "Skapa Grupp",
+      "save": "Spara Ändringar"
+    },
+    "delete": {
+      "title": "Ta Bort Grupp",
+      "confirmationWithMembers": "Den här gruppen har {count} medlem/medlemmar. De kommer att avkopplas och deras kvoter återgår till de globala standardvärdena.",
+      "confirmation": "Är du säker på att du vill ta bort den här gruppen?",
+      "confirm": "Ta Bort Grupp"
+    },
+    "detail": {
+      "title": "Gruppdetaljer",
+      "members": "Medlemmar",
+      "addMember": "Lägg Till Medlem",
+      "searchUsers": "Sök användare...",
+      "noMembers": "Inga medlemmar i den här gruppen.",
+      "remove": "Ta bort",
+      "moveWarning": "Den här användaren är för närvarande i gruppen \"{groupName}\". De kommer att flyttas till den här gruppen.",
+      "storageUsed": "Använt Lagringsutrymme"
+    },
+    "validation": {
+      "nameRequired": "Gruppnamn krävs"
+    },
+    "messages": {
+      "createSuccess": "Gruppen har skapats",
+      "updateSuccess": "Gruppen har uppdaterats",
+      "deleteSuccess": "Gruppen har tagits bort",
+      "memberAdded": "Medlem har lagts till i gruppen",
+      "memberRemoved": "Medlem har tagits bort från gruppen"
+    },
+    "errors": {
+      "submitFailed": "Det gick inte att {mode} gruppen",
+      "deleteFailed": "Det gick inte att ta bort gruppen",
+      "memberAddFailed": "Det gick inte att lägga till medlemmen",
+      "memberRemoveFailed": "Det gick inte att ta bort medlemmen"
+    },
+    "actions": {
+      "viewDetails": "Visa Detaljer",
+      "edit": "Redigera",
+      "delete": "Ta Bort"
+    }
+  },
   "users": {
     "modes": {
       "create": "skapa",
@@ -1980,6 +2052,9 @@
       "role": "Roll",
       "roleUser": "Användare",
       "roleAdmin": "Administration",
+      "group": "Grupp",
+      "noGroup": "Ingen Grupp",
+      "groupSaveError": "Det gick inte att uppdatera grupptilldelningen",
       "create": "Skapa",
       "save": "Spara",
       "quota": {
@@ -1994,7 +2069,11 @@
         "currentUsage": "Aktuell användning",
         "effectiveMaxFileSize": "Effektiv maximal filstorlek",
         "effectiveMaxStorage": "Effektivt maximalt totalt lagringsutrymme",
-        "usagePercent": "Användning"
+        "usagePercent": "Användning",
+        "sourceUser": "Användaråsidosättning",
+        "sourceGroup": "Grupp",
+        "sourceGlobal": "Globalt standardvärde",
+        "sourceAdminDefault": "Administratörens standardvärde"
       }
     },
     "status": {

@@ -657,6 +657,7 @@
     "profile": "Profil",
     "settings": "Ustawienia",
     "usersManagement": "Zarządzanie użytkownikami",
+    "groupsManagement": "Grupy",
     "logout": "Wyloguj się",
     "customization": "Dostosowanie"
   },
@@ -1934,6 +1935,77 @@
       "storageUnavailable": "Usługa przechowywania jest niedostępna. Spróbuj ponownie później."
     }
   },
+  "groups": {
+    "header": {
+      "title": "Grupy",
+      "management": "Zarządzanie Grupami",
+      "addGroup": "Utwórz Grupę"
+    },
+    "table": {
+      "name": "Nazwa",
+      "description": "Opis",
+      "members": "Członkowie",
+      "maxFileSize": "Maks. Rozmiar Pliku",
+      "maxStorage": "Maks. Przestrzeń",
+      "storageUsed": "Użyta Przestrzeń",
+      "actions": "Akcje",
+      "inherited": "Dziedziczone",
+      "unlimited": "Nieograniczone",
+      "empty": "Brak grup. Utwórz jedną, aby zacząć."
+    },
+    "form": {
+      "titleCreate": "Utwórz Grupę",
+      "titleEdit": "Edytuj Grupę",
+      "name": "Nazwa",
+      "namePlaceholder": "Wprowadź nazwę grupy",
+      "description": "Opis",
+      "descriptionPlaceholder": "Opcjonalny opis",
+      "maxFileSize": "Maks. Rozmiar Pliku",
+      "maxTotalStorage": "Maks. Całkowita Przestrzeń",
+      "inherit": "Dziedzicz (domyślne globalne)",
+      "unlimited": "Nieograniczone",
+      "custom": "Niestandardowe",
+      "create": "Utwórz Grupę",
+      "save": "Zapisz Zmiany"
+    },
+    "delete": {
+      "title": "Usuń Grupę",
+      "confirmationWithMembers": "Ta grupa ma {count} członka/członków. Zostaną odpisani, a ich limity wrócą do globalnych domyślnych.",
+      "confirmation": "Czy na pewno chcesz usunąć tę grupę?",
+      "confirm": "Usuń Grupę"
+    },
+    "detail": {
+      "title": "Szczegóły Grupy",
+      "members": "Członkowie",
+      "addMember": "Dodaj Członka",
+      "searchUsers": "Szukaj użytkowników...",
+      "noMembers": "Brak członków w tej grupie.",
+      "remove": "Usuń",
+      "moveWarning": "Ten użytkownik jest obecnie w grupie \"{groupName}\". Zostanie przeniesiony do tej grupy.",
+      "storageUsed": "Użyta Przestrzeń"
+    },
+    "validation": {
+      "nameRequired": "Nazwa grupy jest wymagana"
+    },
+    "messages": {
+      "createSuccess": "Grupa utworzona pomyślnie",
+      "updateSuccess": "Grupa zaktualizowana pomyślnie",
+      "deleteSuccess": "Grupa usunięta pomyślnie",
+      "memberAdded": "Członek dodany do grupy",
+      "memberRemoved": "Członek usunięty z grupy"
+    },
+    "errors": {
+      "submitFailed": "Nie udało się {mode} grupy",
+      "deleteFailed": "Nie udało się usunąć grupy",
+      "memberAddFailed": "Nie udało się dodać członka",
+      "memberRemoveFailed": "Nie udało się usunąć członka"
+    },
+    "actions": {
+      "viewDetails": "Zobacz Szczegóły",
+      "edit": "Edytuj",
+      "delete": "Usuń"
+    }
+  },
   "users": {
     "modes": {
       "create": "utwórz",
@@ -1976,6 +2048,9 @@
       "role": "Rola",
       "roleUser": "Użytkownik",
       "roleAdmin": "Administrator",
+      "group": "Grupa",
+      "noGroup": "Bez Grupy",
+      "groupSaveError": "Nie udało się zaktualizować przypisania grupy",
       "create": "Utwórz",
       "save": "Zapisz",
       "quota": {
@@ -1990,7 +2065,11 @@
         "currentUsage": "Bieżące użycie",
         "effectiveMaxFileSize": "Efektywny maksymalny rozmiar pliku",
         "effectiveMaxStorage": "Efektywna maksymalna łączna pamięć",
-        "usagePercent": "Użycie"
+        "usagePercent": "Użycie",
+        "sourceUser": "Nadpisanie użytkownika",
+        "sourceGroup": "Grupa",
+        "sourceGlobal": "Globalny domyślny",
+        "sourceAdminDefault": "Domyślny administratora"
       }
     },
     "status": {

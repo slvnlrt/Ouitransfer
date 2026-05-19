@@ -657,6 +657,7 @@
     "profile": "Profiel",
     "settings": "Instellingen",
     "usersManagement": "Gebruikersbeheer",
+    "groupsManagement": "Groepen",
     "logout": "Uitloggen",
     "customization": "Aanpassen"
   },
@@ -1934,6 +1935,77 @@
       "storageUnavailable": "De opslagdienst is niet beschikbaar. Probeer het later opnieuw."
     }
   },
+  "groups": {
+    "header": {
+      "title": "Groepen",
+      "management": "Groepsbeheer",
+      "addGroup": "Groep Aanmaken"
+    },
+    "table": {
+      "name": "Naam",
+      "description": "Beschrijving",
+      "members": "Leden",
+      "maxFileSize": "Max. Bestandsgrootte",
+      "maxStorage": "Max. Opslag",
+      "storageUsed": "Gebruikte Opslag",
+      "actions": "Acties",
+      "inherited": "Geërfd",
+      "unlimited": "Onbeperkt",
+      "empty": "Nog geen groepen. Maak er een aan om te beginnen."
+    },
+    "form": {
+      "titleCreate": "Groep Aanmaken",
+      "titleEdit": "Groep Bewerken",
+      "name": "Naam",
+      "namePlaceholder": "Voer groepsnaam in",
+      "description": "Beschrijving",
+      "descriptionPlaceholder": "Optionele beschrijving",
+      "maxFileSize": "Max. Bestandsgrootte",
+      "maxTotalStorage": "Max. Totale Opslag",
+      "inherit": "Erven (globale standaard)",
+      "unlimited": "Onbeperkt",
+      "custom": "Aangepast",
+      "create": "Groep Aanmaken",
+      "save": "Wijzigingen Opslaan"
+    },
+    "delete": {
+      "title": "Groep Verwijderen",
+      "confirmationWithMembers": "Deze groep heeft {count} lid/leden. Ze worden ontkoppeld en hun quota keren terug naar de globale standaardwaarden.",
+      "confirmation": "Weet u zeker dat u deze groep wilt verwijderen?",
+      "confirm": "Groep Verwijderen"
+    },
+    "detail": {
+      "title": "Groepdetails",
+      "members": "Leden",
+      "addMember": "Lid Toevoegen",
+      "searchUsers": "Gebruikers zoeken...",
+      "noMembers": "Geen leden in deze groep.",
+      "remove": "Verwijderen",
+      "moveWarning": "Deze gebruiker bevindt zich momenteel in groep \"{groupName}\". Ze worden naar deze groep verplaatst.",
+      "storageUsed": "Gebruikte Opslag"
+    },
+    "validation": {
+      "nameRequired": "Groepsnaam is vereist"
+    },
+    "messages": {
+      "createSuccess": "Groep succesvol aangemaakt",
+      "updateSuccess": "Groep succesvol bijgewerkt",
+      "deleteSuccess": "Groep succesvol verwijderd",
+      "memberAdded": "Lid toegevoegd aan groep",
+      "memberRemoved": "Lid verwijderd uit groep"
+    },
+    "errors": {
+      "submitFailed": "Kan groep niet {mode}",
+      "deleteFailed": "Kan groep niet verwijderen",
+      "memberAddFailed": "Kan lid niet toevoegen",
+      "memberRemoveFailed": "Kan lid niet verwijderen"
+    },
+    "actions": {
+      "viewDetails": "Details Bekijken",
+      "edit": "Bewerken",
+      "delete": "Verwijderen"
+    }
+  },
   "users": {
     "modes": {
       "create": "aanmaken",
@@ -1976,6 +2048,9 @@
       "role": "Rol",
       "roleUser": "Gebruiker",
       "roleAdmin": "Beheerder",
+      "group": "Groep",
+      "noGroup": "Geen Groep",
+      "groupSaveError": "Mislukt om groepstoewijzing bij te werken",
       "create": "Aanmaken",
       "save": "Opslaan",
       "quota": {
@@ -1990,7 +2065,11 @@
         "currentUsage": "Huidig gebruik",
         "effectiveMaxFileSize": "Effectieve maximale bestandsgrootte",
         "effectiveMaxStorage": "Effectieve maximale totale opslag",
-        "usagePercent": "Gebruik"
+        "usagePercent": "Gebruik",
+        "sourceUser": "Gebruikersoverschrijving",
+        "sourceGroup": "Groep",
+        "sourceGlobal": "Globale standaard",
+        "sourceAdminDefault": "Beheerder standaard"
       }
     },
     "status": {

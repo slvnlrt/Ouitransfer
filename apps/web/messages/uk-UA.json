@@ -662,6 +662,7 @@
     "customization": "Налаштування",
     "settings": "Налаштування",
     "usersManagement": "Управління користувачами",
+    "groupsManagement": "Групи",
     "logout": "Вийти"
   },
   "navigation": {
@@ -1938,6 +1939,77 @@
       "storageUnavailable": "Служба зберігання недоступна. Спробуйте пізніше."
     }
   },
+  "groups": {
+    "header": {
+      "title": "Групи",
+      "management": "Управління Групами",
+      "addGroup": "Створити Групу"
+    },
+    "table": {
+      "name": "Назва",
+      "description": "Опис",
+      "members": "Учасники",
+      "maxFileSize": "Макс. розмір файлу",
+      "maxStorage": "Макс. сховище",
+      "storageUsed": "Використано сховища",
+      "actions": "Дії",
+      "inherited": "Успадковано",
+      "unlimited": "Без обмежень",
+      "empty": "Груп поки немає. Створіть одну для початку."
+    },
+    "form": {
+      "titleCreate": "Створити Групу",
+      "titleEdit": "Редагувати Групу",
+      "name": "Назва",
+      "namePlaceholder": "Введіть назву групи",
+      "description": "Опис",
+      "descriptionPlaceholder": "Необов'язковий опис",
+      "maxFileSize": "Макс. розмір файлу",
+      "maxTotalStorage": "Макс. загальне сховище",
+      "inherit": "Успадкувати (глобальне за замовчуванням)",
+      "unlimited": "Без обмежень",
+      "custom": "Користувацький",
+      "create": "Створити Групу",
+      "save": "Зберегти Зміни"
+    },
+    "delete": {
+      "title": "Видалити Групу",
+      "confirmationWithMembers": "Ця група має {count} учасника/учасників. Їх буде відкріплено, а їхні квоти повернуться до глобальних значень за замовчуванням.",
+      "confirmation": "Ви впевнені, що хочете видалити цю групу?",
+      "confirm": "Видалити Групу"
+    },
+    "detail": {
+      "title": "Деталі Групи",
+      "members": "Учасники",
+      "addMember": "Додати Учасника",
+      "searchUsers": "Пошук користувачів...",
+      "noMembers": "У цій групі немає учасників.",
+      "remove": "Видалити",
+      "moveWarning": "Цей користувач зараз знаходиться в групі \"{groupName}\". Він буде переміщений до цієї групи.",
+      "storageUsed": "Використано сховища"
+    },
+    "validation": {
+      "nameRequired": "Назва групи обов'язкова"
+    },
+    "messages": {
+      "createSuccess": "Групу успішно створено",
+      "updateSuccess": "Групу успішно оновлено",
+      "deleteSuccess": "Групу успішно видалено",
+      "memberAdded": "Учасника додано до групи",
+      "memberRemoved": "Учасника видалено з групи"
+    },
+    "errors": {
+      "submitFailed": "Не вдалося {mode} групу",
+      "deleteFailed": "Не вдалося видалити групу",
+      "memberAddFailed": "Не вдалося додати учасника",
+      "memberRemoveFailed": "Не вдалося видалити учасника"
+    },
+    "actions": {
+      "viewDetails": "Переглянути Деталі",
+      "edit": "Редагувати",
+      "delete": "Видалити"
+    }
+  },
   "users": {
     "modes": {
       "create": "створити",
@@ -1980,6 +2052,9 @@
       "role": "Роль",
       "roleUser": "Користувач",
       "roleAdmin": "Адміністратор",
+      "group": "Група",
+      "noGroup": "Без групи",
+      "groupSaveError": "Не вдалося оновити призначення групи",
       "create": "Створити",
       "save": "Зберегти",
       "quota": {
@@ -1994,7 +2069,11 @@
         "currentUsage": "Поточне використання",
         "effectiveMaxFileSize": "Фактичний максимальний розмір файлу",
         "effectiveMaxStorage": "Фактичний максимальний загальний обсяг",
-        "usagePercent": "Використання"
+        "usagePercent": "Використання",
+        "sourceUser": "Перевизначення користувача",
+        "sourceGroup": "Група",
+        "sourceGlobal": "Глобальне значення за замовчуванням",
+        "sourceAdminDefault": "Значення за замовчуванням адміністратора"
       }
     },
     "status": {
