@@ -37,13 +37,3 @@ export const DEFAULT_FORM_VALUES: CreateReverseShareFormData = {
   noSizeLimit: true,
   allFileTypes: true,
 };
-
-interface WatchedValues {
-  isPasswordProtected: boolean;
-  hasExpiration: boolean;
-  hasFileLimits: boolean;
-  hasFieldRequirements: boolean;
-  noFilesLimit: boolean;
-  noSizeLimit: boolean;
-  allFileTypes: boolean;
-}

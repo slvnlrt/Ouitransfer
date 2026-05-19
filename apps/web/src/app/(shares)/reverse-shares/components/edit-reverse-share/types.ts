@@ -24,13 +24,3 @@ export const DEFAULT_VALUES = {
   ZERO_STRING: "0",
   PAGE_LAYOUT: "DEFAULT" as const,
 } as const;
-
-interface WatchedValues {
-  hasExpiration: boolean;
-  hasFileLimits: boolean;
-  hasFieldRequirements: boolean;
-  noFilesLimit: boolean;
-  noSizeLimit: boolean;
-  allFileTypes: boolean;
-  hasPassword: boolean;
-}
