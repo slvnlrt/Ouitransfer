@@ -95,4 +95,12 @@ export const queryKeys = {
     all: ["admin"] as const,
     stats: () => [...queryKeys.admin.all, "stats"] as const,
   },
+
+  ldap: {
+    all: ["ldap"] as const,
+    config: () => [...queryKeys.ldap.all, "config"] as const,
+    status: () => [...queryKeys.ldap.all, "status"] as const,
+    syncLogs: () => [...queryKeys.ldap.all, "syncLogs"] as const,
+    syncLogDetail: (id: string) => [...queryKeys.ldap.all, "syncLog", id] as const,
+  },
 } as const;
