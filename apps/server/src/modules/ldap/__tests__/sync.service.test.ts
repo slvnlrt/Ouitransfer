@@ -6,9 +6,10 @@ vi.mock("../../../shared/prisma.js", () => ({
   prisma: {
     user: {
       findMany: vi.fn(),
-      findUnique: vi.fn(),
+      findFirst: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
+      updateMany: vi.fn(),
     },
     group: {
       findMany: vi.fn(),
@@ -16,6 +17,7 @@ vi.mock("../../../shared/prisma.js", () => ({
     passwordReset: {
       create: vi.fn(),
     },
+    $transaction: vi.fn(),
   },
 }));
 
@@ -50,7 +52,7 @@ vi.mock("../encryption.js", () => ({
 vi.mock("../../email/service.js", () => ({
   // biome-ignore lint/suspicious/noExplicitAny: vi mock constructor
   EmailService: vi.fn().mockImplementation(function (this: any) {
-    this.sendPasswordResetEmail = vi.fn();
+    this.sendLdapWelcomeEmail = vi.fn();
   }),
 }));
 
@@ -92,6 +94,7 @@ const defaultConfig = {
   displayNameAttribute: "displayName",
   syncIntervalMinutes: 360,
   useTls: true,
+  tlsSkipVerify: false,
   appUrl: "https://transfer.corp.local",
   createdAt: new Date(),
   updatedAt: new Date(),
@@ -131,7 +134,16 @@ describe("LdapSyncService", () => {
     // Re-apply default return values for prisma mocks after clearAllMocks
     vi.mocked(prisma.group.findMany).mockResolvedValue([]);
     vi.mocked(prisma.user.findMany).mockResolvedValue([]);
-    vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
+    vi.mocked(prisma.user.findFirst).mockResolvedValue(null);
+    vi.mocked(prisma.user.updateMany).mockResolvedValue({ count: 0 });
+    // $transaction: by default, execute the callback with prisma as tx
+    vi.mocked(prisma.$transaction).mockImplementation(async (fn) => {
+      if (typeof fn === "function") {
+        return fn(prisma);
+      }
+      // Array-style transactions
+      return Promise.all(fn);
+    });
     vi.mocked(prisma.passwordReset.create).mockResolvedValue({
       id: "pr-1",
       userId: "u-1",
@@ -190,12 +202,14 @@ describe("LdapSyncService", () => {
     await new Promise((r) => setTimeout(r, 0));
 
     // A second call must throw immediately
-    await expect(service.runSync("manual")).rejects.toThrow(ConflictError);
-
-    // Unblock the first sync so the finally block resets the mutex
-    vi.mocked(syncRepo.complete).mockResolvedValue({ ...defaultLog, status: "success" });
-    resolveFirst(defaultLog);
-    await firstSync.catch(() => {});
+    try {
+      await expect(service.runSync("manual")).rejects.toThrow(ConflictError);
+    } finally {
+      // Always unblock the first sync so the finally block resets the mutex
+      vi.mocked(syncRepo.complete).mockResolvedValue({ ...defaultLog, status: "success" });
+      resolveFirst(defaultLog);
+      await firstSync.catch(() => {});
+    }
   });
 
   // ────────────────────────────────────────────────────────────────────────────
@@ -210,11 +224,7 @@ describe("LdapSyncService", () => {
       memberOf: [],
     };
 
-    const { service, syncRepo } = makeService([adUser]);
-
-    vi.mocked(prisma.user.findMany).mockResolvedValue([]);
-    vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
-    vi.mocked(prisma.user.create).mockResolvedValue({
+    const newUserRecord = {
       id: "new-user-1",
       firstName: "John",
       lastName: "Doe",
@@ -235,6 +245,20 @@ describe("LdapSyncService", () => {
       tokenVersion: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
+    };
+
+    const { service, syncRepo } = makeService([adUser]);
+
+    vi.mocked(prisma.user.findMany).mockResolvedValue([]);
+    vi.mocked(prisma.user.findFirst).mockResolvedValue(null);
+    vi.mocked(prisma.user.create).mockResolvedValue(newUserRecord);
+
+    // $transaction callback returns the created user and token
+    vi.mocked(prisma.$transaction).mockImplementation(async (fn) => {
+      if (typeof fn === "function") {
+        return fn(prisma);
+      }
+      return Promise.all(fn);
     });
 
     await service.runSync("manual");
@@ -272,8 +296,8 @@ describe("LdapSyncService", () => {
     const { service, syncRepo } = makeService([adUser]);
 
     vi.mocked(prisma.user.findMany).mockResolvedValue([]);
-    // Email already taken by a non-LDAP account
-    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+    // Email already taken by a non-LDAP account (findFirst now used for OR query)
+    vi.mocked(prisma.user.findFirst).mockResolvedValue({
       id: "local-user-1",
       username: "jdoe",
       email: "jdoe@corp.local",
@@ -364,7 +388,7 @@ describe("LdapSyncService", () => {
   });
 
   // ────────────────────────────────────────────────────────────────────────────
-  // 5. Deactivate local LDAP user not found in AD
+  // 5. Deactivate local LDAP user not found in AD (batch)
   // ────────────────────────────────────────────────────────────────────────────
   it("should deactivate local LDAP user not found in AD", async () => {
     // AD returns no users
@@ -393,16 +417,13 @@ describe("LdapSyncService", () => {
       updatedAt: new Date(),
     };
     vi.mocked(prisma.user.findMany).mockResolvedValue([activeLocalLdapUser]);
-    vi.mocked(prisma.user.update).mockResolvedValue({
-      ...activeLocalLdapUser,
-      isActive: false,
-    });
+    vi.mocked(prisma.user.updateMany).mockResolvedValue({ count: 1 });
 
     await service.runSync("manual");
 
-    expect(vi.mocked(prisma.user.update)).toHaveBeenCalledWith(
+    expect(vi.mocked(prisma.user.updateMany)).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { id: "user-1" },
+        where: { id: { in: ["user-1"] } },
         data: expect.objectContaining({ isActive: false }),
       }),
     );
@@ -485,11 +506,7 @@ describe("LdapSyncService", () => {
       memberOf: [groupDn1, groupDn2],
     };
 
-    const { service } = makeService([adUser]);
-
-    vi.mocked(prisma.user.findMany).mockResolvedValue([]);
-    vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
-    vi.mocked(prisma.user.create).mockResolvedValue({
+    const newUserRecord = {
       id: "new-user-1",
       username: "jdoe",
       email: "jdoe@corp.local",
@@ -510,7 +527,13 @@ describe("LdapSyncService", () => {
       tokenVersion: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
-    });
+    };
+
+    const { service } = makeService([adUser]);
+
+    vi.mocked(prisma.user.findMany).mockResolvedValue([]);
+    vi.mocked(prisma.user.findFirst).mockResolvedValue(null);
+    vi.mocked(prisma.user.create).mockResolvedValue(newUserRecord);
 
     // Two groups with ldapDn — first match in memberOf should win
     vi.mocked(prisma.group.findMany).mockResolvedValue([
@@ -587,7 +610,7 @@ describe("LdapSyncService", () => {
     const { service } = makeService([adUser]);
 
     vi.mocked(prisma.user.findMany).mockResolvedValue([]);
-    vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
+    vi.mocked(prisma.user.findFirst).mockResolvedValue(null);
     vi.mocked(prisma.user.create).mockResolvedValue({
       id: "new-1",
       username: "jpdupont",
@@ -679,5 +702,14 @@ describe("LdapSyncService", () => {
   it("isSyncInProgress() should return false when no sync running", () => {
     const service = new LdapSyncService();
     expect(service.isSyncInProgress()).toBe(false);
+  });
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // 12. Parse "Last, First" display name format (M6)
+  // ────────────────────────────────────────────────────────────────────────────
+  it("should parse 'Last, First' display name format", () => {
+    const service = new LdapSyncService();
+    const result = service.parseDisplayName("Dupont, Jean", "jdupont");
+    expect(result).toEqual({ firstName: "Jean", lastName: "Dupont" });
   });
 });

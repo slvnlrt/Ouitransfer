@@ -3,9 +3,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock("../../../shared/prisma.js", () => ({
   prisma: {
     ldapConfig: {
-      findFirst: vi.fn(),
-      create: vi.fn(),
-      update: vi.fn(),
+      findUnique: vi.fn(),
+      upsert: vi.fn(),
     },
   },
 }));
@@ -23,15 +22,17 @@ describe("LdapConfigRepository", () => {
 
   describe("get", () => {
     it("should return null when no config exists", async () => {
-      vi.mocked(prisma.ldapConfig.findFirst).mockResolvedValue(null);
+      vi.mocked(prisma.ldapConfig.findUnique).mockResolvedValue(null);
       const result = await repository.get();
       expect(result).toBeNull();
-      expect(vi.mocked(prisma.ldapConfig.findFirst)).toHaveBeenCalledOnce();
+      expect(vi.mocked(prisma.ldapConfig.findUnique)).toHaveBeenCalledWith({
+        where: { id: "ldap-config" },
+      });
     });
 
     it("should return config when it exists", async () => {
       const config = {
-        id: "config-1",
+        id: "ldap-config",
         enabled: true,
         serverUrl: "ldaps://ad.corp.local:636",
         bindDn: "cn=svc,dc=corp,dc=local",
@@ -43,11 +44,12 @@ describe("LdapConfigRepository", () => {
         displayNameAttribute: "displayName",
         syncIntervalMinutes: 360,
         useTls: true,
+        tlsSkipVerify: false,
         appUrl: "https://transfer.corp.local",
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      vi.mocked(prisma.ldapConfig.findFirst).mockResolvedValue(config);
+      vi.mocked(prisma.ldapConfig.findUnique).mockResolvedValue(config);
 
       const result = await repository.get();
       expect(result).toEqual(config);
@@ -67,13 +69,13 @@ describe("LdapConfigRepository", () => {
       displayNameAttribute: "displayName",
       syncIntervalMinutes: 360,
       useTls: true,
+      tlsSkipVerify: false,
       appUrl: null,
     };
 
-    it("should create config when none exists", async () => {
-      vi.mocked(prisma.ldapConfig.findFirst).mockResolvedValue(null);
-      vi.mocked(prisma.ldapConfig.create).mockResolvedValue({
-        id: "new-1",
+    it("should upsert config with singleton ID", async () => {
+      vi.mocked(prisma.ldapConfig.upsert).mockResolvedValue({
+        id: "ldap-config",
         ...configData,
         appUrl: null,
         createdAt: new Date(),
@@ -82,30 +84,10 @@ describe("LdapConfigRepository", () => {
 
       await repository.upsert(configData);
 
-      expect(vi.mocked(prisma.ldapConfig.create)).toHaveBeenCalledWith({
-        data: configData,
-      });
-    });
-
-    it("should update config when one exists", async () => {
-      const existing = {
-        id: "existing-1",
-        ...configData,
-        appUrl: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      vi.mocked(prisma.ldapConfig.findFirst).mockResolvedValue(existing);
-      vi.mocked(prisma.ldapConfig.update).mockResolvedValue({
-        ...existing,
-        ...configData,
-      });
-
-      await repository.upsert(configData);
-
-      expect(vi.mocked(prisma.ldapConfig.update)).toHaveBeenCalledWith({
-        where: { id: "existing-1" },
-        data: configData,
+      expect(vi.mocked(prisma.ldapConfig.upsert)).toHaveBeenCalledWith({
+        where: { id: "ldap-config" },
+        update: configData,
+        create: { id: "ldap-config", ...configData },
       });
     });
   });

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createAdminPreValidation } from "../../middleware/admin-prevalidation.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { LdapController } from "./controller.js";
+import { LdapConfigSchema, LdapTestSchema } from "./dto.js";
 
 export async function ldapRoutes(app: FastifyInstance) {
   const controller = new LdapController();
@@ -26,14 +27,14 @@ export async function ldapRoutes(app: FastifyInstance) {
     handler: controller.getConfig.bind(controller),
   });
 
-  // PUT /admin/ldap/config
+  // PUT /admin/ldap/config — body validated by Fastify via LdapConfigSchema
   app.put("/admin/ldap/config", {
     preValidation: [adminPreValidation],
     schema: {
       tags: ["ldap"],
       operationId: "updateLdapConfig",
       summary: "Create or update LDAP configuration",
-      body: z.object({}).passthrough(),
+      body: LdapConfigSchema,
       response: {
         200: z.object({}).passthrough(),
         400: ErrorResponseSchema,
@@ -44,14 +45,14 @@ export async function ldapRoutes(app: FastifyInstance) {
     handler: controller.updateConfig.bind(controller),
   });
 
-  // POST /admin/ldap/test
+  // POST /admin/ldap/test — body validated by Fastify via LdapTestSchema
   app.post("/admin/ldap/test", {
     preValidation: [adminPreValidation],
     schema: {
       tags: ["ldap"],
       operationId: "testLdapConnection",
       summary: "Test LDAP connection",
-      body: z.object({}).passthrough(),
+      body: LdapTestSchema,
       response: {
         200: z.object({
           success: z.boolean(),

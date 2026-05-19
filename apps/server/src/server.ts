@@ -95,8 +95,8 @@ async function startServer() {
   app.register(groupRoutes);
   app.register(ldapRoutes);
 
-  // Initialize LDAP sync scheduler if configured
-  await initSchedulerOnBoot();
+  // Initialize LDAP sync scheduler if configured (fire-and-forget — has internal try/catch)
+  void initSchedulerOnBoot();
 
   if (isInternalStorage) {
     app.log.info("Using internal storage");

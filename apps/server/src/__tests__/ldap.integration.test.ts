@@ -14,17 +14,21 @@ vi.mock("../shared/prisma.js", () => ({
     user: {
       count: vi.fn().mockResolvedValue(1),
       findUnique: vi.fn().mockResolvedValue(null),
+      findFirst: vi.fn().mockResolvedValue(null),
       findMany: vi.fn().mockResolvedValue([]),
       create: vi.fn(),
       update: vi.fn(),
+      updateMany: vi.fn().mockResolvedValue({ count: 0 }),
     },
     group: {
       findMany: vi.fn().mockResolvedValue([]),
     },
     ldapConfig: {
       findFirst: vi.fn().mockResolvedValue(null),
+      findUnique: vi.fn().mockResolvedValue(null),
       create: vi.fn(),
       update: vi.fn(),
+      upsert: vi.fn(),
     },
     ldapSyncLog: {
       create: vi.fn().mockResolvedValue({
@@ -42,6 +46,7 @@ vi.mock("../shared/prisma.js", () => ({
         createdAt: new Date("2026-01-01T10:00:00Z"),
       }),
       update: vi.fn(),
+      updateMany: vi.fn().mockResolvedValue({ count: 0 }),
       findMany: vi.fn().mockResolvedValue([]),
       count: vi.fn().mockResolvedValue(0),
       findUnique: vi.fn().mockResolvedValue(null),
@@ -50,6 +55,7 @@ vi.mock("../shared/prisma.js", () => ({
     passwordReset: {
       create: vi.fn(),
     },
+    $transaction: vi.fn(),
   },
 }));
 
@@ -86,6 +92,15 @@ vi.mock("ldapts", () => ({
     this.search = vi.fn().mockResolvedValue({ searchEntries: [] });
     this.unbind = vi.fn().mockResolvedValue(undefined);
   }),
+  // biome-ignore lint/suspicious/noExplicitAny: vi mock constructor
+  EqualityFilter: vi.fn().mockImplementation(function (this: any, opts: any) {
+    this.attribute = opts.attribute;
+    this.value = opts.value;
+  }),
+  // biome-ignore lint/suspicious/noExplicitAny: vi mock constructor
+  AndFilter: vi.fn().mockImplementation(function (this: any, opts: any) {
+    this.filters = opts.filters;
+  }),
 }));
 
 // ── Mock encryption — no ENCRYPTION_SECRET needed ────────────────────────────
@@ -99,7 +114,6 @@ vi.mock("../modules/ldap/sync.scheduler.js", () => ({
   startScheduler: vi.fn(),
   stopScheduler: vi.fn(),
   getNextSyncAt: vi.fn().mockReturnValue(null),
-  isSchedulerRunning: vi.fn().mockReturnValue(false),
   initSchedulerOnBoot: vi.fn().mockResolvedValue(undefined),
 }));
 
@@ -108,45 +122,54 @@ import { prisma } from "../shared/prisma.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-// ── Fixtures ──────────────────────────────────────────────────────────────────
+// ── Fixture helpers ──────────────────────────────────────────────────────────
 
-const defaultConfig = {
-  id: "cfg-1",
-  enabled: true,
-  serverUrl: "ldaps://ad.corp.local:636",
-  bindDn: "cn=svc,dc=corp,dc=local",
-  bindPassword: "encrypted-value",
-  searchBase: "DC=corp,DC=local",
-  syncGroupDn: "CN=OuiTransfer,OU=Groups,DC=corp,DC=local",
-  usernameAttribute: "sAMAccountName",
-  emailAttribute: "mail",
-  displayNameAttribute: "displayName",
-  syncIntervalMinutes: 360,
-  useTls: true,
-  appUrl: "https://transfer.corp.local",
-  createdAt: new Date("2026-01-01T00:00:00Z"),
-  updatedAt: new Date("2026-01-01T00:00:00Z"),
-};
+function makeConfig(overrides?: Record<string, unknown>) {
+  return {
+    id: "cfg-1",
+    enabled: true,
+    serverUrl: "ldaps://ad.corp.local:636",
+    bindDn: "cn=svc,dc=corp,dc=local",
+    bindPassword: "encrypted-value",
+    searchBase: "DC=corp,DC=local",
+    syncGroupDn: "CN=OuiTransfer,OU=Groups,DC=corp,DC=local",
+    usernameAttribute: "sAMAccountName",
+    emailAttribute: "mail",
+    displayNameAttribute: "displayName",
+    syncIntervalMinutes: 360,
+    useTls: true,
+    tlsSkipVerify: false,
+    appUrl: "https://transfer.corp.local",
+    createdAt: new Date("2026-01-01T00:00:00Z"),
+    updatedAt: new Date("2026-01-01T00:00:00Z"),
+    ...overrides,
+  };
+}
 
-const defaultLog = {
-  id: "log-1",
-  trigger: "manual",
-  status: "success",
-  startedAt: new Date("2026-01-01T10:00:00Z"),
-  completedAt: new Date("2026-01-01T10:05:00Z"),
-  usersCreated: 2,
-  usersUpdated: 1,
-  usersDeactivated: 0,
-  usersSkipped: 0,
-  usersReactivated: 0,
-  details: null,
-  createdAt: new Date("2026-01-01T10:00:00Z"),
-};
+function makeLog(overrides?: Record<string, unknown>) {
+  return {
+    id: "log-1",
+    trigger: "manual",
+    status: "success",
+    startedAt: new Date("2026-01-01T10:00:00Z"),
+    completedAt: new Date("2026-01-01T10:05:00Z"),
+    usersCreated: 2,
+    usersUpdated: 1,
+    usersDeactivated: 0,
+    usersSkipped: 0,
+    usersReactivated: 0,
+    details: null,
+    createdAt: new Date("2026-01-01T10:00:00Z"),
+    ...overrides,
+  };
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 
 describe("LDAP integration tests", () => {
   let app: FastifyInstance;
+  const defaultConfig = makeConfig();
+  const defaultLog = makeLog();
 
   beforeAll(async () => {
     vi.stubEnv("JWT_SECRET", "a]test-jwt-secret-32-chars-long!");
@@ -173,9 +196,12 @@ describe("LDAP integration tests", () => {
     // Default: 1 user exists (non-setup mode)
     vi.mocked(prisma.user.count).mockResolvedValue(1);
     vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
+    vi.mocked(prisma.user.findFirst).mockResolvedValue(null);
     vi.mocked(prisma.user.findMany).mockResolvedValue([]);
+    vi.mocked(prisma.user.updateMany).mockResolvedValue({ count: 0 });
     vi.mocked(prisma.group.findMany).mockResolvedValue([]);
     vi.mocked(prisma.ldapConfig.findFirst).mockResolvedValue(null);
+    vi.mocked(prisma.ldapConfig.findUnique).mockResolvedValue(null);
     vi.mocked(prisma.ldapSyncLog.findFirst).mockResolvedValue(null);
     vi.mocked(prisma.ldapSyncLog.findMany).mockResolvedValue([]);
     vi.mocked(prisma.ldapSyncLog.count).mockResolvedValue(0);
@@ -197,6 +223,13 @@ describe("LDAP integration tests", () => {
     vi.mocked(prisma.ldapSyncLog.update).mockResolvedValue({
       ...defaultLog,
     } as never);
+    vi.mocked(prisma.ldapSyncLog.updateMany).mockResolvedValue({ count: 0 });
+    vi.mocked(prisma.$transaction).mockImplementation(async (fn) => {
+      if (typeof fn === "function") {
+        return fn(prisma);
+      }
+      return Promise.all(fn);
+    });
   });
 
   // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -294,7 +327,7 @@ describe("LDAP integration tests", () => {
 
   describe("GET /admin/ldap/config", () => {
     it("returns { configured: false } when no config exists", async () => {
-      vi.mocked(prisma.ldapConfig.findFirst).mockResolvedValue(null);
+      vi.mocked(prisma.ldapConfig.findUnique).mockResolvedValue(null);
 
       const res = await app.inject({
         method: "GET",
@@ -307,7 +340,7 @@ describe("LDAP integration tests", () => {
     });
 
     it("returns config with masked password when config exists", async () => {
-      vi.mocked(prisma.ldapConfig.findFirst).mockResolvedValue(defaultConfig as never);
+      vi.mocked(prisma.ldapConfig.findUnique).mockResolvedValue(defaultConfig as never);
 
       const res = await app.inject({
         method: "GET",
@@ -331,6 +364,7 @@ describe("LDAP integration tests", () => {
       expect(body.displayNameAttribute).toBe("displayName");
       expect(body.syncIntervalMinutes).toBe(360);
       expect(body.useTls).toBe(true);
+      expect(body.tlsSkipVerify).toBe(false);
     });
   });
 
@@ -349,15 +383,13 @@ describe("LDAP integration tests", () => {
       displayNameAttribute: "displayName",
       syncIntervalMinutes: 360,
       useTls: true,
+      appUrl: "https://transfer.corp.local",
     };
 
     it("creates new config and returns masked password", async () => {
-      // No existing config → will create
-      vi.mocked(prisma.ldapConfig.findFirst).mockResolvedValue(null);
-      vi.mocked(prisma.ldapConfig.create).mockResolvedValue({
-        ...defaultConfig,
-        id: "cfg-new",
-      } as never);
+      // No existing config → upsert will create
+      vi.mocked(prisma.ldapConfig.findUnique).mockResolvedValue(null);
+      vi.mocked(prisma.ldapConfig.upsert).mockResolvedValue(makeConfig({ id: "cfg-new" }) as never);
 
       const { csrfToken, csrfCookie } = await getCsrf();
       const res = await app.inject({
@@ -371,16 +403,15 @@ describe("LDAP integration tests", () => {
       const body = res.json();
       expect(body.configured).toBe(true);
       expect(body.bindPassword).toBe("••••••••");
-      expect(prisma.ldapConfig.create).toHaveBeenCalled();
+      expect(prisma.ldapConfig.upsert).toHaveBeenCalled();
     });
 
     it("updates existing config and returns masked password", async () => {
-      // Existing config → will update
-      vi.mocked(prisma.ldapConfig.findFirst).mockResolvedValue(defaultConfig as never);
-      vi.mocked(prisma.ldapConfig.update).mockResolvedValue({
-        ...defaultConfig,
-        serverUrl: "ldaps://new-server:636",
-      } as never);
+      // Existing config → upsert will update
+      vi.mocked(prisma.ldapConfig.findUnique).mockResolvedValue(defaultConfig as never);
+      vi.mocked(prisma.ldapConfig.upsert).mockResolvedValue(
+        makeConfig({ serverUrl: "ldaps://new-server:636" }) as never,
+      );
 
       const { csrfToken, csrfCookie } = await getCsrf();
       const res = await app.inject({
@@ -394,12 +425,12 @@ describe("LDAP integration tests", () => {
       const body = res.json();
       expect(body.configured).toBe(true);
       expect(body.bindPassword).toBe("••••••••");
-      expect(prisma.ldapConfig.update).toHaveBeenCalled();
+      expect(prisma.ldapConfig.upsert).toHaveBeenCalled();
     });
 
     it("keeps existing bind password when masked password is sent", async () => {
-      vi.mocked(prisma.ldapConfig.findFirst).mockResolvedValue(defaultConfig as never);
-      vi.mocked(prisma.ldapConfig.update).mockResolvedValue(defaultConfig as never);
+      vi.mocked(prisma.ldapConfig.findUnique).mockResolvedValue(defaultConfig as never);
+      vi.mocked(prisma.ldapConfig.upsert).mockResolvedValue(defaultConfig as never);
 
       const { csrfToken, csrfCookie } = await getCsrf();
       const res = await app.inject({
@@ -410,10 +441,10 @@ describe("LDAP integration tests", () => {
       });
 
       expect(res.statusCode).toBe(200);
-      // The update should have been called with the stored (encrypted) password
-      expect(prisma.ldapConfig.update).toHaveBeenCalledWith(
+      // The upsert should have been called with the stored (encrypted) password
+      expect(prisma.ldapConfig.upsert).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: expect.objectContaining({
+          update: expect.objectContaining({
             bindPassword: "encrypted-value",
           }),
         }),
@@ -422,7 +453,7 @@ describe("LDAP integration tests", () => {
 
     it("returns 400 when bind password is empty for new config", async () => {
       // No existing config, no password provided
-      vi.mocked(prisma.ldapConfig.findFirst).mockResolvedValue(null);
+      vi.mocked(prisma.ldapConfig.findUnique).mockResolvedValue(null);
 
       const { csrfToken, csrfCookie } = await getCsrf();
       const res = await app.inject({
@@ -435,10 +466,9 @@ describe("LDAP integration tests", () => {
       expect(res.statusCode).toBe(400);
     });
 
-    it("returns 500 for missing required fields (raw ZodError from controller parse)", async () => {
-      // The controller calls LdapConfigSchema.parse(request.body) directly (not via Fastify
-      // schema validation), so a raw ZodError is thrown and becomes 500 via the global
-      // error handler's unknown-error branch.
+    it("returns 400 for missing required fields (Fastify schema validation)", async () => {
+      // Now that routes use LdapConfigSchema as the body schema, Fastify validates
+      // the body BEFORE the handler runs, returning a proper 400 with validation details.
       const { csrfToken, csrfCookie } = await getCsrf();
       const res = await app.inject({
         method: "PUT",
@@ -447,15 +477,14 @@ describe("LDAP integration tests", () => {
         payload: JSON.stringify({ enabled: true }), // Missing many required fields
       });
 
-      expect(res.statusCode).toBe(500);
+      expect(res.statusCode).toBe(400);
     });
 
     it("stops scheduler when config is disabled", async () => {
-      vi.mocked(prisma.ldapConfig.findFirst).mockResolvedValue(defaultConfig as never);
-      vi.mocked(prisma.ldapConfig.update).mockResolvedValue({
-        ...defaultConfig,
-        enabled: false,
-      } as never);
+      vi.mocked(prisma.ldapConfig.findUnique).mockResolvedValue(defaultConfig as never);
+      vi.mocked(prisma.ldapConfig.upsert).mockResolvedValue(
+        makeConfig({ enabled: false }) as never,
+      );
 
       const { stopScheduler } = await import("../modules/ldap/sync.scheduler.js");
 
@@ -502,9 +531,9 @@ describe("LDAP integration tests", () => {
       expect(typeof body.message).toBe("string");
     });
 
-    it("returns 500 when bind password is empty (raw ZodError from controller parse)", async () => {
-      // LdapTestSchema.parse() is called directly in the controller (not via Fastify schema
-      // validation), so ZodError becomes 500 via the global error handler.
+    it("returns 400 when bind password is empty (Fastify schema validation)", async () => {
+      // Now that routes use LdapTestSchema, Fastify validates the body and
+      // returns 400 for validation failures (instead of 500 from raw ZodError).
       const { csrfToken, csrfCookie } = await getCsrf();
       const res = await app.inject({
         method: "POST",
@@ -513,10 +542,10 @@ describe("LDAP integration tests", () => {
         payload: JSON.stringify({ ...validTestPayload, bindPassword: "" }),
       });
 
-      expect(res.statusCode).toBe(500);
+      expect(res.statusCode).toBe(400);
     });
 
-    it("returns 500 when serverUrl is missing (raw ZodError from controller parse)", async () => {
+    it("returns 400 when serverUrl is missing (Fastify schema validation)", async () => {
       const { csrfToken, csrfCookie } = await getCsrf();
       const { serverUrl: _ignored, ...withoutServerUrl } = validTestPayload;
       const res = await app.inject({
@@ -526,7 +555,7 @@ describe("LDAP integration tests", () => {
         payload: JSON.stringify(withoutServerUrl),
       });
 
-      expect(res.statusCode).toBe(500);
+      expect(res.statusCode).toBe(400);
     });
 
     it("returns 401 for unauthenticated request", async () => {
@@ -550,7 +579,7 @@ describe("LDAP integration tests", () => {
 
   describe("POST /admin/ldap/sync", () => {
     it("triggers sync and returns logId", async () => {
-      vi.mocked(prisma.ldapConfig.findFirst).mockResolvedValue(defaultConfig as never);
+      vi.mocked(prisma.ldapConfig.findUnique).mockResolvedValue(defaultConfig as never);
       vi.mocked(prisma.ldapSyncLog.create).mockResolvedValue({
         id: "log-trigger-1",
         trigger: "manual",
@@ -605,7 +634,7 @@ describe("LDAP integration tests", () => {
     it("returns 500 when LDAP config not found", async () => {
       // No config → sync service throws plain Error ("LDAP configuration not found")
       // which becomes 500 via the global error handler's unknown-error branch.
-      vi.mocked(prisma.ldapConfig.findFirst).mockResolvedValue(null);
+      vi.mocked(prisma.ldapConfig.findUnique).mockResolvedValue(null);
       vi.mocked(prisma.ldapSyncLog.create).mockResolvedValue({
         id: "log-err-1",
         trigger: "manual",
@@ -764,7 +793,7 @@ describe("LDAP integration tests", () => {
 
   describe("GET /admin/ldap/status", () => {
     it("returns status with configured=false when no config", async () => {
-      vi.mocked(prisma.ldapConfig.findFirst).mockResolvedValue(null);
+      vi.mocked(prisma.ldapConfig.findUnique).mockResolvedValue(null);
       vi.mocked(prisma.ldapSyncLog.findFirst).mockResolvedValue(null);
 
       const res = await app.inject({
@@ -783,7 +812,7 @@ describe("LDAP integration tests", () => {
     });
 
     it("returns status with config details when configured", async () => {
-      vi.mocked(prisma.ldapConfig.findFirst).mockResolvedValue(defaultConfig as never);
+      vi.mocked(prisma.ldapConfig.findUnique).mockResolvedValue(defaultConfig as never);
       vi.mocked(prisma.ldapSyncLog.findFirst).mockResolvedValue(defaultLog as never);
 
       const res = await app.inject({

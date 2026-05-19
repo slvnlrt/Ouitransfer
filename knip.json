@@ -11,11 +11,7 @@
       "ignoreDependencies": ["@prisma/client"]
     },
     "apps/server": {
-      "entry": [
-        "src/scripts/reset-password.ts",
-        "src/modules/ldap/ldap.client.ts",
-        "src/modules/ldap/sync.scheduler.ts"
-      ],
+      "entry": ["src/scripts/reset-password.ts"],
       "project": ["src/**/*.ts"],
       "ignoreDependencies": ["@vitest/coverage-v8"]
     },
