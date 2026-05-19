@@ -1,15 +1,34 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
 import { listGroups } from "@/http/endpoints/groups";
 import { getLdapConfig, testLdapConnection, updateLdapConfig } from "@/http/endpoints/ldap";
 import type { LdapTestResult } from "@/http/endpoints/ldap/types";
 import { queryKeys } from "@/lib/query-keys";
+import { parseApiError } from "@/utils/api-error";
 import type { GroupMappingItem, LdapConfigFormData } from "../types";
+
+const ldapConfigFormSchema = z.object({
+  enabled: z.boolean(),
+  serverUrl: z.string().min(1, "Server URL is required"),
+  bindDn: z.string().min(1, "Bind DN is required"),
+  bindPassword: z.string(), // empty = keep existing password on save
+  searchBase: z.string().min(1, "Search base is required"),
+  syncGroupDn: z.string().min(1, "Sync group DN is required"),
+  usernameAttribute: z.string().min(1, "Username attribute is required"),
+  emailAttribute: z.string().min(1, "Email attribute is required"),
+  displayNameAttribute: z.string().min(1, "Display name attribute is required"),
+  syncIntervalMinutes: z.number().int().min(15, "Minimum 15 minutes").max(10080, "Maximum 7 days"),
+  useTls: z.boolean(),
+  tlsSkipVerify: z.boolean(),
+  appUrl: z.string().url("Must be a valid URL").or(z.literal("")),
+});
 
 export function useLdapConfig() {
   const t = useTranslations();
@@ -37,6 +56,7 @@ export function useLdapConfig() {
     .map((g) => ({ id: g.id, name: g.name, ldapDn: g.ldapDn! }));
 
   const formMethods = useForm<LdapConfigFormData>({
+    resolver: zodResolver(ldapConfigFormSchema),
     defaultValues: {
       enabled: false,
       serverUrl: "",
@@ -49,6 +69,7 @@ export function useLdapConfig() {
       displayNameAttribute: "displayName",
       syncIntervalMinutes: 360,
       useTls: true,
+      tlsSkipVerify: false,
       appUrl: "",
     },
     values: configQuery.data?.configured
@@ -56,7 +77,7 @@ export function useLdapConfig() {
           enabled: configQuery.data.enabled ?? false,
           serverUrl: configQuery.data.serverUrl ?? "",
           bindDn: configQuery.data.bindDn ?? "",
-          bindPassword: configQuery.data.bindPassword ?? "",
+          bindPassword: "", // C-1: never populate with masked value from server
           searchBase: configQuery.data.searchBase ?? "",
           syncGroupDn: configQuery.data.syncGroupDn ?? "",
           usernameAttribute: configQuery.data.usernameAttribute ?? "sAMAccountName",
@@ -64,6 +85,7 @@ export function useLdapConfig() {
           displayNameAttribute: configQuery.data.displayNameAttribute ?? "displayName",
           syncIntervalMinutes: configQuery.data.syncIntervalMinutes ?? 360,
           useTls: configQuery.data.useTls ?? true,
+          tlsSkipVerify: configQuery.data.tlsSkipVerify ?? false,
           appUrl: configQuery.data.appUrl ?? "",
         }
       : undefined,
@@ -79,8 +101,9 @@ export function useLdapConfig() {
       queryClient.invalidateQueries({ queryKey: queryKeys.ldap.all });
       toast.success(t("ldap.config.saveSuccess"));
     },
-    onError: () => {
-      toast.error(t("ldap.config.saveError"));
+    onError: (error: unknown) => {
+      const apiError = parseApiError(error);
+      toast.error(apiError.message || t("ldap.config.saveError"));
     },
   });
 
@@ -97,6 +120,7 @@ export function useLdapConfig() {
         emailAttribute: values.emailAttribute,
         displayNameAttribute: values.displayNameAttribute,
         useTls: values.useTls,
+        tlsSkipVerify: values.tlsSkipVerify,
       });
     },
     onSuccess: (res) => {
@@ -107,8 +131,9 @@ export function useLdapConfig() {
         toast.error(res.data.message);
       }
     },
-    onError: () => {
-      toast.error(t("ldap.config.testError"));
+    onError: (error: unknown) => {
+      const apiError = parseApiError(error);
+      toast.error(apiError.message || t("ldap.config.testError"));
     },
   });
 

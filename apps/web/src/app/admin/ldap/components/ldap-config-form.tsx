@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle, Loader2, Server, XCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle, Loader2, Server, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,6 @@ import { Switch } from "@/components/ui/switch";
 import type { LdapConfigFormProps } from "../types";
 
 export function LdapConfigForm({
-  isLoading,
   isSaving,
   isTesting,
   testResult,
@@ -20,19 +19,17 @@ export function LdapConfigForm({
   onTest,
 }: LdapConfigFormProps) {
   const t = useTranslations();
-  const { register, handleSubmit, watch, setValue } = formMethods;
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = formMethods;
   const enabled = watch("enabled");
   const useTls = watch("useTls");
-
-  if (isLoading) {
-    return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-8">
-          <Loader2 className="h-6 w-6 animate-spin" />
-        </CardContent>
-      </Card>
-    );
-  }
+  const tlsSkipVerify = watch("tlsSkipVerify");
+  const bindPassword = watch("bindPassword");
 
   return (
     <Card>
@@ -68,9 +65,12 @@ export function LdapConfigForm({
                   placeholder="ldaps://ad.corp.local:636"
                   {...register("serverUrl")}
                 />
+                {errors.serverUrl && (
+                  <p className="text-sm text-destructive">{errors.serverUrl.message}</p>
+                )}
               </div>
-              <div className="flex items-end gap-4">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2 pt-6">
                   <Label htmlFor="useTls">{t("ldap.config.useTls")}</Label>
                   <Switch
                     id="useTls"
@@ -78,6 +78,20 @@ export function LdapConfigForm({
                     onCheckedChange={(checked) => setValue("useTls", checked)}
                   />
                 </div>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="tlsSkipVerify">{t("ldap.config.tlsSkipVerify")}</Label>
+                  <Switch
+                    id="tlsSkipVerify"
+                    checked={tlsSkipVerify}
+                    onCheckedChange={(checked) => setValue("tlsSkipVerify", checked)}
+                  />
+                </div>
+                {tlsSkipVerify && (
+                  <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
+                    <AlertTriangle className="h-3 w-3 shrink-0" />
+                    <span>{t("ldap.config.tlsSkipVerifyWarning")}</span>
+                  </div>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -88,15 +102,22 @@ export function LdapConfigForm({
                   placeholder="cn=svc-ouitransfer,ou=Service Accounts,dc=corp,dc=local"
                   {...register("bindDn")}
                 />
+                {errors.bindDn && (
+                  <p className="text-sm text-destructive">{errors.bindDn.message}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="bindPassword">{t("ldap.config.bindPassword")}</Label>
                 <Input
                   id="bindPassword"
                   type="password"
-                  placeholder="••••••••"
+                  autoComplete="new-password"
+                  placeholder={t("ldap.config.bindPasswordPlaceholder")}
                   {...register("bindPassword")}
                 />
+                {errors.bindPassword && (
+                  <p className="text-sm text-destructive">{errors.bindPassword.message}</p>
+                )}
               </div>
             </div>
           </div>
@@ -108,6 +129,9 @@ export function LdapConfigForm({
               <div className="space-y-2">
                 <Label htmlFor="searchBase">{t("ldap.config.searchBase")}</Label>
                 <Input id="searchBase" placeholder="DC=corp,DC=local" {...register("searchBase")} />
+                {errors.searchBase && (
+                  <p className="text-sm text-destructive">{errors.searchBase.message}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="syncGroupDn">{t("ldap.config.syncGroupDn")}</Label>
@@ -116,6 +140,9 @@ export function LdapConfigForm({
                   placeholder="CN=OuiTransfer Users,OU=Groups,DC=corp,DC=local"
                   {...register("syncGroupDn")}
                 />
+                {errors.syncGroupDn && (
+                  <p className="text-sm text-destructive">{errors.syncGroupDn.message}</p>
+                )}
               </div>
             </div>
           </div>
@@ -127,14 +154,23 @@ export function LdapConfigForm({
               <div className="space-y-2">
                 <Label htmlFor="usernameAttribute">{t("ldap.config.usernameAttr")}</Label>
                 <Input id="usernameAttribute" {...register("usernameAttribute")} />
+                {errors.usernameAttribute && (
+                  <p className="text-sm text-destructive">{errors.usernameAttribute.message}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="emailAttribute">{t("ldap.config.emailAttr")}</Label>
                 <Input id="emailAttribute" {...register("emailAttribute")} />
+                {errors.emailAttribute && (
+                  <p className="text-sm text-destructive">{errors.emailAttribute.message}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="displayNameAttribute">{t("ldap.config.displayNameAttr")}</Label>
                 <Input id="displayNameAttribute" {...register("displayNameAttribute")} />
+                {errors.displayNameAttribute && (
+                  <p className="text-sm text-destructive">{errors.displayNameAttribute.message}</p>
+                )}
               </div>
             </div>
           </div>
@@ -152,6 +188,9 @@ export function LdapConfigForm({
                   max={10080}
                   {...register("syncIntervalMinutes", { valueAsNumber: true })}
                 />
+                {errors.syncIntervalMinutes && (
+                  <p className="text-sm text-destructive">{errors.syncIntervalMinutes.message}</p>
+                )}
                 <p className="text-xs text-muted-foreground">{t("ldap.config.syncIntervalHelp")}</p>
               </div>
               <div className="space-y-2">
@@ -161,14 +200,19 @@ export function LdapConfigForm({
                   placeholder="https://transfer.company.com"
                   {...register("appUrl")}
                 />
+                {errors.appUrl && (
+                  <p className="text-sm text-destructive">{errors.appUrl.message}</p>
+                )}
                 <p className="text-xs text-muted-foreground">{t("ldap.config.appUrlHelp")}</p>
               </div>
             </div>
           </div>
 
-          {/* Test Result */}
+          {/* Test Result (I-6: ARIA live region) */}
           {testResult && (
             <div
+              role="status"
+              aria-live="polite"
               className={`flex items-center gap-2 rounded-md border p-3 ${
                 testResult.success
                   ? "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950"
@@ -195,7 +239,12 @@ export function LdapConfigForm({
               {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t("ldap.config.save")}
             </Button>
-            <Button type="button" variant="outline" onClick={onTest} disabled={isTesting}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onTest}
+              disabled={isTesting || !bindPassword}
+            >
               {isTesting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t("ldap.config.testConnection")}
             </Button>

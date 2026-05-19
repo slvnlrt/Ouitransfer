@@ -14,6 +14,7 @@ export interface LdapConfig {
   displayNameAttribute?: string;
   syncIntervalMinutes?: number;
   useTls?: boolean;
+  tlsSkipVerify?: boolean;
   appUrl?: string | null;
   createdAt?: string;
   updatedAt?: string;
@@ -31,6 +32,7 @@ export interface LdapConfigBody {
   displayNameAttribute: string;
   syncIntervalMinutes: number;
   useTls: boolean;
+  tlsSkipVerify?: boolean;
   appUrl?: string | null;
 }
 
@@ -44,6 +46,7 @@ export interface LdapTestBody {
   emailAttribute: string;
   displayNameAttribute: string;
   useTls: boolean;
+  tlsSkipVerify?: boolean;
 }
 
 export interface LdapTestResult {
@@ -75,6 +78,7 @@ export interface LdapStatus {
   configured: boolean;
   enabled: boolean;
   syncInProgress: boolean;
+  warnings?: string[];
   lastSync: {
     id: string;
     status: string;
