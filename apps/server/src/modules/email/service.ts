@@ -180,6 +180,32 @@ export class EmailService {
     });
   }
 
+  async sendLdapWelcomeEmail(to: string, resetToken: string, appUrl: string) {
+    const transporter = await this.createTransporter();
+    if (!transporter) {
+      throw new ValidationError("SMTP is not enabled");
+    }
+
+    const fromName = await getConfigValue("smtpFromName");
+    const fromEmail = await getConfigValue("smtpFromEmail");
+    const appName = await getConfigValue("appName");
+
+    await transporter.sendMail({
+      from: `"${fromName}" <${fromEmail}>`,
+      to,
+      subject: `${appName} - Welcome! Set Your Password`,
+      html: `
+        <h1>Welcome to ${appName}</h1>
+        <p>Your account has been created via directory synchronization.</p>
+        <p>Click the link below to set your password:</p>
+        <a href="${appUrl}/reset-password?token=${resetToken}">
+          Set Your Password
+        </a>
+        <p>This link will expire in 1 hour.</p>
+      `,
+    });
+  }
+
   async sendShareNotification(
     to: string,
     shareLink: string,
