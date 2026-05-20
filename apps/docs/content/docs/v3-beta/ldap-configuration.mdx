@@ -1,0 +1,342 @@
+---
+title: LDAP / Active Directory
+icon: Network
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+
+LDAP / Active Directory sync imports user accounts from your corporate Active Directory into Ouitransfer and keeps them up to date. AD is the source of truth for identity and group membership of imported users. **Authentication remains local** — users log in with app-specific passwords, not their AD credentials.
+
+## Overview
+
+When LDAP sync is enabled, Ouitransfer periodically connects to your AD server using a read-only service account, reads the members of a designated sync group, and reconciles the local user database:
+
+- **New members** are created as Ouitransfer users and receive a welcome email with a password-setup link.
+- **Existing members** have their name, email, and group updated to match AD.
+- **Members removed** from the sync group are deactivated (not deleted) — their files and shares are preserved.
+- **Returning members** (previously deactivated) are automatically reactivated.
+
+### Why app-specific passwords?
+
+Ouitransfer uses **LDAP as an import source, not an authentication proxy**. Users authenticate with a dedicated app password managed entirely within Ouitransfer.
+
+This design choice has concrete security benefits:
+
+- The server **never sees** AD passwords — only a read-only service account connects to AD during sync.
+- A compromised Ouitransfer server yields bcrypt hashes of app-specific passwords, not domain credentials.
+- AD passwords grant access to email, file shares, VPN, and more — the blast radius of a breach is far smaller with credential isolation.
+- The existing authentication stack (bcrypt, JWT, 2FA, account lockout) is reused as-is.
+- Sync continues even when AD is temporarily unreachable — users keep working.
+
+The "extra password" is a feature, not a limitation.
+
+---
+
+## Prerequisites
+
+Before configuring LDAP, ensure the following are in place:
+
+### 1. `ENCRYPTION_SECRET` environment variable
+
+Ouitransfer encrypts the LDAP bind password using AES-256-GCM. The encryption key is derived from `ENCRYPTION_SECRET`. This variable is **required** to use LDAP.
+
+Generate a secret:
+
+```bash
+openssl rand -hex 32
+```
+
+Add it to your environment:
+
+<Tabs items={["Docker Compose", ".env file"]}>
+  <Tab value="Docker Compose">
+```yaml
+services:
+  server:
+    environment:
+      ENCRYPTION_SECRET: "your-generated-secret-here"
+```
+  </Tab>
+  <Tab value=".env file">
+```bash
+ENCRYPTION_SECRET=your-generated-secret-here
+```
+  </Tab>
+</Tabs>
+
+<Callout type="warn">
+  Keep `ENCRYPTION_SECRET` consistent across restarts and deployments. If it changes, the stored bind password can no longer be decrypted and you will need to re-enter it in the configuration form.
+</Callout>
+
+### 2. AD service account
+
+You need a **read-only** Active Directory service account with permission to:
+
+- Bind to the AD server (authenticate)
+- Read group members (`member` attribute of the sync group)
+- Read user attributes (`sAMAccountName`, `mail`, `displayName`, `memberOf`)
+
+No write access to AD is required or recommended.
+
+### 3. Network access
+
+The Ouitransfer server must be able to reach your AD server:
+
+- **LDAPS (recommended)**: port 636
+- **STARTTLS**: port 389
+
+Ensure your firewall or security group allows outbound connections from the Ouitransfer server container to the AD server on the appropriate port.
+
+---
+
+## Configuration
+
+Navigate to **Admin → LDAP** to open the LDAP configuration page.
+
+### Connection settings
+
+| Field | Description | Example |
+|-------|-------------|---------|
+| **Server URL** | Full URL of your AD server, including protocol and port | `ldaps://ad.corp.local:636` |
+| **Bind DN** | Distinguished name of the service account | `CN=ldap-reader,OU=Service Accounts,DC=corp,DC=local` |
+| **Bind password** | Password of the service account (stored encrypted) | — |
+| **Search base** | Root DN for directory searches | `DC=corp,DC=local` |
+| **Sync group DN** | DN of the AD group whose members are imported | `CN=Ouitransfer Users,OU=Groups,DC=corp,DC=local` |
+
+### TLS settings
+
+| Field | Description | Default |
+|-------|-------------|---------|
+| **Use TLS** | `true` = LDAPS (port 636), `false` = STARTTLS (port 389) | `true` |
+| **Skip TLS verification** | Disable certificate validation (self-signed certs) | `false` |
+
+<Callout type="warn">
+  Only enable **Skip TLS verification** in development or lab environments. In production, use a trusted certificate to prevent man-in-the-middle attacks.
+</Callout>
+
+### Attribute mapping
+
+These fields map AD attributes to Ouitransfer user fields. The defaults work for standard Active Directory installations.
+
+| Field | Description | Default |
+|-------|-------------|---------|
+| **Username attribute** | AD attribute used as the Ouitransfer username | `sAMAccountName` |
+| **Email attribute** | AD attribute used as the email address | `mail` |
+| **Display name attribute** | AD attribute used for the user's full name | `displayName` |
+
+### Sync interval
+
+The **Sync interval** (in minutes) controls how often the automatic sync runs. It must be between 15 minutes and 7 days (10,080 minutes). The default is **360 minutes** (6 hours).
+
+### Application URL
+
+The **App URL** field (optional) is the public base URL of your Ouitransfer instance (e.g., `https://transfer.company.com`). It is used to generate the password-setup link in the welcome email sent to new users. If left blank, new users will not receive a welcome email.
+
+---
+
+## Testing the connection
+
+Before enabling LDAP, use the **Test Connection** button to verify your settings. The test:
+
+1. Connects to the AD server using the provided URL and TLS settings
+2. Binds with the service account credentials
+3. Searches for the sync group and reads its direct members
+4. Returns the result: bind status, whether the group was found, and the number of members
+
+<Callout type="info">
+  The connection test uses the credentials entered in the form at test time, not the saved configuration. You can test before saving.
+</Callout>
+
+A successful test response looks like:
+
+```json
+{
+  "success": true,
+  "memberCount": 42,
+  "message": "Connection successful. Found 42 members in the sync group."
+}
+```
+
+If the test fails, the response includes an error message describing the failure (bind error, group not found, TLS error, etc.). See [Troubleshooting](#troubleshooting) for common issues.
+
+---
+
+## Group mapping
+
+Ouitransfer groups can be mapped to AD groups so that sync automatically assigns users to the correct group. To configure a mapping:
+
+1. Navigate to **Admin → Group Management**
+2. Edit a group and set the **LDAP DN** field to the DN of the corresponding AD group
+3. The DN must be the full distinguished name of the AD group (e.g., `CN=Finance,OU=Groups,DC=corp,DC=local`)
+
+During each sync, for each imported user, Ouitransfer checks the user's `memberOf` attribute (direct group memberships only) and assigns the **first matching group** — the first Ouitransfer group whose LDAP DN appears in the user's AD group list.
+
+**Behavior details:**
+
+- Only direct AD group memberships are considered. Nested/recursive group resolution is not supported.
+- If a user belongs to multiple AD groups that each have a mapping, the first match wins (ordering is not guaranteed; avoid overlapping memberships for predictable results).
+- If no mapped group matches the user's AD groups, the user is assigned no group (`null`).
+- Group assignment is **overwritten on every sync** — if you manually reassign a synced user's group in Ouitransfer, it will be reset on the next sync.
+
+<Callout type="info">
+  The LDAP page shows a read-only summary of all groups that currently have a LDAP DN configured. Use this as a quick reference when setting up your sync group DN.
+</Callout>
+
+---
+
+## Running a sync
+
+### Manual sync
+
+Click the **Sync Now** button on the LDAP page to trigger an immediate sync. The button is disabled while a sync is in progress.
+
+### Automatic sync
+
+If LDAP is enabled and a sync interval is configured, the scheduler starts automatically when the server boots and runs a sync at the configured interval. The LDAP page shows the **Next scheduled sync** time.
+
+The scheduler uses chained timeouts (not a fixed cron expression) so overlapping syncs are impossible — if a sync is already running when the next interval fires, the scheduled trigger is skipped.
+
+**Re-entrance guard**: only one sync can run at a time, whether triggered manually or by the scheduler. If you attempt a manual sync while one is already running, the API returns a `409 Conflict` response.
+
+### What happens during a sync
+
+1. The server binds to AD using the service account.
+2. It searches for direct members of the configured sync group.
+3. For each AD user:
+   - Reads `username`, `email`, and `displayName` via the configured attribute mapping.
+   - Reads direct group memberships (`memberOf`) for group mapping.
+4. The server compares AD users against local LDAP-managed users and applies the following rules:
+
+| Scenario | Action |
+|----------|--------|
+| User in AD, not in local DB | Create user, send welcome email |
+| User in AD, exists in local DB | Update name, email, group if changed |
+| User not in AD, active in local DB | Deactivate (`isActive = false`) |
+| User not in AD, deactivated in local DB | Already deactivated — no change |
+| User returns to AD after deactivation | Reactivate (`isActive = true`) |
+| Email or username conflicts with a local account | Skip — logged as a skip event |
+
+5. A sync log is written with counts and details.
+
+<Callout type="info">
+  Synced users are **never deleted**. Deactivation preserves all files and shares. A deactivated user cannot log in but their data remains intact.
+</Callout>
+
+---
+
+## Sync logs
+
+The LDAP page displays a history of all sync runs. Each log entry shows:
+
+- **Date and time** the sync started
+- **Trigger** (`manual` or `scheduled`)
+- **Duration**
+- **Stats**: users created, updated, deactivated, reactivated, and skipped
+- **Status** badge
+
+### Status types
+
+| Status | Meaning |
+|--------|---------|
+| `success` | All users processed without errors or skips |
+| `partial` | Sync completed but some users were skipped or had non-fatal errors |
+| `error` | Critical failure — the sync could not complete (e.g., bind failed, LDAP unreachable) |
+
+Click any log row to open the **detail view**, which shows the full list of skip and error events with their messages. Use this to investigate why specific users were not synced.
+
+---
+
+## User experience
+
+### Welcome email
+
+When a new user is created by a sync, Ouitransfer sends a welcome email containing a **password-setup link** (valid for 7 days). The user clicks the link to set their app password and then logs in normally. If the `App URL` field is not configured, no welcome email is sent and an admin must set the password manually.
+
+### LDAP badge
+
+Users imported from AD display an **LDAP** badge in the User Management list. This indicates the account is managed by AD sync.
+
+### Managed fields
+
+The following fields are **controlled by AD** and will be overwritten on the next sync:
+
+- First and last name (from `displayName`)
+- Email address
+- Group membership
+
+Admins can still modify other user fields (admin flag, quota overrides, 2FA settings) without them being affected by sync.
+
+### Password management
+
+Synced users manage their own app password through the standard Ouitransfer password flows:
+
+- **Initial setup**: password-setup link in the welcome email
+- **Self-service reset**: forgot-password flow on the login page (resets the app password only — no interaction with AD)
+- **Admin reset**: admins can set a password directly in User Management
+
+---
+
+## Troubleshooting
+
+### Bind failed
+
+**Symptom**: test connection returns a bind error or `error` status sync log with phase `connect`.
+
+**Checks**:
+- Verify the bind DN is the full distinguished name of the service account (not just the username).
+- Confirm the bind password is correct. The password field is masked after saving — re-enter it and re-save if you suspect it changed.
+- Ensure the `ENCRYPTION_SECRET` environment variable is set and has not changed since the configuration was last saved.
+- Verify the server URL is reachable from the Ouitransfer server container.
+
+### No users found / empty sync group
+
+**Symptom**: sync completes with `usersCreated = 0` and no errors.
+
+**Checks**:
+- Confirm the sync group DN is the full, correct distinguished name.
+- Verify the service account has read access to the group's `member` attribute.
+- Use the **Test Connection** button — it reports the member count directly.
+- Ouitransfer only reads **direct** members. Users in nested groups are not included.
+
+### TLS / certificate errors
+
+**Symptom**: test connection or sync fails with a TLS handshake or certificate error.
+
+**Checks**:
+- If using a self-signed certificate, enable **Skip TLS verification** (dev/lab only).
+- If the AD server uses LDAPS (port 636), ensure `Use TLS` is enabled.
+- If using STARTTLS (port 389), disable `Use TLS`.
+- Ensure there is no firewall blocking the connection on the chosen port.
+
+### Email collision / user skipped
+
+**Symptom**: a user appears in the sync group but is not created in Ouitransfer. The sync log shows a skip event.
+
+**Cause**: an existing Ouitransfer account (local or from a different LDAP entry) already uses the same email address or username.
+
+**Resolution**: either delete or rename the conflicting local account, or remove the duplicate from the AD sync group.
+
+### Bind password lost after restart
+
+**Symptom**: after restarting the server, the LDAP configuration shows an error about invalid encrypted data.
+
+**Cause**: `ENCRYPTION_SECRET` changed between restarts.
+
+**Resolution**: ensure `ENCRYPTION_SECRET` is persisted as a stable environment variable in your deployment. Re-enter the bind password in the configuration form and save.
+
+---
+
+## API reference (admin)
+
+All endpoints require an active admin session. Unauthenticated requests return `401`. Non-admin requests return `403`.
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/admin/ldap/config` | Get the current configuration (bind password is masked as `••••••••`) |
+| `PUT` | `/admin/ldap/config` | Create or update the configuration (upsert). Pass `bindPassword: ""` to keep the existing password. |
+| `POST` | `/admin/ldap/test` | Test the connection with the provided parameters. Requires `bindPassword` (not masked). |
+| `POST` | `/admin/ldap/sync` | Trigger a manual sync. Returns `{ logId }`. Returns `409` if a sync is already in progress. |
+| `GET` | `/admin/ldap/sync/logs` | List sync history. Query params: `limit` (1–100, default 20), `offset` (default 0). |
+| `GET` | `/admin/ldap/sync/logs/:id` | Get the full detail of a sync log entry, including skip/error events. |
+| `GET` | `/admin/ldap/status` | Quick status: enabled flag, last sync result, next scheduled sync time, and any configuration warnings. |
