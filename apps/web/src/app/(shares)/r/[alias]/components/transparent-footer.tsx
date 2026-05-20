@@ -19,7 +19,7 @@ export function TransparentFooter() {
         <Link
           target="_blank"
           className="flex items-center gap-1 text-white/80 hover:text-primary transition-colors"
-          href="https://burger-cie.com"
+          href="https://burgeretcie.fr"
           title={t("footer.kyanHomepage")}
         >
           <span className="text-white/70 text-xs sm:text-sm">{t("footer.poweredBy")}</span>

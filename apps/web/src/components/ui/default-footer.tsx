@@ -19,7 +19,7 @@ export function DefaultFooter() {
         <Link
           target="_blank"
           className="flex items-center gap-1 text-current"
-          href="https://burger-cie.com"
+           href="https://burgeretcie.fr"
           title={t("footer.kyanHomepage")}
         >
           <span className="text-default-600 text-xs sm:text-sm">{t("footer.poweredBy")}</span>
