@@ -72,9 +72,6 @@ export class AuthService {
       throw new UnauthorizedError("Invalid credentials");
     }
 
-    // Record successful login
-    await recordLoginAttempt(data.emailOrUsername, clientIp, true);
-
     const has2FA = await this.twoFactorService.isEnabled(user.id);
 
     if (has2FA) {
@@ -85,12 +82,14 @@ export class AuthService {
           ipAddress,
         );
         if (isDeviceTrusted) {
-          // Update last used timestamp for trusted device
+          // Trusted device bypass — full login complete, record success
           await this.trustedDeviceService.updateLastUsed(user.id, userAgent, ipAddress);
+          await recordLoginAttempt(data.emailOrUsername, clientIp, true);
           return UserResponseSchema.parse(user);
         }
       }
 
+      // 2FA required — defer success recording to completeTwoFactorLogin
       return {
         requiresTwoFactor: true,
         userId: user.id,
@@ -98,6 +97,8 @@ export class AuthService {
       };
     }
 
+    // No 2FA — record successful login
+    await recordLoginAttempt(data.emailOrUsername, clientIp, true);
     return UserResponseSchema.parse(user);
   }
 
@@ -120,11 +121,28 @@ export class AuthService {
       throw new ForbiddenError("Account is inactive. Please contact an administrator.");
     }
 
+    const clientIp = ipAddress || "unknown";
+
+    // Check account lockout before attempting 2FA verification
+    const lockStatus = await isAccountLocked(user.email, clientIp);
+    if (lockStatus.locked) {
+      throw new AppError(
+        403,
+        `Account temporarily locked. Try again in ${lockStatus.remainingMinutes} minutes.`,
+        ErrorCodes.ACCOUNT_LOCKED,
+        { remainingMinutes: lockStatus.remainingMinutes },
+      );
+    }
+
     const verificationResult = await this.twoFactorService.verifyToken(userId, token);
 
     if (!verificationResult.success) {
+      await recordLoginAttempt(user.email, clientIp, false);
       throw new UnauthorizedError("Invalid two-factor authentication code");
     }
+
+    // 2FA verified — full login complete
+    await recordLoginAttempt(user.email, clientIp, true);
 
     if (rememberDevice && userAgent && ipAddress) {
       await this.trustedDeviceService.addTrustedDevice(userId, userAgent, ipAddress);
