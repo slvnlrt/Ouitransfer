@@ -1331,8 +1331,8 @@
         "description": "Uygulama hakkında kısa açıklama"
       },
       "showHomePage": {
-        "title": "Ana Sayfayı Göster",
-        "description": "Kurulumdan sonra ana sayfayı göster"
+        "title": "Public Landing Page",
+        "description": "Display the public landing page for visitors. When disabled, visitors are redirected to the login page."
       },
       "smtpEnabled": {
         "title": "SMTP Etkin",
@@ -1380,11 +1380,11 @@
       },
       "maxFileSize": {
         "title": "Maksimum Dosya Boyutu",
-        "description": "Yüklemeye izin verilen maksimum dosya boyutu"
+        "description": "Maximum allowed file size for uploads. Can be overridden per user or per group."
       },
       "maxTotalStoragePerUser": {
         "title": "Kullanıcı Başına Maksimum Depolama",
-        "description": "Kullanıcı başına toplam depolama sınırı"
+        "description": "Total storage limit per user. Can be overridden per user or per group."
       },
       "firstUserAccess": {
         "title": "İlk Kullanıcı Erişimi",

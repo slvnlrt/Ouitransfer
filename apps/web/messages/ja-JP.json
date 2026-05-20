@@ -1331,8 +1331,8 @@
         "description": "アプリケーションの簡単な説明"
       },
       "showHomePage": {
-        "title": "ホームページを表示",
-        "description": "インストール後にホームページを表示"
+        "title": "Public Landing Page",
+        "description": "Display the public landing page for visitors. When disabled, visitors are redirected to the login page."
       },
       "smtpEnabled": {
         "title": "SMTP有効",
@@ -1380,11 +1380,11 @@
       },
       "maxFileSize": {
         "title": "最大ファイルサイズ",
-        "description": "アップロード可能な最大ファイルサイズ"
+        "description": "Maximum allowed file size for uploads. Can be overridden per user or per group."
       },
       "maxTotalStoragePerUser": {
         "title": "ユーザーごとの最大ストレージ",
-        "description": "ユーザーごとの総ストレージ制限"
+        "description": "Total storage limit per user. Can be overridden per user or per group."
       },
       "firstUserAccess": {
         "description": "新規ユーザーの初回アクセス設定",

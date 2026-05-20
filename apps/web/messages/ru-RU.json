@@ -1331,8 +1331,8 @@
         "description": "Краткое описание приложения"
       },
       "showHomePage": {
-        "title": "Показывать главную страницу",
-        "description": "Показывать главную страницу после установки"
+        "title": "Public Landing Page",
+        "description": "Display the public landing page for visitors. When disabled, visitors are redirected to the login page."
       },
       "smtpEnabled": {
         "title": "Включить SMTP",
@@ -1380,11 +1380,11 @@
       },
       "maxFileSize": {
         "title": "Максимальный размер файла",
-        "description": "Максимальный размер файла для загрузки"
+        "description": "Maximum allowed file size for uploads. Can be overridden per user or per group."
       },
       "maxTotalStoragePerUser": {
         "title": "Максимальное хранилище для пользователя",
-        "description": "Общий лимит хранилища для каждого пользователя"
+        "description": "Total storage limit per user. Can be overridden per user or per group."
       },
       "firstUserAccess": {
         "title": "Первый доступ пользователя",

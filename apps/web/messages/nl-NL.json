@@ -1331,8 +1331,8 @@
         "description": "Korte beschrijving van de applicatie"
       },
       "showHomePage": {
-        "title": "Toon Startpagina",
-        "description": "Toon Startpagina na installatie"
+        "title": "Public Landing Page",
+        "description": "Display the public landing page for visitors. When disabled, visitors are redirected to the login page."
       },
       "smtpEnabled": {
         "title": "SMTP Ingeschakeld",
@@ -1380,11 +1380,11 @@
       },
       "maxFileSize": {
         "title": "Maximum Bestandsgrootte",
-        "description": "Maximum toegestane bestandsgrootte voor uploads"
+        "description": "Maximum allowed file size for uploads. Can be overridden per user or per group."
       },
       "maxTotalStoragePerUser": {
         "title": "Maximum Opslag Per Gebruiker",
-        "description": "Totale opslaglimiet per gebruiker"
+        "description": "Total storage limit per user. Can be overridden per user or per group."
       },
       "firstUserAccess": {
         "description": "Instellingen voor eerste toegang van nieuwe gebruikers",

@@ -1331,8 +1331,8 @@
         "description": "对应用的简短描述"
       },
       "showHomePage": {
-        "title": "显示首页",
-        "description": "安装后显示首页"
+        "title": "Public Landing Page",
+        "description": "Display the public landing page for visitors. When disabled, visitors are redirected to the login page."
       },
       "smtpEnabled": {
         "title": "启用SMTP",
@@ -1380,11 +1380,11 @@
       },
       "maxFileSize": {
         "title": "最大文件大小",
-        "description": "允许上传的最大文件大小"
+        "description": "Maximum allowed file size for uploads. Can be overridden per user or per group."
       },
       "maxTotalStoragePerUser": {
         "title": "每个用户的最大存储量",
-        "description": "每个用户的总存储限制"
+        "description": "Total storage limit per user. Can be overridden per user or per group."
       },
       "firstUserAccess": {
         "description": "新用户首次访问的设置",

@@ -1471,8 +1471,8 @@
         "description": "Brief description of the application"
       },
       "showHomePage": {
-        "title": "Show Home Page",
-        "description": "Show Home Page after installation"
+        "title": "Public Landing Page",
+        "description": "Display the public landing page for visitors. When disabled, visitors are redirected to the login page."
       },
       "hideVersion": {
         "title": "Hide Version",
@@ -1546,11 +1546,11 @@
       },
       "maxFileSize": {
         "title": "Maximum File Size",
-        "description": "Maximum allowed file size for uploads"
+        "description": "Maximum allowed file size for uploads. Can be overridden per user or per group."
       },
       "maxTotalStoragePerUser": {
         "title": "Maximum Storage Per User",
-        "description": "Total storage limit per user"
+        "description": "Total storage limit per user. Can be overridden per user or per group."
       },
       "firstUserAccess": {
         "title": "First User Access",

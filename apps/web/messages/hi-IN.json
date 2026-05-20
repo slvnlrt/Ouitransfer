@@ -1331,8 +1331,8 @@
         "description": "एप्लिकेशन का संक्षिप्त विवरण"
       },
       "showHomePage": {
-        "title": "होम पेज दिखाएं",
-        "description": "इंस्टॉलेशन के बाद होम पेज दिखाएं"
+        "title": "Public Landing Page",
+        "description": "Display the public landing page for visitors. When disabled, visitors are redirected to the login page."
       },
       "smtpEnabled": {
         "title": "SMTP सक्षम",
@@ -1380,11 +1380,11 @@
       },
       "maxFileSize": {
         "title": "अधिकतम फाइल आकार",
-        "description": "अपलोड के लिए अधिकतम अनुमत फाइल आकार"
+        "description": "Maximum allowed file size for uploads. Can be overridden per user or per group."
       },
       "maxTotalStoragePerUser": {
         "title": "प्रति उपयोगकर्ता अधिकतम स्टोरेज",
-        "description": "प्रति उपयोगकर्ता कुल स्टोरेज सीमा"
+        "description": "Total storage limit per user. Can be overridden per user or per group."
       },
       "firstUserAccess": {
         "description": "नए उपयोगकर्ताओं की पहली पहुंच के लिए सेटिंग्स",

@@ -1331,8 +1331,8 @@
         "description": "Breve descrizione dell'applicazione"
       },
       "showHomePage": {
-        "title": "Mostra Pagina Iniziale",
-        "description": "Mostra la Pagina Iniziale dopo l'installazione"
+        "title": "Public Landing Page",
+        "description": "Display the public landing page for visitors. When disabled, visitors are redirected to the login page."
       },
       "smtpEnabled": {
         "title": "SMTP Abilitato",
@@ -1380,11 +1380,11 @@
       },
       "maxFileSize": {
         "title": "Dimensione Massima File",
-        "description": "Dimensione massima consentita per i caricamenti"
+        "description": "Maximum allowed file size for uploads. Can be overridden per user or per group."
       },
       "maxTotalStoragePerUser": {
         "title": "Archiviazione Massima per Utente",
-        "description": "Limite totale di archiviazione per utente"
+        "description": "Total storage limit per user. Can be overridden per user or per group."
       },
       "firstUserAccess": {
         "description": "Impostazioni per il primo accesso di nuovi utenti",

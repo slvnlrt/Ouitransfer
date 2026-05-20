@@ -1335,8 +1335,8 @@
         "description": "คำอธิบายสั้นของแอปพลิเคชัน"
       },
       "showHomePage": {
-        "title": "แสดงหน้าแรก",
-        "description": "แสดงหน้าแรกหลังการติดตั้ง"
+        "title": "Public Landing Page",
+        "description": "Display the public landing page for visitors. When disabled, visitors are redirected to the login page."
       },
       "hideVersion": {
         "title": "ซ่อนเวอร์ชัน",
@@ -1410,11 +1410,11 @@
       },
       "maxFileSize": {
         "title": "ขนาดไฟล์สูงสุด",
-        "description": "ขนาดไฟล์สูงสุดที่อนุญาตสำหรับการอัปโหลด"
+        "description": "Maximum allowed file size for uploads. Can be overridden per user or per group."
       },
       "maxTotalStoragePerUser": {
         "title": "จัดเก็บสูงสุดต่อผู้ใช้",
-        "description": "ขีดจำกัดการจัดเก็บทั้งหมดต่อผู้ใช้"
+        "description": "Total storage limit per user. Can be overridden per user or per group."
       },
       "firstUserAccess": {
         "title": "การเข้าถึงผู้ใช้คนแรก",

@@ -1331,8 +1331,8 @@
         "description": "애플리케이션에 대한 간략한 설명"
       },
       "showHomePage": {
-        "title": "홈페이지 표시",
-        "description": "설치 후 홈페이지를 표시합니다"
+        "title": "Public Landing Page",
+        "description": "Display the public landing page for visitors. When disabled, visitors are redirected to the login page."
       },
       "smtpEnabled": {
         "title": "SMTP 사용",
@@ -1380,11 +1380,11 @@
       },
       "maxFileSize": {
         "title": "최대 파일 크기",
-        "description": "업로드 가능한 최대 파일 크기"
+        "description": "Maximum allowed file size for uploads. Can be overridden per user or per group."
       },
       "maxTotalStoragePerUser": {
         "title": "사용자당 최대 스토리지",
-        "description": "사용자당 총 스토리지 제한"
+        "description": "Total storage limit per user. Can be overridden per user or per group."
       },
       "firstUserAccess": {
         "description": "새 사용자의 첫 번째 액세스 설정",

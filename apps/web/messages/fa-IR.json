@@ -1335,8 +1335,8 @@
         "description": "توضیح مختصری از برنامه"
       },
       "showHomePage": {
-        "title": "نمایش صفحه اصلی",
-        "description": "نمایش صفحه اصلی پس از نصب"
+        "title": "Public Landing Page",
+        "description": "Display the public landing page for visitors. When disabled, visitors are redirected to the login page."
       },
       "hideVersion": {
         "title": "مخفی کردن نسخه",
@@ -1410,11 +1410,11 @@
       },
       "maxFileSize": {
         "title": "حداکثر اندازه فایل",
-        "description": "حداکثر اندازه مجاز برای بارگذاری فایل"
+        "description": "Maximum allowed file size for uploads. Can be overridden per user or per group."
       },
       "maxTotalStoragePerUser": {
         "title": "حداکثر ذخیره‌سازی به ازای هر کاربر",
-        "description": "محدودیت کل ذخیره‌سازی برای هر کاربر"
+        "description": "Total storage limit per user. Can be overridden per user or per group."
       },
       "firstUserAccess": {
         "title": "دسترسی اولین کاربر",

@@ -1335,8 +1335,8 @@
         "description": "Kort beskrivning av ansökan"
       },
       "showHomePage": {
-        "title": "Visa startsida",
-        "description": "Visa startsidan efter installationen"
+        "title": "Public Landing Page",
+        "description": "Display the public landing page for visitors. When disabled, visitors are redirected to the login page."
       },
       "hideVersion": {
         "title": "Dölj version",
@@ -1410,11 +1410,11 @@
       },
       "maxFileSize": {
         "title": "Maximal filstorlek",
-        "description": "Högsta tillåtna filstorlek för uppladdningar"
+        "description": "Maximum allowed file size for uploads. Can be overridden per user or per group."
       },
       "maxTotalStoragePerUser": {
         "title": "Maximalt lagringsutrymme per användare",
-        "description": "Total lagringsgräns per användare"
+        "description": "Total storage limit per user. Can be overridden per user or per group."
       },
       "firstUserAccess": {
         "title": "Första användaråtkomst",

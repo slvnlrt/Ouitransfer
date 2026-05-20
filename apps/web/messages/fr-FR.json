@@ -1334,8 +1334,8 @@
         "description": "Brève description de l'application"
       },
       "showHomePage": {
-        "title": "Afficher la Page d'Accueil",
-        "description": "Afficher la page d'accueil après l'installation"
+        "title": "Page d'accueil publique",
+        "description": "Afficher la page d'accueil publique aux visiteurs. Si désactivé, les visiteurs sont redirigés vers la page de connexion."
       },
       "smtpEnabled": {
         "title": "SMTP Activé",
@@ -1383,11 +1383,11 @@
       },
       "maxFileSize": {
         "title": "Taille Maximale de Fichier",
-        "description": "Taille maximale autorisée pour les fichiers"
+        "description": "Taille maximale autorisée pour les fichiers. Peut être surchargé par utilisateur ou par groupe."
       },
       "maxTotalStoragePerUser": {
         "title": "Stockage Maximum par Utilisateur",
-        "description": "Limite totale de stockage par utilisateur"
+        "description": "Limite totale de stockage par utilisateur. Peut être surchargé par utilisateur ou par groupe."
       },
       "firstUserAccess": {
         "description": "Paramètres pour le premier accès des nouveaux utilisateurs",

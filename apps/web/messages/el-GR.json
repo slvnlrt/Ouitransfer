@@ -1335,8 +1335,8 @@
         "description": "Σύντομη περιγραφή της εφαρμογής"
       },
       "showHomePage": {
-        "title": "Εμφάνιση αρχικής σελίδας",
-        "description": "Εμφάνιση αρχικής σελίδας μετά την εγκατάσταση"
+        "title": "Public Landing Page",
+        "description": "Display the public landing page for visitors. When disabled, visitors are redirected to the login page."
       },
       "hideVersion": {
         "title": "Απόκρυψη έκδοσης",
@@ -1410,11 +1410,11 @@
       },
       "maxFileSize": {
         "title": "Μέγιστο μέγεθος αρχείου",
-        "description": "Μέγιστο επιτρεπτό μέγεθος αρχείου για μεταφορτώσεις"
+        "description": "Maximum allowed file size for uploads. Can be overridden per user or per group."
       },
       "maxTotalStoragePerUser": {
         "title": "Μέγιστος χώρος ανά χρήστη",
-        "description": "Συνολικό όριο αποθήκευσης ανά χρήστη"
+        "description": "Total storage limit per user. Can be overridden per user or per group."
       },
       "firstUserAccess": {
         "title": "Πρώτη πρόσβαση χρήστη",

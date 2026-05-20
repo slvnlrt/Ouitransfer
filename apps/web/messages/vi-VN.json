@@ -1335,8 +1335,8 @@
         "description": "Mô tả ngắn gọn về ứng dụng"
       },
       "showHomePage": {
-        "title": "Hiển thị trang chủ",
-        "description": "Hiển thị trang chủ sau khi cài đặt"
+        "title": "Public Landing Page",
+        "description": "Display the public landing page for visitors. When disabled, visitors are redirected to the login page."
       },
       "hideVersion": {
         "title": "Ẩn phiên bản",
@@ -1410,11 +1410,11 @@
       },
       "maxFileSize": {
         "title": "Kích thước tệp tối đa",
-        "description": "Kích thước tệp tối đa được phép tải lên"
+        "description": "Maximum allowed file size for uploads. Can be overridden per user or per group."
       },
       "maxTotalStoragePerUser": {
         "title": "Dung lượng lưu trữ tối đa cho mỗi người dùng",
-        "description": "Tổng giới hạn dung lượng lưu trữ cho mỗi người dùng"
+        "description": "Total storage limit per user. Can be overridden per user or per group."
       },
       "firstUserAccess": {
         "title": "Quyền truy cập của người dùng đầu tiên",

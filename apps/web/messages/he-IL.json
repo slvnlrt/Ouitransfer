@@ -1335,8 +1335,8 @@
         "description": "תיאור קצר של האפליקציה"
       },
       "showHomePage": {
-        "title": "הצג דף בית",
-        "description": "הצג דף בית לאחר ההתקנה"
+        "title": "Public Landing Page",
+        "description": "Display the public landing page for visitors. When disabled, visitors are redirected to the login page."
       },
       "hideVersion": {
         "title": "הסתר גרסה",
@@ -1410,11 +1410,11 @@
       },
       "maxFileSize": {
         "title": "גודל קובץ מרבי",
-        "description": "גודל קובץ מרבי מותר להעלאות"
+        "description": "Maximum allowed file size for uploads. Can be overridden per user or per group."
       },
       "maxTotalStoragePerUser": {
         "title": "אחסון מרבי למשתמש",
-        "description": "מגבלת אחסון כוללת למשתמש"
+        "description": "Total storage limit per user. Can be overridden per user or per group."
       },
       "firstUserAccess": {
         "title": "גישת משתמש ראשון",

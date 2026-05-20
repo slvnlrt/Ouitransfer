@@ -1331,8 +1331,8 @@
         "description": "وصف مختصر للتطبيق"
       },
       "showHomePage": {
-        "title": "عرض الصفحة الرئيسية",
-        "description": "عرض الصفحة الرئيسية بعد التثبيت"
+        "title": "Public Landing Page",
+        "description": "Display the public landing page for visitors. When disabled, visitors are redirected to the login page."
       },
       "smtpEnabled": {
         "title": "تمكين SMTP",
@@ -1380,11 +1380,11 @@
       },
       "maxFileSize": {
         "title": "أقصى حجم للملف",
-        "description": "الحد الأقصى لحجم الملف المسموح به للرفع "
+        "description": "Maximum allowed file size for uploads. Can be overridden per user or per group."
       },
       "maxTotalStoragePerUser": {
         "title": "أقصى تخزين لكل مستخدم",
-        "description": "الحد الإجمالي للتخزين لكل مستخدم "
+        "description": "Total storage limit per user. Can be overridden per user or per group."
       },
       "firstUserAccess": {
         "description": "إعدادات الوصول الأول للمستخدمين الجدد",

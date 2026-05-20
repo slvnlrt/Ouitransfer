@@ -1335,8 +1335,8 @@
         "description": "Короткий опис програми"
       },
       "showHomePage": {
-        "title": "Показати головну сторінку",
-        "description": "Показати головну сторінку після встановлення"
+        "title": "Public Landing Page",
+        "description": "Display the public landing page for visitors. When disabled, visitors are redirected to the login page."
       },
       "hideVersion": {
         "title": "Сховати версію",
@@ -1410,11 +1410,11 @@
       },
       "maxFileSize": {
         "title": "Максимальний розмір файлу",
-        "description": "Максимально дозволений розмір файлу для завантаження"
+        "description": "Maximum allowed file size for uploads. Can be overridden per user or per group."
       },
       "maxTotalStoragePerUser": {
         "title": "Максимальне сховище на користувача",
-        "description": "Загальний ліміт сховища на користувача"
+        "description": "Total storage limit per user. Can be overridden per user or per group."
       },
       "firstUserAccess": {
         "title": "Доступ першого користувача",
