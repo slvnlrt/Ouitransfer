@@ -144,16 +144,21 @@ export class AuthService {
   }
 
   async requestPasswordReset(email: string, origin: string) {
-    const passwordAuthEnabled = await getConfigValue("passwordAuthEnabled");
-    if (passwordAuthEnabled === "false") {
-      throw new ForbiddenError(
-        "Password authentication is disabled. Password reset is not available.",
-      );
-    }
-
+    // Look up the user first — LDAP users are allowed to reset their password
+    // even when passwordAuth is disabled (needed for welcome-email initial setup).
     const user = await this.userRepository.findUserByEmail(email);
     if (!user) {
       return;
+    }
+
+    const isLdapUser = !!user.ldapDn;
+    if (!isLdapUser) {
+      const passwordAuthEnabled = await getConfigValue("passwordAuthEnabled");
+      if (passwordAuthEnabled === "false") {
+        throw new ForbiddenError(
+          "Password authentication is disabled. Password reset is not available.",
+        );
+      }
     }
 
     const token = crypto.randomBytes(128).toString("hex");
@@ -176,13 +181,8 @@ export class AuthService {
   }
 
   async resetPassword(token: string, newPassword: string): Promise<{ userId: string }> {
-    const passwordAuthEnabled = await getConfigValue("passwordAuthEnabled");
-    if (passwordAuthEnabled === "false") {
-      throw new ForbiddenError(
-        "Password authentication is disabled. Password reset is not available.",
-      );
-    }
-
+    // Look up the reset request first to check if user is LDAP-managed.
+    // LDAP users need to set their initial app password even when password auth is disabled.
     const resetRequest = await prisma.passwordReset.findFirst({
       where: {
         token,
@@ -198,6 +198,18 @@ export class AuthService {
 
     if (!resetRequest) {
       throw new UnauthorizedError("Invalid or expired reset token");
+    }
+
+    // Allow password reset for LDAP users even when password auth is disabled
+    // (they need to set their initial app password via the welcome email link)
+    const isLdapUser = !!resetRequest.user.ldapDn;
+    if (!isLdapUser) {
+      const passwordAuthEnabled = await getConfigValue("passwordAuthEnabled");
+      if (passwordAuthEnabled === "false") {
+        throw new ForbiddenError(
+          "Password authentication is disabled. Password reset is not available.",
+        );
+      }
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);

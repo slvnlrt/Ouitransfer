@@ -1,6 +1,6 @@
 "use client";
 
-import { Layers, LogOut, Palette, Settings, User, Users } from "lucide-react";
+import { Layers, LogOut, Palette, Server, Settings, User, Users } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -134,6 +134,12 @@ export function Navbar() {
                       >
                         <Layers className="h-4 w-4" />
                         {t("navbar.groupsManagement")}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin/ldap" className="flex items-center gap-2 cursor-pointer">
+                        <Server className="h-4 w-4" />
+                        {t("navbar.ldap")}
                       </Link>
                     </DropdownMenuItem>
                   </>

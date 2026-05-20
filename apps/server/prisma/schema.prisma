@@ -31,6 +31,8 @@ model User {
   groupId String?
   group   Group?  @relation(fields: [groupId], references: [id], onDelete: SetNull)
 
+  ldapDn String? @unique // DN in AD — null = local account
+
   tokenVersion Int @default(0)
 
   files         File[]
@@ -388,4 +390,43 @@ model AuditLog {
   @@index([action, createdAt])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+model LdapConfig {
+  id                   String   @id @default(cuid())
+  enabled              Boolean  @default(false)
+  serverUrl            String
+  bindDn               String
+  bindPassword         String   // AES-256-GCM encrypted
+  searchBase           String
+  syncGroupDn          String
+  usernameAttribute    String   @default("sAMAccountName")
+  emailAttribute       String   @default("mail")
+  displayNameAttribute String   @default("displayName")
+  syncIntervalMinutes  Int      @default(360)
+  useTls               Boolean  @default(true)
+  tlsSkipVerify        Boolean  @default(false)
+  appUrl               String?  // Base URL for invite emails (e.g., https://transfer.company.com)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@map("ldap_configs")
+}
+
+model LdapSyncLog {
+  id               String    @id @default(cuid())
+  startedAt        DateTime  @default(now())
+  completedAt      DateTime?
+  status           String    // success, partial, error
+  trigger          String    // scheduled, manual
+  usersCreated     Int       @default(0)
+  usersUpdated     Int       @default(0)
+  usersDeactivated Int       @default(0)
+  usersSkipped     Int       @default(0)
+  usersReactivated Int       @default(0)
+  details          String?   // JSON: [{type: "skip"|"error", username, email?, message}]
+  createdAt        DateTime  @default(now())
+
+  @@index([startedAt])
+  @@map("ldap_sync_logs")
 }

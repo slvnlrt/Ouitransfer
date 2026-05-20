@@ -34,6 +34,7 @@ const envSchema = z.object({
     .describe(
       "Secret used to sign httpOnly cookies — must be distinct from JWT_SECRET and CSRF_SECRET",
     ),
+  ENCRYPTION_SECRET: z.string().min(32).optional(),
   TRUST_PROXY: z
     .string()
     .optional()

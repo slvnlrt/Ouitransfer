@@ -16,6 +16,8 @@ import { folderRoutes } from "./modules/folder/routes.js";
 import { groupRoutes } from "./modules/group/routes.js";
 import { healthRoutes } from "./modules/health/routes.js";
 import { inviteRoutes } from "./modules/invite/routes.js";
+import { ldapRoutes } from "./modules/ldap/routes.js";
+import { initSchedulerOnBoot, stopScheduler } from "./modules/ldap/sync.scheduler.js";
 import { quotaRoutes } from "./modules/quota/routes.js";
 import { reverseShareRoutes } from "./modules/reverse-share/routes.js";
 import { s3StorageRoutes } from "./modules/s3-storage/routes.js";
@@ -91,6 +93,10 @@ async function startServer() {
   app.register(s3StorageRoutes);
   app.register(quotaRoutes);
   app.register(groupRoutes);
+  app.register(ldapRoutes);
+
+  // Initialize LDAP sync scheduler if configured (fire-and-forget — has internal try/catch)
+  void initSchedulerOnBoot();
 
   if (isInternalStorage) {
     app.log.info("Using internal storage");
@@ -133,6 +139,7 @@ async function startServer() {
   // Register cleanup hooks BEFORE listen (Fastify rejects hooks after listen)
   app.addHook("onClose", () => clearInterval(cleanupInterval));
   app.addHook("onClose", () => clearInterval(refreshCleanupInterval));
+  app.addHook("onClose", () => stopScheduler());
 
   await app.listen({
     port: env.PORT,

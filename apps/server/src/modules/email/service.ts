@@ -3,6 +3,19 @@ import nodemailer from "nodemailer";
 import { AppError, ValidationError } from "../../utils/app-error.js";
 import { getConfigValue } from "../config/service.js";
 
+/**
+ * Escape user-provided strings for safe embedding in HTML templates.
+ * Prevents XSS when interpolating config values (appName, fromName, etc.).
+ */
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 interface SmtpConfig {
   smtpEnabled: string;
   smtpHost: string;
@@ -161,9 +174,9 @@ export class EmailService {
       throw new ValidationError("SMTP is not enabled");
     }
 
-    const fromName = await getConfigValue("smtpFromName");
+    const fromName = escapeHtml(await getConfigValue("smtpFromName"));
     const fromEmail = await getConfigValue("smtpFromEmail");
-    const appName = await getConfigValue("appName");
+    const appName = escapeHtml(await getConfigValue("appName"));
 
     await transporter.sendMail({
       from: `"${fromName}" <${fromEmail}>`,
@@ -180,6 +193,32 @@ export class EmailService {
     });
   }
 
+  async sendLdapWelcomeEmail(to: string, setPasswordUrl: string) {
+    const transporter = await this.createTransporter();
+    if (!transporter) {
+      throw new ValidationError("SMTP is not enabled");
+    }
+
+    const fromName = escapeHtml(await getConfigValue("smtpFromName"));
+    const fromEmail = await getConfigValue("smtpFromEmail");
+    const appName = escapeHtml(await getConfigValue("appName"));
+
+    await transporter.sendMail({
+      from: `"${fromName}" <${fromEmail}>`,
+      to,
+      subject: `${appName} - Welcome! Set Your Password`,
+      html: `
+        <h1>Welcome to ${appName}</h1>
+        <p>Your account has been created via directory synchronization.</p>
+        <p>Click the link below to set your password:</p>
+        <a href="${setPasswordUrl}">
+          Set Your Password
+        </a>
+        <p>This link will expire in 7 days.</p>
+      `,
+    });
+  }
+
   async sendShareNotification(
     to: string,
     shareLink: string,
@@ -191,12 +230,12 @@ export class EmailService {
       throw new ValidationError("SMTP is not enabled");
     }
 
-    const fromName = await getConfigValue("smtpFromName");
+    const fromName = escapeHtml(await getConfigValue("smtpFromName"));
     const fromEmail = await getConfigValue("smtpFromEmail");
-    const appName = await getConfigValue("appName");
+    const appName = escapeHtml(await getConfigValue("appName"));
 
-    const shareTitle = shareName || "Files";
-    const sender = senderName || "Someone";
+    const shareTitle = escapeHtml(shareName || "Files");
+    const sender = escapeHtml(senderName || "Someone");
 
     await transporter.sendMail({
       from: `"${fromName}" <${fromEmail}>`,
@@ -251,7 +290,7 @@ export class EmailService {
                 If you didn't expect this email, you can safely ignore it.
               </p>
               <p style="margin: 4px 0 0 0; color: #9ca3af; font-size: 10px;">
-                Powered by <a href="https://burger-cie.com" style="color: #9ca3af; text-decoration: none;">Burger&Cie</a>
+                Powered by <a href="https://burger-cie.com" style="color: #9ca3af; text-decoration: none;">Burger&amp;Cie</a>
               </p>
             </div>
           </div>
@@ -273,14 +312,17 @@ export class EmailService {
       throw new ValidationError("SMTP is not enabled");
     }
 
-    const fromName = await getConfigValue("smtpFromName");
+    const fromName = escapeHtml(await getConfigValue("smtpFromName"));
     const fromEmail = await getConfigValue("smtpFromEmail");
-    const appName = await getConfigValue("appName");
+    const appName = escapeHtml(await getConfigValue("appName"));
+
+    const safeReverseShareName = escapeHtml(reverseShareName);
+    const safeUploaderName = escapeHtml(uploaderName);
 
     await transporter.sendMail({
       from: `"${fromName}" <${fromEmail}>`,
       to: recipientEmail,
-      subject: `${appName} - ${fileCount} file${fileCount > 1 ? "s" : ""} uploaded to "${reverseShareName}"`,
+      subject: `${appName} - ${fileCount} file${fileCount > 1 ? "s" : ""} uploaded to "${safeReverseShareName}"`,
       html: `
         <!DOCTYPE html>
         <html lang="en">
@@ -302,7 +344,7 @@ export class EmailService {
               <div style="text-align: center; margin-bottom: 32px;">
                 <h2 style="margin: 0 0 12px 0; color: #1f2937; font-size: 24px; font-weight: 600;">New File Uploaded</h2>
                 <p style="margin: 0; color: #6b7280; font-size: 16px; line-height: 1.6;">
-                  <strong style="color: #374151;">${uploaderName}</strong> has uploaded <strong style="color: #374151;">${fileCount} file${fileCount > 1 ? "s" : ""}</strong> to your reverse share <strong style="color: #374151;">"${reverseShareName}"</strong>.
+                  <strong style="color: #374151;">${safeUploaderName}</strong> has uploaded <strong style="color: #374151;">${fileCount} file${fileCount > 1 ? "s" : ""}</strong> to your reverse share <strong style="color: #374151;">"${safeReverseShareName}"</strong>.
                 </p>
               </div>
               
@@ -312,7 +354,7 @@ export class EmailService {
                 <ul style="margin: 0; padding-left: 20px; color: #6b7280; font-size: 14px; line-height: 1.5;">
                    ${fileList
                      .split(", ")
-                     .map((file) => `<li style="margin: 4px 0;">${file}</li>`)
+                     .map((file) => `<li style="margin: 4px 0;">${escapeHtml(file)}</li>`)
                      .join("")}
                  </ul>
               </div>
@@ -335,7 +377,7 @@ export class EmailService {
                 If you didn't expect this email, you can safely ignore it.
               </p>
               <p style="margin: 4px 0 0 0; color: #9ca3af; font-size: 10px;">
-                Powered by <a href="https://burger-cie.com" style="color: #9ca3af; text-decoration: none;">Burger&Cie</a>
+                Powered by <a href="https://burger-cie.com" style="color: #9ca3af; text-decoration: none;">Burger&amp;Cie</a>
               </p>
             </div>
           </div>

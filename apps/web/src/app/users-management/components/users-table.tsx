@@ -40,6 +40,9 @@ export function UsersTable({
             <TableHead className="h-10 text-xs font-bold text-muted-foreground bg-muted/50 px-4">
               {t("users.table.role")}
             </TableHead>
+            <TableHead className="h-10 text-xs font-bold text-muted-foreground bg-muted/50 px-4">
+              {t("users.table.source")}
+            </TableHead>
             <TableHead className="h-10 w-[70px] text-xs font-bold text-muted-foreground bg-muted/50 px-4">
               {t("users.table.actions")}
             </TableHead>
@@ -70,8 +73,15 @@ export function UsersTable({
               </TableCell>
               <TableCell className="h-12 px-4">
                 <Badge variant={user.isAdmin ? "destructive" : "secondary"}>
-                  {user.isAdmin ? t("users.table.admin") : t("users.table.userr")}
+                  {user.isAdmin ? t("users.table.admin") : t("users.table.userRole")}
                 </Badge>
+              </TableCell>
+              <TableCell className="h-12 px-4">
+                {user.ldapDn ? (
+                  <Badge variant="outline">{t("users.table.ldap")}</Badge>
+                ) : (
+                  <Badge variant="secondary">{t("users.table.local")}</Badge>
+                )}
               </TableCell>
               <TableCell className="h-12 px-4">
                 <UserActionsDropdown

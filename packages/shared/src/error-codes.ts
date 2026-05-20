@@ -49,6 +49,11 @@ export const ErrorCodes = {
 
   // Upload
   UPLOAD_FAILED: "UPLOAD_FAILED",
+
+  // LDAP
+  LDAP_SYNC_IN_PROGRESS: "LDAP_SYNC_IN_PROGRESS",
+  LDAP_CONFIG_NOT_FOUND: "LDAP_CONFIG_NOT_FOUND",
+  LDAP_CONNECTION_FAILED: "LDAP_CONNECTION_FAILED",
 } as const;
 
 export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];

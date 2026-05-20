@@ -1,10 +1,19 @@
 "use client";
 
-import { useState } from "react";
-
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Loader2, RefreshCw } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useCallback, useState } from "react";
+import { toast } from "sonner";
+import { useSyncPolling } from "@/app/admin/ldap/hooks/use-sync-polling";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { LoadingScreen } from "@/components/layout/loading-screen";
 import { PageLayout } from "@/components/layout/page-layout";
+import { Button } from "@/components/ui/button";
+import { getLdapStatus, triggerLdapSync } from "@/http/endpoints/ldap";
+import { queryKeys } from "@/lib/query-keys";
+import { parseApiError } from "@/utils/api-error";
+import { formatRelativeTime } from "@/utils/format-relative-time";
 import { GenerateInviteLinkModal } from "./components/generate-invite-link-modal";
 import { UserManagementModals } from "./components/user-management-modals";
 import { UsersHeader } from "./components/users-header";
@@ -12,6 +21,7 @@ import { UsersTable } from "./components/users-table";
 import { useUserManagement } from "./hooks/use-user-management";
 
 export default function AdminAreaPage() {
+  const t = useTranslations();
   const {
     users,
     isLoading,
@@ -30,6 +40,47 @@ export default function AdminAreaPage() {
 
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
+  const queryClient = useQueryClient();
+
+  const handleSyncComplete = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
+    queryClient.invalidateQueries({ queryKey: queryKeys.ldap.all });
+  }, [queryClient]);
+
+  const handlePoll = useCallback(async () => {
+    const res = await getLdapStatus();
+    return !res.data.syncInProgress;
+  }, []);
+
+  const { startPolling } = useSyncPolling({
+    onPoll: handlePoll,
+    onComplete: handleSyncComplete,
+  });
+
+  const ldapStatusQuery = useQuery({
+    queryKey: queryKeys.ldap.status(),
+    queryFn: async () => {
+      const res = await getLdapStatus();
+      return res.data;
+    },
+  });
+  const ldapStatus = ldapStatusQuery.data;
+
+  const syncMutation = useMutation({
+    mutationFn: () => triggerLdapSync(),
+    onSuccess: () => {
+      toast.success(t("ldap.sync.triggered"));
+      queryClient.invalidateQueries({ queryKey: queryKeys.ldap.all });
+
+      // I-4: Poll for sync completion, then refresh user list
+      startPolling();
+    },
+    onError: (error: unknown) => {
+      const apiError = parseApiError(error);
+      toast.error(apiError.message || t("ldap.sync.error"));
+    },
+  });
+
   if (isLoading) {
     return <LoadingScreen />;
   }
@@ -42,6 +93,34 @@ export default function AdminAreaPage() {
             onCreateUser={handleCreateUser}
             onGenerateInvite={() => setIsInviteModalOpen(true)}
           />
+
+          {ldapStatus?.configured && ldapStatus.enabled && (
+            <div className="flex items-center gap-3 rounded-lg border bg-muted/50 p-3">
+              <RefreshCw className="h-4 w-4 text-muted-foreground" />
+              {ldapStatus.lastSync ? (
+                <span className="text-sm text-muted-foreground">
+                  {t("ldap.sync.lastSync")}: {formatRelativeTime(ldapStatus.lastSync.startedAt, t)}
+                  {" — "}
+                  {ldapStatus.lastSync.usersCreated} {t("ldap.sync.created").toLowerCase()},{" "}
+                  {ldapStatus.lastSync.usersUpdated} {t("ldap.sync.updated").toLowerCase()}
+                </span>
+              ) : (
+                <span className="text-sm text-muted-foreground">{t("ldap.sync.noHistory")}</span>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                className="ml-auto"
+                onClick={() => syncMutation.mutate()}
+                disabled={syncMutation.isPending || ldapStatus.syncInProgress}
+              >
+                {(syncMutation.isPending || ldapStatus.syncInProgress) && (
+                  <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                )}
+                {t("ldap.sync.syncNow")}
+              </Button>
+            </div>
+          )}
 
           <UsersTable
             currentUser={currentUser}

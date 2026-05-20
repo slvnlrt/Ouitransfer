@@ -15,6 +15,7 @@ export interface User {
   maxTotalStorageOverride: string | null;
   groupId: string | null;
   groupName: string | null;
+  ldapDn: string | null;
 }
 
 export interface UserWithMessageResponse {

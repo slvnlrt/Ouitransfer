@@ -44,3 +44,82 @@ can then brute-force the 6-digit TOTP code without triggering account lockout.
 
 **Found during:** B-7/TD session final review (finding I-5)
 **Severity:** Medium — security gap, but requires valid credentials as prerequisite
+
+---
+
+## TD-4 — Zod type provider configured but not leveraged — 104 type assertions across all controllers
+
+**Context:** `app.ts:68` calls `.withTypeProvider<ZodTypeProvider>()` and sets up both
+`validatorCompiler` and `serializerCompiler`. The infrastructure for end-to-end type-safe
+routes is fully in place. However, **zero routes use it**:
+
+1. **All 17 route files** type `app` as bare `FastifyInstance` instead of
+   `FastifyInstance<RawServerDefault, IncomingMessage, ServerResponse, FastifyBaseLogger, ZodTypeProvider>`.
+   This erases the type provider — Fastify can't infer handler types from Zod schemas.
+
+2. **All ~131 routes** use `.get()/.post()` shorthand with `.bind(controller)` handlers.
+   The `.bind()` returns a generic `Function`, losing all type inference even if the type
+   provider were propagated.
+
+3. **All ~104 controller methods** use `request.body as SomeType`, `request.params as { id: string }`,
+   etc. — manual type assertions that bypass TypeScript's safety. If a route schema changes and
+   the controller `as` cast isn't updated, TypeScript stays silent and the mismatch only
+   surfaces at runtime.
+
+**The correct Fastify + Zod pattern:**
+```ts
+// routes.ts — typed app parameter
+import type { FastifyInstance } from "fastify";
+import type { ZodTypeProvider } from "fastify-type-provider-zod";
+
+export async function exampleRoutes(app: FastifyInstance) {
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "GET",
+    url: "/items",
+    schema: { querystring: ItemQuerySchema, response: { 200: ItemListSchema } },
+    handler: async (request, reply) => {
+      // request.query is automatically typed as z.infer<typeof ItemQuerySchema>
+      // No `as` cast needed — schema change = compilation error
+      const { limit, offset } = request.query;
+      ...
+    },
+  });
+}
+```
+
+**Impact:** 104 unsound type assertions across 15 controller files. Any schema drift
+between route definition and controller cast is invisible to the compiler.
+
+**Fix:**
+1. In each route file, call `app.withTypeProvider<ZodTypeProvider>()` to get a typed instance
+2. Migrate from `.get()/.post()` shorthand to `.route({ method, url, schema, handler })`
+3. Define handlers inline (or use properly typed helper functions) — remove `.bind(controller)`
+4. Remove all `as` casts from controller request parameter access
+5. Verify with `tsc --noEmit` that all types are inferred correctly
+
+**Scope:** ~131 routes across 17 files, ~104 type assertions across 15 controller files.
+This is a mechanical but large refactor — best done module-by-module with tests after each.
+
+**Found during:** 5.3 LDAP post-fix review remediation
+**Severity:** Medium — no runtime impact (Zod validates at runtime regardless), but defeats
+TypeScript's compile-time safety for the entire API surface
+
+---
+
+## TD-5 — Audit needed: other "infrastructure set up but not used" patterns
+
+**Context:** TD-4 revealed that a core piece of infrastructure (Zod type provider) was
+configured but never actually leveraged across any route. This pattern — where refactoring
+sets up the right tool but existing code isn't migrated to use it — may exist elsewhere.
+
+**Items to audit:**
+- [ ] Are there other TypeScript type-safety gaps where `as` casts mask schema drift?
+- [ ] Are Fastify lifecycle hooks (onRequest, preHandler, etc.) properly typed?
+- [ ] Is the Prisma client used with full type inference or are there `as unknown as X` casts?
+- [ ] Are Zod schemas shared between route definitions and service layer, or duplicated?
+- [ ] Are there middleware/plugins that lose type information at boundaries?
+- [ ] Review all `as` casts in `apps/server/src/` — each one is a potential type-safety hole
+
+**Found during:** 5.3 LDAP post-fix review remediation
+**Severity:** Low-Medium — architectural hygiene, no runtime bugs, but undermines the
+value of TypeScript strict mode

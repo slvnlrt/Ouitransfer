@@ -86,6 +86,15 @@ export const routes: RouteConfig[] = [
   r("GET", "admin/audit-logs", "/admin/audit-logs", { query: true }),
   r("GET", "admin/stats", "/admin/stats"),
 
+  // LDAP
+  r("GET", "admin/ldap/config", "/admin/ldap/config"),
+  r("PUT", "admin/ldap/config", "/admin/ldap/config"),
+  r("POST", "admin/ldap/test", "/admin/ldap/test"),
+  r("POST", "admin/ldap/sync", "/admin/ldap/sync"),
+  r("GET", "admin/ldap/sync/logs/:id", "/admin/ldap/sync/logs/:id"),
+  r("GET", "admin/ldap/sync/logs", "/admin/ldap/sync/logs", { query: true }),
+  r("GET", "admin/ldap/status", "/admin/ldap/status"),
+
   // ═══════════════════════════════════════════════════════════════
   // APP
   // ═══════════════════════════════════════════════════════════════
