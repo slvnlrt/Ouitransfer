@@ -1,38 +1,5 @@
 import { z } from "zod";
-
-/**
- * Reuse the quota override field logic: null = inherit, 0 = unlimited, >0 = bytes.
- * Accepts number or string input, converts to bigint internally. Max 1 PB.
- */
-const quotaOverrideField = z.union([z.number(), z.string(), z.null()]).transform((val, ctx) => {
-  if (val === null) return null;
-  const str = String(val);
-  if (!/^\d+$/.test(str)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Quota value must be a non-negative integer in bytes",
-    });
-    return z.NEVER;
-  }
-  try {
-    const n = BigInt(str);
-    const ONE_PB = 1125899906842624n; // 2^50 bytes = 1 PB
-    if (n > ONE_PB) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Quota value must not exceed 1 PB",
-      });
-      return z.NEVER;
-    }
-    return n;
-  } catch {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Quota value must be a valid integer",
-    });
-    return z.NEVER;
-  }
-});
+import { quotaOverrideField } from "../../shared/quota-schema.js";
 
 export const CreateGroupSchema = z.object({
   name: z
