@@ -1,0 +1,200 @@
+---
+title: Groups
+icon: UsersRound
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Groups are organizational units that let you apply quota policies to a set of users at once. Instead of setting quota overrides on every individual account, you create a group, configure its limits once, and assign users to it. Each user can belong to at most one group.
+
+<Callout type="info">
+  Groups are an admin-only feature. All group management operations require an administrator account.
+</Callout>
+
+## Creating a group
+
+Navigate to **Admin → Groups Management** and click **Create Group**.
+
+| Field | Required | Description |
+|---|---|---|
+| Name | Yes | Unique identifier for the group (max 100 characters) |
+| Description | No | Free-text note for administrators (max 500 characters) |
+| Max File Size | No | Per-member file size limit override |
+| Max Total Storage | No | Per-member total storage limit override |
+
+### Quota override values
+
+The quota fields accept three modes:
+
+- **Inherit** (`null`) — the group does not set a limit; each member inherits from the next level (global default).
+- **Unlimited** (`0`) — members in this group have no enforced limit for this quota, regardless of global settings.
+- **Custom** (a positive byte value) — members in this group are capped at this value.
+
+<Callout type="warn">
+  Setting a group quota to **Unlimited** does not mean "use the global default." It means the limit is actively removed for those members. Use **Inherit** if you want the global default to apply.
+</Callout>
+
+## Managing members
+
+### From Groups Management
+
+Open the group detail view by clicking the group name or selecting **View Details** from the actions menu. The detail view shows all current members with their username, email address, and individual storage usage.
+
+To add a member, select a user from the dropdown in the **Add Member** section and click **Add**. If the selected user is already a member of another group, a warning is shown: they will be moved to the current group when you confirm.
+
+To remove a member, click the remove button on their row. The user is unassigned from the group and their quota resolution falls back to global defaults.
+
+### From User Management
+
+You can also assign a group when editing an individual user. Open **Admin → User Management**, edit the user, and select a group from the **Group** dropdown. Choose **None** to remove the user from any group.
+
+<Callout type="info">
+  A user can belong to at most one group at a time. Assigning a user to a new group automatically removes them from their previous group — there is no need to unassign first.
+</Callout>
+
+## Quota inheritance
+
+When Ouitransfer resolves a user's effective quota limits, it applies the following priority chain:
+
+```
+User override  →  Group override  →  Global default
+```
+
+More specifically:
+
+1. If the user has a personal override set, it wins — regardless of any group setting.
+2. If the user has no personal override but belongs to a group that has an override set, the group value is used.
+3. If neither the user nor their group has an override, the global default from Settings applies.
+4. Administrators always get unlimited quotas, regardless of group or global settings.
+
+### Example scenarios
+
+| User override | Group override | Global default | Effective limit |
+|---|---|---|---|
+| 5 GB | 10 GB | 2 GB | **5 GB** (user wins) |
+| Inherit | 10 GB | 2 GB | **10 GB** (group wins) |
+| Inherit | Inherit | 2 GB | **2 GB** (global default) |
+| Inherit | Unlimited | 2 GB | **Unlimited** (group explicitly removes limit) |
+| Inherit | — (no group) | 2 GB | **2 GB** (global default) |
+
+The effective quota for each user is displayed in the User Management edit form, along with a label indicating the resolution source (**User override**, **Group: {name}**, or **Global default**).
+
+For a full description of the quota system, see the [Quotas](/docs/v3-beta/quotas) documentation.
+
+## Deleting a group
+
+Select **Delete** from the group's actions menu. If the group has members, the confirmation dialog will state how many users will be affected.
+
+Deleting a group **does not delete its members**. Their `groupId` is set to `null` (database `SET NULL`) and they fall back to global quota defaults. No user data or files are removed.
+
+<Callout type="warn">
+  Deletion is permanent. Members previously subject to group-level quota overrides will immediately revert to global defaults after the group is deleted. If those global defaults are more restrictive than the group limits were, affected users may find their uploads blocked until you assign them to a new group or set personal overrides.
+</Callout>
+
+## LDAP group mapping
+
+Groups can be linked to Active Directory groups via the `ldapDn` field. When an LDAP sync runs, users who belong to the mapped AD group are automatically assigned to the corresponding Ouitransfer group.
+
+The `ldapDn` field is managed programmatically during LDAP configuration — it is not exposed in the Groups Management UI. You set it when configuring LDAP group mappings.
+
+For setup instructions, see the [LDAP Configuration](/docs/v3-beta/ldap) documentation.
+
+<Callout type="info">
+  LDAP sync respects the one-group-per-user constraint. If a user matches multiple AD group mappings, the first match wins.
+</Callout>
+
+## API reference (Admin)
+
+All endpoints require a valid admin session. Non-admin requests receive `403 Forbidden`.
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/groups` | List all groups with member counts and total storage used |
+| `GET` | `/groups/:id` | Get group details including full member list |
+| `POST` | `/groups` | Create a new group |
+| `PUT` | `/groups/:id` | Update an existing group |
+| `DELETE` | `/groups/:id` | Delete a group (members are unassigned, not deleted) |
+| `POST` | `/groups/:id/members` | Add a user to the group (moves them if already in another group) |
+| `DELETE` | `/groups/:id/members/:userId` | Remove a user from the group |
+
+### Request bodies
+
+**Create group** (`POST /groups`):
+
+```json
+{
+  "name": "Engineering",
+  "description": "Engineering team",
+  "maxFileSizeOverride": null,
+  "maxTotalStorageOverride": "21474836480"
+}
+```
+
+**Update group** (`PUT /groups/:id`) — all fields optional:
+
+```json
+{
+  "name": "Engineering",
+  "description": null,
+  "maxFileSizeOverride": "0",
+  "maxTotalStorageOverride": null
+}
+```
+
+**Add member** (`POST /groups/:id/members`):
+
+```json
+{
+  "userId": "clx..."
+}
+```
+
+### Response shapes
+
+**Group list item** (`GET /groups`):
+
+```json
+{
+  "id": "clx...",
+  "name": "Engineering",
+  "description": "Engineering team",
+  "memberCount": 12,
+  "storageUsed": "5368709120",
+  "maxFileSizeOverride": null,
+  "maxTotalStorageOverride": "21474836480",
+  "ldapDn": null,
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+**Group detail** (`GET /groups/:id`) — same fields plus a `members` array:
+
+```json
+{
+  "members": [
+    {
+      "id": "clx...",
+      "username": "jdoe",
+      "email": "jdoe@example.com",
+      "firstName": "Jane",
+      "lastName": "Doe",
+      "image": null,
+      "storageUsed": "1073741824"
+    }
+  ]
+}
+```
+
+**Delete response** (`DELETE /groups/:id`):
+
+```json
+{
+  "message": "Group deleted",
+  "unassignedCount": 12
+}
+```
+
+### Quota field encoding
+
+`maxFileSizeOverride` and `maxTotalStorageOverride` are `BigInt` values serialized as strings in JSON responses. When sending these values in request bodies, you can provide them as a number, a numeric string, or `null`. The maximum accepted value is 1 PB (1 125 899 906 842 624 bytes).
