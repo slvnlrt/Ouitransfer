@@ -460,15 +460,15 @@ individuellement pour chaque utilisateur ou groupe."
 
 | Bug | Sévérité | Impact | Statut |
 |-----|----------|--------|--------|
-| B-9 Auth providers 500 | **Haute** | Page settings cassée pour tous les admins | À corriger |
+| B-9 Auth providers 500 | **Haute** | Page settings cassée pour tous les admins | ✅ Résolu |
 | B-8 ldapDn non settable | **Moyenne** | Feature LDAP group mapping non fonctionnelle via UI | À corriger |
-| B-10 Contamination PT fr-FR | **Moyenne** | Textes portugais visibles en locale FR | À corriger |
-| B-12 Couleur thème défaut | **Moyenne** | Reset/save change le thème vers couleur obsolète | À corriger |
-| B-11 Traduction "terrain" | **Basse** | Confus mais pas bloquant | À corriger |
-| B-13 Lien footer incorrect | **Basse** | Lien vers mauvais domaine | À corriger |
-| B-14 String hardcodée EN | **Basse** | Anglais affiché en locale non-EN | À corriger |
+| B-10 Contamination PT fr-FR | **Moyenne** | Textes portugais visibles en locale FR | ✅ Résolu |
+| B-12 Couleur thème défaut | **Moyenne** | Reset/save change le thème vers couleur obsolète | ✅ Résolu |
+| B-11 Traduction "terrain" | **Basse** | Confus mais pas bloquant | ✅ Résolu |
+| B-13 Lien footer incorrect | **Basse** | Lien vers mauvais domaine | ✅ Résolu |
+| B-14 String hardcodée EN | **Basse** | Anglais affiché en locale non-EN | ✅ Résolu |
 | B-15 Détails RS incomplets | **Basse** | Champs manquants dans vue détails | À corriger |
-| B-16 Modales 2FA étroites | **Basse** | Visuel contraint | À corriger |
+| B-16 Modales 2FA étroites | **Basse** | Visuel contraint | ✅ Résolu |
 | B-17 Description setting | **Basse** | Description confuse | À corriger |
-| B-18 "Disponibilité" → "Uptime" | **Très basse** | Cosmétique | À corriger |
+| B-18 "Disponibilité" → "Uptime" | **Très basse** | Cosmétique | ✅ Résolu |
 | B-19 Messages stockage incomplets | **Très basse** | Info manquante | À corriger |
