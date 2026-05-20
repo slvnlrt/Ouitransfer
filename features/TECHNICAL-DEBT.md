@@ -22,28 +22,15 @@ and 401/403 response schemas on auth routes.
 
 ---
 
-## TD-3 — 2FA brute-force gap: no per-account rate limiting on TOTP verification
+## ~~TD-3 — 2FA brute-force gap: no per-account rate limiting on TOTP verification~~ ✅ RESOLVED
 
-**Context:** `apps/server/src/modules/auth/service.ts` — `completeTwoFactorLogin()` throws
-`UnauthorizedError` on invalid TOTP/backup codes but does NOT call `recordLoginAttempt()`
-from `login-attempts.service.ts`. This means the per-account lockout mechanism (10 failed
-attempts → 15-minute lock) is bypassed for the 2FA step.
+Resolved in TD session (mai 2026). `login()` restructured to defer success recording when 2FA
+is required. `completeTwoFactorLogin()` now calls `isAccountLocked()` at entry and
+`recordLoginAttempt()` on failure/success. Audit logging (`LOGIN_FAILURE`/`LOGIN_LOCKED`) added
+to `POST /auth/2fa/login` route. Integration test added at
+`src/__tests__/auth-2fa-lockout.integration.test.ts` (4 `app.inject()` tests).
 
-The route-level `rateLimit: { max: 5, timeWindow: "1 minute" }` on `/auth/2fa/login`
-(`apps/server/src/modules/auth/routes.ts`) is per-IP only, trivially defeated by rotating IPs.
-
-An attacker who obtains valid credentials (email + password) receives a `challengeToken` and
-can then brute-force the 6-digit TOTP code without triggering account lockout.
-
-**Fix:**
-1. Call `recordLoginAttempt(emailOrUsername, clientIp)` in `completeTwoFactorLogin()` on
-   TOTP/backup code failure (before throwing `UnauthorizedError`)
-2. Check `isAccountLocked()` at the start of `completeTwoFactorLogin()` — same pattern as
-   the password login path
-3. Add integration test verifying that failed 2FA attempts trigger lockout after threshold
-
-**Found during:** B-7/TD session final review (finding I-5)
-**Severity:** Medium — security gap, but requires valid credentials as prerequisite
+Commits: `fix(server): close 2FA brute-force gap`, `fix: address review findings I-1/I-2/...`
 
 ---
 
@@ -110,19 +97,10 @@ accumulates risk and misses bug fixes / performance improvements
 
 ---
 
-## TD-7 — Turborepo minor update: 2.9.6 → 2.9.14
+## ~~TD-7 — Turborepo minor update: 2.9.6 → 2.9.14~~ ✅ RESOLVED
 
-**Context:** `just dev` shows `Update available v2.9.6 ≫ v2.9.14`. This is a patch/minor
-update (not a major), so it should be safe to apply directly.
-
-**Fix:**
-```
-pnpm dlx @turbo/codemod@latest update
-```
-or manually bump `turbo` in the root `package.json` / workspace.
-
-**Found during:** local dev session (May 2026)
-**Severity:** Very low — patch update, no breaking changes expected
+Resolved in TD session (mai 2026). `turbo` bumped to `^2.9.14` in root `package.json`.
+Commit: `chore(deps): update turbo 2.9.6 -> 2.9.14`
 
 ---
 
@@ -135,27 +113,14 @@ directly in `file/routes.ts`.
 
 ---
 
-## TD-8 — Group API quota fields lack validation (no upper bound, no integer check)
+## ~~TD-8 — Group API quota fields lack validation (no upper bound, no integer check)~~ ✅ RESOLVED
 
-**Context:** The Quota module (`apps/server/src/modules/quota/dto.ts`) validates
-`maxFileSizeOverride` and `maxTotalStorageOverride` with:
-- Upper bound of 1 PB (`ONE_PB = 1125899906842624n`)
-- Integer check (must be a valid BigInt-parseable value)
-- Explicit null/0/positive semantics
+Resolved in TD session (mai 2026). Extracted shared `quotaOverrideField` schema to
+`apps/server/src/shared/quota-schema.ts`. Both `quota/dto.ts` and `group/dto.ts` now import
+from this shared module. 13 unit tests added in `shared/__tests__/quota-schema.test.ts`
+covering null, 0, 1GB, 1PB, overflow, negative, decimal, non-numeric inputs.
 
-However, the Group routes (`apps/server/src/modules/group/routes.ts:99-106,133-134`)
-use a bare `z.union([z.number(), z.string(), z.null()])` with **no upper bound and no
-integer validation**. An admin can `POST /groups` with
-`"maxFileSizeOverride": "99999999999999999999"` and the schema accepts it.
-
-**Fix:**
-1. Extract a shared Zod schema for BigInt quota fields (used in both Quota and Group modules)
-2. Apply the same 1 PB cap and integer validation to Group routes
-3. Add a test verifying that oversized values are rejected
-
-**Found during:** Documentation quality review (docs-update session)
-**Severity:** Low — no data corruption (Prisma stores as BigInt), but inconsistent
-validation between two APIs that manage the same concept
+Commits: `refactor(server): extract shared quotaOverrideField schema`, `fix: address review findings...`
 
 ---
 
@@ -215,26 +180,14 @@ de ces images sont inconnues (potentiellement sous copyright).
 
 ---
 
-## TD-13 — Pattern i18n fragile : concaténation de clés t() au lieu d'interpolation
+## ~~TD-13 — Pattern i18n fragile : concaténation de clés t() au lieu d'interpolation~~ ✅ RESOLVED
 
-**Context:** Dans `reverse-share-card.tsx:467`, le tooltip est composé par concaténation :
-```ts
-title={`${t("common.click")} ${t("reverseShares.modals.details.activate")}`}
-```
+Resolved in TD session (mai 2026). Two occurrences fixed:
+- `reverse-share-card.tsx:450` — remplacé par `common.clickToActivate` / `common.clickToDeactivate`
+- `move-items-modal.tsx:218` — remplacé par `moveItems.movingToFolder` avec interpolation `{folder}`
+Les 23 locales mises à jour. Clé `common.click` supprimée.
 
-Ce pattern suppose que toutes les langues utilisent le même ordre de mots et le même
-espacement. Il devrait utiliser l'interpolation next-intl :
-```
-"clickToAction": "Cliquez pour {action}"
-```
-
-**Fix:**
-1. Auditer le codebase pour d'autres instances de concaténation `${t()} ${t()}`
-2. Remplacer par des clés avec interpolation `{variable}`
-3. Mettre à jour les 23 locales
-
-**Found during:** Investigation B-10 (contamination PT, mai 2026)
-**Severity:** Low — fonctionne tant que l'ordre des mots est identique, mais fragile pour les langues à ordre inversé (arabe, japonais, etc.)
+Commits: `fix(web): replace fragile i18n concatenation with dedicated keys`, `fix: address review findings...`
 
 ---
 
@@ -258,17 +211,12 @@ L'URL, le nom de la société, et l'affichage ne sont pas configurables par l'ad
 
 ---
 
-## TD-15 — Description par défaut de l'application à améliorer
+## ~~TD-15 — Description par défaut de l'application à améliorer~~ ✅ RESOLVED
 
-**Context:** Le seed (`prisma/seed.js:27-31`) initialise `appDescription` avec
-"Secure and simple file sharing - Your personal cloud". Ce texte est générique et peu
-descriptif du produit.
+Resolved in TD session (mai 2026). `appDescription` dans `prisma/seed.js` changé en
+"Self-hosted file transfer platform". Fallback `app-info.ts` mis à jour en cohérence.
 
-**Fix:** Changer la description seedée vers quelque chose de plus pertinent et professionnel.
-Suggestion : "Self-hosted file transfer solution" ou "Plateforme de transfert de fichiers auto-hébergée".
-
-**Found during:** Revue manuelle (session audit, mai 2026)
-**Severity:** Very low — modifiable par l'admin dans settings, le seed est juste le défaut initial
+Commit: `chore(monorepo): update default app description`
 
 ---
 

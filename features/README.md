@@ -103,8 +103,9 @@ features/
 ## Current Focus
 
 **Completed:** 5.1 Quotas, 5.4 Groups, 5.3 LDAP, 6.1-6.3 UI Overhaul, 7.1 Error Handling.
-All resolved: B-1 through B-7, TD-1, TD-2, TD-4, TD-9.
+All resolved: B-1 through B-19, TD-1, TD-2, TD-3, TD-4, TD-7, TD-8, TD-9, TD-13, TD-15.
 
-**Open bugs:** B-8 through B-18 — see `BUGS.md`
-**Open tech debt:** TD-3, TD-5 through TD-8, TD-10 through TD-15 — see `TECHNICAL-DEBT.md`
-**Next features:** 5.2 Auto-cleanup (independent), 8.1 Email Notifications, 8.2 Download Tracking
+**Test counts:** 42 server test files (405 tests) + 19 web test files (222 tests) = **627 total**.
+
+**Open tech debt:** TD-5, TD-6, TD-10, TD-11, TD-12, TD-14, TD-16 — see `TECHNICAL-DEBT.md`
+**Next features:** 5.2 Auto-cleanup (independent), 8.1 Audit Trail, 8.2 Email Notifications, 8.3 Download Tracking
