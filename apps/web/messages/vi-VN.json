@@ -1067,6 +1067,7 @@
         },
         "selectAll": "Chọn tất cả",
         "selectFile": "Chọn tệp {fileName}",
+        "bulkDeleteError": "Lỗi khi xóa các mục đã chọn",
         "copyErrors": {
           "timeout": "Thao tác sao chép đã hết thời gian chờ. Vui lòng thử lại với tệp nhỏ hơn hoặc kiểm tra kết nối của bạn.",
           "failed": "Thao tác sao chép không thành công. Vui lòng thử lại.",

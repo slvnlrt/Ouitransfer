@@ -1066,6 +1066,7 @@
         "selectFile": "Selecionar arquivo {fileName}",
         "deleteError": "Erro ao excluir arquivo",
         "deleteSuccess": "Arquivo excluído com sucesso",
+        "bulkDeleteError": "Erro ao excluir arquivos selecionados",
         "copyErrors": {
           "timeout": "A operação de cópia expirou. Por favor, tente novamente com um arquivo menor ou verifique sua conexão.",
           "failed": "A operação de cópia falhou. Por favor, tente novamente.",

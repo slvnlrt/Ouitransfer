@@ -367,7 +367,7 @@ export function ReceivedFilesModal({
         success: t("reverseShares.modals.receivedFiles.bulkDeleteSuccess", {
           count: filesToDeleteBulk.length,
         }),
-        error: "Error deleting selected files",
+        error: t("reverseShares.modals.receivedFiles.bulkDeleteError"),
       },
     );
   };

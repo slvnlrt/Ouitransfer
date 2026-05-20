@@ -1067,6 +1067,7 @@
         },
         "selectAll": "Välj alla",
         "selectFile": "Välj fil {fileName}",
+        "bulkDeleteError": "Det gick inte att ta bort markerade objekt",
         "copyErrors": {
           "timeout": "Kopieringsåtgärden tog timeout. Försök igen med en mindre fil eller kontrollera din anslutning.",
           "failed": "Kopieringsåtgärden misslyckades. Försök igen.",

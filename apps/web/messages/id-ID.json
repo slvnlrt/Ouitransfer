@@ -1067,6 +1067,7 @@
         },
         "selectAll": "Pilih semua",
         "selectFile": "Pilih file {fileName}",
+        "bulkDeleteError": "Kesalahan menghapus item yang dipilih",
         "copyErrors": {
           "timeout": "Operasi penyalinan habis waktu. Silakan coba lagi dengan file yang lebih kecil atau periksa koneksi Anda.",
           "failed": "Operasi penyalinan gagal. Silakan coba lagi.",

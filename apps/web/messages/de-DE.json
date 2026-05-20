@@ -1063,6 +1063,7 @@
         "selectFile": "Datei {fileName} auswählen",
         "deleteError": "Fehler beim Löschen der Datei",
         "deleteSuccess": "Datei erfolgreich gelöscht",
+        "bulkDeleteError": "Fehler beim Löschen der ausgewählten Dateien",
         "copyErrors": {
           "timeout": "Zeitüberschreitung beim Kopiervorgang. Bitte versuchen Sie es erneut mit einer kleineren Datei oder überprüfen Sie Ihre Verbindung.",
           "failed": "Kopiervorgang fehlgeschlagen. Bitte versuchen Sie es erneut.",

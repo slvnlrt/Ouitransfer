@@ -1063,6 +1063,7 @@
         "selectFile": "Seleziona file {fileName}",
         "deleteError": "Errore durante l'eliminazione del file",
         "deleteSuccess": "File eliminato con successo",
+        "bulkDeleteError": "Errore nell'eliminazione dei file selezionati",
         "copyErrors": {
           "timeout": "Operazione di copia scaduta. Riprova con un file più piccolo o controlla la tua connessione.",
           "failed": "Operazione di copia fallita. Per favore riprova.",

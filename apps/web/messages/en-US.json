@@ -1204,6 +1204,7 @@
         },
         "selectAll": "Select all",
         "selectFile": "Select file {fileName}",
+        "bulkDeleteError": "Error deleting selected files",
         "copyErrors": {
           "timeout": "Copy operation timed out. Please try again with a smaller file or check your connection.",
           "failed": "Copy operation failed. Please try again.",

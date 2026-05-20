@@ -1062,6 +1062,7 @@
         "selectFile": "{fileName} 파일 선택",
         "deleteError": "파일 삭제 오류",
         "deleteSuccess": "파일이 성공적으로 삭제됨",
+        "bulkDeleteError": "선택된 파일 삭제 오류",
         "copyErrors": {
           "timeout": "복사 작업 시간이 초과되었습니다. 더 작은 파일로 다시 시도하거나 연결을 확인하십시오.",
           "failed": "복사 작업이 실패했습니다. 다시 시도해 주세요.",

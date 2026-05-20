@@ -1062,6 +1062,7 @@
         "selectFile": "选择文件 {fileName}",
         "deleteError": "删除文件时出错",
         "deleteSuccess": "文件已成功删除",
+        "bulkDeleteError": "删除选中文件错误",
         "copyErrors": {
           "timeout": "复制操作超时。请尝试使用较小的文件或检查您的连接。",
           "failed": "复制操作失败。请重试。",

@@ -1062,6 +1062,7 @@
         "selectFile": "Wybierz plik {fileName}",
         "deleteError": "Błąd usuwania pliku",
         "deleteSuccess": "Plik usunięty pomyślnie",
+        "bulkDeleteError": "Błąd usuwania wybranych plików",
         "copyErrors": {
           "timeout": "Operacja kopiowania przekroczyła limit czasu. Spróbuj ponownie z mniejszym plikiem lub sprawdź swoje połączenie.",
           "failed": "Operacja kopiowania nie powiodła się. Spróbuj ponownie.",
