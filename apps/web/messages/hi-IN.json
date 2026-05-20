@@ -618,8 +618,8 @@
     "forgotPassword": "पासवर्ड भूल गए?",
     "pageTitle": "लॉगिन",
     "or": "ou",
-    "continueWithSSO": "Continuar com SSO",
-    "processing": "Processando autenticação...",
+    "continueWithSSO": "SSO के साथ जारी रखें",
+    "processing": "प्रमाणीकरण प्रक्रिया जारी है...",
     "orContinueWith": "या इसके साथ जारी रखें",
     "continueWith": "{name} के साथ जारी रखें",
     "providerNotConfigured": "{name} ठीक से कॉन्फ़िगर नहीं किया गया है"
@@ -1062,6 +1062,7 @@
         "selectFile": "फ़ाइल {fileName} चुनें",
         "deleteError": "फ़ाइल हटाने में त्रुटि",
         "deleteSuccess": "फ़ाइल सफलतापूर्वक हटा दी गई",
+        "bulkDeleteError": "चयनित फाइलों को हटाने में त्रुटि",
         "copyErrors": {
           "timeout": "कॉपी ऑपरेशन का समय समाप्त हो गया। कृपया छोटी फ़ाइल के साथ पुनः प्रयास करें या अपना कनेक्शन जांचें।",
           "failed": "कॉपी ऑपरेशन विफल हो गया। कृपया पुनः प्रयास करें।",

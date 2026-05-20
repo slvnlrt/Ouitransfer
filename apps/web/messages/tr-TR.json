@@ -618,8 +618,8 @@
     "forgotPassword": "Şifrenizi mi unuttunuz?",
     "pageTitle": "Giriş",
     "or": "ou",
-    "continueWithSSO": "Continuar com SSO",
-    "processing": "Processando autenticação...",
+    "continueWithSSO": "SSO ile devam et",
+    "processing": "Kimlik doğrulama işleniyor...",
     "orContinueWith": "Veya şununla devam edin",
     "continueWith": "{name} ile devam et",
     "providerNotConfigured": "{name} düzgün yapılandırılmamış"
@@ -1062,6 +1062,7 @@
         "selectFile": "{fileName} dosyasını seç",
         "deleteError": "Dosya silinirken hata oluştu",
         "deleteSuccess": "Dosya başarıyla silindi",
+        "bulkDeleteError": "Seçilen dosyalar silinirken hata",
         "copyErrors": {
           "timeout": "Kopyalama işlemi zaman aşımına uğradı. Lütfen daha küçük bir dosya ile tekrar deneyin veya bağlantınızı kontrol edin.",
           "failed": "Kopyalama işlemi başarısız oldu. Lütfen tekrar deneyin.",

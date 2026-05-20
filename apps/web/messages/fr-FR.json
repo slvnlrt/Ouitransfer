@@ -162,8 +162,8 @@
     "updating": "Mise à jour...",
     "saving": "Enregistrement...",
     "update": "Mettre à jour",
-    "click": "Clique para",
-    "creating": "Criando...",
+    "click": "Cliquez pour",
+    "creating": "Création en cours...",
     "loadingSimple": "Chargement...",
     "create": "Créer",
     "deleting": "Suppression...",
@@ -267,7 +267,7 @@
         "error": "Erreur",
         "notConfigured": "Non configuré"
       },
-      "uptime": "Disponibilité",
+      "uptime": "Uptime",
       "diskSpace": {
         "label": "Espace disque",
         "ariaLabel": "Barre de progression de l'utilisation de l'espace disque"
@@ -618,8 +618,8 @@
     "forgotPassword": "Mot de passe oublié ?",
     "pageTitle": "Connexion",
     "or": "ou",
-    "continueWithSSO": "Continuar com SSO",
-    "processing": "Processando autenticação...",
+    "continueWithSSO": "Continuer avec SSO",
+    "processing": "Traitement de l'authentification...",
     "orContinueWith": "Ou continuer avec",
     "continueWith": "Continuer avec {name}",
     "providerNotConfigured": "{name} n'est pas correctement configuré"
@@ -882,7 +882,7 @@
         "optional": "Optionnel",
         "required": "Obligatoire"
       },
-      "fieldRequirements": "Exigences sur le terrain",
+      "fieldRequirements": "Exigences de champs",
       "nameFieldRequired": "Champ de nom"
     },
     "card": {
@@ -1063,6 +1063,7 @@
         "selectFile": "Sélectionner le fichier {fileName}",
         "deleteError": "Erreur lors de la suppression du fichier",
         "deleteSuccess": "Fichier supprimé avec succès",
+        "bulkDeleteError": "Erreur lors de la suppression des fichiers sélectionnés",
         "copyErrors": {
           "timeout": "L'opération de copie a expiré. Veuillez réessayer avec un fichier plus petit ou vérifier votre connexion.",
           "failed": "L'opération de copie a échoué. Veuillez réessayer.",
@@ -1131,11 +1132,11 @@
       },
       "submit": "Créer le Lien de Réception",
       "emailFieldRequired": {
-        "label": "Exigence de champ de messagerie",
+        "label": "Champ e-mail obligatoire",
         "description": "Configurez si le champ de messagerie du téléchargeur doit être affiché et s'il est requis"
       },
       "fieldRequirements": {
-        "title": "Exigences sur le terrain",
+        "title": "Exigences de champs",
         "description": "Configurer quels champs sont affichés dans le formulaire de téléchargement",
         "configurationTitle": "Configuration des champs :",
         "hiddenDescription": "Masqué : Le champ n'apparaîtra pas dans le formulaire d'upload",
@@ -1143,7 +1144,7 @@
         "requiredDescription": "Obligatoire : Le champ doit être rempli avant l'upload"
       },
       "nameFieldRequired": {
-        "label": "Exigence de champ de nom",
+        "label": "Champ nom obligatoire",
         "description": "Configurer si le champ Nom du téléchargeur doit être affiché et s'il est requis"
       }
     },
@@ -2139,8 +2140,8 @@
     "emailRequired": "L'email est requis",
     "emailOrUsernameRequired": "L'email ou le nom d'utilisateur est requis",
     "passwordRequired": "Le mot de passe est requis",
-    "nameRequired": "Nome é obrigatório",
-    "required": "Este campo é obrigatório"
+    "nameRequired": "Le nom est requis",
+    "required": "Ce champ est requis"
   },
   "embedCode": {
     "title": "Intégrer le média",

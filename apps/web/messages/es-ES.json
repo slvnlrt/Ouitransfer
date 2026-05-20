@@ -622,8 +622,8 @@
     "forgotPassword": "¿Olvidaste tu contraseña?",
     "pageTitle": "Iniciar sesión",
     "or": "ou",
-    "continueWithSSO": "Continuar com SSO",
-    "processing": "Processando autenticação...",
+    "continueWithSSO": "Continuar con SSO",
+    "processing": "Procesando autenticación...",
     "orContinueWith": "O continuar con",
     "continueWith": "Continuar con {name}",
     "providerNotConfigured": "{name} no está correctamente configurado"
@@ -1067,6 +1067,7 @@
         "selectFile": "Seleccionar archivo {fileName}",
         "deleteError": "Error al eliminar el archivo",
         "deleteSuccess": "Archivo eliminado correctamente",
+        "bulkDeleteError": "Error al eliminar archivos seleccionados",
         "copyErrors": {
           "timeout": "La operación de copia expiró. Por favor, inténtalo de nuevo con un archivo más pequeño o verifica tu conexión.",
           "failed": "La operación de copia falló. Por favor, inténtalo de nuevo.",

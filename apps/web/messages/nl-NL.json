@@ -618,8 +618,8 @@
     "forgotPassword": "Wachtwoord vergeten?",
     "pageTitle": "Aanmelden",
     "or": "ou",
-    "continueWithSSO": "Continuar com SSO",
-    "processing": "Processando autenticação...",
+    "continueWithSSO": "Doorgaan met SSO",
+    "processing": "Authenticatie verwerken...",
     "orContinueWith": "Of doorgaan met",
     "continueWith": "Doorgaan met {name}",
     "providerNotConfigured": "{name} is niet juist geconfigureerd"
@@ -1062,6 +1062,7 @@
         "selectFile": "Selecteer bestand {fileName}",
         "deleteError": "Fout bij verwijderen bestand",
         "deleteSuccess": "Bestand succesvol verwijderd",
+        "bulkDeleteError": "Fout bij het verwijderen van geselecteerde bestanden",
         "copyErrors": {
           "timeout": "Kopieeroperatie verlopen. Probeer het opnieuw met een kleiner bestand of controleer uw verbinding.",
           "failed": "Kopieeroperatie mislukt. Probeer het opnieuw.",
