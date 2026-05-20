@@ -1,8 +1,7 @@
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import type { FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
-
-import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 
 import { REFRESH_TOKEN_COOKIE_NAME } from "../../config/auth.config.js";
 import { AppError, UnauthorizedError } from "../../utils/app-error.js";
@@ -13,7 +12,11 @@ import { logAuditEvent } from "../audit/service.js";
 import { getConfigValue } from "../config/service.js";
 import { validatePasswordMiddleware } from "../user/middleware.js";
 import { createChallengeToken, verifyChallengeToken } from "./challenge.js";
-import { CompleteTwoFactorLoginSchema, createResetPasswordSchema, RequestPasswordResetSchema } from "./dto.js";
+import {
+  CompleteTwoFactorLoginSchema,
+  createResetPasswordSchema,
+  RequestPasswordResetSchema,
+} from "./dto.js";
 import {
   createRefreshToken,
   revokeAllUserTokens,
@@ -40,9 +43,7 @@ const jwtPreValidation = async (request: FastifyRequest) => {
     await request.jwtVerify();
   } catch (err) {
     request.log.warn({ err }, "JWT verification failed");
-    throw new UnauthorizedError(
-      "Unauthorized: a valid token is required to access this resource.",
-    );
+    throw new UnauthorizedError("Unauthorized: a valid token is required to access this resource.");
   }
 };
 
@@ -52,7 +53,9 @@ const jwtPreValidation = async (request: FastifyRequest) => {
  * Shared by the login, 2FA-login, and refresh flows.
  */
 async function signAndSetCookies(
-  reply: Parameters<typeof setAuthCookies>[0] & { jwtSign: (payload: Record<string, unknown>) => Promise<string> },
+  reply: Parameters<typeof setAuthCookies>[0] & {
+    jwtSign: (payload: Record<string, unknown>) => Promise<string>;
+  },
   user: { id: string; isAdmin: boolean; tokenVersion: number },
   userAgent: string,
   ipAddress: string,

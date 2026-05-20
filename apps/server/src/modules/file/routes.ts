@@ -269,7 +269,8 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         } catch (err) {
           if (err instanceof AppError) throw err;
 
-          const message = err instanceof Error ? err.message.toLowerCase() : String(err).toLowerCase();
+          const message =
+            err instanceof Error ? err.message.toLowerCase() : String(err).toLowerCase();
           const isExpectedFailure =
             message.includes("range") ||
             message.includes("not supported") ||

@@ -71,36 +71,6 @@ export interface RequestContext {
  */
 export type AuthProviderModel = AuthProvider;
 
-export interface UpdateProviderRequest {
-  Params: { id: string };
-  Body: Record<string, string | boolean | number | null | undefined>;
-}
-
-export interface UpdateProvidersOrderRequest {
-  Body: { providers: { id: string; sortOrder: number }[] };
-}
-
-export interface DeleteProviderRequest {
-  Params: { id: string };
-}
-
-export interface AuthorizeRequest {
-  Params: { provider: string };
-  Querystring: {
-    state?: string;
-    redirect_uri?: string;
-  };
-}
-
-export interface CallbackRequest {
-  Params: { provider: string };
-  Querystring: {
-    code?: string;
-    state?: string;
-    error?: string;
-  };
-}
-
 export interface PendingState {
   codeVerifier: string;
   redirectUrl: string;

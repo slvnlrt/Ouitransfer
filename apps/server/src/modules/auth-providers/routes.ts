@@ -95,10 +95,7 @@ function validateIssuerUrl(issuerUrl: string): boolean {
   }
 }
 
-function determineCallbackError(
-  error: Error,
-  provider: string,
-): { type: string; message: string } {
+function determineCallbackError(error: Error, provider: string): { type: string; message: string } {
   const errorMessage = error.message;
 
   if (errorMessage.includes("registration via") && errorMessage.includes("disabled")) {
@@ -571,10 +568,7 @@ export const authProvidersRoutes: FastifyPluginAsyncZod = async (app) => {
         return reply.redirect(fullRedirectUrl);
       } catch (callbackError) {
         // Log error for debugging
-        request.log.error(
-          { err: callbackError, provider: providerName },
-          "Auth callback error",
-        );
+        request.log.error({ err: callbackError, provider: providerName }, "Auth callback error");
 
         const { type: errorType, message: errorMessage } =
           callbackError instanceof Error
