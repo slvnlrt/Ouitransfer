@@ -447,7 +447,11 @@ export function ReverseShareCard({
                   variant="ghost"
                   className="w-full h-full p-2 hover:bg-muted/40 transition-colors text-center"
                   onClick={handleToggleActive}
-                  title={`${t("common.click")} ${reverseShare.isActive ? t("reverseShares.modals.details.deactivate") : t("reverseShares.modals.details.activate")}`}
+                  title={
+                    reverseShare.isActive
+                      ? t("common.clickToDeactivate")
+                      : t("common.clickToActivate")
+                  }
                 >
                   <div className="flex flex-col items-center gap-1">
                     {reverseShare.isActive ? (
