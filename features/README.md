@@ -27,6 +27,14 @@ This directory tracks all feature development for Ouitransfer (post-refactor pha
 |---|---------|--------|------------|
 | 7.1 | [Error Handling & Dashboard Redesign](specs/7.1-error-handling-dashboard.md) | Done | — |
 
+### 8.x — Auditing, Email & Tracking
+
+| # | Feature | Status | Depends on |
+|---|---------|--------|------------|
+| 8.1 | [Audit Trail / Activity Log](specs/8.1-auditing.md) | Not started | — |
+| 8.2 | [Email Notifications](specs/8.2-email-notifications.md) | Not started | — |
+| 8.3 | [Download Tracking](specs/8.3-download-tracking.md) | Not started | 8.1, 8.2 |
+
 ### Status Legend
 
 | Status | Meaning |
@@ -94,6 +102,9 @@ features/
 
 ## Current Focus
 
-B-7 bug + TD-1/TD-2 technical debt — Done. TD-3 (2FA brute-force gap) tracked in `TECHNICAL-DEBT.md`.
-5.4 Groups — Done. 5.3 LDAP/AD sync — Done. TD-4 (Zod type provider) — Done.
-Next: 5.2 Auto-cleanup (independent), or remaining tech debt (TD-3, TD-5, TD-6, TD-7, TD-8, TD-9).
+**Completed:** 5.1 Quotas, 5.4 Groups, 5.3 LDAP, 6.1-6.3 UI Overhaul, 7.1 Error Handling.
+All resolved: B-1 through B-7, TD-1, TD-2, TD-4, TD-9.
+
+**Open bugs:** B-8 through B-18 — see `BUGS.md`
+**Open tech debt:** TD-3, TD-5 through TD-8, TD-10 through TD-15 — see `TECHNICAL-DEBT.md`
+**Next features:** 5.2 Auto-cleanup (independent), 8.1 Email Notifications, 8.2 Download Tracking

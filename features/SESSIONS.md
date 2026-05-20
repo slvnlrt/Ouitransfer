@@ -1,5 +1,23 @@
 # Session Log
 
+## 2026-05-20 (session 2)
+
+**Audit UI et suivi des bugs/tech debt/features**
+
+Revue manuelle complète de l'application. Résultats :
+- Ajout de 11 bugs : B-9 (auth providers 500), B-10 (contamination PT fr-FR + cross-locale),
+  B-11 (traduction "terrain"), B-12 (couleur thème défaut vert), B-13 (lien footer),
+  B-14 (string hardcodée EN), B-15 (champs RS manquants), B-16 (modales 2FA étroites),
+  B-17 (description setting trompeuse), B-18 (Disponibilité → Uptime), B-19 (messages stockage)
+- Ajout de 6 tech debt items : TD-10 (routes admin), TD-11 (Next.js 16), TD-12 (images WetTransfer),
+  TD-13 (i18n concaténation), TD-14 (footer non configurable), TD-15 (description par défaut)
+- Création des specs de 3 nouvelles features : 8.1 Auditing, 8.2 Email Notifications, 8.3 Download Tracking
+- Mise à jour de features/README.md (workstream 8.x, current focus)
+- Cross-check complet : complété B-8 (note dropdown LDAP futur), B-15 (suppression bouton Edit),
+  B-13 (traduction "Propulsé" à changer)
+
+---
+
 ## 2026-05-20
 
 **TD-4 — Zod type provider migration** (branch `refactor/td4-zod-type-provider`)

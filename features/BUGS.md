@@ -197,11 +197,13 @@ Le schéma Zod de la route `/auth/login` exige un `password` avec `min(passwordM
 
 Le seul moyen actuel de configurer le mapping groupe→AD est un accès direct à la base de données.
 
-**Correction :**
+**Correction (phase 1 — saisie manuelle) :**
 1. Ajouter `ldapDn` au body schema des routes `POST /groups` et `PUT /groups/:id` (nullable string, optionnel)
 2. Propager dans le controller/service
-3. Ajouter le champ dans `group-form-modal.tsx`
+3. Ajouter un champ texte `ldapDn` dans `group-form-modal.tsx` (saisie manuelle du DN)
 4. Tests : intégration `app.inject()` + test unitaire service
+
+**Évolution future (phase 2) :** Remplacer le champ texte par un dropdown qui interroge le serveur LDAP configuré pour lister les groupes AD disponibles. Nécessite une connexion LDAP active.
 
 **Fichiers concernés :**
 - `apps/server/src/modules/group/routes.ts` (body schemas)
@@ -221,3 +223,252 @@ Le seul moyen actuel de configurer le mapping groupe→AD est un accès direct �
 > B-5 résolu par ajout de breakpoints responsive aux grids des formulaires auth-provider.
 > B-6 résolu par ajout d'un handler onError sur l'image logo dans la navbar.
 > B-7 résolu dans la session B-7/TD : VALIDATION_ERROR traité comme "identifiants invalides" (pas de divulgation de politique mdp).
+
+---
+
+## B-9 — `GET /auth/providers/all` → 500 ResponseSerializationError (clientId null)
+
+**Symptôme :** La page `/settings` déclenche une erreur 500 au chargement. Le serveur log un `ResponseSerializationError` : le champ `clientId` est `null` dans la DB mais le schema Zod de réponse exige `z.string()` (non-nullable).
+
+**Analyse :**
+- Prisma schema : `clientId String?` (nullable) — correct, les providers seedés n'ont pas de clientId configuré.
+- Les 9 providers officiels sont seedés sans `clientId` (`prisma/seed.js:170-336`).
+- `AuthProviderResponseSchema` dans `routes.ts:202` déclare `clientId: z.string()` au lieu de `z.string().nullable()`.
+- Problème secondaire : le service `getAllProviders()` ajoute un champ `isOfficial` qui est absent du schema de réponse → silencieusement strippé par la sérialisation Zod.
+
+**Correction :**
+1. Changer `clientId: z.string()` → `clientId: z.string().nullable()` dans `AuthProviderResponseSchema`
+2. Ajouter `isOfficial: z.boolean()` au schema si le frontend en a besoin
+
+**Fichiers concernés :**
+- `apps/server/src/modules/auth-providers/routes.ts` (ligne 202)
+
+**Sévérité :** Haute — bloque le chargement de la page settings pour tous les admins
+
+---
+
+## B-10 — Contamination portugaise dans `fr-FR.json` (6 clés)
+
+**Symptôme :** Textes en portugais affichés quand la locale est française. Exemples : "Clique para Activer" (tooltip), "Criando..." (bouton de création), "Processando autenticação..." (login SSO).
+
+**Analyse :** 6 clés dans `apps/web/messages/fr-FR.json` contiennent des valeurs copiées de `pt-BR.json` :
+
+| Ligne (fr-FR) | Clé | Valeur actuelle (PT) | Correction (FR) |
+|----------------|-----|----------------------|-----------------|
+| 165 | `common.click` | `Clique para` | `Cliquez pour` |
+| 166 | `common.creating` | `Criando...` | `Création en cours...` |
+| 621 | `login.continueWithSSO` | `Continuar com SSO` | `Continuer avec SSO` |
+| 622 | `login.processing` | `Processando autenticação...` | `Traitement de l'authentification...` |
+| 2142 | `validation.nameRequired` | `Nome é obrigatório` | `Le nom est requis` |
+| 2143 | `validation.required` | `Este campo é obrigatório` | `Ce champ est requis` |
+
+De plus, la section `ldap.*` (lignes 2210-2296) est entièrement en anglais (non traduite).
+
+**Contamination cross-locale :** Les clés SSO sont contaminées dans d'autres locales aussi :
+
+| Clé | Locales contaminées (hors pt-BR) |
+|-----|----------------------------------|
+| `login.continueWithSSO` (`Continuar com SSO`) | fr-FR, tr-TR, nl-NL, hi-IN, es-ES |
+| `login.processing` (`Processando autenticação...`) | fr-FR, tr-TR, nl-NL, hi-IN, es-ES |
+
+→ Lors de la correction, vérifier systématiquement les 23 locales pour chacune des 6 phrases PT (grep chaque phrase dans tous les .json).
+
+**Correction :** Remplacer les 6 valeurs PT par les traductions correctes dans toutes les locales affectées. Traduire la section LDAP en FR.
+
+**Fichiers concernés :**
+- `apps/web/messages/fr-FR.json` (6 clés + section LDAP)
+- `apps/web/messages/tr-TR.json` (2 clés SSO)
+- `apps/web/messages/nl-NL.json` (2 clés SSO)
+- `apps/web/messages/hi-IN.json` (2 clés SSO)
+- `apps/web/messages/es-ES.json` (2 clés SSO)
+
+**Sévérité :** Moyenne — UX dégradée pour les utilisateurs de 5 locales
+
+---
+
+## B-11 — Traduction FR incorrecte : "Exigences sur le terrain" pour "Field Requirements"
+
+**Symptôme :** Dans la modale de création de reverse share et les cartes, "Field Requirements" est traduit "Exigences sur le terrain" (terrain physique) au lieu de "Exigences de champs" (champs de formulaire). Même problème pour "Exigence de champ de messagerie" (confus — devrait être "Adresse email").
+
+**Clés concernées dans `fr-FR.json` :**
+- Ligne 885 : `reverseShares.card.fieldRequirements` → "Exigences sur le terrain"
+- Ligne 1138 : `reverseShares.form.fieldRequirements.title` → "Exigences sur le terrain"
+- Ligne 1146 : `reverseShares.form.nameFieldRequired.label` → "Exigence de champ de nom"
+- Ligne 1134 : `reverseShares.form.emailFieldRequired.label` → "Exigence de champ de messagerie"
+
+**Correction :**
+- "Exigences sur le terrain" → "Exigences de champs"
+- "Exigence de champ de nom" → "Champ nom"
+- "Exigence de champ de messagerie" → "Champ email"
+- Ajouter des descriptions explicatives (ex: "Rendre le champ nom obligatoire, optionnel, ou masqué")
+
+**Fichiers concernés :**
+- `apps/web/messages/fr-FR.json`
+
+**Sévérité :** Basse — cosmétique mais confus pour les utilisateurs FR
+
+---
+
+## B-12 — Couleur thème par défaut = vert au lieu d'indigo
+
+**Symptôme :** La page `/customization` affiche Emerald (vert, hue 142) comme couleur sélectionnée par défaut. Le bouton "Réinitialiser par défaut" remet en vert. Or le design system de l'app a été migré vers indigo (hue 265) lors du redesign 6.3.
+
+**Analyse :**
+- `apps/web/src/app/customization/components/color-picker-form.tsx:14` : `PREDEFINED_COLORS[0]` = Emerald
+- `resetToDefault()` (ligne 82) remet à `PREDEFINED_COLORS[0]` → Emerald
+- L'enregistrement force le CSS custom property `--primary` à la couleur sélectionnée
+
+**Correction :**
+1. Réordonner `PREDEFINED_COLORS` pour mettre Indigo en premier position
+2. Ou ajouter une constante `DEFAULT_COLOR` séparée pointant vers Indigo
+3. Vérifier que la valeur CSS par défaut dans `globals.css` correspond
+
+**Fichiers concernés :**
+- `apps/web/src/app/customization/components/color-picker-form.tsx`
+- `apps/web/src/app/globals.css` (vérification)
+
+**Sévérité :** Moyenne — un admin qui clique "Enregistrer" ou "Réinitialiser" change le thème de toute l'app vers une couleur obsolète
+
+---
+
+## B-13 — Lien footer incorrect + hardcodé
+
+**Symptôme :** Le footer affiche "Propulsé par Burger&Cie" avec un lien vers `https://burger-cie.com/` au lieu de `https://burgeretcie.fr/`.
+
+**Analyse :**
+- URL et nom hardcodés dans 2 fichiers :
+  - `apps/web/src/components/ui/default-footer.tsx:22`
+  - `apps/web/src/app/(shares)/r/[alias]/components/transparent-footer.tsx:22`
+- Le texte "Propulsé par" est traduit via i18n (`footer.poweredBy`), mais l'URL et le nom de la société ne le sont pas.
+
+**Correction immédiate :**
+1. Changer l'URL vers `https://burgeretcie.fr/`
+2. Changer la traduction FR `footer.poweredBy` : "Propulsé par" → formulation plus sobre (ex: "Par", "Développé par", ou autre)
+
+**Amélioration future :** Rendre le footer configurable (voir TD-14).
+
+**Fichiers concernés :**
+- `apps/web/src/components/ui/default-footer.tsx`
+- `apps/web/src/app/(shares)/r/[alias]/components/transparent-footer.tsx`
+
+**Sévérité :** Basse — lien de renvoi incorrect
+
+---
+
+## B-14 — String hardcodée en anglais dans received-files-modal.tsx
+
+**Symptôme :** Le toast d'erreur de suppression en masse de fichiers reçus affiche "Error deleting selected files" en anglais quelle que soit la locale.
+
+**Analyse :**
+- `apps/web/src/app/(shares)/reverse-shares/components/received-files-modal.tsx:370` : string passée directement à `toast.promise()` au lieu de `t()`.
+
+**Correction :** Remplacer par `t("reverseShares.modals.receivedFiles.bulkDeleteError")` et ajouter la clé dans les 23 locales.
+
+**Fichiers concernés :**
+- `apps/web/src/app/(shares)/reverse-shares/components/received-files-modal.tsx`
+- `apps/web/messages/*.json` (23 locales)
+
+**Sévérité :** Basse — anglais affiché au lieu de la langue sélectionnée
+
+---
+
+## B-15 — Modale détails reverse share : champs manquants
+
+**Symptôme :** La modale de détails d'un reverse share ne montre pas les champs `nameFieldRequired` et `emailFieldRequired`, alors qu'ils sont éditables dans la modale de création/édition.
+
+**Analyse :**
+- `reverse-share-details-modal.tsx` n'inclut pas ces deux champs
+- Le `UpdateReverseShareSchema` côté serveur les accepte bien
+- Tous les autres champs (name, description, pageLayout, expiration, password, maxFiles, maxFileSize, allowedFileTypes, isActive) sont présents
+
+**Correction :**
+1. Ajouter deux `EditableField` pour `nameFieldRequired` et `emailFieldRequired` (select : HIDDEN / OPTIONAL / REQUIRED) dans la modale de détails
+2. Supprimer le bouton "Modifier" (crayon) de la carte reverse share et du menu dropdown — la modale de détails couvre désormais tous les champs, le doublon est inutile
+3. Supprimer la modale de création utilisée en mode édition (ou la conserver uniquement pour la création)
+
+**Fichiers concernés :**
+- `apps/web/src/app/(shares)/reverse-shares/components/reverse-share-details-modal.tsx` (ajout champs)
+- `apps/web/src/app/(shares)/reverse-shares/components/reverse-share-card.tsx` (suppression bouton Edit)
+- `apps/web/src/app/(shares)/reverse-shares/components/reverse-shares-modals.tsx` (suppression logique Edit)
+
+**Sévérité :** Basse — doublon UX, pas de bug fonctionnel
+
+---
+
+## B-16 — Modales 2FA trop étroites
+
+**Symptôme :** Les 5 modales 2FA (setup, backup codes, disable, remove device, remove all) utilisent `max-w-md` (448px) alors que le défaut de l'app est 576px et les modales comparables utilisent 600-832px. La modale backup codes en particulier ne s'adapte pas bien au contenu.
+
+**Analyse :**
+- `apps/web/src/app/profile/components/two-factor-form.tsx` lignes 333, 412, 482, 529, 570 : toutes utilisent `max-w-md`
+- Le composant Dialog de base définit `--dialog-max-w: 36rem` (576px) par défaut
+- Les modales comparables (share details, upload, LDAP sync) utilisent 600px-832px
+
+**Correction :** Remplacer `max-w-md` par une largeur appropriée. Au minimum retirer le override pour utiliser le défaut 576px, ou utiliser `sm:max-w-[600px]` pour la modale backup codes.
+
+**Fichiers concernés :**
+- `apps/web/src/app/profile/components/two-factor-form.tsx`
+
+**Sévérité :** Basse — visuel, le contenu est fonctionnel mais contraint
+
+---
+
+## B-17 — Description du setting "Afficher la page d'accueil" trompeuse
+
+**Symptôme :** Le label dit "Afficher la page d'accueil après l'installation" ce qui laisse penser que c'est un setting ponctuel. En réalité : quand activé, `/` affiche la landing page publique ; quand désactivé, `/` redirige vers `/login`.
+
+**Correction :** Changer la description dans les 23 locales. Ex FR : "Afficher la page d'accueil publique (sinon, redirection vers la page de connexion)".
+
+**Fichiers concernés :**
+- `apps/web/messages/*.json` (23 locales, clé `settings.fields.showHomePage.description`)
+
+**Sévérité :** Basse — description confuse mais pas de bug fonctionnel
+
+---
+
+## B-18 — Dashboard : "Disponibilité" devrait être "Uptime"
+
+**Symptôme :** Dans l'état du système du dashboard, la traduction FR utilise "Disponibilité" qui est trop vague. "Uptime" est compris universellement même en français.
+
+**Correction :** Changer la traduction FR de "Disponibilité" à "Uptime".
+
+**Fichiers concernés :**
+- `apps/web/messages/fr-FR.json` (clé à identifier — probablement `dashboard.systemStatus.uptime` ou similaire)
+
+**Sévérité :** Très basse — cosmétique
+
+---
+
+## B-19 — Messages de la page Settings > Stockage incomplets
+
+**Symptôme :** Les messages de configuration du stockage (limites de taille de fichier, quota total)
+ne mentionnent pas qu'il est possible d'override ces valeurs par utilisateur et par groupe.
+
+**Correction :** Ajouter une note explicative sous les champs de quota dans les 23 locales,
+par exemple : "Ces valeurs sont les paramètres par défaut. Elles peuvent être surchargées
+individuellement pour chaque utilisateur ou groupe."
+
+**Fichiers concernés :**
+- `apps/web/messages/*.json` (23 locales)
+- Potentiellement le composant de la page settings/stockage
+
+**Sévérité :** Très basse — info manquante mais pas de bug fonctionnel
+
+---
+
+## Priorité de correction (B-8 à B-19)
+
+| Bug | Sévérité | Impact | Statut |
+|-----|----------|--------|--------|
+| B-9 Auth providers 500 | **Haute** | Page settings cassée pour tous les admins | À corriger |
+| B-8 ldapDn non settable | **Moyenne** | Feature LDAP group mapping non fonctionnelle via UI | À corriger |
+| B-10 Contamination PT fr-FR | **Moyenne** | Textes portugais visibles en locale FR | À corriger |
+| B-12 Couleur thème défaut | **Moyenne** | Reset/save change le thème vers couleur obsolète | À corriger |
+| B-11 Traduction "terrain" | **Basse** | Confus mais pas bloquant | À corriger |
+| B-13 Lien footer incorrect | **Basse** | Lien vers mauvais domaine | À corriger |
+| B-14 String hardcodée EN | **Basse** | Anglais affiché en locale non-EN | À corriger |
+| B-15 Détails RS incomplets | **Basse** | Champs manquants dans vue détails | À corriger |
+| B-16 Modales 2FA étroites | **Basse** | Visuel contraint | À corriger |
+| B-17 Description setting | **Basse** | Description confuse | À corriger |
+| B-18 "Disponibilité" → "Uptime" | **Très basse** | Cosmétique | À corriger |
+| B-19 Messages stockage incomplets | **Très basse** | Info manquante | À corriger |

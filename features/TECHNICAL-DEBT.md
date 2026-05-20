@@ -156,3 +156,116 @@ integer validation**. An admin can `POST /groups` with
 **Found during:** Documentation quality review (docs-update session)
 **Severity:** Low — no data corruption (Prisma stores as BigInt), but inconsistent
 validation between two APIs that manage the same concept
+
+---
+
+## TD-10 — Routes admin inconsistantes (/users-management vs /admin/ldap)
+
+**Context:** Les anciennes pages admin (`/users-management`, `/groups-management`, `/settings`)
+sont au top-level, tandis que les nouvelles (`/admin/ldap`) sont sous `/admin/`. Tous les chemins
+sont protégés par les mêmes mécanismes (middleware `adminPaths` + `<ProtectedRoute requireAdmin>`),
+donc pas de risque de sécurité. C'est purement cosmétique/organisationnel.
+
+**Fix:**
+1. Migrer toutes les pages admin sous `/admin/` : `/admin/users`, `/admin/groups`, `/admin/settings`, `/admin/ldap`
+2. Mettre à jour `admin-paths.ts`, la navbar, et tous les liens internes
+3. Optionnel : ajouter un wildcard `/admin/*` dans le middleware au lieu de lister chaque chemin
+
+**Found during:** Revue manuelle (session audit UI, mai 2026)
+**Severity:** Very low — cosmétique, aucun impact fonctionnel ou sécurité
+
+---
+
+## TD-11 — Next.js 15 → 16 upgrade
+
+**Context:** Le projet utilise Next.js 15.5.18 (pinned dans `pnpm-workspace.yaml` catalogs).
+Next.js 16 est stable (16.2.x au moment de l'écriture). L'upgrade est un changement majeur
+qui nécessite une analyse d'impact dédiée.
+
+**Points d'attention :**
+- Compatibilité next-intl (actuellement ^4.3.1)
+- Changements App Router / middleware
+- Dépendances peer (React 19 → ?)
+- Turborepo compatibility
+
+**Fix:**
+1. Lire le guide de migration Next.js 15 → 16
+2. Tester la compatibilité next-intl, shadcn/ui, et autres dépendances critiques
+3. Appliquer l'upgrade + corriger les breaking changes
+4. Full test suite + type-check + E2E
+
+**Found during:** Revue manuelle (session audit, mai 2026)
+**Severity:** Medium — rester sur une version majeure antérieure accumule du retard
+
+---
+
+## TD-12 — Images background WetTransfer : provenance inconnue
+
+**Context:** Le mode "WetTransfer" des reverse shares affiche une image de fond aléatoire
+parmi 8 JPG dans `apps/web/public/assets/wetransfer-bgs/1-8.jpg`. L'origine et la licence
+de ces images sont inconnues (potentiellement sous copyright).
+
+**Fix:**
+1. Documenter la provenance des images actuelles
+2. Remplacer par des images créées en propre ou libres de droits (Unsplash, etc.)
+3. Optionnel : permettre à l'admin de configurer ses propres images de fond
+
+**Found during:** Revue manuelle (session audit, mai 2026)
+**Severity:** Low — risque légal potentiel si images sous copyright
+
+---
+
+## TD-13 — Pattern i18n fragile : concaténation de clés t() au lieu d'interpolation
+
+**Context:** Dans `reverse-share-card.tsx:467`, le tooltip est composé par concaténation :
+```ts
+title={`${t("common.click")} ${t("reverseShares.modals.details.activate")}`}
+```
+
+Ce pattern suppose que toutes les langues utilisent le même ordre de mots et le même
+espacement. Il devrait utiliser l'interpolation next-intl :
+```
+"clickToAction": "Cliquez pour {action}"
+```
+
+**Fix:**
+1. Auditer le codebase pour d'autres instances de concaténation `${t()} ${t()}`
+2. Remplacer par des clés avec interpolation `{variable}`
+3. Mettre à jour les 23 locales
+
+**Found during:** Investigation B-10 (contamination PT, mai 2026)
+**Severity:** Low — fonctionne tant que l'ordre des mots est identique, mais fragile pour les langues à ordre inversé (arabe, japonais, etc.)
+
+---
+
+## TD-14 — Footer non configurable (hardcodé)
+
+**Context:** Le footer "Propulsé par Burger&Cie" est hardcodé dans 2 fichiers :
+- `apps/web/src/components/ui/default-footer.tsx`
+- `apps/web/src/app/(shares)/r/[alias]/components/transparent-footer.tsx`
+
+L'URL, le nom de la société, et l'affichage ne sont pas configurables par l'admin.
+
+**Fix:**
+1. Ajouter 3 settings dans la config : `footerEnabled` (bool), `footerText` (string), `footerUrl` (string)
+2. Seeder avec les valeurs par défaut (Burger&Cie + burgeretcie.fr)
+3. Exposer dans la page settings/general
+4. Modifier les 2 composants footer pour lire la config
+5. Ajouter les clés i18n pour les labels des settings
+
+**Found during:** Revue manuelle (session audit, mai 2026)
+**Severity:** Low — configurable est préférable, mais le hardcodé fonctionne
+
+---
+
+## TD-15 — Description par défaut de l'application à améliorer
+
+**Context:** Le seed (`prisma/seed.js:27-31`) initialise `appDescription` avec
+"Secure and simple file sharing - Your personal cloud". Ce texte est générique et peu
+descriptif du produit.
+
+**Fix:** Changer la description seedée vers quelque chose de plus pertinent et professionnel.
+Suggestion : "Self-hosted file transfer solution" ou "Plateforme de transfert de fichiers auto-hébergée".
+
+**Found during:** Revue manuelle (session audit, mai 2026)
+**Severity:** Very low — modifiable par l'admin dans settings, le seed est juste le défaut initial
