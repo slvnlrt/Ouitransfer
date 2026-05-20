@@ -1,25 +1,30 @@
-import type { FastifyInstance, FastifyRequest } from "fastify";
+import type { FastifyRequest } from "fastify";
+import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
-import {
-  REFRESH_TOKEN_COOKIE_NAME,
-  REFRESH_TOKEN_COOKIE_PATH,
-  REFRESH_TOKEN_MAX_AGE,
-} from "../../config/auth.config.js";
-import { env } from "../../env.js";
-import { UnauthorizedError } from "../../utils/app-error.js";
+
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
+
+import { REFRESH_TOKEN_COOKIE_NAME } from "../../config/auth.config.js";
+import { AppError, UnauthorizedError } from "../../utils/app-error.js";
+import { clearAuthCookies, getClientInfo, setAuthCookies } from "../../utils/auth-cookies.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
+import { getLogger } from "../../utils/logger.js";
+import { logAuditEvent } from "../audit/service.js";
 import { getConfigValue } from "../config/service.js";
 import { validatePasswordMiddleware } from "../user/middleware.js";
-import { AuthController } from "./controller.js";
+import { createChallengeToken, verifyChallengeToken } from "./challenge.js";
+import { CompleteTwoFactorLoginSchema, createResetPasswordSchema, RequestPasswordResetSchema } from "./dto.js";
 import {
-  CompleteTwoFactorLoginSchema,
-  createResetPasswordSchema,
-  RequestPasswordResetSchema,
-} from "./dto.js";
-import { rotateRefreshToken } from "./refresh-token.service.js";
+  createRefreshToken,
+  revokeAllUserTokens,
+  rotateRefreshToken,
+} from "./refresh-token.service.js";
+import { AuthService } from "./service.js";
 
 /** Body size limit for auth endpoints — payloads are small JSON only. */
 const AUTH_BODY_LIMIT = 64 * 1024; // 64 KB
+
+const authService = new AuthService();
 
 const createPasswordSchema = async () => {
   const minLength = Number(await getConfigValue("passwordMinLength"));
@@ -29,9 +34,39 @@ const createPasswordSchema = async () => {
     .describe("User password");
 };
 
-export async function authRoutes(app: FastifyInstance) {
-  const authController = new AuthController();
+/** JWT preValidation hook — verifies the token and throws 401 if invalid. */
+const jwtPreValidation = async (request: FastifyRequest) => {
+  try {
+    await request.jwtVerify();
+  } catch (err) {
+    request.log.warn({ err }, "JWT verification failed");
+    throw new UnauthorizedError(
+      "Unauthorized: a valid token is required to access this resource.",
+    );
+  }
+};
 
+/**
+ * Sign a JWT and issue auth cookies (access token + refresh token).
+ *
+ * Shared by the login, 2FA-login, and refresh flows.
+ */
+async function signAndSetCookies(
+  reply: Parameters<typeof setAuthCookies>[0] & { jwtSign: (payload: Record<string, unknown>) => Promise<string> },
+  user: { id: string; isAdmin: boolean; tokenVersion: number },
+  userAgent: string,
+  ipAddress: string,
+): Promise<void> {
+  const accessToken = await reply.jwtSign({
+    userId: user.id,
+    isAdmin: user.isAdmin,
+    tokenVersion: user.tokenVersion,
+  });
+  const refreshToken = await createRefreshToken(user.id, userAgent, ipAddress);
+  setAuthCookies(reply, { accessToken, refreshToken });
+}
+
+export const authRoutes: FastifyPluginAsyncZod = async (app) => {
   const passwordSchema = await createPasswordSchema();
   const loginSchema = z.object({
     emailOrUsername: z
@@ -41,72 +76,27 @@ export async function authRoutes(app: FastifyInstance) {
     password: passwordSchema,
   });
 
-  app.post(
-    "/auth/login",
-    {
-      bodyLimit: AUTH_BODY_LIMIT,
-      config: {
-        csrfExempt: true,
-        rateLimit: {
-          max: 5,
-          timeWindow: "1 minute",
-        },
-      },
-      schema: {
-        tags: ["Authentication"],
-        operationId: "login",
-        summary: "Login",
-        description: "Performs login and returns user data",
-        body: loginSchema,
-        response: {
-          200: z.union([
-            z.object({
-              user: z.object({
-                id: z.string().describe("User ID"),
-                firstName: z.string().describe("User first name"),
-                lastName: z.string().describe("User last name"),
-                username: z.string().describe("User username"),
-                email: z.string().email().describe("User email"),
-                isAdmin: z.boolean().describe("User is admin"),
-                isActive: z.boolean().describe("User is active"),
-                createdAt: z.date().describe("User creation date"),
-                updatedAt: z.date().describe("User last update date"),
-              }),
-            }),
-            z.object({
-              requiresTwoFactor: z.boolean().describe("Whether 2FA is required"),
-              challengeToken: z.string().describe("Opaque challenge token for 2FA verification"),
-              message: z.string().describe("2FA required message"),
-            }),
-          ]),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-        },
+  // ── POST /auth/login ──────────────────────────────────────────
+  app.route({
+    method: "POST",
+    url: "/auth/login",
+    bodyLimit: AUTH_BODY_LIMIT,
+    config: {
+      csrfExempt: true,
+      rateLimit: {
+        max: 5,
+        timeWindow: "1 minute",
       },
     },
-    authController.login.bind(authController),
-  );
-
-  app.post(
-    "/auth/2fa/login",
-    {
-      bodyLimit: AUTH_BODY_LIMIT,
-      config: {
-        csrfExempt: true,
-        rateLimit: {
-          max: 5,
-          timeWindow: "1 minute",
-        },
-      },
-      schema: {
-        tags: ["Authentication"],
-        operationId: "completeTwoFactorLogin",
-        summary: "Complete Two-Factor Login",
-        description: "Complete login process with 2FA verification",
-        body: CompleteTwoFactorLoginSchema,
-        response: {
-          200: z.object({
+    schema: {
+      tags: ["Authentication"],
+      operationId: "login",
+      summary: "Login",
+      description: "Performs login and returns user data",
+      body: loginSchema,
+      response: {
+        200: z.union([
+          z.object({
             user: z.object({
               id: z.string().describe("User ID"),
               firstName: z.string().describe("User first name"),
@@ -119,270 +109,461 @@ export async function authRoutes(app: FastifyInstance) {
               updatedAt: z.date().describe("User last update date"),
             }),
           }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-        },
-      },
-    },
-    authController.completeTwoFactorLogin.bind(authController),
-  );
-
-  app.post(
-    "/auth/logout",
-    {
-      bodyLimit: AUTH_BODY_LIMIT,
-      schema: {
-        tags: ["Authentication"],
-        operationId: "logout",
-        summary: "Logout",
-        description: "Performs logout by clearing the token cookie",
-        response: {
-          200: z.object({ message: z.string().describe("Logout message") }),
-        },
-      },
-    },
-    authController.logout.bind(authController),
-  );
-
-  app.post(
-    "/auth/forgot-password",
-    {
-      bodyLimit: AUTH_BODY_LIMIT,
-      config: {
-        csrfExempt: true,
-        rateLimit: {
-          max: 3,
-          timeWindow: "1 minute",
-        },
-      },
-      schema: {
-        tags: ["Authentication"],
-        operationId: "requestPasswordReset",
-        summary: "Request Password Reset",
-        description: "Request password reset email",
-        body: RequestPasswordResetSchema,
-        response: {
-          200: z.object({
-            message: z.string().describe("Reset password email sent"),
+          z.object({
+            requiresTwoFactor: z.boolean().describe("Whether 2FA is required"),
+            challengeToken: z.string().describe("Opaque challenge token for 2FA verification"),
+            message: z.string().describe("2FA required message"),
           }),
-          400: ErrorResponseSchema,
-        },
+        ]),
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
       },
     },
-    authController.requestPasswordReset.bind(authController),
-  );
+    handler: async (request, reply) => {
+      const input = request.body;
+      const { userAgent, ipAddress } = getClientInfo(request);
 
-  app.post(
-    "/auth/reset-password",
-    {
-      bodyLimit: AUTH_BODY_LIMIT,
-      config: {
-        csrfExempt: true,
-        rateLimit: {
-          max: 3,
-          timeWindow: "1 minute",
-        },
+      let result: Awaited<ReturnType<AuthService["login"]>>;
+      try {
+        result = await authService.login(input, userAgent, ipAddress);
+      } catch (err) {
+        // Audit failed login (fire-and-forget)
+        // Use LOGIN_LOCKED for rate-limit lockouts to distinguish from credential failures
+        const isLockout = err instanceof AppError && err.code === ErrorCodes.ACCOUNT_LOCKED;
+        logAuditEvent({
+          action: isLockout ? "LOGIN_LOCKED" : "LOGIN_FAILURE",
+          ipAddress,
+          userAgent,
+          metadata: { emailOrUsername: input.emailOrUsername },
+        }).catch((auditErr) => getLogger().error({ err: auditErr }, "Audit log write failed"));
+        throw err;
+      }
+
+      if ("requiresTwoFactor" in result) {
+        const challengeToken = await createChallengeToken(result.userId);
+        return reply.send({
+          requiresTwoFactor: true,
+          challengeToken,
+          message: result.message,
+        });
+      }
+
+      const user = result;
+      await signAndSetCookies(reply, user, userAgent, ipAddress);
+
+      // Audit successful login (fire-and-forget)
+      logAuditEvent({
+        userId: user.id,
+        action: "LOGIN_SUCCESS",
+        ipAddress,
+        userAgent,
+      }).catch((auditErr) => getLogger().error({ err: auditErr }, "Audit log write failed"));
+
+      return reply.send({ user });
+    },
+  });
+
+  // ── POST /auth/2fa/login ──────────────────────────────────────
+  app.route({
+    method: "POST",
+    url: "/auth/2fa/login",
+    bodyLimit: AUTH_BODY_LIMIT,
+    config: {
+      csrfExempt: true,
+      rateLimit: {
+        max: 5,
+        timeWindow: "1 minute",
       },
-      preValidation: validatePasswordMiddleware,
-      schema: {
-        tags: ["Authentication"],
-        operationId: "resetPassword",
-        summary: "Reset Password",
-        description: "Reset password using token",
-        body: await createResetPasswordSchema(),
-        response: {
-          200: z.object({
-            message: z.string().describe("Reset password message"),
+    },
+    schema: {
+      tags: ["Authentication"],
+      operationId: "completeTwoFactorLogin",
+      summary: "Complete Two-Factor Login",
+      description: "Complete login process with 2FA verification",
+      body: CompleteTwoFactorLoginSchema,
+      response: {
+        200: z.object({
+          user: z.object({
+            id: z.string().describe("User ID"),
+            firstName: z.string().describe("User first name"),
+            lastName: z.string().describe("User last name"),
+            username: z.string().describe("User username"),
+            email: z.string().email().describe("User email"),
+            isAdmin: z.boolean().describe("User is admin"),
+            isActive: z.boolean().describe("User is active"),
+            createdAt: z.date().describe("User creation date"),
+            updatedAt: z.date().describe("User last update date"),
           }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-        },
-      },
-    },
-    authController.resetPassword.bind(authController),
-  );
-
-  app.get(
-    "/auth/me",
-    {
-      schema: {
-        tags: ["Authentication"],
-        operationId: "getCurrentUser",
-        summary: "Get Current User",
-        description:
-          "Returns the current authenticated user's information or null if not authenticated",
-        response: {
-          200: z.union([
-            z.object({
-              user: z.object({
-                id: z.string().describe("User ID"),
-                firstName: z.string().describe("User first name"),
-                lastName: z.string().describe("User last name"),
-                username: z.string().describe("User username"),
-                email: z.string().email().describe("User email"),
-                image: z.string().nullable().describe("User profile image URL"),
-                isAdmin: z.boolean().describe("User is admin"),
-                isActive: z.boolean().describe("User is active"),
-                createdAt: z.date().describe("User creation date"),
-                updatedAt: z.date().describe("User last update date"),
-              }),
-            }),
-            z.object({
-              user: z.null().describe("No user when not authenticated"),
-            }),
-          ]),
-        },
-      },
-    },
-    authController.getCurrentUser.bind(authController),
-  );
-
-  app.get(
-    "/auth/trusted-devices",
-    {
-      schema: {
-        tags: ["Authentication"],
-        operationId: "getTrustedDevices",
-        summary: "Get Trusted Devices",
-        description: "Get all trusted devices for the current user",
-        response: {
-          200: z.object({
-            devices: z.array(
-              z.object({
-                id: z.string().describe("Device ID"),
-                deviceName: z.string().nullable().describe("Device name"),
-                userAgent: z.string().nullable().describe("User agent"),
-                ipAddress: z.string().nullable().describe("IP address"),
-                createdAt: z.date().describe("Creation date"),
-                lastUsedAt: z.date().describe("Last used date"),
-                expiresAt: z.date().describe("Expiration date"),
-              }),
-            ),
-          }),
-          401: ErrorResponseSchema,
-        },
-      },
-      preValidation: async (request: FastifyRequest) => {
-        try {
-          await request.jwtVerify();
-        } catch (err) {
-          request.log.warn({ err }, "JWT verification failed");
-          throw new UnauthorizedError(
-            "Unauthorized: a valid token is required to access this resource.",
-          );
-        }
-      },
-    },
-    authController.getTrustedDevices.bind(authController),
-  );
-
-  app.delete(
-    "/auth/trusted-devices/:id",
-    {
-      schema: {
-        tags: ["Authentication"],
-        operationId: "removeTrustedDevice",
-        summary: "Remove Trusted Device",
-        description: "Remove a specific trusted device",
-        params: z.object({
-          id: z.string().describe("Device ID"),
         }),
-        response: {
-          200: z.object({
-            success: z.boolean().describe("Success status"),
-            message: z.string().describe("Success message"),
-          }),
-          401: ErrorResponseSchema,
-        },
-      },
-      preValidation: async (request: FastifyRequest) => {
-        try {
-          await request.jwtVerify();
-        } catch (err) {
-          request.log.warn({ err }, "JWT verification failed");
-          throw new UnauthorizedError(
-            "Unauthorized: a valid token is required to access this resource.",
-          );
-        }
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
       },
     },
-    authController.removeTrustedDevice.bind(authController),
-  );
+    handler: async (request, reply) => {
+      const input = request.body;
 
-  app.delete(
-    "/auth/trusted-devices",
-    {
-      schema: {
-        tags: ["Authentication"],
-        operationId: "removeAllTrustedDevices",
-        summary: "Remove All Trusted Devices",
-        description: "Remove all trusted devices for the current user",
-        response: {
-          200: z.object({
-            success: z.boolean().describe("Success status"),
-            message: z.string().describe("Success message"),
-            removedCount: z.number().describe("Number of devices removed"),
-          }),
-          401: ErrorResponseSchema,
-        },
-      },
-      preValidation: async (request: FastifyRequest) => {
-        try {
-          await request.jwtVerify();
-        } catch (err) {
-          request.log.warn({ err }, "JWT verification failed");
-          throw new UnauthorizedError(
-            "Unauthorized: a valid token is required to access this resource.",
-          );
-        }
+      // Verify the challenge token instead of trusting a raw userId
+      const userId = await verifyChallengeToken(input.challengeToken);
+
+      const { userAgent, ipAddress } = getClientInfo(request);
+      const user = await authService.completeTwoFactorLogin(
+        userId,
+        input.token,
+        input.rememberDevice,
+        userAgent,
+        ipAddress,
+      );
+
+      await signAndSetCookies(reply, user, userAgent, ipAddress);
+
+      // Audit successful 2FA login (fire-and-forget)
+      logAuditEvent({
+        userId: user.id,
+        action: "LOGIN_SUCCESS",
+        ipAddress,
+        userAgent,
+        metadata: { method: "2fa" },
+      }).catch((auditErr) => getLogger().error({ err: auditErr }, "Audit log write failed"));
+
+      return reply.send({ user });
+    },
+  });
+
+  // ── POST /auth/logout ─────────────────────────────────────────
+  app.route({
+    method: "POST",
+    url: "/auth/logout",
+    bodyLimit: AUTH_BODY_LIMIT,
+    schema: {
+      tags: ["Authentication"],
+      operationId: "logout",
+      summary: "Logout",
+      description: "Performs logout by clearing the token cookie",
+      response: {
+        200: z.object({ message: z.string().describe("Logout message") }),
       },
     },
-    authController.removeAllTrustedDevices.bind(authController),
-  );
+    handler: async (request, reply) => {
+      const { userAgent, ipAddress } = getClientInfo(request);
 
-  app.get(
-    "/auth/config",
-    {
-      schema: {
-        tags: ["Authentication"],
-        operationId: "getAuthConfig",
-        summary: "Get Authentication Configuration",
-        description: "Get authentication configuration settings",
-        response: {
-          200: z.object({
-            passwordAuthEnabled: z.boolean().describe("Whether password authentication is enabled"),
-          }),
-          400: ErrorResponseSchema,
-        },
+      // Try to get userId from JWT for audit logging (may fail if token expired)
+      let userId: string | undefined;
+      try {
+        await request.jwtVerify();
+        userId = request.user?.userId;
+      } catch {
+        // Token may be expired or invalid — still proceed with logout
+      }
+
+      clearAuthCookies(reply);
+
+      // Revoke all refresh tokens for this user so stolen tokens cannot be reused
+      if (userId) {
+        revokeAllUserTokens(userId).catch((err) =>
+          getLogger().error({ err }, "Failed to revoke refresh tokens on logout"),
+        );
+      }
+
+      // Audit logout (fire-and-forget)
+      logAuditEvent({
+        userId,
+        action: "LOGOUT",
+        ipAddress,
+        userAgent,
+      }).catch((auditErr) => getLogger().error({ err: auditErr }, "Audit log write failed"));
+
+      return reply.send({ message: "Logout successful" });
+    },
+  });
+
+  // ── POST /auth/forgot-password ────────────────────────────────
+  app.route({
+    method: "POST",
+    url: "/auth/forgot-password",
+    bodyLimit: AUTH_BODY_LIMIT,
+    config: {
+      csrfExempt: true,
+      rateLimit: {
+        max: 3,
+        timeWindow: "1 minute",
       },
     },
-    authController.getAuthConfig.bind(authController),
-  );
+    schema: {
+      tags: ["Authentication"],
+      operationId: "requestPasswordReset",
+      summary: "Request Password Reset",
+      description: "Request password reset email",
+      body: RequestPasswordResetSchema,
+      response: {
+        200: z.object({
+          message: z.string().describe("Reset password email sent"),
+        }),
+        400: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const { email, origin } = request.body;
+      await authService.requestPasswordReset(email, origin);
+      return reply.send({
+        message: "If an account exists with this email, a password reset link will be sent.",
+      });
+    },
+  });
 
-  // ── Refresh Token Endpoint ──────────────────────────────────
+  // ── POST /auth/reset-password ─────────────────────────────────
+  app.route({
+    method: "POST",
+    url: "/auth/reset-password",
+    bodyLimit: AUTH_BODY_LIMIT,
+    config: {
+      csrfExempt: true,
+      rateLimit: {
+        max: 3,
+        timeWindow: "1 minute",
+      },
+    },
+    preValidation: validatePasswordMiddleware,
+    schema: {
+      tags: ["Authentication"],
+      operationId: "resetPassword",
+      summary: "Reset Password",
+      description: "Reset password using token",
+      body: await createResetPasswordSchema(),
+      response: {
+        200: z.object({
+          message: z.string().describe("Reset password message"),
+        }),
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const { token, password } = request.body;
+      const { userAgent, ipAddress } = getClientInfo(request);
+
+      const { userId } = await authService.resetPassword(token, password);
+
+      // Audit password reset (fire-and-forget)
+      logAuditEvent({
+        userId,
+        action: "PASSWORD_RESET",
+        ipAddress,
+        userAgent,
+      }).catch((auditErr) => getLogger().error({ err: auditErr }, "Audit log write failed"));
+
+      return reply.send({ message: "Password reset successfully" });
+    },
+  });
+
+  // ── GET /auth/me ──────────────────────────────────────────────
+  app.route({
+    method: "GET",
+    url: "/auth/me",
+    schema: {
+      tags: ["Authentication"],
+      operationId: "getCurrentUser",
+      summary: "Get Current User",
+      description:
+        "Returns the current authenticated user's information or null if not authenticated",
+      response: {
+        200: z.union([
+          z.object({
+            user: z.object({
+              id: z.string().describe("User ID"),
+              firstName: z.string().describe("User first name"),
+              lastName: z.string().describe("User last name"),
+              username: z.string().describe("User username"),
+              email: z.string().email().describe("User email"),
+              image: z.string().nullable().describe("User profile image URL"),
+              isAdmin: z.boolean().describe("User is admin"),
+              isActive: z.boolean().describe("User is active"),
+              createdAt: z.date().describe("User creation date"),
+              updatedAt: z.date().describe("User last update date"),
+            }),
+          }),
+          z.object({
+            user: z.null().describe("No user when not authenticated"),
+          }),
+        ]),
+      },
+    },
+    handler: async (request, reply) => {
+      let userId: string | null = null;
+      try {
+        await request.jwtVerify();
+        userId = request.user?.userId;
+      } catch {
+        // Not authenticated — return null user (this is expected behavior, not an error)
+        return reply.send({ user: null });
+      }
+
+      if (!userId) {
+        return reply.send({ user: null });
+      }
+
+      const user = await authService.getUserById(userId);
+      if (!user) {
+        return reply.send({ user: null });
+      }
+
+      return reply.send({ user });
+    },
+  });
+
+  // ── GET /auth/trusted-devices ─────────────────────────────────
+  app.route({
+    method: "GET",
+    url: "/auth/trusted-devices",
+    preValidation: jwtPreValidation,
+    schema: {
+      tags: ["Authentication"],
+      operationId: "getTrustedDevices",
+      summary: "Get Trusted Devices",
+      description: "Get all trusted devices for the current user",
+      response: {
+        200: z.object({
+          devices: z.array(
+            z.object({
+              id: z.string().describe("Device ID"),
+              deviceName: z.string().nullable().describe("Device name"),
+              userAgent: z.string().nullable().describe("User agent"),
+              ipAddress: z.string().nullable().describe("IP address"),
+              createdAt: z.date().describe("Creation date"),
+              lastUsedAt: z.date().describe("Last used date"),
+              expiresAt: z.date().describe("Expiration date"),
+            }),
+          ),
+        }),
+        401: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
+      }
+
+      const devices = await authService.getTrustedDevices(userId);
+      return reply.send({ devices });
+    },
+  });
+
+  // ── DELETE /auth/trusted-devices/:id ──────────────────────────
+  app.route({
+    method: "DELETE",
+    url: "/auth/trusted-devices/:id",
+    preValidation: jwtPreValidation,
+    schema: {
+      tags: ["Authentication"],
+      operationId: "removeTrustedDevice",
+      summary: "Remove Trusted Device",
+      description: "Remove a specific trusted device",
+      params: z.object({
+        id: z.string().describe("Device ID"),
+      }),
+      response: {
+        200: z.object({
+          success: z.boolean().describe("Success status"),
+          message: z.string().describe("Success message"),
+        }),
+        401: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
+      }
+
+      await authService.removeTrustedDevice(userId, request.params.id);
+      return reply.send({ success: true, message: "Trusted device removed successfully" });
+    },
+  });
+
+  // ── DELETE /auth/trusted-devices ──────────────────────────────
+  app.route({
+    method: "DELETE",
+    url: "/auth/trusted-devices",
+    preValidation: jwtPreValidation,
+    schema: {
+      tags: ["Authentication"],
+      operationId: "removeAllTrustedDevices",
+      summary: "Remove All Trusted Devices",
+      description: "Remove all trusted devices for the current user",
+      response: {
+        200: z.object({
+          success: z.boolean().describe("Success status"),
+          message: z.string().describe("Success message"),
+          removedCount: z.number().describe("Number of devices removed"),
+        }),
+        401: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
+      }
+
+      const result = await authService.removeAllTrustedDevices(userId);
+      return reply.send(result);
+    },
+  });
+
+  // ── GET /auth/config ──────────────────────────────────────────
+  app.route({
+    method: "GET",
+    url: "/auth/config",
+    schema: {
+      tags: ["Authentication"],
+      operationId: "getAuthConfig",
+      summary: "Get Authentication Configuration",
+      description: "Get authentication configuration settings",
+      response: {
+        200: z.object({
+          passwordAuthEnabled: z.boolean().describe("Whether password authentication is enabled"),
+        }),
+        400: ErrorResponseSchema,
+      },
+    },
+    handler: async (_request, reply) => {
+      const passwordAuthEnabled = await getConfigValue("passwordAuthEnabled");
+      return reply.send({
+        passwordAuthEnabled: passwordAuthEnabled === "true",
+      });
+    },
+  });
+
+  // ── POST /auth/refresh ────────────────────────────────────────
   // Public unauthenticated endpoint — the refresh token IS the auth.
   // CSRF-exempt (added to CSRF_EXEMPT_ROUTES in app.ts).
-  app.post(
-    "/auth/refresh",
-    {
-      config: { rateLimit: { max: 10, timeWindow: "1 minute" } },
-      bodyLimit: AUTH_BODY_LIMIT,
-      schema: {
-        tags: ["Authentication"],
-        operationId: "refreshToken",
-        summary: "Refresh Access Token",
-        description:
-          "Exchange a valid refresh token (sent via httpOnly cookie) for a new access token + refresh token pair (rotation).",
-        response: {
-          200: z.object({
-            message: z.string().describe("Success message"),
-          }),
-          401: ErrorResponseSchema,
-        },
+  app.route({
+    method: "POST",
+    url: "/auth/refresh",
+    bodyLimit: AUTH_BODY_LIMIT,
+    config: { rateLimit: { max: 10, timeWindow: "1 minute" } },
+    schema: {
+      tags: ["Authentication"],
+      operationId: "refreshToken",
+      summary: "Refresh Access Token",
+      description:
+        "Exchange a valid refresh token (sent via httpOnly cookie) for a new access token + refresh token pair (rotation).",
+      response: {
+        200: z.object({
+          message: z.string().describe("Success message"),
+        }),
+        401: ErrorResponseSchema,
       },
     },
-    async (request, reply) => {
+    handler: async (request, reply) => {
       // Refresh token is always in the httpOnly cookie (unified approach for password + OIDC login)
       const refreshToken = (request.cookies as Record<string, string>)[REFRESH_TOKEN_COOKIE_NAME];
 
@@ -399,31 +580,9 @@ export async function authRoutes(app: FastifyInstance) {
         tokenVersion: result.tokenVersion,
       });
 
-      const isSecure = env.SECURE_SITE === "true";
-
-      // signed: true — the token cookie is signed by @fastify/cookie so that
-      // @fastify/jwt can verify its integrity via request.unsignCookie() on read.
-      reply.setCookie("token", accessToken, {
-        httpOnly: true,
-        path: "/",
-        secure: isSecure,
-        sameSite: isSecure ? "lax" : "strict",
-        signed: true,
-      });
-
-      // Update the refresh_token cookie with the rotated value.
-      // signed: false — the refresh token is an opaque value looked up in the DB;
-      // its integrity is guaranteed by the DB record, not by cookie signing.
-      reply.setCookie(REFRESH_TOKEN_COOKIE_NAME, result.refreshToken, {
-        httpOnly: true,
-        secure: isSecure,
-        sameSite: "lax",
-        path: REFRESH_TOKEN_COOKIE_PATH,
-        maxAge: REFRESH_TOKEN_MAX_AGE,
-        signed: false,
-      });
+      setAuthCookies(reply, { accessToken, refreshToken: result.refreshToken });
 
       return reply.send({ message: "Token refreshed" });
     },
-  );
-}
+  });
+};
