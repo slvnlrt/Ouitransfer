@@ -1,7 +1,7 @@
-import type { FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 
+import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
 import { prisma } from "../../shared/prisma.js";
 import { UnauthorizedError } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
@@ -12,18 +12,9 @@ import { TwoFactorService } from "./service.js";
 
 const twoFactorService = new TwoFactorService();
 
-export const twoFactorRoutes: FastifyPluginAsyncZod = async (app) => {
-  const preValidation = async (request: FastifyRequest) => {
-    try {
-      await request.jwtVerify();
-    } catch (err) {
-      request.log.warn({ err }, "JWT verification failed");
-      throw new UnauthorizedError(
-        "Unauthorized: a valid token is required to access this resource.",
-      );
-    }
-  };
+const preValidation = createJwtPreValidation();
 
+export const twoFactorRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
     method: "POST",
     url: "/2fa/setup",

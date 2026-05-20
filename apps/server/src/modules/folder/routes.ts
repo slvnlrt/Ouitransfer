@@ -1,7 +1,7 @@
-import type { FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 
+import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
 import { prisma } from "../../shared/prisma.js";
 import {
   ForbiddenError,
@@ -52,14 +52,7 @@ async function isDescendantOf(
 
 // ── Pre-validation hook ──────────────────────────────────────
 
-const preValidation = async (request: FastifyRequest) => {
-  try {
-    await request.jwtVerify();
-  } catch (err) {
-    request.log.warn({ err }, "JWT verification failed");
-    throw new UnauthorizedError("Invalid or missing token");
-  }
-};
+const preValidation = createJwtPreValidation();
 
 // ── Routes ───────────────────────────────────────────────────
 

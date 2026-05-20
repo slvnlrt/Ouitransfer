@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-import { getConfigValue } from "../config/service.js";
-
 export const BaseRegisterUserSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
@@ -12,13 +10,6 @@ export const BaseRegisterUserSchema = z.object({
 });
 
 export type BaseRegisterUserInput = z.infer<typeof BaseRegisterUserSchema>;
-
-export const createRegisterUserSchema = async () => {
-  const minLength = Number(await getConfigValue("passwordMinLength"));
-  return BaseRegisterUserSchema.extend({
-    password: z.string().min(minLength, `Password must be at least ${minLength} characters`),
-  });
-};
 
 export type RegisterUserInput = BaseRegisterUserInput & {
   password: string;

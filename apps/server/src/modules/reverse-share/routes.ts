@@ -1,6 +1,6 @@
-import type { FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
+import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
 import { UnauthorizedError, ValidationError } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import {
@@ -23,16 +23,9 @@ const reverseShareService = new ReverseShareService();
 const uploadService = new ReverseShareUploadService();
 const multipartService = new ReverseShareMultipartService();
 
-export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
-  const preValidation = async (request: FastifyRequest) => {
-    try {
-      await request.jwtVerify();
-    } catch (err) {
-      request.log.warn({ err }, "JWT verification failed");
-      throw new UnauthorizedError("Invalid or missing token");
-    }
-  };
+const preValidation = createJwtPreValidation();
 
+export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
     method: "POST",
     url: "/reverse-shares",

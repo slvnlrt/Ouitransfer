@@ -1,11 +1,16 @@
 import { ErrorCodes } from "@ouitransfer/shared/error-codes";
-import type { FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 
 import { REFRESH_TOKEN_COOKIE_NAME } from "../../config/auth.config.js";
+import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
 import { AppError, UnauthorizedError } from "../../utils/app-error.js";
-import { clearAuthCookies, getClientInfo, setAuthCookies } from "../../utils/auth-cookies.js";
+import {
+  clearAuthCookies,
+  getClientInfo,
+  setAuthCookies,
+  signAndSetCookies,
+} from "../../utils/auth-cookies.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
@@ -17,11 +22,7 @@ import {
   createResetPasswordSchema,
   RequestPasswordResetSchema,
 } from "./dto.js";
-import {
-  createRefreshToken,
-  revokeAllUserTokens,
-  rotateRefreshToken,
-} from "./refresh-token.service.js";
+import { revokeAllUserTokens, rotateRefreshToken } from "./refresh-token.service.js";
 import { AuthService } from "./service.js";
 
 /** Body size limit for auth endpoints — payloads are small JSON only. */
@@ -37,37 +38,7 @@ const createPasswordSchema = async () => {
     .describe("User password");
 };
 
-/** JWT preValidation hook — verifies the token and throws 401 if invalid. */
-const jwtPreValidation = async (request: FastifyRequest) => {
-  try {
-    await request.jwtVerify();
-  } catch (err) {
-    request.log.warn({ err }, "JWT verification failed");
-    throw new UnauthorizedError("Unauthorized: a valid token is required to access this resource.");
-  }
-};
-
-/**
- * Sign a JWT and issue auth cookies (access token + refresh token).
- *
- * Shared by the login, 2FA-login, and refresh flows.
- */
-async function signAndSetCookies(
-  reply: Parameters<typeof setAuthCookies>[0] & {
-    jwtSign: (payload: Record<string, unknown>) => Promise<string>;
-  },
-  user: { id: string; isAdmin: boolean; tokenVersion: number },
-  userAgent: string,
-  ipAddress: string,
-): Promise<void> {
-  const accessToken = await reply.jwtSign({
-    userId: user.id,
-    isAdmin: user.isAdmin,
-    tokenVersion: user.tokenVersion,
-  });
-  const refreshToken = await createRefreshToken(user.id, userAgent, ipAddress);
-  setAuthCookies(reply, { accessToken, refreshToken });
-}
+const jwtPreValidation = createJwtPreValidation();
 
 export const authRoutes: FastifyPluginAsyncZod = async (app) => {
   const passwordSchema = await createPasswordSchema();

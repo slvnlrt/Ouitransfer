@@ -1,22 +1,15 @@
-import type { FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 
-import { UnauthorizedError } from "../../utils/app-error.js";
+import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { StorageService } from "./service.js";
 
 const storageService = new StorageService();
 
-export const storageRoutes: FastifyPluginAsyncZod = async (app) => {
-  const preValidation = async (request: FastifyRequest) => {
-    try {
-      await request.jwtVerify();
-    } catch (_err) {
-      throw new UnauthorizedError("Unauthorized: a valid token is required.");
-    }
-  };
+const preValidation = createJwtPreValidation();
 
+export const storageRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
     method: "GET",
     url: "/storage/disk-space",

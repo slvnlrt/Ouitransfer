@@ -4,10 +4,9 @@ import { z } from "zod";
 
 import { createAdminPreValidation } from "../../middleware/admin-prevalidation.js";
 import { NotFoundError, ValidationError } from "../../utils/app-error.js";
-import { setAuthCookies } from "../../utils/auth-cookies.js";
+import { signAndSetCookies } from "../../utils/auth-cookies.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { getLogger } from "../../utils/logger.js";
-import { createRefreshToken } from "../auth/refresh-token.service.js";
 import { validateAllProvidersDisable } from "../config/service.js";
 import {
   CreateAuthProviderSchema,
@@ -373,6 +372,9 @@ export const authProvidersRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (request, reply) => {
       const { id } = request.params;
+      // Widening cast: the handler branches to updateOfficialProvider or updateCustomProvider,
+      // each of which re-validates with its own stricter Zod schema. The route-level schema
+      // accepts the union of both.
       const data = request.body as Record<string, unknown>;
 
       const existingProvider = await authProvidersService.getProviderById(id);
@@ -546,19 +548,11 @@ export const authProvidersRoutes: FastifyPluginAsyncZod = async (app) => {
           requestContext,
         );
 
-        const accessToken = await reply.jwtSign({
-          userId: result.user.id,
-          isAdmin: result.user.isAdmin,
-          tokenVersion: result.user.tokenVersion,
-        });
-
-        // Issue a refresh token so OIDC users can renew their 15-minute access token
+        // Issue JWT + refresh token so OIDC users can renew their 15-minute access token
         // without re-authenticating.
         const userAgent = request.headers["user-agent"] || "";
         const ipAddress = request.ip || request.socket.remoteAddress || "";
-        const refreshToken = await createRefreshToken(result.user.id, userAgent, ipAddress);
-
-        setAuthCookies(reply, { accessToken, refreshToken });
+        await signAndSetCookies(reply, result.user, userAgent, ipAddress);
 
         const redirectUrl = result.redirectUrl || "/dashboard";
         const fullRedirectUrl = redirectUrl.startsWith("http")

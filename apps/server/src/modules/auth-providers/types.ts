@@ -78,7 +78,4 @@ export interface PendingState {
   providerId: string;
 }
 
-export interface RequestContextService {
-  protocol: string;
-  host: string;
-}
+export type RequestContextService = Pick<RequestContext, "protocol" | "host">;

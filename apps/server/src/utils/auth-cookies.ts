@@ -22,6 +22,7 @@ import {
   REFRESH_TOKEN_MAX_AGE,
 } from "../config/auth.config.js";
 import { env } from "../env.js";
+import { createRefreshToken } from "../modules/auth/refresh-token.service.js";
 
 /** Tokens needed to issue a full auth cookie pair. */
 export interface AuthTokens {
@@ -92,4 +93,24 @@ export function getClientInfo(request: FastifyRequest): {
   const ipAddress = realIP || request.ip || request.socket.remoteAddress || "";
 
   return { userAgent, ipAddress };
+}
+
+/**
+ * Sign a JWT and issue auth cookies (access token + refresh token).
+ *
+ * Shared by the login, 2FA-login, OIDC callback, and first-user auto-login flows.
+ */
+export async function signAndSetCookies(
+  reply: FastifyReply,
+  user: { id: string; isAdmin: boolean; tokenVersion: number },
+  userAgent: string,
+  ipAddress: string,
+): Promise<void> {
+  const accessToken = await reply.jwtSign({
+    userId: user.id,
+    isAdmin: user.isAdmin,
+    tokenVersion: user.tokenVersion,
+  });
+  const refreshToken = await createRefreshToken(user.id, userAgent, ipAddress);
+  setAuthCookies(reply, { accessToken, refreshToken });
 }

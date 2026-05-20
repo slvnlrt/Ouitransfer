@@ -6,10 +6,10 @@
  */
 
 import path from "node:path";
-import type { FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 
+import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
 import { S3StorageProvider } from "../../providers/s3-storage.provider.js";
 import { prisma } from "../../shared/prisma.js";
 import { ForbiddenError, UnauthorizedError, ValidationError } from "../../utils/app-error.js";
@@ -17,15 +17,9 @@ import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 
 const storageProvider = new S3StorageProvider();
 
-export const s3StorageRoutes: FastifyPluginAsyncZod = async (app) => {
-  const preValidation = async (request: FastifyRequest) => {
-    try {
-      await request.jwtVerify();
-    } catch (_err) {
-      throw new UnauthorizedError("Unauthorized: a valid token is required.");
-    }
-  };
+const preValidation = createJwtPreValidation();
 
+export const s3StorageRoutes: FastifyPluginAsyncZod = async (app) => {
   // Get presigned upload URL
   app.route({
     method: "POST",

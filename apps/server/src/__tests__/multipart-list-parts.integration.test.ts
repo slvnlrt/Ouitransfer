@@ -87,7 +87,7 @@ describe("GET /files/multipart/list-parts", () => {
     // Register JWT plugin
     await app.register(fastifyJwt, {
       secret: "test-secret-key-for-jwt-signing-1234567890",
-      cookie: { cookieName: "access_token", signed: false },
+      cookie: { cookieName: "token", signed: true },
       trusted: () => true,
     });
 

@@ -1,22 +1,16 @@
-import type { FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 
-import {
-  REFRESH_TOKEN_COOKIE_NAME,
-  REFRESH_TOKEN_COOKIE_PATH,
-  REFRESH_TOKEN_MAX_AGE,
-} from "../../config/auth.config.js";
-import { env } from "../../env.js";
-import { prisma } from "../../shared/prisma.js";
-import { ForbiddenError, UnauthorizedError, ValidationError } from "../../utils/app-error.js";
+import { createAdminPreValidation } from "../../middleware/admin-prevalidation.js";
+import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
+import { UnauthorizedError, ValidationError } from "../../utils/app-error.js";
+import { signAndSetCookies } from "../../utils/auth-cookies.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
 import { createPasswordSchema } from "../auth/dto.js";
-import { createRefreshToken } from "../auth/refresh-token.service.js";
 import { AvatarService } from "./avatar.service.js";
-import { createRegisterUserSchema, UpdateUserSchema } from "./dto.js";
+import { UpdateUserSchema } from "./dto.js";
 import { validatePasswordMiddleware } from "./middleware.js";
 import { UserService } from "./service.js";
 
@@ -45,37 +39,8 @@ function serializeUser<
 
 // ── Pre-validation hooks ─────────────────────────────────────
 
-/**
- * Admin pre-validation: allows first-user setup bypass.
- * If users exist, requires JWT + admin role.
- */
-const adminPreValidation = async (request: FastifyRequest) => {
-  const usersCount = await prisma.user.count();
-
-  if (usersCount > 0) {
-    try {
-      await request.jwtVerify();
-    } catch (authErr) {
-      request.log.warn({ err: authErr }, "JWT verification failed");
-      throw new UnauthorizedError(
-        "Unauthorized: a valid token is required to access this resource.",
-      );
-    }
-    if (!request.user.isAdmin) {
-      throw new ForbiddenError("Access restricted to administrators");
-    }
-  }
-};
-
-/** Simple JWT pre-validation (no admin check). */
-const jwtPreValidation = async (request: FastifyRequest) => {
-  try {
-    await request.jwtVerify();
-  } catch (err) {
-    request.log.error({ err }, "JWT verification failed");
-    throw new UnauthorizedError("Unauthorized");
-  }
-};
+const adminPreValidation = createAdminPreValidation({ allowSetupBypass: true });
+const jwtPreValidation = createJwtPreValidation();
 
 // ── Shared response schemas ──────────────────────────────────
 
@@ -120,6 +85,7 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
       email: z.string().email().describe("User email"),
       image: z.string().optional().describe("User profile image URL"),
       password: passwordSchema.describe("User password"),
+      isAdmin: z.boolean().optional().default(false).describe("Whether the user is an admin"),
     });
   };
 
@@ -152,9 +118,7 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     handler: async (request, reply) => {
-      const schema = await createRegisterUserSchema();
-      const input = schema.parse(request.body);
-      const result = await userService.register(input);
+      const result = await userService.register(request.body);
       const { isFirstUser, ...user } = result;
 
       // Audit user creation (fire-and-forget)
@@ -170,35 +134,12 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
       // after registration. Subsequent users are created by an admin who
       // is already logged in, so no auto-login is needed for them.
       if (isFirstUser) {
-        const isSecure = env.SECURE_SITE === "true";
-
-        const token = await reply.jwtSign({
-          userId: user.id,
-          isAdmin: user.isAdmin,
-          tokenVersion: user.tokenVersion,
-        });
-
-        reply.setCookie("token", token, {
-          httpOnly: true,
-          path: "/",
-          secure: isSecure,
-          sameSite: isSecure ? "lax" : "strict",
-          signed: true,
-        });
-
-        const refreshToken = await createRefreshToken(
-          user.id,
+        await signAndSetCookies(
+          reply,
+          { id: user.id, isAdmin: user.isAdmin, tokenVersion: user.tokenVersion },
           request.headers["user-agent"] ?? "",
           request.ip,
         );
-        reply.setCookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
-          httpOnly: true,
-          secure: isSecure,
-          sameSite: "lax",
-          path: REFRESH_TOKEN_COOKIE_PATH,
-          maxAge: REFRESH_TOKEN_MAX_AGE,
-          signed: false,
-        });
       }
 
       return reply

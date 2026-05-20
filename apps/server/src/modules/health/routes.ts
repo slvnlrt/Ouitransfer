@@ -4,7 +4,6 @@ import { z } from "zod";
 
 import { bucketName, s3Client } from "../../config/storage.config.js";
 import { prisma } from "../../shared/prisma.js";
-import { getLogger } from "../../utils/logger.js";
 
 const healthResponseSchema = z.object({
   status: z.enum(["healthy", "degraded"]),
@@ -15,6 +14,40 @@ const healthResponseSchema = z.object({
     storage: z.enum(["ok", "error", "not_configured"]),
   }),
 });
+
+/**
+ * Run database and storage health checks.
+ *
+ * Returns individual check results so each endpoint can map them
+ * to its own response shape.
+ */
+async function runHealthChecks(): Promise<{
+  dbOk: boolean;
+  storageOk: boolean;
+  storageConfigured: boolean;
+}> {
+  let dbOk = false;
+  let storageOk = false;
+  const storageConfigured = Boolean(s3Client && bucketName);
+
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    dbOk = true;
+  } catch {
+    // DB check failed
+  }
+
+  if (storageConfigured) {
+    try {
+      await s3Client!.send(new HeadBucketCommand({ Bucket: bucketName! }));
+      storageOk = true;
+    } catch {
+      // Storage check failed
+    }
+  }
+
+  return { dbOk, storageOk, storageConfigured };
+}
 
 export const healthRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
@@ -30,26 +63,12 @@ export const healthRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     handler: async (_request, reply) => {
+      const { dbOk, storageOk, storageConfigured } = await runHealthChecks();
+
       const checks: { database: "ok" | "error"; storage: "ok" | "error" | "not_configured" } = {
-        database: "error",
-        storage: "not_configured",
+        database: dbOk ? "ok" : "error",
+        storage: !storageConfigured ? "not_configured" : storageOk ? "ok" : "error",
       };
-
-      try {
-        await prisma.$queryRaw`SELECT 1`;
-        checks.database = "ok";
-      } catch {
-        checks.database = "error";
-      }
-
-      if (s3Client && bucketName) {
-        try {
-          await s3Client.send(new HeadBucketCommand({ Bucket: bucketName }));
-          checks.storage = "ok";
-        } catch {
-          checks.storage = "error";
-        }
-      }
 
       const allHealthy = Object.values(checks).every((v) => v === "ok" || v === "not_configured");
 
@@ -77,32 +96,16 @@ export const healthRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     handler: async (_request, reply) => {
-      const logger = getLogger();
-      let dbOk = false;
-      let storageOk = false;
+      const { dbOk, storageOk, storageConfigured } = await runHealthChecks();
 
-      // Check database
-      try {
-        await prisma.$queryRaw`SELECT 1`;
-        dbOk = true;
-      } catch (err) {
-        logger.error({ err }, "Health status: database check failed");
-      }
-
-      // Check storage — mirrors the existing health check pattern
-      if (s3Client && bucketName) {
-        try {
-          await s3Client.send(new HeadBucketCommand({ Bucket: bucketName }));
-          storageOk = true;
-        } catch (err) {
-          logger.error({ err }, "Health status: storage check failed");
-        }
-      } else {
-        // Storage not configured — treat as ok
-        storageOk = true;
-      }
-
-      const status = dbOk && storageOk ? "healthy" : dbOk || storageOk ? "degraded" : "unhealthy";
+      // Storage not configured is treated as ok for the simplified status
+      const effectiveStorageOk = !storageConfigured || storageOk;
+      const status =
+        dbOk && effectiveStorageOk
+          ? "healthy"
+          : dbOk || effectiveStorageOk
+            ? "degraded"
+            : "unhealthy";
 
       return reply.status(200).send({ status });
     },

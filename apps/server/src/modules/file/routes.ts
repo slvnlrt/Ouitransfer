@@ -7,6 +7,7 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 
 import { env } from "../../env.js";
+import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
 import { prisma } from "../../shared/prisma.js";
 import {
   AppError,
@@ -130,14 +131,7 @@ async function checkFileAccess(
 
 // ── Pre-validation hook ──────────────────────────────────────
 
-const preValidation = async (request: FastifyRequest) => {
-  try {
-    await request.jwtVerify();
-  } catch (err) {
-    request.log.warn({ err }, "JWT verification failed");
-    throw new UnauthorizedError("Invalid or missing token");
-  }
-};
+const preValidation = createJwtPreValidation();
 
 // ── Routes ───────────────────────────────────────────────────
 
@@ -767,7 +761,7 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
     },
   });
 
-  // ── Download routes (from download.controller.ts) ──────────
+  // ── Download routes ─────────────────────────────────────────
 
   // POST /files/download-url — get presigned download URL
   app.route({
@@ -910,7 +904,7 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
     },
   });
 
-  // ── Embed routes (from embed.controller.ts) ────────────────
+  // ── Embed routes ────────────────────────────────────────────
 
   // GET /embed/:token — embed file (token-based access)
   app.route({

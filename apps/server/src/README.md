@@ -15,7 +15,7 @@ src/
   shared/             Singletons shared across the app
   utils/              Pure utility functions and error classes
   types/              TypeScript interfaces
-  middleware/         Fastify hooks (CSRF, etc.)
+  middleware/         Fastify hooks (CSRF, admin/JWT preValidation)
   scripts/            One-off scripts (not part of the server runtime)
 ```
 
@@ -47,12 +47,11 @@ modules/
 
 | File | Purpose |
 |------|---------|
-| `routes.ts` | Route registration — Zod body/params/response schemas, plugin hooks |
-| `controller.ts` | Request handlers — parse input, call service, return response |
+| `routes.ts` | Route registration using `FastifyPluginAsyncZod` — Zod schemas, inline handlers, plugin hooks |
 | `service.ts` | Business logic — Prisma queries, S3 calls, domain rules |
 | `dto.ts` | Shared Zod schemas and TypeScript types for this module |
 
-**Important**: Route-level schemas in `routes.ts` and controller-level validation must stay in sync. `fastify-type-provider-zod` strips unknown fields silently — missing a field from the route schema means it will never reach the controller.
+**Note**: Zod schemas in route definitions provide automatic type inference via `FastifyPluginAsyncZod` — no separate interface or manual parsing needed. `fastify-type-provider-zod` strips unknown fields silently, so every field that the handler needs must appear in the route schema.
 
 ## Config (`src/config/`)
 
@@ -78,6 +77,7 @@ modules/
 | File | Purpose |
 |------|---------|
 | `app-error.ts` | AppError base class + 6 subclasses (NotFoundError, UnauthorizedError, ForbiddenError, ValidationError, ConflictError, InternalError) |
+| `auth-cookies.ts` | Cookie utilities: `setAuthCookies`, `clearAuthCookies`, `signAndSetCookies`, `getClientInfo` |
 | `error-handler.ts` | `globalErrorHandler` — Fastify error hook that maps AppError/Zod/Prisma errors to HTTP responses |
 | `error-response-schema.ts` | Shared `ErrorResponseSchema` Zod schema — used in route error schemas |
 | `logger.ts` | Pino logger instance |
@@ -99,7 +99,7 @@ All route input/output is validated with Zod via `fastify-type-provider-zod`. Sc
 
 ## Auth
 
-- **Access tokens**: JWT, 15-minute TTL, stored in httpOnly cookie (`access_token`)
+- **Access tokens**: JWT, 15-minute TTL, stored in httpOnly signed cookie (`token`)
 - **Refresh tokens**: Rotating refresh tokens with replay detection, stored in httpOnly cookie (`refresh_token`)
 - **2FA**: TOTP via `otpauth` (RFC 6238). Backup codes stored hashed.
 - **Brute-force protection**: Per-account `LoginAttempt` model with lockout
@@ -108,9 +108,8 @@ All route input/output is validated with Zod via `fastify-type-provider-zod`. Sc
 ## Adding a New Feature
 
 1. Create `src/modules/{feature}/` directory
-2. Add `routes.ts` — register with `fastify.register()`, define Zod schemas
-3. Add `controller.ts` — handlers that call the service
-4. Add `service.ts` — business logic, Prisma queries
-5. Add `dto.ts` — shared Zod schemas and types
-6. Register the module in `src/app.ts`
-7. Add Prisma schema changes if needed, then run `just db-generate` + `just db-migrate-dev`
+2. Add `routes.ts` using `FastifyPluginAsyncZod` with `.route()` method and inline handlers
+3. Add `service.ts` — business logic
+4. Add `dto.ts` if needed — shared Zod schemas
+5. Register the module in `src/app.ts`
+6. Add Prisma schema changes if needed, then run `just db-generate` + `just db-migrate-dev`

@@ -1,28 +1,16 @@
-import type { FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 
+import { createAdminPreValidation } from "../../middleware/admin-prevalidation.js";
 import { prisma } from "../../shared/prisma.js";
-import { ForbiddenError, NotFoundError, UnauthorizedError } from "../../utils/app-error.js";
+import { NotFoundError } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { QuotaStatusResponseSchema, UpdateQuotaResponseSchema, UpdateQuotaSchema } from "./dto.js";
 import { quotaService } from "./service.js";
 
-export const quotaRoutes: FastifyPluginAsyncZod = async (app) => {
-  // Admin-only preValidation
-  const preValidation = async (request: FastifyRequest) => {
-    try {
-      await request.jwtVerify();
-    } catch (_err) {
-      throw new UnauthorizedError(
-        "Unauthorized: a valid token is required to access this resource.",
-      );
-    }
-    if (!request.user.isAdmin) {
-      throw new ForbiddenError("Access restricted to administrators");
-    }
-  };
+const preValidation = createAdminPreValidation({ allowSetupBypass: false });
 
+export const quotaRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
     method: "GET",
     url: "/users/:id/quota",
