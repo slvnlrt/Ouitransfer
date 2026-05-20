@@ -461,7 +461,7 @@ individuellement pour chaque utilisateur ou groupe."
 | Bug | Sévérité | Impact | Statut |
 |-----|----------|--------|--------|
 | B-9 Auth providers 500 | **Haute** | Page settings cassée pour tous les admins | ✅ Résolu |
-| B-8 ldapDn non settable | **Moyenne** | Feature LDAP group mapping non fonctionnelle via UI | À corriger |
+| B-8 ldapDn non settable | **Moyenne** | Feature LDAP group mapping non fonctionnelle via UI | ✅ Résolu |
 | B-10 Contamination PT fr-FR | **Moyenne** | Textes portugais visibles en locale FR | ✅ Résolu |
 | B-12 Couleur thème défaut | **Moyenne** | Reset/save change le thème vers couleur obsolète | ✅ Résolu |
 | B-11 Traduction "terrain" | **Basse** | Confus mais pas bloquant | ✅ Résolu |
