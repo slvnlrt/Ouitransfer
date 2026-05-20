@@ -130,3 +130,44 @@
   - Tests: 349 server (36 files) + web type-check clean + lint clean
   - 19 commits on `feat/5.3-ldap` branch (be7fc51..bcbe77b)
 - Next: 5.2 Auto-cleanup (independent), or merge 5.3 branch
+
+## 2026-05-20 — 5.3 Post-Fix Review Remediation
+
+- Second review of 5.3 LDAP fix commits (`b6d84e0`, `dfefb49`, `b2f3083`, `bcbe77b`)
+- Postfix review files cross-checked against full reviews — 9 missing items added
+- All 23 findings fixed across 5 parallel agents:
+
+**Server (12 items — 3 Important + 9 Minor):**
+- PF-S-I-1: `requestPasswordReset` now allows LDAP users even when `passwordAuthEnabled=false`
+- PF-S-I-2: Scheduler race condition fixed — handle comparison guards against stale timers
+- PF-S-I-3: `getSyncLogs` route uses `SyncLogsQuerySchema` from dto (was inline with no bounds)
+- PF-S-M-1: All error paths tagged with meaningful `phase` strings (connect/search/create-user/etc.)
+- PF-S-M-2: Boot stale-log cleanup marks ALL `running` logs as error (removed 5-min cutoff)
+- PF-S-M-3: Welcome email URL built with `new URL()` + `searchParams.set()` (was string interpolation)
+- PF-S-M-4: LDAP-vs-LDAP collision check tightened (`conflict.ldapDn !== adUser.dn`)
+- PF-S-M-5: `schedulerNextSyncAt` set to `null` during active sync, updated post-run
+- PF-S-M-6: O(n·m) deactivation lookup → O(n) via captured object array
+- PF-S-M-7: Tautological `else if (Object.keys(changes).length > 0)` → `else`
+- PF-S-M-8: 9 new unit tests for LDAP filter injection (RFC 4515 special chars)
+- PF-S-M-9: Boot stale-log cleanup detail includes `phase: "boot-recovery"`
+
+**Frontend (11 items — 4 Important + 7 Minor):**
+- PF-F-I-1: Server security `warnings` displayed as amber banner on LDAP admin page
+- PF-F-I-2: Shared `useSyncPolling` hook extracted — removed ~40-line duplicate in 2 files
+- PF-F-I-3: 9 missing LDAP i18n keys added to all 22 non-English locale files
+- PF-F-I-4: UTF-8 BOM stripped from all 22 non-English locale files; locale parity test enhanced
+- PF-F-M-1: `closeTimerRef` stored and cleared on `handleViewDetail` and unmount
+- PF-F-M-2: `pt-6` TLS alignment hack replaced with invisible `<Label>` placeholder
+- PF-F-M-3: `appUrl` required-when-enabled validation in form schema
+- PF-F-M-4: `bindPassword` required-when-new validation in form schema
+- PF-F-M-5: `formatRelativeTime` guards against NaN with `Number.isFinite`
+- PF-F-M-6: `isPolling` ref guard prevents stale in-flight poll callbacks
+- PF-F-M-7: Pre-existing typo `"userr"` → `"userRole"` in all 23 locales + code reference updated
+
+**Tech debt:**
+- TD-4 tracked: Zod type provider configured but not leveraged — 104 `as` casts across 15 controllers, 131 routes using `.get()/.post()` without type inference
+- TD-5 tracked: audit needed for other "infrastructure set up but not used" patterns
+
+**Final state:** Server 358 tests (37 files) + Web 222 tests (19 files), both type-checks clean
+- 3 commits on `feat/5.3-ldap`: `b256cd6`, `786e5af`, `e261ded`
+- Merged into `main`
