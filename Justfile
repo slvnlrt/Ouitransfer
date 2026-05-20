@@ -2,6 +2,9 @@
 # Usage: just <recipe>  |  just --list
 # Install just: https://just.systems/man/en/
 
+# Load dev environment variables (DATABASE_URL, JWT_SECRET, etc.) for local CLI tools
+set dotenv-path := "apps/server/.env.development"
+
 # Default recipe — list available commands
 default:
     @just --list
@@ -98,25 +101,25 @@ db-migrate:
 
 # Create and apply a new migration (development only)
 db-migrate-dev:
-    DATABASE_URL="file:./ouitransfer.db" pnpm --filter=ouitransfer-api exec prisma migrate dev
+    pnpm --filter=ouitransfer-api exec prisma migrate dev
 
 # Open Prisma Studio (visual database browser)
 db-studio:
-    DATABASE_URL="file:./ouitransfer.db" pnpm --filter=ouitransfer-api exec prisma studio
+    pnpm --filter=ouitransfer-api exec prisma studio
 
 # Seed the database with initial data
 db-seed:
-    DATABASE_URL="file:./ouitransfer.db" pnpm --filter=ouitransfer-api run db:seed
+    pnpm --filter=ouitransfer-api run db:seed
 
 # Reset database: drop all data and re-run migrations — DEV ONLY
 db-reset:
-    DATABASE_URL="file:./ouitransfer.db" pnpm --filter=ouitransfer-api exec prisma migrate reset
+    pnpm --filter=ouitransfer-api exec prisma migrate reset
 
 # Initialize local dev SQLite database (one-time, no S3 required)
 # Creates apps/server/prisma/ouitransfer.db from the schema and seeds it
 db-dev-init:
-    DATABASE_URL="file:./ouitransfer.db" pnpm --filter=ouitransfer-api exec prisma db push --skip-generate
-    DATABASE_URL="file:./ouitransfer.db" pnpm --filter=ouitransfer-api run db:seed
+    pnpm --filter=ouitransfer-api exec prisma db push --skip-generate
+    pnpm --filter=ouitransfer-api run db:seed
 
 # ─── Docker / Production ─────────────────────────────────────────────────────
 
