@@ -467,8 +467,8 @@ individuellement pour chaque utilisateur ou groupe."
 | B-11 Traduction "terrain" | **Basse** | Confus mais pas bloquant | ✅ Résolu |
 | B-13 Lien footer incorrect | **Basse** | Lien vers mauvais domaine | ✅ Résolu |
 | B-14 String hardcodée EN | **Basse** | Anglais affiché en locale non-EN | ✅ Résolu |
-| B-15 Détails RS incomplets | **Basse** | Champs manquants dans vue détails | À corriger |
+| B-15 Détails RS incomplets | **Basse** | Champs manquants dans vue détails | ✅ Résolu |
 | B-16 Modales 2FA étroites | **Basse** | Visuel contraint | ✅ Résolu |
-| B-17 Description setting | **Basse** | Description confuse | À corriger |
+| B-17 Description setting | **Basse** | Description confuse | ✅ Résolu |
 | B-18 "Disponibilité" → "Uptime" | **Très basse** | Cosmétique | ✅ Résolu |
-| B-19 Messages stockage incomplets | **Très basse** | Info manquante | À corriger |
+| B-19 Messages stockage incomplets | **Très basse** | Info manquante | ✅ Résolu |
