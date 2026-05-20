@@ -25,9 +25,6 @@ export const CheckFileSchema = z.object({
   folderId: z.string().optional(),
 });
 
-export type RegisterFileInput = z.infer<typeof RegisterFileSchema>;
-export type CheckFileInput = z.infer<typeof CheckFileSchema>;
-
 export const UpdateFileSchema = z.object({
   name: z.string().optional().describe("The file name"),
   description: z.string().optional().nullable().describe("The file description"),
@@ -41,6 +38,3 @@ export const ListFilesSchema = z.object({
   folderId: z.string().optional().describe("The folder ID"),
   recursive: z.string().optional().default("true").describe("Include files from subfolders"),
 });
-
-export type MoveFileInput = z.infer<typeof MoveFileSchema>;
-export type ListFilesInput = z.infer<typeof ListFilesSchema>;

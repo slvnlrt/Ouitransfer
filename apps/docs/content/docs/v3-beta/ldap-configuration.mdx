@@ -131,7 +131,11 @@ The **Sync interval** (in minutes) controls how often the automatic sync runs. I
 
 ### Application URL
 
-The **App URL** field (optional) is the public base URL of your Ouitransfer instance (e.g., `https://transfer.company.com`). It is used to generate the password-setup link in the welcome email sent to new users. If left blank, new users will not receive a welcome email.
+The **App URL** field is the public base URL of your Ouitransfer instance (e.g., `https://transfer.company.com`). It is used to generate the password-setup link in the welcome email sent to new users.
+
+<Callout type="warn">
+  **App URL is required when LDAP is enabled.** Saving the configuration with an empty App URL while the Enabled toggle is on will fail with the error: *"Application URL is required when LDAP is enabled (used for welcome emails)."*
+</Callout>
 
 ---
 
@@ -164,23 +168,29 @@ If the test fails, the response includes an error message describing the failure
 
 ## Group mapping
 
-Ouitransfer groups can be mapped to AD groups so that sync automatically assigns users to the correct group. To configure a mapping:
+Ouitransfer groups can be mapped to AD groups so that sync automatically assigns users to the correct group. The mapping is stored as the `ldapDn` column on the Group model — each group can hold the distinguished name of the corresponding AD group.
 
-1. Navigate to **Admin → Group Management**
-2. Edit a group and set the **LDAP DN** field to the DN of the corresponding AD group
-3. The DN must be the full distinguished name of the AD group (e.g., `CN=Finance,OU=Groups,DC=corp,DC=local`)
+<Callout type="warn">
+  The `ldapDn` field is **not yet exposed** in the Groups UI or the REST API body schema. To configure a mapping today, set the `ldapDn` column directly in the database (e.g., via Prisma Studio or a SQL query). A future release will add UI and API support for this field.
+</Callout>
 
-During each sync, for each imported user, Ouitransfer checks the user's `memberOf` attribute (direct group memberships only) and assigns the **first matching group** — the first Ouitransfer group whose LDAP DN appears in the user's AD group list.
+Example (Prisma Studio or direct SQL):
+
+```sql
+UPDATE "Group" SET "ldapDn" = 'CN=Finance,OU=Groups,DC=corp,DC=local' WHERE "name" = 'Finance';
+```
+
+During each sync, for each imported user, Ouitransfer checks the user's `memberOf` attribute (direct group memberships only) and assigns the first matching group.
 
 **Behavior details:**
 
 - Only direct AD group memberships are considered. Nested/recursive group resolution is not supported.
-- If a user belongs to multiple AD groups that each have a mapping, the first match wins (ordering is not guaranteed; avoid overlapping memberships for predictable results).
+- The matching order depends on the database query result order for groups with a `ldapDn` set. If a user belongs to multiple mapped AD groups, **one of them is assigned but the choice is not deterministic**. Avoid overlapping memberships for predictable results.
 - If no mapped group matches the user's AD groups, the user is assigned no group (`null`).
 - Group assignment is **overwritten on every sync** — if you manually reassign a synced user's group in Ouitransfer, it will be reset on the next sync.
 
 <Callout type="info">
-  The LDAP page shows a read-only summary of all groups that currently have a LDAP DN configured. Use this as a quick reference when setting up your sync group DN.
+  The LDAP page shows a read-only summary of all groups that currently have a `ldapDn` configured. Use this as a quick reference when reviewing your group mappings.
 </Callout>
 
 ---
@@ -319,11 +329,11 @@ Synced users manage their own app password through the standard Ouitransfer pass
 
 ### Bind password lost after restart
 
-**Symptom**: after restarting the server, the LDAP configuration shows an error about invalid encrypted data.
+**Symptom**: after restarting the server, LDAP test or sync fails with a decryption error in the server logs (e.g., `Invalid encrypted data format` or an AES-GCM authentication failure).
 
-**Cause**: `ENCRYPTION_SECRET` changed between restarts.
+**Cause**: `ENCRYPTION_SECRET` changed between restarts. The stored bind password was encrypted with the previous key and can no longer be decrypted.
 
-**Resolution**: ensure `ENCRYPTION_SECRET` is persisted as a stable environment variable in your deployment. Re-enter the bind password in the configuration form and save.
+**Resolution**: ensure `ENCRYPTION_SECRET` is persisted as a stable environment variable in your deployment (not generated dynamically at startup). Re-enter the bind password in the configuration form and save — it will be re-encrypted with the current key.
 
 ---
 

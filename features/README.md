@@ -95,4 +95,5 @@ features/
 ## Current Focus
 
 B-7 bug + TD-1/TD-2 technical debt — Done. TD-3 (2FA brute-force gap) tracked in `TECHNICAL-DEBT.md`.
-5.4 Groups — Done. 5.3 LDAP/AD sync — Done. Next: 5.2 Auto-cleanup (independent)
+5.4 Groups — Done. 5.3 LDAP/AD sync — Done. TD-4 (Zod type provider) — Done.
+Next: 5.2 Auto-cleanup (independent), or remaining tech debt (TD-3, TD-5, TD-6, TD-7, TD-8, TD-9).

@@ -47,62 +47,18 @@ can then brute-force the 6-digit TOTP code without triggering account lockout.
 
 ---
 
-## TD-4 — Zod type provider configured but not leveraged — 104 type assertions across all controllers
+## ~~TD-4 — Zod type provider configured but not leveraged — 104 type assertions across all controllers~~ ✅ RESOLVED
 
-**Context:** `app.ts:68` calls `.withTypeProvider<ZodTypeProvider>()` and sets up both
-`validatorCompiler` and `serializerCompiler`. The infrastructure for end-to-end type-safe
-routes is fully in place. However, **zero routes use it**:
+Resolved in TD-4 session (May 2026). Branch `refactor/td4-zod-type-provider`.
 
-1. **All 17 route files** type `app` as bare `FastifyInstance` instead of
-   `FastifyInstance<RawServerDefault, IncomingMessage, ServerResponse, FastifyBaseLogger, ZodTypeProvider>`.
-   This erases the type provider — Fastify can't infer handler types from Zod schemas.
+All 18 controller classes deleted. All 18 route files migrated to `FastifyPluginAsyncZod`
+with `.route()` + inline handlers. All `as` casts on `request.body/params/query` eliminated
+(1 intentional widening cast retained with comment). Cookie utilities centralized in
+`utils/auth-cookies.ts` (`setAuthCookies`, `clearAuthCookies`, `signAndSetCookies`,
+`getClientInfo`). `createJwtPreValidation()` factory extracted to
+`middleware/jwt-prevalidation.ts`. Full test suite: 372 tests passing, zero type errors.
 
-2. **All ~131 routes** use `.get()/.post()` shorthand with `.bind(controller)` handlers.
-   The `.bind()` returns a generic `Function`, losing all type inference even if the type
-   provider were propagated.
-
-3. **All ~104 controller methods** use `request.body as SomeType`, `request.params as { id: string }`,
-   etc. — manual type assertions that bypass TypeScript's safety. If a route schema changes and
-   the controller `as` cast isn't updated, TypeScript stays silent and the mismatch only
-   surfaces at runtime.
-
-**The correct Fastify + Zod pattern:**
-```ts
-// routes.ts — typed app parameter
-import type { FastifyInstance } from "fastify";
-import type { ZodTypeProvider } from "fastify-type-provider-zod";
-
-export async function exampleRoutes(app: FastifyInstance) {
-  app.withTypeProvider<ZodTypeProvider>().route({
-    method: "GET",
-    url: "/items",
-    schema: { querystring: ItemQuerySchema, response: { 200: ItemListSchema } },
-    handler: async (request, reply) => {
-      // request.query is automatically typed as z.infer<typeof ItemQuerySchema>
-      // No `as` cast needed — schema change = compilation error
-      const { limit, offset } = request.query;
-      ...
-    },
-  });
-}
-```
-
-**Impact:** 104 unsound type assertions across 15 controller files. Any schema drift
-between route definition and controller cast is invisible to the compiler.
-
-**Fix:**
-1. In each route file, call `app.withTypeProvider<ZodTypeProvider>()` to get a typed instance
-2. Migrate from `.get()/.post()` shorthand to `.route({ method, url, schema, handler })`
-3. Define handlers inline (or use properly typed helper functions) — remove `.bind(controller)`
-4. Remove all `as` casts from controller request parameter access
-5. Verify with `tsc --noEmit` that all types are inferred correctly
-
-**Scope:** ~131 routes across 17 files, ~104 type assertions across 15 controller files.
-This is a mechanical but large refactor — best done module-by-module with tests after each.
-
-**Found during:** 5.3 LDAP post-fix review remediation
-**Severity:** Medium — no runtime impact (Zod validates at runtime regardless), but defeats
-TypeScript's compile-time safety for the entire API surface
+Commits: `57c96ff`, `7a25254`, `f2d73ed`, `66215a5`, `3e1aa28`, `ae2e66e`, `1559181`, `0416e89`.
 
 ---
 
@@ -167,3 +123,36 @@ or manually bump `turbo` in the root `package.json` / workspace.
 
 **Found during:** local dev session (May 2026)
 **Severity:** Very low — patch update, no breaking changes expected
+
+---
+
+## ~~TD-9 — 4 unused exported types in `file/dto.ts` (knip)~~ ✅ RESOLVED
+
+After TD-4, `RegisterFileInput`, `CheckFileInput`, `MoveFileInput`, `ListFilesInput` in
+`apps/server/src/modules/file/dto.ts` became dead exports (were only used by deleted
+`FileController`). Resolved by deleting the 4 `export type` lines — schemas are still used
+directly in `file/routes.ts`.
+
+---
+
+## TD-8 — Group API quota fields lack validation (no upper bound, no integer check)
+
+**Context:** The Quota module (`apps/server/src/modules/quota/dto.ts`) validates
+`maxFileSizeOverride` and `maxTotalStorageOverride` with:
+- Upper bound of 1 PB (`ONE_PB = 1125899906842624n`)
+- Integer check (must be a valid BigInt-parseable value)
+- Explicit null/0/positive semantics
+
+However, the Group routes (`apps/server/src/modules/group/routes.ts:99-106,133-134`)
+use a bare `z.union([z.number(), z.string(), z.null()])` with **no upper bound and no
+integer validation**. An admin can `POST /groups` with
+`"maxFileSizeOverride": "99999999999999999999"` and the schema accepts it.
+
+**Fix:**
+1. Extract a shared Zod schema for BigInt quota fields (used in both Quota and Group modules)
+2. Apply the same 1 PB cap and integer validation to Group routes
+3. Add a test verifying that oversized values are rejected
+
+**Found during:** Documentation quality review (docs-update session)
+**Severity:** Low — no data corruption (Prisma stores as BigInt), but inconsistent
+validation between two APIs that manage the same concept

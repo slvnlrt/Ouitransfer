@@ -13,7 +13,7 @@ Groups are organizational units that let you apply quota policies to a set of us
 
 ## Creating a group
 
-Navigate to **Admin → Groups Management** and click **Create Group**.
+Navigate to **Groups** (visible in the navigation menu for admin accounts) and click **Create Group**.
 
 | Field | Required | Description |
 |---|---|---|
@@ -36,7 +36,7 @@ The quota fields accept three modes:
 
 ## Managing members
 
-### From Groups Management
+### From the Groups page
 
 Open the group detail view by clicking the group name or selecting **View Details** from the actions menu. The detail view shows all current members with their username, email address, and individual storage usage.
 
@@ -77,7 +77,7 @@ More specifically:
 | Inherit | Unlimited | 2 GB | **Unlimited** (group explicitly removes limit) |
 | Inherit | — (no group) | 2 GB | **2 GB** (global default) |
 
-The effective quota for each user is displayed in the User Management edit form, along with a label indicating the resolution source (**User override**, **Group: {name}**, or **Global default**).
+The effective quota for each user is displayed in the User Management edit form, along with a label indicating the resolution source (**User override**, **Group: \{name\}**, or **Global default**).
 
 For a full description of the quota system, see the [Quotas](/docs/v3-beta/quotas) documentation.
 
@@ -93,17 +93,21 @@ Deleting a group **does not delete its members**. Their `groupId` is set to `nul
 
 ## LDAP group mapping
 
-Groups can be linked to Active Directory groups via the `ldapDn` field. When an LDAP sync runs, users who belong to the mapped AD group are automatically assigned to the corresponding Ouitransfer group.
+Groups can be linked to Active Directory groups via the `ldapDn` field on the Group model. When an LDAP sync runs, users who belong to the mapped AD group are automatically assigned to the corresponding Ouitransfer group.
 
-The `ldapDn` field is managed programmatically during LDAP configuration — it is not exposed in the Groups Management UI. You set it when configuring LDAP group mappings.
-
-For setup instructions, see the [LDAP Configuration](/docs/v3-beta/ldap) documentation.
-
-<Callout type="info">
-  LDAP sync respects the one-group-per-user constraint. If a user matches multiple AD group mappings, the first match wins.
+<Callout type="warn">
+  The `ldapDn` field is **not yet exposed** in the Groups UI or the REST API body schema. To configure a mapping today, set the `ldapDn` column directly in the database (e.g., via Prisma Studio or a SQL query). A future release will add UI and API support for this field.
 </Callout>
 
-## API reference (Admin)
+The `ldapDn` value appears as a read-only field in API responses (`GET /groups`) and in the LDAP configuration page's group mapping summary.
+
+For setup instructions, see the [LDAP Configuration](/docs/v3-beta/ldap-configuration) documentation.
+
+<Callout type="info">
+  LDAP sync respects the one-group-per-user constraint. If a user matches multiple AD group mappings, one of them is assigned but the choice is not deterministic — avoid overlapping memberships for predictable results.
+</Callout>
+
+## API reference (admin)
 
 All endpoints require a valid admin session. Non-admin requests receive `403 Forbidden`.
 

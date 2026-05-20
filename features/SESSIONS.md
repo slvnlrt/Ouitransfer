@@ -1,5 +1,49 @@
 # Session Log
 
+## 2026-05-20
+
+**TD-4 — Zod type provider migration** (branch `refactor/td4-zod-type-provider`)
+
+Goal: migrate all Fastify routes from controller classes + bare `FastifyInstance` to
+`FastifyPluginAsyncZod` + `.route()` + inline handlers, eliminating ~75 `as` casts.
+
+Implementation (7 batches):
+- Batch 0: Extracted `setAuthCookies`, `clearAuthCookies`, `signAndSetCookies`, `getClientInfo`
+  into `utils/auth-cookies.ts` (14 tests)
+- Batch 1 (TRIVIAL): audit, admin/stats, health, health/status, quota, storage, invite,
+  reverse-share/multipart — 8 controllers deleted
+- Batch 2 (LOW-A): group, two-factor, s3-storage, file/multipart — 4 controllers deleted;
+  3 pre-existing type errors fixed (`as const`, `.nullable()`)
+- Batch 3 (LOW-B): share (16 routes), reverse-share (22 routes), ldap (7 routes), app (8 routes)
+  — 4 controllers deleted; password threading improved; LDAP config logic preserved
+- Batch 4 (MEDIUM): file (7 routes), file/download (2), file/embed (2), folder (6), user (10)
+  — 5 controllers deleted; extracted `checkFileAccess()` helper; fixed `updateUserImage` bug
+- Batch 5 (HIGH): auth (10 handlers + inline refresh), auth-providers (8 handlers + 6 helpers)
+  — 2 controllers deleted; extracted `signAndSetCookies`, `jwtPreValidation` factory
+- Batch 6 (Cleanup): zero controllers remain, all 18 route files use `FastifyPluginAsyncZod`
+  zero shorthand `.get()/.post()` calls, dead types removed, Biome-clean
+
+Review findings (4 Important + 7 Minor) — all addressed:
+- I-1: Register handler now uses `signAndSetCookies` (was inline duplicate)
+- I-2: `signAndSetCookies` moved to `utils/auth-cookies.ts`, fixed docstring
+- I-3: Local `adminPreValidation` in user/routes replaced with `createAdminPreValidation` factory
+- I-4: `isAdmin` added to register route schema, redundant `.parse()` removed
+- M-1: `createJwtPreValidation()` factory extracted to `middleware/jwt-prevalidation.ts`
+- M-2: Comment added explaining widening cast in auth-providers `updateProvider`
+- M-3: Stale `(from *.controller.ts)` comments removed from file/routes.ts
+- M-4: README.md updated — controller pattern removed, cookie name fixed, new-feature guide updated
+- M-5: Test fixture cookie name fixed (`access_token` → `token`, `signed: false` → `signed: true`)
+- M-6: `runHealthChecks()` helper extracted in health/routes.ts
+- M-7: `RequestContextService` unified with `Pick<RequestContext, "protocol" | "host">`
+
+**Final state:** 372 tests (38 files), zero type errors, lint clean
+Commits: `57c96ff`, `7a25254`, `f2d73ed`, `66215a5`, `3e1aa28`, `ae2e66e`, `1559181`, `0416e89`
+
+New tech debt identified and immediately resolved:
+- TD-9: 4 unused exported types in `file/dto.ts` (knip) — deleted inline
+
+---
+
 ## 2026-05-14
 - Created `features/` directory structure
 - Split feature specs from audit TODO into individual spec files (5.1–5.4)

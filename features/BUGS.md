@@ -185,6 +185,35 @@ Le schéma Zod de la route `/auth/login` exige un `password` avec `min(passwordM
 | B-4 Grid dashboard | **Basse** | Visuel, pas fonctionnel | **Corrigé** (7.1) |
 | B-5 Grid settings | **Basse** | Visuel, pas fonctionnel | **Corrigé** (7.1) |
 
+---
+
+## B-8 — `ldapDn` non settable sur les Groups (ni UI, ni API)
+
+**Symptôme :** Le spec 5.3 (lignes 191-193) prévoit que les admins puissent éditer le champ `ldapDn` d'un groupe dans le formulaire Groups Management ("set LDAP DNs in group management"). Le champ `ldapDn` existe bien sur le modèle `Group` dans le schema Prisma, mais :
+
+1. **L'UI** ne l'expose pas — `group-form-modal.tsx` n'inclut pas de champ LDAP DN
+2. **L'API** ne l'accepte pas — le body schema de `POST /groups` et `PUT /groups/:id` dans `routes.ts:96-107,130-135` n'inclut pas `ldapDn`
+3. La page LDAP (`ldap-group-mapping.tsx:61`) affiche le `ldapDn` en read-only
+
+Le seul moyen actuel de configurer le mapping groupe→AD est un accès direct à la base de données.
+
+**Correction :**
+1. Ajouter `ldapDn` au body schema des routes `POST /groups` et `PUT /groups/:id` (nullable string, optionnel)
+2. Propager dans le controller/service
+3. Ajouter le champ dans `group-form-modal.tsx`
+4. Tests : intégration `app.inject()` + test unitaire service
+
+**Fichiers concernés :**
+- `apps/server/src/modules/group/routes.ts` (body schemas)
+- `apps/server/src/modules/group/controller.ts`
+- `apps/server/src/modules/group/service.ts`
+- `apps/web/src/app/groups-management/components/group-form-modal.tsx`
+
+**Découvert pendant :** Review qualité des docs (session docs-update)
+**Sévérité :** Moyenne — la feature LDAP group mapping est documentée mais non fonctionnelle via l'UI
+
+---
+
 > Tous les bugs B-1 à B-6 ont été résolus dans le cadre de la feature 7.1 (Error Handling & Dashboard Redesign).
 > B-1/B-4 résolus par le remplacement de SystemHealth+StorageUsage par le composant unifié SystemStatus.
 > B-3 résolu par l'intégration de parseApiError dans use-uppy-upload (détection réseau + stockage) + détection des erreurs XHR réseau Uppy (error.source.status === 0).

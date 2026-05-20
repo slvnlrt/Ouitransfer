@@ -17,7 +17,7 @@ Ouitransfer uses a two-level quota system:
 
 Admins are exempt from global defaults by design. Unless you explicitly set an override on an admin account, admins have unlimited storage and file size.
 
-## How Quota Resolution Works
+## How quota resolution works
 
 When a user initiates an upload, the server resolves that user's effective limits using the following priority chain:
 
@@ -45,7 +45,7 @@ BigInt byte values are serialized as strings in API responses.
   The source of each effective limit is visible in the User Edit panel: the UI shows whether a value comes from a per-user override, a group, the global default, or the admin default.
 </Callout>
 
-## Global Defaults
+## Global defaults
 
 Navigate to **Admin → Settings** to configure the global defaults:
 
@@ -56,7 +56,7 @@ Navigate to **Admin → Settings** to configure the global defaults:
 
 These settings apply to every regular user who does not have a per-user override or a group override. Admin accounts are not affected unless explicitly overridden.
 
-## Per-User Overrides
+## Per-user overrides
 
 Navigate to **Admin → User Management**, then open a user's **Edit** dialog. The **Quota** section at the bottom of the form lets you configure that user's overrides:
 
@@ -71,7 +71,7 @@ Saving the form persists both the profile changes and the quota overrides in a s
   Setting a per-user override to **Inherit** (`null`) removes the override entirely. The user then falls back to their group's quota, or to the global default if they have no group.
 </Callout>
 
-## What Counts Toward Storage
+## What counts toward storage
 
 A user's storage total is calculated as:
 
@@ -90,7 +90,7 @@ Key points:
   To automatically clean up incomplete multipart upload fragments, configure an `AbortIncompleteMultipartUpload` lifecycle policy on your S3-compatible bucket. This is not handled by the application.
 </Callout>
 
-## Blocking Behavior
+## Blocking behavior
 
 | Action | User over quota? | Outcome |
 |--------|-----------------|---------|
@@ -106,7 +106,7 @@ The rationale for not blocking third-party uploads to a reverse share: the creat
   Quota checks are optimistic. Two simultaneous uploads may each pass the check individually but together exceed the limit. The slight overage is acceptable — the next upload will be blocked. File sizes are typically megabytes while quotas are gigabytes, so overruns are negligible.
 </Callout>
 
-## Quota Widget
+## Quota widget
 
 Every authenticated user sees a **storage usage indicator** in the dashboard sidebar. The widget shows:
 
@@ -128,9 +128,9 @@ When the warning level reaches `exceeded`, a persistent red banner appears on th
 
 When the level is `warning` or `critical`, a dismissible banner displays:
 
-> "You're using {percentage}% of your storage quota."
+> "You are using \{percentage\}% of your storage quota."
 
-## API Reference (Admin)
+## API reference (admin)
 
 All quota management endpoints require an authenticated admin session. Non-admin requests receive `403 Forbidden`.
 
