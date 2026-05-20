@@ -3,7 +3,6 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { UnauthorizedError, ValidationError } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
-import { ReverseShareController } from "./controller.js";
 import {
   CreateReverseShareSchema,
   GetPresignedUrlSchema,
@@ -17,12 +16,14 @@ import {
   UploadToReverseShareSchema,
 } from "./dto.js";
 import { ReverseShareMultipartService } from "./multipart.service.js";
+import { ReverseShareService } from "./service.js";
+import { ReverseShareUploadService } from "./upload.service.js";
 
+const reverseShareService = new ReverseShareService();
+const uploadService = new ReverseShareUploadService();
 const multipartService = new ReverseShareMultipartService();
 
 export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
-  const reverseShareController = new ReverseShareController();
-
   const preValidation = async (request: FastifyRequest) => {
     try {
       await request.jwtVerify();
@@ -32,650 +33,825 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
     }
   };
 
-  app.post(
-    "/reverse-shares",
-    {
-      preValidation,
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "createReverseShare",
-        summary: "Create Reverse Share",
-        description:
-          "Create a new reverse share to allow others to upload files to you. Only authenticated users can create reverse shares. The reverse share can be configured with various restrictions like file count limits, file size limits, allowed file types, password protection, and expiration dates.",
-        body: CreateReverseShareSchema,
-        response: {
-          201: z.object({
-            reverseShare: ReverseShareResponseSchema,
-          }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-        },
-      },
-    },
-    reverseShareController.createReverseShare.bind(reverseShareController),
-  );
-
-  app.get(
-    "/reverse-shares",
-    {
-      preValidation,
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "listUserReverseShares",
-        summary: "List User's Reverse Shares",
-        description:
-          "Retrieve all reverse shares created by the authenticated user, ordered by creation date (newest first). This endpoint returns comprehensive information about each reverse share including file counts and settings.",
-        response: {
-          200: z.object({
-            reverseShares: z.array(ReverseShareResponseSchema),
-          }),
-          401: ErrorResponseSchema,
-        },
-      },
-    },
-    reverseShareController.listUserReverseShares.bind(reverseShareController),
-  );
-
-  app.get(
-    "/reverse-shares/:id",
-    {
-      preValidation,
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "getReverseShare",
-        summary: "Get Reverse Share Details",
-        description:
-          "Retrieve detailed information about a specific reverse share by its ID. Only the creator of the reverse share can access this endpoint. Returns all configuration details and uploaded files.",
-        params: z.object({
-          id: z.string().describe("Unique identifier of the reverse share"),
+  app.route({
+    method: "POST",
+    url: "/reverse-shares",
+    preValidation,
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "createReverseShare",
+      summary: "Create Reverse Share",
+      description:
+        "Create a new reverse share to allow others to upload files to you. Only authenticated users can create reverse shares. The reverse share can be configured with various restrictions like file count limits, file size limits, allowed file types, password protection, and expiration dates.",
+      body: CreateReverseShareSchema,
+      response: {
+        201: z.object({
+          reverseShare: ReverseShareResponseSchema,
         }),
-        response: {
-          200: z.object({
-            reverseShare: ReverseShareResponseSchema,
-          }),
-          401: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-        },
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
       },
     },
-    reverseShareController.getReverseShare.bind(reverseShareController),
-  );
-
-  app.put(
-    "/reverse-shares",
-    {
-      preValidation,
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "updateReverseShare",
-        summary: "Update Reverse Share",
-        description:
-          "Update the configuration of an existing reverse share. Only the creator can update their reverse share. All fields except 'id' are optional - only provided fields will be updated.",
-        body: UpdateReverseShareSchema,
-        response: {
-          200: z.object({
-            reverseShare: ReverseShareResponseSchema,
-          }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-        },
-      },
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
+      }
+      const reverseShare = await reverseShareService.createReverseShare(request.body, userId);
+      return reply.status(201).send({ reverseShare });
     },
-    reverseShareController.updateReverseShare.bind(reverseShareController),
-  );
+  });
 
-  app.put(
-    "/reverse-shares/:id/password",
-    {
-      preValidation,
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "updateReverseSharePassword",
-        summary: "Update Reverse Share Password",
-        description:
-          "Update or remove the password for a reverse share. Send null as password value to remove password protection. Only the creator can update the password.",
-        params: z.object({
-          id: z.string().describe("Unique identifier of the reverse share"),
+  app.route({
+    method: "GET",
+    url: "/reverse-shares",
+    preValidation,
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "listUserReverseShares",
+      summary: "List User's Reverse Shares",
+      description:
+        "Retrieve all reverse shares created by the authenticated user, ordered by creation date (newest first). This endpoint returns comprehensive information about each reverse share including file counts and settings.",
+      response: {
+        200: z.object({
+          reverseShares: z.array(ReverseShareResponseSchema),
         }),
-        body: UpdateReverseSharePasswordSchema,
-        response: {
-          200: z.object({
-            reverseShare: ReverseShareResponseSchema,
-          }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-        },
+        401: ErrorResponseSchema,
       },
     },
-    reverseShareController.updatePassword.bind(reverseShareController),
-  );
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
+      }
+      const reverseShares = await reverseShareService.listUserReverseShares(userId);
+      return reply.send({ reverseShares });
+    },
+  });
 
-  app.delete(
-    "/reverse-shares/:id",
-    {
-      preValidation,
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "deleteReverseShare",
-        summary: "Delete Reverse Share",
-        description:
-          "Delete a reverse share and all its associated files. Only the creator of the reverse share can delete it. This action is irreversible and will permanently remove all uploaded files.",
-        params: z.object({
-          id: z.string().describe("Unique identifier of the reverse share to delete"),
+  app.route({
+    method: "GET",
+    url: "/reverse-shares/:id",
+    preValidation,
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "getReverseShare",
+      summary: "Get Reverse Share Details",
+      description:
+        "Retrieve detailed information about a specific reverse share by its ID. Only the creator of the reverse share can access this endpoint. Returns all configuration details and uploaded files.",
+      params: z.object({
+        id: z.string().describe("Unique identifier of the reverse share"),
+      }),
+      response: {
+        200: z.object({
+          reverseShare: ReverseShareResponseSchema,
         }),
-        response: {
-          200: z.object({
-            reverseShare: ReverseShareResponseSchema,
-          }),
-          401: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-        },
+        401: ErrorResponseSchema,
+        404: ErrorResponseSchema,
       },
     },
-    reverseShareController.deleteReverseShare.bind(reverseShareController),
-  );
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
+      }
+      const reverseShare = await reverseShareService.getReverseShareById(request.params.id, userId);
+      return reply.send({ reverseShare });
+    },
+  });
 
-  app.get(
-    "/reverse-shares/:id/upload",
-    {
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "getReverseShareForUpload",
-        summary: "Get Reverse Share for Upload (Public)",
-        description:
-          "Get reverse share information for file upload. This is a public endpoint for non-password-protected shares. For password-protected shares use POST /reverse-shares/:id/upload/access instead.",
-        params: z.object({
-          id: z.string().describe("Unique identifier of the reverse share"),
+  app.route({
+    method: "PUT",
+    url: "/reverse-shares",
+    preValidation,
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "updateReverseShare",
+      summary: "Update Reverse Share",
+      description:
+        "Update the configuration of an existing reverse share. Only the creator can update their reverse share. All fields except 'id' are optional - only provided fields will be updated.",
+      body: UpdateReverseShareSchema,
+      response: {
+        200: z.object({
+          reverseShare: ReverseShareResponseSchema,
         }),
-        response: {
-          200: z.object({
-            reverseShare: ReverseSharePublicSchema,
-          }),
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-          410: ErrorResponseSchema,
-        },
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        404: ErrorResponseSchema,
       },
     },
-    reverseShareController.getReverseShareForUpload.bind(reverseShareController),
-  );
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
+      }
+      const { id, ...updateData } = request.body;
+      const reverseShare = await reverseShareService.updateReverseShare(id, updateData, userId);
+      return reply.send({ reverseShare });
+    },
+  });
 
-  app.post(
-    "/reverse-shares/:id/upload/access",
-    {
-      config: { csrfExempt: true },
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "accessReverseShareForUploadWithPassword",
-        summary: "Access a password-protected reverse share for upload",
-        description:
-          "Get reverse share upload information by providing the password in the request body. Passwords must never be sent as query parameters.",
-        params: z.object({
-          id: z.string().describe("Unique identifier of the reverse share"),
+  app.route({
+    method: "PUT",
+    url: "/reverse-shares/:id/password",
+    preValidation,
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "updateReverseSharePassword",
+      summary: "Update Reverse Share Password",
+      description:
+        "Update or remove the password for a reverse share. Send null as password value to remove password protection. Only the creator can update the password.",
+      params: z.object({
+        id: z.string().describe("Unique identifier of the reverse share"),
+      }),
+      body: UpdateReverseSharePasswordSchema,
+      response: {
+        200: z.object({
+          reverseShare: ReverseShareResponseSchema,
         }),
-        body: z.object({
-          password: z
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
+      }
+      const { password } = request.body;
+      const updateData: { password?: string | null } = { password };
+      const reverseShare = await reverseShareService.updateReverseShare(
+        request.params.id,
+        updateData,
+        userId,
+      );
+      return reply.send({ reverseShare });
+    },
+  });
+
+  app.route({
+    method: "DELETE",
+    url: "/reverse-shares/:id",
+    preValidation,
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "deleteReverseShare",
+      summary: "Delete Reverse Share",
+      description:
+        "Delete a reverse share and all its associated files. Only the creator of the reverse share can delete it. This action is irreversible and will permanently remove all uploaded files.",
+      params: z.object({
+        id: z.string().describe("Unique identifier of the reverse share to delete"),
+      }),
+      response: {
+        200: z.object({
+          reverseShare: ReverseShareResponseSchema,
+        }),
+        401: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
+      }
+      const reverseShare = await reverseShareService.deleteReverseShare(request.params.id, userId);
+      return reply.send({ reverseShare });
+    },
+  });
+
+  app.route({
+    method: "GET",
+    url: "/reverse-shares/:id/upload",
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "getReverseShareForUpload",
+      summary: "Get Reverse Share for Upload (Public)",
+      description:
+        "Get reverse share information for file upload. This is a public endpoint for non-password-protected shares. For password-protected shares use POST /reverse-shares/:id/upload/access instead.",
+      params: z.object({
+        id: z.string().describe("Unique identifier of the reverse share"),
+      }),
+      response: {
+        200: z.object({
+          reverseShare: ReverseSharePublicSchema,
+        }),
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+        410: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const reverseShare = await reverseShareService.getReverseShareForUpload(
+        request.params.id,
+        undefined,
+      );
+      return reply.send({ reverseShare });
+    },
+  });
+
+  app.route({
+    method: "POST",
+    url: "/reverse-shares/:id/upload/access",
+    config: { csrfExempt: true },
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "accessReverseShareForUploadWithPassword",
+      summary: "Access a password-protected reverse share for upload",
+      description:
+        "Get reverse share upload information by providing the password in the request body. Passwords must never be sent as query parameters.",
+      params: z.object({
+        id: z.string().describe("Unique identifier of the reverse share"),
+      }),
+      body: z.object({
+        password: z
+          .string()
+          .min(1, "Password is required")
+          .describe("Password for the reverse share"),
+      }),
+      response: {
+        200: z.object({
+          reverseShare: ReverseSharePublicSchema,
+        }),
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+        410: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const reverseShare = await reverseShareService.getReverseShareForUpload(
+        request.params.id,
+        request.body.password,
+      );
+      return reply.send({ reverseShare });
+    },
+  });
+
+  app.route({
+    method: "GET",
+    url: "/reverse-shares/alias/:alias/upload",
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "getReverseShareForUploadByAlias",
+      summary: "Get Reverse Share for Upload by Alias (Public)",
+      description:
+        "Get reverse share information for file upload using alias. For password-protected shares use POST /reverse-shares/alias/:alias/upload/access instead.",
+      params: z.object({
+        alias: z.string().describe("Alias of the reverse share"),
+      }),
+      response: {
+        200: z.object({
+          reverseShare: ReverseSharePublicSchema,
+        }),
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+        410: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const reverseShare = await reverseShareService.getReverseShareForUploadByAlias(
+        request.params.alias,
+        undefined,
+      );
+      return reply.send({ reverseShare });
+    },
+  });
+
+  app.route({
+    method: "POST",
+    url: "/reverse-shares/alias/:alias/upload/access",
+    config: { csrfExempt: true },
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "accessReverseShareForUploadByAliasWithPassword",
+      summary: "Access a password-protected reverse share for upload by alias",
+      description:
+        "Get reverse share upload information by alias by providing the password in the request body. Passwords must never be sent as query parameters.",
+      params: z.object({
+        alias: z.string().describe("Alias of the reverse share"),
+      }),
+      body: z.object({
+        password: z
+          .string()
+          .min(1, "Password is required")
+          .describe("Password for the reverse share"),
+      }),
+      response: {
+        200: z.object({
+          reverseShare: ReverseSharePublicSchema,
+        }),
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+        410: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const reverseShare = await reverseShareService.getReverseShareForUploadByAlias(
+        request.params.alias,
+        request.body.password,
+      );
+      return reply.send({ reverseShare });
+    },
+  });
+
+  app.route({
+    method: "POST",
+    url: "/reverse-shares/:id/presigned-url",
+    config: { csrfExempt: true },
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "getPresignedUrl",
+      summary: "Get Presigned URL for File Upload (Public)",
+      description:
+        "Get a presigned URL for direct file upload to storage. This endpoint validates reverse share permissions and generates a temporary upload URL. The presigned URL allows clients to upload files directly to the storage service without going through the API server.",
+      params: z.object({
+        id: z.string().describe("Unique identifier of the reverse share"),
+      }),
+      body: GetPresignedUrlSchema.extend({
+        password: z
+          .string()
+          .optional()
+          .describe("Password for accessing password-protected reverse shares"),
+      }),
+      response: {
+        200: z.object({
+          url: z.string().describe("Presigned URL for file upload"),
+          objectName: z
             .string()
-            .min(1, "Password is required")
-            .describe("Password for the reverse share"),
+            .describe("Server-generated object name to use when registering the file"),
+          expiresIn: z.number().describe("URL expiration time in seconds"),
         }),
-        response: {
-          200: z.object({
-            reverseShare: ReverseSharePublicSchema,
-          }),
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-          410: ErrorResponseSchema,
-        },
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+        410: ErrorResponseSchema,
       },
     },
-    reverseShareController.getReverseShareForUpload.bind(reverseShareController),
-  );
-
-  app.get(
-    "/reverse-shares/alias/:alias/upload",
-    {
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "getReverseShareForUploadByAlias",
-        summary: "Get Reverse Share for Upload by Alias (Public)",
-        description:
-          "Get reverse share information for file upload using alias. For password-protected shares use POST /reverse-shares/alias/:alias/upload/access instead.",
-        params: z.object({
-          alias: z.string().describe("Alias of the reverse share"),
-        }),
-        response: {
-          200: z.object({
-            reverseShare: ReverseSharePublicSchema,
-          }),
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-          410: ErrorResponseSchema,
-        },
-      },
+    handler: async (request, reply) => {
+      const { filename, extension, password } = request.body;
+      const result = await uploadService.getPresignedUrl(
+        request.params.id,
+        filename,
+        extension,
+        password,
+      );
+      return reply.send(result);
     },
-    reverseShareController.getReverseShareForUploadByAlias.bind(reverseShareController),
-  );
+  });
 
-  app.post(
-    "/reverse-shares/alias/:alias/upload/access",
-    {
-      config: { csrfExempt: true },
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "accessReverseShareForUploadByAliasWithPassword",
-        summary: "Access a password-protected reverse share for upload by alias",
-        description:
-          "Get reverse share upload information by alias by providing the password in the request body. Passwords must never be sent as query parameters.",
-        params: z.object({
-          alias: z.string().describe("Alias of the reverse share"),
-        }),
-        body: z.object({
-          password: z
+  app.route({
+    method: "POST",
+    url: "/reverse-shares/alias/:alias/presigned-url",
+    config: { csrfExempt: true },
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "getPresignedUrlByAlias",
+      summary: "Get Presigned URL for File Upload by Alias (Public)",
+      description:
+        "Get a presigned URL for direct file upload to storage using alias. This endpoint validates reverse share permissions and generates a temporary upload URL. The presigned URL allows clients to upload files directly to the storage service without going through the API server.",
+      params: z.object({
+        alias: z.string().describe("Alias of the reverse share"),
+      }),
+      body: GetPresignedUrlSchema.extend({
+        password: z
+          .string()
+          .optional()
+          .describe("Password for accessing password-protected reverse shares"),
+      }),
+      response: {
+        200: z.object({
+          url: z.string().describe("Presigned URL for file upload"),
+          objectName: z
             .string()
-            .min(1, "Password is required")
-            .describe("Password for the reverse share"),
+            .describe("Server-generated object name to use when registering the file"),
+          expiresIn: z.number().describe("URL expiration time in seconds"),
         }),
-        response: {
-          200: z.object({
-            reverseShare: ReverseSharePublicSchema,
-          }),
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-          410: ErrorResponseSchema,
-        },
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+        410: ErrorResponseSchema,
       },
     },
-    reverseShareController.getReverseShareForUploadByAlias.bind(reverseShareController),
-  );
+    handler: async (request, reply) => {
+      const { filename, extension, password } = request.body;
+      const result = await uploadService.getPresignedUrlByAlias(
+        request.params.alias,
+        filename,
+        extension,
+        password,
+      );
+      return reply.send(result);
+    },
+  });
 
-  app.post(
-    "/reverse-shares/:id/presigned-url",
-    {
-      config: { csrfExempt: true },
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "getPresignedUrl",
-        summary: "Get Presigned URL for File Upload (Public)",
-        description:
-          "Get a presigned URL for direct file upload to storage. This endpoint validates reverse share permissions and generates a temporary upload URL. The presigned URL allows clients to upload files directly to the storage service without going through the API server.",
-        params: z.object({
-          id: z.string().describe("Unique identifier of the reverse share"),
+  app.route({
+    method: "POST",
+    url: "/reverse-shares/:id/register-file",
+    config: { csrfExempt: true },
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "registerFileUpload",
+      summary: "Register File Upload Completion (Public)",
+      description:
+        "Register a completed file upload to the reverse share. This endpoint should be called after successfully uploading a file using the presigned URL to record the file metadata and associate it with the reverse share.",
+      params: z.object({
+        id: z.string().describe("Unique identifier of the reverse share"),
+      }),
+      body: UploadToReverseShareSchema.extend({
+        password: z
+          .string()
+          .optional()
+          .describe("Password for accessing password-protected reverse shares"),
+      }),
+      response: {
+        201: z.object({
+          file: ReverseShareFileSchema,
         }),
-        body: GetPresignedUrlSchema.extend({
-          password: z
-            .string()
-            .optional()
-            .describe("Password for accessing password-protected reverse shares"),
-        }),
-        response: {
-          200: z.object({
-            url: z.string().describe("Presigned URL for file upload"),
-            objectName: z
-              .string()
-              .describe("Server-generated object name to use when registering the file"),
-            expiresIn: z.number().describe("URL expiration time in seconds"),
-          }),
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-          410: ErrorResponseSchema,
-        },
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+        410: ErrorResponseSchema,
       },
     },
-    reverseShareController.getPresignedUrl.bind(reverseShareController),
-  );
+    handler: async (request, reply) => {
+      const { password, ...fileData } = request.body;
+      const file = await uploadService.registerFileUpload(request.params.id, fileData, password);
+      return reply.status(201).send({ file });
+    },
+  });
 
-  app.post(
-    "/reverse-shares/alias/:alias/presigned-url",
-    {
-      config: { csrfExempt: true },
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "getPresignedUrlByAlias",
-        summary: "Get Presigned URL for File Upload by Alias (Public)",
-        description:
-          "Get a presigned URL for direct file upload to storage using alias. This endpoint validates reverse share permissions and generates a temporary upload URL. The presigned URL allows clients to upload files directly to the storage service without going through the API server.",
-        params: z.object({
-          alias: z.string().describe("Alias of the reverse share"),
+  app.route({
+    method: "POST",
+    url: "/reverse-shares/alias/:alias/register-file",
+    config: { csrfExempt: true },
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "registerFileUploadByAlias",
+      summary: "Register File Upload Completion by Alias (Public)",
+      description:
+        "Register a completed file upload to the reverse share using alias. This endpoint should be called after successfully uploading a file using the presigned URL to record the file metadata and associate it with the reverse share.",
+      params: z.object({
+        alias: z.string().describe("Alias of the reverse share"),
+      }),
+      body: UploadToReverseShareSchema.extend({
+        password: z
+          .string()
+          .optional()
+          .describe("Password for accessing password-protected reverse shares"),
+      }),
+      response: {
+        201: z.object({
+          file: ReverseShareFileSchema,
         }),
-        body: GetPresignedUrlSchema.extend({
-          password: z
-            .string()
-            .optional()
-            .describe("Password for accessing password-protected reverse shares"),
-        }),
-        response: {
-          200: z.object({
-            url: z.string().describe("Presigned URL for file upload"),
-            objectName: z
-              .string()
-              .describe("Server-generated object name to use when registering the file"),
-            expiresIn: z.number().describe("URL expiration time in seconds"),
-          }),
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-          410: ErrorResponseSchema,
-        },
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+        410: ErrorResponseSchema,
       },
     },
-    reverseShareController.getPresignedUrlByAlias.bind(reverseShareController),
-  );
+    handler: async (request, reply) => {
+      const { password, ...fileData } = request.body;
+      const file = await uploadService.registerFileUploadByAlias(
+        request.params.alias,
+        fileData,
+        password,
+      );
+      return reply.status(201).send({ file });
+    },
+  });
 
-  app.post(
-    "/reverse-shares/:id/register-file",
-    {
-      config: { csrfExempt: true },
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "registerFileUpload",
-        summary: "Register File Upload Completion (Public)",
-        description:
-          "Register a completed file upload to the reverse share. This endpoint should be called after successfully uploading a file using the presigned URL to record the file metadata and associate it with the reverse share.",
-        params: z.object({
-          id: z.string().describe("Unique identifier of the reverse share"),
+  app.route({
+    method: "POST",
+    url: "/reverse-shares/:id/check-password",
+    config: { csrfExempt: true },
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "checkReverseSharePassword",
+      summary: "Verify Reverse Share Password (Public)",
+      description:
+        "Verify if the provided password is correct for a password-protected reverse share. This endpoint allows frontend applications to validate passwords before attempting uploads. Returns whether the password is valid.",
+      params: z.object({
+        id: z.string().describe("Unique identifier of the reverse share"),
+      }),
+      body: ReverseSharePasswordSchema,
+      response: {
+        200: z.object({
+          valid: z.boolean().describe("Whether the provided password is valid"),
         }),
-        body: UploadToReverseShareSchema.extend({
-          password: z
-            .string()
-            .optional()
-            .describe("Password for accessing password-protected reverse shares"),
+        401: ErrorResponseSchema.extend({
+          valid: z.boolean(),
         }),
-        response: {
-          201: z.object({
-            file: ReverseShareFileSchema,
-          }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-          410: ErrorResponseSchema,
-        },
+        404: ErrorResponseSchema,
       },
     },
-    reverseShareController.registerFileUpload.bind(reverseShareController),
-  );
+    handler: async (request, reply) => {
+      const result = await reverseShareService.checkPassword(
+        request.params.id,
+        request.body.password,
+      );
+      return reply.send(result);
+    },
+  });
 
-  app.post(
-    "/reverse-shares/alias/:alias/register-file",
-    {
-      config: { csrfExempt: true },
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "registerFileUploadByAlias",
-        summary: "Register File Upload Completion by Alias (Public)",
-        description:
-          "Register a completed file upload to the reverse share using alias. This endpoint should be called after successfully uploading a file using the presigned URL to record the file metadata and associate it with the reverse share.",
-        params: z.object({
-          alias: z.string().describe("Alias of the reverse share"),
+  app.route({
+    method: "GET",
+    url: "/reverse-shares/files/:fileId/download",
+    preValidation,
+    bodyLimit: 50 * 1024 * 1024, // 50MB limit for API metadata payloads
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "downloadReverseShareFile",
+      summary: "Download File from Reverse Share",
+      description:
+        "Generate a download URL for a file uploaded to a reverse share. Only the creator of the reverse share can download files. The URL expires after 1 hour and works with both S3 and filesystem storage modes.",
+      params: z.object({
+        fileId: z.string().describe("Unique identifier of the file to download"),
+      }),
+      response: {
+        200: z.object({
+          url: z.string().describe("Presigned download URL - expires after 1 hour"),
+          expiresIn: z.number().describe("URL expiration time in seconds (3600 = 1 hour)"),
         }),
-        body: UploadToReverseShareSchema.extend({
-          password: z
-            .string()
-            .optional()
-            .describe("Password for accessing password-protected reverse shares"),
+        202: z.object({
+          queued: z.boolean().describe("Download was queued due to memory constraints"),
+          downloadId: z.string().describe("Download identifier for tracking"),
+          message: z.string().describe("Queue status message"),
+          estimatedWaitTime: z.number().describe("Estimated wait time in seconds"),
         }),
-        response: {
-          201: z.object({
-            file: ReverseShareFileSchema,
-          }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-          410: ErrorResponseSchema,
-        },
+        401: ErrorResponseSchema,
+        404: ErrorResponseSchema,
       },
     },
-    reverseShareController.registerFileUploadByAlias.bind(reverseShareController),
-  );
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
+      }
+      // Pass request context for internal storage proxy URLs
+      const requestContext = { protocol: "https", host: "localhost" }; // Simplified - frontend will handle the real URL
+      const result = await reverseShareService.downloadReverseShareFile(
+        request.params.fileId,
+        userId,
+        requestContext,
+      );
+      return reply.send(result);
+    },
+  });
 
-  app.post(
-    "/reverse-shares/:id/check-password",
-    {
-      config: { csrfExempt: true },
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "checkReverseSharePassword",
-        summary: "Verify Reverse Share Password (Public)",
-        description:
-          "Verify if the provided password is correct for a password-protected reverse share. This endpoint allows frontend applications to validate passwords before attempting uploads. Returns whether the password is valid.",
-        params: z.object({
-          id: z.string().describe("Unique identifier of the reverse share"),
+  app.route({
+    method: "DELETE",
+    url: "/reverse-shares/files/:fileId",
+    preValidation,
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "deleteReverseShareFile",
+      summary: "Delete File from Reverse Share",
+      description:
+        "Permanently delete a file from a reverse share. The file will be removed from both the database and storage. This action cannot be undone. Only the creator of the reverse share can delete files.",
+      params: z.object({
+        fileId: z.string().describe("Unique identifier of the file to delete"),
+      }),
+      response: {
+        200: z.object({
+          file: ReverseShareFileSchema,
         }),
-        body: ReverseSharePasswordSchema,
-        response: {
-          200: z.object({
-            valid: z.boolean().describe("Whether the provided password is valid"),
-          }),
-          401: ErrorResponseSchema.extend({
-            valid: z.boolean(),
-          }),
-          404: ErrorResponseSchema,
-        },
+        401: ErrorResponseSchema,
+        404: ErrorResponseSchema,
       },
     },
-    reverseShareController.checkPassword.bind(reverseShareController),
-  );
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
+      }
+      const file = await reverseShareService.deleteReverseShareFile(request.params.fileId, userId);
+      return reply.send({ file });
+    },
+  });
 
-  app.get(
-    "/reverse-shares/files/:fileId/download",
-    {
-      preValidation,
-      bodyLimit: 50 * 1024 * 1024, // 50MB limit for API metadata payloads
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "downloadReverseShareFile",
-        summary: "Download File from Reverse Share",
-        description:
-          "Generate a download URL for a file uploaded to a reverse share. Only the creator of the reverse share can download files. The URL expires after 1 hour and works with both S3 and filesystem storage modes.",
-        params: z.object({
-          fileId: z.string().describe("Unique identifier of the file to download"),
+  app.route({
+    method: "POST",
+    url: "/reverse-shares/:reverseShareId/alias",
+    preValidation,
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "createReverseShareAlias",
+      summary: "Create or update reverse share alias",
+      description:
+        "Create or update a custom alias for a reverse share to make it easier to share and remember.",
+      params: z.object({
+        reverseShareId: z.string().describe("The reverse share ID"),
+      }),
+      body: z.object({
+        alias: z
+          .string()
+          .regex(/^[a-zA-Z0-9-]+$/, "Alias must contain only letters, numbers, and hyphens")
+          .min(3, "Alias must be at least 3 characters long")
+          .max(30, "Alias must not exceed 30 characters"),
+      }),
+      response: {
+        200: z.object({
+          alias: z.object({
+            id: z.string(),
+            alias: z.string(),
+            reverseShareId: z.string(),
+            createdAt: z.string(),
+            updatedAt: z.string(),
+          }),
         }),
-        response: {
-          200: z.object({
-            url: z.string().describe("Presigned download URL - expires after 1 hour"),
-            expiresIn: z.number().describe("URL expiration time in seconds (3600 = 1 hour)"),
-          }),
-          202: z.object({
-            queued: z.boolean().describe("Download was queued due to memory constraints"),
-            downloadId: z.string().describe("Download identifier for tracking"),
-            message: z.string().describe("Queue status message"),
-            estimatedWaitTime: z.number().describe("Estimated wait time in seconds"),
-          }),
-          401: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-        },
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        404: ErrorResponseSchema,
       },
     },
-    reverseShareController.downloadFile.bind(reverseShareController),
-  );
+    handler: async (request, reply) => {
+      const result = await reverseShareService.createOrUpdateAlias(
+        request.params.reverseShareId,
+        request.body.alias,
+        request.user?.userId,
+      );
+      return reply.send({ alias: result });
+    },
+  });
 
-  app.delete(
-    "/reverse-shares/files/:fileId",
-    {
-      preValidation,
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "deleteReverseShareFile",
-        summary: "Delete File from Reverse Share",
-        description:
-          "Permanently delete a file from a reverse share. The file will be removed from both the database and storage. This action cannot be undone. Only the creator of the reverse share can delete files.",
-        params: z.object({
-          fileId: z.string().describe("Unique identifier of the file to delete"),
+  app.route({
+    method: "PATCH",
+    url: "/reverse-shares/:id/activate",
+    preValidation,
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "activateReverseShare",
+      summary: "Activate Reverse Share",
+      description:
+        "Activate a reverse share to make it available for uploads. Only the creator can activate their reverse share.",
+      params: z.object({
+        id: z.string().describe("Unique identifier of the reverse share to activate"),
+      }),
+      response: {
+        200: z.object({
+          reverseShare: ReverseShareResponseSchema,
         }),
-        response: {
-          200: z.object({
-            file: ReverseShareFileSchema,
-          }),
-          401: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-        },
+        401: ErrorResponseSchema,
+        404: ErrorResponseSchema,
       },
     },
-    reverseShareController.deleteFile.bind(reverseShareController),
-  );
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
+      }
+      const reverseShare = await reverseShareService.activateReverseShare(
+        request.params.id,
+        userId,
+      );
+      return reply.send({ reverseShare });
+    },
+  });
 
-  app.post(
-    "/reverse-shares/:reverseShareId/alias",
-    {
-      preValidation,
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "createReverseShareAlias",
-        summary: "Create or update reverse share alias",
-        description:
-          "Create or update a custom alias for a reverse share to make it easier to share and remember.",
-        params: z.object({
-          reverseShareId: z.string().describe("The reverse share ID"),
+  app.route({
+    method: "PATCH",
+    url: "/reverse-shares/:id/deactivate",
+    preValidation,
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "deactivateReverseShare",
+      summary: "Deactivate Reverse Share",
+      description:
+        "Deactivate a reverse share to prevent new uploads. Only the creator can deactivate their reverse share.",
+      params: z.object({
+        id: z.string().describe("Unique identifier of the reverse share to deactivate"),
+      }),
+      response: {
+        200: z.object({
+          reverseShare: ReverseShareResponseSchema,
         }),
-        body: z.object({
-          alias: z
-            .string()
-            .regex(/^[a-zA-Z0-9-]+$/, "Alias must contain only letters, numbers, and hyphens")
-            .min(3, "Alias must be at least 3 characters long")
-            .max(30, "Alias must not exceed 30 characters"),
-        }),
-        response: {
-          200: z.object({
-            alias: z.object({
-              id: z.string(),
-              alias: z.string(),
-              reverseShareId: z.string(),
-              createdAt: z.string(),
-              updatedAt: z.string(),
-            }),
-          }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-        },
+        401: ErrorResponseSchema,
+        404: ErrorResponseSchema,
       },
     },
-    reverseShareController.createOrUpdateAlias.bind(reverseShareController),
-  );
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
+      }
+      const reverseShare = await reverseShareService.deactivateReverseShare(
+        request.params.id,
+        userId,
+      );
+      return reply.send({ reverseShare });
+    },
+  });
 
-  app.patch(
-    "/reverse-shares/:id/activate",
-    {
-      preValidation,
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "activateReverseShare",
-        summary: "Activate Reverse Share",
-        description:
-          "Activate a reverse share to make it available for uploads. Only the creator can activate their reverse share.",
-        params: z.object({
-          id: z.string().describe("Unique identifier of the reverse share to activate"),
+  app.route({
+    method: "PUT",
+    url: "/reverse-shares/files/:fileId",
+    preValidation,
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "updateReverseShareFile",
+      summary: "Update File from Reverse Share",
+      description:
+        "Update the name and/or description of a file uploaded to a reverse share. Only the creator of the reverse share can update files.",
+      params: z.object({
+        fileId: z.string().describe("Unique identifier of the file to update"),
+      }),
+      body: UpdateReverseShareFileSchema,
+      response: {
+        200: z.object({
+          file: ReverseShareFileSchema,
         }),
-        response: {
-          200: z.object({
-            reverseShare: ReverseShareResponseSchema,
-          }),
-          401: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-        },
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
       },
     },
-    reverseShareController.activateReverseShare.bind(reverseShareController),
-  );
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError();
+      }
+      const file = await reverseShareService.updateReverseShareFile(
+        request.params.fileId,
+        request.body,
+        userId,
+      );
+      return reply.send({ file });
+    },
+  });
 
-  app.patch(
-    "/reverse-shares/:id/deactivate",
-    {
-      preValidation,
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "deactivateReverseShare",
-        summary: "Deactivate Reverse Share",
-        description:
-          "Deactivate a reverse share to prevent new uploads. Only the creator can deactivate their reverse share.",
-        params: z.object({
-          id: z.string().describe("Unique identifier of the reverse share to deactivate"),
-        }),
-        response: {
-          200: z.object({
-            reverseShare: ReverseShareResponseSchema,
+  app.route({
+    method: "POST",
+    url: "/reverse-shares/files/:fileId/copy",
+    preValidation,
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "copyReverseShareFileToUserFiles",
+      summary: "Copy File from Reverse Share to User Files",
+      description:
+        "Copy a file from a reverse share to the user's personal files. Only the creator of the reverse share can copy files. The file will be duplicated in storage and added to the user's file collection.",
+      params: z.object({
+        fileId: z.string().describe("Unique identifier of the file to copy"),
+      }),
+      response: {
+        200: z.object({
+          file: z.object({
+            id: z.string(),
+            name: z.string(),
+            description: z.string().nullable(),
+            extension: z.string(),
+            size: z.string(),
+            objectName: z.string(),
+            userId: z.string(),
+            createdAt: z.string(),
+            updatedAt: z.string(),
           }),
-          401: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-        },
+          message: z.string(),
+        }),
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
       },
     },
-    reverseShareController.deactivateReverseShare.bind(reverseShareController),
-  );
-
-  app.put(
-    "/reverse-shares/files/:fileId",
-    {
-      preValidation,
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "updateReverseShareFile",
-        summary: "Update File from Reverse Share",
-        description:
-          "Update the name and/or description of a file uploaded to a reverse share. Only the creator of the reverse share can update files.",
-        params: z.object({
-          fileId: z.string().describe("Unique identifier of the file to update"),
-        }),
-        body: UpdateReverseShareFileSchema,
-        response: {
-          200: z.object({
-            file: ReverseShareFileSchema,
-          }),
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-        },
-      },
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError();
+      }
+      const file = await uploadService.copyReverseShareFileToUserFiles(
+        request.params.fileId,
+        userId,
+      );
+      return reply.send({ file, message: "File copied to your files successfully" });
     },
-    reverseShareController.updateFile.bind(reverseShareController),
-  );
-
-  app.post(
-    "/reverse-shares/files/:fileId/copy",
-    {
-      preValidation,
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "copyReverseShareFileToUserFiles",
-        summary: "Copy File from Reverse Share to User Files",
-        description:
-          "Copy a file from a reverse share to the user's personal files. Only the creator of the reverse share can copy files. The file will be duplicated in storage and added to the user's file collection.",
-        params: z.object({
-          fileId: z.string().describe("Unique identifier of the file to copy"),
-        }),
-        response: {
-          200: z.object({
-            file: z.object({
-              id: z.string(),
-              name: z.string(),
-              description: z.string().nullable(),
-              extension: z.string(),
-              size: z.string(),
-              objectName: z.string(),
-              userId: z.string(),
-              createdAt: z.string(),
-              updatedAt: z.string(),
-            }),
-            message: z.string(),
-          }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-        },
-      },
-    },
-    reverseShareController.copyFileToUserFiles.bind(reverseShareController),
-  );
+  });
 
   // Multipart upload routes for reverse shares (public - no auth required)
   app.route({
@@ -934,32 +1110,36 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
     },
   });
 
-  app.get(
-    "/reverse-shares/alias/:alias/metadata",
-    {
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "getReverseShareMetadataByAlias",
-        summary: "Get reverse share metadata by alias for Open Graph",
-        description:
-          "Get lightweight metadata for a reverse share by alias, used for social media previews",
-        params: z.object({
-          alias: z.string().describe("Alias of the reverse share"),
+  app.route({
+    method: "GET",
+    url: "/reverse-shares/alias/:alias/metadata",
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "getReverseShareMetadataByAlias",
+      summary: "Get reverse share metadata by alias for Open Graph",
+      description:
+        "Get lightweight metadata for a reverse share by alias, used for social media previews",
+      params: z.object({
+        alias: z.string().describe("Alias of the reverse share"),
+      }),
+      response: {
+        200: z.object({
+          name: z.string().nullable(),
+          description: z.string().nullable(),
+          totalFiles: z.number(),
+          hasPassword: z.boolean(),
+          isExpired: z.boolean(),
+          isInactive: z.boolean(),
+          maxFiles: z.number().nullable(),
         }),
-        response: {
-          200: z.object({
-            name: z.string().nullable(),
-            description: z.string().nullable(),
-            totalFiles: z.number(),
-            hasPassword: z.boolean(),
-            isExpired: z.boolean(),
-            isInactive: z.boolean(),
-            maxFiles: z.number().nullable(),
-          }),
-          404: ErrorResponseSchema,
-        },
+        404: ErrorResponseSchema,
       },
     },
-    reverseShareController.getReverseShareMetadataByAlias.bind(reverseShareController),
-  );
+    handler: async (request, reply) => {
+      const metadata = await reverseShareService.getReverseShareMetadataByAlias(
+        request.params.alias,
+      );
+      return reply.send(metadata);
+    },
+  });
 };
