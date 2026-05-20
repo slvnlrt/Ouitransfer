@@ -1962,6 +1962,11 @@
       "namePlaceholder": "समूह का नाम दर्ज करें",
       "description": "विवरण",
       "descriptionPlaceholder": "वैकल्पिक विवरण",
+      "ldapDn": {
+        "label": "LDAP Group DN",
+        "placeholder": "e.g. CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name of the Active Directory group to map. Leave empty if not using LDAP."
+      },
       "quota": {
         "title": "संग्रहण कोटा",
         "maxFileSize": "अधिकतम फ़ाइल आकार",

@@ -1966,6 +1966,11 @@
       "namePlaceholder": "ป้อนชื่อกลุ่ม",
       "description": "คำอธิบาย",
       "descriptionPlaceholder": "คำอธิบาย (ไม่บังคับ)",
+      "ldapDn": {
+        "label": "LDAP Group DN",
+        "placeholder": "e.g. CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name of the Active Directory group to map. Leave empty if not using LDAP."
+      },
       "quota": {
         "title": "โควต้าพื้นที่เก็บข้อมูล",
         "maxFileSize": "ขนาดไฟล์สูงสุด",

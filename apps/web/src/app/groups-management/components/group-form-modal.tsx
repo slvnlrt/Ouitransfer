@@ -128,6 +128,25 @@ export function GroupFormModal({
                   )}
                 />
 
+                <FormField
+                  control={control}
+                  name="ldapDn"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label>{t("groups.form.ldapDn.label")}</Label>
+                      <Input
+                        {...field}
+                        placeholder={t("groups.form.ldapDn.placeholder")}
+                        className={errors.ldapDn ? "border-destructive" : ""}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        {t("groups.form.ldapDn.description")}
+                      </p>
+                      {errors.ldapDn && <FormMessage>{errors.ldapDn.message}</FormMessage>}
+                    </FormItem>
+                  )}
+                />
+
                 <Separator />
 
                 <div className="flex flex-col gap-4">

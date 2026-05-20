@@ -1962,6 +1962,11 @@
       "namePlaceholder": "그룹 이름 입력",
       "description": "설명",
       "descriptionPlaceholder": "선택적 설명",
+      "ldapDn": {
+        "label": "LDAP Group DN",
+        "placeholder": "e.g. CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name of the Active Directory group to map. Leave empty if not using LDAP."
+      },
       "quota": {
         "title": "스토리지 쿼터",
         "maxFileSize": "최대 파일 크기",

@@ -25,6 +25,7 @@ const createSchemas = (t: (key: string) => string) => ({
   groupSchema: z.object({
     name: z.string().min(1, t("groups.validation.nameRequired")).max(100),
     description: z.string().max(500).optional().or(z.literal("")),
+    ldapDn: z.string().max(2048).optional().or(z.literal("")),
   }),
 });
 
@@ -85,7 +86,7 @@ export function useGroupManagement() {
   const handleCreateGroup = () => {
     setModalMode("create");
     setSelectedGroup(null);
-    formMethods.reset({ name: "", description: "" });
+    formMethods.reset({ name: "", description: "", ldapDn: "" });
     onOpen();
   };
 
@@ -95,6 +96,7 @@ export function useGroupManagement() {
     formMethods.reset({
       name: group.name,
       description: group.description ?? "",
+      ldapDn: group.ldapDn ?? "",
     });
     onOpen();
   };
@@ -112,10 +114,12 @@ export function useGroupManagement() {
         maxTotalStorageOverride?: string | number | null;
       },
     ) => {
+      const ldapDn = data.ldapDn?.trim() || null;
       if (modalMode === "create") {
         await createGroup({
           name: data.name,
           description: data.description || undefined,
+          ldapDn,
           maxFileSizeOverride: data.maxFileSizeOverride,
           maxTotalStorageOverride: data.maxTotalStorageOverride,
         });
@@ -124,6 +128,7 @@ export function useGroupManagement() {
         await updateGroup(selectedGroup.id, {
           name: data.name,
           description: data.description || null,
+          ldapDn,
           maxFileSizeOverride: data.maxFileSizeOverride,
           maxTotalStorageOverride: data.maxTotalStorageOverride,
         });

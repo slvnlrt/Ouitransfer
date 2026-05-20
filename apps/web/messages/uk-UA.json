@@ -1966,6 +1966,11 @@
       "namePlaceholder": "Введіть назву групи",
       "description": "Опис",
       "descriptionPlaceholder": "Необов'язковий опис",
+      "ldapDn": {
+        "label": "LDAP Group DN",
+        "placeholder": "e.g. CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name of the Active Directory group to map. Leave empty if not using LDAP."
+      },
       "quota": {
         "title": "Квоти сховища",
         "maxFileSize": "Макс. розмір файлу",

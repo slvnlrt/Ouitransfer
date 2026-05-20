@@ -1966,6 +1966,11 @@
       "namePlaceholder": "Masukkan nama grup",
       "description": "Deskripsi",
       "descriptionPlaceholder": "Deskripsi opsional",
+      "ldapDn": {
+        "label": "LDAP Group DN",
+        "placeholder": "e.g. CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name of the Active Directory group to map. Leave empty if not using LDAP."
+      },
       "quota": {
         "title": "Kuota Penyimpanan",
         "maxFileSize": "Ukuran File Maks.",

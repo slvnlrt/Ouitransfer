@@ -4,6 +4,7 @@ export class GroupRepository {
   async create(data: {
     name: string;
     description?: string;
+    ldapDn?: string | null;
     maxFileSizeOverride?: bigint | null;
     maxTotalStorageOverride?: bigint | null;
   }) {
@@ -46,6 +47,7 @@ export class GroupRepository {
     data: {
       name?: string;
       description?: string | null;
+      ldapDn?: string | null;
       maxFileSizeOverride?: bigint | null;
       maxTotalStorageOverride?: bigint | null;
     },

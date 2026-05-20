@@ -38,6 +38,7 @@ export interface GroupDetail {
 export interface CreateGroupBody {
   name: string;
   description?: string;
+  ldapDn?: string | null;
   maxFileSizeOverride?: string | number | null;
   maxTotalStorageOverride?: string | number | null;
 }
@@ -45,6 +46,7 @@ export interface CreateGroupBody {
 export interface UpdateGroupBody {
   name?: string;
   description?: string | null;
+  ldapDn?: string | null;
   maxFileSizeOverride?: string | number | null;
   maxTotalStorageOverride?: string | number | null;
 }

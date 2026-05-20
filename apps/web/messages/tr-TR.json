@@ -1962,6 +1962,11 @@
       "namePlaceholder": "Grup adını girin",
       "description": "Açıklama",
       "descriptionPlaceholder": "İsteğe bağlı açıklama",
+      "ldapDn": {
+        "label": "LDAP Group DN",
+        "placeholder": "e.g. CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name of the Active Directory group to map. Leave empty if not using LDAP."
+      },
       "quota": {
         "title": "Depolama kotaları",
         "maxFileSize": "Maks. Dosya Boyutu",

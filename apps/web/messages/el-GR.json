@@ -1966,6 +1966,11 @@
       "namePlaceholder": "Εισαγάγετε όνομα ομάδας",
       "description": "Περιγραφή",
       "descriptionPlaceholder": "Προαιρετική περιγραφή",
+      "ldapDn": {
+        "label": "LDAP Group DN",
+        "placeholder": "e.g. CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name of the Active Directory group to map. Leave empty if not using LDAP."
+      },
       "quota": {
         "title": "Ποσοστώσεις αποθήκευσης",
         "maxFileSize": "Μέγ. Μέγεθος Αρχείου",

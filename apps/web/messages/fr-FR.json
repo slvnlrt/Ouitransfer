@@ -1962,6 +1962,11 @@
       "namePlaceholder": "Entrez le nom du groupe",
       "description": "Description",
       "descriptionPlaceholder": "Description optionnelle",
+      "ldapDn": {
+        "label": "DN du groupe LDAP",
+        "placeholder": "ex. CN=Développeurs,OU=Groupes,DC=corp,DC=local",
+        "description": "Distinguished Name du groupe Active Directory à mapper. Laisser vide si LDAP n'est pas utilisé."
+      },
       "quota": {
         "title": "Quotas de stockage",
         "maxFileSize": "Taille Max. de Fichier",

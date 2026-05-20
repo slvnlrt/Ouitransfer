@@ -1962,6 +1962,11 @@
       "namePlaceholder": "Введите название группы",
       "description": "Описание",
       "descriptionPlaceholder": "Необязательное описание",
+      "ldapDn": {
+        "label": "LDAP Group DN",
+        "placeholder": "e.g. CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name of the Active Directory group to map. Leave empty if not using LDAP."
+      },
       "quota": {
         "title": "Квоты хранилища",
         "maxFileSize": "Макс. размер файла",

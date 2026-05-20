@@ -8,6 +8,7 @@ export class GroupService {
   async createGroup(input: {
     name: string;
     description?: string;
+    ldapDn?: string | null;
     maxFileSizeOverride?: bigint | null;
     maxTotalStorageOverride?: bigint | null;
   }) {
@@ -16,7 +17,12 @@ export class GroupService {
       throw new ConflictError("A group with this name already exists");
     }
     try {
-      return await this.repository.create(input);
+      // Normalize empty ldapDn to null
+      const normalizedInput = {
+        ...input,
+        ...(input.ldapDn !== undefined ? { ldapDn: input.ldapDn || null } : {}),
+      };
+      return await this.repository.create(normalizedInput);
     } catch (error: unknown) {
       if (
         error instanceof Error &&
@@ -58,6 +64,7 @@ export class GroupService {
     input: {
       name?: string;
       description?: string | null;
+      ldapDn?: string | null;
       maxFileSizeOverride?: bigint | null;
       maxTotalStorageOverride?: bigint | null;
     },
@@ -76,7 +83,12 @@ export class GroupService {
     }
 
     try {
-      return await this.repository.update(id, input);
+      // Normalize empty ldapDn to null
+      const normalizedInput = {
+        ...input,
+        ...(input.ldapDn !== undefined ? { ldapDn: input.ldapDn || null } : {}),
+      };
+      return await this.repository.update(id, normalizedInput);
     } catch (error: unknown) {
       if (
         error instanceof Error &&
