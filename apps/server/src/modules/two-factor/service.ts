@@ -139,7 +139,7 @@ export class TwoFactorService {
     const verified = loginTotp.validate({ token: normalizedToken, window: 1 }) !== null;
 
     if (verified) {
-      return { success: true, method: "totp" };
+      return { success: true, method: "totp" as const };
     }
 
     if (user.twoFactorBackupCodes) {
@@ -164,7 +164,7 @@ export class TwoFactorService {
           },
         });
 
-        return { success: true, method: "backup" };
+        return { success: true, method: "backup" as const };
       }
     }
 

@@ -53,7 +53,7 @@ export const ShareResponseSchema = z.object({
   views: z.number().describe("The number of views"),
   createdAt: z.string().describe("The share creation date"),
   updatedAt: z.string().describe("The share update date"),
-  creatorId: z.string().describe("The creator ID"),
+  creatorId: z.string().nullable().describe("The creator ID"),
   security: z.object({
     maxViews: z.number().nullable().describe("The maximum number of views"),
     hasPassword: z.boolean().describe("Whether the share has a password"),

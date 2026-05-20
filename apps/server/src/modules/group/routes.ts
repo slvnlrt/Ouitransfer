@@ -1,9 +1,14 @@
-import type { FastifyInstance } from "fastify";
+import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 
 import { createAdminPreValidation } from "../../middleware/admin-prevalidation.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
-import { GroupController } from "./controller.js";
+import { AddMemberSchema, CreateGroupSchema, UpdateGroupSchema } from "./dto.js";
+import { GroupService } from "./service.js";
+
+const adminPreValidation = createAdminPreValidation({ allowSetupBypass: false });
+
+const groupService = new GroupService();
 
 const GroupResponseFields = {
   id: z.string(),
@@ -37,189 +42,214 @@ const GroupDetailSchema = z.object({
   members: z.array(MemberSchema),
 });
 
-export async function groupRoutes(app: FastifyInstance) {
-  const groupController = new GroupController();
-  const adminPreValidation = createAdminPreValidation({ allowSetupBypass: false });
+/** Convert BigInt fields to JSON-safe strings */
+function serializeGroup<
+  T extends {
+    maxFileSizeOverride?: bigint | null;
+    maxTotalStorageOverride?: bigint | null;
+    storageUsed?: bigint;
+  },
+>(group: T) {
+  return {
+    ...group,
+    maxFileSizeOverride:
+      group.maxFileSizeOverride != null ? String(group.maxFileSizeOverride) : null,
+    maxTotalStorageOverride:
+      group.maxTotalStorageOverride != null ? String(group.maxTotalStorageOverride) : null,
+    ...(group.storageUsed !== undefined ? { storageUsed: String(group.storageUsed) } : {}),
+  };
+}
 
+function serializeMember<T extends { storageUsed?: bigint }>(member: T) {
+  return {
+    ...member,
+    storageUsed: String(member.storageUsed ?? 0n),
+  };
+}
+
+export const groupRoutes: FastifyPluginAsyncZod = async (app) => {
   // GET /groups — list all groups
-  app.get(
-    "/groups",
-    {
-      preValidation: adminPreValidation,
-      schema: {
-        tags: ["Group"],
-        operationId: "listGroups",
-        summary: "List All Groups",
-        description: "List all groups with member counts and storage usage (admin only)",
-        response: {
-          200: z.array(GroupListItemSchema),
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-        },
+  app.route({
+    method: "GET",
+    url: "/groups",
+    preValidation: adminPreValidation,
+    schema: {
+      tags: ["Group"],
+      operationId: "listGroups",
+      summary: "List All Groups",
+      description: "List all groups with member counts and storage usage (admin only)",
+      response: {
+        200: z.array(GroupListItemSchema),
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
       },
     },
-    groupController.listGroups.bind(groupController),
-  );
+    handler: async (_request, reply) => {
+      const groups = await groupService.listGroups();
+      return reply.send(groups.map(serializeGroup));
+    },
+  });
 
   // GET /groups/:id — group detail with members
-  app.get(
-    "/groups/:id",
-    {
-      preValidation: adminPreValidation,
-      schema: {
-        tags: ["Group"],
-        operationId: "getGroup",
-        summary: "Get Group Details",
-        description: "Get group details with member list (admin only)",
-        params: z.object({ id: z.string() }),
-        response: {
-          200: GroupDetailSchema,
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-        },
+  app.route({
+    method: "GET",
+    url: "/groups/:id",
+    preValidation: adminPreValidation,
+    schema: {
+      tags: ["Group"],
+      operationId: "getGroup",
+      summary: "Get Group Details",
+      description: "Get group details with member list (admin only)",
+      params: z.object({ id: z.string() }),
+      response: {
+        200: GroupDetailSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
       },
     },
-    groupController.getGroup.bind(groupController),
-  );
+    handler: async (request, reply) => {
+      const group = await groupService.getGroupDetail(request.params.id);
+      const serialized = serializeGroup(group);
+      return reply.send({
+        ...serialized,
+        members: group.members.map(serializeMember),
+      });
+    },
+  });
 
   // POST /groups — create group
-  app.post(
-    "/groups",
-    {
-      preValidation: adminPreValidation,
-      schema: {
-        tags: ["Group"],
-        operationId: "createGroup",
-        summary: "Create Group",
-        description: "Create a new group (admin only)",
-        body: z.object({
-          name: z.string().min(1).max(100).describe("Group name (unique, max 100 chars)"),
-          description: z.string().max(500).optional().describe("Group description (max 500 chars)"),
-          maxFileSizeOverride: z
-            .union([z.number(), z.string(), z.null()])
-            .optional()
-            .describe("Per-member max file size override (null=inherit, 0=unlimited, >0=bytes)"),
-          maxTotalStorageOverride: z
-            .union([z.number(), z.string(), z.null()])
-            .optional()
-            .describe("Per-member max total storage override"),
-        }),
-        response: {
-          201: z.object(GroupResponseFields),
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          409: ErrorResponseSchema,
-        },
+  app.route({
+    method: "POST",
+    url: "/groups",
+    preValidation: adminPreValidation,
+    schema: {
+      tags: ["Group"],
+      operationId: "createGroup",
+      summary: "Create Group",
+      description: "Create a new group (admin only)",
+      body: CreateGroupSchema,
+      response: {
+        201: z.object(GroupResponseFields),
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        409: ErrorResponseSchema,
       },
     },
-    groupController.createGroup.bind(groupController),
-  );
+    handler: async (request, reply) => {
+      const group = await groupService.createGroup(request.body);
+      return reply.status(201).send(serializeGroup(group));
+    },
+  });
 
   // PUT /groups/:id — update group
-  app.put(
-    "/groups/:id",
-    {
-      preValidation: adminPreValidation,
-      schema: {
-        tags: ["Group"],
-        operationId: "updateGroup",
-        summary: "Update Group",
-        description: "Update a group (admin only)",
-        params: z.object({ id: z.string() }),
-        body: z.object({
-          name: z.string().min(1).max(100).optional(),
-          description: z.string().max(500).nullable().optional(),
-          maxFileSizeOverride: z.union([z.number(), z.string(), z.null()]).optional(),
-          maxTotalStorageOverride: z.union([z.number(), z.string(), z.null()]).optional(),
-        }),
-        response: {
-          200: z.object(GroupResponseFields),
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-          409: ErrorResponseSchema,
-        },
+  app.route({
+    method: "PUT",
+    url: "/groups/:id",
+    preValidation: adminPreValidation,
+    schema: {
+      tags: ["Group"],
+      operationId: "updateGroup",
+      summary: "Update Group",
+      description: "Update a group (admin only)",
+      params: z.object({ id: z.string() }),
+      body: UpdateGroupSchema,
+      response: {
+        200: z.object(GroupResponseFields),
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+        409: ErrorResponseSchema,
       },
     },
-    groupController.updateGroup.bind(groupController),
-  );
+    handler: async (request, reply) => {
+      const group = await groupService.updateGroup(request.params.id, request.body);
+      return reply.send(serializeGroup(group));
+    },
+  });
 
   // DELETE /groups/:id — delete group
-  app.delete(
-    "/groups/:id",
-    {
-      preValidation: adminPreValidation,
-      schema: {
-        tags: ["Group"],
-        operationId: "deleteGroup",
-        summary: "Delete Group",
-        description: "Delete a group (members are unassigned via SET NULL, admin only)",
-        params: z.object({ id: z.string() }),
-        response: {
-          200: z.object({
-            message: z.string(),
-            unassignedCount: z.number(),
-          }),
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-        },
+  app.route({
+    method: "DELETE",
+    url: "/groups/:id",
+    preValidation: adminPreValidation,
+    schema: {
+      tags: ["Group"],
+      operationId: "deleteGroup",
+      summary: "Delete Group",
+      description: "Delete a group (members are unassigned via SET NULL, admin only)",
+      params: z.object({ id: z.string() }),
+      response: {
+        200: z.object({
+          message: z.string(),
+          unassignedCount: z.number(),
+        }),
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
       },
     },
-    groupController.deleteGroup.bind(groupController),
-  );
+    handler: async (request, reply) => {
+      const result = await groupService.deleteGroup(request.params.id);
+      return reply.send({ message: "Group deleted", unassignedCount: result.unassignedCount });
+    },
+  });
 
   // POST /groups/:id/members — add member
-  app.post(
-    "/groups/:id/members",
-    {
-      preValidation: adminPreValidation,
-      schema: {
-        tags: ["Group"],
-        operationId: "addGroupMember",
-        summary: "Add Member to Group",
-        description: "Add a user to a group. If user is in another group, they are moved.",
-        params: z.object({ id: z.string() }),
-        body: z.object({
-          userId: z.string().describe("User ID to add"),
+  app.route({
+    method: "POST",
+    url: "/groups/:id/members",
+    preValidation: adminPreValidation,
+    schema: {
+      tags: ["Group"],
+      operationId: "addGroupMember",
+      summary: "Add Member to Group",
+      description: "Add a user to a group. If user is in another group, they are moved.",
+      params: z.object({ id: z.string() }),
+      body: AddMemberSchema,
+      response: {
+        200: z.object({
+          message: z.string(),
+          previousGroupId: z.string().nullable(),
         }),
-        response: {
-          200: z.object({
-            message: z.string(),
-            previousGroupId: z.string().nullable(),
-          }),
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-        },
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
       },
     },
-    groupController.addMember.bind(groupController),
-  );
+    handler: async (request, reply) => {
+      const result = await groupService.addMember(request.params.id, request.body.userId);
+      return reply.send({
+        message: "Member added to group",
+        previousGroupId: result.previousGroupId ?? null,
+      });
+    },
+  });
 
   // DELETE /groups/:id/members/:userId — remove member
-  app.delete(
-    "/groups/:id/members/:userId",
-    {
-      preValidation: adminPreValidation,
-      schema: {
-        tags: ["Group"],
-        operationId: "removeGroupMember",
-        summary: "Remove Member from Group",
-        description: "Remove a user from a group (admin only)",
-        params: z.object({
-          id: z.string(),
-          userId: z.string(),
-        }),
-        response: {
-          200: z.object({ message: z.string() }),
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-        },
+  app.route({
+    method: "DELETE",
+    url: "/groups/:id/members/:userId",
+    preValidation: adminPreValidation,
+    schema: {
+      tags: ["Group"],
+      operationId: "removeGroupMember",
+      summary: "Remove Member from Group",
+      description: "Remove a user from a group (admin only)",
+      params: z.object({
+        id: z.string(),
+        userId: z.string(),
+      }),
+      response: {
+        200: z.object({ message: z.string() }),
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
       },
     },
-    groupController.removeMember.bind(groupController),
-  );
-}
+    handler: async (request, reply) => {
+      await groupService.removeMember(request.params.id, request.params.userId);
+      return reply.send({ message: "Member removed from group" });
+    },
+  });
+};

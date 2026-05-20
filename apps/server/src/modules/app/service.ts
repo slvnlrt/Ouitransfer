@@ -21,7 +21,7 @@ export class AppService {
 
   async getSystemInfo() {
     return {
-      storageProvider: "s3",
+      storageProvider: "s3" as const,
       s3Enabled: true,
     };
   }

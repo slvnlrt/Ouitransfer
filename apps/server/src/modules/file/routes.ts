@@ -1,8 +1,12 @@
+import crypto from "node:crypto";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 
-import { UnauthorizedError } from "../../utils/app-error.js";
+import { env } from "../../env.js";
+import { UnauthorizedError, ValidationError } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
+import { sanitizeFilename } from "../../utils/sanitize-filename.js";
+import { validateObjectName } from "../../utils/validate-object-name.js";
 import { FileController } from "./controller.js";
 import { FileDownloadController } from "./download.controller.js";
 import {
@@ -13,13 +17,14 @@ import {
   UpdateFileSchema,
 } from "./dto.js";
 import { FileEmbedController } from "./embed.controller.js";
-import { FileMultipartController } from "./multipart.controller.js";
+import { FileService } from "./service.js";
+
+const fileService = new FileService();
 
 export async function fileRoutes(app: FastifyInstance) {
   const fileController = new FileController();
   const downloadController = new FileDownloadController();
   const embedController = new FileEmbedController();
-  const multipartController = new FileMultipartController();
 
   const preValidation = async (request: FastifyRequest) => {
     try {
@@ -382,7 +387,7 @@ export async function fileRoutes(app: FastifyInstance) {
     fileController.deleteFile.bind(fileController),
   );
 
-  // Multipart upload routes
+  // Multipart upload routes (inlined from multipart.controller.ts)
   app.post(
     "/files/multipart/create",
     {
@@ -409,7 +414,26 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    multipartController.createMultipartUpload.bind(multipartController),
+    async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError();
+      }
+
+      const { filename, extension } = request.body as { filename: string; extension: string };
+
+      // Generate unique object name (same pattern as simple upload)
+      const safeFilename = sanitizeFilename(`${filename}.${extension}`);
+      const objectName = `${userId}/${crypto.randomUUID()}-${safeFilename}`;
+
+      const uploadId = await fileService.createMultipartUpload(objectName);
+
+      return reply.status(200).send({
+        uploadId,
+        objectName,
+        message: "Multipart upload initialized",
+      });
+    },
   );
 
   app.get(
@@ -436,7 +460,31 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    multipartController.getMultipartPartUrl.bind(multipartController),
+    async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError();
+      }
+
+      const { uploadId, objectName, partNumber } = request.query as {
+        uploadId: string;
+        objectName: string;
+        partNumber: string;
+      };
+
+      const partNum = parseInt(partNumber, 10);
+      if (Number.isNaN(partNum) || partNum < 1 || partNum > 10000) {
+        throw new ValidationError("partNumber must be between 1 and 10000");
+      }
+
+      validateObjectName(objectName, userId);
+
+      const expires = env.PRESIGNED_URL_EXPIRATION;
+
+      const url = await fileService.getPresignedPartUrl(objectName, uploadId, partNum, expires);
+
+      return reply.status(200).send({ url });
+    },
   );
 
   app.post(
@@ -471,7 +519,27 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    multipartController.completeMultipartUpload.bind(multipartController),
+    async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError();
+      }
+
+      const { uploadId, objectName, parts } = request.body as {
+        uploadId: string;
+        objectName: string;
+        parts: Array<{ PartNumber: number; ETag: string }>;
+      };
+
+      validateObjectName(objectName, userId);
+
+      await fileService.completeMultipartUpload(objectName, uploadId, parts);
+
+      return reply.status(200).send({
+        message: "Multipart upload completed successfully",
+        objectName,
+      });
+    },
   );
 
   app.post(
@@ -497,7 +565,25 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    multipartController.abortMultipartUpload.bind(multipartController),
+    async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError();
+      }
+
+      const { uploadId, objectName } = request.body as {
+        uploadId: string;
+        objectName: string;
+      };
+
+      validateObjectName(objectName, userId);
+
+      await fileService.abortMultipartUpload(objectName, uploadId);
+
+      return reply.status(200).send({
+        message: "Multipart upload aborted successfully",
+      });
+    },
   );
 
   app.get(
@@ -532,6 +618,22 @@ export async function fileRoutes(app: FastifyInstance) {
         },
       },
     },
-    multipartController.listParts.bind(multipartController),
+    async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError();
+      }
+
+      const { uploadId, objectName } = request.query as {
+        uploadId: string;
+        objectName: string;
+      };
+
+      validateObjectName(objectName, userId);
+
+      const parts = await fileService.listParts(objectName, uploadId);
+
+      return reply.status(200).send({ parts });
+    },
   );
 }
