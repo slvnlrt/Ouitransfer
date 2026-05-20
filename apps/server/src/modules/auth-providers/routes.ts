@@ -199,7 +199,7 @@ const AuthProviderResponseSchema = z.object({
   autoRegister: z.boolean(),
   scope: z.string().nullable(),
   adminEmailDomains: z.string().nullable(),
-  clientId: z.string(),
+  clientId: z.string().nullable(),
   issuerUrl: z.string().nullable(),
   authorizationEndpoint: z.string().nullable(),
   tokenEndpoint: z.string().nullable(),
@@ -207,6 +207,7 @@ const AuthProviderResponseSchema = z.object({
   sortOrder: z.number(),
   createdAt: z.date(),
   updatedAt: z.date(),
+  isOfficial: z.boolean(),
 });
 
 // ── Plugin ────────────────────────────────────────────────────
