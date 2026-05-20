@@ -330,7 +330,7 @@ export function TwoFactorForm() {
 
       {/* Setup Modal */}
       <Dialog open={isSetupModalOpen} onOpenChange={setIsSetupModalOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>{t("twoFactor.setup.title")}</DialogTitle>
             <DialogDescription>{t("twoFactor.setup.description")}</DialogDescription>
@@ -409,7 +409,7 @@ export function TwoFactorForm() {
 
       {/* Disable Modal */}
       <Dialog open={isDisableModalOpen} onOpenChange={setIsDisableModalOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>{t("twoFactor.disable.title")}</DialogTitle>
             <DialogDescription>{t("twoFactor.disable.description")}</DialogDescription>
@@ -479,7 +479,7 @@ export function TwoFactorForm() {
 
       {/* Backup Codes Modal */}
       <Dialog open={isBackupCodesModalOpen} onOpenChange={setIsBackupCodesModalOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>{t("twoFactor.backupCodes.title")}</DialogTitle>
             <DialogDescription>{t("twoFactor.backupCodes.description")}</DialogDescription>
@@ -526,7 +526,7 @@ export function TwoFactorForm() {
 
       {/* Remove Device Modal */}
       <Dialog open={isRemoveModalOpen} onOpenChange={setIsRemoveModalOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <TriangleAlert className="h-5 w-5 text-destructive" />
@@ -567,7 +567,7 @@ export function TwoFactorForm() {
 
       {/* Remove All Devices Modal */}
       <Dialog open={isRemoveAllModalOpen} onOpenChange={setIsRemoveAllModalOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <TriangleAlert className="h-5 w-5 text-destructive" />
