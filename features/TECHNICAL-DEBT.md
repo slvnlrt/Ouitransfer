@@ -123,3 +123,47 @@ sets up the right tool but existing code isn't migrated to use it — may exist 
 **Found during:** 5.3 LDAP post-fix review remediation
 **Severity:** Low-Medium — architectural hygiene, no runtime bugs, but undermines the
 value of TypeScript strict mode
+
+---
+
+## TD-6 — Prisma major version upgrade: 6.x → 7.x
+
+**Context:** Prisma CLI reports `Update available 6.19.3 -> 7.8.0` (major version).
+Prisma 7 introduces breaking changes to imports, the generated client structure, and
+potentially migration behaviour. Requires reading the official migration guide at
+`https://pris.ly/d/major-version-upgrade`.
+
+**Packages to update** (in `apps/server/package.json` and `pnpm-workspace.yaml` catalogs):
+- `prisma` (devDependency)
+- `@prisma/client` (dependency)
+
+**Likely changes:**
+- Import paths for `PrismaClient` and generated types may change
+- CLI command behaviour / config API may differ
+- `prisma.config.ts` API may have additions
+
+**Fix:**
+1. Read the Prisma v7 migration guide
+2. Update `prisma` + `@prisma/client` in the workspace
+3. Adapt imports and any config that changed
+4. Run full test suite and `tsc --noEmit`
+
+**Found during:** local dev session (May 2026)
+**Severity:** Low (no runtime impact today) — but staying far behind on Prisma majors
+accumulates risk and misses bug fixes / performance improvements
+
+---
+
+## TD-7 — Turborepo minor update: 2.9.6 → 2.9.14
+
+**Context:** `just dev` shows `Update available v2.9.6 ≫ v2.9.14`. This is a patch/minor
+update (not a major), so it should be safe to apply directly.
+
+**Fix:**
+```
+pnpm dlx @turbo/codemod@latest update
+```
+or manually bump `turbo` in the root `package.json` / workspace.
+
+**Found during:** local dev session (May 2026)
+**Severity:** Very low — patch update, no breaking changes expected
