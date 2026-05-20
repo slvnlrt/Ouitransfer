@@ -269,3 +269,24 @@ Suggestion : "Self-hosted file transfer solution" ou "Plateforme de transfert de
 
 **Found during:** Revue manuelle (session audit, mai 2026)
 **Severity:** Very low — modifiable par l'admin dans settings, le seed est juste le défaut initial
+
+---
+
+## TD-16 — Traductions B-17/B-19 perdues dans 22 locales (placeholders EN)
+
+**Context:** Les corrections B-17 (description "Show Home Page") et B-19 (messages stockage)
+ont remplacé les traductions existantes dans 22 locales (toutes sauf en-US et fr-FR) par des
+placeholders en anglais. Les anciennes traductions étaient certes incorrectes/incomplètes,
+mais elles étaient dans la bonne langue. L'anglais est une régression pour les utilisateurs non-EN/FR.
+
+**Fix:** Faire une passe de traduction sur les 22 locales pour les 4 clés modifiées :
+- `settings.fields.showHomePage.title`
+- `settings.fields.showHomePage.description`
+- `settings.fields.maxFileSize.description`
+- `settings.fields.maxTotalStoragePerUser.description`
+
+Option : utiliser un outil de traduction automatique ou restaurer les anciens titres depuis git
+et n'ajouter que la phrase supplémentaire.
+
+**Found during:** Code review session bugfixes B-8 à B-19 (mai 2026)
+**Severity:** Low — app pas en production, les 22 locales ont un placeholder fonctionnel
