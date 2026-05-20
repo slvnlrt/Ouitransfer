@@ -1,36 +1,116 @@
-import type { FastifyInstance, FastifyRequest } from "fastify";
+import type { FastifyRequest } from "fastify";
+import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 
+import {
+  REFRESH_TOKEN_COOKIE_NAME,
+  REFRESH_TOKEN_COOKIE_PATH,
+  REFRESH_TOKEN_MAX_AGE,
+} from "../../config/auth.config.js";
+import { env } from "../../env.js";
 import { prisma } from "../../shared/prisma.js";
-import { ForbiddenError, UnauthorizedError } from "../../utils/app-error.js";
+import { ForbiddenError, UnauthorizedError, ValidationError } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
+import { getLogger } from "../../utils/logger.js";
+import { logAuditEvent } from "../audit/service.js";
 import { createPasswordSchema } from "../auth/dto.js";
-import { UserController } from "./controller.js";
-import { UpdateUserSchema } from "./dto.js";
+import { createRefreshToken } from "../auth/refresh-token.service.js";
+import { AvatarService } from "./avatar.service.js";
+import { createRegisterUserSchema, UpdateUserSchema } from "./dto.js";
 import { validatePasswordMiddleware } from "./middleware.js";
+import { UserService } from "./service.js";
 
-export async function userRoutes(app: FastifyInstance) {
-  const userController = new UserController();
+const userService = new UserService();
+const avatarService = new AvatarService();
 
-  const preValidation = async (request: FastifyRequest) => {
-    // DB errors propagate to globalErrorHandler as 500 automatically.
-    const usersCount = await prisma.user.count();
+// ── Module-level helpers ─────────────────────────────────────
 
-    if (usersCount > 0) {
-      try {
-        await request.jwtVerify();
-      } catch (authErr) {
-        request.log.warn({ err: authErr }, "JWT verification failed");
-        throw new UnauthorizedError(
-          "Unauthorized: a valid token is required to access this resource.",
-        );
-      }
-      if (!request.user.isAdmin) {
-        throw new ForbiddenError("Access restricted to administrators");
-      }
-    }
+/** Convert Prisma User BigInt fields to JSON-safe strings and extract group info */
+function serializeUser<
+  T extends {
+    maxFileSizeOverride?: bigint | null;
+    maxTotalStorageOverride?: bigint | null;
+    group?: { id: string; name: string } | null;
+  },
+>(user: T) {
+  const { group, ...rest } = user;
+  return {
+    ...rest,
+    maxFileSizeOverride: user.maxFileSizeOverride != null ? String(user.maxFileSizeOverride) : null,
+    maxTotalStorageOverride:
+      user.maxTotalStorageOverride != null ? String(user.maxTotalStorageOverride) : null,
+    groupName: group?.name ?? null,
   };
+}
 
+// ── Pre-validation hooks ─────────────────────────────────────
+
+/**
+ * Admin pre-validation: allows first-user setup bypass.
+ * If users exist, requires JWT + admin role.
+ */
+const adminPreValidation = async (request: FastifyRequest) => {
+  const usersCount = await prisma.user.count();
+
+  if (usersCount > 0) {
+    try {
+      await request.jwtVerify();
+    } catch (authErr) {
+      request.log.warn({ err: authErr }, "JWT verification failed");
+      throw new UnauthorizedError(
+        "Unauthorized: a valid token is required to access this resource.",
+      );
+    }
+    if (!request.user.isAdmin) {
+      throw new ForbiddenError("Access restricted to administrators");
+    }
+  }
+};
+
+/** Simple JWT pre-validation (no admin check). */
+const jwtPreValidation = async (request: FastifyRequest) => {
+  try {
+    await request.jwtVerify();
+  } catch (err) {
+    request.log.error({ err }, "JWT verification failed");
+    throw new UnauthorizedError("Unauthorized");
+  }
+};
+
+// ── Shared response schemas ──────────────────────────────────
+
+const UserResponseFields = {
+  id: z.string().describe("User ID"),
+  firstName: z.string().describe("User first name"),
+  lastName: z.string().describe("User last name"),
+  username: z.string().describe("User username"),
+  email: z.string().email().describe("User email"),
+  image: z.string().nullable().describe("User profile image URL"),
+  isAdmin: z.boolean().describe("User is admin"),
+  isActive: z.boolean().describe("User is active"),
+  createdAt: z.date().describe("User creation date"),
+  updatedAt: z.date().describe("User last update date"),
+  groupId: z.union([z.string(), z.null()]).describe("Group ID the user belongs to"),
+  groupName: z.union([z.string(), z.null()]).describe("Group name (for display)"),
+  maxFileSizeOverride: z
+    .union([z.string(), z.null()])
+    .describe("Per-user max file size override in bytes"),
+  maxTotalStorageOverride: z
+    .union([z.string(), z.null()])
+    .describe("Per-user max total storage override in bytes"),
+};
+
+const UserResponseSchema = z.object(UserResponseFields);
+
+const AvatarUserResponseSchema = z.object({
+  ...UserResponseFields,
+  tokenVersion: z.number(),
+});
+
+// ── Routes ───────────────────────────────────────────────────
+
+export const userRoutes: FastifyPluginAsyncZod = async (app) => {
+  // Dynamic schemas (created once at plugin registration time)
   const createRegisterSchema = async () => {
     const passwordSchema = await createPasswordSchema();
     return z.object({
@@ -50,415 +130,355 @@ export async function userRoutes(app: FastifyInstance) {
     });
   };
 
-  app.post(
-    "/auth/register",
-    {
-      preValidation: [preValidation, validatePasswordMiddleware],
-      schema: {
-        tags: ["User"],
-        operationId: "registerUser",
-        summary: "Register New User",
-        description: "Register a new user (admin only)",
-        body: await createRegisterSchema(),
-        response: {
-          201: z.object({
-            user: z.object({
-              id: z.string().describe("User ID"),
-              firstName: z.string().describe("User first name"),
-              lastName: z.string().describe("User last name"),
-              username: z.string().describe("User username"),
-              email: z.string().email().describe("User email"),
-              image: z.string().nullable().describe("User profile image URL"),
-              isAdmin: z.boolean().describe("User is admin"),
-              isActive: z.boolean().describe("User is active"),
-              createdAt: z.date().describe("User creation date"),
-              updatedAt: z.date().describe("User last update date"),
-              groupId: z.union([z.string(), z.null()]).describe("Group ID the user belongs to"),
-              groupName: z.union([z.string(), z.null()]).describe("Group name (for display)"),
-              maxFileSizeOverride: z
-                .union([z.string(), z.null()])
-                .describe("Per-user max file size override in bytes"),
-              maxTotalStorageOverride: z
-                .union([z.string(), z.null()])
-                .describe("Per-user max total storage override in bytes"),
-            }),
-            message: z.string().describe("User registration message"),
-          }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-        },
-      },
-    },
-    userController.register.bind(userController),
-  );
-
-  app.get(
-    "/users",
-    {
-      preValidation,
-      schema: {
-        tags: ["User"],
-        operationId: "listUsers",
-        summary: "List All Users",
-        description: "List all users (admin only)",
-        response: {
-          200: z.array(
-            z.object({
-              id: z.string().describe("User ID"),
-              firstName: z.string().describe("User first name"),
-              lastName: z.string().describe("User last name"),
-              username: z.string().describe("User username"),
-              email: z.string().email().describe("User email"),
-              image: z.string().nullable().describe("User profile image URL"),
-              isAdmin: z.boolean().describe("User is admin"),
-              isActive: z.boolean().describe("User is active"),
-              createdAt: z.date().describe("User creation date"),
-              updatedAt: z.date().describe("User last update date"),
-              groupId: z.union([z.string(), z.null()]).describe("Group ID the user belongs to"),
-              groupName: z.union([z.string(), z.null()]).describe("Group name (for display)"),
-              maxFileSizeOverride: z
-                .union([z.string(), z.null()])
-                .describe("Per-user max file size override in bytes"),
-              maxTotalStorageOverride: z
-                .union([z.string(), z.null()])
-                .describe("Per-user max total storage override in bytes"),
-            }),
-          ),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-        },
-      },
-    },
-    userController.listUsers.bind(userController),
-  );
-
-  app.get(
-    "/users/:id",
-    {
-      preValidation,
-      schema: {
-        tags: ["User"],
-        operationId: "getUserById",
-        summary: "Get User by ID",
-        description: "Get a user by ID (admin only)",
-        params: z.object({ id: z.string().describe("User ID") }),
-        response: {
-          200: z.object({
-            id: z.string().describe("User ID"),
-            firstName: z.string().describe("User first name"),
-            lastName: z.string().describe("User last name"),
-            username: z.string().describe("User username"),
-            email: z.string().email().describe("User email"),
-            image: z.string().nullable().describe("User profile image URL"),
-            isAdmin: z.boolean().describe("User is admin"),
-            isActive: z.boolean().describe("User is active"),
-            createdAt: z.date().describe("User creation date"),
-            updatedAt: z.date().describe("User last update date"),
-            groupId: z.union([z.string(), z.null()]).describe("Group ID the user belongs to"),
-            groupName: z.union([z.string(), z.null()]).describe("Group name (for display)"),
-            maxFileSizeOverride: z
-              .union([z.string(), z.null()])
-              .describe("Per-user max file size override in bytes"),
-            maxTotalStorageOverride: z
-              .union([z.string(), z.null()])
-              .describe("Per-user max total storage override in bytes"),
-          }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-        },
-      },
-    },
-    userController.getUserById.bind(userController),
-  );
-
-  app.put(
-    "/users",
-    {
-      preValidation,
-      schema: {
-        tags: ["User"],
-        operationId: "updateUser",
-        summary: "Update User Data",
-        description: "Update user data (admin only)",
-        body: await createUpdateSchema(),
-        response: {
-          200: z.object({
-            id: z.string().describe("User ID"),
-            firstName: z.string().describe("User first name"),
-            lastName: z.string().describe("User last name"),
-            username: z.string().describe("User username"),
-            email: z.string().email().describe("User email"),
-            image: z.string().nullable().describe("User profile image URL"),
-            isAdmin: z.boolean().describe("User is admin"),
-            isActive: z.boolean().describe("User is active"),
-            createdAt: z.date().describe("User creation date"),
-            updatedAt: z.date().describe("User last update date"),
-            groupId: z.union([z.string(), z.null()]).describe("Group ID the user belongs to"),
-            groupName: z.union([z.string(), z.null()]).describe("Group name (for display)"),
-            maxFileSizeOverride: z
-              .union([z.string(), z.null()])
-              .describe("Per-user max file size override in bytes"),
-            maxTotalStorageOverride: z
-              .union([z.string(), z.null()])
-              .describe("Per-user max total storage override in bytes"),
-          }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-        },
-      },
-    },
-    userController.updateUser.bind(userController),
-  );
-
-  app.patch(
-    "/users/:id/activate",
-    {
-      preValidation,
-      schema: {
-        tags: ["User"],
-        operationId: "activateUser",
-        summary: "Activate User",
-        description: "Activate a user (admin only)",
-        params: z.object({ id: z.string().describe("User ID") }),
-        response: {
-          200: z.object({
-            id: z.string().describe("User ID"),
-            firstName: z.string().describe("User first name"),
-            lastName: z.string().describe("User last name"),
-            username: z.string().describe("User username"),
-            email: z.string().email().describe("User email"),
-            image: z.string().nullable().describe("User profile image URL"),
-            isAdmin: z.boolean().describe("User is admin"),
-            isActive: z.boolean().describe("User is active"),
-            createdAt: z.date().describe("User creation date"),
-            updatedAt: z.date().describe("User last update date"),
-            groupId: z.union([z.string(), z.null()]).describe("Group ID the user belongs to"),
-            groupName: z.union([z.string(), z.null()]).describe("Group name (for display)"),
-            maxFileSizeOverride: z
-              .union([z.string(), z.null()])
-              .describe("Per-user max file size override in bytes"),
-            maxTotalStorageOverride: z
-              .union([z.string(), z.null()])
-              .describe("Per-user max total storage override in bytes"),
-          }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-        },
-      },
-    },
-    userController.activateUser.bind(userController),
-  );
-
-  app.patch(
-    "/users/:id/deactivate",
-    {
-      preValidation,
-      schema: {
-        tags: ["User"],
-        operationId: "deactivateUser",
-        summary: "Deactivate User",
-        description: "Deactivate a user (admin only)",
-        params: z.object({ id: z.string().describe("User ID") }),
-        response: {
-          200: z.object({
-            id: z.string().describe("User ID"),
-            firstName: z.string().describe("User first name"),
-            lastName: z.string().describe("User last name"),
-            username: z.string().describe("User username"),
-            email: z.string().email().describe("User email"),
-            image: z.string().nullable().describe("User profile image URL"),
-            isAdmin: z.boolean().describe("User is admin"),
-            isActive: z.boolean().describe("User is active"),
-            createdAt: z.date().describe("User creation date"),
-            updatedAt: z.date().describe("User last update date"),
-            groupId: z.union([z.string(), z.null()]).describe("Group ID the user belongs to"),
-            groupName: z.union([z.string(), z.null()]).describe("Group name (for display)"),
-            maxFileSizeOverride: z
-              .union([z.string(), z.null()])
-              .describe("Per-user max file size override in bytes"),
-            maxTotalStorageOverride: z
-              .union([z.string(), z.null()])
-              .describe("Per-user max total storage override in bytes"),
-          }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-        },
-      },
-    },
-    userController.deactivateUser.bind(userController),
-  );
-
-  app.delete(
-    "/users/:id",
-    {
-      preValidation,
-      schema: {
-        tags: ["User"],
-        operationId: "deleteUser",
-        summary: "Delete User",
-        description: "Delete a user (admin only)",
-        params: z.object({ id: z.string().describe("User ID") }),
-        response: {
-          200: z.object({
-            id: z.string().describe("User ID"),
-            firstName: z.string().describe("User first name"),
-            lastName: z.string().describe("User last name"),
-            username: z.string().describe("User username"),
-            email: z.string().email().describe("User email"),
-            image: z.string().nullable().describe("User profile image URL"),
-            isAdmin: z.boolean().describe("User is admin"),
-            isActive: z.boolean().describe("User is active"),
-            createdAt: z.date().describe("User creation date"),
-            updatedAt: z.date().describe("User last update date"),
-            groupId: z.union([z.string(), z.null()]).describe("Group ID the user belongs to"),
-            groupName: z.union([z.string(), z.null()]).describe("Group name (for display)"),
-            maxFileSizeOverride: z
-              .union([z.string(), z.null()])
-              .describe("Per-user max file size override in bytes"),
-            maxTotalStorageOverride: z
-              .union([z.string(), z.null()])
-              .describe("Per-user max total storage override in bytes"),
-          }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-        },
-      },
-    },
-    userController.deleteUser.bind(userController),
-  );
-
-  app.patch(
-    "/users/:id/image",
-    {
-      preValidation,
-      schema: {
-        tags: ["User"],
-        operationId: "updateUserImage",
-        summary: "Update User Image",
-        description: "Update user profile image (admin only)",
-        params: z.object({ id: z.string().describe("User ID") }),
-        body: z.object({
-          image: z.string().url().describe("User profile image URL"),
+  // POST /auth/register — register new user
+  app.route({
+    method: "POST",
+    url: "/auth/register",
+    preValidation: [adminPreValidation, validatePasswordMiddleware],
+    schema: {
+      tags: ["User"],
+      operationId: "registerUser",
+      summary: "Register New User",
+      description: "Register a new user (admin only)",
+      body: await createRegisterSchema(),
+      response: {
+        201: z.object({
+          user: UserResponseSchema,
+          message: z.string().describe("User registration message"),
         }),
-        response: {
-          200: z.object({
-            id: z.string().describe("User ID"),
-            firstName: z.string().describe("User first name"),
-            lastName: z.string().describe("User last name"),
-            username: z.string().describe("User username"),
-            email: z.string().email().describe("User email"),
-            image: z.string().nullable().describe("User profile image URL"),
-            isAdmin: z.boolean().describe("User is admin"),
-            isActive: z.boolean().describe("User is active"),
-            createdAt: z.date().describe("User creation date"),
-            updatedAt: z.date().describe("User last update date"),
-            groupId: z.union([z.string(), z.null()]).describe("Group ID the user belongs to"),
-            groupName: z.union([z.string(), z.null()]).describe("Group name (for display)"),
-            maxFileSizeOverride: z
-              .union([z.string(), z.null()])
-              .describe("Per-user max file size override in bytes"),
-            maxTotalStorageOverride: z
-              .union([z.string(), z.null()])
-              .describe("Per-user max total storage override in bytes"),
-          }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-        },
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
       },
     },
-    userController.updateUserImage.bind(userController),
-  );
+    handler: async (request, reply) => {
+      const schema = await createRegisterUserSchema();
+      const input = schema.parse(request.body);
+      const result = await userService.register(input);
+      const { isFirstUser, ...user } = result;
 
-  app.post(
-    "/users/avatar",
-    {
-      preValidation: async (request: FastifyRequest) => {
-        try {
-          await request.jwtVerify();
-        } catch (err) {
-          request.log.error({ err }, "JWT verification failed");
-          throw new UnauthorizedError("Unauthorized");
-        }
-      },
-      schema: {
-        tags: ["User"],
-        operationId: "uploadAvatar",
-        summary: "Upload user avatar",
-        description: "Upload and update user profile image",
-        consumes: ["multipart/form-data"],
-        response: {
-          200: z.object({
-            id: z.string(),
-            firstName: z.string(),
-            lastName: z.string(),
-            username: z.string(),
-            email: z.string(),
-            image: z.string().nullable(),
-            isAdmin: z.boolean(),
-            isActive: z.boolean(),
-            tokenVersion: z.number(),
-            createdAt: z.date(),
-            updatedAt: z.date(),
-            groupId: z.union([z.string(), z.null()]),
-            groupName: z.union([z.string(), z.null()]),
-            maxFileSizeOverride: z.union([z.string(), z.null()]),
-            maxTotalStorageOverride: z.union([z.string(), z.null()]),
-          }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-        },
-      },
-    },
-    userController.uploadAvatar.bind(userController),
-  );
+      // Audit user creation (fire-and-forget)
+      logAuditEvent({
+        userId: request.user?.userId ?? user.id,
+        action: "USER_CREATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        metadata: { createdUserId: user.id, email: user.email },
+      }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
 
-  app.delete(
-    "/users/avatar",
-    {
-      preValidation: async (request: FastifyRequest) => {
-        try {
-          await request.jwtVerify();
-        } catch (err) {
-          request.log.error({ err }, "JWT verification failed");
-          throw new UnauthorizedError("Unauthorized");
-        }
-      },
-      schema: {
-        tags: ["User"],
-        operationId: "removeAvatar",
-        summary: "Remove user avatar",
-        description: "Remove user profile image",
-        response: {
-          200: z.object({
-            id: z.string(),
-            firstName: z.string(),
-            lastName: z.string(),
-            username: z.string(),
-            email: z.string(),
-            image: z.string().nullable(),
-            isAdmin: z.boolean(),
-            isActive: z.boolean(),
-            tokenVersion: z.number(),
-            createdAt: z.date(),
-            updatedAt: z.date(),
-            groupId: z.union([z.string(), z.null()]),
-            groupName: z.union([z.string(), z.null()]),
-            maxFileSizeOverride: z.union([z.string(), z.null()]),
-            maxTotalStorageOverride: z.union([z.string(), z.null()]),
-          }),
-          401: ErrorResponseSchema,
-        },
+      // Auto-login the first user so they're immediately authenticated
+      // after registration. Subsequent users are created by an admin who
+      // is already logged in, so no auto-login is needed for them.
+      if (isFirstUser) {
+        const isSecure = env.SECURE_SITE === "true";
+
+        const token = await reply.jwtSign({
+          userId: user.id,
+          isAdmin: user.isAdmin,
+          tokenVersion: user.tokenVersion,
+        });
+
+        reply.setCookie("token", token, {
+          httpOnly: true,
+          path: "/",
+          secure: isSecure,
+          sameSite: isSecure ? "lax" : "strict",
+          signed: true,
+        });
+
+        const refreshToken = await createRefreshToken(
+          user.id,
+          request.headers["user-agent"] ?? "",
+          request.ip,
+        );
+        reply.setCookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
+          httpOnly: true,
+          secure: isSecure,
+          sameSite: "lax",
+          path: REFRESH_TOKEN_COOKIE_PATH,
+          maxAge: REFRESH_TOKEN_MAX_AGE,
+          signed: false,
+        });
+      }
+
+      return reply
+        .status(201)
+        .send({ user: serializeUser(user), message: "User created successfully" });
+    },
+  });
+
+  // GET /users — list all users
+  app.route({
+    method: "GET",
+    url: "/users",
+    preValidation: adminPreValidation,
+    schema: {
+      tags: ["User"],
+      operationId: "listUsers",
+      summary: "List All Users",
+      description: "List all users (admin only)",
+      response: {
+        200: z.array(UserResponseSchema),
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
       },
     },
-    userController.removeAvatar.bind(userController),
-  );
-}
+    handler: async (_request, reply) => {
+      const users = await userService.listUsers();
+      return reply.send(users.map(serializeUser));
+    },
+  });
+
+  // GET /users/:id — get user by ID
+  app.route({
+    method: "GET",
+    url: "/users/:id",
+    preValidation: adminPreValidation,
+    schema: {
+      tags: ["User"],
+      operationId: "getUserById",
+      summary: "Get User by ID",
+      description: "Get a user by ID (admin only)",
+      params: z.object({ id: z.string().describe("User ID") }),
+      response: {
+        200: UserResponseSchema,
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const user = await userService.getUserById(request.params.id);
+      return reply.send(serializeUser(user));
+    },
+  });
+
+  // PUT /users — update user
+  app.route({
+    method: "PUT",
+    url: "/users",
+    preValidation: adminPreValidation,
+    schema: {
+      tags: ["User"],
+      operationId: "updateUser",
+      summary: "Update User Data",
+      description: "Update user data (admin only)",
+      body: await createUpdateSchema(),
+      response: {
+        200: UserResponseSchema,
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const input = request.body;
+      const { id, ...updateData } = input;
+      const updatedUser = await userService.updateUser(id, updateData);
+
+      // Audit password change if password was in the update (fire-and-forget)
+      if (updateData.password) {
+        logAuditEvent({
+          userId: id,
+          action: "PASSWORD_CHANGE",
+          ipAddress: request.ip,
+          userAgent: request.headers["user-agent"],
+        }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
+      }
+
+      return reply.send(serializeUser(updatedUser));
+    },
+  });
+
+  // PATCH /users/:id/activate — activate user
+  app.route({
+    method: "PATCH",
+    url: "/users/:id/activate",
+    preValidation: adminPreValidation,
+    schema: {
+      tags: ["User"],
+      operationId: "activateUser",
+      summary: "Activate User",
+      description: "Activate a user (admin only)",
+      params: z.object({ id: z.string().describe("User ID") }),
+      response: {
+        200: UserResponseSchema,
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const user = await userService.activateUser(request.params.id);
+      return reply.send(serializeUser(user));
+    },
+  });
+
+  // PATCH /users/:id/deactivate — deactivate user
+  app.route({
+    method: "PATCH",
+    url: "/users/:id/deactivate",
+    preValidation: adminPreValidation,
+    schema: {
+      tags: ["User"],
+      operationId: "deactivateUser",
+      summary: "Deactivate User",
+      description: "Deactivate a user (admin only)",
+      params: z.object({ id: z.string().describe("User ID") }),
+      response: {
+        200: UserResponseSchema,
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const user = await userService.deactivateUser(request.params.id);
+      return reply.send(serializeUser(user));
+    },
+  });
+
+  // DELETE /users/:id — delete user
+  app.route({
+    method: "DELETE",
+    url: "/users/:id",
+    preValidation: adminPreValidation,
+    schema: {
+      tags: ["User"],
+      operationId: "deleteUser",
+      summary: "Delete User",
+      description: "Delete a user (admin only)",
+      params: z.object({ id: z.string().describe("User ID") }),
+      response: {
+        200: UserResponseSchema,
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const user = await userService.deleteUser(request.params.id);
+
+      // Audit user deletion (fire-and-forget)
+      logAuditEvent({
+        userId: request.user?.userId,
+        action: "USER_DELETE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        metadata: { deletedUserId: request.params.id, email: user.email },
+      }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
+
+      return reply.send(serializeUser(user));
+    },
+  });
+
+  // PATCH /users/:id/image — update user image
+  app.route({
+    method: "PATCH",
+    url: "/users/:id/image",
+    preValidation: adminPreValidation,
+    schema: {
+      tags: ["User"],
+      operationId: "updateUserImage",
+      summary: "Update User Image",
+      description: "Update user profile image (admin only)",
+      params: z.object({ id: z.string().describe("User ID") }),
+      body: z.object({
+        image: z.string().url().describe("User profile image URL"),
+      }),
+      response: {
+        200: UserResponseSchema,
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const { id } = request.params;
+      const updatedUser = await userService.updateUserImage(id, request.body.image);
+      return reply.send(serializeUser(updatedUser));
+    },
+  });
+
+  // POST /users/avatar — upload user avatar
+  app.route({
+    method: "POST",
+    url: "/users/avatar",
+    preValidation: jwtPreValidation,
+    schema: {
+      tags: ["User"],
+      operationId: "uploadAvatar",
+      summary: "Upload user avatar",
+      description: "Upload and update user profile image",
+      consumes: ["multipart/form-data"],
+      response: {
+        200: AvatarUserResponseSchema,
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError();
+      }
+
+      const file = await request.file();
+      if (!file) {
+        throw new ValidationError("No file uploaded");
+      }
+
+      if (!file.mimetype.startsWith("image/")) {
+        throw new ValidationError("Only images are allowed");
+      }
+
+      // Avatar files should be small (max 5MB), so we can safely use streaming to buffer
+      const chunks: Buffer[] = [];
+      const maxAvatarSize = 5 * 1024 * 1024; // 5MB
+      let totalSize = 0;
+
+      for await (const chunk of file.file) {
+        totalSize += chunk.length;
+        if (totalSize > maxAvatarSize) {
+          throw new ValidationError("Avatar file too large. Maximum size is 5MB.");
+        }
+        chunks.push(chunk);
+      }
+
+      const buffer = Buffer.concat(chunks);
+      const base64Image = await avatarService.uploadAvatar(buffer);
+      const updatedUser = await userService.updateUserImage(userId, base64Image);
+
+      return reply.send(serializeUser(updatedUser));
+    },
+  });
+
+  // DELETE /users/avatar — remove user avatar
+  app.route({
+    method: "DELETE",
+    url: "/users/avatar",
+    preValidation: jwtPreValidation,
+    schema: {
+      tags: ["User"],
+      operationId: "removeAvatar",
+      summary: "Remove user avatar",
+      description: "Remove user profile image",
+      response: {
+        200: AvatarUserResponseSchema,
+        401: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError();
+      }
+
+      await avatarService.deleteAvatar(userId);
+      const updatedUser = await userService.getUserById(userId);
+      return reply.send(serializeUser(updatedUser));
+    },
+  });
+};
