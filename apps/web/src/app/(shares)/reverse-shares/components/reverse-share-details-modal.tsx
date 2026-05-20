@@ -492,6 +492,51 @@ export function ReverseShareDetailsModal({
               </div>
             </div>
 
+            {/* Field Requirements */}
+            <div className="space-y-3">
+              <h3 className="text-base font-medium text-foreground border-b pb-2">
+                {t("reverseShares.form.fieldRequirements.title")}
+              </h3>
+              <div className="grid grid-cols-2 gap-4">
+                <EditableField
+                  label={t("reverseShares.form.nameFieldRequired.label")}
+                  value={getDisplayValue(reverseShare, "nameFieldRequired", pendingChanges)}
+                  onSave={(value) => handleUpdateField("nameFieldRequired", value)}
+                  type="select"
+                  options={[
+                    { value: "HIDDEN", label: t("reverseShares.labels.fieldOptions.hidden") },
+                    { value: "OPTIONAL", label: t("reverseShares.labels.fieldOptions.optional") },
+                    { value: "REQUIRED", label: t("reverseShares.labels.fieldOptions.required") },
+                  ]}
+                  disabled={!onUpdateReverseShare}
+                  renderValue={(value) => {
+                    if (value === "REQUIRED")
+                      return t("reverseShares.labels.fieldOptions.required");
+                    if (value === "HIDDEN") return t("reverseShares.labels.fieldOptions.hidden");
+                    return t("reverseShares.labels.fieldOptions.optional");
+                  }}
+                />
+                <EditableField
+                  label={t("reverseShares.form.emailFieldRequired.label")}
+                  value={getDisplayValue(reverseShare, "emailFieldRequired", pendingChanges)}
+                  onSave={(value) => handleUpdateField("emailFieldRequired", value)}
+                  type="select"
+                  options={[
+                    { value: "HIDDEN", label: t("reverseShares.labels.fieldOptions.hidden") },
+                    { value: "OPTIONAL", label: t("reverseShares.labels.fieldOptions.optional") },
+                    { value: "REQUIRED", label: t("reverseShares.labels.fieldOptions.required") },
+                  ]}
+                  disabled={!onUpdateReverseShare}
+                  renderValue={(value) => {
+                    if (value === "REQUIRED")
+                      return t("reverseShares.labels.fieldOptions.required");
+                    if (value === "HIDDEN") return t("reverseShares.labels.fieldOptions.hidden");
+                    return t("reverseShares.labels.fieldOptions.optional");
+                  }}
+                />
+              </div>
+            </div>
+
             {/* Datas */}
             <div className="space-y-3">
               <h3 className="text-base font-medium text-foreground border-b pb-2">

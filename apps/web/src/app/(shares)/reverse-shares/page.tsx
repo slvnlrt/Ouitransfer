@@ -20,22 +20,18 @@ export default function ReverseSharesPage() {
     reverseShareToViewDetails,
     reverseShareToGenerateLink,
     reverseShareToDelete,
-    reverseShareToEdit,
     reverseShareToViewFiles,
     reverseShareToViewQrCode,
     isDeleting,
     isCreateModalOpen,
     isCreating,
-    isUpdating,
     setIsCreateModalOpen,
     handleCopyLink,
     handleDeleteReverseShare,
     handleCreateReverseShare,
-    handleUpdateReverseShare,
     setReverseShareToViewDetails,
     setReverseShareToGenerateLink,
     setReverseShareToDelete,
-    setReverseShareToEdit,
     setReverseShareToViewFiles,
     setReverseShareToViewQrCode,
     handleCreateAlias,
@@ -72,7 +68,6 @@ export default function ReverseSharesPage() {
                   reverseShares={filteredReverseShares}
                   onCopyLink={handleCopyLink}
                   onDelete={setReverseShareToDelete}
-                  onEdit={setReverseShareToEdit}
                   onGenerateLink={setReverseShareToGenerateLink}
                   onViewDetails={setReverseShareToViewDetails}
                   onViewFiles={setReverseShareToViewFiles}
@@ -91,10 +86,6 @@ export default function ReverseSharesPage() {
             onCloseCreateModal={() => setIsCreateModalOpen(false)}
             onCreateReverseShare={handleCreateReverseShare}
             isCreating={isCreating}
-            reverseShareToEdit={reverseShareToEdit}
-            onCloseEditModal={() => setReverseShareToEdit(null)}
-            onUpdateReverseShare={handleUpdateReverseShare}
-            isUpdating={isUpdating}
             reverseShareToGenerateLink={reverseShareToGenerateLink}
             reverseShareToViewDetails={reverseShareToViewDetails}
             reverseShareToDelete={reverseShareToDelete}

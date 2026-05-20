@@ -35,7 +35,6 @@ export function useReverseShares() {
     null,
   );
   const [reverseShareToDelete, setReverseShareToDelete] = useState<ReverseShare | null>(null);
-  const [reverseShareToEdit, setReverseShareToEdit] = useState<ReverseShare | null>(null);
   const [reverseShareToViewFiles, setReverseShareToViewFiles] = useState<ReverseShare | null>(null);
   const [reverseShareToViewQrCode, setReverseShareToViewQrCode] = useState<ReverseShare | null>(
     null,
@@ -130,18 +129,6 @@ export function useReverseShares() {
     },
   });
 
-  const updateMutation = useMutation({
-    mutationFn: (data: UpdateReverseShareBody) => updateReverseShare(data),
-    onSuccess: () => {
-      toast.success(t("reverseShares.messages.updateSuccess"));
-      setReverseShareToEdit(null);
-      queryClient.invalidateQueries({ queryKey: queryKeys.reverseShares.list() });
-    },
-    onError: () => {
-      toast.error(t("reverseShares.errors.updateFailed"));
-    },
-  });
-
   const updatePasswordMutation = useMutation({
     mutationFn: ({
       id,
@@ -207,10 +194,6 @@ export function useReverseShares() {
     await deleteMutation.mutateAsync(reverseShare);
   };
 
-  const handleUpdateReverseShare = async (data: UpdateReverseShareBody): Promise<void> => {
-    await updateMutation.mutateAsync(data);
-  };
-
   const handleUpdatePassword = async (
     id: string,
     data: { hasPassword: boolean; password?: string },
@@ -259,26 +242,22 @@ export function useReverseShares() {
     reverseShareToViewDetails: syncedReverseShareToViewDetails,
     reverseShareToGenerateLink,
     reverseShareToDelete,
-    reverseShareToEdit,
     reverseShareToViewFiles: syncedReverseShareToViewFiles,
     reverseShareToViewQrCode,
     isDeleting: deleteMutation.isPending,
     isCreateModalOpen,
     isCreating: createMutation.isPending,
-    isUpdating: updateMutation.isPending,
     filteredReverseShares,
     setSearchQuery,
     setReverseShareToViewDetails,
     setReverseShareToGenerateLink,
     setReverseShareToDelete,
-    setReverseShareToEdit,
     setReverseShareToViewFiles,
     setReverseShareToViewQrCode,
     setIsCreateModalOpen,
     handleCopyLink,
     handleDeleteReverseShare,
     handleCreateReverseShare,
-    handleUpdateReverseShare,
     handleCreateAlias,
     handleUpdatePassword,
     handleUpdateReverseShareData,

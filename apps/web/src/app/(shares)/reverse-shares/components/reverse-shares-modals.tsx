@@ -1,12 +1,8 @@
 import { QrCodeModal } from "@/components/modals/qr-code-modal";
-import type {
-  CreateReverseShareBody,
-  UpdateReverseShareBody,
-} from "@/http/endpoints/reverse-shares/types";
+import type { CreateReverseShareBody } from "@/http/endpoints/reverse-shares/types";
 import type { ReverseShare } from "../hooks/use-reverse-shares";
 import { CreateReverseShareModal } from "./create-reverse-share-modal";
 import { DeleteReverseShareModal } from "./delete-reverse-share-modal";
-import { EditReverseShareModal } from "./edit-reverse-share-modal";
 import { GenerateAliasModal } from "./generate-alias-modal";
 import { ReceivedFilesModal } from "./received-files-modal";
 import { ReverseShareDetailsModal } from "./reverse-share-details-modal";
@@ -16,10 +12,6 @@ interface ReverseSharesModalsProps {
   onCloseCreateModal: () => void;
   onCreateReverseShare: (data: CreateReverseShareBody) => Promise<void>;
   isCreating: boolean;
-  reverseShareToEdit: ReverseShare | null;
-  onCloseEditModal: () => void;
-  onUpdateReverseShare: (data: UpdateReverseShareBody) => Promise<unknown>;
-  isUpdating: boolean;
   reverseShareToViewDetails: ReverseShare | null;
   reverseShareToGenerateLink: ReverseShare | null;
   reverseShareToDelete: ReverseShare | null;
@@ -50,10 +42,6 @@ export function ReverseSharesModals({
   onCloseCreateModal,
   onCreateReverseShare,
   isCreating,
-  reverseShareToEdit,
-  onCloseEditModal,
-  onUpdateReverseShare,
-  isUpdating,
   reverseShareToViewDetails,
   reverseShareToGenerateLink,
   reverseShareToDelete,
@@ -82,14 +70,6 @@ export function ReverseSharesModals({
         onClose={onCloseCreateModal}
         onCreateReverseShare={onCreateReverseShare}
         isCreating={isCreating}
-      />
-
-      <EditReverseShareModal
-        reverseShare={reverseShareToEdit}
-        isOpen={!!reverseShareToEdit}
-        onClose={onCloseEditModal}
-        onUpdateReverseShare={onUpdateReverseShare}
-        isUpdating={isUpdating}
       />
 
       <GenerateAliasModal

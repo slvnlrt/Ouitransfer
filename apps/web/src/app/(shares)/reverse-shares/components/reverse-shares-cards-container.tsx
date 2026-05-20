@@ -6,7 +6,6 @@ interface ReverseSharesCardsContainerProps {
   reverseShares: ReverseShare[];
   onCopyLink: (reverseShare: ReverseShare) => void;
   onDelete: (reverseShare: ReverseShare) => void;
-  onEdit: (reverseShare: ReverseShare) => void;
   onGenerateLink: (reverseShare: ReverseShare) => void;
   onViewDetails: (reverseShare: ReverseShare) => void;
   onViewFiles: (reverseShare: ReverseShare) => void;
@@ -24,7 +23,6 @@ export function ReverseSharesCardsContainer({
   reverseShares,
   onCopyLink,
   onDelete,
-  onEdit,
   onGenerateLink,
   onViewDetails,
   onViewFiles,
@@ -46,7 +44,6 @@ export function ReverseSharesCardsContainer({
           reverseShare={reverseShare}
           onCopyLink={onCopyLink}
           onDelete={onDelete}
-          onEdit={onEdit}
           onGenerateLink={onGenerateLink}
           onViewDetails={onViewDetails}
           onViewFiles={onViewFiles}

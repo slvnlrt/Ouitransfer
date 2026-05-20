@@ -35,7 +35,6 @@ interface ReverseShareCardProps {
   reverseShare: ReverseShare;
   onCopyLink: (reverseShare: ReverseShare) => void;
   onDelete: (reverseShare: ReverseShare) => void;
-  onEdit: (reverseShare: ReverseShare) => void;
   onGenerateLink: (reverseShare: ReverseShare) => void;
   onViewDetails: (reverseShare: ReverseShare) => void;
   onViewFiles: (reverseShare: ReverseShare) => void;
@@ -52,7 +51,6 @@ export function ReverseShareCard({
   reverseShare,
   onCopyLink,
   onDelete,
-  onEdit,
   onGenerateLink,
   onViewDetails,
   onViewFiles,
@@ -267,16 +265,6 @@ export function ReverseShareCard({
               >
                 <Eye className="h-3 w-3" />
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-6 w-6 p-0 hover:bg-background/80 rounded-sm"
-                onClick={() => onEdit(reverseShare)}
-                title={t("reverseShares.actions.edit")}
-              >
-                <Pencil className="h-3 w-3" />
-              </Button>
-
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -313,11 +301,6 @@ export function ReverseShareCard({
                         : t("reverseShares.card.createLink")}
                     </DropdownMenuItem>
                   )}
-
-                  <DropdownMenuItem onClick={() => onEdit(reverseShare)}>
-                    <Pencil className="h-4 w-4" />
-                    {t("reverseShares.actions.edit")}
-                  </DropdownMenuItem>
 
                   <DropdownMenuItem onClick={() => onViewFiles(reverseShare)}>
                     <File className="h-4 w-4" />
