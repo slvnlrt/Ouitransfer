@@ -77,6 +77,7 @@ The OUITRANSFER. architecture follows a clean separation of concerns, making it 
 2. **Backend** — Fastify + Zod + TypeScript process requests with full type safety and validation
 3. **Database** — SQLite + Prisma ORM store and manage data with type-safe operations
 4. **File Storage** — S3-compatible object storage (RustFS built-in or external S3) handles all file operations
+5. **User Management** — Groups, per-user quotas, LDAP/AD synchronization, and role-based access control
 
 ## API integration and extensibility
 
@@ -146,6 +147,7 @@ Three mandatory secrets must be configured on the `server` container before depl
 | `JWT_SECRET` | Min 32 chars — signs JWT access tokens |
 | `CSRF_SECRET` | Min 32 chars, distinct from `JWT_SECRET` — HMAC key for CSRF double-submit cookies |
 | `COOKIE_SECRET` | Min 32 chars, distinct from both above — signs session cookies |
+| `ENCRYPTION_SECRET` | Optional (min 32 chars) — AES-256-GCM key for encrypting sensitive data (LDAP bind password). Required if LDAP is enabled |
 
 Generate each secret with:
 

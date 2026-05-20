@@ -157,8 +157,20 @@ Authentication is done through secure JWTs, stored in HTTP-only cookies for safe
 - Cookie-based session management with refresh token rotation
 - Role support and admin access
 - Profile updates and password reset flows
-- Two-factor authentication (TOTP, RFC 6238)
+- Two-factor authentication (TOTP, RFC 6238) with backup codes
+- Account lockout after repeated failed login attempts (brute-force protection)
+- LDAP / Active Directory synchronization (user import, group mapping, scheduled sync)
 - Logged-in user state handled via TanStack Query
+
+### Groups
+
+OUITRANSFER. supports organizational groups for user management and quota inheritance.
+Groups are admin-managed and can be mapped to AD groups for automatic LDAP assignment.
+
+- One group per user, optional
+- Per-group quota overrides (max file size, max total storage)
+- LDAP DN mapping for Active Directory integration
+- Admin CRUD + member management via dedicated UI and API
 
 ### Storage system
 
@@ -167,7 +179,8 @@ The system uses **S3-compatible object storage** for all file operations. **Rust
 - S3-compatible object storage (RustFS built-in by default)
 - External S3 support (AWS S3, Backblaze B2, Cloudflare R2, etc.) via `ENABLE_S3=true`
 - Upload validation and automatic cleanup
-- Usage tracking and quotas (per user or global)
+- Storage quotas with 3-level resolution: per-user override > group override > global default
+- Admin can set per-user and per-group quota overrides
 - Presigned URLs for secure, time-limited direct uploads and downloads
 
 ### Internationalization

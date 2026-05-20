@@ -137,12 +137,31 @@ The OUITRANSFER. API provides comprehensive access to all platform features:
 - **Authentication** - Login, logout, and session management
 - **Profile management** - Update user information and preferences
 - **User administration** - Create and manage user accounts (admin only)
+- **Two-factor authentication** — Enable/disable TOTP 2FA, manage backup codes
 
 ### System integration
 
 - **Health checks** - Monitor system status and availability
 - **Configuration** - Access and modify system settings
 - **Storage operations** - S3-compatible object storage management
+
+### Quota management
+
+- **View quotas** — Retrieve effective limits for any user with source tracking
+- **Set overrides** — Configure per-user storage limits (admin only)
+
+### Group management
+
+- **CRUD operations** — Create, read, update, and delete groups (admin only)
+- **Member management** — Add and remove users from groups
+- **Quota inheritance** — Groups propagate quota settings to their members
+
+### LDAP / Active Directory
+
+- **Configuration** — Set up and manage LDAP connection settings (admin only)
+- **Connection testing** — Verify AD connectivity before enabling sync
+- **Sync operations** — Trigger manual sync or configure automatic scheduling
+- **Sync logs** — View sync history with detailed status and error reporting
 
 ## Authentication
 

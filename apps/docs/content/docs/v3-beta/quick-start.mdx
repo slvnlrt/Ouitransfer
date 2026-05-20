@@ -120,6 +120,7 @@ Choose your storage method based on your needs:
           COOKIE_SECRET: ""              # REQUIRED: generate with: openssl rand -hex 32
           # REQUIRED: comma-separated list of origins allowed to make requests
           CORS_ORIGINS: ""               # REQUIRED: e.g., http://localhost:5487 or https://files.example.com
+          # ENCRYPTION_SECRET: ""       # Required for LDAP — generate with: openssl rand -hex 32
           # Optional settings:
           # OUITRANSFER_UID: "1000"
           # OUITRANSFER_GID: "1000"
@@ -228,6 +229,7 @@ Choose your storage method based on your needs:
           COOKIE_SECRET: ""              # REQUIRED: generate with: openssl rand -hex 32
           # REQUIRED: comma-separated list of origins allowed to make requests
           CORS_ORIGINS: ""               # REQUIRED: e.g., http://localhost:5487 or https://files.example.com
+          # ENCRYPTION_SECRET: ""       # Required for LDAP — generate with: openssl rand -hex 32
           # Optional settings:
           # OUITRANSFER_UID: "1000"
           # OUITRANSFER_GID: "1000"
@@ -313,6 +315,9 @@ Customize OUITRANSFER's behavior with these environment variables on the **serve
 | `PRESIGNED_URL_EXPIRATION` | `3600` | Upload presigned URL expiration in seconds |
 | `PRESIGNED_GET_URL_EXPIRATION` | `900` | Download presigned URL expiration in seconds |
 | `SECURE_SITE` | `false` | Enable secure cookies for HTTPS/reverse proxy deployments |
+| `TRUST_PROXY` | `loopback` | Trusted proxy setting for Fastify (`loopback`, comma-separated IPs, or `true` for all proxies) |
+| `ENCRYPTION_SECRET` | - | AES-256-GCM key for encrypting sensitive data at rest (e.g., LDAP bind password). Required if using LDAP. Generate with: `openssl rand -hex 32` |
+| `ENABLE_API_DOCS` | `false` (prod) | Set `true` to enable Scalar/Swagger API documentation at `/docs` and `/swagger` in production |
 
 <Callout type="info">
   **Storage Architecture**: OUITRANSFER v3.3+ uses a 3-container architecture with RustFS as the S3-compatible storage backend. Port 9000 **must** be accessible from browsers for file operations to work properly when using internal storage.
@@ -462,9 +467,11 @@ Your OUITRANSFER instance is ready! Here's what you can explore:
 ### Advanced Configuration
 
 - **[UID/GID Configuration](/docs/v3-beta/uid-gid-configuration)** - Configure user permissions for NAS systems and custom environments
-- **[Download Memory Management](/docs/v3-beta/download-memory-management)** - Configure large file download handling and queue system
-- **[S3 Storage](/docs/v3-beta/s3-configuration)** - Scale with Amazon S3 or compatible storage providers
+- **[S3 Storage Providers](/docs/v3-beta/s3-providers)** - Scale with Amazon S3 or compatible storage providers
 - **[Manual Installation](/docs/v3-beta/manual-installation)** - Manual installation and custom configurations
+- **[Storage Quotas](/docs/v3-beta/quotas)** — Configure per-user and per-group storage limits
+- **[Groups](/docs/v3-beta/groups)** — Organize users into groups with quota policies
+- **[LDAP / Active Directory](/docs/v3-beta/ldap-configuration)** — Sync users from Active Directory
 
 ### Integration & Development
 

@@ -132,6 +132,15 @@ API_BASE_URL=http://localhost:3333
 
 # Default UI language
 NEXT_PUBLIC_DEFAULT_LANGUAGE=en-US
+
+# Encryption key for sensitive data at rest (required for LDAP)
+# ENCRYPTION_SECRET=<output of openssl rand -hex 32>
+
+# Trust proxy setting (required behind reverse proxy)
+# TRUST_PROXY=loopback
+
+# Enable API documentation in production (Scalar + Swagger)
+# ENABLE_API_DOCS=true
 ```
 
 ---
