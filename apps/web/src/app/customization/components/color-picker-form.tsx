@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator";
 
 const PREDEFINED_COLORS = [
   // Row 1: Standard vibrant colors
-  { name: "Emerald", value: "oklch(0.59 0.18 142)" },
+  { name: "Indigo", value: "oklch(0.42 0.15 260)" },
   { name: "Blue", value: "oklch(0.59 0.18 240)" },
   { name: "Violet", value: "oklch(0.59 0.18 270)" },
   { name: "Pink", value: "oklch(0.59 0.18 330)" },
@@ -28,7 +28,7 @@ const PREDEFINED_COLORS = [
   { name: "Brown", value: "oklch(0.40 0.10 40)" },
   { name: "Olive", value: "oklch(0.45 0.12 85)" },
   { name: "Teal", value: "oklch(0.50 0.14 180)" },
-  { name: "Indigo", value: "oklch(0.42 0.15 260)" },
+  { name: "Emerald", value: "oklch(0.59 0.18 142)" },
 
   // Row 3: Light colors
   { name: "Mint", value: "oklch(0.80 0.08 160)" },
