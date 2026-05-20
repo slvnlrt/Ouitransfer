@@ -1,6 +1,7 @@
-import type { FastifyInstance, FastifyRequest } from "fastify";
+import type { FastifyRequest } from "fastify";
+import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
-import { UnauthorizedError } from "../../utils/app-error.js";
+import { UnauthorizedError, ValidationError } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { ReverseShareController } from "./controller.js";
 import {
@@ -15,11 +16,12 @@ import {
   UpdateReverseShareSchema,
   UploadToReverseShareSchema,
 } from "./dto.js";
-import { ReverseShareMultipartController } from "./multipart.controller.js";
+import { ReverseShareMultipartService } from "./multipart.service.js";
 
-export async function reverseShareRoutes(app: FastifyInstance) {
+const multipartService = new ReverseShareMultipartService();
+
+export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
   const reverseShareController = new ReverseShareController();
-  const multipartController = new ReverseShareMultipartController();
 
   const preValidation = async (request: FastifyRequest) => {
     try {
@@ -676,210 +678,261 @@ export async function reverseShareRoutes(app: FastifyInstance) {
   );
 
   // Multipart upload routes for reverse shares (public - no auth required)
-  app.post(
-    "/reverse-shares/alias/:alias/multipart/create",
-    {
-      config: { csrfExempt: true },
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "createMultipartUploadByAlias",
-        summary: "Create Multipart Upload for Reverse Share (Public)",
-        description:
-          "Initializes a multipart upload for large files (≥100MB) to a reverse share. Returns uploadId for subsequent part uploads.",
-        params: z.object({
-          alias: z.string().describe("Alias of the reverse share"),
+  app.route({
+    method: "POST",
+    url: "/reverse-shares/alias/:alias/multipart/create",
+    config: { csrfExempt: true },
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "createMultipartUploadByAlias",
+      summary: "Create Multipart Upload for Reverse Share (Public)",
+      description:
+        "Initializes a multipart upload for large files (≥100MB) to a reverse share. Returns uploadId for subsequent part uploads.",
+      params: z.object({
+        alias: z.string().describe("Alias of the reverse share"),
+      }),
+      body: z.object({
+        filename: z.string().min(1).describe("The filename without extension"),
+        extension: z.string().min(1).describe("The file extension"),
+        password: z
+          .string()
+          .optional()
+          .describe("Password for accessing password-protected reverse shares"),
+      }),
+      response: {
+        200: z.object({
+          uploadId: z.string().describe("The upload ID for this multipart upload"),
+          objectName: z.string().describe("The object name in storage"),
+          message: z.string().describe("Success message"),
         }),
-        body: z.object({
-          filename: z.string().min(1).describe("The filename without extension"),
-          extension: z.string().min(1).describe("The file extension"),
-          password: z
-            .string()
-            .optional()
-            .describe("Password for accessing password-protected reverse shares"),
-        }),
-        response: {
-          200: z.object({
-            uploadId: z.string().describe("The upload ID for this multipart upload"),
-            objectName: z.string().describe("The object name in storage"),
-            message: z.string().describe("Success message"),
-          }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-          410: ErrorResponseSchema,
-          500: ErrorResponseSchema,
-        },
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+        410: ErrorResponseSchema,
+        500: ErrorResponseSchema,
       },
     },
-    multipartController.createMultipartUploadByAlias.bind(multipartController),
-  );
+    handler: async (request, reply) => {
+      const { alias } = request.params;
+      const { filename, extension, password } = request.body;
+      const result = await multipartService.createMultipartUploadByAlias(
+        alias,
+        filename,
+        extension,
+        password,
+      );
+      return reply.status(200).send({
+        uploadId: result.uploadId,
+        objectName: result.objectName,
+        message: "Multipart upload initialized",
+      });
+    },
+  });
 
-  app.post(
-    "/reverse-shares/alias/:alias/multipart/part-url",
-    {
-      config: { csrfExempt: true },
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "getMultipartPartUrlByAlias",
-        summary: "Get Presigned URL for Part (Public)",
-        description:
-          "Gets a presigned URL for uploading a specific part of a multipart upload to a reverse share. Changed from GET to POST so that the password is sent in the request body rather than as a query parameter.",
-        params: z.object({
-          alias: z.string().describe("Alias of the reverse share"),
+  app.route({
+    method: "POST",
+    url: "/reverse-shares/alias/:alias/multipart/part-url",
+    config: { csrfExempt: true },
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "getMultipartPartUrlByAlias",
+      summary: "Get Presigned URL for Part (Public)",
+      description:
+        "Gets a presigned URL for uploading a specific part of a multipart upload to a reverse share. Changed from GET to POST so that the password is sent in the request body rather than as a query parameter.",
+      params: z.object({
+        alias: z.string().describe("Alias of the reverse share"),
+      }),
+      body: z.object({
+        uploadId: z.string().min(1).describe("The multipart upload ID"),
+        objectName: z.string().min(1).describe("The object name"),
+        partNumber: z.string().min(1).describe("The part number (1-10000)"),
+        password: z
+          .string()
+          .optional()
+          .describe("Password for accessing password-protected reverse shares"),
+      }),
+      response: {
+        200: z.object({
+          url: z.string().describe("The presigned URL for uploading this part"),
         }),
-        body: z.object({
-          uploadId: z.string().min(1).describe("The multipart upload ID"),
-          objectName: z.string().min(1).describe("The object name"),
-          partNumber: z.string().min(1).describe("The part number (1-10000)"),
-          password: z
-            .string()
-            .optional()
-            .describe("Password for accessing password-protected reverse shares"),
-        }),
-        response: {
-          200: z.object({
-            url: z.string().describe("The presigned URL for uploading this part"),
-          }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-          410: ErrorResponseSchema,
-          500: ErrorResponseSchema,
-        },
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+        410: ErrorResponseSchema,
+        500: ErrorResponseSchema,
       },
     },
-    multipartController.getMultipartPartUrlByAlias.bind(multipartController),
-  );
+    handler: async (request, reply) => {
+      const { alias } = request.params;
+      const { uploadId, objectName, partNumber, password } = request.body;
 
-  app.post(
-    "/reverse-shares/alias/:alias/multipart/complete",
-    {
-      config: { csrfExempt: true },
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "completeMultipartUploadByAlias",
-        summary: "Complete Multipart Upload (Public)",
-        description:
-          "Completes a multipart upload to a reverse share by combining all uploaded parts",
-        params: z.object({
-          alias: z.string().describe("Alias of the reverse share"),
+      const partNum = parseInt(partNumber, 10);
+      if (Number.isNaN(partNum) || partNum < 1 || partNum > 10000) {
+        throw new ValidationError("partNumber must be between 1 and 10000");
+      }
+
+      const result = await multipartService.getMultipartPartUrlByAlias(
+        alias,
+        uploadId,
+        objectName,
+        partNum,
+        password,
+      );
+      return reply.status(200).send({ url: result.url });
+    },
+  });
+
+  app.route({
+    method: "POST",
+    url: "/reverse-shares/alias/:alias/multipart/complete",
+    config: { csrfExempt: true },
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "completeMultipartUploadByAlias",
+      summary: "Complete Multipart Upload (Public)",
+      description:
+        "Completes a multipart upload to a reverse share by combining all uploaded parts",
+      params: z.object({
+        alias: z.string().describe("Alias of the reverse share"),
+      }),
+      body: z.object({
+        uploadId: z.string().min(1).describe("The multipart upload ID"),
+        objectName: z.string().min(1).describe("The object name"),
+        parts: z
+          .array(
+            z.object({
+              PartNumber: z.number().min(1).max(10000).describe("The part number"),
+              ETag: z.string().min(1).describe("The ETag returned from uploading the part"),
+            }),
+          )
+          .describe("Array of uploaded parts"),
+        password: z
+          .string()
+          .optional()
+          .describe("Password for accessing password-protected reverse shares"),
+      }),
+      response: {
+        200: z.object({
+          message: z.string().describe("Success message"),
+          objectName: z.string().describe("The completed object name"),
         }),
-        body: z.object({
-          uploadId: z.string().min(1).describe("The multipart upload ID"),
-          objectName: z.string().min(1).describe("The object name"),
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+        410: ErrorResponseSchema,
+        500: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const { alias } = request.params;
+      const { uploadId, objectName, parts, password } = request.body;
+      const result = await multipartService.completeMultipartUploadByAlias(
+        alias,
+        uploadId,
+        objectName,
+        parts,
+        password,
+      );
+      return reply.status(200).send(result);
+    },
+  });
+
+  app.route({
+    method: "POST",
+    url: "/reverse-shares/alias/:alias/multipart/abort",
+    config: { csrfExempt: true },
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "abortMultipartUploadByAlias",
+      summary: "Abort Multipart Upload (Public)",
+      description: "Aborts a multipart upload to a reverse share and cleans up all uploaded parts",
+      params: z.object({
+        alias: z.string().describe("Alias of the reverse share"),
+      }),
+      body: z.object({
+        uploadId: z.string().min(1).describe("The multipart upload ID"),
+        objectName: z.string().min(1).describe("The object name"),
+        password: z
+          .string()
+          .optional()
+          .describe("Password for accessing password-protected reverse shares"),
+      }),
+      response: {
+        200: z.object({
+          message: z.string().describe("Success message"),
+        }),
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+        410: ErrorResponseSchema,
+        500: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const { alias } = request.params;
+      const { uploadId, objectName, password } = request.body;
+      const result = await multipartService.abortMultipartUploadByAlias(
+        alias,
+        uploadId,
+        objectName,
+        password,
+      );
+      return reply.status(200).send(result);
+    },
+  });
+
+  app.route({
+    method: "POST",
+    url: "/reverse-shares/alias/:alias/multipart/list-parts",
+    config: { csrfExempt: true },
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "listMultipartPartsByAlias",
+      summary: "List Multipart Upload Parts (Public)",
+      description:
+        "Lists already-uploaded parts for a multipart upload to a reverse share, enabling upload resume after interruption",
+      params: z.object({
+        alias: z.string().describe("Alias of the reverse share"),
+      }),
+      body: z.object({
+        uploadId: z.string().min(1).describe("The multipart upload ID"),
+        objectName: z.string().min(1).describe("The object name"),
+        password: z
+          .string()
+          .optional()
+          .describe("Password for accessing password-protected reverse shares"),
+      }),
+      response: {
+        200: z.object({
           parts: z
             .array(
               z.object({
-                PartNumber: z.number().min(1).max(10000).describe("The part number"),
-                ETag: z.string().min(1).describe("The ETag returned from uploading the part"),
+                PartNumber: z.number().describe("The part number"),
+                Size: z.number().describe("The part size in bytes"),
+                ETag: z.string().describe("The ETag of the uploaded part"),
               }),
             )
-            .describe("Array of uploaded parts"),
-          password: z
-            .string()
-            .optional()
-            .describe("Password for accessing password-protected reverse shares"),
+            .describe("Array of already-uploaded parts"),
         }),
-        response: {
-          200: z.object({
-            message: z.string().describe("Success message"),
-            objectName: z.string().describe("The completed object name"),
-          }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-          410: ErrorResponseSchema,
-          500: ErrorResponseSchema,
-        },
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+        410: ErrorResponseSchema,
+        500: ErrorResponseSchema,
       },
     },
-    multipartController.completeMultipartUploadByAlias.bind(multipartController),
-  );
-
-  app.post(
-    "/reverse-shares/alias/:alias/multipart/abort",
-    {
-      config: { csrfExempt: true },
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "abortMultipartUploadByAlias",
-        summary: "Abort Multipart Upload (Public)",
-        description:
-          "Aborts a multipart upload to a reverse share and cleans up all uploaded parts",
-        params: z.object({
-          alias: z.string().describe("Alias of the reverse share"),
-        }),
-        body: z.object({
-          uploadId: z.string().min(1).describe("The multipart upload ID"),
-          objectName: z.string().min(1).describe("The object name"),
-          password: z
-            .string()
-            .optional()
-            .describe("Password for accessing password-protected reverse shares"),
-        }),
-        response: {
-          200: z.object({
-            message: z.string().describe("Success message"),
-          }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-          410: ErrorResponseSchema,
-          500: ErrorResponseSchema,
-        },
-      },
+    handler: async (request, reply) => {
+      const { alias } = request.params;
+      const { uploadId, objectName, password } = request.body;
+      const parts = await multipartService.listPartsByAlias(alias, uploadId, objectName, password);
+      return reply.status(200).send({ parts });
     },
-    multipartController.abortMultipartUploadByAlias.bind(multipartController),
-  );
-
-  app.post(
-    "/reverse-shares/alias/:alias/multipart/list-parts",
-    {
-      config: { csrfExempt: true },
-      schema: {
-        tags: ["Reverse Share"],
-        operationId: "listMultipartPartsByAlias",
-        summary: "List Multipart Upload Parts (Public)",
-        description:
-          "Lists already-uploaded parts for a multipart upload to a reverse share, enabling upload resume after interruption",
-        params: z.object({
-          alias: z.string().describe("Alias of the reverse share"),
-        }),
-        body: z.object({
-          uploadId: z.string().min(1).describe("The multipart upload ID"),
-          objectName: z.string().min(1).describe("The object name"),
-          password: z
-            .string()
-            .optional()
-            .describe("Password for accessing password-protected reverse shares"),
-        }),
-        response: {
-          200: z.object({
-            parts: z
-              .array(
-                z.object({
-                  PartNumber: z.number().describe("The part number"),
-                  Size: z.number().describe("The part size in bytes"),
-                  ETag: z.string().describe("The ETag of the uploaded part"),
-                }),
-              )
-              .describe("Array of already-uploaded parts"),
-          }),
-          400: ErrorResponseSchema,
-          401: ErrorResponseSchema,
-          403: ErrorResponseSchema,
-          404: ErrorResponseSchema,
-          410: ErrorResponseSchema,
-          500: ErrorResponseSchema,
-        },
-      },
-    },
-    multipartController.listPartsByAlias.bind(multipartController),
-  );
+  });
 
   app.get(
     "/reverse-shares/alias/:alias/metadata",
@@ -909,4 +962,4 @@ export async function reverseShareRoutes(app: FastifyInstance) {
     },
     reverseShareController.getReverseShareMetadataByAlias.bind(reverseShareController),
   );
-}
+};
