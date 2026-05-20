@@ -741,7 +741,7 @@
   },
   "moveItems": {
     "itemsToMove": "Items to move:",
-    "movingTo": "Moving to:",
+    "movingToFolder": "Moving to: {folder}",
     "title": "Move {count, plural, =1 {Item} other {Items}}",
     "description": "Move {count, plural, =1 {item} other {items}} to a new location",
     "success": "Successfully moved {count} {count, plural, =1 {item} other {items}}",

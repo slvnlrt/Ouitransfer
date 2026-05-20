@@ -182,13 +182,28 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
       const userId = await verifyChallengeToken(input.challengeToken);
 
       const { userAgent, ipAddress } = getClientInfo(request);
-      const user = await authService.completeTwoFactorLogin(
-        userId,
-        input.token,
-        input.rememberDevice,
-        userAgent,
-        ipAddress,
-      );
+
+      let user: Awaited<ReturnType<AuthService["completeTwoFactorLogin"]>>;
+      try {
+        user = await authService.completeTwoFactorLogin(
+          userId,
+          input.token,
+          input.rememberDevice,
+          userAgent,
+          ipAddress,
+        );
+      } catch (err) {
+        // Audit failed 2FA attempt (fire-and-forget)
+        const isLockout = err instanceof AppError && err.code === ErrorCodes.ACCOUNT_LOCKED;
+        logAuditEvent({
+          userId,
+          action: isLockout ? "LOGIN_LOCKED" : "LOGIN_FAILURE",
+          ipAddress,
+          userAgent,
+          metadata: { method: "2fa" },
+        }).catch((auditErr) => getLogger().error({ err: auditErr }, "Audit log write failed"));
+        throw err;
+      }
 
       await signAndSetCookies(reply, user, userAgent, ipAddress);
 

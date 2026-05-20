@@ -644,7 +644,7 @@
   },
   "moveItems": {
     "itemsToMove": "이동할 항목:",
-    "movingTo": "이동 위치:",
+    "movingToFolder": "Moving to: {folder}",
     "title": "항목 이동",
     "description": "항목을 새 위치로 이동",
     "success": "{count}개 항목이 성공적으로 이동되었습니다",

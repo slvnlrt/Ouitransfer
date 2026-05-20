@@ -1,6 +1,13 @@
 import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import {
+  makeEmailServiceClass,
+  makeTrustedDeviceServiceClass,
+  makeTwoFactorServiceClass,
+  makeUserRepositoryClass,
+} from "../../../__tests__/fixtures/auth-mocks.js";
+
 // Mock all dependencies before importing the service
 vi.mock("../../../shared/prisma.js", () => ({
   prisma: {
@@ -32,34 +39,19 @@ vi.mock("../token-version.js", () => ({
 }));
 
 vi.mock("../trusted-device.service.js", () => ({
-  TrustedDeviceService: class {
-    isDeviceTrusted = vi.fn().mockResolvedValue(false);
-    addTrustedDevice = vi.fn();
-    updateLastUsed = vi.fn();
-    getUserTrustedDevices = vi.fn();
-    removeTrustedDevice = vi.fn();
-    removeAllTrustedDevices = vi.fn();
-  },
+  TrustedDeviceService: makeTrustedDeviceServiceClass(),
 }));
 
 vi.mock("../../two-factor/service.js", () => ({
-  TwoFactorService: class {
-    isEnabled = vi.fn().mockResolvedValue(false);
-    verifyToken = vi.fn();
-  },
+  TwoFactorService: makeTwoFactorServiceClass(false),
 }));
 
 vi.mock("../../email/service.js", () => ({
-  EmailService: class {
-    sendPasswordResetEmail = vi.fn();
-  },
+  EmailService: makeEmailServiceClass(),
 }));
 
 vi.mock("../../user/repository.js", () => ({
-  PrismaUserRepository: class {
-    findUserByEmailOrUsername = vi.fn();
-    findUserByEmail = vi.fn();
-  },
+  PrismaUserRepository: makeUserRepositoryClass(),
 }));
 
 vi.mock("../../config/service.js", () => ({

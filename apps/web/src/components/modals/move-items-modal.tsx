@@ -209,15 +209,9 @@ export function MoveItemsModal({
           <div className="space-y-2">
             <Label>{t("folderActions.selectDestination")}</Label>
             <div className="text-sm text-muted-foreground mb-2">
-              {selectedItems.length > 0 && selectedItems[0] !== "root" ? (
-                <span>
-                  {t("moveItems.movingTo")} {selectedFolder}
-                </span>
-              ) : (
-                <span>
-                  {t("moveItems.movingTo")} {t("folderActions.rootFolder")}
-                </span>
-              )}
+              {selectedItems.length > 0 && selectedItems[0] !== "root"
+                ? t("moveItems.movingToFolder", { folder: selectedFolder ?? "" })
+                : t("moveItems.movingToFolder", { folder: t("folderActions.rootFolder") })}
             </div>
           </div>
 

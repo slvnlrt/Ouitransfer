@@ -648,7 +648,7 @@
   },
   "moveItems": {
     "itemsToMove": "Föremål att flytta:",
-    "movingTo": "Flytta till:",
+    "movingToFolder": "Moving to: {folder}",
     "title": "Flytta {count, plural, =1 {objekt} other {objekt}}",
     "description": "Flytta {count, plural, =1 {objekt} other {objekt}} till en ny plats",
     "success": "Flyttade {count} {count, plural, =1 {objekt} other {objekt}} framgångsrikt",

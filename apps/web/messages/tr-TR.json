@@ -644,7 +644,7 @@
   },
   "moveItems": {
     "itemsToMove": "Taşınacak öğeler:",
-    "movingTo": "Taşınıyor:",
+    "movingToFolder": "Moving to: {folder}",
     "title": "{count, plural, =1 {Öğe} other {Öğeler}} Taşı",
     "description": "{count, plural, =1 {Öğeyi} other {Öğeleri}} yeni konuma taşı",
     "success": "{count} {count, plural, =1 {öğe} other {öğe}} başarıyla taşındı",

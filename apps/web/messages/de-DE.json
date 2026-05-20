@@ -644,7 +644,7 @@
   },
   "moveItems": {
     "itemsToMove": "Zu verschiebende Elemente:",
-    "movingTo": "Verschieben nach:",
+    "movingToFolder": "Moving to: {folder}",
     "title": "{count, plural, =1 {Element} other {Elemente}} verschieben",
     "description": "{count, plural, =1 {Element} other {Elemente}} an einen neuen Ort verschieben",
     "success": "Erfolgreich {count} {count, plural, =1 {Element} other {Elemente}} verschoben",

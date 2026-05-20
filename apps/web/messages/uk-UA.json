@@ -648,7 +648,7 @@
   },
   "moveItems": {
     "itemsToMove": "Елементи для переміщення:",
-    "movingTo": "Переміщення до:",
+    "movingToFolder": "Moving to: {folder}",
     "title": "Перемістити {count, plural, =1 {елемент} other {елементи}}",
     "description": "Перемістити {count, plural, =1 {елемент} other {елементи}} в нове місце",
     "success": "Успішно переміщено {count} {count, plural, =1 {елемент} other {елементів}}",

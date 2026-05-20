@@ -648,7 +648,7 @@
   },
   "moveItems": {
     "itemsToMove": "Elementos a mover:",
-    "movingTo": "Moviendo a:",
+    "movingToFolder": "Moving to: {folder}",
     "title": "Mover {count, plural, =1 {elemento} other {elementos}}",
     "description": "Mover {count, plural, =1 {elemento} other {elementos}} a una nueva ubicación",
     "success": "Se movieron exitosamente {count} {count, plural, =1 {elemento} other {elementos}}",

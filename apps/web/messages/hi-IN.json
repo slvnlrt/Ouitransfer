@@ -644,7 +644,7 @@
   },
   "moveItems": {
     "itemsToMove": "स्थानांतरित करने वाले आइटम:",
-    "movingTo": "यहाँ स्थानांतरित कर रहे हैं:",
+    "movingToFolder": "Moving to: {folder}",
     "title": "आइटम स्थानांतरित करें",
     "description": "आइटम को नए स्थान पर स्थानांतरित करें",
     "success": "{count} आइटम सफलतापूर्वक स्थानांतरित किए गए",

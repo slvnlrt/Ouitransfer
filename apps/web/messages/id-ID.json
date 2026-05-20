@@ -648,7 +648,7 @@
   },
   "moveItems": {
     "itemsToMove": "Item yang akan dipindahkan:",
-    "movingTo": "Memindahkan ke:",
+    "movingToFolder": "Moving to: {folder}",
     "title": "Pindahkan {count, plural, =1 {Item} other {Item}}",
     "description": "Pindahkan {count, plural, =1 {item} other {item}} ke lokasi baru",
     "success": "Berhasil memindahkan {count} {count, plural, =1 {item} other {item}}",

@@ -2,6 +2,13 @@ import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import type { FastifyInstance } from "fastify";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import {
+  makeEmailServiceClass,
+  makeTrustedDeviceServiceClass,
+  makeTwoFactorServiceClass,
+  makeUserRepositoryClass,
+} from "./fixtures/auth-mocks.js";
+
 // Mock Prisma before any imports that use it
 vi.mock("../shared/prisma.js", () => ({
   prisma: {
@@ -41,37 +48,22 @@ vi.mock("../modules/auth/login-attempts.service.js", () => ({
 
 // Mock email service (not exercised in lockout path)
 vi.mock("../modules/email/service.js", () => ({
-  EmailService: class {
-    sendPasswordResetEmail = vi.fn();
-  },
+  EmailService: makeEmailServiceClass(),
 }));
 
 // Mock trusted device service (not exercised in lockout path)
 vi.mock("../modules/auth/trusted-device.service.js", () => ({
-  TrustedDeviceService: class {
-    isDeviceTrusted = vi.fn().mockResolvedValue(false);
-    addTrustedDevice = vi.fn();
-    updateLastUsed = vi.fn();
-    getUserTrustedDevices = vi.fn();
-    removeTrustedDevice = vi.fn();
-    removeAllTrustedDevices = vi.fn();
-  },
+  TrustedDeviceService: makeTrustedDeviceServiceClass(),
 }));
 
-// Mock 2FA service
+// Mock 2FA service (2FA disabled by default — not exercised in lockout path)
 vi.mock("../modules/two-factor/service.js", () => ({
-  TwoFactorService: class {
-    isEnabled = vi.fn().mockResolvedValue(false);
-    verifyToken = vi.fn();
-  },
+  TwoFactorService: makeTwoFactorServiceClass(false),
 }));
 
 // Mock user repository (not reached when locked)
 vi.mock("../modules/user/repository.js", () => ({
-  PrismaUserRepository: class {
-    findUserByEmailOrUsername = vi.fn();
-    findUserByEmail = vi.fn();
-  },
+  PrismaUserRepository: makeUserRepositoryClass(),
 }));
 
 // Mock user DTO (not reached when locked)

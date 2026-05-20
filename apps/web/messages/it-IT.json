@@ -644,7 +644,7 @@
   },
   "moveItems": {
     "itemsToMove": "Elementi da spostare:",
-    "movingTo": "Spostamento in:",
+    "movingToFolder": "Moving to: {folder}",
     "title": "Sposta {count, plural, =1 {elemento} other {elementi}}",
     "description": "Sposta {count, plural, =1 {elemento} other {elementi}} in una nuova posizione",
     "success": "Spostati con successo {count} {count, plural, =1 {elemento} other {elementi}}",

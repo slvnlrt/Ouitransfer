@@ -644,7 +644,7 @@
   },
   "moveItems": {
     "itemsToMove": "要移动的项目：",
-    "movingTo": "移动到：",
+    "movingToFolder": "Moving to: {folder}",
     "title": "移动 {count, plural, =1 {项目} other {项目}}",
     "description": "将 {count, plural, =1 {项目} other {项目}} 移动到新位置",
     "success": "成功移动了 {count} 个项目",

@@ -644,7 +644,7 @@
   },
   "moveItems": {
     "itemsToMove": "العناصر المراد نقلها:",
-    "movingTo": "النقل إلى:",
+    "movingToFolder": "Moving to: {folder}",
     "title": "نقل {count, plural, =1 {عنصر} other {عناصر}}",
     "description": "نقل {count, plural, =1 {عنصر} other {عناصر}} إلى موقع جديد",
     "success": "تم نقل {count} {count, plural, =1 {عنصر} other {عناصر}} بنجاح",

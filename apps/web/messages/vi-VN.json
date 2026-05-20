@@ -648,7 +648,7 @@
   },
   "moveItems": {
     "itemsToMove": "Các mục cần di chuyển:",
-    "movingTo": "Đang di chuyển đến:",
+    "movingToFolder": "Moving to: {folder}",
     "title": "Di chuyển {count, plural, =1 {mục} other {mục}}",
     "description": "Di chuyển {count, plural, =1 {mục} other {mục}} đến một vị trí mới",
     "success": "Đã di chuyển thành công {count} {count, plural, =1 {mục} other {mục}}",

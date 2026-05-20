@@ -644,7 +644,7 @@
   },
   "moveItems": {
     "itemsToMove": "移動するアイテム：",
-    "movingTo": "移動先：",
+    "movingToFolder": "Moving to: {folder}",
     "title": "アイテムを移動",
     "description": "アイテムを新しい場所に移動",
     "success": "{count}個のアイテムが正常に移動されました",

@@ -648,7 +648,7 @@
   },
   "moveItems": {
     "itemsToMove": "פריטים להעברה:",
-    "movingTo": "מעביר ל:",
+    "movingToFolder": "Moving to: {folder}",
     "title": "העבר {count, plural, =1 {פריט} other {פריטים}}",
     "description": "העבר {count, plural, =1 {פריט} other {פריטים}} למיקום חדש",
     "success": "הועברו בהצלחה {count} {count, plural, =1 {פריט} other {פריטים}}",

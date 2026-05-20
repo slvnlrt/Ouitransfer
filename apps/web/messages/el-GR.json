@@ -648,7 +648,7 @@
   },
   "moveItems": {
     "itemsToMove": "Στοιχεία για μετακίνηση:",
-    "movingTo": "Μετακίνηση σε:",
+    "movingToFolder": "Moving to: {folder}",
     "title": "Μετακίνηση {count, plural, =1 {στοιχείου} other {στοιχείων}}",
     "description": "Μετακινήστε {count, plural, =1 {1 στοιχείο} other {# στοιχεία}} σε νέα τοποθεσία",
     "success": "Μετακινήθηκαν επιτυχώς {count} {count, plural, =1 {στοιχείο} other {στοιχεία}}",

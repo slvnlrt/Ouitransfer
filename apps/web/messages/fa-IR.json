@@ -648,7 +648,7 @@
   },
   "moveItems": {
     "itemsToMove": "موارد قابل انتقال:",
-    "movingTo": "در حال انتقال به:",
+    "movingToFolder": "Moving to: {folder}",
     "title": "انتقال {count, plural, =1 {مورد} other {موارد}}",
     "description": "انتقال {count, plural, =1 {مورد} other {موارد}} به مکان جدید",
     "success": "{count} {count, plural, =1 {مورد} other {مورد}} با موفقیت منتقل شد",
