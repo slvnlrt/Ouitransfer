@@ -10,7 +10,7 @@ interface AppInfo {
 
 const DEFAULT_APP_INFO: AppInfo = {
   appName: "OUITRANSFER",
-  appDescription: "File sharing platform",
+  appDescription: "Self-hosted file transfer platform",
   appLogo: null,
 };
 

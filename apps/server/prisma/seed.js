@@ -25,7 +25,7 @@ const defaultConfigs = [
   },
   {
     key: "appDescription",
-    value: "Secure and simple file sharing - Your personal cloud",
+    value: "Self-hosted file transfer platform",
     type: "string",
     group: "general",
   },
