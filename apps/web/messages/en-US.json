@@ -629,6 +629,9 @@
       "disabled": "LDAP/AD sync disabled",
       "configure": "Configure"
     },
+    "warnings": {
+      "title": "Configuration Warnings"
+    },
     "time": {
       "justNow": "just now",
       "minutesAgo": "{minutes}m ago",

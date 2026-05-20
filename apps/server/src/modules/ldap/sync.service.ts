@@ -61,6 +61,7 @@ export class LdapSyncService {
     syncInProgress = true;
     const log = await this.syncLogRepository.create({ trigger, status: "running" });
 
+    let currentPhase = "connect";
     try {
       const config = await this.configRepository.get();
       if (!config) throw new Error("LDAP configuration not found");
@@ -76,6 +77,7 @@ export class LdapSyncService {
         tlsSkipVerify: config.tlsSkipVerify,
       });
 
+      currentPhase = "search";
       const adUsers = await this.ldapClient.searchSyncGroupMembers({
         searchBase: config.searchBase,
         syncGroupDn: config.syncGroupDn,
@@ -86,6 +88,7 @@ export class LdapSyncService {
 
       await this.ldapClient.disconnect();
 
+      currentPhase = "sync";
       const appUrl = config.appUrl ?? "";
       const stats = await this.performSync(adUsers, appUrl);
 
@@ -109,7 +112,6 @@ export class LdapSyncService {
       await this.ldapClient.disconnect();
 
       const message = error instanceof Error ? error.message : "Unknown error";
-      const phase = "sync";
       await this.syncLogRepository.complete(log.id, {
         status: "error",
         usersCreated: 0,
@@ -117,7 +119,9 @@ export class LdapSyncService {
         usersDeactivated: 0,
         usersSkipped: 0,
         usersReactivated: 0,
-        details: JSON.stringify([{ type: "error" as const, username: "", phase, message }]),
+        details: JSON.stringify([
+          { type: "error" as const, username: "", phase: currentPhase, message },
+        ]),
       });
 
       throw error;
@@ -163,9 +167,10 @@ export class LdapSyncService {
     }
 
     // Batch deactivation: find local LDAP users no longer in AD
-    const toDeactivateIds = localLdapUsers
-      .filter((u) => u.isActive && u.ldapDn && !adUserDns.has(u.ldapDn))
-      .map((u) => u.id);
+    const toDeactivate = localLdapUsers.filter(
+      (u) => u.isActive && u.ldapDn && !adUserDns.has(u.ldapDn),
+    );
+    const toDeactivateIds = toDeactivate.map((u) => u.id);
 
     if (toDeactivateIds.length > 0) {
       await prisma.user.updateMany({
@@ -173,7 +178,7 @@ export class LdapSyncService {
         data: { isActive: false },
       });
       stats.deactivated = toDeactivateIds.length;
-      for (const u of localLdapUsers.filter((u) => toDeactivateIds.includes(u.id))) {
+      for (const u of toDeactivate) {
         getLogger().info({ userId: u.id, username: u.username }, "LDAP: deactivated user");
       }
     }
@@ -268,13 +273,18 @@ export class LdapSyncService {
       if (isReactivation) {
         stats.reactivated++;
         getLogger().info({ userId: local.id }, "LDAP: reactivated user");
-      } else if (Object.keys(changes).length > 0) {
+      } else {
         stats.updated++;
         getLogger().info({ userId: local.id }, "LDAP: updated user");
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
-      stats.details.push({ type: "error", username: local.username, message });
+      stats.details.push({
+        type: "error",
+        username: local.username,
+        phase: "update-user",
+        message,
+      });
     }
   }
 
@@ -289,15 +299,17 @@ export class LdapSyncService {
       where: { OR: [{ email: adUser.email }, { username: adUser.username }] },
     });
 
-    if (conflict && !conflict.ldapDn) {
-      // Non-LDAP account already owns this email or username — skip
+    if (conflict && conflict.ldapDn !== adUser.dn) {
+      // Another account (local or a different LDAP entry) already owns this
+      // email or username — skip.
       stats.skipped++;
       const conflictField = conflict.email === adUser.email ? "email" : "username";
+      const conflictKind = conflict.ldapDn ? "LDAP" : "non-LDAP";
       stats.details.push({
         type: "skip",
         username: adUser.username,
         email: adUser.email,
-        message: `${conflictField.charAt(0).toUpperCase() + conflictField.slice(1)} conflict with existing non-LDAP account (${conflict.username})`,
+        message: `${conflictField.charAt(0).toUpperCase() + conflictField.slice(1)} conflict with existing ${conflictKind} account (${conflict.username})`,
       });
       return;
     }
@@ -343,13 +355,15 @@ export class LdapSyncService {
       // Send welcome email outside transaction (non-fatal)
       if (resetToken && appUrl) {
         try {
-          const origin = appUrl.replace(/\/$/, "");
-          await this.emailService.sendLdapWelcomeEmail(newUser.email, resetToken, origin);
+          const resetUrl = new URL("/reset-password", appUrl);
+          resetUrl.searchParams.set("token", resetToken);
+          await this.emailService.sendLdapWelcomeEmail(newUser.email, resetUrl.toString());
         } catch (err) {
           stats.details.push({
             type: "skip",
             username: adUser.username,
             email: adUser.email,
+            phase: "welcome-email",
             message: "Welcome email failed (user created successfully)",
           });
           getLogger().warn({ userId: newUser.id, err }, "LDAP: failed to send welcome email");
@@ -361,6 +375,7 @@ export class LdapSyncService {
         type: "error",
         username: adUser.username,
         email: adUser.email,
+        phase: "create-user",
         message,
       });
     }

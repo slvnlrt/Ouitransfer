@@ -3,9 +3,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
-
+import { useSyncPolling } from "@/app/admin/ldap/hooks/use-sync-polling";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { LoadingScreen } from "@/components/layout/loading-screen";
 import { PageLayout } from "@/components/layout/page-layout";
@@ -41,24 +41,21 @@ export default function AdminAreaPage() {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   const queryClient = useQueryClient();
-  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const pollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const stopPolling = useCallback(() => {
-    if (pollIntervalRef.current) {
-      clearInterval(pollIntervalRef.current);
-      pollIntervalRef.current = null;
-    }
-    if (pollTimeoutRef.current) {
-      clearTimeout(pollTimeoutRef.current);
-      pollTimeoutRef.current = null;
-    }
+  const handleSyncComplete = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
+    queryClient.invalidateQueries({ queryKey: queryKeys.ldap.all });
+  }, [queryClient]);
+
+  const handlePoll = useCallback(async () => {
+    const res = await getLdapStatus();
+    return !res.data.syncInProgress;
   }, []);
 
-  // Cleanup polling on unmount
-  useEffect(() => {
-    return () => stopPolling();
-  }, [stopPolling]);
+  const { startPolling } = useSyncPolling({
+    onPoll: handlePoll,
+    onComplete: handleSyncComplete,
+  });
 
   const ldapStatusQuery = useQuery({
     queryKey: queryKeys.ldap.status(),
@@ -76,20 +73,7 @@ export default function AdminAreaPage() {
       queryClient.invalidateQueries({ queryKey: queryKeys.ldap.all });
 
       // I-4: Poll for sync completion, then refresh user list
-      stopPolling();
-      pollIntervalRef.current = setInterval(async () => {
-        try {
-          const res = await getLdapStatus();
-          if (!res.data.syncInProgress) {
-            stopPolling();
-            queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
-            queryClient.invalidateQueries({ queryKey: queryKeys.ldap.all });
-          }
-        } catch {
-          stopPolling();
-        }
-      }, 3000);
-      pollTimeoutRef.current = setTimeout(() => stopPolling(), 5 * 60 * 1000);
+      startPolling();
     },
     onError: (error: unknown) => {
       const apiError = parseApiError(error);

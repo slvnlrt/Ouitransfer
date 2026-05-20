@@ -193,7 +193,7 @@ export class EmailService {
     });
   }
 
-  async sendLdapWelcomeEmail(to: string, resetToken: string, appUrl: string) {
+  async sendLdapWelcomeEmail(to: string, setPasswordUrl: string) {
     const transporter = await this.createTransporter();
     if (!transporter) {
       throw new ValidationError("SMTP is not enabled");
@@ -211,7 +211,7 @@ export class EmailService {
         <h1>Welcome to ${appName}</h1>
         <p>Your account has been created via directory synchronization.</p>
         <p>Click the link below to set your password:</p>
-        <a href="${appUrl}/reset-password?token=${resetToken}">
+        <a href="${setPasswordUrl}">
           Set Your Password
         </a>
         <p>This link will expire in 7 days.</p>

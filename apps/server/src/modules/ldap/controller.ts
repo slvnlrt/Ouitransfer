@@ -140,7 +140,6 @@ export class LdapController {
   }
 
   async getSyncLogs(request: FastifyRequest, reply: FastifyReply) {
-    // Query is already validated by Fastify's schema
     const { limit, offset } = request.query as z.infer<typeof SyncLogsQuerySchema>;
     const result = await this.syncLogRepository.list(limit, offset);
     return reply.send(result);

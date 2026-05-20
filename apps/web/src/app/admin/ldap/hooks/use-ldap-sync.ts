@@ -8,6 +8,7 @@ import { getLdapStatus, getLdapSyncLogs, triggerLdapSync } from "@/http/endpoint
 import type { LdapSyncLog } from "@/http/endpoints/ldap/types";
 import { queryKeys } from "@/lib/query-keys";
 import { parseApiError } from "@/utils/api-error";
+import { useSyncPolling } from "./use-sync-polling";
 
 const PAGE_SIZE = 10;
 
@@ -17,14 +18,13 @@ export function useLdapSync() {
   const [page, setPage] = useState(0);
   const [selectedLog, setSelectedLog] = useState<LdapSyncLog | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const pollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // M-1: Store close timer to avoid race condition when rapidly opening/closing details
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Cleanup polling on unmount (I-4)
+  // Cleanup close-detail timer on unmount to prevent state updates after unmount
   useEffect(() => {
     return () => {
-      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
-      if (pollTimeoutRef.current) clearTimeout(pollTimeoutRef.current);
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
     };
   }, []);
 
@@ -48,16 +48,20 @@ export function useLdapSync() {
     },
   });
 
-  const stopPolling = useCallback(() => {
-    if (pollIntervalRef.current) {
-      clearInterval(pollIntervalRef.current);
-      pollIntervalRef.current = null;
-    }
-    if (pollTimeoutRef.current) {
-      clearTimeout(pollTimeoutRef.current);
-      pollTimeoutRef.current = null;
-    }
+  const handleSyncComplete = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
+    queryClient.invalidateQueries({ queryKey: queryKeys.ldap.all });
+  }, [queryClient]);
+
+  const handlePoll = useCallback(async () => {
+    const res = await getLdapStatus();
+    return !res.data.syncInProgress;
   }, []);
+
+  const { startPolling } = useSyncPolling({
+    onPoll: handlePoll,
+    onComplete: handleSyncComplete,
+  });
 
   const syncMutation = useMutation({
     mutationFn: () => triggerLdapSync(),
@@ -66,21 +70,7 @@ export function useLdapSync() {
       queryClient.invalidateQueries({ queryKey: queryKeys.ldap.all });
 
       // I-4: Poll for sync completion, then refresh user list
-      stopPolling();
-      pollIntervalRef.current = setInterval(async () => {
-        try {
-          const res = await getLdapStatus();
-          if (!res.data.syncInProgress) {
-            stopPolling();
-            queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
-            queryClient.invalidateQueries({ queryKey: queryKeys.ldap.all });
-          }
-        } catch {
-          stopPolling();
-        }
-      }, 3000);
-      // Safety timeout: stop polling after 5 minutes
-      pollTimeoutRef.current = setTimeout(() => stopPolling(), 5 * 60 * 1000);
+      startPolling();
     },
     onError: (error: unknown) => {
       // I-1: Extract structured error from API response
@@ -90,6 +80,8 @@ export function useLdapSync() {
   });
 
   const handleViewDetail = (log: LdapSyncLog) => {
+    // M-1: Cancel any pending close timer before opening a new detail
+    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
     setSelectedLog(log);
     setIsDetailOpen(true);
   };
@@ -97,7 +89,7 @@ export function useLdapSync() {
   // M-7: Delay clearing selectedLog to allow exit animation
   const handleCloseDetail = () => {
     setIsDetailOpen(false);
-    setTimeout(() => setSelectedLog(null), 200);
+    closeTimerRef.current = setTimeout(() => setSelectedLog(null), 200);
   };
 
   return {

@@ -70,7 +70,11 @@ export function LdapConfigForm({
                 )}
               </div>
               <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-2 pt-6">
+                {/* Invisible label placeholder to align the TLS switch row with the server URL input above */}
+                <Label className="invisible" aria-hidden="true">
+                  &nbsp;
+                </Label>
+                <div className="flex items-center gap-2">
                   <Label htmlFor="useTls">{t("ldap.config.useTls")}</Label>
                   <Switch
                     id="useTls"

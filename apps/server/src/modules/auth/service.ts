@@ -144,16 +144,21 @@ export class AuthService {
   }
 
   async requestPasswordReset(email: string, origin: string) {
-    const passwordAuthEnabled = await getConfigValue("passwordAuthEnabled");
-    if (passwordAuthEnabled === "false") {
-      throw new ForbiddenError(
-        "Password authentication is disabled. Password reset is not available.",
-      );
-    }
-
+    // Look up the user first — LDAP users are allowed to reset their password
+    // even when passwordAuth is disabled (needed for welcome-email initial setup).
     const user = await this.userRepository.findUserByEmail(email);
     if (!user) {
       return;
+    }
+
+    const isLdapUser = !!user.ldapDn;
+    if (!isLdapUser) {
+      const passwordAuthEnabled = await getConfigValue("passwordAuthEnabled");
+      if (passwordAuthEnabled === "false") {
+        throw new ForbiddenError(
+          "Password authentication is disabled. Password reset is not available.",
+        );
+      }
     }
 
     const token = crypto.randomBytes(128).toString("hex");

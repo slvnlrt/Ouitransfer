@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -14,7 +14,7 @@ import { queryKeys } from "@/lib/query-keys";
 import { parseApiError } from "@/utils/api-error";
 import type { GroupMappingItem, LdapConfigFormData } from "../types";
 
-const ldapConfigFormSchema = z.object({
+const ldapConfigBaseSchema = z.object({
   enabled: z.boolean(),
   serverUrl: z.string().min(1, "Server URL is required"),
   bindDn: z.string().min(1, "Bind DN is required"),
@@ -54,6 +54,33 @@ export function useLdapConfig() {
   const mappedGroups: GroupMappingItem[] = (groupsQuery.data ?? [])
     .filter((g) => g.ldapDn)
     .map((g) => ({ id: g.id, name: g.name, ldapDn: g.ldapDn! }));
+
+  const isNewConfig = !configQuery.data?.configured;
+
+  // M-3: appUrl required when enabled; M-4: bindPassword required for new config
+  const ldapConfigFormSchema = useMemo(
+    () =>
+      ldapConfigBaseSchema.superRefine((data, ctx) => {
+        // M-3: appUrl is required when LDAP is enabled (needed for welcome emails)
+        if (data.enabled && !data.appUrl) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t("ldap.config.appUrlRequired"),
+            path: ["appUrl"],
+          });
+        }
+        // M-4: bindPassword required when creating a new LDAP config
+        if (isNewConfig && !data.bindPassword) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t("ldap.config.bindPasswordRequired"),
+            path: ["bindPassword"],
+          });
+        }
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isNewConfig, t],
+  );
 
   const formMethods = useForm<LdapConfigFormData>({
     resolver: zodResolver(ldapConfigFormSchema),

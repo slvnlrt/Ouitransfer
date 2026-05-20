@@ -12,20 +12,36 @@ const configRepository = new LdapConfigRepository();
 /**
  * Schedule the next sync after the given interval.
  * Uses chained setTimeout (not setInterval) so overlapping syncs are impossible.
+ *
+ * Race-condition guard: the handle captured at schedule time is compared inside
+ * the callback to detect superseded timers (e.g. when scheduleNext is called
+ * again before the previous timer fires).
  */
 function scheduleNext(intervalMs: number): void {
   schedulerNextSyncAt = new Date(Date.now() + intervalMs);
-  currentTimeout = setTimeout(async () => {
+  const handle = setTimeout(async () => {
+    // If currentTimeout no longer points to this handle, a newer timer was
+    // registered — skip execution to avoid a stale fire.
+    if (currentTimeout !== handle) {
+      return;
+    }
+
+    // Sync is starting: clear the "next sync" time while running.
+    schedulerNextSyncAt = null;
+
     try {
       await syncService.runSync("scheduled");
     } catch (error) {
       getLogger().error({ err: error }, "Scheduled LDAP sync failed");
     }
-    // Chain next sync only if scheduler hasn't been stopped
-    if (currentTimeout !== null) {
+
+    // Chain next sync only if this timer is still the active one (scheduler
+    // hasn't been stopped or restarted during the sync).
+    if (currentTimeout === handle) {
       scheduleNext(intervalMs);
     }
   }, intervalMs);
+  currentTimeout = handle;
 }
 
 /**
@@ -63,10 +79,10 @@ export function getNextSyncAt(): Date | null {
  */
 export async function initSchedulerOnBoot(): Promise<void> {
   try {
-    // I9: Clean up stale "running" logs from crashed/restarted syncs
-    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000);
+    // Clean up ALL stale "running" logs from crashed/restarted syncs.
+    // No time-based cutoff: any "running" log on boot is by definition stale.
     await prisma.ldapSyncLog.updateMany({
-      where: { status: "running", startedAt: { lt: fiveMinAgo } },
+      where: { status: "running" },
       data: {
         status: "error",
         completedAt: new Date(),
@@ -74,6 +90,7 @@ export async function initSchedulerOnBoot(): Promise<void> {
           {
             type: "error",
             username: "",
+            phase: "boot-recovery",
             message: "Sync interrupted by server restart",
           },
         ]),

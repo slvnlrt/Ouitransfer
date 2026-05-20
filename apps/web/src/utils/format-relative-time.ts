@@ -6,6 +6,7 @@ type TranslatorFn = (key: string, values?: Record<string, string | number | Date
  */
 export function formatRelativeTime(dateStr: string, t: TranslatorFn): string {
   const diff = Date.now() - new Date(dateStr).getTime();
+  if (!Number.isFinite(diff)) return "—";
   const minutes = Math.floor(diff / 60000);
   if (minutes < 1) return t("ldap.time.justNow");
   if (minutes < 60) return t("ldap.time.minutesAgo", { minutes });

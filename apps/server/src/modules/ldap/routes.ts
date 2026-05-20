@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createAdminPreValidation } from "../../middleware/admin-prevalidation.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { LdapController } from "./controller.js";
-import { LdapConfigSchema, LdapTestSchema } from "./dto.js";
+import { LdapConfigSchema, LdapTestSchema, SyncLogsQuerySchema } from "./dto.js";
 
 export async function ldapRoutes(app: FastifyInstance) {
   const controller = new LdapController();
@@ -91,10 +91,7 @@ export async function ldapRoutes(app: FastifyInstance) {
       tags: ["ldap"],
       operationId: "getLdapSyncLogs",
       summary: "List LDAP sync history",
-      querystring: z.object({
-        limit: z.coerce.number().optional(),
-        offset: z.coerce.number().optional(),
-      }),
+      querystring: SyncLogsQuerySchema,
       response: {
         200: z.object({}).passthrough(),
         401: ErrorResponseSchema,
