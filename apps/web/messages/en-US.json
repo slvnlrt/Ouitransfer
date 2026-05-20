@@ -579,6 +579,8 @@
       "syncIntervalHelp": "Between 15 minutes and 7 days (10080 minutes)",
       "appUrl": "Application URL",
       "appUrlHelp": "Used in welcome emails sent to new LDAP users",
+      "appUrlRequired": "Application URL is required when LDAP is enabled",
+      "bindPasswordRequired": "Bind password is required for a new configuration",
       "members": "members",
       "save": "Save Configuration",
       "testConnection": "Test Connection",
@@ -2238,7 +2240,7 @@
       "active": "Active",
       "inactive": "Inactive",
       "admin": "Admin",
-      "userr": "User",
+      "userRole": "User",
       "source": "SOURCE",
       "ldap": "LDAP",
       "local": "Local"

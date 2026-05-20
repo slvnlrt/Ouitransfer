@@ -73,7 +73,7 @@ export function UsersTable({
               </TableCell>
               <TableCell className="h-12 px-4">
                 <Badge variant={user.isAdmin ? "destructive" : "secondary"}>
-                  {user.isAdmin ? t("users.table.admin") : t("users.table.userr")}
+                  {user.isAdmin ? t("users.table.admin") : t("users.table.userRole")}
                 </Badge>
               </TableCell>
               <TableCell className="h-12 px-4">

@@ -5,6 +5,7 @@
  * Ensures all locale files contain the same key structure as en-US.json,
  * preventing future key-addition regressions. Walks the entire nested structure
  * recursively and checks for both missing AND extra (orphan) keys.
+ * Also checks that no locale file contains a UTF-8 BOM.
  */
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -12,8 +13,15 @@ import { describe, expect, it } from "vitest";
 
 const messagesDir = join(__dirname, "../../messages");
 
+/** UTF-8 BOM as a string prefix */
+const BOM = "\uFEFF";
+
 function loadLocale(filename: string): Record<string, unknown> {
-  const content = readFileSync(join(messagesDir, filename), "utf-8");
+  let content = readFileSync(join(messagesDir, filename), "utf-8");
+  // Strip BOM if present so parsing doesn't fail; BOM presence is caught separately
+  if (content.startsWith(BOM)) {
+    content = content.slice(1);
+  }
   return JSON.parse(content) as Record<string, unknown>;
 }
 
@@ -48,6 +56,21 @@ describe("locale key parity", () => {
   it("should find all 23 locale files", () => {
     expect(localeFiles.length).toBeGreaterThanOrEqual(23);
     expect(localeFiles).toContain("en-US.json");
+  });
+
+  it("no locale file should contain a UTF-8 BOM", () => {
+    const filesWithBom: string[] = [];
+    for (const file of localeFiles) {
+      const raw = readFileSync(join(messagesDir, file), "utf-8");
+      if (raw.startsWith(BOM)) {
+        filesWithBom.push(file);
+      }
+    }
+    if (filesWithBom.length > 0) {
+      throw new Error(
+        `The following locale files contain a UTF-8 BOM and must be saved without BOM:\n${filesWithBom.map((f) => `  ${f}`).join("\n")}`,
+      );
+    }
   });
 
   it("all locale files should have the same top-level namespace keys as en-US.json", () => {
