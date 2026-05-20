@@ -20,7 +20,7 @@ export class GroupService {
       // Normalize empty ldapDn to null
       const normalizedInput = {
         ...input,
-        ...(input.ldapDn !== undefined ? { ldapDn: input.ldapDn || null } : {}),
+        ...(input.ldapDn !== undefined ? { ldapDn: input.ldapDn?.trim() || null } : {}),
       };
       return await this.repository.create(normalizedInput);
     } catch (error: unknown) {
@@ -86,7 +86,7 @@ export class GroupService {
       // Normalize empty ldapDn to null
       const normalizedInput = {
         ...input,
-        ...(input.ldapDn !== undefined ? { ldapDn: input.ldapDn || null } : {}),
+        ...(input.ldapDn !== undefined ? { ldapDn: input.ldapDn?.trim() || null } : {}),
       };
       return await this.repository.update(id, normalizedInput);
     } catch (error: unknown) {
