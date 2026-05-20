@@ -155,7 +155,7 @@ export class AuthProvidersService {
   }
 
   async createProvider(data: CreateAuthProviderInput) {
-    return await prisma.authProvider.create({
+    const provider = await prisma.authProvider.create({
       data: {
         name: data.name,
         displayName: data.displayName || data.name,
@@ -174,14 +174,16 @@ export class AuthProvidersService {
       },
       select: AuthProvidersService.SAFE_PROVIDER_SELECT,
     });
+    return { ...provider, isOfficial: this.isOfficial(provider.name) };
   }
 
   async updateProvider(id: string, data: UpdateAuthProviderInput | UpdateOfficialProviderInput) {
-    return await prisma.authProvider.update({
+    const provider = await prisma.authProvider.update({
       where: { id },
       data,
       select: AuthProvidersService.SAFE_PROVIDER_SELECT,
     });
+    return { ...provider, isOfficial: this.isOfficial(provider.name) };
   }
 
   async deleteProvider(id: string) {
