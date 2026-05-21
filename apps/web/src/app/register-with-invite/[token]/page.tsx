@@ -4,9 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { StaticBackgroundLights } from "@/app/login/components/static-background-lights";
 import { LanguageSwitcher } from "@/components/general/language-switcher";
 import { LoadingScreen } from "@/components/layout/loading-screen";
+import { BackgroundLights } from "@/components/ui/background-lights";
 import { Button } from "@/components/ui/button";
 import { DefaultFooter } from "@/components/ui/default-footer";
 import { validateInviteToken } from "@/http/endpoints/invite";
@@ -66,7 +66,7 @@ export default function RegisterWithInvitePage() {
           <LanguageSwitcher />
         </div>
         <div className="container mx-auto max-w-7xl px-6 flex-grow">
-          <StaticBackgroundLights />
+          <BackgroundLights />
           <div className="relative flex h-full w-full items-center justify-center">
             <motion.div
               animate={{ opacity: 1, y: 0 }}
@@ -98,7 +98,7 @@ export default function RegisterWithInvitePage() {
       </div>
 
       <div className="container mx-auto max-w-7xl px-6 flex-grow">
-        <StaticBackgroundLights />
+        <BackgroundLights />
         <div className="relative flex h-full w-full items-center justify-center">
           <motion.div
             animate={{ opacity: 1, y: 0 }}

@@ -3,10 +3,9 @@
 import { motion } from "motion/react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-
+import { BackgroundLights } from "@/components/ui/background-lights";
 import { DefaultFooter } from "@/components/ui/default-footer";
 import { Spinner } from "@/components/ui/spinner";
-import { StaticBackgroundLights } from "../login/components/static-background-lights";
 import { ForgotPasswordForm } from "./components/forgot-password-form";
 import { ForgotPasswordHeader } from "./components/forgot-password-header";
 import { useForgotPassword } from "./hooks/use-forgot-password";
@@ -18,7 +17,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="relative flex min-h-screen flex-col">
       <div className="flex flex-1 items-center justify-center">
-        <StaticBackgroundLights />
+        <BackgroundLights />
         <div className="relative z-10 w-full max-w-md space-y-4 px-4 py-12">
           <motion.div
             animate={{ opacity: 1, y: 0 }}

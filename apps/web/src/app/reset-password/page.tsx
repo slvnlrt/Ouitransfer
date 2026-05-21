@@ -5,9 +5,8 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { toast } from "sonner";
-
+import { BackgroundLights } from "@/components/ui/background-lights";
 import { DefaultFooter } from "@/components/ui/default-footer";
-import { StaticBackgroundLights } from "../login/components/static-background-lights";
 import { ResetPasswordForm } from "./components/reset-password-form";
 import { ResetPasswordHeader } from "./components/reset-password-header";
 import { useResetPassword } from "./hooks/use-reset-password";
@@ -28,7 +27,7 @@ export default function ResetPasswordPage() {
   return (
     <div className="relative flex min-h-screen flex-col">
       <div className="flex flex-1 items-center justify-center">
-        <StaticBackgroundLights />
+        <BackgroundLights />
         <div className="relative z-10 w-full max-w-md space-y-4 px-4 py-12">
           <motion.div
             animate={{ opacity: 1, y: 0 }}

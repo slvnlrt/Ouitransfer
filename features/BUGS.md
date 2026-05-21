@@ -494,15 +494,17 @@ Le CSS de positionnement et le `style` inline (radial-gradient) sont identiques 
 3. Si absents : `BackgroundLights` n'est pas rendu du tout (possible condition de guard manquante ou erreur de rendering silencieuse)
 4. Comparer avec le comportement de `motion.div` sur la page login (qui en utilise aussi pour l'animation d'entrée du formulaire) — est-ce que CELUI-LÀ fonctionne ?
 
-**Piste de correction :**
-- Option A : Ajouter `initial={{ opacity: 0.25 }}` aux `motion.div` dans `BackgroundLights` pour forcer l'état initial correct dès le premier rendu (avant que l'animation ne démarre).
-- Option B : Remplacer `BackgroundLights` par une version statique (`StaticBackgroundLights`) sur la home page — sacrifie l'animation mais garantit la visibilité.
-- Option C : Utiliser `LazyMotion` avec `domAnimation` features pour réduire le bundle et corriger les potentiels problèmes d'hydration.
+**Correction appliquée :**
+Les deux composants (`BackgroundLights` et `StaticBackgroundLights`) ont été unifiés en un seul composant
+Server Component sans dépendance `motion/react`. Le composant utilise des classes CSS statiques pour
+l'opacité, ce qui fonctionne de manière identique en dev et en production Docker. `StaticBackgroundLights`
+a été supprimé, tous les imports mis à jour (login, register-with-invite, reset-password, forgot-password).
 
-**Fichiers concernés :**
-- `apps/web/src/components/ui/background-lights.tsx`
-- `apps/web/src/app/(home)/components/home-content.tsx`
-- `apps/web/src/app/login/components/static-background-lights.tsx` (référence — fonctionne)
+**Fichiers modifiés :**
+- `apps/web/src/components/ui/background-lights.tsx` (réécrit — Server Component)
+- `apps/web/src/app/login/components/static-background-lights.tsx` (supprimé)
+- `apps/web/src/app/login/page.tsx`, `register-with-invite/[token]/page.tsx`,
+  `reset-password/page.tsx`, `forgot-password/page.tsx` (imports mis à jour)
 
 **Sévérité :** Basse — visuel uniquement, aucun impact fonctionnel
 
@@ -512,4 +514,4 @@ Le CSS de positionnement et le `style` inline (radial-gradient) sont identiques 
 
 | Bug | Sévérité | Impact | Statut |
 |-----|----------|--------|--------|
-| B-20 Glow absent home Docker | **Basse** | Visuel — glow manquant en production | ⬜ Non résolu |
+| B-20 Glow absent home Docker | **Basse** | Visuel — glow manquant en production | ✅ Résolu |

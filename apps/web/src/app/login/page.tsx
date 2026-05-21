@@ -4,12 +4,12 @@ import { motion } from "motion/react";
 
 import { LanguageSwitcher } from "@/components/general/language-switcher";
 import { LoadingScreen } from "@/components/layout/loading-screen";
+import { BackgroundLights } from "@/components/ui/background-lights";
 import { DefaultFooter } from "@/components/ui/default-footer";
 import { useAppInfo } from "@/contexts/app-info-context";
 import { LoginForm } from "./components/login-form";
 import { LoginHeader } from "./components/login-header";
 import { RegisterForm } from "./components/register-form";
-import { StaticBackgroundLights } from "./components/static-background-lights";
 import { TwoFactorVerification } from "./components/two-factor-verification";
 import { useLogin } from "./hooks/use-login";
 
@@ -28,7 +28,7 @@ export default function LoginPage() {
       </div>
 
       <div className="container mx-auto max-w-7xl px-6 flex-grow flex items-center justify-center">
-        <StaticBackgroundLights />
+        <BackgroundLights />
         <div className="relative w-full max-w-sm">
           <motion.div
             animate={{ opacity: 1, y: 0 }}
