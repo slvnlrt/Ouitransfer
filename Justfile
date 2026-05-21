@@ -118,7 +118,7 @@ db-reset:
 # Initialize local dev SQLite database (one-time, no S3 required)
 # Creates apps/server/prisma/ouitransfer.db from the schema and seeds it
 db-dev-init:
-    pnpm --filter=ouitransfer-api exec prisma db push --skip-generate
+    pnpm --filter=ouitransfer-api exec prisma db push
     pnpm --filter=ouitransfer-api run db:seed
 
 # ─── Docker / Production ─────────────────────────────────────────────────────

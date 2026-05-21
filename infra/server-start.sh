@@ -60,12 +60,12 @@ fi
 # Database setup
 if [ ! -f "/app/server/prisma/ouitransfer.db" ]; then
     echo "First run: creating database..."
-    run_as_user node $PRISMA_CLI db push --schema=./prisma/schema.prisma --skip-generate
+    run_as_user node $PRISMA_CLI db push --schema=./prisma/schema.prisma
     run_as_user node ./prisma/seed.js
     echo "Database setup complete."
 else
     echo "Existing database found. Checking for schema updates..."
-    run_as_user node $PRISMA_CLI db push --schema=./prisma/schema.prisma --skip-generate
+    run_as_user node $PRISMA_CLI db push --schema=./prisma/schema.prisma
 
     NEEDS_SEEDING=$(run_as_user node ./prisma/check-missing.js check-seeding 2>/dev/null || echo "true")
     if [ "$NEEDS_SEEDING" = "true" ]; then
