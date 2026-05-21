@@ -59,6 +59,7 @@ export interface ReverseShareForUpload {
   currentFileCount: number;
   nameFieldRequired: string;
   emailFieldRequired: string;
+  backgroundImageId: string | null;
 }
 
 export interface CreateReverseShare201 {

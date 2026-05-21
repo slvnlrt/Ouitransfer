@@ -1,44 +1,69 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { Check, Clock, Info, TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
 import { LanguageSwitcher } from "@/components/general/language-switcher";
 import { ModeToggle } from "@/components/general/mode-toggle";
+import { listBackgroundImages } from "@/http/endpoints/background-images";
 import { logger } from "@/lib/logger";
-import { BACKGROUND_IMAGES, MESSAGE_TYPES } from "../constants";
+import { queryKeys } from "@/lib/query-keys";
+import { MESSAGE_TYPES } from "../constants";
 import type { WeTransferLayoutProps } from "../types";
 import { FileUploadSection } from "./file-upload-section";
 import { WeTransferStatusMessage } from "./shared/status-message";
 import { TransparentFooter } from "./transparent-footer";
 
-const getRandomBackgroundImage = (): string => {
-  const randomIndex = Math.floor(Math.random() * BACKGROUND_IMAGES.length);
-  return BACKGROUND_IMAGES[randomIndex];
-};
+const GRADIENT_FALLBACK =
+  "linear-gradient(135deg, oklch(0.3 0.1 265), oklch(0.15 0.05 280), oklch(0.25 0.08 250))";
 
-const useBackgroundImage = () => {
-  const [selectedImage, setSelectedImage] = useState<string>("");
-  const [imageLoaded, setImageLoaded] = useState(false);
+type BackgroundState = { mode: "loading" } | { mode: "image"; url: string } | { mode: "gradient" };
+
+function useDynamicBackground(backgroundImageId: string | null | undefined): BackgroundState {
+  const [state, setState] = useState<BackgroundState>({ mode: "loading" });
+
+  // Fetch the list only when we need a random pick (no specific ID)
+  const { data: imageList } = useQuery({
+    queryKey: queryKeys.backgroundImages.list(),
+    queryFn: async () => {
+      const res = await listBackgroundImages();
+      return res.data.images;
+    },
+    enabled: !backgroundImageId,
+  });
+
+  // Determine which image ID to load
+  const resolvedId = useMemo(() => {
+    if (backgroundImageId) return backgroundImageId;
+    if (!imageList || imageList.length === 0) return null;
+    const randomIndex = Math.floor(Math.random() * imageList.length);
+    return imageList[randomIndex].id;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [backgroundImageId, imageList]);
 
   useEffect(() => {
-    setSelectedImage(getRandomBackgroundImage());
-  }, []);
+    if (resolvedId === null) {
+      // No images available → gradient
+      if (!backgroundImageId && imageList !== undefined) {
+        setState({ mode: "gradient" });
+      }
+      return;
+    }
 
-  useEffect(() => {
-    if (!selectedImage) return;
-
+    const imageUrl = `/api/background-images/${resolvedId}/image?type=full`;
     const img = new Image();
-    img.onload = () => setImageLoaded(true);
+    img.onload = () => setState({ mode: "image", url: img.src });
     img.onerror = () => {
-      logger.error("Error loading background image:", { err: selectedImage });
-      setImageLoaded(true);
+      logger.error("Failed to load background image", { id: resolvedId });
+      setState({ mode: "gradient" });
     };
-    img.src = selectedImage;
-  }, [selectedImage]);
+    img.src = imageUrl;
+  }, [resolvedId, backgroundImageId, imageList]);
 
-  return { selectedImage, imageLoaded };
-};
+  return state;
+}
 
 const HeaderControls = () => (
   <div className="absolute top-4 end-4 md:top-6 md:end-6 z-40 flex items-center gap-2">
@@ -51,25 +76,22 @@ const HeaderControls = () => (
   </div>
 );
 
-const BackgroundLayer = ({
-  selectedImage,
-  imageLoaded,
-}: {
-  selectedImage: string;
-  imageLoaded: boolean;
-}) => (
+const BackgroundLayer = ({ background }: { background: BackgroundState }) => (
   <>
     <div className="absolute inset-0 z-0 bg-background" />
-    {imageLoaded && selectedImage && (
+    {background.mode === "image" && (
       <div
         className="absolute inset-0 z-10"
         style={{
-          backgroundImage: `url(${selectedImage})`,
+          backgroundImage: `url(${background.url})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
         }}
       />
+    )}
+    {background.mode === "gradient" && (
+      <div className="absolute inset-0 z-10" style={{ background: GRADIENT_FALLBACK }} />
     )}
     <div className="absolute inset-0 bg-black/40 z-20" />
   </>
@@ -86,7 +108,7 @@ export function WeTransferLayout({
   isLinkNotFound,
   isLinkExpired,
 }: WeTransferLayoutProps) {
-  const { selectedImage, imageLoaded } = useBackgroundImage();
+  const background = useDynamicBackground(reverseShare?.backgroundImageId ?? null);
   const t = useTranslations();
 
   const getUploadSectionContent = () => {
@@ -161,10 +183,10 @@ export function WeTransferLayout({
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      <BackgroundLayer selectedImage={selectedImage} imageLoaded={imageLoaded} />
+      <BackgroundLayer background={background} />
       <HeaderControls />
 
-      {!imageLoaded && (
+      {background.mode === "loading" && (
         <div className="absolute inset-0 z-30 flex items-center justify-center">
           <div className="animate-pulse text-white/70 text-sm">
             {t("reverseShares.upload.layout.loading")}

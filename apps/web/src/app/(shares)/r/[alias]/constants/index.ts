@@ -44,14 +44,3 @@ export const MESSAGE_TYPES = {
   NOT_FOUND: "NOT_FOUND",
   EXPIRED: "EXPIRED",
 } as const;
-
-export const BACKGROUND_IMAGES = [
-  "/assets/wetransfer-bgs/1.jpg",
-  "/assets/wetransfer-bgs/2.jpg",
-  "/assets/wetransfer-bgs/3.jpg",
-  "/assets/wetransfer-bgs/4.jpg",
-  "/assets/wetransfer-bgs/5.jpg",
-  "/assets/wetransfer-bgs/6.jpg",
-  "/assets/wetransfer-bgs/7.jpg",
-  "/assets/wetransfer-bgs/8.jpg",
-] as const;
