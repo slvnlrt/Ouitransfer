@@ -11,6 +11,7 @@ import { cleanupOldAttempts } from "./modules/auth/login-attempts.service.js";
 import { cleanupExpiredTokens } from "./modules/auth/refresh-token.service.js";
 import { authRoutes } from "./modules/auth/routes.js";
 import { authProvidersRoutes } from "./modules/auth-providers/routes.js";
+import { backgroundImageRoutes } from "./modules/background-image/routes.js";
 import { fileRoutes } from "./modules/file/routes.js";
 import { folderRoutes } from "./modules/folder/routes.js";
 import { groupRoutes } from "./modules/group/routes.js";
@@ -94,6 +95,7 @@ async function startServer() {
   app.register(quotaRoutes);
   app.register(groupRoutes);
   app.register(ldapRoutes);
+  app.register(backgroundImageRoutes);
 
   // Initialize LDAP sync scheduler if configured (fire-and-forget — has internal try/catch)
   void initSchedulerOnBoot();
