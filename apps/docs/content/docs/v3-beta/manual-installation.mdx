@@ -160,7 +160,8 @@ This installs dependencies for all workspaces (`apps/server`, `apps/web`, `apps/
 ## Step 4: Generate Prisma Client
 
 ```bash
-pnpm exec prisma generate --schema=apps/server/prisma/schema.prisma
+cd apps/server
+pnpm exec prisma generate
 ```
 
 Or using the `just` task runner (if installed):
@@ -174,7 +175,8 @@ just db-generate
 ## Step 5: Apply Database Migrations
 
 ```bash
-pnpm exec prisma migrate deploy --schema=apps/server/prisma/schema.prisma
+cd apps/server
+pnpm exec prisma migrate deploy
 ```
 
 Or:
@@ -242,9 +244,11 @@ pnpm install
 # Generate secrets (run 3 times for JWT_SECRET, CSRF_SECRET, COOKIE_SECRET)
 openssl rand -hex 32
 
-# Database setup
-pnpm exec prisma generate --schema=apps/server/prisma/schema.prisma
-pnpm exec prisma migrate deploy --schema=apps/server/prisma/schema.prisma
+# Database setup (must run from apps/server — prisma.config.ts is read from CWD)
+cd apps/server
+pnpm exec prisma generate
+pnpm exec prisma migrate deploy
+cd ../..
 just db-seed
 
 # Build and start backend

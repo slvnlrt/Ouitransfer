@@ -636,3 +636,51 @@ Addressed points from external review:
 - **Tasks 4-6** can be batched into a single agent (all are mechanical import/instantiation updates).
 - **Tasks 8, 10** can be batched (both remove `--skip-generate`).
 - **Task 12** is the verification gate — must pass before marking TD-6 as done.
+
+---
+
+## Plan Deviations
+
+The implementation deviated from the plan in several justified ways, documented here for traceability.
+
+### 1. Output path changed
+
+**Plan:** `./generated/prisma` (relative to schema = `apps/server/prisma/generated/prisma/`)  
+**Implementation:** `../src/generated/prisma` (relative to schema = `apps/server/src/generated/prisma/`)
+
+**Reason:** The tsconfig had `rootDir: "./src"`. Importing from `../../prisma/generated/` would generate "File is not under rootDir" errors. Moving the output to `../src/generated/prisma` keeps the generated client under `rootDir: ./src` without requiring a tsconfig change.
+
+### 2. `@prisma/client` direct import does not work
+
+**Plan:** Task 4 concluded "Keep `from "@prisma/client"` for type imports. After `prisma generate`, `@prisma/client` should re-export from the generated location."  
+**Implementation:** All imports changed to relative paths to the generated client.
+
+**Reason:** In Prisma 7 with `output` explicitly set, `@prisma/client` does NOT re-export from the generated location. Imports via `@prisma/client` fail at both compile time and runtime. All 9 affected files were updated to use relative paths.
+
+### 3. `node` → `tsx` for seed and check-missing
+
+**Plan:** `node prisma/seed.js` would work for the seed file.  
+**Implementation:** Seed is invoked with `tsx` (via `prisma.config.ts` `seed` field and `server-start.sh`).
+
+**Reason:** Prisma 7 generates TypeScript-only output files (`client.ts`, not `client.js`). The generated `client.ts` cannot be loaded by `node` directly. `tsx` is required to transpile on the fly. The seed is now `seed.ts` (TypeScript) and runs via `tsx`.
+
+### 4. `npm rebuild better-sqlite3` in Dockerfile
+
+**Plan:** Not anticipated — Task 9 concluded "Likely no Dockerfile changes needed."  
+**Implementation:** Added `RUN npm rebuild better-sqlite3` after `pnpm deploy`.
+
+**Reason:** `pnpm deploy --ignore-scripts` skips native module compilation. `better-sqlite3` requires native bindings (`.node` file) which were not present in the deploy directory until explicitly rebuilt.
+
+### 5. `check-missing.js` rewritten
+
+**Plan:** Not mentioned — the file was not in scope.  
+**Implementation:** Completely rewritten from CJS to ESM with the adapter pattern.
+
+**Reason:** `check-missing.js` used `require("@prisma/client")` (CJS). Under Prisma 7, this is completely broken — `@prisma/client` no longer exports anything when a custom `output` is set, and CJS `require()` is incompatible with the ESM generated client. The file was rewritten to ESM using the `PrismaBetterSqlite3` adapter pattern.
+
+### 6. `prisma` and `tsx` moved to `dependencies`
+
+**Plan:** Packages were listed as devDependencies throughout the plan.  
+**Implementation:** `prisma` and `tsx` are in `dependencies` (production deps).
+
+**Reason:** Both are needed at runtime in Docker. `prisma` runs `db push` at container startup (via `server-start.sh`). `tsx` executes the seed and check-missing scripts at container startup. Neither can be a devDependency in a production Docker deployment.

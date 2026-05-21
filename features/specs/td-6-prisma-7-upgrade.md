@@ -59,13 +59,13 @@ import type { User } from "@prisma/client";
 
 **After:**
 ```ts
-import { PrismaClient } from "../prisma/generated/prisma/client";
-import type { User } from "../prisma/generated/prisma/client";
+import { PrismaClient } from "../../generated/prisma/client.js";
+import type { User } from "../../generated/prisma/client.js";
 ```
 
-The path is relative to the consuming file and depends on the `output` field in the generator block.
+The path is relative to the consuming file and depends on the `output` field in the generator block. Example above is from a file at `src/modules/X/` depth (two levels up to `src/generated/prisma/client.js`).
 
-**10 files affected** (all in `apps/server/src/`):
+**9 files affected** (all in `apps/server/src/`):
 - `shared/prisma.ts` — `PrismaClient`
 - `scripts/reset-password.ts` — `PrismaClient`
 - `modules/auth-providers/types.ts` — `type AuthProvider`
@@ -97,6 +97,8 @@ export default defineConfig({
   datasource: { url: env("DATABASE_URL") },
 });
 ```
+
+> **Implementation note:** The actual implementation uses `process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL` with an explicit fallback constant instead of `env("DATABASE_URL")`. This is functionally equivalent — both read the `DATABASE_URL` environment variable — but the fallback avoids a startup error when `DATABASE_URL` is unset in local development.
 
 ### 5. Datasource Block Simplified
 
