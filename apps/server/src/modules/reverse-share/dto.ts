@@ -32,6 +32,11 @@ export const CreateReverseShareSchema = z.object({
     .describe("Comma-separated list of allowed file extensions"),
   password: z.string().optional().describe("Password for private access"),
   pageLayout: z.enum(["WETRANSFER", "DEFAULT"]).default("DEFAULT").describe("Page layout type"),
+  backgroundImageId: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("Background image ID for WeTransfer layout"),
   nameFieldRequired: FieldRequirementSchema.default("OPTIONAL").describe(
     "Name field requirement setting",
   ),
@@ -50,6 +55,11 @@ export const UpdateReverseShareSchema = z.object({
   allowedFileTypes: z.string().nullable().optional(),
   password: z.string().nullable().optional(),
   pageLayout: z.enum(["WETRANSFER", "DEFAULT"]).optional(),
+  backgroundImageId: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("Background image ID for WeTransfer layout"),
   isActive: z.boolean().optional(),
   nameFieldRequired: FieldRequirementSchema.optional().describe("Name field requirement setting"),
   emailFieldRequired: FieldRequirementSchema.optional().describe("Email field requirement setting"),
@@ -77,6 +87,7 @@ export const ReverseShareResponseSchema = z.object({
   maxFileSize: z.number().nullable().describe("Maximum file size in bytes"),
   allowedFileTypes: z.string().nullable().describe("Allowed file types"),
   pageLayout: z.string().describe("Page layout type"),
+  backgroundImageId: z.string().nullable().describe("Background image ID"),
   isActive: z.boolean().describe("Whether the reverse share is active"),
   hasPassword: z.boolean().describe("Whether the reverse share has a password"),
   nameFieldRequired: z.string().describe("Name field requirement setting"),
@@ -106,6 +117,7 @@ export const ReverseSharePublicSchema = z.object({
   maxFileSize: z.number().nullable().describe("Maximum file size in bytes"),
   allowedFileTypes: z.string().nullable().describe("Allowed file types"),
   pageLayout: z.string().describe("Page layout type"),
+  backgroundImageId: z.string().nullable().describe("Background image ID"),
   hasPassword: z.boolean().describe("Whether the reverse share has a password"),
   currentFileCount: z.number().describe("Current number of files uploaded"),
   nameFieldRequired: z.string().describe("Name field requirement setting"),

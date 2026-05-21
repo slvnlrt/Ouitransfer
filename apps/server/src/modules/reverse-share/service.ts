@@ -21,6 +21,7 @@ interface ReverseShareData {
   allowedFileTypes: string | null;
   password: string | null;
   pageLayout: string;
+  backgroundImageId: string | null;
   isActive: boolean;
   nameFieldRequired: string;
   emailFieldRequired: string;
@@ -118,6 +119,7 @@ export class ReverseShareService {
       maxFileSize: reverseShare.maxFileSize ? Number(reverseShare.maxFileSize) : null,
       allowedFileTypes: reverseShare.allowedFileTypes,
       pageLayout: reverseShare.pageLayout,
+      backgroundImageId: reverseShare.backgroundImageId,
       hasPassword: !!reverseShare.password,
       currentFileCount,
       nameFieldRequired: reverseShare.nameFieldRequired,
@@ -164,6 +166,7 @@ export class ReverseShareService {
       maxFileSize: reverseShare.maxFileSize ? Number(reverseShare.maxFileSize) : null,
       allowedFileTypes: reverseShare.allowedFileTypes,
       pageLayout: reverseShare.pageLayout,
+      backgroundImageId: reverseShare.backgroundImageId,
       hasPassword: !!reverseShare.password,
       currentFileCount,
       nameFieldRequired: reverseShare.nameFieldRequired,
@@ -430,6 +433,7 @@ export class ReverseShareService {
       maxFileSize: reverseShare.maxFileSize ? Number(reverseShare.maxFileSize) : null,
       allowedFileTypes: reverseShare.allowedFileTypes,
       pageLayout: reverseShare.pageLayout,
+      backgroundImageId: reverseShare.backgroundImageId,
       isActive: reverseShare.isActive,
       hasPassword: !!reverseShare.password,
       createdAt: reverseShare.createdAt.toISOString(),
