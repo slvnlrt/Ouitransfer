@@ -472,3 +472,44 @@ individuellement pour chaque utilisateur ou groupe."
 | B-17 Description setting | **Basse** | Description confuse | ✅ Résolu |
 | B-18 "Disponibilité" → "Uptime" | **Très basse** | Cosmétique | ✅ Résolu |
 | B-19 Messages stockage incomplets | **Très basse** | Info manquante | ✅ Résolu |
+
+---
+
+## B-20 — Glow absent sur la page d'accueil publique en Docker production
+
+**Symptôme :** L'effet de glow (fonds lumineux animés) est absent sur la page d'accueil publique `/` dans la version Docker production (`just docker-start`). Il est bien présent sur la page de login `/login`.
+
+**Analyse :**
+Les deux pages utilisent des composants similaires pour le glow :
+- Login : `StaticBackgroundLights` (`apps/web/src/app/login/components/static-background-lights.tsx`) — des `<div>` ordinaires avec `className="... opacity-25"`. **Fonctionne.**
+- Home : `BackgroundLights` (`apps/web/src/components/ui/background-lights.tsx`) — des `motion.div` (librairie `motion/react`) avec `animate={{ opacity: [0.25, 0.4, 0.25], x: [...], y: [...] }}` en boucle infinie. **Ne fonctionne pas.**
+
+Le CSS de positionnement et le `style` inline (radial-gradient) sont identiques dans les deux composants. La seule différence est l'utilisation de `motion.div` vs `div` et l'animation keyframe vs classe CSS statique.
+
+**Hypothèse principale :** `motion.div` avec des keyframes d'animation infinis (`transition: { repeat: Infinity }`) ne démarre pas ou ne rend pas correctement dans le build production Next.js App Router. Possible cause : hydration SSR/client — `motion.div` rend en `div` nu côté serveur puis l'animation démarre côté client. Si l'hydration échoue ou si le composant est considéré comme non visible pendant l'hydration, l'animation pourrait ne jamais démarrer.
+
+**À investiguer :**
+1. Inspecter le DOM de la home page en Docker : les éléments blob sont-ils présents (avec les classes et le style inline) mais invisibles, ou totalement absents ?
+2. Si présents mais invisibles : vérifier l'`opacity` calculée (l'animation keyframe pourrait démarrer à `opacity: 0` avant d'atteindre `0.25`)
+3. Si absents : `BackgroundLights` n'est pas rendu du tout (possible condition de guard manquante ou erreur de rendering silencieuse)
+4. Comparer avec le comportement de `motion.div` sur la page login (qui en utilise aussi pour l'animation d'entrée du formulaire) — est-ce que CELUI-LÀ fonctionne ?
+
+**Piste de correction :**
+- Option A : Ajouter `initial={{ opacity: 0.25 }}` aux `motion.div` dans `BackgroundLights` pour forcer l'état initial correct dès le premier rendu (avant que l'animation ne démarre).
+- Option B : Remplacer `BackgroundLights` par une version statique (`StaticBackgroundLights`) sur la home page — sacrifie l'animation mais garantit la visibilité.
+- Option C : Utiliser `LazyMotion` avec `domAnimation` features pour réduire le bundle et corriger les potentiels problèmes d'hydration.
+
+**Fichiers concernés :**
+- `apps/web/src/components/ui/background-lights.tsx`
+- `apps/web/src/app/(home)/components/home-content.tsx`
+- `apps/web/src/app/login/components/static-background-lights.tsx` (référence — fonctionne)
+
+**Sévérité :** Basse — visuel uniquement, aucun impact fonctionnel
+
+---
+
+## Priorité de correction (B-20)
+
+| Bug | Sévérité | Impact | Statut |
+|-----|----------|--------|--------|
+| B-20 Glow absent home Docker | **Basse** | Visuel — glow manquant en production | ⬜ Non résolu |

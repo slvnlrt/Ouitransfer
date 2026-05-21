@@ -91,8 +91,8 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
       `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""}`,
       // Styles: self + inline for Tailwind/styled components
       "style-src 'self' 'unsafe-inline'",
-      // Images: self + blob (for preview) + data (for QR codes) + storage URL
-      "img-src 'self' blob: data:",
+      // Images: self + blob (for preview) + data (for QR codes) + storage origin (for background images)
+      `img-src 'self' blob: data:${env.CSP_CONNECT_SOURCES ? ` ${env.CSP_CONNECT_SOURCES}` : ""}`,
       // Fonts: self
       "font-src 'self'",
       // Connect: self + any additional sources (e.g., storage endpoint for presigned URL uploads)

@@ -149,6 +149,8 @@ Choose your storage method based on your needs:
         environment:
           API_BASE_URL: "http://server:3333"
           JWT_SECRET: ""     # REQUIRED: must match server's JWT_SECRET (used by Edge middleware)
+          # REQUIRED: must match server's STORAGE_URL — allows browsers to reach storage for uploads/images
+          CSP_CONNECT_SOURCES: ""    # REQUIRED: same value as STORAGE_URL (e.g., http://192.168.1.100:9000)
           # DEFAULT_LANGUAGE: "en-US"
         ports:
           - "5487:5487"    # Web interface
@@ -258,6 +260,8 @@ Choose your storage method based on your needs:
         environment:
           API_BASE_URL: "http://server:3333"
           JWT_SECRET: ""     # REQUIRED: must match server's JWT_SECRET (used by Edge middleware)
+          # REQUIRED: must match server's STORAGE_URL — allows browsers to reach storage for uploads/images
+          CSP_CONNECT_SOURCES: ""    # REQUIRED: same value as STORAGE_URL (e.g., http://192.168.1.100:9000)
           # DEFAULT_LANGUAGE: "en-US"
         ports:
           - "5487:5487"    # Web interface
@@ -291,33 +295,34 @@ Choose your storage method based on your needs:
 
 ## Configuration
 
-Customize OUITRANSFER's behavior with these environment variables on the **server** service:
+Customize OUITRANSFER's behavior with these environment variables. Most are set on the **server** service; a few are set on the **web** service (noted below).
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `STORAGE_URL` | - | **REQUIRED** for internal storage: Public URL where browsers reach the storage service (e.g., `http://192.168.1.100:9000`) |
-| `JWT_SECRET` | - | **REQUIRED** (server + web): JWT signing key (min 32 chars). Generate with: `openssl rand -hex 32`. Must be set on **both** the server and web services. |
-| `CSRF_SECRET` | - | **REQUIRED**: CSRF token HMAC key (min 32 chars, must differ from JWT_SECRET) |
-| `COOKIE_SECRET` | - | **REQUIRED**: Cookie signing key (min 32 chars, must differ from other secrets) |
-| `CORS_ORIGINS` | - | **REQUIRED**: Comma-separated list of allowed request origins (e.g., `http://localhost:5487` or `https://files.example.com`) |
-| `ENABLE_S3` | `false` | Set `true` to use external S3 storage (AWS, Backblaze, etc.) instead of built-in RustFS |
-| `S3_ENDPOINT` | - | S3 server endpoint (required when using S3) |
-| `S3_ACCESS_KEY` | - | S3 access key for authentication |
-| `S3_SECRET_KEY` | - | S3 secret key for authentication |
-| `S3_BUCKET_NAME` | - | S3 bucket name for file storage |
-| `S3_REGION` | - | S3 region configuration |
-| `S3_USE_SSL` | `true` | Enable SSL for S3 connections |
-| `S3_FORCE_PATH_STYLE` | `false` | Force path-style S3 URLs (set `true` for RustFS or self-hosted S3) |
-| `S3_REJECT_UNAUTHORIZED` | `true` | Strict SSL certificate validation (set `false` for self-signed certificates) |
-| `OUITRANSFER_UID` | `1000` | User ID for server container processes (helps with file permissions) |
-| `OUITRANSFER_GID` | `1000` | Group ID for server container processes (helps with file permissions) |
-| `DEFAULT_LANGUAGE` | `en-US` | Default application language ([see available languages](/docs/v3-beta/available-languages)) |
-| `PRESIGNED_URL_EXPIRATION` | `3600` | Upload presigned URL expiration in seconds |
-| `PRESIGNED_GET_URL_EXPIRATION` | `900` | Download presigned URL expiration in seconds |
-| `SECURE_SITE` | `false` | Enable secure cookies for HTTPS/reverse proxy deployments |
-| `TRUST_PROXY` | `loopback` | Trusted proxy setting for Fastify (`loopback`, comma-separated IPs, or `true` for all proxies) |
-| `ENCRYPTION_SECRET` | - | AES-256-GCM key for encrypting sensitive data at rest (e.g., LDAP bind password). Required if using LDAP. Generate with: `openssl rand -hex 32` |
-| `ENABLE_API_DOCS` | `false` (prod) | Set `true` to enable Scalar/Swagger API documentation at `/docs` and `/swagger` in production |
+| Variable | Service | Default | Description |
+|----------|---------|---------|-------------|
+| `STORAGE_URL` | server | - | **REQUIRED** for internal storage: Public URL where browsers reach the storage service (e.g., `http://192.168.1.100:9000`) |
+| `CSP_CONNECT_SOURCES` | **web** | - | **REQUIRED** for internal storage: Must match `STORAGE_URL`. Allows browsers to connect to storage for file uploads and background images (sets `connect-src` and `img-src` CSP directives). |
+| `JWT_SECRET` | server + web | - | **REQUIRED**: JWT signing key (min 32 chars). Generate with: `openssl rand -hex 32`. Must be set on **both** the server and web services. |
+| `CSRF_SECRET` | server | - | **REQUIRED**: CSRF token HMAC key (min 32 chars, must differ from JWT_SECRET) |
+| `COOKIE_SECRET` | server | - | **REQUIRED**: Cookie signing key (min 32 chars, must differ from other secrets) |
+| `CORS_ORIGINS` | server | - | **REQUIRED**: Comma-separated list of allowed request origins (e.g., `http://localhost:5487` or `https://files.example.com`) |
+| `ENABLE_S3` | server | `false` | Set `true` to use external S3 storage (AWS, Backblaze, etc.) instead of built-in RustFS |
+| `S3_ENDPOINT` | server | - | S3 server endpoint (required when using S3) |
+| `S3_ACCESS_KEY` | server | - | S3 access key for authentication |
+| `S3_SECRET_KEY` | server | - | S3 secret key for authentication |
+| `S3_BUCKET_NAME` | server | - | S3 bucket name for file storage |
+| `S3_REGION` | server | - | S3 region configuration |
+| `S3_USE_SSL` | server | `true` | Enable SSL for S3 connections |
+| `S3_FORCE_PATH_STYLE` | server | `false` | Force path-style S3 URLs (set `true` for RustFS or self-hosted S3) |
+| `S3_REJECT_UNAUTHORIZED` | server | `true` | Strict SSL certificate validation (set `false` for self-signed certificates) |
+| `OUITRANSFER_UID` | server | `1000` | User ID for server container processes (helps with file permissions) |
+| `OUITRANSFER_GID` | server | `1000` | Group ID for server container processes (helps with file permissions) |
+| `DEFAULT_LANGUAGE` | web | `en-US` | Default application language ([see available languages](/docs/v3-beta/available-languages)) |
+| `PRESIGNED_URL_EXPIRATION` | server | `3600` | Upload presigned URL expiration in seconds |
+| `PRESIGNED_GET_URL_EXPIRATION` | server | `900` | Download presigned URL expiration in seconds |
+| `SECURE_SITE` | server | `false` | Enable secure cookies for HTTPS/reverse proxy deployments |
+| `TRUST_PROXY` | server | `loopback` | Trusted proxy setting for Fastify (`loopback`, comma-separated IPs, or `true` for all proxies) |
+| `ENCRYPTION_SECRET` | server | - | AES-256-GCM key for encrypting sensitive data at rest (e.g., LDAP bind password). Required if using LDAP. Generate with: `openssl rand -hex 32` |
+| `ENABLE_API_DOCS` | server | `false` (prod) | Set `true` to enable Scalar/Swagger API documentation at `/docs` and `/swagger` in production |
 
 <Callout type="info">
   **Storage Architecture**: OUITRANSFER v3.3+ uses a 3-container architecture with RustFS as the S3-compatible storage backend. Port 9000 **must** be accessible from browsers for file operations to work properly when using internal storage.
@@ -395,6 +400,7 @@ docker run -d \
   --network ouitransfer \
   -e API_BASE_URL=http://ouitransfer-server:3333 \
   -e JWT_SECRET=your-jwt-secret-at-least-32-chars \
+  -e CSP_CONNECT_SOURCES=http://YOUR_SERVER_IP:9000 \
   -p 5487:5487 \
   --restart unless-stopped \
   ghcr.io/slvnlrt/ouitransfer-web:latest
@@ -410,20 +416,27 @@ docker run -d \
 
 ### Storage URL Configuration (REQUIRED)
 
-When using internal storage (the default), OUITRANSFER requires the `STORAGE_URL` environment variable on the server service. This tells the server how to generate presigned URLs that browsers can access for file uploads and downloads.
+When using internal storage (the default), two environment variables must be configured together:
+
+- **`STORAGE_URL`** (server service) — tells the server how to generate presigned URLs for file uploads and downloads. Browsers will connect directly to this URL.
+- **`CSP_CONNECT_SOURCES`** (web service) — must be set to the **same value** as `STORAGE_URL`. It configures the browser's Content Security Policy to allow connections to the storage service for both file uploads and background image loading.
 
 ```yaml
+# Server service
 environment:
   STORAGE_URL: "http://192.168.1.100:9000"  # Use your actual server IP/domain
-  # or for local testing:
-  # STORAGE_URL: "http://localhost:9000"
+
+# Web service
+environment:
+  CSP_CONNECT_SOURCES: "http://192.168.1.100:9000"  # Must match STORAGE_URL
 ```
 
 **Important Notes:**
+- **Both values must match** — if they differ, either uploads or background images will be blocked by the browser's Content Security Policy
 - **Must include protocol** (`http://` or `https://`)
 - **Must include port 9000** unless you're using a reverse proxy
-- **Use your actual domain/IP** that clients will access — `localhost` only works when browsers run on the same machine
-- **Not needed if using external S3** (`ENABLE_S3=true`)
+- **Use your actual domain/IP** that clients will access — `localhost` only works when browsers run on the same machine as Docker
+- **Not needed if using external S3** (`ENABLE_S3=true`) — the S3 endpoint is used directly
 
 ### Presigned URL Expiration
 

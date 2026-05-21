@@ -121,6 +121,12 @@ services:
     environment:
       API_BASE_URL: "http://server:3333"
       JWT_SECRET: ""       # REQUIRED: must match server's JWT_SECRET (used by middleware for auth)
+
+      # REQUIRED: Must match the server's STORAGE_URL value.
+      # Browsers upload files directly to this storage endpoint via presigned URLs;
+      # this value is added to the Content-Security-Policy connect-src and img-src directives.
+      CSP_CONNECT_SOURCES: ""    # REQUIRED: same value as server's STORAGE_URL (e.g., http://192.168.1.100:9000)
+
       # DEFAULT_LANGUAGE: "en-US"
     ports:
       - "5487:5487"    # Web interface
