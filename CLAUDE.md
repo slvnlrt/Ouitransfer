@@ -131,18 +131,19 @@ Findings are rated Critical / Important / Minor — **all must be fixed, none ar
 Reserve separate agents for tasks requiring distinct architectural decisions or large file sets.
 
 ## Rules for Agents
-0. **IMPORTANT: Empty subagent output is a bug, not a signal.** If a subagent returns an empty or near-empty result, it means the Task tool timed out or hit a transport error while the agent was still working. The agent is likely STILL running and making changes (edits, commits). **Do NOT re-dispatch, re-do work, or touch the working tree.** Wait for the agent to finish on its own — it will complete its work independently. Only after confirming the agent is truly done (wait for the agent's actual output message, or ask the user to provide it) should you proceed.
-1. **Consistency over compatibility** — prefer clean implementations, no need to preserve legacy behavior
-2. **One concern per commit** — atomic changes, clear commit messages
-3. **Check for side effects** — search for all callers/importers before changing a function signature
-4. **Preserve i18n** — don't break translation keys
-5. **Test your changes** — at minimum verify TypeScript compiles (`pnpm run type-check` in the relevant app)
-6. **Report clearly** — state what was changed, which files, and any risks or follow-up needed
-7. **Reference files, don't copy them** — reference files by path and line range instead of copy-pasting content into prompts
-8. **Run the FULL test suite for affected packages** — not just new tests. Always `pnpm --filter <package> test` for every package touched.
-9. **Fastify + Zod route schemas strip unknown properties** — keep route-level and controller-level schemas in sync. Service-layer unit tests don't catch missing fields — use integration tests with `app.inject()`.
-10. **Service-layer tests are necessary but not sufficient** — for security-critical flows, always add at least one `app.inject()` integration test that exercises the full request lifecycle.
-11. **Production-only bugs require production-like testing** — dev mode is too permissive. The E2E workflow (`e2e.yml`) catches SSR, cookie, and build-time issues.
+0. **NEVER dispatch multiple agents in parallel.** Always sequential, one at a time. Parallel agents see each other's uncommitted changes, create stash conflicts, do git resets, and produce inconsistent results. Wait for one agent to fully complete before dispatching the next.
+1. **IMPORTANT: Empty subagent output is a bug, not a signal.** If a subagent returns an empty or near-empty result, it means the Task tool timed out or hit a transport error while the agent was still working. The agent is likely STILL running and making changes (edits, commits). **Do NOT re-dispatch, re-do work, or touch the working tree.** Wait for the agent to finish on its own — it will complete its work independently. Only after confirming the agent is truly done (wait for the agent's actual output message, or ask the user to provide it) should you proceed.
+2. **Consistency over compatibility** — prefer clean implementations, no need to preserve legacy behavior
+3. **One concern per commit** — atomic changes, clear commit messages
+4. **Check for side effects** — search for all callers/importers before changing a function signature
+5. **Preserve i18n** — don't break translation keys
+6. **Test your changes** — at minimum verify TypeScript compiles (`pnpm run type-check` in the relevant app)
+7. **Report clearly** — state what was changed, which files, and any risks or follow-up needed
+8. **Reference files, don't copy them** — reference files by path and line range instead of copy-pasting content into prompts
+9. **Run the FULL test suite for affected packages** — not just new tests. Always `pnpm --filter <package> test` for every package touched.
+10. **Fastify + Zod route schemas strip unknown properties** — keep route-level and controller-level schemas in sync. Service-layer unit tests don't catch missing fields — use integration tests with `app.inject()`.
+11. **Service-layer tests are necessary but not sufficient** — for security-critical flows, always add at least one `app.inject()` integration test that exercises the full request lifecycle.
+12. **Production-only bugs require production-like testing** — dev mode is too permissive. The E2E workflow (`e2e.yml`) catches SSR, cookie, and build-time issues.
 
 ## Context Compression Discipline
 - **Never compress context you're about to use.** If you gathered file contents or code context for an upcoming task (writing a plan, implementing a feature), do NOT compress it before completing that task. Re-reading files wastes tokens and time.

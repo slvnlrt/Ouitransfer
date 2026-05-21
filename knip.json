@@ -13,7 +13,7 @@
     "apps/server": {
       "entry": ["src/scripts/reset-password.ts"],
       "project": ["src/**/*.ts"],
-      "ignoreDependencies": ["@vitest/coverage-v8", "@prisma/client", "dotenv"]
+      "ignoreDependencies": ["@vitest/coverage-v8", "@prisma/client"]
     },
     "apps/web": {
       "entry": [
