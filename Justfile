@@ -183,9 +183,9 @@ setup-dev: install db-generate db-dev-init
 
 # ─── Cleanup ─────────────────────────────────────────────────────────────────
 
-# Remove build artifacts (.next, dist/) — keeps node_modules intact
+# Remove build artifacts (.next, dist/, generated/) — keeps node_modules intact
 clean:
-    rm -rf apps/server/dist apps/web/.next apps/docs/.next packages/shared/dist
+    rm -rf apps/server/dist apps/server/src/generated apps/web/.next apps/docs/.next packages/shared/dist
     @echo "Build artifacts removed."
 
 # Full clean: build artifacts + all node_modules (run 'just install' to restore)
