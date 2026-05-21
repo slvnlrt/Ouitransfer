@@ -57,5 +57,8 @@ test-results/
 # Shared package dist (compiled by Dockerfile shared-builder stage — never commit)
 packages/shared/dist/
 
+# Prisma generated client (v7)
+apps/server/prisma/generated/
+
 # Superpowers brainstorm session artifacts
 .superpowers/
