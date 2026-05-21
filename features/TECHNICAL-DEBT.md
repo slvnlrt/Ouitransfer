@@ -231,3 +231,28 @@ et n'ajouter que la phrase supplémentaire.
 
 **Found during:** Code review session bugfixes B-8 à B-19 (mai 2026)
 **Severity:** Low — app pas en production, les 22 locales ont un placeholder fonctionnel
+
+---
+
+## TD-17 — S3 orphan risk: partial delete in background-image operation
+
+**Context:** The `DELETE /admin/background-images/:id` endpoint (handler at
+`apps/server/src/modules/background-image/routes.ts`) uses `Promise.allSettled` to delete
+two S3 objects (main image + thumbnail). If one `DeleteObjectCommand` fails and the other
+succeeds, the database row is deleted but one S3 object remains orphaned.
+
+**Current state:** The operation logs a warning with image ID and error details, making
+orphans discoverable in logs. However, there is no automated sweeper, dead-letter queue,
+or retry mechanism to clean up abandoned S3 objects.
+
+**Risk level:** Low-Medium — requires manual S3 inspection/cleanup and assumes operational
+monitoring of logs. No customer data loss, but wastes storage quota.
+
+**Options to fix:**
+1. **Atomic approach:** Use S3 transactions (if available) or a transactional saga pattern
+2. **Cleanup job:** Add a periodic background job that lists all S3 objects and finds orphans by comparing to DB
+3. **Dead-letter queue:** Log failures to a DLQ and process asynchronously
+4. **Idempotent delete:** Make S3 deletes best-effort (ignore 404 on missing object), accept orphans as recoverable via cleanup job
+
+**Found during:** TD-14 background-image feature implementation (mai 2026)
+**Severity:** Low — impacts storage utilization, not functionality or data integrity
