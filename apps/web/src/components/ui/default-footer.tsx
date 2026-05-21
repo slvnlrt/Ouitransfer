@@ -11,16 +11,18 @@ export function DefaultFooter() {
   const t = useTranslations();
   const { value: hideVersion } = useSecureConfigValue("hideVersion");
   const { value: footerEnabled } = useSecureConfigValue("footerEnabled");
-  const { value: footerText } = useSecureConfigValue("footerText");
+  const { value: footerText, isLoading: isFooterLoading } = useSecureConfigValue("footerText");
   const { value: footerUrl } = useSecureConfigValue("footerUrl");
 
   if (footerEnabled === "false") {
     return null;
   }
 
+  if (isFooterLoading) return null;
+
   const shouldHideVersion = hideVersion === "true";
-  const displayText = footerText || "Burger&Cie";
-  const displayUrl = footerUrl || "https://burgeretcie.fr";
+  const displayText = footerText || "";
+  const displayUrl = footerUrl || "#";
 
   return (
     <footer className="w-full flex items-center justify-center py-3 h-16">

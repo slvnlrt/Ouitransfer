@@ -112,11 +112,12 @@ export const routes: RouteConfig[] = [
 
   // ═══════════════════════════════════════════════════════════════
   // BACKGROUND IMAGES
+  // NOTE: POST uses /upload suffix to disambiguate from GET on collection.
+  // Full-size images are served via presigned URLs in the list response (fullUrl field).
   // ═══════════════════════════════════════════════════════════════
   r("GET", "background-images", "/background-images"),
   r("POST", "background-images/upload", "/background-images", { body: "raw" }),
   r("PATCH", "background-images/order", "/background-images/order"),
-  r("GET", "background-images/:id/image", "/background-images/:id/image", { query: true }),
   r("PATCH", "background-images/:id", "/background-images/:id"),
   r("DELETE", "background-images/:id", "/background-images/:id"),
 

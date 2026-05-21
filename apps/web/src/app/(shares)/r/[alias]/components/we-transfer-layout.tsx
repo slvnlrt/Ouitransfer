@@ -23,44 +23,51 @@ type BackgroundState = { mode: "loading" } | { mode: "image"; url: string } | { 
 
 function useDynamicBackground(backgroundImageId: string | null | undefined): BackgroundState {
   const [state, setState] = useState<BackgroundState>({ mode: "loading" });
+  // Stable random seed — computed once per component mount, survives re-renders
+  const [randomSeed] = useState(() => Math.random());
 
-  // Fetch the list only when we need a random pick (no specific ID)
+  // Always fetch the list — it contains presigned fullUrl for each image
   const { data: imageList } = useQuery({
     queryKey: queryKeys.backgroundImages.list(),
     queryFn: async () => {
       const res = await listBackgroundImages();
       return res.data.images;
     },
-    enabled: !backgroundImageId,
+    staleTime: 5 * 60 * 1000, // 5 minutes — prevent refetch-induced flicker
   });
 
-  // Determine which image ID to load
-  const resolvedId = useMemo(() => {
-    if (backgroundImageId) return backgroundImageId;
-    if (!imageList || imageList.length === 0) return null;
-    const randomIndex = Math.floor(Math.random() * imageList.length);
-    return imageList[randomIndex].id;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [backgroundImageId, imageList]);
+  // Resolve the image to display
+  const resolvedImage = useMemo(() => {
+    if (!imageList) return undefined; // still loading
+    if (imageList.length === 0) return null; // no images → gradient
+
+    if (backgroundImageId) {
+      // Specific image requested
+      const found = imageList.find((img) => img.id === backgroundImageId);
+      return found ?? null; // not found → gradient
+    }
+
+    // Random pick — stable across re-renders thanks to randomSeed
+    const index = Math.floor(randomSeed * imageList.length);
+    return imageList[index];
+  }, [imageList, backgroundImageId, randomSeed]);
 
   useEffect(() => {
-    if (resolvedId === null) {
-      // No images available → gradient
-      if (!backgroundImageId && imageList !== undefined) {
-        setState({ mode: "gradient" });
-      }
+    if (resolvedImage === undefined) return; // still loading
+    if (resolvedImage === null) {
+      setState({ mode: "gradient" });
       return;
     }
 
-    const imageUrl = `/api/background-images/${resolvedId}/image?type=full`;
+    // Use the presigned fullUrl directly — no proxy redirect needed
     const img = new Image();
     img.onload = () => setState({ mode: "image", url: img.src });
     img.onerror = () => {
-      logger.error("Failed to load background image", { id: resolvedId });
+      logger.error("Failed to load background image", { id: resolvedImage.id });
       setState({ mode: "gradient" });
     };
-    img.src = imageUrl;
-  }, [resolvedId, backgroundImageId, imageList]);
+    img.src = resolvedImage.fullUrl;
+  }, [resolvedImage]);
 
   return state;
 }

@@ -3,8 +3,7 @@ import type { AxiosResponse } from "axios";
 export interface BackgroundImage {
   id: string;
   name: string | null;
-  s3Key: string;
-  thumbnailS3Key: string;
+  fullUrl: string;
   thumbnailUrl: string;
   sortOrder: number;
   createdAt: string;

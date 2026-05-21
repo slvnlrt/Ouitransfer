@@ -37,6 +37,7 @@ export interface BaseReverseShare {
   hasPassword: boolean;
   nameFieldRequired: string;
   emailFieldRequired: string;
+  backgroundImageId: string | null;
   createdAt: string;
   updatedAt: string;
   creatorId: string;

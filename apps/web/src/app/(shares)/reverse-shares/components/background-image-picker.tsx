@@ -28,17 +28,17 @@ export function BackgroundImagePicker({ value, onChange }: BackgroundImagePicker
   const images = data ?? [];
 
   if (isLoading) {
-    return null;
+    return (
+      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="aspect-video rounded-lg bg-muted animate-pulse" />
+        ))}
+      </div>
+    );
   }
 
   if (images.length === 0) {
-    return (
-      <div className="rounded-lg border bg-muted/50 p-3">
-        <p className="text-sm text-muted-foreground">
-          {t("reverseShares.form.backgroundImage.none")}
-        </p>
-      </div>
-    );
+    return null;
   }
 
   return (

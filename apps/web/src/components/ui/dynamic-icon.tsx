@@ -209,7 +209,8 @@ export function DynamicIcon({ name, className }: DynamicIconProps) {
   useEffect(() => {
     // Already resolved from cache
     if (iconCache.has(name)) {
-      setIcon(iconCache.get(name));
+      // Wrap in () => to prevent React from calling functions as state updaters
+      setIcon(() => iconCache.get(name));
       return;
     }
 
@@ -218,7 +219,7 @@ export function DynamicIcon({ name, className }: DynamicIconProps) {
     const slug = getPackSlug(name);
     if (!slug) {
       iconCache.set(name, null);
-      if (!cancelled) setIcon(null);
+      if (!cancelled) setIcon(() => null);
       return;
     }
 
@@ -228,11 +229,11 @@ export function DynamicIcon({ name, className }: DynamicIconProps) {
         const icon: IconType | null =
           typeof candidate === "function" ? (candidate as IconType) : null;
         iconCache.set(name, icon);
-        if (!cancelled) setIcon(icon);
+        if (!cancelled) setIcon(() => icon);
       })
       .catch(() => {
         iconCache.set(name, null);
-        if (!cancelled) setIcon(null);
+        if (!cancelled) setIcon(() => null);
       });
 
     return () => {

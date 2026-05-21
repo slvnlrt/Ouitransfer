@@ -11,14 +11,7 @@ import { AuthProvidersSettings } from "./auth-provider-form/auth-providers-setti
 import { BackgroundImageManager } from "./background-image-manager";
 import { SettingsGroup } from "./settings-group";
 
-const GROUP_ORDER: string[] = [
-  "general",
-  "email",
-  "auth-providers",
-  "security",
-  "storage",
-  "backgrounds",
-];
+const GROUP_ORDER: string[] = ["general", "email", "auth-providers", "security", "storage"];
 
 export function SettingsForm({
   groupedConfigs,
@@ -54,10 +47,6 @@ export function SettingsForm({
   return (
     <div className="flex flex-col gap-6">
       {sortedGroups.map(([group, configs]) => {
-        if (group === "backgrounds") {
-          return <BackgroundImageManager key={group} />;
-        }
-
         if (group === "auth-providers") {
           return (
             <div key={group}>
@@ -97,6 +86,7 @@ export function SettingsForm({
           />
         );
       })}
+      <BackgroundImageManager />
     </div>
   );
 }
