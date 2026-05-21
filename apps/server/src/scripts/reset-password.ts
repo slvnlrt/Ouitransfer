@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 import * as readline from "node:readline";
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
-
-const prisma = new PrismaClient();
+import { prisma } from "../shared/prisma.js";
 
 function createReadlineInterface() {
   return readline.createInterface({
