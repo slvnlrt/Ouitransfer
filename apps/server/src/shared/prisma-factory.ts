@@ -1,11 +1,8 @@
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { PrismaClient } from "../generated/prisma/client.js";
+import { DEFAULT_DATABASE_URL } from "./prisma-constants.js";
 
-/**
- * Default database URL — CWD-relative path used in development.
- * In Docker, DATABASE_URL is set explicitly via server-start.sh.
- */
-export const DEFAULT_DATABASE_URL = "file:./prisma/ouitransfer.db";
+export { DEFAULT_DATABASE_URL };
 
 /**
  * Create a PrismaClient wired to better-sqlite3.

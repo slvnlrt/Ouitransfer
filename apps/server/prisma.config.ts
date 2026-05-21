@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { defineConfig } from "prisma/config";
-import { DEFAULT_DATABASE_URL } from "./src/shared/prisma-factory.js";
+import { DEFAULT_DATABASE_URL } from "./src/shared/prisma-constants.js";
 
 dotenv.config({ path: [".env", ".env.development"] });
 
