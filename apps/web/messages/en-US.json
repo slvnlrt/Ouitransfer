@@ -1479,6 +1479,18 @@
         "title": "Hide Version",
         "description": "Hide the OUITRANSFER version from the footer on all pages"
       },
+      "footerEnabled": {
+        "title": "Show Footer",
+        "description": "Display the footer bar at the bottom of all pages"
+      },
+      "footerText": {
+        "title": "Footer Text",
+        "description": "Company or organization name displayed in the footer"
+      },
+      "footerUrl": {
+        "title": "Footer URL",
+        "description": "Link URL for the footer text"
+      },
       "smtpEnabled": {
         "title": "SMTP Enabled",
         "description": "Enable or disable SMTP email functionality"

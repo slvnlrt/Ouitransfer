@@ -1425,6 +1425,18 @@
         "title": "バージョンを非表示",
         "description": "すべてのページのフッターにあるOUITRANSFERバージョンを非表示にする"
       },
+      "footerEnabled": {
+        "title": "Show Footer",
+        "description": "Display the footer bar at the bottom of all pages"
+      },
+      "footerText": {
+        "title": "Footer Text",
+        "description": "Company or organization name displayed in the footer"
+      },
+      "footerUrl": {
+        "title": "Footer URL",
+        "description": "Link URL for the footer text"
+      },
       "embedSecret": {
         "title": "埋め込みシークレット",
         "description": "安全なファイル埋め込みのための埋め込みトークンの署名に使用されるシークレットキー"

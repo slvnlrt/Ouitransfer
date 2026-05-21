@@ -1425,6 +1425,18 @@
         "title": "Nascondi Versione",
         "description": "Nascondi la versione di OUITRANSFER nel piè di pagina di tutte le pagine"
       },
+      "footerEnabled": {
+        "title": "Show Footer",
+        "description": "Display the footer bar at the bottom of all pages"
+      },
+      "footerText": {
+        "title": "Footer Text",
+        "description": "Company or organization name displayed in the footer"
+      },
+      "footerUrl": {
+        "title": "Footer URL",
+        "description": "Link URL for the footer text"
+      },
       "embedSecret": {
         "title": "Chiave di incorporamento",
         "description": "Chiave segreta utilizzata per firmare i token di incorporamento per l'inserimento sicuro dei file"

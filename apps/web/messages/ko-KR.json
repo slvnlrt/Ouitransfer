@@ -1425,6 +1425,18 @@
         "title": "버전 숨기기",
         "description": "모든 페이지의 바닥글에서 OUITRANSFER 버전 숨기기"
       },
+      "footerEnabled": {
+        "title": "Show Footer",
+        "description": "Display the footer bar at the bottom of all pages"
+      },
+      "footerText": {
+        "title": "Footer Text",
+        "description": "Company or organization name displayed in the footer"
+      },
+      "footerUrl": {
+        "title": "Footer URL",
+        "description": "Link URL for the footer text"
+      },
       "embedSecret": {
         "title": "임베드 시크릿",
         "description": "안전한 파일 임베딩을 위한 임베드 토큰 서명에 사용되는 시크릿 키"

@@ -1425,6 +1425,18 @@
         "title": "Скрыть Версию",
         "description": "Скрыть версию OUITRANSFER в нижнем колонтитуле всех страниц"
       },
+      "footerEnabled": {
+        "title": "Show Footer",
+        "description": "Display the footer bar at the bottom of all pages"
+      },
+      "footerText": {
+        "title": "Footer Text",
+        "description": "Company or organization name displayed in the footer"
+      },
+      "footerUrl": {
+        "title": "Footer URL",
+        "description": "Link URL for the footer text"
+      },
       "embedSecret": {
         "title": "Ключ встраивания",
         "description": "Секретный ключ для подписи токенов встраивания при безопасном отображении файлов"

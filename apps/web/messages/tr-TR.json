@@ -1425,6 +1425,18 @@
         "title": "Sürümü Gizle",
         "description": "Tüm sayfaların alt bilgisinde OUITRANSFER sürümünü gizle"
       },
+      "footerEnabled": {
+        "title": "Show Footer",
+        "description": "Display the footer bar at the bottom of all pages"
+      },
+      "footerText": {
+        "title": "Footer Text",
+        "description": "Company or organization name displayed in the footer"
+      },
+      "footerUrl": {
+        "title": "Footer URL",
+        "description": "Link URL for the footer text"
+      },
       "embedSecret": {
         "title": "Gömme Anahtarı",
         "description": "Güvenli dosya gömme için gömme tokenlarını imzalamak üzere kullanılan gizli anahtar"

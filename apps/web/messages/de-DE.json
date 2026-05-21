@@ -1425,6 +1425,18 @@
         "title": "Version Ausblenden",
         "description": "Die OUITRANSFER-Version in der Fußzeile aller Seiten ausblenden"
       },
+      "footerEnabled": {
+        "title": "Show Footer",
+        "description": "Display the footer bar at the bottom of all pages"
+      },
+      "footerText": {
+        "title": "Footer Text",
+        "description": "Company or organization name displayed in the footer"
+      },
+      "footerUrl": {
+        "title": "Footer URL",
+        "description": "Link URL for the footer text"
+      },
       "embedSecret": {
         "title": "Einbettungsschlüssel",
         "description": "Geheimer Schlüssel zum Signieren von Einbettungstoken für die sichere Dateieinbettung"

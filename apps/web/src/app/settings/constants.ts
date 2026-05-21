@@ -36,6 +36,9 @@ export const createFieldDescriptions = (t: ReturnType<typeof createTranslator>) 
   appDescription: t("settings.fields.appDescription.description"),
   showHomePage: t("settings.fields.showHomePage.description"),
   hideVersion: t("settings.fields.hideVersion.description"),
+  footerEnabled: t("settings.fields.footerEnabled.description"),
+  footerText: t("settings.fields.footerText.description"),
+  footerUrl: t("settings.fields.footerUrl.description"),
   firstUserAccess: t("settings.fields.firstUserAccess.description"),
   serverUrl: t("settings.fields.serverUrl.description"),
 

@@ -1343,6 +1343,18 @@
         "title": "הסתר גרסה",
         "description": "הסתר את גרסת OUITRANSFER מהכותרת התחתונה בכל העמודים"
       },
+      "footerEnabled": {
+        "title": "Show Footer",
+        "description": "Display the footer bar at the bottom of all pages"
+      },
+      "footerText": {
+        "title": "Footer Text",
+        "description": "Company or organization name displayed in the footer"
+      },
+      "footerUrl": {
+        "title": "Footer URL",
+        "description": "Link URL for the footer text"
+      },
       "smtpEnabled": {
         "title": "SMTP מופעל",
         "description": "הפעל או השבת פונקציונליות דוא\"ל SMTP"

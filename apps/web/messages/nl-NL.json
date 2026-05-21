@@ -1425,6 +1425,18 @@
         "title": "Versie Verbergen",
         "description": "Verberg de OUITRANSFER-versie in de voettekst van alle pagina's"
       },
+      "footerEnabled": {
+        "title": "Show Footer",
+        "description": "Display the footer bar at the bottom of all pages"
+      },
+      "footerText": {
+        "title": "Footer Text",
+        "description": "Company or organization name displayed in the footer"
+      },
+      "footerUrl": {
+        "title": "Footer URL",
+        "description": "Link URL for the footer text"
+      },
       "embedSecret": {
         "title": "Insluitsleutel",
         "description": "Geheime sleutel voor het ondertekenen van insluittokens voor veilige bestandsinsluiting"

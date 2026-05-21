@@ -1428,6 +1428,18 @@
         "title": "Masquer la Version",
         "description": "Masquer la version de OUITRANSFER dans le pied de page de toutes les pages"
       },
+      "footerEnabled": {
+        "title": "Show Footer",
+        "description": "Display the footer bar at the bottom of all pages"
+      },
+      "footerText": {
+        "title": "Footer Text",
+        "description": "Company or organization name displayed in the footer"
+      },
+      "footerUrl": {
+        "title": "Footer URL",
+        "description": "Link URL for the footer text"
+      },
       "embedSecret": {
         "title": "Clé d'intégration",
         "description": "Clé secrète utilisée pour signer les jetons d'intégration pour l'affichage sécurisé des fichiers"

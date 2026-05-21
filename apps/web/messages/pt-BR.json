@@ -1437,6 +1437,18 @@
         "title": "Ocultar Versão",
         "description": "Ocultar a versão do OUITRANSFER no rodapé de todas as páginas"
       },
+      "footerEnabled": {
+        "title": "Show Footer",
+        "description": "Display the footer bar at the bottom of all pages"
+      },
+      "footerText": {
+        "title": "Footer Text",
+        "description": "Company or organization name displayed in the footer"
+      },
+      "footerUrl": {
+        "title": "Footer URL",
+        "description": "Link URL for the footer text"
+      },
       "embedSecret": {
         "title": "Chave de incorporação",
         "description": "Chave secreta usada para assinar tokens de incorporação para a exibição segura de arquivos"

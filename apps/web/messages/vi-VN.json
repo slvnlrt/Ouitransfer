@@ -1343,6 +1343,18 @@
         "title": "Ẩn phiên bản",
         "description": "Ẩn phiên bản OUITRANSFER khỏi chân trang trên tất cả các trang"
       },
+      "footerEnabled": {
+        "title": "Show Footer",
+        "description": "Display the footer bar at the bottom of all pages"
+      },
+      "footerText": {
+        "title": "Footer Text",
+        "description": "Company or organization name displayed in the footer"
+      },
+      "footerUrl": {
+        "title": "Footer URL",
+        "description": "Link URL for the footer text"
+      },
       "smtpEnabled": {
         "title": "Đã bật SMTP",
         "description": "Bật hoặc tắt chức năng email SMTP"

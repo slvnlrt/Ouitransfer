@@ -1343,6 +1343,18 @@
         "title": "Dölj version",
         "description": "Dölj OUITRANSFER-versionen från sidfoten på alla sidor"
       },
+      "footerEnabled": {
+        "title": "Show Footer",
+        "description": "Display the footer bar at the bottom of all pages"
+      },
+      "footerText": {
+        "title": "Footer Text",
+        "description": "Company or organization name displayed in the footer"
+      },
+      "footerUrl": {
+        "title": "Footer URL",
+        "description": "Link URL for the footer text"
+      },
       "smtpEnabled": {
         "title": "SMTP aktiverad",
         "description": "Aktivera eller inaktivera SMTP-e-postfunktioner"

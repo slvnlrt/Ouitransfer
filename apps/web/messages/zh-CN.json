@@ -1425,6 +1425,18 @@
         "title": "隐藏版本",
         "description": "在所有页面的页脚中隐藏OUITRANSFER版本"
       },
+      "footerEnabled": {
+        "title": "Show Footer",
+        "description": "Display the footer bar at the bottom of all pages"
+      },
+      "footerText": {
+        "title": "Footer Text",
+        "description": "Company or organization name displayed in the footer"
+      },
+      "footerUrl": {
+        "title": "Footer URL",
+        "description": "Link URL for the footer text"
+      },
       "embedSecret": {
         "title": "嵌入密钥",
         "description": "用于签署嵌入令牌以实现安全文件嵌入的密钥"

@@ -1343,6 +1343,18 @@
         "title": "مخفی کردن نسخه",
         "description": "مخفی کردن نسخه OUITRANSFER از فوتر در تمام صفحات"
       },
+      "footerEnabled": {
+        "title": "Show Footer",
+        "description": "Display the footer bar at the bottom of all pages"
+      },
+      "footerText": {
+        "title": "Footer Text",
+        "description": "Company or organization name displayed in the footer"
+      },
+      "footerUrl": {
+        "title": "Footer URL",
+        "description": "Link URL for the footer text"
+      },
       "smtpEnabled": {
         "title": "فعال‌سازی SMTP",
         "description": "فعال یا غیرفعال کردن قابلیت ایمیل SMTP"

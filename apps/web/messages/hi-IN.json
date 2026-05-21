@@ -1425,6 +1425,18 @@
         "title": "संस्करण छुपाएं",
         "description": "सभी पृष्ठों के फुटर में OUITRANSFER संस्करण छुपाएं"
       },
+      "footerEnabled": {
+        "title": "Show Footer",
+        "description": "Display the footer bar at the bottom of all pages"
+      },
+      "footerText": {
+        "title": "Footer Text",
+        "description": "Company or organization name displayed in the footer"
+      },
+      "footerUrl": {
+        "title": "Footer URL",
+        "description": "Link URL for the footer text"
+      },
       "embedSecret": {
         "title": "एम्बेड सीक्रेट",
         "description": "सुरक्षित फ़ाइल एम्बेडिंग के लिए एम्बेड टोकन पर हस्ताक्षर करने के लिए उपयोग की जाने वाली गुप्त कुंजी"
