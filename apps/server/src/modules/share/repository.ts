@@ -5,7 +5,7 @@ import type {
   ShareAlias,
   ShareRecipient,
   ShareSecurity,
-} from "@prisma/client";
+} from "../../generated/prisma/client.js";
 
 import { prisma } from "../../shared/prisma.js";
 import type { CreateShareInput } from "./dto.js";

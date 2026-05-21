@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "../../generated/prisma/client.js";
 import { prisma } from "../../shared/prisma.js";
 import { ForbiddenError, ValidationError } from "../../utils/app-error.js";
 import type { AuthProviderModel, ProviderUserInfo } from "./types.js";

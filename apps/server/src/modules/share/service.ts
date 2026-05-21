@@ -1,6 +1,6 @@
 import { ErrorCodes } from "@ouitransfer/shared/error-codes";
-import type { Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import type { Prisma } from "../../generated/prisma/client.js";
 import { prisma } from "../../shared/prisma.js";
 import {
   AppError,

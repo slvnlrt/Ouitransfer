@@ -1,5 +1,5 @@
-import type { AuditLog } from "@prisma/client";
 import { z } from "zod";
+import type { AuditLog } from "../../generated/prisma/client.js";
 
 import { prisma } from "../../shared/prisma.js";
 

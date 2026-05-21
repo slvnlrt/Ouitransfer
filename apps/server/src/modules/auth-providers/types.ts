@@ -1,4 +1,4 @@
-import type { AuthProvider } from "@prisma/client";
+import type { AuthProvider } from "../../generated/prisma/client.js";
 
 export interface ProviderConfig {
   name?: string;

@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import { ErrorCodes } from "@ouitransfer/shared/error-codes";
-import type { Prisma } from "@prisma/client";
 import { env } from "../../env.js";
+import type { Prisma } from "../../generated/prisma/client.js";
 import { prisma } from "../../shared/prisma.js";
 import { AppError, ForbiddenError, NotFoundError, ValidationError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";

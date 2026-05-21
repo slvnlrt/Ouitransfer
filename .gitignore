@@ -58,7 +58,7 @@ test-results/
 packages/shared/dist/
 
 # Prisma generated client (v7)
-apps/server/prisma/generated/
+apps/server/src/generated/
 
 # Superpowers brainstorm session artifacts
 .superpowers/
