@@ -111,6 +111,16 @@ export const routes: RouteConfig[] = [
   r("POST", "app/upload-logo", "/app/logo", { body: "raw" }),
 
   // ═══════════════════════════════════════════════════════════════
+  // BACKGROUND IMAGES
+  // ═══════════════════════════════════════════════════════════════
+  r("GET", "background-images", "/background-images"),
+  r("POST", "background-images/upload", "/background-images", { body: "raw" }),
+  r("PATCH", "background-images/order", "/background-images/order"),
+  r("GET", "background-images/:id/image", "/background-images/:id/image", { query: true }),
+  r("PATCH", "background-images/:id", "/background-images/:id"),
+  r("DELETE", "background-images/:id", "/background-images/:id"),
+
+  // ═══════════════════════════════════════════════════════════════
   // CSRF
   // ═══════════════════════════════════════════════════════════════
   r("GET", "csrf-token", "/csrf-token"),

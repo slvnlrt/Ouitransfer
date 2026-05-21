@@ -11,6 +11,7 @@ export * from "./admin";
 export * from "./app";
 export * from "./auth";
 export * from "./auth/trusted-devices";
+export * from "./background-images";
 export * from "./config";
 export * from "./files";
 export * from "./folders";

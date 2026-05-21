@@ -103,4 +103,9 @@ export const queryKeys = {
     syncLogs: () => [...queryKeys.ldap.all, "syncLogs"] as const,
     syncLogDetail: (id: string) => [...queryKeys.ldap.all, "syncLog", id] as const,
   },
+
+  backgroundImages: {
+    all: ["backgroundImages"] as const,
+    list: () => [...queryKeys.backgroundImages.all, "list"] as const,
+  },
 } as const;
