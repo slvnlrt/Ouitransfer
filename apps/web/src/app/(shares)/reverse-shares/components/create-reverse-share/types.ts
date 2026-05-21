@@ -7,6 +7,7 @@ export interface CreateReverseShareFormData {
   allowedFileTypes?: string;
   password?: string;
   pageLayout?: "DEFAULT" | "WETRANSFER";
+  backgroundImageId?: string | null;
   nameFieldRequired: "HIDDEN" | "OPTIONAL" | "REQUIRED";
   emailFieldRequired: "HIDDEN" | "OPTIONAL" | "REQUIRED";
   isPasswordProtected: boolean;
@@ -27,6 +28,7 @@ export const DEFAULT_FORM_VALUES: CreateReverseShareFormData = {
   allowedFileTypes: "",
   password: "",
   pageLayout: "DEFAULT",
+  backgroundImageId: null,
   nameFieldRequired: "OPTIONAL",
   emailFieldRequired: "OPTIONAL",
   isPasswordProtected: false,

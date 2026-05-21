@@ -1262,6 +1262,12 @@
           "wetransfer": "WeTransfer Style"
         }
       },
+      "backgroundImage": {
+        "title": "Background Image",
+        "description": "Choose a background image for the upload page",
+        "random": "Random",
+        "none": "No background images available. An admin can upload images in Settings."
+      },
       "password": {
         "label": "Protection Password",
         "placeholder": "Optional. Add a password to protect the link",

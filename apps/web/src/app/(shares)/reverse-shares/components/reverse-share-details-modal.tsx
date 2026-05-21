@@ -27,6 +27,7 @@ import { LazyQRCode } from "@/components/ui/lazy-qr-code";
 import { logger } from "@/lib/logger";
 import { useReverseShareDetails } from "../hooks/use-reverse-share-details";
 import type { ReverseShare } from "../hooks/use-reverse-shares";
+import { BackgroundImagePicker } from "./background-image-picker";
 import { EditPasswordModal } from "./edit-password-modal";
 import { EditableField } from "./editable-field";
 import { FileSizeInput } from "./file-size-input";
@@ -204,6 +205,19 @@ export function ReverseShareDetailsModal({
                     </Badge>
                   )}
                 />
+
+                {getDisplayValue(reverseShare, "pageLayout", pendingChanges) === "WETRANSFER" && (
+                  <div className="space-y-2">
+                    <BackgroundImagePicker
+                      value={
+                        getDisplayValue(reverseShare, "backgroundImageId", pendingChanges) as
+                          | string
+                          | null
+                      }
+                      onChange={(id) => handleUpdateField("backgroundImageId", id)}
+                    />
+                  </div>
+                )}
               </div>
 
               {/* QR Code */}

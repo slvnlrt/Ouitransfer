@@ -40,6 +40,7 @@ function buildPayload(formData: CreateReverseShareFormData): CreateReverseShareB
   const payload: CreateReverseShareBody = {
     name: formData.name,
     pageLayout: formData.pageLayout || "DEFAULT",
+    backgroundImageId: formData.backgroundImageId ?? null,
     nameFieldRequired: formData.nameFieldRequired,
     emailFieldRequired: formData.emailFieldRequired,
   };

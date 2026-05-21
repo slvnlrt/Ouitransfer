@@ -1122,6 +1122,12 @@
           "wetransfer": "نمط WeTransfer"
         }
       },
+      "backgroundImage": {
+        "title": "Background Image",
+        "description": "Choose a background image for the upload page",
+        "random": "Random",
+        "none": "No background images available. An admin can upload images in Settings."
+      },
       "password": {
         "label": "كلمة مرور الحماية",
         "placeholder": "اختياري. أضف كلمة مرور لحماية الرابط",

@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { BackgroundImagePicker } from "../background-image-picker";
 import type { CreateReverseShareFormData } from "./types";
 
 interface BasicInfoSectionProps {
@@ -95,6 +96,13 @@ export function BasicInfoSection({ form }: BasicInfoSectionProps) {
           </FormItem>
         )}
       />
+
+      {form.watch("pageLayout") === "WETRANSFER" && (
+        <BackgroundImagePicker
+          value={form.watch("backgroundImageId")}
+          onChange={(id) => form.setValue("backgroundImageId", id)}
+        />
+      )}
     </div>
   );
 }

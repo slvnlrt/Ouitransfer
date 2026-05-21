@@ -108,6 +108,7 @@ export interface CreateReverseShareBody {
   allowedFileTypes?: string | null;
   password?: string;
   pageLayout?: PageLayout;
+  backgroundImageId?: string | null;
   nameFieldRequired?: FieldRequirement;
   emailFieldRequired?: FieldRequirement;
 }
@@ -122,6 +123,7 @@ export interface UpdateReverseShareBody {
   allowedFileTypes?: string | null;
   password?: string | null;
   pageLayout?: PageLayout;
+  backgroundImageId?: string | null;
   isActive?: boolean;
   nameFieldRequired?: FieldRequirement;
   emailFieldRequired?: FieldRequirement;
