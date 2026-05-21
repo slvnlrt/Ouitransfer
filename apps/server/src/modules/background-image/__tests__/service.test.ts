@@ -129,7 +129,7 @@ describe("BackgroundImageService", () => {
 
   describe("upload", () => {
     // Access mocked s3Client.send
-    const s3Send = (s3Client as { send: MockInstance }).send;
+    const s3Send = (s3Client as unknown as { send: MockInstance }).send;
     const sharpMock = sharpLib as unknown as MockInstance;
 
     beforeEach(() => {
@@ -153,10 +153,10 @@ describe("BackgroundImageService", () => {
       );
 
       // Reset prisma mocks
-      (prisma.backgroundImage.aggregate as MockInstance).mockResolvedValue({
+      (prisma.backgroundImage.aggregate as unknown as MockInstance).mockResolvedValue({
         _max: { sortOrder: -1 },
       });
-      (prisma.backgroundImage.create as MockInstance).mockResolvedValue({
+      (prisma.backgroundImage.create as unknown as MockInstance).mockResolvedValue({
         id: "test-id",
         name: "Test Image",
         s3Key: "backgrounds/test-id.webp",
@@ -282,7 +282,7 @@ describe("BackgroundImageService", () => {
 
   describe("delete", () => {
     // Access mocked s3Client.send
-    const s3Send = (s3Client as { send: MockInstance }).send;
+    const s3Send = (s3Client as unknown as { send: MockInstance }).send;
 
     const mockImage = {
       id: "test-id",
@@ -296,8 +296,8 @@ describe("BackgroundImageService", () => {
 
     beforeEach(() => {
       vi.clearAllMocks();
-      (prisma.backgroundImage.findUnique as MockInstance).mockResolvedValue(mockImage);
-      (prisma.backgroundImage.delete as MockInstance).mockResolvedValue(mockImage);
+      (prisma.backgroundImage.findUnique as unknown as MockInstance).mockResolvedValue(mockImage);
+      (prisma.backgroundImage.delete as unknown as MockInstance).mockResolvedValue(mockImage);
       s3Send.mockResolvedValue({});
     });
 
@@ -334,7 +334,7 @@ describe("BackgroundImageService", () => {
     });
 
     it("throws NotFoundError when image does not exist", async () => {
-      (prisma.backgroundImage.findUnique as MockInstance).mockResolvedValue(null);
+      (prisma.backgroundImage.findUnique as unknown as MockInstance).mockResolvedValue(null);
 
       await expect(service.delete("nonexistent-id")).rejects.toMatchObject({
         message: "Background image not found",
