@@ -69,31 +69,25 @@ value of TypeScript strict mode
 
 ---
 
-## TD-6 — Prisma major version upgrade: 6.x → 7.x
+## ~~TD-6 — Prisma major version upgrade: 6.x → 7.x~~ ✅ RESOLVED
 
-**Context:** Prisma CLI reports `Update available 6.19.3 -> 7.8.0` (major version).
-Prisma 7 introduces breaking changes to imports, the generated client structure, and
-potentially migration behaviour. Requires reading the official migration guide at
-`https://pris.ly/d/major-version-upgrade`.
+Resolved in TD-6 session (mai 2026). Full migration from Prisma 6.11 to 7.8.0.
 
-**Packages to update** (in `apps/server/package.json` and `pnpm-workspace.yaml` catalogs):
-- `prisma` (devDependency)
-- `@prisma/client` (dependency)
+**Key changes:**
+- Generator: `prisma-client-js` → `prisma-client`, output to `src/generated/prisma/`
+- Driver adapter: `@prisma/adapter-better-sqlite3` + `better-sqlite3` native bindings
+- All imports updated from `@prisma/client` to generated client paths (9 files)
+- `prisma.config.ts` expanded with `datasource.url`, `migrations` config
+- `reset-password.ts` refactored to use shared prisma instance
+- `seed.js` updated to adapter pattern, runs via `tsx` (Prisma 7 generates .ts only)
+- `--skip-generate` flags removed from Justfile and server-start.sh
+- Docker: build tools for native bindings, `check-missing.js` rewritten for ESM/adapter pattern
+- `prisma` and `tsx` moved to runtime dependencies (needed in Docker deploy stage)
 
-**Likely changes:**
-- Import paths for `PrismaClient` and generated types may change
-- CLI command behaviour / config API may differ
-- `prisma.config.ts` API may have additions
+Spec: `features/specs/td-6-prisma-7-upgrade.md`
+Plan: `features/plans/td-6-prisma-7-migration.md`
 
-**Fix:**
-1. Read the Prisma v7 migration guide
-2. Update `prisma` + `@prisma/client` in the workspace
-3. Adapt imports and any config that changed
-4. Run full test suite and `tsc --noEmit`
-
-**Found during:** local dev session (May 2026)
-**Severity:** Low (no runtime impact today) — but staying far behind on Prisma majors
-accumulates risk and misses bug fixes / performance improvements
+Commits: `925b677` through `45eb0bb` (8 commits)
 
 ---
 

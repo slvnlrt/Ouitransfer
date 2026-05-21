@@ -1,5 +1,26 @@
 # Session Log
 
+## 2026-05-21 (session 2)
+
+**TD-6 — Prisma 6 → 7 upgrade**
+
+Migration complète de Prisma 6.11.0 vers 7.8.0 :
+
+- **Schema** : `prisma-client-js` → `prisma-client`, output vers `src/generated/prisma/`
+- **Driver adapter** : `@prisma/adapter-better-sqlite3` + bindings natifs `better-sqlite3`
+- **Imports** : 9 fichiers migrés de `@prisma/client` vers les chemins du client généré
+- **Config** : `prisma.config.ts` étendu (datasource.url, migrations, seed via tsx)
+- **Scripts** : `--skip-generate` supprimé du Justfile et server-start.sh
+- **Seed** : adapter pattern + exécution via `tsx` (Prisma 7 génère .ts uniquement)
+- **Docker** : build tools Alpine pour bindings natifs, `npm rebuild better-sqlite3`,
+  `check-missing.js` réécrit en ESM avec adapter, `prisma`+`tsx` en dependencies
+- **Tests** : 661 (439 serveur + 222 web) — tous passent
+- Spec : `features/specs/td-6-prisma-7-upgrade.md`
+- Plan : `features/plans/td-6-prisma-7-migration.md`
+- Commits : `925b677` à `45eb0bb` (8 commits)
+
+---
+
 ## 2026-05-21
 
 **TD-14 (Footer configurable) + TD-12 (Background Images)**
