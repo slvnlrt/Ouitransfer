@@ -2,7 +2,7 @@ import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand } from "@aws-sd
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import sharp from "sharp";
 
-import { bucketName, s3Client } from "../../config/storage.config.js";
+import { bucketName, createPublicS3Client, s3Client } from "../../config/storage.config.js";
 import { NotFoundError, ValidationError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import type { BackgroundImageResponse } from "./dto.js";
@@ -193,7 +193,12 @@ export class BackgroundImageService {
   }
 
   private async getPresignedUrl(key: string): Promise<string> {
-    const client = this.ensureS3Client();
+    // Use the public S3 client so presigned URLs contain the browser-reachable
+    // endpoint (STORAGE_URL) instead of the Docker-internal hostname.
+    const client = createPublicS3Client();
+    if (!client) {
+      throw new Error("S3 client is not configured");
+    }
     return getSignedUrl(client, new GetObjectCommand({ Bucket: bucketName, Key: key }), {
       expiresIn: PRESIGNED_EXPIRY,
     });

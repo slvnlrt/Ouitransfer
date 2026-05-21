@@ -56,7 +56,7 @@ vi.mock("../../../config/storage.config.js", () => ({
   isInternalStorage: false,
   rejectUnauthorized: true,
   storageConfig: {},
-  createPublicS3Client: vi.fn().mockReturnValue(null),
+  createPublicS3Client: vi.fn().mockReturnValue({ send: vi.fn().mockResolvedValue({}) }),
   ensureBucket: vi.fn().mockResolvedValue(undefined),
 }));
 
