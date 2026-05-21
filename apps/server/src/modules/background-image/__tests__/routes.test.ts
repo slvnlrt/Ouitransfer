@@ -181,7 +181,7 @@ describe("Background image routes — integration", () => {
   // ═══════════════════════════════════════════════════════════════════════════
 
   describe("POST /background-images", () => {
-    it("returns 401 without auth cookie (GET /csrf-token-exempt, POST needs auth first)", async () => {
+    it("returns 401 or 403 without auth cookie", async () => {
       // No auth and no CSRF: admin preValidation fires first → 401
       // CSRF hook also fires for POST; either 401 or 403 is acceptable
       const res = await app.inject({
