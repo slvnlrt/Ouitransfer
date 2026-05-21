@@ -8,12 +8,12 @@
   "workspaces": {
     ".": {
       "entry": [".lighthouserc.cjs", "infra/check-missing.js"],
-      "ignoreDependencies": ["@prisma/client"]
+      "ignoreDependencies": ["dotenv", "@prisma/adapter-better-sqlite3"]
     },
     "apps/server": {
       "entry": ["src/scripts/reset-password.ts"],
       "project": ["src/**/*.ts"],
-      "ignoreDependencies": ["@vitest/coverage-v8"]
+      "ignoreDependencies": ["@vitest/coverage-v8", "@prisma/client"]
     },
     "apps/web": {
       "entry": [

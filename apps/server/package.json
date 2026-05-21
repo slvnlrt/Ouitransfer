@@ -34,7 +34,7 @@
     "validate": "pnpm lint && pnpm type-check",
     "db:migrate": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
-    "db:seed": "node prisma/seed.js",
+    "db:seed": "tsx prisma/seed.js",
     "cleanup:orphan-files": "tsx src/scripts/cleanup-orphan-files.ts",
     "cleanup:orphan-files:confirm": "tsx src/scripts/cleanup-orphan-files.ts --confirm",
     "test": "vitest run",
@@ -68,8 +68,10 @@
     "ldapts": "^8.1.7",
     "nodemailer": "^8.0.7",
     "otpauth": "^9.5.0",
+    "prisma": ">=7.3.0",
     "qrcode": "catalog:",
     "sharp": "^0.34.2",
+    "tsx": "^4.19.2",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -78,8 +80,6 @@
     "@types/node": "catalog:",
     "@types/nodemailer": "^8.0.0",
     "@types/qrcode": "catalog:",
-    "prisma": ">=7.3.0",
-    "tsx": "^4.19.2",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

@@ -41,6 +41,8 @@ RUN pnpm --filter @ouitransfer/shared run build
 
 # === SERVER BUILD STAGE ===
 FROM base AS server-builder
+# Build tools for native modules (better-sqlite3 prebuild fallback)
+RUN apk add --no-cache python3 make g++
 # Workspace context (pnpm deploy needs workspace config at root)
 COPY --from=server-deps /app/pnpm-workspace.yaml /app/package.json /app/pnpm-lock.yaml /app/.npmrc ./
 COPY --from=server-deps /app/node_modules ./node_modules
@@ -61,8 +63,10 @@ RUN pnpm run build
 # - Only production dependencies
 WORKDIR /app
 RUN pnpm --filter ouitransfer-api deploy --legacy --prod --ignore-scripts /app/deploy
-# Generate Prisma client in-place (schema copied via package.json "files" field)
+# Post-deploy: rebuild native modules and generate Prisma client
+# (both skipped by --ignore-scripts during deploy)
 WORKDIR /app/deploy
+RUN npm rebuild better-sqlite3
 RUN node node_modules/prisma/build/index.js generate
 
 
@@ -83,15 +87,22 @@ RUN addgroup --system --gid 1001 nodejs \
 WORKDIR /app/ouitransfer-app
 COPY --from=server-builder --chown=ouitransfer:nodejs /app/deploy ./
 
-# Server startup script and config files
+# Server startup script
 COPY --chown=ouitransfer:nodejs infra/server-start.sh /app/server-start.sh
-COPY --chown=ouitransfer:nodejs infra/configs.json /app/infra/configs.json
-COPY --chown=ouitransfer:nodejs infra/providers.json /app/infra/providers.json
-COPY --chown=ouitransfer:nodejs infra/check-missing.js /app/infra/check-missing.js
 RUN chmod +x /app/server-start.sh
 RUN chmod +x ./reset-password.sh
 
-# Seed file (accessible from data volume for bind mounts)
+# Infra files: check-missing script + seed configs
+# Placed in prisma/ dir so server-start.sh can run ./prisma/check-missing.js directly.
+# Also kept in /app/infra/ as source for persistent /app/server/prisma/ copies.
+COPY --chown=ouitransfer:nodejs infra/configs.json /app/infra/configs.json
+COPY --chown=ouitransfer:nodejs infra/providers.json /app/infra/providers.json
+COPY --chown=ouitransfer:nodejs infra/check-missing.js /app/infra/check-missing.js
+COPY --chown=ouitransfer:nodejs infra/configs.json ./prisma/configs.json
+COPY --chown=ouitransfer:nodejs infra/providers.json ./prisma/providers.json
+COPY --chown=ouitransfer:nodejs infra/check-missing.js ./prisma/check-missing.js
+
+# Seed file backup (accessible from data volume for bind mounts)
 RUN mkdir -p /app/server/prisma
 COPY --from=server-builder --chown=ouitransfer:nodejs /app/apps/server/prisma/seed.js /app/server/prisma/seed.js
 

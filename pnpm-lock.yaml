@@ -250,12 +250,18 @@ importers:
       otpauth:
         specifier: ^9.5.0
         version: 9.5.0
+      prisma:
+        specifier: '>=7.3.0'
+        version: 7.8.0(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(better-sqlite3@12.10.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(typescript@5.8.3)
       qrcode:
         specifier: 'catalog:'
         version: 1.5.4
       sharp:
         specifier: ^0.34.2
         version: 0.34.5
+      tsx:
+        specifier: ^4.19.2
+        version: 4.21.0
       zod:
         specifier: 'catalog:'
         version: 3.25.76
@@ -275,12 +281,6 @@ importers:
       '@types/qrcode':
         specifier: 'catalog:'
         version: 1.5.6
-      prisma:
-        specifier: '>=7.3.0'
-        version: 7.8.0(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(better-sqlite3@12.10.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(typescript@5.8.3)
-      tsx:
-        specifier: ^4.19.2
-        version: 4.21.0
       typescript:
         specifier: 'catalog:'
         version: 5.8.3
