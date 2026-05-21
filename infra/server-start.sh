@@ -13,7 +13,8 @@ export DATABASE_URL="file:/app/server/prisma/ouitransfer.db"
 # Prisma CLI path — uses node directly (no npx/.bin dependency)
 PRISMA_CLI="node_modules/prisma/build/index.js"
 # tsx is needed to run seed.js (Prisma 7 generates TypeScript-only client)
-TSX="node_modules/.bin/tsx"
+# Use direct path (not .bin symlink — pnpm deploy may not create it)
+TSX="node node_modules/tsx/dist/cli.mjs"
 
 echo "Data directory: /app/server"
 echo "Database: $DATABASE_URL"
