@@ -1289,12 +1289,13 @@ git commit -m "feat(TD-12): add background image manager in admin settings"
 
 ---
 
-## Task 8: Frontend — Image Picker in Reverse Share Form
+## Task 8: Frontend — Image Picker in Reverse Share Form + Details Modal
 
 **Files:**
-- Create: `apps/web/src/app/(shares)/reverse-shares/components/create-reverse-share/background-image-section.tsx`
+- Create: `apps/web/src/app/(shares)/reverse-shares/components/background-image-picker.tsx`
 - Modify: `apps/web/src/app/(shares)/reverse-shares/components/create-reverse-share/types.ts`
 - Modify: `apps/web/src/app/(shares)/reverse-shares/components/create-reverse-share/basic-info-section.tsx`
+- Modify: `apps/web/src/app/(shares)/reverse-shares/components/reverse-share-details-modal.tsx`
 - Modify: `apps/web/messages/en-US.json` (+ 22 locales)
 
 - [ ] **Step 1: Add backgroundImageId to form types**
@@ -1311,9 +1312,10 @@ In `apps/web/src/app/(shares)/reverse-shares/components/create-reverse-share/typ
   backgroundImageId: null,
 ```
 
-- [ ] **Step 2: Create background-image-section.tsx**
+- [ ] **Step 2: Create reusable background-image-picker.tsx**
 
-Create `apps/web/src/app/(shares)/reverse-shares/components/create-reverse-share/background-image-section.tsx`:
+Create `apps/web/src/app/(shares)/reverse-shares/components/background-image-picker.tsx`.
+This component is shared between the creation form and the details modal — it uses `value`/`onChange` props (no form dependency):
 
 ```tsx
 "use client";
@@ -1321,19 +1323,18 @@ Create `apps/web/src/app/(shares)/reverse-shares/components/create-reverse-share
 import { useQuery } from "@tanstack/react-query";
 import { Shuffle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { UseFormReturn } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
 import { listBackgroundImages } from "@/http/endpoints/background-images";
 import type { BackgroundImage } from "@/http/endpoints/background-images/types";
 import { queryKeys } from "@/lib/query-keys";
-import type { CreateReverseShareFormData } from "./types";
 
-interface BackgroundImageSectionProps {
-  form: UseFormReturn<CreateReverseShareFormData>;
+interface BackgroundImagePickerProps {
+  value: string | null | undefined;
+  onChange: (id: string | null) => void;
 }
 
-export function BackgroundImageSection({ form }: BackgroundImageSectionProps) {
+export function BackgroundImagePicker({ value, onChange }: BackgroundImagePickerProps) {
   const t = useTranslations();
 
   const { data, isLoading } = useQuery({
@@ -1345,7 +1346,6 @@ export function BackgroundImageSection({ form }: BackgroundImageSectionProps) {
   });
 
   const images = data ?? [];
-  const selectedId = form.watch("backgroundImageId");
 
   if (isLoading) {
     return null;
@@ -1373,10 +1373,10 @@ export function BackgroundImageSection({ form }: BackgroundImageSectionProps) {
         {/* Random option */}
         <button
           type="button"
-          onClick={() => form.setValue("backgroundImageId", null)}
+          onClick={() => onChange(null)}
           className={cn(
             "relative aspect-video rounded-lg border-2 flex items-center justify-center bg-muted transition-all",
-            selectedId === null || selectedId === undefined
+            value === null || value === undefined
               ? "border-primary ring-2 ring-primary/20"
               : "border-transparent hover:border-muted-foreground/30",
           )}
@@ -1394,10 +1394,10 @@ export function BackgroundImageSection({ form }: BackgroundImageSectionProps) {
           <button
             key={image.id}
             type="button"
-            onClick={() => form.setValue("backgroundImageId", image.id)}
+            onClick={() => onChange(image.id)}
             className={cn(
               "relative aspect-video rounded-lg border-2 overflow-hidden transition-all",
-              selectedId === image.id
+              value === image.id
                 ? "border-primary ring-2 ring-primary/20"
                 : "border-transparent hover:border-muted-foreground/30",
             )}
@@ -1415,19 +1415,22 @@ export function BackgroundImageSection({ form }: BackgroundImageSectionProps) {
 }
 ```
 
-- [ ] **Step 3: Show image picker when WETRANSFER is selected**
+- [ ] **Step 3: Show image picker when WETRANSFER is selected in creation form**
 
 In `apps/web/src/app/(shares)/reverse-shares/components/create-reverse-share/basic-info-section.tsx`:
 
 1. Add import:
 ```ts
-import { BackgroundImageSection } from "./background-image-section";
+import { BackgroundImagePicker } from "../background-image-picker";
 ```
 
 2. After the `pageLayout` FormField (after line 97 `/>`, before the closing `</div>`), add:
 ```tsx
       {form.watch("pageLayout") === "WETRANSFER" && (
-        <BackgroundImageSection form={form} />
+        <BackgroundImagePicker
+          value={form.watch("backgroundImageId")}
+          onChange={(id) => form.setValue("backgroundImageId", id)}
+        />
       )}
 ```
 
@@ -1452,17 +1455,40 @@ Same structure, English text.
 
 The `createReverseShare` HTTP call already sends the full form data. The server DTO now accepts `backgroundImageId`. Verify that the form submission code (`use-create-reverse-share.ts` or wherever the form submits) passes `backgroundImageId` from the form data to the API call. Search the file that calls `createReverseShare()` and confirm the field is forwarded.
 
-- [ ] **Step 7: Run type-check**
+- [ ] **Step 7: Add image picker to reverse-share-details-modal.tsx**
+
+In `apps/web/src/app/(shares)/reverse-shares/components/reverse-share-details-modal.tsx`:
+
+1. Add import:
+```ts
+import { BackgroundImagePicker } from "./background-image-picker";
+```
+
+2. After the `pageLayout` EditableField (line ~206, after the closing `/>` of the EditableField), add a conditional image picker that appears when pageLayout is WETRANSFER:
+```tsx
+                {(getDisplayValue(reverseShare, "pageLayout", pendingChanges) === "WETRANSFER") && (
+                  <div className="space-y-2">
+                    <BackgroundImagePicker
+                      value={getDisplayValue(reverseShare, "backgroundImageId", pendingChanges) as string | null}
+                      onChange={(id) => handleUpdateField("backgroundImageId", id)}
+                    />
+                  </div>
+                )}
+```
+
+This uses the same `handleUpdateField` pattern as all other editable fields in the modal — changes are saved immediately via `onUpdateReverseShare`.
+
+- [ ] **Step 8: Run type-check**
 
 ```bash
 pnpm --filter @ouitransfer/web exec tsc --noEmit
 ```
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 9: Commit**
 
 ```bash
-git add apps/web/src/app/(shares)/reverse-shares/components/create-reverse-share/ apps/web/messages/
-git commit -m "feat(TD-12): add background image picker in reverse share creation form"
+git add apps/web/src/app/(shares)/reverse-shares/components/ apps/web/messages/
+git commit -m "feat(TD-12): add background image picker in reverse share form and details modal"
 ```
 
 ---
