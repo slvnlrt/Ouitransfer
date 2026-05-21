@@ -1,16 +1,15 @@
-import "dotenv/config";
+#!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-import { PrismaClient } from "../src/generated/prisma/client.js";
+import dotenv from "dotenv";
+import { createPrismaClient } from "../src/shared/prisma-factory.js";
+
+dotenv.config({ path: [".env", ".env.development"] });
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const adapter = new PrismaBetterSqlite3({
-  url: process.env.DATABASE_URL ?? "file:./prisma/ouitransfer.db",
-});
-const prisma = new PrismaClient({ adapter });
+const prisma = createPrismaClient();
 
 const loadConfigs = () => {
   try {
