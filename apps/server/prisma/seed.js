@@ -41,6 +41,24 @@ const defaultConfigs = [
     type: "boolean",
     group: "general",
   },
+  {
+    key: "footerEnabled",
+    value: "true",
+    type: "boolean",
+    group: "general",
+  },
+  {
+    key: "footerText",
+    value: "Burger&Cie",
+    type: "string",
+    group: "general",
+  },
+  {
+    key: "footerUrl",
+    value: "https://burgeretcie.fr",
+    type: "string",
+    group: "general",
+  },
   // Storage Configurations
   {
     key: "maxFileSize",

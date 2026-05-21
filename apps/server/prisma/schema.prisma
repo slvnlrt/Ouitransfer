@@ -258,6 +258,9 @@ model ReverseShare {
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
 
+  backgroundImageId  String?
+  backgroundImage    BackgroundImage? @relation(fields: [backgroundImageId], references: [id], onDelete: SetNull)
+
   creatorId String
   creator   User   @relation(fields: [creatorId], references: [id], onDelete: Cascade)
 
@@ -294,6 +297,20 @@ model ReverseShareAlias {
   updatedAt      DateTime     @updatedAt
 
   @@map("reverse_share_aliases")
+}
+
+model BackgroundImage {
+  id             String   @id @default(cuid())
+  name           String?
+  s3Key          String
+  thumbnailS3Key String
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  reverseShares ReverseShare[]
+
+  @@map("background_images")
 }
 
 enum FieldRequirement {
