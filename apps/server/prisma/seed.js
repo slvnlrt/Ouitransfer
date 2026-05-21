@@ -1,12 +1,10 @@
 import crypto from "node:crypto";
-import "dotenv/config";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-import { PrismaClient } from "../src/generated/prisma/client.js";
+import dotenv from "dotenv";
+import { createPrismaClient } from "../src/shared/prisma-factory.js";
 
-const adapter = new PrismaBetterSqlite3({
-  url: process.env.DATABASE_URL ?? "file:./prisma/ouitransfer.db",
-});
-const prisma = new PrismaClient({ adapter });
+dotenv.config({ path: [".env", ".env.development"] });
+
+const prisma = createPrismaClient();
 
 const defaultConfigs = [
   // General Configurations

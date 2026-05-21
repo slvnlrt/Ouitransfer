@@ -66,8 +66,8 @@ install_all_deps() {
 
 # Function to ensure Prisma client is available
 ensure_prisma() {
-    # Check if Prisma client exists and is valid
-    if [ -d "node_modules/@prisma/client" ] && [ -f "node_modules/@prisma/client/index.js" ]; then
+    # Check if generated Prisma client exists
+    if [ -f "src/generated/prisma/client.ts" ]; then
         return 0
     fi
 

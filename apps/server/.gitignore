@@ -5,3 +5,4 @@ uploads/*
 temp-uploads/*
 prisma/*.db
 tsconfig.tsbuildinfo
+src/generated/

@@ -2,6 +2,9 @@ packages:
   - "apps/*"
   - "packages/*"
 
+onlyBuiltDependencies:
+  - better-sqlite3
+
 catalog:
   # ── Runtime (shared across 2+ apps) ──────────────────────────
   motion: "^12.23.0"
