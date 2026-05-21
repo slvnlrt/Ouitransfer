@@ -209,10 +209,10 @@ importers:
         specifier: workspace:*
         version: link:../../packages/shared
       '@prisma/adapter-better-sqlite3':
-        specifier: '>=7.3.0'
+        specifier: ^7.8.0
         version: 7.8.0
       '@prisma/client':
-        specifier: '>=7.3.0'
+        specifier: ^7.8.0
         version: 7.8.0(prisma@7.8.0(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(better-sqlite3@12.10.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(typescript@5.8.3))(typescript@5.8.3)
       '@scalar/fastify-api-reference':
         specifier: ^1.32.1
@@ -224,10 +224,10 @@ importers:
         specifier: ^2.4.3
         version: 2.4.3
       better-sqlite3:
-        specifier: '>=8.0.0'
+        specifier: ^12.10.0
         version: 12.10.0
       dotenv:
-        specifier: '>=16.0.0'
+        specifier: ^17.4.2
         version: 17.4.2
       fastify:
         specifier: ^5.4.0
@@ -251,7 +251,7 @@ importers:
         specifier: ^9.5.0
         version: 9.5.0
       prisma:
-        specifier: '>=7.3.0'
+        specifier: ^7.8.0
         version: 7.8.0(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(better-sqlite3@12.10.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(typescript@5.8.3)
       qrcode:
         specifier: 'catalog:'
@@ -270,7 +270,7 @@ importers:
         specifier: ^2.4.6
         version: 2.4.6
       '@types/better-sqlite3':
-        specifier: '>=7.0.0'
+        specifier: ^7.6.13
         version: 7.6.13
       '@types/node':
         specifier: 'catalog:'
