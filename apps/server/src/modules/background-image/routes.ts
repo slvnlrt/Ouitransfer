@@ -9,7 +9,7 @@ import {
   ReorderBackgroundImagesSchema,
   UpdateBackgroundImageSchema,
 } from "./dto.js";
-import { BackgroundImageService } from "./service.js";
+import { BackgroundImageService, MAX_RAW_SIZE } from "./service.js";
 
 const service = new BackgroundImageService();
 const adminPreValidation = createAdminPreValidation({ allowSetupBypass: false });
@@ -73,6 +73,9 @@ export const backgroundImageRoutes: FastifyPluginAsyncZod = async (app) => {
         403: ErrorResponseSchema,
       },
     },
+    // NOTE: Multipart fields must be sent BEFORE the file field.
+    // The 'name' field is read from file.fields, which only contains
+    // fields that appeared before the file in the multipart stream.
     handler: async (request, reply) => {
       const file = await request.file();
       if (!file) {
@@ -89,7 +92,7 @@ export const backgroundImageRoutes: FastifyPluginAsyncZod = async (app) => {
         nameField && "value" in nameField ? (nameField.value as string) || undefined : undefined;
 
       const chunks: Buffer[] = [];
-      const maxSize = 10 * 1024 * 1024;
+      const maxSize = MAX_RAW_SIZE;
       let totalSize = 0;
 
       for await (const chunk of file.file) {
@@ -149,7 +152,7 @@ export const backgroundImageRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     handler: async (request, reply) => {
-      const image = await service.rename(request.params.id, request.body.name ?? "");
+      const image = await service.rename(request.params.id, request.body.name);
       return reply.send({ image });
     },
   });

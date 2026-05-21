@@ -12,7 +12,7 @@ const FULL_WIDTH = 1920;
 const THUMB_WIDTH = 400;
 const FULL_QUALITY = 80;
 const THUMB_QUALITY = 70;
-const MAX_RAW_SIZE = 10 * 1024 * 1024; // 10 MB
+export const MAX_RAW_SIZE = 10 * 1024 * 1024; // 10 MB
 const PRESIGNED_EXPIRY = 3600; // 1 hour
 
 export class BackgroundImageService {
@@ -23,13 +23,15 @@ export class BackgroundImageService {
     const responses: BackgroundImageResponse[] = [];
 
     for (const img of images) {
-      const thumbnailUrl = await this.getPresignedUrl(img.thumbnailS3Key);
+      const [thumbnailUrl, fullUrl] = await Promise.all([
+        this.getPresignedUrl(img.thumbnailS3Key),
+        this.getPresignedUrl(img.s3Key),
+      ]);
       responses.push({
         id: img.id,
         name: img.name,
-        s3Key: img.s3Key,
-        thumbnailS3Key: img.thumbnailS3Key,
         thumbnailUrl,
+        fullUrl,
         sortOrder: img.sortOrder,
         createdAt: img.createdAt.toISOString(),
         updatedAt: img.updatedAt.toISOString(),
@@ -112,14 +114,16 @@ export class BackgroundImageService {
       thumbnailS3Key,
     });
 
-    const thumbnailUrl = await this.getPresignedUrl(thumbnailS3Key);
+    const [thumbnailUrl, fullUrl] = await Promise.all([
+      this.getPresignedUrl(thumbnailS3Key),
+      this.getPresignedUrl(s3Key),
+    ]);
 
     return {
       id: image.id,
       name: image.name,
-      s3Key: image.s3Key,
-      thumbnailS3Key: image.thumbnailS3Key,
       thumbnailUrl,
+      fullUrl,
       sortOrder: image.sortOrder,
       createdAt: image.createdAt.toISOString(),
       updatedAt: image.updatedAt.toISOString(),
@@ -133,14 +137,16 @@ export class BackgroundImageService {
     }
 
     const updated = await this.repository.update(id, { name });
-    const thumbnailUrl = await this.getPresignedUrl(updated.thumbnailS3Key);
+    const [thumbnailUrl, fullUrl] = await Promise.all([
+      this.getPresignedUrl(updated.thumbnailS3Key),
+      this.getPresignedUrl(updated.s3Key),
+    ]);
 
     return {
       id: updated.id,
       name: updated.name,
-      s3Key: updated.s3Key,
-      thumbnailS3Key: updated.thumbnailS3Key,
       thumbnailUrl,
+      fullUrl,
       sortOrder: updated.sortOrder,
       createdAt: updated.createdAt.toISOString(),
       updatedAt: updated.updatedAt.toISOString(),
@@ -157,16 +163,20 @@ export class BackgroundImageService {
       throw new NotFoundError("Background image not found");
     }
 
-    // Delete S3 objects
+    // Delete S3 objects (use allSettled so both are attempted even if one fails)
     const client = this.ensureS3Client();
-    try {
-      await client.send(new DeleteObjectCommand({ Bucket: bucketName, Key: image.s3Key }));
-      await client.send(new DeleteObjectCommand({ Bucket: bucketName, Key: image.thumbnailS3Key }));
-    } catch (err) {
-      getLogger().warn(
-        { err, id },
-        "Failed to delete S3 objects for background image — proceeding with DB deletion",
-      );
+    const results = await Promise.allSettled([
+      client.send(new DeleteObjectCommand({ Bucket: bucketName, Key: image.s3Key })),
+      client.send(new DeleteObjectCommand({ Bucket: bucketName, Key: image.thumbnailS3Key })),
+    ]);
+
+    for (const result of results) {
+      if (result.status === "rejected") {
+        getLogger().warn(
+          { err: result.reason, id },
+          "Failed to delete S3 object for background image — proceeding with DB deletion",
+        );
+      }
     }
 
     // Delete DB record (onDelete: SetNull clears FK on ReverseShares)

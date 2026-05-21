@@ -1,17 +1,20 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronDown, ChevronUp, ImagePlus, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, ImagePlus, Pencil, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
   deleteBackgroundImage,
   listBackgroundImages,
+  reorderBackgroundImages,
+  updateBackgroundImage,
   uploadBackgroundImage,
 } from "@/http/endpoints/background-images";
 import type { BackgroundImage } from "@/http/endpoints/background-images/types";
@@ -23,6 +26,8 @@ export function BackgroundImageManager() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.backgroundImages.list(),
@@ -42,6 +47,26 @@ export function BackgroundImageManager() {
     },
     onError: () => {
       toast.error(t("backgroundImages.deleteError"));
+    },
+  });
+
+  const renameMutation = useMutation({
+    mutationFn: ({ id, name }: { id: string; name: string }) => updateBackgroundImage(id, { name }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.backgroundImages.all });
+    },
+    onError: () => {
+      toast.error(t("backgroundImages.renameError"));
+    },
+  });
+
+  const reorderMutation = useMutation({
+    mutationFn: (ids: string[]) => reorderBackgroundImages(ids),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.backgroundImages.all });
+    },
+    onError: () => {
+      toast.error(t("backgroundImages.reorderError"));
     },
   });
 
@@ -68,6 +93,37 @@ export function BackgroundImageManager() {
     if (window.confirm(t("backgroundImages.deleteConfirm"))) {
       deleteMutation.mutate(id);
     }
+  };
+
+  const startEditing = (image: BackgroundImage) => {
+    setEditingId(image.id);
+    setEditingName(image.name ?? "");
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setEditingName("");
+  };
+
+  const saveEditing = () => {
+    if (!editingId) return;
+    const trimmed = editingName.trim();
+    if (!trimmed) {
+      // Backend requires non-empty name — cancel edit
+      cancelEditing();
+      return;
+    }
+    renameMutation.mutate({ id: editingId, name: trimmed });
+    setEditingId(null);
+    setEditingName("");
+  };
+
+  const handleMove = (index: number, direction: "up" | "down") => {
+    const newImages = [...images];
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newImages.length) return;
+    [newImages[index], newImages[targetIndex]] = [newImages[targetIndex], newImages[index]];
+    reorderMutation.mutate(newImages.map((img) => img.id));
   };
 
   return (
@@ -100,28 +156,81 @@ export function BackgroundImageManager() {
           <p className="text-sm text-muted-foreground">{t("backgroundImages.empty")}</p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {images.map((image: BackgroundImage) => (
+            {images.map((image: BackgroundImage, index: number) => (
               <div key={image.id} className="group relative rounded-lg overflow-hidden border">
                 <div className="aspect-video bg-muted">
                   <img
                     src={image.thumbnailUrl}
-                    alt={image.name || "Background"}
+                    alt={image.name ?? "Background"}
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="p-2 flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground truncate">
-                    {image.name || t("backgroundImages.untitled")}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={() => handleDelete(image.id)}
-                    disabled={deleteMutation.isPending}
-                  >
-                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                  </Button>
+                <div className="p-2 space-y-1">
+                  {/* Name: inline editable */}
+                  {editingId === image.id ? (
+                    <Input
+                      value={editingName}
+                      onChange={(e) => setEditingName(e.target.value)}
+                      onBlur={saveEditing}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") saveEditing();
+                        if (e.key === "Escape") cancelEditing();
+                      }}
+                      className="h-6 text-xs"
+                      autoFocus
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => startEditing(image)}
+                      className="flex items-center gap-1 text-xs text-muted-foreground truncate hover:text-foreground transition-colors bg-transparent border-0 p-0 cursor-pointer"
+                      title={t("backgroundImages.rename")}
+                    >
+                      <span className="truncate">
+                        {image.name ?? t("backgroundImages.untitled")}
+                      </span>
+                      <Pencil className="h-2.5 w-2.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </button>
+                  )}
+
+                  {/* Action buttons: reorder + delete */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-0.5">
+                      {images.length > 1 && index > 0 && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-5 w-5"
+                          onClick={() => handleMove(index, "up")}
+                          disabled={reorderMutation.isPending}
+                          title={t("backgroundImages.moveUp")}
+                        >
+                          <ChevronUp className="h-3 w-3" />
+                        </Button>
+                      )}
+                      {images.length > 1 && index < images.length - 1 && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-5 w-5"
+                          onClick={() => handleMove(index, "down")}
+                          disabled={reorderMutation.isPending}
+                          title={t("backgroundImages.moveDown")}
+                        >
+                          <ChevronDown className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => handleDelete(image.id)}
+                      disabled={deleteMutation.isPending}
+                    >
+                      <Trash2 className="h-3 w-3 text-destructive" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}

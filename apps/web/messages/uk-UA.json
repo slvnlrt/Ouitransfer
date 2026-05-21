@@ -2332,6 +2332,11 @@
     "deleteConfirm": "Are you sure you want to delete this background image?",
     "deleteSuccess": "Image deleted successfully",
     "deleteError": "Failed to delete image",
-    "untitled": "Untitled"
+    "untitled": "Untitled",
+    "rename": "Click to rename",
+    "renameError": "Failed to rename image",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "reorderError": "Failed to reorder images"
   }
 }

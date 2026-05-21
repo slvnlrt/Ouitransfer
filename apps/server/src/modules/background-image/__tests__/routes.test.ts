@@ -65,9 +65,8 @@ vi.mock("../service.js", () => ({
     upload = vi.fn().mockResolvedValue({
       id: "img-1",
       name: "Test Image",
-      s3Key: "backgrounds/img-1.webp",
-      thumbnailS3Key: "backgrounds/img-1_thumb.webp",
       thumbnailUrl: "https://s3.example.com/thumb",
+      fullUrl: "https://s3.example.com/full",
       sortOrder: 0,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -75,9 +74,8 @@ vi.mock("../service.js", () => ({
     rename = vi.fn().mockResolvedValue({
       id: "img-1",
       name: "Renamed Image",
-      s3Key: "backgrounds/img-1.webp",
-      thumbnailS3Key: "backgrounds/img-1_thumb.webp",
       thumbnailUrl: "https://s3.example.com/thumb",
+      fullUrl: "https://s3.example.com/full",
       sortOrder: 0,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
