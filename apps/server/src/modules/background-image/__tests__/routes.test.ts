@@ -5,7 +5,6 @@
  *
  * Tests the full request lifecycle for:
  * - GET  /background-images          — public list
- * - GET  /background-images/:id/image — public image redirect
  * - POST /background-images          — admin upload (auth gate)
  * - PATCH /background-images/order   — admin reorder (auth gate)
  * - PATCH /background-images/:id     — admin rename (auth gate)
@@ -61,7 +60,6 @@ vi.mock("../../../modules/auth/token-version.js", () => ({
 vi.mock("../service.js", () => ({
   BackgroundImageService: class MockBackgroundImageService {
     listAll = vi.fn().mockResolvedValue([]);
-    getImageUrl = vi.fn().mockResolvedValue("https://s3.example.com/presigned-url");
     upload = vi.fn().mockResolvedValue({
       id: "img-1",
       name: "Test Image",
@@ -156,23 +154,6 @@ describe("Background image routes — integration", () => {
     it("returns 200 without auth (public endpoint)", async () => {
       const res = await app.inject({ method: "GET", url: "/background-images" });
       expect(res.statusCode).toBe(200);
-    });
-  });
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // GET /background-images/:id/image — public redirect
-  // ═══════════════════════════════════════════════════════════════════════════
-
-  describe("GET /background-images/:id/image", () => {
-    it("returns 302 redirect for an existing image", async () => {
-      // The mock service.getImageUrl resolves with a URL → routes replies with redirect
-      const res = await app.inject({
-        method: "GET",
-        url: "/background-images/img-1/image",
-      });
-
-      expect(res.statusCode).toBe(302);
-      expect(res.headers.location).toBe("https://s3.example.com/presigned-url");
     });
   });
 
@@ -287,6 +268,42 @@ describe("Background image routes — integration", () => {
       const body = res.json();
       expect(body).toHaveProperty("image");
       expect(body.image.name).toBe("Renamed Image");
+    });
+
+    it("returns 400 for empty name", async () => {
+      const token = signAdminToken();
+      const { csrfToken, csrfCookie } = await getCsrf();
+
+      const res = await app.inject({
+        method: "PATCH",
+        url: "/background-images/img-1",
+        headers: {
+          "content-type": "application/json",
+          cookie: `token=${token}; _csrf=${csrfCookie}`,
+          "x-csrf-token": csrfToken,
+        },
+        payload: JSON.stringify({ name: "" }),
+      });
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it("returns 400 for whitespace-only name", async () => {
+      const token = signAdminToken();
+      const { csrfToken, csrfCookie } = await getCsrf();
+
+      const res = await app.inject({
+        method: "PATCH",
+        url: "/background-images/img-1",
+        headers: {
+          "content-type": "application/json",
+          cookie: `token=${token}; _csrf=${csrfCookie}`,
+          "x-csrf-token": csrfToken,
+        },
+        payload: JSON.stringify({ name: "   " }),
+      });
+
+      expect(res.statusCode).toBe(400);
     });
   });
 

@@ -11,7 +11,7 @@ export const BackgroundImageResponseSchema = z.object({
 });
 
 export const UpdateBackgroundImageSchema = z.object({
-  name: z.string().min(1).describe("New display name"),
+  name: z.string().trim().min(1).describe("New display name"),
 });
 
 export const ReorderBackgroundImagesSchema = z.object({

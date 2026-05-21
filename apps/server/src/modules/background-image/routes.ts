@@ -34,29 +34,6 @@ export const backgroundImageRoutes: FastifyPluginAsyncZod = async (app) => {
     },
   });
 
-  // GET /background-images/:id/image — Public redirect to presigned URL
-  app.route({
-    method: "GET",
-    url: "/background-images/:id/image",
-    schema: {
-      tags: ["BackgroundImages"],
-      operationId: "getBackgroundImage",
-      summary: "Get background image (redirect to S3)",
-      params: z.object({ id: z.string() }),
-      querystring: z.object({
-        type: z.enum(["full", "thumb"]).default("full"),
-      }),
-      response: {
-        302: z.never(),
-        404: ErrorResponseSchema,
-      },
-    },
-    handler: async (request, reply) => {
-      const url = await service.getImageUrl(request.params.id, request.query.type);
-      return reply.redirect(url);
-    },
-  });
-
   // POST /background-images — Admin upload
   app.route({
     method: "POST",
@@ -98,7 +75,9 @@ export const backgroundImageRoutes: FastifyPluginAsyncZod = async (app) => {
       for await (const chunk of file.file) {
         totalSize += chunk.length;
         if (totalSize > maxSize) {
-          throw new ValidationError("Image file too large. Maximum size is 10MB.");
+          throw new ValidationError(
+            `Image file too large. Maximum size is ${MAX_RAW_SIZE / 1024 / 1024}MB.`,
+          );
         }
         chunks.push(chunk);
       }

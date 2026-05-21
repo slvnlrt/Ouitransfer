@@ -41,15 +41,6 @@ export class BackgroundImageService {
     return responses;
   }
 
-  async getImageUrl(id: string, type: "full" | "thumb" = "full"): Promise<string> {
-    const image = await this.repository.findById(id);
-    if (!image) {
-      throw new NotFoundError("Background image not found");
-    }
-    const key = type === "thumb" ? image.thumbnailS3Key : image.s3Key;
-    return this.getPresignedUrl(key);
-  }
-
   async upload(
     buffer: Buffer,
     originalFilename: string,
