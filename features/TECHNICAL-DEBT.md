@@ -164,19 +164,18 @@ qui nécessite une analyse d'impact dédiée.
 
 ---
 
-## TD-12 — Images background WetTransfer : provenance inconnue
+## ~~TD-12 — Images background WetTransfer : provenance inconnue~~ ✅ RESOLVED
 
-**Context:** Le mode "WetTransfer" des reverse shares affiche une image de fond aléatoire
-parmi 8 JPG dans `apps/web/public/assets/wetransfer-bgs/1-8.jpg`. L'origine et la licence
-de ces images sont inconnues (potentiellement sous copyright).
+Resolved in TD-12/TD-14 session (mai 2026). Les 8 JPGs hardcodés ont été supprimés et remplacés
+par un système complet de gestion d'images de fond :
+- Nouveau modèle Prisma `BackgroundImage` (S3, WebP, thumbnails)
+- Module serveur `background-image/` avec 6 endpoints (CRUD admin + accès public)
+- Image manager dans les settings admin (upload, suppression)
+- Image picker dans le formulaire de création ET le modal de détails des reverse shares
+- Layout WeTransfer dynamique : image spécifique, aléatoire, ou fallback gradient indigo
 
-**Fix:**
-1. Documenter la provenance des images actuelles
-2. Remplacer par des images créées en propre ou libres de droits (Unsplash, etc.)
-3. Optionnel : permettre à l'admin de configurer ses propres images de fond
-
-**Found during:** Revue manuelle (session audit, mai 2026)
-**Severity:** Low — risque légal potentiel si images sous copyright
+Spec: `features/specs/td-14-td-12-footer-backgrounds.md`
+Plan: `features/plans/td-14-td-12-footer-backgrounds.md`
 
 ---
 
@@ -191,23 +190,17 @@ Commits: `fix(web): replace fragile i18n concatenation with dedicated keys`, `fi
 
 ---
 
-## TD-14 — Footer non configurable (hardcodé)
+## ~~TD-14 — Footer non configurable (hardcodé)~~ ✅ RESOLVED
 
-**Context:** Le footer "Propulsé par Burger&Cie" est hardcodé dans 2 fichiers :
-- `apps/web/src/components/ui/default-footer.tsx`
-- `apps/web/src/app/(shares)/r/[alias]/components/transparent-footer.tsx`
+Resolved in TD-12/TD-14 session (mai 2026). Le footer est maintenant configurable via 3 settings :
+- `footerEnabled` (bool, défaut: true) — masque entièrement le footer si false
+- `footerText` (string, défaut: "Burger&Cie") — texte du lien
+- `footerUrl` (string, défaut: "https://burgeretcie.fr") — URL du lien
 
-L'URL, le nom de la société, et l'affichage ne sont pas configurables par l'admin.
+Les deux composants footer (`default-footer.tsx` et `transparent-footer.tsx`) lisent ces configs
+via `useSecureConfigValue()`. Les settings apparaissent dans le groupe "general" de la page admin.
 
-**Fix:**
-1. Ajouter 3 settings dans la config : `footerEnabled` (bool), `footerText` (string), `footerUrl` (string)
-2. Seeder avec les valeurs par défaut (Burger&Cie + burgeretcie.fr)
-3. Exposer dans la page settings/general
-4. Modifier les 2 composants footer pour lire la config
-5. Ajouter les clés i18n pour les labels des settings
-
-**Found during:** Revue manuelle (session audit, mai 2026)
-**Severity:** Low — configurable est préférable, mais le hardcodé fonctionne
+Spec: `features/specs/td-14-td-12-footer-backgrounds.md`
 
 ---
 

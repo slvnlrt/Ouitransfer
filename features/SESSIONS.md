@@ -1,5 +1,26 @@
 # Session Log
 
+## 2026-05-21
+
+**TD-14 (Footer configurable) + TD-12 (Background Images)**
+
+Implémentation complète des deux tech debt items en une seule session :
+
+- **TD-14** : Footer configurable via 3 settings admin (`footerEnabled`, `footerText`, `footerUrl`).
+  Les 2 composants footer lissent les configs dynamiquement. i18n ajoutée dans 23 locales.
+- **TD-12** : Remplacement des 8 JPGs hardcodés par un système complet :
+  - Nouveau modèle Prisma `BackgroundImage` avec stockage S3 (WebP full + thumbnail)
+  - Module serveur `background-image/` : 6 endpoints (list public, image redirect, upload/rename/reorder/delete admin)
+  - Image manager dans les settings admin (upload, preview thumbnails, suppression)
+  - Image picker dans le formulaire de création ET le modal de détails des reverse shares
+  - Layout WeTransfer dynamique : image spécifique, aléatoire parmi la galerie, ou fallback gradient indigo
+  - 21 nouveaux tests (9 unit + 12 intégration)
+- **Total tests** : 662 (426 server + 222 web + 14 shared)
+- Spec : `features/specs/td-14-td-12-footer-backgrounds.md`
+- Plan : `features/plans/td-14-td-12-footer-backgrounds.md`
+
+---
+
 ## 2026-05-20 (session 2)
 
 **Audit UI et suivi des bugs/tech debt/features**
