@@ -52,21 +52,57 @@ export function BackgroundImageManager() {
 
   const renameMutation = useMutation({
     mutationFn: ({ id, name }: { id: string; name: string }) => updateBackgroundImage(id, { name }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.backgroundImages.all });
+    onMutate: async ({ id, name }) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.backgroundImages.list() });
+      const previous = queryClient.getQueryData<BackgroundImage[]>(
+        queryKeys.backgroundImages.list(),
+      );
+      queryClient.setQueryData<BackgroundImage[]>(queryKeys.backgroundImages.list(), (old) =>
+        old?.map((img) => (img.id === id ? { ...img, name } : img)),
+      );
+      return { previous };
     },
-    onError: () => {
+    onSuccess: () => {
+      toast.success(t("backgroundImages.renameSuccess"));
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(queryKeys.backgroundImages.list(), context.previous);
+      }
       toast.error(t("backgroundImages.renameError"));
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.backgroundImages.all });
     },
   });
 
   const reorderMutation = useMutation({
     mutationFn: (ids: string[]) => reorderBackgroundImages(ids),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.backgroundImages.all });
+    onMutate: async (ids) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.backgroundImages.list() });
+      const previous = queryClient.getQueryData<BackgroundImage[]>(
+        queryKeys.backgroundImages.list(),
+      );
+      if (previous) {
+        const byId = new Map(previous.map((img) => [img.id, img]));
+        const reordered = ids
+          .map((id, index) => {
+            const img = byId.get(id);
+            return img ? { ...img, sortOrder: index } : undefined;
+          })
+          .filter((img): img is BackgroundImage => img !== undefined);
+        queryClient.setQueryData<BackgroundImage[]>(queryKeys.backgroundImages.list(), reordered);
+      }
+      return { previous };
     },
-    onError: () => {
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(queryKeys.backgroundImages.list(), context.previous);
+      }
       toast.error(t("backgroundImages.reorderError"));
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.backgroundImages.all });
     },
   });
 
@@ -129,8 +165,17 @@ export function BackgroundImageManager() {
   return (
     <Card>
       <CardHeader
-        className="flex flex-row items-center justify-between cursor-pointer py-0"
+        className="flex flex-row items-center justify-between cursor-pointer select-none py-0"
         onClick={() => setIsCollapsed((prev) => !prev)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setIsCollapsed((prev) => !prev);
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-expanded={!isCollapsed}
       >
         <div className="flex flex-row items-center gap-8">
           <ImagePlus className="text-xl text-muted-foreground" />

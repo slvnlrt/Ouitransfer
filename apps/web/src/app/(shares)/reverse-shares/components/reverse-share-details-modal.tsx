@@ -209,11 +209,7 @@ export function ReverseShareDetailsModal({
                 {getDisplayValue(reverseShare, "pageLayout", pendingChanges) === "WETRANSFER" && (
                   <div className="space-y-2">
                     <BackgroundImagePicker
-                      value={
-                        getDisplayValue(reverseShare, "backgroundImageId", pendingChanges) as
-                          | string
-                          | null
-                      }
+                      value={getDisplayValue(reverseShare, "backgroundImageId", pendingChanges)}
                       onChange={(id) => handleUpdateField("backgroundImageId", id)}
                     />
                   </div>

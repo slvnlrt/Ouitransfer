@@ -2334,6 +2334,7 @@
     "deleteError": "Failed to delete image",
     "untitled": "Untitled",
     "rename": "Click to rename",
+    "renameSuccess": "Image renamed successfully",
     "renameError": "Failed to rename image",
     "moveUp": "Move up",
     "moveDown": "Move down",

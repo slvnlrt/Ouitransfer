@@ -1,6 +1,19 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
+import type { ReverseShareWithAlias } from "@/http/endpoints/reverse-shares/types";
+
+/** Keys of ReverseShareWithAlias whose values are scalar (string | number | boolean | null). */
+type ScalarShareKey = {
+  [K in keyof ReverseShareWithAlias]: NonNullable<ReverseShareWithAlias[K]> extends
+    | string
+    | number
+    | boolean
+    ? K
+    : never;
+}[keyof ReverseShareWithAlias] &
+  string;
+
 export function useReverseShareDetails() {
   const t = useTranslations();
   const [showAliasModal, setShowAliasModal] = useState(false);
@@ -31,25 +44,17 @@ export function useReverseShareDetails() {
     return `${parseFloat((sizeInBytes / k ** i).toFixed(1))} ${units[i]}`;
   };
 
-  const getDisplayValue = (
-    reverseShare: object | null | undefined,
-    field: string,
-    pendingChanges: Record<string, unknown>,
-  ): string | number | null | undefined => {
+  const getDisplayValue = <K extends ScalarShareKey>(
+    reverseShare: ReverseShareWithAlias | null | undefined,
+    field: K,
+    pendingChanges: Partial<Record<K, string | number | boolean | null>>,
+  ): ReverseShareWithAlias[K] | undefined => {
     const pendingChange = pendingChanges[field];
     if (pendingChange !== undefined) {
-      const pv = pendingChange;
-      if (pv === null || typeof pv === "string" || typeof pv === "number") {
-        return pv;
-      }
-      return String(pv);
+      return pendingChange as ReverseShareWithAlias[K];
     }
     if (!reverseShare) return undefined;
-    const val = (reverseShare as Record<string, unknown>)[field];
-    if (val === null || val === undefined || typeof val === "string" || typeof val === "number") {
-      return val as string | number | null | undefined;
-    }
-    return String(val);
+    return reverseShare[field];
   };
 
   const generateReverseShareLink = (alias?: string) => {

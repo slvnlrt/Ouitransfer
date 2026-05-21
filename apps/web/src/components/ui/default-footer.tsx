@@ -20,6 +20,8 @@ export function DefaultFooter() {
 
   if (isFooterLoading) return null;
 
+  if (!footerText) return null;
+
   const shouldHideVersion = hideVersion === "true";
   const displayText = footerText || "";
   const displayUrl = footerUrl || "#";

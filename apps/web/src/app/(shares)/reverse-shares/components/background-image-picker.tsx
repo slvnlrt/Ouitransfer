@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Shuffle } from "lucide-react";
+import { ImageIcon, Shuffle } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { listBackgroundImages } from "@/http/endpoints/background-images";
@@ -12,9 +12,14 @@ import { cn } from "@/lib/utils";
 interface BackgroundImagePickerProps {
   value: string | null | undefined;
   onChange: (id: string | null) => void;
+  showEmptyHint?: boolean;
 }
 
-export function BackgroundImagePicker({ value, onChange }: BackgroundImagePickerProps) {
+export function BackgroundImagePicker({
+  value,
+  onChange,
+  showEmptyHint = false,
+}: BackgroundImagePickerProps) {
   const t = useTranslations();
 
   const { data, isLoading } = useQuery({
@@ -38,7 +43,17 @@ export function BackgroundImagePicker({ value, onChange }: BackgroundImagePicker
   }
 
   if (images.length === 0) {
-    return null;
+    if (!showEmptyHint) {
+      return null;
+    }
+    return (
+      <div className="flex items-center gap-3 rounded-lg border bg-muted/50 p-3">
+        <ImageIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
+        <span className="text-sm text-muted-foreground">
+          {t("reverseShares.form.backgroundImage.none")}
+        </span>
+      </div>
+    );
   }
 
   return (

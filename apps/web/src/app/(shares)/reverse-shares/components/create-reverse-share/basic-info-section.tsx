@@ -101,6 +101,7 @@ export function BasicInfoSection({ form }: BasicInfoSectionProps) {
         <BackgroundImagePicker
           value={form.watch("backgroundImageId")}
           onChange={(id) => form.setValue("backgroundImageId", id)}
+          showEmptyHint
         />
       )}
     </div>
