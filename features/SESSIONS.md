@@ -14,10 +14,14 @@ Migration complète de Prisma 6.11.0 vers 7.8.0 :
 - **Seed** : adapter pattern + exécution via `tsx` (Prisma 7 génère .ts uniquement)
 - **Docker** : build tools Alpine pour bindings natifs, `npm rebuild better-sqlite3`,
   `check-missing.js` réécrit en ESM avec adapter, `prisma`+`tsx` en dependencies
-- **Tests** : 661 (439 serveur + 222 web) — tous passent
+- **Tests** : 678 (442 serveur + 222 web + 14 shared) — tous passent
+- Review : spec compliance + code quality, 1 Critical + 7 Important + 13 Minor — **tous fixés**
+- Factory `prisma-factory.ts` pour dédupliquer l'init adapter (4 sites → 1)
+- 3 tests d'intégration Prisma v7 (smoke, P2002→409, P2025→404)
 - Spec : `features/specs/td-6-prisma-7-upgrade.md`
 - Plan : `features/plans/td-6-prisma-7-migration.md`
-- Commits : `925b677` à `45eb0bb` (8 commits)
+- Reviews : `features/reviews/td-6-prisma-7-upgrade.md`, `features/reviews/td-6-prisma-7-quality.md`
+- Commits : `925b677` à `1434d80` (15 commits)
 
 ---
 
