@@ -1,4 +1,4 @@
-import { Database, Mail, Settings, Shield, UserCheck } from "lucide-react";
+import { Database, ImagePlus, Mail, Settings, Shield, UserCheck } from "lucide-react";
 import type { createTranslator } from "next-intl";
 
 export const createGroupMetadata = (t: ReturnType<typeof createTranslator>) => ({
@@ -26,6 +26,11 @@ export const createGroupMetadata = (t: ReturnType<typeof createTranslator>) => (
     title: t("settings.groups.storage.title"),
     description: t("settings.groups.storage.description"),
     icon: Database,
+  },
+  backgrounds: {
+    title: t("settings.groups.backgrounds.title"),
+    description: t("settings.groups.backgrounds.description"),
+    icon: ImagePlus,
   },
 });
 

@@ -1319,6 +1319,10 @@
       "oidc": {
         "title": "OpenID Connect (SSO)",
         "description": "Налаштування автентифікації SSO через OpenID Connect"
+      },
+      "backgrounds": {
+        "title": "Background Images",
+        "description": "Manage background images for WeTransfer-style upload pages"
       }
     },
     "fields": {
@@ -2312,5 +2316,16 @@
       "hoursAgo": "{hours}h ago",
       "daysAgo": "{days}d ago"
     }
+  },
+  "backgroundImages": {
+    "empty": "No background images uploaded. Upload images to enable custom backgrounds for WeTransfer-style shares.",
+    "add": "Add Image",
+    "uploading": "Uploading...",
+    "uploadSuccess": "Image uploaded successfully",
+    "uploadError": "Failed to upload image",
+    "deleteConfirm": "Are you sure you want to delete this background image?",
+    "deleteSuccess": "Image deleted successfully",
+    "deleteError": "Failed to delete image",
+    "untitled": "Untitled"
   }
 }
