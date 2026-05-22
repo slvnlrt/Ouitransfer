@@ -31,9 +31,8 @@ const envDefault = process.env.NEXT_PUBLIC_DEFAULT_LANGUAGE || "en-US";
 const DEFAULT_LOCALE = supportedLocales.includes(envDefault) ? envDefault : "en-US";
 
 export default getRequestConfig(async ({ locale }) => {
-  const cookieStore = cookies();
-  const cookiesList = await cookieStore;
-  const localeCookie = cookiesList.get("NEXT_LOCALE");
+  const cookieStore = await cookies();
+  const localeCookie = cookieStore.get("NEXT_LOCALE");
 
   const resolvedLocale = localeCookie?.value || locale || DEFAULT_LOCALE;
   const finalLocale = supportedLocales.includes(resolvedLocale) ? resolvedLocale : DEFAULT_LOCALE;
