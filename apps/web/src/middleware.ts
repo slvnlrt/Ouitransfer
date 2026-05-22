@@ -92,11 +92,11 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
       // Styles: self + inline for Tailwind/styled components
       "style-src 'self' 'unsafe-inline'",
       // Images: self + blob (for preview) + data (for QR codes) + storage origin (for background images)
-      `img-src 'self' blob: data:${env.CSP_CONNECT_SOURCES ? ` ${env.CSP_CONNECT_SOURCES}` : ""}`,
+      `img-src 'self' blob: data:${env.CSP_STORAGE_ORIGINS ? ` ${env.CSP_STORAGE_ORIGINS}` : ""}`,
       // Fonts: self
       "font-src 'self'",
       // Connect: self + any additional sources (e.g., storage endpoint for presigned URL uploads)
-      `connect-src 'self'${env.CSP_CONNECT_SOURCES ? ` ${env.CSP_CONNECT_SOURCES}` : ""}`,
+      `connect-src 'self'${env.CSP_STORAGE_ORIGINS ? ` ${env.CSP_STORAGE_ORIGINS}` : ""}`,
       // Forms: self
       "form-action 'self'",
       // Frames: none

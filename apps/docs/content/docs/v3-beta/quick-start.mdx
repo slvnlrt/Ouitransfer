@@ -150,7 +150,7 @@ Choose your storage method based on your needs:
           API_BASE_URL: "http://server:3333"
           JWT_SECRET: ""     # REQUIRED: must match server's JWT_SECRET (used by Edge middleware)
           # REQUIRED: must match server's STORAGE_URL — allows browsers to reach storage for uploads/images
-          CSP_CONNECT_SOURCES: ""    # REQUIRED: same value as STORAGE_URL (e.g., http://192.168.1.100:9000)
+          CSP_STORAGE_ORIGINS: ""    # REQUIRED: same value as STORAGE_URL (e.g., http://192.168.1.100:9000)
           # DEFAULT_LANGUAGE: "en-US"
         ports:
           - "5487:5487"    # Web interface
@@ -261,7 +261,7 @@ Choose your storage method based on your needs:
           API_BASE_URL: "http://server:3333"
           JWT_SECRET: ""     # REQUIRED: must match server's JWT_SECRET (used by Edge middleware)
           # REQUIRED: must match server's STORAGE_URL — allows browsers to reach storage for uploads/images
-          CSP_CONNECT_SOURCES: ""    # REQUIRED: same value as STORAGE_URL (e.g., http://192.168.1.100:9000)
+          CSP_STORAGE_ORIGINS: ""    # REQUIRED: same value as STORAGE_URL (e.g., http://192.168.1.100:9000)
           # DEFAULT_LANGUAGE: "en-US"
         ports:
           - "5487:5487"    # Web interface
@@ -300,7 +300,7 @@ Customize OUITRANSFER's behavior with these environment variables. Most are set 
 | Variable | Service | Default | Description |
 |----------|---------|---------|-------------|
 | `STORAGE_URL` | server | - | **REQUIRED** for internal storage: Public URL where browsers reach the storage service (e.g., `http://192.168.1.100:9000`) |
-| `CSP_CONNECT_SOURCES` | **web** | - | **REQUIRED** for internal storage: Must match `STORAGE_URL`. Allows browsers to connect to storage for file uploads and background images (sets `connect-src` and `img-src` CSP directives). |
+| `CSP_STORAGE_ORIGINS` | **web** | - | **REQUIRED** for internal storage: Must match `STORAGE_URL`. Allows browsers to connect to storage for file uploads and background images (sets `connect-src` and `img-src` CSP directives). |
 | `JWT_SECRET` | server + web | - | **REQUIRED**: JWT signing key (min 32 chars). Generate with: `openssl rand -hex 32`. Must be set on **both** the server and web services. |
 | `CSRF_SECRET` | server | - | **REQUIRED**: CSRF token HMAC key (min 32 chars, must differ from JWT_SECRET) |
 | `COOKIE_SECRET` | server | - | **REQUIRED**: Cookie signing key (min 32 chars, must differ from other secrets) |
@@ -400,7 +400,7 @@ docker run -d \
   --network ouitransfer \
   -e API_BASE_URL=http://ouitransfer-server:3333 \
   -e JWT_SECRET=your-jwt-secret-at-least-32-chars \
-  -e CSP_CONNECT_SOURCES=http://YOUR_SERVER_IP:9000 \
+  -e CSP_STORAGE_ORIGINS=http://YOUR_SERVER_IP:9000 \
   -p 5487:5487 \
   --restart unless-stopped \
   ghcr.io/slvnlrt/ouitransfer-web:latest
@@ -419,7 +419,7 @@ docker run -d \
 When using internal storage (the default), two environment variables must be configured together:
 
 - **`STORAGE_URL`** (server service) — tells the server how to generate presigned URLs for file uploads and downloads. Browsers will connect directly to this URL.
-- **`CSP_CONNECT_SOURCES`** (web service) — must be set to the **same value** as `STORAGE_URL`. It configures the browser's Content Security Policy to allow connections to the storage service for both file uploads and background image loading.
+- **`CSP_STORAGE_ORIGINS`** (web service) — must be set to the **same value** as `STORAGE_URL`. It configures the browser's Content Security Policy to allow connections to the storage service for both file uploads and background image loading.
 
 ```yaml
 # Server service
@@ -428,7 +428,7 @@ environment:
 
 # Web service
 environment:
-  CSP_CONNECT_SOURCES: "http://192.168.1.100:9000"  # Must match STORAGE_URL
+  CSP_STORAGE_ORIGINS: "http://192.168.1.100:9000"  # Must match STORAGE_URL
 ```
 
 **Important Notes:**
@@ -437,6 +437,7 @@ environment:
 - **Must include port 9000** unless you're using a reverse proxy
 - **Use your actual domain/IP** that clients will access — `localhost` only works when browsers run on the same machine as Docker
 - **Not needed if using external S3** (`ENABLE_S3=true`) — the S3 endpoint is used directly
+- **Use HTTPS in production** — HTTP exposes presigned URL signatures and file contents on the wire, and browsers block mixed-content requests if the web app is served over HTTPS
 
 ### Presigned URL Expiration
 

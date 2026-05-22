@@ -36,4 +36,4 @@ services:
         NEXT_PUBLIC_APP_VERSION: ${NEXT_PUBLIC_APP_VERSION:-dev}
     environment:
       JWT_SECRET: ci-e2e-jwt-secret-minimum-32-characters-long-ok
-      CSP_CONNECT_SOURCES: "http://localhost:9000"
+      CSP_STORAGE_ORIGINS: "http://localhost:9000"
