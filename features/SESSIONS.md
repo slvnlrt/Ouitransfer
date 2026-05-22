@@ -12,8 +12,17 @@ Implémentation complète du composant QuickShare sur le dashboard :
 - **UI composants** : `QuickShareDropzone` (drag/drop + click), `QuickShareUpload` (liste fichiers, options nom/expiration/mot de passe/destinataires, bouton partager), `QuickShareConfirmation` (QR code, lien+copie, téléchargement QR)
 - **Intégration** : composant `QuickShare` orchestrateur, `GlobalDropZone` retiré du dashboard (reste sur la page fichiers), `smtpEnabled` passé comme prop
 - **Fix pré-existant** : `onAfterUpload` return type dans `file-upload-section.tsx` (reverse-share)
-- Tests : 689 (442 serveur + 233 web + 14 shared) — tous passent. Type-check web + serveur OK.
-- Commits : 6 commits (`776b83a` through `4d493f6`)
+- **Review finale** : 1 Critical + 6 Important + 10 Minor findings — tous corrigés
+  - C1 : multi-batch upload (second drop ne déclenchait pas l'upload) → useEffect réactif
+  - I1 : accessibilité clavier sur la dropzone (role=button, tabIndex, onKeyDown)
+  - I2 : aria-label manquant sur le bouton copier
+  - I3 : pendingShare non réinitialisé sur certains early returns de performShare
+  - I4 : boutons remove/retry non désactivés pendant la soumission
+  - I5 : share orphelin si createShareAlias échoue → retry loop + cleanup
+  - I6 : setTimeout sans cleanup (résolu par C1)
+  - M1-M8 : clé i18n morte, type `string|void`, guards x-move-item, aria-hidden, dropToAdd, prop inutilisée, shareAlias inutilisé
+- Tests : 690 (442 serveur + 234 web + 14 shared) — tous passent. Type-check web + serveur OK.
+- Commits : 9 commits (`7377af7` through `25b8dd6`)
 - Tech debt ajouté : TD-21 (quickShare i18n fallback dans 21 locales)
 
 ---
