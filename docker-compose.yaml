@@ -24,6 +24,11 @@ services:
       RUSTFS_ACCESS_KEY: ""    # REQUIRED: set your storage access key
       RUSTFS_SECRET_KEY: ""    # REQUIRED: set your storage secret key
       RUSTFS_CONSOLE_ENABLE: "true"
+      # REQUIRED: Allow browsers to upload/download files directly via presigned URLs.
+      # Set to the web frontend origin(s). Comma-separated for multiple origins.
+      # Must match the origin users access the web interface from.
+      # Examples: http://localhost:5487, https://files.example.com
+      RUSTFS_CORS_ALLOWED_ORIGINS: ""    # REQUIRED: e.g., http://localhost:5487
     volumes:
       - storage_data:/data
     ports:

@@ -86,6 +86,9 @@ Choose your storage method based on your needs:
           RUSTFS_ACCESS_KEY: ""    # REQUIRED: set your storage access key
           RUSTFS_SECRET_KEY: ""    # REQUIRED: set your storage secret key
           RUSTFS_CONSOLE_ENABLE: "true"
+          # REQUIRED: Allow browsers to upload files directly via presigned URLs.
+          # Set to the web frontend origin (must match CORS_ORIGINS).
+          RUSTFS_CORS_ALLOWED_ORIGINS: ""  # REQUIRED: e.g., http://localhost:5487 or https://files.example.com
         volumes:
           - storage_data:/data
         ports:
@@ -118,7 +121,7 @@ Choose your storage method based on your needs:
           JWT_SECRET: ""                 # REQUIRED: generate with: openssl rand -hex 32
           CSRF_SECRET: ""                # REQUIRED: generate with: openssl rand -hex 32
           COOKIE_SECRET: ""              # REQUIRED: generate with: openssl rand -hex 32
-          # REQUIRED: comma-separated list of origins allowed to make requests
+          # REQUIRED: comma-separated list of web frontend origins allowed to make requests
           CORS_ORIGINS: ""               # REQUIRED: e.g., http://localhost:5487 or https://files.example.com
           # ENCRYPTION_SECRET: ""       # Required for LDAP — generate with: openssl rand -hex 32
           # Optional settings:
@@ -197,6 +200,9 @@ Choose your storage method based on your needs:
           RUSTFS_ACCESS_KEY: ""    # REQUIRED: set your storage access key
           RUSTFS_SECRET_KEY: ""    # REQUIRED: set your storage secret key
           RUSTFS_CONSOLE_ENABLE: "true"
+          # REQUIRED: Allow browsers to upload files directly via presigned URLs.
+          # Set to the web frontend origin (must match CORS_ORIGINS).
+          RUSTFS_CORS_ALLOWED_ORIGINS: ""  # REQUIRED: e.g., http://localhost:5487 or https://files.example.com
         volumes:
           - ./storage-data:/data
         ports:
@@ -304,7 +310,8 @@ Customize OUITRANSFER's behavior with these environment variables. Most are set 
 | `JWT_SECRET` | server + web | - | **REQUIRED**: JWT signing key (min 32 chars). Generate with: `openssl rand -hex 32`. Must be set on **both** the server and web services. |
 | `CSRF_SECRET` | server | - | **REQUIRED**: CSRF token HMAC key (min 32 chars, must differ from JWT_SECRET) |
 | `COOKIE_SECRET` | server | - | **REQUIRED**: Cookie signing key (min 32 chars, must differ from other secrets) |
-| `CORS_ORIGINS` | server | - | **REQUIRED**: Comma-separated list of allowed request origins (e.g., `http://localhost:5487` or `https://files.example.com`) |
+| `CORS_ORIGINS` | server | - | **REQUIRED**: Comma-separated list of web frontend origins allowed to make API requests (e.g., `http://localhost:5487` or `https://files.example.com`) |
+| `RUSTFS_CORS_ALLOWED_ORIGINS` | **storage** | - | **REQUIRED** for internal storage: Web frontend origin for direct browser uploads via presigned URLs. Must match `CORS_ORIGINS`. |
 | `ENABLE_S3` | server | `false` | Set `true` to use external S3 storage (AWS, Backblaze, etc.) instead of built-in RustFS |
 | `S3_ENDPOINT` | server | - | S3 server endpoint (required when using S3) |
 | `S3_ACCESS_KEY` | server | - | S3 access key for authentication |
@@ -367,6 +374,7 @@ docker run -d \
   -e RUSTFS_VOLUMES=/data \
   -e RUSTFS_ACCESS_KEY=your-access-key \
   -e RUSTFS_SECRET_KEY=your-secret-key \
+  -e RUSTFS_CORS_ALLOWED_ORIGINS=http://YOUR_SERVER_IP:5487 \
   -p 9000:9000 \
   -v storage_data:/data \
   --restart unless-stopped \
@@ -414,17 +422,27 @@ docker run -d \
 
 ## Common Configuration Options
 
-### Storage URL Configuration (REQUIRED)
+### Cross-Origin Configuration (REQUIRED)
 
-When using internal storage (the default), two environment variables must be configured together:
+When using internal storage (the default), browsers upload files directly to the storage service via presigned URLs. This requires **two pairs** of environment variables — one pair identifies the **web frontend origin**, and the other identifies the **storage public URL**:
 
-- **`STORAGE_URL`** (server service) — tells the server how to generate presigned URLs for file uploads and downloads. Browsers will connect directly to this URL.
-- **`CSP_STORAGE_ORIGINS`** (web service) — must be set to the **same value** as `STORAGE_URL`. It configures the browser's Content Security Policy to allow connections to the storage service for both file uploads and background image loading.
+**Web frontend origin** (where users access the app):
+- **`CORS_ORIGINS`** (server) — allows the API server to accept requests from the frontend
+- **`RUSTFS_CORS_ALLOWED_ORIGINS`** (storage) — allows the storage service to accept direct uploads from the frontend
+
+**Storage public URL** (where browsers reach the storage):
+- **`STORAGE_URL`** (server) — tells the server how to generate presigned URLs that browsers can reach
+- **`CSP_STORAGE_ORIGINS`** (web) — configures the Content Security Policy to allow browser connections to storage
 
 ```yaml
+# Storage service
+environment:
+  RUSTFS_CORS_ALLOWED_ORIGINS: "http://192.168.1.100:5487"  # Web frontend origin
+
 # Server service
 environment:
-  STORAGE_URL: "http://192.168.1.100:9000"  # Use your actual server IP/domain
+  STORAGE_URL: "http://192.168.1.100:9000"     # Public storage URL
+  CORS_ORIGINS: "http://192.168.1.100:5487"    # Web frontend origin
 
 # Web service
 environment:
@@ -432,11 +450,12 @@ environment:
 ```
 
 **Important Notes:**
-- **Both values must match** — if they differ, either uploads or background images will be blocked by the browser's Content Security Policy
+- **`CORS_ORIGINS` and `RUSTFS_CORS_ALLOWED_ORIGINS` must match** — both are the web frontend origin
+- **`STORAGE_URL` and `CSP_STORAGE_ORIGINS` must match** — both are the public storage URL
 - **Must include protocol** (`http://` or `https://`)
-- **Must include port 9000** unless you're using a reverse proxy
+- **Must include port** unless you're using a reverse proxy
 - **Use your actual domain/IP** that clients will access — `localhost` only works when browsers run on the same machine as Docker
-- **Not needed if using external S3** (`ENABLE_S3=true`) — the S3 endpoint is used directly
+- **Not needed if using external S3** (`ENABLE_S3=true`) — the S3 endpoint is used directly and `RUSTFS_CORS_ALLOWED_ORIGINS` does not apply
 - **Use HTTPS in production** — HTTP exposes presigned URL signatures and file contents on the wire, and browsers block mixed-content requests if the web app is served over HTTPS
 
 ### Presigned URL Expiration
