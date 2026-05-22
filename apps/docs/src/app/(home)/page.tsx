@@ -27,20 +27,8 @@ import { WordRotate } from "@/components/magicui/word-rotate";
 import { ThreeDMarquee } from "@/components/ui/3d-marquee";
 import { TextHoverEffect } from "@/components/ui/text-hover-effect";
 
-const images: string[] = [
-  "/assets/v3/screenshots/dashboard.png",
-  "/assets/v3/screenshots/shares.png",
-  "/assets/v3/screenshots/files-list.png",
-  "/assets/v3/screenshots/login.png",
-  "/assets/v3/screenshots/settings.png",
-  "/assets/v3/screenshots/home.png",
-  "/assets/v3/screenshots/files-card.png",
-  "/assets/v3/screenshots/receive-files.png",
-  "/assets/v3/screenshots/user-management.png",
-  "/assets/v3/screenshots/profile.png",
-  "/assets/v3/screenshots/default-reverse.png",
-  "/assets/v3/screenshots/forgot-password.png",
-];
+// TODO: replace with current screenshots once they are taken
+const images: string[] = [];
 
 const docsLink = "/docs/v3-beta";
 
@@ -85,6 +73,7 @@ function Hero() {
 }
 
 function LogoShowcase() {
+  if (images.length === 0) return null;
   return (
     <div className="z-[2] border-x bg-background">
       <ThreeDMarquee images={images} className="rounded-none" />
