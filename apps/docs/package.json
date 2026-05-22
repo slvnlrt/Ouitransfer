@@ -30,9 +30,9 @@
   "dependencies": {
     "@radix-ui/react-dialog": "catalog:",
     "clsx": "catalog:",
-    "fumadocs-core": "15.2.7",
-    "fumadocs-mdx": "11.6.10",
-    "fumadocs-ui": "15.2.7",
+    "fumadocs-core": "16.4.3",
+    "fumadocs-mdx": "13.0.8",
+    "fumadocs-ui": "16.4.3",
     "lucide-react": "catalog:",
     "motion": "catalog:",
     "next": "catalog:",
