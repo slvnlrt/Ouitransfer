@@ -107,13 +107,13 @@ async function signExpiredToken(
 // ---------------------------------------------------------------------------
 // Middleware tests — standard scenarios (JWT_SECRET is set correctly)
 // ---------------------------------------------------------------------------
-describe("middleware", () => {
-  let middleware: (request: unknown) => Promise<unknown>;
+describe("proxy", () => {
+  let proxy: (request: unknown) => Promise<unknown>;
 
   beforeEach(async () => {
     vi.clearAllMocks();
     const mod = await import("@/proxy");
-    middleware = mod.proxy as (request: unknown) => Promise<unknown>;
+    proxy = mod.proxy as (request: unknown) => Promise<unknown>;
   });
 
   // -----------------------------------------------------------------------
@@ -121,7 +121,7 @@ describe("middleware", () => {
   // -----------------------------------------------------------------------
   it("redirects unauthenticated users on protected paths to /login", async () => {
     const req = createRequest("/dashboard");
-    await middleware(req);
+    await proxy(req);
 
     expect(mockRedirect).toHaveBeenCalledTimes(1);
     const url = mockRedirect.mock.calls[0][0] as URL;
@@ -134,7 +134,7 @@ describe("middleware", () => {
   it("allows access with a valid JWT on protected paths", async () => {
     const token = await signToken({ userId: "user-1", isAdmin: false });
     const req = createRequest("/dashboard", token);
-    await middleware(req);
+    await proxy(req);
 
     expect(mockNext).toHaveBeenCalledTimes(1);
     expect(mockRedirect).not.toHaveBeenCalled();
@@ -148,7 +148,7 @@ describe("middleware", () => {
     // Simulate @fastify/cookie signed format: jwt_value.cookie_hmac_signature
     const signedToken = `${token}.fakeCookieHmacSignature123`;
     const req = createRequest("/dashboard", signedToken);
-    await middleware(req);
+    await proxy(req);
 
     expect(mockNext).toHaveBeenCalledTimes(1);
     expect(mockRedirect).not.toHaveBeenCalled();
@@ -160,7 +160,7 @@ describe("middleware", () => {
   it("rejects expired JWT, clears cookie, and redirects to /login", async () => {
     const token = await signExpiredToken({ userId: "user-1", isAdmin: false });
     const req = createRequest("/dashboard", token);
-    await middleware(req);
+    await proxy(req);
 
     expect(mockRedirect).toHaveBeenCalledTimes(1);
     const url = mockRedirect.mock.calls[0][0] as URL;
@@ -174,7 +174,7 @@ describe("middleware", () => {
   it("rejects JWT signed with a wrong key", async () => {
     const token = await signToken({ userId: "user-1", isAdmin: false }, WRONG_SECRET_KEY);
     const req = createRequest("/dashboard", token);
-    await middleware(req);
+    await proxy(req);
 
     expect(mockRedirect).toHaveBeenCalledTimes(1);
     const url = mockRedirect.mock.calls[0][0] as URL;
@@ -187,7 +187,7 @@ describe("middleware", () => {
   // -----------------------------------------------------------------------
   it("treats /login as public (no auth required)", async () => {
     const req = createRequest("/login");
-    await middleware(req);
+    await proxy(req);
 
     expect(mockNext).toHaveBeenCalledTimes(1);
     expect(mockRedirect).not.toHaveBeenCalled();
@@ -195,7 +195,7 @@ describe("middleware", () => {
 
   it("treats /loginadmin as protected (requires auth)", async () => {
     const req = createRequest("/loginadmin");
-    await middleware(req);
+    await proxy(req);
 
     expect(mockRedirect).toHaveBeenCalledTimes(1);
     const url = mockRedirect.mock.calls[0][0] as URL;
@@ -207,7 +207,7 @@ describe("middleware", () => {
   // -----------------------------------------------------------------------
   it("treats /s/xxx as public (share path)", async () => {
     const req = createRequest("/s/abc123");
-    await middleware(req);
+    await proxy(req);
 
     expect(mockNext).toHaveBeenCalledTimes(1);
     expect(mockRedirect).not.toHaveBeenCalled();
@@ -215,7 +215,7 @@ describe("middleware", () => {
 
   it("treats /s/ as public", async () => {
     const req = createRequest("/s/");
-    await middleware(req);
+    await proxy(req);
 
     expect(mockNext).toHaveBeenCalledTimes(1);
     expect(mockRedirect).not.toHaveBeenCalled();
@@ -227,7 +227,7 @@ describe("middleware", () => {
   it("redirects non-admin users from admin paths to /dashboard", async () => {
     const token = await signToken({ userId: "user-1", isAdmin: false });
     const req = createRequest("/settings", token);
-    await middleware(req);
+    await proxy(req);
 
     expect(mockRedirect).toHaveBeenCalledTimes(1);
     const url = mockRedirect.mock.calls[0][0] as URL;
@@ -237,7 +237,7 @@ describe("middleware", () => {
   it("redirects non-admin users from /users-management to /dashboard", async () => {
     const token = await signToken({ userId: "user-1", isAdmin: false });
     const req = createRequest("/users-management", token);
-    await middleware(req);
+    await proxy(req);
 
     expect(mockRedirect).toHaveBeenCalledTimes(1);
     const url = mockRedirect.mock.calls[0][0] as URL;
@@ -250,7 +250,7 @@ describe("middleware", () => {
   it("allows admin users to access admin paths", async () => {
     const token = await signToken({ userId: "admin-1", isAdmin: true });
     const req = createRequest("/settings", token);
-    await middleware(req);
+    await proxy(req);
 
     expect(mockNext).toHaveBeenCalledTimes(1);
     expect(mockRedirect).not.toHaveBeenCalled();
@@ -259,7 +259,7 @@ describe("middleware", () => {
   it("allows admin users to access /users-management", async () => {
     const token = await signToken({ userId: "admin-1", isAdmin: true });
     const req = createRequest("/users-management", token);
-    await middleware(req);
+    await proxy(req);
 
     expect(mockNext).toHaveBeenCalledTimes(1);
     expect(mockRedirect).not.toHaveBeenCalled();
@@ -271,7 +271,7 @@ describe("middleware", () => {
   it("redirects authenticated users from /login to /dashboard", async () => {
     const token = await signToken({ userId: "user-1", isAdmin: false });
     const req = createRequest("/login", token);
-    await middleware(req);
+    await proxy(req);
 
     expect(mockRedirect).toHaveBeenCalledTimes(1);
     const url = mockRedirect.mock.calls[0][0] as URL;
@@ -281,7 +281,7 @@ describe("middleware", () => {
   it("redirects authenticated users from /forgot-password to /dashboard", async () => {
     const token = await signToken({ userId: "user-1", isAdmin: false });
     const req = createRequest("/forgot-password", token);
-    await middleware(req);
+    await proxy(req);
 
     expect(mockRedirect).toHaveBeenCalledTimes(1);
     const url = mockRedirect.mock.calls[0][0] as URL;
@@ -294,7 +294,7 @@ describe("middleware", () => {
   it("redirects authenticated users on / to /dashboard", async () => {
     const token = await signToken({ userId: "user-1", isAdmin: false });
     const req = createRequest("/", token);
-    await middleware(req);
+    await proxy(req);
 
     expect(mockRedirect).toHaveBeenCalledTimes(1);
     const url = mockRedirect.mock.calls[0][0] as URL;
@@ -303,7 +303,7 @@ describe("middleware", () => {
 
   it("allows unauthenticated users on /", async () => {
     const req = createRequest("/");
-    await middleware(req);
+    await proxy(req);
 
     expect(mockNext).toHaveBeenCalledTimes(1);
     expect(mockRedirect).not.toHaveBeenCalled();
@@ -311,7 +311,7 @@ describe("middleware", () => {
 
   it("treats /login/subpath as public (matches with slash boundary)", async () => {
     const req = createRequest("/login/subpath");
-    await middleware(req);
+    await proxy(req);
 
     expect(mockNext).toHaveBeenCalledTimes(1);
     expect(mockRedirect).not.toHaveBeenCalled();
@@ -320,7 +320,7 @@ describe("middleware", () => {
   it("treats /settings/subpath as admin path", async () => {
     const token = await signToken({ userId: "user-1", isAdmin: false });
     const req = createRequest("/settings/subpath", token);
-    await middleware(req);
+    await proxy(req);
 
     expect(mockRedirect).toHaveBeenCalledTimes(1);
     const url = mockRedirect.mock.calls[0][0] as URL;
@@ -330,7 +330,7 @@ describe("middleware", () => {
   it("treats /settingspage as a regular protected path (not admin)", async () => {
     const token = await signToken({ userId: "user-1", isAdmin: false });
     const req = createRequest("/settingspage", token);
-    await middleware(req);
+    await proxy(req);
 
     // Non-admin user on a non-admin path → should be allowed
     expect(mockNext).toHaveBeenCalledTimes(1);

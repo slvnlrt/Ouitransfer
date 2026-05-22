@@ -32,7 +32,7 @@ function getJwtSecretKey(): Uint8Array {
  * signed JWT cookie has 4 parts (header.payload.jwtSig.cookieHmac).
  *
  * This strips the 4th part if present, recovering the original JWT.
- * The middleware cannot unsign with COOKIE_SECRET (server-only), but it doesn't
+ * The proxy cannot unsign with COOKIE_SECRET (server-only), but it doesn't
  * need to — JWT integrity is verified independently via JWT_SECRET.
  */
 function extractJwtFromSignedCookie(cookieValue: string): string {
