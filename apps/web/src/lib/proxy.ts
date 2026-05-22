@@ -370,25 +370,27 @@ export async function handleProxyRequest(
     // Build headers
     const headers = buildRequestHeaders(req, config);
 
-    // Build body — GET and DELETE (without bodyTransform) send no body
+    // Build body — GET never sends a body; DELETE and others forward it
     let body: BodyInit | null = null;
-    if (method !== "GET" && method !== "DELETE") {
+    if (method !== "GET") {
       if (config.body === "raw" || config.body === "duplex") {
         body = req.body;
       } else if (config.bodyTransform) {
         const text = await req.text();
         body = config.bodyTransform(text || "{}");
       } else {
-        body = (await req.text()) || "{}";
+        const text = await req.text();
+        if (text) {
+          body = text;
+        } else if (method !== "DELETE") {
+          // Non-DELETE methods always send a body (empty → "{}")
+          body = "{}";
+        }
       }
-    } else if (method === "DELETE" && config.bodyTransform) {
-      // DELETE with body transform (e.g. shares items routes)
-      const text = await req.text();
-      body = config.bodyTransform(text || "{}");
     }
 
-    // Don't send Content-Type for bodyless DELETE requests
-    if (method === "DELETE" && !config.bodyTransform) {
+    // Don't send Content-Type for bodyless requests
+    if (body === null) {
       delete headers["Content-Type"];
     }
 
