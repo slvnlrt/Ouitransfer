@@ -2,7 +2,7 @@ import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import type { ReactNode } from "react";
 
 import { baseOptions } from "@/app/layout.config";
-// import { V3BetaModal } from "@/components/V3BetaModal";
+import { V1BetaModal } from "@/components/V1BetaModal";
 import { source } from "@/lib/source";
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -14,7 +14,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       links={[]}
     >
       {children}
-      {/* <V3BetaModal /> */}
+      <V1BetaModal />
     </DocsLayout>
   );
 }
