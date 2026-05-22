@@ -30,14 +30,14 @@ import { TextHoverEffect } from "@/components/ui/text-hover-effect";
 // TODO: replace with current screenshots once they are taken
 const images: string[] = [];
 
-const docsLink = "/docs/v3-beta";
+const docsLink = "/docs/v1-beta";
 
 function Hero() {
   return (
     <section className="relative z-[2] flex flex-col border-x border-t  px-6 pt-12 pb-10 md:px-12 md:pt-16 max-md:text-center">
       <h1 className="mb-8 text-6xl font-bold">
         OUITRANSFER.{" "}
-        <span className="text-[13px] font-light text-muted-foreground/50 font-mono">v3-beta</span>
+        <span className="text-[13px] font-light text-muted-foreground/50 font-mono">v1-beta</span>
       </h1>
       <h1 className="hidden text-4xl font-medium max-w-[600px] md:block mb-4">
         Modern & efficient file sharing

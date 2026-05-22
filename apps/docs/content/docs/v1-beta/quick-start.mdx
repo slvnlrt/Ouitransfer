@@ -170,7 +170,7 @@ Choose your storage method based on your needs:
     ```
 
     <Callout type="info">
-      **Having upload or permission issues?** Add `OUITRANSFER_UID=1000` and `OUITRANSFER_GID=1000` to the server service environment variables. Check our [UID/GID Configuration](/docs/v3-beta/uid-gid-configuration) guide for more details.
+      **Having upload or permission issues?** Add `OUITRANSFER_UID=1000` and `OUITRANSFER_GID=1000` to the server service environment variables. Check our [UID/GID Configuration](/docs/v1-beta/uid-gid-configuration) guide for more details.
     </Callout>
 
     ### Deploy
@@ -284,7 +284,7 @@ Choose your storage method based on your needs:
     </Callout>
 
     <Callout type="info">
-      **Having upload or permission issues?** Add `OUITRANSFER_UID=1000` and `OUITRANSFER_GID=1000` to the server service environment variables. Check our [UID/GID Configuration](/docs/v3-beta/uid-gid-configuration) guide for more details.
+      **Having upload or permission issues?** Add `OUITRANSFER_UID=1000` and `OUITRANSFER_GID=1000` to the server service environment variables. Check our [UID/GID Configuration](/docs/v1-beta/uid-gid-configuration) guide for more details.
     </Callout>
 
     ### Deploy
@@ -337,7 +337,7 @@ These values are set directly in `docker-compose.yaml` and do not normally need 
 | `ENABLE_S3` | server | `false` | Set `true` to use external S3 storage (AWS, Backblaze, etc.) instead of built-in RustFS |
 | `OUITRANSFER_UID` | server | `1000` | User ID for server container processes (helps with file permissions) |
 | `OUITRANSFER_GID` | server | `1000` | Group ID for server container processes (helps with file permissions) |
-| `DEFAULT_LANGUAGE` | web | `en-US` | Default application language ([see available languages](/docs/v3-beta/available-languages)) |
+| `DEFAULT_LANGUAGE` | web | `en-US` | Default application language ([see available languages](/docs/v1-beta/available-languages)) |
 | `PRESIGNED_URL_EXPIRATION` | server | `3600` | Upload presigned URL expiration in seconds |
 | `PRESIGNED_GET_URL_EXPIRATION` | server | `900` | Download presigned URL expiration in seconds |
 | `SECURE_SITE` | server | `false` | Enable secure cookies for HTTPS/reverse proxy deployments |
@@ -351,7 +351,7 @@ These values are set directly in `docker-compose.yaml` and do not normally need 
 
 <Callout>
   **Using a Reverse Proxy?** Set `SECURE_SITE=true` and check our [Reverse Proxy
-  Configuration](/docs/v3-beta/reverse-proxy-configuration) guide for proper HTTPS setup.
+  Configuration](/docs/v1-beta/reverse-proxy-configuration) guide for proper HTTPS setup.
 </Callout>
 
 ## Access Your Instance
@@ -364,7 +364,7 @@ Once deployed, open OUITRANSFER in your browser:
 
 <Callout type="info">
   **Learn More**: For complete API documentation, authentication, and integration examples, see our [API
-  Reference](/docs/v3-beta/api) guide
+  Reference](/docs/v1-beta/api) guide
 </Callout>
 
 <Callout type="warn">
@@ -500,16 +500,16 @@ Your OUITRANSFER instance is ready! Here's what you can explore:
 
 ### Advanced Configuration
 
-- **[UID/GID Configuration](/docs/v3-beta/uid-gid-configuration)** - Configure user permissions for NAS systems and custom environments
-- **[S3 Storage Providers](/docs/v3-beta/s3-providers)** - Scale with Amazon S3 or compatible storage providers
-- **[Manual Installation](/docs/v3-beta/manual-installation)** - Manual installation and custom configurations
-- **[Storage Quotas](/docs/v3-beta/quotas)** — Configure per-user and per-group storage limits
-- **[Groups](/docs/v3-beta/groups)** — Organize users into groups with quota policies
-- **[LDAP / Active Directory](/docs/v3-beta/ldap-configuration)** — Sync users from Active Directory
+- **[UID/GID Configuration](/docs/v1-beta/uid-gid-configuration)** - Configure user permissions for NAS systems and custom environments
+- **[S3 Storage Providers](/docs/v1-beta/s3-providers)** - Scale with Amazon S3 or compatible storage providers
+- **[Manual Installation](/docs/v1-beta/manual-installation)** - Manual installation and custom configurations
+- **[Storage Quotas](/docs/v1-beta/quotas)** — Configure per-user and per-group storage limits
+- **[Groups](/docs/v1-beta/groups)** — Organize users into groups with quota policies
+- **[LDAP / Active Directory](/docs/v1-beta/ldap-configuration)** — Sync users from Active Directory
 
 ### Integration & Development
 
-- **[API Reference](/docs/v3-beta/api)** - Integrate OUITRANSFER. with your applications
+- **[API Reference](/docs/v1-beta/api)** - Integrate OUITRANSFER. with your applications
 
 ---
 

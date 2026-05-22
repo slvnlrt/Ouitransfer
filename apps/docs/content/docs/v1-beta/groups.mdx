@@ -79,7 +79,7 @@ More specifically:
 
 The effective quota for each user is displayed in the User Management edit form, along with a label indicating the resolution source (**User override**, **Group: \{name\}**, or **Global default**).
 
-For a full description of the quota system, see the [Quotas](/docs/v3-beta/quotas) documentation.
+For a full description of the quota system, see the [Quotas](/docs/v1-beta/quotas) documentation.
 
 ## Deleting a group
 
@@ -101,7 +101,7 @@ Groups can be linked to Active Directory groups via the `ldapDn` field on the Gr
 
 The `ldapDn` value appears as a read-only field in API responses (`GET /groups`) and in the LDAP configuration page's group mapping summary.
 
-For setup instructions, see the [LDAP Configuration](/docs/v3-beta/ldap-configuration) documentation.
+For setup instructions, see the [LDAP Configuration](/docs/v1-beta/ldap-configuration) documentation.
 
 <Callout type="info">
   LDAP sync respects the one-group-per-user constraint. If a user matches multiple AD group mappings, one of them is assigned but the choice is not deterministic — avoid overlapping memberships for predictable results.

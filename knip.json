@@ -32,7 +32,8 @@
         "src/components/ui/*.{ts,tsx}"
       ],
       "project": ["src/**/*.{ts,tsx}"],
-      "ignoreDependencies": ["tw-animate-css"]
+      "ignoreDependencies": ["tw-animate-css"],
+      "ignoreFiles": ["src/components/V3BetaModal.tsx"]
     }
   }
 }

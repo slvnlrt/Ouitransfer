@@ -208,6 +208,22 @@ Commit: `chore(monorepo): update default app description`
 
 ---
 
+## TD-20 — Docs : section Developers à réécrire pour v3-beta
+
+**Context:** Les pages de la section "Developers" dans `apps/docs/content/docs/v3-beta/` sont
+obsolètes et ne correspondent plus à l'architecture actuelle du projet.
+
+**Pages à réécrire :**
+- `architecture.mdx` — Architecture of OUITRANSFER. (monorepo, Fastify 5, Prisma 7, RustFS…)
+- `github-architecture.mdx` — GitHub Architecture (CI pipeline, Docker, workflows actuels)
+- `api.mdx` — API Endpoints (toutes les routes ont changé depuis les refactors TD-4+)
+- `translation-management.mdx` — Translation Management (next-intl v4, 23 langues, nouveau workflow)
+
+**Found during:** Revue du site docs post-upgrade Next.js 16 (mai 2026)
+**Severity:** Low — le site docs n'est pas encore public, pas d'impact utilisateur immédiat
+
+---
+
 ## TD-16 — Traductions B-17/B-19 perdues dans 22 locales (placeholders EN)
 
 **Context:** Les corrections B-17 (description "Show Home Page") et B-19 (messages stockage)
