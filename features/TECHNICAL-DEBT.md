@@ -250,3 +250,46 @@ monitoring of logs. No customer data loss, but wastes storage quota.
 
 **Found during:** TD-14 background-image feature implementation (mai 2026)
 **Severity:** Low — impacts storage utilization, not functionality or data integrity
+
+---
+
+## TD-18 — Client-side alias generation: no server-side minting or reserved-word validation
+
+**Context:** Share aliases are generated client-side via `customNanoid(10, alphanumeric)`
+and sent to `POST /api/shares/alias/create/:shareId`. The server validates uniqueness
+(collision → 409) but does not enforce minimum length, charset, or reject reserved words
+(e.g., `admin`, `login`, `api`). A malicious client could squat on short or memorable aliases.
+
+**Used in:**
+- `apps/web/src/components/modals/generate-share-link-modal.tsx:29-30`
+- `apps/web/src/app/dashboard/hooks/use-quick-share.ts` (Quickshare 9.1)
+
+**Risk:** Low for auto-generated aliases (62^10 ≈ 8.4×10¹⁷ entropy). Medium if users
+are ever allowed to pick custom aliases. No data loss or security impact.
+
+**Fix:**
+1. Server: validate alias length ≥ 8, charset `[a-zA-Z0-9]`, reject reserved words list
+2. Ideally: add `generateAlias: true` flag to `createShare` and let server mint the alias
+   in the same transaction (1 API call instead of 2)
+
+**Found during:** Quickshare 9.1 spec review (mai 2026)
+**Severity:** Low — defense-in-depth, no current exploit path
+
+---
+
+## TD-19 — Hardcoded QR code element ID prevents multiple instances
+
+**Context:** Both `generate-share-link-modal.tsx` and `quick-share-confirmation.tsx`
+use `id="quickshare-qr-code"` / `id="share-qr-code"` to locate the SVG element for
+PNG export (`document.getElementById(...)`). If two instances mount simultaneously
+(e.g., modal + dashboard block), the second getElementById finds the first DOM element.
+
+**Used in:**
+- `apps/web/src/components/modals/generate-share-link-modal.tsx`
+- `apps/web/src/app/dashboard/components/quick-share/quick-share-confirmation.tsx`
+
+**Fix:** Use `React.useId()` to generate a unique ID per instance and pass it to both
+the `LazyQRCode` `id` prop and the `getElementById` call in the download function.
+
+**Found during:** Quickshare 9.1 spec review (mai 2026)
+**Severity:** Very low — no current scenario where both mount at the same time
