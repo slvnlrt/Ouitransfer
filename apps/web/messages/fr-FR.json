@@ -1757,6 +1757,57 @@
     "selectShare": "Sélectionner le partage {shareName}",
     "folderCount": "dossiers"
   },
+  "quickShare": {
+    "dropzone": {
+      "title": "Partage rapide",
+      "description": "Déposez vos fichiers ici pour partager rapidement",
+      "browse": "ou cliquez pour parcourir",
+      "dragActive": "Déposez les fichiers ici"
+    },
+    "upload": {
+      "title": "Partage rapide",
+      "addMore": "Ajouter d'autres fichiers",
+      "namePlaceholder": "Nom du partage",
+      "expiration": {
+        "label": "Expire dans",
+        "1day": "1 jour",
+        "7days": "7 jours",
+        "30days": "30 jours",
+        "never": "Jamais"
+      },
+      "password": {
+        "label": "Protection par mot de passe",
+        "placeholder": "Entrez un mot de passe"
+      },
+      "recipients": {
+        "label": "Destinataires",
+        "placeholder": "Ajouter des adresses email",
+        "toggle": "Notifier les destinataires par email"
+      },
+      "share": "Partager",
+      "sharing": "Partage en cours...",
+      "waitingUpload": "Téléversement... le partage sera créé automatiquement",
+      "defaultName": "{count, plural, one {# fichier} other {# fichiers}}",
+      "error": "Échec de la création du partage",
+      "uploadError": "Certains fichiers n'ont pas pu être téléversés",
+      "notifyError": "Partage créé mais impossible de notifier les destinataires",
+      "invalidEmail": "Veuillez entrer une adresse email valide"
+    },
+    "confirmation": {
+      "title": "Partagé !",
+      "copyLink": "Copier le lien",
+      "copied": "Lien copié !",
+      "summary": {
+        "files": "{count, plural, one {# fichier} other {# fichiers}}",
+        "expires": "expire dans {duration}",
+        "noExpiry": "pas d'expiration",
+        "password": "protégé par mot de passe",
+        "noPassword": "pas de mot de passe"
+      },
+      "newShare": "Nouveau partage",
+      "downloadQr": "Télécharger le QR code"
+    }
+  },
   "theme": {
     "toggle": "Changer le thème",
     "light": "Clair",
