@@ -49,7 +49,7 @@ export async function generateMetadata(props: { params: Promise<{ slug?: string[
   if (!page) redirect("/docs/v1-beta");
 
   return {
-    title: `${page.data.title} | OUITRANSFER. Docs`,
+    title: `${page.data.title} | OUITRANSFER Docs`,
     description: page.data.description,
   };
 }

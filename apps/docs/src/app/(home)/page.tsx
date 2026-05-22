@@ -36,7 +36,7 @@ function Hero() {
   return (
     <section className="relative z-[2] flex flex-col border-x border-t  px-6 pt-12 pb-10 md:px-12 md:pt-16 max-md:text-center">
       <h1 className="mb-8 text-6xl font-bold">
-        OUITRANSFER.{" "}
+        OUITRANSFER{" "}
         <span className="text-[13px] font-light text-muted-foreground/50 font-mono">v1-beta</span>
       </h1>
       <h1 className="hidden text-4xl font-medium max-w-[600px] md:block mb-4">
@@ -47,7 +47,7 @@ function Hero() {
         privacy in mind.
       </p>
       <div className="hidden h-[10rem] lg:flex items-center justify-center absolute right-0 top-10">
-        <TextHoverEffect text="OUITRANSFER." />
+        <TextHoverEffect text="OUITRANSFER" />
       </div>
       <div className="inline-flex items-center gap-6 max-md:mx-auto mb-4">
         <PulsatingButton>

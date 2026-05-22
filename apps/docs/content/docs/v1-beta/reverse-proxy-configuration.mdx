@@ -3,15 +3,15 @@ title: Reverse Proxy Configuration
 icon: "Shield"
 ---
 
-When deploying **OUITRANSFER.** behind a reverse proxy (like Traefik, Nginx, or Cloudflare), you need to configure secure cookie settings to ensure proper authentication. This guide covers the `SECURE_SITE` environment variable and related proxy configurations.
+When deploying **OUITRANSFER** behind a reverse proxy (like Traefik, Nginx, or Cloudflare), you need to configure secure cookie settings to ensure proper authentication. This guide covers the `SECURE_SITE` environment variable and related proxy configurations.
 
 ## Overview
 
-Reverse proxies terminate SSL/TLS connections and forward requests to OUITRANSFER., which can cause authentication issues if cookies aren't configured properly for HTTPS environments. The `SECURE_SITE` environment variable controls cookie security settings to handle these scenarios.
+Reverse proxies terminate SSL/TLS connections and forward requests to OUITRANSFER, which can cause authentication issues if cookies aren't configured properly for HTTPS environments. The `SECURE_SITE` environment variable controls cookie security settings to handle these scenarios.
 
 ## The SECURE_SITE Environment Variable
 
-The `SECURE_SITE` variable configures how OUITRANSFER. handles authentication cookies based on your deployment environment:
+The `SECURE_SITE` variable configures how OUITRANSFER handles authentication cookies based on your deployment environment:
 
 ### Configuration Options
 
@@ -144,7 +144,7 @@ environment:
 
 ### Multiple Domains
 
-If serving OUITRANSFER. on multiple domains, ensure consistent cookie settings:
+If serving OUITRANSFER on multiple domains, ensure consistent cookie settings:
 
 ```yaml
 environment:
@@ -231,7 +231,7 @@ If you're still experiencing issues after following this guide:
 
 1. **Check the Logs**: `docker compose logs server` (or `docker compose logs web` for frontend issues)
 2. **Verify Headers**: Use browser dev tools or `curl -I`
-3. **Test Direct Access**: Try accessing OUITRANSFER. directly (bypassing proxy)
+3. **Test Direct Access**: Try accessing OUITRANSFER directly (bypassing proxy)
 4. **Open an Issue**: [Report bugs on GitHub](https://github.com/burger-cie/ouitransfer/issues)
 
-> **💡 Pro Tip**: When reporting issues, include your reverse proxy configuration and any relevant error messages from both OUITRANSFER. and your proxy logs.
+> **💡 Pro Tip**: When reporting issues, include your reverse proxy configuration and any relevant error messages from both OUITRANSFER and your proxy logs.

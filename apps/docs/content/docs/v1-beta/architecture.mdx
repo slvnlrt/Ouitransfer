@@ -1,5 +1,5 @@
 ---
-title: Architecture of OUITRANSFER.
+title: Architecture of OUITRANSFER
 icon: ServerCog
 ---
 
@@ -7,17 +7,17 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 
 ## Overview
 
-Understanding the architecture of OUITRANSFER. is crucial for both deploying and scaling the application. The platform is designed with simplicity and flexibility in mind, offering a streamlined setup that can grow with your needs.
+Understanding the architecture of OUITRANSFER is crucial for both deploying and scaling the application. The platform is designed with simplicity and flexibility in mind, offering a streamlined setup that can grow with your needs.
 
-<ZoomableImage src="/assets/v3/architecture/architecture.png" alt="OUITRANSFER. Architecture" />
+<ZoomableImage src="/assets/v3/architecture/architecture.png" alt="OUITRANSFER Architecture" />
 
 ## Technologies used
 
-Each component in the OUITRANSFER. architecture plays a vital role in ensuring reliability, performance, and scalability. The stack is built with simplicity, performance, and flexibility in mind - everything is self-hosted, developer-friendly, and designed to scale without adding unnecessary complexity.
+Each component in the OUITRANSFER architecture plays a vital role in ensuring reliability, performance, and scalability. The stack is built with simplicity, performance, and flexibility in mind - everything is self-hosted, developer-friendly, and designed to scale without adding unnecessary complexity.
 
 ### SQLite + Prisma ORM
 
-OUITRANSFER. uses **SQLite** as the primary database solution combined with **Prisma ORM** for type-safe database operations. SQLite is a lightweight, serverless database that's perfect for getting started quickly while still being powerful enough for production use. SQLite is fully ACID-compliant, which means it handles transactions safely and reliably. Prisma provides a modern database toolkit that generates a type-safe client, handles migrations, and offers an intuitive query API. Together, they create a powerful combination that eliminates database administration complexity while providing excellent developer experience.
+OUITRANSFER uses **SQLite** as the primary database solution combined with **Prisma ORM** for type-safe database operations. SQLite is a lightweight, serverless database that's perfect for getting started quickly while still being powerful enough for production use. SQLite is fully ACID-compliant, which means it handles transactions safely and reliably. Prisma provides a modern database toolkit that generates a type-safe client, handles migrations, and offers an intuitive query API. Together, they create a powerful combination that eliminates database administration complexity while providing excellent developer experience.
 
 - Provides reliable and secure data storage with zero configuration required
 - **Prisma ORM** offers type-safe queries and automatic TypeScript integration
@@ -28,7 +28,7 @@ OUITRANSFER. uses **SQLite** as the primary database solution combined with **Pr
 
 ### Next.js 15 + React 19 + TypeScript
 
-The frontend of OUITRANSFER. is built using **Next.js 15**, along with **React 19** and **TypeScript**, forming a modern stack that's easy to maintain and super fast for end users. Next.js 15 brings server components, server actions, and a new app router system that makes rendering dynamic content incredibly efficient. This allows us to load only what's needed, when it's needed - which makes the app feel snappy even under load. React 19 provides a clean, component-based structure that makes it easy to break the UI into reusable pieces, and TypeScript helps prevent bugs before they even happen by enforcing static typing and better code navigation.
+The frontend of OUITRANSFER is built using **Next.js 15**, along with **React 19** and **TypeScript**, forming a modern stack that's easy to maintain and super fast for end users. Next.js 15 brings server components, server actions, and a new app router system that makes rendering dynamic content incredibly efficient. This allows us to load only what's needed, when it's needed - which makes the app feel snappy even under load. React 19 provides a clean, component-based structure that makes it easy to break the UI into reusable pieces, and TypeScript helps prevent bugs before they even happen by enforcing static typing and better code navigation.
 
 - **React 19** enables the creation of a dynamic and responsive user interface with a component-based architecture
 - **TypeScript** adds static typing, enhancing code quality and reducing runtime errors
@@ -36,7 +36,7 @@ The frontend of OUITRANSFER. is built using **Next.js 15**, along with **React 1
 
 ### S3-Compatible Object Storage
 
-OUITRANSFER. uses **S3-compatible object storage** for all file operations. By default, a **RustFS** instance is bundled as the `storage` container — no external service required. For users who prefer cloud storage or need additional scalability, any S3-compatible provider (AWS S3, Backblaze B2, Cloudflare R2, etc.) can be used instead by setting `ENABLE_S3=true`.
+OUITRANSFER uses **S3-compatible object storage** for all file operations. By default, a **RustFS** instance is bundled as the `storage` container — no external service required. For users who prefer cloud storage or need additional scalability, any S3-compatible provider (AWS S3, Backblaze B2, Cloudflare R2, etc.) can be used instead by setting `ENABLE_S3=true`.
 
 - S3-compatible API for all file operations
 - **RustFS** built-in: zero additional infrastructure required for self-hosted deployments
@@ -48,7 +48,7 @@ See [S3 Providers](/docs/v1-beta/s3-providers) for setup instructions when using
 
 ### Fastify + Zod + TypeScript
 
-The backend of OUITRANSFER. is powered by **Fastify**, **Zod**, and **TypeScript**, creating a robust and type-safe API layer. Fastify is a super-fast Node.js web framework optimized for performance and low overhead, designed to handle lots of concurrent requests with minimal resource usage. Zod provides runtime type validation and schema definition, ensuring all incoming data is properly validated before reaching business logic. TypeScript adds compile-time type safety throughout the entire backend codebase. This combination creates a highly reliable and maintainable backend that prevents bugs and security issues while maintaining excellent performance.
+The backend of OUITRANSFER is powered by **Fastify**, **Zod**, and **TypeScript**, creating a robust and type-safe API layer. Fastify is a super-fast Node.js web framework optimized for performance and low overhead, designed to handle lots of concurrent requests with minimal resource usage. Zod provides runtime type validation and schema definition, ensuring all incoming data is properly validated before reaching business logic. TypeScript adds compile-time type safety throughout the entire backend codebase. This combination creates a highly reliable and maintainable backend that prevents bugs and security issues while maintaining excellent performance.
 
 - **Fastify** provides fast request handling with a lightweight core
 - **Zod** enables runtime schema validation and type inference via `fastify-type-provider-zod`
@@ -59,7 +59,7 @@ The backend of OUITRANSFER. is powered by **Fastify**, **Zod**, and **TypeScript
 
 ## Docker architecture
 
-OUITRANSFER. runs as **3 Docker containers** with healthcheck-based startup ordering:
+OUITRANSFER runs as **3 Docker containers** with healthcheck-based startup ordering:
 
 | Service | Image | Port | Description |
 |---------|-------|------|-------------|
@@ -71,7 +71,7 @@ Startup order is managed automatically: `storage` starts first, then `server` (o
 
 ## How it works
 
-The OUITRANSFER. architecture follows a clean separation of concerns, making it easy to understand and maintain:
+The OUITRANSFER architecture follows a clean separation of concerns, making it easy to understand and maintain:
 
 1. **Frontend** — React 19 + TypeScript + Next.js 15 handle the user interface and user interactions
 2. **Backend** — Fastify + Zod + TypeScript process requests with full type safety and validation
@@ -81,11 +81,11 @@ The OUITRANSFER. architecture follows a clean separation of concerns, making it 
 
 ## API integration and extensibility
 
-One of OUITRANSFER.'s key strengths is its **open API architecture**, designed to integrate seamlessly with existing workflows and third-party services. The API can be exposed publicly, allowing for powerful integrations and custom development opportunities.
+One of OUITRANSFER's key strengths is its **open API architecture**, designed to integrate seamlessly with existing workflows and third-party services. The API can be exposed publicly, allowing for powerful integrations and custom development opportunities.
 
 ### Open API endpoints
 
-OUITRANSFER. provides comprehensive REST API endpoints that can be integrated with various services and platforms:
+OUITRANSFER provides comprehensive REST API endpoints that can be integrated with various services and platforms:
 
 **Popular integration possibilities:**
 
@@ -103,7 +103,7 @@ OUITRANSFER. provides comprehensive REST API endpoints that can be integrated wi
 The open API architecture enables developers to:
 
 - **Build custom clients** - Create specialized interfaces for specific industries or use cases
-- **Develop integrations** - Connect OUITRANSFER. with existing business systems and workflows
+- **Develop integrations** - Connect OUITRANSFER with existing business systems and workflows
 - **Create automation scripts** - Automate repetitive file management tasks
 - **Build mobile apps** - Develop native iOS/Android applications
 - **Integrate with CMS** - Connect content management systems for seamless file handling
@@ -118,11 +118,11 @@ The open API architecture enables developers to:
 - **Type safety** - Full TypeScript support for reliable integrations
 - **Bulk operations** - Efficient handling of multiple files and batch operations
 
-This open architecture makes OUITRANSFER. not just a file-sharing platform, but a **file management ecosystem** that can adapt to any workflow or business requirement. Whether you're a developer looking to integrate file sharing into your application or a business wanting to automate file workflows, OUITRANSFER.'s API provides the flexibility and power you need.
+This open architecture makes OUITRANSFER not just a file-sharing platform, but a **file management ecosystem** that can adapt to any workflow or business requirement. Whether you're a developer looking to integrate file sharing into your application or a business wanting to automate file workflows, OUITRANSFER's API provides the flexibility and power you need.
 
 ## Storage flexibility
 
-OUITRANSFER. is designed to be flexible in how you handle file storage:
+OUITRANSFER is designed to be flexible in how you handle file storage:
 
 **Default setup (RustFS):**
 

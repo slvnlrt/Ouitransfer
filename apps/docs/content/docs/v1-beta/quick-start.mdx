@@ -8,9 +8,9 @@ import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 
 import { Card, CardGrid } from "@/components/ui/card";
 
-Welcome to the fastest way to deploy <span className="font-bold">OUITRANSFER.</span> - your secure, self-hosted file sharing solution. This guide will have you up and running in minutes, whether you're new to self-hosting or an experienced developer.
+Welcome to the fastest way to deploy <span className="font-bold">OUITRANSFER</span> - your secure, self-hosted file sharing solution. This guide will have you up and running in minutes, whether you're new to self-hosting or an experienced developer.
 
-OUITRANSFER. offers flexible deployment options to match your infrastructure needs. This guide focuses on Docker Compose deployment with 3 services: object storage, API server, and web frontend.
+OUITRANSFER offers flexible deployment options to match your infrastructure needs. This guide focuses on Docker Compose deployment with 3 services: object storage, API server, and web frontend.
 
 ## Prerequisites
 
@@ -28,7 +28,7 @@ Before you begin, make sure you have:
 </Callout>
 
 <Callout>
-  **Platform Support**: OUITRANSFER. is developed on macOS and extensively tested on Linux servers. While we haven't formally
+  **Platform Support**: OUITRANSFER is developed on macOS and extensively tested on Linux servers. While we haven't formally
   tested other platforms, Docker's cross-platform nature should ensure compatibility. Report any issues on our [GitHub
   repository](https://github.com/burger-cie/ouitransfer/issues).
 </Callout>
@@ -47,7 +47,7 @@ Startup order is managed automatically: storage starts first, then server (once 
 
 ## Storage Options
 
-OUITRANSFER. supports two storage approaches for persistent data:
+OUITRANSFER supports two storage approaches for persistent data:
 
 - **Named Volumes (Recommended)** - Docker-managed storage with optimal performance and no permission issues
 - **Bind Mounts** - Direct host filesystem access, ideal for development and direct file management
@@ -461,7 +461,7 @@ When using internal storage (the default), browsers upload files directly to the
 
 ### Presigned URL Expiration
 
-OUITRANSFER. uses temporary URLs (presigned URLs) for secure file access. These URLs expire after a configurable time period to enhance security.
+OUITRANSFER uses temporary URLs (presigned URLs) for secure file access. These URLs expire after a configurable time period to enhance security.
 
 **Default:** Upload: 1 hour (3600s), Download: 15 minutes (900s)
 
@@ -509,7 +509,7 @@ Your OUITRANSFER instance is ready! Here's what you can explore:
 
 ### Integration & Development
 
-- **[API Reference](/docs/v1-beta/api)** - Integrate OUITRANSFER. with your applications
+- **[API Reference](/docs/v1-beta/api)** - Integrate OUITRANSFER with your applications
 
 ---
 

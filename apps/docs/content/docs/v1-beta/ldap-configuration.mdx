@@ -19,7 +19,7 @@ When LDAP sync is enabled, Ouitransfer periodically connects to your AD server u
 
 ### Why app-specific passwords?
 
-Ouitransfer uses **LDAP as an import source, not an authentication proxy**. Users authenticate with a dedicated app password managed entirely within Ouitransfer.
+Ouitransfer uses **LDAP as an import source, not an authentication proxy**. Users authenticate with a dedicated app password managed entirely within OUITRANSFER
 
 This design choice has concrete security benefits:
 
@@ -321,7 +321,7 @@ Synced users manage their own app password through the standard Ouitransfer pass
 
 ### Email collision / user skipped
 
-**Symptom**: a user appears in the sync group but is not created in Ouitransfer. The sync log shows a skip event.
+**Symptom**: a user appears in the sync group but is not created in OUITRANSFER The sync log shows a skip event.
 
 **Cause**: an existing Ouitransfer account (local or from a different LDAP entry) already uses the same email address or username.
 

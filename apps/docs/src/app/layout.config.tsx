@@ -8,7 +8,7 @@ export const baseOptions: BaseLayoutProps = {
     title: (
       <div className="flex items-start gap-1.5">
         <ChevronRight className="text-primary" strokeWidth={3} />
-        <span className="text-xl font-medium">OUITRANSFER.</span>
+        <span className="text-xl font-medium">OUITRANSFER</span>
       </div>
     ),
   },

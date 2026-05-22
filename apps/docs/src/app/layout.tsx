@@ -14,8 +14,8 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "OUITRANSFER. | Official Website",
-  description: "OUITRANSFER. is a fast, simple and powerful document sharing platform.",
+  title: "OUITRANSFER | Official Website",
+  description: "OUITRANSFER is a fast, simple and powerful document sharing platform.",
 };
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -24,7 +24,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       <body className="flex flex-col min-h-screen">
         <Banner variant="rainbow" id="banner-v1-beta">
           <Link href={LATEST_VERSION_PATH}>
-            <s>Winter</s> OUITRANSFER. {LATEST_VERSION} is coming !
+            <s>Winter</s> OUITRANSFER {LATEST_VERSION} is coming !
           </Link>
         </Banner>
         <RootProvider>{children}</RootProvider>

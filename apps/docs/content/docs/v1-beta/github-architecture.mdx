@@ -5,9 +5,9 @@ icon: Github
 
 import { File, Files, Folder } from "fumadocs-ui/components/files";
 
-This guide provides a comprehensive overview of OUITRANSFER.'s GitHub repository structure, explaining how the different components are organized in the codebase. Understanding this architecture will help you navigate the repository, contribute effectively, and understand how the project is structured.
+This guide provides a comprehensive overview of OUITRANSFER's GitHub repository structure, explaining how the different components are organized in the codebase. Understanding this architecture will help you navigate the repository, contribute effectively, and understand how the project is structured.
 
-> **Overview:** OUITRANSFER. uses a monorepo architecture with clear separation between frontend, backend, documentation, and shared package components.
+> **Overview:** OUITRANSFER uses a monorepo architecture with clear separation between frontend, backend, documentation, and shared package components.
 
 ## Project structure
 
@@ -48,7 +48,7 @@ This guide provides a comprehensive overview of OUITRANSFER.'s GitHub repository
 - next-intl for internationalization
 - TanStack Query v5 for server state management
 
-OUITRANSFER.'s frontend is built with **Next.js 15**, using the App Router and Server Components for performance, scalability, and flexibility. The structure is modular and feature-based, keeping things easy to evolve as the product grows. UI logic runs on **React 19**, and **TypeScript** adds type safety that prevents a lot of silent bugs. Styles are handled with **Tailwind CSS 4**, letting us build clean, responsive interfaces quickly. For components, we rely on **shadcn/ui**, a headless component library built with Radix UI and Tailwind — it's fast, accessible, and fully customizable.
+OUITRANSFER's frontend is built with **Next.js 15**, using the App Router and Server Components for performance, scalability, and flexibility. The structure is modular and feature-based, keeping things easy to evolve as the product grows. UI logic runs on **React 19**, and **TypeScript** adds type safety that prevents a lot of silent bugs. Styles are handled with **Tailwind CSS 4**, letting us build clean, responsive interfaces quickly. For components, we rely on **shadcn/ui**, a headless component library built with Radix UI and Tailwind — it's fast, accessible, and fully customizable.
 
 Internationalization is handled by **next-intl**, which integrates perfectly with Next.js routing. It supports locale-aware routes, per-page translation loading, and plural rules, all without any extra client-side bloat. It's flexible, lightweight, and great for apps with multilingual audiences.
 
@@ -117,7 +117,7 @@ It supports sidebar navigation, keyboard shortcuts, dark mode, and even interact
 
 ### Infrastructure
 
-OUITRANSFER. is fully containerized using **Docker** with a **3-container architecture**: `storage` (RustFS S3-compatible object storage), `server` (Fastify API server with embedded SQLite), and `web` (Next.js frontend). With `docker-compose`, the whole stack spins up locally with a single command. Startup ordering is managed automatically via healthcheck-based `depends_on` conditions (`storage` → `server` → `web`).
+OUITRANSFER is fully containerized using **Docker** with a **3-container architecture**: `storage` (RustFS S3-compatible object storage), `server` (Fastify API server with embedded SQLite), and `web` (Next.js frontend). With `docker-compose`, the whole stack spins up locally with a single command. Startup ordering is managed automatically via healthcheck-based `depends_on` conditions (`storage` → `server` → `web`).
 
 Volumes are used to persist data, and containers are networked together so that all services can communicate securely.
 
@@ -142,7 +142,7 @@ The monorepo is managed with **pnpm 10.6.0** workspaces and **Turborepo** for bu
 
 ### File management
 
-Files are at the heart of OUITRANSFER. Users can upload files via the frontend, and they're stored in S3-compatible object storage (RustFS by default). Users can also create folders to organize files. The backend handles metadata (name, size, type, ownership), and also handles deletion, renaming, and public sharing. Every file operation is tracked, and all actions can be scoped per user.
+Files are at the heart of OUITRANSFER Users can upload files via the frontend, and they're stored in S3-compatible object storage (RustFS by default). Users can also create folders to organize files. The backend handles metadata (name, size, type, ownership), and also handles deletion, renaming, and public sharing. Every file operation is tracked, and all actions can be scoped per user.
 
 - Upload/download with instant feedback
 - Create and organize files in folders
@@ -164,7 +164,7 @@ Authentication is done through secure JWTs, stored in HTTP-only cookies for safe
 
 ### Groups
 
-OUITRANSFER. supports organizational groups for user management and quota inheritance.
+OUITRANSFER supports organizational groups for user management and quota inheritance.
 Groups are admin-managed and can be mapped to AD groups for automatic LDAP assignment.
 
 - One group per user, optional
@@ -185,7 +185,7 @@ The system uses **S3-compatible object storage** for all file operations. **Rust
 
 ### Internationalization
 
-OUITRANSFER. supports multiple languages using **next-intl**, which is deeply integrated into the routing system. It loads only the necessary translations per route, supports nested namespaces, and makes it easy to keep things organized even at scale.
+OUITRANSFER supports multiple languages using **next-intl**, which is deeply integrated into the routing system. It loads only the necessary translations per route, supports nested namespaces, and makes it easy to keep things organized even at scale.
 
 - Per-locale routing (`en-US`, `pt-BR`, etc.) — 23 languages supported
 - Translation loading by namespace/page

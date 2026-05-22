@@ -3,9 +3,9 @@ title: S3 Providers
 icon: Package
 ---
 
-This guide provides comprehensive configuration instructions for integrating OUITRANSFER. with various S3-compatible storage providers. Whether you're using cloud services like AWS S3 or self-hosted solutions like RustFS, this guide will help you set up reliable object storage for your files.
+This guide provides comprehensive configuration instructions for integrating OUITRANSFER with various S3-compatible storage providers. Whether you're using cloud services like AWS S3 or self-hosted solutions like RustFS, this guide will help you set up reliable object storage for your files.
 
-> **Overview:** OUITRANSFER. supports any S3-compatible storage provider, giving you flexibility to choose the solution that best fits your needs and budget.
+> **Overview:** OUITRANSFER supports any S3-compatible storage provider, giving you flexibility to choose the solution that best fits your needs and budget.
 
 > **Note:** Some configuration options (like presigned URL expiration) apply to **all storage types**, including filesystem storage. These are marked accordingly in the documentation.
 
@@ -217,7 +217,7 @@ S3_FORCE_PATH_STYLE=false
 
 ## Presigned URL configuration
 
-OUITRANSFER. uses presigned URLs to provide secure, temporary access to files stored in **both S3-compatible storage and filesystem storage**. These URLs have a configurable expiration time to balance security and usability.
+OUITRANSFER uses presigned URLs to provide secure, temporary access to files stored in **both S3-compatible storage and filesystem storage**. These URLs have a configurable expiration time to balance security and usability.
 
 > **Note:** This configuration applies to **all storage types** (S3, filesystem, etc.), not just S3-compatible storage.
 
@@ -356,7 +356,7 @@ S3_REJECT_UNAUTHORIZED=false
 
 After configuring your S3 provider, test the connection by:
 
-1. **Upload a test file** through the OUITRANSFER. interface
+1. **Upload a test file** through the OUITRANSFER interface
 2. **Verify file appears** in your S3 bucket
 3. **Download the file** to confirm retrieval works
 4. **Check file permissions** and access controls
@@ -369,7 +369,7 @@ To switch from filesystem to S3 storage or between S3 providers:
 
 1. **Backup existing files** if switching from filesystem storage
 2. **Update environment variables** with new provider settings
-3. **Restart the OUITRANSFER. container** to apply changes
+3. **Restart the OUITRANSFER container** to apply changes
 4. **Test file operations** to ensure everything works correctly
 
 Remember that existing files won't be automatically migrated when switching storage providers.

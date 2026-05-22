@@ -54,13 +54,13 @@ export function V1BetaModal() {
           <DialogDescription className="text-left space-y-4 pt-2 text-base leading-relaxed">
             <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-lg p-4 mb-4">
               <p className="text-indigo-800 dark:text-indigo-200 text-sm font-medium">
-                <strong>Note:</strong> OUITRANSFER. is currently in beta. Features may evolve and
+                <strong>Note:</strong> OUITRANSFER is currently in beta. Features may evolve and
                 some rough edges may remain. Your feedback helps us improve.
               </p>
             </div>
             <p>
               This is the first public release of{" "}
-              <strong className="text-indigo-600">OUITRANSFER.</strong> — a self-hosted, open-source
+              <strong className="text-indigo-600">OUITRANSFER</strong> — a self-hosted, open-source
               file transfer platform built for speed, privacy, and simplicity.
             </p>
             <p>
