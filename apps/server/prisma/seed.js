@@ -10,7 +10,7 @@ const defaultConfigs = [
   // General Configurations
   {
     key: "appName",
-    value: "OUITRANSFER. ",
+    value: "Ouitransfer",
     type: "string",
     group: "general",
   },
