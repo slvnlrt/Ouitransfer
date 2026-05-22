@@ -76,7 +76,7 @@ export interface UseUppyUploadOptions {
   /**
    * Register file in backend after successful upload
    */
-  onAfterUpload?: (fileId: string, file: File, objectName: string) => Promise<void>;
+  onAfterUpload?: (fileId: string, file: File, objectName: string) => Promise<string | undefined>;
 
   /**
    * Function to get presigned URL for S3 upload
@@ -119,6 +119,7 @@ export interface FileUploadState {
   error?: string;
   objectName?: string;
   previewUrl?: string;
+  registeredFileId?: string; // DB file ID returned by registerFile
 }
 
 /**
@@ -492,19 +493,28 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
       const objectName = getUppyObjectName(file);
 
       try {
-        // Call registration callback
+        // Call registration callback and capture returned file ID
+        let registeredFileId: string | undefined;
         if (onAfterUploadRef.current) {
-          await onAfterUploadRef.current(file.id, file.data as File, objectName ?? "");
+          const result = await onAfterUploadRef.current(
+            file.id,
+            file.data as File,
+            objectName ?? "",
+          );
+          if (typeof result === "string") {
+            registeredFileId = result;
+          }
         }
 
         setFileUploads((prev) =>
-          prev.map((f) => (f.id === file.id ? { ...f, status: "success", progress: 100 } : f)),
+          prev.map((f) =>
+            f.id === file.id ? { ...f, status: "success", progress: 100, registeredFileId } : f,
+          ),
         );
       } catch (error: unknown) {
         logger.error("[Upload] Registration failed", {
           err: error instanceof Error ? error.message : String(error),
         });
-        // Handle registration error
         const errorMessage = error instanceof Error ? error.message : "Failed to register file";
         setFileUploads((prev) =>
           prev.map((f) => (f.id === file.id ? { ...f, status: "error", error: errorMessage } : f)),

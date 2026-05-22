@@ -84,13 +84,15 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
         const fileName = file.name;
         const extension = fileName.split(".").pop() || "";
 
-        await registerFile({
+        const response = await registerFile({
           name: fileName,
           objectName,
           size: file.size,
           extension,
           folderId: currentFolderId,
         });
+
+        return response.data.file.id;
       },
     }),
     [currentFolderId, t],
