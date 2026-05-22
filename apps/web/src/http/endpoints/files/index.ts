@@ -29,6 +29,8 @@ import type {
   UpdateFileResult,
 } from "./types";
 
+export type { DeleteFile409 } from "./types";
+
 /**
  * Generates a pre-signed URL for direct upload to S3-compatible storage
  * @summary Get Presigned URL for File
@@ -103,9 +105,15 @@ export const getDownloadUrl = (
 /**
  * Deletes a user file
  * @summary Delete File
+ * @param force - If true, deletes the file even if it belongs to active shares
  */
-export const deleteFile = (id: string, options?: AxiosRequestConfig): Promise<DeleteFileResult> => {
-  return apiInstance.delete(`/api/files/${id}`, options);
+export const deleteFile = (
+  id: string,
+  force?: boolean,
+  options?: AxiosRequestConfig,
+): Promise<DeleteFileResult> => {
+  const params = force ? { force: true } : undefined;
+  return apiInstance.delete(`/api/files/${id}`, { params, ...options });
 };
 
 /**

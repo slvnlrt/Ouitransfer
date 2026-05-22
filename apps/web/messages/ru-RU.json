@@ -384,7 +384,10 @@
     "deleteFile": "Удалить файл",
     "deleteConfirmation": "Вы уверены, что хотите удалить ?",
     "deleteWarning": "Это действие необратимо.",
-    "addDescriptionPlaceholder": "Добавить описание..."
+    "addDescriptionPlaceholder": "Добавить описание...",
+    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "fileManager": {
     "downloadError": "Ошибка скачивания файла",

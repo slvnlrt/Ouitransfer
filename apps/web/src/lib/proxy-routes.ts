@@ -228,7 +228,7 @@ export const routes: RouteConfig[] = [
   }),
   // 2-seg dynamic
   r("PATCH", "files/:id", "/files/:id"),
-  r("DELETE", "files/:id", "/files/:id"),
+  r("DELETE", "files/:id", "/files/:id", { query: true }),
   // 1-seg
   r("GET", "files", "/files", { query: true }),
   r("POST", "files", "/files"),

@@ -384,7 +384,10 @@
     "deleteFile": "Bestand Verwijderen",
     "deleteConfirmation": "Weet je zeker dat je  wilt verwijderen?",
     "deleteWarning": "Deze actie kan niet ongedaan worden gemaakt.",
-    "addDescriptionPlaceholder": "Beschrijving toevoegen..."
+    "addDescriptionPlaceholder": "Beschrijving toevoegen...",
+    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "fileManager": {
     "downloadError": "Fout bij het downloaden van bestand",

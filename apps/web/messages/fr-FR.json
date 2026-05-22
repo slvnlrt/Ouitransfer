@@ -384,7 +384,10 @@
     "addDescriptionPlaceholder": "Ajouter une description...",
     "deleteFile": "Supprimer le Fichier",
     "deleteConfirmation": "Êtes-vous sûr de vouloir supprimer  ?",
-    "deleteWarning": "Cette action ne peut pas être annulée."
+    "deleteWarning": "Cette action ne peut pas être annulée.",
+    "inSharesWarningTitle": "Ce fichier est inclus dans des partages actifs",
+    "inSharesWarningBody": "Ce fichier est inclus dans {count, plural, one {# partage} other {# partages}}. Le supprimer le retirera de tous ces partages.",
+    "deleteAnyway": "Supprimer quand même"
   },
   "fileManager": {
     "downloadError": "Échec du téléchargement du fichier",

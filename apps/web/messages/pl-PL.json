@@ -384,7 +384,10 @@
     "deleteFile": "Usuń plik",
     "deleteConfirmation": "Czy na pewno chcesz usunąć ten plik?",
     "deleteWarning": "Tej operacji nie można cofnąć.",
-    "addDescriptionPlaceholder": "Dodaj opis..."
+    "addDescriptionPlaceholder": "Dodaj opis...",
+    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "fileManager": {
     "downloadError": "Nie udało się pobrać pliku",

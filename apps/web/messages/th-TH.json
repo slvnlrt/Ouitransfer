@@ -388,7 +388,10 @@
     "addDescriptionPlaceholder": "เพิ่มคำอธิบาย...",
     "deleteFile": "ลบไฟล์",
     "deleteConfirmation": "คุณแน่ใจหรือไม่ว่าต้องการลบไฟล์นี้?",
-    "deleteWarning": "ไม่สามารถเลิกทำการกระทำนี้ได้"
+    "deleteWarning": "ไม่สามารถเลิกทำการกระทำนี้ได้",
+    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "fileManager": {
     "downloadError": "ไม่สามารถดาวน์โหลดไฟล์",

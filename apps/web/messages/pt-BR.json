@@ -388,7 +388,10 @@
     "addDescriptionPlaceholder": "Adicionar descrição...",
     "deleteFile": "Excluir arquivo",
     "deleteConfirmation": "Tem certeza que deseja excluir ?",
-    "deleteWarning": "Esta ação não pode ser desfeita."
+    "deleteWarning": "Esta ação não pode ser desfeita.",
+    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "fileManager": {
     "downloadError": "Falha ao baixar arquivo",

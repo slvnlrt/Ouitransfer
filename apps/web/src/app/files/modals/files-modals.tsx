@@ -62,10 +62,13 @@ export function FilesModals({
       <FileActionsModals
         fileToDelete={fileManager.fileToDelete}
         fileToRename={fileManager.fileToRename}
+        fileInSharesWarning={fileManager.fileInSharesWarning}
         onCloseDelete={() => fileManager.setFileToDelete(null)}
         onCloseRename={() => fileManager.setFileToRename(null)}
+        onCloseSharesWarning={() => fileManager.setFileInSharesWarning(null)}
         onDelete={fileManager.handleDelete}
         onRename={fileManager.handleRename}
+        onForceDelete={fileManager.handleForceDelete}
       />
 
       {/* Bulk Actions Modals */}

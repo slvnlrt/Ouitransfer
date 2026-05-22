@@ -388,7 +388,10 @@
     "addDescriptionPlaceholder": "افزودن توضیحات...",
     "deleteFile": "حذف فایل",
     "deleteConfirmation": "آیا از حذف این فایل اطمینان دارید؟",
-    "deleteWarning": "این عمل قابل بازگشت نیست."
+    "deleteWarning": "این عمل قابل بازگشت نیست.",
+    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "fileManager": {
     "downloadError": "دانلود فایل ناموفق بود",

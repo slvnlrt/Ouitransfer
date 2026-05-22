@@ -38,6 +38,7 @@ export interface EnhancedFileManagerHook {
   fileToDelete: FileToDelete | null;
   fileToRename: FileToRename | null;
   fileToShare: FileToShare | null;
+  fileInSharesWarning: { id: string; name: string; shareCount: number } | null;
   filesToDelete: BulkFile[] | null;
   filesToShare: BulkFile[] | null;
   filesToDownload: BulkFile[] | null;
@@ -58,6 +59,9 @@ export interface EnhancedFileManagerHook {
   setFileToRename: (file: { id: string; name: string; description?: string } | null) => void;
   setPreviewFile: (file: { name: string; objectName: string; description?: string } | null) => void;
   setFileToShare: (file: FileToShare | null) => void;
+  setFileInSharesWarning: (
+    warning: { id: string; name: string; shareCount: number } | null,
+  ) => void;
   setFilesToDelete: (files: BulkFile[] | null) => void;
   setFilesToShare: (files: BulkFile[] | null) => void;
   setFilesToDownload: (files: BulkFile[] | null) => void;
@@ -72,6 +76,7 @@ export interface EnhancedFileManagerHook {
   setFoldersToDownload: (folders: FolderItem[] | null) => void;
 
   handleDelete: (fileId: string) => Promise<void>;
+  handleForceDelete: (fileId: string) => Promise<void>;
   handleDownload: (objectName: string, fileName: string) => Promise<void>;
   handleRename: (fileId: string, newName: string, description?: string) => Promise<void>;
   handleBulkDelete: (files: BulkFile[], folders?: FolderItem[]) => void;
@@ -262,7 +267,8 @@ export function useEnhancedFileManager(
       const deletePromises = [];
 
       if (filesToDelete) {
-        deletePromises.push(...filesToDelete.map((file) => deleteFile(file.id)));
+        // Force-delete in bulk: skip per-file share warnings (no interactive confirmation in bulk)
+        deletePromises.push(...filesToDelete.map((file) => deleteFile(file.id, true)));
       }
 
       if (foldersToDelete) {
@@ -294,9 +300,12 @@ export function useEnhancedFileManager(
     setFileToDelete: fileCrud.setFileToDelete,
     fileToShare: fileCrud.fileToShare,
     setFileToShare: fileCrud.setFileToShare,
+    fileInSharesWarning: fileCrud.fileInSharesWarning,
+    setFileInSharesWarning: fileCrud.setFileInSharesWarning,
     handleDownload: fileCrud.handleDownload,
     handleRename: fileCrud.handleRename,
     handleDelete: fileCrud.handleDelete,
+    handleForceDelete: fileCrud.handleForceDelete,
 
     // Folder CRUD (from sub-hook)
     folderToDelete: folderCrud.folderToDelete,

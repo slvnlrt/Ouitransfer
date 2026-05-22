@@ -388,7 +388,10 @@
     "addDescriptionPlaceholder": "Προσθήκη περιγραφής...",
     "deleteFile": "Διαγραφή αρχείου",
     "deleteConfirmation": "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτό το αρχείο;",
-    "deleteWarning": "Αυτή η ενέργεια δεν μπορεί να αναιρεθεί."
+    "deleteWarning": "Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.",
+    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "fileManager": {
     "downloadError": "Αποτυχία λήψης αρχείου",

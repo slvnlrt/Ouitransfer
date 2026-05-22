@@ -388,7 +388,10 @@
     "addDescriptionPlaceholder": "Add description...",
     "deleteFile": "Delete File",
     "deleteConfirmation": "Are you sure you want to delete this file?",
-    "deleteWarning": "This action cannot be undone."
+    "deleteWarning": "This action cannot be undone.",
+    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "fileManager": {
     "downloadError": "Failed to download file",

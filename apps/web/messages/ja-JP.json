@@ -384,7 +384,10 @@
     "deleteFile": "ファイルを削除",
     "deleteConfirmation": "を削除してもよろしいですか？",
     "deleteWarning": "この操作は元に戻せません。",
-    "addDescriptionPlaceholder": "説明を追加..."
+    "addDescriptionPlaceholder": "説明を追加...",
+    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "fileManager": {
     "downloadError": "ファイルのダウンロードに失敗しました",

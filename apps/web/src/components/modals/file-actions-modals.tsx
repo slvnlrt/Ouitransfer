@@ -15,19 +15,25 @@ import { Input } from "@/components/ui/input";
 interface FileActionsModalsProps {
   fileToRename: { id: string; name: string; description?: string } | null;
   fileToDelete: { id: string; name: string } | null;
+  fileInSharesWarning: { id: string; name: string; shareCount: number } | null;
   onRename: (fileId: string, newName: string, description?: string) => Promise<void>;
   onDelete: (fileId: string) => Promise<void>;
+  onForceDelete: (fileId: string) => Promise<void>;
   onCloseRename: () => void;
   onCloseDelete: () => void;
+  onCloseSharesWarning: () => void;
 }
 
 export function FileActionsModals({
   fileToRename,
   fileToDelete,
+  fileInSharesWarning,
   onRename,
   onDelete,
+  onForceDelete,
   onCloseRename,
   onCloseDelete,
+  onCloseSharesWarning,
 }: FileActionsModalsProps) {
   const t = useTranslations();
 
@@ -128,6 +134,38 @@ export function FileActionsModals({
             </Button>
             <Button variant="destructive" onClick={() => fileToDelete && onDelete(fileToDelete.id)}>
               {t("common.delete")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!fileInSharesWarning} onOpenChange={() => onCloseSharesWarning()}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Trash2 className="size-5" />
+              {t("fileActions.deleteFile")}
+            </DialogTitle>
+          </DialogHeader>
+          <DialogDescription>
+            <p className="text-base font-semibold mb-2 text-foreground">
+              {t("fileActions.inSharesWarningTitle")}
+            </p>
+            <p className="text-sm text-amber-500">
+              {t("fileActions.inSharesWarningBody", {
+                count: fileInSharesWarning?.shareCount ?? 0,
+              })}
+            </p>
+          </DialogDescription>
+          <DialogFooter>
+            <Button variant="outline" onClick={onCloseSharesWarning}>
+              {t("common.cancel")}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => fileInSharesWarning && onForceDelete(fileInSharesWarning.id)}
+            >
+              {t("fileActions.deleteAnyway")}
             </Button>
           </DialogFooter>
         </DialogContent>

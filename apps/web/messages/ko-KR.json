@@ -384,7 +384,10 @@
     "deleteFile": "파일 삭제",
     "deleteConfirmation": "을(를) 삭제하시겠습니까?",
     "deleteWarning": "이 작업은 취소할 수 없습니다.",
-    "addDescriptionPlaceholder": "설명 추가..."
+    "addDescriptionPlaceholder": "설명 추가...",
+    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "fileManager": {
     "downloadError": "파일 다운로드에 실패했습니다",

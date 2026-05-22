@@ -388,7 +388,10 @@
     "addDescriptionPlaceholder": "Tambah deskripsi...",
     "deleteFile": "Hapus File",
     "deleteConfirmation": "Apakah Anda yakin ingin menghapus file ini?",
-    "deleteWarning": "Tindakan ini tidak dapat dibatalkan."
+    "deleteWarning": "Tindakan ini tidak dapat dibatalkan.",
+    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "fileManager": {
     "downloadError": "Gagal mengunduh file",

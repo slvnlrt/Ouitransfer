@@ -1,9 +1,11 @@
+import axios from "axios";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import type { FileItem } from "@/components/tables/files-table-types";
 import { deleteFile, updateFile } from "@/http/endpoints";
+import type { DeleteFile409 } from "@/http/endpoints/files";
 import { getCachedDownloadUrl } from "@/lib/download-url-cache";
 import { logger } from "@/lib/logger";
 
@@ -25,13 +27,18 @@ export interface FileCrudHook {
   fileToDelete: FileToDelete | null;
   fileToRename: FileToRename | null;
   fileToShare: FileToShare | null;
+  fileInSharesWarning: { id: string; name: string; shareCount: number } | null;
 
   setPreviewFile: (file: { name: string; objectName: string; description?: string } | null) => void;
   setFileToDelete: (file: { id: string; name: string } | null) => void;
   setFileToRename: (file: { id: string; name: string; description?: string } | null) => void;
   setFileToShare: (file: FileToShare | null) => void;
+  setFileInSharesWarning: (
+    warning: { id: string; name: string; shareCount: number } | null,
+  ) => void;
 
   handleDelete: (fileId: string) => Promise<void>;
+  handleForceDelete: (fileId: string) => Promise<void>;
   handleDownload: (objectName: string, fileName: string) => Promise<void>;
   handleRename: (fileId: string, newName: string, description?: string) => Promise<void>;
 }
@@ -49,6 +56,11 @@ export function useFileCrud(
   const [fileToRename, setFileToRename] = useState<FileToRename | null>(null);
   const [fileToDelete, setFileToDelete] = useState<FileToDelete | null>(null);
   const [fileToShare, setFileToShare] = useState<FileToShare | null>(null);
+  const [fileInSharesWarning, setFileInSharesWarning] = useState<{
+    id: string;
+    name: string;
+    shareCount: number;
+  } | null>(null);
 
   const handleDownload = async (objectName: string, fileName: string) => {
     try {
@@ -100,7 +112,32 @@ export function useFileCrud(
       toast.success(t("files.deleteSuccess"));
       setFileToDelete(null);
     } catch (error) {
-      logger.error("Failed to delete file", {
+      if (axios.isAxiosError(error) && error.response?.status === 409) {
+        // File belongs to active shares — undo optimistic update by triggering a refresh
+        // We can't easily "un-delete" from UI, but the file still exists on the server.
+        // The warning dialog will handle the force-delete flow.
+        const data = error.response.data as DeleteFile409;
+        const fileName = fileToDelete?.name ?? "";
+        setFileInSharesWarning({ id: fileId, name: fileName, shareCount: data.shareCount });
+        setFileToDelete(null);
+      } else {
+        logger.error("Failed to delete file", {
+          fileId,
+          err: error instanceof Error ? error.message : String(error),
+        });
+        toast.error(t("files.deleteError"));
+      }
+    }
+  };
+
+  const handleForceDelete = async (fileId: string) => {
+    try {
+      await deleteFile(fileId, true);
+      toast.success(t("files.deleteSuccess"));
+      setFileToDelete(null);
+      setFileInSharesWarning(null);
+    } catch (error) {
+      logger.error("Failed to force-delete file", {
         fileId,
         err: error instanceof Error ? error.message : String(error),
       });
@@ -117,8 +154,11 @@ export function useFileCrud(
     setFileToDelete,
     fileToShare,
     setFileToShare,
+    fileInSharesWarning,
+    setFileInSharesWarning,
     handleDownload,
     handleRename,
     handleDelete,
+    handleForceDelete,
   };
 }

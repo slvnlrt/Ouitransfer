@@ -388,7 +388,10 @@
     "addDescriptionPlaceholder": "Thêm mô tả...",
     "deleteFile": "Xóa tệp",
     "deleteConfirmation": "Bạn có chắc chắn muốn xóa tệp này không?",
-    "deleteWarning": "Hành động này không thể hoàn tác."
+    "deleteWarning": "Hành động này không thể hoàn tác.",
+    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "fileManager": {
     "downloadError": "Không thể tải xuống tệp",

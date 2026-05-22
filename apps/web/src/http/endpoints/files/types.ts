@@ -132,6 +132,11 @@ export interface GenerateEmbedToken200 {
   embedUrl: string;
 }
 
+export interface DeleteFile409 {
+  shareCount: number;
+  message: string;
+}
+
 export type RegisterFile201 = FileOperationResponse;
 export type UpdateFile200 = FileOperationResponse;
 export type MoveFile200 = FileOperationResponse;

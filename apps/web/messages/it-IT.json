@@ -384,7 +384,10 @@
     "addDescriptionPlaceholder": "Aggiungi descrizione...",
     "deleteFile": "Elimina File",
     "deleteConfirmation": "Sei sicuro di voler eliminare ?",
-    "deleteWarning": "Questa azione non può essere annullata."
+    "deleteWarning": "Questa azione non può essere annullata.",
+    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "fileManager": {
     "downloadError": "Errore durante il download del file",

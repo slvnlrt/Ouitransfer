@@ -384,7 +384,10 @@
     "deleteFile": "Dosyayı Sil",
     "deleteConfirmation": " dosyasını silmek istediğinize emin misiniz?",
     "deleteWarning": "Bu işlem geri alınamaz.",
-    "addDescriptionPlaceholder": "Açıklama ekle..."
+    "addDescriptionPlaceholder": "Açıklama ekle...",
+    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "fileManager": {
     "downloadError": "Dosya indirilemedi",

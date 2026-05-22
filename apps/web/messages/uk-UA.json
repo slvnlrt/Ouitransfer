@@ -388,7 +388,10 @@
     "addDescriptionPlaceholder": "Додати опис...",
     "deleteFile": "Видалити файл",
     "deleteConfirmation": "Ви впевнені, що хочете видалити цей файл?",
-    "deleteWarning": "Цю дію неможливо скасувати."
+    "deleteWarning": "Цю дію неможливо скасувати.",
+    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "fileManager": {
     "downloadError": "Не вдалося завантажити файл",

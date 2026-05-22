@@ -388,7 +388,10 @@
     "addDescriptionPlaceholder": "Agregar descripción...",
     "deleteFile": "Eliminar archivo",
     "deleteConfirmation": "¿Estás seguro de que deseas eliminar ?",
-    "deleteWarning": "Esta acción no se puede deshacer."
+    "deleteWarning": "Esta acción no se puede deshacer.",
+    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "fileManager": {
     "downloadError": "Error al descargar el archivo",

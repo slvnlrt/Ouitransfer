@@ -388,7 +388,10 @@
     "addDescriptionPlaceholder": "Lägg till beskrivning...",
     "deleteFile": "Ta bort fil",
     "deleteConfirmation": "Är du säker på att du vill ta bort den här filen?",
-    "deleteWarning": "Denna åtgärd kan inte ångras."
+    "deleteWarning": "Denna åtgärd kan inte ångras.",
+    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "fileManager": {
     "downloadError": "Det gick inte att ladda ned filen",

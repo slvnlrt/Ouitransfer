@@ -384,7 +384,10 @@
     "deleteFile": "फाइल हटाएं",
     "deleteConfirmation": "क्या आप वाकई  हटाना चाहते हैं?",
     "deleteWarning": "यह क्रिया अपरिवर्तनीय है।",
-    "addDescriptionPlaceholder": "विवरण जोड़ें..."
+    "addDescriptionPlaceholder": "विवरण जोड़ें...",
+    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "fileManager": {
     "downloadError": "फाइल डाउनलोड करने में त्रुटि",

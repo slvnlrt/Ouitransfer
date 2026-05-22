@@ -384,7 +384,10 @@
     "deleteFile": "حذف الملف",
     "deleteConfirmation": "هل أنت متأكد أنك تريد حذف ؟",
     "deleteWarning": "هذا الإجراء لا يمكن التراجع عنه.",
-    "addDescriptionPlaceholder": "إضافة وصف..."
+    "addDescriptionPlaceholder": "إضافة وصف...",
+    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "fileManager": {
     "downloadError": "فشل في تنزيل الملف",

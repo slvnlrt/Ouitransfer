@@ -384,7 +384,10 @@
     "addDescriptionPlaceholder": "Beschreibung hinzufügen...",
     "deleteFile": "Datei löschen",
     "deleteConfirmation": "Sind Sie sicher, dass Sie  löschen möchten?",
-    "deleteWarning": "Diese Aktion kann nicht rückgängig gemacht werden."
+    "deleteWarning": "Diese Aktion kann nicht rückgängig gemacht werden.",
+    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "fileManager": {
     "downloadError": "Fehler beim Herunterladen der Datei",

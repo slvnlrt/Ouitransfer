@@ -384,7 +384,10 @@
     "deleteFile": "删除文件",
     "deleteConfirmation": "您确定要删除{fileName}吗？",
     "deleteWarning": "此操作不可撤销。",
-    "addDescriptionPlaceholder": "添加描述..."
+    "addDescriptionPlaceholder": "添加描述...",
+    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "fileManager": {
     "downloadError": "文件下载失败",
