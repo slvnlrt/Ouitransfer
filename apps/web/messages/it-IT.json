@@ -385,9 +385,11 @@
     "deleteFile": "Elimina File",
     "deleteConfirmation": "Sei sicuro di voler eliminare ?",
     "deleteWarning": "Questa azione non può essere annullata.",
-    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningTitle": "This file is included in shares",
     "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
-    "deleteAnyway": "Delete anyway"
+    "deleteAnyway": "Delete anyway",
+    "bulkInSharesWarningTitle": "Some files are included in shares",
+    "bulkInSharesWarningBody": "{count, plural, one {# file is} other {# files are}} included in shares. Deleting will remove {count, plural, one {it} other {them}} from all shares."
   },
   "fileManager": {
     "downloadError": "Errore durante il download del file",

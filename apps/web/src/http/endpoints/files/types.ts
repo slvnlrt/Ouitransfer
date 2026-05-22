@@ -133,6 +133,7 @@ export interface GenerateEmbedToken200 {
 }
 
 export interface DeleteFile409 {
+  error: string;
   shareCount: number;
   message: string;
 }

@@ -727,7 +727,7 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
       operationId: "deleteFile",
       summary: "Delete File",
       description:
-        "Deletes a user file. Returns 409 if the file belongs to active shares and force is not set.",
+        "Deletes a user file. Returns 409 if the file belongs to shares and force is not set.",
       params: z.object({
         id: z.string().min(1, "The file id is required").describe("The file ID"),
       }),
@@ -743,6 +743,7 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         403: ErrorResponseSchema,
         404: ErrorResponseSchema,
         409: z.object({
+          error: z.string(),
           shareCount: z.number().describe("Number of shares containing this file"),
           message: z.string(),
         }),
@@ -768,9 +769,22 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
 
       if (fileRecord.shares.length > 0 && !force) {
         return reply.status(409).send({
+          error: "FILE_IN_SHARES",
           shareCount: fileRecord.shares.length,
           message: `This file is included in ${fileRecord.shares.length} share(s). Use force=true to delete it anyway.`,
         });
+      }
+
+      if (force && fileRecord.shares.length > 0) {
+        app.log.info(
+          {
+            event: "file_force_deleted_from_shares",
+            fileId: id,
+            userId,
+            shareIds: fileRecord.shares.map((s) => s.id),
+          },
+          "File force-deleted from shares",
+        );
       }
 
       await fileService.deleteObject(fileRecord.objectName);

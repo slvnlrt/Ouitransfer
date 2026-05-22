@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
@@ -39,6 +40,7 @@ export interface EnhancedFileManagerHook {
   fileToRename: FileToRename | null;
   fileToShare: FileToShare | null;
   fileInSharesWarning: { id: string; name: string; shareCount: number } | null;
+  filesInSharesWarning: Array<{ id: string; name: string }> | null;
   filesToDelete: BulkFile[] | null;
   filesToShare: BulkFile[] | null;
   filesToDownload: BulkFile[] | null;
@@ -62,6 +64,7 @@ export interface EnhancedFileManagerHook {
   setFileInSharesWarning: (
     warning: { id: string; name: string; shareCount: number } | null,
   ) => void;
+  setFilesInSharesWarning: (files: Array<{ id: string; name: string }> | null) => void;
   setFilesToDelete: (files: BulkFile[] | null) => void;
   setFilesToShare: (files: BulkFile[] | null) => void;
   setFilesToDownload: (files: BulkFile[] | null) => void;
@@ -77,6 +80,7 @@ export interface EnhancedFileManagerHook {
 
   handleDelete: (fileId: string) => Promise<void>;
   handleForceDelete: (fileId: string) => Promise<void>;
+  handleForceBulkDelete: () => Promise<void>;
   handleDownload: (objectName: string, fileName: string) => Promise<void>;
   handleRename: (fileId: string, newName: string, description?: string) => Promise<void>;
   handleBulkDelete: (files: BulkFile[], folders?: FolderItem[]) => void;
@@ -137,6 +141,10 @@ export function useEnhancedFileManager(
   const [foldersToShare, setFoldersToShare] = useState<FolderItem[] | null>(null);
   const [foldersToDownload, setFoldersToDownload] = useState<FolderItem[] | null>(null);
   const [isBulkDownloadModalOpen, setBulkDownloadModalOpen] = useState(false);
+  const [filesInSharesWarning, setFilesInSharesWarning] = useState<Array<{
+    id: string;
+    name: string;
+  }> | null>(null);
 
   // --- Bulk operation handlers ---
   const handleBulkDelete = (files: BulkFile[], folders?: FolderItem[]) => {
@@ -254,35 +262,78 @@ export function useEnhancedFileManager(
     if (!filesToDelete && !foldersToDelete) return;
 
     try {
-      // Optimistic update - remove all items from UI immediately
-      if (handleImmediateUpdate) {
-        filesToDelete?.forEach((file) => {
-          handleImmediateUpdate(file.id, "file", "__DELETE__");
-        });
-        foldersToDelete?.forEach((folder) => {
-          handleImmediateUpdate(folder.id, "folder", "__DELETE__");
-        });
-      }
-
-      const deletePromises = [];
-
-      if (filesToDelete) {
-        // Force-delete in bulk: skip per-file share warnings (no interactive confirmation in bulk)
-        deletePromises.push(...filesToDelete.map((file) => deleteFile(file.id, true)));
-      }
-
+      // Delete folders (no share check needed for folders)
       if (foldersToDelete) {
-        deletePromises.push(...foldersToDelete.map((folder) => deleteFolder(folder.id)));
+        await Promise.all(foldersToDelete.map((folder) => deleteFolder(folder.id)));
+        if (handleImmediateUpdate) {
+          foldersToDelete.forEach((folder) => {
+            handleImmediateUpdate(folder.id, "folder", "__DELETE__");
+          });
+        }
       }
 
-      await Promise.all(deletePromises);
+      // Delete files — use allSettled to detect which succeed vs 409
+      if (filesToDelete) {
+        const results = await Promise.allSettled(filesToDelete.map((file) => deleteFile(file.id)));
 
-      const totalCount = (filesToDelete?.length || 0) + (foldersToDelete?.length || 0);
-      toast.success(t("files.bulkDeleteSuccess", { count: totalCount }));
+        const succeeded = filesToDelete.filter((_, i) => results[i].status === "fulfilled");
+        const failedWith409 = filesToDelete.filter((_, i) => {
+          const result = results[i];
+          return (
+            result.status === "rejected" &&
+            axios.isAxiosError(result.reason) &&
+            result.reason.response?.status === 409
+          );
+        });
+
+        // Optimistic update only for succeeded files
+        if (handleImmediateUpdate) {
+          succeeded.forEach((file) => {
+            handleImmediateUpdate(file.id, "file", "__DELETE__");
+          });
+        }
+
+        if (failedWith409.length > 0) {
+          // Show bulk shares warning dialog
+          setFilesInSharesWarning(failedWith409.map((file) => ({ id: file.id, name: file.name })));
+        }
+
+        const totalSucceeded = succeeded.length + (foldersToDelete?.length || 0);
+        if (totalSucceeded > 0) {
+          toast.success(t("files.bulkDeleteSuccess", { count: totalSucceeded }));
+        }
+      } else {
+        // Only folders were deleted
+        const totalCount = foldersToDelete?.length || 0;
+        toast.success(t("files.bulkDeleteSuccess", { count: totalCount }));
+      }
+
       setFilesToDelete(null);
       setFoldersToDelete(null);
     } catch (error) {
       logger.error("Failed to delete items", {
+        err: error instanceof Error ? error.message : String(error),
+      });
+      toast.error(t("files.bulkDeleteError"));
+    }
+  };
+
+  const handleForceBulkDelete = async () => {
+    if (!filesInSharesWarning) return;
+
+    try {
+      await Promise.all(filesInSharesWarning.map((file) => deleteFile(file.id, true)));
+
+      if (handleImmediateUpdate) {
+        filesInSharesWarning.forEach((file) => {
+          handleImmediateUpdate(file.id, "file", "__DELETE__");
+        });
+      }
+
+      toast.success(t("files.bulkDeleteSuccess", { count: filesInSharesWarning.length }));
+      setFilesInSharesWarning(null);
+    } catch (error) {
+      logger.error("Failed to force-delete files in shares", {
         err: error instanceof Error ? error.message : String(error),
       });
       toast.error(t("files.bulkDeleteError"));
@@ -329,6 +380,8 @@ export function useEnhancedFileManager(
     setFilesToDownload,
     foldersToDelete,
     setFoldersToDelete,
+    filesInSharesWarning,
+    setFilesInSharesWarning,
     isBulkDownloadModalOpen,
     setBulkDownloadModalOpen,
     handleBulkDelete,
@@ -336,6 +389,7 @@ export function useEnhancedFileManager(
     handleBulkDownload,
     handleBulkDownloadWithZip,
     handleDeleteBulk,
+    handleForceBulkDelete,
     handleShareBulkSuccess,
 
     foldersToShare,

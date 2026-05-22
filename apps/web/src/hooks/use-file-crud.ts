@@ -103,22 +103,23 @@ export function useFileCrud(
 
   const handleDelete = async (fileId: string) => {
     try {
-      // Optimistic update - remove from UI immediately
+      await deleteFile(fileId);
+
+      // Remove from UI only after server confirms deletion
       if (handleImmediateUpdate) {
         handleImmediateUpdate(fileId, "file", "__DELETE__");
       }
 
-      await deleteFile(fileId);
       toast.success(t("files.deleteSuccess"));
       setFileToDelete(null);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 409) {
-        // File belongs to active shares — undo optimistic update by triggering a refresh
-        // We can't easily "un-delete" from UI, but the file still exists on the server.
-        // The warning dialog will handle the force-delete flow.
         const data = error.response.data as DeleteFile409;
-        const fileName = fileToDelete?.name ?? "";
-        setFileInSharesWarning({ id: fileId, name: fileName, shareCount: data.shareCount });
+        setFileInSharesWarning({
+          id: fileId,
+          name: fileToDelete?.name ?? "",
+          shareCount: data.shareCount,
+        });
         setFileToDelete(null);
       } else {
         logger.error("Failed to delete file", {
@@ -133,6 +134,12 @@ export function useFileCrud(
   const handleForceDelete = async (fileId: string) => {
     try {
       await deleteFile(fileId, true);
+
+      // Remove from UI after server confirms force-deletion
+      if (handleImmediateUpdate) {
+        handleImmediateUpdate(fileId, "file", "__DELETE__");
+      }
+
       toast.success(t("files.deleteSuccess"));
       setFileToDelete(null);
       setFileInSharesWarning(null);

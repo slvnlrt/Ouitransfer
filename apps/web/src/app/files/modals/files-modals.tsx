@@ -133,6 +133,17 @@ export function FilesModals({
           onSuccess();
         }}
       />
+
+      <DeleteConfirmationModal
+        isOpen={!!fileManager.filesInSharesWarning}
+        onClose={() => fileManager.setFilesInSharesWarning(null)}
+        onConfirm={fileManager.handleForceBulkDelete}
+        title={t("fileActions.bulkInSharesWarningTitle")}
+        description={t("fileActions.bulkInSharesWarningBody", {
+          count: fileManager.filesInSharesWarning?.length || 0,
+        })}
+        files={fileManager.filesInSharesWarning?.map((f) => f.name) || []}
+      />
     </>
   );
 }

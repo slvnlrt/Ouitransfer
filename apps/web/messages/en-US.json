@@ -389,8 +389,10 @@
     "deleteFile": "Delete File",
     "deleteConfirmation": "Are you sure you want to delete this file?",
     "deleteWarning": "This action cannot be undone.",
-    "inSharesWarningTitle": "This file is included in active shares",
+    "inSharesWarningTitle": "This file is included in shares",
     "inSharesWarningBody": "This file is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "bulkInSharesWarningTitle": "Some files are included in shares",
+    "bulkInSharesWarningBody": "{count, plural, one {# file is} other {# files are}} included in shares. Deleting will remove {count, plural, one {it} other {them}} from all shares.",
     "deleteAnyway": "Delete anyway"
   },
   "fileManager": {

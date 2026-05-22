@@ -3,8 +3,8 @@
  *
  * Integration tests for the file deletion share-check feature (B-21).
  *
- * Tests that DELETE /files/:id returns 409 when the file belongs to active
- * shares and force is not set, and proceeds when force=true.
+ * Tests that DELETE /files/:id returns 409 when the file belongs to shares
+ * and force is not set, and proceeds when force=true.
  *
  * Per Rule 11 (service-layer tests are not sufficient) these tests exercise
  * the full Fastify request lifecycle via app.inject().
@@ -178,7 +178,7 @@ describe("DELETE /files/:id — share-check feature (B-21)", () => {
   });
 
   // ── Test 2: File belongs to 1 share, no force → 409 ─────────────────────────
-  it("returns 409 with shareCount when file belongs to 1 share and force is not set", async () => {
+  it("returns 409 with shareCount and error code when file belongs to 1 share and force is not set", async () => {
     const { prisma } = await import("../shared/prisma.js");
 
     vi.mocked(prisma.file.findUnique).mockResolvedValue(
@@ -189,6 +189,7 @@ describe("DELETE /files/:id — share-check feature (B-21)", () => {
 
     expect(res.statusCode).toBe(409);
     const body = res.json();
+    expect(body.error).toBe("FILE_IN_SHARES");
     expect(body.shareCount).toBe(1);
     expect(typeof body.message).toBe("string");
     expect(body.message.length).toBeGreaterThan(0);

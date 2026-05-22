@@ -151,7 +151,8 @@ export function FileActionsModals({
             <p className="text-base font-semibold mb-2 text-foreground">
               {t("fileActions.inSharesWarningTitle")}
             </p>
-            <p className="text-sm text-amber-500">
+            <p className="font-medium text-sm text-foreground mt-1">{fileInSharesWarning?.name}</p>
+            <p className="text-sm text-amber-500 mt-2">
               {t("fileActions.inSharesWarningBody", {
                 count: fileInSharesWarning?.shareCount ?? 0,
               })}
