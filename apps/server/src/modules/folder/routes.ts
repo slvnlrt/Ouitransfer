@@ -50,6 +50,26 @@ async function isDescendantOf(
   return false;
 }
 
+/**
+ * Recursively collects all folder IDs in the subtree rooted at `rootId`.
+ * Returns the root ID plus all descendant IDs.
+ */
+async function getDescendantFolderIds(rootId: string): Promise<string[]> {
+  const allIds: string[] = [rootId];
+  let level: string[] = [rootId];
+
+  while (level.length > 0) {
+    const children = await prisma.folder.findMany({
+      where: { parentId: { in: level } },
+      select: { id: true },
+    });
+    level = children.map((c) => c.id);
+    allIds.push(...level);
+  }
+
+  return allIds;
+}
+
 // ── Pre-validation hook ──────────────────────────────────────
 
 const preValidation = createJwtPreValidation();
@@ -554,18 +574,28 @@ export const folderRoutes: FastifyPluginAsyncZod = async (app) => {
       params: z.object({
         id: z.string().min(1, "The folder id is required").describe("The folder ID"),
       }),
+      querystring: z.object({
+        force: z.coerce.boolean().optional().default(false),
+      }),
       response: {
         200: z.object({
           message: z.string().describe("The folder deletion message"),
         }),
         400: ErrorResponseSchema,
         401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
         404: ErrorResponseSchema,
+        409: z.object({
+          error: z.string(),
+          shareCount: z.number().describe("Number of unique shares affected"),
+          message: z.string(),
+        }),
         500: ErrorResponseSchema,
       },
     },
     handler: async (request, reply) => {
       const { id } = request.params;
+      const { force } = request.query;
 
       const folderRecord = await prisma.folder.findUnique({ where: { id } });
       if (!folderRecord) {
@@ -577,8 +607,47 @@ export const folderRoutes: FastifyPluginAsyncZod = async (app) => {
         throw new ForbiddenError("Access denied.");
       }
 
-      await folderService.deleteObject(folderRecord.objectName);
+      // Gather all folder IDs in the subtree (recursive)
+      const allFolderIds = await getDescendantFolderIds(id);
 
+      // Count unique shares that reference any folder or file in this subtree
+      const [folderShareRows, fileShareRows] = await Promise.all([
+        prisma.share.findMany({
+          where: { folders: { some: { id: { in: allFolderIds } } } },
+          select: { id: true },
+        }),
+        prisma.share.findMany({
+          where: { files: { some: { folderId: { in: allFolderIds } } } },
+          select: { id: true },
+        }),
+      ]);
+
+      const affectedShareIds = new Set([
+        ...folderShareRows.map((s) => s.id),
+        ...fileShareRows.map((s) => s.id),
+      ]);
+
+      if (affectedShareIds.size > 0 && !force) {
+        return reply.status(409).send({
+          error: "FOLDER_IN_SHARES",
+          shareCount: affectedShareIds.size,
+          message: `This folder (and its contents) is included in ${affectedShareIds.size} share(s). Use force=true to delete it anyway.`,
+        });
+      }
+
+      if (force && affectedShareIds.size > 0) {
+        app.log.info(
+          {
+            event: "folder_force_deleted_from_shares",
+            folderId: id,
+            userId,
+            shareIds: [...affectedShareIds],
+          },
+          "Folder force-deleted from shares",
+        );
+      }
+
+      await folderService.deleteObject(folderRecord.objectName);
       await prisma.folder.delete({ where: { id } });
 
       return reply.send({ message: "Folder deleted successfully." });
