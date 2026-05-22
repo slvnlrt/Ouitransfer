@@ -1,5 +1,5 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
-import { Github, Palmtree } from "lucide-react";
+import { ChevronRight, Github } from "lucide-react";
 
 import { LATEST_VERSION_PATH } from "@/config/constants";
 
@@ -7,7 +7,7 @@ export const baseOptions: BaseLayoutProps = {
   nav: {
     title: (
       <div className="flex items-start gap-1.5">
-        <Palmtree className="text-[#52822D]" />
+        <ChevronRight className="text-primary" strokeWidth={3} />
         <span className="text-xl font-medium">OUITRANSFER.</span>
       </div>
     ),
