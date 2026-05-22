@@ -96,7 +96,7 @@ export function FileUploadSection({
       onAfterUpload: async (_fileId, file, objectName) => {
         const fileExtension = file.name.split(".").pop() || "";
 
-        await registerFileUploadByAlias(
+        const response = await registerFileUploadByAlias(
           alias,
           {
             name: file.name,
@@ -109,6 +109,8 @@ export function FileUploadSection({
           },
           password ? { password } : undefined,
         );
+
+        return response.data.file.id;
       },
       onSuccess: () => {
         const successCount = fileUploads.filter((u) => u.status === "success").length;
