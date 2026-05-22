@@ -3,21 +3,22 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 
+const VIEW_BOX_MIN_X = -80;
+const VIEW_BOX_WIDTH = 460;
+const VIEW_BOX_HEIGHT = 100;
+
 export const TextHoverEffect = ({ text, duration }: { text: string; duration?: number; automatic?: boolean }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [cursor, setCursor] = useState({ x: 0, y: 0 });
   const [hovered, setHovered] = useState(false);
-  const [maskPosition, setMaskPosition] = useState({ cx: "50%", cy: "50%" });
+  const [maskPosition, setMaskPosition] = useState({ cx: "150", cy: "50" });
 
   useEffect(() => {
     if (svgRef.current && cursor.x !== null && cursor.y !== null) {
       const svgRect = svgRef.current.getBoundingClientRect();
-      const cxPercentage = ((cursor.x - svgRect.left) / svgRect.width) * 100;
-      const cyPercentage = ((cursor.y - svgRect.top) / svgRect.height) * 100;
-      setMaskPosition({
-        cx: `${cxPercentage}%`,
-        cy: `${cyPercentage}%`,
-      });
+      const cx = VIEW_BOX_MIN_X + ((cursor.x - svgRect.left) / svgRect.width) * VIEW_BOX_WIDTH;
+      const cy = ((cursor.y - svgRect.top) / svgRect.height) * VIEW_BOX_HEIGHT;
+      setMaskPosition({ cx: `${cx}`, cy: `${cy}` });
     }
   }, [cursor]);
 
@@ -26,7 +27,7 @@ export const TextHoverEffect = ({ text, duration }: { text: string; duration?: n
       ref={svgRef}
       width="100%"
       height="100%"
-      viewBox="0 0 300 100"
+      viewBox="-80 0 460 100"
       xmlns="http://www.w3.org/2000/svg"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -70,7 +71,7 @@ export const TextHoverEffect = ({ text, duration }: { text: string; duration?: n
         </mask>
       </defs>
       <text
-        x="50%"
+        x="150"
         y="50%"
         textAnchor="middle"
         dominantBaseline="middle"
@@ -81,7 +82,7 @@ export const TextHoverEffect = ({ text, duration }: { text: string; duration?: n
         {text}
       </text>
       <motion.text
-        x="50%"
+        x="150"
         y="50%"
         textAnchor="middle"
         dominantBaseline="middle"
@@ -100,7 +101,7 @@ export const TextHoverEffect = ({ text, duration }: { text: string; duration?: n
         {text}
       </motion.text>
       <text
-        x="50%"
+        x="150"
         y="50%"
         textAnchor="middle"
         dominantBaseline="middle"
