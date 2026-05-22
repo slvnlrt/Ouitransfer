@@ -3,7 +3,7 @@ import { Banner } from "fumadocs-ui/components/banner";
 import "./global.css";
 
 import Link from "fumadocs-core/link";
-import { RootProvider } from "fumadocs-ui/provider";
+import { RootProvider } from "fumadocs-ui/provider/next";
 import { Inter } from "next/font/google";
 import type { ReactNode } from "react";
 

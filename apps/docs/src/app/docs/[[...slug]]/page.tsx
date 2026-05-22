@@ -1,3 +1,4 @@
+import type { LoaderConfig, LoaderOutput } from "fumadocs-core/source";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/page";
 import { redirect } from "next/navigation";
@@ -30,7 +31,7 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
       <DocsBody>
         <MDXContent
           components={getMDXComponents({
-            a: createRelativeLink(source, page),
+            a: createRelativeLink(source as unknown as LoaderOutput<LoaderConfig>, page),
           })}
         />
       </DocsBody>
