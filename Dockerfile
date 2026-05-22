@@ -66,7 +66,9 @@ RUN pnpm --filter ouitransfer-api deploy --legacy --prod --ignore-scripts /app/d
 # Post-deploy: rebuild native modules and generate Prisma client
 # (both skipped by --ignore-scripts during deploy)
 WORKDIR /app/deploy
-RUN npm rebuild better-sqlite3
+RUN npm rebuild better-sqlite3 \
+    || (echo "Retry 1/2 in 10s..." && sleep 10 && npm rebuild better-sqlite3) \
+    || (echo "Retry 2/2 in 20s..." && sleep 20 && npm rebuild better-sqlite3)
 RUN node node_modules/prisma/build/index.js generate
 
 
