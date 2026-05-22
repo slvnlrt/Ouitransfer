@@ -16,7 +16,6 @@ export function QuickShare({ onShareCreated, smtpEnabled }: QuickShareProps) {
     settings,
     shareLink,
     fileUploads,
-    isUploading,
     isSubmitting,
     pendingShare,
     smtpEnabled: resolvedSmtp,
@@ -38,7 +37,6 @@ export function QuickShare({ onShareCreated, smtpEnabled }: QuickShareProps) {
         <QuickShareUpload
           fileUploads={fileUploads}
           settings={settings}
-          isUploading={isUploading}
           isSubmitting={isSubmitting}
           pendingShare={pendingShare}
           smtpEnabled={resolvedSmtp}

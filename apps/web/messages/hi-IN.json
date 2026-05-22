@@ -2350,6 +2350,7 @@
     "upload": {
       "title": "Quick Share",
       "addMore": "Add more files",
+      "dropToAdd": "Drop files to add",
       "namePlaceholder": "Share name",
       "expiration": {
         "label": "Expires in",
@@ -2364,8 +2365,7 @@
       },
       "recipients": {
         "label": "Recipients",
-        "placeholder": "Add email addresses",
-        "toggle": "Notify recipients by email"
+        "placeholder": "Add email addresses"
       },
       "share": "Share",
       "sharing": "Sharing...",

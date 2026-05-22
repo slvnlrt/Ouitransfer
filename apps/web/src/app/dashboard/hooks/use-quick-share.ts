@@ -49,7 +49,7 @@ export function useQuickShare(options: UseQuickShareOptions = {}) {
     recipients: [],
   });
   const [shareLink, setShareLink] = useState("");
-  const [shareAlias, setShareAlias] = useState("");
+  const [_shareAlias, setShareAlias] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pendingShare, setPendingShare] = useState(false);
 
@@ -301,7 +301,6 @@ export function useQuickShare(options: UseQuickShareOptions = {}) {
     state,
     settings,
     shareLink,
-    shareAlias,
     isSubmitting,
     pendingShare,
     smtpEnabled: smtpEnabled ?? "false",

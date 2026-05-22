@@ -1767,6 +1767,7 @@
     "upload": {
       "title": "Partage rapide",
       "addMore": "Ajouter d'autres fichiers",
+      "dropToAdd": "Déposez les fichiers pour ajouter",
       "namePlaceholder": "Nom du partage",
       "expiration": {
         "label": "Expire dans",
@@ -1781,8 +1782,7 @@
       },
       "recipients": {
         "label": "Destinataires",
-        "placeholder": "Ajouter des adresses email",
-        "toggle": "Notifier les destinataires par email"
+        "placeholder": "Ajouter des adresses email"
       },
       "share": "Partager",
       "sharing": "Partage en cours...",

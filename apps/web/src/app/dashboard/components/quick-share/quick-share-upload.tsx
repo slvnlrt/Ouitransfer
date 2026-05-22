@@ -28,7 +28,6 @@ import type { ExpirationOption, QuickShareSettings } from "../../hooks/use-quick
 interface QuickShareUploadProps {
   fileUploads: FileUploadState[];
   settings: QuickShareSettings;
-  isUploading: boolean;
   isSubmitting: boolean;
   pendingShare: boolean;
   smtpEnabled: string;
@@ -45,7 +44,6 @@ const EXPIRATION_OPTIONS: ExpirationOption[] = ["1day", "7days", "30days", "neve
 export function QuickShareUpload({
   fileUploads,
   settings,
-  isUploading: _isUploading,
   isSubmitting,
   pendingShare,
   smtpEnabled,
@@ -133,7 +131,7 @@ export function QuickShareUpload({
       {/* Drop overlay */}
       {isDragOver && (
         <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-primary/5 border-2 border-dashed border-primary">
-          <p className="text-sm font-medium text-primary">{t("addMore")}</p>
+          <p className="text-sm font-medium text-primary">{t("dropToAdd")}</p>
         </div>
       )}
       <CardHeader className="pb-4">
@@ -334,6 +332,7 @@ export function QuickShareUpload({
         className="hidden"
         onChange={handleAddMore}
         tabIndex={-1}
+        aria-hidden="true"
       />
     </Card>
   );

@@ -109,8 +109,6 @@ export function FileUploadSection({
           },
           password ? { password } : undefined,
         );
-
-        return undefined;
       },
       onSuccess: () => {
         const successCount = fileUploads.filter((u) => u.status === "success").length;

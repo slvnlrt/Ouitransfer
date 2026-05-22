@@ -20,7 +20,6 @@ export function QuickShareDropzone({ onFilesAdded }: QuickShareDropzoneProps) {
   const handleDragEnter = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.dataTransfer.types.includes("application/x-move-item")) return;
     dragCounterRef.current++;
     setIsDragOver(true);
   }, []);
@@ -45,8 +44,6 @@ export function QuickShareDropzone({ onFilesAdded }: QuickShareDropzoneProps) {
       e.stopPropagation();
       setIsDragOver(false);
       dragCounterRef.current = 0;
-
-      if (e.dataTransfer.types.includes("application/x-move-item")) return;
 
       const files = e.dataTransfer.files;
       if (files.length > 0) {
@@ -125,6 +122,7 @@ export function QuickShareDropzone({ onFilesAdded }: QuickShareDropzoneProps) {
           className="hidden"
           onChange={handleFileChange}
           tabIndex={-1}
+          aria-hidden="true"
         />
       </CardContent>
     </Card>
