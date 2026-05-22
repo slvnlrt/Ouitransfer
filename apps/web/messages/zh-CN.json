@@ -2339,5 +2339,56 @@
     "moveUp": "Move up",
     "moveDown": "Move down",
     "reorderError": "Failed to reorder images"
+  },
+  "quickShare": {
+    "dropzone": {
+      "title": "Quick Share",
+      "description": "Drop your files here to share quickly",
+      "browse": "or click to browse",
+      "dragActive": "Drop files here"
+    },
+    "upload": {
+      "title": "Quick Share",
+      "addMore": "Add more files",
+      "namePlaceholder": "Share name",
+      "expiration": {
+        "label": "Expires in",
+        "1day": "1 day",
+        "7days": "7 days",
+        "30days": "30 days",
+        "never": "Never"
+      },
+      "password": {
+        "label": "Password protection",
+        "placeholder": "Enter password"
+      },
+      "recipients": {
+        "label": "Recipients",
+        "placeholder": "Add email addresses",
+        "toggle": "Notify recipients by email"
+      },
+      "share": "Share",
+      "sharing": "Sharing...",
+      "waitingUpload": "Uploading... share will be created automatically",
+      "defaultName": "{count, plural, one {# file} other {# files}}",
+      "error": "Failed to create share",
+      "uploadError": "Some files failed to upload",
+      "notifyError": "Share created but failed to notify recipients",
+      "invalidEmail": "Please enter a valid email address"
+    },
+    "confirmation": {
+      "title": "Shared!",
+      "copyLink": "Copy link",
+      "copied": "Link copied!",
+      "summary": {
+        "files": "{count, plural, one {# file} other {# files}}",
+        "expires": "expires in {duration}",
+        "noExpiry": "no expiration",
+        "password": "password protected",
+        "noPassword": "no password"
+      },
+      "newShare": "New share",
+      "downloadQr": "Download QR code"
+    }
   }
 }

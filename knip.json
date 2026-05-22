@@ -22,7 +22,12 @@
         "src/http/endpoints/index.ts"
       ],
       "project": ["src/**/*.{ts,tsx}"],
-      "ignoreDependencies": ["@vitest/coverage-v8", "postcss", "tw-animate-css", "tailwindcss"]
+      "ignoreDependencies": ["@vitest/coverage-v8", "postcss", "tw-animate-css", "tailwindcss"],
+      "ignoreFiles": [
+        "src/app/dashboard/components/quick-share/quick-share-dropzone.tsx",
+        "src/app/dashboard/components/quick-share/quick-share-upload.tsx",
+        "src/app/dashboard/components/quick-share/quick-share-confirmation.tsx"
+      ]
     },
     "apps/docs": {
       "entry": [
