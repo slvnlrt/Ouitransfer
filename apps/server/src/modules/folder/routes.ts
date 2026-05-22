@@ -647,8 +647,8 @@ export const folderRoutes: FastifyPluginAsyncZod = async (app) => {
         );
       }
 
-      await folderService.deleteObject(folderRecord.objectName);
       await prisma.folder.delete({ where: { id } });
+      await folderService.deleteObject(folderRecord.objectName);
 
       return reply.send({ message: "Folder deleted successfully." });
     },

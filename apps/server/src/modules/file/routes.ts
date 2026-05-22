@@ -787,9 +787,8 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         );
       }
 
-      await fileService.deleteObject(fileRecord.objectName);
-
       await prisma.file.delete({ where: { id } });
+      await fileService.deleteObject(fileRecord.objectName);
 
       return reply.send({ message: "File deleted successfully." });
     },
