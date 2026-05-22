@@ -61,6 +61,13 @@ Before deploying, generate three separate secrets:
 openssl rand -hex 32
 ```
 
+Copy the example environment file and fill in your values:
+
+```bash
+cp .env.docker.example .env
+# Edit .env with your values
+```
+
 Choose your storage method based on your needs:
 
 <Tabs items={['Named Volumes (Recommended)', 'Bind Mounts']}>
@@ -83,12 +90,10 @@ Choose your storage method based on your needs:
         container_name: ouitransfer-storage
         environment:
           RUSTFS_VOLUMES: /data
-          RUSTFS_ACCESS_KEY: ""    # REQUIRED: set your storage access key
-          RUSTFS_SECRET_KEY: ""    # REQUIRED: set your storage secret key
+          RUSTFS_ACCESS_KEY: "${S3_ACCESS_KEY}"
+          RUSTFS_SECRET_KEY: "${S3_SECRET_KEY}"
           RUSTFS_CONSOLE_ENABLE: "true"
-          # REQUIRED: Allow browsers to upload files directly via presigned URLs.
-          # Set to the web frontend origin (must match CORS_ORIGINS).
-          RUSTFS_CORS_ALLOWED_ORIGINS: ""  # REQUIRED: e.g., http://localhost:5487 or https://files.example.com
+          RUSTFS_CORS_ALLOWED_ORIGINS: "${FRONTEND_ORIGIN}"
         volumes:
           - storage_data:/data
         ports:
@@ -106,30 +111,28 @@ Choose your storage method based on your needs:
         image: ghcr.io/slvnlrt/ouitransfer-server:latest
         container_name: ouitransfer-server
         environment:
-          # Storage connection (must match storage service credentials)
-          S3_ENDPOINT: storage
+          # Storage connection
+          S3_ENDPOINT: storage    # Docker service name — do not change
           S3_PORT: "9000"
           S3_USE_SSL: "false"
-          S3_ACCESS_KEY: ""              # Must match RUSTFS_ACCESS_KEY
-          S3_SECRET_KEY: ""              # Must match RUSTFS_SECRET_KEY
+          S3_ACCESS_KEY: "${S3_ACCESS_KEY}"
+          S3_SECRET_KEY: "${S3_SECRET_KEY}"
           S3_BUCKET_NAME: ouitransfer-files
           S3_REGION: auto
           S3_FORCE_PATH_STYLE: "true"
-          # REQUIRED: public URL where browsers can reach storage
-          STORAGE_URL: ""                # REQUIRED: replace with your public URL (e.g., http://192.168.1.100:9000)
-          # REQUIRED: security secrets — generate each with: openssl rand -hex 32
-          JWT_SECRET: ""                 # REQUIRED: generate with: openssl rand -hex 32
-          CSRF_SECRET: ""                # REQUIRED: generate with: openssl rand -hex 32
-          COOKIE_SECRET: ""              # REQUIRED: generate with: openssl rand -hex 32
-          # REQUIRED: comma-separated list of web frontend origins allowed to make requests
-          CORS_ORIGINS: ""               # REQUIRED: e.g., http://localhost:5487 or https://files.example.com
-          # ENCRYPTION_SECRET: ""       # Required for LDAP — generate with: openssl rand -hex 32
+          STORAGE_URL: "${STORAGE_PUBLIC_URL}"
+          # Security secrets
+          JWT_SECRET: "${JWT_SECRET}"
+          CSRF_SECRET: "${CSRF_SECRET}"
+          COOKIE_SECRET: "${COOKIE_SECRET}"
+          CORS_ORIGINS: "${FRONTEND_ORIGIN}"
           # Optional settings:
           # OUITRANSFER_UID: "1000"
           # OUITRANSFER_GID: "1000"
           # SECURE_SITE: "true"
           # PRESIGNED_URL_EXPIRATION: "3600"
           # PRESIGNED_GET_URL_EXPIRATION: "900"
+          # ENCRYPTION_SECRET: ""    # Required for LDAP
         volumes:
           - server_data:/app/server
         ports:
@@ -151,9 +154,8 @@ Choose your storage method based on your needs:
         container_name: ouitransfer-web
         environment:
           API_BASE_URL: "http://server:3333"
-          JWT_SECRET: ""     # REQUIRED: must match server's JWT_SECRET (used by Edge middleware)
-          # REQUIRED: must match server's STORAGE_URL — allows browsers to reach storage for uploads/images
-          CSP_STORAGE_ORIGINS: ""    # REQUIRED: same value as STORAGE_URL (e.g., http://192.168.1.100:9000)
+          JWT_SECRET: "${JWT_SECRET}"
+          CSP_STORAGE_ORIGINS: "${STORAGE_PUBLIC_URL}"
           # DEFAULT_LANGUAGE: "en-US"
         ports:
           - "5487:5487"    # Web interface
@@ -197,12 +199,10 @@ Choose your storage method based on your needs:
         container_name: ouitransfer-storage
         environment:
           RUSTFS_VOLUMES: /data
-          RUSTFS_ACCESS_KEY: ""    # REQUIRED: set your storage access key
-          RUSTFS_SECRET_KEY: ""    # REQUIRED: set your storage secret key
+          RUSTFS_ACCESS_KEY: "${S3_ACCESS_KEY}"
+          RUSTFS_SECRET_KEY: "${S3_SECRET_KEY}"
           RUSTFS_CONSOLE_ENABLE: "true"
-          # REQUIRED: Allow browsers to upload files directly via presigned URLs.
-          # Set to the web frontend origin (must match CORS_ORIGINS).
-          RUSTFS_CORS_ALLOWED_ORIGINS: ""  # REQUIRED: e.g., http://localhost:5487 or https://files.example.com
+          RUSTFS_CORS_ALLOWED_ORIGINS: "${FRONTEND_ORIGIN}"
         volumes:
           - ./storage-data:/data
         ports:
@@ -220,30 +220,28 @@ Choose your storage method based on your needs:
         image: ghcr.io/slvnlrt/ouitransfer-server:latest
         container_name: ouitransfer-server
         environment:
-          # Storage connection (must match storage service credentials)
-          S3_ENDPOINT: storage
+          # Storage connection
+          S3_ENDPOINT: storage    # Docker service name — do not change
           S3_PORT: "9000"
           S3_USE_SSL: "false"
-          S3_ACCESS_KEY: ""              # Must match RUSTFS_ACCESS_KEY
-          S3_SECRET_KEY: ""              # Must match RUSTFS_SECRET_KEY
+          S3_ACCESS_KEY: "${S3_ACCESS_KEY}"
+          S3_SECRET_KEY: "${S3_SECRET_KEY}"
           S3_BUCKET_NAME: ouitransfer-files
           S3_REGION: auto
           S3_FORCE_PATH_STYLE: "true"
-          # REQUIRED: public URL where browsers can reach storage
-          STORAGE_URL: ""                # REQUIRED: replace with your public URL (e.g., http://192.168.1.100:9000)
-          # REQUIRED: security secrets — generate each with: openssl rand -hex 32
-          JWT_SECRET: ""                 # REQUIRED: generate with: openssl rand -hex 32
-          CSRF_SECRET: ""                # REQUIRED: generate with: openssl rand -hex 32
-          COOKIE_SECRET: ""              # REQUIRED: generate with: openssl rand -hex 32
-          # REQUIRED: comma-separated list of origins allowed to make requests
-          CORS_ORIGINS: ""               # REQUIRED: e.g., http://localhost:5487 or https://files.example.com
-          # ENCRYPTION_SECRET: ""       # Required for LDAP — generate with: openssl rand -hex 32
+          STORAGE_URL: "${STORAGE_PUBLIC_URL}"
+          # Security secrets
+          JWT_SECRET: "${JWT_SECRET}"
+          CSRF_SECRET: "${CSRF_SECRET}"
+          COOKIE_SECRET: "${COOKIE_SECRET}"
+          CORS_ORIGINS: "${FRONTEND_ORIGIN}"
           # Optional settings:
           # OUITRANSFER_UID: "1000"
           # OUITRANSFER_GID: "1000"
           # SECURE_SITE: "true"
           # PRESIGNED_URL_EXPIRATION: "3600"
           # PRESIGNED_GET_URL_EXPIRATION: "900"
+          # ENCRYPTION_SECRET: ""    # Required for LDAP
         volumes:
           - ./server-data:/app/server
         ports:
@@ -265,9 +263,8 @@ Choose your storage method based on your needs:
         container_name: ouitransfer-web
         environment:
           API_BASE_URL: "http://server:3333"
-          JWT_SECRET: ""     # REQUIRED: must match server's JWT_SECRET (used by Edge middleware)
-          # REQUIRED: must match server's STORAGE_URL — allows browsers to reach storage for uploads/images
-          CSP_STORAGE_ORIGINS: ""    # REQUIRED: same value as STORAGE_URL (e.g., http://192.168.1.100:9000)
+          JWT_SECRET: "${JWT_SECRET}"
+          CSP_STORAGE_ORIGINS: "${STORAGE_PUBLIC_URL}"
           # DEFAULT_LANGUAGE: "en-US"
         ports:
           - "5487:5487"    # Web interface
@@ -301,26 +298,43 @@ Choose your storage method based on your needs:
 
 ## Configuration
 
-Customize OUITRANSFER's behavior with these environment variables. Most are set on the **server** service; a few are set on the **web** service (noted below).
+Customize OUITRANSFER's behavior with environment variables. All user-facing values are set in the `.env` file; fixed infrastructure values are set directly in `docker-compose.yaml`.
+
+### `.env` Configuration
+
+These are the variables you set in `.env` (copied from `.env.docker.example`):
+
+| Variable | Description |
+|----------|-------------|
+| `FRONTEND_ORIGIN` | Origin of the web frontend as browsers reach it (e.g., `http://localhost:5487` or `https://files.example.com`). Used for CORS on the API server and storage service. |
+| `STORAGE_PUBLIC_URL` | Public URL of the storage service as browsers reach it (e.g., `http://localhost:9000` or `https://storage.example.com`). Used for presigned URL generation and Content Security Policy. |
+| `S3_ACCESS_KEY` | Access key shared between the storage service (RustFS) and the API server. |
+| `S3_SECRET_KEY` | Secret key shared between the storage service (RustFS) and the API server. |
+| `JWT_SECRET` | JWT signing key (min 32 chars). Must be set on both server and web. Generate with: `openssl rand -hex 32` |
+| `CSRF_SECRET` | CSRF token HMAC key (min 32 chars, must differ from `JWT_SECRET`). Generate with: `openssl rand -hex 32` |
+| `COOKIE_SECRET` | Cookie signing key (min 32 chars, must differ from other secrets). Generate with: `openssl rand -hex 32` |
+
+### Fixed Configuration
+
+These values are set directly in `docker-compose.yaml` and do not normally need to change:
+
+| Variable | Service | Value | Description |
+|----------|---------|-------|-------------|
+| `S3_ENDPOINT` | server | `storage` | Docker service name for internal storage — do not change |
+| `S3_PORT` | server | `9000` | Internal storage port |
+| `S3_USE_SSL` | server | `false` | No TLS on the internal Docker network |
+| `S3_BUCKET_NAME` | server | `ouitransfer-files` | Bucket name created at startup |
+| `S3_REGION` | server | `auto` | Region setting for RustFS |
+| `S3_FORCE_PATH_STYLE` | server | `true` | Required for RustFS and self-hosted S3 |
+| `API_BASE_URL` | web | `http://server:3333` | Internal API URL — uses Docker service name |
+| `RUSTFS_VOLUMES` | storage | `/data` | Storage data directory inside the container |
+| `RUSTFS_CONSOLE_ENABLE` | storage | `true` | Enables the RustFS management console |
+
+### Additional Optional Variables
 
 | Variable | Service | Default | Description |
 |----------|---------|---------|-------------|
-| `STORAGE_URL` | server | - | **REQUIRED** for internal storage: Public URL where browsers reach the storage service (e.g., `http://192.168.1.100:9000`) |
-| `CSP_STORAGE_ORIGINS` | **web** | - | **REQUIRED** for internal storage: Must match `STORAGE_URL`. Allows browsers to connect to storage for file uploads and background images (sets `connect-src` and `img-src` CSP directives). |
-| `JWT_SECRET` | server + web | - | **REQUIRED**: JWT signing key (min 32 chars). Generate with: `openssl rand -hex 32`. Must be set on **both** the server and web services. |
-| `CSRF_SECRET` | server | - | **REQUIRED**: CSRF token HMAC key (min 32 chars, must differ from JWT_SECRET) |
-| `COOKIE_SECRET` | server | - | **REQUIRED**: Cookie signing key (min 32 chars, must differ from other secrets) |
-| `CORS_ORIGINS` | server | - | **REQUIRED**: Comma-separated list of web frontend origins allowed to make API requests (e.g., `http://localhost:5487` or `https://files.example.com`) |
-| `RUSTFS_CORS_ALLOWED_ORIGINS` | **storage** | - | **REQUIRED** for internal storage: Web frontend origin for direct browser uploads via presigned URLs. Must match `CORS_ORIGINS`. |
 | `ENABLE_S3` | server | `false` | Set `true` to use external S3 storage (AWS, Backblaze, etc.) instead of built-in RustFS |
-| `S3_ENDPOINT` | server | - | S3 server endpoint (required when using S3) |
-| `S3_ACCESS_KEY` | server | - | S3 access key for authentication |
-| `S3_SECRET_KEY` | server | - | S3 secret key for authentication |
-| `S3_BUCKET_NAME` | server | - | S3 bucket name for file storage |
-| `S3_REGION` | server | - | S3 region configuration |
-| `S3_USE_SSL` | server | `true` | Enable SSL for S3 connections |
-| `S3_FORCE_PATH_STYLE` | server | `false` | Force path-style S3 URLs (set `true` for RustFS or self-hosted S3) |
-| `S3_REJECT_UNAUTHORIZED` | server | `true` | Strict SSL certificate validation (set `false` for self-signed certificates) |
 | `OUITRANSFER_UID` | server | `1000` | User ID for server container processes (helps with file permissions) |
 | `OUITRANSFER_GID` | server | `1000` | Group ID for server container processes (helps with file permissions) |
 | `DEFAULT_LANGUAGE` | web | `en-US` | Default application language ([see available languages](/docs/v3-beta/available-languages)) |
@@ -362,6 +376,10 @@ Once deployed, open OUITRANSFER in your browser:
 ## Docker CLI Alternative
 
 For simple setups or testing, you can run Docker Compose from the command line. Note that OUITRANSFER requires all three services, so Docker Compose is the recommended approach. If you prefer individual `docker run` commands, you must create a shared Docker network and start each container manually:
+
+<Callout type="warn">
+  **Docker CLI does not read `.env` automatically.** Unlike Docker Compose, `docker run` does not interpolate environment variables from a `.env` file. You must pass all values explicitly via `-e` flags.
+</Callout>
 
 ```bash
 # Create a shared network
@@ -422,36 +440,19 @@ docker run -d \
 
 ## Common Configuration Options
 
-### Cross-Origin Configuration (REQUIRED)
+### Cross-Origin Configuration
 
-When using internal storage (the default), browsers upload files directly to the storage service via presigned URLs. This requires **two pairs** of environment variables — one pair identifies the **web frontend origin**, and the other identifies the **storage public URL**:
+When using internal storage (the default), browsers upload files directly to the storage service via presigned URLs. Two values control this:
 
-**Web frontend origin** (where users access the app):
-- **`CORS_ORIGINS`** (server) — allows the API server to accept requests from the frontend
-- **`RUSTFS_CORS_ALLOWED_ORIGINS`** (storage) — allows the storage service to accept direct uploads from the frontend
+**`FRONTEND_ORIGIN`** — the origin where users access the web app (e.g., `http://192.168.1.100:5487`):
+- Passed to the API server as `CORS_ORIGINS` — allows the server to accept requests from the frontend
+- Passed to the storage service as `RUSTFS_CORS_ALLOWED_ORIGINS` — allows the storage service to accept direct uploads from the frontend
 
-**Storage public URL** (where browsers reach the storage):
-- **`STORAGE_URL`** (server) — tells the server how to generate presigned URLs that browsers can reach
-- **`CSP_STORAGE_ORIGINS`** (web) — configures the Content Security Policy to allow browser connections to storage
-
-```yaml
-# Storage service
-environment:
-  RUSTFS_CORS_ALLOWED_ORIGINS: "http://192.168.1.100:5487"  # Web frontend origin
-
-# Server service
-environment:
-  STORAGE_URL: "http://192.168.1.100:9000"     # Public storage URL
-  CORS_ORIGINS: "http://192.168.1.100:5487"    # Web frontend origin
-
-# Web service
-environment:
-  CSP_STORAGE_ORIGINS: "http://192.168.1.100:9000"  # Must match STORAGE_URL
-```
+**`STORAGE_PUBLIC_URL`** — the public URL where browsers reach the storage service (e.g., `http://192.168.1.100:9000`):
+- Passed to the API server as `STORAGE_URL` — tells the server how to generate presigned URLs that browsers can reach
+- Passed to the web service as `CSP_STORAGE_ORIGINS` — configures the Content Security Policy to allow browser connections to storage
 
 **Important Notes:**
-- **`CORS_ORIGINS` and `RUSTFS_CORS_ALLOWED_ORIGINS` must match** — both are the web frontend origin
-- **`STORAGE_URL` and `CSP_STORAGE_ORIGINS` must match** — both are the public storage URL
 - **Must include protocol** (`http://` or `https://`)
 - **Must include port** unless you're using a reverse proxy
 - **Use your actual domain/IP** that clients will access — `localhost` only works when browsers run on the same machine as Docker

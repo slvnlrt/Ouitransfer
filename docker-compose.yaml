@@ -6,10 +6,18 @@
 #   server   — Fastify API
 #   web      — Next.js frontend
 #
-# Quick start:
-#   1. Set the required values below (marked REQUIRED)
-#   2. Run: docker compose up -d
-#   3. Open http://localhost:5487
+# Quick start (local dev):
+#   docker compose up -d        ← works out of the box with localhost defaults
+#
+# Production:
+#   1. Copy .env.docker.example to .env
+#   2. Edit .env — set real secrets, IPs, and origins
+#   3. Run: docker compose up -d
+#   4. Open http://YOUR_SERVER_IP:5487
+#
+# All user-configurable values use ${VAR:-default} syntax.
+# Defaults are localhost values suitable for local development.
+# For production, create a .env file to override them.
 #
 # Startup order: storage → server → web (via healthcheck dependencies)
 # ==============================================================================
@@ -21,18 +29,14 @@ services:
     container_name: ouitransfer-storage
     environment:
       RUSTFS_VOLUMES: /data
-      RUSTFS_ACCESS_KEY: ""    # REQUIRED: set your storage access key
-      RUSTFS_SECRET_KEY: ""    # REQUIRED: set your storage secret key
+      RUSTFS_ACCESS_KEY: "${S3_ACCESS_KEY:-ouitransfer}"
+      RUSTFS_SECRET_KEY: "${S3_SECRET_KEY:-ouitransfer}"
       RUSTFS_CONSOLE_ENABLE: "true"
-      # REQUIRED: Allow browsers to upload/download files directly via presigned URLs.
-      # Set to the web frontend origin(s). Comma-separated for multiple origins.
-      # Must match the origin users access the web interface from.
-      # Examples: http://localhost:5487, https://files.example.com
-      RUSTFS_CORS_ALLOWED_ORIGINS: ""    # REQUIRED: e.g., http://localhost:5487
+      RUSTFS_CORS_ALLOWED_ORIGINS: "${FRONTEND_ORIGIN:-http://localhost:5487}"
     volumes:
       - storage_data:/data
     ports:
-      - "9000:9000"    # S3 API — must be reachable by browsers for file uploads (when using internal storage)
+      - "9000:9000"    # S3 API — must be reachable by browsers for file uploads
       # - "9001:9001"  # Storage console (optional, for debugging)
     healthcheck:
       test: ["CMD-SHELL", "curl -fs http://localhost:9000/health || exit 1"]
@@ -53,55 +57,37 @@ services:
     #   target: server-runner
     container_name: ouitransfer-server
     environment:
-      # ── Storage connection (must match storage service credentials) ──
+      # ── Storage connection ──
       S3_ENDPOINT: storage
       S3_PORT: "9000"
       S3_USE_SSL: "false"
-      S3_ACCESS_KEY: ""                                # Must match RUSTFS_ACCESS_KEY
-      S3_SECRET_KEY: ""                                # Must match RUSTFS_SECRET_KEY
+      S3_ACCESS_KEY: "${S3_ACCESS_KEY:-ouitransfer}"
+      S3_SECRET_KEY: "${S3_SECRET_KEY:-ouitransfer}"
       S3_BUCKET_NAME: ouitransfer-files
       S3_REGION: auto
       S3_FORCE_PATH_STYLE: "true"
+      STORAGE_URL: "${STORAGE_PUBLIC_URL:-http://localhost:9000}"
 
-      # REQUIRED: Public URL where browsers can reach the storage service.
-      # Include protocol. The port must match the storage service's published port.
-      # Examples:
-      #   http://localhost:9000           (local development)
-      #   http://192.168.1.100:9000      (LAN access)
-      #   https://storage.example.com    (production with reverse proxy)
-      # WARNING: Use HTTPS in production. HTTP exposes presigned URL signatures
-      # and file contents on the wire. Browsers block mixed-content requests
-      # if the web app is served over HTTPS but storage uses HTTP.
-      STORAGE_URL: ""    # REQUIRED: public URL where browsers reach storage (e.g., http://192.168.1.100:9000)
+      # ── Security ──
+      JWT_SECRET: "${JWT_SECRET:-dev-jwt-secret-do-not-use-in-production!!}"
+      CSRF_SECRET: "${CSRF_SECRET:-dev-csrf-secret-do-not-use-in-production!}"
+      COOKIE_SECRET: "${COOKIE_SECRET:-dev-cookie-secret-not-for-production!}"
+      CORS_ORIGINS: "${FRONTEND_ORIGIN:-http://localhost:5487}"
 
-      # REQUIRED: Security secrets — generate each with: openssl rand -hex 32
-      # All three MUST be different from each other.
-      JWT_SECRET: ""       # REQUIRED: generate with: openssl rand -hex 32
-      CSRF_SECRET: ""      # REQUIRED: generate with: openssl rand -hex 32
-      COOKIE_SECRET: ""    # REQUIRED: generate with: openssl rand -hex 32
-
-      # REQUIRED: Comma-separated list of origins allowed to make cross-origin requests.
-      # Must include the URL(s) users access the web interface from.
-      # Examples:
-      #   http://localhost:5487           (local single-host setup)
-      #   http://192.168.1.100:5487      (LAN access)
-      #   https://files.example.com      (production with reverse proxy)
-      CORS_ORIGINS: ""     # REQUIRED: e.g., http://localhost:5487
-
-      #
       # ── Optional settings ──
       # OUITRANSFER_UID: "1000"              # UID for server process
       # OUITRANSFER_GID: "1000"              # GID for server process
       # SECURE_SITE: "true"                  # Set true when behind HTTPS reverse proxy
       # PRESIGNED_URL_EXPIRATION: "3600"     # Upload URL expiration (seconds)
       # PRESIGNED_GET_URL_EXPIRATION: "900"  # Download URL expiration (seconds)
+      # ENCRYPTION_SECRET: ""               # Required for LDAP — generate with: openssl rand -hex 32
       #
       # ── External S3 (instead of bundled storage) ──
       # To use AWS S3, Backblaze B2, etc. instead of the storage service:
       # 1. Remove or stop the 'storage' service
       # 2. Set ENABLE_S3=true
       # 3. Update S3_* vars with your provider's credentials
-      # 4. Remove STORAGE_URL (not needed for external S3)
+      # 4. Remove STORAGE_PUBLIC_URL (not needed for external S3)
       # ENABLE_S3: "true"
     volumes:
       - server_data:/app/server
@@ -128,13 +114,8 @@ services:
     container_name: ouitransfer-web
     environment:
       API_BASE_URL: "http://server:3333"
-      JWT_SECRET: ""       # REQUIRED: must match server's JWT_SECRET (used by middleware for auth)
-
-      # REQUIRED: Must match the server's STORAGE_URL value.
-      # Browsers upload files directly to this storage endpoint via presigned URLs;
-      # this value is added to the Content-Security-Policy connect-src and img-src directives.
-      CSP_STORAGE_ORIGINS: ""    # REQUIRED: same value as server's STORAGE_URL (e.g., http://192.168.1.100:9000)
-
+      JWT_SECRET: "${JWT_SECRET:-dev-jwt-secret-do-not-use-in-production!!}"
+      CSP_STORAGE_ORIGINS: "${STORAGE_PUBLIC_URL:-http://localhost:9000}"
       # DEFAULT_LANGUAGE: "en-US"
     ports:
       - "5487:5487"    # Web interface

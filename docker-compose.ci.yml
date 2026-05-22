@@ -1,11 +1,13 @@
 # ==============================================================================
-# CI overlay — build images locally and inject test credentials.
+# CI / local-dev overlay — build images locally and inject test credentials.
 #
 # Usage:
 #   docker compose -f docker-compose.yaml -f docker-compose.ci.yml up -d --build
 #   docker compose -f docker-compose.yaml -f docker-compose.ci.yml down -v
 #
-# Values here OVERRIDE the empty-string placeholders in docker-compose.yaml.
+# The main docker-compose.yaml has localhost defaults for all ${VAR:-default} values.
+# This overlay overrides credentials with CI-specific test values and adds
+# build targets so images are built locally instead of pulled.
 # Docker Compose merges environment maps — keys in the override file win.
 # ==============================================================================
 
