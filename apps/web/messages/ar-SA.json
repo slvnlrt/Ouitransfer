@@ -542,7 +542,12 @@
     "deleteFolderError": "خطأ في حذف المجلد",
     "shareFolderError": "خطأ في مشاركة المجلد",
     "deleteConfirmation": "هل أنت متأكد من أنك تريد حذف هذا المجلد؟",
-    "deleteWarning": "لا يمكن التراجع عن هذا الإجراء."
+    "deleteWarning": "لا يمكن التراجع عن هذا الإجراء.",
+    "inSharesWarningTitle": "This folder is included in shares",
+    "inSharesWarningBody": "This folder (and its contents) is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "bulkInSharesWarningTitle": "Some folders are included in shares",
+    "bulkInSharesWarningBody": "{count, plural, one {# folder is} other {# folders are}} included in shares. Deleting will remove {count, plural, one {it} other {them}} from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "footer": {
     "kyanHomepage": "الصفحة الرئيسية لـ Burger&Cie"

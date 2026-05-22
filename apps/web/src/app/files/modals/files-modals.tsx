@@ -40,6 +40,9 @@ export function FilesModals({
         folderToDelete={fileManager.folderToDelete}
         onCloseDelete={() => fileManager.setFolderToDelete(null)}
         onDeleteFolder={fileManager.handleFolderDelete}
+        folderInSharesWarning={fileManager.folderInSharesWarning}
+        onForceDeleteFolder={fileManager.handleFolderForceDelete}
+        onCloseSharesWarning={() => fileManager.setFolderInSharesWarning(null)}
       />
 
       <FilePreviewModal
@@ -143,6 +146,17 @@ export function FilesModals({
           count: fileManager.filesInSharesWarning?.length || 0,
         })}
         files={fileManager.filesInSharesWarning?.map((f) => f.name) || []}
+      />
+
+      <DeleteConfirmationModal
+        isOpen={!!fileManager.foldersInSharesWarning}
+        onClose={() => fileManager.setFoldersInSharesWarning(null)}
+        onConfirm={fileManager.handleForceBulkFolderDelete}
+        title={t("folderActions.bulkInSharesWarningTitle")}
+        description={t("folderActions.bulkInSharesWarningBody", {
+          count: fileManager.foldersInSharesWarning?.length || 0,
+        })}
+        folders={fileManager.foldersInSharesWarning?.map((f) => f.name) || []}
       />
     </>
   );

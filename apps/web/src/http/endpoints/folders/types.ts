@@ -51,6 +51,12 @@ export type UpdateFolder200 = FolderOperationResponse;
 export type MoveFolder200 = FolderOperationResponse;
 export type DeleteFolder200 = MessageOnlyResponse;
 
+export interface DeleteFolder409 {
+  error: string;
+  shareCount: number;
+  message: string;
+}
+
 export type RegisterFolderResult = AxiosResponse<RegisterFolder201>;
 export type ListFoldersResult = AxiosResponse<ListFolders200>;
 export type UpdateFolderResult = AxiosResponse<UpdateFolder200>;

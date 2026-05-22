@@ -241,7 +241,7 @@ export const routes: RouteConfig[] = [
   r("PUT", "folders/:id/move", "/folders/:id/move"),
   r("GET", "folders/:id", "/folders/:id"),
   r("PATCH", "folders/:id", "/folders/:id"),
-  r("DELETE", "folders/:id", "/folders/:id"),
+  r("DELETE", "folders/:id", "/folders/:id", { query: true }),
   r("GET", "folders", "/folders", { query: true }),
   r("POST", "folders", "/folders"),
 

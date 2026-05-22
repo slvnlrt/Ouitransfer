@@ -546,7 +546,12 @@
     "deleteFolderError": "Det gick inte att ta bort mappen",
     "shareFolderError": "Fel vid delning av mapp",
     "deleteConfirmation": "Är du säker på att du vill ta bort den här mappen?",
-    "deleteWarning": "Denna åtgärd kan inte ångras."
+    "deleteWarning": "Denna åtgärd kan inte ångras.",
+    "inSharesWarningTitle": "This folder is included in shares",
+    "inSharesWarningBody": "This folder (and its contents) is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "bulkInSharesWarningTitle": "Some folders are included in shares",
+    "bulkInSharesWarningBody": "{count, plural, one {# folder is} other {# folders are}} included in shares. Deleting will remove {count, plural, one {it} other {them}} from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "footer": {
     "kyanHomepage": "Burger&Cies hemsida"

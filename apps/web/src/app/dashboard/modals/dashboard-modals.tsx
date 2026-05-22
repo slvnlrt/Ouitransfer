@@ -133,6 +133,17 @@ export function DashboardModals({
         files={fileManager.filesInSharesWarning?.map((f) => f.name) || []}
       />
 
+      <DeleteConfirmationModal
+        isOpen={!!fileManager.foldersInSharesWarning}
+        onClose={() => fileManager.setFoldersInSharesWarning(null)}
+        onConfirm={fileManager.handleForceBulkFolderDelete}
+        title={t("folderActions.bulkInSharesWarningTitle")}
+        description={t("folderActions.bulkInSharesWarningBody", {
+          count: fileManager.foldersInSharesWarning?.length || 0,
+        })}
+        folders={fileManager.foldersInSharesWarning?.map((f) => f.name) || []}
+      />
+
       <ShareMultipleItemsModal
         files={fileManager.filesToShare}
         folders={fileManager.foldersToShare}

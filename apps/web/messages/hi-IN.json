@@ -542,7 +542,12 @@
     "deleteFolderError": "फ़ोल्डर हटाने में त्रुटि",
     "shareFolderError": "फ़ोल्डर साझा करने में त्रुटि",
     "deleteConfirmation": "क्या आप वाकई इस फ़ोल्डर को हटाना चाहते हैं?",
-    "deleteWarning": "यह कार्य पूर्ववत नहीं किया जा सकता।"
+    "deleteWarning": "यह कार्य पूर्ववत नहीं किया जा सकता।",
+    "inSharesWarningTitle": "This folder is included in shares",
+    "inSharesWarningBody": "This folder (and its contents) is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "bulkInSharesWarningTitle": "Some folders are included in shares",
+    "bulkInSharesWarningBody": "{count, plural, one {# folder is} other {# folders are}} included in shares. Deleting will remove {count, plural, one {it} other {them}} from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "footer": {
     "kyanHomepage": "Burger&Cie होमपेज"

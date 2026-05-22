@@ -542,7 +542,12 @@
     "deleteFolderError": "Erreur lors de la suppression du dossier",
     "shareFolderError": "Erreur lors du partage du dossier",
     "deleteConfirmation": "Êtes-vous sûr de vouloir supprimer ce dossier ?",
-    "deleteWarning": "Cette action ne peut pas être annulée."
+    "deleteWarning": "Cette action ne peut pas être annulée.",
+    "inSharesWarningTitle": "Ce dossier est inclus dans des partages",
+    "inSharesWarningBody": "Ce dossier (et son contenu) est inclus dans {count, plural, =0 {aucun partage} one {# partage} other {# partages}}. Le supprimer le retirera de tous les partages.",
+    "bulkInSharesWarningTitle": "Certains dossiers sont inclus dans des partages",
+    "bulkInSharesWarningBody": "{count, plural, one {# dossier est} other {# dossiers sont}} inclus dans des partages. Les supprimer les retirera de tous les partages.",
+    "deleteAnyway": "Supprimer quand même"
   },
   "footer": {
     "kyanHomepage": "Page d'accueil de Burger&Cie"

@@ -546,7 +546,12 @@
     "deleteFolderError": "Lỗi khi xóa thư mục",
     "shareFolderError": "Lỗi khi chia sẻ thư mục",
     "deleteConfirmation": "Bạn có chắc chắn muốn xóa thư mục này không?",
-    "deleteWarning": "Hành động này không thể hoàn tác."
+    "deleteWarning": "Hành động này không thể hoàn tác.",
+    "inSharesWarningTitle": "This folder is included in shares",
+    "inSharesWarningBody": "This folder (and its contents) is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "bulkInSharesWarningTitle": "Some folders are included in shares",
+    "bulkInSharesWarningBody": "{count, plural, one {# folder is} other {# folders are}} included in shares. Deleting will remove {count, plural, one {it} other {them}} from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "footer": {
     "kyanHomepage": "Trang chủ Burger&Cie"

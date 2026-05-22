@@ -12,6 +12,8 @@ import type {
   UpdateFolderResult,
 } from "./types";
 
+export type { DeleteFolder409 } from "./types";
+
 /**
  * Registers folder metadata in the database
  * @summary Register Folder Metadata
@@ -61,7 +63,9 @@ export const moveFolder = (
  */
 export const deleteFolder = (
   id: string,
+  force?: boolean,
   options?: AxiosRequestConfig,
 ): Promise<DeleteFolderResult> => {
-  return apiInstance.delete(`/api/folders/${id}`, options);
+  const url = force ? `/api/folders/${id}?force=true` : `/api/folders/${id}`;
+  return apiInstance.delete(url, options);
 };

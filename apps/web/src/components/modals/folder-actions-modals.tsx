@@ -29,6 +29,10 @@ interface FolderActionsModalsProps {
   folderToDelete: FolderToDelete | null;
   onDeleteFolder: (folderId: string) => Promise<void>;
   onCloseDelete: () => void;
+
+  folderInSharesWarning: { id: string; name: string; shareCount: number } | null;
+  onForceDeleteFolder: (folderId: string) => Promise<void>;
+  onCloseSharesWarning: () => void;
 }
 
 export function FolderActionsModals({
@@ -41,6 +45,9 @@ export function FolderActionsModals({
   folderToDelete,
   onDeleteFolder,
   onCloseDelete,
+  folderInSharesWarning,
+  onForceDeleteFolder,
+  onCloseSharesWarning,
 }: FolderActionsModalsProps) {
   const t = useTranslations();
 
@@ -190,6 +197,41 @@ export function FolderActionsModals({
               onClick={() => folderToDelete && onDeleteFolder(folderToDelete.id)}
             >
               {t("common.delete")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!folderInSharesWarning} onOpenChange={() => onCloseSharesWarning()}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Trash2 className="size-5" />
+              {t("folderActions.deleteFolder")}
+            </DialogTitle>
+          </DialogHeader>
+          <DialogDescription>
+            <p className="text-base font-semibold mb-2 text-foreground">
+              {t("folderActions.inSharesWarningTitle")}
+            </p>
+            <p className="font-medium text-sm text-foreground mt-1">
+              {folderInSharesWarning?.name}
+            </p>
+            <p className="text-sm text-amber-500 mt-2">
+              {t("folderActions.inSharesWarningBody", {
+                count: folderInSharesWarning?.shareCount ?? 0,
+              })}
+            </p>
+          </DialogDescription>
+          <DialogFooter>
+            <Button variant="outline" onClick={onCloseSharesWarning}>
+              {t("common.cancel")}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => folderInSharesWarning && onForceDeleteFolder(folderInSharesWarning.id)}
+            >
+              {t("folderActions.deleteAnyway")}
             </Button>
           </DialogFooter>
         </DialogContent>

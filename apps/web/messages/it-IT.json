@@ -542,7 +542,12 @@
     "deleteFolderError": "Errore nell'eliminazione della cartella",
     "shareFolderError": "Errore nella condivisione della cartella",
     "deleteConfirmation": "Sei sicuro di voler eliminare questa cartella?",
-    "deleteWarning": "Questa azione non può essere annullata."
+    "deleteWarning": "Questa azione non può essere annullata.",
+    "inSharesWarningTitle": "This folder is included in shares",
+    "inSharesWarningBody": "This folder (and its contents) is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "bulkInSharesWarningTitle": "Some folders are included in shares",
+    "bulkInSharesWarningBody": "{count, plural, one {# folder is} other {# folders are}} included in shares. Deleting will remove {count, plural, one {it} other {them}} from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "footer": {
     "kyanHomepage": "Homepage di Burger&Cie"

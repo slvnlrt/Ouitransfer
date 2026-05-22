@@ -546,7 +546,12 @@
     "deleteFolderError": "Σφάλμα διαγραφής φακέλου",
     "shareFolderError": "Σφάλμα κοινής χρήσης φακέλου",
     "deleteConfirmation": "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτόν τον φάκελο;",
-    "deleteWarning": "Αυτή η ενέργεια δεν μπορεί να αναιρεθεί."
+    "deleteWarning": "Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.",
+    "inSharesWarningTitle": "This folder is included in shares",
+    "inSharesWarningBody": "This folder (and its contents) is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "bulkInSharesWarningTitle": "Some folders are included in shares",
+    "bulkInSharesWarningBody": "{count, plural, one {# folder is} other {# folders are}} included in shares. Deleting will remove {count, plural, one {it} other {them}} from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "footer": {
     "kyanHomepage": "Αρχική σελίδα Burger&Cie"

@@ -542,7 +542,12 @@
     "deleteFolderError": "Ошибка удаления папки",
     "shareFolderError": "Ошибка обмена папкой",
     "deleteConfirmation": "Вы уверены, что хотите удалить эту папку?",
-    "deleteWarning": "Это действие нельзя отменить."
+    "deleteWarning": "Это действие нельзя отменить.",
+    "inSharesWarningTitle": "This folder is included in shares",
+    "inSharesWarningBody": "This folder (and its contents) is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "bulkInSharesWarningTitle": "Some folders are included in shares",
+    "bulkInSharesWarningBody": "{count, plural, one {# folder is} other {# folders are}} included in shares. Deleting will remove {count, plural, one {it} other {them}} from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "footer": {
     "kyanHomepage": "Домашняя страница Burger&Cie"

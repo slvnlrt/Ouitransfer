@@ -542,7 +542,12 @@
     "deleteFolderError": "폴더 삭제 중 오류 발생",
     "shareFolderError": "폴더 공유 중 오류 발생",
     "deleteConfirmation": "이 폴더를 삭제하시겠습니까?",
-    "deleteWarning": "이 작업은 되돌릴 수 없습니다."
+    "deleteWarning": "이 작업은 되돌릴 수 없습니다.",
+    "inSharesWarningTitle": "This folder is included in shares",
+    "inSharesWarningBody": "This folder (and its contents) is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "bulkInSharesWarningTitle": "Some folders are included in shares",
+    "bulkInSharesWarningBody": "{count, plural, one {# folder is} other {# folders are}} included in shares. Deleting will remove {count, plural, one {it} other {them}} from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "footer": {
     "kyanHomepage": "Burger&Cie 홈페이지"

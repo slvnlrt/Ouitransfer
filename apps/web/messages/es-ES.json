@@ -546,7 +546,12 @@
     "deleteFolderError": "Error al eliminar carpeta",
     "shareFolderError": "Error al compartir carpeta",
     "deleteConfirmation": "¿Está seguro de que desea eliminar esta carpeta?",
-    "deleteWarning": "Esta acción no se puede deshacer."
+    "deleteWarning": "Esta acción no se puede deshacer.",
+    "inSharesWarningTitle": "This folder is included in shares",
+    "inSharesWarningBody": "This folder (and its contents) is included in {count, plural, one {# share} other {# shares}}. Deleting it will remove it from all shares.",
+    "bulkInSharesWarningTitle": "Some folders are included in shares",
+    "bulkInSharesWarningBody": "{count, plural, one {# folder is} other {# folders are}} included in shares. Deleting will remove {count, plural, one {it} other {them}} from all shares.",
+    "deleteAnyway": "Delete anyway"
   },
   "footer": {
     "kyanHomepage": "Página principal de Burger&Cie"
