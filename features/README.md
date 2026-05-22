@@ -27,6 +27,12 @@ This directory tracks all feature development for Ouitransfer (post-refactor pha
 |---|---------|--------|------------|
 | 7.1 | [Error Handling & Dashboard Redesign](specs/7.1-error-handling-dashboard.md) | Done | — |
 
+### 9.x — UX & Workflow
+
+| # | Feature | Status | Depends on |
+|---|---------|--------|------------|
+| 9.1 | [Quickshare](specs/9.1-quickshare.md) | Spec | — |
+
 ### 8.x — Auditing, Email & Tracking
 
 | # | Feature | Status | Depends on |
