@@ -726,9 +726,13 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
       tags: ["File"],
       operationId: "deleteFile",
       summary: "Delete File",
-      description: "Deletes a user file",
+      description:
+        "Deletes a user file. Returns 409 if the file belongs to active shares and force is not set.",
       params: z.object({
         id: z.string().min(1, "The file id is required").describe("The file ID"),
+      }),
+      querystring: z.object({
+        force: z.coerce.boolean().optional().default(false),
       }),
       response: {
         200: z.object({
@@ -736,14 +740,23 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         }),
         400: ErrorResponseSchema,
         401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
         404: ErrorResponseSchema,
+        409: z.object({
+          shareCount: z.number().describe("Number of shares containing this file"),
+          message: z.string(),
+        }),
         500: ErrorResponseSchema,
       },
     },
     handler: async (request, reply) => {
       const { id } = request.params;
+      const { force } = request.query;
 
-      const fileRecord = await prisma.file.findUnique({ where: { id } });
+      const fileRecord = await prisma.file.findUnique({
+        where: { id },
+        include: { shares: { select: { id: true } } },
+      });
       if (!fileRecord) {
         throw new NotFoundError("File not found.");
       }
@@ -751,6 +764,13 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
       const userId = request.user?.userId;
       if (fileRecord.userId !== userId) {
         throw new ForbiddenError("Access denied.");
+      }
+
+      if (fileRecord.shares.length > 0 && !force) {
+        return reply.status(409).send({
+          shareCount: fileRecord.shares.length,
+          message: `This file is included in ${fileRecord.shares.length} share(s). Use force=true to delete it anyway.`,
+        });
       }
 
       await fileService.deleteObject(fileRecord.objectName);
