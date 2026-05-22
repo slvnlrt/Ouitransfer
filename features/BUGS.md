@@ -38,21 +38,19 @@ Commit : `1783e85`
 
 ---
 
-## B-24 — Suppression de dossier : pas de vérification des partages contenant le dossier ou ses fichiers
+## ~~B-24 — Suppression de dossier : pas de vérification des partages contenant le dossier ou ses fichiers~~ ✅ RESOLVED
 
-**Symptôme :** `DELETE /folders/:id` supprime le dossier et tous ses fichiers sans vérifier si
-le dossier (via `_ShareFolders`) ou ses fichiers (via `_ShareFiles`) appartiennent à des partages
-actifs. La suppression cascade silencieusement.
+Résolu en session 2026-05-22. Backend `DELETE /folders/:id` collecte récursivement tous les
+dossiers descendants, puis vérifie si le dossier ou ses fichiers (via `_ShareFolders` et
+`_ShareFiles`) appartiennent à des partages actifs. Retourne 409 avec `{ error: "FOLDER_IN_SHARES",
+shareCount: N }` si des partages sont impactés et que `force` n'est pas activé. Frontend affiche
+un dialog de confirmation secondaire (dossier unique) ou un dialog de batch (suppression multiple
+de dossiers). Le `force=true` est requis pour supprimer un dossier appartenant à des partages.
 
-**Cause :** `folder/routes.ts` — aucun check sur les relations `shares` du dossier ni sur les
-`shares` des fichiers contenus.
-
-**Fix attendu :**
-- Backend : lors de `DELETE /folders/:id`, vérifier si le dossier a des shares ET si ses fichiers
-  ont des shares (requête récursive nécessaire)
-- Retourner 409 avec le compte total si des shares sont impactées
-- Frontend : même pattern que B-21 (warning dialog + force-delete)
-
-**Sévérité :** Medium — même perte silencieuse que B-21, mais via le chemin dossier
+- Backend : `getDescendantFolderIds()` helper récursif, `querystring: { force }`, 409 response schema
+- Frontend single-delete : dialog de warning avec nom du dossier + shareCount + bouton "Delete anyway"
+- Frontend bulk-delete : `Promise.allSettled` + collecte des 409, dialog de batch pour les dossiers en partage
+- i18n : 5 nouvelles clés `folderActions.*` dans 23 locales (en-US + fr-FR natifs, 21 autres en fallback EN)
+- Tests : 6 integration tests server (no-shares→200, 1-share-no-force→409, force→200, 403, 404, deduplication→3)
 
 **Découvert lors de :** Review de B-21 (2026-05-22)

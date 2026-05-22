@@ -1,5 +1,20 @@
 # Session Log
 
+## 2026-05-22 (session 5)
+
+**B-24 — Folder deletion share check**
+
+- **B-24** : `DELETE /folders/:id` retourne 409 avec `{ error: "FOLDER_IN_SHARES", shareCount: N }` si le dossier (ou ses fichiers récursivement) appartient à des partages et que `force` n'est pas activé
+  - Backend : `getDescendantFolderIds()` helper BFS récursif, `querystring: { force: z.coerce.boolean() }`, schéma 409 + 403 ajoutés, Pino logging quand force-delete
+  - Frontend single-delete : optimistic update déplacé APRÈS la confirmation serveur ; dialog de warning secondaire avec nom, shareCount, bouton "Delete anyway"
+  - Frontend bulk-delete : `Promise.allSettled` pour folders aussi (comme files), collecte des 409, dialog de batch pour force-delete des dossiers en partage
+  - Proxy routes : `{ query: true }` ajouté pour `DELETE folders/:id`
+  - i18n : 5 nouvelles clés `folderActions.*` (inSharesWarningTitle, inSharesWarningBody, bulkInSharesWarningTitle, bulkInSharesWarningBody, deleteAnyway) dans 23 locales
+  - Tests : 6 integration tests server (47 fichiers / 454 tests) + 238 tests web (22 fichiers) — tous passants
+  - Type-check server + web : OK
+
+---
+
 ## 2026-05-22 (session 4)
 
 **B-21, B-22, B-23 — Bug fixes**
