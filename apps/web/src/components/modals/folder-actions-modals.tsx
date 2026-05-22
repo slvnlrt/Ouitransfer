@@ -27,7 +27,7 @@ interface FolderActionsModalsProps {
   onCloseEdit: () => void;
 
   folderToDelete: FolderToDelete | null;
-  onDeleteFolder: (folderId: string) => Promise<void>;
+  onDeleteFolder: (folderId: string, folderName: string) => Promise<void>;
   onCloseDelete: () => void;
 
   folderInSharesWarning: { id: string; name: string; shareCount: number } | null;
@@ -53,7 +53,7 @@ export function FolderActionsModals({
 
   return (
     <>
-      <Dialog open={folderToCreate} onOpenChange={() => onCloseCreate()}>
+      <Dialog open={folderToCreate} onOpenChange={(open) => !open && onCloseCreate()}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -103,7 +103,7 @@ export function FolderActionsModals({
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!folderToEdit} onOpenChange={() => onCloseEdit()}>
+      <Dialog open={!!folderToEdit} onOpenChange={(open) => !open && onCloseEdit()}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -167,7 +167,7 @@ export function FolderActionsModals({
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!folderToDelete} onOpenChange={() => onCloseDelete()}>
+      <Dialog open={!!folderToDelete} onOpenChange={(open) => !open && onCloseDelete()}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -194,7 +194,9 @@ export function FolderActionsModals({
             </Button>
             <Button
               variant="destructive"
-              onClick={() => folderToDelete && onDeleteFolder(folderToDelete.id)}
+              onClick={() =>
+                folderToDelete && onDeleteFolder(folderToDelete.id, folderToDelete.name)
+              }
             >
               {t("common.delete")}
             </Button>
@@ -202,7 +204,10 @@ export function FolderActionsModals({
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!folderInSharesWarning} onOpenChange={() => onCloseSharesWarning()}>
+      <Dialog
+        open={!!folderInSharesWarning}
+        onOpenChange={(open) => !open && onCloseSharesWarning()}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">

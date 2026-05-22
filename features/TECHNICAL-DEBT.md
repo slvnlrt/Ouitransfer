@@ -310,6 +310,40 @@ automated translation tools or community contributions.
 
 ---
 
+## TD-22 — BFS in `getDescendantFolderIds` should use a recursive SQL CTE
+
+**Context:** The `getDescendantFolderIds` helper in `apps/server/src/modules/folder/routes.ts`
+uses an iterative BFS that issues one `prisma.folder.findMany` query per tree level. For deep
+or wide folder trees this becomes N sequential round-trips to the database.
+
+**Fix:** Replace the N-level BFS with a single recursive CTE via `prisma.$queryRaw`. SQLite
+supports `WITH RECURSIVE` CTEs, so a single query can collect all descendant IDs in one
+round-trip regardless of tree depth.
+
+**Found during:** B-24 code review (mai 2026)
+**Severity:** Low — current implementation is correct and sufficient for typical folder depths.
+Performance concern only materializes with very deep or wide folder hierarchies.
+
+---
+
+## TD-23 — S3 delete before DB delete creates orphan risk
+
+**Context:** In both `DELETE /files/:id` (`apps/server/src/modules/file/routes.ts`) and
+`DELETE /folders/:id` (`apps/server/src/modules/folder/routes.ts`), S3 object deletion happens
+before the database record deletion. If S3 delete succeeds but DB delete fails, the database
+still points to non-existent S3 objects — creating orphan references.
+
+**Fix:** Either:
+1. Do DB delete first (if DB fails, S3 object is still valid — no orphan)
+2. Wrap in a transaction: delete DB record, then S3, and compensate on S3 failure
+3. Soft-delete pattern: mark as deleted in DB, then background job handles S3 cleanup
+
+**Found during:** B-24 code review (mai 2026)
+**Severity:** Low — requires DB failure after S3 success (rare). Similar to TD-17
+(background-image S3 orphan risk). No data loss, but creates stale DB references.
+
+---
+
 ## TD-19 — Hardcoded QR code element ID prevents multiple instances
 
 **Context:** Both `generate-share-link-modal.tsx` and `quick-share-confirmation.tsx`

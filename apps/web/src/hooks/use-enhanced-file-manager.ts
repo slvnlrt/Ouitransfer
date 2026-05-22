@@ -100,7 +100,7 @@ export interface EnhancedFileManagerHook {
     data: { name: string; description?: string },
     parentId?: string,
   ) => Promise<void>;
-  handleFolderDelete: (folderId: string) => Promise<void>;
+  handleFolderDelete: (folderId: string, folderName: string) => Promise<void>;
   handleFolderForceDelete: (folderId: string) => Promise<void>;
   handleFolderRename: (folderId: string, newName: string, description?: string) => Promise<void>;
   handleForceBulkFolderDelete: () => Promise<void>;
@@ -357,15 +357,27 @@ export function useEnhancedFileManager(
     if (!filesInSharesWarning) return;
 
     try {
-      await Promise.all(filesInSharesWarning.map((file) => deleteFile(file.id, true)));
+      const results = await Promise.allSettled(
+        filesInSharesWarning.map((file) => deleteFile(file.id, true)),
+      );
+
+      const succeeded = filesInSharesWarning.filter((_, i) => results[i].status === "fulfilled");
 
       if (handleImmediateUpdate) {
-        filesInSharesWarning.forEach((file) => {
+        succeeded.forEach((file) => {
           handleImmediateUpdate(file.id, "file", "__DELETE__");
         });
       }
 
-      toast.success(t("files.bulkDeleteSuccess", { count: filesInSharesWarning.length }));
+      if (succeeded.length > 0) {
+        toast.success(t("files.bulkDeleteSuccess", { count: succeeded.length }));
+      }
+
+      const failed = filesInSharesWarning.length - succeeded.length;
+      if (failed > 0) {
+        toast.error(t("files.bulkDeleteError"));
+      }
+
       setFilesInSharesWarning(null);
     } catch (error) {
       logger.error("Failed to force-delete files in shares", {
@@ -379,15 +391,27 @@ export function useEnhancedFileManager(
     if (!foldersInSharesWarning) return;
 
     try {
-      await Promise.all(foldersInSharesWarning.map((folder) => deleteFolder(folder.id, true)));
+      const results = await Promise.allSettled(
+        foldersInSharesWarning.map((folder) => deleteFolder(folder.id, true)),
+      );
+
+      const succeeded = foldersInSharesWarning.filter((_, i) => results[i].status === "fulfilled");
 
       if (handleImmediateUpdate) {
-        foldersInSharesWarning.forEach((folder) => {
+        succeeded.forEach((folder) => {
           handleImmediateUpdate(folder.id, "folder", "__DELETE__");
         });
       }
 
-      toast.success(t("files.bulkDeleteSuccess", { count: foldersInSharesWarning.length }));
+      if (succeeded.length > 0) {
+        toast.success(t("files.bulkDeleteSuccess", { count: succeeded.length }));
+      }
+
+      const failed = foldersInSharesWarning.length - succeeded.length;
+      if (failed > 0) {
+        toast.error(t("files.bulkDeleteError"));
+      }
+
       setFoldersInSharesWarning(null);
     } catch (error) {
       logger.error("Failed to force-delete folders in shares", {

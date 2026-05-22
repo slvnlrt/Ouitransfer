@@ -34,7 +34,7 @@ export interface FolderCrudHook {
     data: { name: string; description?: string },
     parentId?: string,
   ) => Promise<void>;
-  handleFolderDelete: (folderId: string) => Promise<void>;
+  handleFolderDelete: (folderId: string, folderName: string) => Promise<void>;
   handleFolderForceDelete: (folderId: string) => Promise<void>;
   handleFolderRename: (folderId: string, newName: string, description?: string) => Promise<void>;
 }
@@ -106,7 +106,7 @@ export function useFolderCrud(
   );
 
   const handleFolderDelete = useCallback(
-    async (folderId: string) => {
+    async (folderId: string, folderName: string) => {
       try {
         await deleteFolder(folderId);
 
@@ -125,7 +125,7 @@ export function useFolderCrud(
           const data = error.response.data as DeleteFolder409;
           setFolderInSharesWarning({
             id: folderId,
-            name: folderToDelete?.name ?? "",
+            name: folderName,
             shareCount: data.shareCount,
           });
           setFolderToDelete(null);
@@ -138,7 +138,7 @@ export function useFolderCrud(
         }
       }
     },
-    [handleImmediateUpdate, clearSelectionCallback, folderToDelete, t],
+    [handleImmediateUpdate, clearSelectionCallback, t],
   );
 
   const handleFolderForceDelete = useCallback(
