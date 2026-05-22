@@ -22,8 +22,10 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <body className="flex flex-col min-h-screen">
-        <Banner variant="rainbow" id="banner-21-beta">
-          <Link href={LATEST_VERSION_PATH}>OUITRANSFER. {LATEST_VERSION} has released!</Link>
+        <Banner variant="rainbow" id="banner-v1-beta">
+          <Link href={LATEST_VERSION_PATH}>
+            <s>Winter</s> OUITRANSFER. {LATEST_VERSION} is coming !
+          </Link>
         </Banner>
         <RootProvider>{children}</RootProvider>
       </body>
