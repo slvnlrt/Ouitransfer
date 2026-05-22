@@ -2,48 +2,57 @@
 
 > Bugs discovered during testing and development.
 > Archived bugs: see `features/archive/BUGS-2026-05.md` (B-1 through B-20, all resolved).
+> B-21 through B-23 resolved — see below.
 
 ---
 
-## B-21 — Suppression de fichier dans un partage : pas d'avertissement
+## ~~B-21 — Suppression de fichier dans un partage : pas d'avertissement~~ ✅ RESOLVED
 
-**Symptôme :** `DELETE /files/:id` supprime le fichier sans vérifier s'il appartient à un share actif. Le fichier disparaît silencieusement du partage.
+Résolu en session 2026-05-22. Backend retourne 409 avec `shareCount` si le fichier appartient à
+un ou plusieurs partages et que `force` n'est pas activé. Frontend affiche un dialog de
+confirmation secondaire (fichier unique) ou un dialog de batch (suppression multiple). Le
+`force=true` est requis pour supprimer un fichier appartenant à des partages.
 
-**Cause :** `file/routes.ts:720-762` — aucun check sur les relations `_ShareFiles`. Pas de confirmation côté frontend non plus.
+**Note :** La suppression de dossiers contenant des fichiers dans des partages reste sans
+vérification — trackée comme B-24.
 
-**Fix attendu :**
-- Backend : vérifier si le fichier est dans un ou plusieurs shares avant suppression
-- Frontend : afficher un avertissement "Ce fichier est inclus dans X partage(s). Le supprimer le retirera de ces partages."
-- L'utilisateur doit confirmer explicitement
-
-**Sévérité :** Medium — perte de données silencieuse dans les partages
-
----
-
-## B-22 — Footer affiche "Propulsé par" en dur devant le texte configuré
-
-**Symptôme :** Le setting `footerText` = "Burger&Cie" affiche "Propulsé par Burger&Cie" au lieu de juste "Burger&Cie".
-
-**Cause :** `default-footer.tsx:38` et `transparent-footer.tsx:38` — `{t("footer.poweredBy")}` est hardcodé avant `{displayText}`. La clé `footer.poweredBy` existe dans les 23 locales.
-
-**Fix attendu :**
-- Supprimer le `{t("footer.poweredBy")}` des deux composants footer
-- Afficher uniquement `{displayText}`
-- Supprimer la clé `footer.poweredBy` des 23 fichiers de traduction
-- Optionnel : ajouter un setting `footerPrefix` si on veut rendre le préfixe configurable
-
-**Sévérité :** Low — cosmétique
+Commits : `7638f50`, `07a98c4`, `095f2c2`
 
 ---
 
-## B-23 — Nom d'app par défaut "OUITRANSFER. " avec point et espace trailing
+## ~~B-22 — Footer affiche "Propulsé par" en dur devant le texte configuré~~ ✅ RESOLVED
 
-**Symptôme :** Le seed génère `appName` = `"OUITRANSFER. "` (avec point et espace).
+Résolu en session 2026-05-22. Suppression du `{t("footer.poweredBy")}` des deux composants
+footer (`default-footer.tsx`, `transparent-footer.tsx`) et suppression de la clé `poweredBy`
+des 23 fichiers de traduction. Le footer affiche maintenant uniquement `{displayText}`.
 
-**Cause :** `prisma/seed.js:13` — valeur hardcodée avec point stylistique et espace trailing.
+Commit : `2c702d0`
+
+---
+
+## ~~B-23 — Nom d'app par défaut "OUITRANSFER. " avec point et espace trailing~~ ✅ RESOLVED
+
+Résolu en session 2026-05-22. Valeur changée en `"Ouitransfer"` dans `prisma/seed.js`.
+
+Commit : `1783e85`
+
+---
+
+## B-24 — Suppression de dossier : pas de vérification des partages contenant le dossier ou ses fichiers
+
+**Symptôme :** `DELETE /folders/:id` supprime le dossier et tous ses fichiers sans vérifier si
+le dossier (via `_ShareFolders`) ou ses fichiers (via `_ShareFiles`) appartiennent à des partages
+actifs. La suppression cascade silencieusement.
+
+**Cause :** `folder/routes.ts` — aucun check sur les relations `shares` du dossier ni sur les
+`shares` des fichiers contenus.
 
 **Fix attendu :**
-- Changer la valeur dans `seed.js` en `"Ouitransfer"` (ou la valeur souhaitée, sans point ni espace)
-- Note : les instances existantes conservent l'ancienne valeur — changement via Settings ou re-seed
+- Backend : lors de `DELETE /folders/:id`, vérifier si le dossier a des shares ET si ses fichiers
+  ont des shares (requête récursive nécessaire)
+- Retourner 409 avec le compte total si des shares sont impactées
+- Frontend : même pattern que B-21 (warning dialog + force-delete)
 
-**Sévérité :** Very low — cosmétique, corrigeable manuellement dans les settings
+**Sévérité :** Medium — même perte silencieuse que B-21, mais via le chemin dossier
+
+**Découvert lors de :** Review de B-21 (2026-05-22)

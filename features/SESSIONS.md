@@ -1,5 +1,24 @@
 # Session Log
 
+## 2026-05-22 (session 4)
+
+**B-21, B-22, B-23 — Bug fixes**
+
+- **B-23** : `appName` par défaut dans `seed.js` corrigé (`"OUITRANSFER. "` → `"Ouitransfer"`)
+- **B-22** : `{t("footer.poweredBy")}` supprimé des 2 composants footer (`default-footer.tsx`, `transparent-footer.tsx`) + clé `poweredBy` supprimée des 23 locales
+- **Fix TypeScript pré-existant** : `onAfterUpload` dans `file-upload-section.tsx` retourne maintenant l'ID du fichier enregistré (`response.data.file.id`) — type-check web était cassé
+- **B-21** : `DELETE /files/:id` retourne 409 avec `{ error: "FILE_IN_SHARES", shareCount: N }` si le fichier appartient à des partages et que `force` n'est pas activé
+  - Backend : `force` query param (coerce boolean), include shares in findUnique, logging Pino quand force-delete
+  - Frontend single-delete : optimistic update déplacé APRÈS la confirmation serveur (correction UX) ; dialog de warning secondaire avec filename, shareCount, bouton "Supprimer quand même"
+  - Frontend bulk-delete : `Promise.allSettled` + collecte des 409, dialog de batch pour les fichiers en partage, `force=true` uniquement sur confirmation utilisateur
+  - i18n : 3 nouvelles clés `fileActions.*` (single + bulk warnings + deleteAnyway) dans 23 locales (en-US + fr-FR natifs, 21 autres en fallback EN)
+  - Tests : 6 integration tests server (no-shares→200, 1-share-no-force→409, force→200, 403, 404, multiple-shares) + 4 unit tests web (hook use-file-crud)
+  - **B-24 identifié** : même absence de vérification pour `DELETE /folders/:id` — tracké dans BUGS.md
+- Tests : 448 server (46 fichiers) + 238 web (22 fichiers) — tous passants. Type-check web : OK.
+- Commits : `1783e85`, `2c702d0`, `14baed8`, `7638f50`, `07a98c4`, `095f2c2`
+
+---
+
 ## 2026-05-22 (session 3)
 
 **9.1 — Quickshare**
