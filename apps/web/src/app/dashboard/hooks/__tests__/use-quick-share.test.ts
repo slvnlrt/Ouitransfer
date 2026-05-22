@@ -2,12 +2,15 @@ import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useQuickShare } from "../use-quick-share";
 
-// Mock useFileUpload
+// Mock useFileUpload — uses a mutable array that tests populate before
+// calling hook actions.  The mock is returned via getters so each render
+// reads the latest snapshot.
 const mockAddFiles = vi.fn();
 const mockStartUpload = vi.fn();
 const mockRemoveFile = vi.fn();
 const mockClearAll = vi.fn();
-const mockFileUploads: Array<{
+const mockRetryUpload = vi.fn();
+let mockFileUploads: Array<{
   id: string;
   file: File;
   status: string;
@@ -16,8 +19,6 @@ const mockFileUploads: Array<{
   registeredFileId?: string;
 }> = [];
 
-const mockRetryUpload = vi.fn();
-
 vi.mock("@/hooks/use-file-upload", () => ({
   useFileUpload: () => ({
     addFiles: mockAddFiles,
@@ -25,8 +26,12 @@ vi.mock("@/hooks/use-file-upload", () => ({
     removeFile: mockRemoveFile,
     retryUpload: mockRetryUpload,
     clearAll: mockClearAll,
-    fileUploads: mockFileUploads,
-    isUploading: mockFileUploads.some((f) => f.status === "uploading"),
+    get fileUploads() {
+      return mockFileUploads;
+    },
+    get isUploading() {
+      return mockFileUploads.some((f) => f.status === "uploading");
+    },
   }),
 }));
 
@@ -62,7 +67,7 @@ describe("useQuickShare", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();
-    mockFileUploads.length = 0;
+    mockFileUploads = [];
   });
 
   afterEach(() => {
@@ -74,17 +79,23 @@ describe("useQuickShare", () => {
     expect(result.current.state).toBe("dropzone");
   });
 
-  it("transitions to uploading state when files are added", () => {
+  it("transitions to uploading state when files are added", async () => {
+    const file = new File(["test"], "test.txt");
+    // Simulate addFiles populating pending entries (new array = new reference)
+    mockAddFiles.mockImplementation(() => {
+      mockFileUploads = [{ id: "file-1", file, status: "pending", progress: 0 }];
+    });
+
     const { result } = renderHook(() => useQuickShare());
 
     act(() => {
-      result.current.handleFilesAdded([new File(["test"], "test.txt")]);
+      result.current.handleFilesAdded([file]);
     });
 
     expect(result.current.state).toBe("uploading");
     expect(mockAddFiles).toHaveBeenCalled();
-    // Advance timers to trigger the 200ms setTimeout for startUpload
-    act(() => {
+    // Advance timers to trigger the 200ms useEffect for startUpload
+    await act(async () => {
       vi.advanceTimersByTime(300);
     });
     expect(mockStartUpload).toHaveBeenCalled();
@@ -155,6 +166,50 @@ describe("useQuickShare", () => {
     });
     expect(result.current.state).toBe("dropzone");
     expect(mockClearAll).toHaveBeenCalled();
+  });
+
+  it("starts upload for files added while already in uploading state", async () => {
+    const fileA = new File(["a"], "a.txt");
+    const fileB = new File(["b"], "b.txt");
+    let callCount = 0;
+
+    // First call: initial drop adds one pending file
+    // Second call: second drop adds another pending file
+    mockAddFiles.mockImplementation((files: File[]) => {
+      callCount++;
+      if (callCount === 1) {
+        mockFileUploads = [{ id: "file-1", file: files[0], status: "pending", progress: 0 }];
+      } else {
+        mockFileUploads = [
+          { id: "file-1", file: fileA, status: "uploading", progress: 50 },
+          { id: "file-2", file: files[0], status: "pending", progress: 0 },
+        ];
+      }
+    });
+
+    const { result } = renderHook(() => useQuickShare());
+
+    // First drop
+    act(() => {
+      result.current.handleFilesAdded([fileA]);
+    });
+    expect(result.current.state).toBe("uploading");
+
+    // Clear the mock call count so we can verify the second startUpload call
+    mockStartUpload.mockClear();
+
+    // Second drop while uploading
+    act(() => {
+      result.current.handleFilesAdded([fileB]);
+    });
+
+    // After timer fires, startUpload should have been called for the new pending files
+    await act(async () => {
+      vi.advanceTimersByTime(300);
+    });
+
+    expect(result.current.state).toBe("uploading");
+    expect(mockStartUpload).toHaveBeenCalled();
   });
 
   it("exposes smtpEnabled from options", () => {

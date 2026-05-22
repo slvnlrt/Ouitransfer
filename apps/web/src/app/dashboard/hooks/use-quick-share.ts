@@ -77,6 +77,16 @@ export function useQuickShare(options: UseQuickShareOptions = {}) {
     startUploadRef.current = startUpload;
   }, [startUpload]);
 
+  // Auto-start uploads when pending files exist in uploading state.
+  // This covers both the initial drop (dropzone→uploading) and subsequent drops.
+  useEffect(() => {
+    if (state !== "uploading") return;
+    if (fileUploads.some((f) => f.status === "pending")) {
+      const timer = setTimeout(() => startUploadRef.current(), 200);
+      return () => clearTimeout(timer);
+    }
+  }, [fileUploads, state]);
+
   const handleFilesAdded = useCallback(
     (files: File[]) => {
       addFiles(files);
@@ -92,7 +102,6 @@ export function useQuickShare(options: UseQuickShareOptions = {}) {
             : t("quickShare.upload.defaultName", { count: files.length });
         setSettings((prev) => ({ ...prev, name: defaultName }));
         setState("uploading");
-        setTimeout(() => startUploadRef.current(), 200);
       } else if (!nameTouchedRef.current) {
         // Adding more files while already uploading — auto-rename only if user
         // hasn't manually edited the name.
@@ -131,6 +140,7 @@ export function useQuickShare(options: UseQuickShareOptions = {}) {
 
     if (fileIds.length === 0) {
       toast.error(t("quickShare.upload.uploadError"));
+      setPendingShare(false);
       return;
     }
 
@@ -154,9 +164,30 @@ export function useQuickShare(options: UseQuickShareOptions = {}) {
 
       const shareId = shareResult.data.share.id;
 
-      // Generate alias
-      const alias = generateAlias();
-      await createShareAlias(shareId, { alias });
+      // Generate alias with retry (collision + transient failure)
+      let alias = "";
+      let aliasCreated = false;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          alias = generateAlias();
+          await createShareAlias(shareId, { alias });
+          aliasCreated = true;
+          break;
+        } catch {
+          // Retry with a new alias
+        }
+      }
+
+      if (!aliasCreated) {
+        // All retries failed — clean up the orphan share
+        try {
+          const { deleteShare } = await import("@/http/endpoints");
+          await deleteShare(shareId);
+        } catch {
+          // Best-effort cleanup
+        }
+        throw new Error("Failed to create share alias");
+      }
 
       const link = `${window.location.origin}/s/${alias}`;
       setShareLink(link);

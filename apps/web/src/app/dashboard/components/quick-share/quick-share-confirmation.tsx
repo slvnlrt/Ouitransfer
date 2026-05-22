@@ -115,7 +115,7 @@ export function QuickShareConfirmation({
           {/* Link + copy */}
           <div className="flex w-full max-w-md gap-2">
             <Input readOnly value={shareLink} className="flex-1 text-center" />
-            <Button variant="outline" size="icon" onClick={handleCopy}>
+            <Button variant="outline" size="icon" onClick={handleCopy} aria-label={t("copyLink")}>
               <Copy className="size-4" />
             </Button>
           </div>

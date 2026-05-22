@@ -60,6 +60,16 @@ export function QuickShareDropzone({ onFilesAdded }: QuickShareDropzoneProps) {
     inputRef.current?.click();
   }, []);
 
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        handleClick();
+      }
+    },
+    [handleClick],
+  );
+
   const handleFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = e.target.files;
@@ -80,7 +90,11 @@ export function QuickShareDropzone({ onFilesAdded }: QuickShareDropzoneProps) {
           ? "border-primary bg-primary/5 scale-[1.01]"
           : "border-border/60 hover:border-primary/50 hover:bg-accent/30",
       )}
+      role="button"
+      tabIndex={0}
+      aria-label={t("title")}
       onClick={handleClick}
+      onKeyDown={handleKeyDown}
       onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}

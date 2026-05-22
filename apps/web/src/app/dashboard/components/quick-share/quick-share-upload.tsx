@@ -180,6 +180,7 @@ export function QuickShareUpload({
                     size="sm"
                     onClick={() => onRetryUpload(upload.id)}
                     className="h-6 w-6 p-0"
+                    disabled={isSubmitting}
                   >
                     <RotateCcw className="size-3" />
                   </Button>
@@ -189,6 +190,7 @@ export function QuickShareUpload({
                   size="sm"
                   onClick={() => onRemoveFile(upload.id)}
                   className="h-6 w-6 p-0"
+                  disabled={isSubmitting}
                 >
                   <X className="size-3" />
                 </Button>
