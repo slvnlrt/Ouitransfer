@@ -273,4 +273,41 @@ describe("DELETE /folders/:id — share-check feature (B-24)", () => {
     // share-2 appears in both but should be deduplicated → 3 unique shares
     expect(body.shareCount).toBe(3);
   });
+
+  // ── Test 7: Multi-level subtree + userId scoping ────────────────────────────
+  it("checks shares recursively across all descendant folders (BFS with userId scoping)", async () => {
+    const { prisma } = await import("../shared/prisma.js");
+
+    vi.mocked(prisma.folder.findUnique).mockResolvedValue(makeFolder({ shares: [] }) as never);
+
+    // BFS traversal: level 1 → 2 children, level 2 → 1 grandchild, level 3 → done
+    vi.mocked(prisma.folder.findMany)
+      .mockResolvedValueOnce([{ id: "child-1" }, { id: "child-2" }] as never) // BFS level 1
+      .mockResolvedValueOnce([{ id: "grandchild-1" }] as never) // BFS level 2
+      .mockResolvedValueOnce([] as never); // BFS level 3 (termination)
+
+    // A share references a file in the grandchild folder
+    vi.mocked(prisma.share.findMany)
+      .mockResolvedValueOnce([] as never) // no direct folder shares
+      .mockResolvedValueOnce([{ id: "share-1" }] as never); // file in grandchild folder belongs to share
+
+    const res = await deleteFolderRequest("folder-1", OWNER_ID);
+
+    expect(res.statusCode).toBe(409);
+    const body = res.json();
+    expect(body.error).toBe("FOLDER_IN_SHARES");
+    expect(body.shareCount).toBe(1);
+    expect(prisma.folder.delete).not.toHaveBeenCalled();
+
+    // Verify BFS queries included userId filter (C-1 fix)
+    const findManyCalls = vi.mocked(prisma.folder.findMany).mock.calls;
+    expect(findManyCalls[0][0]).toEqual({
+      where: { parentId: { in: ["folder-1"] }, userId: OWNER_ID },
+      select: { id: true },
+    });
+    expect(findManyCalls[1][0]).toEqual({
+      where: { parentId: { in: ["child-1", "child-2"] }, userId: OWNER_ID },
+      select: { id: true },
+    });
+  });
 });

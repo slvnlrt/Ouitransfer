@@ -53,14 +53,15 @@ async function isDescendantOf(
 /**
  * Recursively collects all folder IDs in the subtree rooted at `rootId`.
  * Returns the root ID plus all descendant IDs.
+ * Scoped by `userId` to prevent traversal into other users' folders.
  */
-async function getDescendantFolderIds(rootId: string): Promise<string[]> {
+async function getDescendantFolderIds(rootId: string, userId: string): Promise<string[]> {
   const allIds: string[] = [rootId];
   let level: string[] = [rootId];
 
   while (level.length > 0) {
     const children = await prisma.folder.findMany({
-      where: { parentId: { in: level } },
+      where: { parentId: { in: level }, userId },
       select: { id: true },
     });
     level = children.map((c) => c.id);
@@ -607,8 +608,8 @@ export const folderRoutes: FastifyPluginAsyncZod = async (app) => {
         throw new ForbiddenError("Access denied.");
       }
 
-      // Gather all folder IDs in the subtree (recursive)
-      const allFolderIds = await getDescendantFolderIds(id);
+      // Gather all folder IDs in the subtree (recursive, scoped to this user)
+      const allFolderIds = await getDescendantFolderIds(id, userId as string);
 
       // Count unique shares that reference any folder or file in this subtree
       const [folderShareRows, fileShareRows] = await Promise.all([
