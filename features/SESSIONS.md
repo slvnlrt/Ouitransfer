@@ -1,5 +1,25 @@
 # Session Log
 
+## 2026-05-22 (session 2)
+
+**TD-11 — Next.js 15 → 16 upgrade**
+
+Migration complète de Next.js 15.5.18 vers 16.2.6 :
+
+- **Versions** : `next` 15.5.18 → 16.2.6, `react`/`react-dom` 19.1 → 19.2.5, `@next/bundle-analyzer` 15 → 16.2.6
+- **Fumadocs** : `fumadocs-core`/`fumadocs-ui` 15.2.7 → 16.4.3, `fumadocs-mdx` 11.6.10 → 13.0.8
+- **next-intl** : auto-updated 4.3.1 → 4.9.1
+- **Proxy rename** : `middleware.ts` → `proxy.ts`, export `middleware` → `proxy`, test file renamed
+- **cookies() fix** : consolidated two-step await to inline `await cookies()` in `i18n/request.ts`
+- **Fumadocs API** : `fumadocs-ui/provider` → `fumadocs-ui/provider/next`, `createFromSource` callback → `{ buildIndex }` object, type cast for upstream bug (#3027)
+- **serverActions** : promotion out of `experimental` SKIPPED — `NextConfig` type in 16.2.6 still requires it
+- **Docs** : all `middleware.ts` references updated in README.md, CONTRIBUTING.md, proxy.ts comments
+- **Review fixes** : exact version pinning (was caret), `middleware` → `proxy` rename in test describe/variables
+- Tests : 664 (442 serveur + 222 web) — tous passent. Builds web + docs OK.
+- Commits : 6 commits (`66e6c17` through `31e7e06`)
+
+---
+
 ## 2026-05-22
 
 **Docker CSP fixes + BackgroundLights unification**

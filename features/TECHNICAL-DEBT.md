@@ -135,26 +135,27 @@ donc pas de risque de sécurité. C'est purement cosmétique/organisationnel.
 
 ---
 
-## TD-11 — Next.js 15 → 16 upgrade
+## ~~TD-11 — Next.js 15 → 16 upgrade~~ ✅ RESOLVED
 
-**Context:** Le projet utilise Next.js 15.5.18 (pinned dans `pnpm-workspace.yaml` catalogs).
-Next.js 16 est stable (16.2.x au moment de l'écriture). L'upgrade est un changement majeur
-qui nécessite une analyse d'impact dédiée.
+Resolved in TD-11 session (mai 2026). Full migration from Next.js 15.5.18 to 16.2.6.
 
-**Points d'attention :**
-- Compatibilité next-intl (actuellement ^4.3.1)
-- Changements App Router / middleware
-- Dépendances peer (React 19 → ?)
-- Turborepo compatibility
+**Key changes:**
+- `next` 15.5.18 → 16.2.6, `react`/`react-dom` 19.1 → 19.2.5 (exact pins in catalog)
+- `@next/bundle-analyzer` ^15.3.3 → 16.2.6
+- `fumadocs-core`/`fumadocs-ui` 15.2.7 → 16.4.3, `fumadocs-mdx` 11.6.10 → 13.0.8
+- `next-intl` auto-updated 4.3.1 → 4.9.1
+- `middleware.ts` → `proxy.ts` (Next.js 16 convention), export renamed `middleware` → `proxy`
+- `cookies()` consolidated to inline `await cookies()` in `i18n/request.ts`
+- Fumadocs API migration: `fumadocs-ui/provider` → `fumadocs-ui/provider/next`,
+  `createFromSource` callback → `{ buildIndex }` object API, type cast for upstream
+  typing bug (fuma-nama/fumadocs#3027)
+- Task 3 (serverActions promotion) correctly SKIPPED — `NextConfig` type in 16.2.6
+  still requires `experimental.serverActions`
 
-**Fix:**
-1. Lire le guide de migration Next.js 15 → 16
-2. Tester la compatibilité next-intl, shadcn/ui, et autres dépendances critiques
-3. Appliquer l'upgrade + corriger les breaking changes
-4. Full test suite + type-check + E2E
+Spec: `features/specs/td-11-nextjs-16-upgrade.md`
+Plan: `features/plans/td-11-nextjs-16-upgrade.md`
 
-**Found during:** Revue manuelle (session audit, mai 2026)
-**Severity:** Medium — rester sur une version majeure antérieure accumule du retard
+Commits: `66e6c17` through `31e7e06` (6 commits)
 
 ---
 
