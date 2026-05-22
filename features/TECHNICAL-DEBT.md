@@ -294,6 +294,22 @@ are ever allowed to pick custom aliases. No data loss or security impact.
 
 ---
 
+## TD-21 — Quickshare i18n: 21 locales have English fallback translations
+
+**Context:** The `quickShare.*` namespace (35 keys) was added with proper French translations
+to `en-US.json` and `fr-FR.json`, but the remaining 21 locale files received English fallback
+copies. Users of those languages will see English text in the QuickShare component.
+
+**Files:** All 21 locale JSON files in `apps/web/messages/` (excluding `en-US.json` and `fr-FR.json`)
+
+**Fix:** Translate the 35 `quickShare.*` keys to each locale's native language. Can use
+automated translation tools or community contributions.
+
+**Found during:** Quickshare 9.1 implementation (mai 2026)
+**Severity:** Low — app not in production, English fallback is functional
+
+---
+
 ## TD-19 — Hardcoded QR code element ID prevents multiple instances
 
 **Context:** Both `generate-share-link-modal.tsx` and `quick-share-confirmation.tsx`

@@ -1,5 +1,23 @@
 # Session Log
 
+## 2026-05-22 (session 3)
+
+**9.1 — Quickshare**
+
+Implémentation complète du composant QuickShare sur le dashboard :
+
+- **i18n** : 35 clés `quickShare.*` ajoutées à `en-US.json` et `fr-FR.json` (traductions natives), puis en fallback anglais aux 21 autres locales
+- **Hooks upload** : `registeredFileId` ajouté à `FileUploadState`, `onAfterUpload` retourne maintenant l'ID du fichier enregistré
+- **useQuickShare** : hook orchestrateur à 3 états (dropzone → upload+options → confirmation), auto-naming, création de share automatique quand uploads terminés, auto-reset, validation email — 9 tests
+- **UI composants** : `QuickShareDropzone` (drag/drop + click), `QuickShareUpload` (liste fichiers, options nom/expiration/mot de passe/destinataires, bouton partager), `QuickShareConfirmation` (QR code, lien+copie, téléchargement QR)
+- **Intégration** : composant `QuickShare` orchestrateur, `GlobalDropZone` retiré du dashboard (reste sur la page fichiers), `smtpEnabled` passé comme prop
+- **Fix pré-existant** : `onAfterUpload` return type dans `file-upload-section.tsx` (reverse-share)
+- Tests : 689 (442 serveur + 233 web + 14 shared) — tous passent. Type-check web + serveur OK.
+- Commits : 6 commits (`776b83a` through `4d493f6`)
+- Tech debt ajouté : TD-21 (quickShare i18n fallback dans 21 locales)
+
+---
+
 ## 2026-05-22 (session 2)
 
 **TD-11 — Next.js 15 → 16 upgrade**
