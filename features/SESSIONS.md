@@ -1,5 +1,18 @@
 # Session Log
 
+## 2026-05-22
+
+**Docker CSP fixes + BackgroundLights unification**
+
+- **B-CSP fix (server)** : `background-image/service.ts` — presigned URLs générées avec `s3Client` interne (hostname Docker `storage:9000`) → remplacé par `createPublicS3Client()`. Navigateurs pouvaient pas charger les images de fond.
+- **B-CSP fix (infra)** : `CSP_CONNECT_SOURCES` ajouté à `img-src` (en plus de `connect-src`) dans `middleware.ts`. `docker-compose.yaml` : `CSP_CONNECT_SOURCES: ""` sur le service `web`. `docker-compose.ci.yml` : fallback `http://localhost:9000` pour `just docker-start`. `.env.example` et `quick-start.mdx` documentés.
+- **B-20 résolu** : `BackgroundLights` unifié en Server Component (suppression `motion.div`). `StaticBackgroundLights` supprimé. 4 pages mises à jour (login, register-with-invite, reset-password, forgot-password).
+- **BUGS.md archivé** : B-1 à B-20 tous résolus → `features/archive/BUGS-2026-05.md`.
+- Tests : 678 (442 serveur + 222 web + 14 shared) — tous passent.
+- Commits : 2 commits (fix CSP/infra, refactor BackgroundLights)
+
+---
+
 ## 2026-05-21 (session 2)
 
 **TD-6 — Prisma 6 → 7 upgrade**
