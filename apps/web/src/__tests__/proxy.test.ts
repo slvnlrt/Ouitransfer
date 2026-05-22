@@ -112,8 +112,8 @@ describe("middleware", () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
-    const mod = await import("@/middleware");
-    middleware = mod.middleware as (request: unknown) => Promise<unknown>;
+    const mod = await import("@/proxy");
+    middleware = mod.proxy as (request: unknown) => Promise<unknown>;
   });
 
   // -----------------------------------------------------------------------
@@ -358,10 +358,10 @@ describe("middleware — mismatched JWT_SECRET", () => {
     }));
     vi.doMock("next/server", nextServerMockFactory);
 
-    const { middleware } = await import("@/middleware");
+    const { proxy } = await import("@/proxy");
     const token = await signToken({ userId: "user-1", isAdmin: false });
     const req = createRequest("/dashboard", token);
-    await middleware(req as never);
+    await proxy(req as never);
 
     // Token signed with TEST_SECRET rejected by middleware using WRONG_SECRET
     expect(mockRedirect).toHaveBeenCalledTimes(1);
