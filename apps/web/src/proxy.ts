@@ -61,7 +61,7 @@ async function getTokenPayload(token: string): Promise<TokenPayload | null> {
 
 /**
  * Add security headers to a response.
- * Applied to all responses from the middleware — covers Next.js frontend pages.
+ * Applied to all responses from the proxy — covers Next.js frontend pages.
  * API responses are separately covered by @fastify/helmet on the server.
  */
 function addSecurityHeaders(response: NextResponse): NextResponse {

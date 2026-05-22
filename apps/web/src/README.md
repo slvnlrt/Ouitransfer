@@ -16,9 +16,9 @@ src/
   providers/          React providers (QueryProvider, ThemeProvider, etc.)
   types/              Shared TypeScript types
   utils/              Pure utility functions
-  i18n/               next-intl routing and request config
-  middleware.ts       Edge middleware — JWT auth + route protection
-  env.ts              Zod-validated environment variables
+   i18n/               next-intl routing and request config
+   proxy.ts            Proxy — JWT auth + route protection + security headers
+   env.ts              Zod-validated environment variables
 ```
 
 ## Routing & Pages (`src/app/`)
@@ -63,11 +63,12 @@ Cache invalidation: call `queryClient.invalidateQueries({ queryKey: queryKeys.{r
 
 ## Authentication
 
-**Edge middleware** (`src/middleware.ts`) runs on every request:
-- Verifies the JWT access token in the `access_token` cookie using `jose`
+**Proxy** (`src/proxy.ts`) runs on every request:
+- Verifies the JWT access token in the `token` cookie using `jose`
 - Redirects unauthenticated users to `/login` for protected routes
 - Redirects authenticated users away from auth pages
 - Enforces admin-only routes
+- Adds security headers (CSP, X-Frame-Options, etc.)
 
 Cookie refresh is handled server-side by the Fastify API.
 
@@ -111,5 +112,5 @@ Avoid adding new Zustand stores or React contexts for server-originated data.
    - Add a typed endpoint in `src/http/endpoints/{domain}/`
    - Create a TQ hook in `src/hooks/`
 3. Add translations to all 23 `messages/{locale}.json` files
-4. If the page requires auth, it's covered automatically by middleware (adjust `src/middleware.ts` matcher if the path pattern is unusual)
+4. If the page requires auth, it's covered automatically by the proxy (adjust `src/proxy.ts` matcher if the path pattern is unusual)
 5. Add a loading state (`loading.tsx`) and error boundary (`error.tsx`) for the route if needed
