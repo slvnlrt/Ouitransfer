@@ -51,24 +51,23 @@ async function isDescendantOf(
 }
 
 /**
- * Recursively collects all folder IDs in the subtree rooted at `rootId`.
- * Returns the root ID plus all descendant IDs.
- * Scoped by `userId` to prevent traversal into other users' folders.
+ * Recursively collects all folder IDs in the subtree rooted at `rootId`
+ * for a given user. Returns the root ID plus all descendant IDs.
+ * Uses a single recursive SQL CTE for efficiency.
  */
 async function getDescendantFolderIds(rootId: string, userId: string): Promise<string[]> {
-  const allIds: string[] = [rootId];
-  let level: string[] = [rootId];
-
-  while (level.length > 0) {
-    const children = await prisma.folder.findMany({
-      where: { parentId: { in: level }, userId },
-      select: { id: true },
-    });
-    level = children.map((c) => c.id);
-    allIds.push(...level);
-  }
-
-  return allIds;
+  const rows = await prisma.$queryRaw<{ id: string }[]>`
+    WITH RECURSIVE subtree(id) AS (
+      SELECT id FROM "folders"
+      WHERE id = ${rootId} AND "userId" = ${userId}
+      UNION ALL
+      SELECT f.id FROM "folders" f
+      JOIN subtree s ON f."parentId" = s.id
+      WHERE f."userId" = ${userId}
+    )
+    SELECT id FROM subtree
+  `;
+  return rows.map((r) => r.id);
 }
 
 // ── Pre-validation hook ──────────────────────────────────────

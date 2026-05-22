@@ -55,6 +55,7 @@ vi.mock("../shared/prisma.js", () => ({
         _max: {},
       }),
     },
+    $queryRaw: vi.fn(),
   },
 }));
 
@@ -124,8 +125,10 @@ describe("DELETE /folders/:id — share-check feature (B-24)", () => {
     vi.unstubAllEnvs();
   });
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
+    const { prisma } = await import("../shared/prisma.js");
+    vi.mocked(prisma.$queryRaw).mockResolvedValue([{ id: "folder-1" }] as never);
   });
 
   // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -168,8 +171,6 @@ describe("DELETE /folders/:id — share-check feature (B-24)", () => {
     const { prisma } = await import("../shared/prisma.js");
 
     vi.mocked(prisma.folder.findUnique).mockResolvedValue(makeFolder() as never);
-    // getDescendantFolderIds: no children
-    vi.mocked(prisma.folder.findMany).mockResolvedValue([] as never);
     // share queries: no shares
     vi.mocked(prisma.share.findMany).mockResolvedValue([] as never);
 
@@ -186,8 +187,6 @@ describe("DELETE /folders/:id — share-check feature (B-24)", () => {
     const { prisma } = await import("../shared/prisma.js");
 
     vi.mocked(prisma.folder.findUnique).mockResolvedValue(makeFolder() as never);
-    // getDescendantFolderIds: no children
-    vi.mocked(prisma.folder.findMany).mockResolvedValue([] as never);
     // share queries: folder directly in 1 share
     vi.mocked(prisma.share.findMany)
       .mockResolvedValueOnce([{ id: "share-1" }] as never) // folders query
@@ -210,8 +209,6 @@ describe("DELETE /folders/:id — share-check feature (B-24)", () => {
     const { prisma } = await import("../shared/prisma.js");
 
     vi.mocked(prisma.folder.findUnique).mockResolvedValue(makeFolder() as never);
-    // getDescendantFolderIds: no children
-    vi.mocked(prisma.folder.findMany).mockResolvedValue([] as never);
     // share queries: folder directly in 1 share
     vi.mocked(prisma.share.findMany)
       .mockResolvedValueOnce([{ id: "share-1" }] as never) // folders query
@@ -259,8 +256,6 @@ describe("DELETE /folders/:id — share-check feature (B-24)", () => {
     const { prisma } = await import("../shared/prisma.js");
 
     vi.mocked(prisma.folder.findUnique).mockResolvedValue(makeFolder() as never);
-    // getDescendantFolderIds: no children
-    vi.mocked(prisma.folder.findMany).mockResolvedValue([] as never);
     // share queries: 2 via folder shares, 2 via file shares (1 duplicate)
     vi.mocked(prisma.share.findMany)
       .mockResolvedValueOnce([{ id: "share-1" }, { id: "share-2" }] as never) // folders query
@@ -274,22 +269,23 @@ describe("DELETE /folders/:id — share-check feature (B-24)", () => {
     expect(body.shareCount).toBe(3);
   });
 
-  // ── Test 7: Multi-level subtree + userId scoping ────────────────────────────
-  it("checks shares recursively across all descendant folders (BFS with userId scoping)", async () => {
+  // ── Test 7: Multi-level subtree via CTE ─────────────────────────────────────
+  it("checks shares recursively across all descendant folders using CTE", async () => {
     const { prisma } = await import("../shared/prisma.js");
 
-    vi.mocked(prisma.folder.findUnique).mockResolvedValue(makeFolder({ shares: [] }) as never);
+    vi.mocked(prisma.folder.findUnique).mockResolvedValue(makeFolder({}) as never);
 
-    // BFS traversal: level 1 → 2 children, level 2 → 1 grandchild, level 3 → done
-    vi.mocked(prisma.folder.findMany)
-      .mockResolvedValueOnce([{ id: "child-1" }, { id: "child-2" }] as never) // BFS level 1
-      .mockResolvedValueOnce([{ id: "grandchild-1" }] as never) // BFS level 2
-      .mockResolvedValueOnce([] as never); // BFS level 3 (termination)
+    // CTE returns the full subtree: root + child + grandchild
+    vi.mocked(prisma.$queryRaw).mockResolvedValueOnce([
+      { id: "folder-1" },
+      { id: "child-1" },
+      { id: "grandchild-1" },
+    ] as never);
 
-    // A share references a file in the grandchild folder
+    // A share references the grandchild's file
     vi.mocked(prisma.share.findMany)
       .mockResolvedValueOnce([] as never) // no direct folder shares
-      .mockResolvedValueOnce([{ id: "share-1" }] as never); // file in grandchild folder belongs to share
+      .mockResolvedValueOnce([{ id: "share-1" }] as never); // file in grandchild folder
 
     const res = await deleteFolderRequest("folder-1", OWNER_ID);
 
@@ -298,16 +294,5 @@ describe("DELETE /folders/:id — share-check feature (B-24)", () => {
     expect(body.error).toBe("FOLDER_IN_SHARES");
     expect(body.shareCount).toBe(1);
     expect(prisma.folder.delete).not.toHaveBeenCalled();
-
-    // Verify BFS queries included userId filter (C-1 fix)
-    const findManyCalls = vi.mocked(prisma.folder.findMany).mock.calls;
-    expect(findManyCalls[0][0]).toEqual({
-      where: { parentId: { in: ["folder-1"] }, userId: OWNER_ID },
-      select: { id: true },
-    });
-    expect(findManyCalls[1][0]).toEqual({
-      where: { parentId: { in: ["child-1", "child-2"] }, userId: OWNER_ID },
-      select: { id: true },
-    });
   });
 });
