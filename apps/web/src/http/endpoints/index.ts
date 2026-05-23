@@ -9,6 +9,7 @@
 
 export * from "./admin";
 export * from "./app";
+export * from "./audit";
 export * from "./auth";
 export * from "./auth/trusted-devices";
 export * from "./background-images";

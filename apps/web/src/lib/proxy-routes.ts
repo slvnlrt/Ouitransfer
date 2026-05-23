@@ -83,6 +83,10 @@ export const routes: RouteConfig[] = [
   // ═══════════════════════════════════════════════════════════════
   // ADMIN
   // ═══════════════════════════════════════════════════════════════
+  r("GET", "admin/audit-logs/export", "/admin/audit-logs/export", {
+    query: true,
+    stream: true,
+  }),
   r("GET", "admin/audit-logs", "/admin/audit-logs", { query: true }),
   r("GET", "admin/stats", "/admin/stats"),
 
