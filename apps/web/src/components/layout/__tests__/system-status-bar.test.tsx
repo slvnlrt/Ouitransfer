@@ -37,7 +37,8 @@ vi.mock("@/components/ui/progress", () => ({
   ),
 }));
 
-// Mock formatStorageSize
+// formatStorageSize is tested separately in src/utils/__tests__/format-storage-size.test.ts
+// Here we mock it to isolate the component's rendering logic from formatting details
 vi.mock("@/utils/format-storage-size", () => ({
   formatStorageSize: (size: number) => `${size} GB`,
 }));
@@ -223,12 +224,20 @@ describe("SystemStatusBar", () => {
 
     it("collapses back on collapse button click", () => {
       render(<SystemStatusBar />);
-      fireEvent.click(screen.getByRole("button", { name: "expand" }));
-      expect(screen.getByRole("button", { name: "collapse" })).toBeInTheDocument();
+      const expandButton = screen.getByRole("button", { name: "expand" });
+      expect(expandButton).toHaveAttribute("aria-expanded", "false");
 
-      fireEvent.click(screen.getByRole("button", { name: "collapse" }));
+      fireEvent.click(expandButton);
+      const collapseButton = screen.getByRole("button", { name: "collapse" });
+      expect(collapseButton).toBeInTheDocument();
+      expect(collapseButton).toHaveAttribute("aria-expanded", "true");
+      expect(collapseButton).toHaveAttribute("aria-controls", "system-status-panel");
+
+      fireEvent.click(collapseButton);
       // Back to collapsed state
-      expect(screen.getByRole("button", { name: "expand" })).toBeInTheDocument();
+      const newExpandButton = screen.getByRole("button", { name: "expand" });
+      expect(newExpandButton).toBeInTheDocument();
+      expect(newExpandButton).toHaveAttribute("aria-expanded", "false");
       expect(screen.queryByRole("button", { name: "collapse" })).not.toBeInTheDocument();
     });
 
@@ -603,6 +612,38 @@ describe("SystemStatusBar", () => {
       render(<SystemStatusBar />);
       fireEvent.click(screen.getByRole("button", { name: "expand" }));
       expect(screen.getByText("0m")).toBeInTheDocument();
+    });
+
+    it("formats uptime showing 0m when less than 60 seconds", () => {
+      currentMockStatus = {
+        ...mockStatus,
+        isAdmin: true,
+        healthData: {
+          status: "healthy" as const,
+          timestamp: "2026-05-23T00:00:00.000Z",
+          uptime: 59,
+          checks: { database: "ok" as const, storage: "ok" as const },
+        },
+      };
+      render(<SystemStatusBar />);
+      fireEvent.click(screen.getByRole("button", { name: "expand" }));
+      expect(screen.getByText("0m")).toBeInTheDocument();
+    });
+
+    it("formats uptime showing 1m when exactly 60 seconds", () => {
+      currentMockStatus = {
+        ...mockStatus,
+        isAdmin: true,
+        healthData: {
+          status: "healthy" as const,
+          timestamp: "2026-05-23T00:00:00.000Z",
+          uptime: 60,
+          checks: { database: "ok" as const, storage: "ok" as const },
+        },
+      };
+      render(<SystemStatusBar />);
+      fireEvent.click(screen.getByRole("button", { name: "expand" }));
+      expect(screen.getByText("1m")).toBeInTheDocument();
     });
   });
 });

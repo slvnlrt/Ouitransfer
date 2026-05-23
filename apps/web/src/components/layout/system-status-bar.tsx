@@ -9,7 +9,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { ErrorDisplay } from "@/components/error-display";
 import { Progress } from "@/components/ui/progress";
 import { useDashboardMetrics } from "@/contexts/dashboard-metrics-context";
@@ -101,8 +101,9 @@ function CollapsedTab({
       <button
         type="button"
         onClick={onToggle}
-        className={`${GLASS_TAB} rounded-b-lg px-4 py-1.5 flex items-center gap-2 cursor-pointer pointer-events-auto transition-colors hover:bg-background/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${!isLoading && colors!.border}`}
+        className={`${GLASS_TAB} rounded-b-lg px-4 py-1.5 flex items-center gap-2 cursor-pointer pointer-events-auto transition-colors hover:bg-background/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${!isLoading ? colors!.border : ""}`}
         aria-expanded={false}
+        aria-controls="system-status-panel"
         aria-label={t("expand")}
       >
         {/* Status dot */}
@@ -155,9 +156,11 @@ function CompactProgressBar({
   used: string;
   total: string;
   ariaLabel: string;
-  warningLevel?: string;
+  warningLevel?: "none" | "warning" | "critical" | "exceeded";
 }) {
-  const progressClassName: Record<string, string> = {
+  type WarningLevel = "none" | "warning" | "critical" | "exceeded";
+
+  const progressClassName: Record<WarningLevel, string> = {
     none: "",
     warning: "[&>div]:bg-yellow-500",
     critical: "[&>div]:bg-orange-500",
@@ -166,6 +169,7 @@ function CompactProgressBar({
 
   return (
     <div className="flex flex-col gap-1 min-w-[160px] flex-1">
+      {/* Label shows real percentage (can exceed 100% for exceeded quotas); bar caps at 100 */}
       <div className="flex items-center justify-between text-xs">
         <span className="text-muted-foreground">{label}</span>
         <span className="tabular-nums text-muted-foreground">{percentage}%</span>
@@ -186,10 +190,10 @@ function CompactProgressBar({
 
 function MetricCell({ value, label }: { value: string; label: string }) {
   return (
-    <div className="flex flex-col items-center">
-      <span className="text-lg font-semibold tabular-nums leading-tight">{value}</span>
-      <span className="text-[10px] text-muted-foreground">{label}</span>
-    </div>
+    <dl className="flex flex-col items-center">
+      <dd className="text-lg font-semibold tabular-nums leading-tight m-0">{value}</dd>
+      <dt className="text-[10px] text-muted-foreground">{label}</dt>
+    </dl>
   );
 }
 
@@ -334,28 +338,13 @@ function BarAdminView({
       {diskSpaceError ? (
         <p className="text-xs text-destructive">{t("errors.diskSpaceError")}</p>
       ) : diskSpace ? (
-        <div className="flex flex-col gap-1">
-          <CompactProgressBar
-            label={t("diskSpace.label")}
-            percentage={diskUsagePercent}
-            used={formatStorageSize(diskSpace.diskUsedGB)}
-            total={formatStorageSize(diskSpace.diskSizeGB)}
-            ariaLabel={t("diskSpace.ariaLabel")}
-          />
-          {/* Admin personal quota override */}
-          {diskSpace.warningLevel !== undefined &&
-            diskSpace.diskAvailableGB !== -1 &&
-            diskSpace.diskSizeGB > 0 && (
-              <CompactProgressBar
-                label={t("quota.label")}
-                percentage={diskSpace.percentage ?? 0}
-                used={formatStorageSize(diskSpace.diskUsedGB)}
-                total={formatStorageSize(diskSpace.diskSizeGB)}
-                ariaLabel={t("quota.ariaLabel")}
-                warningLevel={diskSpace.warningLevel}
-              />
-            )}
-        </div>
+        <CompactProgressBar
+          label={t("diskSpace.label")}
+          percentage={diskUsagePercent}
+          used={formatStorageSize(diskSpace.diskUsedGB)}
+          total={formatStorageSize(diskSpace.diskSizeGB)}
+          ariaLabel={t("diskSpace.ariaLabel")}
+        />
       ) : null}
 
       {/* Vertical divider */}
@@ -386,6 +375,7 @@ function BarAdminView({
 function ExpandedPanel({
   status,
   isLoading,
+  isAdmin,
   hasError,
   errorMessage,
   onToggle,
@@ -395,12 +385,13 @@ function ExpandedPanel({
 }: {
   status: OverallStatus;
   isLoading: boolean;
+  isAdmin: boolean;
   hasError: boolean;
   errorMessage?: string;
   onToggle: () => void;
   onRefresh: () => void;
   isRefreshing: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const t = useTranslations("dashboard.systemStatus");
   const colors = STATUS_COLORS[status];
@@ -414,7 +405,7 @@ function ExpandedPanel({
 
   return (
     <div className="sticky top-16 z-30">
-      <section className={`${GLASS_PANEL} w-full`} aria-label={t("title")}>
+      <section id="system-status-panel" className={`${GLASS_PANEL} w-full`} aria-label={t("title")}>
         <div className="max-w-7xl mx-auto px-6 py-3">
           {/* Title row */}
           <div className="flex items-center justify-between mb-3">
@@ -439,27 +430,17 @@ function ExpandedPanel({
               )}
             </div>
 
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={onRefresh}
-                disabled={isRefreshing}
-                className="p-1.5 rounded-md hover:bg-background/50 transition-colors disabled:opacity-50"
-                aria-label={t("refresh")}
-              >
-                <RefreshCw
-                  className={`size-3.5 text-muted-foreground ${isRefreshing ? "animate-spin" : ""}`}
-                />
-              </button>
-              <button
-                type="button"
-                onClick={onToggle}
-                className="p-1.5 rounded-md hover:bg-background/50 transition-colors"
-                aria-label={t("collapse")}
-              >
-                <ChevronUp className="size-3.5 text-muted-foreground" />
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={onRefresh}
+              disabled={isRefreshing}
+              className="p-1.5 rounded-md hover:bg-background/50 transition-colors disabled:opacity-50"
+              aria-label={t("refresh")}
+            >
+              <RefreshCw
+                className={`size-3.5 text-muted-foreground ${isRefreshing ? "animate-spin" : ""}`}
+              />
+            </button>
           </div>
 
           {/* Content */}
@@ -467,6 +448,7 @@ function ExpandedPanel({
             <div className="flex gap-4">
               <div className="h-8 flex-1 bg-muted/50 rounded animate-pulse" />
               <div className="h-8 flex-1 bg-muted/50 rounded animate-pulse" />
+              {isAdmin && <div className="h-8 flex-1 bg-muted/50 rounded animate-pulse" />}
             </div>
           ) : hasError ? (
             <ErrorDisplay
@@ -478,6 +460,20 @@ function ExpandedPanel({
           ) : (
             children
           )}
+
+          {/* Centered collapse button at bottom */}
+          <div className="flex justify-center mt-2">
+            <button
+              type="button"
+              onClick={onToggle}
+              className="p-1 rounded-md hover:bg-background/50 transition-colors"
+              aria-label={t("collapse")}
+              aria-expanded={true}
+              aria-controls="system-status-panel"
+            >
+              <ChevronUp className="size-3.5 text-muted-foreground" />
+            </button>
+          </div>
         </div>
       </section>
     </div>
@@ -488,6 +484,9 @@ function ExpandedPanel({
 
 export function SystemStatusBar() {
   const [isExpanded, setIsExpanded] = useState(false);
+  // NOTE: This hook polls 2-4 endpoints at 60s intervals on every authenticated page.
+  // Previously dashboard-only. Acceptable for MVP; consider longer intervals when
+  // collapsed or on non-dashboard pages as a follow-up optimization.
   const status = useSystemStatus();
 
   const toggle = () => setIsExpanded((prev) => !prev);
@@ -502,12 +501,7 @@ export function SystemStatusBar() {
 
   if (!isLoading && !hasError) {
     if (status.isAdmin && status.healthData) {
-      const isHealthy = status.healthData.status === "healthy";
-      const dbOk = status.healthData.checks.database === "ok";
-      const storageOk =
-        status.healthData.checks.storage === "ok" ||
-        status.healthData.checks.storage === "not_configured";
-      overallStatus = isHealthy ? "healthy" : dbOk || storageOk ? "degraded" : "unhealthy";
+      overallStatus = status.healthData.status;
     } else if (!status.isAdmin && status.healthStatus) {
       overallStatus = status.healthStatus.status;
     }
@@ -529,6 +523,7 @@ export function SystemStatusBar() {
     <ExpandedPanel
       status={overallStatus}
       isLoading={isLoading}
+      isAdmin={status.isAdmin}
       hasError={hasError}
       onToggle={toggle}
       onRefresh={status.refresh}

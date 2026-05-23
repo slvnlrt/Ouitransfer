@@ -35,6 +35,7 @@ export function FileManagerLayout({
   return (
     <div className="w-full min-h-screen flex flex-col">
       <Navbar />
+      {/* sticky top-16 assumes Navbar h-16 (64px) */}
       <SystemStatusBar />
       <div className="flex-1 max-w-7xl mx-auto w-full p-6 py-8">
         <div className="flex flex-col gap-6">
