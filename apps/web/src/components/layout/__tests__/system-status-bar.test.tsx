@@ -1,6 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { UseSystemStatusResult } from "@/hooks/use-system-status";
+
 // Mock next-intl
 vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
@@ -47,15 +49,11 @@ vi.mock("@/contexts/dashboard-metrics-context", () => ({
 }));
 
 // Mutable mock for useSystemStatus
-const mockStatus = {
+const mockStatus: UseSystemStatusResult = {
   healthStatus: { status: "healthy" as const },
   healthStatusLoading: false,
-  healthStatusError: null as string | null,
-  healthData: null as {
-    status: string;
-    uptime: number;
-    checks: { database: string; storage: string };
-  } | null,
+  healthStatusError: null,
+  healthData: null,
   healthLoading: false,
   healthError: false,
   diskSpace: {
@@ -65,29 +63,18 @@ const mockStatus = {
     uploadAllowed: true,
     warningLevel: "none",
     percentage: 25,
-  } as {
-    diskSizeGB: number;
-    diskUsedGB: number;
-    diskAvailableGB: number;
-    uploadAllowed: boolean;
-    warningLevel: string;
-    percentage: number;
-  } | null,
+  },
   diskSpaceLoading: false,
-  diskSpaceError: null as string | null,
-  adminStats: null as {
-    users: { active: number; total: number };
-    files: { total: number };
-    shares: { active: number };
-  } | null,
+  diskSpaceError: null,
+  adminStats: null,
   adminStatsLoading: false,
-  adminStatsError: null as string | null,
+  adminStatsError: null,
   isAdmin: false,
   isRefreshing: false,
   refresh: vi.fn(),
 };
 
-let currentMockStatus = { ...mockStatus };
+let currentMockStatus: UseSystemStatusResult = { ...mockStatus };
 
 vi.mock("@/hooks/use-system-status", () => ({
   useSystemStatus: () => currentMockStatus,
@@ -339,18 +326,20 @@ describe("SystemStatusBar", () => {
 
   describe("admin view", () => {
     const adminHealthData = {
-      status: "healthy",
+      status: "healthy" as const,
+      timestamp: "2026-05-23T00:00:00.000Z",
       uptime: 7200, // 2 hours
       checks: {
-        database: "ok",
-        storage: "ok",
+        database: "ok" as const,
+        storage: "ok" as const,
       },
     };
 
     const adminStats = {
       users: { active: 10, total: 20 },
       files: { total: 100 },
-      shares: { active: 15 },
+      shares: { active: 15, expired: 3 },
+      reverseShares: { active: 2 },
     };
 
     beforeEach(() => {
@@ -459,9 +448,10 @@ describe("SystemStatusBar", () => {
       currentMockStatus = {
         ...currentMockStatus,
         healthData: {
-          status: "degraded",
+          status: "degraded" as const,
+          timestamp: "2026-05-23T00:00:00.000Z",
           uptime: 3600,
-          checks: { database: "ok", storage: "error" },
+          checks: { database: "ok" as const, storage: "error" as const },
         },
       };
       render(<SystemStatusBar />);
@@ -572,9 +562,10 @@ describe("SystemStatusBar", () => {
         ...mockStatus,
         isAdmin: true,
         healthData: {
-          status: "healthy",
+          status: "healthy" as const,
+          timestamp: "2026-05-23T00:00:00.000Z",
           uptime: 1800, // 30 minutes
-          checks: { database: "ok", storage: "ok" },
+          checks: { database: "ok" as const, storage: "ok" as const },
         },
       };
       render(<SystemStatusBar />);
@@ -587,9 +578,10 @@ describe("SystemStatusBar", () => {
         ...mockStatus,
         isAdmin: true,
         healthData: {
-          status: "healthy",
+          status: "healthy" as const,
+          timestamp: "2026-05-23T00:00:00.000Z",
           uptime: 90060, // 1d 1h 1m
-          checks: { database: "ok", storage: "ok" },
+          checks: { database: "ok" as const, storage: "ok" as const },
         },
       };
       render(<SystemStatusBar />);
@@ -602,9 +594,10 @@ describe("SystemStatusBar", () => {
         ...mockStatus,
         isAdmin: true,
         healthData: {
-          status: "healthy",
+          status: "healthy" as const,
+          timestamp: "2026-05-23T00:00:00.000Z",
           uptime: 0,
-          checks: { database: "ok", storage: "ok" },
+          checks: { database: "ok" as const, storage: "ok" as const },
         },
       };
       render(<SystemStatusBar />);

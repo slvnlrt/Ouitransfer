@@ -1,5 +1,21 @@
 # Session Log
 
+## 2026-05-23 (session 6)
+
+**10.1 — System Status Bar**
+
+- **10.1 System Status Bar** — Implemented collapsible glassmorphism status bar below navbar
+  - Moved `formatStorageSize` to `utils/format-storage-size.ts` and `useSystemStatus` to `hooks/use-system-status.ts` (global locations)
+  - Created `DashboardMetricsContext` for dashboard-specific metrics (`fileCount`, `activeShareCount`)
+  - Built `SystemStatusBar` component with collapsed tab and expanded panel (user + admin views)
+  - Integrated into both `FileManagerLayout` and `PageLayout`
+  - Deleted old `SystemStatus` card component (608 lines) and `dashboard/utils/` directory
+  - Added 45 unit tests (291 total web tests)
+  - Added i18n keys to all 23 locale files
+  - Fixed test type errors: `UseSystemStatusResult` annotation on mock, `CheckHealth200`/`AdminStats200` shape alignment
+
+---
+
 ## 2026-05-22 (session 5)
 
 **B-24 — Folder deletion share check**

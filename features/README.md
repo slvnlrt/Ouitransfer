@@ -33,6 +33,12 @@ This directory tracks all feature development for Ouitransfer (post-refactor pha
 |---|---------|--------|------------|
 | 9.1 | [Quickshare](specs/9.1-quickshare.md) | Done | — |
 
+### 10.x — UI Components & Layout
+
+| # | Feature | Status | Depends on |
+|---|---------|--------|------------|
+| 10.1 | System Status Bar | Done | — |
+
 ### 8.x — Auditing, Email & Tracking
 
 | # | Feature | Status | Depends on |
@@ -108,11 +114,11 @@ features/
 
 ## Current Focus
 
-**Completed:** 5.1 Quotas, 5.4 Groups, 5.3 LDAP, 6.1-6.3 UI Overhaul, 7.1 Error Handling, 9.1 Quickshare.
+**Completed:** 5.1 Quotas, 5.4 Groups, 5.3 LDAP, 6.1-6.3 UI Overhaul, 7.1 Error Handling, 9.1 Quickshare, 10.1 System Status Bar.
 All resolved: B-1 through B-23, TD-1, TD-2, TD-3, TD-4, TD-6, TD-7, TD-8, TD-9, TD-11, TD-12, TD-13, TD-14, TD-15.
 
-**Test counts:** 46 server test files (448 tests) + 22 web test files (238 tests) + 2 shared (14 tests) = **700 total**.
+**Test counts:** 47 server test files (455 tests) + 25 web test files (291 tests) + 2 shared (14 tests) = **760 total**.
 
-**Open bugs:** B-24 (folder deletion share check)
+**Open bugs:** none
 **Open tech debt:** TD-5, TD-10, TD-16, TD-17, TD-18, TD-19, TD-20, TD-21 — see `TECHNICAL-DEBT.md`
 **Next features:** 5.2 Auto-cleanup (independent), 8.1 Audit Trail, 8.2 Email Notifications, 8.3 Download Tracking
