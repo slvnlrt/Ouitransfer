@@ -38,8 +38,13 @@ export interface UseSystemStatusResult {
   refresh: () => void;
 }
 
-export function useSystemStatus(): UseSystemStatusResult {
+export function useSystemStatus(options?: { isExpanded?: boolean }): UseSystemStatusResult {
+  const { isExpanded = false } = options ?? {};
   const { isAdmin, user } = useAuth();
+
+  const POLL_ACTIVE = 60_000; // 60s when expanded
+  const POLL_BACKGROUND = 300_000; // 5 min when collapsed
+  const pollInterval = isExpanded ? POLL_ACTIVE : POLL_BACKGROUND;
 
   // Simplified health status (regular users only)
   const healthStatusQuery = useQuery({
@@ -48,7 +53,7 @@ export function useSystemStatus(): UseSystemStatusResult {
       const res = await getHealthStatus();
       return res.data;
     },
-    refetchInterval: 60_000,
+    refetchInterval: pollInterval,
     enabled: !isAdmin,
   });
 
@@ -59,7 +64,7 @@ export function useSystemStatus(): UseSystemStatusResult {
       const res = await checkHealth();
       return res.data;
     },
-    refetchInterval: 60_000,
+    refetchInterval: pollInterval,
     enabled: !!isAdmin,
   });
 
@@ -70,19 +75,19 @@ export function useSystemStatus(): UseSystemStatusResult {
       const res = await getDiskSpace();
       return res.data;
     },
-    refetchInterval: 60_000,
+    refetchInterval: pollInterval,
     enabled: !!user,
   });
 
-  // Admin stats (admin only)
+  // Admin stats (admin only — only useful in expanded admin view)
   const adminStatsQuery = useQuery({
     queryKey: queryKeys.admin.stats(),
     queryFn: async () => {
       const res = await getAdminStats();
       return res.data;
     },
-    refetchInterval: 60_000,
-    enabled: !!isAdmin,
+    refetchInterval: POLL_ACTIVE,
+    enabled: !!isAdmin && isExpanded,
   });
 
   // Error parsing

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { UseSystemStatusResult } from "@/hooks/use-system-status";
@@ -78,7 +78,7 @@ const mockStatus: UseSystemStatusResult = {
 let currentMockStatus: UseSystemStatusResult = { ...mockStatus };
 
 vi.mock("@/hooks/use-system-status", () => ({
-  useSystemStatus: () => currentMockStatus,
+  useSystemStatus: (_options?: { isExpanded?: boolean }) => currentMockStatus,
 }));
 
 import { SystemStatusBar } from "../system-status-bar";
@@ -99,7 +99,10 @@ describe("SystemStatusBar", () => {
 
     it("shows system status title in collapsed tab", () => {
       render(<SystemStatusBar />);
-      expect(screen.getByText("title")).toBeInTheDocument();
+      // Both collapsed tab and always-in-DOM expanded panel contain "title" text;
+      // verify at least one is rendered (the collapsed tab is visible)
+      const titles = screen.getAllByText("title");
+      expect(titles.length).toBeGreaterThanOrEqual(1);
     });
 
     it("has a status dot in collapsed tab", () => {
@@ -123,8 +126,11 @@ describe("SystemStatusBar", () => {
         },
       };
       render(<SystemStatusBar />);
-      // 25% should not appear as a quota badge
-      expect(screen.queryByText("25%")).not.toBeInTheDocument();
+      // The collapsed tab button should NOT contain a quota badge.
+      // The expanded panel (always in DOM, aria-hidden) may show percentage text,
+      // so we scope the check to the expand button itself.
+      const expandButton = screen.getByRole("button", { name: "expand" });
+      expect(within(expandButton).queryByText("25%")).not.toBeInTheDocument();
     });
 
     it("shows quota badge when warning level is 'warning'", () => {
@@ -140,7 +146,9 @@ describe("SystemStatusBar", () => {
         },
       };
       render(<SystemStatusBar />);
-      expect(screen.getByText("75%")).toBeInTheDocument();
+      // Scope to expand button — the badge is inside the collapsed tab button
+      const expandButton = screen.getByRole("button", { name: "expand" });
+      expect(within(expandButton).getByText("75%")).toBeInTheDocument();
     });
 
     it("shows quota badge when warning level is 'critical'", () => {
@@ -156,7 +164,8 @@ describe("SystemStatusBar", () => {
         },
       };
       render(<SystemStatusBar />);
-      expect(screen.getByText("90%")).toBeInTheDocument();
+      const expandButton = screen.getByRole("button", { name: "expand" });
+      expect(within(expandButton).getByText("90%")).toBeInTheDocument();
     });
 
     it("shows quota badge when warning level is 'exceeded'", () => {
@@ -172,7 +181,8 @@ describe("SystemStatusBar", () => {
         },
       };
       render(<SystemStatusBar />);
-      expect(screen.getByText("100%")).toBeInTheDocument();
+      const expandButton = screen.getByRole("button", { name: "expand" });
+      expect(within(expandButton).getByText("100%")).toBeInTheDocument();
     });
 
     it("does NOT show quota badge when diskSpace is null", () => {
@@ -181,11 +191,10 @@ describe("SystemStatusBar", () => {
         diskSpace: null,
       };
       render(<SystemStatusBar />);
-      // No percentage badge should appear
+      // No percentage badge should appear in the collapsed tab button
       const button = screen.getByRole("button", { name: "expand" });
       expect(button).toBeInTheDocument();
-      // No percentage text
-      expect(screen.queryByText(/\d+%/)).not.toBeInTheDocument();
+      expect(within(button).queryByText(/\d+%/)).not.toBeInTheDocument();
     });
 
     it("shows dimmed tab when loading", () => {

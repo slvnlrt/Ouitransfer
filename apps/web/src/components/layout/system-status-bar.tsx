@@ -97,7 +97,7 @@ function CollapsedTab({
     ["warning", "critical", "exceeded"].includes(warningLevel);
 
   return (
-    <div className="sticky top-16 z-30 flex justify-center pointer-events-none">
+    <div className="flex justify-center pointer-events-none">
       <button
         type="button"
         onClick={onToggle}
@@ -404,79 +404,77 @@ function ExpandedPanel({
   };
 
   return (
-    <div className="sticky top-16 z-30">
-      <section id="system-status-panel" className={`${GLASS_PANEL} w-full`} aria-label={t("title")}>
-        <div className="max-w-7xl mx-auto px-6 py-3">
-          {/* Title row */}
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <span
-                className={`inline-block size-2 rounded-full ${colors.dot} ${colors.glow} ${pulseClass}`}
-                aria-hidden="true"
-              />
-              <span className="text-sm font-semibold">{t("title")}</span>
-              {!isLoading && !hasError && (
-                <span
-                  className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                    status === "healthy"
-                      ? "bg-green-500/10 text-green-600 dark:text-green-400"
-                      : status === "degraded"
-                        ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
-                        : "bg-red-500/10 text-red-600 dark:text-red-400"
-                  }`}
-                >
-                  {statusLabelMap[status]}
-                </span>
-              )}
-            </div>
-
-            <button
-              type="button"
-              onClick={onRefresh}
-              disabled={isRefreshing}
-              className="p-1.5 rounded-md hover:bg-background/50 transition-colors disabled:opacity-50"
-              aria-label={t("refresh")}
-            >
-              <RefreshCw
-                className={`size-3.5 text-muted-foreground ${isRefreshing ? "animate-spin" : ""}`}
-              />
-            </button>
-          </div>
-
-          {/* Content */}
-          {isLoading ? (
-            <div className="flex gap-4">
-              <div className="h-8 flex-1 bg-muted/50 rounded animate-pulse" />
-              <div className="h-8 flex-1 bg-muted/50 rounded animate-pulse" />
-              {isAdmin && <div className="h-8 flex-1 bg-muted/50 rounded animate-pulse" />}
-            </div>
-          ) : hasError ? (
-            <ErrorDisplay
-              variant="inline"
-              title={t("errors.title")}
-              message={errorMessage ?? t("errors.fetchFailed")}
-              actions={[{ label: t("refresh"), onClick: onRefresh, variant: "outline" }]}
+    <section id="system-status-panel" className={`${GLASS_PANEL} w-full`} aria-label={t("title")}>
+      <div className="max-w-7xl mx-auto px-6 py-3">
+        {/* Title row */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <span
+              className={`inline-block size-2 rounded-full ${colors.dot} ${colors.glow} ${pulseClass}`}
+              aria-hidden="true"
             />
-          ) : (
-            children
-          )}
-
-          {/* Centered collapse button at bottom */}
-          <div className="flex justify-center mt-2">
-            <button
-              type="button"
-              onClick={onToggle}
-              className="p-1 rounded-md hover:bg-background/50 transition-colors"
-              aria-label={t("collapse")}
-              aria-expanded={true}
-              aria-controls="system-status-panel"
-            >
-              <ChevronUp className="size-3.5 text-muted-foreground" />
-            </button>
+            <span className="text-sm font-semibold">{t("title")}</span>
+            {!isLoading && !hasError && (
+              <span
+                className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                  status === "healthy"
+                    ? "bg-green-500/10 text-green-600 dark:text-green-400"
+                    : status === "degraded"
+                      ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                      : "bg-red-500/10 text-red-600 dark:text-red-400"
+                }`}
+              >
+                {statusLabelMap[status]}
+              </span>
+            )}
           </div>
+
+          <button
+            type="button"
+            onClick={onRefresh}
+            disabled={isRefreshing}
+            className="p-1.5 rounded-md hover:bg-background/50 transition-colors disabled:opacity-50"
+            aria-label={t("refresh")}
+          >
+            <RefreshCw
+              className={`size-3.5 text-muted-foreground ${isRefreshing ? "animate-spin" : ""}`}
+            />
+          </button>
         </div>
-      </section>
-    </div>
+
+        {/* Content */}
+        {isLoading ? (
+          <div className="flex gap-4">
+            <div className="h-8 flex-1 bg-muted/50 rounded animate-pulse" />
+            <div className="h-8 flex-1 bg-muted/50 rounded animate-pulse" />
+            {isAdmin && <div className="h-8 flex-1 bg-muted/50 rounded animate-pulse" />}
+          </div>
+        ) : hasError ? (
+          <ErrorDisplay
+            variant="inline"
+            title={t("errors.title")}
+            message={errorMessage ?? t("errors.fetchFailed")}
+            actions={[{ label: t("refresh"), onClick: onRefresh, variant: "outline" }]}
+          />
+        ) : (
+          children
+        )}
+
+        {/* Centered collapse button at bottom */}
+        <div className="flex justify-center mt-2">
+          <button
+            type="button"
+            onClick={onToggle}
+            className="p-1 rounded-md hover:bg-background/50 transition-colors"
+            aria-label={t("collapse")}
+            aria-expanded={true}
+            aria-controls="system-status-panel"
+          >
+            <ChevronUp className="size-3.5 text-muted-foreground" />
+          </button>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -484,10 +482,7 @@ function ExpandedPanel({
 
 export function SystemStatusBar() {
   const [isExpanded, setIsExpanded] = useState(false);
-  // NOTE: This hook polls 2-4 endpoints at 60s intervals on every authenticated page.
-  // Previously dashboard-only. Acceptable for MVP; consider longer intervals when
-  // collapsed or on non-dashboard pages as a follow-up optimization.
-  const status = useSystemStatus();
+  const status = useSystemStatus({ isExpanded });
 
   const toggle = () => setIsExpanded((prev) => !prev);
 
@@ -507,39 +502,49 @@ export function SystemStatusBar() {
     }
   }
 
-  if (!isExpanded) {
-    return (
-      <CollapsedTab
-        status={overallStatus}
-        isLoading={isLoading}
-        quotaPercentage={status.diskSpace?.percentage}
-        warningLevel={status.diskSpace?.warningLevel}
-        onToggle={toggle}
-      />
-    );
-  }
-
   return (
-    <ExpandedPanel
-      status={overallStatus}
-      isLoading={isLoading}
-      isAdmin={status.isAdmin}
-      hasError={hasError}
-      onToggle={toggle}
-      onRefresh={status.refresh}
-      isRefreshing={status.isRefreshing}
-    >
-      {status.isAdmin ? (
-        <BarAdminView
-          healthData={status.healthData}
-          diskSpace={status.diskSpace}
-          adminStats={status.adminStats}
-          adminStatsError={status.adminStatsError}
-          diskSpaceError={status.diskSpaceError}
+    <div className="sticky top-16 z-30">
+      {/* Expandable panel — CSS grid height animation */}
+      <div
+        className="grid transition-[grid-template-rows] duration-300 ease-in-out"
+        style={{ gridTemplateRows: isExpanded ? "1fr" : "0fr" }}
+        aria-hidden={!isExpanded}
+      >
+        <div className="overflow-hidden min-h-0">
+          <ExpandedPanel
+            status={overallStatus}
+            isLoading={isLoading}
+            isAdmin={status.isAdmin}
+            hasError={hasError}
+            onToggle={toggle}
+            onRefresh={status.refresh}
+            isRefreshing={status.isRefreshing}
+          >
+            {status.isAdmin ? (
+              <BarAdminView
+                healthData={status.healthData}
+                diskSpace={status.diskSpace}
+                adminStats={status.adminStats}
+                adminStatsError={status.adminStatsError}
+                diskSpaceError={status.diskSpaceError}
+              />
+            ) : (
+              <BarUserView diskSpace={status.diskSpace} />
+            )}
+          </ExpandedPanel>
+        </div>
+      </div>
+
+      {/* Collapsed tab — visible when panel is collapsed */}
+      {!isExpanded && (
+        <CollapsedTab
+          status={overallStatus}
+          isLoading={isLoading}
+          quotaPercentage={status.diskSpace?.percentage}
+          warningLevel={status.diskSpace?.warningLevel}
+          onToggle={toggle}
         />
-      ) : (
-        <BarUserView diskSpace={status.diskSpace} />
       )}
-    </ExpandedPanel>
+    </div>
   );
 }
