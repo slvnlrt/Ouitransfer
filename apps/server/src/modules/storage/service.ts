@@ -134,9 +134,9 @@ export class StorageService {
 
         return {
           kind: "admin",
-          diskSizeGB: Number(diskSizeGB.toFixed(2)),
-          diskUsedGB: Number(diskUsedGB.toFixed(2)),
-          diskAvailableGB: Number(diskAvailableGB.toFixed(2)),
+          diskSizeGB: Number(diskSizeGB.toFixed(6)),
+          diskUsedGB: Number(diskUsedGB.toFixed(6)),
+          diskAvailableGB: Number(diskAvailableGB.toFixed(6)),
           uploadAllowed: diskAvailableGB > 0.1,
         };
       } else if (userId) {
@@ -153,9 +153,9 @@ export class StorageService {
 
         return {
           kind: "user",
-          diskSizeGB: Number(maxStorageGB.toFixed(2)),
-          diskUsedGB: Number(usedStorageGB.toFixed(2)),
-          diskAvailableGB: isUnlimited ? -1 : Number(availableStorageGB.toFixed(2)),
+          diskSizeGB: Number(maxStorageGB.toFixed(6)),
+          diskUsedGB: Number(usedStorageGB.toFixed(6)),
+          diskAvailableGB: isUnlimited ? -1 : Number(availableStorageGB.toFixed(6)),
           uploadAllowed: status.uploadAllowed,
           warningLevel: status.warningLevel,
           maxFileSize: status.maxFileSize === 0n ? 0 : Number(status.maxFileSize),

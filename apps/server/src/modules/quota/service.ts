@@ -132,7 +132,9 @@ export class QuotaService {
 
     let percentage = 0;
     if (!isUnlimited && limits.maxTotalStorage > 0n) {
-      percentage = Math.round((Number(used) / Number(limits.maxTotalStorage)) * 100);
+      const raw = (Number(used) / Number(limits.maxTotalStorage)) * 100;
+      // Ensure non-zero usage always shows at least 1% — never display "0%" when files exist
+      percentage = used > 0n ? Math.max(1, Math.round(raw)) : 0;
     }
 
     let warningLevel: WarningLevel = "none";
