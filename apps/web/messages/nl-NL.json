@@ -300,7 +300,9 @@
         "fetchFailed": "Kan de systeemstatus niet ophalen. Probeer het later opnieuw.",
         "diskSpaceError": "Kan schijfruimte-informatie niet ophalen.",
         "statsError": "Kan platformstatistieken niet laden."
-      }
+      },
+      "collapse": "Collapse system status",
+      "expand": "Expand system status"
     }
   },
   "deleteConfirmation": {

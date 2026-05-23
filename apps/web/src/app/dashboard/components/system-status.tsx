@@ -21,10 +21,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import { useSystemStatus } from "@/hooks/use-system-status";
 import type { AdminStats200 } from "@/http/endpoints/admin/types";
 import type { CheckHealth200, DiskSpaceInfo, HealthStatus200 } from "@/http/endpoints/app/types";
 import { formatStorageSize } from "@/utils/format-storage-size";
-import { useSystemStatus } from "../hooks/use-system-status";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

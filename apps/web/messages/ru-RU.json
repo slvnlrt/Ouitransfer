@@ -300,7 +300,9 @@
         "fetchFailed": "Не удалось получить состояние системы. Повторите попытку позже.",
         "diskSpaceError": "Не удалось получить информацию о дисковом пространстве.",
         "statsError": "Не удалось загрузить статистику платформы."
-      }
+      },
+      "collapse": "Collapse system status",
+      "expand": "Expand system status"
     }
   },
   "deleteConfirmation": {

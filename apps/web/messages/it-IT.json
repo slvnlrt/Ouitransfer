@@ -300,7 +300,9 @@
         "fetchFailed": "Impossibile recuperare lo stato del sistema. Riprova più tardi.",
         "diskSpaceError": "Impossibile recuperare le informazioni sullo spazio su disco.",
         "statsError": "Impossibile caricare le statistiche della piattaforma."
-      }
+      },
+      "collapse": "Collapse system status",
+      "expand": "Expand system status"
     }
   },
   "deleteConfirmation": {

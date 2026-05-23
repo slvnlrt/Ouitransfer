@@ -304,7 +304,9 @@
         "fetchFailed": "Δεν ήταν δυνατή η ανάκτηση της κατάστασης του συστήματος. Δοκιμάστε ξανά αργότερα.",
         "diskSpaceError": "Δεν ήταν δυνατή η ανάκτηση πληροφοριών χώρου δίσκου.",
         "statsError": "Δεν ήταν δυνατή η φόρτωση στατιστικών πλατφόρμας."
-      }
+      },
+      "collapse": "Collapse system status",
+      "expand": "Expand system status"
     }
   },
   "deleteConfirmation": {

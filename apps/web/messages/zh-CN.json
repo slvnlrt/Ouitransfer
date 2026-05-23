@@ -300,7 +300,9 @@
         "fetchFailed": "无法获取系统状态。请稍后再试。",
         "diskSpaceError": "无法获取磁盘空间信息。",
         "statsError": "无法加载平台统计数据。"
-      }
+      },
+      "collapse": "Collapse system status",
+      "expand": "Expand system status"
     }
   },
   "deleteConfirmation": {

@@ -304,7 +304,9 @@
         "fetchFailed": "Не вдалося отримати стан системи. Спробуйте пізніше.",
         "diskSpaceError": "Не вдалося отримати інформацію про дисковий простір.",
         "statsError": "Не вдалося завантажити статистику платформи."
-      }
+      },
+      "collapse": "Collapse system status",
+      "expand": "Expand system status"
     }
   },
   "deleteConfirmation": {

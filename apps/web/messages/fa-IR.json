@@ -304,7 +304,9 @@
         "fetchFailed": "دریافت وضعیت سیستم ممکن نیست. لطفاً بعداً دوباره تلاش کنید.",
         "diskSpaceError": "دریافت اطلاعات فضای دیسک ممکن نیست.",
         "statsError": "بارگذاری آمار پلتفرم ممکن نیست."
-      }
+      },
+      "collapse": "Collapse system status",
+      "expand": "Expand system status"
     }
   },
   "deleteConfirmation": {

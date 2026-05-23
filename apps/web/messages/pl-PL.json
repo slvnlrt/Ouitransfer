@@ -300,7 +300,9 @@
         "fetchFailed": "Nie udało się pobrać stanu systemu. Spróbuj ponownie później.",
         "diskSpaceError": "Nie udało się pobrać informacji o przestrzeni dyskowej.",
         "statsError": "Nie udało się załadować statystyk platformy."
-      }
+      },
+      "collapse": "Collapse system status",
+      "expand": "Expand system status"
     }
   },
   "deleteConfirmation": {

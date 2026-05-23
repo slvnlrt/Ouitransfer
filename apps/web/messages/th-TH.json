@@ -304,7 +304,9 @@
         "fetchFailed": "ไม่สามารถดึงข้อมูลสถานะระบบได้ กรุณาลองใหม่อีกครั้งในภายหลัง",
         "diskSpaceError": "ไม่สามารถดึงข้อมูลพื้นที่ดิสก์ได้",
         "statsError": "ไม่สามารถโหลดสถิติแพลตฟอร์มได้"
-      }
+      },
+      "collapse": "Collapse system status",
+      "expand": "Expand system status"
     }
   },
   "deleteConfirmation": {

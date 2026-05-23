@@ -304,7 +304,9 @@
         "fetchFailed": "לא ניתן לאחזר את מצב המערכת. נסה שוב מאוחר יותר.",
         "diskSpaceError": "לא ניתן לאחזר מידע על שטח הדיסק.",
         "statsError": "לא ניתן לטעון סטטיסטיקות הפלטפורמה."
-      }
+      },
+      "collapse": "Collapse system status",
+      "expand": "Expand system status"
     }
   },
   "deleteConfirmation": {

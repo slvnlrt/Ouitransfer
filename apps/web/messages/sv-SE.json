@@ -304,7 +304,9 @@
         "fetchFailed": "Det gick inte att hämta systemstatus. Försök igen senare.",
         "diskSpaceError": "Det gick inte att hämta information om diskutrymme.",
         "statsError": "Det gick inte att ladda plattformsstatistik."
-      }
+      },
+      "collapse": "Collapse system status",
+      "expand": "Expand system status"
     }
   },
   "deleteConfirmation": {

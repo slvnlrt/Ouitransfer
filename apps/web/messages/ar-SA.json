@@ -300,7 +300,9 @@
         "fetchFailed": "تعذّر استرجاع حالة النظام. يرجى المحاولة مرة أخرى لاحقاً.",
         "diskSpaceError": "تعذّر استرجاع معلومات مساحة القرص.",
         "statsError": "تعذّر تحميل إحصائيات المنصة."
-      }
+      },
+      "collapse": "Collapse system status",
+      "expand": "Expand system status"
     }
   },
   "deleteConfirmation": {

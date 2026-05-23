@@ -300,7 +300,9 @@
         "fetchFailed": "システムステータスを取得できませんでした。後でもう一度お試しください。",
         "diskSpaceError": "ディスク容量の情報を取得できませんでした。",
         "statsError": "プラットフォームの統計情報を読み込めませんでした。"
-      }
+      },
+      "collapse": "Collapse system status",
+      "expand": "Expand system status"
     }
   },
   "deleteConfirmation": {

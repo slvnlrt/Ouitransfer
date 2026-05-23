@@ -300,7 +300,9 @@
         "fetchFailed": "सिस्टम स्थिति प्राप्त नहीं हो सकी। कृपया बाद में पुनः प्रयास करें।",
         "diskSpaceError": "डिस्क स्पेस की जानकारी प्राप्त नहीं हो सकी।",
         "statsError": "प्लेटफ़ॉर्म आँकड़े लोड नहीं हो सके।"
-      }
+      },
+      "collapse": "Collapse system status",
+      "expand": "Expand system status"
     }
   },
   "deleteConfirmation": {

@@ -304,7 +304,9 @@
         "fetchFailed": "Unable to retrieve system status. Please try again later.",
         "diskSpaceError": "Unable to retrieve disk space information.",
         "statsError": "Unable to load platform statistics."
-      }
+      },
+      "collapse": "Collapse system status",
+      "expand": "Expand system status"
     }
   },
   "deleteConfirmation": {

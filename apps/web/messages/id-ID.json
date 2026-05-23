@@ -304,7 +304,9 @@
         "fetchFailed": "Tidak dapat mengambil status sistem. Silakan coba lagi nanti.",
         "diskSpaceError": "Tidak dapat mengambil informasi ruang disk.",
         "statsError": "Tidak dapat memuat statistik platform."
-      }
+      },
+      "collapse": "Collapse system status",
+      "expand": "Expand system status"
     }
   },
   "deleteConfirmation": {
