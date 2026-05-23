@@ -43,7 +43,6 @@ export interface ShareRecipient {
 }
 
 export interface ShareSecurity {
-  maxViews: number | null;
   hasPassword: boolean;
 }
 
@@ -53,6 +52,7 @@ export interface Share {
   description: string | null;
   expiration: string | null;
   views: number;
+  maxViews: number | null;
   createdAt: string;
   updatedAt: string;
   creatorId: string;

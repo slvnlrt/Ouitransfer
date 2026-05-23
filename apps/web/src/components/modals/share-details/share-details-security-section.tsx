@@ -46,9 +46,9 @@ export function ShareDetailsSecuritySection({
             {t("shareDetails.publicAccess")}
           </StatusBadge>
         )}
-        {share.security?.maxViews && (
+        {share.maxViews && (
           <StatusBadge variant="info" className="w-fit">
-            {t("shareDetails.maxViews")} {share.security.maxViews}
+            {t("shareDetails.maxViews")} {share.maxViews}
           </StatusBadge>
         )}
       </div>

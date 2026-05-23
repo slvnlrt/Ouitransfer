@@ -120,7 +120,7 @@ export function ShareActionsModals({
           : "",
         isPasswordProtected: Boolean(shareToEdit.security?.hasPassword),
         password: "",
-        maxViews: shareToEdit.security?.maxViews?.toString() || "",
+        maxViews: shareToEdit.maxViews?.toString() || "",
       });
     }
   }, [shareToEdit]);
