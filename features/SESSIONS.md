@@ -1,5 +1,16 @@
 # Session Log
 
+## 2026-05-23 (session 7)
+
+**B-25 — Quota precision bug + system status bar polish**
+
+- **B-25** : `diskUsedGB` retournait `0` malgré des fichiers uploadés — `toFixed(2)` en GB écrasait tout < ~5 MB
+  - `storage/service.ts` : `toFixed(2)` → `toFixed(6)` sur les 6 valeurs GB (admin + user)
+  - `quota/service.ts` : `Math.max(1, Math.round(raw))` quand `used > 0n` — jamais 0% avec usage non-nul
+- **SystemStatusBar polish** : `cursor-pointer` ajouté sur le bouton collapse (chevron-up)
+
+---
+
 ## 2026-05-23 (session 6)
 
 **10.1 — System Status Bar**

@@ -2,7 +2,7 @@
 
 > Bugs discovered during testing and development.
 > Archived bugs: see `features/archive/BUGS-2026-05.md` (B-1 through B-20, all resolved).
-> B-21 through B-23 resolved — see below.
+> B-21 through B-25 resolved — see below.
 
 ---
 
@@ -54,3 +54,19 @@ de dossiers). Le `force=true` est requis pour supprimer un dossier appartenant �
 - Tests : 6 integration tests server (no-shares→200, 1-share-no-force→409, force→200, 403, 404, deduplication→3)
 
 **Découvert lors de :** Review de B-21 (2026-05-22)
+
+---
+
+## ~~B-25 — Quota user : diskUsedGB arrondi à 0, percentage affiché 0% avec des fichiers~~ ✅ RESOLVED
+
+Résolu en session 2026-05-23. Le service de stockage utilisait `toFixed(2)` pour convertir les bytes en GB, ce qui
+écrasait toute valeur inférieure à ~5 MB à `0.00`. Conséquence : `diskUsedGB: 0` même avec des fichiers uploadés,
+et `percentage: 0` pour tout usage < 1% du quota (ex. quelques MB sur 10 GB).
+
+**Fix :**
+- `storage/service.ts` : `toFixed(2)` → `toFixed(6)` sur les 6 valeurs GB (chemins admin + user). Précision ~1 KB,
+  la fonction `formatStorageSize` côté frontend gère déjà la conversion en MB/KB/B selon l'échelle.
+- `quota/service.ts` : `Math.max(1, Math.round(raw))` quand `used > 0n` — non-zero usage affiche toujours au moins 1%.
+- Également corrigé : `cursor-pointer` manquant sur le bouton collapse de `SystemStatusBar`.
+
+Commits : voir session 2026-05-23
