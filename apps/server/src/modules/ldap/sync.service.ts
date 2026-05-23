@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import { prisma } from "../../shared/prisma.js";
 import { ConflictError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
+import { logAuditEvent } from "../audit/service.js";
 import { EmailService } from "../email/service.js";
 import { LdapConfigRepository } from "./config.repository.js";
 import { decrypt } from "./encryption.js";
@@ -106,6 +107,22 @@ export class LdapSyncService {
         details: JSON.stringify(stats.details),
       });
 
+      logAuditEvent({
+        action: "LDAP_SYNC_COMPLETED",
+        ipAddress: "127.0.0.1",
+        targetType: "ldap_sync_log",
+        targetId: log.id,
+        metadata: {
+          trigger,
+          status,
+          usersCreated: stats.created,
+          usersUpdated: stats.updated,
+          usersDeactivated: stats.deactivated,
+          usersReactivated: stats.reactivated,
+          usersSkipped: stats.skipped,
+        },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
       return log.id;
     } catch (error) {
       // Best-effort disconnect on error
@@ -123,6 +140,14 @@ export class LdapSyncService {
           { type: "error" as const, username: "", phase: currentPhase, message },
         ]),
       });
+
+      logAuditEvent({
+        action: "LDAP_SYNC_ERROR",
+        ipAddress: "127.0.0.1",
+        targetType: "ldap_sync_log",
+        targetId: log.id,
+        metadata: { trigger, error: message },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
 
       throw error;
     } finally {

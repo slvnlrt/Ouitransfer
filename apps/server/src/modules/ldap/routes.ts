@@ -3,6 +3,8 @@ import { z } from "zod";
 import { createAdminPreValidation } from "../../middleware/admin-prevalidation.js";
 import { NotFoundError, ValidationError } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
+import { getLogger } from "../../utils/logger.js";
+import { logAuditEvent } from "../audit/service.js";
 import { LdapConfigRepository } from "./config.repository.js";
 import { LdapConfigSchema, LdapTestSchema, SyncLogsQuerySchema } from "./dto.js";
 import { encrypt } from "./encryption.js";
@@ -128,6 +130,16 @@ export const ldapRoutes: FastifyPluginAsyncZod = async (app) => {
         stopScheduler();
       }
 
+      logAuditEvent({
+        userId: request.user?.userId,
+        action: "LDAP_CONFIG_UPDATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "ldap_config",
+        targetId: config.id,
+        metadata: { enabled: config.enabled },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
       return reply.send({
         configured: true,
         id: config.id,
@@ -204,8 +216,17 @@ export const ldapRoutes: FastifyPluginAsyncZod = async (app) => {
         409: ErrorResponseSchema,
       },
     },
-    handler: async (_request, reply) => {
+    handler: async (request, reply) => {
       const logId = await syncService.runSync("manual");
+      logAuditEvent({
+        userId: request.user?.userId,
+        action: "LDAP_SYNC_TRIGGERED",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "ldap_sync_log",
+        targetId: logId,
+        metadata: { manual: true },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ logId });
     },
   });

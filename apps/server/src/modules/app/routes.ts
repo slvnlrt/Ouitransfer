@@ -102,6 +102,8 @@ export const appRoutes: FastifyPluginAsyncZod = async (app) => {
         action: "ADMIN_CONFIG_CHANGE",
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
+        targetType: "setting",
+        targetId: request.params.key,
         metadata: { key: request.params.key },
       }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
 
@@ -183,6 +185,7 @@ export const appRoutes: FastifyPluginAsyncZod = async (app) => {
         action: "ADMIN_CONFIG_CHANGE",
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
+        targetType: "setting",
         metadata: { keys: request.body.map((u) => u.key) },
       }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
 
@@ -253,6 +256,12 @@ export const appRoutes: FastifyPluginAsyncZod = async (app) => {
     handler: async (request, reply) => {
       const smtpConfig = request.body?.smtpConfig;
       const result = await emailService.testConnection(smtpConfig);
+      logAuditEvent({
+        userId: request.user?.userId,
+        action: "SMTP_TEST",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send(result);
     },
   });
@@ -301,6 +310,14 @@ export const appRoutes: FastifyPluginAsyncZod = async (app) => {
       const base64Logo = await logoService.uploadLogo(buffer);
       await appService.updateConfig("appLogo", base64Logo);
 
+      logAuditEvent({
+        userId: request.user?.userId,
+        action: "LOGO_UPLOAD",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "logo",
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
       return reply.send({ logo: base64Logo });
     },
   });
@@ -323,8 +340,15 @@ export const appRoutes: FastifyPluginAsyncZod = async (app) => {
         403: ErrorResponseSchema,
       },
     },
-    handler: async (_request, reply) => {
+    handler: async (request, reply) => {
       await logoService.deleteLogo();
+      logAuditEvent({
+        userId: request.user?.userId,
+        action: "LOGO_REMOVE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "logo",
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ message: "Logo removed successfully" });
     },
   });

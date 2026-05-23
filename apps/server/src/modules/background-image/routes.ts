@@ -4,6 +4,8 @@ import { z } from "zod";
 import { createAdminPreValidation } from "../../middleware/admin-prevalidation.js";
 import { ValidationError } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
+import { getLogger } from "../../utils/logger.js";
+import { logAuditEvent } from "../audit/service.js";
 import {
   BackgroundImageResponseSchema,
   ReorderBackgroundImagesSchema,
@@ -84,6 +86,15 @@ export const backgroundImageRoutes: FastifyPluginAsyncZod = async (app) => {
 
       const buffer = Buffer.concat(chunks);
       const image = await service.upload(buffer, file.filename, name);
+      logAuditEvent({
+        userId: request.user?.userId,
+        action: "BACKGROUND_IMAGE_UPLOAD",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "background_image",
+        targetId: image.id,
+        metadata: { name: image.name },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ image });
     },
   });
@@ -155,6 +166,14 @@ export const backgroundImageRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (request, reply) => {
       await service.delete(request.params.id);
+      logAuditEvent({
+        userId: request.user?.userId,
+        action: "BACKGROUND_IMAGE_DELETE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "background_image",
+        targetId: request.params.id,
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ success: true });
     },
   });

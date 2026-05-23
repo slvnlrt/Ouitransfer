@@ -3,6 +3,8 @@ import { z } from "zod";
 
 import { createAdminPreValidation } from "../../middleware/admin-prevalidation.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
+import { getLogger } from "../../utils/logger.js";
+import { logAuditEvent } from "../audit/service.js";
 import { AddMemberSchema, CreateGroupSchema, UpdateGroupSchema } from "./dto.js";
 import { GroupService } from "./service.js";
 
@@ -138,6 +140,15 @@ export const groupRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (request, reply) => {
       const group = await groupService.createGroup(request.body);
+      logAuditEvent({
+        userId: request.user?.userId,
+        action: "GROUP_CREATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "group",
+        targetId: group.id,
+        metadata: { name: request.body.name },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.status(201).send(serializeGroup(group));
     },
   });
@@ -164,6 +175,14 @@ export const groupRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (request, reply) => {
       const group = await groupService.updateGroup(request.params.id, request.body);
+      logAuditEvent({
+        userId: request.user?.userId,
+        action: "GROUP_UPDATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "group",
+        targetId: request.params.id,
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send(serializeGroup(group));
     },
   });
@@ -191,6 +210,15 @@ export const groupRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (request, reply) => {
       const result = await groupService.deleteGroup(request.params.id);
+      logAuditEvent({
+        userId: request.user?.userId,
+        action: "GROUP_DELETE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "group",
+        targetId: request.params.id,
+        metadata: { unassignedCount: result.unassignedCount },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ message: "Group deleted", unassignedCount: result.unassignedCount });
     },
   });
@@ -219,6 +247,18 @@ export const groupRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (request, reply) => {
       const result = await groupService.addMember(request.params.id, request.body.userId);
+      logAuditEvent({
+        userId: request.user?.userId,
+        action: "GROUP_MEMBER_ADD",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "group",
+        targetId: request.params.id,
+        metadata: {
+          memberId: request.body.userId,
+          previousGroupId: result.previousGroupId ?? null,
+        },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({
         message: "Member added to group",
         previousGroupId: result.previousGroupId ?? null,
@@ -249,6 +289,15 @@ export const groupRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (request, reply) => {
       await groupService.removeMember(request.params.id, request.params.userId);
+      logAuditEvent({
+        userId: request.user?.userId,
+        action: "GROUP_MEMBER_REMOVE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "group",
+        targetId: request.params.id,
+        metadata: { memberId: request.params.userId },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ message: "Member removed from group" });
     },
   });
