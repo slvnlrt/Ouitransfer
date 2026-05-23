@@ -6,6 +6,10 @@ import { directoriesConfig } from "./config/directories.config.js";
 import { env } from "./env.js";
 import { adminRoutes } from "./modules/admin/routes.js";
 import { appRoutes } from "./modules/app/routes.js";
+import {
+  initAuditRetentionOnBoot,
+  stopAuditRetentionScheduler,
+} from "./modules/audit/retention.scheduler.js";
 import { auditRoutes } from "./modules/audit/routes.js";
 import { cleanupOldAttempts } from "./modules/auth/login-attempts.service.js";
 import { cleanupExpiredTokens } from "./modules/auth/refresh-token.service.js";
@@ -100,6 +104,9 @@ async function startServer() {
   // Initialize LDAP sync scheduler if configured (fire-and-forget — has internal try/catch)
   void initSchedulerOnBoot();
 
+  // Initialize audit retention scheduler (fire-and-forget — has internal try/catch)
+  void initAuditRetentionOnBoot();
+
   if (isInternalStorage) {
     app.log.info("Using internal storage");
   } else if (isExternalS3) {
@@ -142,6 +149,7 @@ async function startServer() {
   app.addHook("onClose", () => clearInterval(cleanupInterval));
   app.addHook("onClose", () => clearInterval(refreshCleanupInterval));
   app.addHook("onClose", () => stopScheduler());
+  app.addHook("onClose", () => stopAuditRetentionScheduler());
 
   await app.listen({
     port: env.PORT,
