@@ -5,6 +5,8 @@ import { createAdminPreValidation } from "../../middleware/admin-prevalidation.j
 import { prisma } from "../../shared/prisma.js";
 import { NotFoundError } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
+import { getLogger } from "../../utils/logger.js";
+import { logAuditEvent } from "../audit/service.js";
 import { QuotaStatusResponseSchema, UpdateQuotaResponseSchema, UpdateQuotaSchema } from "./dto.js";
 import { quotaService } from "./service.js";
 
@@ -90,6 +92,22 @@ export const quotaRoutes: FastifyPluginAsyncZod = async (app) => {
           maxTotalStorageOverride: true,
         },
       });
+
+      // Audit quota change (fire-and-forget)
+      logAuditEvent({
+        userId: request.user?.userId,
+        action: "USER_QUOTA_CHANGE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "user",
+        targetId: id,
+        metadata: {
+          oldMaxFileSize: user.maxFileSizeOverride?.toString() ?? null,
+          newMaxFileSize: updated.maxFileSizeOverride?.toString() ?? null,
+          oldMaxTotalStorage: user.maxTotalStorageOverride?.toString() ?? null,
+          newMaxTotalStorage: updated.maxTotalStorageOverride?.toString() ?? null,
+        },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
 
       return reply.send({
         message: "User quota overrides updated",

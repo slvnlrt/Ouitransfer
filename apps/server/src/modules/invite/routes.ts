@@ -3,6 +3,8 @@ import { z } from "zod";
 
 import { createAdminPreValidation } from "../../middleware/admin-prevalidation.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
+import { getLogger } from "../../utils/logger.js";
+import { logAuditEvent } from "../audit/service.js";
 import {
   CreateInviteTokenResponseSchema,
   RegisterWithInviteResponseSchema,
@@ -32,6 +34,18 @@ export const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
     preValidation: createAdminPreValidation({ allowSetupBypass: false }),
     handler: async (request, reply) => {
       const { token, expiresAt } = await inviteService.generateInviteToken(request.user.userId);
+
+      // Audit invite token creation (fire-and-forget)
+      logAuditEvent({
+        action: "INVITE_TOKEN_CREATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId: request.user.userId,
+        targetType: "invite_token",
+        targetId: token,
+        metadata: { expiresAt: expiresAt.toISOString() },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
       return reply.send({ token, expiresAt });
     },
   });
@@ -84,6 +98,17 @@ export const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
         email,
         password,
       });
+
+      // Audit invite token use (fire-and-forget)
+      logAuditEvent({
+        action: "INVITE_TOKEN_USED",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "invite_token",
+        targetId: token,
+        metadata: { email: user.email, userId: user.id },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
       return reply.send({
         message: "User registered successfully",
         user,

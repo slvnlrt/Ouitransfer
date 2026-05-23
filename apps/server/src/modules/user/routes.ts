@@ -127,7 +127,9 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
         action: "USER_CREATE",
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
-        metadata: { createdUserId: user.id, email: user.email },
+        targetType: "user",
+        targetId: user.id,
+        metadata: { via: "admin", createdUserId: user.id, email: user.email },
       }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
 
       // Auto-login the first user so they're immediately authenticated
@@ -217,6 +219,10 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
     handler: async (request, reply) => {
       const input = request.body;
       const { id, ...updateData } = input;
+
+      // Fetch old user state for audit comparison (role change detection)
+      const oldUser = await userService.getUserById(id);
+
       const updatedUser = await userService.updateUser(id, updateData);
 
       // Audit password change if password was in the update (fire-and-forget)
@@ -226,6 +232,38 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
           action: "PASSWORD_CHANGE",
           ipAddress: request.ip,
           userAgent: request.headers["user-agent"],
+          targetType: "user",
+          targetId: id,
+        }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
+      }
+
+      // Audit role change if isAdmin was changed (fire-and-forget)
+      if (updateData.isAdmin !== undefined && oldUser.isAdmin !== updatedUser.isAdmin) {
+        logAuditEvent({
+          userId: request.user?.userId,
+          action: "USER_ROLE_CHANGE",
+          ipAddress: request.ip,
+          userAgent: request.headers["user-agent"],
+          targetType: "user",
+          targetId: id,
+          metadata: {
+            oldRole: oldUser.isAdmin ? "admin" : "user",
+            newRole: updatedUser.isAdmin ? "admin" : "user",
+          },
+        }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
+      }
+
+      // Audit general user update for non-password fields (fire-and-forget)
+      const changedFields = Object.keys(updateData).filter((k) => k !== "password");
+      if (changedFields.length > 0) {
+        logAuditEvent({
+          userId: request.user?.userId,
+          action: "USER_UPDATE",
+          ipAddress: request.ip,
+          userAgent: request.headers["user-agent"],
+          targetType: "user",
+          targetId: id,
+          metadata: { changedFields },
         }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
       }
 
@@ -253,6 +291,17 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (request, reply) => {
       const user = await userService.activateUser(request.params.id);
+
+      // Audit user activation (fire-and-forget)
+      logAuditEvent({
+        userId: request.user?.userId,
+        action: "USER_ACTIVATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "user",
+        targetId: request.params.id,
+      }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
+
       return reply.send(serializeUser(user));
     },
   });
@@ -277,6 +326,17 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (request, reply) => {
       const user = await userService.deactivateUser(request.params.id);
+
+      // Audit user deactivation (fire-and-forget)
+      logAuditEvent({
+        userId: request.user?.userId,
+        action: "USER_DEACTIVATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "user",
+        targetId: request.params.id,
+      }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
+
       return reply.send(serializeUser(user));
     },
   });
@@ -308,6 +368,8 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
         action: "USER_DELETE",
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
+        targetType: "user",
+        targetId: request.params.id,
         metadata: { deletedUserId: request.params.id, email: user.email },
       }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
 
