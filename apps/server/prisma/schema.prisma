@@ -95,6 +95,7 @@ model Share {
   id          String    @id @default(cuid())
   name        String?
   views       Int       @default(0)
+  maxViews    Int?
   expiration  DateTime?
   description String?
   createdAt   DateTime  @default(now())
@@ -118,7 +119,6 @@ model Share {
 model ShareSecurity {
   id        String   @id @default(cuid())
   password  String?
-  maxViews  Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -395,17 +395,20 @@ model RefreshToken {
 }
 
 model AuditLog {
-  id        String   @id @default(cuid())
-  userId    String?
-  action    String
-  ipAddress String
-  userAgent String?
-  metadata  String?
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  userId     String?
+  action     String
+  ipAddress  String
+  userAgent  String?
+  metadata   String?
+  targetType String?
+  targetId   String?
+  createdAt  DateTime @default(now())
 
   @@index([userId, createdAt])
   @@index([action, createdAt])
   @@index([createdAt])
+  @@index([targetType, targetId, action, createdAt])
   @@map("audit_logs")
 }
 

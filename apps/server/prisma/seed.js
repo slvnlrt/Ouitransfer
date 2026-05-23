@@ -100,6 +100,12 @@ const defaultConfigs = [
     type: "number",
     group: "security",
   },
+  {
+    key: "auditRetentionDays",
+    value: "365",
+    type: "number",
+    group: "security",
+  },
   // Email Configurations
   {
     key: "smtpEnabled",
