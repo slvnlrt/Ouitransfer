@@ -465,7 +465,7 @@ function ExpandedPanel({
           <button
             type="button"
             onClick={onToggle}
-            className="p-1 rounded-md hover:bg-background/50 transition-colors"
+            className="p-1 rounded-md hover:bg-background/50 transition-colors cursor-pointer"
             aria-label={t("collapse")}
             aria-expanded={true}
             aria-controls="system-status-panel"
