@@ -10,6 +10,8 @@ import {
   ValidationError,
 } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
+import { getLogger } from "../../utils/logger.js";
+import { logAuditEvent } from "../audit/service.js";
 import {
   CheckFolderSchema,
   ListFoldersSchema,
@@ -168,6 +170,16 @@ export const folderRoutes: FastifyPluginAsyncZod = async (app) => {
         totalSize: totalSize.toString(),
         _count: folderRecord._count,
       };
+
+      logAuditEvent({
+        action: "FOLDER_CREATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "folder",
+        targetId: folderRecord.id,
+        metadata: { name: folderRecord.name, parentId: folderRecord.parentId ?? null },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
 
       return reply.status(201).send({
         folder: folderResponse,
@@ -445,6 +457,15 @@ export const folderRoutes: FastifyPluginAsyncZod = async (app) => {
         _count: updatedFolder._count,
       };
 
+      logAuditEvent({
+        action: "FOLDER_UPDATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "folder",
+        targetId: request.params.id,
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
       return reply.send({
         folder: folderResponse,
         message: "Folder updated successfully.",
@@ -554,6 +575,16 @@ export const folderRoutes: FastifyPluginAsyncZod = async (app) => {
         _count: updatedFolder._count,
       };
 
+      logAuditEvent({
+        action: "FOLDER_MOVE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "folder",
+        targetId: request.params.id,
+        metadata: { targetParentId: input.parentId ?? null },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
       return reply.send({
         folder: folderResponse,
         message: "Folder moved successfully.",
@@ -649,6 +680,16 @@ export const folderRoutes: FastifyPluginAsyncZod = async (app) => {
 
       await prisma.folder.delete({ where: { id } });
       await folderService.deleteObject(folderRecord.objectName);
+
+      logAuditEvent({
+        action: "FOLDER_DELETE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "folder",
+        targetId: id,
+        metadata: { name: folderRecord.name },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
 
       return reply.send({ message: "Folder deleted successfully." });
     },

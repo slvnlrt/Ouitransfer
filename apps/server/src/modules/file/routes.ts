@@ -23,9 +23,11 @@ import {
   generateUniqueFileNameForRename,
   parseFileName,
 } from "../../utils/file-name-generator.js";
+import { getLogger } from "../../utils/logger.js";
 import { sanitizeFilename } from "../../utils/sanitize-filename.js";
 import { isMimeTypeConsistent, verifyMagicBytes } from "../../utils/validate-file-content.js";
 import { validateObjectName } from "../../utils/validate-object-name.js";
+import { logAuditEvent } from "../audit/service.js";
 import { quotaService } from "../quota/service.js";
 import {
   CheckFileSchema,
@@ -351,6 +353,20 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         updatedAt: fileRecord.updatedAt,
       };
 
+      logAuditEvent({
+        action: "FILE_UPLOAD",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "file",
+        targetId: fileRecord.id,
+        metadata: {
+          name: fileRecord.name,
+          extension: fileRecord.extension,
+          size: fileRecord.size.toString(),
+        },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
       return reply.status(201).send({
         file: fileResponse,
         message: "File registered successfully.",
@@ -620,6 +636,15 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         updatedAt: updatedFile.updatedAt,
       };
 
+      logAuditEvent({
+        action: "FILE_UPDATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "file",
+        targetId: request.params.id,
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
       return reply.send({
         file: fileResponse,
         message: "File updated successfully.",
@@ -710,6 +735,16 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         updatedAt: updatedFile.updatedAt,
       };
 
+      logAuditEvent({
+        action: "FILE_MOVE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "file",
+        targetId: request.params.id,
+        metadata: { targetFolderId: input.folderId ?? null },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
       return reply.send({
         file: fileResponse,
         message: "File moved successfully.",
@@ -790,6 +825,16 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
       await prisma.file.delete({ where: { id } });
       await fileService.deleteObject(fileRecord.objectName);
 
+      logAuditEvent({
+        action: "FILE_DELETE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "file",
+        targetId: id,
+        metadata: { name: fileRecord.name },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
       return reply.send({ message: "File deleted successfully." });
     },
   });
@@ -846,6 +891,17 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
       const expires = env.PRESIGNED_GET_URL_EXPIRATION;
 
       const url = await fileService.getPresignedGetUrl(objectName, expires, fileName);
+
+      logAuditEvent({
+        action: "FILE_DOWNLOAD",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId: request.user?.userId,
+        targetType: "file",
+        targetId: fileRecord.id,
+        metadata: { method: "presigned-url" },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
       return reply.send({ url, expiresIn: expires });
     },
   });
@@ -924,6 +980,16 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
       if (!hasAccess) {
         throw new UnauthorizedError("Unauthorized access to file.");
       }
+
+      logAuditEvent({
+        action: "FILE_DOWNLOAD",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId: request.user?.userId,
+        targetType: "file",
+        targetId: fileRecord.id,
+        metadata: { method: "stream" },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
 
       const stream = await fileService.getObjectStream(objectName);
       const contentType = getContentType(fileRecord.name);
@@ -1018,6 +1084,15 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
       if (!isMedia) {
         throw new ForbiddenError("Embed is only allowed for media files.");
       }
+
+      logAuditEvent({
+        action: "FILE_EMBED_ACCESS",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "file",
+        targetId: fileId,
+        metadata: { shareId },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
 
       // Stream from S3 storage
       const stream = await fileService.getObjectStream(fileRecord.objectName);
