@@ -47,6 +47,7 @@ const makeShare = (overrides: Record<string, unknown> = {}) => ({
   description: null,
   expiration: null,
   views: 0,
+  maxViews: null,
   creatorId: "creator-user",
   securityId: "sec-1",
   createdAt: new Date(),
@@ -58,7 +59,6 @@ const makeShare = (overrides: Record<string, unknown> = {}) => ({
   security: {
     id: "sec-1",
     password: null,
-    maxViews: null,
   },
   ...overrides,
 });
@@ -122,7 +122,7 @@ describe("Share error codes — integration (Task 4)", () => {
     // bcrypt hash of "secret" — matches real bcrypt.compare logic but we check no-password path,
     // so any non-null value triggers the "password required" branch before compare is called.
     const share = makeShare({
-      security: { id: "sec-1", password: "$2b$10$hashedPassword", maxViews: null },
+      security: { id: "sec-1", password: "$2b$10$hashedPassword" },
     });
     prismaModule.prisma.share.findUnique.mockResolvedValue(share);
 
@@ -148,7 +148,6 @@ describe("Share error codes — integration (Task 4)", () => {
         id: "sec-1",
         // Hash of "correct-password" — "wrong-password" will NOT match
         password: "$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lh8i",
-        maxViews: null,
       },
     });
     prismaModule.prisma.share.findUnique.mockResolvedValue(share);
@@ -166,7 +165,7 @@ describe("Share error codes — integration (Task 4)", () => {
   it("returns code=SHARE_EXPIRED (not GONE) when a share is past its expiration date", async () => {
     const share = makeShare({
       expiration: new Date(Date.now() - 1000), // 1 second in the past
-      security: { id: "sec-1", password: null, maxViews: null },
+      security: { id: "sec-1", password: null },
     });
     prismaModule.prisma.share.findUnique.mockResolvedValue(share);
 
@@ -183,7 +182,8 @@ describe("Share error codes — integration (Task 4)", () => {
   it("returns code=MAX_VIEWS_REACHED (not GONE) when a share has reached its view limit", async () => {
     const share = makeShare({
       views: 5,
-      security: { id: "sec-1", password: null, maxViews: 5 },
+      maxViews: 5,
+      security: { id: "sec-1", password: null },
     });
     prismaModule.prisma.share.findUnique.mockResolvedValue(share);
 

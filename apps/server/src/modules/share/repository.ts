@@ -15,7 +15,13 @@ type FolderWithCount = Folder & {
 };
 
 export interface IShareRepository {
-  createShare(data: CreateShareInput & { securityId: string; creatorId: string }): Promise<Share>;
+  createShare(
+    data: Omit<CreateShareInput, "password"> & {
+      securityId: string;
+      creatorId: string;
+      maxViews?: number | null;
+    },
+  ): Promise<Share>;
   findShareById(id: string): Promise<
     | (Share & {
         security: ShareSecurity;
@@ -65,9 +71,10 @@ export interface IShareRepository {
 
 export class PrismaShareRepository implements IShareRepository {
   async createShare(
-    data: Omit<CreateShareInput, "password" | "maxViews"> & {
+    data: Omit<CreateShareInput, "password"> & {
       securityId: string;
       creatorId: string;
+      maxViews?: number | null;
     },
   ): Promise<Share> {
     const { files, folders, recipients, expiration, ...shareData } = data;

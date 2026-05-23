@@ -60,8 +60,8 @@ export class ShareService {
             updatedAt: share.alias.updatedAt.toISOString(),
           }
         : null,
+      maxViews: share.maxViews,
       security: {
-        maxViews: share.security.maxViews,
         hasPassword: !!share.security.password,
       },
       files:
@@ -137,7 +137,6 @@ export class ShareService {
     const security = await prisma.shareSecurity.create({
       data: {
         password: password ? await bcrypt.hash(password, 10) : null,
-        maxViews: maxViews,
       },
     });
 
@@ -145,6 +144,7 @@ export class ShareService {
       ...shareData,
       files,
       folders,
+      maxViews: maxViews ?? null,
       securityId: security.id,
       creatorId: userId,
     });
@@ -168,7 +168,7 @@ export class ShareService {
       throw new AppError(410, "Share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 
-    if (share.security?.maxViews && share.views >= share.security.maxViews) {
+    if (share.maxViews && share.views >= share.maxViews) {
       throw new AppError(410, "Share has reached maximum views", ErrorCodes.MAX_VIEWS_REACHED);
     }
 
@@ -201,10 +201,9 @@ export class ShareService {
       throw new ForbiddenError("Unauthorized to update this share");
     }
 
-    if (password || maxViews !== undefined) {
+    if (password) {
       await this.shareRepository.updateShareSecurity(share.securityId, {
-        password: password ? await bcrypt.hash(password, 10) : undefined,
-        maxViews: maxViews,
+        password: await bcrypt.hash(password, 10),
       });
     }
 
@@ -220,6 +219,7 @@ export class ShareService {
 
     await this.shareRepository.updateShare(shareId, {
       ...shareData,
+      maxViews: maxViews !== undefined ? maxViews : undefined,
       expiration: shareData.expiration ? new Date(shareData.expiration) : null,
     });
     const shareWithRelations = await this.shareRepository.findShareById(shareId);
@@ -502,8 +502,7 @@ export class ShareService {
     const isExpired = share.expiration ? new Date(share.expiration) < new Date() : false;
 
     // Check if max views reached
-    const isMaxViewsReached =
-      share.security.maxViews !== null ? share.views >= share.security.maxViews : false;
+    const isMaxViewsReached = share.maxViews !== null ? share.views >= share.maxViews : false;
 
     const totalFiles = share.files?.length || 0;
     const totalFolders = share.folders?.length || 0;

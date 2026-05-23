@@ -51,11 +51,11 @@ export const ShareResponseSchema = z.object({
   description: z.string().nullable().describe("The share description"),
   expiration: z.string().nullable().describe("The share expiration date"),
   views: z.number().describe("The number of views"),
+  maxViews: z.number().nullable().describe("The maximum number of views"),
   createdAt: z.string().describe("The share creation date"),
   updatedAt: z.string().describe("The share update date"),
   creatorId: z.string().nullable().describe("The creator ID"),
   security: z.object({
-    maxViews: z.number().nullable().describe("The maximum number of views"),
     hasPassword: z.boolean().describe("Whether the share has a password"),
   }),
   files: z.array(

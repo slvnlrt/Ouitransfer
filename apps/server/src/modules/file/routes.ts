@@ -989,9 +989,9 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
       }
 
       // Block embed access if the share has reached its view limit
-      if (share.security?.maxViews !== null && share.security?.maxViews !== undefined) {
+      if (share.maxViews !== null && share.maxViews !== undefined) {
         const result = await prisma.share.updateMany({
-          where: { id: share.id, views: { lt: share.security.maxViews } },
+          where: { id: share.id, views: { lt: share.maxViews } },
           data: { views: { increment: 1 } },
         });
         if (result.count === 0) {
