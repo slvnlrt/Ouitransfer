@@ -1,8 +1,10 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
-import { UnauthorizedError, ValidationError } from "../../utils/app-error.js";
+import { AppError, UnauthorizedError, ValidationError } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
+import { getLogger } from "../../utils/logger.js";
+import { logAuditEvent } from "../audit/service.js";
 import {
   CreateReverseShareSchema,
   GetPresignedUrlSchema,
@@ -53,6 +55,18 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         );
       }
       const reverseShare = await reverseShareService.createReverseShare(request.body, userId);
+      logAuditEvent({
+        action: "REVERSE_SHARE_CREATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "reverse_share",
+        targetId: reverseShare.id,
+        metadata: {
+          maxFiles: request.body.maxFiles ?? null,
+          maxFileSize: request.body.maxFileSize ?? null,
+        },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.status(201).send({ reverseShare });
     },
   });
@@ -148,6 +162,14 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
       }
       const { id, ...updateData } = request.body;
       const reverseShare = await reverseShareService.updateReverseShare(id, updateData, userId);
+      logAuditEvent({
+        action: "REVERSE_SHARE_UPDATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "reverse_share",
+        targetId: id,
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ reverseShare });
     },
   });
@@ -189,6 +211,14 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         updateData,
         userId,
       );
+      logAuditEvent({
+        action: "REVERSE_SHARE_PASSWORD_UPDATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "reverse_share",
+        targetId: request.params.id,
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ reverseShare });
     },
   });
@@ -222,6 +252,14 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         );
       }
       const reverseShare = await reverseShareService.deleteReverseShare(request.params.id, userId);
+      logAuditEvent({
+        action: "REVERSE_SHARE_DELETE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "reverse_share",
+        targetId: request.params.id,
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ reverseShare });
     },
   });
@@ -253,6 +291,13 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         request.params.id,
         undefined,
       );
+      logAuditEvent({
+        action: "REVERSE_SHARE_ACCESS",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "reverse_share",
+        targetId: request.params.id,
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ reverseShare });
     },
   });
@@ -287,11 +332,31 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     handler: async (request, reply) => {
-      const reverseShare = await reverseShareService.getReverseShareForUpload(
-        request.params.id,
-        request.body.password,
-      );
-      return reply.send({ reverseShare });
+      try {
+        const reverseShare = await reverseShareService.getReverseShareForUpload(
+          request.params.id,
+          request.body.password,
+        );
+        logAuditEvent({
+          action: "REVERSE_SHARE_PASSWORD_VERIFIED",
+          ipAddress: request.ip,
+          userAgent: request.headers["user-agent"],
+          targetType: "reverse_share",
+          targetId: request.params.id,
+        }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+        return reply.send({ reverseShare });
+      } catch (err) {
+        if (err instanceof AppError && err.code === "INVALID_PASSWORD") {
+          logAuditEvent({
+            action: "REVERSE_SHARE_PASSWORD_FAILED",
+            ipAddress: request.ip,
+            userAgent: request.headers["user-agent"],
+            targetType: "reverse_share",
+            targetId: request.params.id,
+          }).catch((auditErr) => getLogger().error({ err: auditErr }, "Failed to log audit event"));
+        }
+        throw err;
+      }
     },
   });
 
@@ -322,6 +387,13 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         request.params.alias,
         undefined,
       );
+      logAuditEvent({
+        action: "REVERSE_SHARE_ACCESS",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "reverse_share",
+        targetId: reverseShare.id,
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ reverseShare });
     },
   });
@@ -356,11 +428,31 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     handler: async (request, reply) => {
-      const reverseShare = await reverseShareService.getReverseShareForUploadByAlias(
-        request.params.alias,
-        request.body.password,
-      );
-      return reply.send({ reverseShare });
+      try {
+        const reverseShare = await reverseShareService.getReverseShareForUploadByAlias(
+          request.params.alias,
+          request.body.password,
+        );
+        logAuditEvent({
+          action: "REVERSE_SHARE_PASSWORD_VERIFIED",
+          ipAddress: request.ip,
+          userAgent: request.headers["user-agent"],
+          targetType: "reverse_share",
+          targetId: reverseShare.id,
+        }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+        return reply.send({ reverseShare });
+      } catch (err) {
+        if (err instanceof AppError && err.code === "INVALID_PASSWORD") {
+          logAuditEvent({
+            action: "REVERSE_SHARE_PASSWORD_FAILED",
+            ipAddress: request.ip,
+            userAgent: request.headers["user-agent"],
+            targetType: "reverse_share",
+            targetId: request.params.alias,
+          }).catch((auditErr) => getLogger().error({ err: auditErr }, "Failed to log audit event"));
+        }
+        throw err;
+      }
     },
   });
 
@@ -486,7 +578,10 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (request, reply) => {
       const { password, ...fileData } = request.body;
-      const file = await uploadService.registerFileUpload(request.params.id, fileData, password);
+      const file = await uploadService.registerFileUpload(request.params.id, fileData, password, {
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+      });
       return reply.status(201).send({ file });
     },
   });
@@ -527,6 +622,7 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         request.params.alias,
         fileData,
         password,
+        { ipAddress: request.ip, userAgent: request.headers["user-agent"] },
       );
       return reply.status(201).send({ file });
     },
@@ -608,6 +704,15 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         userId,
         requestContext,
       );
+      logAuditEvent({
+        action: "REVERSE_SHARE_FILE_DOWNLOAD",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "reverse_share",
+        targetId: request.params.fileId,
+        metadata: { fileId: request.params.fileId },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send(result);
     },
   });
@@ -641,6 +746,15 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         );
       }
       const file = await reverseShareService.deleteReverseShareFile(request.params.fileId, userId);
+      logAuditEvent({
+        action: "REVERSE_SHARE_FILE_DELETE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "reverse_share",
+        targetId: file.reverseShareId,
+        metadata: { fileId: request.params.fileId },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ file });
     },
   });
@@ -722,6 +836,14 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         request.params.id,
         userId,
       );
+      logAuditEvent({
+        action: "REVERSE_SHARE_ACTIVATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "reverse_share",
+        targetId: request.params.id,
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ reverseShare });
     },
   });
@@ -758,6 +880,14 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         request.params.id,
         userId,
       );
+      logAuditEvent({
+        action: "REVERSE_SHARE_DEACTIVATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "reverse_share",
+        targetId: request.params.id,
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ reverseShare });
     },
   });
@@ -842,6 +972,15 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         request.params.fileId,
         userId,
       );
+      logAuditEvent({
+        action: "REVERSE_SHARE_FILE_COPY",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "reverse_share",
+        targetId: request.params.fileId,
+        metadata: { fileId: request.params.fileId },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ file, message: "File copied to your files successfully" });
     },
   });

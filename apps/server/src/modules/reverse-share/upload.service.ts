@@ -8,6 +8,7 @@ import { getLogger } from "../../utils/logger.js";
 import { sanitizeFilename } from "../../utils/sanitize-filename.js";
 import { isMimeTypeConsistent } from "../../utils/validate-file-content.js";
 import { validateObjectName } from "../../utils/validate-object-name.js";
+import { logAuditEvent } from "../audit/service.js";
 import { EmailService } from "../email/service.js";
 import { FileService } from "../file/service.js";
 import { quotaService } from "../quota/service.js";
@@ -148,6 +149,7 @@ export class ReverseShareUploadService {
     reverseShareId: string,
     fileData: UploadToReverseShareInput,
     password?: string,
+    context?: { ipAddress: string; userAgent?: string },
   ) {
     const reverseShare = await this.reverseShareRepository.findById(reverseShareId);
     if (!reverseShare) {
@@ -209,6 +211,22 @@ export class ReverseShareUploadService {
       size: BigInt(fileData.size),
     });
 
+    if (context) {
+      logAuditEvent({
+        action: "REVERSE_SHARE_UPLOAD",
+        ipAddress: context.ipAddress,
+        userAgent: context.userAgent,
+        targetType: "reverse_share",
+        targetId: reverseShareId,
+        metadata: {
+          fileName: fileData.name,
+          fileSize: fileData.size,
+          uploaderEmail: fileData.uploaderEmail ?? undefined,
+          uploaderName: fileData.uploaderName ?? undefined,
+        },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+    }
+
     this.addFileToUploadSession(reverseShare, fileData);
 
     return this.formatFileResponse(file);
@@ -218,6 +236,7 @@ export class ReverseShareUploadService {
     alias: string,
     fileData: UploadToReverseShareInput,
     password?: string,
+    context?: { ipAddress: string; userAgent?: string },
   ) {
     const reverseShare = await this.reverseShareRepository.findByAlias(alias);
     if (!reverseShare) {
@@ -279,6 +298,22 @@ export class ReverseShareUploadService {
       ...fileData,
       size: BigInt(fileData.size),
     });
+
+    if (context) {
+      logAuditEvent({
+        action: "REVERSE_SHARE_UPLOAD",
+        ipAddress: context.ipAddress,
+        userAgent: context.userAgent,
+        targetType: "reverse_share",
+        targetId: reverseShare.id,
+        metadata: {
+          fileName: fileData.name,
+          fileSize: fileData.size,
+          uploaderEmail: fileData.uploaderEmail ?? undefined,
+          uploaderName: fileData.uploaderName ?? undefined,
+        },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+    }
 
     this.addFileToUploadSession(reverseShare, fileData);
 
