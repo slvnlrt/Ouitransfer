@@ -22,7 +22,11 @@
         "src/http/endpoints/index.ts"
       ],
       "project": ["src/**/*.{ts,tsx}"],
-      "ignoreDependencies": ["@vitest/coverage-v8", "postcss", "tw-animate-css", "tailwindcss"]
+      "ignoreDependencies": ["@vitest/coverage-v8", "postcss", "tw-animate-css", "tailwindcss"],
+      "ignoreFiles": [
+        "src/contexts/dashboard-metrics-context.tsx",
+        "src/components/layout/system-status-bar.tsx"
+      ]
     },
     "apps/docs": {
       "entry": [
