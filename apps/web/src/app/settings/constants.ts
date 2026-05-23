@@ -68,6 +68,8 @@ export const createFieldDescriptions = (t: ReturnType<typeof createTranslator>) 
   passwordMinLength: t("settings.fields.passwordMinLength.description"),
   passwordResetTokenExpiration: t("settings.fields.passwordResetTokenExpiration.description"),
 
+  auditRetentionDays: t("settings.fields.auditRetentionDays.description"),
+
   // Storage settings
   maxFileSize: t("settings.fields.maxFileSize.description"),
   maxTotalStoragePerUser: t("settings.fields.maxTotalStoragePerUser.description"),

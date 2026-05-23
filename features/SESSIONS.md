@@ -1,5 +1,23 @@
 # Session Log
 
+## 2026-05-23 (session 8)
+
+**8.1 — Audit Trail / Activity Log**
+
+- **Schema**: Added `targetType`/`targetId` to `AuditLog`, moved `maxViews` from `ShareSecurity` to `Share`, added `auditRetentionDays` config (365 days default)
+- **Audit service**: Expanded from 12 to 67 actions, 14 target types, metadata denylist, userAgent cap (512), `exportAuditLogs` async generator (CSV/JSON, 100k ceiling), `deleteOldAuditLogs` batch loop
+- **Audit routes**: Enriched `GET /admin/audit-logs` with `targetType`/`targetId`/`dateFrom`/`dateTo`/`search` filters; new `GET /admin/audit-logs/export` streaming route
+- **Retention scheduler**: Chained `setTimeout` pattern (matches LDAP), WAL mode check on boot, registered in `server.ts`
+- **maxViews migration**: Updated `share/service.ts`, `share/dto.ts`, `share/repository.ts`, `file/routes.ts` — all use `share.maxViews` directly
+- **Audit events**: Added ~55 new `logAuditEvent` calls across all 21 modules (auth, 2FA, user, invite, quota, share, file, folder, reverse-share, group, LDAP, app, background-image, auth-providers)
+- **Integration tests**: Enhanced `audit-logs.integration.test.ts` (6 new tests), new `share-audit.integration.test.ts` (3 tests)
+- **Frontend**: API client (`endpoints/audit/`), proxy route, query keys, admin audit page (table+filters+export+metadata display), Activity Log nav item, share type maxViews migration
+- **i18n**: Added `audit` section (77 actions, 14 target types, 37 metadata labels) + `navbar.activityLog` + `settings.fields.auditRetentionDays` to all 23 locale files
+- **Frontend tests**: 26 tests for AuditLogTable, AuditLogExport, AuditMetadataDisplay
+- **Test totals**: 48 server test files (476 tests) + 26 web test files (319 tests) + 2 shared (14 tests) = **809 total**
+
+---
+
 ## 2026-05-23 (session 7)
 
 **B-25 — Quota precision bug + system status bar polish**
