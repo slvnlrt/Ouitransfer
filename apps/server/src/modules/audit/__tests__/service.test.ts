@@ -6,12 +6,29 @@ vi.mock("../../../shared/prisma.js", () => ({
       create: vi.fn(),
       findMany: vi.fn(),
       count: vi.fn(),
+      deleteMany: vi.fn(),
     },
   },
 }));
 
 import { prisma } from "../../../shared/prisma.js";
-import { getAuditLogs, logAuditEvent } from "../service.js";
+import {
+  AuditActionSchema,
+  AuditTargetTypeSchema,
+  deleteOldAuditLogs,
+  exportAuditLogs,
+  getAuditLogs,
+  logAuditEvent,
+} from "../service.js";
+
+// Helper to collect an async generator into an array
+async function collectAsyncGenerator<T>(gen: AsyncGenerator<T>): Promise<T[]> {
+  const results: T[] = [];
+  for await (const chunk of gen) {
+    results.push(chunk);
+  }
+  return results;
+}
 
 describe("Audit service", () => {
   beforeEach(() => {
@@ -19,7 +36,7 @@ describe("Audit service", () => {
   });
 
   describe("logAuditEvent", () => {
-    it("creates an audit record with all fields", async () => {
+    it("creates an audit record with targetType and targetId", async () => {
       vi.mocked(prisma.auditLog.create).mockResolvedValue({} as never);
 
       await logAuditEvent({
@@ -28,20 +45,65 @@ describe("Audit service", () => {
         ipAddress: "127.0.0.1",
         userAgent: "Mozilla/5.0",
         metadata: { method: "password" },
+        targetType: "user",
+        targetId: "user-1",
       });
 
       expect(prisma.auditLog.create).toHaveBeenCalledWith({
-        data: {
-          userId: "user-1",
-          action: "LOGIN_SUCCESS",
-          ipAddress: "127.0.0.1",
-          userAgent: "Mozilla/5.0",
+        data: expect.objectContaining({
+          targetType: "user",
+          targetId: "user-1",
           metadata: JSON.stringify({ method: "password" }),
-        },
+        }),
       });
     });
 
-    it("creates an audit record with null optional fields", async () => {
+    it("strips denylist keys from metadata", async () => {
+      vi.mocked(prisma.auditLog.create).mockResolvedValue({} as never);
+
+      await logAuditEvent({
+        action: "ADMIN_CONFIG_CHANGE",
+        ipAddress: "10.0.0.1",
+        metadata: {
+          key: "smtpHost",
+          password: "secret123",
+          token: "abc",
+          secret: "xyz",
+          bindPassword: "ldap-pass",
+          clientSecret: "oauth-secret",
+          smtpPass: "mail-pass",
+          twoFactorSecret: "totp-secret",
+          twoFactorBackupCodes: ["code1"],
+          currentPassword: "old",
+          newPassword: "new",
+          confirmPassword: "new",
+          safeKey: "this-stays",
+        },
+      });
+
+      const callData = vi.mocked(prisma.auditLog.create).mock.calls[0]![0]!.data;
+      const parsedMetadata = JSON.parse(callData.metadata as string);
+      expect(parsedMetadata).toEqual({ key: "smtpHost", safeKey: "this-stays" });
+      expect(parsedMetadata).not.toHaveProperty("password");
+      expect(parsedMetadata).not.toHaveProperty("token");
+      expect(parsedMetadata).not.toHaveProperty("secret");
+    });
+
+    it("caps userAgent at 512 characters", async () => {
+      vi.mocked(prisma.auditLog.create).mockResolvedValue({} as never);
+      const longAgent = "X".repeat(1000);
+
+      await logAuditEvent({
+        action: "LOGIN_SUCCESS",
+        ipAddress: "10.0.0.1",
+        userAgent: longAgent,
+      });
+
+      const callData = vi.mocked(prisma.auditLog.create).mock.calls[0]![0]!.data;
+      expect((callData.userAgent as string).length).toBe(512);
+    });
+
+    it("creates record with null optional fields", async () => {
       vi.mocked(prisma.auditLog.create).mockResolvedValue({} as never);
 
       await logAuditEvent({
@@ -56,12 +118,77 @@ describe("Audit service", () => {
           ipAddress: "10.0.0.1",
           userAgent: null,
           metadata: null,
+          targetType: null,
+          targetId: null,
         },
       });
     });
   });
 
   describe("getAuditLogs", () => {
+    beforeEach(() => {
+      vi.mocked(prisma.auditLog.findMany).mockResolvedValue([] as never);
+      vi.mocked(prisma.auditLog.count).mockResolvedValue(0 as never);
+    });
+
+    it("filters by targetType", async () => {
+      await getAuditLogs({ targetType: "share" });
+
+      expect(prisma.auditLog.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ targetType: "share" }),
+        }),
+      );
+    });
+
+    it("filters by targetId", async () => {
+      await getAuditLogs({ targetId: "share-1" });
+
+      expect(prisma.auditLog.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ targetId: "share-1" }),
+        }),
+      );
+    });
+
+    it("filters by dateFrom (inclusive)", async () => {
+      const dateFrom = new Date("2026-01-01T00:00:00.000Z");
+      await getAuditLogs({ dateFrom });
+
+      expect(prisma.auditLog.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            createdAt: expect.objectContaining({ gte: dateFrom }),
+          }),
+        }),
+      );
+    });
+
+    it("filters by dateTo (inclusive, end of day)", async () => {
+      const dateTo = new Date("2026-01-31T23:59:59.999Z");
+      await getAuditLogs({ dateTo });
+
+      expect(prisma.auditLog.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            createdAt: expect.objectContaining({ lte: dateTo }),
+          }),
+        }),
+      );
+    });
+
+    it("searches ipAddress and action via contains", async () => {
+      await getAuditLogs({ search: "127.0" });
+
+      expect(prisma.auditLog.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            OR: [{ ipAddress: { contains: "127.0" } }, { action: { contains: "127.0" } }],
+          }),
+        }),
+      );
+    });
+
     it("returns logs and total count", async () => {
       const mockLogs = [
         {
@@ -71,6 +198,8 @@ describe("Audit service", () => {
           ipAddress: "127.0.0.1",
           userAgent: null,
           metadata: null,
+          targetType: "user",
+          targetId: "user-1",
           createdAt: new Date(),
         },
       ];
@@ -81,53 +210,86 @@ describe("Audit service", () => {
 
       expect(result.logs).toHaveLength(1);
       expect(result.total).toBe(1);
-      expect(prisma.auditLog.findMany).toHaveBeenCalledWith({
-        where: {},
-        orderBy: { createdAt: "desc" },
-        take: 50,
-        skip: 0,
-      });
+    });
+  });
+
+  describe("exportAuditLogs", () => {
+    it("throws if dateFrom or dateTo is missing", async () => {
+      await expect(collectAsyncGenerator(exportAuditLogs({ format: "csv" }))).rejects.toThrow(
+        "dateFrom and dateTo are required for export",
+      );
+
+      await expect(
+        collectAsyncGenerator(exportAuditLogs({ format: "csv", dateFrom: new Date() })),
+      ).rejects.toThrow("dateFrom and dateTo are required for export");
     });
 
-    it("filters by userId", async () => {
+    it("yields CSV with correct header", async () => {
       vi.mocked(prisma.auditLog.findMany).mockResolvedValue([] as never);
-      vi.mocked(prisma.auditLog.count).mockResolvedValue(0 as never);
 
-      await getAuditLogs({ userId: "user-1" });
-
-      expect(prisma.auditLog.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: { userId: "user-1" },
+      const chunks = await collectAsyncGenerator(
+        exportAuditLogs({
+          format: "csv",
+          dateFrom: new Date("2026-01-01"),
+          dateTo: new Date("2026-01-31"),
         }),
+      );
+
+      expect(chunks[0]).toContain(
+        "id,userId,action,ipAddress,userAgent,targetType,targetId,metadata,createdAt",
       );
     });
 
-    it("filters by action", async () => {
+    it("yields valid JSON array", async () => {
       vi.mocked(prisma.auditLog.findMany).mockResolvedValue([] as never);
-      vi.mocked(prisma.auditLog.count).mockResolvedValue(0 as never);
 
-      await getAuditLogs({ action: "LOGIN_SUCCESS" });
-
-      expect(prisma.auditLog.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: { action: "LOGIN_SUCCESS" },
+      const chunks = await collectAsyncGenerator(
+        exportAuditLogs({
+          format: "json",
+          dateFrom: new Date("2026-01-01"),
+          dateTo: new Date("2026-01-31"),
         }),
       );
+
+      const fullJson = chunks.join("");
+      expect(JSON.parse(fullJson)).toEqual([]);
+    });
+  });
+
+  describe("deleteOldAuditLogs", () => {
+    it("deletes records older than given date in batches", async () => {
+      vi.mocked(prisma.auditLog.deleteMany)
+        .mockResolvedValueOnce({ count: 1000 } as never)
+        .mockResolvedValueOnce({ count: 500 } as never);
+
+      const result = await deleteOldAuditLogs(new Date("2025-01-01"));
+
+      expect(result).toBe(1500);
+      expect(prisma.auditLog.deleteMany).toHaveBeenCalledTimes(2);
     });
 
-    it("applies pagination", async () => {
-      vi.mocked(prisma.auditLog.findMany).mockResolvedValue([] as never);
-      vi.mocked(prisma.auditLog.count).mockResolvedValue(100 as never);
+    it("returns 0 when nothing to delete", async () => {
+      vi.mocked(prisma.auditLog.deleteMany).mockResolvedValue({ count: 0 } as never);
 
-      const result = await getAuditLogs({ limit: 10, offset: 20 });
+      const result = await deleteOldAuditLogs(new Date("2025-01-01"));
 
-      expect(result.total).toBe(100);
-      expect(prisma.auditLog.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          take: 10,
-          skip: 20,
-        }),
-      );
+      expect(result).toBe(0);
+    });
+  });
+
+  describe("schemas", () => {
+    it("AuditActionSchema accepts known actions", () => {
+      expect(AuditActionSchema.parse("LOGIN_SUCCESS")).toBe("LOGIN_SUCCESS");
+      expect(AuditActionSchema.parse("SHARE_CREATE")).toBe("SHARE_CREATE");
+    });
+
+    it("AuditTargetTypeSchema accepts known types", () => {
+      expect(AuditTargetTypeSchema.parse("share")).toBe("share");
+      expect(AuditTargetTypeSchema.parse("user")).toBe("user");
+    });
+
+    it("AuditTargetTypeSchema rejects unknown types", () => {
+      expect(() => AuditTargetTypeSchema.parse("invalid_type")).toThrow();
     });
   });
 });
