@@ -108,6 +108,8 @@ export const twoFactorRoutes: FastifyPluginAsyncZod = async (app) => {
         action: "TWO_FACTOR_ENABLE",
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
+        targetType: "user",
+        targetId: userId,
       }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
 
       return reply.send(result);
@@ -192,6 +194,8 @@ export const twoFactorRoutes: FastifyPluginAsyncZod = async (app) => {
         action: "TWO_FACTOR_DISABLE",
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
+        targetType: "user",
+        targetId: userId,
       }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
 
       return reply.send(result);
@@ -222,6 +226,16 @@ export const twoFactorRoutes: FastifyPluginAsyncZod = async (app) => {
       }
 
       const codes = await twoFactorService.generateNewBackupCodes(userId);
+
+      // Audit backup codes regeneration (fire-and-forget)
+      logAuditEvent({
+        userId,
+        action: "TWO_FACTOR_BACKUP_REGENERATED",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "user",
+        targetId: userId,
+      }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
 
       return reply.send({ backupCodes: codes });
     },

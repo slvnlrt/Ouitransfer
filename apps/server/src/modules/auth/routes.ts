@@ -109,6 +109,7 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
           action: isLockout ? "LOGIN_LOCKED" : "LOGIN_FAILURE",
           ipAddress,
           userAgent,
+          targetType: "user",
           metadata: { emailOrUsername: input.emailOrUsername },
         }).catch((auditErr) => getLogger().error({ err: auditErr }, "Audit log write failed"));
         throw err;
@@ -132,6 +133,9 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
         action: "LOGIN_SUCCESS",
         ipAddress,
         userAgent,
+        targetType: "user",
+        targetId: user.id,
+        metadata: { method: "password" },
       }).catch((auditErr) => getLogger().error({ err: auditErr }, "Audit log write failed"));
 
       return reply.send({ user });
@@ -200,6 +204,8 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
           action: isLockout ? "LOGIN_LOCKED" : "LOGIN_FAILURE",
           ipAddress,
           userAgent,
+          targetType: "user",
+          targetId: userId,
           metadata: { method: "2fa" },
         }).catch((auditErr) => getLogger().error({ err: auditErr }, "Audit log write failed"));
         throw err;
@@ -213,6 +219,8 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
         action: "LOGIN_SUCCESS",
         ipAddress,
         userAgent,
+        targetType: "user",
+        targetId: user.id,
         metadata: { method: "2fa" },
       }).catch((auditErr) => getLogger().error({ err: auditErr }, "Audit log write failed"));
 
@@ -261,6 +269,8 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
         action: "LOGOUT",
         ipAddress,
         userAgent,
+        targetType: "user",
+        targetId: userId,
       }).catch((auditErr) => getLogger().error({ err: auditErr }, "Audit log write failed"));
 
       return reply.send({ message: "Logout successful" });
@@ -295,6 +305,16 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
     handler: async (request, reply) => {
       const { email, origin } = request.body;
       await authService.requestPasswordReset(email, origin);
+
+      // Audit password reset request (fire-and-forget)
+      // No userId — intentionally omitted to avoid confirming user existence
+      logAuditEvent({
+        action: "PASSWORD_RESET_REQUEST",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        metadata: { email: request.body.email },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
       return reply.send({
         message: "If an account exists with this email, a password reset link will be sent.",
       });
@@ -340,6 +360,8 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
         action: "PASSWORD_RESET",
         ipAddress,
         userAgent,
+        targetType: "user",
+        targetId: userId,
       }).catch((auditErr) => getLogger().error({ err: auditErr }, "Audit log write failed"));
 
       return reply.send({ message: "Password reset successfully" });
@@ -471,6 +493,17 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
       }
 
       await authService.removeTrustedDevice(userId, request.params.id);
+
+      // Audit trusted device removal (fire-and-forget)
+      logAuditEvent({
+        action: "TRUSTED_DEVICE_REMOVE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId: request.user?.userId,
+        targetType: "trusted_device",
+        targetId: request.params.id,
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
       return reply.send({ success: true, message: "Trusted device removed successfully" });
     },
   });
@@ -503,6 +536,18 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
       }
 
       const result = await authService.removeAllTrustedDevices(userId);
+
+      // Audit remove all trusted devices (fire-and-forget)
+      logAuditEvent({
+        action: "TRUSTED_DEVICE_REMOVE_ALL",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId: request.user?.userId,
+        targetType: "user",
+        targetId: request.user?.userId,
+        metadata: { count: result.removedCount },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
       return reply.send(result);
     },
   });

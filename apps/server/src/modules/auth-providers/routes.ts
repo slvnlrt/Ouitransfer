@@ -7,6 +7,7 @@ import { NotFoundError, ValidationError } from "../../utils/app-error.js";
 import { signAndSetCookies } from "../../utils/auth-cookies.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { getLogger } from "../../utils/logger.js";
+import { logAuditEvent } from "../audit/service.js";
 import { validateAllProvidersDisable } from "../config/service.js";
 import {
   CreateAuthProviderSchema,
@@ -307,6 +308,18 @@ export const authProvidersRoutes: FastifyPluginAsyncZod = async (app) => {
       }
 
       const provider = await authProvidersService.createProvider(data);
+
+      // Audit provider creation (fire-and-forget)
+      logAuditEvent({
+        action: "AUTH_PROVIDER_CREATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId: request.user?.userId,
+        targetType: "auth_provider",
+        targetId: provider.id,
+        metadata: { name: provider.name, type: provider.type },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
       return sendSuccessResponse(reply, provider);
     },
   });
@@ -392,6 +405,17 @@ export const authProvidersRoutes: FastifyPluginAsyncZod = async (app) => {
         }
       }
 
+      // Audit provider update (fire-and-forget) — log before delegating to helper
+      logAuditEvent({
+        action: "AUTH_PROVIDER_UPDATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId: request.user?.userId,
+        targetType: "auth_provider",
+        targetId: id,
+        metadata: { name: existingProvider.name },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
       const isOfficial = authProvidersService.isOfficialProvider(existingProvider.name);
 
       if (isOfficial) {
@@ -448,6 +472,18 @@ export const authProvidersRoutes: FastifyPluginAsyncZod = async (app) => {
       }
 
       await authProvidersService.deleteProvider(id);
+
+      // Audit provider deletion (fire-and-forget)
+      logAuditEvent({
+        action: "AUTH_PROVIDER_DELETE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId: request.user?.userId,
+        targetType: "auth_provider",
+        targetId: id,
+        metadata: { name: provider.name },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
       return sendSuccessResponse(reply, undefined, "Provider deleted successfully");
     },
   });
@@ -554,6 +590,17 @@ export const authProvidersRoutes: FastifyPluginAsyncZod = async (app) => {
         const userAgent = request.headers["user-agent"] || "";
         const ipAddress = request.ip || request.socket.remoteAddress || "";
         await signAndSetCookies(reply, result.user, userAgent, ipAddress);
+
+        // Audit SSO login (fire-and-forget)
+        logAuditEvent({
+          action: "AUTH_PROVIDER_LOGIN",
+          ipAddress,
+          userAgent,
+          userId: result.user.id,
+          targetType: "auth_provider",
+          targetId: providerName,
+          metadata: { providerName },
+        }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
 
         const redirectUrl = result.redirectUrl || "/dashboard";
         const fullRedirectUrl = redirectUrl.startsWith("http")
