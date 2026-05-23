@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
 import { Navbar } from "@/components/layout/navbar";
+import { SystemStatusBar } from "@/components/layout/system-status-bar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -34,6 +35,7 @@ export function FileManagerLayout({
   return (
     <div className="w-full min-h-screen flex flex-col">
       <Navbar />
+      <SystemStatusBar />
       <div className="flex-1 max-w-7xl mx-auto w-full p-6 py-8">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-4">

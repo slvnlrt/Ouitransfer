@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 
 import { Navbar } from "@/components/layout/navbar";
+import { SystemStatusBar } from "@/components/layout/system-status-bar";
 import { DefaultFooter } from "@/components/ui/default-footer";
 
 interface PageLayoutProps {
@@ -20,6 +21,7 @@ export function PageLayout({ children }: PageLayoutProps) {
   return (
     <div className="w-full min-h-screen flex flex-col">
       <Navbar />
+      <SystemStatusBar />
       <div className="flex-1 max-w-7xl mx-auto w-full px-6 py-8">{children}</div>
       <DefaultFooter />
     </div>
