@@ -4,6 +4,8 @@ import { z } from "zod";
 import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
 import { NotFoundError, UnauthorizedError } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
+import { getLogger } from "../../utils/logger.js";
+import { logAuditEvent } from "../audit/service.js";
 import {
   CreateShareSchema,
   ShareAliasResponseSchema,
@@ -46,6 +48,21 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         );
       }
       const share = await shareService.createShare(request.body, userId);
+      logAuditEvent({
+        action: "SHARE_CREATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "share",
+        targetId: share.id,
+        metadata: {
+          name: request.body.name ?? null,
+          fileCount: request.body.files?.length ?? 0,
+          folderCount: request.body.folders?.length ?? 0,
+          hasPassword: !!request.body.password,
+          expiration: request.body.expiration ?? null,
+        },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.status(201).send({ share });
     },
   });
@@ -109,7 +126,10 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         // JWT verification failure is expected for unauthenticated share access
         request.log.debug({ err }, "JWT verification skipped (anonymous access)");
       }
-      const share = await shareService.getShare(request.params.shareId, undefined, userId);
+      const share = await shareService.getShare(request.params.shareId, undefined, userId, {
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+      });
       return reply.send({ share });
     },
   });
@@ -152,6 +172,7 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         request.params.shareId,
         request.body.password,
         userId,
+        { ipAddress: request.ip, userAgent: request.headers["user-agent"] },
       );
       return reply.send({ share });
     },
@@ -182,6 +203,14 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       }
       const { id, ...updateData } = request.body;
       const share = await shareService.updateShare(id, updateData, userId);
+      logAuditEvent({
+        action: "SHARE_UPDATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "share",
+        targetId: id,
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ share });
     },
   });
@@ -220,6 +249,15 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         throw new UnauthorizedError("Unauthorized to delete this share");
       }
       const deleted = await shareService.deleteShare(request.params.id);
+      logAuditEvent({
+        action: "SHARE_DELETE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "share",
+        targetId: request.params.id,
+        metadata: { name: share.name },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ share: deleted });
     },
   });
@@ -257,6 +295,15 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         userId,
         request.body.password,
       );
+      logAuditEvent({
+        action: "SHARE_PASSWORD_UPDATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "share",
+        targetId: request.params.shareId,
+        metadata: { passwordCleared: !request.body.password },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ share });
     },
   });
@@ -296,6 +343,15 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         files || [],
         folders || [],
       );
+      logAuditEvent({
+        action: "SHARE_ITEMS_ADD",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "share",
+        targetId: request.params.shareId,
+        metadata: { fileCount: files?.length ?? 0, folderCount: folders?.length ?? 0 },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ share });
     },
   });
@@ -335,6 +391,15 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         files || [],
         folders || [],
       );
+      logAuditEvent({
+        action: "SHARE_ITEMS_REMOVE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "share",
+        targetId: request.params.shareId,
+        metadata: { fileCount: files?.length ?? 0, folderCount: folders?.length ?? 0 },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ share });
     },
   });
@@ -372,6 +437,15 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         userId,
         request.body.emails,
       );
+      logAuditEvent({
+        action: "SHARE_RECIPIENT_ADD",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "share",
+        targetId: request.params.shareId,
+        metadata: { count: request.body.emails.length },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ share });
     },
   });
@@ -410,6 +484,15 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         userId,
         request.body.emails,
       );
+      logAuditEvent({
+        action: "SHARE_RECIPIENT_REMOVE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "share",
+        targetId: request.params.shareId,
+        metadata: { count: request.body.emails.length },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ share });
     },
   });
@@ -473,7 +556,10 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     handler: async (request, reply) => {
-      const share = await shareService.getShareByAlias(request.params.alias, undefined);
+      const share = await shareService.getShareByAlias(request.params.alias, undefined, {
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+      });
       return reply.send({ share });
     },
   });
@@ -504,7 +590,11 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     handler: async (request, reply) => {
-      const share = await shareService.getShareByAlias(request.params.alias, request.body.password);
+      const share = await shareService.getShareByAlias(
+        request.params.alias,
+        request.body.password,
+        { ipAddress: request.ip, userAgent: request.headers["user-agent"] },
+      );
       return reply.send({ share });
     },
   });
@@ -546,6 +636,15 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         userId,
         request.body.shareLink,
       );
+      logAuditEvent({
+        action: "SHARE_RECIPIENT_NOTIFY",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "share",
+        targetId: request.params.shareId,
+        metadata: { recipientCount: result.notifiedRecipients.length },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send(result);
     },
   });

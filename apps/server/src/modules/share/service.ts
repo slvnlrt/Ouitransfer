@@ -10,6 +10,7 @@ import {
   ValidationError,
 } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
+import { logAuditEvent } from "../audit/service.js";
 import { EmailService } from "../email/service.js";
 import { FolderService } from "../folder/service.js";
 import { UserService } from "../user/service.js";
@@ -153,7 +154,12 @@ export class ShareService {
     return ShareResponseSchema.parse(await this.formatShareResponse(shareWithRelations));
   }
 
-  async getShare(shareId: string, password?: string, userId?: string) {
+  async getShare(
+    shareId: string,
+    password?: string,
+    userId?: string,
+    context?: { ipAddress: string; userAgent?: string },
+  ) {
     const share = await this.shareRepository.findShareById(shareId);
 
     if (!share) {
@@ -179,11 +185,39 @@ export class ShareService {
     if (share.security?.password && password) {
       const isPasswordValid = await bcrypt.compare(password, share.security.password);
       if (!isPasswordValid) {
+        if (context) {
+          logAuditEvent({
+            action: "SHARE_PASSWORD_FAILED",
+            ipAddress: context.ipAddress,
+            userAgent: context.userAgent,
+            targetType: "share",
+            targetId: shareId,
+          }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+        }
         throw new AppError(401, "Invalid password", ErrorCodes.INVALID_PASSWORD);
+      }
+      if (context) {
+        logAuditEvent({
+          action: "SHARE_PASSWORD_VERIFIED",
+          ipAddress: context.ipAddress,
+          userAgent: context.userAgent,
+          targetType: "share",
+          targetId: shareId,
+        }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       }
     }
 
     await this.shareRepository.incrementViews(shareId);
+
+    if (context) {
+      logAuditEvent({
+        action: "SHARE_ACCESS",
+        ipAddress: context.ipAddress,
+        userAgent: context.userAgent,
+        targetType: "share",
+        targetId: shareId,
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+    }
 
     const updatedShare = await this.shareRepository.findShareById(shareId);
     return ShareResponseSchema.parse(await this.formatShareResponse(updatedShare));
@@ -420,7 +454,11 @@ export class ShareService {
     };
   }
 
-  async getShareByAlias(alias: string, password?: string) {
+  async getShareByAlias(
+    alias: string,
+    password?: string,
+    context?: { ipAddress: string; userAgent?: string },
+  ) {
     const shareAlias = await prisma.shareAlias.findUnique({
       where: { alias },
       include: {
@@ -438,7 +476,7 @@ export class ShareService {
       throw new NotFoundError("Share not found");
     }
 
-    return this.getShare(shareAlias.shareId, password);
+    return this.getShare(shareAlias.shareId, password, undefined, context);
   }
 
   async notifyRecipients(shareId: string, userId: string, shareLink: string) {
