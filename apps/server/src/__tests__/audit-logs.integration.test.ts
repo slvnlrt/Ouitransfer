@@ -215,4 +215,118 @@ describe("GET /admin/audit-logs — integration", () => {
     // causing jwtVerify() to throw an Untrusted Token error → 401.
     expect(res.statusCode).toBe(401);
   });
+
+  // ── New filter tests ─────────────────────────────────────────────────────
+
+  it("filters by targetType", async () => {
+    const jwt = app.jwt.sign({ userId: "admin-user", isAdmin: true, tokenVersion: TOKEN_VERSION });
+    const token = app.signCookie(jwt);
+
+    const res = await app.inject({
+      method: "GET",
+      url: "/admin/audit-logs?targetType=share",
+      headers: { cookie: `token=${token}` },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(mockFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ targetType: "share" }),
+      }),
+    );
+  });
+
+  it("filters by dateFrom and dateTo", async () => {
+    const jwt = app.jwt.sign({ userId: "admin-user", isAdmin: true, tokenVersion: TOKEN_VERSION });
+    const token = app.signCookie(jwt);
+
+    const res = await app.inject({
+      method: "GET",
+      url: "/admin/audit-logs?dateFrom=2026-01-01T00:00:00.000Z&dateTo=2026-12-31T23:59:59.000Z",
+      headers: { cookie: `token=${token}` },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(mockFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          createdAt: expect.objectContaining({
+            gte: expect.any(Date),
+            lte: expect.any(Date),
+          }),
+        }),
+      }),
+    );
+  });
+
+  it("filters by search term", async () => {
+    const jwt = app.jwt.sign({ userId: "admin-user", isAdmin: true, tokenVersion: TOKEN_VERSION });
+    const token = app.signCookie(jwt);
+
+    const res = await app.inject({
+      method: "GET",
+      url: "/admin/audit-logs?search=127",
+      headers: { cookie: `token=${token}` },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(mockFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          OR: expect.arrayContaining([
+            expect.objectContaining({ ipAddress: expect.objectContaining({ contains: "127" }) }),
+            expect.objectContaining({ action: expect.objectContaining({ contains: "127" }) }),
+          ]),
+        }),
+      }),
+    );
+  });
+
+  // ── Export route tests ────────────────────────────────────────────────────
+
+  it("returns CSV export with proper headers", async () => {
+    const jwt = app.jwt.sign({ userId: "admin-user", isAdmin: true, tokenVersion: TOKEN_VERSION });
+    const token = app.signCookie(jwt);
+
+    const res = await app.inject({
+      method: "GET",
+      url: "/admin/audit-logs/export?format=csv&dateFrom=2026-01-01T00:00:00.000Z&dateTo=2026-12-31T23:59:59.000Z",
+      headers: { cookie: `token=${token}` },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.headers["content-type"]).toContain("text/csv");
+    expect(res.headers["content-disposition"]).toContain("audit-logs-");
+    // The response should start with CSV headers
+    expect(res.body).toContain(
+      "id,userId,action,ipAddress,userAgent,targetType,targetId,metadata,createdAt",
+    );
+  });
+
+  it("returns JSON export with proper headers", async () => {
+    const jwt = app.jwt.sign({ userId: "admin-user", isAdmin: true, tokenVersion: TOKEN_VERSION });
+    const token = app.signCookie(jwt);
+
+    const res = await app.inject({
+      method: "GET",
+      url: "/admin/audit-logs/export?format=json&dateFrom=2026-01-01T00:00:00.000Z&dateTo=2026-12-31T23:59:59.000Z",
+      headers: { cookie: `token=${token}` },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.headers["content-type"]).toContain("application/json");
+    expect(res.headers["content-disposition"]).toContain("audit-logs-");
+    // Empty export should still be valid JSON
+    const body = res.body;
+    expect(body).toContain("[");
+    expect(body).toContain("]");
+  });
+
+  it("returns 400 when export is missing date range", async () => {
+    const jwt = app.jwt.sign({ userId: "admin-user", isAdmin: true, tokenVersion: TOKEN_VERSION });
+    const token = app.signCookie(jwt);
+
+    const res = await app.inject({
+      method: "GET",
+      url: "/admin/audit-logs/export?format=csv",
+      headers: { cookie: `token=${token}` },
+    });
+    // Zod validation will reject missing required dateFrom/dateTo
+    expect(res.statusCode).toBe(400);
+  });
 });
