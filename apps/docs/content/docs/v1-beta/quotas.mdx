@@ -106,11 +106,13 @@ The rationale for not blocking third-party uploads to a reverse share: the creat
   Quota checks are optimistic. Two simultaneous uploads may each pass the check individually but together exceed the limit. The slight overage is acceptable — the next upload will be blocked. File sizes are typically megabytes while quotas are gigabytes, so overruns are negligible.
 </Callout>
 
-## Quota widget
+## Quota indicator
 
-Every authenticated user sees a **storage usage indicator** in the dashboard sidebar. The widget shows:
+Every authenticated user sees a **storage usage indicator** in the System Status Bar — the collapsible panel that appears below the navigation bar on the dashboard. Expand it to view the quota details.
 
-- Current usage and effective limit (e.g., "5.0 GB / 10.0 GB")
+The indicator shows:
+
+- Current usage and effective limit with a progress bar (e.g., "5.0 GB / 10.0 GB")
 - A progress bar color-coded by warning level:
 
 | Warning level | Threshold | Color |
@@ -120,15 +122,9 @@ Every authenticated user sees a **storage usage indicator** in the dashboard sid
 | `critical` | 90 – 99 % | Orange |
 | `exceeded` | ≥ 100 % | Red |
 
-- If the effective limit is **unlimited** (`0`), the widget shows current usage only ("5.0 GB used") with no progress bar.
+- If the effective limit is **unlimited** (`0`), the indicator shows current usage only with no progress bar.
 
-When the warning level reaches `exceeded`, a persistent red banner appears on the dashboard:
-
-> "Your storage quota is exceeded. You cannot upload new files until you free up space by deleting existing files or shares."
-
-When the level is `warning` or `critical`, a dismissible banner displays:
-
-> "You are using \{percentage\}% of your storage quota."
+When the warning level is `warning` or `critical`, a percentage badge appears on the collapsed System Status Bar tab to draw attention without requiring the panel to be open.
 
 ## API reference (admin)
 
