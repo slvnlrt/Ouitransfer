@@ -9,7 +9,7 @@ The Ouitransfer API is a REST API built with Fastify 5, Zod, and TypeScript. It 
 
 ## Base URL
 
-The API server runs on port **3333** by default. For direct API access, use the server URL:
+The API server runs on port **3333** by default (configurable via the `PORT` environment variable). For direct API access, use the server URL:
 
 ```
 http://your-server:3333
@@ -31,7 +31,7 @@ The API uses **httpOnly signed cookies** for authentication — there is no API 
 
 1. **Get a CSRF token** — `GET /csrf-token` returns a `token` value and sets a `_csrf` cookie.
 2. **Login** — `POST /auth/login` with credentials. On success, the server sets `token` (JWT access token) and `refreshToken` cookies.
-3. **Make requests** — include cookies on all subsequent requests. The JWT is short-lived (15 minutes); use `POST /auth/refresh` to obtain a new one.
+3. **Make requests** — include cookies on all subsequent requests. The JWT is short-lived (15 minutes); use `POST /auth/refresh` to obtain a new one. The refresh endpoint returns no token in the response body — both the new access token and the rotated refresh token are set as httpOnly cookies.
 
 ### CSRF protection
 
@@ -41,6 +41,10 @@ All **mutating requests** (POST, PUT, PATCH, DELETE) require a CSRF token, unles
 - The client must send a matching token in the `X-CSRF-Token` request header.
 - Obtain the token from `GET /csrf-token`.
 - GET, HEAD, and OPTIONS requests do not require the CSRF header.
+
+<Callout type="warn">
+  CSRF token is required for **all POST, PUT, PATCH, and DELETE requests**, even endpoints marked `Auth: —` (public). Public mutations like file downloads (`POST /files/download-url`) still require a valid `X-CSRF-Token` header unless explicitly listed as CSRF-exempt. See the exempt list below.
+</Callout>
 
 **CSRF-exempt endpoints** (public or unauthenticated mutations): `/auth/login`, `/auth/refresh`, `/auth/forgot-password`, `/auth/reset-password`, `/auth/2fa/login`, `/register-with-invite`, share and reverse share password-access endpoints, and all reverse share public upload endpoints.
 
@@ -93,13 +97,13 @@ Both provide endpoint exploration, request builders, and response visualization 
 | DELETE | `/auth/trusted-devices` | User | Remove all trusted devices |
 | GET | `/csrf-token` | — | Get a CSRF token (sets `_csrf` cookie) |
 
-¹ These endpoints behave differently based on session state: `/auth/me` returns the current user if authenticated, `null` otherwise. `/auth/logout` clears session cookies regardless of whether a valid session exists. Neither requires a session to succeed.
+**Note on optional-auth endpoints:** `/auth/me` returns the current user if a valid session exists, `null` otherwise — it doesn't require authentication to call. `/auth/logout` clears session cookies even without a valid session. Neither returns a `401` when called without credentials. Note that `/auth/logout` still requires a CSRF token (like all POST endpoints) even though it doesn't require a JWT session.
 
 **Login** returns the user object on success. If the account has 2FA enabled, it returns `{ requiresTwoFactor: true, challengeToken: "..." }` — pass the challenge token and TOTP code to `/auth/2fa/login` to complete authentication.
 
 **Rate limits:** Login: 5 attempts per minute per IP. Forgot password: 3 per minute per IP. Reset password: 3 per minute per IP. Token refresh: 10 per minute per IP.
 
-**Account lockout:** After repeated failed login attempts, the account may be locked and return an `ACCOUNT_LOCKED` error code with `403 Forbidden`. Locked accounts must be unlocked by an administrator via `PATCH /users/:id/activate`.
+**Account lockout:** After 10 consecutive failed login attempts within 15 minutes, the account is temporarily locked and returns an `ACCOUNT_LOCKED` error code with `403 Forbidden`. The lockout expires automatically after 15 minutes from the oldest failed attempt — no administrator intervention is required. A successful login resets the failure counter.
 
 ---
 
@@ -153,7 +157,7 @@ Both provide endpoint exploration, request builders, and response visualization 
 |--------|------|------|-------------|
 | GET | `/files/presigned-url` | User | Get presigned URL for S3 upload |
 | POST | `/files` | User | Register uploaded file metadata |
-| POST | `/files/check` | User | Pre-flight check: validate file against quotas |
+| POST | `/files/check` | User | Pre-flight check: validate file against quotas (does not create a record) |
 | GET | `/files` | User | List user's files (optionally filtered by folder) |
 | PATCH | `/files/:id` | User | Update file metadata (name, description) |
 | PUT | `/files/:id/move` | User | Move file to a different folder |
@@ -161,7 +165,7 @@ Both provide endpoint exploration, request builders, and response visualization 
 | POST | `/files/download-url` | — | Get presigned download URL (share password in body) |
 | POST | `/files/download` | — | Download file content (streaming, share password in body) |
 | GET | `/embed/:token` | — | Embed media file via signed token |
-| POST | `/files/embed-token` | User | Generate signed embed token for a file in a share |
+| POST | `/files/embed-token` | User | Generate signed embed token for a file in a share (24-hour expiry) |
 
 **Multipart upload** (for large files ≥100 MB):
 
@@ -173,7 +177,7 @@ Both provide endpoint exploration, request builders, and response visualization 
 | POST | `/files/multipart/abort` | User | Abort multipart upload |
 | GET | `/files/multipart/list-parts` | User | List uploaded parts (for resume) |
 
-**Upload flow:** Get a presigned URL → upload the file directly to S3 → register the file metadata via `POST /files`. The `POST /files/check` endpoint validates quotas and generates a unique filename without creating a record.
+**Upload flow:** Get a presigned URL → upload the file directly to S3 → register the file metadata via `POST /files`. The `POST /files/check` endpoint is a pre-flight check that validates the file against quotas without creating a record.
 
 **Rate limits:** Presigned upload URL: 30 per minute. Download URL / download: 20 per minute each.
 
@@ -405,7 +409,6 @@ These endpoints provide direct S3 object operations. Most clients should use the
 |------|---------|
 | 200 | OK — request succeeded |
 | 201 | Created — resource created successfully |
-| 202 | Accepted — download queued (large reverse-share file download) |
 | 302 | Redirect — OAuth/OIDC flow redirects |
 | 400 | Bad Request — validation failure (Zod schema) |
 | 401 | Unauthorized — not authenticated, invalid token, or CSRF mismatch |
@@ -413,7 +416,7 @@ These endpoints provide direct S3 object operations. Most clients should use the
 | 404 | Not Found — resource does not exist |
 | 409 | Conflict — duplicate resource or file-in-shares conflict |
 | 410 | Gone — share or reverse share has expired |
-| 413 | Payload Too Large — file exceeds quota |
+| 413 | Payload Too Large — request body exceeds the 50 MB body size limit |
 | 429 | Too Many Requests — rate limit exceeded |
 | 500 | Internal Server Error |
 
@@ -421,11 +424,14 @@ All error responses follow a consistent JSON shape:
 
 ```json
 {
-  "error": "ERROR_CODE",
-  "message": "Human-readable description",
-  "statusCode": 400
+  "error": "Human-readable description",
+  "code": "ERROR_CODE",
+  "statusCode": 400,
+  "timestamp": "2025-01-15T12:00:00.000Z"
 }
 ```
+
+The `error` field contains a human-readable message, `code` is the machine-readable error code (e.g. `VALIDATION_ERROR`, `NOT_FOUND`, `ACCOUNT_LOCKED`), and `timestamp` is an ISO 8601 string. Some errors include an additional `details` object with structured metadata.
 
 ---
 
@@ -448,6 +454,14 @@ Global rate limit: **100 requests per minute per IP**. Individual endpoints may 
 | `GET /csrf-token` | 30 / minute |
 
 When rate-limited, the server returns `429 Too Many Requests` with a `retryAfter` field indicating seconds until the limit resets.
+
+<Callout type="info">
+  Rate limit error responses have a different shape from standard API errors — they don't include the `code` or `timestamp` fields. A rate limit response looks like:
+
+  ```json
+  { "error": "Too many requests", "message": "Rate limit exceeded. Try again in 15 seconds.", "retryAfter": 15 }
+  ```
+</Callout>
 
 ### Request size limits
 
