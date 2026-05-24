@@ -122,14 +122,19 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
       const { isFirstUser, ...user } = result;
 
       // Audit user creation (fire-and-forget)
+      // For self-setup (first user, no admin), userId is undefined → null in DB
       logAuditEvent({
-        userId: request.user?.userId ?? user.id,
+        userId: request.user?.userId,
         action: "USER_CREATE",
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
         targetType: "user",
         targetId: user.id,
-        metadata: { via: "admin", createdUserId: user.id, email: user.email },
+        metadata: {
+          via: request.user?.userId ? "admin" : "self_setup",
+          createdUserId: user.id,
+          email: user.email,
+        },
       }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
 
       // Auto-login the first user so they're immediately authenticated

@@ -165,6 +165,8 @@ export const backgroundImageRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     handler: async (request, reply) => {
+      // Fetch the image record before deletion to capture its name for audit metadata
+      const image = await service.findById(request.params.id);
       await service.delete(request.params.id);
       logAuditEvent({
         userId: request.user?.userId,
@@ -173,6 +175,7 @@ export const backgroundImageRoutes: FastifyPluginAsyncZod = async (app) => {
         userAgent: request.headers["user-agent"],
         targetType: "background_image",
         targetId: request.params.id,
+        metadata: { fileName: image?.name ?? null },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ success: true });
     },

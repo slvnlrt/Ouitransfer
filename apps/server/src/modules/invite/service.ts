@@ -5,12 +5,14 @@ import { prisma } from "../../shared/prisma.js";
 import { ConflictError, GoneError, NotFoundError } from "../../utils/app-error.js";
 
 export class InviteService {
-  async generateInviteToken(adminUserId: string): Promise<{ token: string; expiresAt: Date }> {
+  async generateInviteToken(
+    adminUserId: string,
+  ): Promise<{ id: string; token: string; expiresAt: Date }> {
     const token = randomBytes(32).toString("hex");
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 15);
 
-    await prisma.inviteToken.create({
+    const inviteToken = await prisma.inviteToken.create({
       data: {
         token,
         expiresAt,
@@ -18,7 +20,7 @@ export class InviteService {
       },
     });
 
-    return { token, expiresAt };
+    return { id: inviteToken.id, token, expiresAt };
   }
 
   async validateInviteToken(
@@ -50,7 +52,7 @@ export class InviteService {
     username: string;
     email: string;
     password: string;
-  }): Promise<{ id: string; username: string; email: string }> {
+  }): Promise<{ id: string; username: string; email: string; inviteTokenId: string }> {
     const validation = await this.validateInviteToken(data.token);
 
     if (!validation.valid) {
@@ -97,12 +99,12 @@ export class InviteService {
         },
       });
 
-      await tx.inviteToken.update({
+      const inviteToken = await tx.inviteToken.update({
         where: { token: data.token },
         data: { usedAt: new Date() },
       });
 
-      return user;
+      return { ...user, inviteTokenId: inviteToken.id };
     });
 
     return result;

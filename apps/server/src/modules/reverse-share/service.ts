@@ -276,6 +276,12 @@ export class ReverseShareService {
     return this.formatFileResponse(deletedFile);
   }
 
+  /** Resolve the DB id for a reverse share from its alias. Returns null if not found. */
+  async getIdByAlias(alias: string): Promise<string | null> {
+    const reverseShare = await this.reverseShareRepository.findByAlias(alias);
+    return reverseShare?.id ?? null;
+  }
+
   async checkPassword(id: string, password: string) {
     const reverseShare = await this.reverseShareRepository.findById(id);
     if (!reverseShare) {

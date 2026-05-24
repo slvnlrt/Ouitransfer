@@ -22,6 +22,7 @@ export interface IShareRepository {
       maxViews?: number | null;
     },
   ): Promise<Share>;
+  incrementViewsAtomic(shareId: string, maxViews: number | null): Promise<boolean>;
   findShareById(id: string): Promise<
     | (Share & {
         security: ShareSecurity;
@@ -233,6 +234,26 @@ export class PrismaShareRepository implements IShareRepository {
         },
       },
     });
+  }
+
+  /**
+   * Atomically increment the view count only if the current count is below maxViews.
+   * When maxViews is null (unlimited), always increments and returns true.
+   * Returns true if the increment happened, false if max views was already reached.
+   */
+  async incrementViewsAtomic(shareId: string, maxViews: number | null): Promise<boolean> {
+    if (maxViews === null) {
+      await prisma.share.update({
+        where: { id: shareId },
+        data: { views: { increment: 1 } },
+      });
+      return true;
+    }
+    const result = await prisma.share.updateMany({
+      where: { id: shareId, views: { lt: maxViews } },
+      data: { views: { increment: 1 } },
+    });
+    return result.count > 0;
   }
 
   async addFilesToShare(shareId: string, fileIds: string[]): Promise<void> {

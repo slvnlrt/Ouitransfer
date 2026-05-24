@@ -210,6 +210,7 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         userId,
         targetType: "share",
         targetId: id,
+        metadata: { fields: Object.keys(updateData) },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ share });
     },
@@ -444,7 +445,7 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         userId,
         targetType: "share",
         targetId: request.params.shareId,
-        metadata: { count: request.body.emails.length },
+        metadata: { count: request.body.emails.length, emails: request.body.emails },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ share });
     },
@@ -491,7 +492,7 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         userId,
         targetType: "share",
         targetId: request.params.shareId,
-        metadata: { count: request.body.emails.length },
+        metadata: { count: request.body.emails.length, emails: request.body.emails },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ share });
     },
@@ -643,7 +644,10 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         userId,
         targetType: "share",
         targetId: request.params.shareId,
-        metadata: { recipientCount: result.notifiedRecipients.length },
+        metadata: {
+          recipientCount: result.notifiedRecipients.length,
+          emails: result.notifiedRecipients,
+        },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send(result);
     },

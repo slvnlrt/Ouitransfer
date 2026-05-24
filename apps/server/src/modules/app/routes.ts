@@ -261,6 +261,10 @@ export const appRoutes: FastifyPluginAsyncZod = async (app) => {
         action: "SMTP_TEST",
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
+        metadata: {
+          usingCustomConfig: !!smtpConfig,
+          smtpHost: smtpConfig?.smtpHost ?? null,
+        },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send(result);
     },

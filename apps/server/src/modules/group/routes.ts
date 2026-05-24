@@ -182,6 +182,7 @@ export const groupRoutes: FastifyPluginAsyncZod = async (app) => {
         userAgent: request.headers["user-agent"],
         targetType: "group",
         targetId: request.params.id,
+        metadata: { fields: Object.keys(request.body) },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send(serializeGroup(group));
     },

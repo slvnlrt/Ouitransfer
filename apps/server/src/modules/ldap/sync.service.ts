@@ -109,7 +109,7 @@ export class LdapSyncService {
 
       logAuditEvent({
         action: "LDAP_SYNC_COMPLETED",
-        ipAddress: "127.0.0.1",
+        ipAddress: "system",
         targetType: "ldap_sync_log",
         targetId: log.id,
         metadata: {
@@ -143,7 +143,7 @@ export class LdapSyncService {
 
       logAuditEvent({
         action: "LDAP_SYNC_ERROR",
-        ipAddress: "127.0.0.1",
+        ipAddress: "system",
         targetType: "ldap_sync_log",
         targetId: log.id,
         metadata: { trigger, error: message },

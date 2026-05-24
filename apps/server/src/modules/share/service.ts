@@ -174,11 +174,17 @@ export class ShareService {
       throw new AppError(410, "Share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 
-    if (share.maxViews && share.views >= share.maxViews) {
-      throw new AppError(410, "Share has reached maximum views", ErrorCodes.MAX_VIEWS_REACHED);
-    }
-
     if (share.security?.password && !password) {
+      if (context) {
+        logAuditEvent({
+          action: "SHARE_PASSWORD_FAILED",
+          ipAddress: context.ipAddress,
+          userAgent: context.userAgent,
+          targetType: "share",
+          targetId: shareId,
+          metadata: { reason: "no_password_supplied" },
+        }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+      }
       throw new AppError(401, "Password required", ErrorCodes.PASSWORD_REQUIRED);
     }
 
@@ -207,7 +213,13 @@ export class ShareService {
       }
     }
 
-    await this.shareRepository.incrementViews(shareId);
+    const incremented = await this.shareRepository.incrementViewsAtomic(
+      shareId,
+      share.maxViews ?? null,
+    );
+    if (!incremented) {
+      throw new AppError(410, "Share has reached maximum views", ErrorCodes.MAX_VIEWS_REACHED);
+    }
 
     if (context) {
       logAuditEvent({

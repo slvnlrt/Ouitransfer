@@ -499,7 +499,7 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
         action: "TRUSTED_DEVICE_REMOVE",
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
-        userId: request.user?.userId,
+        userId,
         targetType: "trusted_device",
         targetId: request.params.id,
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
@@ -542,9 +542,9 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
         action: "TRUSTED_DEVICE_REMOVE_ALL",
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
-        userId: request.user?.userId,
+        userId,
         targetType: "user",
-        targetId: request.user?.userId,
+        targetId: userId,
         metadata: { count: result.removedCount },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
 

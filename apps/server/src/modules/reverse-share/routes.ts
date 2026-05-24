@@ -1,3 +1,4 @@
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
@@ -65,6 +66,8 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         metadata: {
           maxFiles: request.body.maxFiles ?? null,
           maxFileSize: request.body.maxFileSize ?? null,
+          hasPassword: !!request.body.password,
+          expiration: request.body.expiration ?? null,
         },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.status(201).send({ reverseShare });
@@ -169,6 +172,7 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         userId,
         targetType: "reverse_share",
         targetId: id,
+        metadata: { fields: Object.keys(updateData) },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ reverseShare });
     },
@@ -346,7 +350,7 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
         return reply.send({ reverseShare });
       } catch (err) {
-        if (err instanceof AppError && err.code === "INVALID_PASSWORD") {
+        if (err instanceof AppError && err.code === ErrorCodes.INVALID_PASSWORD) {
           logAuditEvent({
             action: "REVERSE_SHARE_PASSWORD_FAILED",
             ipAddress: request.ip,
@@ -442,13 +446,17 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
         return reply.send({ reverseShare });
       } catch (err) {
-        if (err instanceof AppError && err.code === "INVALID_PASSWORD") {
+        if (err instanceof AppError && err.code === ErrorCodes.INVALID_PASSWORD) {
+          // Resolve the reverse share id so targetId is consistent (not the alias string)
+          const reverseShareId = await reverseShareService
+            .getIdByAlias(request.params.alias)
+            .catch(() => null);
           logAuditEvent({
             action: "REVERSE_SHARE_PASSWORD_FAILED",
             ipAddress: request.ip,
             userAgent: request.headers["user-agent"],
             targetType: "reverse_share",
-            targetId: request.params.alias,
+            targetId: reverseShareId ?? request.params.alias,
           }).catch((auditErr) => getLogger().error({ err: auditErr }, "Failed to log audit event"));
         }
         throw err;
@@ -709,7 +717,7 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
         userId,
-        targetType: "reverse_share",
+        targetType: "file",
         targetId: request.params.fileId,
         metadata: { fileId: request.params.fileId },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));

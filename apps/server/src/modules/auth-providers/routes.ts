@@ -591,6 +591,9 @@ export const authProvidersRoutes: FastifyPluginAsyncZod = async (app) => {
         const ipAddress = request.ip || request.socket.remoteAddress || "";
         await signAndSetCookies(reply, result.user, userAgent, ipAddress);
 
+        // Fetch provider for accurate id and type in audit metadata
+        const provider = await authProvidersService.getProviderByName(providerName);
+
         // Audit SSO login (fire-and-forget)
         logAuditEvent({
           action: "AUTH_PROVIDER_LOGIN",
@@ -598,8 +601,8 @@ export const authProvidersRoutes: FastifyPluginAsyncZod = async (app) => {
           userAgent,
           userId: result.user.id,
           targetType: "auth_provider",
-          targetId: providerName,
-          metadata: { providerName },
+          targetId: provider?.id ?? providerName,
+          metadata: { providerName, providerType: provider?.type ?? null },
         }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
 
         const redirectUrl = result.redirectUrl || "/dashboard";

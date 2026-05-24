@@ -121,6 +121,10 @@ export class BackgroundImageService {
     };
   }
 
+  async findById(id: string) {
+    return this.repository.findById(id);
+  }
+
   async rename(id: string, name: string): Promise<BackgroundImageResponse> {
     const image = await this.repository.findById(id);
     if (!image) {
