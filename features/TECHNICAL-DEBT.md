@@ -345,6 +345,39 @@ than 1 day), but an admin setting this intentionally low is unlikely in practice
 
 ---
 
+## TD-25 — Scripts Python de gestion des traductions à auditer et mettre à jour
+
+**Context:** Les scripts Python dans `apps/web/scripts/` (`check_translations.py`,
+`sync_translations.py`, `prune_translations.py`, `clean_translations.py`, `run_translations.py`)
+datent d'avant le grand refactor. Ils ont peut-être des hypothèses sur la structure des clés,
+les fichiers de locale, ou les chemins qui ne correspondent plus à l'état actuel du projet.
+
+**Fichiers concernés :**
+- `apps/web/scripts/check_translations.py`
+- `apps/web/scripts/sync_translations.py`
+- `apps/web/scripts/prune_translations.py`
+- `apps/web/scripts/clean_translations.py`
+- `apps/web/scripts/run_translations.py`
+
+**À auditer :**
+- [ ] Les chemins vers `messages/` sont-ils corrects ?
+- [ ] La structure des namespaces imbriqués est-elle bien gérée (ex : `quickShare.*`, `audit.*`) ?
+- [ ] Les scripts détectent-ils correctement les clés orphelines (supprimées du code mais encore dans JSON) ?
+- [ ] Les scripts ajoutent-ils les nouvelles clés avec le bon fallback (anglais) ?
+- [ ] `prune_translations.py` / `clean_translations.py` — comportement safe ou destructif ?
+- [ ] Tests : les scripts ont-ils une couverture de test ou un mode `--dry-run` fiable ?
+- [ ] Compatibilité Python 3.x : version minimale requise documentée ?
+
+**Fix :** Faire tourner les scripts sur le repo actuel, vérifier les résultats, corriger
+les éventuels bugs ou hypothèses obsolètes.
+
+**Found during:** Documentation update session (mai 2026) — scripts référencés dans
+`translation-management.mdx` qui date du même refactor
+**Severity:** Low — les scripts ne sont pas dans le chemin critique, mais s'ils sont cassés
+les 21 locales avec placeholder anglais (TD-16, TD-21) ne pourront pas être corrigées proprement
+
+---
+
 ## TD-19 — Hardcoded QR code element ID prevents multiple instances
 
 **Context:** Both `generate-share-link-modal.tsx` and `quick-share-confirmation.tsx`
