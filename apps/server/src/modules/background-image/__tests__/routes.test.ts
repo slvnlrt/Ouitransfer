@@ -80,6 +80,7 @@ vi.mock("../service.js", () => ({
     });
     reorder = vi.fn().mockResolvedValue(undefined);
     delete = vi.fn().mockResolvedValue(undefined);
+    findById = vi.fn().mockResolvedValue({ id: "img-1", name: "Test Image" });
   },
 }));
 
