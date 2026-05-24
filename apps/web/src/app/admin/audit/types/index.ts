@@ -74,6 +74,15 @@ export const ACTION_CATEGORIES = {
     "BACKGROUND_IMAGE_UPLOAD",
     "BACKGROUND_IMAGE_DELETE",
   ],
+  user: [
+    "USER_CREATE",
+    "USER_UPDATE",
+    "USER_DELETE",
+    "USER_ROLE_CHANGE",
+    "USER_QUOTA_CHANGE",
+    "USER_ACTIVATE",
+    "USER_DEACTIVATE",
+  ],
   system: ["AUDIT_RETENTION_CLEANUP"],
 } as const;
 

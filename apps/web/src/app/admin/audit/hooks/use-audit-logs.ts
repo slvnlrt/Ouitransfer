@@ -13,9 +13,15 @@ export function useAuditLogs() {
     offset: 0,
   });
 
+  const queryParams: AuditLogsParams = {
+    ...params,
+    dateFrom: params.dateFrom ? `${params.dateFrom}T00:00:00.000Z` : undefined,
+    dateTo: params.dateTo ? `${params.dateTo}T23:59:59.999Z` : undefined,
+  };
+
   const query = useQuery({
-    queryKey: queryKeys.admin.audit.logs(params as Record<string, unknown>),
-    queryFn: ({ signal }) => getAuditLogs(params, { signal }),
+    queryKey: queryKeys.admin.audit.logs(queryParams),
+    queryFn: ({ signal }) => getAuditLogs(queryParams, { signal }),
     select: (response) => response.data,
   });
 

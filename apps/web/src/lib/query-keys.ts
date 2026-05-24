@@ -96,8 +96,7 @@ export const queryKeys = {
     stats: () => [...queryKeys.admin.all, "stats"] as const,
     audit: {
       all: () => [...queryKeys.admin.all, "audit"] as const,
-      logs: (params: Record<string, unknown>) =>
-        [...queryKeys.admin.all, "audit", "logs", params] as const,
+      logs: (params: object) => [...queryKeys.admin.all, "audit", "logs", params] as const,
     },
   },
 

@@ -13,6 +13,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 // next-intl
 vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
+  useLocale: () => "en-US",
 }));
 
 // lucide-react icons — minimal stubs so jsdom doesn't choke on SVG
@@ -186,10 +187,8 @@ describe("AuditLogTable", () => {
 
     render(<AuditLogTable {...DEFAULT_TABLE_PROPS} logs={[log]} total={1} />);
 
-    // Action rendered in a badge — safeTranslate tries "actions.LOGIN_SUCCESS" key
-    const badges = screen.getAllByTestId("badge");
-    const actionBadge = badges.find((b) => b.textContent?.includes("actions.LOGIN_SUCCESS"));
-    expect(actionBadge).toBeInTheDocument();
+    // Action rendered as a colored span — safeTranslate tries "actions.LOGIN_SUCCESS" key
+    expect(screen.getByText("actions.LOGIN_SUCCESS")).toBeInTheDocument();
   });
 
   it("renders abbreviated user ID for authenticated user", () => {
@@ -339,13 +338,13 @@ describe("AuditMetadataDisplay", () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it("formats bytes correctly for USER_QUOTA_CHANGE — 1 GB → 2 GB", () => {
+  it("formats bytes correctly for USER_QUOTA_CHANGE — 1 GB → 2 GB (maxFileSize)", () => {
     // 1073741824 bytes = 1.0 GB
     // 2147483648 bytes = 2.0 GB
     render(
       <AuditMetadataDisplay
         action="USER_QUOTA_CHANGE"
-        metadata={{ oldQuota: 1073741824, newQuota: 2147483648 }}
+        metadata={{ oldMaxFileSize: 1073741824, newMaxFileSize: 2147483648 }}
       />,
     );
 
@@ -354,13 +353,13 @@ describe("AuditMetadataDisplay", () => {
     expect(screen.getByText(/2\.0 GB/)).toBeInTheDocument();
   });
 
-  it("formats bytes correctly for USER_QUOTA_CHANGE — bytes to KB", () => {
+  it("formats bytes correctly for USER_QUOTA_CHANGE — bytes to KB (maxTotalStorage)", () => {
     // 512 bytes stays as "512 B" (< 1024)
     // 1536 bytes = 1.5 KB
     render(
       <AuditMetadataDisplay
         action="USER_QUOTA_CHANGE"
-        metadata={{ oldQuota: 512, newQuota: 1536 }}
+        metadata={{ oldMaxTotalStorage: 512, newMaxTotalStorage: 1536 }}
       />,
     );
 
@@ -378,16 +377,18 @@ describe("AuditMetadataDisplay", () => {
 
     // Values should be rendered
     expect(screen.getByText("My Share")).toBeInTheDocument();
-    expect(screen.getByText("Yes")).toBeInTheDocument();
+    // Boolean true renders as t("metadata.yes") which the mock returns as "yes"
+    expect(screen.getByText("yes")).toBeInTheDocument();
   });
 
-  it("renders boolean false as 'No' in generic metadata", () => {
+  it("renders boolean false as i18n 'no' key in generic metadata", () => {
     render(<AuditMetadataDisplay action="SHARE_UPDATE" metadata={{ passwordProtected: false }} />);
 
-    expect(screen.getByText("No")).toBeInTheDocument();
+    // Boolean false renders as t("metadata.no") which the mock returns as "no"
+    expect(screen.getByText("no")).toBeInTheDocument();
   });
 
-  it("renders array values joined with comma in generic metadata", () => {
+  it("renders array values with Intl.ListFormat in generic metadata", () => {
     render(
       <AuditMetadataDisplay
         action="GROUP_MEMBER_ADD"
@@ -395,7 +396,8 @@ describe("AuditMetadataDisplay", () => {
       />,
     );
 
-    expect(screen.getByText("alice, bob, carol")).toBeInTheDocument();
+    // Intl.ListFormat with en-US locale produces "alice, bob, and carol"
+    expect(screen.getByText("alice, bob, and carol")).toBeInTheDocument();
   });
 
   it("renders null value as em-dash in generic metadata", () => {
@@ -404,8 +406,8 @@ describe("AuditMetadataDisplay", () => {
     expect(screen.getByText("—")).toBeInTheDocument();
   });
 
-  it("does not render quota format for USER_QUOTA_CHANGE when keys are missing", () => {
-    // Falls through to generic rendering when oldQuota/newQuota are absent
+  it("does not render quota format for USER_QUOTA_CHANGE when byte keys are missing", () => {
+    // Falls through to generic rendering when oldMaxFileSize/newMaxFileSize/etc. are absent
     render(
       <AuditMetadataDisplay action="USER_QUOTA_CHANGE" metadata={{ reason: "admin override" }} />,
     );

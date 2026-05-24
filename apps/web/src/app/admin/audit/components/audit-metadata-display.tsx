@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 interface AuditMetadataDisplayProps {
   action: string;
@@ -30,21 +30,39 @@ function safeTranslate(t: ReturnType<typeof useTranslations>, key: string): stri
 
 export function AuditMetadataDisplay({ action, metadata }: AuditMetadataDisplayProps) {
   const t = useTranslations("audit.metadata");
+  const locale = useLocale();
 
   if (!metadata || Object.keys(metadata).length === 0) return null;
 
-  // Special rendering for quota changes
-  if (
-    action === "USER_QUOTA_CHANGE" &&
-    metadata.oldQuota !== undefined &&
-    metadata.newQuota !== undefined
-  ) {
-    return (
-      <span className="text-sm">
-        {formatBytes(metadata.oldQuota as string | number)} →{" "}
-        {formatBytes(metadata.newQuota as string | number)}
-      </span>
-    );
+  // Special rendering for quota changes — server emits oldMaxFileSize/newMaxFileSize/oldMaxTotalStorage/newMaxTotalStorage
+  if (action === "USER_QUOTA_CHANGE") {
+    const hasByteFields =
+      metadata.oldMaxFileSize !== undefined ||
+      metadata.newMaxFileSize !== undefined ||
+      metadata.oldMaxTotalStorage !== undefined ||
+      metadata.newMaxTotalStorage !== undefined;
+
+    if (hasByteFields) {
+      return (
+        <div className="space-y-1 text-sm">
+          {metadata.oldMaxFileSize !== undefined && metadata.newMaxFileSize !== undefined && (
+            <div>
+              {safeTranslate(t, "maxFileSize")}:{" "}
+              {formatBytes(metadata.oldMaxFileSize as string | number)} →{" "}
+              {formatBytes(metadata.newMaxFileSize as string | number)}
+            </div>
+          )}
+          {metadata.oldMaxTotalStorage !== undefined &&
+            metadata.newMaxTotalStorage !== undefined && (
+              <div>
+                {safeTranslate(t, "maxTotalStorage")}:{" "}
+                {formatBytes(metadata.oldMaxTotalStorage as string | number)} →{" "}
+                {formatBytes(metadata.newMaxTotalStorage as string | number)}
+              </div>
+            )}
+        </div>
+      );
+    }
   }
 
   // Generic key-value rendering
@@ -53,11 +71,13 @@ export function AuditMetadataDisplay({ action, metadata }: AuditMetadataDisplayP
       {Object.entries(metadata).map(([key, value]) => {
         const label = safeTranslate(t, key);
         const displayValue = Array.isArray(value)
-          ? value.join(", ")
+          ? new Intl.ListFormat(locale, { style: "long", type: "conjunction" }).format(
+              value.map(String),
+            )
           : typeof value === "boolean"
             ? value
-              ? "Yes"
-              : "No"
+              ? t("yes" as never)
+              : t("no" as never)
             : String(value ?? "—");
 
         return (
