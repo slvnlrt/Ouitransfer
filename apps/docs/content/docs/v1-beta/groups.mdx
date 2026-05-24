@@ -95,11 +95,9 @@ Deleting a group **does not delete its members**. Their `groupId` is set to `nul
 
 Groups can be linked to Active Directory groups via the `ldapDn` field on the Group model. When an LDAP sync runs, users who belong to the mapped AD group are automatically assigned to the corresponding Ouitransfer group.
 
-<Callout type="warn">
-  The `ldapDn` field is **not yet exposed** in the Groups UI or the REST API body schema. To configure a mapping today, set the `ldapDn` column directly in the database (e.g., via Prisma Studio or a SQL query). A future release will add UI and API support for this field.
-</Callout>
+The **LDAP DN** field is available in the Groups UI (in the Create and Edit group dialogs) and in the REST API body for both `POST /groups` and `PUT /groups/:id`. Set it to the distinguished name of the corresponding Active Directory group (e.g., `CN=Finance,OU=Groups,DC=corp,DC=local`).
 
-The `ldapDn` value appears as a read-only field in API responses (`GET /groups`) and in the LDAP configuration page's group mapping summary.
+The `ldapDn` value is also returned in API responses (`GET /groups`, `GET /groups/:id`) and in the LDAP configuration page's group mapping summary.
 
 For setup instructions, see the [LDAP Configuration](/docs/v1-beta/ldap-configuration) documentation.
 
@@ -129,6 +127,7 @@ All endpoints require a valid admin session. Non-admin requests receive `403 For
 {
   "name": "Engineering",
   "description": "Engineering team",
+  "ldapDn": "CN=Engineering,OU=Groups,DC=corp,DC=local",
   "maxFileSizeOverride": null,
   "maxTotalStorageOverride": "21474836480"
 }
@@ -140,6 +139,7 @@ All endpoints require a valid admin session. Non-admin requests receive `403 For
 {
   "name": "Engineering",
   "description": null,
+  "ldapDn": null,
   "maxFileSizeOverride": "0",
   "maxTotalStorageOverride": null
 }

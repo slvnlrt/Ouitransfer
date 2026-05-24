@@ -168,17 +168,9 @@ If the test fails, the response includes an error message describing the failure
 
 ## Group mapping
 
-Ouitransfer groups can be mapped to AD groups so that sync automatically assigns users to the correct group. The mapping is stored as the `ldapDn` column on the Group model — each group can hold the distinguished name of the corresponding AD group.
+Ouitransfer groups can be mapped to AD groups so that sync automatically assigns users to the correct group. The mapping is stored as the `ldapDn` field on the Group model — each group can hold the distinguished name of the corresponding AD group.
 
-<Callout type="warn">
-  The `ldapDn` field is **not yet exposed** in the Groups UI or the REST API body schema. To configure a mapping today, set the `ldapDn` column directly in the database (e.g., via Prisma Studio or a SQL query). A future release will add UI and API support for this field.
-</Callout>
-
-Example (Prisma Studio or direct SQL):
-
-```sql
-UPDATE "Group" SET "ldapDn" = 'CN=Finance,OU=Groups,DC=corp,DC=local' WHERE "name" = 'Finance';
-```
+Configure the mapping in the **Groups** management UI: open the Create or Edit dialog for a group and fill in the **LDAP DN** field with the distinguished name of the corresponding AD group (e.g., `CN=Finance,OU=Groups,DC=corp,DC=local`). You can also set it via the REST API (`POST /groups` or `PUT /groups/:id`).
 
 During each sync, for each imported user, Ouitransfer checks the user's `memberOf` attribute (direct group memberships only) and assigns the first matching group.
 
