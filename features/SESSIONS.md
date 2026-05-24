@@ -1,5 +1,20 @@
 # Session Log
 
+## 2026-05-24 (session 9)
+
+**8.1 — Audit Trail / Activity Log — Review Fixes**
+
+- **Spec compliance review** (`features/reviews/8.1-auditing-spec.md`): 1 Critical, 10 Important, 9 Minor — all fixed
+- **Code quality review** (`features/reviews/8.1-auditing-quality.md`): 4 Critical, 12 Important, 13 Minor — all fixed
+- **Critical fixes**: Date filter (ISO datetime), invite token ID (not secret), real batch deletion (raw SQL LIMIT), retention scheduler boot run, maxViews atomic enforcement
+- **Event metadata enrichments**: Recipient emails, changed fields, hasPassword/expiration, consistent targetId, ErrorCodes constants, first-user attribution, background image fileName
+- **Export quality**: RFC 4180 CSV quoting, UTF-8 BOM, compound cursor pagination, streaming error handling, backpressure, truncation warning
+- **Frontend**: Action category coloring, user category in filters, responsive columns, quota metadata alignment, hardcoded English → i18n, Intl.ListFormat for arrays
+- **Tests**: maxViews concurrency test (10 parallel, 5 succeed), retention scheduler tests (13), racy setTimeout → setImmediate, share access double-fetch eliminated
+- **Test totals**: 49 server test files (490 tests) + 26 web test files (319 tests) + 2 shared (14 tests) = **823 total**
+
+---
+
 ## 2026-05-23 (session 8)
 
 **8.1 — Audit Trail / Activity Log**
