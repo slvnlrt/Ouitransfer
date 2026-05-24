@@ -7,7 +7,7 @@ This guide provides comprehensive configuration instructions for integrating OUI
 
 > **Overview:** OUITRANSFER supports any S3-compatible storage provider, giving you flexibility to choose the solution that best fits your needs and budget.
 
-> **Note:** Some configuration options (like presigned URL expiration) apply to **all storage types**, including filesystem storage. These are marked accordingly in the documentation.
+> **Note:** Some configuration options (like presigned URL expiration) apply regardless of which S3-compatible provider you use (RustFS built-in or external S3). These are marked accordingly in the documentation.
 
 ## When to use S3-compatible storage
 
@@ -217,9 +217,9 @@ S3_FORCE_PATH_STYLE=false
 
 ## Presigned URL configuration
 
-OUITRANSFER uses presigned URLs to provide secure, temporary access to files stored in **both S3-compatible storage and filesystem storage**. These URLs have a configurable expiration time to balance security and usability.
+OUITRANSFER uses presigned URLs to provide secure, temporary access to files. These URLs have a configurable expiration time to balance security and usability.
 
-> **Note:** This configuration applies to **all storage types** (S3, filesystem, etc.), not just S3-compatible storage.
+> **Note:** This configuration applies to both the built-in RustFS storage and external S3 providers.
 
 ### Understanding presigned URLs
 
@@ -227,8 +227,8 @@ Presigned URLs are temporary URLs that allow direct access to files without expo
 
 **How it works:**
 
-- **S3 Storage:** URLs are signed by AWS/S3-compatible provider credentials
-- **Filesystem Storage:** URLs use temporary tokens that are validated by OUITRANSFER server
+- URLs are signed by the S3-compatible provider credentials (RustFS or external S3)
+- The signature encodes the expiration time — expired URLs are rejected by the storage service
 
 **Default behavior:**
 
@@ -365,10 +365,10 @@ After configuring your S3 provider, test the connection by:
 
 ## Switching between providers
 
-To switch from filesystem to S3 storage or between S3 providers:
+To switch from the built-in RustFS storage to an external S3 provider (or between S3 providers):
 
-1. **Backup existing files** if switching from filesystem storage
-2. **Update environment variables** with new provider settings
+1. **Backup existing files** before switching — files are not automatically migrated
+2. **Update environment variables** with the new provider settings (set `ENABLE_S3=true` for external S3)
 3. **Restart the OUITRANSFER container** to apply changes
 4. **Test file operations** to ensure everything works correctly
 
