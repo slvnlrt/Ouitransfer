@@ -86,16 +86,20 @@ Both provide endpoint exploration, request builders, and response visualization 
 | GET | `/auth/me` | — | Get current authenticated user (returns `null` if not logged in) |
 | POST | `/auth/forgot-password` | — | Request password reset email |
 | POST | `/auth/reset-password` | — | Reset password using token from email |
-| POST | `/auth/refresh` | — | Refresh access token using refresh token cookie |
+| POST | `/auth/refresh` | — | Refresh access token using refresh token cookie (token rotation — old refresh token is invalidated) |
 | GET | `/auth/config` | — | Get auth configuration (whether password auth is enabled) |
 | GET | `/auth/trusted-devices` | User | List trusted 2FA devices |
 | DELETE | `/auth/trusted-devices/:id` | User | Remove a specific trusted device |
 | DELETE | `/auth/trusted-devices` | User | Remove all trusted devices |
 | GET | `/csrf-token` | — | Get a CSRF token (sets `_csrf` cookie) |
 
+¹ These endpoints behave differently based on session state: `/auth/me` returns the current user if authenticated, `null` otherwise. `/auth/logout` clears session cookies regardless of whether a valid session exists. Neither requires a session to succeed.
+
 **Login** returns the user object on success. If the account has 2FA enabled, it returns `{ requiresTwoFactor: true, challengeToken: "..." }` — pass the challenge token and TOTP code to `/auth/2fa/login` to complete authentication.
 
 **Rate limits:** Login: 5 attempts per minute per IP. Forgot password: 3 per minute per IP. Reset password: 3 per minute per IP. Token refresh: 10 per minute per IP.
+
+**Account lockout:** After repeated failed login attempts, the account may be locked and return an `ACCOUNT_LOCKED` error code with `403 Forbidden`. Locked accounts must be unlocked by an administrator via `PATCH /users/:id/activate`.
 
 ---
 
@@ -401,6 +405,7 @@ These endpoints provide direct S3 object operations. Most clients should use the
 |------|---------|
 | 200 | OK — request succeeded |
 | 201 | Created — resource created successfully |
+| 202 | Accepted — download queued (large reverse-share file download) |
 | 302 | Redirect — OAuth/OIDC flow redirects |
 | 400 | Bad Request — validation failure (Zod schema) |
 | 401 | Unauthorized — not authenticated, invalid token, or CSRF mismatch |
@@ -443,3 +448,7 @@ Global rate limit: **100 requests per minute per IP**. Individual endpoints may 
 | `GET /csrf-token` | 30 / minute |
 
 When rate-limited, the server returns `429 Too Many Requests` with a `retryAfter` field indicating seconds until the limit resets.
+
+### Request size limits
+
+The API enforces a **50 MB** body size limit on non-multipart requests. File uploads bypass this limit by using S3 presigned URLs — the file content goes directly to S3, not through the API server.
