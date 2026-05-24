@@ -9,15 +9,15 @@ Configure user and group permissions for seamless bind mount compatibility acros
 
 OUITRANSFER supports runtime UID/GID configuration to resolve permission conflicts when using bind mounts. This eliminates the need for manual permission management on your host system.
 
-**⚠️ Important**: OUITRANSFER uses **UID 1000, GID 1000** by default, which matches the standard Linux convention. However, some systems may use different UID/GID values, which can cause permission issues with bind mounts.
+**⚠️ Important**: OUITRANSFER uses **UID 1001, GID 1001** by default. Many Linux systems use UID/GID 1000 for the first user, which creates a mismatch and causes permission issues with bind mounts.
 
 ## The Permission Problem
 
 ### Why This Happens
 
-- **OUITRANSFER Default**: UID 1000, GID 1000 (container)
+- **OUITRANSFER Default**: UID 1001, GID 1001 (container)
 - **Linux Standard**: UID 1000, GID 1000 (most host systems)
-- **Result**: Usually compatible, but some systems may use different values
+- **Result**: Mismatch causes permission errors on bind-mounted directories
 
 ### Common Error Scenarios
 
