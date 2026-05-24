@@ -345,7 +345,9 @@ than 1 day), but an admin setting this intentionally low is unlikely in practice
 
 ---
 
-## TD-25 — Scripts Python de gestion des traductions à auditer et mettre à jour
+## TD-25 — Scripts pre-refactor à auditer : traductions Python + cleanup-orphan-files.ts
+
+### Sous-tâche A — Scripts Python de gestion des traductions
 
 **Context:** Les scripts Python dans `apps/web/scripts/` (`check_translations.py`,
 `sync_translations.py`, `prune_translations.py`, `clean_translations.py`, `run_translations.py`)
@@ -375,6 +377,24 @@ les éventuels bugs ou hypothèses obsolètes.
 `translation-management.mdx` qui date du même refactor
 **Severity:** Low — les scripts ne sont pas dans le chemin critique, mais s'ils sont cassés
 les 21 locales avec placeholder anglais (TD-16, TD-21) ne pourront pas être corrigées proprement
+
+### Sous-tâche B — `apps/server/src/scripts/cleanup-orphan-files.ts`
+
+**Context:** Ce script date du commit initial (pré-refactor). Il est **clairement obsolète** :
+
+- **Ligne 11** : `console.log('Storage mode: S3')` — hardcodé, ne tient pas compte du mode filesystem
+- **Ligne 14** : `new S3StorageProvider()` — instanciation directe, ignore `ENABLE_S3` et le mode local
+- **Ligne 64** : référence `node dist/scripts/cleanup-orphan-files.js` — chemin pré-ESM potentiellement incorrect
+- Ne gère que les orphelins DB→S3 (fichiers en DB absents du storage). L'inverse (objets S3 sans entrée DB) n'est pas couvert.
+- N'utilise pas la factory/abstraction `StorageProvider` qui existe depuis le refactor
+
+**Options :**
+1. **Réécrire** pour utiliser la factory de storage (`getStorageProvider()`) et couvrir les deux sens (DB→S3 et S3→DB)
+2. **Supprimer** si le script n'est plus nécessaire (TD-17 décrit déjà le risque d'orphelins comme acceptable)
+3. **Garder + documenter** l'état cassé dans un header de fichier
+
+**Found during:** Documentation update session (mai 2026) — découvert en cherchant des scripts pre-refactor
+**Severity:** Low — script utilitaire off-path, pas dans le chemin de production
 
 ---
 
