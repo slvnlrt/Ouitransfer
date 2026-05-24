@@ -1,10 +1,14 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { ScrollText } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useMemo } from "react";
 
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { PageLayout } from "@/components/layout/page-layout";
+import { listUsers } from "@/http/endpoints";
+import { queryKeys } from "@/lib/query-keys";
 
 import { AuditLogExport } from "./components/audit-log-export";
 import { AuditLogFilters } from "./components/audit-log-filters";
@@ -24,6 +28,29 @@ export default function AuditPage() {
     setFilters,
     clearFilters,
   } = useAuditLogs();
+
+  const usersQuery = useQuery({
+    queryKey: queryKeys.users.list(),
+    queryFn: async ({ signal }) => {
+      const response = await listUsers({ signal });
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const userMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const user of usersQuery.data ?? []) {
+      const firstName = user.firstName.trim();
+      const lastName = user.lastName.trim();
+      const displayName =
+        firstName && lastName
+          ? `${firstName} ${lastName}`
+          : firstName || lastName || user.username || user.email;
+      map.set(user.id, displayName);
+    }
+    return map;
+  }, [usersQuery.data]);
 
   return (
     <ProtectedRoute requireAdmin>
@@ -49,6 +76,7 @@ export default function AuditPage() {
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setPage}
+            userMap={userMap}
           />
         </div>
       </PageLayout>

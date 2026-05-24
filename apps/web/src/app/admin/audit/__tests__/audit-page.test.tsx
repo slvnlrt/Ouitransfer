@@ -191,7 +191,7 @@ describe("AuditLogTable", () => {
     expect(screen.getByText("actions.LOGIN_SUCCESS")).toBeInTheDocument();
   });
 
-  it("renders abbreviated user ID for authenticated user", () => {
+  it("renders abbreviated user ID for authenticated user when no userMap is provided", () => {
     const log: AuditLogEntry = {
       ...BASE_LOG,
       userId: "user-abc123def456",
@@ -200,6 +200,36 @@ describe("AuditLogTable", () => {
     render(<AuditLogTable {...DEFAULT_TABLE_PROPS} logs={[log]} total={1} />);
 
     // Shows first 8 chars of userId followed by ellipsis
+    expect(screen.getByText("user-abc…")).toBeInTheDocument();
+  });
+
+  it("renders display name from userMap when userId is in the map", () => {
+    const log: AuditLogEntry = {
+      ...BASE_LOG,
+      userId: "user-abc123def456",
+    };
+
+    const userMap = new Map([["user-abc123def456", "Jane Doe"]]);
+
+    render(<AuditLogTable {...DEFAULT_TABLE_PROPS} logs={[log]} total={1} userMap={userMap} />);
+
+    // Shows the resolved display name instead of the truncated ID
+    expect(screen.getByText("Jane Doe")).toBeInTheDocument();
+    expect(screen.queryByText("user-abc…")).not.toBeInTheDocument();
+  });
+
+  it("falls back to abbreviated user ID when userMap does not contain the userId", () => {
+    const log: AuditLogEntry = {
+      ...BASE_LOG,
+      userId: "user-abc123def456",
+    };
+
+    // userMap exists but doesn't have this userId
+    const userMap = new Map([["other-user-id", "Other User"]]);
+
+    render(<AuditLogTable {...DEFAULT_TABLE_PROPS} logs={[log]} total={1} userMap={userMap} />);
+
+    // Falls back to truncated ID
     expect(screen.getByText("user-abc…")).toBeInTheDocument();
   });
 

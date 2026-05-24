@@ -26,6 +26,7 @@ interface AuditLogTableProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  userMap?: Map<string, string>;
 }
 
 // System actions that should display a "System" badge instead of a user
@@ -128,6 +129,7 @@ export function AuditLogTable({
   currentPage,
   totalPages,
   onPageChange,
+  userMap,
 }: AuditLogTableProps) {
   const t = useTranslations("audit");
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
@@ -173,7 +175,13 @@ export function AuditLogTable({
                   <TableCell className="whitespace-nowrap">{formatDate(log.createdAt)}</TableCell>
                   <TableCell>
                     {log.userId ? (
-                      <span className="font-mono text-xs">{log.userId.slice(0, 8)}…</span>
+                      <span className="text-sm">
+                        {userMap?.get(log.userId) ?? (
+                          <span className="font-mono text-xs text-muted-foreground">
+                            {log.userId.slice(0, 8)}…
+                          </span>
+                        )}
+                      </span>
                     ) : isSystemAction ? (
                       <Badge variant="secondary">{t("table.system")}</Badge>
                     ) : (
