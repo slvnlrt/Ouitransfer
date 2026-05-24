@@ -11,7 +11,8 @@
 - **Export quality**: RFC 4180 CSV quoting, UTF-8 BOM, compound cursor pagination, streaming error handling, backpressure, truncation warning
 - **Frontend**: Action category coloring, user category in filters, responsive columns, quota metadata alignment, hardcoded English → i18n, Intl.ListFormat for arrays
 - **Tests**: maxViews concurrency test (10 parallel, 5 succeed), retention scheduler tests (13), racy setTimeout → setImmediate, share access double-fetch eliminated
-- **Test totals**: 49 server test files (490 tests) + 26 web test files (319 tests) + 2 shared (14 tests) = **823 total**
+- **Additional fixes (post-review)**: User name resolution in audit table (userId → firstName+lastName), `setInterval` → chained `setTimeout` with guard for login-attempts and refresh-token cleanups in `server.ts` (pre-existing but part of 8.1 review), SQL column name confirmed correct
+- **Test totals**: 49 server test files (490 tests) + 26 web test files (321 tests) + 2 shared (14 tests) = **825 total**
 
 ---
 
