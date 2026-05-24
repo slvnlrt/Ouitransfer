@@ -1,5 +1,21 @@
 # Session Log
 
+## 2026-05-24 (session 10)
+
+**Documentation Update — Full audit and update of apps/docs**
+
+- **Task 1 — Activity Log page**: Created `activity-log.mdx` (new), updated `meta.json` (moved to `---Configuration---`). Review fixes: removed nonexistent UI User filter, changed "7-day floor enforced" to recommended minimum, corrected action category list (10 categories), added UTC day boundary note, count ~77 actions, added TECHNICAL-DEBT item for server-side validation
+- **Task 2 — API reference**: Full rewrite of `api.mdx` covering ~146 routes across 19 modules. Review fixes: corrected error response shape (`{ error, code, statusCode, timestamp, details? }`), removed fabricated 202 status, fixed 413→400 for quota violations, added CSRF-on-public-POST callout, fixed refresh response (cookies only, no body), added rate-limit shape divergence note, fixed account lockout (time-based not admin-reset), added 24h embed token expiry
+- **Task 3 — Feature pages**: `quotas.mdx` updated (removed nonexistent "persistent banner", corrected system status bar description). `ldap-configuration.mdx`: fixed two OUITRANSFER formatting typos. `groups.mdx` and `quick-share.mdx` were accurate — no changes needed
+- **Task 4 — OIDC pages**: Added Pocket ID to official providers list in `index.mdx` (was in cards/meta but missing from text)
+- **Task 5 — Configuration pages**: Fixed `uid-gid-configuration.mdx` (UID/GID default is 1001 not 1000). Fixed `reverse-proxy-configuration.mdx` (CSP var name: `CSP_STORAGE_ORIGINS` not `CSP_CONNECT_SOURCES`). Other config pages accurate
+- **Task 6 — Getting started pages**: Fixed `quick-start.mdx` (UID/GID defaults 1001). Fixed `manual-installation.mdx` (git URL typo, DB filename `ouitransfer.db`)
+- **Task 7 — Architecture/remaining pages**: All accurate — `architecture.mdx`, `github-architecture.mdx`, `available-languages.mdx` (23 languages confirmed), `translation-management.mdx`, `index.mdx` verified correct
+
+**Commits**: `a22a84e`, `95ad9c7`, `c6482d1`, `651cc57`, `ba359fe`, `15d9ae9`, `3a76030`, `1bc9fa4`, `60e0f69`
+
+---
+
 ## 2026-05-24 (session 9)
 
 **8.1 — Audit Trail / Activity Log — Review Fixes**
