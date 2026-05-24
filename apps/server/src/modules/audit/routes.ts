@@ -42,8 +42,8 @@ export const auditRoutes: FastifyPluginAsyncZod = async (app) => {
               ipAddress: z.string(),
               userAgent: z.string().nullable(),
               metadata: z.unknown().nullable(),
-              targetType: z.string().nullable().optional(),
-              targetId: z.string().nullable().optional(),
+              targetType: z.string().nullable(),
+              targetId: z.string().nullable(),
               createdAt: z.date(),
             }),
           ),
@@ -119,11 +119,19 @@ export const auditRoutes: FastifyPluginAsyncZod = async (app) => {
         search: q.search,
       });
 
-      for await (const chunk of generator) {
-        reply.raw.write(chunk);
+      try {
+        for await (const chunk of generator) {
+          const canContinue = reply.raw.write(chunk);
+          if (!canContinue) {
+            await new Promise<void>((resolve) => reply.raw.once("drain", resolve));
+          }
+        }
+        reply.raw.end();
+      } catch (error) {
+        request.log.error({ err: error }, "Audit export stream failed");
+        reply.raw.destroy(error instanceof Error ? error : new Error(String(error)));
       }
 
-      reply.raw.end();
       return reply;
     },
   });

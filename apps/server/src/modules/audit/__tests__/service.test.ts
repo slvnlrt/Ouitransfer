@@ -6,8 +6,8 @@ vi.mock("../../../shared/prisma.js", () => ({
       create: vi.fn(),
       findMany: vi.fn(),
       count: vi.fn(),
-      deleteMany: vi.fn(),
     },
+    $executeRawUnsafe: vi.fn(),
   },
 }));
 
@@ -235,7 +235,9 @@ describe("Audit service", () => {
         }),
       );
 
-      expect(chunks[0]).toContain(
+      // chunks[0] is the UTF-8 BOM; chunks[1] is the header row
+      expect(chunks[0]).toBe("\uFEFF");
+      expect(chunks[1]).toContain(
         "id,userId,action,ipAddress,userAgent,targetType,targetId,metadata,createdAt",
       );
     });
@@ -257,23 +259,24 @@ describe("Audit service", () => {
   });
 
   describe("deleteOldAuditLogs", () => {
-    it("deletes records older than given date in batches", async () => {
-      vi.mocked(prisma.auditLog.deleteMany)
-        .mockResolvedValueOnce({ count: 1000 } as never)
-        .mockResolvedValueOnce({ count: 500 } as never);
+    it("deletes in batches using raw SQL and returns total", async () => {
+      vi.mocked(prisma.$executeRawUnsafe)
+        .mockResolvedValueOnce(1000) // first batch: full batch → continue
+        .mockResolvedValueOnce(500); // second batch: < 1000 → stop
 
       const result = await deleteOldAuditLogs(new Date("2025-01-01"));
 
       expect(result).toBe(1500);
-      expect(prisma.auditLog.deleteMany).toHaveBeenCalledTimes(2);
+      expect(prisma.$executeRawUnsafe).toHaveBeenCalledTimes(2);
     });
 
     it("returns 0 when nothing to delete", async () => {
-      vi.mocked(prisma.auditLog.deleteMany).mockResolvedValue({ count: 0 } as never);
+      vi.mocked(prisma.$executeRawUnsafe).mockResolvedValueOnce(0);
 
       const result = await deleteOldAuditLogs(new Date("2025-01-01"));
 
       expect(result).toBe(0);
+      expect(prisma.$executeRawUnsafe).toHaveBeenCalledTimes(1);
     });
   });
 

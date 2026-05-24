@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { AuditLog } from "../../generated/prisma/client.js";
 
 import { prisma } from "../../shared/prisma.js";
+import { getLogger } from "../../utils/logger.js";
 
 // ── Action enum ──────────────────────────────────────────────────────────────
 
@@ -143,14 +144,23 @@ const METADATA_DENYLIST = new Set([
 
 const MAX_USER_AGENT_LENGTH = 512;
 
-function sanitizeMetadata(metadata: Record<string, unknown> | undefined): string | null {
-  if (!metadata) return null;
-  const sanitized: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(metadata)) {
-    if (!METADATA_DENYLIST.has(key)) {
-      sanitized[key] = value;
+function deepSanitize(obj: Record<string, unknown>): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(obj)) {
+    if (METADATA_DENYLIST.has(key)) continue;
+    if (value !== null && typeof value === "object" && !Array.isArray(value)) {
+      const nested = deepSanitize(value as Record<string, unknown>);
+      if (Object.keys(nested).length > 0) result[key] = nested;
+    } else {
+      result[key] = value;
     }
   }
+  return result;
+}
+
+function sanitizeMetadata(metadata: Record<string, unknown> | undefined): string | null {
+  if (!metadata) return null;
+  const sanitized = deepSanitize(metadata);
   return Object.keys(sanitized).length > 0 ? JSON.stringify(sanitized) : null;
 }
 
@@ -237,7 +247,8 @@ export async function getAuditLogs(params: {
     try {
       return { ...log, metadata: JSON.parse(log.metadata) as unknown };
     } catch {
-      return { ...log, metadata: log.metadata };
+      getLogger().warn({ logId: log.id }, "Failed to parse audit log metadata");
+      return { ...log, metadata: null };
     }
   });
 
@@ -248,6 +259,15 @@ export async function getAuditLogs(params: {
 
 const EXPORT_BATCH_SIZE = 1000;
 const EXPORT_MAX_ROWS = 100_000;
+
+/** RFC 4180 — wrap field in double-quotes if it contains special characters. */
+function csvField(value: string | null | undefined): string {
+  if (value === null || value === undefined) return "";
+  if (value.includes(",") || value.includes('"') || value.includes("\n") || value.includes("\r")) {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+  return value;
+}
 
 export async function* exportAuditLogs(params: {
   format: "csv" | "json";
@@ -285,12 +305,15 @@ export async function* exportAuditLogs(params: {
   let totalExported = 0;
 
   if (params.format === "csv") {
+    // UTF-8 BOM for Excel compatibility (FIX 5)
+    yield "\uFEFF";
     yield "id,userId,action,ipAddress,userAgent,targetType,targetId,metadata,createdAt\n";
 
     while (totalExported < EXPORT_MAX_ROWS) {
       const batch = await prisma.auditLog.findMany({
         where,
-        orderBy: { createdAt: "desc" },
+        // Compound orderBy: break createdAt ties by id to avoid skipping rows (FIX 3)
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
         take: Math.min(EXPORT_BATCH_SIZE, EXPORT_MAX_ROWS - totalExported),
         ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
       });
@@ -298,14 +321,28 @@ export async function* exportAuditLogs(params: {
       if (batch.length === 0) break;
 
       for (const log of batch) {
-        const metadataStr = log.metadata ? `"${log.metadata.replace(/"/g, '""')}"` : "";
-        yield `${log.id},${log.userId ?? ""},${log.action},${log.ipAddress},${(log.userAgent ?? "").replace(/,/g, " ")},${log.targetType ?? ""},${log.targetId ?? ""},${metadataStr},${log.createdAt.toISOString()}\n`;
+        const fields = [
+          log.id,
+          log.userId ?? "",
+          log.action,
+          log.ipAddress,
+          log.userAgent ?? "",
+          log.targetType ?? "",
+          log.targetId ?? "",
+          log.metadata ?? "",
+          log.createdAt.toISOString(),
+        ];
+        yield `${fields.map(csvField).join(",")}\n`;
       }
 
       totalExported += batch.length;
       cursor = batch[batch.length - 1]!.id;
 
       if (batch.length < EXPORT_BATCH_SIZE) break;
+    }
+
+    if (totalExported >= EXPORT_MAX_ROWS) {
+      yield `# Export truncated at ${EXPORT_MAX_ROWS} rows. Refine your date range for complete data.\n`;
     }
   } else {
     // JSON format
@@ -315,7 +352,8 @@ export async function* exportAuditLogs(params: {
     while (totalExported < EXPORT_MAX_ROWS) {
       const batch = await prisma.auditLog.findMany({
         where,
-        orderBy: { createdAt: "desc" },
+        // Compound orderBy: break createdAt ties by id to avoid skipping rows (FIX 3)
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
         take: Math.min(EXPORT_BATCH_SIZE, EXPORT_MAX_ROWS - totalExported),
         ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
       });
@@ -339,6 +377,13 @@ export async function* exportAuditLogs(params: {
     }
 
     yield "]";
+
+    if (totalExported >= EXPORT_MAX_ROWS) {
+      getLogger().warn(
+        { totalExported, maxRows: EXPORT_MAX_ROWS },
+        "Audit export truncated at row limit",
+      );
+    }
   }
 }
 
@@ -346,17 +391,28 @@ export async function* exportAuditLogs(params: {
 
 const DELETE_BATCH_SIZE = 1000;
 
+/**
+ * Delete audit logs older than the given date in real batches.
+ *
+ * Prisma's `deleteMany` has no LIMIT — it deletes everything matching in one
+ * statement. We use `$executeRawUnsafe` with a subquery-based LIMIT so each
+ * iteration truly deletes at most DELETE_BATCH_SIZE rows.
+ *
+ * Note: the SQLite column name is `createdAt` (no @map in schema).
+ */
 export async function deleteOldAuditLogs(olderThan: Date): Promise<number> {
   let totalDeleted = 0;
-  let batchDeleted: number;
 
-  do {
-    const result = await prisma.auditLog.deleteMany({
-      where: { createdAt: { lt: olderThan } },
-    });
-    batchDeleted = result.count;
-    totalDeleted += batchDeleted;
-  } while (batchDeleted >= DELETE_BATCH_SIZE);
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const deleted = await prisma.$executeRawUnsafe(
+      `DELETE FROM audit_logs WHERE id IN (SELECT id FROM audit_logs WHERE "createdAt" < ? LIMIT ?)`,
+      olderThan.toISOString(),
+      DELETE_BATCH_SIZE,
+    );
+    totalDeleted += deleted;
+    if (deleted < DELETE_BATCH_SIZE) break;
+  }
 
   return totalDeleted;
 }

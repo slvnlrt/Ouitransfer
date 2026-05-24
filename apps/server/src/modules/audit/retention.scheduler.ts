@@ -76,7 +76,8 @@ export function stopAuditRetentionScheduler(): void {
 
 /**
  * Initialize audit retention on server boot.
- * Also verifies WAL mode.
+ * Also verifies WAL mode and runs an immediate first cleanup so records
+ * are not left stale for up to 24 hours after a restart.
  */
 export async function initAuditRetentionOnBoot(): Promise<void> {
   try {
@@ -89,6 +90,28 @@ export async function initAuditRetentionOnBoot(): Promise<void> {
         "SQLite is NOT in WAL mode. Audit write volume may cause contention. " +
           "Set journal_mode=WAL in your migration or deployment config.",
       );
+    }
+
+    // Run initial cleanup on boot so expired records don't linger up to 24h (FIX C-4)
+    try {
+      const retentionDaysStr = await getConfigValue("auditRetentionDays");
+      const retentionDays = parseInt(retentionDaysStr, 10);
+      if (retentionDays > 0) {
+        const olderThan = new Date(Date.now() - retentionDays * ONE_DAY_MS);
+        const deletedCount = await deleteOldAuditLogs(olderThan);
+        if (deletedCount > 0) {
+          getLogger().info({ deletedCount }, "Audit retention initial cleanup completed");
+          logAuditEvent({
+            action: "AUDIT_RETENTION_CLEANUP",
+            ipAddress: "system",
+            metadata: { deletedCount, olderThan: olderThan.toISOString() },
+          }).catch((err) => {
+            getLogger().error({ err }, "Failed to log audit retention cleanup event");
+          });
+        }
+      }
+    } catch (error) {
+      getLogger().error({ err: error }, "Initial audit retention cleanup failed");
     }
 
     startAuditRetentionScheduler();
