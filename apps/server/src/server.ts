@@ -115,39 +115,53 @@ async function startServer() {
     app.log.warn("Storage not configured — storage may not work");
   }
 
-  // Periodic cleanup of old login attempts (every hour)
-  const cleanupInterval = setInterval(
-    async () => {
+  const ONE_HOUR_MS = 60 * 60 * 1000;
+
+  // --- Login attempts cleanup (every hour, chained setTimeout to prevent overlap) ---
+  let loginAttemptsCleanupHandle: ReturnType<typeof setTimeout> | null = null;
+
+  function scheduleLoginAttemptsCleanup(): void {
+    const handle = setTimeout(async () => {
+      if (loginAttemptsCleanupHandle !== handle) return; // superseded
       try {
         const count = await cleanupOldAttempts();
-        if (count > 0) {
-          app.log.info({ count }, "Cleaned up old login attempts");
-        }
+        if (count > 0) app.log.info({ count }, "Cleaned up old login attempts");
       } catch (err) {
         app.log.error({ err }, "Failed to cleanup login attempts");
       }
-    },
-    60 * 60 * 1000,
-  );
+      if (loginAttemptsCleanupHandle === handle) scheduleLoginAttemptsCleanup();
+    }, ONE_HOUR_MS);
+    loginAttemptsCleanupHandle = handle;
+  }
+  scheduleLoginAttemptsCleanup();
 
-  // Periodic cleanup of expired refresh tokens (every hour)
-  const refreshCleanupInterval = setInterval(
-    async () => {
+  // --- Refresh token cleanup (every hour, chained setTimeout to prevent overlap) ---
+  let refreshCleanupHandle: ReturnType<typeof setTimeout> | null = null;
+
+  function scheduleRefreshCleanup(): void {
+    const handle = setTimeout(async () => {
+      if (refreshCleanupHandle !== handle) return; // superseded
       try {
         const count = await cleanupExpiredTokens();
-        if (count > 0) {
-          app.log.info({ count }, "Cleaned up expired refresh tokens");
-        }
+        if (count > 0) app.log.info({ count }, "Cleaned up expired refresh tokens");
       } catch (err) {
         app.log.error({ err }, "Failed to cleanup refresh tokens");
       }
-    },
-    60 * 60 * 1000,
-  );
+      if (refreshCleanupHandle === handle) scheduleRefreshCleanup();
+    }, ONE_HOUR_MS);
+    refreshCleanupHandle = handle;
+  }
+  scheduleRefreshCleanup();
 
   // Register cleanup hooks BEFORE listen (Fastify rejects hooks after listen)
-  app.addHook("onClose", () => clearInterval(cleanupInterval));
-  app.addHook("onClose", () => clearInterval(refreshCleanupInterval));
+  app.addHook("onClose", () => {
+    if (loginAttemptsCleanupHandle) clearTimeout(loginAttemptsCleanupHandle);
+    loginAttemptsCleanupHandle = null;
+  });
+  app.addHook("onClose", () => {
+    if (refreshCleanupHandle) clearTimeout(refreshCleanupHandle);
+    refreshCleanupHandle = null;
+  });
   app.addHook("onClose", () => stopScheduler());
   app.addHook("onClose", () => stopAuditRetentionScheduler());
 
