@@ -327,6 +327,24 @@ after DB delete, orphaned S3 object is acceptable (GC can clean).
 
 ---
 
+## TD-24 — No server-side validation on `auditRetentionDays` (min: 0, if > 0 then >= 7)
+
+**Context:** The admin UI shows a help text suggesting 7 days as a minimum retention period,
+but neither the client nor the server enforces this. The `auditRetentionDays` setting accepts
+any integer (including negative values) without rejection.
+
+**Fix:**
+- Add Zod validation on the `auditRetentionDays` config setting: `z.number().int().min(0)`
+- Add a refinement: if the value is > 0, it must be >= 7 (i.e., values 1–6 are rejected)
+- Return a clear validation error message explaining the constraint
+- Update the admin UI to show an inline validation error rather than just help text
+
+**Found during:** 8.1 Activity Log docs quality review (mai 2026)
+**Severity:** Low — the scheduler uses the value as-is (a value of 1 would delete logs older
+than 1 day), but an admin setting this intentionally low is unlikely in practice
+
+---
+
 ## TD-19 — Hardcoded QR code element ID prevents multiple instances
 
 **Context:** Both `generate-share-link-modal.tsx` and `quick-share-confirmation.tsx`

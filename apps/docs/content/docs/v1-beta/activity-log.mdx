@@ -5,11 +5,13 @@ icon: ScrollText
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-The Activity Log is an admin-only audit trail that records every significant action performed in Ouitransfer — including authenticated actions, public share access, file uploads and downloads, configuration changes, and system events. It provides a searchable, filterable, and exportable history of what happened, who did it, and when.
+The Activity Log is an admin-only audit trail that records a defined set of actions performed in Ouitransfer — including authenticated actions, public share access, file uploads and downloads, configuration changes, and system events. It provides a searchable, filterable, and exportable history of what happened, who did it, and when.
 
 ## Overview
 
 The Activity Log is accessible at **Admin → Activity Log**. Only administrators can view the log. Regular users have no activity view.
+
+In the API and code, the feature is referred to as the **audit log** — the UI calls it the Activity Log. The two terms refer to the same data.
 
 Each log entry records:
 
@@ -60,8 +62,7 @@ The filter bar above the table lets you narrow down events:
 
 | Filter | Description |
 |--------|-------------|
-| **Action type** | Multi-select dropdown, grouped by category (Auth, Share, File, Reverse Share, Group, LDAP, Admin, System) |
-| **User** | Searchable dropdown to filter events by a specific user |
+| **Action type** | Multi-select dropdown, grouped by category (Auth, Share, File, Folder, Reverse Share, Group, LDAP, Admin, User, System) |
 | **Target type** | Dropdown — filter by entity type (user, share, file, folder, group, etc.) |
 | **Date range** | Two date pickers for "From" and "To" (both inclusive) |
 | **Search** | Text input — searches IP address and action name (partial match) |
@@ -72,7 +73,8 @@ Use **Clear all filters** to reset the filter bar and return to the full log.
 
 - `dateFrom` is inclusive: events on that day from 00:00:00 UTC are included.
 - `dateTo` is inclusive: events on that day up to 23:59:59 UTC are included.
-- Both accept ISO 8601 date strings.
+
+The admin UI date pickers automatically convert selected dates to UTC day boundaries before submitting: "From" becomes `YYYY-MM-DDT00:00:00.000Z` and "To" becomes `YYYY-MM-DDT23:59:59.999Z`. API callers must supply full ISO 8601 datetimes with timezone (e.g., `2026-01-01T00:00:00.000Z`) — date-only strings are not accepted.
 
 ---
 
@@ -85,9 +87,14 @@ Click the **Export** button to download the log as a file. You must set a date r
 | **CSV** | Comma-separated values, UTF-8 with BOM for Excel compatibility |
 | **JSON** | Array of log objects with parsed metadata |
 
-The export applies all active filters (action, user, target type, search, date range).
+The export applies all active filters (action, target type, search, date range).
 
-**Hard ceiling:** exports are capped at **100,000 rows**. If your date range yields more rows, the export is truncated at 100k and a warning comment is appended to the CSV file. To get complete data, narrow the date range and export in multiple batches.
+**Hard ceiling:** exports are capped at **100,000 rows**. If your date range yields more rows, the export is truncated at 100k. Truncation behavior differs by format:
+
+- **CSV:** a warning comment (`# Export truncated at 100000 rows...`) is appended at the end of the file.
+- **JSON:** the file is silently truncated to 100,000 entries (no inline warning).
+
+To get complete data, narrow the date range and export in multiple batches.
 
 The export streams directly to the browser as a file download — no temporary file is stored on the server.
 
@@ -103,19 +110,19 @@ Navigate to **Admin → Settings** (Security section) to configure:
 
 | Setting | Description |
 |---------|-------------|
-| **Audit Retention Days** | Number of days to keep audit logs. Default: `365`. Minimum: `7`. Set to `0` to keep logs forever. |
+| **Audit Retention Days** | Number of days to keep audit logs. Default: `365`. Recommended minimum: `7`. Set to `0` to keep logs forever. |
 
 The retention scheduler runs daily and deletes entries older than the configured threshold in batches of 1,000 rows at a time to avoid locking the database. When a cleanup run completes, an `AUDIT_RETENTION_CLEANUP` event is written to the log with the count of deleted rows.
 
 <Callout type="warn">
-  The minimum retention period is **7 days**. The admin interface enforces this floor — values below 7 are rejected. Setting retention to `0` disables automatic deletion entirely.
+  The recommended minimum retention period is **7 days**. The setting accepts any non-negative integer — values below 7 are not rejected by the server. Set to `0` to keep logs forever (no automatic deletion).
 </Callout>
 
 ---
 
 ## What gets logged
 
-Ouitransfer logs approximately 67 distinct action types across all application modules. The table below lists the categories and representative examples — this is not an exhaustive list.
+Ouitransfer logs approximately 77 distinct action types across all application modules. The table below lists the categories and representative examples — this is not an exhaustive list. Note that the groupings below are for documentation purposes; in the UI dropdown, 2FA actions appear inside the **Auth** category.
 
 ### Auth
 
@@ -242,6 +249,10 @@ Ouitransfer logs approximately 67 distinct action types across all application m
 ## API reference
 
 All audit log endpoints require an active **admin session**. Unauthenticated requests return `401`. Non-admin requests return `403`.
+
+<Callout type="info">
+  The `userId` filter is available as an **API-only** parameter. The admin UI does not expose a user dropdown — filtering by user must be done via direct API calls.
+</Callout>
 
 ### `GET /admin/audit-logs`
 
