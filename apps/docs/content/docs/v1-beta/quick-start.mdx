@@ -335,8 +335,8 @@ These values are set directly in `docker-compose.yaml` and do not normally need 
 | Variable | Service | Default | Description |
 |----------|---------|---------|-------------|
 | `ENABLE_S3` | server | `false` | Set `true` to use external S3 storage (AWS, Backblaze, etc.) instead of built-in RustFS |
-| `OUITRANSFER_UID` | server | `1000` | User ID for server container processes (helps with file permissions) |
-| `OUITRANSFER_GID` | server | `1000` | Group ID for server container processes (helps with file permissions) |
+| `OUITRANSFER_UID` | server | `1001` | User ID for server container processes (helps with file permissions) |
+| `OUITRANSFER_GID` | server | `1001` | Group ID for server container processes (helps with file permissions) |
 | `DEFAULT_LANGUAGE` | web | `en-US` | Default application language ([see available languages](/docs/v1-beta/available-languages)) |
 | `PRESIGNED_URL_EXPIRATION` | server | `3600` | Upload presigned URL expiration in seconds |
 | `PRESIGNED_GET_URL_EXPIRATION` | server | `900` | Download presigned URL expiration in seconds |
