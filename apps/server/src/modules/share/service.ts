@@ -231,7 +231,8 @@ export class ShareService {
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
     }
 
-    const updatedShare = await this.shareRepository.findShareById(shareId);
+    // Update view count in memory to avoid a second DB round-trip
+    const updatedShare = { ...share, views: share.views + 1 };
     return ShareResponseSchema.parse(await this.formatShareResponse(updatedShare));
   }
 

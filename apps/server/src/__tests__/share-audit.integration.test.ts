@@ -4,6 +4,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vites
 // ── Track audit event creation ───────────────────────────────────────────────
 const mockAuditCreate = vi.fn().mockResolvedValue({ id: "audit-1" });
 const mockShareUpdate = vi.fn().mockResolvedValue({});
+const mockShareUpdateMany = vi.fn().mockResolvedValue({ count: 1 });
 const mockShareFindUnique = vi.fn();
 
 vi.mock("../shared/prisma.js", () => ({
@@ -15,6 +16,7 @@ vi.mock("../shared/prisma.js", () => ({
     share: {
       findUnique: mockShareFindUnique,
       update: mockShareUpdate,
+      updateMany: mockShareUpdateMany,
     },
     auditLog: { create: mockAuditCreate },
   },
@@ -103,6 +105,7 @@ describe("Share audit events — integration", () => {
     // Re-apply defaults cleared by clearAllMocks
     mockAuditCreate.mockResolvedValue({ id: "audit-1" });
     mockShareUpdate.mockResolvedValue({});
+    mockShareUpdateMany.mockResolvedValue({ count: 1 });
   });
 
   it("creates SHARE_ACCESS audit event for non-creator access", async () => {
@@ -128,8 +131,8 @@ describe("Share audit events — integration", () => {
       }),
     );
 
-    // Wait a tick for fire-and-forget to settle
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    // Flush microtask queue for fire-and-forget audit event to settle
+    await new Promise((resolve) => setImmediate(resolve));
     expect(mockAuditCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
@@ -165,8 +168,8 @@ describe("Share audit events — integration", () => {
     // Should NOT have called update (no view increment for creator)
     expect(mockShareUpdate).not.toHaveBeenCalled();
 
-    // Wait and verify no audit event
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    // Flush microtask queue and verify no audit event
+    await new Promise((resolve) => setImmediate(resolve));
     expect(mockAuditCreate).not.toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({ action: "SHARE_ACCESS" }),
@@ -195,8 +198,8 @@ describe("Share audit events — integration", () => {
 
     expect(res.statusCode).toBe(401);
 
-    // Wait for fire-and-forget
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    // Flush microtask queue for fire-and-forget audit event to settle
+    await new Promise((resolve) => setImmediate(resolve));
     expect(mockAuditCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
@@ -206,5 +209,54 @@ describe("Share audit events — integration", () => {
         }),
       }),
     );
+  });
+
+  describe("maxViews concurrency", () => {
+    it("allows exactly maxViews successful accesses with concurrent requests", async () => {
+      const MAX_VIEWS = 5;
+      const CONCURRENT_REQUESTS = 10;
+      let currentViews = 0;
+
+      const share = makeShare({
+        id: "share-concurrent",
+        maxViews: MAX_VIEWS,
+        views: 0,
+        creatorId: "other-user", // not the requester, so non-creator path
+      });
+
+      // findUnique returns current view count on each call
+      mockShareFindUnique.mockImplementation(async () => ({
+        ...share,
+        views: currentViews,
+      }));
+
+      // updateMany simulates atomic check-and-increment:
+      // only succeed if currentViews < maxViews (serialised inside the mock)
+      mockShareUpdateMany.mockImplementation(async () => {
+        if (currentViews < MAX_VIEWS) {
+          currentViews++;
+          return { count: 1 };
+        }
+        return { count: 0 };
+      });
+
+      // auditLog.create is fire-and-forget; resolve immediately
+      mockAuditCreate.mockResolvedValue({ id: "audit-concurrent" });
+
+      // Fire 10 concurrent requests (no auth = anonymous non-creator)
+      const requests = Array.from({ length: CONCURRENT_REQUESTS }, () =>
+        app.inject({
+          method: "GET",
+          url: "/shares/share-concurrent",
+        }),
+      );
+
+      const responses = await Promise.all(requests);
+      const successes = responses.filter((r) => r.statusCode === 200);
+      const failures = responses.filter((r) => r.statusCode === 410);
+
+      expect(successes).toHaveLength(MAX_VIEWS);
+      expect(failures).toHaveLength(CONCURRENT_REQUESTS - MAX_VIEWS);
+    });
   });
 });
