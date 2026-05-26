@@ -23,7 +23,6 @@ const envSchema = z.object({
     .url("API_BASE_URL must be a valid URL")
     .default("http://localhost:3333")
     .transform((url) => url.replace(/\/+$/, "")),
-  OAUTH_ALLOWED_REDIRECT_HOSTS: z.string().optional(),
   ALLOWED_IMAGE_HOSTS: z.string().optional(),
   CSP_STORAGE_ORIGINS: z
     .string()
@@ -48,7 +47,6 @@ function getEnv(): Env {
   _cached = envSchema.parse({
     JWT_SECRET: process.env.JWT_SECRET,
     API_BASE_URL: process.env.API_BASE_URL,
-    OAUTH_ALLOWED_REDIRECT_HOSTS: process.env.OAUTH_ALLOWED_REDIRECT_HOSTS,
     ALLOWED_IMAGE_HOSTS: process.env.ALLOWED_IMAGE_HOSTS,
     CSP_STORAGE_ORIGINS: process.env.CSP_STORAGE_ORIGINS,
   });

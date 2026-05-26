@@ -111,6 +111,18 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // API Routing (Development / Docker Dev fallback)
+  // In production with Traefik, this is bypassed because Traefik intercepts /api before it reaches Next.js.
+  // We use this fallback when running `just dev` or `just docker-start` locally.
+  if (pathname === "/api" || pathname.startsWith("/api/")) {
+    if (process.env.NODE_ENV === "development" || process.env.API_BASE_URL) {
+      const targetPath = pathname.replace(/^\/api/, "");
+      const rewriteUrl = new URL((targetPath || "/") + request.nextUrl.search, env.API_BASE_URL);
+      return NextResponse.rewrite(rewriteUrl);
+    }
+  }
+
   const token = request.cookies.get("token")?.value;
   const payload = token ? await getTokenPayload(token) : null;
 
@@ -156,6 +168,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon\\.ico|robots\\.txt|manifest\\.webmanifest|api/|e/).*)",
+    "/((?!_next/static|_next/image|favicon\\.ico|robots\\.txt|manifest\\.webmanifest|e/).*)",
   ],
 };

@@ -64,7 +64,6 @@ const nextConfig: NextConfig = {
       ? parseImageHosts(process.env.ALLOWED_IMAGE_HOSTS)
       : DEFAULT_IMAGE_PATTERNS,
   },
-  serverExternalPackages: [],
   experimental: {
     serverActions: {
       bodySizeLimit: "50mb",

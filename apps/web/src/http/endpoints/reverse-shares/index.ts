@@ -37,7 +37,7 @@ export const createReverseShare = (
   createReverseShareBody: CreateReverseShareBody,
   options?: AxiosRequestConfig,
 ): Promise<CreateReverseShareResult> => {
-  return apiInstance.post(`/api/reverse-shares/create`, createReverseShareBody, options);
+  return apiInstance.post(`/api/reverse-shares`, createReverseShareBody, options);
 };
 
 /**
@@ -47,7 +47,7 @@ export const createReverseShare = (
 export const listUserReverseShares = (
   options?: AxiosRequestConfig,
 ): Promise<ListUserReverseSharesResult> => {
-  return apiInstance.get(`/api/reverse-shares/list`, options);
+  return apiInstance.get(`/api/reverse-shares`, options);
 };
 
 /**
@@ -58,7 +58,7 @@ export const updateReverseShare = (
   updateReverseShareBody: UpdateReverseShareBody,
   options?: AxiosRequestConfig,
 ): Promise<UpdateReverseShareResult> => {
-  return apiInstance.put(`/api/reverse-shares/update`, updateReverseShareBody, options);
+  return apiInstance.put(`/api/reverse-shares`, updateReverseShareBody, options);
 };
 
 /**
@@ -71,7 +71,7 @@ export const updateReverseSharePassword = (
   options?: AxiosRequestConfig,
 ): Promise<UpdateReverseSharePasswordResult> => {
   return apiInstance.put(
-    `/api/reverse-shares/password/${id}`,
+    `/api/reverse-shares/${id}/password`,
     updateReverseSharePasswordBody,
     options,
   );
@@ -85,7 +85,7 @@ export const deleteReverseShare = (
   id: string,
   options?: AxiosRequestConfig,
 ): Promise<DeleteReverseShareResult> => {
-  return apiInstance.delete(`/api/reverse-shares/delete/${id}`, options);
+  return apiInstance.delete(`/api/reverse-shares/${id}`, options);
 };
 
 /**
@@ -150,7 +150,7 @@ export const downloadReverseShareFile = (
   fileId: string,
   options?: AxiosRequestConfig,
 ): Promise<GetPresignedUrlResult> => {
-  return apiInstance.get(`/api/reverse-shares/files/download/${fileId}`, options);
+  return apiInstance.get(`/api/reverse-shares/files/${fileId}/download`, options);
 };
 
 /**

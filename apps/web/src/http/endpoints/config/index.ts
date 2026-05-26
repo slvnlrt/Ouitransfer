@@ -27,5 +27,5 @@ export const bulkUpdateConfigs = (
   bulkUpdateConfigsBody: BulkUpdateConfigsBody,
   options?: AxiosRequestConfig,
 ): Promise<BulkUpdateConfigsResult> => {
-  return apiInstance.patch(`api/config/update/bulk`, bulkUpdateConfigsBody, options);
+  return apiInstance.patch(`/api/app/configs`, bulkUpdateConfigsBody, options);
 };

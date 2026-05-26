@@ -32,8 +32,7 @@ import type {
 
 /**
  * Share management endpoints.
- * NOTE: URL paths here are frontend proxy paths, not direct server routes.
- * See apps/web/src/lib/proxy-routes.ts for the rewrite mapping to actual backend endpoints.
+ * Aligned directly to actual backend REST routes.
  */
 
 /**
@@ -44,7 +43,7 @@ export const createShare = (
   createShareBody: CreateShareBody,
   options?: AxiosRequestConfig,
 ): Promise<CreateShareResult> => {
-  return apiInstance.post(`/api/shares/create`, createShareBody, options);
+  return apiInstance.post(`/api/shares`, createShareBody, options);
 };
 
 /**
@@ -55,7 +54,7 @@ export const updateShare = (
   updateShareBody: UpdateShareBody,
   options?: AxiosRequestConfig,
 ): Promise<UpdateShareResult> => {
-  return apiInstance.put(`/api/shares/update`, updateShareBody, options);
+  return apiInstance.put(`/api/shares`, updateShareBody, options);
 };
 
 /**
@@ -63,7 +62,7 @@ export const updateShare = (
  * @summary List all shares created by the authenticated user
  */
 export const listUserShares = (options?: AxiosRequestConfig): Promise<ListUserSharesResult> => {
-  return apiInstance.get(`/api/shares/list`, options);
+  return apiInstance.get(`/api/shares/me`, options);
 };
 
 /**
@@ -83,7 +82,7 @@ export const getShare = (
       options,
     );
   }
-  return apiInstance.get(`/api/shares/details/${shareId}`, options);
+  return apiInstance.get(`/api/shares/${shareId}`, options);
 };
 
 /**
@@ -94,7 +93,7 @@ export const deleteShare = (
   id: string,
   options?: AxiosRequestConfig,
 ): Promise<DeleteShareResult> => {
-  return apiInstance.delete(`/api/shares/delete/${id}`, options);
+  return apiInstance.delete(`/api/shares/${id}`, options);
 };
 
 /**
@@ -105,11 +104,7 @@ export const updateSharePassword = (
   updateSharePasswordBody: UpdateSharePasswordBody,
   options?: AxiosRequestConfig,
 ): Promise<UpdateSharePasswordResult> => {
-  return apiInstance.patch(
-    `api/shares/password/update/${shareId}`,
-    updateSharePasswordBody,
-    options,
-  );
+  return apiInstance.put(`/api/shares/${shareId}/password`, updateSharePasswordBody, options);
 };
 
 /**
@@ -120,7 +115,11 @@ export const addFiles = (
   addFilesBody: AddFilesBody,
   options?: AxiosRequestConfig,
 ): Promise<AddFilesResult> => {
-  return apiInstance.post(`/api/shares/files/add/${shareId}`, addFilesBody, options);
+  return apiInstance.post(
+    `/api/shares/${shareId}/items`,
+    { files: addFilesBody.files, folders: [] },
+    options,
+  );
 };
 
 /**
@@ -131,8 +130,8 @@ export const removeFiles = (
   removeFilesBody: RemoveFilesBody,
   options?: AxiosRequestConfig,
 ): Promise<RemoveFilesResult> => {
-  return apiInstance.delete(`/api/shares/files/remove/${shareId}`, {
-    data: removeFilesBody,
+  return apiInstance.delete(`/api/shares/${shareId}/items`, {
+    data: { files: removeFilesBody.files, folders: [] },
     ...options,
   });
 };
@@ -145,7 +144,7 @@ export const addRecipients = (
   addRecipientsBody: AddRecipientsBody,
   options?: AxiosRequestConfig,
 ): Promise<AddRecipientsResult> => {
-  return apiInstance.post(`/api/shares/recipients/add/${shareId}`, addRecipientsBody, options);
+  return apiInstance.post(`/api/shares/${shareId}/recipients`, addRecipientsBody, options);
 };
 
 /**
@@ -157,7 +156,7 @@ export const removeRecipients = (
   removeRecipientsBody: RemoveRecipientsBody,
   options?: AxiosRequestConfig,
 ): Promise<RemoveRecipientsResult> => {
-  return apiInstance.delete(`/api/shares/recipients/remove/${shareId}`, {
+  return apiInstance.delete(`/api/shares/${shareId}/recipients`, {
     data: removeRecipientsBody,
     ...options,
   });
@@ -171,7 +170,7 @@ export const createShareAlias = (
   createShareAliasBody: CreateShareAliasBody,
   options?: AxiosRequestConfig,
 ): Promise<CreateShareAliasResult> => {
-  return apiInstance.post(`/api/shares/alias/create/${shareId}`, createShareAliasBody, options);
+  return apiInstance.post(`/api/shares/${shareId}/alias`, createShareAliasBody, options);
 };
 
 /**
@@ -190,7 +189,7 @@ export const getShareByAlias = (
       options,
     );
   }
-  return apiInstance.get(`/api/shares/alias/get/${alias}`, options);
+  return apiInstance.get(`/api/shares/alias/${alias}`, options);
 };
 
 /**
@@ -202,11 +201,7 @@ export const notifyRecipients = (
   notifyRecipientsBody: NotifyRecipientsBody,
   options?: AxiosRequestConfig,
 ): Promise<NotifyRecipientsResult> => {
-  return apiInstance.post(
-    `/api/shares/recipients/notify/${shareId}`,
-    notifyRecipientsBody,
-    options,
-  );
+  return apiInstance.post(`/api/shares/${shareId}/notify`, notifyRecipientsBody, options);
 };
 
 /**
@@ -217,7 +212,11 @@ export const addFolders = (
   addFoldersBody: { folders: string[] },
   options?: AxiosRequestConfig,
 ): Promise<AddFoldersResult> => {
-  return apiInstance.post(`/api/shares/folders/add/${shareId}`, addFoldersBody, options);
+  return apiInstance.post(
+    `/api/shares/${shareId}/items`,
+    { files: [], folders: addFoldersBody.folders },
+    options,
+  );
 };
 
 /**
@@ -228,8 +227,8 @@ export const removeFolders = (
   removeFoldersBody: { folders: string[] },
   options?: AxiosRequestConfig,
 ): Promise<RemoveFoldersResult> => {
-  return apiInstance.delete(`/api/shares/folders/remove/${shareId}`, {
-    data: removeFoldersBody,
+  return apiInstance.delete(`/api/shares/${shareId}/items`, {
+    data: { files: [], folders: removeFoldersBody.folders },
     ...options,
   });
 };

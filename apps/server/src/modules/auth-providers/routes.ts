@@ -7,6 +7,7 @@ import { NotFoundError, ValidationError } from "../../utils/app-error.js";
 import { signAndSetCookies } from "../../utils/auth-cookies.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { getLogger } from "../../utils/logger.js";
+import { isAllowedRedirectUrl } from "../../utils/redirect-validation.js";
 import { logAuditEvent } from "../audit/service.js";
 import { validateAllProvidersDisable } from "../config/service.js";
 import {
@@ -41,8 +42,8 @@ const authProvidersService = new AuthProvidersService();
 
 function buildRequestContext(request: FastifyRequest): RequestContext {
   return {
-    protocol: (request.headers["x-forwarded-proto"] as string) || request.protocol,
-    host: (request.headers["x-forwarded-host"] as string) || (request.headers.host as string),
+    protocol: request.protocol,
+    host: request.hostname,
     headers: request.headers,
   };
 }
@@ -609,6 +610,13 @@ export const authProvidersRoutes: FastifyPluginAsyncZod = async (app) => {
         const fullRedirectUrl = redirectUrl.startsWith("http")
           ? redirectUrl
           : `${baseUrl}${redirectUrl}`;
+
+        // Validate redirect URL to prevent open redirect attacks (S-2)
+        const requestOrigin = `${requestContext.protocol}://${requestContext.host}`;
+        if (!isAllowedRedirectUrl(fullRedirectUrl, requestOrigin)) {
+          request.log.warn({ redirectUrl: fullRedirectUrl }, "Blocked unsafe redirect URL");
+          return reply.redirect(`${baseUrl}/dashboard`);
+        }
 
         return reply.redirect(fullRedirectUrl);
       } catch (callbackError) {

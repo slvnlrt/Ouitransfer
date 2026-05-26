@@ -41,6 +41,7 @@ const envSchema = z.object({
     .default("loopback")
     .transform((v) => v.toLowerCase()),
   ENABLE_API_DOCS: z.union([z.literal("true"), z.literal("false")]).optional(),
+  OAUTH_ALLOWED_REDIRECT_HOSTS: z.string().optional(),
 });
 
 const refinedEnvSchema = envSchema

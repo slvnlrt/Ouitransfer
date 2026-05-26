@@ -35,7 +35,7 @@ export const uploadLogo = (
     formData.append("file", uploadLogoBody.file as Blob);
   }
 
-  return apiInstance.post(`/api/app/upload-logo`, formData, {
+  return apiInstance.post(`/api/app/logo`, formData, {
     ...options,
     headers: {
       ...options?.headers,
@@ -49,7 +49,7 @@ export const uploadLogo = (
  * @summary Remove app logo
  */
 export const removeLogo = (options?: AxiosRequestConfig): Promise<RemoveLogoResult> => {
-  return apiInstance.delete(`/api/app/remove-logo`, options);
+  return apiInstance.delete(`/api/app/logo`, options);
 };
 
 /**
@@ -57,7 +57,7 @@ export const removeLogo = (options?: AxiosRequestConfig): Promise<RemoveLogoResu
  * @summary Check API Health
  */
 export const checkHealth = (options?: AxiosRequestConfig): Promise<CheckHealthResult> => {
-  return apiInstance.get(`/api/app/health`, options);
+  return apiInstance.get(`/api/health`, options);
 };
 
 /**
@@ -65,7 +65,7 @@ export const checkHealth = (options?: AxiosRequestConfig): Promise<CheckHealthRe
  * @summary Get system health status
  */
 export const getHealthStatus = (options?: AxiosRequestConfig): Promise<HealthStatusResult> => {
-  return apiInstance.get(`/api/app/health-status`, options);
+  return apiInstance.get(`/api/health/status`, options);
 };
 
 /**
@@ -73,7 +73,7 @@ export const getHealthStatus = (options?: AxiosRequestConfig): Promise<HealthSta
  * @summary Get server disk space information
  */
 export const getDiskSpace = (options?: AxiosRequestConfig): Promise<GetDiskSpaceResult> => {
-  return apiInstance.get(`/api/app/disk-space`, options);
+  return apiInstance.get(`/api/storage/disk-space`, options);
 };
 
 /**
@@ -84,7 +84,7 @@ export const checkUploadAllowed = (
   params: CheckUploadAllowedParams,
   options?: AxiosRequestConfig,
 ): Promise<CheckUploadAllowedResult> => {
-  return apiInstance.get(`/api/app/check-upload`, {
+  return apiInstance.get(`/api/storage/check-upload`, {
     ...options,
     params: { ...params, ...options?.params },
   });

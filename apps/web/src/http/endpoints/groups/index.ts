@@ -16,12 +16,12 @@ import type {
 
 /** List all groups (admin only) */
 export const listGroups = (options?: AxiosRequestConfig): Promise<ListGroupsResult> => {
-  return apiInstance.get("/api/groups/list", options);
+  return apiInstance.get("/api/groups", options);
 };
 
 /** Get group details with members (admin only) */
 export const getGroup = (id: string, options?: AxiosRequestConfig): Promise<GetGroupResult> => {
-  return apiInstance.get(`/api/groups/details/${id}`, options);
+  return apiInstance.get(`/api/groups/${id}`, options);
 };
 
 /** Create a new group (admin only) */
@@ -29,7 +29,7 @@ export const createGroup = (
   body: CreateGroupBody,
   options?: AxiosRequestConfig,
 ): Promise<CreateGroupResult> => {
-  return apiInstance.post("/api/groups/create", body, options);
+  return apiInstance.post("/api/groups", body, options);
 };
 
 /** Update a group (admin only) */
@@ -38,7 +38,7 @@ export const updateGroup = (
   body: UpdateGroupBody,
   options?: AxiosRequestConfig,
 ): Promise<UpdateGroupResult> => {
-  return apiInstance.put(`/api/groups/update/${id}`, body, options);
+  return apiInstance.put(`/api/groups/${id}`, body, options);
 };
 
 /** Delete a group (admin only) */
@@ -46,7 +46,7 @@ export const deleteGroup = (
   id: string,
   options?: AxiosRequestConfig,
 ): Promise<DeleteGroupResult> => {
-  return apiInstance.delete(`/api/groups/delete/${id}`, options);
+  return apiInstance.delete(`/api/groups/${id}`, options);
 };
 
 /** Add a member to a group (admin only) */
@@ -55,7 +55,7 @@ export const addGroupMember = (
   body: AddMemberBody,
   options?: AxiosRequestConfig,
 ): Promise<AddMemberResult> => {
-  return apiInstance.post(`/api/groups/${groupId}/members/add`, body, options);
+  return apiInstance.post(`/api/groups/${groupId}/members`, body, options);
 };
 
 /** Remove a member from a group (admin only) */
@@ -64,5 +64,5 @@ export const removeGroupMember = (
   userId: string,
   options?: AxiosRequestConfig,
 ): Promise<RemoveMemberResult> => {
-  return apiInstance.delete(`/api/groups/${groupId}/members/remove/${userId}`, options);
+  return apiInstance.delete(`/api/groups/${groupId}/members/${userId}`, options);
 };

@@ -29,15 +29,14 @@ Key route groups:
 - `app/(auth)/` — login, register, password reset
 - `app/(app)/` — authenticated app shell (dashboard, settings, etc.)
 - `app/share/[token]/` — public share pages (no auth required)
-- `app/api/[...proxy]/` — catch-all API proxy (see below)
 
 ## API Communication
 
-All server requests go through a **catch-all proxy** at `src/app/api/[...proxy]/route.ts`. This forwards requests from the browser to the Fastify server, preserving cookies and headers.
+All requests to `/api/*` are routed directly to the Fastify server backend. 
 
-- **Route table**: `src/lib/proxy-routes.ts` — maps URL patterns to backend paths
-- **Axios instance**: `src/lib/axios.ts` — configured with base URL, credentials, 401 interceptor
-- **Typed endpoints**: `src/http/endpoints/{domain}/` — Axios wrappers with TypeScript types
+- **Development (local):** Next.js `rewrites` natively proxy `/api/:path*` to the `API_BASE_URL` (typically `http://localhost:3333/:path*`).
+- **Production:** A reverse proxy (e.g., Traefik) directly intercepts `/api/*` and routes it to Fastify, bypassing the Next.js container completely.
+- **Typed endpoints:** `src/http/endpoints/{domain}/` — Axios wrappers with clean TypeScript types that match the Fastify REST endpoints exactly.
 
 The 401 interceptor in `src/lib/axios.ts` hard-navigates to `/login` on auth failure (skips auth and public pages to avoid redirect loops).
 
@@ -108,8 +107,7 @@ Avoid adding new Zustand stores or React contexts for server-originated data.
 
 1. Create `src/app/{locale}/{route}/page.tsx`
 2. If the page needs data from the API:
-   - Add a proxy route in `src/lib/proxy-routes.ts` if one doesn't exist
-   - Add a typed endpoint in `src/http/endpoints/{domain}/`
+   - Add a typed endpoint in `src/http/endpoints/{domain}/` matching the backend Fastify REST route.
    - Create a TQ hook in `src/hooks/`
 3. Add translations to all 23 `messages/{locale}.json` files
 4. If the page requires auth, it's covered automatically by the proxy (adjust `src/proxy.ts` matcher if the path pattern is unusual)

@@ -26,7 +26,7 @@ export const registerUser = (
   registerUserBody: RegisterUserBody,
   options?: AxiosRequestConfig,
 ): Promise<RegisterUserResult> => {
-  return apiInstance.post(`/api/users/register`, registerUserBody, options);
+  return apiInstance.post(`/api/auth/register`, registerUserBody, options);
 };
 
 /**
@@ -34,7 +34,7 @@ export const registerUser = (
  * @summary List All Users
  */
 export const listUsers = (options?: AxiosRequestConfig): Promise<ListUsersResult> => {
-  return apiInstance.get(`/api/users/list`, options);
+  return apiInstance.get(`/api/users`, options);
 };
 
 /**
@@ -45,7 +45,7 @@ export const updateUser = (
   updateUserBody: UpdateUserBody,
   options?: AxiosRequestConfig,
 ): Promise<UpdateUserResult> => {
-  return apiInstance.put(`/api/users/update`, updateUserBody, options);
+  return apiInstance.put(`/api/users`, updateUserBody, options);
 };
 
 /**
@@ -53,7 +53,7 @@ export const updateUser = (
  * @summary Delete User
  */
 export const deleteUser = (id: string, options?: AxiosRequestConfig): Promise<DeleteUserResult> => {
-  return apiInstance.delete(`/api/users/delete/${id}`, options);
+  return apiInstance.delete(`/api/users/${id}`, options);
 };
 
 /**
@@ -64,7 +64,7 @@ export const activateUser = (
   id: string,
   options?: AxiosRequestConfig,
 ): Promise<ActivateUserResult> => {
-  return apiInstance.patch(`/api/users/activate/${id}`, undefined, options);
+  return apiInstance.patch(`/api/users/${id}/activate`, undefined, options);
 };
 
 /**
@@ -75,7 +75,7 @@ export const deactivateUser = (
   id: string,
   options?: AxiosRequestConfig,
 ): Promise<DeactivateUserResult> => {
-  return apiInstance.patch(`/api/users/deactivate/${id}`, undefined, options);
+  return apiInstance.patch(`/api/users/${id}/deactivate`, undefined, options);
 };
 
 /**
@@ -92,7 +92,7 @@ export const uploadAvatar = (
     formData.append("file", uploadAvatarBody.file as Blob);
   }
 
-  return apiInstance.post(`/api/users/avatar/upload`, formData, {
+  return apiInstance.post(`/api/users/avatar`, formData, {
     ...options,
     headers: {
       ...options?.headers,
@@ -106,7 +106,7 @@ export const uploadAvatar = (
  * @summary Remove user avatar
  */
 export const removeAvatar = (options?: AxiosRequestConfig): Promise<RemoveAvatarResult> => {
-  return apiInstance.delete(`/api/users/avatar/remove`, options);
+  return apiInstance.delete(`/api/users/avatar`, options);
 };
 
 /**
@@ -117,7 +117,7 @@ export const getUserQuota = (
   id: string,
   options?: AxiosRequestConfig,
 ): Promise<GetUserQuotaResult> => {
-  return apiInstance.get(`/api/users/quota/${id}`, options);
+  return apiInstance.get(`/api/users/${id}/quota`, options);
 };
 
 /**
@@ -129,5 +129,5 @@ export const updateUserQuota = (
   body: UpdateQuotaBody,
   options?: AxiosRequestConfig,
 ): Promise<UpdateUserQuotaResult> => {
-  return apiInstance.patch(`/api/users/quota/${id}`, body, options);
+  return apiInstance.patch(`/api/users/${id}/quota`, body, options);
 };

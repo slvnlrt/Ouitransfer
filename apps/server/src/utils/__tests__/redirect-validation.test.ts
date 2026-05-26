@@ -1,7 +1,26 @@
 import { describe, expect, it, vi } from "vitest";
-import { __resetAllowedRedirectHostsForTest, isAllowedRedirectUrl } from "../proxy.js";
 
-describe("isAllowedRedirectUrl (5.15)", () => {
+let mockOauthHosts = "";
+
+// Top-level mock of the env to satisfy Zod validation at module load time
+// Resolves relative to this test file to point to src/env.ts (../../env.js)
+vi.mock("../../env.js", () => ({
+  env: {
+    JWT_SECRET: "a]test-jwt-secret-32-chars-long!",
+    CSRF_SECRET: "b]test-csrf-secret-32-chars-long!",
+    COOKIE_SECRET: "c]test-cookie-secret-32-chars-long!",
+    get OAUTH_ALLOWED_REDIRECT_HOSTS() {
+      return mockOauthHosts;
+    },
+  },
+}));
+
+import {
+  __resetAllowedRedirectHostsForTest,
+  isAllowedRedirectUrl,
+} from "../redirect-validation.js";
+
+describe("isAllowedRedirectUrl (Server)", () => {
   it("allows same-origin redirects", () => {
     expect(
       isAllowedRedirectUrl("https://app.example.com/callback", "https://app.example.com/api/x"),
@@ -56,7 +75,6 @@ describe("isAllowedRedirectUrl (5.15)", () => {
 
   it("rejects URLs that use an allowed host as credentials to redirect to an evil host", () => {
     // Attack pattern: https://allowed.host@evil.com/steal
-    // The actual hostname is evil.com, not accounts.google.com
     expect(
       isAllowedRedirectUrl(
         "https://accounts.google.com@evil.com/steal",
@@ -71,36 +89,22 @@ describe("isAllowedRedirectUrl (5.15)", () => {
     ).toBe(false);
   });
 
-  // I-5: env-driven extension for custom OIDC providers
-  it("allows custom OIDC redirect hosts from env", async () => {
-    vi.resetModules();
+  it("allows custom OIDC redirect hosts from env", () => {
+    // Mutate the mock state dynamically via the getter
+    mockOauthHosts = "auth.acme.example.com,login.corp.net";
 
-    // Mock @/env with the custom hosts so the proxy module picks them up at load time
-    vi.doMock("@/env", () => ({
-      env: {
-        JWT_SECRET: "a]#Fq9K!mZ3Tv&bW8xR2pL7jY0sN5dH6",
-        API_BASE_URL: "http://localhost:3333",
-        OAUTH_ALLOWED_REDIRECT_HOSTS: "auth.acme.example.com,login.corp.net",
-        ALLOWED_IMAGE_HOSTS: undefined,
-      },
-    }));
+    // Reset allowed redirect hosts cache to force rebuilding with the new mocked getter value
+    __resetAllowedRedirectHostsForTest();
 
-    const { isAllowedRedirectUrl: isAllowed, __resetAllowedRedirectHostsForTest: reset } =
-      await import("../proxy.js");
+    expect(
+      isAllowedRedirectUrl("https://auth.acme.example.com/auth", "https://app.example.com/api/x"),
+    ).toBe(true);
+    expect(
+      isAllowedRedirectUrl("https://login.corp.net/callback", "https://app.example.com/api/x"),
+    ).toBe(true);
 
-    // Reset cache so the new env value is picked up
-    reset();
-
-    expect(isAllowed("https://auth.acme.example.com/auth", "https://app.example.com/api/x")).toBe(
-      true,
-    );
-    expect(isAllowed("https://login.corp.net/callback", "https://app.example.com/api/x")).toBe(
-      true,
-    );
-
-    // Clean up
-    vi.doUnmock("@/env");
-    vi.resetModules();
+    // Clean up/restore
+    mockOauthHosts = "";
     __resetAllowedRedirectHostsForTest();
   });
 });
