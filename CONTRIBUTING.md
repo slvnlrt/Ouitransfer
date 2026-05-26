@@ -191,8 +191,8 @@ Keep PRs focused — one concern per PR makes review faster.
 
 - **Framework**: Next.js 15 (App Router) + React 19
 - **Data fetching**: TanStack Query v5 — all server state lives in the TQ cache (no Zustand/Context for server data)
-- **API communication**: Single catch-all proxy at `apps/web/src/app/api/[...proxy]/route.ts`, route table in `proxy-routes.ts`
-- **Auth**: JWT verification via `jose` in `src/proxy.ts`
+- **API communication**: Direct Infrastructure Routing (Traefik) in production, or Next.js Edge Middleware runtime rewrites (`apps/web/src/proxy.ts`) in development. All frontend queries call Fastify REST endpoints directly under `/api/`.
+- **Auth**: JWT verification via `jose` in `apps/web/src/proxy.ts` for frontend page access guards.
 - **i18n**: next-intl with 23 languages, message files in `apps/web/messages/`
 - **UI**: shadcn/ui (new-york style) + Radix primitives + lucide-react icons
 

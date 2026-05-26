@@ -223,6 +223,21 @@ services:
 
 Multiple origins can be space-separated: `CSP_STORAGE_ORIGINS: "https://files.yourdomain.com https://cdn.yourdomain.com"`.
 
+### CORS Configuration (`CORS_ORIGINS`)
+
+The Fastify server restricts API access to whitelisted origins. By default, it allows `http://localhost:5487` (production port) and the whitelisted `FRONTEND_ORIGIN` mapped via Docker Compose.
+
+In production, if you are serving OUITRANSFER over a custom domain or allowing third-party applications to call the API directly from a browser, you must specify the allowed origins in the `CORS_ORIGINS` environment variable on the **server** container:
+
+```yaml
+services:
+  server:
+    environment:
+      CORS_ORIGINS: "https://files.yourdomain.com,https://api.yourdomain.com"
+```
+
+In local development mode (running frontend on port 3000), Next.js dynamically forwards the browser's original `Origin` header (`http://localhost:3000`) through the rewrite layer. Make sure `CORS_ORIGINS` includes `http://localhost:3000` in your server's `.env.development` configuration to prevent browser CORS blocking.
+
 ---
 
 ## Need Help?

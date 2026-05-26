@@ -37,7 +37,7 @@ D:\Code\Ouitransfer\
 - **File naming**: kebab-case for files, PascalCase for React components
 - **Server modules**: `src/modules/{feature}/` with `controller.ts`, `service.ts`, `routes.ts`, `dto.ts`
 - **Shared code**: `packages/shared` for cross-app utilities — use subpath exports (`./mime-types`) not barrel exports
-- **Proxy layer**: Single catch-all handler at `apps/web/src/app/api/[...proxy]/route.ts` with route table in `proxy-routes.ts`
+- **Proxy layer**: Dev-mode Edge Middleware (`apps/web/src/proxy.ts`) with Next.js runtime rewrite; Traefik infrastructure routing in production
 - **Validation**: Zod schemas via `fastify-type-provider-zod`
 - **Auth**: JWT in httpOnly signed cookie, bcrypt, 2FA via otpauth (TOTP, RFC 6238), CSRF double-submit cookie
 - **i18n**: next-intl, 23 languages, messages in `apps/web/messages/`

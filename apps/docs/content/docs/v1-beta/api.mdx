@@ -5,7 +5,7 @@ icon: Code
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-The Ouitransfer API is a REST API built with Fastify 5, Zod, and TypeScript. It powers all operations in the platform — the web frontend communicates with it through a proxy layer, but you can also call it directly for automation, integrations, or custom clients.
+The Ouitransfer API is a REST API built with Fastify 5, Zod, and TypeScript. It powers all operations in the platform — the web frontend communicates with it directly via `/api/*` routes, but you can also call it directly for automation, integrations, or custom clients.
 
 ## Base URL
 
@@ -16,7 +16,7 @@ http://your-server:3333
 ```
 
 <Callout type="info">
-  The Next.js web app proxies most API requests through its own `/api/[...proxy]` route. For direct API access (scripts, CI/CD, custom clients), always target the server URL, not the web app URL.
+  In production, a reverse proxy (like Traefik) routes the `/api/*` path directly to the Fastify backend. In development, a Next.js edge middleware rewrite forwards `/api/*` requests to the Fastify port (3333). For direct API access (scripts, CI/CD, custom clients), always target the Fastify server port 3333 directly.
 </Callout>
 
 To expose the API port in Docker Compose, add `ports: ["3333:3333"]` to the `server` service. See the [Quick Start guide](/docs/v1-beta/quick-start) for a full deployment example.

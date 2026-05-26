@@ -9,7 +9,7 @@
 
 **Source :** Scan SAST (Semgrep)
 **Fichier :** `apps/server/src/modules/auth-providers/routes.ts`
-**Statut :** 🔴 À corriger
+**Statut :** ✅ Fixé (session 11)
 
 ### Description
 
@@ -60,7 +60,7 @@ Configurer `TRUST_PROXY` dans l'environnement Docker pour inclure le réseau de 
 
 **Source :** Scan SAST (Semgrep)
 **Fichier :** `apps/server/src/modules/auth-providers/routes.ts` + `service.ts`
-**Statut :** 🔴 À corriger
+**Statut :** ✅ Fixé (session 11)
 
 ### Description
 
@@ -189,7 +189,7 @@ Réversion du support des `URL` objects dans `config.url` (introduit en 1.16.0, 
 
 ### Risque réel
 
-- **Proxy Cleartext Leak** : Concerne le Node.js HTTP adapter. En pratique, l'app Next.js en SSR utilise `fetch` via le proxy API (`apps/web/src/app/api/[...proxy]/route.ts`), pas axios côté serveur. Axios n'est utilisé que côté browser. Risque **très faible**.
+- **Proxy Cleartext Leak** : Concerne le Node.js HTTP adapter. En pratique, l'app Next.js en SSR utilise `fetch` directement ou via le middleware de rewrite local (`apps/web/src/proxy.ts`), pas axios côté serveur. Axios n'est utilisé que côté browser. Risque **très faible**.
 - **Prototype Pollution** : Nécessite une vulnérabilité PP dans une autre dépendance pour être exploitable (gadget, pas vulnérabilité directe). Risque **très faible**.
 
 ### Recommandation
@@ -238,8 +238,8 @@ Migration non triviale estimée à **46 fichiers**, avec des risques:
 
 | ID | Description | Sévérité | Statut | Priorité |
 |----|-------------|----------|--------|----------|
-| S-1 | Host Header Injection via `buildRequestContext` | Medium | 🔴 | Haute |
-| S-2 | Open redirect via `redirect_uri` | Low | 🔴 | Moyenne |
+| S-1 | Host Header Injection via `buildRequestContext` | Medium | ✅ Fixé | — |
+| S-2 | Open redirect via `redirect_uri` | Low | ✅ Fixé | — |
 | S-3 | XSS via `window.location.href` | — | ✅ Fixé | — |
 | S-4 | GitHub Action non épinglée par hash (`pnpm/action-setup@v4`) | Medium | 🔴 À faire | Basse |
 | S-5 | axios 1.16.0 (2 CVEs) → 1.16.1 | High/Low | 🔴 Mettre à jour | Haute |

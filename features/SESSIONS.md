@@ -1,5 +1,24 @@
 # Session Log
 
+## 2026-05-26 (session 11)
+
+**Traefik Proxy Migration & Route Alignment**
+
+- **Goal**: Migrate proxy layer from custom Next.js proxy to direct infrastructure routing (Traefik in production, Next.js native rewrites in dev).
+- **Backend Refactoring**:
+  - Created `apps/server/src/utils/redirect-validation.ts` for secure SSO redirect validation (Fix S-2).
+  - Configured Zod environment validation for `OAUTH_ALLOWED_REDIRECT_HOSTS`.
+  - Fixed Host Header Injection (Fix S-1) in `buildRequestContext` (`apps/server/src/modules/auth-providers/routes.ts`) by reading `request.protocol` and `request.hostname` natively instead of raw headers.
+- **Frontend Refactoring**:
+  - Aligned all API client endpoints (`apps/web/src/http/endpoints/`) directly to Fastify REST endpoints, bypassing legacy proxy mapping.
+  - Deleted ~960 lines of obsolete proxy code, utility libraries, schemas, and test specs.
+- **Docker Standalone Resolution**:
+  - Migrated dev-mode rewrite logic to Next.js Edge Middleware (`apps/web/src/proxy.ts`) using dynamic `NextResponse.rewrite()`. This resolves the static serialization limitation of build-time configurations (`next.config.ts`) when deploying standalone containers.
+  - Configured local dev CORS whitelisting (`CORS_ORIGINS`) inside `apps/server/.env.development`.
+- **Verification**: 499/499 server tests passing, Next.js build and type check completed successfully.
+
+---
+
 ## 2026-05-26
 
 **CI Fix — prisma-v7 integration tests failed in CI (500 vs 409/404)**

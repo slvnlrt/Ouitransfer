@@ -188,7 +188,7 @@ function Features() {
         </Highlight>
 
         <Highlight icon={CloudIcon} heading="Flexible Storage">
-          Local filesystem or S3-compatible storage options
+          S3-compatible storage options (internal or external)
         </Highlight>
 
         <Highlight icon={KeyboardIcon} heading="Developer API">

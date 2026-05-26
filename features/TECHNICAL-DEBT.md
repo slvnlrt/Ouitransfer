@@ -418,3 +418,59 @@ the `LazyQRCode` `id` prop and the `getElementById` call in the download functio
 
 **Found during:** Quickshare 9.1 spec review (mai 2026)
 **Severity:** Very low — no current scenario where both mount at the same time
+
+---
+
+## ~~TD-26 — Next.js API Rewrite & CORS en Docker Dev (Standalone)~~ ✅ RESOLVED
+
+**Problème :**
+Le routage local des requêtes `/api/*` vers Fastify via `rewrites()` dans `next.config.ts` causait des erreurs 404 avec `just docker-start`.
+*Cause :* `next.config.ts` est évalué au build time. En mode Docker standalone (`NODE_ENV=production`), les rewrites sont sérialisés statiquement dans `routes-manifest.json`, rendant impossible l'injection d'une URL dynamique (`API_BASE_URL`) au runtime.
+
+**Résolution Architecturale :**
+Le routage API de dev a été migré de la configuration de build (`next.config.ts`) vers le runtime (middleware Next.js `proxy.ts`).
+1. **Routage :** Le middleware intercepte `/api/*` et utilise `NextResponse.rewrite()` pour transférer la requête (headers, body, cookies) vers `env.API_BASE_URL`.
+2. **Sécurité Prod :** En production (Traefik), ce code est inactif car Traefik intercepte et route `/api` en amont. La pureté de l'infrastructure est préservée.
+3. **CORS :** `NextResponse.rewrite()` transfère le header `Origin` de manière transparente. Les erreurs CORS sont gérées proprement en configurant `CORS_ORIGINS` dans `apps/server/.env.development`, évitant tout hardcoding dans `app.ts`.
+
+**Found during:** Migration proxy Traefik (mai 2026)
+**Severity:** Resolved — Redirection runtime et sécurité finalisées.
+
+---
+
+## TD-27 — Assymétrie du préfixe /api entre le Frontend et Fastify
+
+**Context:**
+Actuellement, le frontend envoie ses requêtes vers `/api/*` (ex: `/api/shares`). Or, les routes Fastify sont enregistrées à la racine (ex: `POST /shares`).
+Cette asymétrie oblige à avoir une couche intermédiaire qui "strip" le préfixe `/api` :
+- En production : Traefik gère cela via `StripPrefix(/api)`.
+- En développement local : Le middleware Next.js (`proxy.ts`) s'en charge via un `.replace(/^\/api/, "")`.
+
+**Fix:**
+Il serait plus sain (Niveau 2 de résolution architecturale) de configurer Fastify pour qu'il adopte nativement le préfixe `/api` globalement (`app.register(routes, { prefix: "/api" })`).
+Cela permettrait :
+- Au frontend et au backend de partager les *mêmes* chemins (symétrie totale).
+- De supprimer la couche de traduction de `StripPrefix` dans Traefik (un simple `PathPrefix` suffira).
+- De simplifier encore le middleware de dev (transfert direct du `pathname`).
+- De standardiser les endpoints dans les tests serveurs (qui injecteraient `/api/shares` au lieu de `/shares`).
+
+**Found during:** Analyse post-mortem du proxy (mai 2026)
+**Severity:** Low — L'asymétrie est parfaitement compensée par l'infrastructure (Traefik/Middleware), mais c'est une dette architecturale à moyen terme.
+
+---
+
+## TD-28 — Migration globale Zod v3 → v4
+
+**Context:**
+L'application utilise actuellement `zod@3.25.76` dans tout son code source (46 fichiers). Zod v4 est uniquement présent de manière transitive via le module de documentation `fumadocs`. Aikido SAST/SCA a levé deux alertes de sécurité moyennes (Prototype Pollution et validation manquante) sur cette version transitive v4. Bien que l'application ne soit pas vulnérable directement, cela crée un flag de sécurité et une asymétrie de versions.
+
+**Migration & Blockers :**
+Une évaluation complète et exhaustive a été rédigée dans [zod-v4-migration.md](file:///d:/Code/Ouitransfer/features/zod-v4-migration.md). La migration est estimée d'effort moyen-élevé avec les principaux chantiers suivants :
+1. **Critical Blockers :** Upgrade de `fastify-type-provider-zod` vers la v5+ (compatible Zod v4), renommage de tous les imports `"zod"` vers `"zod/v4"` (requis par le type provider), correction de la signature `z.record(z.string())` (requiert 2 arguments en v4), adaptation du handler d'erreur Zod dans `error-handler.ts`.
+2. **Semantic Changes :** Le comportement des `.default()` dans les champs optionnels change (les valeurs par défaut seront appliquées, contrairement à la v3), et le type d'entrée de `z.coerce` devient `unknown`.
+
+**Fix:**
+Planifier la migration complète en s'appuyant sur l'assessment détaillé disponible dans `features/zod-v4-migration.md`.
+
+**Found during:** Analyse de sécurité Aikido (S-6, mai 2026)
+**Severity:** Low — Aucun exploit direct de sécurité n'est possible via l'application, mais l'asymétrie v3/v4 et le flag de sécurité incitent à cette mise à niveau à moyen terme.

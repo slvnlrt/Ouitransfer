@@ -344,6 +344,7 @@ These values are set directly in `docker-compose.yaml` and do not normally need 
 | `TRUST_PROXY` | server | `loopback` | Trusted proxy setting for Fastify (`loopback`, comma-separated IPs, or `true` for all proxies) |
 | `ENCRYPTION_SECRET` | server | - | AES-256-GCM key for encrypting sensitive data at rest (e.g., LDAP bind password). Required if using LDAP. Generate with: `openssl rand -hex 32` |
 | `ENABLE_API_DOCS` | server | `false` (prod) | Set `true` to enable Scalar/Swagger API documentation at `/docs` and `/swagger` in production |
+| `OAUTH_ALLOWED_REDIRECT_HOSTS` | server | - | Comma-separated additional allowed redirect hostnames (e.g., `auth.example.com`) for custom OIDC providers |
 
 <Callout type="info">
   **Storage Architecture**: OUITRANSFER v3.3+ uses a 3-container architecture with RustFS as the S3-compatible storage backend. Port 9000 **must** be accessible from browsers for file operations to work properly when using internal storage.
