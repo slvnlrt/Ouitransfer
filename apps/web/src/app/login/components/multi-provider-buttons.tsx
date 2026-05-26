@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { DynamicIcon } from "@/components/ui/dynamic-icon";
 import { useAppInfo } from "@/contexts/app-info-context";
-import type { EnabledAuthProvider } from "@/http/endpoints/auth/types";
 import { useEnabledProviders } from "../hooks/use-enabled-providers";
 
 interface MultiProviderButtonsProps {
@@ -19,13 +18,8 @@ export function MultiProviderButtons({ showSeparator = true }: MultiProviderButt
     enabled: !firstAccess,
   });
 
-  const handleProviderLogin = (provider: EnabledAuthProvider) => {
-    if (!provider.authUrl) {
-      toast.error(t("login.providerNotConfigured", { name: provider.displayName }));
-      return;
-    }
-
-    window.location.href = provider.authUrl;
+  const handleMissingProvider = (displayName: string) => {
+    toast.error(t("login.providerNotConfigured", { name: displayName }));
   };
 
   if (firstAccess) {
@@ -60,20 +54,34 @@ export function MultiProviderButtons({ showSeparator = true }: MultiProviderButt
       )}
 
       <div className="space-y-2">
-        {providers.map((provider) => (
-          <Button
-            key={provider.id}
-            variant="outline"
-            className="w-full"
-            onClick={() => handleProviderLogin(provider)}
-            type="button"
-          >
-            <div className="flex items-center gap-2">
+        {providers.map((provider) => {
+          const content = (
+            <>
               {provider.icon && <DynamicIcon name={provider.icon} className="w-5 h-5" />}
               <span>{t("login.continueWith", { name: provider.displayName })}</span>
-            </div>
-          </Button>
-        ))}
+            </>
+          );
+
+          if (!provider.authUrl) {
+            return (
+              <Button
+                key={provider.id}
+                variant="outline"
+                className="w-full"
+                onClick={() => handleMissingProvider(provider.displayName)}
+                type="button"
+              >
+                {content}
+              </Button>
+            );
+          }
+
+          return (
+            <Button key={provider.id} variant="outline" className="w-full" asChild>
+              <a href={provider.authUrl}>{content}</a>
+            </Button>
+          );
+        })}
       </div>
     </div>
   );
