@@ -19,11 +19,29 @@
  * It points to the real DB via DATABASE_URL so the existing schema is available.
  */
 
+import { execSync } from "node:child_process";
+import { resolve } from "node:path";
 import { type FastifyInstance, fastify } from "fastify";
 import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { DEFAULT_DATABASE_URL } from "../shared/prisma-constants.js";
 import { createPrismaClient } from "../shared/prisma-factory.js";
 import { globalErrorHandler } from "../utils/error-handler.js";
+
+// ── File-level setup: ensure the database schema exists ─────────────────────
+// This is the only test file that uses the real database (not mocked).
+// In CI, no `prisma migrate deploy` runs before tests, so we push the schema
+// here to guarantee the tables exist.
+const SERVER_DIR = resolve(import.meta.dirname!, "..", "..");
+
+beforeAll(() => {
+  const dbUrl = process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL;
+  execSync("npx prisma db push --accept-data-loss", {
+    cwd: SERVER_DIR,
+    env: { ...process.env, DATABASE_URL: dbUrl },
+    stdio: "pipe",
+  });
+});
 
 // ── Unique sentinel name used for P2002 test isolation ───────────────────────
 // A UUID-style name that is extremely unlikely to already exist in the dev DB.

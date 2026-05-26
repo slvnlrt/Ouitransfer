@@ -1,5 +1,17 @@
 # Session Log
 
+## 2026-05-26
+
+**CI Fix — prisma-v7 integration tests failed in CI (500 vs 409/404)**
+
+- **Bug**: `prisma-v7.integration.test.ts` returned 500 instead of 409 (P2002) / 404 (P2025) in CI
+- **Root cause**: Test uses the real database (only file that does) — in CI no `prisma migrate deploy` runs, so the DB is empty → Prisma throws unrecognized errors → falls to 500 catch-all in `globalErrorHandler`
+- **Fix**: Added `prisma db push --accept-data-loss` in a file-level `beforeAll` at `apps/server/src/__tests__/prisma-v7.integration.test.ts` to ensure schema exists
+- **Verification**: All 490 server tests pass, type-check + lint clean
+- Commit: (pending)
+
+---
+
 ## 2026-05-24 (session 10)
 
 **Documentation Update — Full audit and update of apps/docs**
