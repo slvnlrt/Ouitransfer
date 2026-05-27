@@ -50,21 +50,24 @@ def check_untranslated_strings(file_path: Path) -> Tuple[int, int, List[str]]:
     return len(all_strings), len(untranslated), untranslated
 
 
-# Technical terms that are legitimately kept in English across all languages.
-# Matching is case-insensitive. Strings containing any of these are excluded
-# from "suspected untranslated".
-_TECHNICAL_TERMS = (
+# Syntax-based patterns: always excluded regardless of string length.
+# These identify code/notation that is never translated (LDAP DN syntax, etc.)
+_SYNTAX_PATTERNS = ('cn=', 'dc=', 'ou=')
+
+# Keyword-based terms: only excluded for short strings (labels, not descriptions).
+# A long description mentioning "background image" should still be translated;
+# a short label "Background Images" (17 chars) should not be flagged.
+_TECHNICAL_LABEL_TERMS = (
     # Auth protocols & standards
     'ldap', 'ldaps', 'oidc', 'openid', 'oauth', 'saml', 'scim', 'starttls',
     # Microsoft / directory services
     'active directory',
-    # LDAP DN notation (e.g. CN=...,DC=...)
-    'cn=', 'dc=', 'ou=',
-    # OAuth / OIDC endpoint & config labels
+    # OAuth / OIDC config labels
     'endpoint', 'callback url',
-    # UI: technical section labels conventionally kept in English
+    # UI section names conventionally kept in English
     'background image',  # covers "background image" and "background images"
 )
+_TECHNICAL_LABEL_MAX_LEN = 40  # labels are short; descriptions are long
 
 
 def _is_suspected_untranslated(value: str) -> bool:
@@ -78,10 +81,14 @@ def _is_suspected_untranslated(value: str) -> bool:
     # Date/format patterns
     if any(pat in value for pat in ('MM/DD', 'HH:MM', 'YYYY', '%Y', '%m', '%d')):
         return False
-    # Known technical terms legitimately kept in English (case-insensitive)
     lower = value.lower()
-    if any(term in lower for term in _TECHNICAL_TERMS):
+    # Syntax patterns: always excluded (LDAP DN notation, etc.)
+    if any(pat in lower for pat in _SYNTAX_PATTERNS):
         return False
+    # Keyword exclusions: only for short strings (labels, not descriptions)
+    if len(value) <= _TECHNICAL_LABEL_MAX_LEN:
+        if any(term in lower for term in _TECHNICAL_LABEL_TERMS):
+            return False
     return True
 
 
