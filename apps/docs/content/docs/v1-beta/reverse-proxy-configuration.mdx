@@ -190,53 +190,77 @@ The health endpoint returns `{ status, timestamp, uptime, checks: { database, st
 
 ---
 
-## Storage and CSP Configuration Behind a Reverse Proxy
+## URL Configuration
 
-When deploying behind a reverse proxy, two additional configuration points are important:
+OUITRANSFER uses two public URL variables — `FRONTEND_ORIGIN` and `STORAGE_PUBLIC_URL` — that control how browsers reach the application and its storage. Getting these right is critical: incorrect values cause silent failures in file uploads and downloads.
 
-### STORAGE_URL Must Be Externally Reachable
+### What each variable controls
 
-The `STORAGE_URL` environment variable on the **server** service controls the base URL embedded in presigned upload/download URLs. When behind a reverse proxy, this must point to the externally reachable address of the storage service — not an internal Docker hostname.
+**`FRONTEND_ORIGIN`** — The URL where users open the web interface in their browser (e.g. `http://192.168.1.100:5487` or `https://files.example.com`).
+
+The Docker Compose file propagates it to:
+- `CORS_ORIGINS` on the **server** — allows the API to accept requests from the frontend
+- `RUSTFS_CORS_ALLOWED_ORIGINS` on the **storage** — allows the storage service to accept direct upload/download requests from the frontend
+
+**`STORAGE_PUBLIC_URL`** — The URL where browsers upload and download files directly from the storage service (e.g. `http://192.168.1.100:9000` or `https://storage.example.com`).
+
+The Docker Compose file propagates it to:
+- `STORAGE_URL` on the **server** — the base URL embedded in presigned URLs sent to browsers
+- `CSP_STORAGE_ORIGINS` on the **web** container — the Content Security Policy origin browsers are allowed to connect to
+
+### How file transfers work (the presigned URL flow)
+
+OUITRANSFER does not proxy file data through the API server. Instead:
+
+1. The browser asks the API server for a presigned URL — a short-lived signed URL (uploads: 1 hour, downloads: 15 min by default)
+2. The browser uses that URL to upload or download **directly** from the storage service
+3. The presigned URL contains the base from `STORAGE_PUBLIC_URL` — so the browser must be able to reach that address
+
+This is why `STORAGE_PUBLIC_URL` must be an address reachable by the **user's browser**, not an internal Docker hostname like `storage:9000`.
+
+### Common mistakes
+
+| Mistake | Symptom |
+|---------|---------|
+| Using `localhost` when browsers run on a different machine | Uploads fail silently — browser tries to connect to its own machine |
+| HTTP `STORAGE_PUBLIC_URL` with an HTTPS web interface | Browser blocks the mixed-content request |
+| Omitting the port (e.g. missing `:9000`) when not behind a reverse proxy | Connection refused on upload/download |
+| Using the internal Docker hostname (`storage:9000`) | DNS resolution fails in the browser |
+
+### With a reverse proxy
+
+When using a reverse proxy, the storage service can be exposed on a custom domain or path — so port 9000 does not need to be publicly open. Update your `.env` to use the public addresses:
+
+```bash
+FRONTEND_ORIGIN=https://files.example.com
+STORAGE_PUBLIC_URL=https://storage.example.com
+```
+
+If your reverse proxy exposes storage on a subpath of the same domain (e.g. `https://files.example.com/s3`), use that full URL as `STORAGE_PUBLIC_URL`. The important thing is that the URL resolves correctly in the user's browser.
+
+Don't forget to also set `SECURE_SITE=true` on the **server** service when using HTTPS (see [above](#the-secure_site-environment-variable)).
+
+### Overriding individual variables
+
+The Docker Compose file maps `FRONTEND_ORIGIN` and `STORAGE_PUBLIC_URL` to their downstream counterparts automatically. If you need to set them to different values (e.g. storage on a completely separate domain from the frontend), you can override the downstream variables directly in `docker-compose.yml`:
 
 ```yaml
 services:
   server:
     environment:
-      STORAGE_URL: "https://files.yourdomain.com"  # or http://YOUR_SERVER_IP:9000
-```
+      STORAGE_URL: "https://storage.example.com"      # overrides STORAGE_PUBLIC_URL
+      CORS_ORIGINS: "https://files.example.com"        # overrides FRONTEND_ORIGIN
 
-> **💡 Note:** Browsers must be able to reach port 9000 (or your proxy path for storage) to perform file uploads and downloads. Presigned URLs are generated with this address and sent directly to browsers.
+  storage:
+    environment:
+      RUSTFS_CORS_ALLOWED_ORIGINS: "https://files.example.com"  # overrides FRONTEND_ORIGIN
 
-### CSP Configuration for Storage Origin
-
-The web container sets a Content Security Policy (CSP) that restricts which origins browsers can connect to. If your storage service runs on a different domain or port than the web interface, you must add it to the allowed origins using the `CSP_STORAGE_ORIGINS` environment variable on the **web** service:
-
-```yaml
-services:
   web:
-    image: ouitransfer/web:latest
-    container_name: ouitransfer-web
     environment:
-      API_BASE_URL: "http://server:3333"
-      CSP_STORAGE_ORIGINS: "https://files.yourdomain.com"  # Add storage origin here
+      CSP_STORAGE_ORIGINS: "https://storage.example.com"         # overrides STORAGE_PUBLIC_URL
 ```
 
-Multiple origins can be space-separated: `CSP_STORAGE_ORIGINS: "https://files.yourdomain.com https://cdn.yourdomain.com"`.
-
-### CORS Configuration (`CORS_ORIGINS`)
-
-The Fastify server restricts API access to whitelisted origins. By default, it allows `http://localhost:5487` (production port) and the whitelisted `FRONTEND_ORIGIN` mapped via Docker Compose.
-
-In production, if you are serving OUITRANSFER over a custom domain or allowing third-party applications to call the API directly from a browser, you must specify the allowed origins in the `CORS_ORIGINS` environment variable on the **server** container:
-
-```yaml
-services:
-  server:
-    environment:
-      CORS_ORIGINS: "https://files.yourdomain.com,https://api.yourdomain.com"
-```
-
-In local development mode (running frontend on port 3000), Next.js dynamically forwards the browser's original `Origin` header (`http://localhost:3000`) through the rewrite layer. Make sure `CORS_ORIGINS` includes `http://localhost:3000` in your server's `.env.development` configuration to prevent browser CORS blocking.
+Multiple CORS origins are comma-separated; multiple CSP origins are space-separated.
 
 ---
 
@@ -247,6 +271,6 @@ If you're still experiencing issues after following this guide:
 1. **Check the Logs**: `docker compose logs server` (or `docker compose logs web` for frontend issues)
 2. **Verify Headers**: Use browser dev tools or `curl -I`
 3. **Test Direct Access**: Try accessing OUITRANSFER directly (bypassing proxy)
-4. **Open an Issue**: [Report bugs on GitHub](https://github.com/burger-cie/ouitransfer/issues)
+4. **Open an Issue**: [Report bugs on GitHub](https://github.com/slvnlrt/ouitransfer/issues)
 
 > **💡 Pro Tip**: When reporting issues, include your reverse proxy configuration and any relevant error messages from both OUITRANSFER and your proxy logs.

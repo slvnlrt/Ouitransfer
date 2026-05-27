@@ -3,7 +3,7 @@ title: How to Contribute
 icon: Users
 ---
 
-Thank you for your interest in contributing to **Ouitransfer**! This page covers the essentials to get you started quickly. For the full developer setup guide, see [**CONTRIBUTING.md**](https://github.com/burger-cie/ouitransfer/blob/main/CONTRIBUTING.md) in the repository.
+Thank you for your interest in contributing to **Ouitransfer**! This page covers the essentials to get you started quickly. For the full developer setup guide, see [**CONTRIBUTING.md**](https://github.com/slvnlrt/ouitransfer/blob/main/CONTRIBUTING.md) in the repository.
 
 ---
 
@@ -24,7 +24,7 @@ Install `just` from [https://github.com/casey/just](https://github.com/casey/jus
 
 ```bash
 # 1. Fork the repo on GitHub, then clone your fork
-git clone https://github.com/your-username/OUITRANSFERgit
+git clone https://github.com/your-username/ouitransfer
 cd ouitransfer
 
 # 2. Install deps + generate Prisma client + create local SQLite DB
@@ -87,19 +87,17 @@ Commits are enforced by **commitlint** (via Lefthook) using the [Conventional Co
 
 ```
 <type>(<scope>): <description>
-
-Types: feat, fix, docs, style, refactor, test, chore, perf, build, ci
 ```
+
+Both **type** and **scope** are required and must be from the allowed lists — the commit is rejected otherwise. See [Repository Structure → Commit message format](/docs/v1-beta/github-architecture#commit-message-format) for the full reference.
 
 Examples:
 ```
-feat(share): add password-protected share expiry
-fix(auth): correct token refresh cookie path
-docs: update manual installation guide
+feat(server): add password-protected share expiry
+fix(web): correct token refresh cookie path
+docs(docs): update manual installation guide
 chore(deps): update Fastify to v5.3
 ```
-
-Scopes are optional but encouraged (e.g., `auth`, `share`, `file`, `web`, `server`).
 
 ---
 
@@ -128,6 +126,6 @@ Use descriptive names following this pattern:
 
 ## Further Reading
 
-- [**CONTRIBUTING.md**](https://github.com/burger-cie/ouitransfer/blob/main/CONTRIBUTING.md) — full guide including architecture notes, project structure, and testing patterns
+- [**CONTRIBUTING.md**](https://github.com/slvnlrt/ouitransfer/blob/main/CONTRIBUTING.md) — full guide including architecture notes, project structure, and testing patterns
 - [Conventional Commits spec](https://www.conventionalcommits.org/)
 - [GitHub: Working with forks](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks)

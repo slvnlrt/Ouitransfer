@@ -3,13 +3,42 @@ title: Architecture of OUITRANSFER
 icon: ServerCog
 ---
 
-import { ZoomableImage } from "@/components/ui/zoomable-image";
-
 ## Overview
 
-Understanding the architecture of OUITRANSFER is crucial for both deploying and scaling the application. The platform is designed with simplicity and flexibility in mind, offering a streamlined setup that can grow with your needs.
+OUITRANSFER runs as three Docker containers with a clear separation of concerns. The browser talks to the **web** frontend and directly to **storage** for presigned file transfers. The **server** handles all business logic and coordinates between the two.
 
-<ZoomableImage src="/assets/v3/architecture/architecture.png" alt="OUITRANSFER Architecture" />
+```mermaid
+flowchart TB
+    Browser(["Browser / Client"])
+
+    subgraph Compose["Docker Compose"]
+        direction TB
+        Web["<b>web</b><br/>Next.js 16 + React 19<br/>port 5487"]
+        Server["<b>server</b><br/>Fastify 5 + Zod<br/>SQLite · port 3333"]
+        Storage["<b>storage</b><br/>RustFS S3-compatible<br/>port 9000"]
+    end
+
+    RP["Reverse Proxy<br/>Traefik / Nginx<br/><i>optional</i>"]
+    ExtS3["External S3<br/>AWS / Backblaze B2 / R2<br/><i>ENABLE_S3=true</i>"]
+
+    Browser -- "App UI" --> RP
+    RP --> Web
+    RP -- "Presigned URLs" --> Storage
+    Web -- "REST API" --> Server
+    Server -- "S3 API" --> Storage
+    Server -. "ENABLE_S3=true" .-> ExtS3
+
+    Storage -->|"healthy"| Server
+    Server -->|"healthy"| Web
+
+    classDef container fill:#4f46e5,color:#ffffff,stroke:#3730a3,stroke-width:2px
+    classDef client fill:#0284c7,color:#ffffff,stroke:#0369a1,stroke-width:2px
+
+    class Web,Server,Storage container
+    class Browser client
+```
+
+Startup order is managed automatically via healthcheck-based `depends_on`: `storage` starts first, then `server` (once storage is healthy), then `web` (once server is healthy).
 
 ## Technologies used
 
@@ -26,13 +55,13 @@ OUITRANSFER uses **SQLite** as the primary database solution combined with **Pri
 - Self-contained with no external dependencies or server processes needed
 - Easy database migrations and schema management through Prisma
 
-### Next.js 15 + React 19 + TypeScript
+### Next.js 16 + React 19 + TypeScript
 
-The frontend of OUITRANSFER is built using **Next.js 15**, along with **React 19** and **TypeScript**, forming a modern stack that's easy to maintain and super fast for end users. Next.js 15 brings server components, server actions, and a new app router system that makes rendering dynamic content incredibly efficient. This allows us to load only what's needed, when it's needed - which makes the app feel snappy even under load. React 19 provides a clean, component-based structure that makes it easy to break the UI into reusable pieces, and TypeScript helps prevent bugs before they even happen by enforcing static typing and better code navigation.
+The frontend of OUITRANSFER is built using **Next.js 16**, along with **React 19** and **TypeScript**, forming a modern stack that's easy to maintain and super fast for end users. Next.js 16 brings server components, server actions, and a new app router system that makes rendering dynamic content incredibly efficient. This allows us to load only what's needed, when it's needed - which makes the app feel snappy even under load. React 19 provides a clean, component-based structure that makes it easy to break the UI into reusable pieces, and TypeScript helps prevent bugs before they even happen by enforcing static typing and better code navigation.
 
 - **React 19** enables the creation of a dynamic and responsive user interface with a component-based architecture
 - **TypeScript** adds static typing, enhancing code quality and reducing runtime errors
-- **Next.js 15** handles routing, server-side rendering, and server components for performance at scale
+- **Next.js 16** handles routing, server-side rendering, and server components for performance at scale
 
 ### S3-Compatible Object Storage
 
@@ -73,52 +102,17 @@ Startup order is managed automatically: `storage` starts first, then `server` (o
 
 The OUITRANSFER architecture follows a clean separation of concerns, making it easy to understand and maintain:
 
-1. **Frontend** — React 19 + TypeScript + Next.js 15 handle the user interface and user interactions
+1. **Frontend** — React 19 + TypeScript + Next.js 16 handle the user interface and user interactions
 2. **Backend** — Fastify + Zod + TypeScript process requests with full type safety and validation
 3. **Database** — SQLite + Prisma ORM store and manage data with type-safe operations
 4. **File Storage** — S3-compatible object storage (RustFS built-in or external S3) handles all file operations
 5. **User Management** — Groups, per-user quotas, LDAP/AD synchronization, and role-based access control
 
-## API integration and extensibility
+## API
 
-One of OUITRANSFER's key strengths is its **open API architecture**, designed to integrate seamlessly with existing workflows and third-party services. The API can be exposed publicly, allowing for powerful integrations and custom development opportunities.
+The Fastify server exposes a full REST API that powers the web frontend and is available for direct use. See the [API Reference](/docs/v1-beta/api) for the complete endpoint list, authentication flow, and curl examples.
 
-### Open API endpoints
-
-OUITRANSFER provides comprehensive REST API endpoints that can be integrated with various services and platforms:
-
-**Popular integration possibilities:**
-
-- **Zapier** - Automate file sharing workflows and connect with 5,000+ apps
-- **Microsoft Power Automate** - Create automated workflows within Microsoft ecosystem
-- **IFTTT** - Simple automation for personal and business use cases
-- **n8n** - Self-hosted workflow automation for advanced users
-- **GitHub Actions** - Integrate file sharing into CI/CD pipelines
-- **Slack/Discord Bots** - Share files directly from chat platforms
-- **Mobile Apps** - Build custom mobile applications using the API
-- **Desktop Applications** - Create native desktop clients for specific use cases
-
-### Custom development opportunities
-
-The open API architecture enables developers to:
-
-- **Build custom clients** - Create specialized interfaces for specific industries or use cases
-- **Develop integrations** - Connect OUITRANSFER with existing business systems and workflows
-- **Create automation scripts** - Automate repetitive file management tasks
-- **Build mobile apps** - Develop native iOS/Android applications
-- **Integrate with CMS** - Connect content management systems for seamless file handling
-- **Create backup solutions** - Build automated backup and sync tools
-
-### API benefits
-
-- **RESTful design** - Standard HTTP methods and status codes for easy integration
-- **Comprehensive documentation** - Complete API reference with examples and use cases
-- **Authentication support** - Secure API access with JWT token-based authentication
-- **Schema validation** - Built-in request/response validation using Zod schemas
-- **Type safety** - Full TypeScript support for reliable integrations
-- **Bulk operations** - Efficient handling of multiple files and batch operations
-
-This open architecture makes OUITRANSFER not just a file-sharing platform, but a **file management ecosystem** that can adapt to any workflow or business requirement. Whether you're a developer looking to integrate file sharing into your application or a business wanting to automate file workflows, OUITRANSFER's API provides the flexibility and power you need.
+Interactive documentation (Scalar + Swagger UI) is available at `http://localhost:3333/docs` and `http://localhost:3333/swagger` when `ENABLE_API_DOCS=true` (always enabled in development).
 
 ## Storage flexibility
 

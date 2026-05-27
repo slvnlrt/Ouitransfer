@@ -60,13 +60,14 @@ The translation management system consists of Python scripts that help maintain 
 
 ### Main Commands (npm/pnpm)
 
-| Command                         | Description                               |
-| ------------------------------- | ----------------------------------------- |
-| `pnpm run translations`         | Complete workflow: sync + check           |
-| `pnpm run translations:check`   | Check translation status and completeness |
-| `pnpm run translations:sync`    | Synchronize missing keys from en-US.json  |
-| `pnpm run translations:dry-run` | Test workflow without making changes      |
-| `pnpm run translations:help`    | Show detailed help and examples           |
+| Command                          | Description                                       |
+| -------------------------------- | ------------------------------------------------- |
+| `pnpm run translations`          | Complete workflow: check → sync → check           |
+| `pnpm run translations:check`    | Check translation status and completeness         |
+| `pnpm run translations:sync`     | Synchronize missing keys from en-US.json          |
+| `pnpm run translations:prune`    | Remove stale keys not present in en-US.json       |
+| `pnpm run translations:dry-run`  | Test complete workflow without making changes     |
+| `pnpm run translations:help`     | Show detailed help and examples                   |
 
 ## Workflow
 
@@ -87,6 +88,14 @@ When you add new text to the application:
 ### 2. Checking Translation Status
 
 <Callout>Always run `pnpm run translations:check` before releases to ensure completeness.</Callout>
+
+<Callout type="warn">
+  **"100% completeness" does not mean fully translated.** The check script only detects strings
+  marked with `[TO_TRANSLATE]`. If a string was added to all locale files with its English value
+  (without the marker), it will be counted as complete even if it was never translated. Always
+  review the **"Possible matches"** column — strings identical to English that may need human
+  translation.
+</Callout>
 
 ```bash
 # Generate detailed translation report
@@ -119,10 +128,10 @@ apps/web/
 │   └── ...            # Other languages
 │
 └── scripts/           # Management scripts
-    ├── run_translations.py     # Main wrapper
-    ├── sync_translations.py    # Synchronization
-    ├── check_translations.py   # Status checking
-    └── clean_translations.py   # Cleanup utilities
+    ├── run_translations.py     # Main wrapper (check, sync, all, help)
+    ├── sync_translations.py    # Add missing keys to all languages
+    ├── check_translations.py   # Report translation completeness
+    └── prune_translations.py   # Remove stale keys from all languages
 ```
 
 ## Prerequisites
@@ -187,6 +196,20 @@ Provides comprehensive translation analysis:
 - **Detailed breakdowns**: Per-language analysis with specific keys
 - **Quality insights**: Identifies potential translation issues
 - **Export friendly**: Output can be redirected to files for reports
+
+### Prune Script (`prune_translations.py`)
+
+Removes stale translation keys — keys that still exist in a language file but were deleted from the English reference (`en-US.json`). Run this after removing keys from the application to keep language files clean.
+
+```bash
+# Preview what would be removed (recommended first)
+python3 scripts/prune_translations.py --dry-run
+
+# Apply removal
+pnpm run translations:prune
+```
+
+Supports `--dry-run`, `--messages-dir`, and `--reference` flags, same as the other scripts.
 
 ## Advanced Usage
 
@@ -398,33 +421,41 @@ After manual translation:
 
 ```
 Loading reference file: en-US.json
-Reference file contains 980 keys
-Processing 14 translation files...
+Reference file contains 2285 keys
+Processing 22 translation files...
 
 Processing: pt-BR.json
+  ✅ Complete (2285/2285 keys)
+Processing: fr-FR.json
   🔍 Found 12 missing keys
-  ✅ Updated successfully (980/980 keys)
+  ✅ Updated successfully (2285/2285 keys)
 
 ============================================================
 SUMMARY
 ============================================================
-✅ ar-SA.json      - 980/980 keys
-🔄 pt-BR.json      - 980/980 keys (+12 added)
+✅ ar-SA.json      - 2285/2285 keys
+🔄 fr-FR.json      - 2285/2285 keys (+12 added)
 ```
 
 ### Translation Status Report
 
 ```
 📊 TRANSLATION REPORT
-Reference: en-US.json (980 strings)
+Reference: en-US.json (1958 strings)
 ================================================================================
-LANGUAGE        COMPLETENESS STRINGS         UNTRANSLATED    POSSIBLE MATCHES
+LANGUAGE        COMPLETENESS STRINGS           UNTRANSLATED    POSSIBLE MATCHES
 --------------------------------------------------------------------------------
-✅ pt-BR         100.0%       980/980         0 (0.0%)        5
-⚠️  fr-FR         100.0%       980/980         12 (2.5%)       3
-🟡 de-DE         95.2%        962/980         0 (0.0%)        8
+✅ pt-BR         100.0%       1958/1958         0 (0.0%)        378
+✅ fr-FR         100.0%       1958/1958         0 (0.0%)        166
+🟡 de-DE         95.2%        1866/1958         0 (0.0%)        384
 ================================================================================
 ```
+
+<Callout type="info">
+  **Key count difference**: `check` reports 1958 *leaf strings* (actual translatable values). `sync` reports
+  2285 *total key paths* (including intermediate object nodes in the JSON hierarchy). Both are correct — they
+  measure different things. Use `check` as the authoritative count of strings that need human translation.
+</Callout>
 
 ## Contributing
 

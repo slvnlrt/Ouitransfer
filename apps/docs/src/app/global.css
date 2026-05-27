@@ -167,6 +167,18 @@ h4 {
   }
 }
 
+/* Frosted glass effect for the sticky banner */
+#banner-v1-beta {
+  background: transparent;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Slightly reduce gradient opacity so content shows through the blur */
+#banner-v1-beta > .absolute {
+  opacity: 0.75;
+}
+
 @layer utilities {
   .line-clamp-1 {
     overflow: hidden;

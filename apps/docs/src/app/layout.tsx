@@ -2,12 +2,13 @@ import { Banner } from "fumadocs-ui/components/banner";
 
 import "./global.css";
 
-import Link from "fumadocs-core/link";
 import { RootProvider } from "fumadocs-ui/provider/next";
 import { Inter } from "next/font/google";
 import type { ReactNode } from "react";
 
-import { LATEST_VERSION, LATEST_VERSION_PATH } from "@/config/constants";
+import { BannerModalTrigger } from "@/components/BannerModalTrigger";
+import { V1BetaModal } from "@/components/V1BetaModal";
+import { LATEST_VERSION } from "@/config/constants";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,12 +23,15 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <body className="flex flex-col min-h-screen">
-        <Banner variant="rainbow" id="banner-v1-beta">
-          <Link href={LATEST_VERSION_PATH}>
+        <Banner variant="rainbow" id="banner-v1-beta" className="!items-start pt-2">
+          <BannerModalTrigger>
             <s>Winter</s> OUITRANSFER {LATEST_VERSION} is coming !
-          </Link>
+          </BannerModalTrigger>
         </Banner>
-        <RootProvider>{children}</RootProvider>
+        <RootProvider>
+          {children}
+          <V1BetaModal />
+        </RootProvider>
       </body>
     </html>
   );

@@ -4,481 +4,349 @@ icon: "Rocket"
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
-import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 
 import { Card, CardGrid } from "@/components/ui/card";
 
-Welcome to the fastest way to deploy <span className="font-bold">OUITRANSFER</span> - your secure, self-hosted file sharing solution. This guide will have you up and running in minutes, whether you're new to self-hosting or an experienced developer.
-
-OUITRANSFER offers flexible deployment options to match your infrastructure needs. This guide focuses on Docker Compose deployment with 3 services: object storage, API server, and web frontend.
+This guide takes you from zero to a running OUITRANSFER instance in about 5 minutes. By the end, you'll have the web interface available at **`http://YOUR_IP:5487`**, with storage, the API, and the frontend all running and talking to each other.
 
 ## Prerequisites
 
 Before you begin, make sure you have:
 
-- **Docker** - Container runtime ([installation guide](https://docs.docker.com/get-docker/))
-- **Docker Compose** - Multi-container orchestration ([installation guide](https://docs.docker.com/compose/install/))
-- **2GB+ available disk space** for the application and your files
-- **Port 5487** available for the web interface
-- **Port 9000** available for S3-compatible storage (**REQUIRED** unless using external S3)
-- **Port 3333** available for API access (optional)
+- **Docker** — Container runtime ([installation guide](https://docs.docker.com/get-docker/))
+- **Docker Compose** — Multi-container orchestration ([installation guide](https://docs.docker.com/compose/install/))
+- **2 GB+ available disk space** for the application and your files
 
-<Callout type="warn">
-  **Critical**: Port **9000** is **REQUIRED** for internal storage operations. This port exposes the RustFS S3-compatible storage server. Browsers must be able to reach this port for file uploads and downloads. If you cannot expose this port, you **must** configure external S3 storage using the `ENABLE_S3=true` option.
-</Callout>
+**Ports you'll need available:**
+- **5487** — Web interface (required)
+- **9000** — Storage service. Browsers upload and download files directly to this port when using the built-in storage. Not needed if you use an external S3 provider or a reverse proxy that exposes storage on a domain.
+- **3333** — API server, internal only. Only expose it if you want direct access to the API or its documentation.
 
 <Callout>
-  **Platform Support**: OUITRANSFER is developed on macOS and extensively tested on Linux servers. While we haven't formally
-  tested other platforms, Docker's cross-platform nature should ensure compatibility. Report any issues on our [GitHub
-  repository](https://github.com/burger-cie/ouitransfer/issues).
+  **Platform Support**: Thanks to Docker's containerized architecture, OUITRANSFER can be deployed on
+  any platform that supports Docker — Linux, macOS, Windows, NAS devices, and cloud VMs alike. For
+  those unfamiliar with Docker: it packages the entire application and its dependencies into isolated
+  containers, so the host operating system matters very little. That said, **a Linux server is
+  recommended for production** deployments — it offers better I/O performance, lower overhead, and
+  more predictable behavior for long-running container workloads.
 </Callout>
 
-## Architecture
+## How it Works
 
-OUITRANSFER runs as 3 Docker containers:
+OUITRANSFER runs as three Docker containers that start in sequence:
 
 | Service | Image | Port | Description |
 |---------|-------|------|-------------|
 | **storage** | `rustfs/rustfs:latest` | 9000 | S3-compatible object storage (RustFS) |
-| **server** | `ouitransfer/server:latest` | 3333 | Fastify API server |
-| **web** | `ouitransfer/web:latest` | 5487 | Next.js web frontend |
+| **server** | `ghcr.io/slvnlrt/ouitransfer-server:latest` | 3333 | Fastify API server |
+| **web** | `ghcr.io/slvnlrt/ouitransfer-web:latest` | 5487 | Next.js web frontend |
 
-Startup order is managed automatically: storage starts first, then server (once storage is healthy), then web (once server is healthy).
+Docker Compose manages the startup order automatically: storage starts first, then the server (once storage is healthy), then the web frontend (once the server is healthy). On first start, the server creates the database and seeds initial configuration automatically.
 
-## Storage Options
+---
 
-OUITRANSFER supports two storage approaches for persistent data:
+## Step 1 — Generate Your Secrets
 
-- **Named Volumes (Recommended)** - Docker-managed storage with optimal performance and no permission issues
-- **Bind Mounts** - Direct host filesystem access, ideal for development and direct file management
-
-## Deployment
-
-Before deploying, generate three separate secrets:
+OUITRANSFER requires three independent cryptographic secrets. Run this command three separate times and save each output:
 
 ```bash
-# Run this three times, use a different value for each secret
 openssl rand -hex 32
 ```
 
-Copy the example environment file and fill in your values:
+You'll use the three values as `JWT_SECRET`, `CSRF_SECRET`, and `COOKIE_SECRET` in the next step. They **must all be different** from each other.
+
+<Callout type="warn">
+  Do not reuse the same value for multiple secrets. Each must be unique.
+</Callout>
+
+---
+
+## Step 2 — Configure Your Environment
+
+Create a `.env` file from the provided example:
 
 ```bash
 cp .env.docker.example .env
-# Edit .env with your values
 ```
 
-Choose your storage method based on your needs:
+Open `.env` in a text editor and fill in the following values:
 
-<Tabs items={['Named Volumes (Recommended)', 'Bind Mounts']}>
-  <Tab value="Named Volumes (Recommended)">
-    Docker-managed storage that provides the best balance of performance, security, and ease of use:
+```bash
+# ── Public URLs ───────────────────────────────────────────────────────────────
+# These must be URLs that the user's BROWSER can actually reach.
+# "localhost" only works when the browser runs on the same machine as Docker.
 
-    - **No Permission Issues**: Docker handles all permission management automatically
-    - **Performance**: Optimized for container workloads with better I/O performance
-    - **Production Ready**: Recommended for production deployments
+# Where users open the app. Used for CORS on both the API and the storage service.
+FRONTEND_ORIGIN=http://192.168.1.100:5487
 
-    ### Configuration
+# Where browsers upload and download files (direct S3 access via presigned URLs).
+# In most setups, same IP as above but on port 9000.
+STORAGE_PUBLIC_URL=http://192.168.1.100:9000
 
-    Create a `docker-compose.yml` file:
+# ── S3 Storage Credentials ────────────────────────────────────────────────────
+# Shared between the RustFS storage container and the API server.
+# Not user-facing — choose any string, just keep them consistent between the two.
+S3_ACCESS_KEY=my-access-key
+S3_SECRET_KEY=my-secret-key
 
-    ```yaml
-    services:
-      # ─── S3-Compatible Object Storage ────────────────────────────
-      storage:
-        image: rustfs/rustfs:latest
-        container_name: ouitransfer-storage
-        environment:
-          RUSTFS_VOLUMES: /data
-          RUSTFS_ACCESS_KEY: "${S3_ACCESS_KEY}"
-          RUSTFS_SECRET_KEY: "${S3_SECRET_KEY}"
-          RUSTFS_CONSOLE_ENABLE: "true"
-          RUSTFS_CORS_ALLOWED_ORIGINS: "${FRONTEND_ORIGIN}"
-        volumes:
-          - storage_data:/data
-        ports:
-          - "9000:9000"    # S3 API — must be reachable by browsers
-        healthcheck:
-          test: ["CMD-SHELL", "curl -fs http://localhost:9000/health || exit 1"]
-          interval: 10s
-          timeout: 5s
-          retries: 5
-          start_period: 10s
-        restart: unless-stopped
+# ── Security Secrets ──────────────────────────────────────────────────────────
+# Paste the three values generated in Step 1.
+JWT_SECRET=<first openssl output>
+CSRF_SECRET=<second openssl output>
+COOKIE_SECRET=<third openssl output>
+```
 
-      # ─── Fastify API Server ──────────────────────────────────────
-      server:
-        image: ghcr.io/slvnlrt/ouitransfer-server:latest
-        container_name: ouitransfer-server
-        environment:
-          # Storage connection
-          S3_ENDPOINT: storage    # Docker service name — do not change
-          S3_PORT: "9000"
-          S3_USE_SSL: "false"
-          S3_ACCESS_KEY: "${S3_ACCESS_KEY}"
-          S3_SECRET_KEY: "${S3_SECRET_KEY}"
-          S3_BUCKET_NAME: ouitransfer-files
-          S3_REGION: auto
-          S3_FORCE_PATH_STYLE: "true"
-          STORAGE_URL: "${STORAGE_PUBLIC_URL}"
-          # Security secrets
-          JWT_SECRET: "${JWT_SECRET}"
-          CSRF_SECRET: "${CSRF_SECRET}"
-          COOKIE_SECRET: "${COOKIE_SECRET}"
-          CORS_ORIGINS: "${FRONTEND_ORIGIN}"
-          # Optional settings:
-          # OUITRANSFER_UID: "1000"
-          # OUITRANSFER_GID: "1000"
-          # SECURE_SITE: "true"
-          # PRESIGNED_URL_EXPIRATION: "3600"
-          # PRESIGNED_GET_URL_EXPIRATION: "900"
-          # ENCRYPTION_SECRET: ""    # Required for LDAP
-        volumes:
-          - server_data:/app/server
-        ports:
-          - "3333:3333"    # API (optional: only needed for direct API access)
-        depends_on:
-          storage:
-            condition: service_healthy
-        healthcheck:
-          test: ["CMD", "curl", "-f", "http://localhost:3333/health"]
-          interval: 15s
-          timeout: 5s
-          retries: 3
-          start_period: 30s
-        restart: unless-stopped
+<Callout type="info">
+  **Running on the same machine?** If your browser and Docker are on the same host, use `localhost`:
+  ```bash
+  FRONTEND_ORIGIN=http://localhost:5487
+  STORAGE_PUBLIC_URL=http://localhost:9000
+  ```
+</Callout>
 
-      # ─── Next.js Web Frontend ────────────────────────────────────
-      web:
-        image: ghcr.io/slvnlrt/ouitransfer-web:latest
-        container_name: ouitransfer-web
-        environment:
-          API_BASE_URL: "http://server:3333"
-          JWT_SECRET: "${JWT_SECRET}"
-          CSP_STORAGE_ORIGINS: "${STORAGE_PUBLIC_URL}"
-          # DEFAULT_LANGUAGE: "en-US"
-        ports:
-          - "5487:5487"    # Web interface
-        depends_on:
-          server:
-            condition: service_healthy
-        restart: unless-stopped
+<Callout type="info">
+  **Why two URL variables?** OUITRANSFER generates presigned URLs — short-lived signed URLs that
+  browsers use to upload and download files **directly** from the storage service, bypassing the API
+  server. Both variables must be addresses the **user's browser can reach**, not internal Docker
+  hostnames like `server:3333` or `storage:9000`.
 
+  Each variable propagates to two internal env vars in the Docker Compose file:
+  - `FRONTEND_ORIGIN` → `CORS_ORIGINS` on the API server + `RUSTFS_CORS_ALLOWED_ORIGINS` on storage
+  - `STORAGE_PUBLIC_URL` → `STORAGE_URL` on the API server (embedded in presigned URLs) + `CSP_STORAGE_ORIGINS` on the web container
+
+  For a detailed explanation, including reverse proxy setups where storage runs behind a domain, see
+  [URL Configuration](/docs/v1-beta/reverse-proxy-configuration#url-configuration).
+</Callout>
+
+---
+
+## Step 3 — Create Your docker-compose.yml
+
+Create a `docker-compose.yml` file in the same directory as your `.env`:
+
+```yaml
+services:
+  # ─── S3-Compatible Object Storage ────────────────────────────
+  storage:
+    image: rustfs/rustfs:latest
+    container_name: ouitransfer-storage
+    environment:
+      RUSTFS_VOLUMES: /data
+      RUSTFS_ACCESS_KEY: "${S3_ACCESS_KEY}"
+      RUSTFS_SECRET_KEY: "${S3_SECRET_KEY}"
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_CORS_ALLOWED_ORIGINS: "${FRONTEND_ORIGIN}"
     volumes:
-      storage_data:
-      server_data:
-    ```
+      - storage_data:/data
+    ports:
+      - "9000:9000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:9000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
 
-    <Callout type="info">
-      **Having upload or permission issues?** Add `OUITRANSFER_UID=1000` and `OUITRANSFER_GID=1000` to the server service environment variables. Check our [UID/GID Configuration](/docs/v1-beta/uid-gid-configuration) guide for more details.
-    </Callout>
-
-    ### Deploy
-
-    ```bash
-    docker compose up -d
-    ```
-
-  </Tab>
-  <Tab value="Bind Mounts">
-    Direct mapping to host filesystem directories, providing direct file access:
-
-    - **Direct Access**: Files are directly accessible from your host system
-    - **Development Friendly**: Easy to inspect, modify, or backup files manually
-    - **Platform Dependent**: May require UID/GID configuration, especially on NAS systems
-
-    ### Configuration
-
-    Create a `docker-compose.yml` file:
-
-    ```yaml
-    services:
-      # ─── S3-Compatible Object Storage ────────────────────────────
+  # ─── Fastify API Server ──────────────────────────────────────
+  server:
+    image: ghcr.io/slvnlrt/ouitransfer-server:latest
+    container_name: ouitransfer-server
+    environment:
+      S3_ENDPOINT: storage       # Docker service name — do not change
+      S3_PORT: "9000"
+      S3_USE_SSL: "false"
+      S3_ACCESS_KEY: "${S3_ACCESS_KEY}"
+      S3_SECRET_KEY: "${S3_SECRET_KEY}"
+      S3_BUCKET_NAME: ouitransfer-files
+      S3_REGION: auto
+      S3_FORCE_PATH_STYLE: "true"
+      STORAGE_URL: "${STORAGE_PUBLIC_URL}"
+      JWT_SECRET: "${JWT_SECRET}"
+      CSRF_SECRET: "${CSRF_SECRET}"
+      COOKIE_SECRET: "${COOKIE_SECRET}"
+      CORS_ORIGINS: "${FRONTEND_ORIGIN}"
+    volumes:
+      - server_data:/app/server
+    ports:
+      - "3333:3333"              # Optional: remove if you don't need direct API access
+    depends_on:
       storage:
-        image: rustfs/rustfs:latest
-        container_name: ouitransfer-storage
-        environment:
-          RUSTFS_VOLUMES: /data
-          RUSTFS_ACCESS_KEY: "${S3_ACCESS_KEY}"
-          RUSTFS_SECRET_KEY: "${S3_SECRET_KEY}"
-          RUSTFS_CONSOLE_ENABLE: "true"
-          RUSTFS_CORS_ALLOWED_ORIGINS: "${FRONTEND_ORIGIN}"
-        volumes:
-          - ./storage-data:/data
-        ports:
-          - "9000:9000"    # S3 API — must be reachable by browsers
-        healthcheck:
-          test: ["CMD-SHELL", "curl -fs http://localhost:9000/health || exit 1"]
-          interval: 10s
-          timeout: 5s
-          retries: 5
-          start_period: 10s
-        restart: unless-stopped
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3333/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
 
-      # ─── Fastify API Server ──────────────────────────────────────
+  # ─── Next.js Web Frontend ────────────────────────────────────
+  web:
+    image: ghcr.io/slvnlrt/ouitransfer-web:latest
+    container_name: ouitransfer-web
+    environment:
+      API_BASE_URL: "http://server:3333"   # Internal Docker network — do not change
+      JWT_SECRET: "${JWT_SECRET}"
+      CSP_STORAGE_ORIGINS: "${STORAGE_PUBLIC_URL}"
+    ports:
+      - "5487:5487"
+    depends_on:
       server:
-        image: ghcr.io/slvnlrt/ouitransfer-server:latest
-        container_name: ouitransfer-server
-        environment:
-          # Storage connection
-          S3_ENDPOINT: storage    # Docker service name — do not change
-          S3_PORT: "9000"
-          S3_USE_SSL: "false"
-          S3_ACCESS_KEY: "${S3_ACCESS_KEY}"
-          S3_SECRET_KEY: "${S3_SECRET_KEY}"
-          S3_BUCKET_NAME: ouitransfer-files
-          S3_REGION: auto
-          S3_FORCE_PATH_STYLE: "true"
-          STORAGE_URL: "${STORAGE_PUBLIC_URL}"
-          # Security secrets
-          JWT_SECRET: "${JWT_SECRET}"
-          CSRF_SECRET: "${CSRF_SECRET}"
-          COOKIE_SECRET: "${COOKIE_SECRET}"
-          CORS_ORIGINS: "${FRONTEND_ORIGIN}"
-          # Optional settings:
-          # OUITRANSFER_UID: "1000"
-          # OUITRANSFER_GID: "1000"
-          # SECURE_SITE: "true"
-          # PRESIGNED_URL_EXPIRATION: "3600"
-          # PRESIGNED_GET_URL_EXPIRATION: "900"
-          # ENCRYPTION_SECRET: ""    # Required for LDAP
-        volumes:
-          - ./server-data:/app/server
-        ports:
-          - "3333:3333"    # API (optional: only needed for direct API access)
-        depends_on:
-          storage:
-            condition: service_healthy
-        healthcheck:
-          test: ["CMD", "curl", "-f", "http://localhost:3333/health"]
-          interval: 15s
-          timeout: 5s
-          retries: 3
-          start_period: 30s
-        restart: unless-stopped
+        condition: service_healthy
+    restart: unless-stopped
 
-      # ─── Next.js Web Frontend ────────────────────────────────────
-      web:
-        image: ghcr.io/slvnlrt/ouitransfer-web:latest
-        container_name: ouitransfer-web
-        environment:
-          API_BASE_URL: "http://server:3333"
-          JWT_SECRET: "${JWT_SECRET}"
-          CSP_STORAGE_ORIGINS: "${STORAGE_PUBLIC_URL}"
-          # DEFAULT_LANGUAGE: "en-US"
-        ports:
-          - "5487:5487"    # Web interface
-        depends_on:
-          server:
-            condition: service_healthy
-        restart: unless-stopped
-    ```
+volumes:
+  storage_data:
+  server_data:
+```
 
-    <Callout type="warn">
-      **Storage permissions**: The RustFS image runs as UID 10001. For bind mounts, you must set correct ownership:
-      ```bash
-      mkdir -p storage-data
-      chown -R 10001:10001 storage-data
-      ```
-      Named volumes handle this automatically.
-    </Callout>
+This configuration uses **Docker-managed named volumes** for storage and server data — the recommended approach for most deployments. Docker handles permissions automatically and I/O performance is optimal.
 
-    <Callout type="info">
-      **Having upload or permission issues?** Add `OUITRANSFER_UID=1000` and `OUITRANSFER_GID=1000` to the server service environment variables. Check our [UID/GID Configuration](/docs/v1-beta/uid-gid-configuration) guide for more details.
-    </Callout>
+<Callout type="info">
+  **Need direct access to data files on your host filesystem?** (e.g. NAS, manual backups, bind
+  mount workflows) See the [Bind Mounts](#bind-mounts) section at the bottom of this page.
+</Callout>
 
-    ### Deploy
+---
 
-    ```bash
-    docker compose up -d
-    ```
+## Step 4 — Start OUITRANSFER
 
-  </Tab>
-</Tabs>
+```bash
+docker compose up -d
+```
 
-## Configuration
+Docker pulls the images on first run (a few hundred MB — this may take a minute depending on your connection). To watch the startup logs in real time:
 
-Customize OUITRANSFER's behavior with environment variables. All user-facing values are set in the `.env` file; fixed infrastructure values are set directly in `docker-compose.yaml`.
+```bash
+docker compose logs -f
+```
 
-### `.env` Configuration
+Wait until the server logs show `Fastify server listening`. The first startup also runs database migrations and seeds the initial app configuration automatically — no manual steps needed.
 
-These are the variables you set in `.env` (copied from `.env.docker.example`):
+---
+
+## Step 5 — Access and First Setup
+
+Open your browser and go to:
+
+```
+http://YOUR_IP:5487
+```
+
+Replace `YOUR_IP` with the value you used in `FRONTEND_ORIGIN` (or `localhost` if running locally).
+
+**Creating your admin account:**
+
+On a fresh install you'll see the login page. Click **Register** to create the first account — the first registered user is automatically granted **administrator privileges**.
+
+<Callout type="warn">
+  **Register right away.** If your instance is reachable from a local network or the internet,
+  create your admin account immediately after first start to prevent anyone else from claiming
+  administrator access.
+</Callout>
+
+Once logged in, explore the **Settings** panel (accessible from the profile menu in the top-right corner) to configure your instance.
+
+---
+
+## After First Login — Recommended Setup
+
+### Personalize your instance
+
+Go to **Settings → General** to set your application name, logo, and description. These appear throughout the UI and in notification emails.
+
+### Configure email (strongly recommended)
+
+Go to **Settings → Email** to configure an SMTP server. This enables:
+- **Password reset** — users who forget their password can recover their account by email.
+- **Share notifications** — recipients get an email when a file is shared with them.
+
+Without SMTP, users who lose access to their account cannot recover it without admin intervention.
+
+See [Configuring SMTP](/docs/v1-beta/configuring-smtp) for step-by-step instructions.
+
+If you can't configure SMTP right now, see [Password Reset Without SMTP](/docs/v1-beta/password-reset-without-smtp) for the admin-based workaround.
+
+### Going to production with HTTPS?
+
+If you're deploying behind a reverse proxy (Traefik, Nginx, Caddy) with HTTPS:
+
+1. Add `SECURE_SITE=true` to the **server** service's environment variables in your `docker-compose.yml`. This tells the API to issue cookies with the `Secure` flag, which is required for cookies to work over HTTPS.
+2. Set `FRONTEND_ORIGIN` and `STORAGE_PUBLIC_URL` to your `https://` URLs.
+3. Configure your reverse proxy to forward requests to the correct containers.
+
+See [Reverse Proxy Configuration](/docs/v1-beta/reverse-proxy-configuration) for a complete guide.
+
+---
+
+## Bind Mounts
+
+If you need the data files to live at a known path on your host filesystem (useful for NAS setups, bind-aware backup tools, or manual inspection), replace the named volumes in your `docker-compose.yml`:
+
+```yaml
+# Replace this in the storage service:
+volumes:
+  - ./storage-data:/data        # was: storage_data:/data
+
+# Replace this in the server service:
+volumes:
+  - ./server-data:/app/server   # was: server_data:/app/server
+
+# Remove the top-level volumes: block entirely (or remove unused entries).
+```
+
+<Callout type="warn">
+  **Storage permissions**: RustFS runs as UID 10001. Pre-create the directory with correct ownership:
+  ```bash
+  mkdir -p storage-data
+  chown -R 10001:10001 storage-data
+  ```
+  For server data permissions (SQLite, uploads), see [UID/GID Configuration](/docs/v1-beta/uid-gid-configuration).
+</Callout>
+
+---
+
+## Configuration Reference
+
+### `.env` — Required Variables
 
 | Variable | Description |
 |----------|-------------|
-| `FRONTEND_ORIGIN` | Origin of the web frontend as browsers reach it (e.g., `http://localhost:5487` or `https://files.example.com`). Used for CORS on the API server and storage service. |
-| `STORAGE_PUBLIC_URL` | Public URL of the storage service as browsers reach it (e.g., `http://localhost:9000` or `https://storage.example.com`). Used for presigned URL generation and Content Security Policy. |
-| `S3_ACCESS_KEY` | Access key shared between the storage service (RustFS) and the API server. |
-| `S3_SECRET_KEY` | Secret key shared between the storage service (RustFS) and the API server. |
-| `JWT_SECRET` | JWT signing key (min 32 chars). Must be set on both server and web. Generate with: `openssl rand -hex 32` |
-| `CSRF_SECRET` | CSRF token HMAC key (min 32 chars, must differ from `JWT_SECRET`). Generate with: `openssl rand -hex 32` |
-| `COOKIE_SECRET` | Cookie signing key (min 32 chars, must differ from other secrets). Generate with: `openssl rand -hex 32` |
+| `FRONTEND_ORIGIN` | URL where users access the web interface (e.g. `http://192.168.1.100:5487`). Used for CORS on the API and the storage service. |
+| `STORAGE_PUBLIC_URL` | URL where browsers reach the storage service (e.g. `http://192.168.1.100:9000`). Used to generate presigned URLs and configure the Content Security Policy. |
+| `S3_ACCESS_KEY` | S3 access key shared between RustFS and the API server. |
+| `S3_SECRET_KEY` | S3 secret key shared between RustFS and the API server. |
+| `JWT_SECRET` | JWT signing key — at least 32 characters. Generate with `openssl rand -hex 32`. |
+| `CSRF_SECRET` | CSRF HMAC key — at least 32 characters, must differ from `JWT_SECRET`. |
+| `COOKIE_SECRET` | Cookie signing key — at least 32 characters, must differ from the other two. |
 
-### Fixed Configuration
+### `.env` — Optional Variables
 
-These values are set directly in `docker-compose.yaml` and do not normally need to change:
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `SECURE_SITE` | `false` | Set `true` when serving over HTTPS behind a reverse proxy. Required for cookies to work correctly with HTTPS. |
+| `OUITRANSFER_UID` | `1001` | User ID for server container processes. Useful for NAS or bind-mount setups. |
+| `OUITRANSFER_GID` | `1001` | Group ID for server container processes. |
+| `DEFAULT_LANGUAGE` | `en-US` | Default UI language. See [available languages](/docs/v1-beta/available-languages). |
+| `ENCRYPTION_SECRET` | — | AES-256-GCM key for encrypting sensitive data at rest. Required for LDAP. Generate with `openssl rand -hex 32`. |
+| `PRESIGNED_URL_EXPIRATION` | `3600` | Upload presigned URL expiry in seconds (default: 1 hour). |
+| `PRESIGNED_GET_URL_EXPIRATION` | `900` | Download presigned URL expiry in seconds (default: 15 min). |
+| `TRUST_PROXY` | `loopback` | Fastify trusted proxy setting. Use `loopback` for direct deployments; set your proxy IP when behind a reverse proxy. |
+| `OAUTH_ALLOWED_REDIRECT_HOSTS` | — | Comma-separated additional redirect hosts for custom OIDC providers. |
+| `ENABLE_API_DOCS` | `false` | Expose API documentation at `/docs` and `/swagger` in production. |
 
-| Variable | Service | Value | Description |
-|----------|---------|-------|-------------|
-| `S3_ENDPOINT` | server | `storage` | Docker service name for internal storage — do not change |
-| `S3_PORT` | server | `9000` | Internal storage port |
-| `S3_USE_SSL` | server | `false` | No TLS on the internal Docker network |
-| `S3_BUCKET_NAME` | server | `ouitransfer-files` | Bucket name created at startup |
-| `S3_REGION` | server | `auto` | Region setting for RustFS |
-| `S3_FORCE_PATH_STYLE` | server | `true` | Required for RustFS and self-hosted S3 |
-| `API_BASE_URL` | web | `http://server:3333` | Internal API URL — uses Docker service name |
-| `RUSTFS_VOLUMES` | storage | `/data` | Storage data directory inside the container |
-| `RUSTFS_CONSOLE_ENABLE` | storage | `true` | Enables the RustFS management console |
+### Fixed Variables (set in docker-compose.yml)
 
-### Additional Optional Variables
+These are set directly in `docker-compose.yml` and do not normally need to change:
 
-| Variable | Service | Default | Description |
-|----------|---------|---------|-------------|
-| `ENABLE_S3` | server | `false` | Set `true` to use external S3 storage (AWS, Backblaze, etc.) instead of built-in RustFS |
-| `OUITRANSFER_UID` | server | `1001` | User ID for server container processes (helps with file permissions) |
-| `OUITRANSFER_GID` | server | `1001` | Group ID for server container processes (helps with file permissions) |
-| `DEFAULT_LANGUAGE` | web | `en-US` | Default application language ([see available languages](/docs/v1-beta/available-languages)) |
-| `PRESIGNED_URL_EXPIRATION` | server | `3600` | Upload presigned URL expiration in seconds |
-| `PRESIGNED_GET_URL_EXPIRATION` | server | `900` | Download presigned URL expiration in seconds |
-| `SECURE_SITE` | server | `false` | Enable secure cookies for HTTPS/reverse proxy deployments |
-| `TRUST_PROXY` | server | `loopback` | Trusted proxy setting for Fastify (`loopback`, comma-separated IPs, or `true` for all proxies) |
-| `ENCRYPTION_SECRET` | server | - | AES-256-GCM key for encrypting sensitive data at rest (e.g., LDAP bind password). Required if using LDAP. Generate with: `openssl rand -hex 32` |
-| `ENABLE_API_DOCS` | server | `false` (prod) | Set `true` to enable Scalar/Swagger API documentation at `/docs` and `/swagger` in production |
-| `OAUTH_ALLOWED_REDIRECT_HOSTS` | server | - | Comma-separated additional allowed redirect hostnames (e.g., `auth.example.com`) for custom OIDC providers |
-
-<Callout type="info">
-  **Storage Architecture**: OUITRANSFER v3.3+ uses a 3-container architecture with RustFS as the S3-compatible storage backend. Port 9000 **must** be accessible from browsers for file operations to work properly when using internal storage.
-</Callout>
-
-<Callout>
-  **Using a Reverse Proxy?** Set `SECURE_SITE=true` and check our [Reverse Proxy
-  Configuration](/docs/v1-beta/reverse-proxy-configuration) guide for proper HTTPS setup.
-</Callout>
-
-## Access Your Instance
-
-Once deployed, open OUITRANSFER in your browser:
-
-- **Web Interface**: `http://localhost:5487` (local) or `http://YOUR_SERVER_IP:5487` (remote)
-- **Storage API**: `http://localhost:9000` (S3-compatible API, used for file operations)
-- **API Documentation**: `http://localhost:3333/docs` (if port 3333 is exposed)
-
-<Callout type="info">
-  **Learn More**: For complete API documentation, authentication, and integration examples, see our [API
-  Reference](/docs/v1-beta/api) guide
-</Callout>
-
-<Callout type="warn">
-  **Production Ready?** Configure HTTPS with a valid SSL certificate for secure production deployments.
-</Callout>
-
----
-
-## Docker CLI Alternative
-
-For simple setups or testing, you can run Docker Compose from the command line. Note that OUITRANSFER requires all three services, so Docker Compose is the recommended approach. If you prefer individual `docker run` commands, you must create a shared Docker network and start each container manually:
-
-<Callout type="warn">
-  **Docker CLI does not read `.env` automatically.** Unlike Docker Compose, `docker run` does not interpolate environment variables from a `.env` file. You must pass all values explicitly via `-e` flags.
-</Callout>
-
-```bash
-# Create a shared network
-docker network create ouitransfer
-
-# Start storage
-docker run -d \
-  --name ouitransfer-storage \
-  --network ouitransfer \
-  -e RUSTFS_VOLUMES=/data \
-  -e RUSTFS_ACCESS_KEY=your-access-key \
-  -e RUSTFS_SECRET_KEY=your-secret-key \
-  -e RUSTFS_CORS_ALLOWED_ORIGINS=http://YOUR_SERVER_IP:5487 \
-  -p 9000:9000 \
-  -v storage_data:/data \
-  --restart unless-stopped \
-  rustfs/rustfs:latest
-
-# Start server (wait for storage to be healthy first)
-docker run -d \
-  --name ouitransfer-server \
-  --network ouitransfer \
-  -e S3_ENDPOINT=ouitransfer-storage \
-  -e S3_PORT=9000 \
-  -e S3_USE_SSL=false \
-  -e S3_ACCESS_KEY=your-access-key \
-  -e S3_SECRET_KEY=your-secret-key \
-  -e S3_BUCKET_NAME=ouitransfer-files \
-  -e S3_REGION=auto \
-  -e S3_FORCE_PATH_STYLE=true \
-  -e STORAGE_URL=http://YOUR_SERVER_IP:9000 \
-  -e JWT_SECRET=your-jwt-secret-at-least-32-chars \
-  -e CSRF_SECRET=your-csrf-secret-at-least-32-chars \
-  -e COOKIE_SECRET=your-cookie-secret-at-least-32-chars \
-  -e CORS_ORIGINS=http://YOUR_SERVER_IP:5487 \
-  -p 3333:3333 \
-  -v server_data:/app/server \
-  --restart unless-stopped \
-  ghcr.io/slvnlrt/ouitransfer-server:latest
-
-# Start web (wait for server to be healthy first)
-docker run -d \
-  --name ouitransfer-web \
-  --network ouitransfer \
-  -e API_BASE_URL=http://ouitransfer-server:3333 \
-  -e JWT_SECRET=your-jwt-secret-at-least-32-chars \
-  -e CSP_STORAGE_ORIGINS=http://YOUR_SERVER_IP:9000 \
-  -p 5487:5487 \
-  --restart unless-stopped \
-  ghcr.io/slvnlrt/ouitransfer-web:latest
-```
-
-<Callout type="warn">
-  **Docker Compose is strongly recommended.** The CLI approach above requires manual health checking and startup ordering. Docker Compose handles this automatically via `depends_on` with healthcheck conditions.
-</Callout>
-
----
-
-## Common Configuration Options
-
-### Cross-Origin Configuration
-
-When using internal storage (the default), browsers upload files directly to the storage service via presigned URLs. Two values control this:
-
-**`FRONTEND_ORIGIN`** — the origin where users access the web app (e.g., `http://192.168.1.100:5487`):
-- Passed to the API server as `CORS_ORIGINS` — allows the server to accept requests from the frontend
-- Passed to the storage service as `RUSTFS_CORS_ALLOWED_ORIGINS` — allows the storage service to accept direct uploads from the frontend
-
-**`STORAGE_PUBLIC_URL`** — the public URL where browsers reach the storage service (e.g., `http://192.168.1.100:9000`):
-- Passed to the API server as `STORAGE_URL` — tells the server how to generate presigned URLs that browsers can reach
-- Passed to the web service as `CSP_STORAGE_ORIGINS` — configures the Content Security Policy to allow browser connections to storage
-
-**Important Notes:**
-- **Must include protocol** (`http://` or `https://`)
-- **Must include port** unless you're using a reverse proxy
-- **Use your actual domain/IP** that clients will access — `localhost` only works when browsers run on the same machine as Docker
-- **Not needed if using external S3** (`ENABLE_S3=true`) — the S3 endpoint is used directly and `RUSTFS_CORS_ALLOWED_ORIGINS` does not apply
-- **Use HTTPS in production** — HTTP exposes presigned URL signatures and file contents on the wire, and browsers block mixed-content requests if the web app is served over HTTPS
-
-### Presigned URL Expiration
-
-OUITRANSFER uses temporary URLs (presigned URLs) for secure file access. These URLs expire after a configurable time period to enhance security.
-
-**Default:** Upload: 1 hour (3600s), Download: 15 minutes (900s)
-
-You can customize this for all storage types (internal or S3) by adding:
-
-```yaml
-environment:
-  PRESIGNED_URL_EXPIRATION: "7200"       # Upload: 2 hours
-  PRESIGNED_GET_URL_EXPIRATION: "1800"   # Download: 30 minutes
-```
-
-**When to adjust:**
-
-- **Shorter time (900 = 15 min):** Higher security, but users may need to refresh download links
-- **Longer time (7200-21600 = 2-6 hours):** Better for large file transfers, but URLs stay valid longer
-- **Default:** Good balance for most use cases
+| Variable | Value | Description |
+|----------|-------|-------------|
+| `S3_ENDPOINT` | `storage` | Docker service name for internal storage — do not change. |
+| `S3_PORT` | `9000` | Internal storage port. |
+| `S3_USE_SSL` | `false` | No TLS on the internal Docker network. |
+| `S3_BUCKET_NAME` | `ouitransfer-files` | Bucket name created at startup. |
+| `API_BASE_URL` | `http://server:3333` | Internal API URL — uses Docker service name, do not change. |
 
 ---
 
@@ -486,32 +354,49 @@ environment:
 
 ### Updates
 
-Keep OUITRANSFER up to date with the latest features and security patches:
-
 ```bash
 docker compose pull
 docker compose up -d
+```
+
+Database migrations and seed updates run automatically on startup. No manual migration steps needed.
+
+### Check Status
+
+```bash
+# Container status and health
+docker compose ps
+
+# Real-time logs
+docker compose logs -f
+
+# API health endpoint (if port 3333 is exposed)
+curl http://localhost:3333/health
 ```
 
 ---
 
 ## What's Next?
 
-Your OUITRANSFER instance is ready! Here's what you can explore:
+### Deployment
 
-### Advanced Configuration
+- **[Reverse Proxy Configuration](/docs/v1-beta/reverse-proxy-configuration)** — HTTPS with Traefik, Nginx, or Caddy; `SECURE_SITE=true`
+- **[UID/GID Configuration](/docs/v1-beta/uid-gid-configuration)** — File permissions for NAS systems and bind-mount setups
+- **[S3 Storage Providers](/docs/v1-beta/s3-providers)** — Use external S3 (AWS, Backblaze B2, DigitalOcean Spaces, etc.) instead of built-in RustFS
+- **[Manual Installation](/docs/v1-beta/manual-installation)** — Run without Docker, directly from source
 
-- **[UID/GID Configuration](/docs/v1-beta/uid-gid-configuration)** - Configure user permissions for NAS systems and custom environments
-- **[S3 Storage Providers](/docs/v1-beta/s3-providers)** - Scale with Amazon S3 or compatible storage providers
-- **[Manual Installation](/docs/v1-beta/manual-installation)** - Manual installation and custom configurations
-- **[Storage Quotas](/docs/v1-beta/quotas)** — Configure per-user and per-group storage limits
-- **[Groups](/docs/v1-beta/groups)** — Organize users into groups with quota policies
-- **[LDAP / Active Directory](/docs/v1-beta/ldap-configuration)** — Sync users from Active Directory
+### Features
+
+- **[Storage Quotas](/docs/v1-beta/quotas)** — Per-user and per-group storage limits
+- **[Groups](/docs/v1-beta/groups)** — Organize users with group-level quota policies
+- **[LDAP / Active Directory](/docs/v1-beta/ldap-configuration)** — Sync users and groups from Active Directory
+- **[OIDC / SSO](/docs/v1-beta/oidc-authentication)** — Single sign-on with Google, GitHub, and more
 
 ### Integration & Development
 
-- **[API Reference](/docs/v1-beta/api)** - Integrate OUITRANSFER with your applications
+- **[API Reference](/docs/v1-beta/api)** — Integrate OUITRANSFER with your applications
+- **[Architecture](/docs/v1-beta/architecture)** — How the pieces fit together
 
 ---
 
-**Questions?** Visit our [GitHub Issues](https://github.com/burger-cie/ouitransfer/issues) or join the community discussions.
+**Questions or issues?** Open a ticket on [GitHub](https://github.com/slvnlrt/ouitransfer/issues).

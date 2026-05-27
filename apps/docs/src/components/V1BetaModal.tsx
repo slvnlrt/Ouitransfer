@@ -31,6 +31,13 @@ export function V1BetaModal() {
     }
   }, [pathname]);
 
+  useEffect(() => {
+    // Also open when the banner button dispatches the custom event
+    const handleOpen = () => setIsOpen(true);
+    window.addEventListener("open-v1-beta-modal", handleOpen);
+    return () => window.removeEventListener("open-v1-beta-modal", handleOpen);
+  }, []);
+
   const handleClose = () => {
     localStorage.setItem(V1_BETA_MODAL_KEY, "true");
     setIsOpen(false);
@@ -51,30 +58,32 @@ export function V1BetaModal() {
             </div>
             <DialogTitle className="text-xl font-bold">Welcome to v1-beta</DialogTitle>
           </div>
-          <DialogDescription className="text-left space-y-4 pt-2 text-base leading-relaxed">
-            <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-lg p-4 mb-4">
-              <p className="text-indigo-800 dark:text-indigo-200 text-sm font-medium">
-                <strong>Note:</strong> OUITRANSFER is currently in beta. Features may evolve and
-                some rough edges may remain. Your feedback helps us improve.
+          <DialogDescription asChild className="text-left space-y-4 pt-2 text-base leading-relaxed">
+            <div>
+              <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-lg p-4 mb-4">
+                <p className="text-indigo-800 dark:text-indigo-200 text-sm font-medium">
+                  <strong>Note:</strong> OUITRANSFER is currently in beta. Features may evolve and
+                  some rough edges may remain. Your feedback helps us improve.
+                </p>
+              </div>
+              <p>
+                This is the first public release of{" "}
+                <strong className="text-indigo-600">OUITRANSFER</strong> — a self-hosted,
+                open-source file transfer platform built for speed, privacy, and simplicity.
+              </p>
+              <p>
+                Found a bug or have a suggestion? Open an issue on{" "}
+                <a
+                  href="https://github.com/slvnlrt/ouitransfer"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-indigo-600 underline underline-offset-2"
+                >
+                  GitHub
+                </a>
+                .
               </p>
             </div>
-            <p>
-              This is the first public release of{" "}
-              <strong className="text-indigo-600">OUITRANSFER</strong> — a self-hosted, open-source
-              file transfer platform built for speed, privacy, and simplicity.
-            </p>
-            <p>
-              Found a bug or have a suggestion? Open an issue on{" "}
-              <a
-                href="https://github.com/burger-cie/ouitransfer"
-                target="_blank"
-                rel="noreferrer"
-                className="text-indigo-600 underline underline-offset-2"
-              >
-                GitHub
-              </a>
-              .
-            </p>
           </DialogDescription>
         </DialogHeader>
         <div className="flex gap-3 justify-end pt-6">

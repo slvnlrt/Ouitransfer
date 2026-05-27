@@ -1,193 +1,255 @@
 ---
-title: GitHub Architecture
+title: Repository Structure
 icon: Github
 ---
 
 import { File, Files, Folder } from "fumadocs-ui/components/files";
+import { Callout } from "fumadocs-ui/components/callout";
+import {
+  GitBranch,
+  GitPullRequest,
+  PackageCheck,
+  ShieldAlert,
+  Hammer,
+  CircleCheck,
+  Tag,
+  Play,
+  Layers,
+  HeartPulse,
+  Gauge,
+  Globe,
+  FileUp,
+  OctagonX,
+  CloudUpload,
+} from "lucide-react";
 
-This guide provides a comprehensive overview of OUITRANSFER's GitHub repository structure, explaining how the different components are organized in the codebase. Understanding this architecture will help you navigate the repository, contribute effectively, and understand how the project is structured.
+OUITRANSFER is a **pnpm monorepo** managed with Turborepo. This page covers the repository layout, monorepo tooling, and CI/CD pipelines. For the runtime architecture (Docker containers, request flow), see [Architecture](/docs/v1-beta/architecture).
 
-> **Overview:** OUITRANSFER uses a monorepo architecture with clear separation between frontend, backend, documentation, and shared package components.
-
-## Project structure
+## Repository layout
 
 <Files>
   <Folder name="apps" defaultOpen>
+    <Folder name="server" defaultOpen>
+      <Folder name="src">
+        <Folder name="modules">
+          <File name="auth/, file/, share/, user/, ..." />
+        </Folder>
+        <File name="app.ts — Fastify app factory" />
+        <File name="server.ts — entrypoint" />
+        <File name="env.ts — Zod-validated env" />
+      </Folder>
+      <File name="prisma/schema.prisma" />
+    </Folder>
+    <Folder name="web" defaultOpen>
+      <Folder name="src">
+        <Folder name="app">
+          <File name="[locale]/ — locale-aware routes" />
+        </Folder>
+        <File name="components/ — shared UI" />
+        <File name="hooks/ — custom React hooks" />
+        <File name="http/ — API client (TanStack Query)" />
+        <File name="proxy.ts — dev Edge middleware" />
+      </Folder>
+      <File name="messages/ — i18n JSON (23 languages)" />
+    </Folder>
     <Folder name="docs">
-      <File name="all documentation files" />
-    </Folder>
-    <Folder name="server">
-      <File name="all backend files" />
-    </Folder>
-    <Folder name="web">
-      <File name="all frontend files" />
+      <File name="content/docs/ — MDX pages" />
+      <File name="src/components/ — custom MDX components" />
     </Folder>
   </Folder>
   <Folder name="packages" defaultOpen>
     <Folder name="shared">
-      <File name="shared utilities (mime-types, etc.)" />
+      <File name="@ouitransfer/shared — MIME utils" />
     </Folder>
     <Folder name="config">
-      <File name="shared TypeScript config presets" />
+      <File name="@ouitransfer/config — tsconfig presets" />
     </Folder>
   </Folder>
-  <File name="other project files" />
+  <Folder name=".github">
+    <Folder name="workflows">
+      <File name="ci.yml — lint, type-check, test, build" />
+      <File name="e2e.yml — E2E, Lighthouse, Docker publish" />
+    </Folder>
+  </Folder>
+  <File name="docker-compose.yaml — production stack" />
+  <File name="docker-compose.ci.yml — CI overrides" />
+  <File name="Justfile — task runner recipes" />
+  <File name="pnpm-workspace.yaml — workspace + catalogs" />
+  <File name="turbo.json — build pipeline" />
+  <File name="biome.json — lint + format config" />
+  <File name="lefthook.yml — git hooks" />
 </Files>
 
-## Core components
+### Server module structure
 
-### Frontend application (apps/web)
+Each feature lives in `apps/server/src/modules/<feature>/` and follows the same layout:
 
-**Technology stack:**
+| File | Role |
+|------|------|
+| `routes.ts` | Fastify route registration, Zod schema declarations |
+| `controller.ts` | Request/response handling, input validation |
+| `service.ts` | Business logic, Prisma queries |
+| `dto.ts` | Shared Zod schemas and TypeScript types |
 
-- Next.js 15 (App Router)
-- React 19
-- TypeScript
-- Tailwind CSS 4
-- shadcn/ui components
-- next-intl for internationalization
-- TanStack Query v5 for server state management
+Current modules: `admin`, `app`, `audit`, `auth`, `auth-providers`, `background-image`, `config`, `email`, `file`, `folder`, `group`, `health`, `invite`, `ldap`, `quota`, `reverse-share`, `s3-storage`, `share`, `storage`, `two-factor`, `user`.
 
-OUITRANSFER's frontend is built with **Next.js 15**, using the App Router and Server Components for performance, scalability, and flexibility. The structure is modular and feature-based, keeping things easy to evolve as the product grows. UI logic runs on **React 19**, and **TypeScript** adds type safety that prevents a lot of silent bugs. Styles are handled with **Tailwind CSS 4**, letting us build clean, responsive interfaces quickly. For components, we rely on **shadcn/ui**, a headless component library built with Radix UI and Tailwind — it's fast, accessible, and fully customizable.
+---
 
-Internationalization is handled by **next-intl**, which integrates perfectly with Next.js routing. It supports locale-aware routes, per-page translation loading, and plural rules, all without any extra client-side bloat. It's flexible, lightweight, and great for apps with multilingual audiences.
+## Monorepo tooling
 
-The frontend is organized with:
+| Tool | Role |
+|------|------|
+| **pnpm 10.6.0** | Package manager + workspace management |
+| **pnpm catalogs** | Shared dependency versions across packages (defined in `pnpm-workspace.yaml`) |
+| **Turborepo** | Build pipeline orchestration — runs `lint`, `type-check`, `test`, `build` in parallel across packages |
+| **Biome** | Unified linter + formatter (replaces ESLint + Prettier). `noExplicitAny` enforced. |
+| **Lefthook** | Git hooks — runs checks before every commit and validates commit messages |
+| **commitlint** | Enforces [Conventional Commits](https://www.conventionalcommits.org/) on all commit messages |
+| **Knip** | Dead code and unused export detection |
+| **`just`** | Task runner — run `just --list` for all available recipes |
 
-- A **components-based architecture** for modular UI
-- **Custom hooks** to isolate logic and side effects
-- A **route protection system** using JWT verification via `jose` at the Edge (Next.js middleware)
-- A **file management interface** integrated with the backend
-- **Folder support** for organizing files hierarchically
-- A **reusable modal system** used for file actions, confirmations, and more
-- **Dynamic, locale-aware routing** using next-intl
+Common `just` recipes for contributors:
 
-### Backend service (apps/server)
+```bash
+just setup-dev       # First-time local setup (install + DB init)
+just dev             # Start all apps in watch mode
+just test            # Run all Vitest tests
+just lint            # Run Biome across the monorepo
+just validate        # type-check + lint + test (mirrors CI)
+just db-generate     # Regenerate Prisma client after schema changes
+just db-migrate-dev  # Apply pending migrations
+```
 
-**Technology stack:**
+### Pre-commit hooks
 
-- Fastify 5
-- Node.js 24
-- SQLite + Prisma ORM
-- S3-compatible object storage (RustFS built-in or external S3)
-- Zod schemas via `fastify-type-provider-zod`
+Lefthook installs two hooks automatically when you run `just setup-dev` (or `pnpm exec lefthook install`):
 
-The backend is built on **Fastify 5**, a blazing-fast web framework for Node.js. It's lightweight, modular, and optimized for high performance. Every route is validated using **Zod schemas** (via `fastify-type-provider-zod`), which keeps the API consistent, secure, and fully type-safe. Auth flows are built using JWTs stored in HTTP-only cookies, and everything from file uploads to token-based sharing goes through this layer.
+**`pre-commit`** — runs in parallel on every `git commit`:
 
-Data is stored in **SQLite**, which handles user info, file metadata, session tokens, and more. For file storage, the system uses **S3-compatible object storage** — RustFS is bundled as the default storage container, and external S3 providers can be enabled with `ENABLE_S3=true`. We use **Prisma** as our ORM to simplify database access — it gives us type-safe queries and easy-to-read code.
+| Check | What it does |
+|-------|-------------|
+| **Biome** | Lints and auto-formats **staged files only** (`--staged`). Fixed files are automatically re-staged — you don't need to `git add` again. |
+| **Knip** | Scans for unused exports, dead code, and unresolved imports across the monorepo. Fails the commit if issues are found. |
 
-Key features include:
+**`commit-msg`** — validates the commit message format using commitlint.
 
-- **Authentication/authorization** with JWT + cookie sessions, CSRF protection, and 2FA
-- **File management logic** including uploads, deletes, renames, and folders
-- **Storage operations** to handle file organization, usage tracking, and cleanup via S3-compatible APIs
-- A **share system** that generates tokenized public file links
-- Zod-based request validation for all endpoints (fully type-safe, no runtime surprises)
-- Prisma models that keep the database logic predictable and type-safe
-- **Audit logging** for security-sensitive operations
+### Commit message format
 
-### Shared packages
+Messages must follow the [Conventional Commits](https://www.conventionalcommits.org/) specification with these enforced rules:
 
-**`packages/shared`** — Shared utilities used by both the server and web apps:
+```
+<type>(<scope>): <description>
+```
 
-- MIME-type detection and mapping
-- Consumed via subpath exports (`@ouitransfer/shared/mime-types`)
+**Allowed types:**
 
-**`packages/config`** — Shared TypeScript configuration presets:
+`feat` `fix` `docs` `style` `refactor` `perf` `test` `build` `ci` `chore` `revert` `security`
 
-- `base`, `server`, and `nextjs` tsconfig presets
-- Ensures consistent TypeScript settings across the monorepo
+**Allowed scopes (required):**
 
-### Documentation (apps/docs)
+`server` `web` `docs` `infra` `deps` `ci` `monorepo`
 
-**Technology stack:**
+Both type and scope are validated at commit time — the commit is rejected if either is missing or not in the allowed list. Subject must not start with an uppercase letter.
 
-- Fumadocs
-- MDX (Markdown + JSX)
-- React-based components
+**Examples:**
 
-The docs are built using **Fumadocs**, a modern documentation system built on top of Next.js. It uses **MDX**, so you can mix Markdown with interactive React components — perfect for developer tools and open-source projects. Pages are fast, versionable, and easy to customize. The goal is to keep the documentation as close to the codebase as possible, using shared components where needed and reusing UI patterns directly from the app.
+```
+feat(server): add per-user quota enforcement
+fix(web): correct presigned URL handling on Safari
+docs(docs): update reverse proxy configuration guide
+chore(deps): upgrade Fastify to 5.3.0
+ci(ci): add Lighthouse step to release workflow
+```
 
-It supports sidebar navigation, keyboard shortcuts, dark mode, and even interactive demos or UI previews. The file tree you see above, for example, is powered by a real React component from the docs.
+---
 
-- Built with **Fumadocs**, powered by Next.js
-- Supports **MDX** and full React component embedding
-- Ideal for technical docs and live code samples
-- Styled using the same Tailwind setup from the main app
+## CI/CD pipelines
 
-### Infrastructure
+### CI (`ci.yml`) — pull request gate
 
-OUITRANSFER is fully containerized using **Docker** with a **3-container architecture**: `storage` (RustFS S3-compatible object storage), `server` (Fastify API server with embedded SQLite), and `web` (Next.js frontend). With `docker-compose`, the whole stack spins up locally with a single command. Startup ordering is managed automatically via healthcheck-based `depends_on` conditions (`storage` → `server` → `web`).
+Triggers on **push to `main`** and **pull requests targeting `main`**. Concurrent runs on the same ref are cancelled automatically.
 
-Volumes are used to persist data, and containers are networked together so that all services can communicate securely.
+<Pipeline>
+  <PipelineTriggers>
+    <PipelineStep variant="trigger" icon={<GitBranch size={14} />}>Push to main</PipelineStep>
+    <PipelineStep variant="trigger" icon={<GitPullRequest size={14} />}>Pull Request → main</PipelineStep>
+  </PipelineTriggers>
+  <PipelineArrow />
+  <PipelineStep icon={<PackageCheck size={14} />}>Install dependencies</PipelineStep>
+  <PipelineArrow />
+  <PipelineStep variant="warn" badge="non-blocking" icon={<ShieldAlert size={14} />}>Security audit</PipelineStep>
+  <PipelineArrow />
+  <PipelineParallel label="Turborepo · runs in parallel">
+    <PipelineParallelItem>Lint</PipelineParallelItem>
+    <PipelineParallelItem>Type-check</PipelineParallelItem>
+    <PipelineParallelItem>Tests</PipelineParallelItem>
+  </PipelineParallel>
+  <PipelineArrow />
+  <PipelineStep icon={<Hammer size={14} />}>Build all apps</PipelineStep>
+  <PipelineArrow />
+  <PipelineStep variant="success" icon={<CircleCheck size={14} />}>All checks pass</PipelineStep>
+</Pipeline>
 
-- **3-container Docker architecture**: `ouitransfer-storage`, `ouitransfer-server`, `ouitransfer-web`
-- Configurable through `.env` and compose overrides
-- Local volumes and named networks
-- Healthcheck-based startup ordering
-- Easy to deploy and scale on any container-compatible infrastructure
+**Steps:**
 
-### Monorepo tooling
+1. **Install** — `pnpm install --frozen-lockfile` (no lock file drift allowed)
+2. **Security audit** — `pnpm audit --audit-level=high`. Non-blocking (transitive vulnerabilities from upstream don't gate the build, but surface as warnings).
+3. **Lint + Type-check + Test** — `turbo lint type-check test --continue`. Turbo runs all three task types in parallel across all packages. `--continue` ensures all tasks run even if one fails, so you get the full picture in one pass.
+4. **Build** — `pnpm build` with a minimal `JWT_SECRET` to satisfy env validation.
 
-The monorepo is managed with **pnpm 10.6.0** workspaces and **Turborepo** for build orchestration. Key tooling:
+This pipeline must pass before any PR can be merged.
 
-- **Biome** — unified linter and formatter (replaces ESLint + Prettier)
-- **Vitest** — unit and integration testing
-- **Playwright** — end-to-end testing
-- **Lefthook** + **commitlint** — Git hooks and conventional commit enforcement
-- **pnpm catalogs** — shared dependency version management across workspace packages
-- **`just`** — task runner (`just --list` for all available recipes)
+### Release Validation (`e2e.yml`) — tag gate + Docker publish
 
-## Key features
+Triggers on **`v*` tags** (releases) and **manual dispatch** (`workflow_dispatch`). Concurrent release runs are cancelled.
 
-### File management
+<Pipeline>
+  <PipelineTriggers>
+    <PipelineStep variant="trigger" icon={<Tag size={14} />}>Git tag (v*)</PipelineStep>
+    <PipelineStep variant="trigger" icon={<Play size={14} />}>Manual trigger</PipelineStep>
+  </PipelineTriggers>
+  <PipelineArrow />
+  <PipelineStep icon={<PackageCheck size={14} />}>Install dependencies & browsers</PipelineStep>
+  <PipelineArrow />
+  <PipelineStep icon={<Hammer size={14} />}>Build Docker images</PipelineStep>
+  <PipelineArrow />
+  <PipelineStep icon={<Layers size={14} />}>Start 3-container stack</PipelineStep>
+  <PipelineArrow />
+  <PipelineStep icon={<HeartPulse size={14} />}>Health checks · 120s timeout</PipelineStep>
+  <PipelineArrow />
+  <PipelineStep variant="warn" badge="non-blocking" icon={<Gauge size={14} />}>Lighthouse audit</PipelineStep>
+  <PipelineArrow />
+  <PipelineStep icon={<Globe size={14} />}>E2E tests (Playwright)</PipelineStep>
+  <PipelineArrow />
+  <PipelineStep icon={<FileUp size={14} />}>Upload test report</PipelineStep>
+  <PipelineArrow />
+  <PipelineStep variant="muted" badge="always" icon={<OctagonX size={14} />}>Stop stack</PipelineStep>
+  <PipelineArrow />
+  <PipelineFork question="Tag push?">
+    <PipelineForkBranch label="yes" highlight>
+      <PipelineStep icon={<CloudUpload size={14} />}>Publish to GHCR</PipelineStep>
+      <PipelineArrow />
+      <PipelineStep variant="success" icon={<CircleCheck size={14} />}>Done</PipelineStep>
+    </PipelineForkBranch>
+    <PipelineForkBranch label="no">
+      <PipelineStep variant="success" icon={<CircleCheck size={14} />}>Done</PipelineStep>
+    </PipelineForkBranch>
+  </PipelineFork>
+</Pipeline>
 
-Files are at the heart of OUITRANSFER Users can upload files via the frontend, and they're stored in S3-compatible object storage (RustFS by default). Users can also create folders to organize files. The backend handles metadata (name, size, type, ownership), and also handles deletion, renaming, and public sharing. Every file operation is tracked, and all actions can be scoped per user.
+**Steps:**
 
-- Upload/download with instant feedback
-- Create and organize files in folders
-- File previews, type validation, and size limits
-- Token-based sharing system
-- Disk usage tracking by user
+1. **Build Docker images** — `docker compose build` using `docker-compose.ci.yml` overrides. The git tag name becomes `NEXT_PUBLIC_APP_VERSION` (e.g. `v1.2.3` → `1.2.3`), which is injected at build time into the Next.js bundle.
+2. **Start stack** — full 3-container stack (storage + server + web) with CI overrides.
+3. **Wait for health** — polls `GET /health` (server) and the web port until both respond, with a 120-second timeout.
+4. **Lighthouse CI** — performance audit. Non-blocking.
+5. **E2E tests** — full Playwright suite against the live Docker stack. Blocking.
+6. **Upload Playwright report** — stored as a GitHub Actions artifact (14-day retention).
+7. **Stop stack** — always runs, even on failure.
+8. **Publish to GHCR** — only on tag pushes (skipped on `workflow_dispatch`). Pushes `server` and `web` images to `ghcr.io/slvnlrt/ouitransfer-{server,web}` with three tags: `latest`, `1.2.3` (semver), and `1.2` (minor).
 
-### User system
+<Callout type="info">
+**Why two separate workflows?**
 
-Authentication is done through secure JWTs, stored in HTTP-only cookies for safety. Signup and login flows are simple and fast, and user info is kept in sync across the frontend and backend.
-
-- Cookie-based session management with refresh token rotation
-- Role support and admin access
-- Profile updates and password reset flows
-- Two-factor authentication (TOTP, RFC 6238) with backup codes
-- Account lockout after repeated failed login attempts (brute-force protection)
-- LDAP / Active Directory synchronization (user import, group mapping, scheduled sync)
-- Logged-in user state handled via TanStack Query
-
-### Groups
-
-OUITRANSFER supports organizational groups for user management and quota inheritance.
-Groups are admin-managed and can be mapped to AD groups for automatic LDAP assignment.
-
-- One group per user, optional
-- Per-group quota overrides (max file size, max total storage)
-- LDAP DN mapping for Active Directory integration
-- Admin CRUD + member management via dedicated UI and API
-
-### Storage system
-
-The system uses **S3-compatible object storage** for all file operations. **RustFS** is bundled as the default storage container — no external service required. For users who need cloud storage or additional scalability, the architecture supports any S3-compatible provider via `ENABLE_S3=true`. The backend tracks usage, handles cleanup of orphaned files, and ensures that every file in storage has a matching database record.
-
-- S3-compatible object storage (RustFS built-in by default)
-- External S3 support (AWS S3, Backblaze B2, Cloudflare R2, etc.) via `ENABLE_S3=true`
-- Upload validation and automatic cleanup
-- Storage quotas with 3-level resolution: per-user override > group override > global default
-- Admin can set per-user and per-group quota overrides
-- Presigned URLs for secure, time-limited direct uploads and downloads
-
-### Internationalization
-
-OUITRANSFER supports multiple languages using **next-intl**, which is deeply integrated into the routing system. It loads only the necessary translations per route, supports nested namespaces, and makes it easy to keep things organized even at scale.
-
-- Per-locale routing (`en-US`, `pt-BR`, etc.) — 23 languages supported
-- Translation loading by namespace/page
-- Full pluralization and formatting support
-- Easy translation management via JSON files
+CI runs on every PR and must be fast — no Docker builds, no E2E. The release workflow is heavier (Docker build + full E2E) and only runs when cutting a release or triggering manually. This keeps PR feedback loops short.
+</Callout>
