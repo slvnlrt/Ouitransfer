@@ -50,6 +50,23 @@ def check_untranslated_strings(file_path: Path) -> Tuple[int, int, List[str]]:
     return len(all_strings), len(untranslated), untranslated
 
 
+# Technical terms that are legitimately kept in English across all languages.
+# Matching is case-insensitive. Strings containing any of these are excluded
+# from "suspected untranslated".
+_TECHNICAL_TERMS = (
+    # Auth protocols & standards
+    'ldap', 'ldaps', 'oidc', 'openid', 'oauth', 'saml', 'scim', 'starttls',
+    # Microsoft / directory services
+    'active directory',
+    # LDAP DN notation (e.g. CN=...,DC=...)
+    'cn=', 'dc=', 'ou=',
+    # OAuth / OIDC endpoint & config labels
+    'endpoint', 'callback url',
+    # UI: technical section labels conventionally kept in English
+    'background image',  # covers "background image" and "background images"
+)
+
+
 def _is_suspected_untranslated(value: str) -> bool:
     """Return True if a string looks like untranslated English natural-language text."""
     if len(value) <= 15:
@@ -60,6 +77,10 @@ def _is_suspected_untranslated(value: str) -> bool:
         return False
     # Date/format patterns
     if any(pat in value for pat in ('MM/DD', 'HH:MM', 'YYYY', '%Y', '%m', '%d')):
+        return False
+    # Known technical terms legitimately kept in English (case-insensitive)
+    lower = value.lower()
+    if any(term in lower for term in _TECHNICAL_TERMS):
         return False
     return True
 
