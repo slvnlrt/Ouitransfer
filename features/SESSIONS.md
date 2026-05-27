@@ -1,5 +1,16 @@
 # Session Log
 
+## 2026-05-27 (session 12)
+
+**Docs overhaul & i18n completion**
+
+- **Docs fixes**: Hydration error in `V1BetaModal.tsx` (`DialogDescription asChild`). Rewrote `quick-start.mdx` as 5-step happy path. Added `## URL Configuration` to `reverse-proxy-configuration.mdx`. Replaced old Palmr `architecture.png` with client-side Mermaid diagram (`remarkMdxMermaid` + `mermaid.tsx` component). Rewrote `github-architecture.mdx` as Repository Structure (repo layout, module structure, tooling, pre-commit hooks, commit format, CI/CD). Created `Pipeline` JSX component for CI/CD diagrams. Fixed all `burger-cie` → `slvnlrt` GitHub URLs, Next.js 15 → 16. Frosted glass banner + click-to-open modal wiring (`BannerModalTrigger`). Fixed `translation-management.mdx` (prune command, file structure, completeness caveats).
+- **i18n**: Diagnosed ~140–155 untranslated strings per locale (`audit.*`, `ldap.*`, `quickShare.*`, `backgroundImages.*`, etc.). Translated all 21 locales via parallel worker-fast agents (4 passes). Improved `check_translations.py` with `SUSPECTED EN` column, case-insensitive exclusions, length-threshold for technical terms, cognate note in output.
+- **Result**: 19/21 locales at ✅ 0 suspects; 3 false positives (de-DE, fr-FR, sv-SE: "Position {position}" — cognate).
+- Commits: `feat(web): translate 21 locales`, `feat(web): improve check`, `fix(web): refine exclusions`, `docs: overhaul docs site`, `docs(monorepo): TECHNICAL-DEBT.md`, `feat(web): complete translations for all 21 locales`
+
+---
+
 ## 2026-05-26 (session 11)
 
 **Traefik Proxy Migration & Route Alignment**
