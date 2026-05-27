@@ -345,38 +345,29 @@ than 1 day), but an admin setting this intentionally low is unlikely in practice
 
 ---
 
-## TD-25 — Scripts pre-refactor à auditer : traductions Python + cleanup-orphan-files.ts
+## ~~TD-25A — Scripts Python de traduction à auditer~~ ✅ RESOLVED
 
-### Sous-tâche A — Scripts Python de gestion des traductions
+**Audit réalisé en mai 2026.** Tous les scripts fonctionnent correctement avec le repo actuel :
 
-**Context:** Les scripts Python dans `apps/web/scripts/` (`check_translations.py`,
-`sync_translations.py`, `prune_translations.py`, `clean_translations.py`, `run_translations.py`)
-datent d'avant le grand refactor. Ils ont peut-être des hypothèses sur la structure des clés,
-les fichiers de locale, ou les chemins qui ne correspondent plus à l'état actuel du projet.
+- [x] Les chemins vers `messages/` sont corrects (auto-détectés via `Path(__file__).parent`)
+- [x] La structure des namespaces imbriqués est bien gérée (quickShare, audit, ldap... OK)
+- [x] `prune_translations.py --dry-run` : 0 clés orphelines, aucune clé en trop dans les 22 fichiers
+- [x] `sync_translations.py --dry-run` : 0 clés manquantes, les 22 langues ont exactement les mêmes 2285 paths que en-US.json
+- [x] `check_translations.py` : 0 marqueur `[TO_TRANSLATE]` dans les 22 langues (1958 leaf strings)
+- [x] `--dry-run` fiable et sûr sur tous les scripts
+- [x] Python 3.6+ suffisant, aucune dépendance externe
 
-**Fichiers concernés :**
-- `apps/web/scripts/check_translations.py`
-- `apps/web/scripts/sync_translations.py`
-- `apps/web/scripts/prune_translations.py`
-- `apps/web/scripts/clean_translations.py`
-- `apps/web/scripts/run_translations.py`
+**Découverte adjacente :** Le "100% completeness" rapporté par `check` ne signifie pas que les valeurs
+sont traduites — il signifie uniquement qu'il n'y a pas de marqueur `[TO_TRANSLATE]`. En pratique,
+~140-155 strings par langue (hors fr-FR : ~50) sont identiques à l'anglais sans être du vrai anglais
+technique. Les namespaces affectés : voir TD-26 ci-dessous.
 
-**À auditer :**
-- [ ] Les chemins vers `messages/` sont-ils corrects ?
-- [ ] La structure des namespaces imbriqués est-elle bien gérée (ex : `quickShare.*`, `audit.*`) ?
-- [ ] Les scripts détectent-ils correctement les clés orphelines (supprimées du code mais encore dans JSON) ?
-- [ ] Les scripts ajoutent-ils les nouvelles clés avec le bon fallback (anglais) ?
-- [ ] `prune_translations.py` / `clean_translations.py` — comportement safe ou destructif ?
-- [ ] Tests : les scripts ont-ils une couverture de test ou un mode `--dry-run` fiable ?
-- [ ] Compatibilité Python 3.x : version minimale requise documentée ?
+**Discrepance 1958 vs 2285 :** `check` compte les feuilles (strings réelles = 1958) ;
+`sync` compte tous les noeuds JSON y compris les objets intermédiaires (= 2285). Normal.
 
-**Fix :** Faire tourner les scripts sur le repo actuel, vérifier les résultats, corriger
-les éventuels bugs ou hypothèses obsolètes.
+---
 
-**Found during:** Documentation update session (mai 2026) — scripts référencés dans
-`translation-management.mdx` qui date du même refactor
-**Severity:** Low — les scripts ne sont pas dans le chemin critique, mais s'ils sont cassés
-les 21 locales avec placeholder anglais (TD-16, TD-21) ne pourront pas être corrigées proprement
+## TD-25 — `apps/server/src/scripts/cleanup-orphan-files.ts`
 
 ### Sous-tâche B — `apps/server/src/scripts/cleanup-orphan-files.ts`
 
@@ -474,3 +465,43 @@ Planifier la migration complète en s'appuyant sur l'assessment détaillé dispo
 
 **Found during:** Analyse de sécurité Aikido (S-6, mai 2026)
 **Severity:** Low — Aucun exploit direct de sécurité n'est possible via l'application, mais l'asymétrie v3/v4 et le flag de sécurité incitent à cette mise à niveau à moyen terme.
+
+---
+
+## TD-26 — Strings non traduites dans 21 locales (scope élargi)
+
+**Context:** Audit de mai 2026 (TD-25A). TD-16 et TD-21 avaient identifié des strings en anglais
+pour 4 clés settings et les 35 clés quickShare. L'audit complet révèle que le problème est plus
+large : plusieurs namespaces ajoutés pendant le refactor n'ont jamais été traduits dans les
+21 locales non-FR (toutes sauf en-US et fr-FR).
+
+**Scope par namespace (exemple ja-JP, représentatif des autres) :**
+
+| Namespace        | Strings en anglais | Feature d'origine |
+| ---------------- | ------------------:| ----------------- |
+| `audit.*`        | 61                 | 7.1 Activity Log  |
+| `ldap.*`         | 29                 | 5.3 LDAP          |
+| `quickShare.*`   | 13                 | 9.1 QuickShare (TD-21) |
+| `settings.*`     | 12                 | divers (incl. TD-16) |
+| `backgroundImages.*` | 9             | 10.1 Background Images |
+| `errors.*`       | 8                  | divers            |
+| `fileActions.*`, `folderActions.*`, etc. | ~15 | divers |
+| **Total**        | **~147 / 1958**    | ~7.5% du total    |
+
+fr-FR est nettement mieux loti (~50 strings identiques, dont beaucoup de termes techniques
+légitimement en anglais), probablement car c'est la seule langue traduite manuellement.
+
+**Mécanisme :** Les clés ont été ajoutées à en-US.json directement avec les valeurs anglaises
+dans tous les fichiers locale (sans marqueur `[TO_TRANSLATE]`). Le script `check` ne les détecte
+pas comme incomplètes. Le test `locale-keys.test.ts` ne vérifie que la structure (bonne), pas
+les valeurs.
+
+**Fix :** Pour chaque namespace manquant, utiliser un outil de traduction automatique
+(DeepL, Google Translate) pour les 21 locales, puis vérifier manuellement les termes techniques.
+Priorité : `errors.*` (UX critique), `audit.*` (grand nombre), `quickShare.*` (TD-21).
+
+**Référence :** TD-16 (4 clés settings), TD-21 (35 clés quickShare) sont des sous-ensembles de ce TD.
+
+**Found during:** Audit scripts traduction (mai 2026)
+**Severity:** Low — app pas en production ; les valeurs anglaises sont fonctionnelles mais dégradent
+l'expérience pour les utilisateurs non-EN/FR.
