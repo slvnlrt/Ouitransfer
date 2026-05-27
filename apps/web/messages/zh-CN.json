@@ -1,6 +1,6 @@
 {
   "a11y": {
-    "skipToContent": "Skip to content"
+    "skipToContent": "跳过到内容"
   },
   "auth": {
     "errors": {
@@ -790,16 +790,16 @@
       "logo": "Logo"
     },
     "actionCategories": {
-      "auth": "Authentication",
-      "share": "Shares",
-      "file": "Files",
-      "folder": "Folders",
-      "reverseShare": "Reverse Shares",
-      "user": "User",
-      "group": "Groups",
+      "auth": "身份验证",
+      "share": "共享",
+      "file": "文件",
+      "folder": "文件夹",
+      "reverseShare": "反向共享",
+      "user": "用户",
+      "group": "群组",
       "ldap": "LDAP",
-      "admin": "Administration",
-      "system": "System"
+      "admin": "管理",
+      "system": "系统"
     },
     "metadata": {
       "method": "方法",
@@ -1542,8 +1542,8 @@
         "description": "通过OpenID Connect配置SSO认证"
       },
       "backgrounds": {
-        "title": "Background Images",
-        "description": "Manage background images for WeTransfer-style upload pages"
+        "title": "背景图片",
+        "description": "管理WeTransfer风格上传页面的背景图片"
       }
     },
     "fields": {
@@ -1621,8 +1621,8 @@
         "title": "首次用户访问"
       },
       "serverUrl": {
-        "title": "URL do Servidor",
-        "description": "URL base do servidor OUITRANSFER (ex: https://OUITRANSFER.exemplo.com)"
+        "title": "服务器 URL",
+        "description": "OUITRANSFER 服务器的基础 URL（例如：https://ouitransfer.example.com）"
       },
       "testSmtp": {
         "title": "测试SMTP连接",
@@ -1703,8 +1703,8 @@
       "defaultPlaceholder": "输入并按回车键"
     },
     "redirectUri": {
-      "placeholder": "https://meusite.com",
-      "previewLabel": "URL completa que será salva:"
+      "placeholder": "https://mysite.com",
+      "previewLabel": "将保存的完整 URL："
     }
   },
   "share": {
@@ -2347,7 +2347,7 @@
       "management": "用户管理"
     },
     "table": {
-      "user": "USER",
+      "user": "用户",
       "userRole": "用户",
       "email": "电子邮件",
       "status": "状态",
@@ -2356,9 +2356,9 @@
       "active": "激活",
       "inactive": "停用",
       "admin": "管理员",
-      "source": "Source",
+      "source": "来源",
       "ldap": "LDAP",
-      "local": "Local"
+      "local": "本地"
     },
     "invite": {
       "button": "生成邀请链接",

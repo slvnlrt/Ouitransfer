@@ -248,6 +248,7 @@ def generate_translation_report(messages_dir: Path, reference_file: str = 'en-US
     print("• Use 'python3 sync_translations.py' to synchronize all translations")
     print("• Strings marked with [TO_TRANSLATE] need manual translation")
     print("• Strings in 'SUSPECTED EN' column may need translation (identical to English reference)")
+    print("• Note: some suspects are cognates (e.g. 'Position') spelled identically in multiple languages — these are false positives")
 
 
 def main():

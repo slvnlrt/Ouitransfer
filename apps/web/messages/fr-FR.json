@@ -2058,8 +2058,8 @@
       "description": "Saisissez votre mot de passe pour confirmer la désactivation de l'authentification à deux facteurs.",
       "password": "Mot de passe",
       "passwordPlaceholder": "Entrez votre mot de passe",
-      "totpLabel": "[en] Verification code",
-      "totpHint": "[en] Enter your 6-digit authenticator code or a backup code",
+      "totpLabel": "Code de vérification",
+      "totpHint": "Entrez votre code d'authentification à 6 chiffres ou un code de secours",
       "confirm": "Confirmer la Désactivation",
       "cancel": "Annuler"
     },

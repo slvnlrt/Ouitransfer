@@ -1546,8 +1546,8 @@
         "description": "Ρυθμίστε έλεγχο ταυτότητας SSO μέσω OpenID Connect"
       },
       "backgrounds": {
-        "title": "Background Images",
-        "description": "Manage background images for WeTransfer-style upload pages"
+        "title": "Εικόνες Φόντου",
+        "description": "Διαχείριση εικόνων φόντου για σελίδες μεταφόρτωσης στιλ WeTransfer"
       }
     },
     "fields": {

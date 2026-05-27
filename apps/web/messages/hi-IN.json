@@ -1542,8 +1542,8 @@
         "description": "OpenID Connect के माध्यम से SSO प्रमाणीकरण कॉन्फ़िगरेशन"
       },
       "backgrounds": {
-        "title": "Background Images",
-        "description": "Manage background images for WeTransfer-style upload pages"
+        "title": "पृष्ठभूमि छवियां",
+        "description": "वीट्रांसफर-शैली अपलोड पृष्ठों के लिए पृष्ठभूमि छवियों का प्रबंधन करें"
       }
     },
     "fields": {
@@ -2209,9 +2209,9 @@
       "description": "विवरण",
       "descriptionPlaceholder": "वैकल्पिक विवरण",
       "ldapDn": {
-        "label": "LDAP Group DN",
-        "placeholder": "e.g. CN=Developers,OU=Groups,DC=corp,DC=local",
-        "description": "Distinguished Name of the Active Directory group to map. Leave empty if not using LDAP."
+        "label": "LDAP समूह DN",
+        "placeholder": "जैसे CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "मैप करने के लिए Active Directory समूह का Distinguished Name। यदि LDAP का उपयोग नहीं कर रहे हैं तो खाली छोड़ें।"
       },
       "quota": {
         "title": "संग्रहण कोटा",
@@ -2356,9 +2356,9 @@
       "active": "सक्रिय",
       "inactive": "निष्क्रिय",
       "admin": "व्यवस्थापक",
-      "source": "Source",
+      "source": "स्रोत",
       "ldap": "LDAP",
-      "local": "Local"
+      "local": "स्थानीय"
     },
     "invite": {
       "button": "आमंत्रण लिंक जनरेट करें",

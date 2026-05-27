@@ -138,7 +138,7 @@
     "deleteModal": {
       "title": "Ta bort autentiseringsleverantör",
       "confirmMessage": "Är du säker på att du vill ta bort leverantören \"{displayName}\"? Denna åtgärd kan inte ångras.",
-      "providerId": "Provider ID: {name}",
+      "providerId": "Leverantörs-ID: {name}",
       "cancel": "Avboka",
       "delete": "Ta bort leverantör",
       "deleting": "Tar bort..."
@@ -342,7 +342,7 @@
       "active": "Aktiv",
       "queued": "I kö",
       "position": "Position {position}",
-      "estimatedWait": "Wait: {time}",
+      "estimatedWait": "Väntetid: {time}",
       "unknownFile": "Okänd fil",
       "noDownloads": "Inga nedladdningar pågår",
       "refresh": "Uppdatera kö"
@@ -659,7 +659,7 @@
   },
   "moveItems": {
     "itemsToMove": "Föremål att flytta:",
-    "movingToFolder": "Moving to: {folder}",
+    "movingToFolder": "Flyttar till: {folder}",
     "title": "Flytta {count, plural, =1 {objekt} other {objekt}}",
     "description": "Flytta {count, plural, =1 {objekt} other {objekt}} till en ny plats",
     "success": "Flyttade {count} {count, plural, =1 {objekt} other {objekt}} framgångsrikt",
@@ -2213,9 +2213,9 @@
       "description": "Beskrivning",
       "descriptionPlaceholder": "Valfri beskrivning",
       "ldapDn": {
-        "label": "LDAP Group DN",
-        "placeholder": "e.g. CN=Developers,OU=Groups,DC=corp,DC=local",
-        "description": "Distinguished Name of the Active Directory group to map. Leave empty if not using LDAP."
+        "label": "LDAP-grupp DN",
+        "placeholder": "t.ex. CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name för Active Directory-gruppen som ska mappas. Lämna tomt om du inte använder LDAP."
       },
       "quota": {
         "title": "Lagringskvoter",
@@ -2360,9 +2360,9 @@
       "active": "Aktiv",
       "inactive": "Inaktiv",
       "admin": "Administration",
-      "source": "Source",
+      "source": "Källa",
       "ldap": "LDAP",
-      "local": "Local"
+      "local": "Lokal"
     },
     "invite": {
       "button": "Generera inbjudningslänk",

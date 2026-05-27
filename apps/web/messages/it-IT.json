@@ -1542,8 +1542,8 @@
         "description": "Configurazione dell'autenticazione SSO tramite OpenID Connect"
       },
       "backgrounds": {
-        "title": "Background Images",
-        "description": "Manage background images for WeTransfer-style upload pages"
+        "title": "Immagini di Sfondo",
+        "description": "Gestisci le immagini di sfondo per le pagine di caricamento in stile WeTransfer"
       }
     },
     "fields": {
@@ -2210,8 +2210,8 @@
       "descriptionPlaceholder": "Descrizione opzionale",
       "ldapDn": {
         "label": "LDAP Group DN",
-        "placeholder": "e.g. CN=Developers,OU=Groups,DC=corp,DC=local",
-        "description": "Distinguished Name of the Active Directory group to map. Leave empty if not using LDAP."
+        "placeholder": "ad es. CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name del gruppo Active Directory da mappare. Lascia vuoto se non utilizzi LDAP."
       },
       "quota": {
         "title": "Quote di archiviazione",

@@ -1,6 +1,6 @@
 {
   "a11y": {
-    "skipToContent": "Skip to content"
+    "skipToContent": "الانتقال إلى المحتوى"
   },
   "auth": {
     "errors": {
@@ -1542,8 +1542,8 @@
         "description": "تكوين المصادقة SSO عبر OpenID Connect"
       },
       "backgrounds": {
-        "title": "Background Images",
-        "description": "Manage background images for WeTransfer-style upload pages"
+        "title": "صور الخلفية",
+        "description": "إدارة صور الخلفية لصفحات الرفع بنمط WeTransfer"
       }
     },
     "fields": {
@@ -2210,8 +2210,8 @@
       "descriptionPlaceholder": "وصف اختياري",
       "ldapDn": {
         "label": "LDAP Group DN",
-        "placeholder": "e.g. CN=Developers,OU=Groups,DC=corp,DC=local",
-        "description": "Distinguished Name of the Active Directory group to map. Leave empty if not using LDAP."
+        "placeholder": "مثال: CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name لمجموعة Active Directory المراد ربطها. اتركه فارغاً إذا لم تكن تستخدم LDAP."
       },
       "quota": {
         "title": "حصص التخزين",
@@ -2347,7 +2347,7 @@
       "management": "إدارة المستخدمين"
     },
     "table": {
-      "user": "USER",
+      "user": "المستخدم",
       "userRole": "مستخدم",
       "email": "البريد الإلكتروني",
       "status": "الحالة",
@@ -2356,9 +2356,9 @@
       "active": "مفعل",
       "inactive": "غير مفعل",
       "admin": "مسؤول",
-      "source": "Source",
+      "source": "المصدر",
       "ldap": "LDAP",
-      "local": "Local"
+      "local": "محلي"
     },
     "invite": {
       "button": "إنشاء رابط دعوة",

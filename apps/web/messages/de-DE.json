@@ -1096,7 +1096,7 @@
       "noSizeLimit": "Kein Größenlimit",
       "allFileTypes": "Alle Dateitypen",
       "fileTypesHelp": "Geben Sie Erweiterungen ohne Punkt ein, getrennt durch Leerzeichen, Komma, Bindestrich oder Pipe",
-      "emailFieldRequired": "E -Mail -Feld",
+      "emailFieldRequired": "E-Mail-Feld",
       "fieldOptions": {
         "hidden": "Versteckt",
         "optional": "Fakultativ",
@@ -1358,12 +1358,12 @@
       },
       "submit": "Empfangslink erstellen",
       "emailFieldRequired": {
-        "label": "E -Mail -Feldanforderung",
-        "description": "Konfigurieren Sie, ob das Feld Uploader -E -Mail angezeigt werden soll und ob es erforderlich ist"
+        "label": "E-Mail-Feldanforderung",
+        "description": "Konfigurieren Sie, ob das Feld Uploader-E-Mail angezeigt werden soll und ob es erforderlich ist"
       },
       "fieldRequirements": {
         "title": "Feldanforderungen",
-        "description": "Konfigurieren Sie, welche Felder im Upload -Formular angezeigt werden",
+        "description": "Konfigurieren Sie, welche Felder im Upload-Formular angezeigt werden",
         "configurationTitle": "Feldkonfiguration:",
         "hiddenDescription": "Versteckt: Das Feld erscheint nicht im Upload-Formular",
         "optionalDescription": "Optional: Das Feld wird angezeigt, ist aber nicht erforderlich",
@@ -1371,7 +1371,7 @@
       },
       "nameFieldRequired": {
         "label": "Namensfeldbedarf",
-        "description": "Konfigurieren Sie, ob das Feld Uploader -Name angezeigt werden soll und ob es erforderlich ist"
+        "description": "Konfigurieren Sie, ob das Feld Uploader-Name angezeigt werden soll und ob es erforderlich ist"
       }
     },
     "messages": {
@@ -1437,7 +1437,7 @@
         "maxFilesExceeded": "Maximal {maxFiles} Dateien erlaubt",
         "selectAtLeastOneFile": "Wählen Sie mindestens eine Datei aus",
         "provideNameOrEmail": "Geben Sie Ihren Namen oder E-Mail an",
-        "provideEmailRequired": "E -Mail ist erforderlich",
+        "provideEmailRequired": "E-Mail ist erforderlich",
         "provideNameRequired": "Name ist erforderlich"
       },
       "fileDropzone": {
@@ -1542,8 +1542,8 @@
         "description": "SSO-Authentifizierung über OpenID Connect konfigurieren"
       },
       "backgrounds": {
-        "title": "Background Images",
-        "description": "Manage background images for WeTransfer-style upload pages"
+        "title": "Hintergrundbilder",
+        "description": "Verwalten Sie Hintergrundbilder für WeTransfer-Stil-Upload-Seiten"
       }
     },
     "fields": {
@@ -1848,15 +1848,15 @@
     "expirationUpdateError": "Ablaufeinstellungen konnten nicht aktualisiert werden",
     "securityUpdateSuccess": "Sicherheitseinstellungen erfolgreich aktualisiert",
     "expirationUpdateSuccess": "Ablaufeinstellungen erfolgreich aktualisiert",
-    "creatingZip": "ZIP -Datei erstellen ...",
-    "defaultShareName": "Aktie",
-    "downloadError": "Download Share -Dateien nicht herunterladen",
-    "downloadSuccess": "Download begann erfolgreich",
-    "multipleSharesZipName": "{count} _shares_files.zip",
-    "noFilesToDownload": "Keine Dateien zum Download zur Verfügung stehen",
-    "singleShareZipName": "{ShareName} _files.zip",
-    "zipDownloadError": "Die ZIP -Datei erstellt nicht",
-    "zipDownloadSuccess": "ZIP -Datei erfolgreich heruntergeladen",
+    "creatingZip": "ZIP-Datei wird erstellt...",
+    "defaultShareName": "Freigabe",
+    "downloadError": "Fehler beim Herunterladen der Freigabe-Dateien",
+    "downloadSuccess": "Download erfolgreich gestartet",
+    "multipleSharesZipName": "{count}_freigaben_dateien.zip",
+    "noFilesToDownload": "Keine Dateien zum Herunterladen verfügbar",
+    "singleShareZipName": "{ShareName}_dateien.zip",
+    "zipDownloadError": "ZIP-Datei konnte nicht erstellt werden",
+    "zipDownloadSuccess": "ZIP-Datei erfolgreich heruntergeladen",
     "errors": {
       "multipleDownloadNotSupported": "Download mehrerer Freigaben wird noch nicht unterstützt - bitte laden Sie Freigaben einzeln herunter"
     }

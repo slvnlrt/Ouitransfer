@@ -1546,8 +1546,8 @@
         "description": "Налаштування автентифікації SSO через OpenID Connect"
       },
       "backgrounds": {
-        "title": "Background Images",
-        "description": "Manage background images for WeTransfer-style upload pages"
+        "title": "Фонові зображення",
+        "description": "Керуйте фоновими зображеннями для сторінок завантаження у стилі WeTransfer"
       }
     },
     "fields": {
@@ -2214,8 +2214,8 @@
       "descriptionPlaceholder": "Необов'язковий опис",
       "ldapDn": {
         "label": "LDAP Group DN",
-        "placeholder": "e.g. CN=Developers,OU=Groups,DC=corp,DC=local",
-        "description": "Distinguished Name of the Active Directory group to map. Leave empty if not using LDAP."
+        "placeholder": "напр. CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name групи Active Directory для зпоставлення. Залиште порожнім, якщо LDAP не використовується."
       },
       "quota": {
         "title": "Квоти сховища",
@@ -2360,9 +2360,9 @@
       "active": "Активний",
       "inactive": "Неактивний",
       "admin": "Адміністратор",
-      "source": "Source",
+      "source": "Джерело",
       "ldap": "LDAP",
-      "local": "Local"
+      "local": "Локальний"
     },
     "invite": {
       "button": "Створити посилання для запрошення",
@@ -2565,10 +2565,10 @@
   },
   "quickShare": {
     "dropzone": {
-      "title": "Quick Share",
-      "description": "Drop your files here to share quickly",
-      "browse": "or click to browse",
-      "dragActive": "Drop files here"
+      "title": "Швидкий спільний доступ",
+      "description": "Перетягніть ваші файли сюди для швидкого спільного доступу",
+      "browse": "або натисніть для перегляду",
+      "dragActive": "Перетягніть файли сюди"
     },
     "upload": {
       "title": "Швидкий спільний доступ",

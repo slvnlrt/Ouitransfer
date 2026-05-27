@@ -1542,8 +1542,8 @@
         "description": "OpenID Connectを使用したSSO認証の設定"
       },
       "backgrounds": {
-        "title": "Background Images",
-        "description": "Manage background images for WeTransfer-style upload pages"
+        "title": "背景画像",
+        "description": "WeTransferスタイルのアップロードページの背景画像を管理"
       }
     },
     "fields": {
@@ -2347,7 +2347,7 @@
       "management": "ユーザー管理"
     },
     "table": {
-      "user": "USER",
+      "user": "ユーザー",
       "userRole": "ユーザー",
       "email": "メール",
       "status": "状態",
@@ -2356,9 +2356,9 @@
       "active": "アクティブ",
       "inactive": "非アクティブ",
       "admin": "管理者",
-      "source": "Source",
+      "source": "ソース",
       "ldap": "LDAP",
-      "local": "Local"
+      "local": "ローカル"
     },
     "invite": {
       "button": "招待リンクを生成",

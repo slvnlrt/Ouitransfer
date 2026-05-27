@@ -1546,8 +1546,8 @@
         "description": "ตั้งค่า SSO ผ่าน OpenID Connect"
       },
       "backgrounds": {
-        "title": "Background Images",
-        "description": "Manage background images for WeTransfer-style upload pages"
+        "title": "รูปภาพพื้นหลัง",
+        "description": "จัดการรูปภาพพื้นหลังสำหรับหน้าอัปโหลดสไตล์ WeTransfer"
       }
     },
     "fields": {
@@ -2214,8 +2214,8 @@
       "descriptionPlaceholder": "คำอธิบาย (ไม่บังคับ)",
       "ldapDn": {
         "label": "LDAP Group DN",
-        "placeholder": "e.g. CN=Developers,OU=Groups,DC=corp,DC=local",
-        "description": "Distinguished Name of the Active Directory group to map. Leave empty if not using LDAP."
+        "placeholder": "เช่น CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name ของกลุ่ม Active Directory ที่จะแมป ปล่อยว่างไว้หากไม่ใช้ LDAP"
       },
       "quota": {
         "title": "โควต้าพื้นที่เก็บข้อมูล",
@@ -2351,7 +2351,7 @@
       "management": "การจัดการผู้ใช้"
     },
     "table": {
-      "user": "USER",
+      "user": "ผู้ใช้",
       "userRole": "ผู้ใช้",
       "email": "อีเมล",
       "status": "สถานะ",
@@ -2360,9 +2360,9 @@
       "active": "ใช้งานอยู่",
       "inactive": "ไม่ใช้งาน",
       "admin": "ผู้ดูแลระบบ",
-      "source": "Source",
+      "source": "แหล่งที่มา",
       "ldap": "LDAP",
-      "local": "Local"
+      "local": "ท้องถิ่น"
     },
     "invite": {
       "button": "สร้างลิงค์เชิญ",

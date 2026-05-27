@@ -1,6 +1,6 @@
 {
   "a11y": {
-    "skipToContent": "Skip to content"
+    "skipToContent": "דלג לתוכן"
   },
   "auth": {
     "successfullyAuthenticated": "אימות בוצע בהצלחה!",
@@ -883,7 +883,7 @@
     "usersManagement": "ניהול משתמשים",
     "groupsManagement": "קבוצות",
     "ldap": "LDAP",
-    "activityLog": "Activity Log",
+    "activityLog": "יומן פעילות",
     "logout": "התנתק"
   },
   "navigation": {
@@ -1546,8 +1546,8 @@
         "description": "הגדר אימות SSO באמצעות OpenID Connect"
       },
       "backgrounds": {
-        "title": "Background Images",
-        "description": "Manage background images for WeTransfer-style upload pages"
+        "title": "תמונות רקע",
+        "description": "ניהול תמונות רקע לעמודי העלאה בסגנון WeTransfer"
       }
     },
     "fields": {
@@ -2020,8 +2020,8 @@
       "description": "הזן את הסיסמה שלך כדי לאשר השבתת אימות דו-שלבי.",
       "password": "סיסמה",
       "passwordPlaceholder": "הזן את הסיסמה שלך",
-      "totpLabel": "[en] Verification code",
-      "totpHint": "[en] Enter your 6-digit authenticator code or a backup code",
+      "totpLabel": "קוד אימות",
+      "totpHint": "הזן קוד אימות בן 6 ספרות או קוד גיבוי",
       "confirm": "אשר השבתה",
       "cancel": "ביטול"
     },

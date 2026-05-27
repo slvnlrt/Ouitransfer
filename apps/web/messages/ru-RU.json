@@ -1542,8 +1542,8 @@
         "description": "Настройка аутентификации SSO через OpenID Connect"
       },
       "backgrounds": {
-        "title": "Background Images",
-        "description": "Manage background images for WeTransfer-style upload pages"
+        "title": "Фоновые изображения",
+        "description": "Управление фоновыми изображениями для страниц загрузки в стиле WeTransfer"
       }
     },
     "fields": {
@@ -2356,7 +2356,7 @@
       "active": "Активен",
       "inactive": "Неактивен",
       "admin": "Администратор",
-      "source": "Source",
+      "source": "Источник",
       "ldap": "LDAP",
       "local": "Local"
     },

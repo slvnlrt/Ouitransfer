@@ -134,7 +134,7 @@
     "deleteModal": {
       "title": "Authenticatie Provider Verwijderen",
       "confirmMessage": "Weet u zeker dat u de \"{displayName}\" provider wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
-      "providerId": "Provider ID: {name}",
+      "providerId": "Provider-ID: {name}",
       "cancel": "Annuleren",
       "delete": "Provider Verwijderen",
       "deleting": "Verwijderen..."
@@ -552,7 +552,7 @@
     "deleteAnyway": "Toch verwijderen"
   },
   "footer": {
-    "kyanHomepage": "Burger&Cie homepage"
+    "kyanHomepage": "Burger&Cie startpagina"
   },
   "forgotPassword": {
     "emailLabel": "E-mailadres",
@@ -655,7 +655,7 @@
   },
   "moveItems": {
     "itemsToMove": "Items om te verplaatsen:",
-    "movingToFolder": "Moving to: {folder}",
+    "movingToFolder": "Verplaatsen naar: {folder}",
     "title": "{count, plural, =1 {Item} other {Items}} verplaatsen",
     "description": "{count, plural, =1 {Item} other {Items}} naar een nieuwe locatie verplaatsen",
     "success": "{count} {count, plural, =1 {item} other {items}} succesvol verplaatst",
@@ -871,14 +871,14 @@
     }
   },
   "navbar": {
-    "logoAlt": "Applicatie Logo",
-    "profileMenu": "Profiel Menu",
+    "logoAlt": "Applicatielogo",
+    "profileMenu": "Profielmenu",
     "profile": "Profiel",
     "settings": "Instellingen",
     "usersManagement": "Gebruikersbeheer",
     "groupsManagement": "Groepen",
     "ldap": "LDAP",
-    "activityLog": "Activity Log",
+    "activityLog": "Activiteitenlogboek",
     "logout": "Uitloggen",
     "customization": "Aanpassen"
   },
@@ -1096,7 +1096,7 @@
       "noSizeLimit": "Geen groottelimiet",
       "allFileTypes": "Alle bestandstypes",
       "fileTypesHelp": "Voer extensies in zonder punt, gescheiden door spatie, komma, streepje of verticale streep",
-      "emailFieldRequired": "E -mailveld",
+      "emailFieldRequired": "E-mailveld",
       "fieldOptions": {
         "hidden": "Verborgen",
         "optional": "Optioneel",
@@ -1253,7 +1253,7 @@
           "preview": "Voorvertoning",
           "download": "Downloaden",
           "copyToMyFiles": "Kopieer naar mijn bestanden",
-          "copying": "Kopiëren ..."
+          "copying": "Kopiëren..."
         },
         "uploadedBy": "Verzonden door {name}",
         "anonymous": "Anoniem",
@@ -1294,7 +1294,7 @@
     },
     "form": {
       "name": {
-        "label": "Link Naam",
+        "label": "Linknaam",
         "placeholder": "Bijv: Project Documenten, Familie Foto's..."
       },
       "description": {
@@ -1463,7 +1463,7 @@
         "descriptionPlaceholder": "Voeg een beschrijving toe aan de bestanden...",
         "uploadButton": "{count} bestand(en) verzenden",
         "uploading": "Verzenden...",
-        "emailLabelOptional": "E -mail (optioneel)",
+        "emailLabelOptional": "E-mail (optioneel)",
         "nameLabelOptional": "Naam (optioneel)"
       },
       "success": {
@@ -1539,11 +1539,11 @@
       },
       "oidc": {
         "title": "OpenID Connect (SSO)",
-        "description": "Configuração de autenticação SSO via OpenID Connect"
+        "description": "SSO-authenticatieconfiguratie via OpenID Connect"
       },
       "backgrounds": {
-        "title": "Background Images",
-        "description": "Manage background images for WeTransfer-style upload pages"
+        "title": "Achtergrondafbeeldingen",
+        "description": "Beheer achtergrondafbeeldingen voor WeTransfer-stijl uploadpagina's"
       }
     },
     "fields": {
@@ -1610,11 +1610,11 @@
       },
       "maxFileSize": {
         "title": "Maximum Bestandsgrootte",
-        "description": "Maximum allowed file size for uploads. Can be overridden per user or per group."
+        "description": "Maximale bestandsgrootte voor uploads. Kan worden overschreven per gebruiker of groep."
       },
       "maxTotalStoragePerUser": {
         "title": "Maximum Opslag Per Gebruiker",
-        "description": "Total storage limit per user. Can be overridden per user or per group."
+        "description": "Totale opslaglimiet per gebruiker. Kan worden overschreven per gebruiker of groep."
       },
       "firstUserAccess": {
         "description": "Instellingen voor eerste toegang van nieuwe gebruikers",
@@ -1848,14 +1848,14 @@
     "expirationUpdateError": "Fout bij het bijwerken van verloop instellingen",
     "securityUpdateSuccess": "Beveiligingsinstellingen succesvol bijgewerkt",
     "expirationUpdateSuccess": "Verloop instellingen succesvol bijgewerkt",
-    "creatingZip": "Zip -bestand maken ...",
+    "creatingZip": "ZIP-bestand maken...",
     "defaultShareName": "Deel",
-    "downloadError": "Kan niet downloaden Delen -bestanden downloaden",
+    "downloadError": "Kan deelbestanden niet downloaden",
     "downloadSuccess": "Download begonnen met succes",
     "multipleSharesZipName": "{count} _shares_files.zip",
     "noFilesToDownload": "Geen bestanden beschikbaar om te downloaden",
-    "singleShareZipName": "{Sharename} _files.zip",
-    "zipDownloadError": "Kan zip -bestand niet maken",
+    "singleShareZipName": "{shareName}_files.zip",
+    "zipDownloadError": "Kan ZIP-bestand niet maken",
     "zipDownloadSuccess": "Zipbestand met succes gedownload",
     "errors": {
       "multipleDownloadNotSupported": "Download van meerdere delen wordt nog niet ondersteund - download delen afzonderlijk"
@@ -2207,11 +2207,11 @@
       "name": "Naam",
       "namePlaceholder": "Voer groepsnaam in",
       "description": "Beschrijving",
-      "descriptionPlaceholder": "Optionele beschrijving",
+      "descriptionPlaceholder": "Optionele groepsbeschrijving",
       "ldapDn": {
-        "label": "LDAP Group DN",
-        "placeholder": "e.g. CN=Developers,OU=Groups,DC=corp,DC=local",
-        "description": "Distinguished Name of the Active Directory group to map. Leave empty if not using LDAP."
+        "label": "LDAP-groep DN",
+        "placeholder": "bijv. CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name van de Active Directory-groep om toe te wijzen. Laat leeg als u LDAP niet gebruikt."
       },
       "quota": {
         "title": "Opslagquota",
@@ -2347,7 +2347,7 @@
       "management": "Gebruikersbeheer"
     },
     "table": {
-      "user": "USER",
+      "user": "GEBRUIKER",
       "userRole": "Gebruiker",
       "email": "E-MAIL",
       "status": "STATUS",
@@ -2356,9 +2356,9 @@
       "active": "Actief",
       "inactive": "Inactief",
       "admin": "Beheerder",
-      "source": "Source",
+      "source": "Bron",
       "ldap": "LDAP",
-      "local": "Local"
+      "local": "Lokaal"
     },
     "invite": {
       "button": "Genereer Uitnodigingslink",

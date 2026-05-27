@@ -659,7 +659,7 @@
   },
   "moveItems": {
     "itemsToMove": "موارد قابل انتقال:",
-    "movingToFolder": "Moving to: {folder}",
+    "movingToFolder": "انتقال به: {folder}",
     "title": "انتقال {count, plural, =1 {مورد} other {موارد}}",
     "description": "انتقال {count, plural, =1 {مورد} other {موارد}} به مکان جدید",
     "success": "{count} {count, plural, =1 {مورد} other {مورد}} با موفقیت منتقل شد",
@@ -2214,8 +2214,8 @@
       "descriptionPlaceholder": "توضیحات اختیاری",
       "ldapDn": {
         "label": "LDAP Group DN",
-        "placeholder": "e.g. CN=Developers,OU=Groups,DC=corp,DC=local",
-        "description": "Distinguished Name of the Active Directory group to map. Leave empty if not using LDAP."
+        "placeholder": "مثال: CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name گروه Active Directory برای نقشه‌برداری. اگر از LDAP استفاده نمی‌کنید خالی بگذارید."
       },
       "quota": {
         "title": "سهمیه‌های ذخیره‌سازی",
@@ -2351,7 +2351,7 @@
       "management": "مدیریت کاربران"
     },
     "table": {
-      "user": "USER",
+      "user": "کاربر",
       "userRole": "کاربر",
       "email": "ایمیل",
       "status": "وضعیت",

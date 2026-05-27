@@ -659,7 +659,7 @@
   },
   "moveItems": {
     "itemsToMove": "Item yang akan dipindahkan:",
-    "movingToFolder": "Moving to: {folder}",
+    "movingToFolder": "Pindahkan ke: {folder}",
     "title": "Pindahkan {count, plural, =1 {Item} other {Item}}",
     "description": "Pindahkan {count, plural, =1 {item} other {item}} ke lokasi baru",
     "success": "Berhasil memindahkan {count} {count, plural, =1 {item} other {item}}",
@@ -1546,8 +1546,8 @@
         "description": "Konfigurasi autentikasi SSO melalui OpenID Connect"
       },
       "backgrounds": {
-        "title": "Background Images",
-        "description": "Manage background images for WeTransfer-style upload pages"
+        "title": "Gambar Latar Belakang",
+        "description": "Kelola gambar latar untuk halaman unggah gaya WeTransfer"
       }
     },
     "fields": {
@@ -2213,9 +2213,9 @@
       "description": "Deskripsi",
       "descriptionPlaceholder": "Deskripsi opsional",
       "ldapDn": {
-        "label": "LDAP Group DN",
-        "placeholder": "e.g. CN=Developers,OU=Groups,DC=corp,DC=local",
-        "description": "Distinguished Name of the Active Directory group to map. Leave empty if not using LDAP."
+        "label": "DN Grup LDAP",
+        "placeholder": "contoh: CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name dari grup Active Directory yang akan dipetakan. Biarkan kosong jika tidak menggunakan LDAP."
       },
       "quota": {
         "title": "Kuota Penyimpanan",
