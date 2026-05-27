@@ -33,7 +33,7 @@
       ],
       "project": ["src/**/*.{ts,tsx}"],
       "ignoreDependencies": ["tw-animate-css"],
-      "ignoreFiles": ["src/components/V3BetaModal.tsx"]
+      "ignoreFiles": ["src/components/V1BetaModal.tsx"]
     }
   }
 }

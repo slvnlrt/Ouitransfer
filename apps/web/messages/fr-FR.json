@@ -1342,10 +1342,10 @@
         }
       },
       "backgroundImage": {
-        "title": "Background Image",
-        "description": "Choose a background image for the upload page",
-        "random": "Random",
-        "none": "No background images available. An admin can upload images in Settings."
+        "title": "Image d'Arrière-plan",
+        "description": "Choisissez une image d'arrière-plan pour la page de téléversement",
+        "random": "Aléatoire",
+        "none": "Aucune image d'arrière-plan disponible. Un administrateur peut téléverser des images dans les paramètres."
       },
       "password": {
         "label": "Mot de Passe de Protection",
@@ -1545,8 +1545,8 @@
         "description": "Configuration de l'authentification SSO via OpenID Connect"
       },
       "backgrounds": {
-        "title": "Background Images",
-        "description": "Manage background images for WeTransfer-style upload pages"
+        "title": "Images d'Arrière-plan",
+        "description": "Gérer les images d'arrière-plan pour les pages de téléversement de style WeTransfer"
       }
     },
     "fields": {
@@ -1658,16 +1658,16 @@
         "description": "Masquer la version de OUITRANSFER dans le pied de page de toutes les pages"
       },
       "footerEnabled": {
-        "title": "Show Footer",
-        "description": "Display the footer bar at the bottom of all pages"
+        "title": "Afficher le Pied de Page",
+        "description": "Afficher la barre du pied de page au bas de toutes les pages"
       },
       "footerText": {
-        "title": "Footer Text",
-        "description": "Company or organization name displayed in the footer"
+        "title": "Texte du Pied de Page",
+        "description": "Nom de l'entreprise ou de l'organisation affiché dans le pied de page"
       },
       "footerUrl": {
-        "title": "Footer URL",
-        "description": "Link URL for the footer text"
+        "title": "URL du Pied de Page",
+        "description": "URL du lien pour le texte du pied de page"
       },
       "embedSecret": {
         "title": "Clé d'intégration",
@@ -2512,106 +2512,106 @@
   },
   "ldap": {
     "pageTitle": "LDAP / Active Directory",
-    "pageDescription": "Configure LDAP synchronization to import users from Active Directory",
+    "pageDescription": "Configurer la synchronisation LDAP pour importer les utilisateurs depuis Active Directory",
     "config": {
       "title": "Configuration",
-      "description": "LDAP server connection and attribute mapping settings",
-      "enabled": "Enabled",
-      "connection": "Connection",
-      "serverUrl": "Server URL",
-      "useTls": "Use TLS (LDAPS)",
-      "tlsSkipVerify": "Skip TLS Verification",
-      "tlsSkipVerifyWarning": "Warning: Disabling certificate verification allows man-in-the-middle attacks",
+      "description": "Paramètres de connexion au serveur LDAP et mappage d'attributs",
+      "enabled": "Activé",
+      "connection": "Connexion",
+      "serverUrl": "URL du serveur",
+      "useTls": "Utiliser TLS (LDAPS)",
+      "tlsSkipVerify": "Ignorer la Vérification TLS",
+      "tlsSkipVerifyWarning": "Attention : La désactivation de la vérification du certificat permet les attaques de type man-in-the-middle",
       "bindDn": "Bind DN",
-      "bindPassword": "Bind Password",
-      "bindPasswordPlaceholder": "Enter password to test or save new password",
-      "search": "Search Settings",
-      "searchBase": "Search Base",
+      "bindPassword": "Mot de passe Bind",
+      "bindPasswordPlaceholder": "Entrez le mot de passe pour tester ou enregistrer un nouveau mot de passe",
+      "search": "Paramètres de Recherche",
+      "searchBase": "Base de Recherche",
       "syncGroupDn": "Sync Group DN",
-      "attributes": "Attribute Mapping",
-      "usernameAttr": "Username Attribute",
-      "emailAttr": "Email Attribute",
-      "displayNameAttr": "Display Name Attribute",
-      "syncSettings": "Sync Settings",
-      "syncInterval": "Sync Interval (minutes)",
-      "syncIntervalHelp": "Between 15 minutes and 7 days (10080 minutes)",
-      "appUrl": "Application URL",
-      "appUrlHelp": "Used in welcome emails sent to new LDAP users",
-      "appUrlRequired": "Application URL is required when LDAP is enabled",
-      "bindPasswordRequired": "Bind password is required for a new configuration",
-      "members": "members",
-      "save": "Save Configuration",
-      "testConnection": "Test Connection",
-      "saveSuccess": "LDAP configuration saved",
-      "saveError": "Failed to save LDAP configuration",
-      "testSuccess": "Connection test successful",
-      "testError": "Connection test failed"
+      "attributes": "Mappage d'Attributs",
+      "usernameAttr": "Attribut Nom d'Utilisateur",
+      "emailAttr": "Attribut Email",
+      "displayNameAttr": "Attribut Nom d'Affichage",
+      "syncSettings": "Paramètres de Synchronisation",
+      "syncInterval": "Intervalle de Synchronisation (minutes)",
+      "syncIntervalHelp": "Entre 15 minutes et 7 jours (10080 minutes)",
+      "appUrl": "URL de l'Application",
+      "appUrlHelp": "Utilisée dans les emails de bienvenue envoyés aux nouveaux utilisateurs LDAP",
+      "appUrlRequired": "L'URL de l'application est requise lorsque LDAP est activé",
+      "bindPasswordRequired": "Le mot de passe Bind est requis pour une nouvelle configuration",
+      "members": "membres",
+      "save": "Enregistrer la Configuration",
+      "testConnection": "Tester la Connexion",
+      "saveSuccess": "Configuration LDAP enregistrée",
+      "saveError": "Échec de l'enregistrement de la configuration LDAP",
+      "testSuccess": "Test de connexion réussi",
+      "testError": "Échec du test de connexion"
     },
     "groupMapping": {
-      "title": "Group Mapping",
-      "description": "Local groups mapped to Active Directory groups for quota assignment",
-      "manageGroups": "Manage Groups",
-      "groupName": "Group Name",
+      "title": "Mappage de Groupes",
+      "description": "Groupes locaux mappés à des groupes Active Directory pour l'assignation de quota",
+      "manageGroups": "Gérer les Groupes",
+      "groupName": "Nom du Groupe",
       "adGroupDn": "AD Group DN",
-      "noMapping": "No group mapping configured. Set LDAP DNs in group management to map AD groups to local quota groups."
+      "noMapping": "Aucun mappage de groupe configuré. Définissez les DNs LDAP dans la gestion des groupes pour mapper les groupes AD aux groupes de quota locaux."
     },
     "sync": {
-      "title": "Sync Operations",
-      "description": "Manual sync and synchronization history",
-      "syncNow": "Sync Now",
-      "triggered": "LDAP sync started",
-      "error": "Failed to start LDAP sync",
-      "lastSync": "Last sync",
-      "nextSync": "Next sync",
-      "noHistory": "No sync history yet",
+      "title": "Opérations de Synchronisation",
+      "description": "Synchronisation manuelle et historique de synchronisation",
+      "syncNow": "Synchroniser Maintenant",
+      "triggered": "Synchronisation LDAP démarrée",
+      "error": "Échec du démarrage de la synchronisation LDAP",
+      "lastSync": "Dernière synchronisation",
+      "nextSync": "Prochaine synchronisation",
+      "noHistory": "Pas encore d'historique de synchronisation",
       "date": "Date",
-      "trigger": "Trigger",
-      "duration": "Duration",
-      "created": "Created",
-      "updated": "Updated",
-      "deactivated": "Deactivated",
-      "reactivated": "Reactivated",
-      "skipped": "Skipped",
-      "status": "Status"
+      "trigger": "Déclencheur",
+      "duration": "Durée",
+      "created": "Créé",
+      "updated": "Mis à jour",
+      "deactivated": "Désactivé",
+      "reactivated": "Réactivé",
+      "skipped": "Ignoré",
+      "status": "Statut"
     },
     "syncDetail": {
-      "title": "Sync Details",
-      "details": "Skip & Error Details",
+      "title": "Détails de la Synchronisation",
+      "details": "Détails de Skippage & Erreur",
       "type": "Type",
-      "username": "Username",
+      "username": "Nom d'Utilisateur",
       "email": "Email",
       "message": "Message"
     },
     "banner": {
-      "active": "LDAP/AD sync active",
-      "disabled": "LDAP/AD sync disabled",
-      "configure": "Configure"
+      "active": "Synchronisation LDAP/AD active",
+      "disabled": "Synchronisation LDAP/AD désactivée",
+      "configure": "Configurer"
     },
     "warnings": {
-      "title": "Configuration Warnings"
+      "title": "Avertissements de Configuration"
     },
     "time": {
-      "justNow": "just now",
-      "minutesAgo": "{minutes}m ago",
-      "hoursAgo": "{hours}h ago",
-      "daysAgo": "{days}d ago"
+      "justNow": "à l'instant",
+      "minutesAgo": "il y a {minutes}m",
+      "hoursAgo": "il y a {hours}h",
+      "daysAgo": "il y a {days}d"
     }
   },
   "backgroundImages": {
-    "empty": "No background images uploaded. Upload images to enable custom backgrounds for WeTransfer-style shares.",
-    "add": "Add Image",
-    "uploading": "Uploading...",
-    "uploadSuccess": "Image uploaded successfully",
-    "uploadError": "Failed to upload image",
-    "deleteConfirm": "Are you sure you want to delete this background image?",
-    "deleteSuccess": "Image deleted successfully",
-    "deleteError": "Failed to delete image",
-    "untitled": "Untitled",
-    "rename": "Click to rename",
-    "renameSuccess": "Image renamed successfully",
-    "renameError": "Failed to rename image",
-    "moveUp": "Move up",
-    "moveDown": "Move down",
-    "reorderError": "Failed to reorder images"
+    "empty": "Aucune image d'arrière-plan téléversée. Téléversez des images pour activer les arrière-plans personnalisés pour les partages de style WeTransfer.",
+    "add": "Ajouter une Image",
+    "uploading": "Téléversement...",
+    "uploadSuccess": "Image téléversée avec succès",
+    "uploadError": "Échec du téléversement de l'image",
+    "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cette image d'arrière-plan ?",
+    "deleteSuccess": "Image supprimée avec succès",
+    "deleteError": "Échec de la suppression de l'image",
+    "untitled": "Sans titre",
+    "rename": "Cliquez pour renommer",
+    "renameSuccess": "Image renommée avec succès",
+    "renameError": "Échec du renommage de l'image",
+    "moveUp": "Déplacer vers le haut",
+    "moveDown": "Déplacer vers le bas",
+    "reorderError": "Échec de la réorganisation des images"
   }
 }

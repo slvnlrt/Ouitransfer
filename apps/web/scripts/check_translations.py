@@ -50,6 +50,20 @@ def check_untranslated_strings(file_path: Path) -> Tuple[int, int, List[str]]:
     return len(all_strings), len(untranslated), untranslated
 
 
+def _is_suspected_untranslated(value: str) -> bool:
+    """Return True if a string looks like untranslated English natural-language text."""
+    if len(value) <= 15:
+        return False
+    if value.startswith('http://') or value.startswith('https://'):
+        return False
+    if value.startswith('{'):
+        return False
+    # Date/format patterns
+    if any(pat in value for pat in ('MM/DD', 'HH:MM', 'YYYY', '%Y', '%m', '%d')):
+        return False
+    return True
+
+
 def compare_languages(reference_file: Path, target_file: Path) -> Dict[str, Any]:
     """Compare two language files."""
     reference_data = load_json_file(reference_file)
@@ -64,17 +78,24 @@ def compare_languages(reference_file: Path, target_file: Path) -> Dict[str, Any]
     # Find common keys
     common_keys = set(reference_strings.keys()) & set(target_strings.keys())
     
-    # Check identical strings (possibly untranslated)
+    # All identical strings (broad — for "possible matches" count)
     identical_strings = []
+    # Suspected untranslated: stricter filter
+    suspected_untranslated = []
     for key in common_keys:
-        if reference_strings[key] == target_strings[key] and len(reference_strings[key]) > 3:
-            identical_strings.append(key)
+        ref_val = reference_strings[key]
+        if ref_val == target_strings[key]:
+            if len(ref_val) > 3:
+                identical_strings.append(key)
+            if _is_suspected_untranslated(ref_val):
+                suspected_untranslated.append(key)
     
     return {
         'total_reference': len(reference_strings),
         'total_target': len(target_strings),
         'common_keys': len(common_keys),
-        'identical_strings': identical_strings
+        'identical_strings': identical_strings,
+        'suspected_untranslated': suspected_untranslated,
     }
 
 
@@ -118,13 +139,14 @@ def generate_translation_report(messages_dir: Path, reference_file: str = 'en-US
             'untranslated_keys': untranslated_keys,
             'completion_percentage': completion_percentage,
             'untranslated_percentage': untranslated_percentage,
-            'identical_strings': comparison.get('identical_strings', [])
+            'identical_strings': comparison.get('identical_strings', []),
+            'suspected_untranslated': comparison.get('suspected_untranslated', []),
         })
     
-    # Sort by completion percentage
-    reports.sort(key=lambda x: x['completion_percentage'], reverse=True)
+    # Sort by completion percentage, then suspected count
+    reports.sort(key=lambda x: (-x['completion_percentage'], x['untranslated_count'], len(x['suspected_untranslated'])))
     
-    print(f"{'LANGUAGE':<15} {'COMPLETENESS':<12} {'STRINGS':<15} {'UNTRANSLATED':<15} {'POSSIBLE MATCHES'}")
+    print(f"{'LANGUAGE':<15} {'COMPLETENESS':<12} {'STRINGS':<15} {'[TO_TRANSLATE]':<16} {'SUSPECTED EN'}")
     print("-" * 80)
     
     for report in reports:
@@ -132,22 +154,25 @@ def generate_translation_report(messages_dir: Path, reference_file: str = 'en-US
         completion = f"{report['completion_percentage']:.1f}%"
         strings_info = f"{report['total_strings']}/{total_reference_strings}"
         untranslated_info = f"{report['untranslated_count']} ({report['untranslated_percentage']:.1f}%)"
-        identical_count = len(report['identical_strings'])
+        suspected_count = len(report['suspected_untranslated'])
         
-        # Choose icon based on completeness
-        if report['completion_percentage'] >= 100:
-            icon = "✅" if report['untranslated_count'] == 0 else "⚠️"
+        # Choose icon based on completeness and suspected untranslated
+        if report['completion_percentage'] >= 100 and report['untranslated_count'] == 0:
+            icon = "✅" if suspected_count == 0 else "⚠️"
         elif report['completion_percentage'] >= 90:
             icon = "🟡"
         else:
             icon = "🔴"
         
-        print(f"{icon} {language:<13} {completion:<12} {strings_info:<15} {untranslated_info:<15} {identical_count}")
+        print(f"{icon} {language:<13} {completion:<12} {strings_info:<15} {untranslated_info:<16} {suspected_count}")
     
     print("\n" + "=" * 80)
     
     # Show details of problematic files
-    problematic_files = [r for r in reports if r['untranslated_count'] > 0 or r['completion_percentage'] < 100]
+    problematic_files = [
+        r for r in reports
+        if r['untranslated_count'] > 0 or r['completion_percentage'] < 100 or r['suspected_untranslated']
+    ]
     
     if problematic_files:
         print("📋 DETAILS OF FILES THAT NEED ATTENTION:")
@@ -165,28 +190,24 @@ def generate_translation_report(messages_dir: Path, reference_file: str = 'en-US
                 print(f"   • {report['untranslated_count']} strings marked as [TO_TRANSLATE]")
                 
                 if report['untranslated_count'] <= 10:
-                    print("   • Untranslated keys:")
                     for key in report['untranslated_keys']:
                         print(f"     - {key}")
                 else:
-                    print("   • First 10 untranslated keys:")
                     for key in report['untranslated_keys'][:10]:
                         print(f"     - {key}")
                     print(f"     ... and {report['untranslated_count'] - 10} more")
             
-            if report['identical_strings']:
-                identical_count = len(report['identical_strings'])
-                print(f"   • {identical_count} strings identical to English (possibly untranslated)")
-                
-                if identical_count <= 5:
-                    for key in report['identical_strings']:
-                        value = reference_strings.get(key, '')[:50]
-                        print(f"     - {key}: \"{value}...\"")
-                else:
-                    for key in report['identical_strings'][:5]:
-                        value = reference_strings.get(key, '')[:50]
-                        print(f"     - {key}: \"{value}...\"")
-                    print(f"     ... and {identical_count - 5} more")
+            if report['suspected_untranslated']:
+                suspected = report['suspected_untranslated']
+                print(f"   • {len(suspected)} strings suspected untranslated (identical to English, >15 chars):")
+                # Group by top-level namespace
+                by_ns: Dict[str, List[str]] = {}
+                for key in suspected:
+                    ns = key.split('.')[0]
+                    by_ns.setdefault(ns, []).append(key)
+                for ns, keys in sorted(by_ns.items(), key=lambda x: -len(x[1])):
+                    sample = reference_strings.get(keys[0], '')[:40]
+                    print(f"     [{ns}] {len(keys)} keys  e.g. \"{sample}{'...' if len(reference_strings.get(keys[0],'')) > 40 else ''}\"")
             
             print()
     
@@ -198,7 +219,7 @@ def generate_translation_report(messages_dir: Path, reference_file: str = 'en-US
     print("• Use 'python3 sync_translations.py --dry-run' to see what would be added")
     print("• Use 'python3 sync_translations.py' to synchronize all translations")
     print("• Strings marked with [TO_TRANSLATE] need manual translation")
-    print("• Strings identical to English may need translation")
+    print("• Strings in 'SUSPECTED EN' column may need translation (identical to English reference)")
 
 
 def main():

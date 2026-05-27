@@ -34,8 +34,10 @@
     "fumadocs-mdx": "13.0.8",
     "fumadocs-ui": "16.4.3",
     "lucide-react": "catalog:",
+    "mermaid": "^11.15.0",
     "motion": "catalog:",
     "next": "catalog:",
+    "next-themes": "^0.4.6",
     "react": "catalog:",
     "react-dom": "catalog:",
     "tailwind-merge": "catalog:"
