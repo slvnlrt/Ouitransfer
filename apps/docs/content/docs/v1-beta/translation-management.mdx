@@ -93,8 +93,8 @@ When you add new text to the application:
   **"100% completeness" does not mean fully translated.** The check script only detects strings
   marked with `[TO_TRANSLATE]`. If a string was added to all locale files with its English value
   (without the marker), it will be counted as complete even if it was never translated. Always
-  review the **"Possible matches"** column — strings identical to English that may need human
-  translation.
+  review the **"SUSPECTED EN"** column — strings identical to English (>15 chars) that may need human
+  translation. Note: some are false positives (cognates spelled identically in multiple languages, e.g. "Position").
 </Callout>
 
 ```bash
@@ -192,7 +192,7 @@ Provides comprehensive translation analysis:
 
 #### Analysis Features
 
-- **Visual indicators**: Icons show completion status (✅ 🟡 🔴)
+- **Visual indicators**: Icons show completion status (✅ complete, ⚠️ has suspected untranslated strings)
 - **Detailed breakdowns**: Per-language analysis with specific keys
 - **Quality insights**: Identifies potential translation issues
 - **Export friendly**: Output can be redirected to files for reports
@@ -443,11 +443,11 @@ SUMMARY
 📊 TRANSLATION REPORT
 Reference: en-US.json (1958 strings)
 ================================================================================
-LANGUAGE        COMPLETENESS STRINGS           UNTRANSLATED    POSSIBLE MATCHES
+LANGUAGE        COMPLETENESS STRINGS         [TO_TRANSLATE]   SUSPECTED EN
 --------------------------------------------------------------------------------
-✅ pt-BR         100.0%       1958/1958         0 (0.0%)        378
-✅ fr-FR         100.0%       1958/1958         0 (0.0%)        166
-🟡 de-DE         95.2%        1866/1958         0 (0.0%)        384
+✅ pt-BR         100.0%       1958/1958       0 (0.0%)         0
+✅ fr-FR         100.0%       1958/1958       0 (0.0%)         0
+⚠️ de-DE         100.0%       1958/1958       0 (0.0%)         1
 ================================================================================
 ```
 
