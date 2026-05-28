@@ -1874,6 +1874,15 @@
       "placeholder": "Enter share password",
       "submit": "Submit"
     },
+    "identification": {
+      "title": "Visitor Identification",
+      "subtitle": "Please provide your information to access this share",
+      "nameLabel": "Name",
+      "emailLabel": "Email",
+      "submit": "Continue",
+      "error": "Failed to submit identification. Please try again.",
+      "optional": "optional"
+    },
     "details": {
       "untitled": "Untitled Share",
       "created": "Created: {date}",
@@ -1948,7 +1957,16 @@
     "qrCode": "QR Code",
     "downloadQrCode": "Download QR Code",
     "clickToEnlargeQrCode": "Click to enlarge QR Code",
-    "loadError": "Failed to load share details"
+    "loadError": "Failed to load share details",
+    "activity": {
+      "title": "Activity",
+      "noActivity": "No activity recorded yet.",
+      "access": "Viewed",
+      "download": "Downloaded",
+      "anonymous": "Anonymous",
+      "loadMore": "Load more",
+      "showingCount": "Showing {shown} of {total}"
+    }
   },
   "shareExpiration": {
     "title": "Share Expiration Settings",

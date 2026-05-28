@@ -21,6 +21,7 @@ import { logger } from "@/lib/logger";
 import { queryKeys } from "@/lib/query-keys";
 import { GenerateShareLinkModal } from "./generate-share-link-modal";
 import { QrCodeModal } from "./qr-code-modal";
+import { ShareDetailsActivitySection } from "./share-details/share-details-activity-section";
 import { ShareDetailsDatesSection } from "./share-details/share-details-dates-section";
 import { ShareDetailsFilesList } from "./share-details/share-details-files-list";
 import { ShareDetailsInfoSection } from "./share-details/share-details-info-section";
@@ -307,6 +308,8 @@ export function ShareDetailsModal({
                     </div>
                   </div>
                 )}
+
+                <ShareDetailsActivitySection shareId={share.id} />
               </div>
             )}
           </div>

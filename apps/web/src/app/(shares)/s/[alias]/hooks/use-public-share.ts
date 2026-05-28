@@ -6,8 +6,8 @@ import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { getShareByAlias } from "@/http/endpoints/index";
-import type { Share } from "@/http/endpoints/shares/types";
+import { getShareByAlias, getShareMetadata, identifyVisitor } from "@/http/endpoints/index";
+import type { IdentifyVisitorBody, Share } from "@/http/endpoints/shares/types";
 import { logger } from "@/lib/logger";
 import { queryKeys } from "@/lib/query-keys";
 import { parseApiError } from "@/utils/api-error";
@@ -28,6 +28,13 @@ function isInvalidPassword(error: unknown): boolean {
   return parseApiError(error).code === ErrorCodes.INVALID_PASSWORD;
 }
 
+/**
+ * Checks whether an error is an "Identification required" response.
+ */
+function isIdentificationRequired(error: unknown): boolean {
+  return parseApiError(error).code === ErrorCodes.IDENTIFICATION_REQUIRED;
+}
+
 export function usePublicShare() {
   const t = useTranslations();
   const params = useParams();
@@ -37,6 +44,7 @@ export function usePublicShare() {
   // --- UI-only state (not server-derived) ---
   const [password, setPassword] = useState("");
   const [isPasswordError, setIsPasswordError] = useState(false);
+  const [isIdentificationSubmitting, setIsIdentificationSubmitting] = useState(false);
 
   // --- Initial share fetch via useQuery ---
   const shareQuery = useQuery({
@@ -49,10 +57,24 @@ export function usePublicShare() {
     retry: false, // 401 (password required) should not retry
   });
 
-  // --- React to non-password query errors ---
+  // --- Derived: identification modal is open when query fails with IDENTIFICATION_REQUIRED ---
+  const isIdentificationModalOpen = !shareQuery.data && isIdentificationRequired(shareQuery.error);
+
+  // --- Fetch share metadata to know which fields to show (only when identification is required) ---
+  const metadataQuery = useQuery({
+    queryKey: queryKeys.shares.metadata(alias),
+    queryFn: async () => {
+      const response = await getShareMetadata(alias);
+      return response.data.metadata;
+    },
+    enabled: !!alias && isIdentificationModalOpen,
+    retry: false,
+  });
+
+  // --- React to non-password, non-identification query errors ---
   useEffect(() => {
     if (!shareQuery.error) return;
-    if (!isPasswordRequired(shareQuery.error)) {
+    if (!isPasswordRequired(shareQuery.error) && !isIdentificationRequired(shareQuery.error)) {
       toast.error(t("share.errors.loadFailed"));
     }
   }, [shareQuery.error]);
@@ -84,15 +106,42 @@ export function usePublicShare() {
     },
   });
 
+  // --- Identification submit mutation ---
+  const identificationMutation = useMutation({
+    mutationFn: async (body: IdentifyVisitorBody) => {
+      await identifyVisitor(alias, body);
+    },
+    onSuccess: () => {
+      // The server has now set the visitor cookie — re-fetch the share
+      queryClient.invalidateQueries({ queryKey: queryKeys.shares.byAlias(alias) });
+      setIsIdentificationSubmitting(false);
+    },
+    onError: (error: unknown) => {
+      toast.error(t("share.identification.error"));
+      setIsIdentificationSubmitting(false);
+      logger.error("Failed to identify visitor", {
+        alias,
+        err: error instanceof Error ? error.message : String(error),
+      });
+    },
+  });
+
   // --- Derived state from TQ cache ---
   const share: Share | null = shareQuery.data ?? null;
-  const isLoading = shareQuery.isLoading || passwordMutation.isPending;
+  const isLoading =
+    shareQuery.isLoading || passwordMutation.isPending || identificationMutation.isPending;
   // Show the password modal when the query fails with "Password required" and we don't have share data yet
   const isPasswordModalOpen = !share && isPasswordRequired(shareQuery.error);
 
   // --- Password submit handler (reads password from state, matches original signature) ---
   const handlePasswordSubmit = async () => {
     passwordMutation.mutate(password);
+  };
+
+  // --- Identification submit handler ---
+  const handleIdentificationSubmit = (name: string | undefined, email: string | undefined) => {
+    setIsIdentificationSubmitting(true);
+    identificationMutation.mutate({ name, email });
   };
 
   // --- Compose sub-hooks ---
@@ -108,6 +157,12 @@ export function usePublicShare() {
     isPasswordError,
     setPassword,
     handlePasswordSubmit,
+
+    // Identification functionality
+    isIdentificationModalOpen,
+    isIdentificationSubmitting,
+    shareMetadata: metadataQuery.data ?? null,
+    handleIdentificationSubmit,
 
     // Download functionality (from sub-hook)
     handleDownload: downloads.handleDownload,

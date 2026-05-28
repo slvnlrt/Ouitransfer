@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { ErrorDisplay } from "@/components/error-display";
 import { LoadingScreen } from "@/components/layout/loading-screen";
 import { DefaultFooter } from "@/components/ui/default-footer";
+import { IdentificationForm } from "./components/identification-form";
 import { PasswordModal } from "./components/password-modal";
 import { ShareDetails } from "./components/share-details";
 import { ShareHeader } from "./components/share-header";
@@ -21,6 +22,10 @@ export default function PublicSharePage() {
     isPasswordError,
     setPassword,
     handlePasswordSubmit,
+    isIdentificationModalOpen,
+    isIdentificationSubmitting,
+    shareMetadata,
+    handleIdentificationSubmit,
     handleDownload,
     handleBulkDownload,
     handleSelectedItemsBulkDownload,
@@ -43,7 +48,7 @@ export default function PublicSharePage() {
 
       <div className="flex-1 container mx-auto px-6 py-8">
         <div className="max-w-5xl mx-auto space-y-6">
-          {!isPasswordModalOpen && !share && (
+          {!isPasswordModalOpen && !isIdentificationModalOpen && !share && (
             <ErrorDisplay
               variant="page"
               title={t("share.notFound.title")}
@@ -82,6 +87,13 @@ export default function PublicSharePage() {
         password={password}
         onPasswordChange={setPassword}
         onSubmit={handlePasswordSubmit}
+      />
+
+      <IdentificationForm
+        isOpen={isIdentificationModalOpen}
+        metadata={shareMetadata}
+        isSubmitting={isIdentificationSubmitting}
+        onSubmit={handleIdentificationSubmit}
       />
     </div>
   );

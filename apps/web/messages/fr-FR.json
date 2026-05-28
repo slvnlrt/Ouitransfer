@@ -1734,6 +1734,15 @@
       "placeholder": "Entrez le mot de passe du partage",
       "submit": "Envoyer"
     },
+    "identification": {
+      "title": "Identification du Visiteur",
+      "subtitle": "Veuillez fournir vos informations pour accéder à ce partage",
+      "nameLabel": "Nom",
+      "emailLabel": "E-mail",
+      "submit": "Continuer",
+      "error": "Échec de l'envoi de l'identification. Veuillez réessayer.",
+      "optional": "optionnel"
+    },
     "details": {
       "untitled": "Partage sans titre",
       "created": "Créé le: {date}",
@@ -1808,7 +1817,16 @@
     "editExpiration": "Modifier l'Expiration",
     "clickToEnlargeQrCode": "Cliquez pour agrandir le Code QR",
     "downloadQrCode": "Télécharger le Code QR",
-    "qrCode": "Code QR"
+    "qrCode": "Code QR",
+    "activity": {
+      "title": "Activité",
+      "noActivity": "Aucune activité enregistrée pour l'instant.",
+      "access": "Consulté",
+      "download": "Téléchargé",
+      "anonymous": "Anonyme",
+      "loadMore": "Charger plus",
+      "showingCount": "Affichage de {shown} sur {total}"
+    }
   },
   "shareExpiration": {
     "neverExpires": "N'expire Jamais",
