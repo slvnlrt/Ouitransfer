@@ -35,15 +35,18 @@ model User {
 
   tokenVersion Int @default(0)
 
+  locale String @default("en") // User's preferred locale for emails (ISO 639-1)
+
   files         File[]
   folders       Folder[]
   shares        Share[]
   reverseShares ReverseShare[]
 
-  passwordResets PasswordReset[]
-  authProviders  UserAuthProvider[]
-  trustedDevices TrustedDevice[]
-  refreshTokens  RefreshToken[]
+  passwordResets         PasswordReset[]
+  authProviders          UserAuthProvider[]
+  trustedDevices         TrustedDevice[]
+  refreshTokens          RefreshToken[]
+  notificationPreferences NotificationPreference[]
 
   @@map("users")
 }
@@ -107,9 +110,18 @@ model Share {
   securityId String        @unique
   security   ShareSecurity @relation(fields: [securityId], references: [id])
 
+  nameFieldRequired    FieldRequirement @default(HIDDEN)
+  emailFieldRequired   FieldRequirement @default(HIDDEN)
+  inactivityAlertDays  Int?
+  inactivityAlertSent  Boolean   @default(false)
+  lastDownloadedAt     DateTime?
+  notifyOnDownload     Boolean   @default(false)
+  notifiedForExpiration Boolean  @default(false)
+
   files      File[]           @relation("ShareFiles")
   folders    Folder[]         @relation("ShareFolders")
   recipients ShareRecipient[]
+  visits     ShareVisit[]
 
   alias ShareAlias?
 
@@ -137,6 +149,15 @@ model ShareRecipient {
   shareId String
   share   Share  @relation(fields: [shareId], references: [id], onDelete: Cascade)
 
+  name           String?
+  trackingToken  String?   @unique
+  notifiedAt     DateTime?
+  lastAccessedAt DateTime?
+  accessCount    Int       @default(0)
+
+  visits         ShareVisit[]
+
+  @@unique([shareId, email])
   @@map("share_recipients")
 }
 
@@ -151,6 +172,60 @@ model AppConfig {
   updatedAt DateTime @updatedAt
 
   @@map("app_configs")
+}
+
+model EmailJob {
+  id            String    @id @default(cuid())
+  type          String
+  to            String
+  subject       String
+  htmlBody      String?
+  textBody      String?
+  locale        String    @default("en")
+  status        String    @default("pending")
+  priority      Int       @default(0)
+  attempts      Int       @default(0)
+  maxAttempts   Int       @default(3)
+  nextAttemptAt DateTime  @default(now())
+  lastError     String?
+  lockedAt      DateTime?
+  sentAt        DateTime?
+  payload       String?
+  relatedId     String?
+  listUnsubscribe String?
+  createdAt     DateTime  @default(now())
+
+  @@index([status, nextAttemptAt])
+  @@map("email_jobs")
+}
+
+model NotificationPreference {
+  id        String @id @default(cuid())
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  frequency String @default("immediate")
+
+  @@unique([userId, type])
+  @@map("notification_preferences")
+}
+
+model ShareVisit {
+  id           String          @id @default(cuid())
+  shareId      String
+  share        Share           @relation(fields: [shareId], references: [id], onDelete: Cascade)
+  recipientId  String?
+  recipient    ShareRecipient? @relation(fields: [recipientId], references: [id], onDelete: SetNull)
+  visitorName  String?
+  visitorEmail String?
+  ipAddress    String?
+  userAgent    String?
+  action       String
+  fileId       String?
+  createdAt    DateTime        @default(now())
+
+  @@index([shareId, createdAt])
+  @@map("share_visits")
 }
 
 model LoginAttempt {

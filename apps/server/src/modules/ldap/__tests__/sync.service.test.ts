@@ -243,6 +243,7 @@ describe("LdapSyncService", () => {
       maxFileSizeOverride: null,
       maxTotalStorageOverride: null,
       tokenVersion: 0,
+      locale: "en",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -316,6 +317,7 @@ describe("LdapSyncService", () => {
       maxFileSizeOverride: null,
       maxTotalStorageOverride: null,
       tokenVersion: 0,
+      locale: "en",
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -361,6 +363,7 @@ describe("LdapSyncService", () => {
       maxFileSizeOverride: null,
       maxTotalStorageOverride: null,
       tokenVersion: 0,
+      locale: "en",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -413,6 +416,7 @@ describe("LdapSyncService", () => {
       maxFileSizeOverride: null,
       maxTotalStorageOverride: null,
       tokenVersion: 0,
+      locale: "en",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -465,6 +469,7 @@ describe("LdapSyncService", () => {
       maxFileSizeOverride: null,
       maxTotalStorageOverride: null,
       tokenVersion: 0,
+      locale: "en",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -525,6 +530,7 @@ describe("LdapSyncService", () => {
       maxFileSizeOverride: null,
       maxTotalStorageOverride: null,
       tokenVersion: 0,
+      locale: "en",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -630,6 +636,7 @@ describe("LdapSyncService", () => {
       maxFileSizeOverride: null,
       maxTotalStorageOverride: null,
       tokenVersion: 0,
+      locale: "en",
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -679,6 +686,7 @@ describe("LdapSyncService", () => {
       maxFileSizeOverride: null,
       maxTotalStorageOverride: null,
       tokenVersion: 0,
+      locale: "en",
       createdAt: new Date(),
       updatedAt: new Date(),
     };

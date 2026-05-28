@@ -192,6 +192,41 @@ const defaultConfigs = [
     type: "string",
     group: "general",
   },
+  {
+    key: "appUrl",
+    value: "",
+    type: "string",
+    group: "general",
+    isSystem: false,
+  },
+  {
+    key: "emailQueueIntervalSeconds",
+    value: "30",
+    type: "int",
+    group: "email",
+    isSystem: true,
+  },
+  {
+    key: "emailQueueMaxRetries",
+    value: "3",
+    type: "int",
+    group: "email",
+    isSystem: true,
+  },
+  {
+    key: "emailDigestHour",
+    value: "8",
+    type: "int",
+    group: "email",
+    isSystem: true,
+  },
+  {
+    key: "emailJobRetentionDays",
+    value: "30",
+    type: "int",
+    group: "email",
+    isSystem: true,
+  },
 ];
 
 const defaultAuthProviders = [
