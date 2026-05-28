@@ -1,6 +1,9 @@
 {
   "$schema": "https://unpkg.com/knip@latest/schema.json",
   "ignoreExportsUsedInFile": true,
+  "ignoreIssues": {
+    "apps/server/src/modules/email/transport.ts": ["exports"]
+  },
   "exclude": ["duplicates", "unresolved"],
   "ignoreBinaries": ["python3"],
   "ignoreDependencies": ["vitest", "@commitlint/types"],
