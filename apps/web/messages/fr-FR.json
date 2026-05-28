@@ -880,7 +880,8 @@
     "ldap": "LDAP",
     "activityLog": "Journal d'activité",
     "logout": "Déconnexion",
-    "customization": "Personnalisation"
+    "customization": "Personnalisation",
+    "notifications": "Notifications"
   },
   "navigation": {
     "dashboard": "Tableau de bord"
@@ -2613,5 +2614,51 @@
     "moveUp": "Déplacer vers le haut",
     "moveDown": "Déplacer vers le bas",
     "reorderError": "Échec de la réorganisation des images"
+  },
+  "notificationPreferences": {
+    "pageTitle": "Préférences de notifications",
+    "description": "Choisissez les notifications par email que vous recevez",
+    "type": "Type de notification",
+    "category": "Catégorie",
+    "frequency": "Fréquence",
+    "immediate": "Immédiat",
+    "disabled": "Désactivé",
+    "alwaysEnabled": "Toujours activé",
+    "save": "Enregistrer les préférences",
+    "saveSuccess": "Préférences de notifications enregistrées",
+    "saveError": "Échec de l'enregistrement des préférences",
+    "noChanges": "Aucune modification à enregistrer",
+    "types": {
+      "password_reset": "Réinitialisation de mot de passe",
+      "welcome": "Email de bienvenue",
+      "account_deactivated": "Compte désactivé",
+      "account_reactivated": "Compte réactivé",
+      "share_invitation": "Invitation de partage",
+      "share_accessed": "Partage accédé",
+      "share_downloaded": "Fichier téléchargé depuis un partage",
+      "share_expiring": "Partage expirant bientôt",
+      "share_expired": "Partage expiré",
+      "share_max_views_reached": "Limite de vues du partage atteinte",
+      "share_no_activity": "Aucune activité sur le partage",
+      "reverse_share_invitation": "Invitation de partage inversé",
+      "reverse_share_uploaded": "Fichiers uploadés sur un partage inversé",
+      "reverse_share_expiring": "Partage inversé expirant",
+      "reverse_share_expired": "Partage inversé expiré",
+      "quota_warning": "Avertissement de quota",
+      "quota_exceeded": "Quota dépassé",
+      "files_auto_deleted": "Fichiers supprimés automatiquement",
+      "share_auto_deleted": "Partage supprimé automatiquement",
+      "admin_user_registered": "Nouvel utilisateur inscrit (admin)",
+      "admin_quota_alert": "Alerte quota utilisateur (admin)",
+      "test_email": "Email de test"
+    },
+    "categories": {
+      "account": "Compte",
+      "shares": "Partages",
+      "reverseShares": "Partages inversés",
+      "quota": "Quotas",
+      "admin": "Administration",
+      "test": "Test"
+    }
   }
 }

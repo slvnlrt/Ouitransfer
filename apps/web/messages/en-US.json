@@ -977,7 +977,8 @@
     "groupsManagement": "Groups",
     "ldap": "LDAP",
     "activityLog": "Activity Log",
-    "logout": "Log Out"
+    "logout": "Log Out",
+    "notifications": "Notifications"
   },
   "navigation": {
     "dashboard": "Dashboard"
@@ -2613,5 +2614,51 @@
     "moveUp": "Move up",
     "moveDown": "Move down",
     "reorderError": "Failed to reorder images"
+  },
+  "notificationPreferences": {
+    "pageTitle": "Notification Preferences",
+    "description": "Choose which email notifications you receive",
+    "type": "Notification Type",
+    "category": "Category",
+    "frequency": "Frequency",
+    "immediate": "Immediate",
+    "disabled": "Disabled",
+    "alwaysEnabled": "Always enabled",
+    "save": "Save Preferences",
+    "saveSuccess": "Notification preferences saved",
+    "saveError": "Failed to save preferences",
+    "noChanges": "No changes to save",
+    "types": {
+      "password_reset": "Password reset",
+      "welcome": "Welcome email",
+      "account_deactivated": "Account deactivated",
+      "account_reactivated": "Account reactivated",
+      "share_invitation": "Share invitation",
+      "share_accessed": "Share accessed",
+      "share_downloaded": "File downloaded from share",
+      "share_expiring": "Share expiring soon",
+      "share_expired": "Share expired",
+      "share_max_views_reached": "Share max views reached",
+      "share_no_activity": "No activity on share",
+      "reverse_share_invitation": "Reverse share invitation",
+      "reverse_share_uploaded": "Files uploaded to reverse share",
+      "reverse_share_expiring": "Reverse share expiring",
+      "reverse_share_expired": "Reverse share expired",
+      "quota_warning": "Quota warning",
+      "quota_exceeded": "Quota exceeded",
+      "files_auto_deleted": "Files auto-deleted",
+      "share_auto_deleted": "Share auto-deleted",
+      "admin_user_registered": "New user registered (admin)",
+      "admin_quota_alert": "User quota alert (admin)",
+      "test_email": "Test email"
+    },
+    "categories": {
+      "account": "Account",
+      "shares": "Shares",
+      "reverseShares": "Reverse Shares",
+      "quota": "Quotas",
+      "admin": "Administration",
+      "test": "Test"
+    }
   }
 }

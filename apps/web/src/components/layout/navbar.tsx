@@ -1,6 +1,16 @@
 "use client";
 
-import { Layers, LogOut, Palette, ScrollText, Server, Settings, User, Users } from "lucide-react";
+import {
+  Bell,
+  Layers,
+  LogOut,
+  Palette,
+  ScrollText,
+  Server,
+  Settings,
+  User,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -108,6 +118,12 @@ export function Navbar() {
                   <Link href="/customization" className="flex items-center gap-2 cursor-pointer">
                     <Palette className="h-4 w-4" />
                     {t("navbar.customization")}
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/notifications" className="flex items-center gap-2 cursor-pointer">
+                    <Bell className="h-4 w-4" />
+                    {t("navbar.notifications")}
                   </Link>
                 </DropdownMenuItem>
                 {isAdmin && (
