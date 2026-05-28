@@ -1,6 +1,7 @@
 import { prisma } from "../../shared/prisma.js";
 import { getLogger } from "../../utils/logger.js";
 import { getConfigValue } from "../config/service.js";
+import { validateAllI18nKeys } from "./catalog.js";
 import { emailQueueEvents } from "./events.js";
 import { smtpTransport } from "./transport.js";
 
@@ -338,10 +339,12 @@ export function stopEmailQueueScheduler(): void {
 
 /**
  * Initialize the email queue on server boot.
- * Recovers stuck jobs, then starts the scheduler.
+ * Validates i18n keys, recovers stuck jobs, then starts the scheduler.
  * Fire-and-forget from server.ts — has internal error handling.
  */
 export async function initEmailQueueOnBoot(): Promise<void> {
+  validateAllI18nKeys();
+
   try {
     await recoverStuckJobs();
   } catch (error) {

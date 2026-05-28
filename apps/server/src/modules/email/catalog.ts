@@ -1,7 +1,29 @@
 import { z } from "zod";
-
 import type { TranslationFn } from "./i18n/loader.js";
+import { validateI18nKeys } from "./i18n/loader.js";
+import { renderAccountDeactivated } from "./templates/account-deactivated.js";
+import { renderAccountReactivated } from "./templates/account-reactivated.js";
+import { renderAdminQuotaAlert } from "./templates/admin-quota-alert.js";
+import { renderAdminUserRegistered } from "./templates/admin-user-registered.js";
 import type { LayoutSlots } from "./templates/base-layout.js";
+import { renderFilesAutoDeleted } from "./templates/files-auto-deleted.js";
+import { renderPasswordReset } from "./templates/password-reset.js";
+import { renderQuotaExceeded } from "./templates/quota-exceeded.js";
+import { renderQuotaWarning } from "./templates/quota-warning.js";
+import { renderReverseShareExpired } from "./templates/reverse-share-expired.js";
+import { renderReverseShareExpiring } from "./templates/reverse-share-expiring.js";
+import { renderReverseShareInvitation } from "./templates/reverse-share-invitation.js";
+import { renderReverseShareUploaded } from "./templates/reverse-share-uploaded.js";
+import { renderShareAccessed } from "./templates/share-accessed.js";
+import { renderShareAutoDeleted } from "./templates/share-auto-deleted.js";
+import { renderShareDownloaded } from "./templates/share-downloaded.js";
+import { renderShareExpired } from "./templates/share-expired.js";
+import { renderShareExpiring } from "./templates/share-expiring.js";
+import { renderShareInvitation } from "./templates/share-invitation.js";
+import { renderShareMaxViewsReached } from "./templates/share-max-views-reached.js";
+import { renderShareNoActivity } from "./templates/share-no-activity.js";
+import { renderTestEmail } from "./templates/test-email.js";
+import { renderWelcome } from "./templates/welcome.js";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -22,16 +44,26 @@ export interface NotificationTypeConfig {
   hasUnsubscribe: boolean;
   /** Optional dedup window in seconds (e.g. 900 for share_accessed). */
   cooldownSeconds?: number;
-  /** i18n keys required by the render function. Empty until Batch 6. */
+  /** i18n keys required by the render function. */
   requiredI18nKeys: string[];
 }
 
-// ─── Stub render (replaced in Batch 6 with real templates) ────────────────────
+// ─── Render adapter ───────────────────────────────────────────────────────────
 
-const stubRender = (_data: unknown, _t: TranslationFn): LayoutSlots => ({
-  subtitle: "Email",
-  body: "<p>Placeholder</p>",
-});
+/**
+ * Casts a strongly-typed render function to the `(data: unknown) => LayoutSlots`
+ * signature required by `NotificationTypeConfig.render`.
+ *
+ * This is safe at runtime: the catalog's Zod `payloadSchema` validates each
+ * payload before `render()` is ever called, so the typed function always
+ * receives a correctly-shaped object.
+ */
+function asRender<T>(
+  fn: (data: T, t: TranslationFn) => LayoutSlots,
+): (data: unknown, t: TranslationFn) => LayoutSlots {
+  // biome-ignore lint/suspicious/noExplicitAny: necessary to bridge strongly-typed render fns to the unknown-data interface contract; Zod validates the payload before render() is called
+  return fn as (data: any, t: TranslationFn) => LayoutSlots;
+}
 
 // ─── Payload schemas ──────────────────────────────────────────────────────────
 
@@ -175,77 +207,110 @@ export const notificationCatalog = {
   // ── Account lifecycle (critical, non-configurable) ─────────────────────────
 
   welcome: {
-    render: stubRender,
+    render: asRender(renderWelcome),
     payloadSchema: welcomeSchema,
     priority: 1,
     isCritical: true,
     defaultFrequency: "immediate",
     configurable: false,
     hasUnsubscribe: false,
-    requiredI18nKeys: [],
+    requiredI18nKeys: ["welcome.subject", "welcome.subtitle", "welcome.body", "welcome.cta"],
   },
 
   password_reset: {
-    render: stubRender,
+    render: asRender(renderPasswordReset),
     payloadSchema: passwordResetSchema,
     priority: 1,
     isCritical: true,
     defaultFrequency: "immediate",
     configurable: false,
     hasUnsubscribe: false,
-    requiredI18nKeys: [],
+    requiredI18nKeys: [
+      "passwordReset.subject",
+      "passwordReset.subtitle",
+      "passwordReset.body",
+      "passwordReset.cta",
+      "passwordReset.info",
+    ],
   },
 
   account_deactivated: {
-    render: stubRender,
+    render: asRender(renderAccountDeactivated),
     payloadSchema: accountDeactivatedSchema,
     priority: 1,
     isCritical: true,
     defaultFrequency: "immediate",
     configurable: false,
     hasUnsubscribe: false,
-    requiredI18nKeys: [],
+    requiredI18nKeys: [
+      "accountDeactivated.subject",
+      "accountDeactivated.subtitle",
+      "accountDeactivated.body",
+      "accountDeactivated.info",
+      "accountDeactivated.infoContact",
+    ],
   },
 
   account_reactivated: {
-    render: stubRender,
+    render: asRender(renderAccountReactivated),
     payloadSchema: accountReactivatedSchema,
     priority: 1,
     isCritical: true,
     defaultFrequency: "immediate",
     configurable: false,
     hasUnsubscribe: false,
-    requiredI18nKeys: [],
+    requiredI18nKeys: [
+      "accountReactivated.subject",
+      "accountReactivated.subtitle",
+      "accountReactivated.body",
+      "accountReactivated.cta",
+    ],
   },
 
   // ── Share invitations (non-configurable, one-shot) ─────────────────────────
 
   share_invitation: {
-    render: stubRender,
+    render: asRender(renderShareInvitation),
     payloadSchema: shareInvitationSchema,
     priority: 0,
     isCritical: false,
     defaultFrequency: "immediate",
     configurable: false,
     hasUnsubscribe: false,
-    requiredI18nKeys: [],
+    requiredI18nKeys: [
+      "shareInvitation.subject",
+      "shareInvitation.subtitle",
+      "shareInvitation.body",
+      "shareInvitation.cta",
+      "shareInvitation.info",
+      "shareInvitation.infoPassword",
+      "shareInvitation.infoExpires",
+    ],
   },
 
   reverse_share_invitation: {
-    render: stubRender,
+    render: asRender(renderReverseShareInvitation),
     payloadSchema: reverseShareInvitationSchema,
     priority: 0,
     isCritical: false,
     defaultFrequency: "immediate",
     configurable: false,
     hasUnsubscribe: false,
-    requiredI18nKeys: [],
+    requiredI18nKeys: [
+      "reverseShareInvitation.subject",
+      "reverseShareInvitation.subtitle",
+      "reverseShareInvitation.body",
+      "reverseShareInvitation.cta",
+      "reverseShareInvitation.info",
+      "reverseShareInvitation.infoPassword",
+      "reverseShareInvitation.infoExpires",
+    ],
   },
 
   // ── Share activity (configurable, noisy) ───────────────────────────────────
 
   share_accessed: {
-    render: stubRender,
+    render: asRender(renderShareAccessed),
     payloadSchema: shareAccessedSchema,
     priority: 0,
     isCritical: false,
@@ -253,11 +318,16 @@ export const notificationCatalog = {
     configurable: true,
     hasUnsubscribe: true,
     cooldownSeconds: 900,
-    requiredI18nKeys: [],
+    requiredI18nKeys: [
+      "shareAccessed.subject",
+      "shareAccessed.subtitle",
+      "shareAccessed.bodyIdentified",
+      "shareAccessed.bodyAnonymous",
+    ],
   },
 
   share_downloaded: {
-    render: stubRender,
+    render: asRender(renderShareDownloaded),
     payloadSchema: shareDownloadedSchema,
     priority: 0,
     isCritical: false,
@@ -265,171 +335,245 @@ export const notificationCatalog = {
     configurable: true,
     hasUnsubscribe: true,
     cooldownSeconds: 900,
-    requiredI18nKeys: [],
+    requiredI18nKeys: [
+      "shareDownloaded.subject",
+      "shareDownloaded.subtitle",
+      "shareDownloaded.bodyIdentified",
+      "shareDownloaded.bodyAnonymous",
+    ],
   },
 
   // ── Share lifecycle (configurable) ─────────────────────────────────────────
 
   share_expiring: {
-    render: stubRender,
+    render: asRender(renderShareExpiring),
     payloadSchema: shareExpiringSchema,
     priority: 0,
     isCritical: false,
     defaultFrequency: "immediate",
     configurable: true,
     hasUnsubscribe: true,
-    requiredI18nKeys: [],
+    requiredI18nKeys: [
+      "shareExpiring.subject",
+      "shareExpiring.subtitle",
+      "shareExpiring.body",
+      "shareExpiring.cta",
+    ],
   },
 
   share_expired: {
-    render: stubRender,
+    render: asRender(renderShareExpired),
     payloadSchema: shareExpiredSchema,
     priority: 0,
     isCritical: false,
     defaultFrequency: "immediate",
     configurable: true,
     hasUnsubscribe: true,
-    requiredI18nKeys: [],
+    requiredI18nKeys: [
+      "shareExpired.subject",
+      "shareExpired.subtitle",
+      "shareExpired.body",
+      "shareExpired.cta",
+    ],
   },
 
   share_max_views_reached: {
-    render: stubRender,
+    render: asRender(renderShareMaxViewsReached),
     payloadSchema: shareMaxViewsReachedSchema,
     priority: 0,
     isCritical: false,
     defaultFrequency: "immediate",
     configurable: true,
     hasUnsubscribe: true,
-    requiredI18nKeys: [],
+    requiredI18nKeys: [
+      "shareMaxViewsReached.subject",
+      "shareMaxViewsReached.subtitle",
+      "shareMaxViewsReached.body",
+      "shareMaxViewsReached.cta",
+    ],
   },
 
   share_no_activity: {
-    render: stubRender,
+    render: asRender(renderShareNoActivity),
     payloadSchema: shareNoActivitySchema,
     priority: 0,
     isCritical: false,
     defaultFrequency: "immediate",
     configurable: true,
     hasUnsubscribe: true,
-    requiredI18nKeys: [],
+    requiredI18nKeys: [
+      "shareNoActivity.subject",
+      "shareNoActivity.subtitle",
+      "shareNoActivity.body",
+      "shareNoActivity.cta",
+    ],
   },
 
   // ── Reverse share lifecycle (configurable) ─────────────────────────────────
 
   reverse_share_uploaded: {
-    render: stubRender,
+    render: asRender(renderReverseShareUploaded),
     payloadSchema: reverseShareUploadedSchema,
     priority: 0,
     isCritical: false,
     defaultFrequency: "immediate",
     configurable: true,
     hasUnsubscribe: true,
-    requiredI18nKeys: [],
+    requiredI18nKeys: [
+      "reverseShareUploaded.subject",
+      "reverseShareUploaded.subtitle",
+      "reverseShareUploaded.bodyIdentified",
+      "reverseShareUploaded.bodyAnonymous",
+    ],
   },
 
   reverse_share_expiring: {
-    render: stubRender,
+    render: asRender(renderReverseShareExpiring),
     payloadSchema: reverseShareExpiringSchema,
     priority: 0,
     isCritical: false,
     defaultFrequency: "immediate",
     configurable: true,
     hasUnsubscribe: true,
-    requiredI18nKeys: [],
+    requiredI18nKeys: [
+      "reverseShareExpiring.subject",
+      "reverseShareExpiring.subtitle",
+      "reverseShareExpiring.body",
+    ],
   },
 
   reverse_share_expired: {
-    render: stubRender,
+    render: asRender(renderReverseShareExpired),
     payloadSchema: reverseShareExpiredSchema,
     priority: 0,
     isCritical: false,
     defaultFrequency: "immediate",
     configurable: true,
     hasUnsubscribe: true,
-    requiredI18nKeys: [],
+    requiredI18nKeys: [
+      "reverseShareExpired.subject",
+      "reverseShareExpired.subtitle",
+      "reverseShareExpired.body",
+    ],
   },
 
   // ── Quota & cleanup (configurable) ─────────────────────────────────────────
 
   quota_warning: {
-    render: stubRender,
+    render: asRender(renderQuotaWarning),
     payloadSchema: quotaWarningSchema,
     priority: 0,
     isCritical: false,
     defaultFrequency: "immediate",
     configurable: true,
     hasUnsubscribe: true,
-    requiredI18nKeys: [],
+    requiredI18nKeys: [
+      "quotaWarning.subject",
+      "quotaWarning.subtitle",
+      "quotaWarning.body",
+      "quotaWarning.info",
+    ],
   },
 
   quota_exceeded: {
-    render: stubRender,
+    render: asRender(renderQuotaExceeded),
     payloadSchema: quotaExceededSchema,
     priority: 0,
     isCritical: false,
     defaultFrequency: "immediate",
     configurable: true,
     hasUnsubscribe: true,
-    requiredI18nKeys: [],
+    requiredI18nKeys: [
+      "quotaExceeded.subject",
+      "quotaExceeded.subtitle",
+      "quotaExceeded.body",
+      "quotaExceeded.bodyGrace",
+      "quotaExceeded.info",
+    ],
   },
 
   files_auto_deleted: {
-    render: stubRender,
+    render: asRender(renderFilesAutoDeleted),
     payloadSchema: filesAutoDeletedSchema,
     priority: 0,
     isCritical: false,
     defaultFrequency: "immediate",
     configurable: true,
     hasUnsubscribe: true,
-    requiredI18nKeys: [],
+    requiredI18nKeys: [
+      "filesAutoDeleted.subject",
+      "filesAutoDeleted.subtitle",
+      "filesAutoDeleted.body",
+      "filesAutoDeleted.info",
+    ],
   },
 
   share_auto_deleted: {
-    render: stubRender,
+    render: asRender(renderShareAutoDeleted),
     payloadSchema: shareAutoDeletedSchema,
     priority: 0,
     isCritical: false,
     defaultFrequency: "immediate",
     configurable: true,
     hasUnsubscribe: true,
-    requiredI18nKeys: [],
+    requiredI18nKeys: [
+      "shareAutoDeleted.subject",
+      "shareAutoDeleted.subtitle",
+      "shareAutoDeleted.body",
+      "shareAutoDeleted.info",
+    ],
   },
 
   // ── Admin notifications (configurable) ─────────────────────────────────────
 
   admin_user_registered: {
-    render: stubRender,
+    render: asRender(renderAdminUserRegistered),
     payloadSchema: adminUserRegisteredSchema,
     priority: 0,
     isCritical: false,
     defaultFrequency: "immediate",
     configurable: true,
     hasUnsubscribe: true,
-    requiredI18nKeys: [],
+    requiredI18nKeys: [
+      "adminUserRegistered.subject",
+      "adminUserRegistered.subtitle",
+      "adminUserRegistered.body",
+    ],
   },
 
   admin_quota_alert: {
-    render: stubRender,
+    render: asRender(renderAdminQuotaAlert),
     payloadSchema: adminQuotaAlertSchema,
     priority: 0,
     isCritical: false,
     defaultFrequency: "immediate",
     configurable: true,
     hasUnsubscribe: true,
-    requiredI18nKeys: [],
+    requiredI18nKeys: [
+      "adminQuotaAlert.subject",
+      "adminQuotaAlert.subtitle",
+      "adminQuotaAlert.body",
+      "adminQuotaAlert.info",
+    ],
   },
 
   // ── System / testing (critical) ────────────────────────────────────────────
 
   test_email: {
-    render: stubRender,
+    render: asRender(renderTestEmail),
     payloadSchema: testEmailSchema,
     priority: 1,
     isCritical: true,
     defaultFrequency: "immediate",
     configurable: false,
     hasUnsubscribe: false,
-    requiredI18nKeys: [],
+    requiredI18nKeys: [
+      "testEmail.subject",
+      "testEmail.subtitle",
+      "testEmail.body",
+      "testEmail.bodyCustom",
+      "testEmail.info",
+    ],
   },
 } as const satisfies Record<string, NotificationTypeConfig>;
 
@@ -456,4 +600,15 @@ export type EmailPayloads = {
  */
 export function typeToI18nPrefix(type: NotificationKey): string {
   return type.replace(/_([a-z])/g, (_, c: string) => c.toUpperCase());
+}
+
+/**
+ * Validates that all i18n keys required by the notification catalog exist in en.json.
+ * Call this on boot to catch missing translations early.
+ *
+ * @throws Error listing all missing keys.
+ */
+export function validateAllI18nKeys(): void {
+  const allKeys = Object.values(notificationCatalog).flatMap((c) => c.requiredI18nKeys);
+  validateI18nKeys([...new Set(allKeys)]);
 }

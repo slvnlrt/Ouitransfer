@@ -142,16 +142,97 @@ describe("notificationCatalog", () => {
     }
   });
 
-  it("all requiredI18nKeys arrays are empty (Batch 4 stub)", () => {
+  it("all requiredI18nKeys arrays are non-empty (Batch 6 real templates)", () => {
     for (const [key, entry] of getEntries(allKeys)) {
-      expect(entry.requiredI18nKeys, `${key} should have empty i18n keys`).toEqual([]);
+      expect(
+        entry.requiredI18nKeys.length,
+        `${key} should have at least one i18n key`,
+      ).toBeGreaterThan(0);
     }
   });
 
-  it("stub render functions produce valid LayoutSlots", () => {
+  it("render functions produce valid LayoutSlots", () => {
     const dummyT = (key: string) => key;
+
+    /** Minimal valid payloads for each notification type. */
+    const samplePayloads: Record<NotificationKey, unknown> = {
+      welcome: { firstName: "Alice", loginUrl: "https://example.com/login" },
+      password_reset: { resetUrl: "https://example.com/reset", expiresInMinutes: 30 },
+      account_deactivated: { firstName: "Bob" },
+      account_reactivated: { firstName: "Carol", loginUrl: "https://example.com/login" },
+      share_invitation: {
+        senderName: "Alice",
+        shareName: "Files",
+        shareLink: "https://example.com/s/abc",
+        hasPassword: false,
+      },
+      reverse_share_invitation: {
+        senderName: "Alice",
+        reverseShareName: "Upload",
+        reverseShareLink: "https://example.com/r/abc",
+        hasPassword: false,
+      },
+      share_accessed: { shareName: "My Share", accessedAt: "2026-01-01T00:00:00Z" },
+      share_downloaded: {
+        shareName: "My Share",
+        fileName: "file.pdf",
+        downloadedAt: "2026-01-01T00:00:00Z",
+      },
+      share_expiring: {
+        shareName: "My Share",
+        expiresAt: "2026-12-31",
+        shareManageUrl: "https://example.com/manage",
+      },
+      share_expired: {
+        shareName: "My Share",
+        expiredAt: "2026-01-01",
+        shareManageUrl: "https://example.com/manage",
+      },
+      share_max_views_reached: {
+        shareName: "My Share",
+        maxViews: 50,
+        shareManageUrl: "https://example.com/manage",
+      },
+      share_no_activity: {
+        shareName: "My Share",
+        inactivityDays: 30,
+        shareManageUrl: "https://example.com/manage",
+      },
+      reverse_share_uploaded: {
+        reverseShareName: "Upload Request",
+        fileCount: 1,
+        fileNames: ["file.txt"],
+      },
+      reverse_share_expiring: {
+        reverseShareName: "Upload Request",
+        expiresAt: "2026-12-31",
+      },
+      reverse_share_expired: {
+        reverseShareName: "Upload Request",
+        expiredAt: "2026-01-01",
+      },
+      quota_warning: { usedPercent: 80, usedBytes: 8_000_000_000, maxBytes: 10_000_000_000 },
+      quota_exceeded: { usedBytes: 11_000_000_000, maxBytes: 10_000_000_000 },
+      files_auto_deleted: { fileNames: ["old.zip"], reason: "expired" },
+      share_auto_deleted: { shareName: "Old Share", reason: "inactivity" },
+      admin_user_registered: {
+        userName: "Dave",
+        userEmail: "dave@example.com",
+        registrationMethod: "email",
+      },
+      admin_quota_alert: {
+        userName: "Eve",
+        userEmail: "eve@example.com",
+        usedPercent: 95,
+        usedBytes: 9_500_000_000,
+        maxBytes: 10_000_000_000,
+      },
+      test_email: {},
+    };
+
     for (const [key, entry] of getEntries(allKeys)) {
-      const slots = entry.render({}, dummyT);
+      const payload = samplePayloads[key];
+      const slots = entry.render(payload, dummyT);
       expect(slots, `${key} render should return object`).toBeDefined();
       expect(typeof slots.subtitle, `${key} should have subtitle string`).toBe("string");
       expect(typeof slots.body, `${key} should have body string`).toBe("string");

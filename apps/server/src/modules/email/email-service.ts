@@ -144,7 +144,7 @@ class EmailService {
     let textBody: string;
     try {
       const tr = createTranslationFn(options.locale);
-      const slots = entry.render(options.data, tr);
+      const slots = entry.render(options.data as unknown, tr);
 
       // Add unsubscribe URL if applicable
       if (entry.hasUnsubscribe && options.userId) {

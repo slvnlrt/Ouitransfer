@@ -4,5 +4,144 @@
     "footerIgnore": "Si vous n'attendiez pas cet e-mail, vous pouvez l'ignorer en toute sécurité.",
     "poweredBy": "Propulsé par Ouitransfer",
     "unsubscribe": "Se désabonner de ces notifications"
+  },
+  "welcome": {
+    "subject": "{appName} - Bienvenue !",
+    "subtitle": "Bienvenue sur {appName}",
+    "body": "Bonjour {firstName},\n\nBienvenue sur {appName} ! Votre compte a été créé avec succès et est prêt à être utilisé.",
+    "cta": "Se connecter à {appName}"
+  },
+  "passwordReset": {
+    "subject": "{appName} - Demande de réinitialisation du mot de passe",
+    "subtitle": "Réinitialisation du mot de passe",
+    "body": "Nous avons reçu une demande de réinitialisation de votre mot de passe. Ce lien expirera dans {expiresInMinutes} minutes.",
+    "cta": "Réinitialiser mon mot de passe",
+    "info": "Si vous n'avez pas demandé de réinitialisation de mot de passe, vous pouvez ignorer cet e-mail en toute sécurité. Votre mot de passe ne sera pas modifié."
+  },
+  "accountDeactivated": {
+    "subject": "{appName} - Compte désactivé",
+    "subtitle": "Compte désactivé",
+    "body": "Bonjour {firstName},\n\nVotre compte a été désactivé. Vous ne pourrez plus vous connecter.",
+    "info": "Si vous pensez que cette action a été effectuée par erreur, veuillez contacter votre administrateur.",
+    "infoContact": "Si vous pensez que cette action a été effectuée par erreur, veuillez contacter votre administrateur à l'adresse {adminContactEmail}."
+  },
+  "accountReactivated": {
+    "subject": "{appName} - Compte réactivé",
+    "subtitle": "Compte réactivé",
+    "body": "Bonjour {firstName},\n\nBonne nouvelle ! Votre compte a été réactivé. Vous pouvez désormais vous connecter et accéder à tous vos fichiers.",
+    "cta": "Se connecter"
+  },
+  "shareInvitation": {
+    "subject": "{appName} - {senderName} a partagé des fichiers avec vous",
+    "subtitle": "Fichiers partagés avec vous",
+    "body": "{senderName} a partagé <strong>{shareName}</strong> avec vous.",
+    "cta": "Voir les fichiers partagés",
+    "info": "Ce partage est accessible à toute personne disposant du lien.",
+    "infoPassword": "Ce partage est protégé par un mot de passe. Vous serez invité à le saisir.",
+    "infoExpires": "Ce lien de partage expirera le {expiresAt}."
+  },
+  "shareAccessed": {
+    "subject": "{appName} - Votre partage a été consulté",
+    "subtitle": "Partage consulté",
+    "bodyIdentified": "<strong>{visitorName}</strong> a consulté votre partage <strong>{shareName}</strong> le {accessedAt}.",
+    "bodyAnonymous": "Quelqu'un a consulté votre partage <strong>{shareName}</strong> le {accessedAt}."
+  },
+  "shareDownloaded": {
+    "subject": "{appName} - Un fichier a été téléchargé depuis votre partage",
+    "subtitle": "Fichier téléchargé",
+    "bodyIdentified": "<strong>{visitorName}</strong> a téléchargé <strong>{fileName}</strong> depuis votre partage <strong>{shareName}</strong> le {downloadedAt}.",
+    "bodyAnonymous": "Quelqu'un a téléchargé <strong>{fileName}</strong> depuis votre partage <strong>{shareName}</strong> le {downloadedAt}."
+  },
+  "shareExpiring": {
+    "subject": "{appName} - Votre partage expire bientôt",
+    "subtitle": "Partage expirant bientôt",
+    "body": "Votre partage <strong>{shareName}</strong> expirera le {expiresAt}. Après cette date, les destinataires ne pourront plus accéder aux fichiers.",
+    "cta": "Gérer le partage"
+  },
+  "shareExpired": {
+    "subject": "{appName} - Votre partage a expiré",
+    "subtitle": "Partage expiré",
+    "body": "Votre partage <strong>{shareName}</strong> a expiré le {expiredAt}. Les destinataires ne peuvent plus accéder aux fichiers.",
+    "cta": "Gérer le partage"
+  },
+  "shareMaxViewsReached": {
+    "subject": "{appName} - Votre partage a atteint sa limite de vues",
+    "subtitle": "Limite de vues atteinte",
+    "body": "Votre partage <strong>{shareName}</strong> a atteint son nombre maximum de vues ({maxViews}). Le partage n'est plus accessible aux nouveaux visiteurs.",
+    "cta": "Gérer le partage"
+  },
+  "shareNoActivity": {
+    "subject": "{appName} - Votre partage n'a eu aucune activité récente",
+    "subtitle": "Aucune activité récente",
+    "body": "Votre partage <strong>{shareName}</strong> n'a eu aucune activité depuis {inactivityDays} jours. Pensez à le renouveler ou à le supprimer.",
+    "cta": "Gérer le partage"
+  },
+  "reverseShareInvitation": {
+    "subject": "{appName} - {senderName} vous demande d'envoyer des fichiers",
+    "subtitle": "Demande d'envoi de fichiers",
+    "body": "{senderName} vous demande de déposer des fichiers via <strong>{reverseShareName}</strong>. Cliquez sur le bouton ci-dessous pour téléverser vos fichiers.",
+    "cta": "Déposer des fichiers",
+    "info": "Toute personne disposant de ce lien peut déposer des fichiers.",
+    "infoPassword": "Ce lien de dépôt est protégé par un mot de passe. Vous serez invité à le saisir.",
+    "infoExpires": "Ce lien de dépôt expirera le {expiresAt}."
+  },
+  "reverseShareUploaded": {
+    "subject": "{appName} - De nouveaux fichiers ont été déposés",
+    "subtitle": "Fichiers déposés",
+    "bodyIdentified": "<strong>{uploaderName}</strong> a déposé {fileCount} fichier(s) dans <strong>{reverseShareName}</strong> : {fileList}.",
+    "bodyAnonymous": "Quelqu'un a déposé {fileCount} fichier(s) dans <strong>{reverseShareName}</strong> : {fileList}."
+  },
+  "reverseShareExpiring": {
+    "subject": "{appName} - Votre lien de demande de fichiers expire bientôt",
+    "subtitle": "Demande de fichiers expirant bientôt",
+    "body": "Votre demande de fichiers <strong>{reverseShareName}</strong> expirera le {expiresAt}. Après cette date, personne ne pourra déposer de fichiers via ce lien."
+  },
+  "reverseShareExpired": {
+    "subject": "{appName} - Votre lien de demande de fichiers a expiré",
+    "subtitle": "Demande de fichiers expirée",
+    "body": "Votre demande de fichiers <strong>{reverseShareName}</strong> a expiré le {expiredAt}. Aucun fichier supplémentaire ne peut être déposé via ce lien."
+  },
+  "quotaWarning": {
+    "subject": "{appName} - Avertissement de quota de stockage",
+    "subtitle": "Avertissement de quota de stockage",
+    "body": "Vous utilisez {usedPercent}% de votre quota de stockage ({usedBytes} octets sur {maxBytes} octets). Pensez à supprimer des anciens fichiers pour libérer de l'espace.",
+    "info": "Vous avez utilisé {usedPercent}% de votre espace de stockage disponible."
+  },
+  "quotaExceeded": {
+    "subject": "{appName} - Quota de stockage dépassé",
+    "subtitle": "Quota de stockage dépassé",
+    "body": "Vous avez dépassé votre quota de stockage. Vous utilisez actuellement {usedBytes} octets sur {maxBytes} octets. Les nouveaux téléversements seront bloqués jusqu'à ce que vous libériez de l'espace.",
+    "bodyGrace": "Vous avez dépassé votre quota de stockage. Vous utilisez actuellement {usedBytes} octets sur {maxBytes} octets. Vous disposez de {gracePeriodDays} jour(s) pour libérer de l'espace avant que les téléversements soient bloqués.",
+    "info": "Veuillez supprimer des anciens fichiers pour rétablir votre capacité de téléversement."
+  },
+  "filesAutoDeleted": {
+    "subject": "{appName} - Fichiers supprimés automatiquement",
+    "subtitle": "Fichiers supprimés automatiquement",
+    "body": "Les fichiers suivants ont été supprimés automatiquement : {fileList}. Raison : {reason}.",
+    "info": "Cette action a été effectuée automatiquement par la politique de nettoyage du système."
+  },
+  "shareAutoDeleted": {
+    "subject": "{appName} - Partage supprimé automatiquement",
+    "subtitle": "Partage supprimé automatiquement",
+    "body": "Votre partage <strong>{shareName}</strong> a été supprimé automatiquement. Raison : {reason}.",
+    "info": "Cette action a été effectuée automatiquement par la politique de nettoyage du système."
+  },
+  "adminUserRegistered": {
+    "subject": "{appName} - Nouvel utilisateur enregistré",
+    "subtitle": "Nouvel utilisateur enregistré",
+    "body": "Un nouvel utilisateur s'est inscrit sur {appName}.\n\nNom : {userName}\nE-mail : {userEmail}\nMéthode d'inscription : {registrationMethod}"
+  },
+  "adminQuotaAlert": {
+    "subject": "{appName} - Alerte de quota utilisateur",
+    "subtitle": "Alerte de quota de stockage utilisateur",
+    "body": "Un utilisateur a atteint un niveau d'utilisation élevé du stockage.\n\nNom : {userName}\nE-mail : {userEmail}\nUtilisation : {usedPercent}% ({usedBytes} octets sur {maxBytes} octets)",
+    "info": "Cet utilisateur a utilisé {usedPercent}% de son quota de stockage."
+  },
+  "testEmail": {
+    "subject": "{appName} - E-mail de test",
+    "subtitle": "E-mail de test",
+    "body": "Ceci est un e-mail de test envoyé par {appName}. Si vous avez reçu ce message, votre configuration e-mail fonctionne correctement.",
+    "bodyCustom": "Ceci est un e-mail de test envoyé par {appName}.\n\n{testMessage}",
+    "info": "Cet e-mail a été envoyé à titre de test. Aucune action n'est requise."
   }
 }
