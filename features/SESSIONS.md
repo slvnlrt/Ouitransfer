@@ -1,5 +1,31 @@
 # Session Log
 
+## 2026-05-28 (session 13)
+
+**8.2 Email Notifications — Full Implementation**
+
+- **Scope**: Complete email notification system — 22 notification types, SQLite-backed queue, type-safe templates, visitor tracking, user preferences, admin dashboard.
+- **Brainstorming**: Designed template engine (homemade TS), queue (SQLite EmailJob table with retry), i18n (server-side JSON), preferences (per-type + per-share overrides), visitor tracking (3 mechanisms: tracking tokens, identification form, IP/UA), unsubscribe (two-step JWT). 5.2 decisions captured in spec.
+- **Spec**: Rewrote `features/specs/8.2-email-notifications.md` (~1020 lines). Two review rounds (first: 4C/8I/9M, second: 5C/9I/10M). All findings resolved. Key decisions: httpOnly cookie for visitor ID, HMAC-derived unsubscribe key, notification cooldown, recipient upsert sync.
+- **Plan**: 12 sequential batches in `features/plans/8.2-email-notifications/` (index + 12 batch files, ~2390 lines total). Reviewed (7C/15I/8M), all fixes applied.
+- **Implementation** (12 batches, all done):
+  - **Batch 1**: Prisma schema (EmailJob, NotificationPreference, ShareVisit + extensions to Share, ShareRecipient, User) + config seed
+  - **Batch 2**: SmtpTransport (pooled nodemailer, config-hash-aware reconnection)
+  - **Batch 3**: i18n loader (fs-cached JSON, `{key}` interpolation, fallback chain) + base HTML email layout (indigo, Outlook-safe table layout)
+  - **Batch 4**: Notification catalog (22 types, Zod schemas, type-safe `EmailPayloads`) + EmailService orchestrator (preference cascade, cooldown, unsubscribe JWT)
+  - **Batch 5**: Email queue scheduler (chained setTimeout, exponential backoff, stuck job recovery, wake-up EventEmitter)
+  - **Batch 6**: 22 template functions (en + fr i18n keys, `asRender<T>()` for TypeScript contravariance)
+  - **Batch 7**: Migration (5 callers migrated, old EmailService deleted), recipient upsert (transactional, preserves tokens/stats), 5 MVP bug fixes
+  - **Batch 8**: Visitor tracking (ShareVisit on access/download), download tracking (shareId in presigned URL endpoints), recipient stats
+  - **Batch 9**: Visitor identification endpoint (httpOnly cookie `sv_{alias}`), notification scheduler (expiring/expired/inactive shares + reverse shares)
+  - **Batch 10**: Notification preferences CRUD + two-step unsubscribe (GET=confirmation, POST=action)
+  - **Batch 11**: Admin endpoints (queue stats, test email)
+  - **Batch 12A-E**: Frontend — API clients + types, notification preferences page, share form extensions (privacy/notifications section), visitor identification form, share activity section, RecipientSelector enhancements (notify bug fix, notified indicator), admin email section, i18n (23 locales)
+- **Test counts**: 64 server test files (752 tests), all passing. Web type-check clean.
+- **Commits**: ~20 commits on feature branch (schema → transport → i18n → catalog → queue → templates → migration → tracking → identification → preferences → admin → frontend×5)
+
+---
+
 ## 2026-05-27 (session 12)
 
 **Docs overhaul & i18n completion**

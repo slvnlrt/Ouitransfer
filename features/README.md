@@ -44,7 +44,7 @@ This directory tracks all feature development for Ouitransfer (post-refactor pha
 | # | Feature | Status | Depends on |
 |---|---------|--------|------------|
 | 8.1 | [Audit Trail / Activity Log](specs/8.1-auditing.md) | Done | — |
-| 8.2 | [Email Notifications](specs/8.2-email-notifications.md) | Not started | — |
+| 8.2 | [Email Notifications](specs/8.2-email-notifications.md) | Done | — |
 | 8.3 | [Download Tracking](specs/8.3-download-tracking.md) | Not started | 8.1, 8.2 |
 
 ### Status Legend
@@ -114,11 +114,11 @@ features/
 
 ## Current Focus
 
-**Completed:** 5.1 Quotas, 5.4 Groups, 5.3 LDAP, 6.1-6.3 UI Overhaul, 7.1 Error Handling, 9.1 Quickshare, 10.1 System Status Bar, 8.1 Audit Trail.
+**Completed:** 5.1 Quotas, 5.4 Groups, 5.3 LDAP, 6.1-6.3 UI Overhaul, 7.1 Error Handling, 9.1 Quickshare, 10.1 System Status Bar, 8.1 Audit Trail, 8.2 Email Notifications.
 All resolved: B-1 through B-25, TD-1, TD-2, TD-3, TD-4, TD-6, TD-7, TD-8, TD-9, TD-11, TD-12, TD-13, TD-14, TD-15.
 
-**Test counts:** 48 server test files (476 tests) + 26 web test files (319 tests) + 2 shared (14 tests) = **809 total**.
+**Test counts:** 64 server test files (752 tests) + 26 web test files (319 tests) + 2 shared (14 tests) = **1085 total**.
 
 **Open bugs:** none
 **Open tech debt:** TD-5, TD-10, TD-16, TD-17, TD-18, TD-19, TD-20, TD-21 — see `TECHNICAL-DEBT.md`
-**Next features:** 5.2 Auto-cleanup (independent), 8.2 Email Notifications, 8.3 Download Tracking (depends on 8.1+8.2)
+**Next features:** 5.2 Auto-cleanup (depends on 8.2), 8.3 Download Tracking (depends on 8.1+8.2)
