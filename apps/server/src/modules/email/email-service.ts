@@ -1,0 +1,315 @@
+import crypto from "node:crypto";
+
+import { env } from "../../env.js";
+import { prisma } from "../../shared/prisma.js";
+import { getLogger } from "../../utils/logger.js";
+import { getConfigValue } from "../config/service.js";
+import {
+  type EmailPayloads,
+  type NotificationKey,
+  type NotificationTypeConfig,
+  notificationCatalog,
+  typeToI18nPrefix,
+} from "./catalog.js";
+import { emailQueueEvents } from "./events.js";
+import { createTranslationFn, t } from "./i18n/loader.js";
+import { renderLayout } from "./templates/base-layout.js";
+import { buildUnsubscribeUrl, getAppUrl } from "./url-builder.js";
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+/** HMAC sub-key derivation label for unsubscribe tokens. */
+const UNSUBSCRIBE_KEY_LABEL = "unsubscribe";
+
+/** Unsubscribe token expiry in seconds: 90 days. */
+const UNSUBSCRIBE_TOKEN_EXPIRY_SECONDS = 90 * 24 * 60 * 60;
+
+// ─── JWT helpers (standalone, no Fastify instance needed) ─────────────────────
+
+/**
+ * Derives a purpose-specific HMAC key from the global JWT_SECRET.
+ * This prevents cross-purpose token reuse (e.g. an auth JWT being
+ * accepted as an unsubscribe token).
+ */
+function deriveKey(label: string): Buffer {
+  return crypto.createHmac("sha256", env.JWT_SECRET).update(label).digest();
+}
+
+/** Base64url encode (no padding). */
+function base64url(input: Buffer | string): string {
+  const buf = typeof input === "string" ? Buffer.from(input) : input;
+  return buf.toString("base64url");
+}
+
+/**
+ * Creates a compact HS256 JWT token for unsubscribe links.
+ * We avoid importing jsonwebtoken (not a project dependency) and instead
+ * use Node's native crypto — the token format is standard JWT.
+ */
+function signUnsubscribeToken(payload: { userId: string; type: string }): string {
+  const key = deriveKey(UNSUBSCRIBE_KEY_LABEL);
+  const now = Math.floor(Date.now() / 1000);
+
+  const header = base64url(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+  const body = base64url(
+    JSON.stringify({
+      ...payload,
+      iat: now,
+      exp: now + UNSUBSCRIBE_TOKEN_EXPIRY_SECONDS,
+    }),
+  );
+
+  const signature = base64url(
+    crypto.createHmac("sha256", key).update(`${header}.${body}`).digest(),
+  );
+
+  return `${header}.${body}.${signature}`;
+}
+
+// ─── EmailService ─────────────────────────────────────────────────────────────
+
+class EmailService {
+  /**
+   * Send a typed notification email.
+   *
+   * This is the single entry point for all notification emails.
+   * It validates the payload, checks preferences, renders the template,
+   * and inserts an EmailJob for the queue worker to pick up.
+   */
+  async send<T extends NotificationKey>(
+    type: T,
+    options: {
+      to: string;
+      locale: string;
+      userId?: string;
+      data: EmailPayloads[T];
+      shareId?: string;
+    },
+  ): Promise<void> {
+    const log = getLogger();
+    const entry = notificationCatalog[type];
+
+    // 1. Check SMTP is enabled
+    let smtpEnabled: string;
+    try {
+      smtpEnabled = await getConfigValue("smtpEnabled");
+    } catch {
+      // Config key missing — SMTP not configured
+      log.debug({ type }, "SMTP not configured, skipping email");
+      return;
+    }
+    if (smtpEnabled !== "true") {
+      log.debug({ type }, "SMTP disabled, skipping email");
+      return;
+    }
+
+    // 1b. Check appUrl is configured (required for links in emails)
+    try {
+      await getAppUrl();
+    } catch {
+      log.warn({ type }, "appUrl not configured, skipping email");
+      return;
+    }
+
+    // 2. For non-critical types, check user preferences
+    if (!entry.isCritical && options.userId) {
+      const frequency = await this.resolveFrequency(type, options.userId, options.shareId);
+      if (frequency === "disabled") {
+        log.debug({ type, userId: options.userId }, "Notification disabled by user preference");
+        return;
+      }
+    }
+
+    // 3. Check cooldown for noisy types
+    const cooldown = (entry as NotificationTypeConfig).cooldownSeconds;
+    if (cooldown && cooldown > 0) {
+      const cutoff = new Date(Date.now() - cooldown * 1000);
+      const recent = await prisma.emailJob.findFirst({
+        where: {
+          type,
+          to: options.to,
+          relatedId: options.shareId ?? null,
+          createdAt: { gt: cutoff },
+          status: { not: "failed" },
+        },
+      });
+      if (recent) {
+        log.debug({ type, to: options.to, shareId: options.shareId }, "Cooldown active, skipping");
+        return;
+      }
+    }
+
+    // 4. Render template
+    let htmlBody: string;
+    let textBody: string;
+    try {
+      const tr = createTranslationFn(options.locale);
+      const slots = entry.render(options.data, tr);
+
+      // Add unsubscribe URL if applicable
+      if (entry.hasUnsubscribe && options.userId) {
+        slots.unsubscribeUrl = await this.generateUnsubscribeUrl(options.userId, type);
+      }
+
+      // Resolve appName for the layout
+      let appName: string;
+      try {
+        appName = await getConfigValue("appName");
+      } catch {
+        appName = "Ouitransfer";
+      }
+
+      const output = renderLayout(slots, { appName });
+      htmlBody = output.html;
+      textBody = output.text;
+    } catch (renderError) {
+      // Render failure → create FAILED job immediately (no retry)
+      log.error({ type, error: renderError }, "Email render failed, creating FAILED job");
+
+      const errorMessage =
+        renderError instanceof Error ? renderError.message : "Unknown render error";
+
+      await prisma.emailJob.create({
+        data: {
+          type,
+          to: options.to,
+          subject: type,
+          locale: options.locale,
+          status: "failed",
+          priority: entry.priority,
+          lastError: `Render failed: ${errorMessage}`,
+          relatedId: options.shareId,
+          maxAttempts: 0,
+        },
+      });
+      return;
+    }
+
+    // 5. Resolve subject from i18n (fallback to type name until Batch 6 adds keys)
+    let subject: string;
+    try {
+      let appName: string;
+      try {
+        appName = await getConfigValue("appName");
+      } catch {
+        appName = "Ouitransfer";
+      }
+
+      const prefix = typeToI18nPrefix(type);
+      subject = t(options.locale, `${prefix}.subject`, { appName });
+    } catch {
+      // i18n key not found yet — use type as fallback subject
+      subject = type;
+    }
+
+    // 6. Resolve unsubscribe header
+    let listUnsubscribe: string | undefined;
+    if (entry.hasUnsubscribe && options.userId) {
+      const unsubUrl = await this.generateUnsubscribeUrl(options.userId, type);
+      listUnsubscribe = `<${unsubUrl}>`;
+    }
+
+    // 7. Determine job status based on frequency resolution
+    let status = "pending";
+    if (!entry.isCritical && options.userId) {
+      const frequency = await this.resolveFrequency(type, options.userId, options.shareId);
+      if (frequency === "daily_digest") {
+        status = "digest_pending";
+      }
+    }
+
+    // 8. Insert EmailJob
+    await prisma.emailJob.create({
+      data: {
+        type,
+        to: options.to,
+        subject,
+        htmlBody,
+        textBody,
+        locale: options.locale,
+        status,
+        priority: entry.priority,
+        relatedId: options.shareId,
+        listUnsubscribe,
+      },
+    });
+
+    // 9. Wake the queue for priority 1 jobs
+    if (entry.priority === 1) {
+      emailQueueEvents.emit("wake");
+    }
+  }
+
+  /**
+   * Resolves the effective notification frequency for a user + type.
+   *
+   * Cascade:
+   * 1. User has a NotificationPreference row → use its frequency
+   * 2. No row → use catalog defaultFrequency
+   * 3. Per-share override: if share.notifyOnDownload=true → upgrade to "immediate"
+   * 4. "disabled" always wins (no upgrade overrides it)
+   */
+  async resolveFrequency(
+    type: string,
+    userId: string,
+    shareId?: string,
+  ): Promise<"immediate" | "daily_digest" | "disabled"> {
+    // Step 1: Check user preference
+    const pref = await prisma.notificationPreference.findUnique({
+      where: { userId_type: { userId, type } },
+    });
+
+    const catalogEntry = notificationCatalog[type as NotificationKey];
+    const baseFrequency = pref ? pref.frequency : (catalogEntry?.defaultFrequency ?? "immediate");
+
+    // Step 2: "disabled" always wins — no override can change it
+    if (baseFrequency === "disabled") {
+      return "disabled";
+    }
+
+    // Step 3: Per-share notifyOnDownload upgrade
+    if (shareId) {
+      const share = await prisma.share.findUnique({
+        where: { id: shareId },
+        select: { notifyOnDownload: true },
+      });
+      if (share?.notifyOnDownload) {
+        return "immediate";
+      }
+    }
+
+    return baseFrequency as "immediate" | "daily_digest";
+  }
+
+  /**
+   * Generates a signed unsubscribe URL for the given user + notification type.
+   * The token is a compact HS256 JWT with a 90-day expiry.
+   */
+  async generateUnsubscribeUrl(userId: string, type: string): Promise<string> {
+    const token = signUnsubscribeToken({ userId, type });
+    return buildUnsubscribeUrl(token);
+  }
+
+  /**
+   * Sends a notification to all active admin users.
+   * Each admin receives a separate `send()` call so that individual
+   * preference checks and locale selection apply per-admin.
+   */
+  async sendToAdmins<T extends NotificationKey>(type: T, data: EmailPayloads[T]): Promise<void> {
+    const admins = await prisma.user.findMany({
+      where: { isAdmin: true, isActive: true },
+      select: { id: true, email: true, locale: true },
+    });
+
+    for (const admin of admins) {
+      await this.send(type, {
+        to: admin.email,
+        locale: admin.locale ?? "en",
+        userId: admin.id,
+        data,
+      });
+    }
+  }
+}
+
+export const emailService = new EmailService();
