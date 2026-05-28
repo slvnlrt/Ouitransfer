@@ -28,6 +28,7 @@ import { sanitizeFilename } from "../../utils/sanitize-filename.js";
 import { isMimeTypeConsistent, verifyMagicBytes } from "../../utils/validate-file-content.js";
 import { validateObjectName } from "../../utils/validate-object-name.js";
 import { logAuditEvent } from "../audit/service.js";
+import { emailService } from "../email/service.js";
 import { quotaService } from "../quota/service.js";
 import {
   CheckFileSchema,
@@ -860,6 +861,7 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
       body: z.object({
         objectName: z.string().min(1, "The objectName is required"),
         password: z.string().optional().describe("Share password if required"),
+        shareId: z.string().optional().describe("Share ID for download tracking"),
       }),
       response: {
         200: z.object({
@@ -873,7 +875,7 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     handler: async (request, reply) => {
-      const { objectName, password } = request.body;
+      const { objectName, password, shareId } = request.body;
 
       const fileRecord = await prisma.file.findFirst({ where: { objectName } });
 
@@ -902,6 +904,78 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         metadata: { method: "presigned-url" },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
 
+      // Track download if shareId provided
+      if (shareId) {
+        // Verify file belongs to this share
+        const shareWithFile = await prisma.share.findFirst({
+          where: {
+            id: shareId,
+            files: { some: { id: fileRecord.id } },
+          },
+          include: {
+            creator: { select: { email: true, locale: true } },
+          },
+        });
+
+        if (shareWithFile) {
+          // Determine if the requester is the share owner
+          let requestUserId: string | undefined;
+          try {
+            await request.jwtVerify();
+            requestUserId = request.user?.userId;
+          } catch {
+            // Anonymous access — not the owner
+          }
+          const isOwner = requestUserId === shareWithFile.creatorId;
+
+          if (!isOwner) {
+            // Create ShareVisit for download (fire-and-forget)
+            prisma.shareVisit
+              .create({
+                data: {
+                  shareId,
+                  fileId: fileRecord.id,
+                  ipAddress: request.ip,
+                  userAgent: request.headers["user-agent"],
+                  action: "download",
+                },
+              })
+              .catch((err) =>
+                getLogger().error({ err }, "Failed to create ShareVisit for download"),
+              );
+
+            // Update lastDownloadedAt (fire-and-forget)
+            prisma.share
+              .update({
+                where: { id: shareId },
+                data: { lastDownloadedAt: new Date() },
+              })
+              .catch((err) =>
+                getLogger().error({ err }, "Failed to update share lastDownloadedAt"),
+              );
+
+            // Notify share owner (fire-and-forget)
+            if (shareWithFile.creatorId && shareWithFile.creator?.email) {
+              emailService
+                .send("share_downloaded", {
+                  to: shareWithFile.creator.email,
+                  locale: shareWithFile.creator.locale ?? "en",
+                  userId: shareWithFile.creatorId,
+                  shareId,
+                  data: {
+                    shareName: shareWithFile.name ?? "Unnamed share",
+                    fileName: fileRecord.name,
+                    downloadedAt: new Date().toISOString(),
+                  },
+                })
+                .catch((err) =>
+                  getLogger().error({ err }, "Failed to send share_downloaded notification"),
+                );
+            }
+          }
+        }
+      }
+
       return reply.send({ url, expiresIn: expires });
     },
   });
@@ -925,10 +999,11 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
       body: z.object({
         objectName: z.string().min(1, "The objectName is required"),
         password: z.string().optional().describe("Share password if required"),
+        shareId: z.string().optional().describe("Share ID for download tracking"),
       }),
     },
     handler: async (request, reply) => {
-      const { objectName, password } = request.body;
+      const { objectName, password, shareId } = request.body;
 
       const fileRecord = await prisma.file.findFirst({ where: { objectName } });
 
@@ -990,6 +1065,78 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         targetId: fileRecord.id,
         metadata: { method: "stream" },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
+      // Track download if shareId provided
+      if (shareId) {
+        // Verify file belongs to this share
+        const shareWithFile = await prisma.share.findFirst({
+          where: {
+            id: shareId,
+            files: { some: { id: fileRecord.id } },
+          },
+          include: {
+            creator: { select: { email: true, locale: true } },
+          },
+        });
+
+        if (shareWithFile) {
+          // Determine if the requester is the share owner
+          let requestUserId: string | undefined;
+          try {
+            await request.jwtVerify();
+            requestUserId = request.user?.userId;
+          } catch {
+            // Anonymous access — not the owner
+          }
+          const isOwner = requestUserId === shareWithFile.creatorId;
+
+          if (!isOwner) {
+            // Create ShareVisit for download (fire-and-forget)
+            prisma.shareVisit
+              .create({
+                data: {
+                  shareId,
+                  fileId: fileRecord.id,
+                  ipAddress: request.ip,
+                  userAgent: request.headers["user-agent"],
+                  action: "download",
+                },
+              })
+              .catch((err) =>
+                getLogger().error({ err }, "Failed to create ShareVisit for download"),
+              );
+
+            // Update lastDownloadedAt (fire-and-forget)
+            prisma.share
+              .update({
+                where: { id: shareId },
+                data: { lastDownloadedAt: new Date() },
+              })
+              .catch((err) =>
+                getLogger().error({ err }, "Failed to update share lastDownloadedAt"),
+              );
+
+            // Notify share owner (fire-and-forget)
+            if (shareWithFile.creatorId && shareWithFile.creator?.email) {
+              emailService
+                .send("share_downloaded", {
+                  to: shareWithFile.creator.email,
+                  locale: shareWithFile.creator.locale ?? "en",
+                  userId: shareWithFile.creatorId,
+                  shareId,
+                  data: {
+                    shareName: shareWithFile.name ?? "Unnamed share",
+                    fileName: fileRecord.name,
+                    downloadedAt: new Date().toISOString(),
+                  },
+                })
+                .catch((err) =>
+                  getLogger().error({ err }, "Failed to send share_downloaded notification"),
+                );
+            }
+          }
+        }
+      }
 
       const stream = await fileService.getObjectStream(objectName);
       const contentType = getContentType(fileRecord.name);

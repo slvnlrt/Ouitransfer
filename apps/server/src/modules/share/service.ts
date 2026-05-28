@@ -17,6 +17,13 @@ import { FolderService } from "../folder/service.js";
 import { type CreateShareInput, ShareResponseSchema, type UpdateShareInput } from "./dto.js";
 import { type IShareRepository, PrismaShareRepository } from "./repository.js";
 
+export interface ShareAccessContext {
+  trackingToken?: string;
+  visitorCookie?: { name?: string; email?: string; alias?: string };
+  ipAddress?: string;
+  userAgent?: string;
+}
+
 type ShareWithRelations = Prisma.ShareGetPayload<{
   include: {
     security: true;
@@ -36,6 +43,12 @@ type ShareWithRelations = Prisma.ShareGetPayload<{
     };
     recipients: true;
     alias: true;
+    creator: {
+      select: {
+        email: true;
+        locale: true;
+      };
+    };
   };
 }>;
 
@@ -51,6 +64,7 @@ export class ShareService {
       createdAt: share.createdAt.toISOString(),
       updatedAt: share.updatedAt.toISOString(),
       expiration: share.expiration?.toISOString() || null,
+      lastDownloadedAt: share.lastDownloadedAt?.toISOString() ?? null,
       alias: share.alias
         ? {
             ...share.alias,
@@ -89,9 +103,13 @@ export class ShareService {
       recipients:
         share.recipients?.map((recipient) => ({
           ...recipient,
+          notifiedAt: recipient.notifiedAt?.toISOString() ?? null,
+          lastAccessedAt: recipient.lastAccessedAt?.toISOString() ?? null,
           createdAt: recipient.createdAt.toISOString(),
           updatedAt: recipient.updatedAt.toISOString(),
         })) || [],
+      // Strip creator from response (internal use only)
+      creator: undefined,
     };
   }
 
@@ -155,7 +173,7 @@ export class ShareService {
     shareId: string,
     password?: string,
     userId?: string,
-    context?: { ipAddress: string; userAgent?: string },
+    context?: ShareAccessContext,
   ) {
     const share = await this.shareRepository.findShareById(shareId);
 
@@ -163,7 +181,9 @@ export class ShareService {
       throw new NotFoundError("Share not found");
     }
 
-    if (userId && share.creatorId === userId) {
+    const isOwner = !!(userId && share.creatorId === userId);
+
+    if (isOwner) {
       return ShareResponseSchema.parse(await this.formatShareResponse(share));
     }
 
@@ -172,7 +192,7 @@ export class ShareService {
     }
 
     if (share.security?.password && !password) {
-      if (context) {
+      if (context?.ipAddress) {
         logAuditEvent({
           action: "SHARE_PASSWORD_FAILED",
           ipAddress: context.ipAddress,
@@ -188,7 +208,7 @@ export class ShareService {
     if (share.security?.password && password) {
       const isPasswordValid = await bcrypt.compare(password, share.security.password);
       if (!isPasswordValid) {
-        if (context) {
+        if (context?.ipAddress) {
           logAuditEvent({
             action: "SHARE_PASSWORD_FAILED",
             ipAddress: context.ipAddress,
@@ -199,7 +219,7 @@ export class ShareService {
         }
         throw new AppError(401, "Invalid password", ErrorCodes.INVALID_PASSWORD);
       }
-      if (context) {
+      if (context?.ipAddress) {
         logAuditEvent({
           action: "SHARE_PASSWORD_VERIFIED",
           ipAddress: context.ipAddress,
@@ -218,7 +238,7 @@ export class ShareService {
       throw new AppError(410, "Share has reached maximum views", ErrorCodes.MAX_VIEWS_REACHED);
     }
 
-    if (context) {
+    if (context?.ipAddress) {
       logAuditEvent({
         action: "SHARE_ACCESS",
         ipAddress: context.ipAddress,
@@ -226,6 +246,67 @@ export class ShareService {
         targetType: "share",
         targetId: shareId,
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+    }
+
+    // Record visitor tracking for non-owner access
+    let recipientId: string | undefined;
+    let visitorName: string | undefined;
+    let visitorEmail: string | undefined;
+
+    if (context?.trackingToken) {
+      const recipient = await prisma.shareRecipient.findUnique({
+        where: { trackingToken: context.trackingToken },
+      });
+      if (recipient && recipient.shareId === share.id) {
+        recipientId = recipient.id;
+        visitorEmail = recipient.email;
+        visitorName = recipient.name ?? undefined;
+        // Update recipient access stats
+        await prisma.shareRecipient.update({
+          where: { id: recipient.id },
+          data: { lastAccessedAt: new Date(), accessCount: { increment: 1 } },
+        });
+      }
+    }
+
+    // Or from identification cookie (Batch 9 will wire this)
+    if (!recipientId && context?.visitorCookie) {
+      visitorName = context.visitorCookie.name;
+      visitorEmail = context.visitorCookie.email;
+    }
+
+    // Fire and forget — don't block the response
+    prisma.shareVisit
+      .create({
+        data: {
+          shareId: share.id,
+          recipientId,
+          visitorName,
+          visitorEmail,
+          ipAddress: context?.ipAddress,
+          userAgent: context?.userAgent,
+          action: "access",
+        },
+      })
+      .catch((err) => getLogger().error({ err }, "Failed to create ShareVisit"));
+
+    // Trigger share_accessed notification (fire-and-forget)
+    if (share.creatorId && share.creator?.email) {
+      emailService
+        .send("share_accessed", {
+          to: share.creator.email,
+          locale: share.creator.locale ?? "en",
+          userId: share.creatorId,
+          shareId: share.id,
+          data: {
+            shareName: share.name ?? "Unnamed share",
+            visitorName,
+            visitorEmail,
+            ipAddress: context?.ipAddress,
+            accessedAt: new Date().toISOString(),
+          },
+        })
+        .catch((err) => getLogger().error({ err }, "Failed to send share_accessed notification"));
     }
 
     // Update view count in memory to avoid a second DB round-trip
@@ -481,26 +562,19 @@ export class ShareService {
   async getShareByAlias(
     alias: string,
     password?: string,
-    context?: { ipAddress: string; userAgent?: string },
+    userId?: string,
+    context?: ShareAccessContext,
   ) {
     const shareAlias = await prisma.shareAlias.findUnique({
       where: { alias },
-      include: {
-        share: {
-          include: {
-            security: true,
-            files: true,
-            recipients: true,
-          },
-        },
-      },
+      select: { shareId: true },
     });
 
     if (!shareAlias) {
       throw new NotFoundError("Share not found");
     }
 
-    return this.getShare(shareAlias.shareId, password, undefined, context);
+    return this.getShare(shareAlias.shareId, password, userId, context);
   }
 
   async notifyRecipients(

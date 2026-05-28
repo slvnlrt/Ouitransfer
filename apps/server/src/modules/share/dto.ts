@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { FieldRequirement } from "../../generated/prisma/client.js";
 
 export const CreateShareSchema = z
   .object({
@@ -15,6 +16,22 @@ export const CreateShareSchema = z
     password: z.string().optional().describe("The share password"),
     maxViews: z.number().optional().nullable().describe("The maximum number of views"),
     recipients: z.array(z.string().email()).optional().describe("The recipient emails"),
+    nameFieldRequired: z
+      .nativeEnum(FieldRequirement)
+      .optional()
+      .describe("Name field requirement for visitor identification"),
+    emailFieldRequired: z
+      .nativeEnum(FieldRequirement)
+      .optional()
+      .describe("Email field requirement for visitor identification"),
+    notifyOnDownload: z.boolean().optional().describe("Notify owner on file download"),
+    inactivityAlertDays: z
+      .number()
+      .int()
+      .positive()
+      .nullable()
+      .optional()
+      .describe("Days of inactivity before alert"),
   })
   .refine(
     (data) => {
@@ -35,6 +52,22 @@ export const UpdateShareSchema = z.object({
   password: z.string().optional(),
   maxViews: z.number().optional().nullable(),
   recipients: z.array(z.string().email()).optional(),
+  nameFieldRequired: z
+    .nativeEnum(FieldRequirement)
+    .optional()
+    .describe("Name field requirement for visitor identification"),
+  emailFieldRequired: z
+    .nativeEnum(FieldRequirement)
+    .optional()
+    .describe("Email field requirement for visitor identification"),
+  notifyOnDownload: z.boolean().optional().describe("Notify owner on file download"),
+  inactivityAlertDays: z
+    .number()
+    .int()
+    .positive()
+    .nullable()
+    .optional()
+    .describe("Days of inactivity before alert"),
 });
 
 export const ShareAliasResponseSchema = z.object({
@@ -91,10 +124,25 @@ export const ShareResponseSchema = z.object({
         .optional(),
     }),
   ),
+  nameFieldRequired: z
+    .nativeEnum(FieldRequirement)
+    .describe("Name field requirement for visitor identification"),
+  emailFieldRequired: z
+    .nativeEnum(FieldRequirement)
+    .describe("Email field requirement for visitor identification"),
+  notifyOnDownload: z.boolean().describe("Notify owner on file download"),
+  inactivityAlertDays: z.number().nullable().describe("Days of inactivity before alert"),
+  lastDownloadedAt: z.string().datetime().nullable().describe("Last download timestamp"),
+  notifiedForExpiration: z.boolean().describe("Whether expiration notification was sent"),
   recipients: z.array(
     z.object({
       id: z.string().describe("The recipient ID"),
       email: z.string().email().describe("The recipient email"),
+      name: z.string().nullable().describe("The recipient name"),
+      trackingToken: z.string().nullable().describe("The recipient tracking token"),
+      notifiedAt: z.string().datetime().nullable().describe("When the recipient was notified"),
+      lastAccessedAt: z.string().datetime().nullable().describe("When the recipient last accessed"),
+      accessCount: z.number().describe("Number of times the recipient has accessed the share"),
       createdAt: z.string().describe("The recipient creation date"),
       updatedAt: z.string().describe("The recipient update date"),
     }),

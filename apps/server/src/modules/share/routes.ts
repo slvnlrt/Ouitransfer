@@ -2,7 +2,8 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 
 import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
-import { NotFoundError, UnauthorizedError } from "../../utils/app-error.js";
+import { prisma } from "../../shared/prisma.js";
+import { ForbiddenError, NotFoundError, UnauthorizedError } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
@@ -15,7 +16,11 @@ import {
   UpdateShareRecipientsSchema,
   UpdateShareSchema,
 } from "./dto.js";
-import { ShareService } from "./service.js";
+import { type ShareAccessContext, ShareService } from "./service.js";
+
+const ShareAccessQuery = z.object({
+  t: z.string().optional().describe("Tracking token"),
+});
 
 const shareService = new ShareService();
 
@@ -108,6 +113,7 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       params: z.object({
         shareId: z.string().describe("The share ID"),
       }),
+      querystring: ShareAccessQuery,
       response: {
         200: z.object({
           share: ShareResponseSchema,
@@ -126,10 +132,12 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         // JWT verification failure is expected for unauthenticated share access
         request.log.debug({ err }, "JWT verification skipped (anonymous access)");
       }
-      const share = await shareService.getShare(request.params.shareId, undefined, userId, {
+      const context: ShareAccessContext = {
+        trackingToken: request.query.t,
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
-      });
+      };
+      const share = await shareService.getShare(request.params.shareId, undefined, userId, context);
       return reply.send({ share });
     },
   });
@@ -147,6 +155,7 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       params: z.object({
         shareId: z.string().describe("The share ID"),
       }),
+      querystring: ShareAccessQuery,
       body: z.object({
         password: z.string().min(1, "Password is required").describe("The share password"),
       }),
@@ -168,11 +177,16 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         // JWT verification failure is expected for unauthenticated share access
         request.log.debug({ err }, "JWT verification skipped (anonymous access)");
       }
+      const context: ShareAccessContext = {
+        trackingToken: request.query.t,
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+      };
       const share = await shareService.getShare(
         request.params.shareId,
         request.body.password,
         userId,
-        { ipAddress: request.ip, userAgent: request.headers["user-agent"] },
+        context,
       );
       return reply.send({ share });
     },
@@ -547,6 +561,7 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       params: z.object({
         alias: z.string().describe("The share alias"),
       }),
+      querystring: ShareAccessQuery,
       response: {
         200: z.object({
           share: ShareResponseSchema,
@@ -557,10 +572,24 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     handler: async (request, reply) => {
-      const share = await shareService.getShareByAlias(request.params.alias, undefined, {
+      let userId: string | undefined;
+      try {
+        await request.jwtVerify();
+        userId = request.user?.userId;
+      } catch (err) {
+        request.log.debug({ err }, "JWT verification skipped (anonymous access)");
+      }
+      const context: ShareAccessContext = {
+        trackingToken: request.query.t,
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
-      });
+      };
+      const share = await shareService.getShareByAlias(
+        request.params.alias,
+        undefined,
+        userId,
+        context,
+      );
       return reply.send({ share });
     },
   });
@@ -578,6 +607,7 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       params: z.object({
         alias: z.string().describe("The share alias"),
       }),
+      querystring: ShareAccessQuery,
       body: z.object({
         password: z.string().min(1, "Password is required").describe("The share password"),
       }),
@@ -591,10 +621,23 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     handler: async (request, reply) => {
+      let userId: string | undefined;
+      try {
+        await request.jwtVerify();
+        userId = request.user?.userId;
+      } catch (err) {
+        request.log.debug({ err }, "JWT verification skipped (anonymous access)");
+      }
+      const context: ShareAccessContext = {
+        trackingToken: request.query.t,
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+      };
       const share = await shareService.getShareByAlias(
         request.params.alias,
         request.body.password,
-        { ipAddress: request.ip, userAgent: request.headers["user-agent"] },
+        userId,
+        context,
       );
       return reply.send({ share });
     },
@@ -684,6 +727,95 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
     handler: async (request, reply) => {
       const metadata = await shareService.getShareMetadataByAlias(request.params.alias);
       return reply.send(metadata);
+    },
+  });
+
+  app.route({
+    method: "GET",
+    url: "/shares/:shareId/visits",
+    preValidation,
+    schema: {
+      tags: ["Share"],
+      operationId: "getShareVisits",
+      summary: "Get visits for a share",
+      description:
+        "Returns paginated visit records for a share. Only accessible by the share creator.",
+      params: z.object({
+        shareId: z.string().describe("The share ID"),
+      }),
+      querystring: z.object({
+        action: z.enum(["access", "download"]).optional().describe("Filter by visit action"),
+        page: z.coerce.number().int().positive().default(1).describe("Page number"),
+        limit: z.coerce.number().int().positive().max(100).default(20).describe("Results per page"),
+      }),
+      response: {
+        200: z.object({
+          visits: z.array(
+            z.object({
+              id: z.string(),
+              shareId: z.string(),
+              recipientId: z.string().nullable(),
+              visitorName: z.string().nullable(),
+              visitorEmail: z.string().nullable(),
+              ipAddress: z.string().nullable(),
+              userAgent: z.string().nullable(),
+              action: z.string(),
+              fileId: z.string().nullable(),
+              createdAt: z.date(),
+              recipient: z
+                .object({
+                  email: z.string(),
+                  name: z.string().nullable(),
+                })
+                .nullable(),
+            }),
+          ),
+          total: z.number(),
+          page: z.number(),
+          limit: z.number(),
+        }),
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
+      }
+
+      const { shareId } = request.params;
+      const { action, page, limit } = request.query;
+
+      // Verify the requester is the share creator
+      const share = await prisma.share.findUnique({ where: { id: shareId } });
+      if (!share) {
+        throw new NotFoundError("Share not found");
+      }
+      if (share.creatorId !== userId) {
+        throw new ForbiddenError("Not share creator");
+      }
+
+      const where = {
+        shareId,
+        ...(action ? { action } : {}),
+      };
+
+      const [visits, total] = await Promise.all([
+        prisma.shareVisit.findMany({
+          where,
+          include: { recipient: { select: { email: true, name: true } } },
+          orderBy: { createdAt: "desc" },
+          skip: (page - 1) * limit,
+          take: limit,
+        }),
+        prisma.shareVisit.count({ where }),
+      ]);
+
+      return reply.send({ visits, total, page, limit });
     },
   });
 };

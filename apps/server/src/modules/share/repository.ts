@@ -5,6 +5,7 @@ import type {
   ShareAlias,
   ShareRecipient,
   ShareSecurity,
+  User,
 } from "../../generated/prisma/client.js";
 
 import { prisma } from "../../shared/prisma.js";
@@ -13,6 +14,8 @@ import type { CreateShareInput } from "./dto.js";
 type FolderWithCount = Folder & {
   _count: { files: number; children: number };
 };
+
+type CreatorInfo = Pick<User, "email" | "locale"> | null;
 
 export interface IShareRepository {
   createShare(
@@ -30,6 +33,7 @@ export interface IShareRepository {
         folders: FolderWithCount[];
         recipients: ShareRecipient[];
         alias: ShareAlias | null;
+        creator: CreatorInfo;
       })
     | null
   >;
@@ -44,6 +48,7 @@ export interface IShareRepository {
         files: File[];
         folders: FolderWithCount[];
         recipients: ShareRecipient[];
+        creator: CreatorInfo;
       })
     | null
   >;
@@ -66,6 +71,7 @@ export interface IShareRepository {
       folders: FolderWithCount[];
       recipients: ShareRecipient[];
       alias: ShareAlias | null;
+      creator: CreatorInfo;
     })[]
   >;
 }
@@ -138,6 +144,12 @@ export class PrismaShareRepository implements IShareRepository {
           },
         },
         recipients: true,
+        creator: {
+          select: {
+            email: true,
+            locale: true,
+          },
+        },
       },
     });
   }
@@ -197,6 +209,12 @@ export class PrismaShareRepository implements IShareRepository {
               },
             },
             recipients: true,
+            creator: {
+              select: {
+                email: true,
+                locale: true,
+              },
+            },
           },
         },
       },
@@ -376,6 +394,12 @@ export class PrismaShareRepository implements IShareRepository {
         },
         recipients: true,
         alias: true,
+        creator: {
+          select: {
+            email: true,
+            locale: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
