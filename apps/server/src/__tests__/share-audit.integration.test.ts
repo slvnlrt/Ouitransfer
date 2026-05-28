@@ -18,6 +18,13 @@ vi.mock("../shared/prisma.js", () => ({
       update: mockShareUpdate,
       updateMany: mockShareUpdateMany,
     },
+    shareRecipient: {
+      findUnique: vi.fn().mockResolvedValue(null),
+      update: vi.fn().mockResolvedValue({}),
+    },
+    shareVisit: {
+      create: vi.fn().mockResolvedValue({ id: "visit-1" }),
+    },
     auditLog: { create: mockAuditCreate },
   },
 }));
@@ -34,6 +41,22 @@ vi.mock("../modules/auth/token-version.js", () => ({
   incrementTokenVersion: vi.fn(),
 }));
 
+vi.mock("../modules/email/service.js", () => ({
+  emailService: {
+    send: vi.fn().mockResolvedValue(undefined),
+  },
+}));
+
+vi.mock("../utils/logger.js", () => ({
+  setLogger: vi.fn(),
+  getLogger: vi.fn(() => ({
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
+  })),
+}));
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 const makeShare = (overrides: Record<string, unknown> = {}) => ({
@@ -47,6 +70,13 @@ const makeShare = (overrides: Record<string, unknown> = {}) => ({
   securityId: "sec-1",
   createdAt: new Date(),
   updatedAt: new Date(),
+  nameFieldRequired: "HIDDEN",
+  emailFieldRequired: "HIDDEN",
+  inactivityAlertDays: null,
+  inactivityAlertSent: false,
+  lastDownloadedAt: null,
+  notifyOnDownload: false,
+  notifiedForExpiration: false,
   files: [
     {
       id: "file-1",
@@ -65,6 +95,7 @@ const makeShare = (overrides: Record<string, unknown> = {}) => ({
   folders: [],
   recipients: [],
   alias: null,
+  creator: { email: "creator@example.com", locale: "en" },
   security: {
     id: "sec-1",
     password: null,
