@@ -430,6 +430,8 @@ describe("Visitor Tracking — integration", () => {
           recipients: [],
           security: { password: null },
           creator: { email: "creator@example.com", locale: "en" },
+          nameFieldRequired: "HIDDEN",
+          emailFieldRequired: "HIDDEN",
         },
       });
 

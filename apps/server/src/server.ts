@@ -16,6 +16,10 @@ import { cleanupExpiredTokens } from "./modules/auth/refresh-token.service.js";
 import { authRoutes } from "./modules/auth/routes.js";
 import { authProvidersRoutes } from "./modules/auth-providers/routes.js";
 import { backgroundImageRoutes } from "./modules/background-image/routes.js";
+import {
+  initNotificationSchedulerOnBoot,
+  stopNotificationScheduler,
+} from "./modules/email/notification.scheduler.js";
 import { initEmailQueueOnBoot, stopEmailQueueScheduler } from "./modules/email/queue.js";
 import { fileRoutes } from "./modules/file/routes.js";
 import { folderRoutes } from "./modules/folder/routes.js";
@@ -111,6 +115,9 @@ async function startServer() {
   // Initialize email queue scheduler (fire-and-forget — has internal try/catch)
   void initEmailQueueOnBoot();
 
+  // Initialize notification scheduler (fire-and-forget — has internal try/catch)
+  void initNotificationSchedulerOnBoot();
+
   if (isInternalStorage) {
     app.log.info("Using internal storage");
   } else if (isExternalS3) {
@@ -169,6 +176,7 @@ async function startServer() {
   app.addHook("onClose", () => stopScheduler());
   app.addHook("onClose", () => stopAuditRetentionScheduler());
   app.addHook("onClose", () => stopEmailQueueScheduler());
+  app.addHook("onClose", () => stopNotificationScheduler());
 
   await app.listen({
     port: env.PORT,

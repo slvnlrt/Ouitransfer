@@ -1,9 +1,15 @@
+import type { FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
-
+import { env } from "../../env.js";
 import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
 import { prisma } from "../../shared/prisma.js";
-import { ForbiddenError, NotFoundError, UnauthorizedError } from "../../utils/app-error.js";
+import {
+  ForbiddenError,
+  NotFoundError,
+  UnauthorizedError,
+  ValidationError,
+} from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
@@ -17,6 +23,27 @@ import {
   UpdateShareSchema,
 } from "./dto.js";
 import { type ShareAccessContext, ShareService } from "./service.js";
+
+/**
+ * Parse a signed visitor identification cookie for the given alias.
+ * Returns the parsed payload if valid, undefined otherwise.
+ */
+function parseVisitorCookie(
+  request: FastifyRequest,
+  alias: string,
+): { name?: string; email?: string; alias: string } | undefined {
+  const raw = request.cookies[`sv_${alias}`];
+  if (!raw) return undefined;
+  const unsigned = request.unsignCookie(raw);
+  if (!unsigned.valid || !unsigned.value) return undefined;
+  try {
+    const payload = JSON.parse(unsigned.value) as { alias?: string; name?: string; email?: string };
+    if (payload.alias !== alias) return undefined;
+    return payload as { name?: string; email?: string; alias: string };
+  } catch {
+    return undefined;
+  }
+}
 
 const ShareAccessQuery = z.object({
   t: z.string().optional().describe("Tracking token"),
@@ -579,8 +606,10 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       } catch (err) {
         request.log.debug({ err }, "JWT verification skipped (anonymous access)");
       }
+      const visitorCookie = parseVisitorCookie(request, request.params.alias);
       const context: ShareAccessContext = {
         trackingToken: request.query.t,
+        visitorCookie,
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
       };
@@ -628,8 +657,10 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       } catch (err) {
         request.log.debug({ err }, "JWT verification skipped (anonymous access)");
       }
+      const visitorCookie = parseVisitorCookie(request, request.params.alias);
       const context: ShareAccessContext = {
         trackingToken: request.query.t,
+        visitorCookie,
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
       };
@@ -720,6 +751,8 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
           hasPassword: z.boolean(),
           isExpired: z.boolean(),
           isMaxViewsReached: z.boolean(),
+          nameFieldRequired: z.string(),
+          emailFieldRequired: z.string(),
         }),
         404: ErrorResponseSchema,
       },
@@ -727,6 +760,72 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
     handler: async (request, reply) => {
       const metadata = await shareService.getShareMetadataByAlias(request.params.alias);
       return reply.send(metadata);
+    },
+  });
+
+  app.route({
+    method: "POST",
+    url: "/shares/alias/:alias/identify",
+    config: {
+      csrfExempt: true,
+      rateLimit: {
+        max: 30,
+        timeWindow: "1 hour",
+        keyGenerator: (req: FastifyRequest) =>
+          `${req.ip}:${(req.params as { alias: string }).alias}`,
+      },
+    },
+    schema: {
+      tags: ["Share"],
+      operationId: "identifyVisitor",
+      summary: "Identify visitor for a share",
+      description:
+        "Submit visitor name/email for shares that require identification before access. Sets a signed httpOnly cookie.",
+      params: z.object({
+        alias: z.string().describe("The share alias"),
+      }),
+      body: z.object({
+        name: z.string().max(100).optional().describe("Visitor name"),
+        email: z.string().email().max(254).optional().describe("Visitor email"),
+      }),
+      response: {
+        200: z.object({
+          success: z.boolean(),
+        }),
+        400: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const { alias } = request.params;
+
+      // Look up the share to check field requirements
+      const metadata = await shareService.getShareMetadataByAlias(alias);
+
+      // Validate required fields
+      if (metadata.nameFieldRequired === "REQUIRED" && !request.body.name) {
+        throw new ValidationError("Name is required");
+      }
+      if (metadata.emailFieldRequired === "REQUIRED" && !request.body.email) {
+        throw new ValidationError("Email is required");
+      }
+
+      const payload = JSON.stringify({
+        alias,
+        name: request.body.name ?? null,
+        email: request.body.email ?? null,
+      });
+
+      reply.setCookie(`sv_${alias}`, payload, {
+        path: "/api",
+        httpOnly: true,
+        sameSite: "strict",
+        secure: env.SECURE_SITE === "true",
+        signed: true,
+        maxAge: 86400, // 24h
+      });
+
+      return reply.send({ success: true });
     },
   });
 

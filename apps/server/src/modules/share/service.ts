@@ -230,6 +230,26 @@ export class ShareService {
       }
     }
 
+    // Check if identification is required before allowing access
+    if (share.nameFieldRequired === "REQUIRED" || share.emailFieldRequired === "REQUIRED") {
+      const hasTrackingToken = !!context?.trackingToken;
+      const hasCookie = !!context?.visitorCookie;
+
+      let tokenSatisfiesRequirements = false;
+      if (hasTrackingToken) {
+        const recipient = await prisma.shareRecipient.findUnique({
+          where: { trackingToken: context!.trackingToken },
+        });
+        tokenSatisfiesRequirements =
+          (share.nameFieldRequired !== "REQUIRED" || !!recipient?.name) &&
+          (share.emailFieldRequired !== "REQUIRED" || !!recipient?.email);
+      }
+
+      if (!tokenSatisfiesRequirements && !hasCookie) {
+        throw new AppError(403, "Identification required", ErrorCodes.IDENTIFICATION_REQUIRED);
+      }
+    }
+
     const incremented = await this.shareRepository.incrementViewsAtomic(
       shareId,
       share.maxViews ?? null,
@@ -356,11 +376,21 @@ export class ShareService {
       });
     }
 
-    await this.shareRepository.updateShare(shareId, {
+    const updateData: Partial<Parameters<typeof this.shareRepository.updateShare>[1]> = {
       ...shareData,
       maxViews: maxViews !== undefined ? maxViews : undefined,
       expiration: shareData.expiration ? new Date(shareData.expiration) : null,
-    });
+    };
+
+    // If expiration is being extended, reset notifiedForExpiration to allow re-notification
+    if (shareData.expiration && share.expiration) {
+      const newExp = new Date(shareData.expiration);
+      if (newExp > share.expiration) {
+        updateData.notifiedForExpiration = false;
+      }
+    }
+
+    await this.shareRepository.updateShare(shareId, updateData);
     const shareWithRelations = await this.shareRepository.findShareById(shareId);
 
     return await this.formatShareResponse(shareWithRelations);
@@ -679,6 +709,8 @@ export class ShareService {
       hasPassword,
       isExpired,
       isMaxViewsReached,
+      nameFieldRequired: share.nameFieldRequired,
+      emailFieldRequired: share.emailFieldRequired,
     };
   }
 }
