@@ -216,7 +216,10 @@ describe("SmtpTransport", () => {
 
     await transport.getTransporter();
 
-    const callArgs = mockCreateTransport.mock.calls[0][0] as unknown as Record<string, unknown>;
+    const callArgs = (mockCreateTransport.mock.calls as unknown[][])[0][0] as Record<
+      string,
+      unknown
+    >;
     expect(callArgs.secure).toBe(false);
     expect(callArgs.requireTLS).toBe(false);
     expect(callArgs.tls).toBeUndefined();
@@ -249,7 +252,10 @@ describe("SmtpTransport", () => {
 
     await transport.getTransporter();
 
-    const callArgs = mockCreateTransport.mock.calls[0][0] as unknown as Record<string, unknown>;
+    const callArgs = (mockCreateTransport.mock.calls as unknown[][])[0][0] as Record<
+      string,
+      unknown
+    >;
     expect(callArgs.auth).toBeUndefined();
     // User/pass config keys should not be fetched when noAuth is true
     expect(getConfigValue).not.toHaveBeenCalledWith("smtpUser");
@@ -261,7 +267,10 @@ describe("SmtpTransport", () => {
 
     await transport.getTransporter();
 
-    const callArgs = mockCreateTransport.mock.calls[0][0] as unknown as Record<string, unknown>;
+    const callArgs = (mockCreateTransport.mock.calls as unknown[][])[0][0] as Record<
+      string,
+      unknown
+    >;
     expect(callArgs.tls).toEqual({ rejectUnauthorized: false });
   });
 
