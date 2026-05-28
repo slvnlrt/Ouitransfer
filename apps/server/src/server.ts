@@ -28,6 +28,7 @@ import { healthRoutes } from "./modules/health/routes.js";
 import { inviteRoutes } from "./modules/invite/routes.js";
 import { ldapRoutes } from "./modules/ldap/routes.js";
 import { initSchedulerOnBoot, stopScheduler } from "./modules/ldap/sync.scheduler.js";
+import { notificationRoutes } from "./modules/notification/routes.js";
 import { quotaRoutes } from "./modules/quota/routes.js";
 import { reverseShareRoutes } from "./modules/reverse-share/routes.js";
 import { s3StorageRoutes } from "./modules/s3-storage/routes.js";
@@ -105,6 +106,7 @@ async function startServer() {
   app.register(groupRoutes);
   app.register(ldapRoutes);
   app.register(backgroundImageRoutes);
+  app.register(notificationRoutes);
 
   // Initialize LDAP sync scheduler if configured (fire-and-forget — has internal try/catch)
   void initSchedulerOnBoot();

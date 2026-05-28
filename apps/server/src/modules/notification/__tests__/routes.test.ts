@@ -1,0 +1,539 @@
+/**
+ * routes.test.ts
+ *
+ * Integration tests for notification routes using app.inject().
+ *
+ * Tests the full request lifecycle for:
+ * - GET  /notifications/preferences  — authenticated, returns all types
+ * - PUT  /notifications/preferences  — authenticated, updates preferences
+ * - GET  /notifications/unsubscribe  — public, renders HTML confirmation
+ * - POST /notifications/unsubscribe  — public, performs unsubscribe
+ *
+ * Mock path notes: all vi.mock() specifiers are resolved relative to the
+ * CALLING TEST FILE (src/modules/notification/__tests__/routes.test.ts),
+ * not the project root.
+ */
+
+import crypto from "node:crypto";
+import type { FastifyInstance } from "fastify";
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+
+// ─── Mock Prisma ──────────────────────────────────────────────────────────────
+
+const mockPrisma = {
+  user: {
+    count: vi.fn().mockResolvedValue(1),
+    findUnique: vi.fn(),
+  },
+  notificationPreference: {
+    findMany: vi.fn().mockResolvedValue([]),
+    findUnique: vi.fn().mockResolvedValue(null),
+    upsert: vi.fn().mockResolvedValue({}),
+  },
+};
+
+vi.mock("../../../shared/prisma.js", () => ({
+  prisma: mockPrisma,
+}));
+
+// ─── Mock config service ───────────────────────────────────────────────────────
+
+vi.mock("../../../modules/config/service.js", () => ({
+  getConfigValue: vi.fn().mockImplementation(async (key: string) => {
+    if (key === "passwordMinLength") return "8";
+    if (key === "passwordAuthEnabled") return "true";
+    return "true";
+  }),
+  validatePasswordAuthDisable: vi.fn().mockResolvedValue(true),
+  validateAllProvidersDisable: vi.fn().mockResolvedValue(true),
+}));
+
+// ─── Mock token version ───────────────────────────────────────────────────────
+
+vi.mock("../../../modules/auth/token-version.js", () => ({
+  validateTokenVersion: vi.fn().mockResolvedValue(true),
+  invalidateTokenVersionCache: vi.fn(),
+  incrementTokenVersion: vi.fn(),
+}));
+
+// ─── Token helpers ────────────────────────────────────────────────────────────
+
+const JWT_SECRET = "a]test-jwt-secret-32-chars-long!";
+const UNSUBSCRIBE_KEY_LABEL = "unsubscribe";
+const UNSUBSCRIBE_TOKEN_EXPIRY_SECONDS = 90 * 24 * 60 * 60; // 90 days
+
+function deriveKey(label: string): Buffer {
+  return crypto.createHmac("sha256", JWT_SECRET).update(label).digest();
+}
+
+function base64url(input: Buffer | string): string {
+  const buf = typeof input === "string" ? Buffer.from(input) : input;
+  return buf.toString("base64url");
+}
+
+/**
+ * Creates a valid unsubscribe token using the same algorithm as email/service.ts.
+ * Used in tests to generate tokens without exposing the private function.
+ */
+function signUnsubscribeToken(
+  payload: { userId: string; type: string },
+  expiresInSeconds = UNSUBSCRIBE_TOKEN_EXPIRY_SECONDS,
+): string {
+  const key = deriveKey(UNSUBSCRIBE_KEY_LABEL);
+  const now = Math.floor(Date.now() / 1000);
+
+  const header = base64url(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+  const body = base64url(
+    JSON.stringify({
+      ...payload,
+      iat: now,
+      exp: now + expiresInSeconds,
+    }),
+  );
+
+  const signature = base64url(
+    crypto.createHmac("sha256", key).update(`${header}.${body}`).digest(),
+  );
+
+  return `${header}.${body}.${signature}`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe("Notification routes — integration", () => {
+  let app: FastifyInstance;
+
+  beforeAll(async () => {
+    vi.stubEnv("JWT_SECRET", JWT_SECRET);
+    vi.stubEnv("CSRF_SECRET", "b]test-csrf-secret-32chars-long!");
+    vi.stubEnv("COOKIE_SECRET", "c]test-cookie-secret-32chars-lon");
+    vi.stubEnv("NODE_ENV", "test");
+
+    const { buildApp } = await import("../../../app.js");
+    app = await buildApp();
+
+    const { notificationRoutes } = await import("../routes.js");
+    app.register(notificationRoutes);
+    await app.ready();
+  });
+
+  afterAll(async () => {
+    await app.close();
+    vi.unstubAllEnvs();
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Re-establish defaults after clearAllMocks
+    vi.mocked(mockPrisma.user.count).mockResolvedValue(1);
+    vi.mocked(mockPrisma.notificationPreference.findMany).mockResolvedValue([]);
+    vi.mocked(mockPrisma.notificationPreference.upsert).mockResolvedValue({} as never);
+  });
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+
+  function signUserToken(userId = "user-1"): string {
+    const jwt = app.jwt.sign({ userId, isAdmin: false, tokenVersion: 0 });
+    return app.signCookie(jwt);
+  }
+
+  async function getCsrf(): Promise<{ csrfToken: string; csrfCookie: string }> {
+    const res = await app.inject({ method: "GET", url: "/csrf-token" });
+    const { token: csrfToken } = res.json();
+    const csrfCookie = res.cookies.find((c: { name: string }) => c.name === "_csrf");
+    if (!csrfCookie?.value) throw new Error("Test fixture: _csrf cookie not found");
+    return { csrfToken, csrfCookie: csrfCookie.value };
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // GET /notifications/preferences
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  describe("GET /notifications/preferences", () => {
+    it("returns 200 with all notification types including defaults", async () => {
+      const token = signUserToken();
+
+      const res = await app.inject({
+        method: "GET",
+        url: "/notifications/preferences",
+        headers: { cookie: `token=${token}` },
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = res.json();
+      expect(body).toHaveProperty("preferences");
+      expect(Array.isArray(body.preferences)).toBe(true);
+
+      // Should include all catalog types (22 types)
+      expect(body.preferences.length).toBeGreaterThan(0);
+
+      // Each item should have the expected shape
+      const firstPref = body.preferences[0];
+      expect(firstPref).toHaveProperty("type");
+      expect(firstPref).toHaveProperty("frequency");
+      expect(firstPref).toHaveProperty("configurable");
+      expect(firstPref).toHaveProperty("isCritical");
+      expect(firstPref).toHaveProperty("defaultFrequency");
+    });
+
+    it("returns stored preference when user has one set", async () => {
+      // Mock a stored preference for share_expiring → disabled
+      vi.mocked(mockPrisma.notificationPreference.findMany).mockResolvedValue([
+        {
+          id: "pref-1",
+          userId: "user-1",
+          type: "share_expiring",
+          frequency: "disabled",
+        } as never,
+      ]);
+
+      const token = signUserToken();
+
+      const res = await app.inject({
+        method: "GET",
+        url: "/notifications/preferences",
+        headers: { cookie: `token=${token}` },
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = res.json();
+
+      const shareExpiringPref = body.preferences.find(
+        (p: { type: string }) => p.type === "share_expiring",
+      );
+      expect(shareExpiringPref).toBeDefined();
+      expect(shareExpiringPref.frequency).toBe("disabled");
+    });
+
+    it("returns catalog default when user has no stored preference", async () => {
+      vi.mocked(mockPrisma.notificationPreference.findMany).mockResolvedValue([]);
+
+      const token = signUserToken();
+
+      const res = await app.inject({
+        method: "GET",
+        url: "/notifications/preferences",
+        headers: { cookie: `token=${token}` },
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = res.json();
+
+      // share_accessed defaults to "disabled"
+      const shareAccessedPref = body.preferences.find(
+        (p: { type: string }) => p.type === "share_accessed",
+      );
+      expect(shareAccessedPref).toBeDefined();
+      expect(shareAccessedPref.frequency).toBe("disabled");
+      expect(shareAccessedPref.configurable).toBe(true);
+
+      // welcome defaults to "immediate" and is non-configurable
+      const welcomePref = body.preferences.find((p: { type: string }) => p.type === "welcome");
+      expect(welcomePref).toBeDefined();
+      expect(welcomePref.frequency).toBe("immediate");
+      expect(welcomePref.configurable).toBe(false);
+    });
+
+    it("returns 401 when not authenticated", async () => {
+      const res = await app.inject({
+        method: "GET",
+        url: "/notifications/preferences",
+      });
+
+      expect(res.statusCode).toBe(401);
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PUT /notifications/preferences
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  describe("PUT /notifications/preferences", () => {
+    it("returns 200 when updating a configurable type", async () => {
+      const token = signUserToken();
+      const { csrfToken, csrfCookie } = await getCsrf();
+
+      const res = await app.inject({
+        method: "PUT",
+        url: "/notifications/preferences",
+        headers: {
+          "content-type": "application/json",
+          cookie: `token=${token}; _csrf=${csrfCookie}`,
+          "x-csrf-token": csrfToken,
+        },
+        payload: JSON.stringify({
+          preferences: [{ type: "share_expiring", frequency: "disabled" }],
+        }),
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = res.json();
+      expect(body.message).toBe("Notification preferences updated");
+    });
+
+    it("calls upsert for the updated preference", async () => {
+      const token = signUserToken("user-42");
+      const { csrfToken, csrfCookie } = await getCsrf();
+
+      await app.inject({
+        method: "PUT",
+        url: "/notifications/preferences",
+        headers: {
+          "content-type": "application/json",
+          cookie: `token=${token}; _csrf=${csrfCookie}`,
+          "x-csrf-token": csrfToken,
+        },
+        payload: JSON.stringify({
+          preferences: [{ type: "share_expiring", frequency: "immediate" }],
+        }),
+      });
+
+      expect(mockPrisma.notificationPreference.upsert).toHaveBeenCalledOnce();
+      const upsertCall = vi.mocked(mockPrisma.notificationPreference.upsert).mock.calls[0][0];
+      expect(upsertCall.where).toEqual({
+        userId_type: { userId: "user-42", type: "share_expiring" },
+      });
+      expect(upsertCall.create.frequency).toBe("immediate");
+      expect(upsertCall.update.frequency).toBe("immediate");
+    });
+
+    it("returns 400 when trying to update a non-configurable type", async () => {
+      const token = signUserToken();
+      const { csrfToken, csrfCookie } = await getCsrf();
+
+      const res = await app.inject({
+        method: "PUT",
+        url: "/notifications/preferences",
+        headers: {
+          "content-type": "application/json",
+          cookie: `token=${token}; _csrf=${csrfCookie}`,
+          "x-csrf-token": csrfToken,
+        },
+        payload: JSON.stringify({
+          preferences: [{ type: "welcome", frequency: "disabled" }],
+        }),
+      });
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it("returns 400 when frequency is 'daily_digest'", async () => {
+      const token = signUserToken();
+      const { csrfToken, csrfCookie } = await getCsrf();
+
+      const res = await app.inject({
+        method: "PUT",
+        url: "/notifications/preferences",
+        headers: {
+          "content-type": "application/json",
+          cookie: `token=${token}; _csrf=${csrfCookie}`,
+          "x-csrf-token": csrfToken,
+        },
+        payload: JSON.stringify({
+          preferences: [{ type: "share_expiring", frequency: "daily_digest" }],
+        }),
+      });
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it("returns 400 when notification type does not exist", async () => {
+      const token = signUserToken();
+      const { csrfToken, csrfCookie } = await getCsrf();
+
+      const res = await app.inject({
+        method: "PUT",
+        url: "/notifications/preferences",
+        headers: {
+          "content-type": "application/json",
+          cookie: `token=${token}; _csrf=${csrfCookie}`,
+          "x-csrf-token": csrfToken,
+        },
+        payload: JSON.stringify({
+          preferences: [{ type: "nonexistent_type", frequency: "disabled" }],
+        }),
+      });
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it("returns 401 or 403 when not authenticated", async () => {
+      // CSRF hook fires before JWT validation for PUT — either 401 or 403 is acceptable
+      const res = await app.inject({
+        method: "PUT",
+        url: "/notifications/preferences",
+        headers: { "content-type": "application/json" },
+        payload: JSON.stringify({
+          preferences: [{ type: "share_expiring", frequency: "disabled" }],
+        }),
+      });
+
+      expect([401, 403]).toContain(res.statusCode);
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // GET /notifications/unsubscribe
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  describe("GET /notifications/unsubscribe", () => {
+    it("returns HTML confirmation page with valid token (does NOT unsubscribe)", async () => {
+      const token = signUnsubscribeToken({ userId: "user-1", type: "share_expiring" });
+
+      const res = await app.inject({
+        method: "GET",
+        url: `/notifications/unsubscribe?token=${token}`,
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.headers["content-type"]).toContain("text/html");
+
+      const html = res.payload;
+      expect(html).toContain("Unsubscribe from notifications");
+      expect(html).toContain("share_expiring");
+      expect(html).toContain("Confirm Unsubscribe");
+
+      // The GET endpoint must NOT have unsubscribed the user
+      expect(mockPrisma.notificationPreference.upsert).not.toHaveBeenCalled();
+    });
+
+    it("returns error HTML page with an invalid token", async () => {
+      const res = await app.inject({
+        method: "GET",
+        url: "/notifications/unsubscribe?token=invalid.token.value",
+      });
+
+      // Even with invalid token, returns 200 HTML (not 4xx)
+      expect(res.statusCode).toBe(200);
+      expect(res.headers["content-type"]).toContain("text/html");
+
+      const html = res.payload;
+      expect(html).toContain("Invalid or expired unsubscribe link");
+    });
+
+    it("returns 400 when token query parameter is missing", async () => {
+      const res = await app.inject({
+        method: "GET",
+        url: "/notifications/unsubscribe",
+      });
+
+      expect(res.statusCode).toBe(400);
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // POST /notifications/unsubscribe
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  describe("POST /notifications/unsubscribe", () => {
+    it("returns success HTML page and sets preference to disabled with valid token", async () => {
+      const token = signUnsubscribeToken({ userId: "user-1", type: "share_expiring" });
+
+      const res = await app.inject({
+        method: "POST",
+        url: "/notifications/unsubscribe",
+        headers: { "content-type": "application/json" },
+        payload: JSON.stringify({ token }),
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.headers["content-type"]).toContain("text/html");
+
+      const html = res.payload;
+      expect(html).toContain("Successfully unsubscribed");
+      expect(html).toContain("share_expiring");
+
+      // Should have called upsert to set frequency to disabled
+      expect(mockPrisma.notificationPreference.upsert).toHaveBeenCalledOnce();
+      const upsertCall = vi.mocked(mockPrisma.notificationPreference.upsert).mock.calls[0][0];
+      expect(upsertCall.where).toEqual({
+        userId_type: { userId: "user-1", type: "share_expiring" },
+      });
+      expect(upsertCall.create.frequency).toBe("disabled");
+      expect(upsertCall.update.frequency).toBe("disabled");
+    });
+
+    it("returns error HTML page with expired token", async () => {
+      // Token with -1 second expiry (already expired)
+      const token = signUnsubscribeToken({ userId: "user-1", type: "share_expiring" }, -1);
+
+      const res = await app.inject({
+        method: "POST",
+        url: "/notifications/unsubscribe",
+        headers: { "content-type": "application/json" },
+        payload: JSON.stringify({ token }),
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.headers["content-type"]).toContain("text/html");
+
+      const html = res.payload;
+      expect(html).toContain("Invalid or expired unsubscribe link");
+
+      // Should NOT have called upsert
+      expect(mockPrisma.notificationPreference.upsert).not.toHaveBeenCalled();
+    });
+
+    it("returns error HTML page with invalid token", async () => {
+      const res = await app.inject({
+        method: "POST",
+        url: "/notifications/unsubscribe",
+        headers: { "content-type": "application/json" },
+        payload: JSON.stringify({ token: "not.a.valid.jwt" }),
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.headers["content-type"]).toContain("text/html");
+
+      const html = res.payload;
+      expect(html).toContain("Invalid or expired unsubscribe link");
+
+      expect(mockPrisma.notificationPreference.upsert).not.toHaveBeenCalled();
+    });
+
+    it("is idempotent — re-unsubscribing succeeds without error", async () => {
+      const token = signUnsubscribeToken({ userId: "user-1", type: "share_expiring" });
+
+      // First unsubscribe
+      const res1 = await app.inject({
+        method: "POST",
+        url: "/notifications/unsubscribe",
+        headers: { "content-type": "application/json" },
+        payload: JSON.stringify({ token }),
+      });
+
+      expect(res1.statusCode).toBe(200);
+      expect(res1.payload).toContain("Successfully unsubscribed");
+
+      // Second unsubscribe with same token
+      const res2 = await app.inject({
+        method: "POST",
+        url: "/notifications/unsubscribe",
+        headers: { "content-type": "application/json" },
+        payload: JSON.stringify({ token }),
+      });
+
+      expect(res2.statusCode).toBe(200);
+      expect(res2.payload).toContain("Successfully unsubscribed");
+
+      // Upsert called twice — idempotent by design
+      expect(mockPrisma.notificationPreference.upsert).toHaveBeenCalledTimes(2);
+    });
+
+    it("is CSRF-exempt — succeeds without CSRF token", async () => {
+      const token = signUnsubscribeToken({ userId: "user-1", type: "share_expiring" });
+
+      // No CSRF token or cookie in headers
+      const res = await app.inject({
+        method: "POST",
+        url: "/notifications/unsubscribe",
+        headers: { "content-type": "application/json" },
+        payload: JSON.stringify({ token }),
+      });
+
+      // Should succeed, not return 403
+      expect(res.statusCode).toBe(200);
+      expect(res.payload).toContain("Successfully unsubscribed");
+    });
+  });
+});
