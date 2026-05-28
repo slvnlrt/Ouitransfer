@@ -63,7 +63,7 @@ function Hero() {
             </PulsatingButton>
             <RippleButton>
               <a
-                href="https://github.com/burger-cie/ouitransfer"
+                href="https://github.com/slvnlrt/ouitransfer"
                 target="_blank"
                 rel="noreferrer noopener"
                 className="flex gap-2 items-center"
@@ -271,7 +271,7 @@ function GetStarted() {
             </PulsatingButton>
             <RippleButton>
               <a
-                href="https://github.com/burger-cie/ouitransfer"
+                href="https://github.com/slvnlrt/ouitransfer"
                 target="_blank"
                 rel="noreferrer noopener"
                 className="flex gap-2 items-center"

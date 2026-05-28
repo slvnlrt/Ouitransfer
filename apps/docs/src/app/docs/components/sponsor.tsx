@@ -4,7 +4,7 @@ export function Sponsor() {
   return (
     <footer>
       <a
-        href="https://github.com/burger-cie"
+        href="https://github.com/slvnlrt"
         target="_blank"
         rel="noopener noreferrer"
         className="m-2 mt-5 flex items-center justify-center gap-2 p-3 rounded-lg border-2 bg-card text-card-foreground hover:bg-accent/50 transition-colors "

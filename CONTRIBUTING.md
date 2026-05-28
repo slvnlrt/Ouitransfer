@@ -2,7 +2,7 @@
 
 Ouitransfer is a self-hosted file transfer solution (WeTransfer alternative) built as a pnpm monorepo with Turborepo. Contributions are welcome — this guide covers the developer workflow from setup through submitting a PR.
 
-Repository: **[https://github.com/burger-cie/ouitransfer](https://github.com/burger-cie/ouitransfer)**
+Repository: **[https://github.com/slvnlrt/ouitransfer](https://github.com/slvnlrt/ouitransfer)**
 
 ---
 
@@ -23,7 +23,7 @@ Install `just` via [https://github.com/casey/just](https://github.com/casey/just
 
 ```bash
 # 1. Clone and install dependencies
-git clone https://github.com/burger-cie/ouitransfer.git
+git clone https://github.com/slvnlrt/ouitransfer.git
 cd ouitransfer
 
 # 2. Install deps + generate Prisma client + create local SQLite DB
@@ -167,7 +167,7 @@ For server integration tests, use Fastify's `app.inject()` to exercise the full 
 1. Fork the repository and create a branch from `main`
 2. Make your changes with atomic, conventional commits
 3. Ensure `just validate` passes locally (type-check + lint + test)
-4. Open a PR against the `main` branch of `burger-cie/ouitransfer`
+4. Open a PR against the `main` branch of `slvnlrt/ouitransfer`
 5. Fill in the PR template with a clear description of what changed and why
 
 CI will run: lint, type-check, tests, security audit, build, and Lighthouse (non-blocking) for all packages.

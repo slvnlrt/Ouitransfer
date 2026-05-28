@@ -52,13 +52,13 @@ const defaultConfigs = [
   },
   {
     key: "footerText",
-    value: "Burger&Cie",
+    value: "My Organization",
     type: "string",
     group: "general",
   },
   {
     key: "footerUrl",
-    value: "https://burgeretcie.fr",
+    value: "https://example.com",
     type: "string",
     group: "general",
   },

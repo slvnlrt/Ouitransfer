@@ -190,7 +190,7 @@ Commits: `fix(web): replace fragile i18n concatenation with dedicated keys`, `fi
 Resolved in TD-12/TD-14 session (mai 2026). Le footer est maintenant configurable via 3 settings :
 - `footerEnabled` (bool, défaut: true) — masque entièrement le footer si false
 - `footerText` (string, défaut: "Burger&Cie") — texte du lien
-- `footerUrl` (string, défaut: "https://burgeretcie.fr") — URL du lien
+- `footerUrl` (string, défaut: "https://example.com") — URL du lien
 
 Les deux composants footer (`default-footer.tsx` et `transparent-footer.tsx`) lisent ces configs
 via `useSecureConfigValue()`. Les settings apparaissent dans le groupe "general" de la page admin.

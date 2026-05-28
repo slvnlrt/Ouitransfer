@@ -20,7 +20,7 @@ export const baseOptions: BaseLayoutProps = {
     },
     {
       text: "Github",
-      url: "https://github.com/burger-cie/ouitransfer",
+      url: "https://github.com/slvnlrt/ouitransfer",
       active: "nested-url",
       icon: (
         <>
