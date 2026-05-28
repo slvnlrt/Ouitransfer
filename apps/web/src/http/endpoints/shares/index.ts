@@ -14,8 +14,12 @@ import type {
   DeleteShareResult,
   GetShareByAliasParams,
   GetShareByAliasResult,
+  GetShareMetadataResult,
   GetShareParams,
   GetShareResult,
+  GetShareVisitsResult,
+  IdentifyVisitorBody,
+  IdentifyVisitorResult,
   ListUserSharesResult,
   NotifyRecipientsBody,
   NotifyRecipientsResult,
@@ -231,4 +235,36 @@ export const removeFolders = (
     data: { files: [], folders: removeFoldersBody.folders },
     ...options,
   });
+};
+
+/**
+ * Get share visit history (creator only)
+ */
+export const getShareVisits = (
+  shareId: string,
+  params?: { action?: string; page?: number; limit?: number },
+  options?: AxiosRequestConfig,
+): Promise<GetShareVisitsResult> => {
+  return apiInstance.get(`/api/shares/${shareId}/visits`, { params, ...options });
+};
+
+/**
+ * Identify a visitor on a share (public, sets httpOnly cookie)
+ */
+export const identifyVisitor = (
+  alias: string,
+  body: IdentifyVisitorBody,
+  options?: AxiosRequestConfig,
+): Promise<IdentifyVisitorResult> => {
+  return apiInstance.post(`/api/shares/alias/${alias}/identify`, body, options);
+};
+
+/**
+ * Get share metadata by alias (public, lightweight)
+ */
+export const getShareMetadata = (
+  alias: string,
+  options?: AxiosRequestConfig,
+): Promise<GetShareMetadataResult> => {
+  return apiInstance.get(`/api/shares/alias/${alias}/metadata`, options);
 };

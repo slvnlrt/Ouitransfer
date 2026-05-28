@@ -38,6 +38,11 @@ export interface ShareFolder {
 export interface ShareRecipient {
   id: string;
   email: string;
+  name: string | null;
+  trackingToken: string | null;
+  notifiedAt: string | null;
+  lastAccessedAt: string | null;
+  accessCount: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -61,6 +66,12 @@ export interface Share {
   folders: ShareFolder[];
   recipients: ShareRecipient[];
   alias: ShareAlias;
+  nameFieldRequired: "HIDDEN" | "OPTIONAL" | "REQUIRED";
+  emailFieldRequired: "HIDDEN" | "OPTIONAL" | "REQUIRED";
+  notifyOnDownload: boolean;
+  inactivityAlertDays: number | null;
+  lastDownloadedAt: string | null;
+  notifiedForExpiration: boolean;
 }
 
 export interface CreateShare201 {
@@ -139,6 +150,10 @@ export interface CreateShareBody {
   password?: string;
   maxViews?: number | null;
   recipients?: string[];
+  nameFieldRequired?: "HIDDEN" | "OPTIONAL" | "REQUIRED";
+  emailFieldRequired?: "HIDDEN" | "OPTIONAL" | "REQUIRED";
+  notifyOnDownload?: boolean;
+  inactivityAlertDays?: number | null;
 }
 
 export interface UpdateShareBody {
@@ -149,6 +164,10 @@ export interface UpdateShareBody {
   password?: string;
   maxViews?: number | null;
   recipients?: string[];
+  nameFieldRequired?: "HIDDEN" | "OPTIONAL" | "REQUIRED";
+  emailFieldRequired?: "HIDDEN" | "OPTIONAL" | "REQUIRED";
+  notifyOnDownload?: boolean;
+  inactivityAlertDays?: number | null;
 }
 
 export interface UpdateSharePasswordBody {
@@ -177,6 +196,7 @@ export interface CreateShareAliasBody {
 
 export interface NotifyRecipientsBody {
   shareLink: string;
+  emails?: string[];
 }
 
 export interface GetShareParams {
@@ -185,6 +205,52 @@ export interface GetShareParams {
 
 export interface GetShareByAliasParams {
   password?: string;
+}
+
+// ── Share visits ────────────────────────────────────────────────────────
+export interface ShareVisit {
+  id: string;
+  action: string;
+  ipAddress: string | null;
+  userAgent: string | null;
+  visitorName: string | null;
+  visitorEmail: string | null;
+  createdAt: string;
+  recipientId: string | null;
+}
+
+export interface GetShareVisits200 {
+  visits: ShareVisit[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+// ── Visitor identification ─────────────────────────────────────────────
+export interface IdentifyVisitorBody {
+  name?: string;
+  email?: string;
+}
+
+export interface IdentifyVisitor200 {
+  message: string;
+}
+
+// ── Share metadata (extended) ──────────────────────────────────────────
+export interface ShareMetadata {
+  name: string | null;
+  description: string | null;
+  totalFiles: number;
+  totalFolders: number;
+  hasPassword: boolean;
+  isExpired: boolean;
+  isMaxViewsReached: boolean;
+  nameFieldRequired: "HIDDEN" | "OPTIONAL" | "REQUIRED";
+  emailFieldRequired: "HIDDEN" | "OPTIONAL" | "REQUIRED";
+}
+
+export interface GetShareMetadata200 {
+  metadata: ShareMetadata;
 }
 
 export type CreateShareResult = AxiosResponse<CreateShare201>;
@@ -202,3 +268,6 @@ export type GetShareByAliasResult = AxiosResponse<GetShareByAlias200>;
 export type NotifyRecipientsResult = AxiosResponse<NotifyRecipients200>;
 export type AddFoldersResult = AxiosResponse<AddFolders200>;
 export type RemoveFoldersResult = AxiosResponse<RemoveFolders200>;
+export type GetShareVisitsResult = AxiosResponse<GetShareVisits200>;
+export type IdentifyVisitorResult = AxiosResponse<IdentifyVisitor200>;
+export type GetShareMetadataResult = AxiosResponse<GetShareMetadata200>;

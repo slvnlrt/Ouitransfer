@@ -93,11 +93,15 @@ export const listFiles = (
 export const getDownloadUrl = (
   objectName: string,
   password?: string,
+  shareId?: string,
   options?: AxiosRequestConfig,
 ): Promise<GetDownloadUrlResult> => {
-  const body: { objectName: string; password?: string } = { objectName };
+  const body: { objectName: string; password?: string; shareId?: string } = { objectName };
   if (password) {
     body.password = password;
+  }
+  if (shareId) {
+    body.shareId = shareId;
   }
   return apiInstance.post(`/api/files/download-url`, body, options);
 };

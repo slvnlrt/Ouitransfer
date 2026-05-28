@@ -49,6 +49,14 @@ export const queryKeys = {
     detail: (id: string) => [...queryKeys.shares.all, "detail", id] as const,
     folderContents: (shareId: string, folderId: string) =>
       [...queryKeys.shares.all, "folderContents", shareId, folderId] as const,
+    visits: (shareId: string, params?: object) =>
+      [...queryKeys.shares.all, "visits", shareId, params] as const,
+    metadata: (alias: string) => [...queryKeys.shares.all, "metadata", alias] as const,
+  },
+
+  notifications: {
+    all: ["notifications"] as const,
+    preferences: () => [...queryKeys.notifications.all, "preferences"] as const,
   },
 
   reverseShares: {
@@ -98,6 +106,7 @@ export const queryKeys = {
       all: () => [...queryKeys.admin.all, "audit"] as const,
       logs: (params: object) => [...queryKeys.admin.all, "audit", "logs", params] as const,
     },
+    emailStats: () => [...queryKeys.admin.all, "emailStats"] as const,
   },
 
   ldap: {

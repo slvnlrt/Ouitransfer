@@ -19,6 +19,7 @@ export * from "./folders";
 export * from "./groups";
 export * from "./invite";
 export * from "./ldap";
+export * from "./notifications";
 export * from "./reverse-shares";
 export * from "./shares";
 export * from "./users";
