@@ -3,7 +3,7 @@ import type { FastifyInstance } from "fastify";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
-  makeEmailServiceClass,
+  makeEmailServiceMock,
   makeTestUser,
   makeTrustedDeviceServiceClass,
   mockFindUserByEmailOrUsername,
@@ -49,7 +49,7 @@ vi.mock("../modules/auth/login-attempts.service.js", () => ({
 }));
 
 vi.mock("../modules/email/service.js", () => ({
-  EmailService: makeEmailServiceClass(),
+  emailService: makeEmailServiceMock(),
 }));
 
 vi.mock("../modules/auth/trusted-device.service.js", () => ({

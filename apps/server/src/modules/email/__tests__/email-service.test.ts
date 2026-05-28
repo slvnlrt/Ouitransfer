@@ -86,7 +86,7 @@ vi.mock("../../../env.js", () => ({
 
 // ─── Imports (after mocks) ────────────────────────────────────────────────────
 
-import { emailService } from "../email-service.js";
+import { emailService } from "../service.js";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

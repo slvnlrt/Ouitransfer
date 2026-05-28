@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import bcrypt from "bcryptjs";
 import type { Prisma } from "../../generated/prisma/client.js";
@@ -11,9 +12,8 @@ import {
 } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
-import { EmailService } from "../email/service.js";
+import { emailService } from "../email/service.js";
 import { FolderService } from "../folder/service.js";
-import { UserService } from "../user/service.js";
 import { type CreateShareInput, ShareResponseSchema, type UpdateShareInput } from "./dto.js";
 import { type IShareRepository, PrismaShareRepository } from "./repository.js";
 
@@ -41,9 +41,6 @@ type ShareWithRelations = Prisma.ShareGetPayload<{
 
 export class ShareService {
   constructor(private readonly shareRepository: IShareRepository = new PrismaShareRepository()) {}
-
-  private emailService = new EmailService();
-  private userService = new UserService();
   private folderService = new FolderService();
 
   private async formatShareResponse(share: ShareWithRelations | null) {
@@ -254,14 +251,28 @@ export class ShareService {
       });
     }
 
-    if (recipients) {
-      await this.shareRepository.removeRecipients(
-        shareId,
-        share.recipients.map((r) => r.email),
-      );
-      if (recipients.length > 0) {
-        await this.shareRepository.addRecipients(shareId, recipients);
-      }
+    if (recipients !== undefined) {
+      await prisma.$transaction(async (tx) => {
+        const existing = await tx.shareRecipient.findMany({ where: { shareId } });
+        const existingByEmail = new Map(existing.map((r) => [r.email, r]));
+        const newEmailSet = new Set(recipients);
+
+        // Remove recipients no longer in the list
+        const toRemove = existing.filter((r) => !newEmailSet.has(r.email));
+        if (toRemove.length > 0) {
+          await tx.shareRecipient.deleteMany({
+            where: { shareId, id: { in: toRemove.map((r) => r.id) } },
+          });
+        }
+
+        // Add new recipients with tracking tokens
+        const toAdd = recipients.filter((email) => !existingByEmail.has(email));
+        for (const email of toAdd) {
+          const trackingToken = crypto.randomBytes(24).toString("base64url");
+          await tx.shareRecipient.create({ data: { shareId, email, trackingToken } });
+        }
+        // Existing recipients are untouched — tokens, notifiedAt, stats preserved
+      });
     }
 
     await this.shareRepository.updateShare(shareId, {
@@ -492,7 +503,12 @@ export class ShareService {
     return this.getShare(shareAlias.shareId, password, undefined, context);
   }
 
-  async notifyRecipients(shareId: string, userId: string, shareLink: string) {
+  async notifyRecipients(
+    shareId: string,
+    userId: string,
+    shareLink: string,
+    selectedEmails?: string[],
+  ): Promise<{ notifiedRecipients: string[] }> {
     const share = await this.shareRepository.findShareById(shareId);
 
     if (!share) {
@@ -507,40 +523,62 @@ export class ShareService {
       throw new ValidationError("No recipients found for this share");
     }
 
-    let senderName = "Someone";
-    try {
-      const sender = await this.userService.getUserById(userId);
-      if (sender.firstName && sender.lastName) {
-        senderName = `${sender.firstName} ${sender.lastName}`;
-      } else if (sender.firstName) {
-        senderName = sender.firstName;
-      } else if (sender.username) {
-        senderName = sender.username;
-      }
-    } catch (error) {
-      getLogger().error({ err: error, userId }, "Failed to get sender information");
+    // Filter to selected emails if provided
+    let recipientsToNotify = share.recipients;
+    if (selectedEmails?.length) {
+      const emailSet = new Set(selectedEmails);
+      recipientsToNotify = share.recipients.filter((r) => emailSet.has(r.email));
     }
+
+    // Get sender info
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    const senderName = user?.firstName
+      ? `${user.firstName} ${user.lastName ?? ""}`.trim()
+      : (user?.username ?? "Someone");
 
     const notifiedRecipients: string[] = [];
 
-    for (const recipient of share.recipients) {
+    for (const recipient of recipientsToNotify) {
+      // Ensure tracking token exists (backfill for pre-existing recipients)
+      let trackingToken = recipient.trackingToken;
+      if (!trackingToken) {
+        trackingToken = crypto.randomBytes(24).toString("base64url");
+        await prisma.shareRecipient.update({
+          where: { id: recipient.id },
+          data: { trackingToken },
+        });
+      }
+
+      const personalizedLink = `${shareLink}?t=${trackingToken}`;
       try {
-        await this.emailService.sendShareNotification(
-          recipient.email,
-          shareLink,
-          share.name || undefined,
-          senderName,
-        );
+        await emailService.send("share_invitation", {
+          to: recipient.email,
+          locale: user?.locale ?? "en",
+          data: {
+            senderName,
+            shareName: share.name ?? "Shared files",
+            shareLink: personalizedLink,
+            hasPassword: !!share.security?.password,
+            expiresAt: share.expiration?.toISOString(),
+          },
+        });
+
+        // Track notification time
+        await prisma.shareRecipient.update({
+          where: { id: recipient.id },
+          data: { notifiedAt: new Date() },
+        });
+
         notifiedRecipients.push(recipient.email);
       } catch (error) {
-        getLogger().error({ err: error, email: recipient.email }, "Failed to send email");
+        getLogger().error(
+          { err: error, email: recipient.email },
+          "Failed to queue share invitation",
+        );
       }
     }
 
-    return {
-      message: `Successfully sent notifications to ${notifiedRecipients.length} recipients`,
-      notifiedRecipients,
-    };
+    return { notifiedRecipients };
   }
 
   async getShareMetadataByAlias(alias: string) {

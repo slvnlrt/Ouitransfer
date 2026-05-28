@@ -3,7 +3,7 @@ import type { FastifyInstance } from "fastify";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
-  makeEmailServiceClass,
+  makeEmailServiceMock,
   makeTrustedDeviceServiceClass,
   makeTwoFactorServiceClass,
   makeUserRepositoryClass,
@@ -48,7 +48,7 @@ vi.mock("../modules/auth/login-attempts.service.js", () => ({
 
 // Mock email service (not exercised in lockout path)
 vi.mock("../modules/email/service.js", () => ({
-  EmailService: makeEmailServiceClass(),
+  emailService: makeEmailServiceMock(),
 }));
 
 // Mock trusted device service (not exercised in lockout path)

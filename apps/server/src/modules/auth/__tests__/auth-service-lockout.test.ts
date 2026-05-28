@@ -2,7 +2,7 @@ import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
-  makeEmailServiceClass,
+  makeEmailServiceMock,
   makeTrustedDeviceServiceClass,
   makeTwoFactorServiceClass,
   makeUserRepositoryClass,
@@ -47,7 +47,7 @@ vi.mock("../../two-factor/service.js", () => ({
 }));
 
 vi.mock("../../email/service.js", () => ({
-  EmailService: makeEmailServiceClass(),
+  emailService: makeEmailServiceMock(),
 }));
 
 vi.mock("../../user/repository.js", () => ({

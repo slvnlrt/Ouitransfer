@@ -614,10 +614,13 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       }),
       body: z.object({
         shareLink: z.string().url().describe("The frontend share URL"),
+        emails: z
+          .array(z.string().email())
+          .optional()
+          .describe("Optional list of recipient emails to notify (notifies all if omitted)"),
       }),
       response: {
         200: z.object({
-          message: z.string().describe("Success message"),
           notifiedRecipients: z.array(z.string()).describe("List of notified email addresses"),
         }),
         400: ErrorResponseSchema,
@@ -636,6 +639,7 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         request.params.shareId,
         userId,
         request.body.shareLink,
+        request.body.emails,
       );
       logAuditEvent({
         action: "SHARE_RECIPIENT_NOTIFY",

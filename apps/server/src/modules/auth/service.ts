@@ -11,7 +11,7 @@ import {
 } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { getConfigValue } from "../config/service.js";
-import { EmailService } from "../email/service.js";
+import { emailService } from "../email/service.js";
 import { TwoFactorService } from "../two-factor/service.js";
 import { UserResponseSchema } from "../user/dto.js";
 import { PrismaUserRepository } from "../user/repository.js";
@@ -23,7 +23,6 @@ import { TrustedDeviceService } from "./trusted-device.service.js";
 
 export class AuthService {
   private userRepository = new PrismaUserRepository();
-  private emailService = new EmailService();
   private twoFactorService = new TwoFactorService();
   private trustedDeviceService = new TrustedDeviceService();
 
@@ -191,7 +190,15 @@ export class AuthService {
     });
 
     try {
-      await this.emailService.sendPasswordResetEmail(email, token, origin);
+      await emailService.send("password_reset", {
+        to: email,
+        locale: user.locale ?? "en",
+        userId: user.id,
+        data: {
+          resetUrl: `${origin}/auth/reset-password/${token}`,
+          expiresInMinutes: Math.round(expirationSeconds / 60),
+        },
+      });
     } catch (error) {
       getLogger().error({ err: error }, "Failed to send password reset email");
       throw new ValidationError("Failed to send password reset email");

@@ -76,12 +76,15 @@ export function makeTwoFactorServiceClass(isEnabledDefault = false) {
 }
 
 /**
- * Returns an `EmailService` mock class.
- * `sendPasswordResetEmail` is a vi.fn() — not asserted on in lockout tests.
+ * Returns a mock `emailService` singleton object.
+ * `send` is a vi.fn() — not asserted on in lockout tests.
  */
-export function makeEmailServiceClass() {
-  return class {
-    sendPasswordResetEmail = vi.fn();
+export function makeEmailServiceMock() {
+  return {
+    send: vi.fn().mockResolvedValue(undefined),
+    sendToAdmins: vi.fn().mockResolvedValue(undefined),
+    resolveFrequency: vi.fn(),
+    generateUnsubscribeUrl: vi.fn(),
   };
 }
 

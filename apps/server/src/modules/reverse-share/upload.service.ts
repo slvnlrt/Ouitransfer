@@ -9,10 +9,9 @@ import { sanitizeFilename } from "../../utils/sanitize-filename.js";
 import { isMimeTypeConsistent } from "../../utils/validate-file-content.js";
 import { validateObjectName } from "../../utils/validate-object-name.js";
 import { logAuditEvent } from "../audit/service.js";
-import { EmailService } from "../email/service.js";
+import { emailService } from "../email/service.js";
 import { FileService } from "../file/service.js";
 import { quotaService } from "../quota/service.js";
-import { UserService } from "../user/service.js";
 import type { UploadToReverseShareInput } from "./dto.js";
 import { ReverseShareRepository } from "./repository.js";
 
@@ -27,8 +26,6 @@ type ReverseShareWithCreator = Prisma.ReverseShareGetPayload<{
 export class ReverseShareUploadService {
   private reverseShareRepository = new ReverseShareRepository();
   private fileService = new FileService();
-  private emailService = new EmailService();
-  private userService = new UserService();
 
   private uploadSessions = new Map<
     string,
@@ -449,20 +446,35 @@ export class ReverseShareUploadService {
     reverseShare: Pick<ReverseShareWithCreator, "creatorId" | "name">,
     uploaderName: string,
     fileNames: string[],
+    uploaderEmail?: string,
   ) {
     try {
-      const creator = await this.userService.getUserById(reverseShare.creatorId);
+      const creator = await prisma.user.findUnique({
+        where: { id: reverseShare.creatorId },
+        select: { id: true, email: true, locale: true },
+      });
+      if (!creator) {
+        getLogger().warn(
+          { creatorId: reverseShare.creatorId },
+          "Reverse share creator not found, skipping notification",
+        );
+        return;
+      }
       const reverseShareName = reverseShare.name || "Unnamed Reverse Share";
       const fileCount = fileNames.length;
-      const fileList = fileNames.join(", ");
 
-      await this.emailService.sendReverseShareBatchFileNotification(
-        creator.email,
-        reverseShareName,
-        fileCount,
-        fileList,
-        uploaderName,
-      );
+      await emailService.send("reverse_share_uploaded", {
+        to: creator.email,
+        locale: creator.locale ?? "en",
+        userId: creator.id,
+        data: {
+          reverseShareName,
+          fileCount,
+          fileNames,
+          uploaderName: uploaderName !== "Someone" ? uploaderName : undefined,
+          uploaderEmail: uploaderEmail ?? undefined,
+        },
+      });
     } catch (error) {
       getLogger().error({ err: error }, "Failed to send reverse share batch file notification");
     }
@@ -492,7 +504,12 @@ export class ReverseShareUploadService {
 
     const session = this.uploadSessions.get(sessionKey)!;
     session.timeout = setTimeout(async () => {
-      await this.sendBatchFileUploadNotification(reverseShare, session.uploaderName, session.files);
+      await this.sendBatchFileUploadNotification(
+        reverseShare,
+        session.uploaderName,
+        session.files,
+        session.uploaderEmail,
+      );
       this.uploadSessions.delete(sessionKey);
     }, 5000);
   }

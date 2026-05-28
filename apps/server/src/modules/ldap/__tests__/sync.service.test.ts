@@ -50,10 +50,9 @@ vi.mock("../encryption.js", () => ({
 }));
 
 vi.mock("../../email/service.js", () => ({
-  // biome-ignore lint/suspicious/noExplicitAny: vi mock constructor
-  EmailService: vi.fn().mockImplementation(function (this: any) {
-    this.sendLdapWelcomeEmail = vi.fn();
-  }),
+  emailService: {
+    send: vi.fn().mockResolvedValue(undefined),
+  },
 }));
 
 vi.mock("../../config/service.js", () => ({

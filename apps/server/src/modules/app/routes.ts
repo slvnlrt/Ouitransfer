@@ -6,7 +6,7 @@ import { ValidationError } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
-import { EmailService } from "../email/service.js";
+import { smtpTransport } from "../email/transport.js";
 import { BulkUpdateConfigSchema, ConfigResponseSchema } from "./dto.js";
 import { LogoService } from "./logo.service.js";
 import { AppService } from "./service.js";
@@ -16,7 +16,6 @@ const SMALL_BODY_LIMIT = 64 * 1024; // 64 KB
 
 const appService = new AppService();
 const logoService = new LogoService();
-const emailService = new EmailService();
 
 const adminPreValidation = createAdminPreValidation({ allowSetupBypass: true });
 
@@ -255,7 +254,7 @@ export const appRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (request, reply) => {
       const smtpConfig = request.body?.smtpConfig;
-      const result = await emailService.testConnection(smtpConfig);
+      const result = await smtpTransport.testConnection(smtpConfig);
       logAuditEvent({
         userId: request.user?.userId,
         action: "SMTP_TEST",

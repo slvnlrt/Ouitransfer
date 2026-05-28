@@ -3,7 +3,7 @@ import { prisma } from "../../shared/prisma.js";
 import { ConflictError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
-import { EmailService } from "../email/service.js";
+import { emailService } from "../email/service.js";
 import { LdapConfigRepository } from "./config.repository.js";
 import { decrypt } from "./encryption.js";
 import type { LdapUserEntry } from "./ldap.client.js";
@@ -40,7 +40,6 @@ export class LdapSyncService {
   private configRepository = new LdapConfigRepository();
   private syncLogRepository = new LdapSyncLogRepository();
   private ldapClient = new LdapClient();
-  private emailService = new EmailService();
 
   // ── Public API ─────────────────────────────────────────────────────────────
 
@@ -380,9 +379,17 @@ export class LdapSyncService {
       // Send welcome email outside transaction (non-fatal)
       if (resetToken && appUrl) {
         try {
-          const resetUrl = new URL("/reset-password", appUrl);
-          resetUrl.searchParams.set("token", resetToken);
-          await this.emailService.sendLdapWelcomeEmail(newUser.email, resetUrl.toString());
+          const setPasswordUrl = new URL("/reset-password", appUrl);
+          setPasswordUrl.searchParams.set("token", resetToken);
+          await emailService.send("welcome", {
+            to: newUser.email,
+            locale: newUser.locale ?? "en",
+            userId: newUser.id,
+            data: {
+              firstName: newUser.firstName ?? newUser.username,
+              loginUrl: setPasswordUrl.toString(),
+            },
+          });
         } catch (err) {
           stats.details.push({
             type: "skip",

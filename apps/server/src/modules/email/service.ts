@@ -1,389 +1,315 @@
-import nodemailer from "nodemailer";
+import crypto from "node:crypto";
 
-import { AppError, ValidationError } from "../../utils/app-error.js";
+import { env } from "../../env.js";
+import { prisma } from "../../shared/prisma.js";
+import { getLogger } from "../../utils/logger.js";
 import { getConfigValue } from "../config/service.js";
+import {
+  type EmailPayloads,
+  type NotificationKey,
+  type NotificationTypeConfig,
+  notificationCatalog,
+  typeToI18nPrefix,
+} from "./catalog.js";
+import { emailQueueEvents } from "./events.js";
+import { createTranslationFn, t } from "./i18n/loader.js";
+import { renderLayout } from "./templates/base-layout.js";
+import { buildUnsubscribeUrl, getAppUrl } from "./url-builder.js";
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+/** HMAC sub-key derivation label for unsubscribe tokens. */
+const UNSUBSCRIBE_KEY_LABEL = "unsubscribe";
+
+/** Unsubscribe token expiry in seconds: 90 days. */
+const UNSUBSCRIBE_TOKEN_EXPIRY_SECONDS = 90 * 24 * 60 * 60;
+
+// ─── JWT helpers (standalone, no Fastify instance needed) ─────────────────────
 
 /**
- * Escape user-provided strings for safe embedding in HTML templates.
- * Prevents XSS when interpolating config values (appName, fromName, etc.).
+ * Derives a purpose-specific HMAC key from the global JWT_SECRET.
+ * This prevents cross-purpose token reuse (e.g. an auth JWT being
+ * accepted as an unsubscribe token).
  */
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+function deriveKey(label: string): Buffer {
+  return crypto.createHmac("sha256", env.JWT_SECRET).update(label).digest();
 }
 
-interface SmtpConfig {
-  smtpEnabled: string;
-  smtpHost: string;
-  smtpPort: string;
-  smtpUser: string;
-  smtpPass: string;
-  smtpSecure?: string;
-  smtpNoAuth?: string;
-  smtpTrustSelfSigned?: string;
+/** Base64url encode (no padding). */
+function base64url(input: Buffer | string): string {
+  const buf = typeof input === "string" ? Buffer.from(input) : input;
+  return buf.toString("base64url");
 }
 
-export class EmailService {
-  private async createTransporter() {
-    const smtpEnabled = await getConfigValue("smtpEnabled");
-    if (smtpEnabled !== "true") {
-      return null;
-    }
+/**
+ * Creates a compact HS256 JWT token for unsubscribe links.
+ * We avoid importing jsonwebtoken (not a project dependency) and instead
+ * use Node's native crypto — the token format is standard JWT.
+ */
+function signUnsubscribeToken(payload: { userId: string; type: string }): string {
+  const key = deriveKey(UNSUBSCRIBE_KEY_LABEL);
+  const now = Math.floor(Date.now() / 1000);
 
-    const port = Number(await getConfigValue("smtpPort"));
-    const smtpSecure = (await getConfigValue("smtpSecure")) || "auto";
-    const smtpNoAuth = await getConfigValue("smtpNoAuth");
-    const smtpTrustSelfSigned = await getConfigValue("smtpTrustSelfSigned");
+  const header = base64url(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+  const body = base64url(
+    JSON.stringify({
+      ...payload,
+      iat: now,
+      exp: now + UNSUBSCRIBE_TOKEN_EXPIRY_SECONDS,
+    }),
+  );
 
-    let secure = false;
-    let requireTLS = false;
+  const signature = base64url(
+    crypto.createHmac("sha256", key).update(`${header}.${body}`).digest(),
+  );
 
-    if (smtpSecure === "ssl") {
-      secure = true;
-    } else if (smtpSecure === "tls") {
-      requireTLS = true;
-    } else if (smtpSecure === "none") {
-      secure = false;
-      requireTLS = false;
-    } else if (smtpSecure === "auto") {
-      if (port === 465) {
-        secure = true;
-      } else if (port === 587 || port === 25) {
-        requireTLS = true;
-      }
-    }
+  return `${header}.${body}.${signature}`;
+}
 
-    const transportConfig: nodemailer.TransportOptions & {
-      host: string;
-      port: number;
-      secure: boolean;
-      requireTLS: boolean;
-      tls?: { rejectUnauthorized: boolean };
-      auth?: { user: string; pass: string };
-    } = {
-      host: await getConfigValue("smtpHost"),
-      port: port,
-      secure: secure,
-      requireTLS: requireTLS,
-    };
+// ─── EmailService ─────────────────────────────────────────────────────────────
 
-    if (smtpSecure !== "none") {
-      transportConfig.tls = {
-        rejectUnauthorized: smtpTrustSelfSigned !== "true",
-      };
-    }
+class EmailService {
+  /**
+   * Send a typed notification email.
+   *
+   * This is the single entry point for all notification emails.
+   * It validates the payload, checks preferences, renders the template,
+   * and inserts an EmailJob for the queue worker to pick up.
+   */
+  async send<T extends NotificationKey>(
+    type: T,
+    options: {
+      to: string;
+      locale: string;
+      userId?: string;
+      data: EmailPayloads[T];
+      shareId?: string;
+    },
+  ): Promise<void> {
+    const log = getLogger();
+    const entry = notificationCatalog[type];
 
-    if (smtpNoAuth !== "true") {
-      transportConfig.auth = {
-        user: await getConfigValue("smtpUser"),
-        pass: await getConfigValue("smtpPass"),
-      };
-    }
-
-    return nodemailer.createTransport(transportConfig);
-  }
-
-  async testConnection(config?: SmtpConfig) {
-    let smtpConfig: SmtpConfig;
-
-    if (config) {
-      smtpConfig = config;
-    } else {
-      smtpConfig = {
-        smtpEnabled: await getConfigValue("smtpEnabled"),
-        smtpHost: await getConfigValue("smtpHost"),
-        smtpPort: await getConfigValue("smtpPort"),
-        smtpUser: await getConfigValue("smtpUser"),
-        smtpPass: await getConfigValue("smtpPass"),
-        smtpSecure: (await getConfigValue("smtpSecure")) || "auto",
-        smtpNoAuth: await getConfigValue("smtpNoAuth"),
-        smtpTrustSelfSigned: await getConfigValue("smtpTrustSelfSigned"),
-      };
-    }
-
-    if (smtpConfig.smtpEnabled !== "true") {
-      throw new ValidationError("SMTP is not enabled");
-    }
-
-    const port = Number(smtpConfig.smtpPort);
-    const smtpSecure = smtpConfig.smtpSecure || "auto";
-    const smtpNoAuth = smtpConfig.smtpNoAuth;
-
-    let secure = false;
-    let requireTLS = false;
-
-    if (smtpSecure === "ssl") {
-      secure = true;
-    } else if (smtpSecure === "tls") {
-      requireTLS = true;
-    } else if (smtpSecure === "none") {
-      secure = false;
-      requireTLS = false;
-    } else if (smtpSecure === "auto") {
-      if (port === 465) {
-        secure = true;
-      } else if (port === 587 || port === 25) {
-        requireTLS = true;
-      }
-    }
-
-    const transportConfig: nodemailer.TransportOptions & {
-      host: string;
-      port: number;
-      secure: boolean;
-      requireTLS: boolean;
-      tls?: { rejectUnauthorized: boolean };
-      auth?: { user: string; pass: string };
-    } = {
-      host: smtpConfig.smtpHost,
-      port: port,
-      secure: secure,
-      requireTLS: requireTLS,
-    };
-
-    if (smtpSecure !== "none") {
-      transportConfig.tls = {
-        rejectUnauthorized: smtpConfig.smtpTrustSelfSigned !== "true",
-      };
-    }
-
-    if (smtpNoAuth !== "true") {
-      transportConfig.auth = {
-        user: smtpConfig.smtpUser,
-        pass: smtpConfig.smtpPass,
-      };
-    }
-
-    const transporter = nodemailer.createTransport(transportConfig);
-
+    // 1. Check SMTP is enabled
+    let smtpEnabled: string;
     try {
-      await transporter.verify();
-      return { success: true, message: "SMTP connection successful" };
+      smtpEnabled = await getConfigValue("smtpEnabled");
     } catch {
-      throw new AppError(503, "Email delivery failed", "EMAIL_DELIVERY_FAILED");
+      // Config key missing — SMTP not configured
+      log.debug({ type }, "SMTP not configured, skipping email");
+      return;
+    }
+    if (smtpEnabled !== "true") {
+      log.debug({ type }, "SMTP disabled, skipping email");
+      return;
+    }
+
+    // 1b. Check appUrl is configured (required for links in emails)
+    try {
+      await getAppUrl();
+    } catch {
+      log.warn({ type }, "appUrl not configured, skipping email");
+      return;
+    }
+
+    // 2. For non-critical types, check user preferences
+    if (!entry.isCritical && options.userId) {
+      const frequency = await this.resolveFrequency(type, options.userId, options.shareId);
+      if (frequency === "disabled") {
+        log.debug({ type, userId: options.userId }, "Notification disabled by user preference");
+        return;
+      }
+    }
+
+    // 3. Check cooldown for noisy types
+    const cooldown = (entry as NotificationTypeConfig).cooldownSeconds;
+    if (cooldown && cooldown > 0) {
+      const cutoff = new Date(Date.now() - cooldown * 1000);
+      const recent = await prisma.emailJob.findFirst({
+        where: {
+          type,
+          to: options.to,
+          relatedId: options.shareId ?? null,
+          createdAt: { gt: cutoff },
+          status: { not: "failed" },
+        },
+      });
+      if (recent) {
+        log.debug({ type, to: options.to, shareId: options.shareId }, "Cooldown active, skipping");
+        return;
+      }
+    }
+
+    // 4. Render template
+    let htmlBody: string;
+    let textBody: string;
+    try {
+      const tr = createTranslationFn(options.locale);
+      const slots = entry.render(options.data as unknown, tr);
+
+      // Add unsubscribe URL if applicable
+      if (entry.hasUnsubscribe && options.userId) {
+        slots.unsubscribeUrl = await this.generateUnsubscribeUrl(options.userId, type);
+      }
+
+      // Resolve appName for the layout
+      let appName: string;
+      try {
+        appName = await getConfigValue("appName");
+      } catch {
+        appName = "Ouitransfer";
+      }
+
+      const output = renderLayout(slots, { appName });
+      htmlBody = output.html;
+      textBody = output.text;
+    } catch (renderError) {
+      // Render failure → create FAILED job immediately (no retry)
+      log.error({ type, error: renderError }, "Email render failed, creating FAILED job");
+
+      const errorMessage =
+        renderError instanceof Error ? renderError.message : "Unknown render error";
+
+      await prisma.emailJob.create({
+        data: {
+          type,
+          to: options.to,
+          subject: type,
+          locale: options.locale,
+          status: "failed",
+          priority: entry.priority,
+          lastError: `Render failed: ${errorMessage}`,
+          relatedId: options.shareId,
+          maxAttempts: 0,
+        },
+      });
+      return;
+    }
+
+    // 5. Resolve subject from i18n (fallback to type name until Batch 6 adds keys)
+    let subject: string;
+    try {
+      let appName: string;
+      try {
+        appName = await getConfigValue("appName");
+      } catch {
+        appName = "Ouitransfer";
+      }
+
+      const prefix = typeToI18nPrefix(type);
+      subject = t(options.locale, `${prefix}.subject`, { appName });
+    } catch {
+      // i18n key not found yet — use type as fallback subject
+      subject = type;
+    }
+
+    // 6. Resolve unsubscribe header
+    let listUnsubscribe: string | undefined;
+    if (entry.hasUnsubscribe && options.userId) {
+      const unsubUrl = await this.generateUnsubscribeUrl(options.userId, type);
+      listUnsubscribe = `<${unsubUrl}>`;
+    }
+
+    // 7. Determine job status based on frequency resolution
+    let status = "pending";
+    if (!entry.isCritical && options.userId) {
+      const frequency = await this.resolveFrequency(type, options.userId, options.shareId);
+      if (frequency === "daily_digest") {
+        status = "digest_pending";
+      }
+    }
+
+    // 8. Insert EmailJob
+    await prisma.emailJob.create({
+      data: {
+        type,
+        to: options.to,
+        subject,
+        htmlBody,
+        textBody,
+        locale: options.locale,
+        status,
+        priority: entry.priority,
+        relatedId: options.shareId,
+        listUnsubscribe,
+      },
+    });
+
+    // 9. Wake the queue for priority 1 jobs
+    if (entry.priority === 1) {
+      emailQueueEvents.emit("wake");
     }
   }
 
-  async sendPasswordResetEmail(to: string, resetToken: string, origin: string) {
-    const transporter = await this.createTransporter();
-    if (!transporter) {
-      throw new ValidationError("SMTP is not enabled");
+  /**
+   * Resolves the effective notification frequency for a user + type.
+   *
+   * Cascade:
+   * 1. User has a NotificationPreference row → use its frequency
+   * 2. No row → use catalog defaultFrequency
+   * 3. Per-share override: if share.notifyOnDownload=true → upgrade to "immediate"
+   * 4. "disabled" always wins (no upgrade overrides it)
+   */
+  async resolveFrequency(
+    type: string,
+    userId: string,
+    shareId?: string,
+  ): Promise<"immediate" | "daily_digest" | "disabled"> {
+    // Step 1: Check user preference
+    const pref = await prisma.notificationPreference.findUnique({
+      where: { userId_type: { userId, type } },
+    });
+
+    const catalogEntry = notificationCatalog[type as NotificationKey];
+    const baseFrequency = pref ? pref.frequency : (catalogEntry?.defaultFrequency ?? "immediate");
+
+    // Step 2: "disabled" always wins — no override can change it
+    if (baseFrequency === "disabled") {
+      return "disabled";
     }
 
-    const fromName = escapeHtml(await getConfigValue("smtpFromName"));
-    const fromEmail = await getConfigValue("smtpFromEmail");
-    const appName = escapeHtml(await getConfigValue("appName"));
+    // Step 3: Per-share notifyOnDownload upgrade
+    if (shareId) {
+      const share = await prisma.share.findUnique({
+        where: { id: shareId },
+        select: { notifyOnDownload: true },
+      });
+      if (share?.notifyOnDownload) {
+        return "immediate";
+      }
+    }
 
-    await transporter.sendMail({
-      from: `"${fromName}" <${fromEmail}>`,
-      to,
-      subject: `${appName} - Password Reset Request`,
-      html: `
-        <h1>${appName} - Password Reset Request</h1>
-        <p>Click the link below to reset your password:</p>
-        <a href="${origin}/reset-password?token=${resetToken}">
-          Reset Password
-        </a>
-        <p>This link will expire in 1 hour.</p>
-      `,
-    });
+    return baseFrequency as "immediate" | "daily_digest";
   }
 
-  async sendLdapWelcomeEmail(to: string, setPasswordUrl: string) {
-    const transporter = await this.createTransporter();
-    if (!transporter) {
-      throw new ValidationError("SMTP is not enabled");
-    }
-
-    const fromName = escapeHtml(await getConfigValue("smtpFromName"));
-    const fromEmail = await getConfigValue("smtpFromEmail");
-    const appName = escapeHtml(await getConfigValue("appName"));
-
-    await transporter.sendMail({
-      from: `"${fromName}" <${fromEmail}>`,
-      to,
-      subject: `${appName} - Welcome! Set Your Password`,
-      html: `
-        <h1>Welcome to ${appName}</h1>
-        <p>Your account has been created via directory synchronization.</p>
-        <p>Click the link below to set your password:</p>
-        <a href="${setPasswordUrl}">
-          Set Your Password
-        </a>
-        <p>This link will expire in 7 days.</p>
-      `,
-    });
+  /**
+   * Generates a signed unsubscribe URL for the given user + notification type.
+   * The token is a compact HS256 JWT with a 90-day expiry.
+   */
+  async generateUnsubscribeUrl(userId: string, type: string): Promise<string> {
+    const token = signUnsubscribeToken({ userId, type });
+    return buildUnsubscribeUrl(token);
   }
 
-  async sendShareNotification(
-    to: string,
-    shareLink: string,
-    shareName?: string,
-    senderName?: string,
-  ) {
-    const transporter = await this.createTransporter();
-    if (!transporter) {
-      throw new ValidationError("SMTP is not enabled");
-    }
-
-    const fromName = escapeHtml(await getConfigValue("smtpFromName"));
-    const fromEmail = await getConfigValue("smtpFromEmail");
-    const appName = escapeHtml(await getConfigValue("appName"));
-
-    const shareTitle = escapeHtml(shareName || "Files");
-    const sender = escapeHtml(senderName || "Someone");
-
-    await transporter.sendMail({
-      from: `"${fromName}" <${fromEmail}>`,
-      to,
-      subject: `${appName} - ${shareTitle} shared with you`,
-      html: `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>${appName} - Shared Files</title>
-        </head>
-        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5; color: #333333;">
-          <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); overflow: hidden; margin-top: 40px; margin-bottom: 40px;">
-            <!-- Header -->
-            <div style="background-color: #22B14C; padding: 30px 20px; text-align: center;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600; letter-spacing: -0.5px;">${appName}</h1>
-              <p style="margin: 2px 0 0 0; color: #ffffff; font-size: 16px; opacity: 0.9;">Shared Files</p>
-            </div>
-            
-            <!-- Content -->
-            <div style="padding: 40px 30px;">
-              <div style="text-align: center; margin-bottom: 32px;">
-                <h2 style="margin: 0 0 12px 0; color: #1f2937; font-size: 24px; font-weight: 600;">Files Shared With You</h2>
-                <p style="margin: 0; color: #6b7280; font-size: 16px; line-height: 1.6;">
-                  <strong style="color: #374151;">${sender}</strong> has shared <strong style="color: #374151;">"${shareTitle}"</strong> with you.
-                </p>
-              </div>
-              
-              <!-- CTA Button -->
-              <div style="text-align: center; margin: 32px 0;">
-                <a href="${shareLink}" style="display: inline-block; background-color: #22B14C; color: #ffffff; text-decoration: none; padding: 12px 24px; font-weight: 600; font-size: 16px; border: 2px solid #22B14C; border-radius: 8px; transition: all 0.3s ease;">
-                  Access Shared Files
-                </a>
-              </div>
-              
-              <!-- Info Box -->
-              <div style="background-color: #f9fafb; border-left: 4px solid #22B14C; padding: 16px 20px; margin-top: 32px;">
-                <p style="margin: 0; color: #4b5563; font-size: 14px; line-height: 1.5;">
-                  <strong>Important:</strong> This share may have an expiration date or view limit. Access it as soon as possible to ensure availability.
-                </p>
-              </div>
-            </div>
-            
-            <!-- Footer -->
-            <div style="background-color: #f9fafb; padding: 24px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
-              <p style="margin: 0; color: #6b7280; font-size: 14px;">
-                This email was sent by <strong>${appName}</strong>
-              </p>
-              <p style="margin: 8px 0 0 0; color: #9ca3af; font-size: 12px;">
-                If you didn't expect this email, you can safely ignore it.
-              </p>
-              <p style="margin: 4px 0 0 0; color: #9ca3af; font-size: 10px;">
-                Powered by <a href="https://github.com/slvnlrt/ouitransfer" style="color: #9ca3af; text-decoration: none;">Ouitransfer</a>
-              </p>
-            </div>
-          </div>
-        </body>
-        </html>
-      `,
+  /**
+   * Sends a notification to all active admin users.
+   * Each admin receives a separate `send()` call so that individual
+   * preference checks and locale selection apply per-admin.
+   */
+  async sendToAdmins<T extends NotificationKey>(type: T, data: EmailPayloads[T]): Promise<void> {
+    const admins = await prisma.user.findMany({
+      where: { isAdmin: true, isActive: true },
+      select: { id: true, email: true, locale: true },
     });
-  }
 
-  async sendReverseShareBatchFileNotification(
-    recipientEmail: string,
-    reverseShareName: string,
-    fileCount: number,
-    fileList: string,
-    uploaderName: string,
-  ) {
-    const transporter = await this.createTransporter();
-    if (!transporter) {
-      throw new ValidationError("SMTP is not enabled");
+    for (const admin of admins) {
+      await this.send(type, {
+        to: admin.email,
+        locale: admin.locale ?? "en",
+        userId: admin.id,
+        data,
+      });
     }
-
-    const fromName = escapeHtml(await getConfigValue("smtpFromName"));
-    const fromEmail = await getConfigValue("smtpFromEmail");
-    const appName = escapeHtml(await getConfigValue("appName"));
-
-    const safeReverseShareName = escapeHtml(reverseShareName);
-    const safeUploaderName = escapeHtml(uploaderName);
-
-    await transporter.sendMail({
-      from: `"${fromName}" <${fromEmail}>`,
-      to: recipientEmail,
-      subject: `${appName} - ${fileCount} file${fileCount > 1 ? "s" : ""} uploaded to "${safeReverseShareName}"`,
-      html: `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>${appName} - File Upload Notification</title>
-        </head>
-        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5; color: #333333;">
-          <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); overflow: hidden; margin-top: 40px; margin-bottom: 40px;">
-            <!-- Header -->
-            <div style="background-color: #22B14C; padding: 30px 20px; text-align: center;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600; letter-spacing: -0.5px;">${appName}</h1>
-              <p style="margin: 2px 0 0 0; color: #ffffff; font-size: 16px; opacity: 0.9;">File Upload Notification</p>
-            </div>
-            
-            <!-- Content -->
-            <div style="padding: 40px 30px;">
-              <div style="text-align: center; margin-bottom: 32px;">
-                <h2 style="margin: 0 0 12px 0; color: #1f2937; font-size: 24px; font-weight: 600;">New File Uploaded</h2>
-                <p style="margin: 0; color: #6b7280; font-size: 16px; line-height: 1.6;">
-                  <strong style="color: #374151;">${safeUploaderName}</strong> has uploaded <strong style="color: #374151;">${fileCount} file${fileCount > 1 ? "s" : ""}</strong> to your reverse share <strong style="color: #374151;">"${safeReverseShareName}"</strong>.
-                </p>
-              </div>
-              
-              <!-- File List -->
-              <div style="background-color: #f9fafb; border-radius: 8px; padding: 16px; margin: 32px 0; border-left: 4px solid #22B14C;">
-                <p style="margin: 0 0 8px 0; color: #374151; font-size: 14px;"><strong>Files (${fileCount}):</strong></p>
-                <ul style="margin: 0; padding-left: 20px; color: #6b7280; font-size: 14px; line-height: 1.5;">
-                   ${fileList
-                     .split(", ")
-                     .map((file) => `<li style="margin: 4px 0;">${escapeHtml(file)}</li>`)
-                     .join("")}
-                 </ul>
-              </div>
-              
-              <!-- Info Text -->
-              <div style="text-align: center; margin-top: 32px;">
-                <p style="margin: 0; color: #9ca3af; font-size: 12px;">
-                  You can now access and manage these files through your dashboard.
-                </p>
-              </div>
-              
-            </div>
-            
-            <!-- Footer -->
-            <div style="background-color: #f9fafb; padding: 24px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
-              <p style="margin: 0; color: #6b7280; font-size: 14px;">
-                This email was sent by <strong>${appName}</strong>
-              </p>
-              <p style="margin: 8px 0 0 0; color: #9ca3af; font-size: 12px;">
-                If you didn't expect this email, you can safely ignore it.
-              </p>
-              <p style="margin: 4px 0 0 0; color: #9ca3af; font-size: 10px;">
-                Powered by <a href="https://github.com/slvnlrt/ouitransfer" style="color: #9ca3af; text-decoration: none;">Ouitransfer</a>
-              </p>
-            </div>
-          </div>
-        </body>
-        </html>
-      `,
-    });
   }
 }
+
+export const emailService = new EmailService();
