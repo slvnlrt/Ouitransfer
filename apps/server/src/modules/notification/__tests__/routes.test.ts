@@ -30,10 +30,20 @@ const mockPrisma = {
     findUnique: vi.fn().mockResolvedValue(null),
     upsert: vi.fn().mockResolvedValue({}),
   },
+  emailJob: {
+    count: vi.fn().mockResolvedValue(0),
+    create: vi.fn().mockResolvedValue({ id: "test-job-id" }),
+  },
 };
 
 vi.mock("../../../shared/prisma.js", () => ({
   prisma: mockPrisma,
+}));
+
+vi.mock("../../email/service.js", () => ({
+  emailService: {
+    send: vi.fn().mockResolvedValue(undefined),
+  },
 }));
 
 // ─── Mock config service ───────────────────────────────────────────────────────
@@ -55,6 +65,10 @@ vi.mock("../../../modules/auth/token-version.js", () => ({
   invalidateTokenVersionCache: vi.fn(),
   incrementTokenVersion: vi.fn(),
 }));
+
+// ─── Static imports of mocked modules (must come AFTER vi.mock hoisting) ─────
+
+import { emailService } from "../../email/service.js";
 
 // ─── Token helpers ────────────────────────────────────────────────────────────
 
@@ -128,12 +142,19 @@ describe("Notification routes — integration", () => {
     vi.mocked(mockPrisma.user.count).mockResolvedValue(1);
     vi.mocked(mockPrisma.notificationPreference.findMany).mockResolvedValue([]);
     vi.mocked(mockPrisma.notificationPreference.upsert).mockResolvedValue({} as never);
+    vi.mocked(mockPrisma.emailJob.count).mockResolvedValue(0);
+    vi.mocked(mockPrisma.emailJob.create).mockResolvedValue({ id: "test-job-id" } as never);
   });
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
   function signUserToken(userId = "user-1"): string {
     const jwt = app.jwt.sign({ userId, isAdmin: false, tokenVersion: 0 });
+    return app.signCookie(jwt);
+  }
+
+  function signAdminToken(userId = "admin-user"): string {
+    const jwt = app.jwt.sign({ userId, isAdmin: true, tokenVersion: 0 });
     return app.signCookie(jwt);
   }
 
@@ -534,6 +555,110 @@ describe("Notification routes — integration", () => {
       // Should succeed, not return 403
       expect(res.statusCode).toBe(200);
       expect(res.payload).toContain("Successfully unsubscribed");
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Admin email endpoints
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  describe("admin email endpoints", () => {
+    // ── GET /admin/email/stats ─────────────────────────────────────────────
+
+    it("GET /admin/email/stats returns counters", async () => {
+      vi.mocked(mockPrisma.emailJob.count)
+        .mockResolvedValueOnce(5) // pending
+        .mockResolvedValueOnce(42) // sentLast24h
+        .mockResolvedValueOnce(3); // failed
+
+      const token = signAdminToken();
+
+      const res = await app.inject({
+        method: "GET",
+        url: "/admin/email/stats",
+        headers: { cookie: `token=${token}` },
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = res.json();
+      expect(body).toEqual({ pending: 5, sentLast24h: 42, failed: 3 });
+    });
+
+    it("GET /admin/email/stats rejected for non-admin", async () => {
+      const token = signUserToken();
+
+      const res = await app.inject({
+        method: "GET",
+        url: "/admin/email/stats",
+        headers: { cookie: `token=${token}` },
+      });
+
+      expect(res.statusCode).toBe(403);
+    });
+
+    // ── POST /admin/email/test ─────────────────────────────────────────────
+
+    it("POST /admin/email/test creates EmailJob via emailService.send", async () => {
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const token = signAdminToken();
+
+      const res = await app.inject({
+        method: "POST",
+        url: "/admin/email/test",
+        headers: {
+          "content-type": "application/json",
+          cookie: `token=${token}; _csrf=${csrfCookie}`,
+          "x-csrf-token": csrfToken,
+        },
+        payload: JSON.stringify({ to: "admin@example.com" }),
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = res.json();
+      expect(body).toEqual({ success: true, message: "Test email queued" });
+
+      expect(vi.mocked(emailService.send)).toHaveBeenCalledOnce();
+      expect(vi.mocked(emailService.send)).toHaveBeenCalledWith("test_email", {
+        to: "admin@example.com",
+        locale: "en",
+        data: {},
+      });
+    });
+
+    it("POST /admin/email/test rejected for non-admin", async () => {
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const token = signUserToken();
+
+      const res = await app.inject({
+        method: "POST",
+        url: "/admin/email/test",
+        headers: {
+          "content-type": "application/json",
+          cookie: `token=${token}; _csrf=${csrfCookie}`,
+          "x-csrf-token": csrfToken,
+        },
+        payload: JSON.stringify({ to: "user@example.com" }),
+      });
+
+      expect(res.statusCode).toBe(403);
+    });
+
+    it("POST /admin/email/test with invalid email → 400", async () => {
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const token = signAdminToken();
+
+      const res = await app.inject({
+        method: "POST",
+        url: "/admin/email/test",
+        headers: {
+          "content-type": "application/json",
+          cookie: `token=${token}; _csrf=${csrfCookie}`,
+          "x-csrf-token": csrfToken,
+        },
+        payload: JSON.stringify({ to: "not-a-valid-email" }),
+      });
+
+      expect(res.statusCode).toBe(400);
     });
   });
 });

@@ -1,8 +1,11 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 
+import { createAdminPreValidation } from "../../middleware/admin-prevalidation.js";
 import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
+import { prisma } from "../../shared/prisma.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
+import { emailService } from "../email/service.js";
 import {
   getUserPreferences,
   unsubscribeUser,
@@ -11,6 +14,7 @@ import {
 } from "./service.js";
 
 const jwtPreValidation = createJwtPreValidation();
+const adminPreValidation = createAdminPreValidation({ allowSetupBypass: false });
 
 // ─── HTML page helpers ────────────────────────────────────────────────────────
 
@@ -223,6 +227,73 @@ export const notificationRoutes: FastifyPluginAsyncZod = async (app) => {
       } catch {
         return reply.header("Content-Type", "text/html; charset=utf-8").send(renderErrorPage());
       }
+    },
+  });
+
+  // ── GET /admin/email/stats ─────────────────────────────────────────────────
+  // Admin-only — returns email queue counters.
+
+  app.route({
+    method: "GET",
+    url: "/admin/email/stats",
+    preValidation: adminPreValidation,
+    schema: {
+      tags: ["Admin"],
+      operationId: "getEmailStats",
+      summary: "Get email queue statistics (admin only)",
+      response: {
+        200: z.object({
+          pending: z.number(),
+          sentLast24h: z.number(),
+          failed: z.number(),
+        }),
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+      },
+    },
+    handler: async (_request, reply) => {
+      const [pending, sentLast24h, failed] = await Promise.all([
+        prisma.emailJob.count({ where: { status: "pending" } }),
+        prisma.emailJob.count({
+          where: {
+            status: "sent",
+            sentAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+          },
+        }),
+        prisma.emailJob.count({ where: { status: "failed" } }),
+      ]);
+      return reply.send({ pending, sentLast24h, failed });
+    },
+  });
+
+  // ── POST /admin/email/test ─────────────────────────────────────────────────
+  // Admin-only — sends a test email via the email service.
+
+  app.route({
+    method: "POST",
+    url: "/admin/email/test",
+    preValidation: adminPreValidation,
+    schema: {
+      tags: ["Admin"],
+      operationId: "sendTestEmail",
+      summary: "Send a test email (admin only)",
+      body: z.object({
+        to: z.string().email(),
+      }),
+      response: {
+        200: z.object({
+          success: z.literal(true),
+          message: z.string(),
+        }),
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const { to } = request.body;
+      await emailService.send("test_email", { to, locale: "en", data: {} });
+      return reply.send({ success: true, message: "Test email queued" });
     },
   });
 };
