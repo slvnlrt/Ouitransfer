@@ -9,6 +9,7 @@ import { queryKeys } from "@/lib/query-keys";
 import type { SettingsFormProps, ValidGroup } from "../types";
 import { AuthProvidersSettings } from "./auth-provider-form/auth-providers-settings";
 import { BackgroundImageManager } from "./background-image-manager";
+import { EmailAdminSection } from "./email-admin-section";
 import { SettingsGroup } from "./settings-group";
 
 const GROUP_ORDER: string[] = ["general", "email", "auth-providers", "security", "storage"];
@@ -74,16 +75,23 @@ export function SettingsForm({
           return null;
         }
 
+        const isEmailGroup = group === "email";
+        const smtpEnabled = isEmailGroup
+          ? configs.some((c) => c.key === "smtpEnabled" && c.value === "true")
+          : false;
+
         return (
-          <SettingsGroup
-            key={group}
-            configs={configs}
-            form={form}
-            group={group}
-            isCollapsed={collapsedGroups[group]}
-            onSubmit={(data) => onGroupSubmit(group as ValidGroup, data)}
-            onToggleCollapse={() => onToggleCollapse(group as ValidGroup)}
-          />
+          <div key={group}>
+            <SettingsGroup
+              configs={configs}
+              form={form}
+              group={group}
+              isCollapsed={collapsedGroups[group]}
+              onSubmit={(data) => onGroupSubmit(group as ValidGroup, data)}
+              onToggleCollapse={() => onToggleCollapse(group as ValidGroup)}
+            />
+            {isEmailGroup && smtpEnabled && <EmailAdminSection />}
+          </div>
         );
       })}
       <BackgroundImageManager />

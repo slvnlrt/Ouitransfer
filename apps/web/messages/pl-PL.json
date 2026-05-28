@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Przejdź do treści"
   },
@@ -202,7 +202,16 @@
     },
     "itemsSelected": "Wybrano {count} elementów",
     "passwordPlaceholder": "Wprowadź hasło",
-    "selectItemsPrompt": "Wybierz pliki i foldery do udostępnienia"
+    "selectItemsPrompt": "Wybierz pliki i foldery do udostępnienia",
+    "privacySection": "Privacy & Notifications",
+    "nameFieldRequired": "Require visitor name",
+    "emailFieldRequired": "Require visitor email",
+    "notifyOnDownload": "Notify me on each download",
+    "inactivityAlertDays": "Alert if no downloads after (days)",
+    "inactivityAlertPlaceholder": "Leave empty to disable",
+    "fieldHidden": "Hidden",
+    "fieldOptional": "Optional",
+    "fieldRequired": "Required"
   },
   "customization": {
     "breadcrumb": "Personalizacja",
@@ -880,7 +889,8 @@
     "ldap": "LDAP",
     "activityLog": "Dziennik aktywności",
     "logout": "Wyloguj się",
-    "customization": "Dostosowanie"
+    "customization": "Dostosowanie",
+    "notifications": "Notifications"
   },
   "navigation": {
     "dashboard": "Panel główny"
@@ -1008,7 +1018,9 @@
     "addRecipient": "Dodaj odbiorcę",
     "invalidEmail": "Proszę wprowadzić prawidłowy adres e-mail",
     "duplicateEmail": "Ten odbiorca został już dodany",
-    "noRecipientsDescription": "Dodaj odbiorców, aby udostępnić tę zawartość pocztą e-mail"
+    "noRecipientsDescription": "Dodaj odbiorców, aby udostępnić tę zawartość pocztą e-mail",
+    "notified": "Notified",
+    "views": "{count} views"
   },
   "register": {
     "validation": {
@@ -1705,6 +1717,17 @@
     "redirectUri": {
       "placeholder": "https://mysite.com",
       "previewLabel": "Kompletny adres URL, który zostanie zapisany:"
+    },
+    "emailAdmin": {
+      "queueStatus": "Email Queue Status",
+      "pending": "Pending",
+      "sentLast24h": "Sent (24h)",
+      "failed": "Failed",
+      "sendTest": "Send Test Email",
+      "testPlaceholder": "recipient@example.com",
+      "testSending": "Sending...",
+      "testSuccess": "Test email queued successfully",
+      "testError": "Failed to send test email"
     }
   },
   "share": {
@@ -1738,6 +1761,15 @@
     "metadata": {
       "defaultDescription": "Bezpiecznie udostępniaj pliki",
       "filesShared": "{count, plural, =1 {1 plik udostępniony} other {# plików udostępnionych}}"
+    },
+    "identification": {
+      "title": "Visitor Identification",
+      "subtitle": "Please provide your information to access this share",
+      "nameLabel": "Name",
+      "emailLabel": "Email",
+      "submit": "Continue",
+      "error": "Failed to submit identification. Please try again.",
+      "optional": "optional"
     }
   },
   "shareActions": {
@@ -1798,7 +1830,16 @@
     "loadError": "Nie udało się załadować szczegółów udostępnienia",
     "clickToEnlargeQrCode": "Kliknij, aby powiększyć kod QR",
     "downloadQrCode": "Pobierz kod QR",
-    "qrCode": "Kod QR"
+    "qrCode": "Kod QR",
+    "activity": {
+      "title": "Activity",
+      "noActivity": "No activity recorded yet.",
+      "access": "Viewed",
+      "download": "Downloaded",
+      "anonymous": "Anonymous",
+      "loadMore": "Load more",
+      "showingCount": "Showing {shown} of {total}"
+    }
   },
   "shareExpiration": {
     "title": "Ustawienia wygaśnięcia udostępnienia",
@@ -2612,6 +2653,52 @@
       },
       "newShare": "Nowe udostępnienie",
       "downloadQr": "Pobierz kod QR"
+    }
+  },
+  "notificationPreferences": {
+    "pageTitle": "Notification Preferences",
+    "description": "Choose which email notifications you receive",
+    "type": "Notification Type",
+    "category": "Category",
+    "frequency": "Frequency",
+    "immediate": "Immediate",
+    "disabled": "Disabled",
+    "alwaysEnabled": "Always enabled",
+    "save": "Save Preferences",
+    "saveSuccess": "Notification preferences saved",
+    "saveError": "Failed to save preferences",
+    "noChanges": "No changes to save",
+    "types": {
+      "password_reset": "Password reset",
+      "welcome": "Welcome email",
+      "account_deactivated": "Account deactivated",
+      "account_reactivated": "Account reactivated",
+      "share_invitation": "Share invitation",
+      "share_accessed": "Share accessed",
+      "share_downloaded": "File downloaded from share",
+      "share_expiring": "Share expiring soon",
+      "share_expired": "Share expired",
+      "share_max_views_reached": "Share max views reached",
+      "share_no_activity": "No activity on share",
+      "reverse_share_invitation": "Reverse share invitation",
+      "reverse_share_uploaded": "Files uploaded to reverse share",
+      "reverse_share_expiring": "Reverse share expiring",
+      "reverse_share_expired": "Reverse share expired",
+      "quota_warning": "Quota warning",
+      "quota_exceeded": "Quota exceeded",
+      "files_auto_deleted": "Files auto-deleted",
+      "share_auto_deleted": "Share auto-deleted",
+      "admin_user_registered": "New user registered (admin)",
+      "admin_quota_alert": "User quota alert (admin)",
+      "test_email": "Test email"
+    },
+    "categories": {
+      "account": "Account",
+      "shares": "Shares",
+      "reverseShares": "Reverse Shares",
+      "quota": "Quotas",
+      "admin": "Administration",
+      "test": "Test"
     }
   }
 }

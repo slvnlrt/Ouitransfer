@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "跳过到内容"
   },
@@ -202,7 +202,16 @@
     },
     "itemsSelected": "已选择 {count} 项",
     "passwordPlaceholder": "输入密码",
-    "selectItemsPrompt": "选择要分享的文件和文件夹"
+    "selectItemsPrompt": "选择要分享的文件和文件夹",
+    "privacySection": "Privacy & Notifications",
+    "nameFieldRequired": "Require visitor name",
+    "emailFieldRequired": "Require visitor email",
+    "notifyOnDownload": "Notify me on each download",
+    "inactivityAlertDays": "Alert if no downloads after (days)",
+    "inactivityAlertPlaceholder": "Leave empty to disable",
+    "fieldHidden": "Hidden",
+    "fieldOptional": "Optional",
+    "fieldRequired": "Required"
   },
   "customization": {
     "breadcrumb": "自定义",
@@ -880,7 +889,8 @@
     "ldap": "LDAP",
     "activityLog": "活动日志",
     "logout": "退出登录",
-    "customization": "自定义"
+    "customization": "自定义",
+    "notifications": "Notifications"
   },
   "navigation": {
     "dashboard": "仪表盘"
@@ -1008,7 +1018,9 @@
     "removeSelected": "移除选中项",
     "selectedCount": "已选择{count}个",
     "addRecipient": "添加收件人",
-    "bulkNotifyError": "通知选中收件人失败"
+    "bulkNotifyError": "通知选中收件人失败",
+    "notified": "Notified",
+    "views": "{count} views"
   },
   "register": {
     "validation": {
@@ -1705,6 +1717,17 @@
     "redirectUri": {
       "placeholder": "https://mysite.com",
       "previewLabel": "将保存的完整 URL："
+    },
+    "emailAdmin": {
+      "queueStatus": "Email Queue Status",
+      "pending": "Pending",
+      "sentLast24h": "Sent (24h)",
+      "failed": "Failed",
+      "sendTest": "Send Test Email",
+      "testPlaceholder": "recipient@example.com",
+      "testSending": "Sending...",
+      "testSuccess": "Test email queued successfully",
+      "testError": "Failed to send test email"
     }
   },
   "share": {
@@ -1738,6 +1761,15 @@
     "metadata": {
       "defaultDescription": "安全共享文件",
       "filesShared": "{count, plural, =1 {已共享 1 个文件} other {已共享 # 个文件}}"
+    },
+    "identification": {
+      "title": "Visitor Identification",
+      "subtitle": "Please provide your information to access this share",
+      "nameLabel": "Name",
+      "emailLabel": "Email",
+      "submit": "Continue",
+      "error": "Failed to submit identification. Please try again.",
+      "optional": "optional"
     }
   },
   "shareActions": {
@@ -1798,7 +1830,16 @@
     "editExpiration": "编辑过期",
     "clickToEnlargeQrCode": "点击放大QR Code",
     "downloadQrCode": "下载QR Code",
-    "qrCode": "QR Code"
+    "qrCode": "QR Code",
+    "activity": {
+      "title": "Activity",
+      "noActivity": "No activity recorded yet.",
+      "access": "Viewed",
+      "download": "Downloaded",
+      "anonymous": "Anonymous",
+      "loadMore": "Load more",
+      "showingCount": "Showing {shown} of {total}"
+    }
   },
   "shareExpiration": {
     "neverExpires": "永不过期",
@@ -2612,6 +2653,52 @@
       },
       "newShare": "新共享",
       "downloadQr": "下载二维码"
+    }
+  },
+  "notificationPreferences": {
+    "pageTitle": "Notification Preferences",
+    "description": "Choose which email notifications you receive",
+    "type": "Notification Type",
+    "category": "Category",
+    "frequency": "Frequency",
+    "immediate": "Immediate",
+    "disabled": "Disabled",
+    "alwaysEnabled": "Always enabled",
+    "save": "Save Preferences",
+    "saveSuccess": "Notification preferences saved",
+    "saveError": "Failed to save preferences",
+    "noChanges": "No changes to save",
+    "types": {
+      "password_reset": "Password reset",
+      "welcome": "Welcome email",
+      "account_deactivated": "Account deactivated",
+      "account_reactivated": "Account reactivated",
+      "share_invitation": "Share invitation",
+      "share_accessed": "Share accessed",
+      "share_downloaded": "File downloaded from share",
+      "share_expiring": "Share expiring soon",
+      "share_expired": "Share expired",
+      "share_max_views_reached": "Share max views reached",
+      "share_no_activity": "No activity on share",
+      "reverse_share_invitation": "Reverse share invitation",
+      "reverse_share_uploaded": "Files uploaded to reverse share",
+      "reverse_share_expiring": "Reverse share expiring",
+      "reverse_share_expired": "Reverse share expired",
+      "quota_warning": "Quota warning",
+      "quota_exceeded": "Quota exceeded",
+      "files_auto_deleted": "Files auto-deleted",
+      "share_auto_deleted": "Share auto-deleted",
+      "admin_user_registered": "New user registered (admin)",
+      "admin_quota_alert": "User quota alert (admin)",
+      "test_email": "Test email"
+    },
+    "categories": {
+      "account": "Account",
+      "shares": "Shares",
+      "reverseShares": "Reverse Shares",
+      "quota": "Quotas",
+      "admin": "Administration",
+      "test": "Test"
     }
   }
 }

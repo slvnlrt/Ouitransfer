@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Перейти до вмісту"
   },
@@ -206,7 +206,16 @@
       "selectFiles": "Вибрати файли"
     },
     "nextSelectFiles": "Далі: Вибрати файли",
-    "searchLabel": "Пошук"
+    "searchLabel": "Пошук",
+    "privacySection": "Privacy & Notifications",
+    "nameFieldRequired": "Require visitor name",
+    "emailFieldRequired": "Require visitor email",
+    "notifyOnDownload": "Notify me on each download",
+    "inactivityAlertDays": "Alert if no downloads after (days)",
+    "inactivityAlertPlaceholder": "Leave empty to disable",
+    "fieldHidden": "Hidden",
+    "fieldOptional": "Optional",
+    "fieldRequired": "Required"
   },
   "customization": {
     "breadcrumb": "Налаштування",
@@ -884,7 +893,8 @@
     "groupsManagement": "Групи",
     "ldap": "LDAP",
     "activityLog": "Журнал активності",
-    "logout": "Вийти"
+    "logout": "Вийти",
+    "notifications": "Notifications"
   },
   "navigation": {
     "dashboard": "Панель управління"
@@ -1012,7 +1022,9 @@
     "addRecipient": "Додати отримувача",
     "invalidEmail": "Будь ласка, введіть дійсну адресу електронної пошти",
     "duplicateEmail": "Цього отримувача вже додано",
-    "noRecipientsDescription": "Додайте отримувачів, щоб поділитися цим контентом через електронну пошту"
+    "noRecipientsDescription": "Додайте отримувачів, щоб поділитися цим контентом через електронну пошту",
+    "notified": "Notified",
+    "views": "{count} views"
   },
   "register": {
     "validation": {
@@ -1709,6 +1721,17 @@
     "redirectUri": {
       "placeholder": "https://mysite.com",
       "previewLabel": "Повний URL, який буде збережено:"
+    },
+    "emailAdmin": {
+      "queueStatus": "Email Queue Status",
+      "pending": "Pending",
+      "sentLast24h": "Sent (24h)",
+      "failed": "Failed",
+      "sendTest": "Send Test Email",
+      "testPlaceholder": "recipient@example.com",
+      "testSending": "Sending...",
+      "testSuccess": "Test email queued successfully",
+      "testError": "Failed to send test email"
     }
   },
   "share": {
@@ -1742,6 +1765,15 @@
     "metadata": {
       "defaultDescription": "Безпечно ділитися файлами",
       "filesShared": "{count, plural, =1 {1 файл спільно використовується} few {# файли спільно використовуються} many {# файлів спільно використовується} other {# файлів спільно використовується}}"
+    },
+    "identification": {
+      "title": "Visitor Identification",
+      "subtitle": "Please provide your information to access this share",
+      "nameLabel": "Name",
+      "emailLabel": "Email",
+      "submit": "Continue",
+      "error": "Failed to submit identification. Please try again.",
+      "optional": "optional"
     }
   },
   "shareActions": {
@@ -1802,7 +1834,16 @@
     "qrCode": "QR код",
     "downloadQrCode": "Завантажити QR код",
     "clickToEnlargeQrCode": "Клікніть, щоб збільшити QR код",
-    "loadError": "Не вдалося завантажити деталі спільного використання"
+    "loadError": "Не вдалося завантажити деталі спільного використання",
+    "activity": {
+      "title": "Activity",
+      "noActivity": "No activity recorded yet.",
+      "access": "Viewed",
+      "download": "Downloaded",
+      "anonymous": "Anonymous",
+      "loadMore": "Load more",
+      "showingCount": "Showing {shown} of {total}"
+    }
   },
   "shareExpiration": {
     "title": "Налаштування закінчення спільного доступу",
@@ -2612,6 +2653,52 @@
       },
       "newShare": "Новий спільний доступ",
       "downloadQr": "Завантажити QR код"
+    }
+  },
+  "notificationPreferences": {
+    "pageTitle": "Notification Preferences",
+    "description": "Choose which email notifications you receive",
+    "type": "Notification Type",
+    "category": "Category",
+    "frequency": "Frequency",
+    "immediate": "Immediate",
+    "disabled": "Disabled",
+    "alwaysEnabled": "Always enabled",
+    "save": "Save Preferences",
+    "saveSuccess": "Notification preferences saved",
+    "saveError": "Failed to save preferences",
+    "noChanges": "No changes to save",
+    "types": {
+      "password_reset": "Password reset",
+      "welcome": "Welcome email",
+      "account_deactivated": "Account deactivated",
+      "account_reactivated": "Account reactivated",
+      "share_invitation": "Share invitation",
+      "share_accessed": "Share accessed",
+      "share_downloaded": "File downloaded from share",
+      "share_expiring": "Share expiring soon",
+      "share_expired": "Share expired",
+      "share_max_views_reached": "Share max views reached",
+      "share_no_activity": "No activity on share",
+      "reverse_share_invitation": "Reverse share invitation",
+      "reverse_share_uploaded": "Files uploaded to reverse share",
+      "reverse_share_expiring": "Reverse share expiring",
+      "reverse_share_expired": "Reverse share expired",
+      "quota_warning": "Quota warning",
+      "quota_exceeded": "Quota exceeded",
+      "files_auto_deleted": "Files auto-deleted",
+      "share_auto_deleted": "Share auto-deleted",
+      "admin_user_registered": "New user registered (admin)",
+      "admin_quota_alert": "User quota alert (admin)",
+      "test_email": "Test email"
+    },
+    "categories": {
+      "account": "Account",
+      "shares": "Shares",
+      "reverseShares": "Reverse Shares",
+      "quota": "Quotas",
+      "admin": "Administration",
+      "test": "Test"
     }
   }
 }

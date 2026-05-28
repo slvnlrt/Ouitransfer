@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Hoppa till innehåll"
   },
@@ -206,7 +206,16 @@
       "selectFiles": "Välj Filer"
     },
     "nextSelectFiles": "Nästa: Välj Filer",
-    "searchLabel": "Söka"
+    "searchLabel": "Söka",
+    "privacySection": "Privacy & Notifications",
+    "nameFieldRequired": "Require visitor name",
+    "emailFieldRequired": "Require visitor email",
+    "notifyOnDownload": "Notify me on each download",
+    "inactivityAlertDays": "Alert if no downloads after (days)",
+    "inactivityAlertPlaceholder": "Leave empty to disable",
+    "fieldHidden": "Hidden",
+    "fieldOptional": "Optional",
+    "fieldRequired": "Required"
   },
   "customization": {
     "breadcrumb": "Anpassning",
@@ -884,7 +893,8 @@
     "groupsManagement": "Grupper",
     "ldap": "LDAP",
     "activityLog": "Aktivitetslogg",
-    "logout": "Logga ut"
+    "logout": "Logga ut",
+    "notifications": "Notifications"
   },
   "navigation": {
     "dashboard": "Instrumentbräda"
@@ -1012,7 +1022,9 @@
     "addRecipient": "Lägg till mottagare",
     "invalidEmail": "Vänligen ange en giltig e-postadress",
     "duplicateEmail": "Den här mottagaren har redan lagts till",
-    "noRecipientsDescription": "Lägg till mottagare för att dela detta innehåll via e-post"
+    "noRecipientsDescription": "Lägg till mottagare för att dela detta innehåll via e-post",
+    "notified": "Notified",
+    "views": "{count} views"
   },
   "register": {
     "validation": {
@@ -1709,6 +1721,17 @@
     "redirectUri": {
       "placeholder": "https://mysite.com",
       "previewLabel": "Komplett URL som kommer att sparas:"
+    },
+    "emailAdmin": {
+      "queueStatus": "Email Queue Status",
+      "pending": "Pending",
+      "sentLast24h": "Sent (24h)",
+      "failed": "Failed",
+      "sendTest": "Send Test Email",
+      "testPlaceholder": "recipient@example.com",
+      "testSending": "Sending...",
+      "testSuccess": "Test email queued successfully",
+      "testError": "Failed to send test email"
     }
   },
   "share": {
@@ -1742,6 +1765,15 @@
     "metadata": {
       "defaultDescription": "Dela filer säkert",
       "filesShared": "{count, plural, =1 {1 fil delad} other {# filer delade}}"
+    },
+    "identification": {
+      "title": "Visitor Identification",
+      "subtitle": "Please provide your information to access this share",
+      "nameLabel": "Name",
+      "emailLabel": "Email",
+      "submit": "Continue",
+      "error": "Failed to submit identification. Please try again.",
+      "optional": "optional"
     }
   },
   "shareActions": {
@@ -1802,7 +1834,16 @@
     "qrCode": "QR-kod",
     "downloadQrCode": "Ladda ner QR-kod",
     "clickToEnlargeQrCode": "Klicka för att förstora QR-koden",
-    "loadError": "Det gick inte att läsa in delningsinformation"
+    "loadError": "Det gick inte att läsa in delningsinformation",
+    "activity": {
+      "title": "Activity",
+      "noActivity": "No activity recorded yet.",
+      "access": "Viewed",
+      "download": "Downloaded",
+      "anonymous": "Anonymous",
+      "loadMore": "Load more",
+      "showingCount": "Showing {shown} of {total}"
+    }
   },
   "shareExpiration": {
     "title": "Dela utgångsinställningar",
@@ -2612,6 +2653,52 @@
       },
       "newShare": "Ny delning",
       "downloadQr": "Ladda ner QR-kod"
+    }
+  },
+  "notificationPreferences": {
+    "pageTitle": "Notification Preferences",
+    "description": "Choose which email notifications you receive",
+    "type": "Notification Type",
+    "category": "Category",
+    "frequency": "Frequency",
+    "immediate": "Immediate",
+    "disabled": "Disabled",
+    "alwaysEnabled": "Always enabled",
+    "save": "Save Preferences",
+    "saveSuccess": "Notification preferences saved",
+    "saveError": "Failed to save preferences",
+    "noChanges": "No changes to save",
+    "types": {
+      "password_reset": "Password reset",
+      "welcome": "Welcome email",
+      "account_deactivated": "Account deactivated",
+      "account_reactivated": "Account reactivated",
+      "share_invitation": "Share invitation",
+      "share_accessed": "Share accessed",
+      "share_downloaded": "File downloaded from share",
+      "share_expiring": "Share expiring soon",
+      "share_expired": "Share expired",
+      "share_max_views_reached": "Share max views reached",
+      "share_no_activity": "No activity on share",
+      "reverse_share_invitation": "Reverse share invitation",
+      "reverse_share_uploaded": "Files uploaded to reverse share",
+      "reverse_share_expiring": "Reverse share expiring",
+      "reverse_share_expired": "Reverse share expired",
+      "quota_warning": "Quota warning",
+      "quota_exceeded": "Quota exceeded",
+      "files_auto_deleted": "Files auto-deleted",
+      "share_auto_deleted": "Share auto-deleted",
+      "admin_user_registered": "New user registered (admin)",
+      "admin_quota_alert": "User quota alert (admin)",
+      "test_email": "Test email"
+    },
+    "categories": {
+      "account": "Account",
+      "shares": "Shares",
+      "reverseShares": "Reverse Shares",
+      "quota": "Quotas",
+      "admin": "Administration",
+      "test": "Test"
     }
   }
 }

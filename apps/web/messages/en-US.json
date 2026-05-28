@@ -1115,7 +1115,9 @@
     "addRecipient": "Add Recipient",
     "invalidEmail": "Please enter a valid email address",
     "duplicateEmail": "This recipient has already been added",
-    "noRecipientsDescription": "Add recipients to share this content via email"
+    "noRecipientsDescription": "Add recipients to share this content via email",
+    "notified": "Notified",
+    "views": "{count} views"
   },
   "register": {
     "validation": {
@@ -1855,6 +1857,17 @@
     "redirectUri": {
       "placeholder": "https://mysite.com",
       "previewLabel": "Complete URL that will be saved:"
+    },
+    "emailAdmin": {
+      "queueStatus": "Email Queue Status",
+      "pending": "Pending",
+      "sentLast24h": "Sent (24h)",
+      "failed": "Failed",
+      "sendTest": "Send Test Email",
+      "testPlaceholder": "recipient@example.com",
+      "testSending": "Sending...",
+      "testSuccess": "Test email queued successfully",
+      "testError": "Failed to send test email"
     }
   },
   "share": {

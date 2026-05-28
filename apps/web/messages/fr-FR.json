@@ -1018,7 +1018,9 @@
     "removeSelected": "Supprimer les Sélectionnés",
     "selectedCount": "{count} sélectionnés",
     "addRecipient": "Ajouter Destinataire",
-    "bulkNotifyError": "Échec de notification des destinataires sélectionnés"
+    "bulkNotifyError": "Échec de notification des destinataires sélectionnés",
+    "notified": "Notifié",
+    "views": "{count} vue(s)"
   },
   "register": {
     "validation": {
@@ -1715,6 +1717,17 @@
     "redirectUri": {
       "placeholder": "https://monsite.com",
       "previewLabel": "URL complète qui sera enregistrée :"
+    },
+    "emailAdmin": {
+      "queueStatus": "Statut de la file d'envoi",
+      "pending": "En attente",
+      "sentLast24h": "Envoyés (24h)",
+      "failed": "Échoués",
+      "sendTest": "Envoyer un email de test",
+      "testPlaceholder": "destinataire@example.com",
+      "testSending": "Envoi en cours...",
+      "testSuccess": "Email de test mis en file d'envoi",
+      "testError": "Échec de l'envoi de l'email de test"
     }
   },
   "share": {

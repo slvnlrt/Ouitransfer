@@ -12,17 +12,11 @@ import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { useSecureConfigValue } from "@/hooks/use-secure-configs";
 import { addRecipients, notifyRecipients, removeRecipients } from "@/http/endpoints";
-
-interface Recipient {
-  id: string;
-  email: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import type { ShareRecipient } from "@/http/endpoints/shares/types";
 
 interface RecipientSelectorProps {
   shareId: string;
-  selectedRecipients: Recipient[];
+  selectedRecipients: ShareRecipient[];
   shareAlias?: string;
   onSuccess: () => void;
 }
@@ -35,15 +29,13 @@ export function RecipientSelector({
 }: RecipientSelectorProps) {
   const t = useTranslations();
   const { value: smtpEnabled } = useSecureConfigValue("smtpEnabled");
-  const [recipients, setRecipients] = useState<string[]>(
-    selectedRecipients?.map((recipient) => recipient.email) || [],
-  );
+  const [recipients, setRecipients] = useState<ShareRecipient[]>(selectedRecipients ?? []);
   const [newRecipient, setNewRecipient] = useState("");
   const [selectedForAction, setSelectedForAction] = useState<Set<string>>(new Set());
   const [isAddingRecipient, setIsAddingRecipient] = useState(false);
 
   useEffect(() => {
-    setRecipients(selectedRecipients?.map((recipient) => recipient.email) || []);
+    setRecipients(selectedRecipients ?? []);
     setSelectedForAction(new Set());
   }, [selectedRecipients]);
 
@@ -60,15 +52,15 @@ export function RecipientSelector({
       return;
     }
 
-    if (recipients.includes(newRecipient)) {
+    if (recipients.some((r) => r.email === newRecipient)) {
       toast.error(t("recipientSelector.duplicateEmail"));
       return;
     }
 
     setIsAddingRecipient(true);
     try {
-      await addRecipients(shareId, { emails: [newRecipient] });
-      setRecipients([...recipients, newRecipient]);
+      const res = await addRecipients(shareId, { emails: [newRecipient] });
+      setRecipients(res.data.share.recipients);
       setNewRecipient("");
       toast.success(t("recipientSelector.addSuccess"));
       onSuccess();
@@ -81,8 +73,8 @@ export function RecipientSelector({
 
   const handleRemoveRecipient = async (email: string) => {
     try {
-      await removeRecipients(shareId, { emails: [email] });
-      setRecipients(recipients.filter((r) => r !== email));
+      const res = await removeRecipients(shareId, { emails: [email] });
+      setRecipients(res.data.share.recipients);
       setSelectedForAction((prev) => {
         const newSet = new Set(prev);
         newSet.delete(email);
@@ -98,8 +90,8 @@ export function RecipientSelector({
   const handleRemoveSelected = async () => {
     const emailsToRemove = Array.from(selectedForAction);
     try {
-      await removeRecipients(shareId, { emails: emailsToRemove });
-      setRecipients(recipients.filter((r) => !selectedForAction.has(r)));
+      const res = await removeRecipients(shareId, { emails: emailsToRemove });
+      setRecipients(res.data.share.recipients);
       setSelectedForAction(new Set());
       toast.success(t("recipientSelector.bulkRemoveSuccess", { count: emailsToRemove.length }));
       onSuccess();
@@ -116,7 +108,7 @@ export function RecipientSelector({
     const loadingToast = toast.loading(t("recipientSelector.sendingNotifications"));
 
     try {
-      await notifyRecipients(shareId, { shareLink: link });
+      await notifyRecipients(shareId, { shareLink: link, emails: emailsToNotify });
       toast.dismiss(loadingToast);
       toast.success(t("recipientSelector.bulkNotifySuccess", { count: emailsToNotify.length }));
       setSelectedForAction(new Set());
@@ -144,7 +136,7 @@ export function RecipientSelector({
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedForAction(new Set(recipients));
+      setSelectedForAction(new Set(recipients.map((r) => r.email)));
     } else {
       setSelectedForAction(new Set());
     }
@@ -293,11 +285,12 @@ export function RecipientSelector({
               </div>
 
               <div className="divide-y max-h-80 overflow-y-auto">
-                {recipients.map((email, index) => {
+                {recipients.map((recipient) => {
+                  const { email, notifiedAt, accessCount } = recipient;
                   const isSelected = selectedForAction.has(email);
                   return (
                     <div
-                      key={index}
+                      key={recipient.id}
                       className={`flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors ${
                         isSelected ? "bg-accent/50" : ""
                       }`}
@@ -314,7 +307,22 @@ export function RecipientSelector({
                         <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
                           <Mail className="h-4 w-4 text-primary" />
                         </div>
-                        <span className="truncate font-medium">{email}</span>
+                        <div className="flex flex-col min-w-0">
+                          <span className="truncate font-medium">{email}</span>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            {notifiedAt && (
+                              <span className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+                                <Check className="h-3 w-3" />
+                                {t("recipientSelector.notified")}
+                              </span>
+                            )}
+                            {accessCount > 0 && (
+                              <span className="text-xs text-muted-foreground">
+                                {t("recipientSelector.views", { count: accessCount })}
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </div>
 
                       <div className="flex items-center gap-1">
@@ -330,7 +338,10 @@ export function RecipientSelector({
                               );
 
                               try {
-                                await notifyRecipients(shareId, { shareLink: link });
+                                await notifyRecipients(shareId, {
+                                  shareLink: link,
+                                  emails: [email],
+                                });
                                 toast.dismiss(loadingToast);
                                 toast.success(
                                   t("recipientSelector.singleNotifySuccess", { email }),
