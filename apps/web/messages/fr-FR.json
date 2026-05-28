@@ -202,7 +202,16 @@
     },
     "itemsSelected": "{count, plural, =0 {Aucun élément sélectionné} =1 {1 élément sélectionné} other {# éléments sélectionnés}}",
     "passwordPlaceholder": "Entrez le mot de passe",
-    "selectItemsPrompt": "Sélectionnez les fichiers et dossiers à partager"
+    "selectItemsPrompt": "Sélectionnez les fichiers et dossiers à partager",
+    "privacySection": "Confidentialité et notifications",
+    "nameFieldRequired": "Exiger le nom du visiteur",
+    "emailFieldRequired": "Exiger l'email du visiteur",
+    "notifyOnDownload": "Me notifier à chaque téléchargement",
+    "inactivityAlertDays": "Alerter si aucun téléchargement après (jours)",
+    "inactivityAlertPlaceholder": "Laisser vide pour désactiver",
+    "fieldHidden": "Masqué",
+    "fieldOptional": "Optionnel",
+    "fieldRequired": "Requis"
   },
   "customization": {
     "breadcrumb": "Personnalisation",

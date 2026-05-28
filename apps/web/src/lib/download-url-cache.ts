@@ -54,6 +54,7 @@ class DownloadUrlCache {
   async getCachedDownloadUrl(
     objectName: string,
     options?: { headers?: { "x-share-password"?: string } },
+    shareId?: string,
   ): Promise<string> {
     const cacheKey = this.getCacheKey(objectName, options);
     const now = Date.now();
@@ -65,7 +66,7 @@ class DownloadUrlCache {
 
     // Extract password from x-share-password header and pass it as body param
     const password = options?.headers?.["x-share-password"];
-    const response = await getDownloadUrl(objectName, password);
+    const response = await getDownloadUrl(objectName, password, shareId);
     const url = response.data.url;
     const entry: CacheEntry = {
       url,

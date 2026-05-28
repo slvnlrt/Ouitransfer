@@ -206,7 +206,16 @@
       "selectFiles": "Select Files"
     },
     "nextSelectFiles": "Next: Select Files",
-    "searchLabel": "Search"
+    "searchLabel": "Search",
+    "privacySection": "Privacy & Notifications",
+    "nameFieldRequired": "Require visitor name",
+    "emailFieldRequired": "Require visitor email",
+    "notifyOnDownload": "Notify me on each download",
+    "inactivityAlertDays": "Alert if no downloads after (days)",
+    "inactivityAlertPlaceholder": "Leave empty to disable",
+    "fieldHidden": "Hidden",
+    "fieldOptional": "Optional",
+    "fieldRequired": "Required"
   },
   "customization": {
     "breadcrumb": "Customization",

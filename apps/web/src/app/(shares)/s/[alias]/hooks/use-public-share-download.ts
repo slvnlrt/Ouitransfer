@@ -51,7 +51,7 @@ export function usePublicShareDownload(
       // Get presigned URLs for all files with their relative paths
       const downloadItems = await Promise.all(
         folderFilesWithPath.map(async ({ file, path }) => {
-          const url = await getCachedDownloadUrl(file.objectName, getDownloadOptions());
+          const url = await getCachedDownloadUrl(file.objectName, getDownloadOptions(), share?.id);
           return {
             url,
             name: path ? `${path}/${file.name}` : file.name,
@@ -83,7 +83,7 @@ export function usePublicShareDownload(
 
       const loadingToast = toast.loading(t("share.messages.downloadStarted"));
 
-      const url = await getCachedDownloadUrl(objectName, getDownloadOptions());
+      const url = await getCachedDownloadUrl(objectName, getDownloadOptions(), share?.id);
 
       const link = document.createElement("a");
       link.href = url;
@@ -129,7 +129,11 @@ export function usePublicShareDownload(
         const rootFiles = bulkFiles.filter((f) => !f.folderId);
         const rootFileItems = await Promise.all(
           rootFiles.map(async (file) => {
-            const url = await getCachedDownloadUrl(file.objectName, getDownloadOptions());
+            const url = await getCachedDownloadUrl(
+              file.objectName,
+              getDownloadOptions(),
+              share?.id,
+            );
             return {
               url,
               name: file.name,
@@ -150,7 +154,11 @@ export function usePublicShareDownload(
 
           const folderFileItems = await Promise.all(
             folderFiles.map(async ({ file, path }) => {
-              const url = await getCachedDownloadUrl(file.objectName, getDownloadOptions());
+              const url = await getCachedDownloadUrl(
+                file.objectName,
+                getDownloadOptions(),
+                share?.id,
+              );
               return {
                 url,
                 name: path ? `${path}/${file.name}` : file.name,
@@ -208,7 +216,11 @@ export function usePublicShareDownload(
         // Get presigned URLs for direct files (not in folders)
         const directFileItems = await Promise.all(
           files.map(async (file) => {
-            const url = await getCachedDownloadUrl(file.objectName, getDownloadOptions());
+            const url = await getCachedDownloadUrl(
+              file.objectName,
+              getDownloadOptions(),
+              share?.id,
+            );
             return {
               url,
               name: file.name,
@@ -228,7 +240,11 @@ export function usePublicShareDownload(
 
           const folderFileItems = await Promise.all(
             folderFiles.map(async ({ file, path }) => {
-              const url = await getCachedDownloadUrl(file.objectName, getDownloadOptions());
+              const url = await getCachedDownloadUrl(
+                file.objectName,
+                getDownloadOptions(),
+                share?.id,
+              );
               return {
                 url,
                 name: path ? `${path}/${file.name}` : file.name,
