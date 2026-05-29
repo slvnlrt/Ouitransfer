@@ -43,7 +43,7 @@ const { mockEmailServiceSend, mockPrisma, mockLogger, mockGetAppUrl } = vi.hoist
 
 // ─── Mocks ─────────────────────────────────────────────────────────────────────
 
-vi.mock("../service.js", () => ({
+vi.mock("../../email/service.js", () => ({
   emailService: {
     send: mockEmailServiceSend,
   },
@@ -77,29 +77,29 @@ const mockShareRepository = {
   removeRecipients: vi.fn(),
 };
 
-vi.mock("../../../modules/share/repository.js", () => ({
+vi.mock("../repository.js", () => ({
   PrismaShareRepository: vi.fn().mockImplementation(() => mockShareRepository),
 }));
 
-vi.mock("../../../modules/user/service.js", () => ({
+vi.mock("../user/service.js", () => ({
   // biome-ignore lint/suspicious/noExplicitAny: vi mock constructor
   UserService: vi.fn().mockImplementation(function (this: any) {
     this.getUserById = vi.fn();
   }),
 }));
 
-vi.mock("../../../modules/folder/service.js", () => ({
+vi.mock("../folder/service.js", () => ({
   // biome-ignore lint/suspicious/noExplicitAny: vi mock constructor
   FolderService: vi.fn().mockImplementation(function (this: any) {
     this.calculateFolderSize = vi.fn().mockResolvedValue(BigInt(0));
   }),
 }));
 
-vi.mock("../../../modules/audit/service.js", () => ({
+vi.mock("../audit/service.js", () => ({
   logAuditEvent: vi.fn().mockResolvedValue(undefined),
 }));
 
-vi.mock("../url-builder.js", () => ({
+vi.mock("../../email/url-builder.js", () => ({
   getAppUrl: mockGetAppUrl,
 }));
 
@@ -110,9 +110,20 @@ vi.mock("bcryptjs", () => ({
   },
 }));
 
+// Mock env to avoid ZodError at module load time (share/service.ts transitively imports env.ts)
+vi.mock("../../../env.js", () => ({
+  env: {
+    JWT_SECRET: "test-secret-key-that-is-at-least-32-characters-long",
+    CSRF_SECRET: "test-csrf-secret-32-characters-long!",
+    COOKIE_SECRET: "test-cookie-secret-32-chars-long!",
+    NODE_ENV: "test",
+    SECURE_SITE: "false",
+  },
+}));
+
 // ─── Imports (after mocks) ──────────────────────────────────────────────────────
 
-import { ShareService } from "../../../modules/share/service.js";
+import { ShareService } from "../service.js";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -121,8 +132,11 @@ function makeRecipient(overrides: Record<string, unknown> = {}) {
     id: "recipient-1",
     shareId: "share-1",
     email: "alice@example.com",
+    name: null,
     trackingToken: "existing-token-abc",
     notifiedAt: null,
+    lastAccessedAt: null,
+    accessCount: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,
@@ -140,18 +154,32 @@ function makeShare(overrides: Record<string, unknown> = {}) {
     creatorId: "user-1",
     securityId: "sec-1",
     notifyOnDownload: false,
+    nameFieldRequired: "HIDDEN",
+    emailFieldRequired: "HIDDEN",
+    inactivityAlertDays: null,
+    inactivityAlertSent: false,
+    lastDownloadedAt: null,
+    notifiedForExpiring: false,
+    notifiedForExpired: false,
     createdAt: new Date(),
     updatedAt: new Date(),
     files: [],
     folders: [],
     recipients: [makeRecipient()],
-    alias: { alias: "share-1", createdAt: new Date(), updatedAt: new Date() },
+    alias: {
+      id: "alias-1",
+      alias: "share-1",
+      shareId: "share-1",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
     security: {
       id: "sec-1",
       password: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     },
+    creator: { email: "creator@example.com", locale: "en" },
     ...overrides,
   };
 }

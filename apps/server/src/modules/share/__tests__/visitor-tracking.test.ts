@@ -331,7 +331,7 @@ describe("Visitor Tracking — integration", () => {
     });
 
     it("does NOT resolve recipient for token belonging to different share", async () => {
-      const trackingToken = "wrong-share-token";
+      const trackingToken = "wrong-share-token-abc12345";
       const share = makeShare();
       mockShareAliasFindUnique.mockResolvedValue({ shareId: SHARE_ID });
       mockShareFindUnique.mockResolvedValue(share);

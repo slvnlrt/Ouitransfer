@@ -5,6 +5,7 @@ import { createAdminPreValidation } from "../../middleware/admin-prevalidation.j
 import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
 import { prisma } from "../../shared/prisma.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
+import { escapeHtml } from "../../utils/escape-html.js";
 import { emailService } from "../email/service.js";
 import {
   getUserPreferences,
@@ -15,17 +16,6 @@ import {
 
 const jwtPreValidation = createJwtPreValidation();
 const adminPreValidation = createAdminPreValidation({ allowSetupBypass: false });
-
-// ─── HTML page helpers ────────────────────────────────────────────────────────
-
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
 
 const BRAND_INDIGO = "#6366f1";
 
@@ -48,6 +38,8 @@ const HTML_STYLES = `
   .error-icon { font-size: 3rem; margin-bottom: 16px; }
 `.trim();
 
+// LIMITATION: Unsubscribe confirmation pages are English-only. Localization would require
+// resolving the user's locale from the JWT payload or DB lookup.
 function renderConfirmPage(token: string, type: string): string {
   return `<!DOCTYPE html>
 <html lang="en">

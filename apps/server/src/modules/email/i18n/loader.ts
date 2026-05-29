@@ -207,6 +207,9 @@ function resolveAndInterpolateSyncCached(
  * Uses an in-flight promise deduplication pattern: if a load for the same
  * locale is already in progress, the existing promise is returned instead
  * of starting a second concurrent file read.
+ *
+ * Fallback chain: requested locale → "en". No BCP-47 prefix matching
+ * (e.g. de-DE → de). Only exact locale files are loaded.
  */
 async function loadLocale(locale: string): Promise<Record<string, unknown> | null> {
   // Already in cache — return immediately
@@ -291,11 +294,21 @@ function interpolate(
     return template;
   }
 
-  return template.replace(/\{(\w+)\}/g, (match, key: string) => {
+  const result = template.replace(/\{(\w+)\}/g, (match, key: string) => {
     if (!(key in params)) return match;
     const value = params[key];
     return htmlEscape ? escapeHtml(value) : value;
   });
+
+  // Warn about unresolved placeholders in development
+  if (process.env.NODE_ENV !== "production") {
+    const unresolved = result.match(/\{(\w+)\}/g);
+    if (unresolved) {
+      console.warn(`[email-i18n] Unresolved placeholders in template: ${unresolved.join(", ")}`);
+    }
+  }
+
+  return result;
 }
 
 /**

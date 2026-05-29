@@ -2,6 +2,7 @@ import type { FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { env } from "../../env.js";
+import { FieldRequirement } from "../../generated/prisma/client.js";
 import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
 import { prisma } from "../../shared/prisma.js";
 import {
@@ -39,6 +40,8 @@ function parseVisitorCookie(
   try {
     const payload = JSON.parse(unsigned.value) as { alias?: string; name?: string; email?: string };
     if (payload.alias !== alias) return undefined;
+    // Treat empty-content cookies as absent — both fields blank is the same as no identification
+    if (!payload.name && !payload.email) return undefined;
     return payload as { name?: string; email?: string; alias: string };
   } catch {
     return undefined;
@@ -46,7 +49,13 @@ function parseVisitorCookie(
 }
 
 const ShareAccessQuery = z.object({
-  t: z.string().optional().describe("Tracking token"),
+  t: z
+    .string()
+    .regex(/^[A-Za-z0-9_-]+$/)
+    .min(20)
+    .max(64)
+    .optional()
+    .describe("Tracking token"),
 });
 
 const shareService = new ShareService();
@@ -718,6 +727,8 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         userId,
         request.body.emails,
       );
+      // NOTE: Recipient emails are stored in the audit log for forensics. PII retention follows
+      // auditRetentionDays (default 365). If privacy requirements change, hash or redact emails here.
       logAuditEvent({
         action: "SHARE_RECIPIENT_NOTIFY",
         ipAddress: request.ip,
@@ -741,6 +752,9 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
     method: "GET",
     url: "/shares/alias/:alias/metadata",
+    config: {
+      rateLimit: { max: 60, timeWindow: "1 minute" },
+    },
     schema: {
       tags: ["Share"],
       operationId: "getShareMetadataByAlias",
@@ -758,8 +772,8 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
           hasPassword: z.boolean(),
           isExpired: z.boolean(),
           isMaxViewsReached: z.boolean(),
-          nameFieldRequired: z.string(),
-          emailFieldRequired: z.string(),
+          nameFieldRequired: z.nativeEnum(FieldRequirement),
+          emailFieldRequired: z.nativeEnum(FieldRequirement),
         }),
         404: ErrorResponseSchema,
       },

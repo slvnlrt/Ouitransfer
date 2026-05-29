@@ -405,7 +405,7 @@ describe("Visitor Identification — integration", () => {
     });
 
     it("tracking token does NOT satisfy when name is REQUIRED but recipient has no name", async () => {
-      const trackingToken = "token-no-name";
+      const trackingToken = "token-no-name-abc12345678";
       const share = makeShare({ nameFieldRequired: "REQUIRED" });
       mockShareAliasFindUnique.mockResolvedValue({ shareId: SHARE_ID });
       mockShareFindUnique.mockResolvedValue(share);

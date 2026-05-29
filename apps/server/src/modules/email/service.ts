@@ -10,7 +10,7 @@ import {
 } from "./catalog.js";
 import { emailQueueEvents } from "./events.js";
 import { createTranslationFn, t } from "./i18n/loader.js";
-import { getMaxRetries } from "./queue.js";
+import { type EmailJobStatus, getMaxRetries } from "./queue.js";
 import { renderLayout } from "./templates/base-layout.js";
 import { signUnsubscribeToken } from "./unsubscribe-token.js";
 import { buildUnsubscribeUrl, getAppUrl } from "./url-builder.js";
@@ -192,7 +192,7 @@ class EmailService {
     }
 
     // 11. Determine job status based on frequency (already resolved above)
-    let status = "pending";
+    let status: EmailJobStatus = "pending";
     if (frequency === "daily_digest") {
       status = "digest_pending";
     }

@@ -191,7 +191,7 @@ model EmailJob {
   lastError     String?
   lockedAt      DateTime?
   sentAt        DateTime?
-  payload       String?
+  payload       String?   /// Reserved for future digest aggregation. Digest jobs will store raw payload JSON here for deferred rendering.
   relatedId     String?
   listUnsubscribe String?
   createdAt     DateTime  @default(now())

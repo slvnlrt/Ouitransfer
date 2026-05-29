@@ -5,6 +5,14 @@ import { validateAllI18nKeys } from "./catalog.js";
 import { emailQueueEvents } from "./events.js";
 import { smtpTransport } from "./transport.js";
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+/**
+ * Valid status values for EmailJob records.
+ * Note: SQLite does not support native enums — this is a TypeScript-level type guard only.
+ */
+export type EmailJobStatus = "pending" | "processing" | "sent" | "failed" | "digest_pending";
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 /** Number of jobs to process per batch. */
@@ -49,7 +57,10 @@ async function getIntervalMs(): Promise<number> {
   }
 }
 
-/** Read max retries from config. Falls back to 3. */
+/**
+ * Returns the configured max retries. Value is captured per-job at enqueue time
+ * (EmailJob.maxAttempts), so config changes only affect newly enqueued jobs.
+ */
 export async function getMaxRetries(): Promise<number> {
   try {
     const value = await getConfigValue("emailQueueMaxRetries");
@@ -178,6 +189,8 @@ async function processBatch(): Promise<void> {
       },
     });
 
+    // NOTE: Sequential processing is intentional — SQLite has a single writer, and parallel
+    // SMTP sends would increase memory/connection pressure. Acceptable at current scale.
     for (const job of jobs) {
       // 1. Lock the job — if this fails, skip and continue to next job
       try {
@@ -424,6 +437,7 @@ export async function initEmailQueueOnBoot(): Promise<void> {
     await recoverStuckJobs();
   } catch (error) {
     getLogger().error({ err: error }, "Failed to recover stuck email jobs on boot");
+    // Boot-time recovery failure is acceptable — recoverStuckJobs runs every ~5 minutes thereafter.
   }
 
   startEmailQueueScheduler();

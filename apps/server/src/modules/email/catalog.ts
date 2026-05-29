@@ -107,7 +107,7 @@ const shareAccessedSchema = z.object({
   shareName: z.string(),
   visitorName: z.string().optional(),
   visitorEmail: z.string().optional(),
-  ipAddress: z.string().optional(),
+  ipAddress: z.string().optional(), // Collected for audit trail / future template use, not rendered in current template
   accessedAt: z.string(),
 });
 
@@ -116,7 +116,7 @@ const shareDownloadedSchema = z.object({
   fileName: z.string(),
   visitorName: z.string().optional(),
   visitorEmail: z.string().optional(),
-  ipAddress: z.string().optional(),
+  ipAddress: z.string().optional(), // Collected for audit trail / future template use, not rendered in current template
   downloadedAt: z.string(),
 });
 

@@ -690,6 +690,8 @@ export class ShareService {
 
     const notifiedRecipients: string[] = [];
 
+    // Sequential per-recipient to avoid SQLite contention. Acceptable at current scale.
+    // For large recipient lists, consider Promise.allSettled with bounded concurrency.
     for (const recipient of recipientsToNotify) {
       // NOTE: These three writes (trackingToken backfill, email send, notifiedAt update) are
       // NOT wrapped in a transaction. On partial failure:

@@ -184,18 +184,22 @@ export class ReverseShareService {
       throw new ForbiddenError("Unauthorized to update this reverse share");
     }
 
-    const updatedReverseShare = await this.reverseShareRepository.update(id, data);
+    // If expiration is being extended, include notification flag reset in the same update
+    // to avoid a stale-read window between the two separate writes.
+    const shouldResetNotifications =
+      data.expiration &&
+      reverseShare.expiration &&
+      new Date(data.expiration) > reverseShare.expiration;
 
-    // If expiration is being extended, reset notification flags to allow re-notification
-    if (data.expiration && reverseShare.expiration) {
-      const newExp = new Date(data.expiration);
-      if (newExp > reverseShare.expiration) {
-        await prisma.reverseShare.update({
-          where: { id },
-          data: { notifiedForExpiring: false, notifiedForExpired: false },
-        });
-      }
-    }
+    const updateData = shouldResetNotifications
+      ? { ...data, notifiedForExpiring: false, notifiedForExpired: false }
+      : data;
+
+    const updatedReverseShare = await this.reverseShareRepository.update(
+      id,
+      // biome-ignore lint/suspicious/noExplicitAny: notification flags are valid ReverseShare fields not in the DTO input type
+      updateData as any,
+    );
 
     return ReverseShareResponseSchema.parse(this.formatReverseShareResponse(updatedReverseShare));
   }

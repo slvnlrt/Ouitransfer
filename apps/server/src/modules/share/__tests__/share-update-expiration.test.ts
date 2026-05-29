@@ -211,4 +211,28 @@ describe("updateShare — notification flag reset", () => {
     expect(updateCall.notifiedForExpiring).toBeUndefined();
     expect(updateCall.notifiedForExpired).toBeUndefined();
   });
+
+  it("still updates share when creator is null (no notification sent)", async () => {
+    const newExpiration = new Date("2024-08-01T00:00:00Z");
+    const currentExpiration = new Date("2024-07-01T00:00:00Z");
+
+    const share = makeFullShare({
+      expiration: currentExpiration,
+      creatorId: CREATOR_ID,
+      creator: null, // creator has been deleted (SetNull)
+      notifiedForExpiring: true,
+      notifiedForExpired: false,
+    });
+    mockFindShareById.mockResolvedValue(share);
+    mockUpdateShare.mockResolvedValue(share);
+
+    const { ShareService } = await import("../service.js");
+    const service = new ShareService();
+
+    // Should not throw — creator=null is handled gracefully
+    await service.updateShare(SHARE_ID, { expiration: newExpiration.toISOString() }, CREATOR_ID);
+
+    // Update should still have been called
+    expect(mockUpdateShare).toHaveBeenCalledOnce();
+  });
 });

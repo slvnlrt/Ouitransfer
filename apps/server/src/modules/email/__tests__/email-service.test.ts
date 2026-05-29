@@ -428,6 +428,26 @@ describe("EmailService", () => {
       );
     });
 
+    it("falls back to 'Ouitransfer' when appName config throws", async () => {
+      mockGetConfigValue.mockImplementation(async (key: string) => {
+        if (key === "smtpEnabled") return "true";
+        if (key === "appName") throw new Error("Config not found");
+        if (key === "emailQueueMaxRetries") return "3";
+        throw new Error(`Unknown config key: ${key}`);
+      });
+
+      await emailService.send("welcome", {
+        to: "user@test.com",
+        locale: "en",
+        data: { firstName: "John", loginUrl: "https://test.example.com" },
+      });
+
+      // Job should still be created (fallback name used, not a failure)
+      expect(mockPrisma.emailJob.create).toHaveBeenCalledOnce();
+      // createTranslationFn should have been called with the fallback appName
+      expect(mockCreateTranslationFn).toHaveBeenCalledWith("en", { appName: "Ouitransfer" });
+    });
+
     it("with cooldown: skips when recent job exists for same type/to/shareId", async () => {
       // share_accessed has cooldownSeconds: 900
       mockPrisma.emailJob.findFirst.mockResolvedValue({
