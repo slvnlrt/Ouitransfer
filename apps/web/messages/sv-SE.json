@@ -1575,6 +1575,10 @@
         "title": "Applikationsnamn",
         "description": "Applikationsnamnet visas för användarna"
       },
+      "appUrl": {
+        "title": "Application URL",
+        "description": "Public URL of the application, used in email links"
+      },
       "appDescription": {
         "title": "Applikationsbeskrivning",
         "description": "Kort beskrivning av ansökan"
@@ -1684,6 +1688,22 @@
       "passwordAuthEnabled": {
         "title": "Lösenordsautentisering",
         "description": "Aktivera eller inaktivera lösenordsbaserad autentisering"
+      },
+      "emailDigestHour": {
+        "title": "Digest Email Hour",
+        "description": "Hour of the day (0-23) when digest emails are sent"
+      },
+      "emailJobRetentionDays": {
+        "title": "Email Job Retention",
+        "description": "Number of days to keep completed email jobs before cleanup"
+      },
+      "emailQueueIntervalSeconds": {
+        "title": "Queue Processing Interval",
+        "description": "Seconds between email queue processing cycles"
+      },
+      "emailQueueMaxRetries": {
+        "title": "Max Email Retries",
+        "description": "Maximum number of retry attempts for failed emails"
       },
       "embedSecret": {
         "title": "Inbäddningsnyckel",

@@ -1575,6 +1575,10 @@
         "title": "ชื่อแอปพลิเคชัน",
         "description": "ชื่อแอปพลิเคชันที่แสดงให้ผู้ใช้"
       },
+      "appUrl": {
+        "title": "Application URL",
+        "description": "Public URL of the application, used in email links"
+      },
       "appDescription": {
         "title": "คำอธิบายแอปพลิเคชัน",
         "description": "คำอธิบายสั้นของแอปพลิเคชัน"
@@ -1684,6 +1688,22 @@
       "passwordAuthEnabled": {
         "title": "การยืนยันตัวตนด้วยรหัสผ่าน",
         "description": "เปิดหรือปิดใช้งานการยืนยันตัวตนโดยใช้รหัสผ่าน"
+      },
+      "emailDigestHour": {
+        "title": "Digest Email Hour",
+        "description": "Hour of the day (0-23) when digest emails are sent"
+      },
+      "emailJobRetentionDays": {
+        "title": "Email Job Retention",
+        "description": "Number of days to keep completed email jobs before cleanup"
+      },
+      "emailQueueIntervalSeconds": {
+        "title": "Queue Processing Interval",
+        "description": "Seconds between email queue processing cycles"
+      },
+      "emailQueueMaxRetries": {
+        "title": "Max Email Retries",
+        "description": "Maximum number of retry attempts for failed emails"
       },
       "embedSecret": {
         "title": "คีย์ฝังตัว",

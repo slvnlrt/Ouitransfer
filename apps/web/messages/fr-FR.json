@@ -1574,6 +1574,10 @@
         "title": "Nom de l'Application",
         "description": "Nom de l'application affiché aux utilisateurs"
       },
+      "appUrl": {
+        "title": "URL de l'Application",
+        "description": "URL publique de l'application, utilisée dans les liens des emails"
+      },
       "appDescription": {
         "title": "Description de l'Application",
         "description": "Brève description de l'application"
@@ -1683,6 +1687,22 @@
       "footerUrl": {
         "title": "URL du Pied de Page",
         "description": "URL du lien pour le texte du pied de page"
+      },
+      "emailDigestHour": {
+        "title": "Heure d'Envoi du Digest",
+        "description": "Heure de la journée (0-23) à laquelle les emails de synthèse sont envoyés"
+      },
+      "emailJobRetentionDays": {
+        "title": "Rétention des Tâches Email",
+        "description": "Nombre de jours de conservation des tâches email terminées avant nettoyage"
+      },
+      "emailQueueIntervalSeconds": {
+        "title": "Intervalle de Traitement de la File",
+        "description": "Secondes entre les cycles de traitement de la file d'attente des emails"
+      },
+      "emailQueueMaxRetries": {
+        "title": "Nombre Maximum de Tentatives Email",
+        "description": "Nombre maximum de tentatives de renvoi pour les emails échoués"
       },
       "embedSecret": {
         "title": "Clé d'intégration",
