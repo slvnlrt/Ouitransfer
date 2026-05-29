@@ -687,9 +687,13 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         shareId: z.string().describe("The share ID"),
       }),
       body: z.object({
-        shareLink: z.string().url().describe("The frontend share URL"),
         emails: z
-          .array(z.string().email())
+          .array(
+            z
+              .string()
+              .email()
+              .transform((s) => s.trim().toLowerCase()),
+          )
           .optional()
           .describe("Optional list of recipient emails to notify (notifies all if omitted)"),
       }),
@@ -712,7 +716,6 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       const result = await shareService.notifyRecipients(
         request.params.shareId,
         userId,
-        request.body.shareLink,
         request.body.emails,
       );
       logAuditEvent({
@@ -788,10 +791,14 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       params: z.object({
         alias: z.string().describe("The share alias"),
       }),
-      body: z.object({
-        name: z.string().max(100).optional().describe("Visitor name"),
-        email: z.string().email().max(254).optional().describe("Visitor email"),
-      }),
+      body: z
+        .object({
+          name: z.string().max(100).optional().describe("Visitor name"),
+          email: z.string().email().max(254).optional().describe("Visitor email"),
+        })
+        .refine((data) => !!(data.name?.trim() || data.email?.trim()), {
+          message: "At least one of name or email must be provided",
+        }),
       response: {
         200: z.object({
           success: z.boolean(),

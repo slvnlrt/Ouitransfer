@@ -1,6 +1,3 @@
-import crypto from "node:crypto";
-
-import { env } from "../../env.js";
 import { prisma } from "../../shared/prisma.js";
 import { getLogger } from "../../utils/logger.js";
 import { getConfigValue } from "../config/service.js";
@@ -15,59 +12,22 @@ import { emailQueueEvents } from "./events.js";
 import { createTranslationFn, t } from "./i18n/loader.js";
 import { getMaxRetries } from "./queue.js";
 import { renderLayout } from "./templates/base-layout.js";
+import { signUnsubscribeToken } from "./unsubscribe-token.js";
 import { buildUnsubscribeUrl, getAppUrl } from "./url-builder.js";
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-/** HMAC sub-key derivation label for unsubscribe tokens. */
-const UNSUBSCRIBE_KEY_LABEL = "unsubscribe";
-
-/** Unsubscribe token expiry in seconds: 90 days. */
-const UNSUBSCRIBE_TOKEN_EXPIRY_SECONDS = 90 * 24 * 60 * 60;
-
-// ─── JWT helpers (standalone, no Fastify instance needed) ─────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 /**
- * Derives a purpose-specific HMAC key from the global JWT_SECRET.
- * This prevents cross-purpose token reuse (e.g. an auth JWT being
- * accepted as an unsubscribe token).
+ * Strips CR/LF characters from all string values in a params record.
+ * Prevents SMTP header injection when interpolating user-controlled data
+ * into email subjects via i18n templates.
  */
-function deriveKey(label: string): Buffer {
-  return crypto.createHmac("sha256", env.JWT_SECRET).update(label).digest();
-}
-
-/** Base64url encode (no padding). */
-function base64url(input: Buffer | string): string {
-  const buf = typeof input === "string" ? Buffer.from(input) : input;
-  return buf.toString("base64url");
-}
-
-/**
- * Creates a compact HS256 JWT token for unsubscribe links.
- * We avoid importing jsonwebtoken (not a project dependency) and instead
- * use Node's native crypto — the token format is standard JWT.
- *
- * // Tech debt: Hand-rolled JWT. Consider migrating to jose library if validation
- * // requirements grow (e.g. key rotation, RS256, audience checks). See review finding Core M-8.
- */
-function signUnsubscribeToken(payload: { userId: string; type: string }): string {
-  const key = deriveKey(UNSUBSCRIBE_KEY_LABEL);
-  const now = Math.floor(Date.now() / 1000);
-
-  const header = base64url(JSON.stringify({ alg: "HS256", typ: "JWT" }));
-  const body = base64url(
-    JSON.stringify({
-      ...payload,
-      iat: now,
-      exp: now + UNSUBSCRIBE_TOKEN_EXPIRY_SECONDS,
-    }),
-  );
-
-  const signature = base64url(
-    crypto.createHmac("sha256", key).update(`${header}.${body}`).digest(),
-  );
-
-  return `${header}.${body}.${signature}`;
+function sanitizeForSubject(params: Record<string, string>): Record<string, string> {
+  const clean: Record<string, string> = {};
+  for (const [k, v] of Object.entries(params)) {
+    clean[k] = v.replace(/[\r\n]/g, " ");
+  }
+  return clean;
 }
 
 // ─── EmailService ─────────────────────────────────────────────────────────────
@@ -143,7 +103,6 @@ class EmailService {
           to: options.to,
           relatedId: options.shareId ?? null,
           createdAt: { gt: cutoff },
-          status: { notIn: ["failed", "processing"] },
         },
       });
       if (recent) {
@@ -208,11 +167,15 @@ class EmailService {
       return;
     }
 
-    // 8. Resolve subject from i18n with full payload params (plain text, no HTML escaping)
+    // 8. Sanitize data params: strip CR/LF to prevent SMTP header injection
+    //    via user-controlled values (senderName, shareName, etc.)
+    const sanitizedParams = sanitizeForSubject(dataParams);
+
+    // 9. Resolve subject from i18n with full payload params (plain text, no HTML escaping)
     let subject: string;
     try {
       const prefix = typeToI18nPrefix(type);
-      subject = await t(options.locale, `${prefix}.subject`, { appName, ...dataParams });
+      subject = await t(options.locale, `${prefix}.subject`, { appName, ...sanitizedParams });
     } catch {
       // i18n key not found — use type as fallback subject
       log.warn(
@@ -222,19 +185,19 @@ class EmailService {
       subject = type;
     }
 
-    // 9. Resolve unsubscribe header
+    // 10. Resolve unsubscribe header
     let listUnsubscribe: string | undefined;
     if (unsubscribeUrl) {
       listUnsubscribe = `<${unsubscribeUrl}>`;
     }
 
-    // 10. Determine job status based on frequency (already resolved above)
+    // 11. Determine job status based on frequency (already resolved above)
     let status = "pending";
     if (frequency === "daily_digest") {
       status = "digest_pending";
     }
 
-    // 11. Insert EmailJob
+    // 12. Insert EmailJob
     const maxAttempts = await getMaxRetries();
     await prisma.emailJob.create({
       data: {
@@ -252,7 +215,7 @@ class EmailService {
       },
     });
 
-    // 12. Wake the queue for priority 1 jobs
+    // 13. Wake the queue for priority 1 jobs
     if (entry.priority === 1) {
       emailQueueEvents.emit("wake");
     }

@@ -156,7 +156,7 @@ describe("SmtpTransport", () => {
 
     expect(mockSendMail).toHaveBeenCalledWith(
       expect.objectContaining({
-        from: '"Test App" <noreply@example.com>',
+        from: { name: "Test App", address: "noreply@example.com" },
         to: "dest@example.com",
       }),
     );

@@ -115,7 +115,7 @@ export class SmtpTransport {
     // Load from address from DB (needed even if transporter is cached)
     const fromName = await getConfigValue("smtpFromName");
     const fromEmail = await getConfigValue("smtpFromEmail");
-    const from = options.from ?? `"${fromName}" <${fromEmail}>`;
+    const from = options.from ?? { name: fromName, address: fromEmail };
 
     // Translate listUnsubscribeHeader → nodemailer headers (RFC 8058)
     if (options.listUnsubscribeHeader) {

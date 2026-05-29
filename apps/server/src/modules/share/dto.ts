@@ -174,7 +174,13 @@ export const UpdateShareItemsSchema = z
   );
 
 export const UpdateShareRecipientsSchema = z.object({
-  emails: z.array(z.string().email("Invalid email format").describe("The recipient emails")),
+  emails: z.array(
+    z
+      .string()
+      .email("Invalid email format")
+      .transform((s) => s.trim().toLowerCase())
+      .describe("The recipient emails"),
+  ),
 });
 
 export type CreateShareInput = z.infer<typeof CreateShareSchema>;

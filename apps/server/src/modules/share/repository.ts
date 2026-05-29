@@ -341,11 +341,12 @@ export class PrismaShareRepository implements IShareRepository {
   }
 
   async addRecipients(shareId: string, emails: string[]): Promise<void> {
+    const normalizedEmails = emails.map((e) => e.trim().toLowerCase());
     await prisma.share.update({
       where: { id: shareId },
       data: {
         recipients: {
-          create: emails.map((email) => ({
+          create: normalizedEmails.map((email) => ({
             email,
           })),
         },
@@ -354,13 +355,14 @@ export class PrismaShareRepository implements IShareRepository {
   }
 
   async removeRecipients(shareId: string, emails: string[]): Promise<void> {
+    const normalizedEmails = emails.map((e) => e.trim().toLowerCase());
     await prisma.share.update({
       where: { id: shareId },
       data: {
         recipients: {
           deleteMany: {
             email: {
-              in: emails,
+              in: normalizedEmails,
             },
           },
         },

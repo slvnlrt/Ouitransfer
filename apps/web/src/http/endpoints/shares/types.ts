@@ -198,7 +198,6 @@ export interface CreateShareAliasBody {
 }
 
 export interface NotifyRecipientsBody {
-  shareLink: string;
   emails?: string[];
 }
 

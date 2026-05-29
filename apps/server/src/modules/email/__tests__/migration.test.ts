@@ -13,8 +13,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // ─── Hoisted mock state ────────────────────────────────────────────────────────
 
-const { mockEmailServiceSend, mockPrisma, mockLogger } = vi.hoisted(() => ({
+const { mockEmailServiceSend, mockPrisma, mockLogger, mockGetAppUrl } = vi.hoisted(() => ({
   mockEmailServiceSend: vi.fn().mockResolvedValue(undefined),
+  mockGetAppUrl: vi.fn().mockResolvedValue("https://app.example.com"),
   mockPrisma: {
     user: {
       findUnique: vi.fn(),
@@ -96,6 +97,10 @@ vi.mock("../../../modules/audit/service.js", () => ({
   logAuditEvent: vi.fn().mockResolvedValue(undefined),
 }));
 
+vi.mock("../url-builder.js", () => ({
+  getAppUrl: mockGetAppUrl,
+}));
+
 vi.mock("bcryptjs", () => ({
   default: {
     hash: vi.fn().mockResolvedValue("hashed-password"),
@@ -138,7 +143,7 @@ function makeShare(overrides: Record<string, unknown> = {}) {
     files: [],
     folders: [],
     recipients: [makeRecipient()],
-    alias: null,
+    alias: { alias: "share-1", createdAt: new Date(), updatedAt: new Date() },
     security: {
       id: "sec-1",
       password: null,
@@ -180,7 +185,7 @@ describe("Email migration — ShareService.notifyRecipients()", () => {
   it("calls emailService.send() instead of direct SMTP for each recipient", async () => {
     mockShareRepository.findShareById.mockResolvedValue(makeShare());
 
-    await shareService.notifyRecipients("share-1", "user-1", "https://app.example.com/s/share-1");
+    await shareService.notifyRecipients("share-1", "user-1");
 
     expect(mockEmailServiceSend).toHaveBeenCalledOnce();
     expect(mockEmailServiceSend).toHaveBeenCalledWith(
@@ -201,7 +206,7 @@ describe("Email migration — ShareService.notifyRecipients()", () => {
     const recipient = makeRecipient({ trackingToken: "my-token-123" });
     mockShareRepository.findShareById.mockResolvedValue(makeShare({ recipients: [recipient] }));
 
-    await shareService.notifyRecipients("share-1", "user-1", "https://app.example.com/s/share-1");
+    await shareService.notifyRecipients("share-1", "user-1");
 
     expect(mockEmailServiceSend).toHaveBeenCalledWith(
       "share_invitation",
@@ -217,7 +222,7 @@ describe("Email migration — ShareService.notifyRecipients()", () => {
     const recipient = makeRecipient({ trackingToken: null });
     mockShareRepository.findShareById.mockResolvedValue(makeShare({ recipients: [recipient] }));
 
-    await shareService.notifyRecipients("share-1", "user-1", "https://app.example.com/s/share-1");
+    await shareService.notifyRecipients("share-1", "user-1");
 
     // Should update the recipient to add a tracking token
     expect(mockPrisma.shareRecipient.update).toHaveBeenCalledWith(
@@ -243,7 +248,7 @@ describe("Email migration — ShareService.notifyRecipients()", () => {
   it("sets notifiedAt on each successfully notified recipient", async () => {
     mockShareRepository.findShareById.mockResolvedValue(makeShare());
 
-    await shareService.notifyRecipients("share-1", "user-1", "https://app.example.com/s/share-1");
+    await shareService.notifyRecipients("share-1", "user-1");
 
     // The second shareRecipient.update call should set notifiedAt
     const calls = mockPrisma.shareRecipient.update.mock.calls;
@@ -260,11 +265,7 @@ describe("Email migration — ShareService.notifyRecipients()", () => {
   it("returns only notified recipient emails", async () => {
     mockShareRepository.findShareById.mockResolvedValue(makeShare());
 
-    const result = await shareService.notifyRecipients(
-      "share-1",
-      "user-1",
-      "https://app.example.com/s/share-1",
-    );
+    const result = await shareService.notifyRecipients("share-1", "user-1");
 
     expect(result.notifiedRecipients).toEqual(["alice@example.com"]);
   });
@@ -279,12 +280,10 @@ describe("Email migration — ShareService.notifyRecipients()", () => {
     });
     mockShareRepository.findShareById.mockResolvedValue(share);
 
-    const result = await shareService.notifyRecipients(
-      "share-1",
-      "user-1",
-      "https://app.example.com/s/share-1",
-      ["alice@example.com", "carol@example.com"],
-    );
+    const result = await shareService.notifyRecipients("share-1", "user-1", [
+      "alice@example.com",
+      "carol@example.com",
+    ]);
 
     // Only 2 recipients notified
     expect(mockEmailServiceSend).toHaveBeenCalledTimes(2);
@@ -294,7 +293,7 @@ describe("Email migration — ShareService.notifyRecipients()", () => {
     expect(result.notifiedRecipients).not.toContain("bob@example.com");
   });
 
-  it("with empty selectedEmails notifies all recipients", async () => {
+  it("with omitted selectedEmails notifies all recipients", async () => {
     const share = makeShare({
       recipients: [
         makeRecipient({ id: "r-1", email: "alice@example.com", trackingToken: "tok-a" }),
@@ -303,11 +302,7 @@ describe("Email migration — ShareService.notifyRecipients()", () => {
     });
     mockShareRepository.findShareById.mockResolvedValue(share);
 
-    const result = await shareService.notifyRecipients(
-      "share-1",
-      "user-1",
-      "https://app.example.com/s/share-1",
-    );
+    const result = await shareService.notifyRecipients("share-1", "user-1");
 
     expect(mockEmailServiceSend).toHaveBeenCalledTimes(2);
     expect(result.notifiedRecipients).toHaveLength(2);
@@ -317,7 +312,7 @@ describe("Email migration — ShareService.notifyRecipients()", () => {
     mockPrisma.user.findUnique.mockResolvedValue(makeUser({ firstName: null, lastName: null }));
     mockShareRepository.findShareById.mockResolvedValue(makeShare());
 
-    await shareService.notifyRecipients("share-1", "user-1", "https://app.example.com/s/share-1");
+    await shareService.notifyRecipients("share-1", "user-1");
 
     expect(mockEmailServiceSend).toHaveBeenCalledWith(
       "share_invitation",
@@ -343,11 +338,7 @@ describe("Email migration — ShareService.notifyRecipients()", () => {
       .mockRejectedValueOnce(new Error("Queue error"))
       .mockResolvedValueOnce(undefined);
 
-    const result = await shareService.notifyRecipients(
-      "share-1",
-      "user-1",
-      "https://app.example.com/s/share-1",
-    );
+    const result = await shareService.notifyRecipients("share-1", "user-1");
 
     // Only bob was successfully notified
     expect(result.notifiedRecipients).toEqual(["bob@example.com"]);

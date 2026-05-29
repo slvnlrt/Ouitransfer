@@ -30,11 +30,10 @@ export function useShareRecipients(onSuccess: () => void): ShareRecipientsHook {
   };
 
   const handleNotifyRecipients = async (share: Share) => {
-    const link = `${window.location.origin}/s/${share.alias?.alias}`;
     const loadingToast = toast.loading(t("shareManager.notifyLoading"));
 
     try {
-      await notifyRecipients(share.id, { shareLink: link });
+      await notifyRecipients(share.id, {});
       toast.dismiss(loadingToast);
       toast.success(t("shareManager.notifySuccess"));
     } catch {

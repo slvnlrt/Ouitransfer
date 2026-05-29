@@ -279,10 +279,21 @@ describe("Visitor Identification — integration", () => {
         method: "POST",
         url: `/shares/alias/nonexistent/identify`,
         headers: { "content-type": "application/json" },
-        payload: {},
+        payload: { name: "Someone" },
       });
 
       expect(res.statusCode).toBe(404);
+    });
+
+    it("returns 400 when body has neither name nor email", async () => {
+      const res = await app.inject({
+        method: "POST",
+        url: `/shares/alias/${ALIAS}/identify`,
+        headers: { "content-type": "application/json" },
+        payload: {},
+      });
+
+      expect(res.statusCode).toBe(400);
     });
 
     it("returns 200 with both required fields provided", async () => {

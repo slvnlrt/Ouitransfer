@@ -105,13 +105,10 @@ export function RecipientSelector({
    * @param emails - specific emails to notify, or undefined to notify all
    */
   const notify = async (emails: string[] | undefined) => {
-    if (!shareAlias) return;
-
-    const link = `${window.location.origin}/s/${shareAlias}`;
     const loadingToast = toast.loading(t("recipientSelector.sendingNotifications"));
 
     try {
-      await notifyRecipients(shareId, { shareLink: link, emails });
+      await notifyRecipients(shareId, { emails });
       toast.dismiss(loadingToast);
       if (emails === undefined) {
         toast.success(t("recipientSelector.notifySuccess"));

@@ -50,10 +50,7 @@ export function useShares() {
 
   const notifyMutation = useMutation({
     mutationFn: async (share: Share) => {
-      if (!share.alias?.alias) return;
-
-      const link = `${window.location.origin}/s/${share.alias.alias}`;
-      await notifyRecipients(share.id, { shareLink: link });
+      await notifyRecipients(share.id, {});
     },
     onSuccess: () => {
       toast.success(t("shares.messages.recipientsNotified"));

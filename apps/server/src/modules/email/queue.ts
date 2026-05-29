@@ -34,6 +34,7 @@ let currentTimeout: ReturnType<typeof setTimeout> | null = null;
 let tickCount = 0;
 let wakeListener: (() => void) | null = null;
 let isProcessing = false;
+let wakePending = false;
 
 // ─── Config helpers ───────────────────────────────────────────────────────────
 
@@ -56,6 +57,35 @@ export async function getMaxRetries(): Promise<number> {
     return Number.isFinite(parsed) && parsed > 0 ? parsed : 3;
   } catch {
     return 3;
+  }
+}
+
+/**
+ * Run `recoverStuckJobs()` every N ticks (~5 min at 30s intervals).
+ */
+const RECOVER_STUCK_EVERY_N_TICKS = 10;
+
+/**
+ * Updates a job's status with a single retry after 100ms on failure.
+ * Prevents transient DB errors from leaving jobs stuck in "processing".
+ */
+async function updateJobStatusWithRetry(
+  jobId: string,
+  data: Record<string, unknown>,
+): Promise<void> {
+  try {
+    await prisma.emailJob.update({ where: { id: jobId }, data });
+  } catch (firstError) {
+    getLogger().warn({ jobId, err: firstError }, "Job status update failed, retrying in 100ms");
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    try {
+      await prisma.emailJob.update({ where: { id: jobId }, data });
+    } catch (retryError) {
+      getLogger().error(
+        { jobId, err: retryError },
+        "Job status update failed after retry — job may be stuck",
+      );
+    }
   }
 }
 
@@ -149,14 +179,19 @@ async function processBatch(): Promise<void> {
     });
 
     for (const job of jobs) {
-      // 1. Lock the job
-      await prisma.emailJob.update({
-        where: { id: job.id },
-        data: {
-          status: "processing",
-          lockedAt: new Date(),
-        },
-      });
+      // 1. Lock the job — if this fails, skip and continue to next job
+      try {
+        await prisma.emailJob.update({
+          where: { id: job.id },
+          data: {
+            status: "processing",
+            lockedAt: new Date(),
+          },
+        });
+      } catch (lockError) {
+        getLogger().warn({ jobId: job.id, err: lockError }, "Failed to lock email job, skipping");
+        continue;
+      }
 
       // 2. Attempt to send
       try {
@@ -179,14 +214,11 @@ async function processBatch(): Promise<void> {
 
         await smtpTransport.sendMail(sendOptions);
 
-        // 3. Mark sent
-        await prisma.emailJob.update({
-          where: { id: job.id },
-          data: {
-            status: "sent",
-            sentAt: new Date(),
-            lockedAt: null,
-          },
+        // 3. Mark sent (with one retry on DB failure)
+        await updateJobStatusWithRetry(job.id, {
+          status: "sent",
+          sentAt: new Date(),
+          lockedAt: null,
         });
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -199,37 +231,53 @@ async function processBatch(): Promise<void> {
         );
 
         if (newAttempts >= maxAttempts) {
-          // Permanently failed — no more retries
-          await prisma.emailJob.update({
-            where: { id: job.id },
-            data: {
-              status: "failed",
-              attempts: newAttempts,
-              lastError: errorMessage,
-              lockedAt: null,
-            },
+          // Permanently failed — no more retries (with one retry on DB failure)
+          await updateJobStatusWithRetry(job.id, {
+            status: "failed",
+            attempts: newAttempts,
+            lastError: errorMessage,
+            lockedAt: null,
           });
         } else {
-          // Retry with exponential backoff
+          // Retry with exponential backoff (with one retry on DB failure)
           const backoffSeconds =
             BACKOFF_SECONDS[newAttempts - 1] ?? BACKOFF_SECONDS[BACKOFF_SECONDS.length - 1];
           const nextAttemptAt = new Date(Date.now() + backoffSeconds * 1000);
 
-          await prisma.emailJob.update({
-            where: { id: job.id },
-            data: {
-              status: "pending",
-              attempts: newAttempts,
-              lastError: errorMessage,
-              nextAttemptAt,
-              lockedAt: null,
-            },
+          await updateJobStatusWithRetry(job.id, {
+            status: "pending",
+            attempts: newAttempts,
+            lastError: errorMessage,
+            nextAttemptAt,
+            lockedAt: null,
           });
         }
       }
     }
   } finally {
     isProcessing = false;
+
+    // If a wake event fired while we were processing, schedule an immediate re-tick
+    // so priority jobs are not delayed until the next polling interval.
+    if (wakePending) {
+      wakePending = false;
+      if (currentTimeout) {
+        clearTimeout(currentTimeout);
+        currentTimeout = null;
+      }
+      const handle = setTimeout(async () => {
+        if (currentTimeout !== handle) return;
+        try {
+          await processTick();
+        } catch (error) {
+          getLogger().error({ err: error }, "Email queue deferred wake tick failed");
+        }
+        if (currentTimeout === handle) {
+          void scheduleNext();
+        }
+      }, 0);
+      currentTimeout = handle;
+    }
   }
 }
 
@@ -245,18 +293,21 @@ async function processTick(): Promise<void> {
     getLogger().error({ err: error }, "Email queue processBatch failed");
   }
 
-  // Run cleanup + stuck job recovery approximately once per hour (every CLEANUP_EVERY_N_TICKS ticks)
+  // Run stuck job recovery every ~5 min (RECOVER_STUCK_EVERY_N_TICKS ticks)
+  if (tickCount % RECOVER_STUCK_EVERY_N_TICKS === 0) {
+    try {
+      await recoverStuckJobs();
+    } catch (error) {
+      getLogger().error({ err: error }, "Email queue periodic recoverStuckJobs failed");
+    }
+  }
+
+  // Run cleanup approximately once per hour (every CLEANUP_EVERY_N_TICKS ticks)
   if (tickCount % CLEANUP_EVERY_N_TICKS === 0) {
     try {
       await cleanupSentJobs();
     } catch (error) {
       getLogger().error({ err: error }, "Email queue cleanupSentJobs failed");
-    }
-
-    try {
-      await recoverStuckJobs();
-    } catch (error) {
-      getLogger().error({ err: error }, "Email queue periodic recoverStuckJobs failed");
     }
   }
 }
@@ -295,6 +346,14 @@ async function scheduleNext(): Promise<void> {
  * the full interval.
  */
 function onWake(): void {
+  // If a batch is currently processing, defer the wake to the finally block
+  // of processBatch(). This is race-free because all flag/timer manipulation
+  // happens on the main thread between awaits.
+  if (isProcessing) {
+    wakePending = true;
+    return;
+  }
+
   if (currentTimeout) {
     clearTimeout(currentTimeout);
     currentTimeout = null;
@@ -344,6 +403,8 @@ export function stopEmailQueueScheduler(): void {
     clearTimeout(currentTimeout);
     currentTimeout = null;
   }
+
+  wakePending = false;
 
   if (wakeListener) {
     emailQueueEvents.off("wake", wakeListener);

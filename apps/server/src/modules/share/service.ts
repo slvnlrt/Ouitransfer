@@ -13,6 +13,7 @@ import {
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
 import { emailService } from "../email/service.js";
+import { getAppUrl } from "../email/url-builder.js";
 import { FolderService } from "../folder/service.js";
 import { type CreateShareInput, ShareResponseSchema, type UpdateShareInput } from "./dto.js";
 import { type IShareRepository, PrismaShareRepository } from "./repository.js";
@@ -380,10 +381,13 @@ export class ShareService {
     }
 
     if (recipients !== undefined) {
+      // Normalize emails for consistent matching
+      const normalizedRecipients = recipients.map((e) => e.trim().toLowerCase());
+
       await prisma.$transaction(async (tx) => {
         const existing = await tx.shareRecipient.findMany({ where: { shareId } });
         const existingByEmail = new Map(existing.map((r) => [r.email, r]));
-        const newEmailSet = new Set(recipients);
+        const newEmailSet = new Set(normalizedRecipients);
 
         // Remove recipients no longer in the list
         const toRemove = existing.filter((r) => !newEmailSet.has(r.email));
@@ -394,7 +398,7 @@ export class ShareService {
         }
 
         // Add new recipients with tracking tokens
-        const toAdd = recipients.filter((email) => !existingByEmail.has(email));
+        const toAdd = normalizedRecipients.filter((email) => !existingByEmail.has(email));
         for (const email of toAdd) {
           const trackingToken = crypto.randomBytes(24).toString("base64url");
           await tx.shareRecipient.create({ data: { shareId, email, trackingToken } });
@@ -638,7 +642,6 @@ export class ShareService {
   async notifyRecipients(
     shareId: string,
     userId: string,
-    shareLink: string,
     selectedEmails?: string[],
   ): Promise<{ notifiedRecipients: string[] }> {
     const share = await this.shareRepository.findShareById(shareId);
@@ -655,12 +658,27 @@ export class ShareService {
       throw new ValidationError("No recipients found for this share");
     }
 
-    // Filter to selected emails if provided
+    // FIX 10: Empty selectedEmails array is nonsensical — "notify zero specific people"
+    if (selectedEmails && selectedEmails.length === 0) {
+      throw new ValidationError("selectedEmails must not be empty when provided");
+    }
+
+    // Filter to selected emails if provided (normalize for case-insensitive matching)
     let recipientsToNotify = share.recipients;
     if (selectedEmails?.length) {
-      const emailSet = new Set(selectedEmails);
-      recipientsToNotify = share.recipients.filter((r) => emailSet.has(r.email));
+      const emailSet = new Set(selectedEmails.map((e) => e.trim().toLowerCase()));
+      recipientsToNotify = share.recipients.filter((r) => emailSet.has(r.email.toLowerCase()));
+
+      // FIX 10: If selectedEmails were provided but none matched, report an error
+      if (recipientsToNotify.length === 0) {
+        throw new ValidationError("None of the selected emails match this share's recipients");
+      }
     }
+
+    // Build share link server-side (FIX 7: prevents phishing via client-supplied URLs)
+    const appUrl = await getAppUrl();
+    const shareAlias = share.alias?.alias;
+    const baseShareLink = shareAlias ? `${appUrl}/s/${shareAlias}` : `${appUrl}/s/${share.id}`;
 
     // Get sender info
     const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -688,7 +706,7 @@ export class ShareService {
         });
       }
 
-      const linkUrl = new URL(shareLink);
+      const linkUrl = new URL(baseShareLink);
       linkUrl.searchParams.set("t", trackingToken);
       const personalizedLink = linkUrl.toString();
       try {
