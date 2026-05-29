@@ -173,7 +173,8 @@
     "search": "Ara",
     "share": "Paylaş",
     "copied": "Kopyalandı",
-    "copy": "Kopyala"
+    "copy": "Kopyala",
+    "retry": "Retry"
   },
   "createShare": {
     "title": "Paylaşım Oluştur",
@@ -1772,7 +1773,9 @@
       "optional": "optional",
       "nameRequired": "Name is required",
       "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email address"
+      "emailInvalid": "Please enter a valid email address",
+      "metadataError": "Failed to load share information. Please try again.",
+      "rateLimited": "Too many attempts. Please try again later."
     }
   },
   "shareActions": {
@@ -1841,7 +1844,8 @@
       "download": "Downloaded",
       "anonymous": "Anonymous",
       "loadMore": "Load more",
-      "showingCount": "Showing {shown} of {total}"
+      "showingCount": "Showing {shown} of {total}",
+      "loadError": "Failed to load activity data."
     }
   },
   "shareExpiration": {
@@ -1916,7 +1920,12 @@
     "totalSize": "Toplam boyut: {size}",
     "creating": "Oluşturuluyor...",
     "create": "Paylaşım Oluştur",
-    "itemsToShare": "Paylaşılacak öğeler ({count} {count, plural, =1 {öğe} other {öğe}})"
+    "itemsToShare": "Paylaşılacak öğeler ({count} {count, plural, =1 {öğe} other {öğe}})",
+    "defaultNameFiles": "{count, plural, one {# file} other {# files}}",
+    "defaultNameFolders": "{count, plural, one {# folder} other {# folders}}",
+    "defaultNameConnector": " and ",
+    "defaultNameSuffix": " shared",
+    "itemsBreakdown": "({fileCount, plural, one {# file} other {# files}}, {folderCount, plural, one {# folder} other {# folders}})"
   },
   "shareSecurity": {
     "subtitle": "Bu paylaşım için şifre koruması ve güvenlik seçeneklerini yapılandırın",

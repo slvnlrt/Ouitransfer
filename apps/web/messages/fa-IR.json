@@ -177,7 +177,8 @@
     "share": "اشتراک‌گذاری",
     "search": "جست‌وجو",
     "copy": "کپی",
-    "copied": "کپی شد"
+    "copied": "کپی شد",
+    "retry": "Retry"
   },
   "createShare": {
     "title": "ایجاد اشتراک",
@@ -1776,7 +1777,9 @@
       "optional": "optional",
       "nameRequired": "Name is required",
       "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email address"
+      "emailInvalid": "Please enter a valid email address",
+      "metadataError": "Failed to load share information. Please try again.",
+      "rateLimited": "Too many attempts. Please try again later."
     }
   },
   "shareActions": {
@@ -1845,7 +1848,8 @@
       "download": "Downloaded",
       "anonymous": "Anonymous",
       "loadMore": "Load more",
-      "showingCount": "Showing {shown} of {total}"
+      "showingCount": "Showing {shown} of {total}",
+      "loadError": "Failed to load activity data."
     }
   },
   "shareExpiration": {
@@ -1920,7 +1924,12 @@
     "totalSize": "حجم کل: {size}",
     "creating": "در حال ایجاد اشتراک...",
     "create": "ایجاد اشتراک",
-    "itemsToShare": "موارد برای اشتراک‌گذاری ({count} {count, plural, =1 {مورد} other {مورد}})"
+    "itemsToShare": "موارد برای اشتراک‌گذاری ({count} {count, plural, =1 {مورد} other {مورد}})",
+    "defaultNameFiles": "{count, plural, one {# file} other {# files}}",
+    "defaultNameFolders": "{count, plural, one {# folder} other {# folders}}",
+    "defaultNameConnector": " and ",
+    "defaultNameSuffix": " shared",
+    "itemsBreakdown": "({fileCount, plural, one {# file} other {# files}}, {folderCount, plural, one {# folder} other {# folders}})"
   },
   "shareSecurity": {
     "title": "تنظیمات امنیتی اشتراک",

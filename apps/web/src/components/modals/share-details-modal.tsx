@@ -77,7 +77,7 @@ export function ShareDetailsModal({
   });
 
   const share = shareQuery.data ?? null;
-  const isLoading = shareQuery.isLoading;
+  const _isLoading = shareQuery.isLoading;
 
   const invalidateShare = () => {
     queryClient.invalidateQueries({ queryKey: queryKeys.shares.detail(shareId!) });
@@ -189,7 +189,7 @@ export function ShareDetailsModal({
     }
   };
 
-  if (!share) return null;
+  if (!shareId) return null;
 
   const shareLink = share?.alias?.alias ? `${window.location.origin}/s/${share.alias.alias}` : null;
   const isEditingName = editingField?.field === "name";
@@ -206,7 +206,7 @@ export function ShareDetailsModal({
             <DialogDescription>{t("shareDetails.subtitle")}</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            {isLoading ? (
+            {!share ? (
               <div className="flex justify-center py-8">
                 <Loader size="lg" />
               </div>

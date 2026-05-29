@@ -25,6 +25,8 @@ export default function PublicSharePage() {
     isIdentificationModalOpen,
     isIdentificationSubmitting,
     shareMetadata,
+    metadataError,
+    refetchMetadata,
     handleIdentificationSubmit,
     handleDownload,
     handleBulkDownload,
@@ -92,6 +94,8 @@ export default function PublicSharePage() {
       <IdentificationForm
         isOpen={isIdentificationModalOpen}
         metadata={shareMetadata}
+        metadataError={metadataError}
+        refetchMetadata={refetchMetadata}
         isSubmitting={isIdentificationSubmitting}
         onSubmit={handleIdentificationSubmit}
       />

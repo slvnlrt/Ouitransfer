@@ -177,7 +177,8 @@
     "share": "Κοινή χρήση",
     "search": "Αναζήτηση",
     "copy": "Αντιγραφή",
-    "copied": "Αντιγράφηκε"
+    "copied": "Αντιγράφηκε",
+    "retry": "Retry"
   },
   "createShare": {
     "title": "Δημιουργία κοινής χρήσης",
@@ -1776,7 +1777,9 @@
       "optional": "optional",
       "nameRequired": "Name is required",
       "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email address"
+      "emailInvalid": "Please enter a valid email address",
+      "metadataError": "Failed to load share information. Please try again.",
+      "rateLimited": "Too many attempts. Please try again later."
     }
   },
   "shareActions": {
@@ -1845,7 +1848,8 @@
       "download": "Downloaded",
       "anonymous": "Anonymous",
       "loadMore": "Load more",
-      "showingCount": "Showing {shown} of {total}"
+      "showingCount": "Showing {shown} of {total}",
+      "loadError": "Failed to load activity data."
     }
   },
   "shareExpiration": {
@@ -1920,7 +1924,12 @@
     "totalSize": "Συνολικό μέγεθος: {size}",
     "creating": "Δημιουργία κοινής χρήσης...",
     "create": "Δημιουργία κοινής χρήσης",
-    "itemsToShare": "Στοιχεία για κοινή χρήση ({count} {count, plural, =1 {στοιχείο} other {στοιχεία}})"
+    "itemsToShare": "Στοιχεία για κοινή χρήση ({count} {count, plural, =1 {στοιχείο} other {στοιχεία}})",
+    "defaultNameFiles": "{count, plural, one {# file} other {# files}}",
+    "defaultNameFolders": "{count, plural, one {# folder} other {# folders}}",
+    "defaultNameConnector": " and ",
+    "defaultNameSuffix": " shared",
+    "itemsBreakdown": "({fileCount, plural, one {# file} other {# files}}, {folderCount, plural, one {# folder} other {# folders}})"
   },
   "shareSecurity": {
     "title": "Ρυθμίσεις ασφάλειας κοινής χρήσης",

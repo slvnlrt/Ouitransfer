@@ -20,6 +20,8 @@ import type { ShareMetadata } from "@/http/endpoints/shares/types";
 interface IdentificationFormProps {
   isOpen: boolean;
   metadata: ShareMetadata | null;
+  metadataError?: boolean;
+  refetchMetadata?: () => void;
   isSubmitting: boolean;
   onSubmit: (name: string | undefined, email: string | undefined) => void;
 }
@@ -29,6 +31,8 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export function IdentificationForm({
   isOpen,
   metadata,
+  metadataError,
+  refetchMetadata,
   isSubmitting,
   onSubmit,
 }: IdentificationFormProps) {
@@ -86,9 +90,20 @@ export function IdentificationForm({
           </div>
         </DialogHeader>
         {!metadata ? (
-          <div className="flex justify-center py-8">
-            <Loader size="sm" />
-          </div>
+          metadataError ? (
+            <div className="flex flex-col items-center gap-4 py-8">
+              <p className="text-sm text-destructive">{t("share.identification.metadataError")}</p>
+              {refetchMetadata && (
+                <Button variant="outline" size="sm" onClick={() => refetchMetadata()}>
+                  {t("common.retry")}
+                </Button>
+              )}
+            </div>
+          ) : (
+            <div className="flex justify-center py-8">
+              <Loader size="sm" />
+            </div>
+          )
         ) : (
           <form
             onSubmit={(e) => {

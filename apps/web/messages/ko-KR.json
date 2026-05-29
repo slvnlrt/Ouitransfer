@@ -173,7 +173,8 @@
     "search": "검색",
     "share": "공유",
     "copied": "복사됨",
-    "copy": "복사"
+    "copy": "복사",
+    "retry": "Retry"
   },
   "createShare": {
     "title": "공유 생성",
@@ -1772,7 +1773,9 @@
       "optional": "optional",
       "nameRequired": "Name is required",
       "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email address"
+      "emailInvalid": "Please enter a valid email address",
+      "metadataError": "Failed to load share information. Please try again.",
+      "rateLimited": "Too many attempts. Please try again later."
     }
   },
   "shareActions": {
@@ -1841,7 +1844,8 @@
       "download": "Downloaded",
       "anonymous": "Anonymous",
       "loadMore": "Load more",
-      "showingCount": "Showing {shown} of {total}"
+      "showingCount": "Showing {shown} of {total}",
+      "loadError": "Failed to load activity data."
     }
   },
   "shareExpiration": {
@@ -1916,7 +1920,12 @@
     "totalSize": "전체 크기: {size}",
     "creating": "생성 중...",
     "create": "공유 생성",
-    "itemsToShare": "공유할 항목 ({count}개 항목)"
+    "itemsToShare": "공유할 항목 ({count}개 항목)",
+    "defaultNameFiles": "{count, plural, one {# file} other {# files}}",
+    "defaultNameFolders": "{count, plural, one {# folder} other {# folders}}",
+    "defaultNameConnector": " and ",
+    "defaultNameSuffix": " shared",
+    "itemsBreakdown": "({fileCount, plural, one {# file} other {# files}}, {folderCount, plural, one {# folder} other {# folders}})"
   },
   "shareSecurity": {
     "subtitle": "이 공유의 비밀번호 보호 및 보안 옵션을 구성하세요",

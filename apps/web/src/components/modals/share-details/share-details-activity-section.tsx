@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Download, Eye } from "lucide-react";
+import { AlertTriangle, Download, Eye } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -19,21 +19,29 @@ const PAGE_LIMIT = 10;
 
 function truncateIp(ip: string | null): string {
   if (!ip) return "";
-  // Show only the first two octets for IPv4
+
+  // IPv6: any address containing ":"
+  if (ip.includes(":")) {
+    const groups = ip.split(":");
+    // Find empty segment (from ::) — e.g. "2001:db8::1" splits to ["2001","db8","","1"]
+    const emptyIdx = groups.indexOf("");
+
+    if (emptyIdx >= 0 && emptyIdx <= 3) {
+      // Compressed form — take available prefix groups before the empty segment (up to 3)
+      const prefix = groups.slice(0, Math.min(emptyIdx || 1, 3)).filter(Boolean);
+      return prefix.length > 0 ? `${prefix.join(":")}::…` : "::…";
+    }
+
+    // Full or partially compressed — take first 3 groups
+    return `${groups.slice(0, 3).join(":")}::…`;
+  }
+
+  // IPv4: show first two octets
   const parts = ip.split(".");
   if (parts.length === 4) {
     return `${parts[0]}.${parts[1]}.*.*`;
   }
-  // IPv6: only truncate full addresses (8 groups); return short forms (e.g. ::1) as-is
-  if (ip.includes(":")) {
-    const v6parts = ip.split(":");
-    if (v6parts.length === 8) {
-      // Full IPv6 — show first 4 groups
-      return `${v6parts.slice(0, 4).join(":")}::…`;
-    }
-    // Short form (e.g. ::1 for localhost, abbreviated addresses) — return as-is
-    return ip;
-  }
+
   return ip;
 }
 
@@ -103,7 +111,15 @@ export function ShareDetailsActivitySection({ shareId }: ShareDetailsActivitySec
         {t("shareDetails.activity.title")}
       </h3>
 
-      {visitsQuery.isLoading ? (
+      {visitsQuery.isError ? (
+        <div className="flex flex-col items-center gap-3 py-8 text-center">
+          <AlertTriangle className="h-5 w-5 text-destructive" />
+          <p className="text-sm text-destructive">{t("shareDetails.activity.loadError")}</p>
+          <Button variant="outline" size="sm" onClick={() => visitsQuery.refetch()}>
+            {t("common.retry")}
+          </Button>
+        </div>
+      ) : visitsQuery.isLoading ? (
         <div className="flex justify-center py-4">
           <Loader size="sm" />
         </div>

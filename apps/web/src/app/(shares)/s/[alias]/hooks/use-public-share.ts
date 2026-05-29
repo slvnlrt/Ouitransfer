@@ -136,7 +136,12 @@ export function usePublicShare() {
       setIsIdentificationSubmitting(false);
     },
     onError: (error: unknown) => {
-      toast.error(t("share.identification.error"));
+      const apiError = parseApiError(error);
+      if (apiError.statusCode === 429) {
+        toast.error(t("share.identification.rateLimited"));
+      } else {
+        toast.error(t("share.identification.error"));
+      }
       setIsIdentificationSubmitting(false);
       logger.error("Failed to identify visitor", {
         alias,
@@ -183,6 +188,8 @@ export function usePublicShare() {
     isIdentificationModalOpen,
     isIdentificationSubmitting,
     shareMetadata: metadataQuery.data ?? null,
+    metadataError: metadataQuery.isError,
+    refetchMetadata: metadataQuery.refetch,
     handleIdentificationSubmit,
 
     // Download functionality (from sub-hook)

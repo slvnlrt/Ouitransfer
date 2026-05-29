@@ -91,10 +91,16 @@ export function ShareMultipleItemsModal({
           defaultName = folders[0].name;
         }
       } else {
-        const items = [];
-        if (fileCount > 0) items.push(`${fileCount} files`);
-        if (folderCount > 0) items.push(`${folderCount} folders`);
-        defaultName = `${items.join(" and ")} shared`;
+        const parts = [];
+        if (fileCount > 0) {
+          parts.push(t("shareMultipleFiles.defaultNameFiles", { count: fileCount }));
+        }
+        if (folderCount > 0) {
+          parts.push(t("shareMultipleFiles.defaultNameFolders", { count: folderCount }));
+        }
+        defaultName =
+          parts.join(t("shareMultipleFiles.defaultNameConnector")) +
+          t("shareMultipleFiles.defaultNameSuffix");
       }
 
       setFormData({
@@ -113,6 +119,7 @@ export function ShareMultipleItemsModal({
       setStep("create");
       setShareId(null);
       setGeneratedLink("");
+      setIsLoading(false);
     }
   }, [isOpen, files, folders]);
 
@@ -237,6 +244,7 @@ export function ShareMultipleItemsModal({
   };
 
   const handleClose = () => {
+    setIsLoading(false);
     onClose();
     setTimeout(() => {
       setStep("create");
@@ -434,8 +442,11 @@ export function ShareMultipleItemsModal({
                   </div>
                 </ScrollArea>
                 <p className="text-xs text-muted-foreground">
-                  {t("shareMultipleFiles.totalSize", { size: formatFileSize(totalSize) })} (
-                  {filesList.length} files, {foldersList.length} folders)
+                  {t("shareMultipleFiles.totalSize", { size: formatFileSize(totalSize) })}{" "}
+                  {t("shareMultipleFiles.itemsBreakdown", {
+                    fileCount: filesList.length,
+                    folderCount: foldersList.length,
+                  })}
                 </p>
               </div>
             </div>

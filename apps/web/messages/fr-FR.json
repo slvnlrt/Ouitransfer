@@ -173,7 +173,8 @@
     "search": "Rechercher",
     "share": "Partager",
     "copied": "Copié",
-    "copy": "Copier"
+    "copy": "Copier",
+    "retry": "Retry"
   },
   "createShare": {
     "title": "Créer un Partage",
@@ -1757,7 +1758,9 @@
       "optional": "optionnel",
       "nameRequired": "Le nom est requis",
       "emailRequired": "L'e-mail est requis",
-      "emailInvalid": "Veuillez entrer une adresse e-mail valide"
+      "emailInvalid": "Veuillez entrer une adresse e-mail valide",
+      "metadataError": "Failed to load share information. Please try again.",
+      "rateLimited": "Too many attempts. Please try again later."
     },
     "details": {
       "untitled": "Partage sans titre",
@@ -1841,7 +1844,8 @@
       "download": "Téléchargé",
       "anonymous": "Anonyme",
       "loadMore": "Charger plus",
-      "showingCount": "Affichage de {shown} sur {total}"
+      "showingCount": "Affichage de {shown} sur {total}",
+      "loadError": "Failed to load activity data."
     }
   },
   "shareExpiration": {
@@ -1916,7 +1920,12 @@
     "totalSize": "Taille totale : {size}",
     "creating": "Création...",
     "create": "Créer un Partage",
-    "itemsToShare": "Éléments à partager ({count} {count, plural, =1 {élément} other {éléments}})"
+    "itemsToShare": "Éléments à partager ({count} {count, plural, =1 {élément} other {éléments}})",
+    "defaultNameFiles": "{count, plural, one {# file} other {# files}}",
+    "defaultNameFolders": "{count, plural, one {# folder} other {# folders}}",
+    "defaultNameConnector": " and ",
+    "defaultNameSuffix": " shared",
+    "itemsBreakdown": "({fileCount, plural, one {# file} other {# files}}, {folderCount, plural, one {# folder} other {# folders}})"
   },
   "shareSecurity": {
     "subtitle": "Configurer la protection par mot de passe et les options de sécurité pour ce partage",

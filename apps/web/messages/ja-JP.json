@@ -173,7 +173,8 @@
     "search": "検索",
     "share": "共有",
     "copied": "コピーしました",
-    "copy": "コピー"
+    "copy": "コピー",
+    "retry": "Retry"
   },
   "createShare": {
     "title": "共有を作成",
@@ -1772,7 +1773,9 @@
       "optional": "optional",
       "nameRequired": "Name is required",
       "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email address"
+      "emailInvalid": "Please enter a valid email address",
+      "metadataError": "Failed to load share information. Please try again.",
+      "rateLimited": "Too many attempts. Please try again later."
     }
   },
   "shareActions": {
@@ -1841,7 +1844,8 @@
       "download": "Downloaded",
       "anonymous": "Anonymous",
       "loadMore": "Load more",
-      "showingCount": "Showing {shown} of {total}"
+      "showingCount": "Showing {shown} of {total}",
+      "loadError": "Failed to load activity data."
     }
   },
   "shareExpiration": {
@@ -1916,7 +1920,12 @@
     "totalSize": "合計サイズ: {size}",
     "creating": "作成中...",
     "create": "共有を作成",
-    "itemsToShare": "共有するアイテム（{count}個のアイテム）"
+    "itemsToShare": "共有するアイテム（{count}個のアイテム）",
+    "defaultNameFiles": "{count, plural, one {# file} other {# files}}",
+    "defaultNameFolders": "{count, plural, one {# folder} other {# folders}}",
+    "defaultNameConnector": " and ",
+    "defaultNameSuffix": " shared",
+    "itemsBreakdown": "({fileCount, plural, one {# file} other {# files}}, {folderCount, plural, one {# folder} other {# folders}})"
   },
   "shareSecurity": {
     "subtitle": "この共有のパスワード保護とセキュリティオプションを設定",

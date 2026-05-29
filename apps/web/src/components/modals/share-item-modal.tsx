@@ -86,6 +86,7 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
       setStep("create");
       setShareId(null);
       setGeneratedLink("");
+      setIsLoading(false);
     }
   }, [isOpen, item, file, folder]);
 
@@ -219,6 +220,7 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
   };
 
   const handleClose = () => {
+    setIsLoading(false);
     onClose();
     setTimeout(() => {
       setStep("create");
@@ -408,7 +410,14 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
               <Button variant="outline" onClick={handleClose}>
                 {t("common.cancel")}
               </Button>
-              <Button disabled={isLoading || !formData.name.trim()} onClick={handleCreateShare}>
+              <Button
+                disabled={
+                  isLoading ||
+                  !formData.name.trim() ||
+                  (formData.isPasswordProtected && !formData.password.trim())
+                }
+                onClick={handleCreateShare}
+              >
                 {isLoading ? <div className="animate-spin">⠋</div> : t("createShare.create")}
               </Button>
             </>

@@ -238,7 +238,7 @@ export interface IdentifyVisitorBody {
 }
 
 export interface IdentifyVisitor200 {
-  message: string;
+  success: boolean;
 }
 
 // ── Share metadata (extended) ──────────────────────────────────────────
