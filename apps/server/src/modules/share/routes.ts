@@ -496,11 +496,13 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
           "Unauthorized: a valid token is required to access this resource.",
         );
       }
-      const share = await shareService.addRecipients(
-        request.params.shareId,
-        userId,
-        request.body.emails,
-      );
+      // Normalize: accept either `emails` (legacy) or `recipients` (with optional name)
+      const recipientList: Array<{ email: string; name?: string | null }> = request.body.recipients
+        ? request.body.recipients
+        : (request.body.emails ?? []).map((email: string) => ({ email }));
+
+      const share = await shareService.addRecipients(request.params.shareId, userId, recipientList);
+      const emailList = recipientList.map((r) => r.email);
       // NOTE: Recipient emails are stored in the audit log for forensics. PII retention follows
       // auditRetentionDays (default 365). If privacy requirements change, hash or redact emails here.
       logAuditEvent({
@@ -510,7 +512,7 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         userId,
         targetType: "share",
         targetId: request.params.shareId,
-        metadata: { count: request.body.emails.length, emails: request.body.emails },
+        metadata: { count: emailList.length, emails: emailList },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ share });
     },
@@ -545,10 +547,14 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
           "Unauthorized: a valid token is required to access this resource.",
         );
       }
+      // For removal, extract emails from either `emails` or `recipients` fields
+      const emailsToRemove: string[] =
+        request.body.emails ??
+        (request.body.recipients ?? []).map((r: { email: string }) => r.email);
       const share = await shareService.removeRecipients(
         request.params.shareId,
         userId,
-        request.body.emails,
+        emailsToRemove,
       );
       // NOTE: Recipient emails are stored in the audit log for forensics. PII retention follows
       // auditRetentionDays (default 365). If privacy requirements change, hash or redact emails here.
@@ -559,7 +565,7 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         userId,
         targetType: "share",
         targetId: request.params.shareId,
-        metadata: { count: request.body.emails.length, emails: request.body.emails },
+        metadata: { count: emailsToRemove.length, emails: emailsToRemove },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ share });
     },

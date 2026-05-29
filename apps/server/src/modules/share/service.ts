@@ -559,7 +559,11 @@ export class ShareService {
     return share;
   }
 
-  async addRecipients(shareId: string, userId: string, emails: string[]) {
+  async addRecipients(
+    shareId: string,
+    userId: string,
+    recipients: Array<{ email: string; name?: string | null }>,
+  ) {
     const share = await this.shareRepository.findShareById(shareId);
     if (!share) {
       throw new NotFoundError("Share not found");
@@ -569,7 +573,7 @@ export class ShareService {
       throw new ForbiddenError("Unauthorized to update this share");
     }
 
-    await this.shareRepository.addRecipients(shareId, emails);
+    await this.shareRepository.addRecipients(shareId, recipients);
     const updated = await this.shareRepository.findShareById(shareId);
     return ShareResponseSchema.parse(await this.formatShareResponse(updated));
   }

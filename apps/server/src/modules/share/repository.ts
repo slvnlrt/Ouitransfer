@@ -64,7 +64,10 @@ export interface IShareRepository {
   removeFoldersFromShare(shareId: string, folderIds: string[]): Promise<void>;
   findFilesByIds(fileIds: string[]): Promise<File[]>;
   findFoldersByIds(folderIds: string[]): Promise<Folder[]>;
-  addRecipients(shareId: string, emails: string[]): Promise<void>;
+  addRecipients(
+    shareId: string,
+    recipients: Array<{ email: string; name?: string | null }>,
+  ): Promise<void>;
   removeRecipients(shareId: string, emails: string[]): Promise<void>;
   findSharesByUserId(userId: string): Promise<
     (Share & {
@@ -342,14 +345,17 @@ export class PrismaShareRepository implements IShareRepository {
     });
   }
 
-  async addRecipients(shareId: string, emails: string[]): Promise<void> {
-    const normalizedEmails = emails.map((e) => e.trim().toLowerCase());
+  async addRecipients(
+    shareId: string,
+    recipients: Array<{ email: string; name?: string | null }>,
+  ): Promise<void> {
     await prisma.share.update({
       where: { id: shareId },
       data: {
         recipients: {
-          create: normalizedEmails.map((email) => ({
-            email,
+          create: recipients.map((r) => ({
+            email: r.email.trim().toLowerCase(),
+            name: r.name || null,
             trackingToken: crypto.randomBytes(24).toString("base64url"),
           })),
         },

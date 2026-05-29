@@ -173,15 +173,40 @@ export const UpdateShareItemsSchema = z
     },
   );
 
-export const UpdateShareRecipientsSchema = z.object({
-  emails: z.array(
-    z
-      .string()
-      .email("Invalid email format")
-      .transform((s) => s.trim().toLowerCase())
-      .describe("The recipient emails"),
-  ),
+export const RecipientWithNameSchema = z.object({
+  email: z
+    .string()
+    .email("Invalid email format")
+    .transform((s) => s.trim().toLowerCase())
+    .describe("The recipient email"),
+  name: z
+    .string()
+    .transform((s) => s.trim() || null)
+    .nullable()
+    .optional()
+    .describe("The recipient display name"),
 });
+
+export const UpdateShareRecipientsSchema = z
+  .object({
+    emails: z
+      .array(
+        z
+          .string()
+          .email("Invalid email format")
+          .transform((s) => s.trim().toLowerCase())
+          .describe("The recipient emails"),
+      )
+      .optional(),
+    recipients: z.array(RecipientWithNameSchema).optional(),
+  })
+  .refine(
+    (data) =>
+      (data.emails && data.emails.length > 0) || (data.recipients && data.recipients.length > 0),
+    {
+      message: "Either emails or recipients must be provided",
+    },
+  );
 
 export type CreateShareInput = z.infer<typeof CreateShareSchema>;
 export type UpdateShareInput = z.infer<typeof UpdateShareSchema>;
