@@ -219,8 +219,6 @@ export interface GetShareByAliasParams {
 export interface ShareVisit {
   id: string;
   action: string;
-  ipAddress: string | null;
-  userAgent: string | null;
   visitorName: string | null;
   visitorEmail: string | null;
   createdAt: string;

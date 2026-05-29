@@ -652,6 +652,9 @@ describe("Visitor Tracking — integration", () => {
       expect(Array.isArray(body.visits)).toBe(true);
       expect(body.visits).toHaveLength(1);
       expect(body.visits[0]).toHaveProperty("action", "access");
+      // ipAddress and userAgent must NOT be exposed to regular users (privacy)
+      expect(body.visits[0]).not.toHaveProperty("ipAddress");
+      expect(body.visits[0]).not.toHaveProperty("userAgent");
     });
 
     it("filters by action when provided", async () => {

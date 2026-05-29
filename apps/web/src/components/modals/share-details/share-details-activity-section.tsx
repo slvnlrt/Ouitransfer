@@ -24,38 +24,6 @@ interface ShareDetailsActivitySectionProps {
 
 const PAGE_LIMIT = 10;
 
-// Privacy note: IPv4 addresses are truncated to the first two octets (e.g. 192.168.*.*),
-// which corresponds roughly to city-level geolocation. This balances the share owner's
-// need to see approximate visitor origin against visitor privacy. IPv6 addresses are
-// similarly truncated to the first three groups.
-function truncateIp(ip: string | null): string {
-  if (!ip) return "";
-
-  // IPv6: any address containing ":"
-  if (ip.includes(":")) {
-    const groups = ip.split(":");
-    // Find empty segment (from ::) — e.g. "2001:db8::1" splits to ["2001","db8","","1"]
-    const emptyIdx = groups.indexOf("");
-
-    if (emptyIdx >= 0 && emptyIdx <= 3) {
-      // Compressed form — take available prefix groups before the empty segment (up to 3)
-      const prefix = groups.slice(0, Math.min(emptyIdx || 1, 3)).filter(Boolean);
-      return prefix.length > 0 ? `${prefix.join(":")}::…` : "::…";
-    }
-
-    // Full or partially compressed — take first 3 groups
-    return `${groups.slice(0, 3).join(":")}::…`;
-  }
-
-  // IPv4: show first two octets
-  const parts = ip.split(".");
-  if (parts.length === 4) {
-    return `${parts[0]}.${parts[1]}.*.*`;
-  }
-
-  return ip;
-}
-
 interface VisitEntryProps {
   visit: ShareVisit;
 }
@@ -86,10 +54,7 @@ function VisitEntry({ visit }: VisitEntryProps) {
             {visit.visitorEmail}
           </p>
         ) : (
-          <p className="text-xs text-muted-foreground">
-            {t("shareDetails.activity.anonymous")}
-            {visit.ipAddress && ` · ${truncateIp(visit.ipAddress)}`}
-          </p>
+          <p className="text-xs text-muted-foreground">{t("shareDetails.activity.anonymous")}</p>
         )}
       </div>
       <span className="text-xs text-muted-foreground flex-shrink-0 mt-0.5">

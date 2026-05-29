@@ -904,8 +904,6 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
               recipientId: z.string().nullable(),
               visitorName: z.string().nullable(),
               visitorEmail: z.string().nullable(),
-              ipAddress: z.string().nullable(),
-              userAgent: z.string().nullable(),
               action: z.string(),
               fileId: z.string().nullable(),
               createdAt: z.string().datetime(),
@@ -971,7 +969,9 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       // - "tracking_token": recipientId is set (visitor arrived via a personalized link)
       // - "cookie": no recipientId, but visitorEmail or visitorName is set (identification form)
       // - "anonymous": no identification at all
-      const enrichedVisits = visits.map((visit) => ({
+      // Strip ipAddress and userAgent from response — these are stored for
+      // admin audit purposes only and must not be exposed to regular users.
+      const enrichedVisits = visits.map(({ ipAddress: _ip, userAgent: _ua, ...visit }) => ({
         ...visit,
         createdAt: visit.createdAt.toISOString(),
         identificationSource: visit.recipientId
