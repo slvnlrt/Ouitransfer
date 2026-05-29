@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Check, Mail, Plus, Trash2, Users, X } from "lucide-react";
+import { Bell, Check, Mail, Plus, Trash2, User, Users, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -31,6 +31,7 @@ export function RecipientSelector({
   const { value: smtpEnabled } = useSecureConfigValue("smtpEnabled");
   const [recipients, setRecipients] = useState<ShareRecipient[]>(selectedRecipients ?? []);
   const [newRecipient, setNewRecipient] = useState("");
+  const [newRecipientName, setNewRecipientName] = useState("");
   const [selectedForAction, setSelectedForAction] = useState<Set<string>>(new Set());
   const [isAddingRecipient, setIsAddingRecipient] = useState(false);
 
@@ -60,9 +61,13 @@ export function RecipientSelector({
 
     setIsAddingRecipient(true);
     try {
-      const res = await addRecipients(shareId, { emails: [trimmed] });
+      const trimmedName = newRecipientName.trim() || undefined;
+      const res = await addRecipients(shareId, {
+        recipients: [{ email: trimmed, name: trimmedName }],
+      });
       setRecipients(res.data.share.recipients);
       setNewRecipient("");
+      setNewRecipientName("");
       toast.success(t("recipientSelector.addSuccess"));
       onSuccess();
     } catch {
@@ -194,6 +199,17 @@ export function RecipientSelector({
               disabled={isAddingRecipient}
             />
           </div>
+          <div className="relative sm:w-40">
+            <User className="absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              className="ps-9 h-10"
+              placeholder={t("recipientSelector.namePlaceholder")}
+              value={newRecipientName}
+              onChange={(e) => setNewRecipientName(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && !isAddingRecipient && handleAddRecipient()}
+              disabled={isAddingRecipient}
+            />
+          </div>
           <Button
             onClick={handleAddRecipient}
             disabled={!newRecipient.trim() || isAddingRecipient}
@@ -306,7 +322,7 @@ export function RecipientSelector({
 
               <div className="divide-y max-h-80 overflow-y-auto">
                 {recipients.map((recipient) => {
-                  const { email, notifiedAt, accessCount } = recipient;
+                  const { email, name, notifiedAt, accessCount } = recipient;
                   const isSelected = selectedForAction.has(email);
                   return (
                     <div
@@ -328,7 +344,12 @@ export function RecipientSelector({
                           <Mail className="h-4 w-4 text-primary" />
                         </div>
                         <div className="flex flex-col min-w-0">
-                          <span className="truncate font-medium">{email}</span>
+                          {name && <span className="truncate font-medium">{name}</span>}
+                          <span
+                            className={`truncate ${name ? "text-xs text-muted-foreground" : "font-medium"}`}
+                          >
+                            {email}
+                          </span>
                           <div className="flex items-center gap-2 mt-0.5">
                             {notifiedAt && (
                               <span className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">

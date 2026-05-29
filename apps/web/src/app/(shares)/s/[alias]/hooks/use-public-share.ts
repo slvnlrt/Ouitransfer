@@ -177,6 +177,14 @@ export function usePublicShare() {
   const downloads = usePublicShareDownload(share, password);
   const navigation = usePublicShareNavigation(share, shareQuery.isLoading);
 
+  // I-3: Clear password error when user types a new value
+  const handleSetPassword = (value: string) => {
+    setPassword(value);
+    if (isPasswordError) {
+      setIsPasswordError(false);
+    }
+  };
+
   return {
     // Original functionality
     isLoading,
@@ -184,7 +192,7 @@ export function usePublicShare() {
     password,
     isPasswordModalOpen,
     isPasswordError,
-    setPassword,
+    setPassword: handleSetPassword,
     handlePasswordSubmit,
 
     // Identification functionality

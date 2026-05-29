@@ -4,9 +4,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bell, LayoutDashboard, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -38,6 +37,7 @@ import {
 } from "@/http/endpoints/notifications";
 import type { NotificationPreference } from "@/http/endpoints/notifications/types";
 import { queryKeys } from "@/lib/query-keys";
+import { parseApiError } from "@/utils/api-error";
 
 // Maps notification types to their display category
 const TYPE_TO_CATEGORY: Record<string, string> = {
@@ -105,6 +105,17 @@ export function NotificationPreferencesTable() {
 
   // Local state: track user-modified frequencies (type -> frequency)
   const [localChanges, setLocalChanges] = useState<Record<string, string>>({});
+  const hasUnsavedChanges = Object.keys(localChanges).length > 0;
+
+  // Warn about unsaved changes when navigating away
+  useEffect(() => {
+    if (!hasUnsavedChanges) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [hasUnsavedChanges]);
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: queryKeys.notifications.preferences(),
@@ -127,8 +138,9 @@ export function NotificationPreferencesTable() {
       setLocalChanges({});
       queryClient.invalidateQueries({ queryKey: queryKeys.notifications.preferences() });
     },
-    onError: () => {
-      toast.error(t("saveError"));
+    onError: (error: unknown) => {
+      const apiError = parseApiError(error);
+      toast.error(`${t("saveError")}: ${apiError.message}`);
     },
   });
 
@@ -214,44 +226,57 @@ export function NotificationPreferencesTable() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {prefs.map((pref) => (
-                          <TableRow
-                            key={pref.type}
-                            className={pref.isCritical ? "opacity-60" : undefined}
-                          >
-                            <TableCell className="font-medium">
-                              {t(`types.${pref.type}` as Parameters<typeof t>[0])}
-                            </TableCell>
-                            <TableCell>
-                              {pref.isCritical ? (
-                                <span className="text-sm text-muted-foreground italic">
-                                  {t("alwaysEnabled")}
-                                </span>
-                              ) : (
-                                <Select
-                                  value={getFrequency(pref)}
-                                  onValueChange={(value) => handleFrequencyChange(pref.type, value)}
-                                >
-                                  <SelectTrigger className="w-40">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="immediate">{t("immediate")}</SelectItem>
-                                    <SelectItem value="disabled">{t("disabled")}</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              )}
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                        {prefs.map((pref) => {
+                          const isChanged = localChanges[pref.type] !== undefined;
+                          return (
+                            <TableRow
+                              key={pref.type}
+                              className={`${pref.isCritical ? "opacity-60" : ""} ${isChanged ? "bg-accent/30" : ""}`}
+                            >
+                              <TableCell className="font-medium">
+                                {t(`types.${pref.type}` as Parameters<typeof t>[0])}
+                              </TableCell>
+                              <TableCell>
+                                {pref.isCritical ? (
+                                  <span className="text-sm text-muted-foreground italic">
+                                    {t("alwaysEnabled")}
+                                  </span>
+                                ) : (
+                                  <Select
+                                    value={getFrequency(pref)}
+                                    onValueChange={(value) =>
+                                      handleFrequencyChange(pref.type, value)
+                                    }
+                                  >
+                                    <SelectTrigger className="w-40">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="immediate">{t("immediate")}</SelectItem>
+                                      <SelectItem value="disabled">{t("disabled")}</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                       </TableBody>
                     </Table>
                   </div>
                 </div>
               ))}
 
-              <div className="flex justify-end pt-2">
-                <Button onClick={handleSave} disabled={saveMutation.isPending}>
+              <div className="flex items-center justify-end gap-3 pt-2">
+                {hasUnsavedChanges && (
+                  <span className="text-xs text-muted-foreground">
+                    {t("unsavedChanges", { count: Object.keys(localChanges).length })}
+                  </span>
+                )}
+                <Button
+                  onClick={handleSave}
+                  disabled={saveMutation.isPending || !hasUnsavedChanges}
+                >
                   {saveMutation.isPending ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />

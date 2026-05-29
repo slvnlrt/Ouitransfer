@@ -29,12 +29,17 @@ import { listFolders } from "@/http/endpoints/folders";
 import type { FolderItem } from "@/http/endpoints/folders/types";
 import type { Share } from "@/http/endpoints/shares/types";
 import { logger } from "@/lib/logger";
+import { SharePrivacySection } from "./share-privacy-section";
 
 export interface UpdateShareData {
   name?: string;
   description?: string;
   expiration?: string;
   maxViews?: number | null;
+  nameFieldRequired?: "HIDDEN" | "OPTIONAL" | "REQUIRED";
+  emailFieldRequired?: "HIDDEN" | "OPTIONAL" | "REQUIRED";
+  notifyOnDownload?: boolean;
+  inactivityAlertDays?: number | null;
 }
 
 export interface ShareActionsModalsProps {
@@ -108,6 +113,10 @@ export function ShareActionsModals({
     isPasswordProtected: false,
     password: "",
     maxViews: "",
+    nameFieldRequired: "HIDDEN" as "HIDDEN" | "OPTIONAL" | "REQUIRED",
+    emailFieldRequired: "HIDDEN" as "HIDDEN" | "OPTIONAL" | "REQUIRED",
+    notifyOnDownload: false,
+    inactivityAlertDays: "",
   });
 
   useEffect(() => {
@@ -121,6 +130,10 @@ export function ShareActionsModals({
         isPasswordProtected: Boolean(shareToEdit.security?.hasPassword),
         password: "",
         maxViews: shareToEdit.maxViews?.toString() || "",
+        nameFieldRequired: shareToEdit.nameFieldRequired || "HIDDEN",
+        emailFieldRequired: shareToEdit.emailFieldRequired || "HIDDEN",
+        notifyOnDownload: shareToEdit.notifyOnDownload || false,
+        inactivityAlertDays: shareToEdit.inactivityAlertDays?.toString() || "",
       });
     }
   }, [shareToEdit]);
@@ -173,16 +186,29 @@ export function ShareActionsModals({
     setIsLoading(false);
   };
 
+  // C-1: Disable save if password toggle is ON, password is empty, and share doesn't already have one
+  const isPasswordInvalid =
+    editForm.isPasswordProtected &&
+    !editForm.password.trim() &&
+    !shareToEdit?.security?.hasPassword;
+
   const handleEdit = async () => {
     if (!shareToEdit) return;
+    if (isPasswordInvalid) return;
     setIsLoading(true);
 
     try {
-      const updateData = {
+      const updateData: UpdateShareData = {
         name: editForm.name,
         description: editForm.description,
         expiration: editForm.expiresAt ? new Date(editForm.expiresAt).toISOString() : undefined,
         maxViews: editForm.maxViews ? parseInt(editForm.maxViews, 10) : null,
+        nameFieldRequired: editForm.nameFieldRequired,
+        emailFieldRequired: editForm.emailFieldRequired,
+        notifyOnDownload: editForm.notifyOnDownload,
+        inactivityAlertDays: editForm.inactivityAlertDays
+          ? parseInt(editForm.inactivityAlertDays, 10)
+          : null,
       };
 
       await onEdit(shareToEdit.id, updateData);
@@ -354,14 +380,32 @@ export function ShareActionsModals({
                   value={editForm.password}
                   onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
                 />
+                {shareToEdit?.security?.hasPassword && !editForm.password.trim() && (
+                  <p className="text-xs text-muted-foreground">
+                    {t("shareActions.keepCurrentPasswordHint")}
+                  </p>
+                )}
+                {isPasswordInvalid && (
+                  <p className="text-xs text-destructive">{t("shareActions.passwordRequired")}</p>
+                )}
               </div>
             )}
+            <SharePrivacySection
+              value={{
+                nameFieldRequired: editForm.nameFieldRequired,
+                emailFieldRequired: editForm.emailFieldRequired,
+                notifyOnDownload: editForm.notifyOnDownload,
+                inactivityAlertDays: editForm.inactivityAlertDays,
+              }}
+              onChange={(privacy) => setEditForm({ ...editForm, ...privacy })}
+              switchIdSuffix="edit"
+            />
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={onCloseEdit}>
               {t("common.cancel")}
             </Button>
-            <Button disabled={isLoading} onClick={handleEdit}>
+            <Button disabled={isLoading || isPasswordInvalid} onClick={handleEdit}>
               {t("common.save")}
             </Button>
           </DialogFooter>

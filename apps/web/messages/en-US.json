@@ -1120,7 +1120,8 @@
     "noRecipientsDescription": "Add recipients to share this content via email",
     "notified": "Notified",
     "views": "{count, plural, one {# view} other {# views}}",
-    "notifyPartial": "Only {sent} of {total} recipients were notified"
+    "notifyPartial": "Only {sent} of {total} recipients were notified",
+    "namePlaceholder": "Name (optional)"
   },
   "register": {
     "validation": {
@@ -1964,7 +1965,9 @@
     "editSuccess": "Share updated successfully",
     "editError": "Failed to update share",
     "bulkDeleteConfirmation": "Are you sure you want to delete {count, plural, =1 {1 share} other {# shares}}? This action cannot be undone.",
-    "bulkDeleteTitle": "Delete Selected Shares"
+    "bulkDeleteTitle": "Delete Selected Shares",
+    "keepCurrentPasswordHint": "Leave empty to keep current password",
+    "passwordRequired": "Password is required for new password protection"
   },
   "shareDetails": {
     "title": "Share Details",
@@ -1999,6 +2002,9 @@
     "downloadQrCode": "Download QR Code",
     "clickToEnlargeQrCode": "Click to enlarge QR Code",
     "loadError": "Failed to load share details",
+    "lastDownloaded": "Last Downloaded",
+    "recipientNotified": "Notified",
+    "recipientAccess": "{count, plural, one {# access} other {# accesses}}{lastAccess, select, null {} other { · last {lastAccess}}}",
     "activity": {
       "title": "Activity",
       "noActivity": "No activity recorded yet.",
@@ -2007,7 +2013,13 @@
       "anonymous": "Anonymous",
       "loadMore": "Load more",
       "showingCount": "Showing {shown} of {total}",
-      "loadError": "Failed to load activity data."
+      "loadError": "Failed to load activity data.",
+      "filterAll": "All actions",
+      "filterAccess": "Views only",
+      "filterDownload": "Downloads only",
+      "filterAllVisitors": "All visitors",
+      "filterIdentified": "Identified",
+      "filterAnonymous": "Anonymous"
     }
   },
   "shareExpiration": {
@@ -2703,6 +2715,7 @@
     "saveSuccess": "Notification preferences saved",
     "saveError": "Failed to save preferences",
     "noChanges": "No changes to save",
+    "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}",
     "loadError": "Failed to load notification preferences",
     "retry": "Retry",
     "types": {

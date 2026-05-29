@@ -1023,7 +1023,8 @@
     "bulkNotifyError": "선택된 수신자들에게 알림 전송에 실패했습니다",
     "notified": "Notified",
     "views": "{count, plural, one {# view} other {# views}}",
-    "notifyPartial": "Only {sent} of {total} recipients were notified"
+    "notifyPartial": "Only {sent} of {total} recipients were notified",
+    "namePlaceholder": "Name (optional)"
   },
   "register": {
     "validation": {
@@ -1824,7 +1825,9 @@
     "linkReady": "공유 링크가 준비되었습니다:",
     "linkTitle": "링크 생성",
     "itemsSelected": "{count}개 항목 선택됨",
-    "manageFilesDescription": "이 공유에 포함할 파일 및 폴더 선택"
+    "manageFilesDescription": "이 공유에 포함할 파일 및 폴더 선택",
+    "keepCurrentPasswordHint": "Leave empty to keep current password",
+    "passwordRequired": "Password is required for new password protection"
   },
   "shareDetails": {
     "title": "공유 세부 정보",
@@ -1867,8 +1870,17 @@
       "anonymous": "Anonymous",
       "loadMore": "Load more",
       "showingCount": "Showing {shown} of {total}",
-      "loadError": "Failed to load activity data."
-    }
+      "loadError": "Failed to load activity data.",
+      "filterAll": "All actions",
+      "filterAccess": "Views only",
+      "filterDownload": "Downloads only",
+      "filterAllVisitors": "All visitors",
+      "filterIdentified": "Identified",
+      "filterAnonymous": "Anonymous"
+    },
+    "lastDownloaded": "Last Downloaded",
+    "recipientNotified": "Notified",
+    "recipientAccess": "{count, plural, one {# access} other {# accesses}}{lastAccess, select, null {} other { · last {lastAccess}}}"
   },
   "shareExpiration": {
     "neverExpires": "만료되지 않음",
@@ -2736,6 +2748,7 @@
     },
     "saving": "Saving...",
     "loadError": "Failed to load notification preferences",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}"
   }
 }

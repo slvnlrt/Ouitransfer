@@ -21,6 +21,11 @@ vi.mock("@/http/endpoints", () => ({
 vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
   useLocale: () => "en-US",
+  useFormatter: () => ({
+    relativeTime: (date: Date) => date.toISOString(),
+    dateTime: (date: Date) => date.toISOString(),
+    number: (n: number) => String(n),
+  }),
 }));
 
 // LazyQRCode isn't needed in unit tests

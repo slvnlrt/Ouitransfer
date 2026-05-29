@@ -1023,7 +1023,8 @@
     "noRecipientsDescription": "Dodaj odbiorców, aby udostępnić tę zawartość pocztą e-mail",
     "notified": "Notified",
     "views": "{count, plural, one {# view} other {# views}}",
-    "notifyPartial": "Only {sent} of {total} recipients were notified"
+    "notifyPartial": "Only {sent} of {total} recipients were notified",
+    "namePlaceholder": "Name (optional)"
   },
   "register": {
     "validation": {
@@ -1824,7 +1825,9 @@
     "linkReady": "Twój link udostępniania jest gotowy:",
     "linkTitle": "Generuj link",
     "itemsSelected": "Wybrano {count} elementów",
-    "manageFilesDescription": "Wybierz pliki i foldery do uwzględnienia w tym udostępnieniu"
+    "manageFilesDescription": "Wybierz pliki i foldery do uwzględnienia w tym udostępnieniu",
+    "keepCurrentPasswordHint": "Leave empty to keep current password",
+    "passwordRequired": "Password is required for new password protection"
   },
   "shareDetails": {
     "title": "Szczegóły udostępnienia",
@@ -1867,8 +1870,17 @@
       "anonymous": "Anonymous",
       "loadMore": "Load more",
       "showingCount": "Showing {shown} of {total}",
-      "loadError": "Failed to load activity data."
-    }
+      "loadError": "Failed to load activity data.",
+      "filterAll": "All actions",
+      "filterAccess": "Views only",
+      "filterDownload": "Downloads only",
+      "filterAllVisitors": "All visitors",
+      "filterIdentified": "Identified",
+      "filterAnonymous": "Anonymous"
+    },
+    "lastDownloaded": "Last Downloaded",
+    "recipientNotified": "Notified",
+    "recipientAccess": "{count, plural, one {# access} other {# accesses}}{lastAccess, select, null {} other { · last {lastAccess}}}"
   },
   "shareExpiration": {
     "title": "Ustawienia wygaśnięcia udostępnienia",
@@ -2736,6 +2748,7 @@
     },
     "saving": "Saving...",
     "loadError": "Failed to load notification preferences",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}"
   }
 }

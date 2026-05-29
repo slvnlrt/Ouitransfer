@@ -29,6 +29,7 @@ export interface EmailStats {
   pending: number;
   sentLast24h: number;
   failed: number;
+  digestPending: number;
 }
 
 export interface SendTestEmail200 {

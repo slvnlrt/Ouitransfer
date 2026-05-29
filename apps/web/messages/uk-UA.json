@@ -1027,7 +1027,8 @@
     "noRecipientsDescription": "Додайте отримувачів, щоб поділитися цим контентом через електронну пошту",
     "notified": "Notified",
     "views": "{count, plural, one {# view} other {# views}}",
-    "notifyPartial": "Only {sent} of {total} recipients were notified"
+    "notifyPartial": "Only {sent} of {total} recipients were notified",
+    "namePlaceholder": "Name (optional)"
   },
   "register": {
     "validation": {
@@ -1828,7 +1829,9 @@
     "editSuccess": "Спільне використання успішно оновлено",
     "editError": "Не вдалося оновити спільне використання",
     "bulkDeleteConfirmation": "Ви впевнені, що хочете видалити {count, plural, =1 {1 спільне використання} few {# спільних використання} many {# спільних використань} other {# спільних використань}}? Цю дію неможливо скасувати.",
-    "bulkDeleteTitle": "Видалити вибрані спільні використання"
+    "bulkDeleteTitle": "Видалити вибрані спільні використання",
+    "keepCurrentPasswordHint": "Leave empty to keep current password",
+    "passwordRequired": "Password is required for new password protection"
   },
   "shareDetails": {
     "title": "Деталі спільного використання",
@@ -1871,8 +1874,17 @@
       "anonymous": "Anonymous",
       "loadMore": "Load more",
       "showingCount": "Showing {shown} of {total}",
-      "loadError": "Failed to load activity data."
-    }
+      "loadError": "Failed to load activity data.",
+      "filterAll": "All actions",
+      "filterAccess": "Views only",
+      "filterDownload": "Downloads only",
+      "filterAllVisitors": "All visitors",
+      "filterIdentified": "Identified",
+      "filterAnonymous": "Anonymous"
+    },
+    "lastDownloaded": "Last Downloaded",
+    "recipientNotified": "Notified",
+    "recipientAccess": "{count, plural, one {# access} other {# accesses}}{lastAccess, select, null {} other { · last {lastAccess}}}"
   },
   "shareExpiration": {
     "title": "Налаштування закінчення спільного доступу",
@@ -2736,6 +2748,7 @@
     },
     "saving": "Saving...",
     "loadError": "Failed to load notification preferences",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}"
   }
 }

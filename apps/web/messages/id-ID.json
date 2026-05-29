@@ -1027,7 +1027,8 @@
     "noRecipientsDescription": "Tambahkan penerima untuk membagikan konten ini melalui email",
     "notified": "Notified",
     "views": "{count, plural, one {# view} other {# views}}",
-    "notifyPartial": "Only {sent} of {total} recipients were notified"
+    "notifyPartial": "Only {sent} of {total} recipients were notified",
+    "namePlaceholder": "Name (optional)"
   },
   "register": {
     "validation": {
@@ -1828,7 +1829,9 @@
     "editSuccess": "Berbagi berhasil diperbarui",
     "editError": "Gagal memperbarui berbagi",
     "bulkDeleteConfirmation": "Apakah Anda yakin ingin menghapus {count, plural, =1 {1 berbagi} other {# berbagi}}? Tindakan ini tidak dapat dibatalkan.",
-    "bulkDeleteTitle": "Hapus Berbagi Terpilih"
+    "bulkDeleteTitle": "Hapus Berbagi Terpilih",
+    "keepCurrentPasswordHint": "Leave empty to keep current password",
+    "passwordRequired": "Password is required for new password protection"
   },
   "shareDetails": {
     "title": "Detail Berbagi",
@@ -1871,8 +1874,17 @@
       "anonymous": "Anonymous",
       "loadMore": "Load more",
       "showingCount": "Showing {shown} of {total}",
-      "loadError": "Failed to load activity data."
-    }
+      "loadError": "Failed to load activity data.",
+      "filterAll": "All actions",
+      "filterAccess": "Views only",
+      "filterDownload": "Downloads only",
+      "filterAllVisitors": "All visitors",
+      "filterIdentified": "Identified",
+      "filterAnonymous": "Anonymous"
+    },
+    "lastDownloaded": "Last Downloaded",
+    "recipientNotified": "Notified",
+    "recipientAccess": "{count, plural, one {# access} other {# accesses}}{lastAccess, select, null {} other { · last {lastAccess}}}"
   },
   "shareExpiration": {
     "title": "Pengaturan Kedaluwarsa Berbagi",
@@ -2736,6 +2748,7 @@
     },
     "saving": "Saving...",
     "loadError": "Failed to load notification preferences",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}"
   }
 }

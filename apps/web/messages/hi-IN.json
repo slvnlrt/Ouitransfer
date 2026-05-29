@@ -1023,7 +1023,8 @@
     "bulkNotifyError": "चयनित प्राप्तकर्ताओं को सूचित करने में विफल",
     "notified": "Notified",
     "views": "{count, plural, one {# view} other {# views}}",
-    "notifyPartial": "Only {sent} of {total} recipients were notified"
+    "notifyPartial": "Only {sent} of {total} recipients were notified",
+    "namePlaceholder": "Name (optional)"
   },
   "register": {
     "validation": {
@@ -1824,7 +1825,9 @@
     "linkReady": "आपका साझाकरण लिंक तैयार है:",
     "linkTitle": "लिंक जेनरेट करें",
     "itemsSelected": "{count, plural, =0 {कोई आइटम चयनित नहीं} =1 {1 आइटम चयनित} other {# आइटम चयनित}}",
-    "manageFilesDescription": "इस साझाकरण में शामिल करने के लिए फ़ाइलें और फ़ोल्डर चुनें"
+    "manageFilesDescription": "इस साझाकरण में शामिल करने के लिए फ़ाइलें और फ़ोल्डर चुनें",
+    "keepCurrentPasswordHint": "Leave empty to keep current password",
+    "passwordRequired": "Password is required for new password protection"
   },
   "shareDetails": {
     "title": "साझाकरण विवरण",
@@ -1867,8 +1870,17 @@
       "anonymous": "Anonymous",
       "loadMore": "Load more",
       "showingCount": "Showing {shown} of {total}",
-      "loadError": "Failed to load activity data."
-    }
+      "loadError": "Failed to load activity data.",
+      "filterAll": "All actions",
+      "filterAccess": "Views only",
+      "filterDownload": "Downloads only",
+      "filterAllVisitors": "All visitors",
+      "filterIdentified": "Identified",
+      "filterAnonymous": "Anonymous"
+    },
+    "lastDownloaded": "Last Downloaded",
+    "recipientNotified": "Notified",
+    "recipientAccess": "{count, plural, one {# access} other {# accesses}}{lastAccess, select, null {} other { · last {lastAccess}}}"
   },
   "shareExpiration": {
     "neverExpires": "कभी समाप्त नहीं होता",
@@ -2736,6 +2748,7 @@
     },
     "saving": "Saving...",
     "loadError": "Failed to load notification preferences",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}"
   }
 }

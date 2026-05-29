@@ -1023,7 +1023,8 @@
     "bulkNotifyError": "Échec de notification des destinataires sélectionnés",
     "notified": "Notifié",
     "views": "{count, plural, one {# vue} other {# vues}}",
-    "notifyPartial": "Seulement {sent} des {total} destinataires ont été notifiés"
+    "notifyPartial": "Seulement {sent} des {total} destinataires ont été notifiés",
+    "namePlaceholder": "Nom (optionnel)"
   },
   "register": {
     "validation": {
@@ -1813,6 +1814,8 @@
     "editError": "Échec de la mise à jour du partage",
     "bulkDeleteConfirmation": "Êtes-vous sûr de vouloir supprimer {count, plural, =1 {1 partage} other {# partages}} ? Cette action ne peut pas être annulée.",
     "bulkDeleteTitle": "Supprimer les Partages Sélectionnés",
+    "keepCurrentPasswordHint": "Laissez vide pour conserver le mot de passe actuel",
+    "passwordRequired": "Un mot de passe est requis pour la nouvelle protection",
     "aliasLabel": "Alias du lien",
     "aliasPlaceholder": "Entrez un alias personnalisé",
     "copyLink": "Copier le lien",
@@ -1859,6 +1862,9 @@
     "clickToEnlargeQrCode": "Cliquez pour agrandir le Code QR",
     "downloadQrCode": "Télécharger le Code QR",
     "qrCode": "Code QR",
+    "lastDownloaded": "Dernier téléchargement",
+    "recipientNotified": "Notifié",
+    "recipientAccess": "{count, plural, one {# accès} other {# accès}}{lastAccess, select, null {} other { · dernier {lastAccess}}}",
     "activity": {
       "title": "Activité",
       "noActivity": "Aucune activité enregistrée pour l'instant.",
@@ -1867,7 +1873,13 @@
       "anonymous": "Anonyme",
       "loadMore": "Charger plus",
       "showingCount": "Affichage de {shown} sur {total}",
-      "loadError": "Failed to load activity data."
+      "loadError": "Échec du chargement des données d'activité.",
+      "filterAll": "Toutes les actions",
+      "filterAccess": "Consultations uniquement",
+      "filterDownload": "Téléchargements uniquement",
+      "filterAllVisitors": "Tous les visiteurs",
+      "filterIdentified": "Identifiés",
+      "filterAnonymous": "Anonymes"
     }
   },
   "shareExpiration": {
@@ -2703,6 +2715,7 @@
     "saveSuccess": "Préférences de notifications enregistrées",
     "saveError": "Échec de l'enregistrement des préférences",
     "noChanges": "Aucune modification à enregistrer",
+    "unsavedChanges": "{count, plural, one {# modification non enregistrée} other {# modifications non enregistrées}}",
     "loadError": "Échec du chargement des préférences de notifications",
     "retry": "Réessayer",
     "types": {

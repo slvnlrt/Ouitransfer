@@ -2,7 +2,7 @@
 
 import { Calendar, Copy, Download, Eye, Folder, Link, Lock, Share } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import type { FileItem, FolderItem } from "@/components/tables/files-table-types";
 import { Button } from "@/components/ui/button";
@@ -77,32 +77,48 @@ export function ShareMultipleItemsModal({
   const [generatedLink, setGeneratedLink] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // Stable key derived from IDs — only changes when the actual items change, not on reference changes.
+  const itemsKey = useMemo(() => {
+    const fileIds = files
+      ? files
+          .map((f) => f.id)
+          .sort()
+          .join(",")
+      : "";
+    const folderIds = folders
+      ? folders
+          .map((f) => f.id)
+          .sort()
+          .join(",")
+      : "";
+    return `${fileIds}|${folderIds}`;
+  }, [files, folders]);
+
+  const defaultName = useMemo(() => {
+    const fileCount = files ? files.length : 0;
+    const folderCount = folders ? folders.length : 0;
+    const totalCount = fileCount + folderCount;
+
+    if (totalCount === 0) return "";
+    if (totalCount === 1) {
+      if (fileCount === 1 && files) return files[0].name.split(".")[0];
+      if (folderCount === 1 && folders) return folders[0].name;
+    }
+    const parts = [];
+    if (fileCount > 0) {
+      parts.push(t("shareMultipleFiles.defaultNameFiles", { count: fileCount }));
+    }
+    if (folderCount > 0) {
+      parts.push(t("shareMultipleFiles.defaultNameFolders", { count: folderCount }));
+    }
+    return (
+      parts.join(t("shareMultipleFiles.defaultNameConnector")) +
+      t("shareMultipleFiles.defaultNameSuffix")
+    );
+  }, [files, folders, t]);
+
   useEffect(() => {
-    if (isOpen && ((files && files.length > 0) || (folders && folders.length > 0))) {
-      const fileCount = files ? files.length : 0;
-      const folderCount = folders ? folders.length : 0;
-      const totalCount = fileCount + folderCount;
-
-      let defaultName = "";
-      if (totalCount === 1) {
-        if (fileCount === 1 && files) {
-          defaultName = files[0].name.split(".")[0];
-        } else if (folderCount === 1 && folders) {
-          defaultName = folders[0].name;
-        }
-      } else {
-        const parts = [];
-        if (fileCount > 0) {
-          parts.push(t("shareMultipleFiles.defaultNameFiles", { count: fileCount }));
-        }
-        if (folderCount > 0) {
-          parts.push(t("shareMultipleFiles.defaultNameFolders", { count: folderCount }));
-        }
-        defaultName =
-          parts.join(t("shareMultipleFiles.defaultNameConnector")) +
-          t("shareMultipleFiles.defaultNameSuffix");
-      }
-
+    if (isOpen && itemsKey) {
       setFormData({
         name: defaultName,
         description: "",
@@ -121,7 +137,7 @@ export function ShareMultipleItemsModal({
       setGeneratedLink("");
       setIsLoading(false);
     }
-  }, [isOpen, files, folders]);
+  }, [isOpen, itemsKey, defaultName]);
 
   const getAllFolderContents = async (
     folderId: string,
@@ -205,19 +221,8 @@ export function ShareMultipleItemsModal({
     } finally {
       setIsLoading(false);
     }
-
-    setFormData({
-      name: "",
-      description: "",
-      password: "",
-      expiresAt: "",
-      isPasswordProtected: false,
-      maxViews: "",
-      nameFieldRequired: "HIDDEN",
-      emailFieldRequired: "HIDDEN",
-      notifyOnDownload: false,
-      inactivityAlertDays: "",
-    });
+    // Form reset is handled by the useEffect on [isOpen, files, folders] — no post-handler reset needed.
+    // Resetting here would wipe user input on failure.
   };
 
   const handleGenerateLink = async () => {

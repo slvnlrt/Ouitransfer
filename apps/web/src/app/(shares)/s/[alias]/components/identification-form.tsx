@@ -2,7 +2,7 @@
 
 import { UserCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +21,7 @@ interface IdentificationFormProps {
   isOpen: boolean;
   metadata: ShareMetadata | null;
   metadataError?: boolean;
-  refetchMetadata?: () => void;
+  refetchMetadata: () => void;
   isSubmitting: boolean;
   onSubmit: (name: string | undefined, email: string | undefined) => void;
 }
@@ -40,6 +40,14 @@ export function IdentificationForm({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [attempted, setAttempted] = useState(false);
+  const firstInputRef = useRef<HTMLInputElement>(null);
+
+  // Autofocus the first visible input when metadata arrives
+  useEffect(() => {
+    if (metadata && firstInputRef.current) {
+      firstInputRef.current.focus();
+    }
+  }, [metadata]);
 
   const showNameField = metadata ? metadata.nameFieldRequired !== "HIDDEN" : false;
   const showEmailField = metadata ? metadata.emailFieldRequired !== "HIDDEN" : false;
@@ -69,8 +77,8 @@ export function IdentificationForm({
     setAttempted(true);
     if (!canSubmit) return;
     onSubmit(
-      showNameField ? name || undefined : undefined,
-      showEmailField ? email || undefined : undefined,
+      showNameField ? name.trim() || undefined : undefined,
+      showEmailField ? email.trim() || undefined : undefined,
     );
   };
 
@@ -93,11 +101,9 @@ export function IdentificationForm({
           metadataError ? (
             <div className="flex flex-col items-center gap-4 py-8">
               <p className="text-sm text-destructive">{t("share.identification.metadataError")}</p>
-              {refetchMetadata && (
-                <Button variant="outline" size="sm" onClick={() => refetchMetadata()}>
-                  {t("common.retry")}
-                </Button>
-              )}
+              <Button variant="outline" size="sm" onClick={() => refetchMetadata()}>
+                {t("common.retry")}
+              </Button>
             </div>
           ) : (
             <div className="flex justify-center py-8">
@@ -127,6 +133,7 @@ export function IdentificationForm({
                     )}
                   </Label>
                   <Input
+                    ref={showNameField ? firstInputRef : undefined}
                     id="visitor-name"
                     type="text"
                     value={name}
@@ -157,6 +164,7 @@ export function IdentificationForm({
                     )}
                   </Label>
                   <Input
+                    ref={!showNameField ? firstInputRef : undefined}
                     id="visitor-email"
                     type="email"
                     value={email}

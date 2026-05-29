@@ -185,8 +185,14 @@ export interface RemoveFilesBody {
   files: string[];
 }
 
+export interface RecipientInput {
+  email: string;
+  name?: string | null;
+}
+
 export interface AddRecipientsBody {
-  emails: string[];
+  emails?: string[];
+  recipients?: RecipientInput[];
 }
 
 export interface RemoveRecipientsBody {

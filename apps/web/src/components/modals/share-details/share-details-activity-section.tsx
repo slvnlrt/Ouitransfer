@@ -7,6 +7,13 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Loader } from "@/components/ui/loader";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { getShareVisits } from "@/http/endpoints";
 import type { ShareVisit } from "@/http/endpoints/shares/types";
 import { queryKeys } from "@/lib/query-keys";
@@ -88,22 +95,46 @@ function VisitEntry({ visit }: VisitEntryProps) {
   );
 }
 
+type ActionFilter = "all" | "access" | "download";
+type IdentityFilter = "all" | "identified" | "anonymous";
+
 export function ShareDetailsActivitySection({ shareId }: ShareDetailsActivitySectionProps) {
   const t = useTranslations();
   const [page, setPage] = useState(1);
+  const [actionFilter, setActionFilter] = useState<ActionFilter>("all");
+  const [identityFilter, setIdentityFilter] = useState<IdentityFilter>("all");
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [actionFilter, identityFilter]);
+
+  const actionParam = actionFilter === "all" ? undefined : actionFilter;
 
   const visitsQuery = useQuery({
-    queryKey: queryKeys.shares.visits(shareId, { page, limit: PAGE_LIMIT }),
+    queryKey: queryKeys.shares.visits(shareId, { page, limit: PAGE_LIMIT, action: actionParam }),
     queryFn: async () => {
-      const response = await getShareVisits(shareId, { page, limit: PAGE_LIMIT });
+      const response = await getShareVisits(shareId, {
+        page,
+        limit: PAGE_LIMIT,
+        action: actionParam,
+      });
       return response.data;
     },
     enabled: !!shareId,
   });
 
-  const visits = visitsQuery.data?.visits ?? [];
+  // Client-side identification filter
+  const rawVisits = visitsQuery.data?.visits ?? [];
+  const visits =
+    identityFilter === "all"
+      ? rawVisits
+      : rawVisits.filter((v) => {
+          const hasIdentity = !!(v.visitorName || v.visitorEmail);
+          return identityFilter === "identified" ? hasIdentity : !hasIdentity;
+        });
   const total = visitsQuery.data?.total ?? 0;
-  const hasMore = visits.length > 0 && page * PAGE_LIMIT < total;
+  const hasMore = rawVisits.length > 0 && page * PAGE_LIMIT < total;
 
   // If we land on a page > 1 that returns no results (e.g. page deleted/expired),
   // auto-reset to page 1 instead of showing a misleading "no activity" message.
@@ -118,6 +149,35 @@ export function ShareDetailsActivitySection({ shareId }: ShareDetailsActivitySec
       <h3 className="text-base font-medium text-foreground border-b pb-2">
         {t("shareDetails.activity.title")}
       </h3>
+
+      <div className="flex flex-wrap gap-2">
+        <Select value={actionFilter} onValueChange={(v) => setActionFilter(v as ActionFilter)}>
+          <SelectTrigger className="w-[140px] h-8 text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("shareDetails.activity.filterAll")}</SelectItem>
+            <SelectItem value="access">{t("shareDetails.activity.filterAccess")}</SelectItem>
+            <SelectItem value="download">{t("shareDetails.activity.filterDownload")}</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={identityFilter}
+          onValueChange={(v) => setIdentityFilter(v as IdentityFilter)}
+        >
+          <SelectTrigger className="w-[140px] h-8 text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("shareDetails.activity.filterAllVisitors")}</SelectItem>
+            <SelectItem value="identified">
+              {t("shareDetails.activity.filterIdentified")}
+            </SelectItem>
+            <SelectItem value="anonymous">{t("shareDetails.activity.filterAnonymous")}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
       {visitsQuery.isError ? (
         <div className="flex flex-col items-center gap-3 py-8 text-center">

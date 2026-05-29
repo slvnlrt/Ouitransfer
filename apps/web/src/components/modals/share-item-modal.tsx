@@ -169,19 +169,8 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
     } finally {
       setIsLoading(false);
     }
-
-    setFormData({
-      name: "",
-      description: "",
-      password: "",
-      expiresAt: "",
-      isPasswordProtected: false,
-      maxViews: "",
-      nameFieldRequired: "HIDDEN",
-      emailFieldRequired: "HIDDEN",
-      notifyOnDownload: false,
-      inactivityAlertDays: "",
-    });
+    // Form reset is handled by the useEffect on [isOpen, item] — no post-handler reset needed.
+    // Resetting here would wipe user input on failure.
   };
 
   const handleGenerateLink = async () => {

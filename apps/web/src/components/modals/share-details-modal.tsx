@@ -1,8 +1,8 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Mail } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { Check, Eye, Mail } from "lucide-react";
+import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,7 +14,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Loader } from "@/components/ui/loader";
-import { StatusBadge } from "@/components/ui/status-badge";
 import { getShare } from "@/http/endpoints";
 import type { Share, ShareRecipient } from "@/http/endpoints/shares/types";
 import { logger } from "@/lib/logger";
@@ -57,6 +56,7 @@ export function ShareDetailsModal({
   onSuccess,
 }: ShareDetailsModalProps) {
   const t = useTranslations();
+  const format = useFormatter();
   const queryClient = useQueryClient();
   const [editingField, setEditingField] = useState<{ field: "name" | "description" } | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -294,12 +294,45 @@ export function ShareDetailsModal({
                     <h3 className="text-base font-medium text-foreground border-b pb-2">
                       {t("shareDetails.recipients")}
                     </h3>
-                    <div className="flex flex-wrap gap-1">
+                    <div className="space-y-2">
                       {share.recipients.map((recipient: ShareRecipient) => (
-                        <StatusBadge key={recipient.id} variant="info">
-                          <Mail className="h-3 w-3 me-1" />
-                          {recipient.email}
-                        </StatusBadge>
+                        <div
+                          key={recipient.id}
+                          className="flex items-center gap-3 p-2 rounded-md border bg-muted/20"
+                        >
+                          <div className="w-7 h-7 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                            <Mail className="h-3.5 w-3.5 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            {recipient.name && (
+                              <p className="text-sm font-medium truncate">{recipient.name}</p>
+                            )}
+                            <p
+                              className={`text-sm truncate ${recipient.name ? "text-muted-foreground text-xs" : "font-medium"}`}
+                            >
+                              {recipient.email}
+                            </p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              {recipient.notifiedAt && (
+                                <span className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+                                  <Check className="h-3 w-3" />
+                                  {t("shareDetails.recipientNotified")}
+                                </span>
+                              )}
+                              {recipient.accessCount > 0 && (
+                                <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                  <Eye className="h-3 w-3" />
+                                  {t("shareDetails.recipientAccess", {
+                                    count: recipient.accessCount,
+                                    lastAccess: recipient.lastAccessedAt
+                                      ? format.relativeTime(new Date(recipient.lastAccessedAt))
+                                      : "null",
+                                  })}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
                       ))}
                     </div>
                   </div>

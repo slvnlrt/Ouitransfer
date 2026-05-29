@@ -56,6 +56,14 @@ export function ShareDetailsDatesSection({ share, onEditExpiration }: ShareDetai
             {share.expiration ? formatDate(share.expiration) : t("shareDetails.never")}
           </div>
         </div>
+        {share.lastDownloadedAt && (
+          <div>
+            <div className="text-xs font-medium text-muted-foreground">
+              {t("shareDetails.lastDownloaded")}
+            </div>
+            <div className="text-sm">{formatDate(share.lastDownloadedAt)}</div>
+          </div>
+        )}
       </div>
     </div>
   );
