@@ -1894,7 +1894,10 @@
       "emailLabel": "Email",
       "submit": "Continue",
       "error": "Failed to submit identification. Please try again.",
-      "optional": "optional"
+      "optional": "optional",
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address"
     },
     "details": {
       "untitled": "Untitled Share",
@@ -2665,9 +2668,12 @@
     "disabled": "Disabled",
     "alwaysEnabled": "Always enabled",
     "save": "Save Preferences",
+    "saving": "Saving...",
     "saveSuccess": "Notification preferences saved",
     "saveError": "Failed to save preferences",
     "noChanges": "No changes to save",
+    "loadError": "Failed to load notification preferences",
+    "retry": "Retry",
     "types": {
       "password_reset": "Password reset",
       "welcome": "Welcome email",

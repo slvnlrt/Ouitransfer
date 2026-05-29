@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bell, LayoutDashboard } from "lucide-react";
+import { Bell, LayoutDashboard, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -105,7 +105,7 @@ export function NotificationPreferencesTable() {
   // Local state: track user-modified frequencies (type -> frequency)
   const [localChanges, setLocalChanges] = useState<Record<string, string>>({});
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: queryKeys.notifications.preferences(),
     queryFn: async () => {
       const response = await getNotificationPreferences();
@@ -188,6 +188,13 @@ export function NotificationPreferencesTable() {
         <CardContent className="flex flex-col gap-6">
           {isLoading ? (
             <div className="text-muted-foreground text-sm py-8 text-center">Loading...</div>
+          ) : data === undefined && error ? (
+            <div className="text-center py-8 space-y-3">
+              <p className="text-sm text-destructive">{t("loadError")}</p>
+              <Button variant="outline" size="sm" onClick={() => refetch()}>
+                {t("retry")}
+              </Button>
+            </div>
           ) : (
             <>
               {Array.from(grouped.entries()).map(([category, prefs]) => (
@@ -242,7 +249,14 @@ export function NotificationPreferencesTable() {
 
               <div className="flex justify-end pt-2">
                 <Button onClick={handleSave} disabled={saveMutation.isPending}>
-                  {t("save")}
+                  {saveMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      {t("saving")}
+                    </>
+                  ) : (
+                    t("save")
+                  )}
                 </Button>
               </div>
             </>

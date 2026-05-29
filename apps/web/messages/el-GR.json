@@ -1,4 +1,4 @@
-﻿{
+{
   "a11y": {
     "skipToContent": "Μετάβαση στο περιεχόμενο"
   },
@@ -1773,7 +1773,10 @@
       "emailLabel": "Email",
       "submit": "Continue",
       "error": "Failed to submit identification. Please try again.",
-      "optional": "optional"
+      "optional": "optional",
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address"
     }
   },
   "shareActions": {
@@ -2699,6 +2702,9 @@
       "quota": "Quotas",
       "admin": "Administration",
       "test": "Test"
-    }
+    },
+    "saving": "Saving...",
+    "loadError": "Failed to load notification preferences",
+    "retry": "Retry"
   }
 }

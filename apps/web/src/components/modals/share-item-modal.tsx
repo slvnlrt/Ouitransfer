@@ -1,22 +1,11 @@
 "use client";
 
-import {
-  Calendar,
-  ChevronDown,
-  Copy,
-  Download,
-  Eye,
-  Link,
-  Lock,
-  Share,
-  Shield,
-} from "lucide-react";
+import { Calendar, Copy, Download, Eye, Link, Lock, Share } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import type { FileItem, FolderItem } from "@/components/tables/files-table-types";
 import { Button } from "@/components/ui/button";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Dialog,
   DialogContent,
@@ -27,18 +16,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LazyQRCode } from "@/components/ui/lazy-qr-code";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { createShare, createShareAlias, listFiles, listFolders } from "@/http/endpoints";
 import { logger } from "@/lib/logger";
 import { customNanoid } from "@/lib/utils";
+import { SharePrivacySection } from "./share-privacy-section";
 
 type ShareFile = Pick<
   FileItem,
@@ -357,78 +340,15 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
               </div>
             )}
 
-            <Collapsible>
-              <CollapsibleTrigger className="flex w-full items-center justify-between rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted/50 transition-colors">
-                <span className="flex items-center gap-2">
-                  <Shield className="size-4" />
-                  {t("createShare.privacySection")}
-                </span>
-                <ChevronDown className="size-4 transition-transform duration-200 data-[state=open]:rotate-180" />
-              </CollapsibleTrigger>
-              <CollapsibleContent className="space-y-4 pt-3">
-                <div className="space-y-2">
-                  <Label>{t("createShare.nameFieldRequired")}</Label>
-                  <Select
-                    value={formData.nameFieldRequired}
-                    onValueChange={(value: "HIDDEN" | "OPTIONAL" | "REQUIRED") =>
-                      setFormData({ ...formData, nameFieldRequired: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="HIDDEN">{t("createShare.fieldHidden")}</SelectItem>
-                      <SelectItem value="OPTIONAL">{t("createShare.fieldOptional")}</SelectItem>
-                      <SelectItem value="REQUIRED">{t("createShare.fieldRequired")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>{t("createShare.emailFieldRequired")}</Label>
-                  <Select
-                    value={formData.emailFieldRequired}
-                    onValueChange={(value: "HIDDEN" | "OPTIONAL" | "REQUIRED") =>
-                      setFormData({ ...formData, emailFieldRequired: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="HIDDEN">{t("createShare.fieldHidden")}</SelectItem>
-                      <SelectItem value="OPTIONAL">{t("createShare.fieldOptional")}</SelectItem>
-                      <SelectItem value="REQUIRED">{t("createShare.fieldRequired")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Switch
-                    checked={formData.notifyOnDownload}
-                    onCheckedChange={(checked) =>
-                      setFormData({ ...formData, notifyOnDownload: checked })
-                    }
-                    id="notify-on-download"
-                  />
-                  <Label htmlFor="notify-on-download">{t("createShare.notifyOnDownload")}</Label>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>{t("createShare.inactivityAlertDays")}</Label>
-                  <Input
-                    type="number"
-                    min="1"
-                    value={formData.inactivityAlertDays}
-                    onChange={(e) =>
-                      setFormData({ ...formData, inactivityAlertDays: e.target.value })
-                    }
-                    placeholder={t("createShare.inactivityAlertPlaceholder")}
-                  />
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
+            <SharePrivacySection
+              value={{
+                nameFieldRequired: formData.nameFieldRequired,
+                emailFieldRequired: formData.emailFieldRequired,
+                notifyOnDownload: formData.notifyOnDownload,
+                inactivityAlertDays: formData.inactivityAlertDays,
+              }}
+              onChange={(privacy) => setFormData({ ...formData, ...privacy })}
+            />
           </div>
         )}
 

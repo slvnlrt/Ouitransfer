@@ -21,9 +21,11 @@ class DownloadUrlCache {
   private getCacheKey(
     objectName: string,
     options?: { headers?: { "x-share-password"?: string } },
+    shareId?: string,
   ): string {
     const password = options?.headers?.["x-share-password"] || "";
-    return password ? `${objectName}:${password}` : objectName;
+    const parts = [objectName, password, shareId].filter(Boolean);
+    return parts.join("|");
   }
 
   /**
@@ -56,7 +58,7 @@ class DownloadUrlCache {
     options?: { headers?: { "x-share-password"?: string } },
     shareId?: string,
   ): Promise<string> {
-    const cacheKey = this.getCacheKey(objectName, options);
+    const cacheKey = this.getCacheKey(objectName, options, shareId);
     const now = Date.now();
     const cached = this.cache.get(cacheKey);
 

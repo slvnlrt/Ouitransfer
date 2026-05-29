@@ -1754,7 +1754,10 @@
       "emailLabel": "E-mail",
       "submit": "Continuer",
       "error": "Échec de l'envoi de l'identification. Veuillez réessayer.",
-      "optional": "optionnel"
+      "optional": "optionnel",
+      "nameRequired": "Le nom est requis",
+      "emailRequired": "L'e-mail est requis",
+      "emailInvalid": "Veuillez entrer une adresse e-mail valide"
     },
     "details": {
       "untitled": "Partage sans titre",
@@ -2665,9 +2668,12 @@
     "disabled": "Désactivé",
     "alwaysEnabled": "Toujours activé",
     "save": "Enregistrer les préférences",
+    "saving": "Enregistrement...",
     "saveSuccess": "Préférences de notifications enregistrées",
     "saveError": "Échec de l'enregistrement des préférences",
     "noChanges": "Aucune modification à enregistrer",
+    "loadError": "Échec du chargement des préférences de notifications",
+    "retry": "Réessayer",
     "types": {
       "password_reset": "Réinitialisation de mot de passe",
       "welcome": "Email de bienvenue",

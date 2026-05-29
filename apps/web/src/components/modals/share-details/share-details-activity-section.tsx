@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { Download, Eye } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -16,21 +16,6 @@ interface ShareDetailsActivitySectionProps {
 }
 
 const PAGE_LIMIT = 10;
-
-function formatRelativeTime(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffSeconds = Math.floor(diffMs / 1000);
-  const diffMinutes = Math.floor(diffSeconds / 60);
-  const diffHours = Math.floor(diffMinutes / 60);
-  const diffDays = Math.floor(diffHours / 24);
-
-  if (diffSeconds < 60) return `${diffSeconds}s ago`;
-  if (diffMinutes < 60) return `${diffMinutes}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  return `${diffDays}d ago`;
-}
 
 function truncateIp(ip: string | null): string {
   if (!ip) return "";
@@ -52,6 +37,7 @@ interface VisitEntryProps {
 
 function VisitEntry({ visit }: VisitEntryProps) {
   const t = useTranslations();
+  const format = useFormatter();
   const isDownload = visit.action === "download";
   const hasIdentity = !!(visit.visitorName || visit.visitorEmail);
 
@@ -82,7 +68,7 @@ function VisitEntry({ visit }: VisitEntryProps) {
         )}
       </div>
       <span className="text-xs text-muted-foreground flex-shrink-0 mt-0.5">
-        {formatRelativeTime(visit.createdAt)}
+        {format.relativeTime(new Date(visit.createdAt))}
       </span>
     </div>
   );

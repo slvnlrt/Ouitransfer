@@ -90,7 +90,7 @@ export function SettingsForm({
               onSubmit={(data) => onGroupSubmit(group as ValidGroup, data)}
               onToggleCollapse={() => onToggleCollapse(group as ValidGroup)}
             />
-            {isEmailGroup && smtpEnabled && <EmailAdminSection />}
+            {isEmailGroup && smtpEnabled && !collapsedGroups[group] && <EmailAdminSection />}
           </div>
         );
       })}

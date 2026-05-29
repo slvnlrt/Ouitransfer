@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Loader } from "@/components/ui/loader";
 import type { ShareMetadata } from "@/http/endpoints/shares/types";
 
 interface IdentificationFormProps {
@@ -22,6 +23,8 @@ interface IdentificationFormProps {
   isSubmitting: boolean;
   onSubmit: (name: string | undefined, email: string | undefined) => void;
 }
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function IdentificationForm({
   isOpen,
@@ -32,23 +35,39 @@ export function IdentificationForm({
   const t = useTranslations();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [attempted, setAttempted] = useState(false);
 
   const showNameField = metadata ? metadata.nameFieldRequired !== "HIDDEN" : false;
   const showEmailField = metadata ? metadata.emailFieldRequired !== "HIDDEN" : false;
   const nameRequired = metadata?.nameFieldRequired === "REQUIRED";
   const emailRequired = metadata?.emailFieldRequired === "REQUIRED";
 
+  const nameError = attempted && nameRequired && !name.trim();
+  const emailError =
+    attempted &&
+    ((emailRequired && !email.trim()) ||
+      (showEmailField && email.trim() && !EMAIL_REGEX.test(email.trim())));
+  const emailErrorMessage =
+    emailRequired && !email.trim()
+      ? t("share.identification.emailRequired")
+      : showEmailField && email.trim() && !EMAIL_REGEX.test(email.trim())
+        ? t("share.identification.emailInvalid")
+        : null;
+
+  const canSubmit = (() => {
+    if (nameRequired && !name.trim()) return false;
+    if (emailRequired && !email.trim()) return false;
+    if (showEmailField && email.trim() && !EMAIL_REGEX.test(email.trim())) return false;
+    return true;
+  })();
+
   const handleSubmit = () => {
+    setAttempted(true);
+    if (!canSubmit) return;
     onSubmit(
       showNameField ? name || undefined : undefined,
       showEmailField ? email || undefined : undefined,
     );
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSubmit();
-    }
   };
 
   return (
@@ -61,55 +80,79 @@ export function IdentificationForm({
             <p>{t("share.identification.subtitle")}</p>
           </div>
         </DialogHeader>
-        <div className="py-4 space-y-4">
-          {showNameField && (
-            <div className="space-y-2">
-              <Label htmlFor="visitor-name">
-                {t("share.identification.nameLabel")}
-                {!nameRequired && (
-                  <span className="ml-1 text-muted-foreground text-xs">
-                    ({t("share.identification.optional")})
-                  </span>
-                )}
-              </Label>
-              <Input
-                id="visitor-name"
-                type="text"
-                value={name}
-                placeholder={t("share.identification.nameLabel")}
-                onChange={(e) => setName(e.target.value)}
-                onKeyDown={handleKeyDown}
-                required={nameRequired}
-              />
+        {!metadata ? (
+          <div className="flex justify-center py-8">
+            <Loader size="sm" />
+          </div>
+        ) : (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSubmit();
+            }}
+          >
+            <div className="py-4 space-y-4">
+              {showNameField && (
+                <div className="space-y-2">
+                  <Label htmlFor="visitor-name">
+                    {t("share.identification.nameLabel")}
+                    {!nameRequired && (
+                      <span className="ml-1 text-muted-foreground text-xs">
+                        ({t("share.identification.optional")})
+                      </span>
+                    )}
+                  </Label>
+                  <Input
+                    id="visitor-name"
+                    type="text"
+                    value={name}
+                    placeholder={t("share.identification.nameLabel")}
+                    onChange={(e) => setName(e.target.value)}
+                    required={nameRequired}
+                    aria-invalid={nameError || undefined}
+                  />
+                  {nameError && (
+                    <p className="text-xs text-destructive">
+                      {t("share.identification.nameRequired")}
+                    </p>
+                  )}
+                </div>
+              )}
+              {showEmailField && (
+                <div className="space-y-2">
+                  <Label htmlFor="visitor-email">
+                    {t("share.identification.emailLabel")}
+                    {!emailRequired && (
+                      <span className="ml-1 text-muted-foreground text-xs">
+                        ({t("share.identification.optional")})
+                      </span>
+                    )}
+                  </Label>
+                  <Input
+                    id="visitor-email"
+                    type="email"
+                    value={email}
+                    placeholder={t("share.identification.emailLabel")}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required={emailRequired}
+                    aria-invalid={emailError || undefined}
+                  />
+                  {emailError && emailErrorMessage && (
+                    <p className="text-xs text-destructive">{emailErrorMessage}</p>
+                  )}
+                </div>
+              )}
             </div>
-          )}
-          {showEmailField && (
-            <div className="space-y-2">
-              <Label htmlFor="visitor-email">
-                {t("share.identification.emailLabel")}
-                {!emailRequired && (
-                  <span className="ml-1 text-muted-foreground text-xs">
-                    ({t("share.identification.optional")})
-                  </span>
-                )}
-              </Label>
-              <Input
-                id="visitor-email"
-                type="email"
-                value={email}
-                placeholder={t("share.identification.emailLabel")}
-                onChange={(e) => setEmail(e.target.value)}
-                onKeyDown={handleKeyDown}
-                required={emailRequired}
-              />
-            </div>
-          )}
-        </div>
-        <DialogFooter>
-          <Button onClick={handleSubmit} disabled={isSubmitting}>
-            {t("share.identification.submit")}
-          </Button>
-        </DialogFooter>
+            <DialogFooter>
+              <Button
+                type="submit"
+                disabled={!metadata || isSubmitting || (attempted && !canSubmit)}
+              >
+                {t("share.identification.submit")}
+              </Button>
+            </DialogFooter>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   );

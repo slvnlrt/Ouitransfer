@@ -25,6 +25,8 @@ export interface ShareFolder {
   id: string;
   name: string;
   description: string | null;
+  objectName: string;
+  userId: string;
   parentId: string | null;
   totalSize: string | null;
   createdAt: string;
@@ -60,7 +62,7 @@ export interface Share {
   maxViews: number | null;
   createdAt: string;
   updatedAt: string;
-  creatorId: string;
+  creatorId: string | null;
   security: ShareSecurity;
   files: ShareFile[];
   folders: ShareFolder[];
@@ -218,6 +220,9 @@ export interface ShareVisit {
   visitorEmail: string | null;
   createdAt: string;
   recipientId: string | null;
+  shareId: string;
+  fileId: string | null;
+  recipient: { email: string; name: string | null } | null;
 }
 
 export interface GetShareVisits200 {

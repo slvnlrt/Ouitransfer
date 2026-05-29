@@ -4,7 +4,7 @@ import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { getShareByAlias, getShareMetadata, identifyVisitor } from "@/http/endpoints/index";
 import type { IdentifyVisitorBody, Share } from "@/http/endpoints/shares/types";
@@ -45,20 +45,32 @@ export function usePublicShare() {
   const [password, setPassword] = useState("");
   const [isPasswordError, setIsPasswordError] = useState(false);
   const [isIdentificationSubmitting, setIsIdentificationSubmitting] = useState(false);
+  // Tracks when password was accepted but identification is still required.
+  // We use both state (for re-render) and a ref (for immediate access in queryFn).
+  const [acceptedPassword, setAcceptedPassword] = useState<string | null>(null);
+  const acceptedPasswordRef = useRef<string | null>(null);
 
   // --- Initial share fetch via useQuery ---
   const shareQuery = useQuery({
     queryKey: queryKeys.shares.byAlias(alias),
     queryFn: async () => {
-      const response = await getShareByAlias(alias);
+      // Use the ref to avoid stale closure — invalidateQueries triggers refetch
+      // before React re-renders with updated state.
+      const storedPassword = acceptedPasswordRef.current;
+      const params = storedPassword ? { password: storedPassword } : undefined;
+      const response = await getShareByAlias(alias, params);
       return response.data.share;
     },
     enabled: !!alias,
     retry: false, // 401 (password required) should not retry
   });
 
-  // --- Derived: identification modal is open when query fails with IDENTIFICATION_REQUIRED ---
-  const isIdentificationModalOpen = !shareQuery.data && isIdentificationRequired(shareQuery.error);
+  // --- Derived: identification modal is open when query fails with IDENTIFICATION_REQUIRED,
+  //     OR when password was accepted but identification is still needed ---
+  const isIdentificationModalOpen =
+    !shareQuery.data &&
+    (isIdentificationRequired(shareQuery.error) ||
+      (acceptedPassword !== null && isPasswordRequired(shareQuery.error)));
 
   // --- Fetch share metadata to know which fields to show (only when identification is required) ---
   const metadataQuery = useQuery({
@@ -95,6 +107,13 @@ export function usePublicShare() {
       if (isInvalidPassword(error)) {
         setIsPasswordError(true);
         toast.error(t("share.errors.invalidPassword"));
+      } else if (isIdentificationRequired(error)) {
+        // Password was correct but identification is also required.
+        // Store the accepted password so subsequent fetches include it,
+        // then refetch — the query will now use the stored password.
+        acceptedPasswordRef.current = password;
+        setAcceptedPassword(password);
+        queryClient.invalidateQueries({ queryKey: queryKeys.shares.byAlias(alias) });
       } else {
         toast.error(t("share.errors.loadFailed"));
       }
@@ -131,7 +150,9 @@ export function usePublicShare() {
   const isLoading =
     shareQuery.isLoading || passwordMutation.isPending || identificationMutation.isPending;
   // Show the password modal when the query fails with "Password required" and we don't have share data yet
-  const isPasswordModalOpen = !share && isPasswordRequired(shareQuery.error);
+  // Don't show it if the password was already accepted (identification step is next)
+  const isPasswordModalOpen =
+    !share && acceptedPassword === null && isPasswordRequired(shareQuery.error);
 
   // --- Password submit handler (reads password from state, matches original signature) ---
   const handlePasswordSubmit = async () => {
