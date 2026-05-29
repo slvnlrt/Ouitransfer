@@ -174,7 +174,8 @@
     "share": "Paylaş",
     "copied": "Kopyalandı",
     "copy": "Kopyala",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unavailable": "unavailable"
   },
   "createShare": {
     "title": "Paylaşım Oluştur",
@@ -1021,7 +1022,8 @@
     "addRecipient": "Alıcı Ekle",
     "bulkNotifyError": "Seçilen alıcılara bildirim gönderme başarısız",
     "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}"
+    "views": "{count, plural, one {# view} other {# views}}",
+    "notifyPartial": "Only {sent} of {total} recipients were notified"
   },
   "register": {
     "validation": {

@@ -312,6 +312,8 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
               />
             </div>
 
+            {/* Password field is cleared when toggling protection off (via formData.password = "").
+                The Create button is disabled when protection is on but password is empty. */}
             <div className="flex items-center gap-2">
               <Switch
                 checked={formData.isPasswordProtected}

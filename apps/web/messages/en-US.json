@@ -178,7 +178,8 @@
     "search": "Search",
     "copy": "Copy",
     "copied": "Copied",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unavailable": "unavailable"
   },
   "createShare": {
     "title": "Create Share",
@@ -1118,7 +1119,8 @@
     "duplicateEmail": "This recipient has already been added",
     "noRecipientsDescription": "Add recipients to share this content via email",
     "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}"
+    "views": "{count, plural, one {# view} other {# views}}",
+    "notifyPartial": "Only {sent} of {total} recipients were notified"
   },
   "register": {
     "validation": {

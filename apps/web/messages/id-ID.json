@@ -178,7 +178,8 @@
     "search": "Cari",
     "copy": "Salin",
     "copied": "Disalin",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unavailable": "unavailable"
   },
   "createShare": {
     "title": "Buat Berbagi",
@@ -1025,7 +1026,8 @@
     "duplicateEmail": "Penerima ini sudah ditambahkan",
     "noRecipientsDescription": "Tambahkan penerima untuk membagikan konten ini melalui email",
     "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}"
+    "views": "{count, plural, one {# view} other {# views}}",
+    "notifyPartial": "Only {sent} of {total} recipients were notified"
   },
   "register": {
     "validation": {

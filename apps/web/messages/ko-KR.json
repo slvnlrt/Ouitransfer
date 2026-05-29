@@ -174,7 +174,8 @@
     "share": "공유",
     "copied": "복사됨",
     "copy": "복사",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unavailable": "unavailable"
   },
   "createShare": {
     "title": "공유 생성",
@@ -1021,7 +1022,8 @@
     "addRecipient": "수신자 추가",
     "bulkNotifyError": "선택된 수신자들에게 알림 전송에 실패했습니다",
     "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}"
+    "views": "{count, plural, one {# view} other {# views}}",
+    "notifyPartial": "Only {sent} of {total} recipients were notified"
   },
   "register": {
     "validation": {

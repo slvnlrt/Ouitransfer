@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle, Download, Eye } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Loader } from "@/components/ui/loader";
@@ -104,6 +104,14 @@ export function ShareDetailsActivitySection({ shareId }: ShareDetailsActivitySec
   const visits = visitsQuery.data?.visits ?? [];
   const total = visitsQuery.data?.total ?? 0;
   const hasMore = visits.length > 0 && page * PAGE_LIMIT < total;
+
+  // If we land on a page > 1 that returns no results (e.g. page deleted/expired),
+  // auto-reset to page 1 instead of showing a misleading "no activity" message.
+  useEffect(() => {
+    if (visits.length === 0 && page > 1 && !visitsQuery.isLoading && !visitsQuery.isError) {
+      setPage(1);
+    }
+  }, [visits.length, page, visitsQuery.isLoading, visitsQuery.isError]);
 
   return (
     <div className="space-y-3">

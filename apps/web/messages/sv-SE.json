@@ -178,7 +178,8 @@
     "search": "Söka",
     "copy": "Kopiera",
     "copied": "Kopierade",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unavailable": "unavailable"
   },
   "createShare": {
     "title": "Skapa Share",
@@ -1025,7 +1026,8 @@
     "duplicateEmail": "Den här mottagaren har redan lagts till",
     "noRecipientsDescription": "Lägg till mottagare för att dela detta innehåll via e-post",
     "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}"
+    "views": "{count, plural, one {# view} other {# views}}",
+    "notifyPartial": "Only {sent} of {total} recipients were notified"
   },
   "register": {
     "validation": {

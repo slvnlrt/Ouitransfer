@@ -174,7 +174,8 @@
     "share": "Partager",
     "copied": "Copié",
     "copy": "Copier",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unavailable": "indisponible"
   },
   "createShare": {
     "title": "Créer un Partage",
@@ -1021,7 +1022,8 @@
     "addRecipient": "Ajouter Destinataire",
     "bulkNotifyError": "Échec de notification des destinataires sélectionnés",
     "notified": "Notifié",
-    "views": "{count, plural, one {# vue} other {# vues}}"
+    "views": "{count, plural, one {# vue} other {# vues}}",
+    "notifyPartial": "Seulement {sent} des {total} destinataires ont été notifiés"
   },
   "register": {
     "validation": {

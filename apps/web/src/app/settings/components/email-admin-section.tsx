@@ -53,10 +53,12 @@ export function EmailAdminSection() {
         <div className="grid grid-cols-3 gap-4">
           <div className="flex flex-col items-center justify-center rounded-md border bg-muted/30 p-3 text-center">
             <span className="text-2xl font-bold tabular-nums">
-              {emailStatsQuery.isLoading ? (
+              {emailStatsQuery.isError ? (
+                <span className="text-xs text-destructive">{t("common.unavailable")}</span>
+              ) : emailStatsQuery.isLoading ? (
                 <Loader className="h-5 w-5 animate-spin text-muted-foreground" />
               ) : (
-                (stats?.pending ?? "—")
+                (stats?.pending ?? 0)
               )}
             </span>
             <span className="mt-1 text-xs text-muted-foreground">
@@ -65,10 +67,12 @@ export function EmailAdminSection() {
           </div>
           <div className="flex flex-col items-center justify-center rounded-md border bg-muted/30 p-3 text-center">
             <span className="text-2xl font-bold tabular-nums text-green-600 dark:text-green-400">
-              {emailStatsQuery.isLoading ? (
+              {emailStatsQuery.isError ? (
+                <span className="text-xs text-destructive">{t("common.unavailable")}</span>
+              ) : emailStatsQuery.isLoading ? (
                 <Loader className="h-5 w-5 animate-spin text-muted-foreground" />
               ) : (
-                (stats?.sentLast24h ?? "—")
+                (stats?.sentLast24h ?? 0)
               )}
             </span>
             <span className="mt-1 text-xs text-muted-foreground">
@@ -77,10 +81,12 @@ export function EmailAdminSection() {
           </div>
           <div className="flex flex-col items-center justify-center rounded-md border bg-muted/30 p-3 text-center">
             <span className="text-2xl font-bold tabular-nums text-destructive">
-              {emailStatsQuery.isLoading ? (
+              {emailStatsQuery.isError ? (
+                <span className="text-xs text-destructive">{t("common.unavailable")}</span>
+              ) : emailStatsQuery.isLoading ? (
                 <Loader className="h-5 w-5 animate-spin text-muted-foreground" />
               ) : (
-                (stats?.failed ?? "—")
+                (stats?.failed ?? 0)
               )}
             </span>
             <span className="mt-1 text-xs text-muted-foreground">

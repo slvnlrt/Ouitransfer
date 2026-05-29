@@ -178,7 +178,8 @@
     "search": "חפש",
     "copy": "העתק",
     "copied": "הועתק",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unavailable": "unavailable"
   },
   "createShare": {
     "title": "צור שיתוף",
@@ -1025,7 +1026,8 @@
     "duplicateEmail": "נמען זה כבר נוסף",
     "noRecipientsDescription": "הוסף נמענים כדי לשתף תוכן זה באמצעות דוא\"ל",
     "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}"
+    "views": "{count, plural, one {# view} other {# views}}",
+    "notifyPartial": "Only {sent} of {total} recipients were notified"
   },
   "register": {
     "validation": {

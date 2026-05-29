@@ -174,7 +174,8 @@
     "share": "Condividi",
     "copied": "Copiato",
     "copy": "Copia",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unavailable": "unavailable"
   },
   "createShare": {
     "title": "Crea Condivisione",
@@ -1021,7 +1022,8 @@
     "addRecipient": "Aggiungi Destinatario",
     "bulkNotifyError": "Impossibile notificare i destinatari selezionati",
     "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}"
+    "views": "{count, plural, one {# view} other {# views}}",
+    "notifyPartial": "Only {sent} of {total} recipients were notified"
   },
   "register": {
     "validation": {

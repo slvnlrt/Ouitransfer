@@ -178,7 +178,8 @@
     "share": "Compartilhar",
     "copied": "Copiado",
     "copy": "Copiar",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unavailable": "unavailable"
   },
   "createShare": {
     "title": "Criar compartilhamento",
@@ -1025,7 +1026,8 @@
     "duplicateEmail": "Este destinatário já foi adicionado",
     "noRecipientsDescription": "Adicione destinatários para compartilhar este conteúdo via e-mail",
     "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}"
+    "views": "{count, plural, one {# view} other {# views}}",
+    "notifyPartial": "Only {sent} of {total} recipients were notified"
   },
   "register": {
     "validation": {

@@ -174,7 +174,8 @@
     "share": "Teilen",
     "copied": "Kopiert",
     "copy": "Kopieren",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unavailable": "unavailable"
   },
   "createShare": {
     "title": "Freigabe Erstellen",
@@ -1021,7 +1022,8 @@
     "addRecipient": "Empfänger hinzufügen",
     "bulkNotifyError": "Ausgewählte Empfänger konnten nicht benachrichtigt werden",
     "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}"
+    "views": "{count, plural, one {# view} other {# views}}",
+    "notifyPartial": "Only {sent} of {total} recipients were notified"
   },
   "register": {
     "validation": {

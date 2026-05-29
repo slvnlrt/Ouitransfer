@@ -174,7 +174,8 @@
     "share": "共有",
     "copied": "コピーしました",
     "copy": "コピー",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unavailable": "unavailable"
   },
   "createShare": {
     "title": "共有を作成",
@@ -1021,7 +1022,8 @@
     "addRecipient": "受信者を追加",
     "bulkNotifyError": "選択された受信者への通知に失敗しました",
     "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}"
+    "views": "{count, plural, one {# view} other {# views}}",
+    "notifyPartial": "Only {sent} of {total} recipients were notified"
   },
   "register": {
     "validation": {

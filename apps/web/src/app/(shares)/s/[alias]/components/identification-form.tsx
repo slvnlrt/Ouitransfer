@@ -116,7 +116,11 @@ export function IdentificationForm({
                 <div className="space-y-2">
                   <Label htmlFor="visitor-name">
                     {t("share.identification.nameLabel")}
-                    {!nameRequired && (
+                    {nameRequired ? (
+                      <span className="text-destructive ml-1" aria-hidden="true">
+                        *
+                      </span>
+                    ) : (
                       <span className="ml-1 text-muted-foreground text-xs">
                         ({t("share.identification.optional")})
                       </span>
@@ -142,7 +146,11 @@ export function IdentificationForm({
                 <div className="space-y-2">
                   <Label htmlFor="visitor-email">
                     {t("share.identification.emailLabel")}
-                    {!emailRequired && (
+                    {emailRequired ? (
+                      <span className="text-destructive ml-1" aria-hidden="true">
+                        *
+                      </span>
+                    ) : (
                       <span className="ml-1 text-muted-foreground text-xs">
                         ({t("share.identification.optional")})
                       </span>

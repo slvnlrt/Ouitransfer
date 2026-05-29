@@ -119,6 +119,20 @@ describe("ShareDetailsModal", () => {
     });
   });
 
+  it("shows loader while share data is loading", () => {
+    // Never resolve — keeps query in pending/loading state
+    mockGetShare.mockReturnValue(new Promise(() => {}));
+
+    const { Wrapper } = createWrapper();
+    render(<ShareDetailsModal shareId="share-1" onClose={vi.fn()} />, { wrapper: Wrapper });
+
+    // Loader renders with role="status" while share data is pending
+    // (ShareDetailsModal renders <Loader size="lg" /> when !share)
+    expect(screen.getByRole("status")).toBeInTheDocument();
+    // And share content is not visible yet
+    expect(screen.queryByTestId("info-section")).not.toBeInTheDocument();
+  });
+
   it("fetches exactly once on mount (no infinite loop)", async () => {
     // The old useCallback+useEffect pattern could cause runaway fetches.
     // With useQuery, the query runs exactly once per mount (unless invalidated).

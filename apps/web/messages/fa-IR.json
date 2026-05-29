@@ -178,7 +178,8 @@
     "search": "جست‌وجو",
     "copy": "کپی",
     "copied": "کپی شد",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unavailable": "unavailable"
   },
   "createShare": {
     "title": "ایجاد اشتراک",
@@ -1025,7 +1026,8 @@
     "duplicateEmail": "این گیرنده قبلاً اضافه شده است",
     "noRecipientsDescription": "گیرندگان را اضافه کنید تا این محتوا را از طریق ایمیل به اشتراک بگذارید",
     "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}"
+    "views": "{count, plural, one {# view} other {# views}}",
+    "notifyPartial": "Only {sent} of {total} recipients were notified"
   },
   "register": {
     "validation": {

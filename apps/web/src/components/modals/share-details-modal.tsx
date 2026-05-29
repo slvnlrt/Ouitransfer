@@ -80,8 +80,11 @@ export function ShareDetailsModal({
   const _isLoading = shareQuery.isLoading;
 
   const invalidateShare = () => {
+    // Invalidate the specific share detail and the list (e.g. name/description changes
+    // should be reflected in the shares list), but avoid the overly broad .all key
+    // which would also bust visit/alias/metadata caches unnecessarily.
     queryClient.invalidateQueries({ queryKey: queryKeys.shares.detail(shareId!) });
-    queryClient.invalidateQueries({ queryKey: queryKeys.shares.all });
+    queryClient.invalidateQueries({ queryKey: queryKeys.shares.list() });
   };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: invalidateShare is stable (reads queryClient + shareId which are stable references)

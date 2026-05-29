@@ -178,7 +178,8 @@
     "search": "Пошук",
     "copy": "Копіювати",
     "copied": "Скопійовано",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unavailable": "unavailable"
   },
   "createShare": {
     "title": "Створити спільний доступ",
@@ -1025,7 +1026,8 @@
     "duplicateEmail": "Цього отримувача вже додано",
     "noRecipientsDescription": "Додайте отримувачів, щоб поділитися цим контентом через електронну пошту",
     "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}"
+    "views": "{count, plural, one {# view} other {# views}}",
+    "notifyPartial": "Only {sent} of {total} recipients were notified"
   },
   "register": {
     "validation": {

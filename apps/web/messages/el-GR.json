@@ -178,7 +178,8 @@
     "search": "Αναζήτηση",
     "copy": "Αντιγραφή",
     "copied": "Αντιγράφηκε",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unavailable": "unavailable"
   },
   "createShare": {
     "title": "Δημιουργία κοινής χρήσης",
@@ -1025,7 +1026,8 @@
     "duplicateEmail": "Αυτός ο παραλήπτης έχει ήδη προστεθεί",
     "noRecipientsDescription": "Προσθέστε παραλήπτες για να κοινοποιήσετε αυτό το περιεχόμενο μέσω email",
     "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}"
+    "views": "{count, plural, one {# view} other {# views}}",
+    "notifyPartial": "Only {sent} of {total} recipients were notified"
   },
   "register": {
     "validation": {

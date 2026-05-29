@@ -118,6 +118,25 @@ Commits: `refactor(server): extract shared quotaOverrideField schema`, `fix: add
 
 ---
 
+## TD-29 — No CI guard against UTF-8 BOM in locale files
+
+**Context:** `apps/web/messages/*.json` locale files must not have a UTF-8 BOM
+(Byte Order Mark, `0xEF 0xBB 0xBF`). A BOM causes JSON.parse to fail at runtime,
+breaking all i18n for the affected locale. This has happened at least once during
+the project (introduced by a text editor that adds BOM by default).
+
+**Currently:** There is no automated CI check to catch BOM insertion. The issue
+is only caught at runtime when the locale fails to load.
+
+**Fix:** Add a CI step (e.g., a `grep -rP '\xEF\xBB\xBF'` pre-commit hook or
+a Vitest test in `locale-keys.test.ts`) that scans all `apps/web/messages/*.json`
+files for BOM bytes and fails the build if any are found.
+
+**Found during:** Post-review audit (8.2 batch 5b, mai 2026)
+**Severity:** Low — no current BOM in any locale file; risk is from future editor misconfiguration
+
+---
+
 ## TD-10 — Routes admin inconsistantes (/users-management vs /admin/ldap)
 
 **Context:** Les anciennes pages admin (`/users-management`, `/groups-management`, `/settings`)

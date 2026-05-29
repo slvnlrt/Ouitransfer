@@ -205,6 +205,19 @@ export function ShareMultipleItemsModal({
     } finally {
       setIsLoading(false);
     }
+
+    setFormData({
+      name: "",
+      description: "",
+      password: "",
+      expiresAt: "",
+      isPasswordProtected: false,
+      maxViews: "",
+      nameFieldRequired: "HIDDEN",
+      emailFieldRequired: "HIDDEN",
+      notifyOnDownload: false,
+      inactivityAlertDays: "",
+    });
   };
 
   const handleGenerateLink = async () => {

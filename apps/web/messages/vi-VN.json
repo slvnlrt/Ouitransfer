@@ -178,7 +178,8 @@
     "search": "Tìm kiếm",
     "copy": "Sao chép",
     "copied": "Đã sao chép",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unavailable": "unavailable"
   },
   "createShare": {
     "title": "Tạo chia sẻ",
@@ -1025,7 +1026,8 @@
     "duplicateEmail": "Người nhận này đã được thêm",
     "noRecipientsDescription": "Thêm người nhận để chia sẻ nội dung này qua email",
     "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}"
+    "views": "{count, plural, one {# view} other {# views}}",
+    "notifyPartial": "Only {sent} of {total} recipients were notified"
   },
   "register": {
     "validation": {

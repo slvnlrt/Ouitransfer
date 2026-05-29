@@ -58,6 +58,9 @@ export function usePublicShare() {
       // before React re-renders with updated state.
       const storedPassword = acceptedPasswordRef.current;
       const params = storedPassword ? { password: storedPassword } : undefined;
+      // NOTE: Password is re-sent on every refetch (the server re-validates).
+      // This is acceptable — the alternative (session cookie) would add complexity
+      // for marginal benefit.
       const response = await getShareByAlias(alias, params);
       return response.data.share;
     },

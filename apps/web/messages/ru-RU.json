@@ -174,7 +174,8 @@
     "share": "Поделиться",
     "copied": "Скопировано",
     "copy": "Копировать",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unavailable": "unavailable"
   },
   "createShare": {
     "title": "Создать общий доступ",
@@ -1021,7 +1022,8 @@
     "addRecipient": "Добавить получателя",
     "bulkNotifyError": "Не удалось уведомить выбранных получателей",
     "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}"
+    "views": "{count, plural, one {# view} other {# views}}",
+    "notifyPartial": "Only {sent} of {total} recipients were notified"
   },
   "register": {
     "validation": {

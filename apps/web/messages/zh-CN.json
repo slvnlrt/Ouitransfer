@@ -174,7 +174,8 @@
     "share": "分享",
     "copied": "已复制",
     "copy": "复制",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unavailable": "unavailable"
   },
   "createShare": {
     "title": "创建分享",
@@ -1021,7 +1022,8 @@
     "addRecipient": "添加收件人",
     "bulkNotifyError": "通知选中收件人失败",
     "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}"
+    "views": "{count, plural, one {# view} other {# views}}",
+    "notifyPartial": "Only {sent} of {total} recipients were notified"
   },
   "register": {
     "validation": {

@@ -174,7 +174,8 @@
     "share": "Udostępnij",
     "copied": "Skopiowano",
     "copy": "Kopiuj",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unavailable": "unavailable"
   },
   "createShare": {
     "title": "Utwórz Udostępnienie",
@@ -1021,7 +1022,8 @@
     "duplicateEmail": "Ten odbiorca został już dodany",
     "noRecipientsDescription": "Dodaj odbiorców, aby udostępnić tę zawartość pocztą e-mail",
     "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}"
+    "views": "{count, plural, one {# view} other {# views}}",
+    "notifyPartial": "Only {sent} of {total} recipients were notified"
   },
   "register": {
     "validation": {

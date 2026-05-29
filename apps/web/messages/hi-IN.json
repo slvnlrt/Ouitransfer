@@ -174,7 +174,8 @@
     "share": "साझा करें",
     "copied": "कॉपी किया गया",
     "copy": "कॉपी करें",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unavailable": "unavailable"
   },
   "createShare": {
     "title": "साझाकरण बनाएं",
@@ -1021,7 +1022,8 @@
     "addRecipient": "प्राप्तकर्ता जोड़ें",
     "bulkNotifyError": "चयनित प्राप्तकर्ताओं को सूचित करने में विफल",
     "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}"
+    "views": "{count, plural, one {# view} other {# views}}",
+    "notifyPartial": "Only {sent} of {total} recipients were notified"
   },
   "register": {
     "validation": {

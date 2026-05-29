@@ -174,7 +174,8 @@
     "share": "Delen",
     "copied": "Gekopieerd",
     "copy": "Kopiëren",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unavailable": "unavailable"
   },
   "createShare": {
     "title": "Delen Maken",
@@ -1021,7 +1022,8 @@
     "addRecipient": "Ontvanger Toevoegen",
     "bulkNotifyError": "Fout bij het waarschuwen van geselecteerde ontvangers",
     "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}"
+    "views": "{count, plural, one {# view} other {# views}}",
+    "notifyPartial": "Only {sent} of {total} recipients were notified"
   },
   "register": {
     "validation": {

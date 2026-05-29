@@ -178,7 +178,8 @@
     "search": "ค้นหา",
     "copy": "คัดลอก",
     "copied": "คัดลอกแล้ว",
-    "retry": "Retry"
+    "retry": "Retry",
+    "unavailable": "unavailable"
   },
   "createShare": {
     "title": "สร้างแชร์",
@@ -1025,7 +1026,8 @@
     "duplicateEmail": "ผู้รับนี้ได้รับการเพิ่มแล้ว",
     "noRecipientsDescription": "เพิ่มผู้รับเพื่อแชร์เนื้อหาผ่านทางอีเมล",
     "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}"
+    "views": "{count, plural, one {# view} other {# views}}",
+    "notifyPartial": "Only {sent} of {total} recipients were notified"
   },
   "register": {
     "validation": {

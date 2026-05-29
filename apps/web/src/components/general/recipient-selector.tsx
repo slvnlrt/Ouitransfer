@@ -45,21 +45,22 @@ export function RecipientSelector({
   };
 
   const handleAddRecipient = async () => {
-    if (!newRecipient.trim()) return;
+    const trimmed = newRecipient.trim();
+    if (!trimmed) return;
 
-    if (!isValidEmail(newRecipient)) {
+    if (!isValidEmail(trimmed)) {
       toast.error(t("recipientSelector.invalidEmail"));
       return;
     }
 
-    if (recipients.some((r) => r.email === newRecipient)) {
+    if (recipients.some((r) => r.email === trimmed)) {
       toast.error(t("recipientSelector.duplicateEmail"));
       return;
     }
 
     setIsAddingRecipient(true);
     try {
-      const res = await addRecipients(shareId, { emails: [newRecipient] });
+      const res = await addRecipients(shareId, { emails: [trimmed] });
       setRecipients(res.data.share.recipients);
       setNewRecipient("");
       toast.success(t("recipientSelector.addSuccess"));
@@ -108,14 +109,28 @@ export function RecipientSelector({
     const loadingToast = toast.loading(t("recipientSelector.sendingNotifications"));
 
     try {
-      await notifyRecipients(shareId, { emails });
+      const response = await notifyRecipients(shareId, { emails });
+      const notified = response.data.notifiedRecipients;
       toast.dismiss(loadingToast);
       if (emails === undefined) {
+        // "Notify all" — no expected count, show generic success
         toast.success(t("recipientSelector.notifySuccess"));
       } else if (emails.length === 1) {
-        toast.success(t("recipientSelector.singleNotifySuccess", { email: emails[0] }));
+        if (notified.length === 1) {
+          toast.success(t("recipientSelector.singleNotifySuccess", { email: emails[0] }));
+        } else {
+          toast.warning(
+            t("recipientSelector.notifyPartial", { sent: notified.length, total: emails.length }),
+          );
+        }
       } else {
-        toast.success(t("recipientSelector.bulkNotifySuccess", { count: emails.length }));
+        if (notified.length === emails.length) {
+          toast.success(t("recipientSelector.bulkNotifySuccess", { count: notified.length }));
+        } else {
+          toast.warning(
+            t("recipientSelector.notifyPartial", { sent: notified.length, total: emails.length }),
+          );
+        }
       }
     } catch {
       toast.dismiss(loadingToast);
