@@ -13,6 +13,7 @@ import {
 } from "./catalog.js";
 import { emailQueueEvents } from "./events.js";
 import { createTranslationFn, t } from "./i18n/loader.js";
+import { getMaxRetries } from "./queue.js";
 import { renderLayout } from "./templates/base-layout.js";
 import { buildUnsubscribeUrl, getAppUrl } from "./url-builder.js";
 
@@ -219,6 +220,7 @@ class EmailService {
     }
 
     // 8. Insert EmailJob
+    const maxAttempts = await getMaxRetries();
     await prisma.emailJob.create({
       data: {
         type,
@@ -231,6 +233,7 @@ class EmailService {
         priority: entry.priority,
         relatedId: options.shareId,
         listUnsubscribe,
+        maxAttempts,
       },
     });
 

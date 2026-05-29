@@ -98,6 +98,8 @@ function setupDefaultMocks() {
         return "true";
       case "appName":
         return "TestApp";
+      case "emailQueueMaxRetries":
+        return "3";
       default:
         throw new Error(`Unknown config key: ${key}`);
     }

@@ -33,6 +33,7 @@ const CLEANUP_EVERY_N_TICKS = 120;
 let currentTimeout: ReturnType<typeof setTimeout> | null = null;
 let tickCount = 0;
 let wakeListener: (() => void) | null = null;
+let isProcessing = false;
 
 // ─── Config helpers ───────────────────────────────────────────────────────────
 
@@ -48,7 +49,7 @@ async function getIntervalMs(): Promise<number> {
 }
 
 /** Read max retries from config. Falls back to 3. */
-async function _getMaxRetries(): Promise<number> {
+export async function getMaxRetries(): Promise<number> {
   try {
     const value = await getConfigValue("emailQueueMaxRetries");
     const parsed = parseInt(value, 10);
@@ -122,106 +123,113 @@ async function cleanupSentJobs(): Promise<void> {
  * parallel writes and sequential processing avoids contention.
  */
 async function processBatch(): Promise<void> {
-  const now = new Date();
+  if (isProcessing) return;
+  isProcessing = true;
 
-  const jobs = await prisma.emailJob.findMany({
-    where: {
-      status: "pending",
-      nextAttemptAt: { lte: now },
-    },
-    orderBy: [{ priority: "desc" }, { createdAt: "asc" }],
-    take: BATCH_SIZE,
-    select: {
-      id: true,
-      to: true,
-      subject: true,
-      htmlBody: true,
-      textBody: true,
-      listUnsubscribe: true,
-      attempts: true,
-      maxAttempts: true,
-    },
-  });
+  try {
+    const now = new Date();
 
-  for (const job of jobs) {
-    // 1. Lock the job
-    await prisma.emailJob.update({
-      where: { id: job.id },
-      data: {
-        status: "processing",
-        lockedAt: new Date(),
+    const jobs = await prisma.emailJob.findMany({
+      where: {
+        status: "pending",
+        nextAttemptAt: { lte: now },
+      },
+      orderBy: [{ priority: "desc" }, { createdAt: "asc" }],
+      take: BATCH_SIZE,
+      select: {
+        id: true,
+        to: true,
+        subject: true,
+        htmlBody: true,
+        textBody: true,
+        listUnsubscribe: true,
+        attempts: true,
+        maxAttempts: true,
       },
     });
 
-    // 2. Attempt to send
-    try {
-      const sendOptions: {
-        to: string;
-        subject: string;
-        html: string;
-        text: string;
-        listUnsubscribeHeader?: string;
-      } = {
-        to: job.to,
-        subject: job.subject,
-        html: job.htmlBody ?? "",
-        text: job.textBody ?? "",
-      };
-
-      if (job.listUnsubscribe) {
-        sendOptions.listUnsubscribeHeader = job.listUnsubscribe;
-      }
-
-      await smtpTransport.sendMail(sendOptions);
-
-      // 3. Mark sent
+    for (const job of jobs) {
+      // 1. Lock the job
       await prisma.emailJob.update({
         where: { id: job.id },
         data: {
-          status: "sent",
-          sentAt: new Date(),
-          lockedAt: null,
+          status: "processing",
+          lockedAt: new Date(),
         },
       });
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      const newAttempts = job.attempts + 1;
-      const maxAttempts = job.maxAttempts;
 
-      getLogger().warn(
-        { jobId: job.id, to: job.to, attempts: newAttempts, error: errorMessage },
-        "Email send failed",
-      );
+      // 2. Attempt to send
+      try {
+        const sendOptions: {
+          to: string;
+          subject: string;
+          html: string;
+          text: string;
+          listUnsubscribeHeader?: string;
+        } = {
+          to: job.to,
+          subject: job.subject,
+          html: job.htmlBody ?? "",
+          text: job.textBody ?? "",
+        };
 
-      if (newAttempts >= maxAttempts) {
-        // Permanently failed — no more retries
+        if (job.listUnsubscribe) {
+          sendOptions.listUnsubscribeHeader = job.listUnsubscribe;
+        }
+
+        await smtpTransport.sendMail(sendOptions);
+
+        // 3. Mark sent
         await prisma.emailJob.update({
           where: { id: job.id },
           data: {
-            status: "failed",
-            attempts: newAttempts,
-            lastError: errorMessage,
+            status: "sent",
+            sentAt: new Date(),
             lockedAt: null,
           },
         });
-      } else {
-        // Retry with exponential backoff
-        const backoffSeconds =
-          BACKOFF_SECONDS[newAttempts - 1] ?? BACKOFF_SECONDS[BACKOFF_SECONDS.length - 1];
-        const nextAttemptAt = new Date(Date.now() + backoffSeconds * 1000);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        const newAttempts = job.attempts + 1;
+        const maxAttempts = job.maxAttempts;
 
-        await prisma.emailJob.update({
-          where: { id: job.id },
-          data: {
-            status: "pending",
-            attempts: newAttempts,
-            lastError: errorMessage,
-            nextAttemptAt,
-            lockedAt: null,
-          },
-        });
+        getLogger().warn(
+          { jobId: job.id, to: job.to, attempts: newAttempts, error: errorMessage },
+          "Email send failed",
+        );
+
+        if (newAttempts >= maxAttempts) {
+          // Permanently failed — no more retries
+          await prisma.emailJob.update({
+            where: { id: job.id },
+            data: {
+              status: "failed",
+              attempts: newAttempts,
+              lastError: errorMessage,
+              lockedAt: null,
+            },
+          });
+        } else {
+          // Retry with exponential backoff
+          const backoffSeconds =
+            BACKOFF_SECONDS[newAttempts - 1] ?? BACKOFF_SECONDS[BACKOFF_SECONDS.length - 1];
+          const nextAttemptAt = new Date(Date.now() + backoffSeconds * 1000);
+
+          await prisma.emailJob.update({
+            where: { id: job.id },
+            data: {
+              status: "pending",
+              attempts: newAttempts,
+              lastError: errorMessage,
+              nextAttemptAt,
+              lockedAt: null,
+            },
+          });
+        }
       }
     }
+  } finally {
+    isProcessing = false;
   }
 }
 
@@ -237,12 +245,18 @@ async function processTick(): Promise<void> {
     getLogger().error({ err: error }, "Email queue processBatch failed");
   }
 
-  // Run cleanup approximately once per hour (every CLEANUP_EVERY_N_TICKS ticks)
+  // Run cleanup + stuck job recovery approximately once per hour (every CLEANUP_EVERY_N_TICKS ticks)
   if (tickCount % CLEANUP_EVERY_N_TICKS === 0) {
     try {
       await cleanupSentJobs();
     } catch (error) {
       getLogger().error({ err: error }, "Email queue cleanupSentJobs failed");
+    }
+
+    try {
+      await recoverStuckJobs();
+    } catch (error) {
+      getLogger().error({ err: error }, "Email queue periodic recoverStuckJobs failed");
     }
   }
 }

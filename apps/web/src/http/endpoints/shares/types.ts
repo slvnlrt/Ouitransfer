@@ -71,7 +71,8 @@ export interface Share {
   notifyOnDownload: boolean;
   inactivityAlertDays: number | null;
   lastDownloadedAt: string | null;
-  notifiedForExpiration: boolean;
+  notifiedForExpiring: boolean;
+  notifiedForExpired: boolean;
 }
 
 export interface CreateShare201 {

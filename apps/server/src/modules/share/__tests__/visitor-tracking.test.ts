@@ -178,7 +178,8 @@ function makeShare(overrides: Record<string, unknown> = {}) {
     inactivityAlertSent: false,
     lastDownloadedAt: null,
     notifyOnDownload: false,
-    notifiedForExpiration: false,
+    notifiedForExpiring: false,
+    notifiedForExpired: false,
     security: { id: SECURITY_ID, password: null, createdAt: new Date(), updatedAt: new Date() },
     files: [
       {
@@ -715,7 +716,8 @@ describe("Visitor Tracking — integration", () => {
         notifyOnDownload: true,
         inactivityAlertDays: 7,
         lastDownloadedAt: new Date("2024-06-01"),
-        notifiedForExpiration: false,
+        notifiedForExpiring: false,
+        notifiedForExpired: false,
       });
       mockShareFindUnique.mockResolvedValue(share);
 
@@ -735,7 +737,8 @@ describe("Visitor Tracking — integration", () => {
       expect(responseShare).toHaveProperty("inactivityAlertDays", 7);
       expect(responseShare).toHaveProperty("lastDownloadedAt");
       expect(responseShare.lastDownloadedAt).toMatch(/2024-06-01/);
-      expect(responseShare).toHaveProperty("notifiedForExpiration", false);
+      expect(responseShare).toHaveProperty("notifiedForExpiring", false);
+      expect(responseShare).toHaveProperty("notifiedForExpired", false);
     });
 
     it("includes extended recipient fields in share response", async () => {

@@ -382,11 +382,12 @@ export class ShareService {
       expiration: shareData.expiration ? new Date(shareData.expiration) : null,
     };
 
-    // If expiration is being extended, reset notifiedForExpiration to allow re-notification
+    // If expiration is being extended, reset both notification flags to allow re-notification
     if (shareData.expiration && share.expiration) {
       const newExp = new Date(shareData.expiration);
       if (newExp > share.expiration) {
-        updateData.notifiedForExpiration = false;
+        updateData.notifiedForExpiring = false;
+        updateData.notifiedForExpired = false;
       }
     }
 

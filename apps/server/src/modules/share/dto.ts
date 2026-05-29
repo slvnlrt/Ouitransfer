@@ -133,7 +133,8 @@ export const ShareResponseSchema = z.object({
   notifyOnDownload: z.boolean().describe("Notify owner on file download"),
   inactivityAlertDays: z.number().nullable().describe("Days of inactivity before alert"),
   lastDownloadedAt: z.string().datetime().nullable().describe("Last download timestamp"),
-  notifiedForExpiration: z.boolean().describe("Whether expiration notification was sent"),
+  notifiedForExpiring: z.boolean().describe("Whether expiring-soon notification was sent"),
+  notifiedForExpired: z.boolean().describe("Whether expired notification was sent"),
   recipients: z.array(
     z.object({
       id: z.string().describe("The recipient ID"),

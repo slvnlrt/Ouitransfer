@@ -1,11 +1,11 @@
 /**
  * share-update-expiration.test.ts
  *
- * Unit tests for the notifiedForExpiration reset logic in share updateShare().
+ * Unit tests for the notification flag reset logic in share updateShare().
  *
  * Tests:
- * - Extending share expiration resets notifiedForExpiration to false
- * - Reducing share expiration does NOT reset notifiedForExpiration
+ * - Extending share expiration resets notifiedForExpiring and notifiedForExpired to false
+ * - Reducing share expiration does NOT reset notification flags
  * - Setting expiration on a share without one does not reset (no previous expiration)
  */
 
@@ -114,7 +114,8 @@ function makeFullShare(overrides: Record<string, unknown> = {}) {
     inactivityAlertSent: false,
     lastDownloadedAt: null,
     notifyOnDownload: false,
-    notifiedForExpiration: true, // already notified
+    notifiedForExpiring: true, // already notified
+    notifiedForExpired: true,
     security: { id: SECURITY_ID, password: null, createdAt: new Date(), updatedAt: new Date() },
     files: [],
     folders: [],
@@ -127,7 +128,7 @@ function makeFullShare(overrides: Record<string, unknown> = {}) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe("updateShare — notifiedForExpiration reset", () => {
+describe("updateShare — notification flag reset", () => {
   beforeAll(() => {
     vi.stubEnv("JWT_SECRET", "a]test-jwt-secret-32-chars-long!");
     vi.stubEnv("CSRF_SECRET", "b]test-csrf-secret-32chars-long!");
@@ -139,11 +140,15 @@ describe("updateShare — notifiedForExpiration reset", () => {
     vi.clearAllMocks();
   });
 
-  it("resets notifiedForExpiration when expiration is extended", async () => {
+  it("resets both notification flags when expiration is extended", async () => {
     const currentExpiration = new Date("2024-07-01T00:00:00Z");
     const newExpiration = new Date("2024-08-01T00:00:00Z"); // later
 
-    const share = makeFullShare({ expiration: currentExpiration, notifiedForExpiration: true });
+    const share = makeFullShare({
+      expiration: currentExpiration,
+      notifiedForExpiring: true,
+      notifiedForExpired: true,
+    });
     // findShareById called twice: before update and after update
     mockFindShareById.mockResolvedValue(share);
     mockUpdateShare.mockResolvedValue(share);
@@ -156,16 +161,21 @@ describe("updateShare — notifiedForExpiration reset", () => {
     expect(mockUpdateShare).toHaveBeenCalledWith(
       SHARE_ID,
       expect.objectContaining({
-        notifiedForExpiration: false,
+        notifiedForExpiring: false,
+        notifiedForExpired: false,
       }),
     );
   });
 
-  it("does NOT reset notifiedForExpiration when expiration is reduced", async () => {
+  it("does NOT reset notification flags when expiration is reduced", async () => {
     const currentExpiration = new Date("2024-08-01T00:00:00Z");
     const newExpiration = new Date("2024-07-01T00:00:00Z"); // earlier
 
-    const share = makeFullShare({ expiration: currentExpiration, notifiedForExpiration: true });
+    const share = makeFullShare({
+      expiration: currentExpiration,
+      notifiedForExpiring: true,
+      notifiedForExpired: true,
+    });
     mockFindShareById.mockResolvedValue(share);
     mockUpdateShare.mockResolvedValue(share);
 
@@ -174,15 +184,20 @@ describe("updateShare — notifiedForExpiration reset", () => {
 
     await service.updateShare(SHARE_ID, { expiration: newExpiration.toISOString() }, CREATOR_ID);
 
-    // notifiedForExpiration should NOT be set to false
+    // Notification flags should NOT be set to false
     const updateCall = mockUpdateShare.mock.calls[0][1];
-    expect(updateCall.notifiedForExpiration).toBeUndefined();
+    expect(updateCall.notifiedForExpiring).toBeUndefined();
+    expect(updateCall.notifiedForExpired).toBeUndefined();
   });
 
-  it("does NOT reset notifiedForExpiration when share had no prior expiration", async () => {
+  it("does NOT reset notification flags when share had no prior expiration", async () => {
     const newExpiration = new Date("2024-08-01T00:00:00Z");
 
-    const share = makeFullShare({ expiration: null, notifiedForExpiration: false });
+    const share = makeFullShare({
+      expiration: null,
+      notifiedForExpiring: false,
+      notifiedForExpired: false,
+    });
     mockFindShareById.mockResolvedValue(share);
     mockUpdateShare.mockResolvedValue(share);
 
@@ -191,8 +206,9 @@ describe("updateShare — notifiedForExpiration reset", () => {
 
     await service.updateShare(SHARE_ID, { expiration: newExpiration.toISOString() }, CREATOR_ID);
 
-    // No notifiedForExpiration reset — no previous expiration to compare against
+    // No notification flag reset — no previous expiration to compare against
     const updateCall = mockUpdateShare.mock.calls[0][1];
-    expect(updateCall.notifiedForExpiration).toBeUndefined();
+    expect(updateCall.notifiedForExpiring).toBeUndefined();
+    expect(updateCall.notifiedForExpired).toBeUndefined();
   });
 });

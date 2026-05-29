@@ -116,7 +116,8 @@ model Share {
   inactivityAlertSent  Boolean   @default(false)
   lastDownloadedAt     DateTime?
   notifyOnDownload     Boolean   @default(false)
-  notifiedForExpiration Boolean  @default(false)
+  notifiedForExpiring  Boolean   @default(false)
+  notifiedForExpired   Boolean   @default(false)
 
   files      File[]           @relation("ShareFiles")
   folders    Folder[]         @relation("ShareFolders")
@@ -330,6 +331,8 @@ model ReverseShare {
   isActive           Boolean          @default(true)
   nameFieldRequired  FieldRequirement @default(OPTIONAL)
   emailFieldRequired FieldRequirement @default(OPTIONAL)
+  notifiedForExpiring  Boolean          @default(false)
+  notifiedForExpired   Boolean          @default(false)
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
 

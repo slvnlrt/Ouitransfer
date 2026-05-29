@@ -4,13 +4,14 @@
  * Unit tests for the notification scheduler (Batch 9).
  *
  * Tests:
- * - checkExpiringShares sends share_expiring and sets notifiedForExpiration
+ * - checkExpiringShares sends share_expiring and sets notifiedForExpiring
  * - checkExpiringShares skips already-notified shares
- * - checkExpiredShares sends share_expired and sets notifiedForExpiration
+ * - checkExpiredShares sends share_expired and sets notifiedForExpired
+ * - share_expiring does NOT block share_expired (separate flags)
  * - checkInactiveShares sends share_no_activity and sets inactivityAlertSent
  * - checkInactiveShares skips shares where inactivity threshold not reached
- * - checkExpiringReverseShares sends reverse_share_expiring
- * - checkExpiredReverseShares sends reverse_share_expired
+ * - checkExpiringReverseShares sends reverse_share_expiring and sets notifiedForExpiring
+ * - checkExpiredReverseShares sends reverse_share_expired and sets notifiedForExpired
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -21,12 +22,14 @@ const {
   mockShareFindMany,
   mockShareUpdate,
   mockReverseShareFindMany,
+  mockReverseShareUpdate,
   mockEmailSend,
   mockBuildShareManageUrl,
 } = vi.hoisted(() => ({
   mockShareFindMany: vi.fn(),
   mockShareUpdate: vi.fn().mockResolvedValue({}),
   mockReverseShareFindMany: vi.fn(),
+  mockReverseShareUpdate: vi.fn().mockResolvedValue({}),
   mockEmailSend: vi.fn().mockResolvedValue(undefined),
   mockBuildShareManageUrl: vi.fn().mockResolvedValue("https://app.test/shares/share-1"),
 }));
@@ -41,6 +44,7 @@ vi.mock("../../../shared/prisma.js", () => ({
     },
     reverseShare: {
       findMany: mockReverseShareFindMany,
+      update: mockReverseShareUpdate,
     },
   },
 }));
@@ -81,7 +85,8 @@ function makeShare(overrides: Record<string, unknown> = {}) {
     creatorId: CREATOR_ID,
     expiration: null,
     lastDownloadedAt: null,
-    notifiedForExpiration: false,
+    notifiedForExpiring: false,
+    notifiedForExpired: false,
     inactivityAlertDays: null,
     inactivityAlertSent: false,
     createdAt: new Date("2024-01-01"),
@@ -106,9 +111,9 @@ describe("Notification Scheduler", () => {
   // ── checkExpiringShares ────────────────────────────────────────────────────
 
   describe("checkExpiringShares", () => {
-    it("sends share_expiring and sets notifiedForExpiration=true", async () => {
+    it("sends share_expiring and sets notifiedForExpiring=true", async () => {
       const expiresAt = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000); // 2 days from now
-      const share = makeShare({ expiration: expiresAt, notifiedForExpiration: false });
+      const share = makeShare({ expiration: expiresAt, notifiedForExpiring: false });
       mockShareFindMany.mockResolvedValue([share]);
 
       const { checkExpiringShares } = await import("../notification.scheduler.js");
@@ -131,7 +136,7 @@ describe("Notification Scheduler", () => {
 
       expect(mockShareUpdate).toHaveBeenCalledWith({
         where: { id: SHARE_ID },
-        data: { notifiedForExpiration: true },
+        data: { notifiedForExpiring: true },
       });
     });
 
@@ -147,7 +152,7 @@ describe("Notification Scheduler", () => {
               not: null,
               gt: now,
             }),
-            notifiedForExpiration: false,
+            notifiedForExpiring: false,
             creatorId: { not: null },
           }),
         }),
@@ -181,9 +186,9 @@ describe("Notification Scheduler", () => {
   // ── checkExpiredShares ─────────────────────────────────────────────────────
 
   describe("checkExpiredShares", () => {
-    it("sends share_expired and sets notifiedForExpiration=true", async () => {
+    it("sends share_expired and sets notifiedForExpired=true", async () => {
       const expiredAt = new Date(now.getTime() - 24 * 60 * 60 * 1000); // 1 day ago
-      const share = makeShare({ expiration: expiredAt, notifiedForExpiration: false });
+      const share = makeShare({ expiration: expiredAt, notifiedForExpired: false });
       mockShareFindMany.mockResolvedValue([share]);
 
       const { checkExpiredShares } = await import("../notification.scheduler.js");
@@ -206,7 +211,7 @@ describe("Notification Scheduler", () => {
 
       expect(mockShareUpdate).toHaveBeenCalledWith({
         where: { id: SHARE_ID },
-        data: { notifiedForExpiration: true },
+        data: { notifiedForExpired: true },
       });
     });
 
@@ -222,10 +227,41 @@ describe("Notification Scheduler", () => {
               not: null,
               lt: now,
             }),
-            notifiedForExpiration: false,
+            notifiedForExpired: false,
           }),
         }),
       );
+    });
+  });
+
+  // ── share_expiring does NOT block share_expired ────────────────────────────
+
+  describe("share_expiring does NOT block share_expired", () => {
+    it("sends share_expired even if share was already notified for expiring", async () => {
+      const expiredAt = new Date(now.getTime() - 24 * 60 * 60 * 1000); // 1 day ago
+      // notifiedForExpiring=true (already warned), but notifiedForExpired=false
+      const share = makeShare({
+        expiration: expiredAt,
+        notifiedForExpiring: true,
+        notifiedForExpired: false,
+      });
+      mockShareFindMany.mockResolvedValue([share]);
+
+      const { checkExpiredShares } = await import("../notification.scheduler.js");
+      await checkExpiredShares();
+
+      expect(mockEmailSend).toHaveBeenCalledWith(
+        "share_expired",
+        expect.objectContaining({
+          to: "creator@example.com",
+          shareId: SHARE_ID,
+        }),
+      );
+
+      expect(mockShareUpdate).toHaveBeenCalledWith({
+        where: { id: SHARE_ID },
+        data: { notifiedForExpired: true },
+      });
     });
   });
 
@@ -328,13 +364,14 @@ describe("Notification Scheduler", () => {
   // ── checkExpiringReverseShares ─────────────────────────────────────────────
 
   describe("checkExpiringReverseShares", () => {
-    it("sends reverse_share_expiring for reverse shares expiring soon", async () => {
+    it("sends reverse_share_expiring and sets notifiedForExpiring=true", async () => {
       const expiresAt = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
       const rs = {
         id: "rs-1",
         name: "Upload request",
         creatorId: CREATOR_ID,
         expiration: expiresAt,
+        notifiedForExpiring: false,
         creator: makeCreator(),
       };
       mockReverseShareFindMany.mockResolvedValue([rs]);
@@ -353,19 +390,39 @@ describe("Notification Scheduler", () => {
           }),
         }),
       );
+
+      expect(mockReverseShareUpdate).toHaveBeenCalledWith({
+        where: { id: "rs-1" },
+        data: { notifiedForExpiring: true },
+      });
+    });
+
+    it("queries with notifiedForExpiring: false filter", async () => {
+      mockReverseShareFindMany.mockResolvedValue([]);
+      const { checkExpiringReverseShares } = await import("../notification.scheduler.js");
+      await checkExpiringReverseShares();
+
+      expect(mockReverseShareFindMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            notifiedForExpiring: false,
+          }),
+        }),
+      );
     });
   });
 
   // ── checkExpiredReverseShares ──────────────────────────────────────────────
 
   describe("checkExpiredReverseShares", () => {
-    it("sends reverse_share_expired for expired reverse shares", async () => {
+    it("sends reverse_share_expired and sets notifiedForExpired=true", async () => {
       const expiredAt = new Date(now.getTime() - 24 * 60 * 60 * 1000);
       const rs = {
         id: "rs-1",
         name: "Upload request",
         creatorId: CREATOR_ID,
         expiration: expiredAt,
+        notifiedForExpired: false,
         creator: makeCreator(),
       };
       mockReverseShareFindMany.mockResolvedValue([rs]);
@@ -381,6 +438,25 @@ describe("Notification Scheduler", () => {
           data: expect.objectContaining({
             reverseShareName: "Upload request",
             expiredAt: expiredAt.toISOString(),
+          }),
+        }),
+      );
+
+      expect(mockReverseShareUpdate).toHaveBeenCalledWith({
+        where: { id: "rs-1" },
+        data: { notifiedForExpired: true },
+      });
+    });
+
+    it("queries with notifiedForExpired: false filter", async () => {
+      mockReverseShareFindMany.mockResolvedValue([]);
+      const { checkExpiredReverseShares } = await import("../notification.scheduler.js");
+      await checkExpiredReverseShares();
+
+      expect(mockReverseShareFindMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            notifiedForExpired: false,
           }),
         }),
       );

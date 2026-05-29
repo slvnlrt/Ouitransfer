@@ -185,6 +185,18 @@ export class ReverseShareService {
     }
 
     const updatedReverseShare = await this.reverseShareRepository.update(id, data);
+
+    // If expiration is being extended, reset notification flags to allow re-notification
+    if (data.expiration && reverseShare.expiration) {
+      const newExp = new Date(data.expiration);
+      if (newExp > reverseShare.expiration) {
+        await prisma.reverseShare.update({
+          where: { id },
+          data: { notifiedForExpiring: false, notifiedForExpired: false },
+        });
+      }
+    }
+
     return ReverseShareResponseSchema.parse(this.formatReverseShareResponse(updatedReverseShare));
   }
 
