@@ -18,6 +18,15 @@ const adminPreValidation = createAdminPreValidation({ allowSetupBypass: false })
 
 // ─── HTML page helpers ────────────────────────────────────────────────────────
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 const BRAND_INDIGO = "#6366f1";
 
 const HTML_STYLES = `
@@ -52,10 +61,10 @@ function renderConfirmPage(token: string, type: string): string {
   <div class="card">
     <h1>Unsubscribe from notifications</h1>
     <p>You are about to unsubscribe from:</p>
-    <div class="type-badge">${type}</div>
+    <div class="type-badge">${escapeHtml(type)}</div>
     <p>You will no longer receive emails for this notification type.</p>
     <form method="POST" action="/notifications/unsubscribe">
-      <input type="hidden" name="token" value="${token}" />
+      <input type="hidden" name="token" value="${escapeHtml(token)}" />
       <button type="submit" class="btn">Confirm Unsubscribe</button>
     </form>
   </div>
@@ -76,7 +85,7 @@ function renderSuccessPage(type: string): string {
   <div class="card">
     <div class="success-icon">✅</div>
     <h1>Successfully unsubscribed</h1>
-    <p>You have been unsubscribed from <strong>${type}</strong> notifications.</p>
+    <p>You have been unsubscribed from <strong>${escapeHtml(type)}</strong> notifications.</p>
     <p>You can manage all your notification preferences in your account settings.</p>
   </div>
 </body>
@@ -292,7 +301,11 @@ export const notificationRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (request, reply) => {
       const { to } = request.body;
-      await emailService.send("test_email", { to, locale: "en", data: {} });
+      const admin = await prisma.user.findUnique({
+        where: { id: request.user.userId },
+        select: { locale: true },
+      });
+      await emailService.send("test_email", { to, locale: admin?.locale ?? "en", data: {} });
       return reply.send({ success: true, message: "Test email queued" });
     },
   });

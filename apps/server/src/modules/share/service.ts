@@ -56,7 +56,7 @@ export class ShareService {
   constructor(private readonly shareRepository: IShareRepository = new PrismaShareRepository()) {}
   private folderService = new FolderService();
 
-  private async formatShareResponse(share: ShareWithRelations | null) {
+  private async formatShareResponse(share: ShareWithRelations | null, isOwner = true) {
     if (!share) throw new NotFoundError("Share not found");
 
     return {
@@ -100,14 +100,16 @@ export class ShareService {
               }),
             )
           : [],
-      recipients:
-        share.recipients?.map((recipient) => ({
-          ...recipient,
-          notifiedAt: recipient.notifiedAt?.toISOString() ?? null,
-          lastAccessedAt: recipient.lastAccessedAt?.toISOString() ?? null,
-          createdAt: recipient.createdAt.toISOString(),
-          updatedAt: recipient.updatedAt.toISOString(),
-        })) || [],
+      // Strip recipients (including trackingTokens) from non-owner responses
+      recipients: isOwner
+        ? share.recipients?.map((recipient) => ({
+            ...recipient,
+            notifiedAt: recipient.notifiedAt?.toISOString() ?? null,
+            lastAccessedAt: recipient.lastAccessedAt?.toISOString() ?? null,
+            createdAt: recipient.createdAt.toISOString(),
+            updatedAt: recipient.updatedAt.toISOString(),
+          })) || []
+        : [],
       // Strip creator from response (internal use only)
       creator: undefined,
     };
@@ -241,11 +243,22 @@ export class ShareService {
           where: { trackingToken: context!.trackingToken },
         });
         tokenSatisfiesRequirements =
-          (share.nameFieldRequired !== "REQUIRED" || !!recipient?.name) &&
-          (share.emailFieldRequired !== "REQUIRED" || !!recipient?.email);
+          !!recipient &&
+          recipient.shareId === share.id &&
+          (share.nameFieldRequired !== "REQUIRED" || !!recipient.name) &&
+          (share.emailFieldRequired !== "REQUIRED" || !!recipient.email);
       }
 
-      if (!tokenSatisfiesRequirements && !hasCookie) {
+      // FIX 3: Re-validate cookie content against current share requirements
+      let cookieSatisfiesRequirements = false;
+      if (hasCookie) {
+        const cookie = context!.visitorCookie!;
+        cookieSatisfiesRequirements =
+          (share.nameFieldRequired !== "REQUIRED" || !!cookie.name) &&
+          (share.emailFieldRequired !== "REQUIRED" || !!cookie.email);
+      }
+
+      if (!tokenSatisfiesRequirements && !cookieSatisfiesRequirements) {
         throw new AppError(403, "Identification required", ErrorCodes.IDENTIFICATION_REQUIRED);
       }
     }
@@ -331,7 +344,7 @@ export class ShareService {
 
     // Update view count in memory to avoid a second DB round-trip
     const updatedShare = { ...share, views: share.views + 1 };
-    return ShareResponseSchema.parse(await this.formatShareResponse(updatedShare));
+    return ShareResponseSchema.parse(await this.formatShareResponse(updatedShare, false));
   }
 
   async updateShare(shareId: string, data: Omit<UpdateShareInput, "id">, userId: string) {
@@ -644,6 +657,13 @@ export class ShareService {
     const notifiedRecipients: string[] = [];
 
     for (const recipient of recipientsToNotify) {
+      // NOTE: These three writes (trackingToken backfill, email send, notifiedAt update) are
+      // NOT wrapped in a transaction. On partial failure:
+      // - Token backfill without send: harmless (token exists but email not sent, retry will work)
+      // - Send without notifiedAt: email queued but UI shows "not notified" — acceptable since
+      //   the email will be delivered and the user can re-trigger notification
+      // SQLite's single-writer nature limits concurrent corruption risk.
+
       // Ensure tracking token exists (backfill for pre-existing recipients)
       let trackingToken = recipient.trackingToken;
       if (!trackingToken) {
@@ -654,7 +674,9 @@ export class ShareService {
         });
       }
 
-      const personalizedLink = `${shareLink}?t=${trackingToken}`;
+      const linkUrl = new URL(shareLink);
+      linkUrl.searchParams.set("t", trackingToken);
+      const personalizedLink = linkUrl.toString();
       try {
         await emailService.send("share_invitation", {
           to: recipient.email,

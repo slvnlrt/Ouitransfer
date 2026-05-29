@@ -140,7 +140,7 @@ class EmailService {
           to: options.to,
           relatedId: options.shareId ?? null,
           createdAt: { gt: cutoff },
-          status: { not: "failed" },
+          status: { notIn: ["failed", "processing"] },
         },
       });
       if (recent) {
@@ -282,8 +282,8 @@ class EmailService {
       return "disabled";
     }
 
-    // Step 3: Per-share notifyOnDownload upgrade
-    if (shareId) {
+    // Step 3: Per-share notifyOnDownload upgrade (only for share_downloaded)
+    if (shareId && type === "share_downloaded") {
       const share = await prisma.share.findUnique({
         where: { id: shareId },
         select: { notifyOnDownload: true },

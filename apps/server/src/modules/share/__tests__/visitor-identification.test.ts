@@ -416,5 +416,109 @@ describe("Visitor Identification — integration", () => {
       expect(res.statusCode).toBe(403);
       expect(res.json().code).toBe("IDENTIFICATION_REQUIRED");
     });
+
+    // ── FIX 1 regression: recipients stripped from anonymous response ──────
+    it("anonymous GET does NOT include recipients with trackingTokens", async () => {
+      const share = makeShare({
+        nameFieldRequired: "HIDDEN",
+        emailFieldRequired: "HIDDEN",
+        recipients: [
+          {
+            id: "r-1",
+            shareId: SHARE_ID,
+            email: "alice@example.com",
+            name: "Alice",
+            trackingToken: "secret-tracking-token-abc",
+            notifiedAt: new Date("2025-01-01"),
+            lastAccessedAt: null,
+            accessCount: 0,
+            createdAt: new Date("2025-01-01"),
+            updatedAt: new Date("2025-01-01"),
+          },
+        ],
+      });
+      mockShareAliasFindUnique.mockResolvedValue({ shareId: SHARE_ID });
+      mockShareFindUnique.mockResolvedValue(share);
+      mockShareUpdateMany.mockResolvedValue({ count: 1 });
+
+      const res = await app.inject({
+        method: "GET",
+        url: `/shares/alias/${ALIAS}`,
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = res.json();
+      // Recipients should be empty for non-owner access
+      expect(body.share.recipients).toEqual([]);
+    });
+
+    // ── FIX 2 regression: cross-share tracking token rejected ──────────────
+    it("tracking token from a DIFFERENT share does NOT bypass identification gate", async () => {
+      const trackingToken = "token-from-other-share";
+      const share = makeShare({ nameFieldRequired: "REQUIRED" });
+      mockShareAliasFindUnique.mockResolvedValue({ shareId: SHARE_ID });
+      mockShareFindUnique.mockResolvedValue(share);
+      // Recipient exists but belongs to a different share
+      mockShareRecipientFindUnique.mockResolvedValue({
+        id: "recipient-99",
+        shareId: "OTHER-SHARE-ID", // ← different share!
+        email: "alice@example.com",
+        name: "Alice Smith",
+        trackingToken,
+        accessCount: 0,
+        lastAccessedAt: null,
+      });
+
+      const res = await app.inject({
+        method: "GET",
+        url: `/shares/alias/${ALIAS}?t=${trackingToken}`,
+      });
+
+      expect(res.statusCode).toBe(403);
+      expect(res.json().code).toBe("IDENTIFICATION_REQUIRED");
+    });
+
+    // ── FIX 3 regression: cookie re-validated against current requirements ─
+    it("cookie with name=null is rejected when nameFieldRequired=REQUIRED", async () => {
+      const share = makeShare({ nameFieldRequired: "REQUIRED", emailFieldRequired: "HIDDEN" });
+      mockShareAliasFindUnique.mockResolvedValue({ shareId: SHARE_ID });
+      mockShareFindUnique.mockResolvedValue(share);
+
+      // Simulate a cookie that was set when name was OPTIONAL (name is null)
+      const cookiePayload = JSON.stringify({ alias: ALIAS, name: null, email: "bob@example.com" });
+
+      const res = await app.inject({
+        method: "GET",
+        url: `/shares/alias/${ALIAS}`,
+        cookies: {
+          [`sv_${ALIAS}`]: cookiePayload,
+        },
+      });
+
+      // Cookie has name=null but share now requires name → 403
+      expect(res.statusCode).toBe(403);
+      expect(res.json().code).toBe("IDENTIFICATION_REQUIRED");
+    });
+
+    it("cookie with email=null is rejected when emailFieldRequired=REQUIRED", async () => {
+      const share = makeShare({ nameFieldRequired: "HIDDEN", emailFieldRequired: "REQUIRED" });
+      mockShareAliasFindUnique.mockResolvedValue({ shareId: SHARE_ID });
+      mockShareFindUnique.mockResolvedValue(share);
+
+      // Simulate a cookie that was set when email was OPTIONAL (email is null)
+      const cookiePayload = JSON.stringify({ alias: ALIAS, name: "Bob", email: null });
+
+      const res = await app.inject({
+        method: "GET",
+        url: `/shares/alias/${ALIAS}`,
+        cookies: {
+          [`sv_${ALIAS}`]: cookiePayload,
+        },
+      });
+
+      // Cookie has email=null but share now requires email → 403
+      expect(res.statusCode).toBe(403);
+      expect(res.json().code).toBe("IDENTIFICATION_REQUIRED");
+    });
   });
 });
