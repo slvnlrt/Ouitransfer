@@ -24,6 +24,9 @@ interface NodemailerTransportOptions {
   port: number;
   secure: boolean;
   requireTLS: boolean;
+  pool: boolean;
+  maxConnections: number;
+  maxMessages: number;
   tls?: { rejectUnauthorized: boolean };
   auth?: { user: string; pass: string };
 }
@@ -97,16 +100,36 @@ export class SmtpTransport {
 
   /**
    * Sends an email. Automatically adds the `from` address from the DB config.
+   * Translates `listUnsubscribeHeader` → nodemailer `headers` (RFC 8058).
    * Logs send duration and recipient via Pino.
    * Re-throws transport errors so the caller can handle them.
    */
-  async sendMail(options: Omit<SendMailOptions, "from"> & { from?: string }): Promise<void> {
+  async sendMail(
+    options: Omit<SendMailOptions, "from"> & {
+      from?: string;
+      listUnsubscribeHeader?: string;
+    },
+  ): Promise<void> {
     const transporter = await this.getTransporter();
 
     // Load from address from DB (needed even if transporter is cached)
     const fromName = await getConfigValue("smtpFromName");
     const fromEmail = await getConfigValue("smtpFromEmail");
     const from = options.from ?? `"${fromName}" <${fromEmail}>`;
+
+    // Translate listUnsubscribeHeader → nodemailer headers (RFC 8058)
+    if (options.listUnsubscribeHeader) {
+      const existingHeaders =
+        typeof options.headers === "object" && !Array.isArray(options.headers)
+          ? (options.headers as Record<string, string>)
+          : {};
+      options.headers = {
+        ...existingHeaders,
+        "List-Unsubscribe": options.listUnsubscribeHeader,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      };
+      delete options.listUnsubscribeHeader;
+    }
 
     const start = Date.now();
     await transporter.sendMail({ ...options, from });
@@ -194,6 +217,9 @@ export class SmtpTransport {
       port,
       secure,
       requireTLS,
+      pool: true,
+      maxConnections: 5,
+      maxMessages: 100,
     };
 
     if (smtpSecure !== "none") {

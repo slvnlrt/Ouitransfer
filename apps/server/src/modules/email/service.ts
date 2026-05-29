@@ -112,16 +112,25 @@ class EmailService {
       return;
     }
 
-    // 2. For non-critical types, check user preferences
+    // 2. Resolve appName once (used in render, subject, and layout)
+    let appName: string;
+    try {
+      appName = await getConfigValue("appName");
+    } catch {
+      appName = "Ouitransfer";
+    }
+
+    // 3. For non-critical types, resolve frequency ONCE and reuse
+    let frequency: "immediate" | "daily_digest" | "disabled" | null = null;
     if (!entry.isCritical && options.userId) {
-      const frequency = await this.resolveFrequency(type, options.userId, options.shareId);
+      frequency = await this.resolveFrequency(type, options.userId, options.shareId);
       if (frequency === "disabled") {
         log.debug({ type, userId: options.userId }, "Notification disabled by user preference");
         return;
       }
     }
 
-    // 3. Check cooldown for noisy types
+    // 4. Check cooldown for noisy types
     const cooldown = (entry as NotificationTypeConfig).cooldownSeconds;
     if (cooldown && cooldown > 0) {
       const cutoff = new Date(Date.now() - cooldown * 1000);
@@ -140,7 +149,25 @@ class EmailService {
       }
     }
 
-    // 4. Render template
+    // 5. Generate unsubscribe URL ONCE (used in both footer link and List-Unsubscribe header)
+    let unsubscribeUrl: string | undefined;
+    if (entry.hasUnsubscribe && options.userId) {
+      unsubscribeUrl = await this.generateUnsubscribeUrl(options.userId, type);
+    }
+
+    // 6. Build string params from payload data for i18n interpolation.
+    //    Convert all payload values to strings so they can be used in subjects and templates.
+    const dataParams: Record<string, string> = {};
+    for (const [key, value] of Object.entries(options.data as Record<string, unknown>)) {
+      if (typeof value === "string") {
+        dataParams[key] = value;
+      } else if (typeof value === "number" || typeof value === "boolean") {
+        dataParams[key] = String(value);
+      }
+      // Arrays and objects are skipped — they don't interpolate into {key} placeholders
+    }
+
+    // 7. Render template
     let htmlBody: string;
     let textBody: string;
     try {
@@ -148,19 +175,11 @@ class EmailService {
       const slots = entry.render(options.data as unknown, tr);
 
       // Add unsubscribe URL if applicable
-      if (entry.hasUnsubscribe && options.userId) {
-        slots.unsubscribeUrl = await this.generateUnsubscribeUrl(options.userId, type);
+      if (unsubscribeUrl) {
+        slots.unsubscribeUrl = unsubscribeUrl;
       }
 
-      // Resolve appName for the layout
-      let appName: string;
-      try {
-        appName = await getConfigValue("appName");
-      } catch {
-        appName = "Ouitransfer";
-      }
-
-      const output = renderLayout(slots, { appName });
+      const output = renderLayout(slots, { appName, locale: options.locale }, tr);
       htmlBody = output.html;
       textBody = output.text;
     } catch (renderError) {
@@ -186,40 +205,33 @@ class EmailService {
       return;
     }
 
-    // 5. Resolve subject from i18n (fallback to type name until Batch 6 adds keys)
+    // 8. Resolve subject from i18n with full payload params (plain text, no HTML escaping)
     let subject: string;
     try {
-      let appName: string;
-      try {
-        appName = await getConfigValue("appName");
-      } catch {
-        appName = "Ouitransfer";
-      }
-
       const prefix = typeToI18nPrefix(type);
-      subject = t(options.locale, `${prefix}.subject`, { appName });
+      subject = t(options.locale, `${prefix}.subject`, { appName, ...dataParams });
     } catch {
-      // i18n key not found yet — use type as fallback subject
+      // i18n key not found — use type as fallback subject
+      log.warn(
+        { type, locale: options.locale },
+        "Missing subject i18n key, using type as fallback",
+      );
       subject = type;
     }
 
-    // 6. Resolve unsubscribe header
+    // 9. Resolve unsubscribe header
     let listUnsubscribe: string | undefined;
-    if (entry.hasUnsubscribe && options.userId) {
-      const unsubUrl = await this.generateUnsubscribeUrl(options.userId, type);
-      listUnsubscribe = `<${unsubUrl}>`;
+    if (unsubscribeUrl) {
+      listUnsubscribe = `<${unsubscribeUrl}>`;
     }
 
-    // 7. Determine job status based on frequency resolution
+    // 10. Determine job status based on frequency (already resolved above)
     let status = "pending";
-    if (!entry.isCritical && options.userId) {
-      const frequency = await this.resolveFrequency(type, options.userId, options.shareId);
-      if (frequency === "daily_digest") {
-        status = "digest_pending";
-      }
+    if (frequency === "daily_digest") {
+      status = "digest_pending";
     }
 
-    // 8. Insert EmailJob
+    // 11. Insert EmailJob
     const maxAttempts = await getMaxRetries();
     await prisma.emailJob.create({
       data: {
@@ -237,7 +249,7 @@ class EmailService {
       },
     });
 
-    // 9. Wake the queue for priority 1 jobs
+    // 12. Wake the queue for priority 1 jobs
     if (entry.priority === 1) {
       emailQueueEvents.emit("wake");
     }

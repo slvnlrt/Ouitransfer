@@ -1,6 +1,7 @@
 import { prisma } from "../../shared/prisma.js";
 import { ForbiddenError, NotFoundError } from "../../utils/app-error.js";
 import { getConfigValue, validatePasswordAuthDisable } from "../config/service.js";
+import { invalidateAppUrlCache } from "../email/url-builder.js";
 
 export class AppService {
   async getAppInfo() {
@@ -77,10 +78,17 @@ export class AppService {
       throw new NotFoundError("Configuration not found");
     }
 
-    return prisma.appConfig.update({
+    const result = await prisma.appConfig.update({
       where: { key },
       data: { value },
     });
+
+    // Invalidate cached appUrl when it's updated
+    if (key === "appUrl") {
+      invalidateAppUrlCache();
+    }
+
+    return result;
   }
 
   async bulkUpdateConfigs(updates: Array<{ key: string; value: string }>) {
@@ -105,7 +113,7 @@ export class AppService {
       throw new NotFoundError(`Configurations not found: ${missingKeys.join(", ")}`);
     }
 
-    return prisma.$transaction(
+    const result = await prisma.$transaction(
       updates.map((update) =>
         prisma.appConfig.update({
           where: { key: update.key },
@@ -113,5 +121,12 @@ export class AppService {
         }),
       ),
     );
+
+    // Invalidate cached appUrl if it was part of the bulk update
+    if (updates.some((update) => update.key === "appUrl")) {
+      invalidateAppUrlCache();
+    }
+
+    return result;
   }
 }

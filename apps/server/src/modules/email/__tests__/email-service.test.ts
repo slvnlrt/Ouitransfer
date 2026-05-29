@@ -301,7 +301,7 @@ describe("EmailService", () => {
       expect(createArg.data.status).toBe("pending");
     });
 
-    it("calls template render + renderLayout", async () => {
+    it("calls template render + renderLayout with locale and translation fn", async () => {
       await emailService.send("welcome", {
         to: "user@test.com",
         locale: "fr",
@@ -311,8 +311,9 @@ describe("EmailService", () => {
       expect(mockCreateTranslationFn).toHaveBeenCalledWith("fr");
       expect(mockRenderLayout).toHaveBeenCalledOnce();
       const layoutCall = mockRenderLayout.mock.calls[0];
-      // First arg is slots, second is config
-      expect(layoutCall[1]).toEqual({ appName: "TestApp" });
+      // First arg is slots, second is config (with locale), third is translation fn
+      expect(layoutCall[1]).toEqual({ appName: "TestApp", locale: "fr" });
+      expect(typeof layoutCall[2]).toBe("function"); // translation fn
     });
 
     it("adds unsubscribe URL for hasUnsubscribe=true + userId", async () => {
@@ -406,7 +407,7 @@ describe("EmailService", () => {
       expect(createArg.data.maxAttempts).toBe(0);
     });
 
-    it("uses fallback subject when i18n key is missing", async () => {
+    it("uses fallback subject when i18n key is missing and logs warning", async () => {
       mockT.mockImplementation(() => {
         throw new Error("Missing i18n key");
       });
@@ -420,6 +421,11 @@ describe("EmailService", () => {
       const createArg = mockPrisma.emailJob.create.mock.calls[0][0];
       // Fallback subject is the type name
       expect(createArg.data.subject).toBe("welcome");
+      // FIX 11: Should log a warning when falling back
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        expect.objectContaining({ type: "welcome", locale: "en" }),
+        expect.stringContaining("Missing subject i18n key"),
+      );
     });
 
     it("with cooldown: skips when recent job exists for same type/to/shareId", async () => {

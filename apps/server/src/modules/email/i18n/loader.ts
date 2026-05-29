@@ -2,6 +2,8 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { escapeHtml } from "../../../utils/escape-html.js";
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type TranslationFn = (dotPath: string, params?: Record<string, string>) => string;
@@ -18,6 +20,8 @@ const cache = new Map<string, Record<string, unknown>>();
 
 /**
  * Translate a dot-separated key for the given locale.
+ * Values are interpolated **without** HTML escaping — suitable for
+ * plain-text contexts (email subjects, logs, etc.).
  *
  * Fallback chain:
  *   1. Requested locale
@@ -27,39 +31,39 @@ const cache = new Map<string, Record<string, unknown>>();
  * Interpolation: replaces `{key}` placeholders with values from `params`.
  */
 export function t(locale: string, dotPath: string, params?: Record<string, string>): string {
-  // Try the requested locale first
-  const localeMessages = loadLocale(locale);
-  const localeValue = localeMessages !== null ? resolvePath(localeMessages, dotPath) : undefined;
+  return resolveAndInterpolate(locale, dotPath, params, false);
+}
 
-  if (localeValue !== undefined) {
-    return interpolate(localeValue, params);
-  }
-
-  // Fall back to English
-  const enMessages = loadLocale("en");
-  if (enMessages === null) {
-    throw new Error(`[i18n] Could not load en.json (messages directory not found)`);
-  }
-
-  const enValue = resolvePath(enMessages, dotPath);
-  if (enValue === undefined) {
-    throw new Error(
-      `[i18n] Missing translation key "${dotPath}" in en.json — this is a bug, add the key`,
-    );
-  }
-
-  return interpolate(enValue, params);
+/**
+ * Translate a dot-separated key for the given locale, **HTML-escaping** all
+ * interpolated values. Use this for any string that will be embedded inside
+ * an HTML email body.
+ *
+ * The HTML markup in the locale template itself (e.g. `<strong>`) is preserved;
+ * only the substituted *values* are escaped.
+ */
+export function tHtml(locale: string, dotPath: string, params?: Record<string, string>): string {
+  return resolveAndInterpolate(locale, dotPath, params, true);
 }
 
 /**
  * Returns a curried translation function bound to a specific locale.
- * Useful in template functions so they don't need to thread the locale everywhere.
+ * **HTML-escapes** all interpolated values — designed for email body templates.
  *
  * @example
  * const tr = createTranslationFn("fr");
- * tr("common.footer", { appName: "Acme" });
+ * tr("common.footer", { appName: "Acme" }); // Acme is HTML-escaped
  */
 export function createTranslationFn(locale: string): TranslationFn {
+  return (dotPath: string, params?: Record<string, string>) => tHtml(locale, dotPath, params);
+}
+
+/**
+ * Returns a curried translation function bound to a specific locale.
+ * Does **not** HTML-escape values — suitable for plain-text contexts
+ * (email subjects, plain-text body, etc.).
+ */
+export function createPlainTranslationFn(locale: string): TranslationFn {
   return (dotPath: string, params?: Record<string, string>) => t(locale, dotPath, params);
 }
 
@@ -85,6 +89,39 @@ export function validateI18nKeys(requiredKeys: string[]): void {
 }
 
 // ─── Internal helpers ─────────────────────────────────────────────────────────
+
+/**
+ * Core resolve-and-interpolate implementation shared by `t()` and `tHtml()`.
+ */
+function resolveAndInterpolate(
+  locale: string,
+  dotPath: string,
+  params: Record<string, string> | undefined,
+  htmlEscape: boolean,
+): string {
+  // Try the requested locale first
+  const localeMessages = loadLocale(locale);
+  const localeValue = localeMessages !== null ? resolvePath(localeMessages, dotPath) : undefined;
+
+  if (localeValue !== undefined) {
+    return interpolate(localeValue, params, htmlEscape);
+  }
+
+  // Fall back to English
+  const enMessages = loadLocale("en");
+  if (enMessages === null) {
+    throw new Error(`[i18n] Could not load en.json (messages directory not found)`);
+  }
+
+  const enValue = resolvePath(enMessages, dotPath);
+  if (enValue === undefined) {
+    throw new Error(
+      `[i18n] Missing translation key "${dotPath}" in en.json — this is a bug, add the key`,
+    );
+  }
+
+  return interpolate(enValue, params, htmlEscape);
+}
 
 /**
  * Loads and caches the JSON messages file for the given locale.
@@ -113,14 +150,13 @@ function loadLocale(locale: string): Record<string, unknown> | null {
  */
 function resolvePath(obj: Record<string, unknown>, dotPath: string): string | undefined {
   const parts = dotPath.split(".");
-  // biome-ignore lint/suspicious/noExplicitAny: traversing an unknown JSON tree requires any
-  let current: any = obj;
+  let current: unknown = obj;
 
   for (const part of parts) {
-    if (current === null || typeof current !== "object" || !(part in current)) {
+    if (current === null || typeof current !== "object" || !(part in (current as object))) {
       return undefined;
     }
-    current = current[part];
+    current = (current as Record<string, unknown>)[part];
   }
 
   if (typeof current !== "string") {
@@ -133,14 +169,24 @@ function resolvePath(obj: Record<string, unknown>, dotPath: string): string | un
 /**
  * Replaces `{key}` placeholders in a template string with values from params.
  * Unknown placeholders (no matching param key) are left as-is.
+ *
+ * When `escape` is true, each substituted value is HTML-escaped before
+ * insertion. This protects against XSS when user-controlled data flows
+ * into HTML email templates.
  */
-function interpolate(template: string, params?: Record<string, string>): string {
+function interpolate(
+  template: string,
+  params: Record<string, string> | undefined,
+  htmlEscape: boolean,
+): string {
   if (!params || Object.keys(params).length === 0) {
     return template;
   }
 
   return template.replace(/\{(\w+)\}/g, (match, key: string) => {
-    return key in params ? params[key] : match;
+    if (!(key in params)) return match;
+    const value = params[key];
+    return htmlEscape ? escapeHtml(value) : value;
   });
 }
 

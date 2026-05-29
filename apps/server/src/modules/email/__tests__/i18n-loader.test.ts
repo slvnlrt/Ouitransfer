@@ -7,6 +7,19 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("node:fs");
 
+// Use real escapeHtml — it's a pure function, no I/O
+vi.mock("../../../utils/escape-html.js", async () => {
+  return {
+    escapeHtml: (str: string) =>
+      str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;"),
+  };
+});
+
 const mockedFs = vi.mocked(fs);
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
@@ -56,7 +69,14 @@ function setupFsMocks(locales: Record<string, object>) {
 // ─── Imports (after mocks) ─────────────────────────────────────────────────────
 // Import after vi.mock() so the module receives the mocked fs.
 
-import { clearLocaleCache, createTranslationFn, t, validateI18nKeys } from "../i18n/loader.js";
+import {
+  clearLocaleCache,
+  createPlainTranslationFn,
+  createTranslationFn,
+  t,
+  tHtml,
+  validateI18nKeys,
+} from "../i18n/loader.js";
 
 // ─── Tests ─────────────────────────────────────────────────────────────────────
 
@@ -131,15 +151,27 @@ describe("i18n loader", () => {
     expect(result).toBe("This email was sent by <strong>{appName}</strong>");
   });
 
-  // ── createTranslationFn ─────────────────────────────────────────────────────
+  // ── createTranslationFn (HTML-escaping) ─────────────────────────────────────
 
-  it("createTranslationFn(locale) returns a curried function", () => {
+  it("createTranslationFn(locale) returns a curried function that HTML-escapes values", () => {
     setupFsMocks({ en: EN_MESSAGES, fr: FR_MESSAGES });
 
     const tr = createTranslationFn("fr");
     const result = tr("common.footer", { appName: "Acme" });
 
     expect(result).toBe("Cet e-mail a été envoyé par <strong>Acme</strong>");
+  });
+
+  it("createTranslationFn HTML-escapes user-controlled values (XSS prevention)", () => {
+    setupFsMocks({ en: EN_MESSAGES });
+
+    const tr = createTranslationFn("en");
+    const result = tr("shareInvitation.subject", {
+      senderName: '<script>alert("xss")</script>',
+    });
+
+    expect(result).not.toContain("<script>");
+    expect(result).toContain("&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;");
   });
 
   it("createTranslationFn falls back to en for missing keys in locale", () => {
@@ -150,6 +182,43 @@ describe("i18n loader", () => {
     const result = tr("shareInvitation.subject", { senderName: "Bob" });
 
     expect(result).toBe("You have received a share from Bob");
+  });
+
+  // ── createPlainTranslationFn (no escaping) ─────────────────────────────────
+
+  it("createPlainTranslationFn does NOT HTML-escape values", () => {
+    setupFsMocks({ en: EN_MESSAGES });
+
+    const tr = createPlainTranslationFn("en");
+    const result = tr("shareInvitation.subject", {
+      senderName: '<script>alert("xss")</script>',
+    });
+
+    expect(result).toContain('<script>alert("xss")</script>');
+  });
+
+  // ── tHtml ──────────────────────────────────────────────────────────────────
+
+  it("tHtml HTML-escapes interpolated values", () => {
+    setupFsMocks({ en: EN_MESSAGES });
+
+    const result = tHtml("en", "shareInvitation.subject", {
+      senderName: "<b>Evil</b>",
+    });
+
+    expect(result).not.toContain("<b>Evil</b>");
+    expect(result).toContain("&lt;b&gt;Evil&lt;/b&gt;");
+  });
+
+  it("tHtml preserves template HTML (e.g. <strong> tags from locale file)", () => {
+    setupFsMocks({ en: EN_MESSAGES });
+
+    const result = tHtml("en", "common.footer", { appName: "Safe&Co" });
+
+    // Template <strong> tags are preserved
+    expect(result).toContain("<strong>");
+    // But the interpolated value is escaped
+    expect(result).toContain("Safe&amp;Co");
   });
 
   // ── validateI18nKeys ────────────────────────────────────────────────────────

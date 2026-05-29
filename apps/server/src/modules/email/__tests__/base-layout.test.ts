@@ -1,7 +1,25 @@
 import { describe, expect, it } from "vitest";
+import type { TranslationFn } from "../i18n/loader.js";
 import { renderLayout } from "../templates/base-layout.js";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+
+/** Mock translation function that returns the same strings as the fallback English */
+const mockTr: TranslationFn = (path, params) => {
+  const strings: Record<string, string> = {
+    "common.footer": "Sent by <strong>{appName}</strong>",
+    "common.footerIgnore": "If you didn't expect this, ignore it.",
+    "common.poweredBy": "Powered by Ouitransfer",
+    "common.unsubscribe": "Unsubscribe from these notifications",
+  };
+  let result = strings[path] ?? `[${path}]`;
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      result = result.replace(`{${key}}`, value);
+    }
+  }
+  return result;
+};
 
 const DEFAULT_CONFIG = { appName: "Ouitransfer" };
 
@@ -179,6 +197,66 @@ describe("renderLayout", () => {
     const { text } = renderLayout(DEFAULT_SLOTS, DEFAULT_CONFIG);
 
     expect(text).not.toContain("Unsubscribe:");
+  });
+
+  // ── HTML lang attribute ─────────────────────────────────────────────────────
+
+  it("uses locale for html lang attribute when provided", () => {
+    const { html } = renderLayout(DEFAULT_SLOTS, { ...DEFAULT_CONFIG, locale: "fr" });
+
+    expect(html).toContain('<html lang="fr">');
+    expect(html).not.toContain('<html lang="en">');
+  });
+
+  it("defaults html lang to 'en' when locale is not provided", () => {
+    const { html } = renderLayout(DEFAULT_SLOTS, DEFAULT_CONFIG);
+
+    expect(html).toContain('<html lang="en">');
+  });
+
+  // ── Footer i18n ───────────────────────────────────────────────────────────
+
+  it("uses translation function for footer strings when provided", () => {
+    const { html } = renderLayout(DEFAULT_SLOTS, DEFAULT_CONFIG, mockTr);
+
+    expect(html).toContain("Sent by <strong>Ouitransfer</strong>");
+    expect(html).toContain("If you didn't expect this, ignore it.");
+    expect(html).toContain("Powered by Ouitransfer");
+  });
+
+  it("uses hardcoded English footer strings when no translation function provided", () => {
+    const { html } = renderLayout(DEFAULT_SLOTS, DEFAULT_CONFIG);
+
+    expect(html).toContain("This email was sent by <strong>Ouitransfer</strong>");
+    expect(html).toContain("If you didn't expect this email, you can safely ignore it.");
+  });
+
+  it("uses translation function for plain text footer", () => {
+    const { text } = renderLayout(DEFAULT_SLOTS, DEFAULT_CONFIG, mockTr);
+
+    expect(text).toContain("Sent by Ouitransfer");
+    expect(text).toContain("If you didn't expect this, ignore it.");
+    expect(text).toContain("Powered by Ouitransfer");
+  });
+
+  it("uses translated unsubscribe label in HTML footer", () => {
+    const frTr: TranslationFn = (path) => {
+      const strings: Record<string, string> = {
+        "common.footer": "E-mail de <strong>Ouitransfer</strong>",
+        "common.footerIgnore": "Ignorer si inattendu.",
+        "common.poweredBy": "Propulsé par Ouitransfer",
+        "common.unsubscribe": "Se désabonner",
+      };
+      return strings[path] ?? `[${path}]`;
+    };
+
+    const { html } = renderLayout(
+      { ...DEFAULT_SLOTS, unsubscribeUrl: "https://example.com/unsub" },
+      DEFAULT_CONFIG,
+      frTr,
+    );
+
+    expect(html).toContain("Se désabonner");
   });
 
   // ── XSS safety ─────────────────────────────────────────────────────────────

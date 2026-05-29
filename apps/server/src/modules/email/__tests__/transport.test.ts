@@ -94,6 +94,14 @@ describe("SmtpTransport", () => {
     await transport.getTransporter();
 
     expect(mockCreateTransport).toHaveBeenCalledTimes(1);
+    // Verify pool is enabled (FIX 6)
+    const transportOpts = (mockCreateTransport.mock.calls as unknown[][])[0][0] as Record<
+      string,
+      unknown
+    >;
+    expect(transportOpts.pool).toBe(true);
+    expect(transportOpts.maxConnections).toBe(5);
+    expect(transportOpts.maxMessages).toBe(100);
   });
 
   it("reuses the same transporter when SMTP config has not changed", async () => {
@@ -172,6 +180,37 @@ describe("SmtpTransport", () => {
     await expect(
       transport.sendMail({ to: "fail@example.com", subject: "Test", html: "<p>Hi</p>" }),
     ).rejects.toThrow("Send failed");
+  });
+
+  it("sendMail() translates listUnsubscribeHeader to RFC 8058 headers", async () => {
+    setupSmtpConfig();
+
+    await transport.sendMail({
+      to: "dest@example.com",
+      subject: "Hello",
+      html: "<p>Hi</p>",
+      listUnsubscribeHeader: "<https://example.com/unsubscribe?token=abc>",
+    });
+
+    const sentArgs = mockSendMail.mock.calls[0][0] as Record<string, unknown>;
+    const headers = sentArgs.headers as Record<string, string>;
+    expect(headers["List-Unsubscribe"]).toBe("<https://example.com/unsubscribe?token=abc>");
+    expect(headers["List-Unsubscribe-Post"]).toBe("List-Unsubscribe=One-Click");
+    // listUnsubscribeHeader should be removed (nodemailer doesn't recognize it)
+    expect(sentArgs.listUnsubscribeHeader).toBeUndefined();
+  });
+
+  it("sendMail() does not set List-Unsubscribe headers when listUnsubscribeHeader is absent", async () => {
+    setupSmtpConfig();
+
+    await transport.sendMail({
+      to: "dest@example.com",
+      subject: "Hello",
+      html: "<p>Hi</p>",
+    });
+
+    const sentArgs = mockSendMail.mock.calls[0][0] as Record<string, unknown>;
+    expect(sentArgs.headers).toBeUndefined();
   });
 
   // ── getTransporter() config key coverage ──────────────────────────────────

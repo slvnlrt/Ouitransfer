@@ -1,4 +1,5 @@
 import { escapeHtml } from "../../../utils/escape-html.js";
+import type { TranslationFn } from "../i18n/loader.js";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -18,6 +19,8 @@ export interface LayoutSlots {
 export interface LayoutConfig {
   /** Application display name (e.g. "Ouitransfer") */
   appName: string;
+  /** Locale code for the `<html lang>` attribute (defaults to "en") */
+  locale?: string;
 }
 
 export interface LayoutOutput {
@@ -50,22 +53,40 @@ const FONT_STACK =
  *
  * All styles are inline (no `<style>` block) for Outlook compatibility.
  * Max width: 600px. Primary colour: indigo (#6366f1).
+ *
+ * @param tr - Optional translation function for i18n footer strings.
+ *   When omitted (e.g. in tests), falls back to hardcoded English.
  */
-export function renderLayout(slots: LayoutSlots, config: LayoutConfig): LayoutOutput {
+export function renderLayout(
+  slots: LayoutSlots,
+  config: LayoutConfig,
+  tr?: TranslationFn,
+): LayoutOutput {
   return {
-    html: renderHtml(slots, config),
-    text: renderText(slots, config),
+    html: renderHtml(slots, config, tr),
+    text: renderText(slots, config, tr),
   };
 }
 
 // ─── HTML renderer ────────────────────────────────────────────────────────────
 
-function renderHtml(slots: LayoutSlots, config: LayoutConfig): string {
+function renderHtml(slots: LayoutSlots, config: LayoutConfig, tr?: TranslationFn): string {
   const safeAppName = escapeHtml(config.appName);
   const safeSubtitle = escapeHtml(slots.subtitle);
+  const lang = config.locale ?? "en";
+
+  // Footer i18n — use translation function when available, fall back to English
+  const footerSentBy = tr
+    ? tr("common.footer", { appName: safeAppName })
+    : `This email was sent by <strong>${safeAppName}</strong>`;
+  const footerIgnore = tr
+    ? tr("common.footerIgnore")
+    : "If you didn't expect this email, you can safely ignore it.";
+  const footerPoweredBy = tr ? tr("common.poweredBy") : "Powered by Ouitransfer";
+  const footerUnsubscribe = tr ? tr("common.unsubscribe") : "Unsubscribe from these notifications";
 
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="${lang}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -101,14 +122,14 @@ function renderHtml(slots: LayoutSlots, config: LayoutConfig): string {
           <tr>
             <td style="background-color:${COLOR.infoBg};padding:24px 32px;text-align:center;border-top:1px solid ${COLOR.border};">
               <p style="margin:0;color:${COLOR.textSecondary};font-size:13px;font-family:${FONT_STACK};">
-                This email was sent by <strong>${safeAppName}</strong>
+                ${footerSentBy}
               </p>
               <p style="margin:6px 0 0 0;color:${COLOR.textMuted};font-size:12px;font-family:${FONT_STACK};">
-                If you didn't expect this email, you can safely ignore it.
+                ${footerIgnore}
               </p>
-              ${slots.unsubscribeUrl ? renderUnsubscribeHtml(slots.unsubscribeUrl) : ""}
+              ${slots.unsubscribeUrl ? renderUnsubscribeHtml(slots.unsubscribeUrl, footerUnsubscribe) : ""}
               <p style="margin:8px 0 0 0;color:${COLOR.textMuted};font-size:11px;font-family:${FONT_STACK};">
-                Powered by <a href="https://github.com/slvnlrt/ouitransfer" style="color:${COLOR.textMuted};text-decoration:none;">Ouitransfer</a>
+                ${footerPoweredBy} — <a href="https://github.com/slvnlrt/ouitransfer" style="color:${COLOR.textMuted};text-decoration:none;">Ouitransfer</a>
               </p>
             </td>
           </tr>
@@ -136,10 +157,10 @@ function renderInfoBoxHtml(content: string): string {
               </div>`;
 }
 
-function renderUnsubscribeHtml(url: string): string {
+function renderUnsubscribeHtml(url: string, label: string): string {
   return `
               <p style="margin:8px 0 0 0;color:${COLOR.textMuted};font-size:12px;font-family:${FONT_STACK};">
-                <a href="${url}" style="color:${COLOR.textMuted};text-decoration:underline;">Unsubscribe from these notifications</a>
+                <a href="${url}" style="color:${COLOR.textMuted};text-decoration:underline;">${label}</a>
               </p>`;
 }
 
@@ -149,8 +170,17 @@ function renderUnsubscribeHtml(url: string): string {
  * Generates a plain-text version of the email by stripping HTML tags,
  * then applying minimal formatting (indentation, separators).
  */
-function renderText(slots: LayoutSlots, config: LayoutConfig): string {
+function renderText(slots: LayoutSlots, config: LayoutConfig, tr?: TranslationFn): string {
   const lines: string[] = [];
+
+  // Footer i18n — strip HTML from translated strings for plain text
+  const footerSentBy = tr
+    ? stripHtml(tr("common.footer", { appName: config.appName }))
+    : `This email was sent by ${config.appName}`;
+  const footerIgnore = tr
+    ? tr("common.footerIgnore")
+    : "If you didn't expect this email, you can safely ignore it.";
+  const footerPoweredBy = tr ? tr("common.poweredBy") : "Powered by Ouitransfer";
 
   // Header
   lines.push(`${config.appName}`);
@@ -177,14 +207,15 @@ function renderText(slots: LayoutSlots, config: LayoutConfig): string {
 
   // Footer
   lines.push("─".repeat(60));
-  lines.push(`This email was sent by ${config.appName}`);
-  lines.push("If you didn't expect this email, you can safely ignore it.");
+  lines.push(footerSentBy);
+  lines.push(footerIgnore);
 
   if (slots.unsubscribeUrl) {
-    lines.push(`Unsubscribe: ${slots.unsubscribeUrl}`);
+    const unsubLabel = tr ? tr("common.unsubscribe") : "Unsubscribe";
+    lines.push(`${unsubLabel}: ${slots.unsubscribeUrl}`);
   }
 
-  lines.push("Powered by Ouitransfer — https://github.com/slvnlrt/ouitransfer");
+  lines.push(`${footerPoweredBy} — https://github.com/slvnlrt/ouitransfer`);
 
   return lines.join("\n");
 }
