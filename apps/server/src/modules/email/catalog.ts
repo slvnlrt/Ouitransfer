@@ -420,6 +420,8 @@ export const notificationCatalog = {
     defaultFrequency: "immediate",
     configurable: true,
     hasUnsubscribe: true,
+    // Prevent flooding from script-driven upload bursts (5-minute cooldown)
+    cooldownSeconds: 300,
     requiredI18nKeys: [
       "reverseShareUploaded.subject",
       "reverseShareUploaded.subtitle",
@@ -609,7 +611,7 @@ export function typeToI18nPrefix(type: NotificationKey): string {
  *
  * @throws Error listing all missing keys.
  */
-export function validateAllI18nKeys(): void {
+export async function validateAllI18nKeys(): Promise<void> {
   const allKeys = Object.values(notificationCatalog).flatMap((c) => c.requiredI18nKeys);
-  validateI18nKeys([...new Set(allKeys)]);
+  await validateI18nKeys([...new Set(allKeys)]);
 }

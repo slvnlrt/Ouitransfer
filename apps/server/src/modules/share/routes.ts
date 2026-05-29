@@ -731,6 +731,10 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
     },
   });
 
+  // Design note: nameFieldRequired / emailFieldRequired are intentionally included in this
+  // public metadata endpoint. The frontend identification form reads them BEFORE attempting
+  // access, so it can show (or skip) the name/email fields without triggering the 403
+  // IDENTIFICATION_REQUIRED gate. This is intentional per spec (Section 5).
   app.route({
     method: "GET",
     url: "/shares/alias/:alias/metadata",

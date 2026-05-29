@@ -357,7 +357,7 @@ export function stopEmailQueueScheduler(): void {
  * Fire-and-forget from server.ts — has internal error handling.
  */
 export async function initEmailQueueOnBoot(): Promise<void> {
-  validateAllI18nKeys();
+  await validateAllI18nKeys();
 
   try {
     await recoverStuckJobs();

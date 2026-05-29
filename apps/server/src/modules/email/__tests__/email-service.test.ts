@@ -114,13 +114,13 @@ function setupDefaultMocks() {
     text: "test email",
   });
 
-  // i18n returns fallback
+  // i18n t() is now async — return a rejected promise for missing keys
   mockT.mockImplementation((_locale: string, key: string) => {
-    throw new Error(`Missing i18n key: ${key}`);
+    return Promise.reject(new Error(`Missing i18n key: ${key}`));
   });
 
-  // createTranslationFn returns a dummy
-  mockCreateTranslationFn.mockReturnValue((_key: string) => "translated");
+  // createTranslationFn returns a dummy (now async — returns a Promise<TranslationFn>)
+  mockCreateTranslationFn.mockResolvedValue((_key: string) => "translated");
 
   // buildUnsubscribeUrl returns a URL
   mockBuildUnsubscribeUrl.mockResolvedValue(
@@ -409,7 +409,7 @@ describe("EmailService", () => {
 
     it("uses fallback subject when i18n key is missing and logs warning", async () => {
       mockT.mockImplementation(() => {
-        throw new Error("Missing i18n key");
+        return Promise.reject(new Error("Missing i18n key"));
       });
 
       await emailService.send("welcome", {

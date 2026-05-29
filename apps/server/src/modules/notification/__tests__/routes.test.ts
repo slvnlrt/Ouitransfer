@@ -569,7 +569,8 @@ describe("Notification routes — integration", () => {
       vi.mocked(mockPrisma.emailJob.count)
         .mockResolvedValueOnce(5) // pending
         .mockResolvedValueOnce(42) // sentLast24h
-        .mockResolvedValueOnce(3); // failed
+        .mockResolvedValueOnce(3) // failed
+        .mockResolvedValueOnce(7); // digestPending
 
       const token = signAdminToken();
 
@@ -581,7 +582,7 @@ describe("Notification routes — integration", () => {
 
       expect(res.statusCode).toBe(200);
       const body = res.json();
-      expect(body).toEqual({ pending: 5, sentLast24h: 42, failed: 3 });
+      expect(body).toEqual({ pending: 5, sentLast24h: 42, failed: 3, digestPending: 7 });
     });
 
     it("GET /admin/email/stats rejected for non-admin", async () => {

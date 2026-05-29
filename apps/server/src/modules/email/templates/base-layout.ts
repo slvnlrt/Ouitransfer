@@ -144,9 +144,10 @@ function renderHtml(slots: LayoutSlots, config: LayoutConfig, tr?: TranslationFn
 
 function renderCtaHtml(cta: { url: string; label: string }): string {
   const safeLabel = escapeHtml(cta.label);
+  const safeUrl = escapeHtml(cta.url);
   return `
               <div style="text-align:center;margin:32px 0;">
-                <a href="${cta.url}" style="display:inline-block;background-color:${COLOR.indigo};color:${COLOR.white};text-decoration:none;padding:13px 28px;font-weight:600;font-size:15px;border-radius:6px;font-family:${FONT_STACK};">${safeLabel}</a>
+                <a href="${safeUrl}" style="display:inline-block;background-color:${COLOR.indigo};color:${COLOR.white};text-decoration:none;padding:13px 28px;font-weight:600;font-size:15px;border-radius:6px;font-family:${FONT_STACK};">${safeLabel}</a>
               </div>`;
 }
 
@@ -158,9 +159,10 @@ function renderInfoBoxHtml(content: string): string {
 }
 
 function renderUnsubscribeHtml(url: string, label: string): string {
+  const safeUrl = escapeHtml(url);
   return `
               <p style="margin:8px 0 0 0;color:${COLOR.textMuted};font-size:12px;font-family:${FONT_STACK};">
-                <a href="${url}" style="color:${COLOR.textMuted};text-decoration:underline;">${label}</a>
+                <a href="${safeUrl}" style="color:${COLOR.textMuted};text-decoration:underline;">${label}</a>
               </p>`;
 }
 

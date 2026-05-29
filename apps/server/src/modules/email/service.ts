@@ -46,6 +46,9 @@ function base64url(input: Buffer | string): string {
  * Creates a compact HS256 JWT token for unsubscribe links.
  * We avoid importing jsonwebtoken (not a project dependency) and instead
  * use Node's native crypto — the token format is standard JWT.
+ *
+ * // Tech debt: Hand-rolled JWT. Consider migrating to jose library if validation
+ * // requirements grow (e.g. key rotation, RS256, audience checks). See review finding Core M-8.
  */
 function signUnsubscribeToken(payload: { userId: string; type: string }): string {
   const key = deriveKey(UNSUBSCRIBE_KEY_LABEL);
@@ -171,7 +174,7 @@ class EmailService {
     let htmlBody: string;
     let textBody: string;
     try {
-      const tr = createTranslationFn(options.locale);
+      const tr = await createTranslationFn(options.locale);
       const slots = entry.render(options.data as unknown, tr);
 
       // Add unsubscribe URL if applicable
@@ -209,7 +212,7 @@ class EmailService {
     let subject: string;
     try {
       const prefix = typeToI18nPrefix(type);
-      subject = t(options.locale, `${prefix}.subject`, { appName, ...dataParams });
+      subject = await t(options.locale, `${prefix}.subject`, { appName, ...dataParams });
     } catch {
       // i18n key not found — use type as fallback subject
       log.warn(

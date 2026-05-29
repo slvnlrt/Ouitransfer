@@ -48,22 +48,28 @@ const FR_MESSAGES = {
 // biome-ignore lint/suspicious/noExplicitAny: needed for flexible path matching in mock
 type AnyArgs = any[];
 
-/** Sets up fs mocks so the loader can read specific locale files. */
+/** Sets up fs mocks so the loader can read specific locale files (async API). */
 function setupFsMocks(locales: Record<string, object>) {
-  mockedFs.existsSync.mockImplementation((...args: AnyArgs) => {
-    const filePath = args[0] as string;
-    const locale = path.basename(filePath, ".json");
-    return locale in locales;
-  });
-
-  mockedFs.readFileSync.mockImplementation((...args: AnyArgs) => {
-    const filePath = args[0] as string;
-    const locale = path.basename(filePath, ".json");
-    if (locale in locales) {
-      return JSON.stringify(locales[locale as keyof typeof locales]);
-    }
-    throw new Error(`ENOENT: no such file: ${filePath}`);
-  });
+  // Mock fs.promises.access: resolves if locale exists, rejects otherwise
+  mockedFs.promises = {
+    ...mockedFs.promises,
+    access: vi.fn().mockImplementation((...args: AnyArgs) => {
+      const filePath = args[0] as string;
+      const locale = path.basename(filePath, ".json");
+      if (locale in locales) {
+        return Promise.resolve();
+      }
+      return Promise.reject(new Error(`ENOENT: no such file: ${filePath}`));
+    }),
+    readFile: vi.fn().mockImplementation((...args: AnyArgs) => {
+      const filePath = args[0] as string;
+      const locale = path.basename(filePath, ".json");
+      if (locale in locales) {
+        return Promise.resolve(JSON.stringify(locales[locale as keyof typeof locales]));
+      }
+      return Promise.reject(new Error(`ENOENT: no such file: ${filePath}`));
+    }),
+  } as typeof fs.promises;
 }
 
 // ─── Imports (after mocks) ─────────────────────────────────────────────────────
@@ -92,60 +98,60 @@ describe("i18n loader", () => {
 
   // ── Basic translation ───────────────────────────────────────────────────────
 
-  it("t('en', 'common.footer', { appName: 'Test' }) interpolates correctly", () => {
+  it("t('en', 'common.footer', { appName: 'Test' }) interpolates correctly", async () => {
     setupFsMocks({ en: EN_MESSAGES });
 
-    const result = t("en", "common.footer", { appName: "Test" });
+    const result = await t("en", "common.footer", { appName: "Test" });
 
     expect(result).toBe("This email was sent by <strong>Test</strong>");
   });
 
-  it("t('fr', 'common.footer', { appName: 'Test' }) returns French text", () => {
+  it("t('fr', 'common.footer', { appName: 'Test' }) returns French text", async () => {
     setupFsMocks({ en: EN_MESSAGES, fr: FR_MESSAGES });
 
-    const result = t("fr", "common.footer", { appName: "Test" });
+    const result = await t("fr", "common.footer", { appName: "Test" });
 
     expect(result).toBe("Cet e-mail a été envoyé par <strong>Test</strong>");
   });
 
-  it("t('de', ...) falls back to en when de.json lacks the key", () => {
+  it("t('de', ...) falls back to en when de.json lacks the key", async () => {
     // de.json does not exist in our mock
     setupFsMocks({ en: EN_MESSAGES });
 
-    const result = t("de", "common.footer", { appName: "Acme" });
+    const result = await t("de", "common.footer", { appName: "Acme" });
 
     // Should return the English translation
     expect(result).toBe("This email was sent by <strong>Acme</strong>");
   });
 
-  it("t('en', 'nonexistent.key') throws Error (missing in en = bug)", () => {
+  it("t('en', 'nonexistent.key') throws Error (missing in en = bug)", async () => {
     setupFsMocks({ en: EN_MESSAGES });
 
-    expect(() => t("en", "nonexistent.key")).toThrowError(
+    await expect(t("en", "nonexistent.key")).rejects.toThrowError(
       /Missing translation key "nonexistent.key"/,
     );
   });
 
-  it("handles nested paths ('shareInvitation.subject')", () => {
+  it("handles nested paths ('shareInvitation.subject')", async () => {
     setupFsMocks({ en: EN_MESSAGES });
 
-    const result = t("en", "shareInvitation.subject", { senderName: "Alice" });
+    const result = await t("en", "shareInvitation.subject", { senderName: "Alice" });
 
     expect(result).toBe("You have received a share from Alice");
   });
 
-  it("returns raw template when no params provided", () => {
+  it("returns raw template when no params provided", async () => {
     setupFsMocks({ en: EN_MESSAGES });
 
-    const result = t("en", "common.footerIgnore");
+    const result = await t("en", "common.footerIgnore");
 
     expect(result).toBe("If you didn't expect this email, you can safely ignore it.");
   });
 
-  it("returns raw template with unresolved placeholders when params is empty", () => {
+  it("returns raw template with unresolved placeholders when params is empty", async () => {
     setupFsMocks({ en: EN_MESSAGES });
 
-    const result = t("en", "common.footer");
+    const result = await t("en", "common.footer");
 
     // No params → placeholders remain as-is
     expect(result).toBe("This email was sent by <strong>{appName}</strong>");
@@ -153,19 +159,19 @@ describe("i18n loader", () => {
 
   // ── createTranslationFn (HTML-escaping) ─────────────────────────────────────
 
-  it("createTranslationFn(locale) returns a curried function that HTML-escapes values", () => {
+  it("createTranslationFn(locale) returns a curried function that HTML-escapes values", async () => {
     setupFsMocks({ en: EN_MESSAGES, fr: FR_MESSAGES });
 
-    const tr = createTranslationFn("fr");
+    const tr = await createTranslationFn("fr");
     const result = tr("common.footer", { appName: "Acme" });
 
     expect(result).toBe("Cet e-mail a été envoyé par <strong>Acme</strong>");
   });
 
-  it("createTranslationFn HTML-escapes user-controlled values (XSS prevention)", () => {
+  it("createTranslationFn HTML-escapes user-controlled values (XSS prevention)", async () => {
     setupFsMocks({ en: EN_MESSAGES });
 
-    const tr = createTranslationFn("en");
+    const tr = await createTranslationFn("en");
     const result = tr("shareInvitation.subject", {
       senderName: '<script>alert("xss")</script>',
     });
@@ -174,11 +180,11 @@ describe("i18n loader", () => {
     expect(result).toContain("&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;");
   });
 
-  it("createTranslationFn falls back to en for missing keys in locale", () => {
+  it("createTranslationFn falls back to en for missing keys in locale", async () => {
     // FR_MESSAGES does not have shareInvitation.subject
     setupFsMocks({ en: EN_MESSAGES, fr: FR_MESSAGES });
 
-    const tr = createTranslationFn("fr");
+    const tr = await createTranslationFn("fr");
     const result = tr("shareInvitation.subject", { senderName: "Bob" });
 
     expect(result).toBe("You have received a share from Bob");
@@ -186,10 +192,10 @@ describe("i18n loader", () => {
 
   // ── createPlainTranslationFn (no escaping) ─────────────────────────────────
 
-  it("createPlainTranslationFn does NOT HTML-escape values", () => {
+  it("createPlainTranslationFn does NOT HTML-escape values", async () => {
     setupFsMocks({ en: EN_MESSAGES });
 
-    const tr = createPlainTranslationFn("en");
+    const tr = await createPlainTranslationFn("en");
     const result = tr("shareInvitation.subject", {
       senderName: '<script>alert("xss")</script>',
     });
@@ -199,10 +205,10 @@ describe("i18n loader", () => {
 
   // ── tHtml ──────────────────────────────────────────────────────────────────
 
-  it("tHtml HTML-escapes interpolated values", () => {
+  it("tHtml HTML-escapes interpolated values", async () => {
     setupFsMocks({ en: EN_MESSAGES });
 
-    const result = tHtml("en", "shareInvitation.subject", {
+    const result = await tHtml("en", "shareInvitation.subject", {
       senderName: "<b>Evil</b>",
     });
 
@@ -210,10 +216,10 @@ describe("i18n loader", () => {
     expect(result).toContain("&lt;b&gt;Evil&lt;/b&gt;");
   });
 
-  it("tHtml preserves template HTML (e.g. <strong> tags from locale file)", () => {
+  it("tHtml preserves template HTML (e.g. <strong> tags from locale file)", async () => {
     setupFsMocks({ en: EN_MESSAGES });
 
-    const result = tHtml("en", "common.footer", { appName: "Safe&Co" });
+    const result = await tHtml("en", "common.footer", { appName: "Safe&Co" });
 
     // Template <strong> tags are preserved
     expect(result).toContain("<strong>");
@@ -223,44 +229,46 @@ describe("i18n loader", () => {
 
   // ── validateI18nKeys ────────────────────────────────────────────────────────
 
-  it("validateI18nKeys([...]) passes when all keys exist in en.json", () => {
+  it("validateI18nKeys([...]) passes when all keys exist in en.json", async () => {
     setupFsMocks({ en: EN_MESSAGES });
 
-    expect(() =>
+    await expect(
       validateI18nKeys(["common.footer", "common.footerIgnore", "common.poweredBy"]),
-    ).not.toThrow();
+    ).resolves.not.toThrow();
   });
 
-  it("validateI18nKeys([...]) throws when any key is missing", () => {
+  it("validateI18nKeys([...]) throws when any key is missing", async () => {
     setupFsMocks({ en: EN_MESSAGES });
 
-    expect(() =>
+    await expect(
       validateI18nKeys(["common.footer", "missing.key", "another.missing"]),
-    ).toThrowError(/Missing translation keys in en.json.*"missing.key".*"another.missing"/s);
+    ).rejects.toThrowError(
+      /Missing translation keys in en.json.*"missing.key".*"another.missing"/s,
+    );
   });
 
   // ── Caching ─────────────────────────────────────────────────────────────────
 
-  it("caches loaded locale files (second call doesn't re-read)", () => {
+  it("caches loaded locale files (second call doesn't re-read)", async () => {
     setupFsMocks({ en: EN_MESSAGES });
 
-    t("en", "common.footer", { appName: "A" });
-    t("en", "common.footerIgnore");
-    t("en", "common.poweredBy");
+    await t("en", "common.footer", { appName: "A" });
+    await t("en", "common.footerIgnore");
+    await t("en", "common.poweredBy");
 
-    // fs.readFileSync should have been called only once for en.json
-    expect(mockedFs.readFileSync).toHaveBeenCalledTimes(1);
+    // fs.promises.readFile should have been called only once for en.json
+    expect(mockedFs.promises.readFile).toHaveBeenCalledTimes(1);
   });
 
-  it("caches different locales independently", () => {
+  it("caches different locales independently", async () => {
     setupFsMocks({ en: EN_MESSAGES, fr: FR_MESSAGES });
 
-    t("en", "common.footer", { appName: "A" });
-    t("fr", "common.footer", { appName: "B" });
-    t("en", "common.footerIgnore");
-    t("fr", "common.poweredBy");
+    await t("en", "common.footer", { appName: "A" });
+    await t("fr", "common.footer", { appName: "B" });
+    await t("en", "common.footerIgnore");
+    await t("fr", "common.poweredBy");
 
     // One read per locale
-    expect(mockedFs.readFileSync).toHaveBeenCalledTimes(2);
+    expect(mockedFs.promises.readFile).toHaveBeenCalledTimes(2);
   });
 });

@@ -1,10 +1,11 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import {
   type NotificationKey,
   type NotificationTypeConfig,
   notificationCatalog,
   typeToI18nPrefix,
 } from "../catalog.js";
+import { clearLocaleCache, createTranslationFn } from "../i18n/loader.js";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -257,6 +258,121 @@ describe("typeToI18nPrefix", () => {
       expect(() => typeToI18nPrefix(key)).not.toThrow();
       // Result should not contain underscores
       expect(typeToI18nPrefix(key)).not.toContain("_");
+    }
+  });
+});
+
+describe("i18n key smoke tests — real en.json", () => {
+  afterEach(() => {
+    clearLocaleCache();
+  });
+
+  it("all catalog entries have valid i18n keys in en.json", async () => {
+    // Use real en.json via createTranslationFn (no mocks).
+    // This validates that every key referenced by templates actually exists.
+    const tr = await createTranslationFn("en");
+
+    /** Minimal valid payloads matching each catalog entry's Zod schema. */
+    const samplePayloads: Record<NotificationKey, unknown> = {
+      welcome: { firstName: "Alice", loginUrl: "https://example.com/login" },
+      password_reset: { resetUrl: "https://example.com/reset", expiresInMinutes: 30 },
+      account_deactivated: { firstName: "Bob" },
+      account_reactivated: { firstName: "Carol", loginUrl: "https://example.com/login" },
+      share_invitation: {
+        senderName: "Alice",
+        shareName: "Files",
+        shareLink: "https://example.com/s/abc",
+        hasPassword: false,
+      },
+      reverse_share_invitation: {
+        senderName: "Alice",
+        reverseShareName: "Upload",
+        reverseShareLink: "https://example.com/r/abc",
+        hasPassword: false,
+      },
+      share_accessed: { shareName: "My Share", accessedAt: "2026-01-01T00:00:00Z" },
+      share_downloaded: {
+        shareName: "My Share",
+        fileName: "file.pdf",
+        downloadedAt: "2026-01-01T00:00:00Z",
+      },
+      share_expiring: {
+        shareName: "My Share",
+        expiresAt: "2026-12-31",
+        shareManageUrl: "https://example.com/manage",
+      },
+      share_expired: {
+        shareName: "My Share",
+        expiredAt: "2026-01-01",
+        shareManageUrl: "https://example.com/manage",
+      },
+      share_max_views_reached: {
+        shareName: "My Share",
+        maxViews: 50,
+        shareManageUrl: "https://example.com/manage",
+      },
+      share_no_activity: {
+        shareName: "My Share",
+        inactivityDays: 30,
+        shareManageUrl: "https://example.com/manage",
+      },
+      reverse_share_uploaded: {
+        reverseShareName: "Upload Request",
+        fileCount: 1,
+        fileNames: ["file.txt"],
+      },
+      reverse_share_expiring: {
+        reverseShareName: "Upload Request",
+        expiresAt: "2026-12-31",
+      },
+      reverse_share_expired: {
+        reverseShareName: "Upload Request",
+        expiredAt: "2026-01-01",
+      },
+      quota_warning: { usedPercent: 80, usedBytes: 8_000_000_000, maxBytes: 10_000_000_000 },
+      quota_exceeded: { usedBytes: 11_000_000_000, maxBytes: 10_000_000_000 },
+      files_auto_deleted: { fileNames: ["old.zip"], reason: "expired" },
+      share_auto_deleted: { shareName: "Old Share", reason: "inactivity" },
+      admin_user_registered: {
+        userName: "Dave",
+        userEmail: "dave@example.com",
+        registrationMethod: "email",
+      },
+      admin_quota_alert: {
+        userName: "Eve",
+        userEmail: "eve@example.com",
+        usedPercent: 95,
+        usedBytes: 9_500_000_000,
+        maxBytes: 10_000_000_000,
+      },
+      test_email: {},
+    };
+
+    for (const [type, entry] of Object.entries(notificationCatalog) as [
+      NotificationKey,
+      NotificationTypeConfig,
+    ][]) {
+      const payload = samplePayloads[type];
+
+      // render() should not throw — if it does, a required i18n key is missing
+      let rendered: ReturnType<typeof entry.render>;
+      expect(() => {
+        rendered = entry.render(payload, tr);
+      }, `${type} render() threw — likely a missing i18n key`).not.toThrow();
+
+      // Verify slots have correct shape
+      expect(typeof rendered!.subtitle, `${type} should have subtitle string`).toBe("string");
+      expect(typeof rendered!.body, `${type} should have body string`).toBe("string");
+
+      // Dotted-path patterns like {shareInvitation.body} indicate a raw i18n key was
+      // returned instead of its value — this means a key is missing in en.json.
+      // Note: single-word patterns like {appName}, {firstName} are legitimate layout-level
+      // placeholders deferred to the renderLayout step, so we only flag dotted paths.
+      const html = rendered!.body + (rendered!.subtitle ?? "");
+      expect(
+        html,
+        `${type} output contains raw i18n key {x.y} — key missing in en.json`,
+      ).not.toMatch(/\{[a-zA-Z][a-zA-Z0-9]*\.[a-zA-Z][a-zA-Z0-9.]*\}/);
     }
   });
 });

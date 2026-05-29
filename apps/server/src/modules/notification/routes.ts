@@ -184,6 +184,12 @@ export const notificationRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
     method: "GET",
     url: "/notifications/unsubscribe",
+    config: {
+      rateLimit: {
+        max: 30,
+        timeWindow: "1 hour",
+      },
+    },
     schema: {
       tags: ["Notifications"],
       operationId: "getUnsubscribePage",
@@ -214,7 +220,13 @@ export const notificationRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
     method: "POST",
     url: "/notifications/unsubscribe",
-    config: { csrfExempt: true },
+    config: {
+      csrfExempt: true,
+      rateLimit: {
+        max: 30,
+        timeWindow: "1 hour",
+      },
+    },
     schema: {
       tags: ["Notifications"],
       operationId: "processUnsubscribe",
@@ -255,13 +267,14 @@ export const notificationRoutes: FastifyPluginAsyncZod = async (app) => {
           pending: z.number(),
           sentLast24h: z.number(),
           failed: z.number(),
+          digestPending: z.number(),
         }),
         401: ErrorResponseSchema,
         403: ErrorResponseSchema,
       },
     },
     handler: async (_request, reply) => {
-      const [pending, sentLast24h, failed] = await Promise.all([
+      const [pending, sentLast24h, failed, digestPending] = await Promise.all([
         prisma.emailJob.count({ where: { status: "pending" } }),
         prisma.emailJob.count({
           where: {
@@ -270,8 +283,9 @@ export const notificationRoutes: FastifyPluginAsyncZod = async (app) => {
           },
         }),
         prisma.emailJob.count({ where: { status: "failed" } }),
+        prisma.emailJob.count({ where: { status: "digest_pending" } }),
       ]);
-      return reply.send({ pending, sentLast24h, failed });
+      return reply.send({ pending, sentLast24h, failed, digestPending });
     },
   });
 

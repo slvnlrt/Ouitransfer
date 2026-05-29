@@ -48,6 +48,7 @@ export interface IShareRepository {
         files: File[];
         folders: FolderWithCount[];
         recipients: ShareRecipient[];
+        alias: ShareAlias | null;
         creator: CreatorInfo;
       })
     | null
@@ -188,6 +189,7 @@ export class PrismaShareRepository implements IShareRepository {
       include: {
         share: {
           include: {
+            alias: true,
             security: true,
             files: true,
             folders: {

@@ -59,6 +59,7 @@ vi.mock("../utils/logger.js", () => ({
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
+// TODO: Extract to shared test factory (see review 8.2 Integ M-2)
 const makeShare = (overrides: Record<string, unknown> = {}) => ({
   id: "share-abc",
   name: "Test Share",

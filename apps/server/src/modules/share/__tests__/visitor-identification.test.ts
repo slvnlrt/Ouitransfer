@@ -520,5 +520,45 @@ describe("Visitor Identification — integration", () => {
       expect(res.statusCode).toBe(403);
       expect(res.json().code).toBe("IDENTIFICATION_REQUIRED");
     });
+
+    // ── Integ M-4: happy-path — identify then access ───────────────────────
+    it("valid identify cookie bypasses identification gate on subsequent GET", async () => {
+      const share = makeShare({
+        nameFieldRequired: "REQUIRED",
+        emailFieldRequired: "REQUIRED",
+      });
+
+      // Setup: alias lookup for POST /identify and GET /alias/:alias
+      mockShareAliasFindUnique.mockResolvedValue({
+        share: makeShare({ nameFieldRequired: "REQUIRED", emailFieldRequired: "REQUIRED" }),
+        shareId: SHARE_ID,
+      });
+      mockShareFindUnique.mockResolvedValue(share);
+      mockShareUpdateMany.mockResolvedValue({ count: 1 });
+
+      // Step 1: POST /identify to receive the signed cookie
+      const identifyRes = await app.inject({
+        method: "POST",
+        url: `/shares/alias/${ALIAS}/identify`,
+        headers: { "content-type": "application/json" },
+        payload: { name: "Alice Smith", email: "alice@example.com" },
+      });
+
+      expect(identifyRes.statusCode).toBe(200);
+      expect(identifyRes.json()).toEqual({ success: true });
+
+      // Extract the signed cookie set by the identify endpoint
+      const cookie = identifyRes.cookies.find((c: { name: string }) => c.name === `sv_${ALIAS}`);
+      expect(cookie).toBeDefined();
+
+      // Step 2: GET /alias/:alias — re-send the cookie, expect 200 (gate bypassed)
+      const getRes = await app.inject({
+        method: "GET",
+        url: `/shares/alias/${ALIAS}`,
+        cookies: { [`sv_${ALIAS}`]: cookie!.value },
+      });
+
+      expect(getRes.statusCode).toBe(200);
+    });
   });
 });

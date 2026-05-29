@@ -184,6 +184,9 @@ export class ShareService {
     }
 
     const isOwner = !!(userId && share.creatorId === userId);
+    // Note: If the share owner accesses while logged out, they are treated as an anonymous
+    // visitor. This is intentional per spec (Section 5). Do not attempt to infer ownership
+    // via cookies or fingerprints.
 
     if (isOwner) {
       return ShareResponseSchema.parse(await this.formatShareResponse(share));
