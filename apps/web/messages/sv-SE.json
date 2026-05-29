@@ -1024,7 +1024,7 @@
     "duplicateEmail": "Den här mottagaren har redan lagts till",
     "noRecipientsDescription": "Lägg till mottagare för att dela detta innehåll via e-post",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -1917,7 +1917,7 @@
     "descriptionPlaceholder": "Ange en beskrivning (valfritt)",
     "filesToShare": "Filer att dela",
     "files": "filer",
-    "totalSize": "Total storlek",
+    "totalSize": "Total storlek: {size}",
     "creating": "Skapar delning...",
     "create": "Skapa Share",
     "itemsToShare": "Objekt att dela ({count} {count, plural, =1 {objekt} other {objekt}})"

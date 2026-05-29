@@ -1020,7 +1020,7 @@
     "addRecipient": "Empfänger hinzufügen",
     "bulkNotifyError": "Ausgewählte Empfänger konnten nicht benachrichtigt werden",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -1913,7 +1913,7 @@
     "descriptionPlaceholder": "Geben Sie eine Beschreibung ein (optional)",
     "filesToShare": "Zu teilende Dateien",
     "files": "Dateien",
-    "totalSize": "Gesamtgröße",
+    "totalSize": "Gesamtgröße: {size}",
     "creating": "Erstellen...",
     "create": "Freigabe Erstellen",
     "itemsToShare": "Zu teilende Elemente ({count} {count, plural, =1 {Element} other {Elemente}})"

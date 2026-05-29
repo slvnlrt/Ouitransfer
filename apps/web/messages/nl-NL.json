@@ -1020,7 +1020,7 @@
     "addRecipient": "Ontvanger Toevoegen",
     "bulkNotifyError": "Fout bij het waarschuwen van geselecteerde ontvangers",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -1913,7 +1913,7 @@
     "descriptionPlaceholder": "Voer een beschrijving in (optioneel)",
     "filesToShare": "Bestanden om te delen",
     "files": "bestanden",
-    "totalSize": "Totale grootte",
+    "totalSize": "Totale grootte: {size}",
     "creating": "Aanmaken...",
     "create": "Delen Maken",
     "itemsToShare": "Items om te delen ({count} {count, plural, =1 {item} other {items}})"

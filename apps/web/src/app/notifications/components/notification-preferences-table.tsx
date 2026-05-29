@@ -100,6 +100,7 @@ function groupByCategory(
 export function NotificationPreferencesTable() {
   const t = useTranslations("notificationPreferences");
   const tNav = useTranslations("navigation");
+  const tCommon = useTranslations("common");
   const queryClient = useQueryClient();
 
   // Local state: track user-modified frequencies (type -> frequency)
@@ -187,7 +188,9 @@ export function NotificationPreferencesTable() {
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
           {isLoading ? (
-            <div className="text-muted-foreground text-sm py-8 text-center">Loading...</div>
+            <div className="text-muted-foreground text-sm py-8 text-center">
+              {tCommon("loadingSimple")}
+            </div>
           ) : data === undefined && error ? (
             <div className="text-center py-8 space-y-3">
               <p className="text-sm text-destructive">{t("loadError")}</p>

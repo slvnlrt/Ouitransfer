@@ -1117,7 +1117,7 @@
     "duplicateEmail": "This recipient has already been added",
     "noRecipientsDescription": "Add recipients to share this content via email",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -2053,7 +2053,7 @@
     "descriptionPlaceholder": "Enter a description (optional)",
     "filesToShare": "Files to Share",
     "files": "files",
-    "totalSize": "Total size",
+    "totalSize": "Total size: {size}",
     "creating": "Creating share...",
     "create": "Create Share",
     "itemsToShare": "Items to share ({count} {count, plural, =1 {item} other {items}})"

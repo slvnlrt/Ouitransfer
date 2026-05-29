@@ -1024,7 +1024,7 @@
     "duplicateEmail": "נמען זה כבר נוסף",
     "noRecipientsDescription": "הוסף נמענים כדי לשתף תוכן זה באמצעות דוא\"ל",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -1917,7 +1917,7 @@
     "descriptionPlaceholder": "הזן תיאור (אופציונלי)",
     "filesToShare": "קבצים לשיתוף",
     "files": "קבצים",
-    "totalSize": "גודל כולל",
+    "totalSize": "גודל כולל: {size}",
     "creating": "יוצר שיתוף...",
     "create": "צור שיתוף",
     "itemsToShare": "פריטים לשיתוף ({count} {count, plural, =1 {פריט} other {פריטים}})"

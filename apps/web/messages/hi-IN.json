@@ -1020,7 +1020,7 @@
     "addRecipient": "प्राप्तकर्ता जोड़ें",
     "bulkNotifyError": "चयनित प्राप्तकर्ताओं को सूचित करने में विफल",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -1913,7 +1913,7 @@
     "descriptionPlaceholder": "विवरण दर्ज करें (वैकल्पिक)",
     "filesToShare": "साझा करने के लिए फाइलें",
     "files": "फाइलें",
-    "totalSize": "कुल आकार",
+    "totalSize": "कुल आकार: {size}",
     "creating": "बनाया जा रहा है...",
     "create": "साझाकरण बनाएं",
     "itemsToShare": "साझा करने वाले आइटम ({count} आइटम)"

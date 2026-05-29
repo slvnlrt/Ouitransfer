@@ -1020,7 +1020,7 @@
     "addRecipient": "수신자 추가",
     "bulkNotifyError": "선택된 수신자들에게 알림 전송에 실패했습니다",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -1913,7 +1913,7 @@
     "descriptionPlaceholder": "설명을 입력하세요 (선택사항)",
     "filesToShare": "공유할 파일",
     "files": "파일",
-    "totalSize": "전체 크기",
+    "totalSize": "전체 크기: {size}",
     "creating": "생성 중...",
     "create": "공유 생성",
     "itemsToShare": "공유할 항목 ({count}개 항목)"

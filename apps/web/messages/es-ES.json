@@ -1024,7 +1024,7 @@
     "addRecipient": "Agregar Destinatario",
     "bulkNotifyError": "Error al notificar destinatarios seleccionados",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -1917,7 +1917,7 @@
     "descriptionPlaceholder": "Ingrese una descripción (opcional)",
     "filesToShare": "Archivos para compartir",
     "files": "archivos",
-    "totalSize": "Tamaño total",
+    "totalSize": "Tamaño total: {size}",
     "creating": "Creando...",
     "create": "Crear Compartir",
     "itemsToShare": "Elementos a compartir ({count} {count, plural, =1 {elemento} other {elementos}})"

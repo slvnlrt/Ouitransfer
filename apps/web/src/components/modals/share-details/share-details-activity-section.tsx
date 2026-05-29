@@ -19,14 +19,20 @@ const PAGE_LIMIT = 10;
 
 function truncateIp(ip: string | null): string {
   if (!ip) return "";
-  // Show only the first two octets for IPv4, or first two groups for IPv6
+  // Show only the first two octets for IPv4
   const parts = ip.split(".");
   if (parts.length === 4) {
     return `${parts[0]}.${parts[1]}.*.*`;
   }
-  const v6parts = ip.split(":");
-  if (v6parts.length > 2) {
-    return `${v6parts[0]}:${v6parts[1]}:…`;
+  // IPv6: only truncate full addresses (8 groups); return short forms (e.g. ::1) as-is
+  if (ip.includes(":")) {
+    const v6parts = ip.split(":");
+    if (v6parts.length === 8) {
+      // Full IPv6 — show first 4 groups
+      return `${v6parts.slice(0, 4).join(":")}::…`;
+    }
+    // Short form (e.g. ::1 for localhost, abbreviated addresses) — return as-is
+    return ip;
   }
   return ip;
 }

@@ -1024,7 +1024,7 @@
     "duplicateEmail": "Цього отримувача вже додано",
     "noRecipientsDescription": "Додайте отримувачів, щоб поділитися цим контентом через електронну пошту",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -1917,7 +1917,7 @@
     "descriptionPlaceholder": "Введіть опис (необов'язково)",
     "filesToShare": "Файли для спільного використання",
     "files": "файли",
-    "totalSize": "Загальний розмір",
+    "totalSize": "Загальний розмір: {size}",
     "creating": "Створення спільного використання...",
     "create": "Створити спільне використання",
     "itemsToShare": "Елементи для спільного використання ({count} {count, plural, =1 {елемент} few {елементи} many {елементів} other {елементів}})"

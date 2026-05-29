@@ -89,7 +89,7 @@ export function usePublicShare() {
     if (!isPasswordRequired(shareQuery.error) && !isIdentificationRequired(shareQuery.error)) {
       toast.error(t("share.errors.loadFailed"));
     }
-  }, [shareQuery.error]);
+  }, [shareQuery.error, t]);
 
   // --- Password submit mutation ---
   const passwordMutation = useMutation({

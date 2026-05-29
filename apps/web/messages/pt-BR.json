@@ -1024,7 +1024,7 @@
     "duplicateEmail": "Este destinatário já foi adicionado",
     "noRecipientsDescription": "Adicione destinatários para compartilhar este conteúdo via e-mail",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -1917,7 +1917,7 @@
     "descriptionPlaceholder": "Digite uma descrição (opcional)",
     "filesToShare": "Arquivos para compartilhar",
     "files": "arquivos",
-    "totalSize": "Tamanho total",
+    "totalSize": "Tamanho total: {size}",
     "creating": "Criando...",
     "create": "Criar Compartilhamento",
     "itemsToShare": "Itens para compartilhar ({count} {count, plural, =1 {item} other {itens}})"

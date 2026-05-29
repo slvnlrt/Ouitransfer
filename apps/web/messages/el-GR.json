@@ -1024,7 +1024,7 @@
     "duplicateEmail": "Αυτός ο παραλήπτης έχει ήδη προστεθεί",
     "noRecipientsDescription": "Προσθέστε παραλήπτες για να κοινοποιήσετε αυτό το περιεχόμενο μέσω email",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -1917,7 +1917,7 @@
     "descriptionPlaceholder": "Εισαγάγετε περιγραφή (προαιρετικό)",
     "filesToShare": "Αρχεία για κοινή χρήση",
     "files": "αρχεία",
-    "totalSize": "Συνολικό μέγεθος",
+    "totalSize": "Συνολικό μέγεθος: {size}",
     "creating": "Δημιουργία κοινής χρήσης...",
     "create": "Δημιουργία κοινής χρήσης",
     "itemsToShare": "Στοιχεία για κοινή χρήση ({count} {count, plural, =1 {στοιχείο} other {στοιχεία}})"

@@ -1024,7 +1024,7 @@
     "duplicateEmail": "ผู้รับนี้ได้รับการเพิ่มแล้ว",
     "noRecipientsDescription": "เพิ่มผู้รับเพื่อแชร์เนื้อหาผ่านทางอีเมล",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -1917,7 +1917,7 @@
     "descriptionPlaceholder": "ป้อนคำอธิบาย (เสริม)",
     "filesToShare": "ไฟล์ที่จะแชร์",
     "files": "ไฟล์",
-    "totalSize": "ขนาดทั้งหมด",
+    "totalSize": "ขนาดทั้งหมด: {size}",
     "creating": "กำลังสร้างแชร์...",
     "create": "สร้างแชร์",
     "itemsToShare": "รายการที่จะแชร์ ({count} {count, plural, =1 {รายการ} other {รายการ}})"

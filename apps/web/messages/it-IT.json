@@ -1020,7 +1020,7 @@
     "addRecipient": "Aggiungi Destinatario",
     "bulkNotifyError": "Impossibile notificare i destinatari selezionati",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -1913,7 +1913,7 @@
     "descriptionPlaceholder": "Inserisci una descrizione (opzionale)",
     "filesToShare": "File da condividere",
     "files": "file",
-    "totalSize": "Dimensione totale",
+    "totalSize": "Dimensione totale: {size}",
     "creating": "Creazione...",
     "create": "Crea Condivisione",
     "itemsToShare": "Elementi da condividere ({count} {count, plural, =1 {elemento} other {elementi}})"

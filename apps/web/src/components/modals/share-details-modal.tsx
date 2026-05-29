@@ -16,7 +16,7 @@ import {
 import { Loader } from "@/components/ui/loader";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { getShare } from "@/http/endpoints";
-import type { Share } from "@/http/endpoints/shares/types";
+import type { Share, ShareRecipient } from "@/http/endpoints/shares/types";
 import { logger } from "@/lib/logger";
 import { queryKeys } from "@/lib/query-keys";
 import { GenerateShareLinkModal } from "./generate-share-link-modal";
@@ -42,13 +42,6 @@ interface ShareDetailsModalProps {
   onUpdateExpiration?: (shareId: string) => Promise<void>;
   refreshTrigger?: number;
   onSuccess?: () => void;
-}
-
-interface ShareRecipient {
-  id: string;
-  email: string;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export function ShareDetailsModal({
@@ -91,7 +84,7 @@ export function ShareDetailsModal({
     queryClient.invalidateQueries({ queryKey: queryKeys.shares.all });
   };
 
-  // invalidateShare is stable (reads queryClient + shareId which are stable references)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: invalidateShare is stable (reads queryClient + shareId which are stable references)
   useEffect(() => {
     if (refreshTrigger) {
       invalidateShare();

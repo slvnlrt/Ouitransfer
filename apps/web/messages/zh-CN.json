@@ -1020,7 +1020,7 @@
     "addRecipient": "添加收件人",
     "bulkNotifyError": "通知选中收件人失败",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -1913,7 +1913,7 @@
     "descriptionPlaceholder": "输入描述（可选）",
     "filesToShare": "要分享的文件",
     "files": "文件",
-    "totalSize": "总大小",
+    "totalSize": "总大小：{size}",
     "creating": "创建中...",
     "create": "创建分享",
     "itemsToShare": "要分享的项目（{count} 个项目）"

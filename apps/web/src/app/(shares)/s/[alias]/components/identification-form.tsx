@@ -71,7 +71,12 @@ export function IdentificationForm({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={() => {}} modal>
+    <Dialog
+      open={isOpen}
+      // Intentionally prevent dismissal — user must identify before accessing the share
+      onOpenChange={() => {}}
+      modal
+    >
       <DialogContent>
         <DialogHeader className="flex flex-col gap-1">
           <DialogTitle>{t("share.identification.title")}</DialogTitle>

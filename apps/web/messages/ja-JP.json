@@ -1020,7 +1020,7 @@
     "addRecipient": "受信者を追加",
     "bulkNotifyError": "選択された受信者への通知に失敗しました",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -1913,7 +1913,7 @@
     "descriptionPlaceholder": "説明を入力してください（任意）",
     "filesToShare": "共有するファイル",
     "files": "ファイル",
-    "totalSize": "合計サイズ",
+    "totalSize": "合計サイズ: {size}",
     "creating": "作成中...",
     "create": "共有を作成",
     "itemsToShare": "共有するアイテム（{count}個のアイテム）"

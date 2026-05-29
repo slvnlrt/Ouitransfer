@@ -1024,7 +1024,7 @@
     "duplicateEmail": "Người nhận này đã được thêm",
     "noRecipientsDescription": "Thêm người nhận để chia sẻ nội dung này qua email",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -1917,7 +1917,7 @@
     "descriptionPlaceholder": "Nhập mô tả (tùy chọn)",
     "filesToShare": "Tệp để chia sẻ",
     "files": "tệp",
-    "totalSize": "Tổng kích thước",
+    "totalSize": "Tổng kích thước: {size}",
     "creating": "Đang tạo chia sẻ...",
     "create": "Tạo chia sẻ",
     "itemsToShare": "Các mục để chia sẻ ({count} {count, plural, =1 {mục} other {mục}})"

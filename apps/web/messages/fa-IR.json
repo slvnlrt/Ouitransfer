@@ -1024,7 +1024,7 @@
     "duplicateEmail": "این گیرنده قبلاً اضافه شده است",
     "noRecipientsDescription": "گیرندگان را اضافه کنید تا این محتوا را از طریق ایمیل به اشتراک بگذارید",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -1917,7 +1917,7 @@
     "descriptionPlaceholder": "توضیح وارد کنید (اختیاری)",
     "filesToShare": "فایل‌ها برای اشتراک‌گذاری",
     "files": "فایل‌ها",
-    "totalSize": "حجم کل",
+    "totalSize": "حجم کل: {size}",
     "creating": "در حال ایجاد اشتراک...",
     "create": "ایجاد اشتراک",
     "itemsToShare": "موارد برای اشتراک‌گذاری ({count} {count, plural, =1 {مورد} other {مورد}})"

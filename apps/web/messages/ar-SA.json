@@ -1020,7 +1020,7 @@
     "addRecipient": "إضافة مستلم",
     "bulkNotifyError": "فشل في إشعار المستلمين المحددين",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -1913,7 +1913,7 @@
     "descriptionPlaceholder": "أدخل وصفًا (اختياري)",
     "filesToShare": "الملفات للمشاركة",
     "files": "ملفات",
-    "totalSize": "الحجم الإجمالي",
+    "totalSize": "الحجم الإجمالي: {size}",
     "creating": "جاري الإنشاء...",
     "create": "إنشاء مشاركة",
     "itemsToShare": "العناصر للمشاركة ({count} {count, plural, =1 {عنصر} other {عناصر}})"

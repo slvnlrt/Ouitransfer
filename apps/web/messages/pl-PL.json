@@ -1020,7 +1020,7 @@
     "duplicateEmail": "Ten odbiorca został już dodany",
     "noRecipientsDescription": "Dodaj odbiorców, aby udostępnić tę zawartość pocztą e-mail",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -1913,7 +1913,7 @@
     "descriptionPlaceholder": "Wprowadź opis (opcjonalnie)",
     "filesToShare": "Pliki do udostępnienia",
     "files": "plików",
-    "totalSize": "Całkowity rozmiar",
+    "totalSize": "Całkowity rozmiar: {size}",
     "creating": "Tworzenie...",
     "create": "Utwórz udostępnienie",
     "itemsToShare": "Elementy do udostępnienia ({count} {count, plural, =1 {element} other {elementów}})"

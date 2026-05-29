@@ -1024,7 +1024,7 @@
     "duplicateEmail": "Penerima ini sudah ditambahkan",
     "noRecipientsDescription": "Tambahkan penerima untuk membagikan konten ini melalui email",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -1917,7 +1917,7 @@
     "descriptionPlaceholder": "Masukkan deskripsi (opsional)",
     "filesToShare": "File untuk Dibagikan",
     "files": "file",
-    "totalSize": "Total ukuran",
+    "totalSize": "Total ukuran: {size}",
     "creating": "Membuat berbagi...",
     "create": "Buat Berbagi",
     "itemsToShare": "Item untuk dibagikan ({count} {count, plural, =1 {item} other {item}})"

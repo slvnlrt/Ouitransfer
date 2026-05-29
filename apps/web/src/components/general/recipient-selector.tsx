@@ -100,38 +100,46 @@ export function RecipientSelector({
     }
   };
 
-  const handleNotifySelected = async () => {
+  /**
+   * Shared notify helper used by all three call sites (selected, all, single).
+   * @param emails - specific emails to notify, or undefined to notify all
+   */
+  const notify = async (emails: string[] | undefined) => {
     if (!shareAlias) return;
 
-    const emailsToNotify = Array.from(selectedForAction);
     const link = `${window.location.origin}/s/${shareAlias}`;
     const loadingToast = toast.loading(t("recipientSelector.sendingNotifications"));
 
     try {
-      await notifyRecipients(shareId, { shareLink: link, emails: emailsToNotify });
+      await notifyRecipients(shareId, { shareLink: link, emails });
       toast.dismiss(loadingToast);
-      toast.success(t("recipientSelector.bulkNotifySuccess", { count: emailsToNotify.length }));
-      setSelectedForAction(new Set());
+      if (emails === undefined) {
+        toast.success(t("recipientSelector.notifySuccess"));
+      } else if (emails.length === 1) {
+        toast.success(t("recipientSelector.singleNotifySuccess", { email: emails[0] }));
+      } else {
+        toast.success(t("recipientSelector.bulkNotifySuccess", { count: emails.length }));
+      }
     } catch {
       toast.dismiss(loadingToast);
-      toast.error(t("recipientSelector.bulkNotifyError"));
+      if (emails === undefined) {
+        toast.error(t("recipientSelector.notifyError"));
+      } else if (emails.length === 1) {
+        toast.error(t("recipientSelector.singleNotifyError"));
+      } else {
+        toast.error(t("recipientSelector.bulkNotifyError"));
+      }
     }
   };
 
+  const handleNotifySelected = async () => {
+    const emailsToNotify = Array.from(selectedForAction);
+    await notify(emailsToNotify);
+    setSelectedForAction(new Set());
+  };
+
   const handleNotifyAll = async () => {
-    if (!shareAlias) return;
-
-    const link = `${window.location.origin}/s/${shareAlias}`;
-    const loadingToast = toast.loading(t("recipientSelector.sendingNotifications"));
-
-    try {
-      await notifyRecipients(shareId, { shareLink: link });
-      toast.dismiss(loadingToast);
-      toast.success(t("recipientSelector.notifySuccess"));
-    } catch {
-      toast.dismiss(loadingToast);
-      toast.error(t("recipientSelector.notifyError"));
-    }
+    await notify(undefined);
   };
 
   const handleSelectAll = (checked: boolean) => {
@@ -331,26 +339,7 @@ export function RecipientSelector({
                             variant="ghost"
                             size="sm"
                             className="h-8 w-8 p-0 text-primary hover:text-primary hover:bg-primary/10"
-                            onClick={async () => {
-                              const link = `${window.location.origin}/s/${shareAlias}`;
-                              const loadingToast = toast.loading(
-                                t("recipientSelector.sendingNotifications"),
-                              );
-
-                              try {
-                                await notifyRecipients(shareId, {
-                                  shareLink: link,
-                                  emails: [email],
-                                });
-                                toast.dismiss(loadingToast);
-                                toast.success(
-                                  t("recipientSelector.singleNotifySuccess", { email }),
-                                );
-                              } catch {
-                                toast.dismiss(loadingToast);
-                                toast.error(t("recipientSelector.singleNotifyError"));
-                              }
-                            }}
+                            onClick={() => notify([email])}
                             title={t("recipientSelector.notifySingle")}
                           >
                             <Bell className="h-4 w-4" />

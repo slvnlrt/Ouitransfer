@@ -1020,7 +1020,7 @@
     "addRecipient": "Alıcı Ekle",
     "bulkNotifyError": "Seçilen alıcılara bildirim gönderme başarısız",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -1913,7 +1913,7 @@
     "descriptionPlaceholder": "Açıklama girin (isteğe bağlı)",
     "filesToShare": "Paylaşılacak dosyalar",
     "files": "dosya",
-    "totalSize": "Toplam boyut",
+    "totalSize": "Toplam boyut: {size}",
     "creating": "Oluşturuluyor...",
     "create": "Paylaşım Oluştur",
     "itemsToShare": "Paylaşılacak öğeler ({count} {count, plural, =1 {öğe} other {öğe}})"

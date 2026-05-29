@@ -1020,7 +1020,7 @@
     "addRecipient": "Добавить получателя",
     "bulkNotifyError": "Не удалось уведомить выбранных получателей",
     "notified": "Notified",
-    "views": "{count} views"
+    "views": "{count, plural, one {# view} other {# views}}"
   },
   "register": {
     "validation": {
@@ -1913,7 +1913,7 @@
     "descriptionPlaceholder": "Введите описание (опционально)",
     "filesToShare": "Файлы для отправки",
     "files": "файлов",
-    "totalSize": "Общий размер",
+    "totalSize": "Общий размер: {size}",
     "creating": "Создание...",
     "create": "Создать Общий Доступ",
     "itemsToShare": "Элементы для обмена ({count} {count, plural, =1 {элемент} other {элементов}})"

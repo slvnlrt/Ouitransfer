@@ -434,8 +434,8 @@ export function ShareMultipleItemsModal({
                   </div>
                 </ScrollArea>
                 <p className="text-xs text-muted-foreground">
-                  Total size: {formatFileSize(totalSize)} ({filesList.length} files,{" "}
-                  {foldersList.length} folders)
+                  {t("shareMultipleFiles.totalSize", { size: formatFileSize(totalSize) })} (
+                  {filesList.length} files, {foldersList.length} folders)
                 </p>
               </div>
             </div>
