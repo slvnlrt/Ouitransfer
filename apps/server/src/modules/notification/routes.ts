@@ -63,7 +63,7 @@ function renderConfirmPage(token: string, type: string): string {
     <p>You are about to unsubscribe from:</p>
     <div class="type-badge">${escapeHtml(type)}</div>
     <p>You will no longer receive emails for this notification type.</p>
-    <form method="POST" action="/notifications/unsubscribe">
+    <form method="POST">
       <input type="hidden" name="token" value="${escapeHtml(token)}" />
       <button type="submit" class="btn">Confirm Unsubscribe</button>
     </form>
@@ -231,13 +231,23 @@ export const notificationRoutes: FastifyPluginAsyncZod = async (app) => {
       tags: ["Notifications"],
       operationId: "processUnsubscribe",
       summary: "Process unsubscribe (public, CSRF-exempt)",
-      body: z.object({ token: z.string() }),
+      // Body is permissive: HTML form sends {token}, RFC 8058 one-click sends
+      // {List-Unsubscribe: "One-Click"} with token in query string only.
+      body: z.object({ token: z.string().optional() }).passthrough().optional(),
+      querystring: z.object({ token: z.string().optional() }),
       response: {
         200: z.string(),
       },
     },
     handler: async (request, reply) => {
-      const { token } = request.body;
+      // Accept token from form body or query string (RFC 8058 one-click)
+      const body = request.body as { token?: string } | undefined;
+      const query = request.query as { token?: string };
+      const token = body?.token ?? query.token;
+
+      if (!token) {
+        return reply.header("Content-Type", "text/html; charset=utf-8").send(renderErrorPage());
+      }
 
       try {
         const { userId, type } = verifyUnsubscribeToken(token);

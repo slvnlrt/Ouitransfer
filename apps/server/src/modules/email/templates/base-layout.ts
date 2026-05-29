@@ -46,6 +46,17 @@ const COLOR = {
 const FONT_STACK =
   "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+/**
+ * Converts newline characters (`\n`) to `<br>` tags for HTML rendering.
+ * Translation body strings use `\n\n` for paragraph breaks; without this
+ * conversion browsers collapse whitespace into a single line.
+ */
+function nlToBr(text: string): string {
+  return text.replace(/\n/g, "<br>");
+}
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
@@ -111,7 +122,7 @@ function renderHtml(slots: LayoutSlots, config: LayoutConfig, tr?: TranslationFn
           <tr>
             <td style="padding:40px 32px;background-color:${COLOR.cardBg};">
               <div style="font-size:15px;line-height:1.7;color:${COLOR.textPrimary};font-family:${FONT_STACK};">
-                ${slots.body}
+                ${nlToBr(slots.body)}
               </div>
               ${slots.cta ? renderCtaHtml(slots.cta) : ""}
               ${slots.infoBox ? renderInfoBoxHtml(slots.infoBox) : ""}

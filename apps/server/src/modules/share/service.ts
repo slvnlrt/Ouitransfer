@@ -110,6 +110,17 @@ export class ShareService {
             updatedAt: recipient.updatedAt.toISOString(),
           })) || []
         : [],
+      // Strip owner-only metadata from non-owner responses
+      ...(isOwner
+        ? {}
+        : {
+            creatorId: null,
+            notifyOnDownload: false,
+            inactivityAlertDays: null,
+            lastDownloadedAt: null,
+            notifiedForExpiring: false,
+            notifiedForExpired: false,
+          }),
       // Strip creator from response (internal use only)
       creator: undefined,
     };

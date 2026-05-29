@@ -417,6 +417,37 @@ describe("Visitor Identification — integration", () => {
       expect(res.json().code).toBe("IDENTIFICATION_REQUIRED");
     });
 
+    // ── Owner-only metadata stripped from anonymous response ─────────────
+    it("anonymous GET does NOT expose owner-only metadata", async () => {
+      const share = makeShare({
+        nameFieldRequired: "HIDDEN",
+        emailFieldRequired: "HIDDEN",
+        notifyOnDownload: true,
+        inactivityAlertDays: 30,
+        lastDownloadedAt: new Date("2025-06-01"),
+        notifiedForExpiring: true,
+        notifiedForExpired: false,
+      });
+      mockShareAliasFindUnique.mockResolvedValue({ shareId: SHARE_ID });
+      mockShareFindUnique.mockResolvedValue(share);
+      mockShareUpdateMany.mockResolvedValue({ count: 1 });
+
+      const res = await app.inject({
+        method: "GET",
+        url: `/shares/alias/${ALIAS}`,
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = res.json();
+      // Owner-only fields should be nulled/zeroed for non-owner access
+      expect(body.share.creatorId).toBeNull();
+      expect(body.share.notifyOnDownload).toBe(false);
+      expect(body.share.inactivityAlertDays).toBeNull();
+      expect(body.share.lastDownloadedAt).toBeNull();
+      expect(body.share.notifiedForExpiring).toBe(false);
+      expect(body.share.notifiedForExpired).toBe(false);
+    });
+
     // ── FIX 1 regression: recipients stripped from anonymous response ──────
     it("anonymous GET does NOT include recipients with trackingTokens", async () => {
       const share = makeShare({

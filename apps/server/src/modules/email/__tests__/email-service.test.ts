@@ -308,7 +308,7 @@ describe("EmailService", () => {
         data: { firstName: "Jean", loginUrl: "https://test.example.com" },
       });
 
-      expect(mockCreateTranslationFn).toHaveBeenCalledWith("fr");
+      expect(mockCreateTranslationFn).toHaveBeenCalledWith("fr", { appName: "TestApp" });
       expect(mockRenderLayout).toHaveBeenCalledOnce();
       const layoutCall = mockRenderLayout.mock.calls[0];
       // First arg is slots, second is config (with locale), third is translation fn

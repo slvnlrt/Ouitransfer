@@ -259,6 +259,36 @@ describe("renderLayout", () => {
     expect(html).toContain("Se désabonner");
   });
 
+  // ── Newline-to-BR conversion ─────────────────────────────────────────────
+
+  it("converts \\n in body to <br> in HTML output", () => {
+    const { html } = renderLayout(
+      { ...DEFAULT_SLOTS, body: "Hello Alice,\n\nWelcome to Ouitransfer!" },
+      DEFAULT_CONFIG,
+    );
+
+    expect(html).toContain("Hello Alice,<br><br>Welcome to Ouitransfer!");
+    expect(html).not.toContain("Hello Alice,\n\nWelcome to Ouitransfer!");
+  });
+
+  it("preserves raw newlines in plain text output (no <br> conversion)", () => {
+    const { text } = renderLayout(
+      { ...DEFAULT_SLOTS, body: "Hello Alice,\n\nWelcome to Ouitransfer!" },
+      DEFAULT_CONFIG,
+    );
+
+    expect(text).toContain("Hello Alice,\n\nWelcome to Ouitransfer!");
+    expect(text).not.toContain("<br>");
+  });
+
+  it("does not apply nlToBr to subtitle", () => {
+    const { html } = renderLayout({ ...DEFAULT_SLOTS, subtitle: "Line1\nLine2" }, DEFAULT_CONFIG);
+
+    // Subtitle is HTML-escaped but newlines are not converted —
+    // the subtitle goes through escapeHtml which does not add <br>.
+    expect(html).not.toContain("Line1<br>Line2");
+  });
+
   // ── XSS safety ─────────────────────────────────────────────────────────────
 
   it("escapes appName in HTML to prevent XSS", () => {

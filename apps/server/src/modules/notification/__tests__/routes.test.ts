@@ -556,6 +556,54 @@ describe("Notification routes — integration", () => {
       expect(res.statusCode).toBe(200);
       expect(res.payload).toContain("Successfully unsubscribed");
     });
+
+    it("accepts form-urlencoded body (HTML form submission)", async () => {
+      const token = signUnsubscribeToken({ userId: "user-1", type: "share_expiring" });
+
+      const res = await app.inject({
+        method: "POST",
+        url: "/notifications/unsubscribe",
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        payload: `token=${encodeURIComponent(token)}`,
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.headers["content-type"]).toContain("text/html");
+      expect(res.payload).toContain("Successfully unsubscribed");
+      expect(mockPrisma.notificationPreference.upsert).toHaveBeenCalledOnce();
+    });
+
+    it("accepts token from query string (RFC 8058 one-click unsubscribe)", async () => {
+      const token = signUnsubscribeToken({ userId: "user-1", type: "share_expiring" });
+
+      // RFC 8058: mail client POSTs to List-Unsubscribe URL with
+      // List-Unsubscribe=One-Click body, token is in the URL query
+      const res = await app.inject({
+        method: "POST",
+        url: `/notifications/unsubscribe?token=${encodeURIComponent(token)}`,
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        payload: "List-Unsubscribe=One-Click",
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.headers["content-type"]).toContain("text/html");
+      expect(res.payload).toContain("Successfully unsubscribed");
+      expect(mockPrisma.notificationPreference.upsert).toHaveBeenCalledOnce();
+    });
+
+    it("returns error page when no token is provided anywhere", async () => {
+      const res = await app.inject({
+        method: "POST",
+        url: "/notifications/unsubscribe",
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        payload: "List-Unsubscribe=One-Click",
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.headers["content-type"]).toContain("text/html");
+      expect(res.payload).toContain("Invalid or expired unsubscribe link");
+      expect(mockPrisma.notificationPreference.upsert).not.toHaveBeenCalled();
+    });
   });
 
   // ═══════════════════════════════════════════════════════════════════════════

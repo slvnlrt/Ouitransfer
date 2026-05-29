@@ -76,6 +76,47 @@ describe("renderWelcome", () => {
     );
     expect(slots.unsubscribeUrl).toBeUndefined();
   });
+
+  it("interpolates appName into subtitle when provided via default params", () => {
+    // Simulate a translation function that has appName as a default param
+    // (as set up by createTranslationFn in service.ts)
+    const trWithAppName: TranslationFn = (path, params) => {
+      const strings: Record<string, string> = {
+        "welcome.subtitle": "Welcome to {appName}",
+        "welcome.body": "Hello {firstName},\n\nWelcome to {appName}!",
+        "welcome.cta": "Sign in to {appName}",
+      };
+      let result = strings[path] ?? `[${path}]`;
+      if (params) {
+        for (const [key, value] of Object.entries(params)) {
+          result = result.replaceAll(`{${key}}`, value);
+        }
+      }
+      return result;
+    };
+
+    const slots = renderWelcome(
+      { firstName: "Alice", loginUrl: "https://example.com/login" },
+      trWithAppName,
+    );
+
+    // When appName is NOT passed, subtitle shows literal {appName}
+    expect(slots.subtitle).toContain("{appName}");
+
+    // Now simulate what service.ts does: merge appName into default params
+    const trWithDefaults: TranslationFn = (path, params) => {
+      return trWithAppName(path, { appName: "Ouitransfer", ...params });
+    };
+
+    const slotsWithDefaults = renderWelcome(
+      { firstName: "Alice", loginUrl: "https://example.com/login" },
+      trWithDefaults,
+    );
+
+    // With appName in defaults, subtitle is correctly interpolated
+    expect(slotsWithDefaults.subtitle).toBe("Welcome to Ouitransfer");
+    expect(slotsWithDefaults.subtitle).not.toContain("{appName}");
+  });
 });
 
 describe("renderPasswordReset", () => {

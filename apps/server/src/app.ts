@@ -2,6 +2,7 @@ import * as http from "node:http";
 import fastifyCookie from "@fastify/cookie";
 import { fastifyCors } from "@fastify/cors";
 import fastifyCsrf from "@fastify/csrf-protection";
+import formbody from "@fastify/formbody";
 import helmet from "@fastify/helmet";
 import fastifyJwt from "@fastify/jwt";
 import rateLimit from "@fastify/rate-limit";
@@ -165,6 +166,12 @@ export async function buildApp() {
     // Returning false causes jwtVerify to throw "Untrusted token".
     trusted: validateTokenVersion,
   });
+
+  // ── Form body parsing ───────────────────────────────────────
+  // Enables parsing of application/x-www-form-urlencoded request bodies.
+  // Required for the unsubscribe flow (HTML form POST) and RFC 8058
+  // one-click List-Unsubscribe headers.
+  await app.register(formbody);
 
   // ── CSRF Protection (double-submit cookie pattern) ──────────
   // Must be registered after @fastify/cookie.

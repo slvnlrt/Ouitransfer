@@ -174,7 +174,7 @@ class EmailService {
     let htmlBody: string;
     let textBody: string;
     try {
-      const tr = await createTranslationFn(options.locale);
+      const tr = await createTranslationFn(options.locale, { appName });
       const slots = entry.render(options.data as unknown, tr);
 
       // Add unsubscribe URL if applicable

@@ -62,16 +62,26 @@ export async function tHtml(
  * **HTML-escapes** all interpolated values — designed for email body templates.
  * The returned function is synchronous (locale data is pre-loaded).
  *
+ * @param locale - The locale code (e.g. "fr", "en")
+ * @param defaultParams - Optional default params merged into every call.
+ *   Call-site params take precedence over defaults.
+ *
  * @example
- * const tr = await createTranslationFn("fr");
- * tr("common.footer", { appName: "Acme" }); // Acme is HTML-escaped
+ * const tr = await createTranslationFn("fr", { appName: "Acme" });
+ * tr("common.footer"); // appName is available without passing it explicitly
+ * tr("common.footer", { appName: "Override" }); // call-site wins
  */
-export async function createTranslationFn(locale: string): Promise<TranslationFn> {
+export async function createTranslationFn(
+  locale: string,
+  defaultParams?: Record<string, string>,
+): Promise<TranslationFn> {
   // Pre-load both the requested locale and English fallback so the returned
   // synchronous TranslationFn can always resolve values without I/O.
   await Promise.all([loadLocale(locale), loadLocale("en")]);
-  return (dotPath: string, params?: Record<string, string>) =>
-    resolveAndInterpolateSyncCached(locale, dotPath, params, true);
+  return (dotPath: string, params?: Record<string, string>) => {
+    const merged = defaultParams ? { ...defaultParams, ...params } : params;
+    return resolveAndInterpolateSyncCached(locale, dotPath, merged, true);
+  };
 }
 
 /**
@@ -79,11 +89,20 @@ export async function createTranslationFn(locale: string): Promise<TranslationFn
  * Does **not** HTML-escape values — suitable for plain-text contexts
  * (email subjects, plain-text body, etc.).
  * The returned function is synchronous (locale data is pre-loaded).
+ *
+ * @param locale - The locale code (e.g. "fr", "en")
+ * @param defaultParams - Optional default params merged into every call.
+ *   Call-site params take precedence over defaults.
  */
-export async function createPlainTranslationFn(locale: string): Promise<TranslationFn> {
+export async function createPlainTranslationFn(
+  locale: string,
+  defaultParams?: Record<string, string>,
+): Promise<TranslationFn> {
   await Promise.all([loadLocale(locale), loadLocale("en")]);
-  return (dotPath: string, params?: Record<string, string>) =>
-    resolveAndInterpolateSyncCached(locale, dotPath, params, false);
+  return (dotPath: string, params?: Record<string, string>) => {
+    const merged = defaultParams ? { ...defaultParams, ...params } : params;
+    return resolveAndInterpolateSyncCached(locale, dotPath, merged, false);
+  };
 }
 
 /**
