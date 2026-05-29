@@ -2,32 +2,40 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // ─── Hoisted mock state ──────────────────────────────────────────────────────
 
-const { mockGetConfigValue, mockPrisma, mockLogger, mockSmtpTransport, mockEmailQueueEvents } =
-  vi.hoisted(() => ({
-    mockGetConfigValue: vi.fn(),
-    mockPrisma: {
-      emailJob: {
-        findMany: vi.fn(),
-        updateMany: vi.fn(),
-        update: vi.fn(),
-        deleteMany: vi.fn(),
-      },
+const {
+  mockGetConfigValue,
+  mockPrisma,
+  mockLogger,
+  mockSmtpTransport,
+  mockEmailQueueEvents,
+  mockValidateAllI18nKeys,
+} = vi.hoisted(() => ({
+  mockGetConfigValue: vi.fn(),
+  mockValidateAllI18nKeys: vi.fn().mockResolvedValue(undefined),
+  mockPrisma: {
+    emailJob: {
+      findMany: vi.fn(),
+      updateMany: vi.fn(),
+      update: vi.fn(),
+      deleteMany: vi.fn(),
     },
-    mockLogger: {
-      info: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-      debug: vi.fn(),
-    },
-    mockSmtpTransport: {
-      sendMail: vi.fn(),
-    },
-    mockEmailQueueEvents: {
-      on: vi.fn(),
-      off: vi.fn(),
-      removeListener: vi.fn(),
-    },
-  }));
+  },
+  mockLogger: {
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    fatal: vi.fn(),
+    debug: vi.fn(),
+  },
+  mockSmtpTransport: {
+    sendMail: vi.fn(),
+  },
+  mockEmailQueueEvents: {
+    on: vi.fn(),
+    off: vi.fn(),
+    removeListener: vi.fn(),
+  },
+}));
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
@@ -49,6 +57,10 @@ vi.mock("../transport.js", () => ({
 
 vi.mock("../events.js", () => ({
   emailQueueEvents: mockEmailQueueEvents,
+}));
+
+vi.mock("../catalog.js", () => ({
+  validateAllI18nKeys: mockValidateAllI18nKeys,
 }));
 
 // ─── Imports (after mocks) ────────────────────────────────────────────────────
@@ -475,6 +487,18 @@ describe("EmailQueueScheduler", () => {
 
       await expect(initEmailQueueOnBoot()).resolves.not.toThrow();
       expect(mockLogger.error).toHaveBeenCalled();
+    });
+
+    it("throws when i18n validation fails (fail-fast)", async () => {
+      mockValidateAllI18nKeys.mockRejectedValue(
+        new Error("Missing i18n key: shareExpiring.subject"),
+      );
+
+      await expect(initEmailQueueOnBoot()).rejects.toThrow("Missing i18n key");
+      expect(mockLogger.fatal).toHaveBeenCalledWith(
+        expect.objectContaining({ err: expect.any(Error) }),
+        expect.stringContaining("i18n validation failed"),
+      );
     });
   });
 });

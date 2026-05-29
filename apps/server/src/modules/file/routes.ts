@@ -181,11 +181,12 @@ async function trackShareDownload(
     })
     .catch((err) => getLogger().error({ err }, "Failed to create ShareVisit for download"));
 
-  // Update lastDownloadedAt (fire-and-forget)
+  // Update lastDownloadedAt and reset inactivityAlertSent so a future
+  // inactivity cycle can trigger another alert (fire-and-forget)
   prisma.share
     .update({
       where: { id: shareId },
-      data: { lastDownloadedAt: new Date() },
+      data: { lastDownloadedAt: new Date(), inactivityAlertSent: false },
     })
     .catch((err) => getLogger().error({ err }, "Failed to update share lastDownloadedAt"));
 

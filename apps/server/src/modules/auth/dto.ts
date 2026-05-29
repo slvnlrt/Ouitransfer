@@ -18,7 +18,6 @@ export interface LoginInput {
 
 export const RequestPasswordResetSchema = z.object({
   email: z.string().email("Invalid email").describe("User email"),
-  origin: z.string().url("Invalid origin").describe("Origin of the request"),
 });
 
 export const BaseResetPasswordSchema = z.object({

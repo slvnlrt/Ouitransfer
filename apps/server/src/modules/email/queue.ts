@@ -427,11 +427,18 @@ export function stopEmailQueueScheduler(): void {
 
 /**
  * Initialize the email queue on server boot.
- * Validates i18n keys, recovers stuck jobs, then starts the scheduler.
- * Fire-and-forget from server.ts — has internal error handling.
+ * Validates i18n keys (fail-fast on missing keys — catches typos during development),
+ * recovers stuck jobs, then starts the scheduler.
+ *
+ * Throws on i18n validation failure so the server fails to start deterministically.
  */
 export async function initEmailQueueOnBoot(): Promise<void> {
-  await validateAllI18nKeys();
+  try {
+    await validateAllI18nKeys();
+  } catch (err) {
+    getLogger().fatal({ err }, "i18n validation failed — email subsystem disabled");
+    throw err;
+  }
 
   try {
     await recoverStuckJobs();

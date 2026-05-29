@@ -303,8 +303,8 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     handler: async (request, reply) => {
-      const { email, origin } = request.body;
-      await authService.requestPasswordReset(email, origin);
+      const { email } = request.body;
+      await authService.requestPasswordReset(email);
 
       // Audit password reset request (fire-and-forget)
       // No userId — intentionally omitted to avoid confirming user existence

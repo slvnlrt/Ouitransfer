@@ -12,6 +12,7 @@ import {
 import { getLogger } from "../../utils/logger.js";
 import { getConfigValue } from "../config/service.js";
 import { emailService } from "../email/service.js";
+import { buildResetPasswordUrl } from "../email/url-builder.js";
 import { TwoFactorService } from "../two-factor/service.js";
 import { UserResponseSchema } from "../user/dto.js";
 import { PrismaUserRepository } from "../user/repository.js";
@@ -160,7 +161,7 @@ export class AuthService {
     return UserResponseSchema.parse(user);
   }
 
-  async requestPasswordReset(email: string, origin: string) {
+  async requestPasswordReset(email: string) {
     // Look up the user first — LDAP users are allowed to reset their password
     // even when passwordAuth is disabled (needed for welcome-email initial setup).
     const user = await this.userRepository.findUserByEmail(email);
@@ -190,12 +191,13 @@ export class AuthService {
     });
 
     try {
+      const resetUrl = await buildResetPasswordUrl(token);
       await emailService.send("password_reset", {
         to: email,
         locale: user.locale ?? "en",
         userId: user.id,
         data: {
-          resetUrl: `${origin}/auth/reset-password/${token}`,
+          resetUrl,
           expiresInMinutes: Math.round(expirationSeconds / 60),
         },
       });

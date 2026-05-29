@@ -678,9 +678,12 @@ export class ShareService {
     }
 
     // Build share link server-side (FIX 7: prevents phishing via client-supplied URLs)
-    const appUrl = await getAppUrl();
     const shareAlias = share.alias?.alias;
-    const baseShareLink = shareAlias ? `${appUrl}/s/${shareAlias}` : `${appUrl}/s/${share.id}`;
+    if (!shareAlias) {
+      throw new ValidationError("Share must have an alias before sending notifications");
+    }
+    const appUrl = await getAppUrl();
+    const baseShareLink = `${appUrl}/s/${shareAlias}`;
 
     // Get sender info
     const user = await prisma.user.findUnique({ where: { id: userId } });

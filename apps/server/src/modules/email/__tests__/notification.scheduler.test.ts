@@ -359,6 +359,68 @@ describe("Notification Scheduler", () => {
       expect(mockEmailSend).not.toHaveBeenCalled();
       expect(mockShareUpdate).not.toHaveBeenCalled();
     });
+
+    it("alert fires again after inactivityAlertSent is reset by a download", async () => {
+      // Scenario: alert already fired (inactivityAlertSent=true) → download resets it
+      // to false → share goes inactive again → alert should fire again.
+      //
+      // Step 1: share with inactivityAlertSent=false, last download 10 days ago,
+      // threshold 7 days → alert fires.
+      const lastDownloadedAt = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
+      const share = makeShare({
+        inactivityAlertDays: 7,
+        inactivityAlertSent: false,
+        lastDownloadedAt,
+        createdAt: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000),
+      });
+      mockShareFindMany.mockResolvedValue([share]);
+
+      const { checkInactiveShares } = await import("../notification.scheduler.js");
+      await checkInactiveShares();
+
+      expect(mockEmailSend).toHaveBeenCalledWith("share_no_activity", expect.anything());
+      expect(mockShareUpdate).toHaveBeenCalledWith({
+        where: { id: SHARE_ID },
+        data: { inactivityAlertSent: true },
+      });
+
+      // Step 2: simulate a download resetting the flag — now
+      // inactivityAlertSent=false again, lastDownloadedAt=recently
+      vi.clearAllMocks();
+      const recentDownload = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000);
+      const shareAfterDownload = makeShare({
+        inactivityAlertDays: 7,
+        inactivityAlertSent: false, // reset by trackShareDownload
+        lastDownloadedAt: recentDownload,
+        createdAt: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000),
+      });
+      mockShareFindMany.mockResolvedValue([shareAfterDownload]);
+
+      await checkInactiveShares();
+
+      // Recent download (2 days ago) < threshold (7 days) → should NOT fire yet
+      expect(mockEmailSend).not.toHaveBeenCalled();
+
+      // Step 3: time passes, share goes inactive again (last download now 10 days ago)
+      vi.clearAllMocks();
+      const staleDownload = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
+      const shareInactiveAgain = makeShare({
+        inactivityAlertDays: 7,
+        inactivityAlertSent: false,
+        lastDownloadedAt: staleDownload,
+        createdAt: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000),
+      });
+      mockShareFindMany.mockResolvedValue([shareInactiveAgain]);
+
+      await checkInactiveShares();
+
+      // Alert fires again — the reset allowed a new cycle
+      expect(mockEmailSend).toHaveBeenCalledWith("share_no_activity", expect.anything());
+      expect(mockShareUpdate).toHaveBeenCalledWith({
+        where: { id: SHARE_ID },
+        data: { inactivityAlertSent: true },
+      });
+    });
   });
 
   // ── checkExpiringReverseShares ─────────────────────────────────────────────

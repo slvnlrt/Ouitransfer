@@ -340,6 +340,36 @@ describe("Email migration — ShareService.notifyRecipients()", () => {
     expect(result.notifiedRecipients).toHaveLength(2);
   });
 
+  it("rejects notification for shares without an alias", async () => {
+    const share = makeShare({ alias: null });
+    mockShareRepository.findShareById.mockResolvedValue(share);
+
+    await expect(shareService.notifyRecipients("share-1", "user-1")).rejects.toThrow(
+      "Share must have an alias before sending notifications",
+    );
+
+    expect(mockEmailServiceSend).not.toHaveBeenCalled();
+  });
+
+  it("rejects notification when alias object exists but alias field is null", async () => {
+    const share = makeShare({
+      alias: {
+        id: "alias-1",
+        alias: null,
+        shareId: "share-1",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+    mockShareRepository.findShareById.mockResolvedValue(share);
+
+    await expect(shareService.notifyRecipients("share-1", "user-1")).rejects.toThrow(
+      "Share must have an alias before sending notifications",
+    );
+
+    expect(mockEmailServiceSend).not.toHaveBeenCalled();
+  });
+
   it("uses username as senderName when no firstName set", async () => {
     mockPrisma.user.findUnique.mockResolvedValue(makeUser({ firstName: null, lastName: null }));
     mockShareRepository.findShareById.mockResolvedValue(makeShare());

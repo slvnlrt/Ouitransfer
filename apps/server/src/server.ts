@@ -114,8 +114,8 @@ async function startServer() {
   // Initialize audit retention scheduler (fire-and-forget — has internal try/catch)
   void initAuditRetentionOnBoot();
 
-  // Initialize email queue scheduler (fire-and-forget — has internal try/catch)
-  void initEmailQueueOnBoot();
+  // Initialize email queue scheduler — throws on i18n validation failure (fail-fast)
+  await initEmailQueueOnBoot();
 
   // Initialize notification scheduler (fire-and-forget — has internal try/catch)
   void initNotificationSchedulerOnBoot();

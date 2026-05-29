@@ -123,9 +123,9 @@ async function checkExpiredShares(): Promise<void> {
  * Send share_no_activity notifications for shares that have exceeded their
  * inactivity threshold without any downloads.
  *
- * One-shot alert: once inactivityAlertSent=true, no second alert fires for this share
- * even if activity resumes then stops again. This is by design — a single nudge per
- * share lifecycle.
+ * Alert lifecycle: when a non-owner downloads a share, `trackShareDownload()` resets
+ * `inactivityAlertSent` to `false` and updates `lastDownloadedAt`, allowing a future
+ * alert cycle if the share goes inactive again.
  *
  * PERF NOTE: This fetches all shares with inactivityAlertDays set and filters in JS.
  * For large deployments (10k+ shares), consider using prisma.$queryRaw with a computed

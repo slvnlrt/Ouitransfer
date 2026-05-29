@@ -48,7 +48,6 @@ export function useForgotPassword() {
     try {
       await requestPasswordReset({
         email: data.email,
-        origin: window.location.origin,
       });
       toast.success(t("forgotPassword.resetInstructions"));
       router.push("/login");
