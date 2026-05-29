@@ -39,7 +39,8 @@ const HTML_STYLES = `
 `.trim();
 
 // LIMITATION: Unsubscribe confirmation pages are English-only. Localization would require
-// resolving the user's locale from the JWT payload or DB lookup.
+// fetching the user's locale preference after token verification (the unsubscribe JWT contains
+// only userId + type, not locale). Deferred — acceptable for v1.
 function renderConfirmPage(token: string, type: string): string {
   return `<!DOCTYPE html>
 <html lang="en">

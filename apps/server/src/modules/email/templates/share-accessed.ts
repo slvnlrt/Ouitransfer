@@ -5,7 +5,6 @@ export interface ShareAccessedData {
   shareName: string;
   visitorName?: string;
   visitorEmail?: string;
-  ipAddress?: string;
   accessedAt: string;
 }
 

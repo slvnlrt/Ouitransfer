@@ -20,6 +20,15 @@ vi.mock("../../../utils/escape-html.js", async () => {
   };
 });
 
+vi.mock("../../../utils/logger.js", () => ({
+  getLogger: vi.fn(() => ({
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
+  })),
+}));
+
 const mockedFs = vi.mocked(fs);
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────

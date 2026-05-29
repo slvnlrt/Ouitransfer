@@ -294,8 +294,8 @@ describe("EmailQueueScheduler", () => {
       expect(diffFromNow).toBeLessThanOrEqual(61_000);
     });
 
-    it("backoff delay attempt 2: ~5min (300s)", async () => {
-      // attempts=1 → newAttempts=2 → BACKOFF_SECONDS[1]=300s
+    it("backoff delay attempt 2: ~2min (120s)", async () => {
+      // attempts=1 → newAttempts=2 → min(3600, 60 * 2^1) = 120s
       // maxAttempts=4 so it retries (newAttempts=2 < 4)
       const job = makeJob({ attempts: 1, maxAttempts: 4 });
       mockPrisma.emailJob.findMany.mockResolvedValue([job]);
@@ -313,12 +313,12 @@ describe("EmailQueueScheduler", () => {
       expect(retryCall).toBeDefined();
       const nextAttempt = (retryCall![0] as { data: { nextAttemptAt?: Date } }).data.nextAttemptAt!;
       const diffFromNow = nextAttempt.getTime() - now;
-      expect(diffFromNow).toBeGreaterThanOrEqual(299_000);
-      expect(diffFromNow).toBeLessThanOrEqual(301_000);
+      expect(diffFromNow).toBeGreaterThanOrEqual(119_000);
+      expect(diffFromNow).toBeLessThanOrEqual(121_000);
     });
 
-    it("backoff delay attempt 3: ~30min (1800s)", async () => {
-      // attempts=2 → newAttempts=3 → BACKOFF_SECONDS[2]=1800s
+    it("backoff delay attempt 3: ~4min (240s)", async () => {
+      // attempts=2 → newAttempts=3 → min(3600, 60 * 2^2) = 240s
       // maxAttempts=4 so it retries (newAttempts=3 < 4)
       const job = makeJob({ attempts: 2, maxAttempts: 4 });
       mockPrisma.emailJob.findMany.mockResolvedValue([job]);
@@ -336,8 +336,8 @@ describe("EmailQueueScheduler", () => {
       expect(retryCall).toBeDefined();
       const nextAttempt = (retryCall![0] as { data: { nextAttemptAt?: Date } }).data.nextAttemptAt!;
       const diffFromNow = nextAttempt.getTime() - now;
-      expect(diffFromNow).toBeGreaterThanOrEqual(1_799_000);
-      expect(diffFromNow).toBeLessThanOrEqual(1_801_000);
+      expect(diffFromNow).toBeGreaterThanOrEqual(239_000);
+      expect(diffFromNow).toBeLessThanOrEqual(241_000);
     });
 
     it("marks job 'failed' permanently when attempts >= maxAttempts", async () => {

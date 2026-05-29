@@ -25,6 +25,13 @@ import {
 } from "./dto.js";
 import { type ShareAccessContext, ShareService } from "./service.js";
 
+/** Zod schema for the signed visitor identification cookie payload. */
+const VisitorCookiePayload = z.object({
+  alias: z.string(),
+  name: z.string().nullable().optional(),
+  email: z.string().nullable().optional(),
+});
+
 /**
  * Parse a signed visitor identification cookie for the given alias.
  * Returns the parsed payload if valid, undefined otherwise.
@@ -38,11 +45,17 @@ function parseVisitorCookie(
   const unsigned = request.unsignCookie(raw);
   if (!unsigned.valid || !unsigned.value) return undefined;
   try {
-    const payload = JSON.parse(unsigned.value) as { alias?: string; name?: string; email?: string };
+    const parsed = VisitorCookiePayload.safeParse(JSON.parse(unsigned.value));
+    if (!parsed.success) return undefined;
+    const payload = parsed.data;
     if (payload.alias !== alias) return undefined;
     // Treat empty-content cookies as absent — both fields blank is the same as no identification
     if (!payload.name && !payload.email) return undefined;
-    return payload as { name?: string; email?: string; alias: string };
+    return {
+      alias: payload.alias,
+      name: payload.name ?? undefined,
+      email: payload.email ?? undefined,
+    };
   } catch {
     return undefined;
   }
@@ -488,6 +501,8 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         userId,
         request.body.emails,
       );
+      // NOTE: Recipient emails are stored in the audit log for forensics. PII retention follows
+      // auditRetentionDays (default 365). If privacy requirements change, hash or redact emails here.
       logAuditEvent({
         action: "SHARE_RECIPIENT_ADD",
         ipAddress: request.ip,
@@ -535,6 +550,8 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         userId,
         request.body.emails,
       );
+      // NOTE: Recipient emails are stored in the audit log for forensics. PII retention follows
+      // auditRetentionDays (default 365). If privacy requirements change, hash or redact emails here.
       logAuditEvent({
         action: "SHARE_RECIPIENT_REMOVE",
         ipAddress: request.ip,
@@ -892,6 +909,11 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
                   name: z.string().nullable(),
                 })
                 .nullable(),
+              identificationSource: z
+                .enum(["tracking_token", "cookie", "anonymous"])
+                .describe(
+                  "How the visitor was identified: tracking_token (recipient link), cookie (identification form), anonymous",
+                ),
             }),
           ),
           total: z.number(),
@@ -939,7 +961,20 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         prisma.shareVisit.count({ where }),
       ]);
 
-      return reply.send({ visits, total, page, limit });
+      // Derive identificationSource for each visit:
+      // - "tracking_token": recipientId is set (visitor arrived via a personalized link)
+      // - "cookie": no recipientId, but visitorEmail or visitorName is set (identification form)
+      // - "anonymous": no identification at all
+      const enrichedVisits = visits.map((visit) => ({
+        ...visit,
+        identificationSource: visit.recipientId
+          ? ("tracking_token" as const)
+          : visit.visitorEmail || visit.visitorName
+            ? ("cookie" as const)
+            : ("anonymous" as const),
+      }));
+
+      return reply.send({ visits: enrichedVisits, total, page, limit });
     },
   });
 };

@@ -13,33 +13,37 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // ─── Hoisted mock state ────────────────────────────────────────────────────────
 
-const { mockEmailServiceSend, mockPrisma, mockLogger, mockGetAppUrl } = vi.hoisted(() => ({
-  mockEmailServiceSend: vi.fn().mockResolvedValue(undefined),
-  mockGetAppUrl: vi.fn().mockResolvedValue("https://app.example.com"),
-  mockPrisma: {
-    user: {
-      findUnique: vi.fn(),
+const { mockEmailServiceSend, mockPrisma, mockLogger, mockGetAppUrl, mockBuildShareLink } =
+  vi.hoisted(() => ({
+    mockEmailServiceSend: vi.fn().mockResolvedValue(undefined),
+    mockGetAppUrl: vi.fn().mockResolvedValue("https://app.example.com"),
+    mockBuildShareLink: vi
+      .fn()
+      .mockImplementation(async (alias: string) => `https://app.example.com/s/${alias}`),
+    mockPrisma: {
+      user: {
+        findUnique: vi.fn(),
+      },
+      shareRecipient: {
+        update: vi.fn(),
+        updateMany: vi.fn(),
+        findUnique: vi.fn(),
+        findMany: vi.fn(),
+        deleteMany: vi.fn(),
+        create: vi.fn(),
+      },
+      share: {
+        update: vi.fn(),
+      },
+      $transaction: vi.fn(),
     },
-    shareRecipient: {
-      update: vi.fn(),
-      updateMany: vi.fn(),
-      findUnique: vi.fn(),
-      findMany: vi.fn(),
-      deleteMany: vi.fn(),
-      create: vi.fn(),
+    mockLogger: {
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+      debug: vi.fn(),
     },
-    share: {
-      update: vi.fn(),
-    },
-    $transaction: vi.fn(),
-  },
-  mockLogger: {
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn(),
-    debug: vi.fn(),
-  },
-}));
+  }));
 
 // ─── Mocks ─────────────────────────────────────────────────────────────────────
 
@@ -101,6 +105,7 @@ vi.mock("../audit/service.js", () => ({
 
 vi.mock("../../email/url-builder.js", () => ({
   getAppUrl: mockGetAppUrl,
+  buildShareLink: mockBuildShareLink,
 }));
 
 vi.mock("bcryptjs", () => ({
@@ -250,28 +255,23 @@ describe("Email migration — ShareService.notifyRecipients()", () => {
     );
   });
 
-  it("generates a tracking token for recipients without one", async () => {
+  it("sends link without tracking token when recipient has no token (legacy data)", async () => {
+    // Tracking tokens are now generated at creation time. Recipients with null tokens
+    // are legacy data — the notification still sends, just without a tracking param.
     const recipient = makeRecipient({ trackingToken: null });
     mockShareRepository.findShareById.mockResolvedValue(makeShare({ recipients: [recipient] }));
 
     await shareService.notifyRecipients("share-1", "user-1");
 
-    // Should use conditional updateMany (race-safe backfill): only writes when token is still null
-    expect(mockPrisma.shareRecipient.updateMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { id: "recipient-1", trackingToken: null },
-        data: expect.objectContaining({
-          trackingToken: expect.any(String),
-        }),
-      }),
-    );
+    // No backfill should occur — tokens are generated at creation time
+    expect(mockPrisma.shareRecipient.updateMany).not.toHaveBeenCalled();
 
-    // The send call should include the newly generated token
+    // The send call should use the base link without a tracking token
     expect(mockEmailServiceSend).toHaveBeenCalledWith(
       "share_invitation",
       expect.objectContaining({
         data: expect.objectContaining({
-          shareLink: expect.stringContaining("?t="),
+          shareLink: "https://app.example.com/s/share-1",
         }),
       }),
     );

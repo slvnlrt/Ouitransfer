@@ -36,6 +36,7 @@ async function checkExpiringShares(): Promise<void> {
       },
       notifiedForExpiring: false,
       creatorId: { not: null },
+      creator: { isActive: true },
     },
     include: {
       creator: {
@@ -89,6 +90,7 @@ async function checkExpiredShares(): Promise<void> {
       },
       notifiedForExpired: false,
       creatorId: { not: null },
+      creator: { isActive: true },
     },
     include: {
       creator: {
@@ -144,6 +146,7 @@ async function checkInactiveShares(): Promise<void> {
       inactivityAlertDays: { not: null },
       inactivityAlertSent: false,
       creatorId: { not: null },
+      creator: { isActive: true },
     },
     include: {
       creator: {
@@ -204,6 +207,7 @@ async function checkExpiringReverseShares(): Promise<void> {
         lt: warnThreshold,
       },
       notifiedForExpiring: false,
+      creator: { isActive: true },
     },
     include: {
       creator: {
@@ -250,6 +254,7 @@ async function checkExpiredReverseShares(): Promise<void> {
         lt: now,
       },
       notifiedForExpired: false,
+      creator: { isActive: true },
     },
     include: {
       creator: {

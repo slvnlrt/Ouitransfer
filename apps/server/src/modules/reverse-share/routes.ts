@@ -8,6 +8,7 @@ import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
 import {
   CreateReverseShareSchema,
+  FieldRequirementSchema,
   GetPresignedUrlSchema,
   ReverseShareFileSchema,
   ReverseSharePasswordSchema,
@@ -1271,6 +1272,8 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
           isExpired: z.boolean(),
           isInactive: z.boolean(),
           maxFiles: z.number().nullable(),
+          nameFieldRequired: FieldRequirementSchema,
+          emailFieldRequired: FieldRequirementSchema,
         }),
         404: ErrorResponseSchema,
       },

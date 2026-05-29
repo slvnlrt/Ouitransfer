@@ -216,7 +216,7 @@ describe("updateShare — notification flag reset", () => {
     );
   });
 
-  it("still updates share when creator is null (no notification sent)", async () => {
+  it("does not throw when creator is null (creator deletion case) and skips notification", async () => {
     const newExpiration = new Date("2024-08-01T00:00:00Z");
     const currentExpiration = new Date("2024-07-01T00:00:00Z");
 
@@ -230,6 +230,7 @@ describe("updateShare — notification flag reset", () => {
     mockFindShareById.mockResolvedValue(share);
     mockUpdateShare.mockResolvedValue(share);
 
+    const { emailService } = await import("../../email/service.js");
     const { ShareService } = await import("../service.js");
     const service = new ShareService();
 
@@ -238,5 +239,8 @@ describe("updateShare — notification flag reset", () => {
 
     // Update should still have been called
     expect(mockUpdateShare).toHaveBeenCalledOnce();
+
+    // No notification should have been sent (creator is null)
+    expect(emailService.send).not.toHaveBeenCalled();
   });
 });

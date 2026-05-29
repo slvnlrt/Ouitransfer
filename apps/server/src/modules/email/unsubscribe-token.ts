@@ -34,6 +34,11 @@ function base64url(input: Buffer | string): string {
  * Creates a compact HS256 JWT token for unsubscribe links.
  * Uses Node's native crypto — the token format is standard JWT.
  *
+ * The token includes both `iat` (issued-at) and `exp` (expiry) claims.
+ * `iat` is informational only — useful for debugging and audit trails but NOT
+ * enforced during verification. Only `exp` is checked for token validity.
+ * Since the token is HMAC-signed, `iat` cannot be forged without the key.
+ *
  * // TECH DEBT: Hand-rolled HMAC JWT. Migrate to 'jose' library if key rotation, RS256,
  * // audience checks, or token revocation are needed.
  */
@@ -45,7 +50,7 @@ export function signUnsubscribeToken(payload: { userId: string; type: string }):
   const body = base64url(
     JSON.stringify({
       ...payload,
-      iat: now,
+      iat: now, // Informational only — not enforced during verification (see verifyUnsubscribeToken)
       exp: now + UNSUBSCRIBE_TOKEN_EXPIRY_SECONDS,
     }),
   );

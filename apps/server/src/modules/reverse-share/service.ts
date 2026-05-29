@@ -442,6 +442,8 @@ export class ReverseShareService {
       isExpired,
       isInactive,
       maxFiles: reverseShare.maxFiles,
+      nameFieldRequired: reverseShare.nameFieldRequired,
+      emailFieldRequired: reverseShare.emailFieldRequired,
     };
   }
 

@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import type {
   File,
   Folder,
@@ -112,6 +113,7 @@ export class PrismaShareRepository implements IShareRepository {
             ? {
                 create: validRecipients.map((email) => ({
                   email: email.trim().toLowerCase(),
+                  trackingToken: crypto.randomBytes(24).toString("base64url"),
                 })),
               }
             : undefined,
@@ -348,6 +350,7 @@ export class PrismaShareRepository implements IShareRepository {
         recipients: {
           create: normalizedEmails.map((email) => ({
             email,
+            trackingToken: crypto.randomBytes(24).toString("base64url"),
           })),
         },
       },

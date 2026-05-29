@@ -3,6 +3,7 @@ import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { escapeHtml } from "../../../utils/escape-html.js";
+import { getLogger } from "../../../utils/logger.js";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -309,7 +310,9 @@ function interpolate(
   if (process.env.NODE_ENV !== "production") {
     const unresolved = result.match(/\{(\w+)\}/g);
     if (unresolved) {
-      console.warn(`[email-i18n] Unresolved placeholders in template: ${unresolved.join(", ")}`);
+      getLogger().warn(
+        `[email-i18n] Unresolved placeholders in template: ${unresolved.join(", ")}`,
+      );
     }
   }
 

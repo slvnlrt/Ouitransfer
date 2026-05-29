@@ -211,14 +211,19 @@ class EmailService {
     }
 
     // 12. Insert EmailJob
+    // Digest jobs store raw data as JSON payload (htmlBody/textBody null) — the digest
+    // aggregator will render a combined template at send time. Immediate jobs store
+    // pre-rendered HTML/text bodies (payload null).
+    const isDigest = status === "digest_pending";
     const maxAttempts = await getMaxRetries();
     await prisma.emailJob.create({
       data: {
         type,
         to: options.to,
         subject,
-        htmlBody,
-        textBody,
+        htmlBody: isDigest ? null : htmlBody,
+        textBody: isDigest ? null : textBody,
+        payload: isDigest ? JSON.stringify({ v: 1, type, data: options.data }) : undefined,
         locale: options.locale,
         status,
         priority: entry.priority,

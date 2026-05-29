@@ -472,6 +472,44 @@ describe("EmailService", () => {
       expect(mockLogger.debug).toHaveBeenCalled();
     });
 
+    it("with cooldown but no recent job: job IS created and findFirst was called with correct cutoff", async () => {
+      // share_accessed has cooldownSeconds: 900 and defaultFrequency: "disabled"
+      // We must set the user preference to "immediate" so the flow reaches the cooldown check
+      mockPrisma.notificationPreference.findUnique.mockResolvedValue({
+        id: "pref-1",
+        userId: "user-1",
+        type: "share_accessed",
+        frequency: "immediate",
+      });
+
+      // No recent job found → should proceed to create
+      mockPrisma.emailJob.findFirst.mockResolvedValue(null);
+
+      await emailService.send("share_accessed", {
+        to: "user@test.com",
+        locale: "en",
+        userId: "user-1",
+        shareId: "share-1",
+        data: {
+          shareName: "My Share",
+          accessedAt: "2025-01-01T00:00:00Z",
+        },
+      });
+
+      // findFirst should have been called for cooldown check
+      expect(mockPrisma.emailJob.findFirst).toHaveBeenCalledOnce();
+      const findFirstArg = mockPrisma.emailJob.findFirst.mock.calls[0][0];
+      expect(findFirstArg.where.type).toBe("share_accessed");
+      expect(findFirstArg.where.to).toBe("user@test.com");
+      // Cutoff should be approximately 900 seconds ago
+      const cutoff = findFirstArg.where.createdAt.gt as Date;
+      const expectedCutoff = Date.now() - 900 * 1000;
+      expect(Math.abs(cutoff.getTime() - expectedCutoff)).toBeLessThan(5000); // within 5s tolerance
+
+      // Job should have been created (cooldown did not block)
+      expect(mockPrisma.emailJob.create).toHaveBeenCalledOnce();
+    });
+
     it("without cooldown: types without cooldownSeconds do not check", async () => {
       // welcome has no cooldownSeconds
       await emailService.send("welcome", {

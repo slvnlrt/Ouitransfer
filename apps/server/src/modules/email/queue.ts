@@ -19,10 +19,11 @@ export type EmailJobStatus = "pending" | "processing" | "sent" | "failed" | "dig
 const BATCH_SIZE = 10;
 
 /**
- * Backoff delays in seconds for each retry attempt (1-indexed by attempt count).
- * Attempt 1 → 60s, attempt 2 → 300s (5min), attempt 3 → 1800s (30min).
+ * Maximum backoff delay in seconds (1 hour).
+ * The actual delay is computed as `min(MAX_BACKOFF_SECONDS, 60 × 2^(attempt-1))`:
+ *   attempt 1 → 60s, attempt 2 → 120s, attempt 3 → 240s, …, capped at 3600s.
  */
-const BACKOFF_SECONDS = [60, 300, 1800];
+const MAX_BACKOFF_SECONDS = 3600;
 
 /**
  * Jobs in "processing" status for longer than this are considered stuck
@@ -252,9 +253,8 @@ async function processBatch(): Promise<void> {
             lockedAt: null,
           });
         } else {
-          // Retry with exponential backoff (with one retry on DB failure)
-          const backoffSeconds =
-            BACKOFF_SECONDS[newAttempts - 1] ?? BACKOFF_SECONDS[BACKOFF_SECONDS.length - 1];
+          // Retry with exponential backoff: 60 × 2^(attempt-1), capped at MAX_BACKOFF_SECONDS
+          const backoffSeconds = Math.min(MAX_BACKOFF_SECONDS, 60 * 2 ** (newAttempts - 1));
           const nextAttemptAt = new Date(Date.now() + backoffSeconds * 1000);
 
           await updateJobStatusWithRetry(job.id, {

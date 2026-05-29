@@ -13,7 +13,7 @@ import {
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
 import { emailService } from "../email/service.js";
-import { getAppUrl } from "../email/url-builder.js";
+import { buildShareLink } from "../email/url-builder.js";
 import { FolderService } from "../folder/service.js";
 import { type CreateShareInput, ShareResponseSchema, type UpdateShareInput } from "./dto.js";
 import { type IShareRepository, PrismaShareRepository } from "./repository.js";
@@ -352,7 +352,6 @@ export class ShareService {
             shareName: share.name ?? "Unnamed share",
             visitorName,
             visitorEmail,
-            ipAddress: context?.ipAddress,
             accessedAt: new Date().toISOString(),
           },
         })
@@ -681,8 +680,7 @@ export class ShareService {
     if (!shareAlias) {
       throw new ValidationError("Share must have an alias before sending notifications");
     }
-    const appUrl = await getAppUrl();
-    const baseShareLink = `${appUrl}/s/${shareAlias}`;
+    const baseShareLink = await buildShareLink(shareAlias);
 
     // Get sender info
     const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -695,43 +693,18 @@ export class ShareService {
     // Sequential per-recipient to avoid SQLite contention. Acceptable at current scale.
     // For large recipient lists, consider Promise.allSettled with bounded concurrency.
     for (const recipient of recipientsToNotify) {
-      // NOTE: These three writes (trackingToken backfill, email send, notifiedAt update) are
-      // NOT wrapped in a transaction. On partial failure:
-      // - Token backfill without send: harmless (token exists but email not sent, retry will work)
+      // NOTE: email send + notifiedAt update are NOT wrapped in a transaction. On partial failure:
       // - Send without notifiedAt: email queued but UI shows "not notified" — acceptable since
       //   the email will be delivered and the user can re-trigger notification
       // SQLite's single-writer nature limits concurrent corruption risk.
 
-      // Ensure tracking token exists.
-      // Some creation paths (createShare, addRecipients via repository) do not generate tokens
-      // at creation time — we backfill here on first notification. The conditional update
-      // (where: trackingToken IS NULL) is safe against concurrent calls: if two notifyRecipients
-      // calls race for the same recipient, only the first write lands; the second is a no-op
-      // and we re-read the winner's token.
-      let trackingToken = recipient.trackingToken;
-      if (!trackingToken) {
-        const newToken = crypto.randomBytes(24).toString("base64url");
-        const { count } = await prisma.shareRecipient.updateMany({
-          where: { id: recipient.id, trackingToken: null },
-          data: { trackingToken: newToken },
-        });
-        if (count > 0) {
-          // We wrote the token
-          trackingToken = newToken;
-        } else {
-          // Another concurrent call already set the token — re-read it
-          const updated = await prisma.shareRecipient.findUnique({
-            where: { id: recipient.id },
-          });
-          trackingToken = updated?.trackingToken ?? null;
-        }
-      }
+      // Tracking tokens are generated at recipient creation time (createShare, addRecipients).
+      const { trackingToken } = recipient;
 
-      const linkUrl = new URL(baseShareLink);
-      if (trackingToken) {
-        linkUrl.searchParams.set("t", trackingToken);
-      }
-      const personalizedLink = linkUrl.toString();
+      // Append tracking token to the base share link for personalized recipient tracking
+      const personalizedLink = trackingToken
+        ? `${baseShareLink}?t=${trackingToken}`
+        : baseShareLink;
       try {
         await emailService.send("share_invitation", {
           to: recipient.email,

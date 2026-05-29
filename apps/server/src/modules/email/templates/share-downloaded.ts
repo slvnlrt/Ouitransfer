@@ -6,7 +6,6 @@ export interface ShareDownloadedData {
   fileName: string;
   visitorName?: string;
   visitorEmail?: string;
-  ipAddress?: string;
   downloadedAt: string;
 }
 

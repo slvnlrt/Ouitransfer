@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   type NotificationKey,
   type NotificationTypeConfig,
@@ -7,6 +7,16 @@ import {
 } from "../catalog.js";
 import { clearLocaleCache, createPlainTranslationFn, createTranslationFn } from "../i18n/loader.js";
 import { renderLayout } from "../templates/base-layout.js";
+
+// The i18n loader's interpolate function uses getLogger() for unresolved placeholder warnings.
+vi.mock("../../../utils/logger.js", () => ({
+  getLogger: vi.fn(() => ({
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
+  })),
+}));
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
