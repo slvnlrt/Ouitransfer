@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { AlertTriangle, Download, Eye } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -24,6 +24,10 @@ interface ShareDetailsActivitySectionProps {
 
 const PAGE_LIMIT = 10;
 
+// Privacy note: IPv4 addresses are truncated to the first two octets (e.g. 192.168.*.*),
+// which corresponds roughly to city-level geolocation. This balances the share owner's
+// need to see approximate visitor origin against visitor privacy. IPv6 addresses are
+// similarly truncated to the first three groups.
 function truncateIp(ip: string | null): string {
   if (!ip) return "";
 
@@ -122,6 +126,7 @@ export function ShareDetailsActivitySection({ shareId }: ShareDetailsActivitySec
       return response.data;
     },
     enabled: !!shareId,
+    placeholderData: keepPreviousData,
   });
 
   // Client-side identification filter

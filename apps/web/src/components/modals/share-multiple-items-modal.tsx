@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LazyQRCode } from "@/components/ui/lazy-qr-code";
+import { Loader } from "@/components/ui/loader";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
@@ -533,7 +534,7 @@ export function ShareMultipleItemsModal({
                 }
                 onClick={handleCreateShare}
               >
-                {isLoading ? <div className="animate-spin">⠋</div> : t("shareMultipleFiles.create")}
+                {isLoading ? <Loader size="sm" /> : t("shareMultipleFiles.create")}
               </Button>
             </>
           )}
@@ -544,7 +545,7 @@ export function ShareMultipleItemsModal({
                 {t("common.back")}
               </Button>
               <Button disabled={!alias || isLoading} onClick={handleGenerateLink}>
-                {isLoading ? <div className="animate-spin">⠋</div> : t("shareActions.generateLink")}
+                {isLoading ? <Loader size="sm" /> : t("shareActions.generateLink")}
               </Button>
             </>
           )}

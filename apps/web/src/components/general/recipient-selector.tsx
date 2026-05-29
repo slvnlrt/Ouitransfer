@@ -357,10 +357,16 @@ export function RecipientSelector({
                                 {t("recipientSelector.notified")}
                               </span>
                             )}
-                            {accessCount > 0 && (
+                            {accessCount > 0 ? (
                               <span className="text-xs text-muted-foreground">
                                 {t("recipientSelector.views", { count: accessCount })}
                               </span>
+                            ) : (
+                              notifiedAt && (
+                                <span className="text-xs text-muted-foreground">
+                                  {t("recipientSelector.neverAccessed")}
+                                </span>
+                              )
                             )}
                           </div>
                         </div>

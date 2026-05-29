@@ -908,7 +908,7 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
               userAgent: z.string().nullable(),
               action: z.string(),
               fileId: z.string().nullable(),
-              createdAt: z.date(),
+              createdAt: z.string().datetime(),
               recipient: z
                 .object({
                   email: z.string(),
@@ -973,6 +973,7 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       // - "anonymous": no identification at all
       const enrichedVisits = visits.map((visit) => ({
         ...visit,
+        createdAt: visit.createdAt.toISOString(),
         identificationSource: visit.recipientId
           ? ("tracking_token" as const)
           : visit.visitorEmail || visit.visitorName

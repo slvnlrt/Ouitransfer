@@ -1024,6 +1024,7 @@
     "notified": "Notified",
     "views": "{count, plural, one {# view} other {# views}}",
     "notifyPartial": "Only {sent} of {total} recipients were notified",
+    "neverAccessed": "Never accessed",
     "namePlaceholder": "Name (optional)"
   },
   "register": {
@@ -1793,7 +1794,7 @@
       "emailLabel": "Email",
       "submit": "Continue",
       "error": "Failed to submit identification. Please try again.",
-      "optional": "optional",
+      "optional": "Optional",
       "nameRequired": "Name is required",
       "emailRequired": "Email is required",
       "emailInvalid": "Please enter a valid email address",

@@ -9,11 +9,13 @@ interface CacheEntry {
 
 class DownloadUrlCache {
   private cache = new Map<string, CacheEntry>();
+  private lastEvictionAt = 0;
 
   // Presigned URLs expire in 3600s (1h)
   // We cache for 3300s (55min) with a 5min safety margin
   private readonly CACHE_DURATION = 3300 * 1000; // 55min in ms
   private readonly SAFETY_BUFFER = 60 * 1000; // 1min buffer before using cached URL
+  private readonly EVICTION_INTERVAL = 60 * 1000; // Run eviction at most once per 60s
 
   /**
    * Generates unique cache key considering objectName and optional share password
@@ -51,6 +53,17 @@ class DownloadUrlCache {
   }
 
   /**
+   * Runs eviction if at least EVICTION_INTERVAL has elapsed since the last run.
+   */
+  private maybeEvict(): void {
+    const now = Date.now();
+    if (now - this.lastEvictionAt >= this.EVICTION_INTERVAL) {
+      this.evictExpiredEntries();
+      this.lastEvictionAt = now;
+    }
+  }
+
+  /**
    * Gets download URL with intelligent caching
    */
   async getCachedDownloadUrl(
@@ -77,10 +90,7 @@ class DownloadUrlCache {
     };
 
     this.cache.set(cacheKey, entry);
-
-    if (this.cache.size % 10 === 0) {
-      this.evictExpiredEntries();
-    }
+    this.maybeEvict();
 
     return url;
   }
@@ -106,6 +116,7 @@ class DownloadUrlCache {
     };
 
     this.cache.set(cacheKey, entry);
+    this.maybeEvict();
 
     return url;
   }

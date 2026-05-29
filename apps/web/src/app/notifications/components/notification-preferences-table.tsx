@@ -1,5 +1,6 @@
 "use client";
 
+import type { NotificationType } from "@ouitransfer/shared/notification-types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bell, LayoutDashboard, Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -40,7 +41,7 @@ import { queryKeys } from "@/lib/query-keys";
 import { parseApiError } from "@/utils/api-error";
 
 // Maps notification types to their display category
-const TYPE_TO_CATEGORY: Record<string, string> = {
+const TYPE_TO_CATEGORY: Record<NotificationType, string> = {
   password_reset: "account",
   welcome: "account",
   account_deactivated: "account",
@@ -104,7 +105,7 @@ export function NotificationPreferencesTable() {
   const queryClient = useQueryClient();
 
   // Local state: track user-modified frequencies (type -> frequency)
-  const [localChanges, setLocalChanges] = useState<Record<string, string>>({});
+  const [localChanges, setLocalChanges] = useState<Partial<Record<NotificationType, string>>>({});
   const hasUnsavedChanges = Object.keys(localChanges).length > 0;
 
   // Warn about unsaved changes when navigating away
@@ -126,10 +127,10 @@ export function NotificationPreferencesTable() {
   });
 
   const saveMutation = useMutation({
-    mutationFn: async (changes: Record<string, string>) => {
+    mutationFn: async (changes: Partial<Record<NotificationType, string>>) => {
       const preferences = Object.entries(changes).map(([type, frequency]) => ({
-        type,
-        frequency,
+        type: type as NotificationType,
+        frequency: frequency as string,
       }));
       await updateNotificationPreferences({ preferences });
     },
@@ -144,7 +145,7 @@ export function NotificationPreferencesTable() {
     },
   });
 
-  const handleFrequencyChange = (type: string, frequency: string) => {
+  const handleFrequencyChange = (type: NotificationType, frequency: string) => {
     setLocalChanges((prev) => ({ ...prev, [type]: frequency }));
   };
 
@@ -156,7 +157,8 @@ export function NotificationPreferencesTable() {
     saveMutation.mutate(localChanges);
   };
 
-  const preferences = data?.preferences ?? [];
+  // Filter out non-configurable (critical) types — spec says they are not shown in preferences
+  const preferences = (data?.preferences ?? []).filter((pref) => !pref.isCritical);
   const grouped = groupByCategory(preferences);
 
   const getFrequency = (pref: NotificationPreference): string => {
@@ -229,34 +231,23 @@ export function NotificationPreferencesTable() {
                         {prefs.map((pref) => {
                           const isChanged = localChanges[pref.type] !== undefined;
                           return (
-                            <TableRow
-                              key={pref.type}
-                              className={`${pref.isCritical ? "opacity-60" : ""} ${isChanged ? "bg-accent/30" : ""}`}
-                            >
+                            <TableRow key={pref.type} className={isChanged ? "bg-accent/30" : ""}>
                               <TableCell className="font-medium">
                                 {t(`types.${pref.type}` as Parameters<typeof t>[0])}
                               </TableCell>
                               <TableCell>
-                                {pref.isCritical ? (
-                                  <span className="text-sm text-muted-foreground italic">
-                                    {t("alwaysEnabled")}
-                                  </span>
-                                ) : (
-                                  <Select
-                                    value={getFrequency(pref)}
-                                    onValueChange={(value) =>
-                                      handleFrequencyChange(pref.type, value)
-                                    }
-                                  >
-                                    <SelectTrigger className="w-40">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="immediate">{t("immediate")}</SelectItem>
-                                      <SelectItem value="disabled">{t("disabled")}</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                )}
+                                <Select
+                                  value={getFrequency(pref)}
+                                  onValueChange={(value) => handleFrequencyChange(pref.type, value)}
+                                >
+                                  <SelectTrigger className="w-40">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="immediate">{t("immediate")}</SelectItem>
+                                    <SelectItem value="disabled">{t("disabled")}</SelectItem>
+                                  </SelectContent>
+                                </Select>
                               </TableCell>
                             </TableRow>
                           );

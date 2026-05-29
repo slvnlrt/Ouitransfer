@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Activity, Loader, Mail, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -14,7 +14,6 @@ import { queryKeys } from "@/lib/query-keys";
 export function EmailAdminSection() {
   const t = useTranslations();
   const [testEmail, setTestEmail] = useState("");
-  const [isSending, setIsSending] = useState(false);
 
   const emailStatsQuery = useQuery({
     queryKey: queryKeys.admin.emailStats(),
@@ -27,19 +26,20 @@ export function EmailAdminSection() {
 
   const stats = emailStatsQuery.data;
 
-  const handleSendTest = async () => {
-    if (!testEmail.trim()) return;
-
-    setIsSending(true);
-    try {
-      await sendTestEmail(testEmail.trim());
+  const testEmailMutation = useMutation({
+    mutationFn: () => sendTestEmail(testEmail.trim()),
+    onSuccess: () => {
       toast.success(t("settings.emailAdmin.testSuccess"));
       setTestEmail("");
-    } catch {
+    },
+    onError: () => {
       toast.error(t("settings.emailAdmin.testError"));
-    } finally {
-      setIsSending(false);
-    }
+    },
+  });
+
+  const handleSendTest = () => {
+    if (!testEmail.trim()) return;
+    testEmailMutation.mutate();
   };
 
   return (
@@ -108,18 +108,18 @@ export function EmailAdminSection() {
             placeholder={t("settings.emailAdmin.testPlaceholder")}
             value={testEmail}
             onChange={(e) => setTestEmail(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && !isSending && handleSendTest()}
-            disabled={isSending}
+            onKeyDown={(e) => e.key === "Enter" && !testEmailMutation.isPending && handleSendTest()}
+            disabled={testEmailMutation.isPending}
             className="flex-1"
           />
           <Button
             type="button"
             variant="outline"
             onClick={handleSendTest}
-            disabled={!testEmail.trim() || isSending}
+            disabled={!testEmail.trim() || testEmailMutation.isPending}
             className="sm:w-auto w-full"
           >
-            {isSending ? (
+            {testEmailMutation.isPending ? (
               <>
                 <Loader className="h-4 w-4 animate-spin" />
                 {t("settings.emailAdmin.testSending")}

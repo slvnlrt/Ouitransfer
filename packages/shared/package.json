@@ -13,6 +13,10 @@
     "./error-codes": {
       "types": "./src/error-codes.ts",
       "default": "./dist/error-codes.js"
+    },
+    "./notification-types": {
+      "types": "./src/notification-types.ts",
+      "default": "./dist/notification-types.js"
     }
   },
   "scripts": {

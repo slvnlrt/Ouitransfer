@@ -1024,6 +1024,7 @@
     "notified": "Notifié",
     "views": "{count, plural, one {# vue} other {# vues}}",
     "notifyPartial": "Seulement {sent} des {total} destinataires ont été notifiés",
+    "neverAccessed": "Jamais consulté",
     "namePlaceholder": "Nom (optionnel)"
   },
   "register": {
@@ -1778,7 +1779,7 @@
       "emailLabel": "E-mail",
       "submit": "Continuer",
       "error": "Échec de l'envoi de l'identification. Veuillez réessayer.",
-      "optional": "optionnel",
+      "optional": "Optionnel",
       "nameRequired": "Le nom est requis",
       "emailRequired": "L'e-mail est requis",
       "emailInvalid": "Veuillez entrer une adresse e-mail valide",

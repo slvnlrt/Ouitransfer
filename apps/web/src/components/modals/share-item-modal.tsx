@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LazyQRCode } from "@/components/ui/lazy-qr-code";
+import { Loader } from "@/components/ui/loader";
 import { Switch } from "@/components/ui/switch";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { createShare, createShareAlias, listFiles, listFolders } from "@/http/endpoints";
@@ -409,7 +410,7 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
                 }
                 onClick={handleCreateShare}
               >
-                {isLoading ? <div className="animate-spin">⠋</div> : t("createShare.create")}
+                {isLoading ? <Loader size="sm" /> : t("createShare.create")}
               </Button>
             </>
           )}
@@ -420,7 +421,7 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
                 {t("common.back")}
               </Button>
               <Button disabled={!alias || isLoading} onClick={handleGenerateLink}>
-                {isLoading ? <div className="animate-spin">⠋</div> : t("shareActions.generateLink")}
+                {isLoading ? <Loader size="sm" /> : t("shareActions.generateLink")}
               </Button>
             </>
           )}

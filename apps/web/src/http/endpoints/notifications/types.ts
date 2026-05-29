@@ -1,7 +1,8 @@
+import type { NotificationType } from "@ouitransfer/shared/notification-types";
 import type { AxiosResponse } from "axios";
 
 export interface NotificationPreference {
-  type: string;
+  type: NotificationType;
   frequency: string;
   configurable: boolean;
   isCritical: boolean;
@@ -13,7 +14,7 @@ export interface GetNotificationPreferences200 {
 }
 
 export interface UpdatePreferenceItem {
-  type: string;
+  type: NotificationType;
   frequency: string;
 }
 
