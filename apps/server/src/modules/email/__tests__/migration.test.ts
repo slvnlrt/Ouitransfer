@@ -22,6 +22,8 @@ const { mockEmailServiceSend, mockPrisma, mockLogger, mockGetAppUrl } = vi.hoist
     },
     shareRecipient: {
       update: vi.fn(),
+      updateMany: vi.fn(),
+      findUnique: vi.fn(),
       findMany: vi.fn(),
       deleteMany: vi.fn(),
       create: vi.fn(),
@@ -176,6 +178,8 @@ describe("Email migration — ShareService.notifyRecipients()", () => {
     shareService = new ShareService(mockShareRepository as never);
     mockPrisma.user.findUnique.mockResolvedValue(makeUser());
     mockPrisma.shareRecipient.update.mockResolvedValue({});
+    // updateMany used for race-safe token backfill: returns { count: 1 } by default
+    mockPrisma.shareRecipient.updateMany.mockResolvedValue({ count: 1 });
   });
 
   afterEach(() => {
@@ -224,10 +228,10 @@ describe("Email migration — ShareService.notifyRecipients()", () => {
 
     await shareService.notifyRecipients("share-1", "user-1");
 
-    // Should update the recipient to add a tracking token
-    expect(mockPrisma.shareRecipient.update).toHaveBeenCalledWith(
+    // Should use conditional updateMany (race-safe backfill): only writes when token is still null
+    expect(mockPrisma.shareRecipient.updateMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { id: "recipient-1" },
+        where: { id: "recipient-1", trackingToken: null },
         data: expect.objectContaining({
           trackingToken: expect.any(String),
         }),
