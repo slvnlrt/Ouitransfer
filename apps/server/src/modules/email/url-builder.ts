@@ -2,6 +2,9 @@ import { getConfigValue } from "../config/service.js";
 
 // ─── App URL cache ────────────────────────────────────────────────────────────
 
+// NOTE: Process-local cache. In a multi-instance deployment, config changes
+// on one instance won't propagate to others until restart. Acceptable for
+// current single-instance architecture. See also: transport.ts hash cache.
 let cachedAppUrl: string | null = null;
 
 /**

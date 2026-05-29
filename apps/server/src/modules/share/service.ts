@@ -247,22 +247,29 @@ export class ShareService {
       }
     }
 
+    // Hoist the recipient lookup: resolve the tracking-token recipient once and reuse
+    // below for both the identification gate and the visit-tracking update (avoids two
+    // round-trips to the database for the same query).
+    let resolvedRecipient: Awaited<ReturnType<typeof prisma.shareRecipient.findUnique>> | null =
+      null;
+    if (context?.trackingToken) {
+      const candidate = await prisma.shareRecipient.findUnique({
+        where: { trackingToken: context.trackingToken },
+      });
+      // Only accept the recipient if they belong to this share
+      if (candidate && candidate.shareId === share.id) {
+        resolvedRecipient = candidate;
+      }
+    }
+
     // Check if identification is required before allowing access
     if (share.nameFieldRequired === "REQUIRED" || share.emailFieldRequired === "REQUIRED") {
-      const hasTrackingToken = !!context?.trackingToken;
       const hasCookie = !!context?.visitorCookie;
 
-      let tokenSatisfiesRequirements = false;
-      if (hasTrackingToken) {
-        const recipient = await prisma.shareRecipient.findUnique({
-          where: { trackingToken: context!.trackingToken },
-        });
-        tokenSatisfiesRequirements =
-          !!recipient &&
-          recipient.shareId === share.id &&
-          (share.nameFieldRequired !== "REQUIRED" || !!recipient.name) &&
-          (share.emailFieldRequired !== "REQUIRED" || !!recipient.email);
-      }
+      const tokenSatisfiesRequirements =
+        !!resolvedRecipient &&
+        (share.nameFieldRequired !== "REQUIRED" || !!resolvedRecipient.name) &&
+        (share.emailFieldRequired !== "REQUIRED" || !!resolvedRecipient.email);
 
       // FIX 3: Re-validate cookie content against current share requirements
       let cookieSatisfiesRequirements = false;
@@ -296,25 +303,20 @@ export class ShareService {
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
     }
 
-    // Record visitor tracking for non-owner access
+    // Record visitor tracking for non-owner access — reuse the already-resolved recipient
     let recipientId: string | undefined;
     let visitorName: string | undefined;
     let visitorEmail: string | undefined;
 
-    if (context?.trackingToken) {
-      const recipient = await prisma.shareRecipient.findUnique({
-        where: { trackingToken: context.trackingToken },
+    if (resolvedRecipient) {
+      recipientId = resolvedRecipient.id;
+      visitorEmail = resolvedRecipient.email;
+      visitorName = resolvedRecipient.name ?? undefined;
+      // Update recipient access stats
+      await prisma.shareRecipient.update({
+        where: { id: resolvedRecipient.id },
+        data: { lastAccessedAt: new Date(), accessCount: { increment: 1 } },
       });
-      if (recipient && recipient.shareId === share.id) {
-        recipientId = recipient.id;
-        visitorEmail = recipient.email;
-        visitorName = recipient.name ?? undefined;
-        // Update recipient access stats
-        await prisma.shareRecipient.update({
-          where: { id: recipient.id },
-          data: { lastAccessedAt: new Date(), accessCount: { increment: 1 } },
-        });
-      }
     }
 
     // Or from identification cookie (Batch 9 will wire this)
@@ -696,23 +698,43 @@ export class ShareService {
       //   the email will be delivered and the user can re-trigger notification
       // SQLite's single-writer nature limits concurrent corruption risk.
 
-      // Ensure tracking token exists (backfill for pre-existing recipients)
+      // Ensure tracking token exists.
+      // Some creation paths (createShare, addRecipients via repository) do not generate tokens
+      // at creation time — we backfill here on first notification. The conditional update
+      // (where: trackingToken IS NULL) is safe against concurrent calls: if two notifyRecipients
+      // calls race for the same recipient, only the first write lands; the second is a no-op
+      // and we re-read the winner's token.
       let trackingToken = recipient.trackingToken;
       if (!trackingToken) {
-        trackingToken = crypto.randomBytes(24).toString("base64url");
-        await prisma.shareRecipient.update({
-          where: { id: recipient.id },
-          data: { trackingToken },
+        const newToken = crypto.randomBytes(24).toString("base64url");
+        const { count } = await prisma.shareRecipient.updateMany({
+          where: { id: recipient.id, trackingToken: null },
+          data: { trackingToken: newToken },
         });
+        if (count > 0) {
+          // We wrote the token
+          trackingToken = newToken;
+        } else {
+          // Another concurrent call already set the token — re-read it
+          const updated = await prisma.shareRecipient.findUnique({
+            where: { id: recipient.id },
+          });
+          trackingToken = updated?.trackingToken ?? null;
+        }
       }
 
       const linkUrl = new URL(baseShareLink);
-      linkUrl.searchParams.set("t", trackingToken);
+      if (trackingToken) {
+        linkUrl.searchParams.set("t", trackingToken);
+      }
       const personalizedLink = linkUrl.toString();
       try {
         await emailService.send("share_invitation", {
           to: recipient.email,
-          locale: user?.locale ?? "en",
+          // Recipients receive invitations in English (system default).
+          // Per-recipient locale requires adding a locale field to ShareRecipient model.
+          // Using the sender's locale would be wrong for external recipients.
+          locale: "en",
           data: {
             senderName,
             shareName: share.name ?? "Shared files",

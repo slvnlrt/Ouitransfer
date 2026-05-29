@@ -313,6 +313,13 @@ async function runAllChecks(): Promise<void> {
 /**
  * Schedule the next notification check.
  * Uses chained setTimeout (not setInterval) to prevent overlapping runs.
+ *
+ * DESIGN LIMITATION: The scheduler runs at boot + N × 24h intervals.
+ * This means notification timing depends on when the server started.
+ * Wall-clock alignment (e.g., always run at 9am local time) would require
+ * computing the delta to the next target hour via setTimeout. This is
+ * acceptable for the current single-instance deployment but should be
+ * revisited if user-facing timing guarantees are added.
  */
 function scheduleNext(): void {
   const handle = setTimeout(async () => {

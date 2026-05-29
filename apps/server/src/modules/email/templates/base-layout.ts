@@ -122,6 +122,8 @@ function renderHtml(slots: LayoutSlots, config: LayoutConfig, tr?: TranslationFn
           <tr>
             <td style="padding:40px 32px;background-color:${COLOR.cardBg};">
               <div style="font-size:15px;line-height:1.7;color:${COLOR.textPrimary};font-family:${FONT_STACK};">
+                <!-- SAFETY: slots.body is pre-escaped — template renders use tHtml() which HTML-escapes
+                     all interpolated values. Do NOT inject raw user strings into body without escaping. -->
                 ${nlToBr(slots.body)}
               </div>
               ${slots.cta ? renderCtaHtml(slots.cta) : ""}

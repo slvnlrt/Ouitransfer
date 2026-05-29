@@ -43,6 +43,10 @@ interface NodemailerTransportOptions {
  * - `testConnection()` accepts an optional config override so the admin UI can
  *   test a draft configuration before saving it to the database.
  * - `sendMail()` automatically prepends the configured `from` address.
+ *
+ * NOTE: Process-local cache. Same single-instance assumption as url-builder.ts.
+ * In a multi-instance deployment, SMTP config changes won't propagate to other
+ * instances until they are restarted.
  */
 export class SmtpTransport {
   private transporter: Transporter | null = null;

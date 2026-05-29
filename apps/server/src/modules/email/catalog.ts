@@ -327,6 +327,13 @@ export const notificationCatalog = {
     ],
   },
 
+  /**
+   * Cooldown is per-share (not per-file). A single notification is sent for the share
+   * regardless of how many individual files are downloaded within the cooldown window.
+   *
+   * TODO(8.x): Wire this type when download-specific notifications are needed.
+   * Currently only `share_accessed` is wired in share/service.ts.
+   */
   share_downloaded: {
     render: asRender(renderShareDownloaded),
     payloadSchema: shareDownloadedSchema,

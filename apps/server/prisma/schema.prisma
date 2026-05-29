@@ -197,6 +197,7 @@ model EmailJob {
   createdAt     DateTime  @default(now())
 
   @@index([status, nextAttemptAt])
+  @@index([status, priority, nextAttemptAt])
   @@map("email_jobs")
 }
 

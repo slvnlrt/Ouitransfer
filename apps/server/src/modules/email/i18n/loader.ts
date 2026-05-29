@@ -19,6 +19,12 @@ const cache = new Map<string, Record<string, unknown>>();
 /** In-flight promise cache: locale → pending load promise. Prevents duplicate reads. */
 const inFlight = new Map<string, Promise<Record<string, unknown> | null>>();
 
+/**
+ * Set of locale codes whose message files are known to not exist.
+ * Caches negative lookups to avoid repeated disk access on every call.
+ */
+const missingLocales = new Set<string>();
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
@@ -208,6 +214,11 @@ async function loadLocale(locale: string): Promise<Record<string, unknown> | nul
     return cache.get(locale) as Record<string, unknown>;
   }
 
+  // Known missing locale — return null immediately without disk access
+  if (missingLocales.has(locale)) {
+    return null;
+  }
+
   // Already loading — return the existing in-flight promise
   if (inFlight.has(locale)) {
     return inFlight.get(locale) as Promise<Record<string, unknown> | null>;
@@ -219,7 +230,8 @@ async function loadLocale(locale: string): Promise<Record<string, unknown> | nul
     try {
       await fs.promises.access(filePath);
     } catch {
-      // File does not exist — cache a sentinel so we don't retry every call
+      // File does not exist — cache the negative result to skip future disk checks
+      missingLocales.add(locale);
       inFlight.delete(locale);
       return null;
     }
@@ -287,10 +299,11 @@ function interpolate(
 }
 
 /**
- * Clears the in-memory locale cache and any in-flight load promises.
+ * Clears the in-memory locale cache, missing-locale sentinel set, and any in-flight load promises.
  * Useful in tests to ensure a clean state between test runs.
  */
 export function clearLocaleCache(): void {
   cache.clear();
   inFlight.clear();
+  missingLocales.clear();
 }

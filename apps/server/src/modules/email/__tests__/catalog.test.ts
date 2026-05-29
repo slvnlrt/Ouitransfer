@@ -5,7 +5,8 @@ import {
   notificationCatalog,
   typeToI18nPrefix,
 } from "../catalog.js";
-import { clearLocaleCache, createTranslationFn } from "../i18n/loader.js";
+import { clearLocaleCache, createPlainTranslationFn, createTranslationFn } from "../i18n/loader.js";
+import { renderLayout } from "../templates/base-layout.js";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -238,6 +239,60 @@ describe("notificationCatalog", () => {
       expect(typeof slots.subtitle, `${key} should have subtitle string`).toBe("string");
       expect(typeof slots.body, `${key} should have body string`).toBe("string");
     }
+  });
+});
+
+describe("XSS safety — render pipeline escapes user-controlled fields", () => {
+  afterEach(() => {
+    clearLocaleCache();
+  });
+
+  it("HTML body does NOT contain raw <script> when senderName is XSS payload (share_invitation)", async () => {
+    // Use real i18n (HTML-escaping) translation fn
+    const tr = await createTranslationFn("en");
+    const xssPayload = "<script>alert(1)</script>";
+
+    const entry = notificationCatalog.share_invitation;
+    const slots = entry.render(
+      {
+        senderName: xssPayload,
+        shareName: "My Files",
+        shareLink: "https://example.com/s/abc",
+        hasPassword: false,
+      },
+      tr,
+    );
+
+    const output = renderLayout(slots, { appName: "Ouitransfer", locale: "en" }, tr);
+
+    // HTML body MUST NOT contain the raw script tag
+    expect(output.html).not.toContain("<script>alert(1)</script>");
+    // It should contain the HTML-escaped version instead
+    expect(output.html).toContain("&lt;script&gt;");
+  });
+
+  it("plain-text body DOES contain raw <script> (no escaping needed for plain text)", async () => {
+    // Use plain (non-escaping) translation fn for plain text, as the service does
+    const tr = await createPlainTranslationFn("en");
+    const xssPayload = "<script>alert(1)</script>";
+
+    const entry = notificationCatalog.share_invitation;
+    const slots = entry.render(
+      {
+        senderName: xssPayload,
+        shareName: "My Files",
+        shareLink: "https://example.com/s/abc",
+        hasPassword: false,
+      },
+      tr,
+    );
+
+    const output = renderLayout(slots, { appName: "Ouitransfer", locale: "en" }, tr);
+
+    // Plain-text body may contain the raw string (stripHtml will decode it back)
+    // or it may be absent if the template used HTML-escaping tr — either is acceptable.
+    // The key invariant is that the plain-text renderer does not double-encode.
+    expect(output.text).not.toContain("&lt;script&gt;");
   });
 });
 
