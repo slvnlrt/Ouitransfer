@@ -132,7 +132,14 @@ Reserve separate agents for tasks requiring distinct architectural decisions or 
 
 ## Rules for Agents
 0. **NEVER dispatch multiple agents in parallel.** Always sequential, one at a time. Parallel agents see each other's uncommitted changes, create stash conflicts, do git resets, and produce inconsistent results. Wait for one agent to fully complete before dispatching the next.
-1. **IMPORTANT: Empty subagent output is a bug, not a signal.** If a subagent returns an empty or near-empty result, it means the Task tool timed out or hit a transport error while the agent was still working. The agent is likely STILL running and making changes (edits, commits). **Do NOT re-dispatch, re-do work, or touch the working tree.** Wait for the agent to finish on its own — it will complete its work independently. Only after confirming the agent is truly done (wait for the agent's actual output message, or ask the user to provide it) should you proceed.
+1. **HARD STOP on empty subagent output.** If a subagent returns an empty or near-empty result, it means the Task tool timed out or hit a transport error while the agent was still working. The agent is likely STILL running and making changes (edits, commits). **Your ONLY action is to inform the user and STOP.** Do NOT:
+   - Run `git status`, `git log`, or any command to "check on" the agent's work
+   - Read, grep, or glob any files the agent might have touched
+   - Attempt to verify, validate, or continue the agent's work
+   - Re-dispatch another agent for the same or related task
+   - Commit, stage, or modify anything in the working tree
+   - Take ANY follow-up action whatsoever
+   Simply tell the user: "The agent returned empty output (likely a timeout). I'm stopping — let me know when you'd like to proceed." Then wait for explicit user instructions before doing anything else.
 2. **Consistency over compatibility** — prefer clean implementations, no need to preserve legacy behavior
 3. **One concern per commit** — atomic changes, clear commit messages
 4. **Check for side effects** — search for all callers/importers before changing a function signature

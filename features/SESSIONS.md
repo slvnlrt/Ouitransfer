@@ -1,5 +1,27 @@
 # Session Log
 
+## 2026-05-29 (session 14)
+
+**8.2 Email Notifications — Review Fixes (2 rounds)**
+
+- **First review round**: 3 reviewer agents (server-core, server-integration, frontend) produced 73 findings (11C, 28I, 34M). All fixed in 5 batches:
+  - Batch 1: Schema + scheduler (split notification flags, reentrant guard, stuck job recovery)
+  - Batch 2: Email i18n + templates + transport (XSS protection, List-Unsubscribe RFC 8058, connection pooling, footer i18n)
+  - Batch 3: Share access security (tracking token leak, cross-share bypass, cookie re-validation, download dedup)
+  - Batch 4: Frontend critical + important (password+identification flow, cache key, SharePrivacySection extraction, types, validation, error states)
+  - Batch 5: All remaining minors (server + frontend, 23 locale files updated)
+- **Second review round**: Fresh re-reviews (no prior findings shared). 71 new findings (4C, 28I, 39M). All fixed in 5 batches:
+  - Batch 1: Criticals (HTML newline rendering, appName default params, unsubscribe flow end-to-end fix with @fastify/formbody, owner-only metadata leak)
+  - Batch 2: Server security + queue (wake signal, cooldown, SMTP header injection, unsubscribe token module, lock recovery, subject sanitization, shareLink server-side, email normalization, identify validation)
+  - Batch 3: Server remaining important (cooldown docs, XSS tests, scheduler comment, DB index, locale cache, recipient locale, hoisted lookup, race-safe backfill)
+  - Batch 4: Frontend important (type drift, loader states, metadata error handling, password validation, rate limit UX, activity error state, modal cleanup, IPv6 truncation, i18n)
+  - Batch 5: All remaining minors (server docs/comments/types + frontend UX polish, 23 locale files)
+- **Post-review fix**: Added missing i18n keys for 5 email settings fields (appUrl, emailDigestHour, emailJobRetentionDays, emailQueueIntervalSeconds, emailQueueMaxRetries) across all 23 locales.
+- **Final validation**: Server 786 tests pass, web 255 tests pass, both type-checks clean.
+- **Review files**: `features/reviews/8.2-review-*.md` (round 1) + `features/reviews/8.2-re-review-*.md` (round 2)
+
+---
+
 ## 2026-05-28 (session 13)
 
 **8.2 Email Notifications — Full Implementation**
