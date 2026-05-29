@@ -22,6 +22,11 @@ const inFlight = new Map<string, Promise<Record<string, unknown> | null>>();
 /**
  * Set of locale codes whose message files are known to not exist.
  * Caches negative lookups to avoid repeated disk access on every call.
+ *
+ * This set is intentionally permanent for the process lifetime — translations
+ * are shipped with the build and are not expected to appear at runtime.
+ * Adding a new locale file requires a server restart (or calling
+ * `clearLocaleCache()` in tests). See `clearLocaleCache()` below.
  */
 const missingLocales = new Set<string>();
 
@@ -314,6 +319,9 @@ function interpolate(
 /**
  * Clears the in-memory locale cache, missing-locale sentinel set, and any in-flight load promises.
  * Useful in tests to ensure a clean state between test runs.
+ *
+ * This also clears the `missingLocales` set, allowing previously-absent locale files
+ * to be discovered on the next load attempt (relevant for tests that create temp locale files).
  */
 export function clearLocaleCache(): void {
   cache.clear();

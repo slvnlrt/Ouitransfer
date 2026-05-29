@@ -190,13 +190,13 @@ describe("updateShare — notification flag reset", () => {
     expect(updateCall.notifiedForExpired).toBeUndefined();
   });
 
-  it("does NOT reset notification flags when share had no prior expiration", async () => {
+  it("resets notification flags when expiration is added to a share that had none", async () => {
     const newExpiration = new Date("2024-08-01T00:00:00Z");
 
     const share = makeFullShare({
       expiration: null,
-      notifiedForExpiring: false,
-      notifiedForExpired: false,
+      notifiedForExpiring: true, // stale from a previous expiration that was later cleared
+      notifiedForExpired: true,
     });
     mockFindShareById.mockResolvedValue(share);
     mockUpdateShare.mockResolvedValue(share);
@@ -206,10 +206,14 @@ describe("updateShare — notification flag reset", () => {
 
     await service.updateShare(SHARE_ID, { expiration: newExpiration.toISOString() }, CREATOR_ID);
 
-    // No notification flag reset — no previous expiration to compare against
-    const updateCall = mockUpdateShare.mock.calls[0][1];
-    expect(updateCall.notifiedForExpiring).toBeUndefined();
-    expect(updateCall.notifiedForExpired).toBeUndefined();
+    // Flags must be reset: adding an expiration after clearing creates a new notification window
+    expect(mockUpdateShare).toHaveBeenCalledWith(
+      SHARE_ID,
+      expect.objectContaining({
+        notifiedForExpiring: false,
+        notifiedForExpired: false,
+      }),
+    );
   });
 
   it("still updates share when creator is null (no notification sent)", async () => {

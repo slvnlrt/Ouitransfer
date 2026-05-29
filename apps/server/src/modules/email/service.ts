@@ -47,11 +47,21 @@ class EmailService {
       locale: string;
       userId?: string;
       data: EmailPayloads[T];
+      /** @deprecated Use `relatedId` instead. Alias kept for backward compatibility. */
       shareId?: string;
+      /**
+       * Free-form identifier for cooldown scoping and DB tracking.
+       * For share notifications: the shareId. For reverse-share notifications: the reverseShareId.
+       * Falls back to `shareId` if not provided (backward compatibility).
+       */
+      relatedId?: string;
     },
   ): Promise<void> {
     const log = getLogger();
     const entry = notificationCatalog[type];
+
+    // Resolve effective relatedId (relatedId takes priority over deprecated shareId)
+    const effectiveRelatedId = options.relatedId ?? options.shareId;
 
     // 1. Check SMTP is enabled
     let smtpEnabled: string;
@@ -86,7 +96,7 @@ class EmailService {
     // 3. For non-critical types, resolve frequency ONCE and reuse
     let frequency: "immediate" | "daily_digest" | "disabled" | null = null;
     if (!entry.isCritical && options.userId) {
-      frequency = await this.resolveFrequency(type, options.userId, options.shareId);
+      frequency = await this.resolveFrequency(type, options.userId, effectiveRelatedId);
       if (frequency === "disabled") {
         log.debug({ type, userId: options.userId }, "Notification disabled by user preference");
         return;
@@ -101,12 +111,15 @@ class EmailService {
         where: {
           type,
           to: options.to,
-          relatedId: options.shareId ?? null,
+          relatedId: effectiveRelatedId ?? null,
           createdAt: { gt: cutoff },
         },
       });
       if (recent) {
-        log.debug({ type, to: options.to, shareId: options.shareId }, "Cooldown active, skipping");
+        log.debug(
+          { type, to: options.to, relatedId: effectiveRelatedId },
+          "Cooldown active, skipping",
+        );
         return;
       }
     }
@@ -160,7 +173,7 @@ class EmailService {
           status: "failed",
           priority: entry.priority,
           lastError: `Render failed: ${errorMessage}`,
-          relatedId: options.shareId,
+          relatedId: effectiveRelatedId,
           maxAttempts: 0,
         },
       });
@@ -209,7 +222,7 @@ class EmailService {
         locale: options.locale,
         status,
         priority: entry.priority,
-        relatedId: options.shareId,
+        relatedId: effectiveRelatedId,
         listUnsubscribe,
         maxAttempts,
       },

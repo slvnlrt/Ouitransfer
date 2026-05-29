@@ -1,6 +1,17 @@
 import { z } from "zod";
 import type { TranslationFn } from "./i18n/loader.js";
 import { validateI18nKeys } from "./i18n/loader.js";
+
+/**
+ * Zod refinement for ISO date/datetime strings.
+ * Accepts both ISO 8601 datetime (`2026-01-01T00:00:00Z`) and date-only
+ * (`2026-01-01`) strings, but rejects arbitrary text that `Date.parse` also
+ * rejects.
+ */
+const isoDateString = z.string().refine((s) => !Number.isNaN(Date.parse(s)), {
+  message: "Expected a valid ISO date or datetime string",
+});
+
 import { renderAccountDeactivated } from "./templates/account-deactivated.js";
 import { renderAccountReactivated } from "./templates/account-reactivated.js";
 import { renderAdminQuotaAlert } from "./templates/admin-quota-alert.js";
@@ -92,7 +103,7 @@ const shareInvitationSchema = z.object({
   shareName: z.string(),
   shareLink: z.string(),
   hasPassword: z.boolean(),
-  expiresAt: z.string().optional(),
+  expiresAt: isoDateString.optional(),
 });
 
 const reverseShareInvitationSchema = z.object({
@@ -100,7 +111,7 @@ const reverseShareInvitationSchema = z.object({
   reverseShareName: z.string(),
   reverseShareLink: z.string(),
   hasPassword: z.boolean(),
-  expiresAt: z.string().optional(),
+  expiresAt: isoDateString.optional(),
 });
 
 const shareAccessedSchema = z.object({
@@ -108,7 +119,7 @@ const shareAccessedSchema = z.object({
   visitorName: z.string().optional(),
   visitorEmail: z.string().optional(),
   ipAddress: z.string().optional(), // Collected for audit trail / future template use, not rendered in current template
-  accessedAt: z.string(),
+  accessedAt: isoDateString,
 });
 
 const shareDownloadedSchema = z.object({
@@ -117,18 +128,18 @@ const shareDownloadedSchema = z.object({
   visitorName: z.string().optional(),
   visitorEmail: z.string().optional(),
   ipAddress: z.string().optional(), // Collected for audit trail / future template use, not rendered in current template
-  downloadedAt: z.string(),
+  downloadedAt: isoDateString,
 });
 
 const shareExpiringSchema = z.object({
   shareName: z.string(),
-  expiresAt: z.string(),
+  expiresAt: isoDateString,
   shareManageUrl: z.string(),
 });
 
 const shareExpiredSchema = z.object({
   shareName: z.string(),
-  expiredAt: z.string(),
+  expiredAt: isoDateString,
   shareManageUrl: z.string(),
 });
 
@@ -154,12 +165,12 @@ const reverseShareUploadedSchema = z.object({
 
 const reverseShareExpiringSchema = z.object({
   reverseShareName: z.string(),
-  expiresAt: z.string(),
+  expiresAt: isoDateString,
 });
 
 const reverseShareExpiredSchema = z.object({
   reverseShareName: z.string(),
-  expiredAt: z.string(),
+  expiredAt: isoDateString,
 });
 
 const quotaWarningSchema = z.object({
@@ -286,6 +297,7 @@ export const notificationCatalog = {
       "shareInvitation.info",
       "shareInvitation.infoPassword",
       "shareInvitation.infoExpires",
+      "shareInvitation.infoPasswordExpires",
     ],
   },
 
@@ -305,6 +317,7 @@ export const notificationCatalog = {
       "reverseShareInvitation.info",
       "reverseShareInvitation.infoPassword",
       "reverseShareInvitation.infoExpires",
+      "reverseShareInvitation.infoPasswordExpires",
     ],
   },
 

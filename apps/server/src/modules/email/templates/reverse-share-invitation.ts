@@ -20,10 +20,13 @@ export function renderReverseShareInvitation(
       reverseShareName: data.reverseShareName,
     }),
     cta: { url: data.reverseShareLink, label: t("reverseShareInvitation.cta") },
-    infoBox: data.hasPassword
-      ? t("reverseShareInvitation.infoPassword")
-      : data.expiresAt
-        ? t("reverseShareInvitation.infoExpires", { expiresAt: data.expiresAt })
-        : t("reverseShareInvitation.info"),
+    infoBox:
+      data.hasPassword && data.expiresAt
+        ? t("reverseShareInvitation.infoPasswordExpires", { expiresAt: data.expiresAt })
+        : data.hasPassword
+          ? t("reverseShareInvitation.infoPassword")
+          : data.expiresAt
+            ? t("reverseShareInvitation.infoExpires", { expiresAt: data.expiresAt })
+            : t("reverseShareInvitation.info"),
   };
 }

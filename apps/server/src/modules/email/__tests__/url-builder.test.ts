@@ -55,18 +55,21 @@ describe("url-builder", () => {
       await expect(getAppUrl()).rejects.toThrow("appUrl is not configured or empty");
     });
 
-    it("caches after first call", async () => {
-      mockGetConfigValue.mockResolvedValueOnce("https://transfer.example.com");
+    it("reads config on every call (no caching)", async () => {
+      mockGetConfigValue
+        .mockResolvedValueOnce("https://transfer.example.com")
+        .mockResolvedValueOnce("https://transfer.example.com");
 
       const url1 = await getAppUrl();
       const url2 = await getAppUrl();
 
       expect(url1).toBe("https://transfer.example.com");
       expect(url2).toBe("https://transfer.example.com");
-      expect(mockGetConfigValue).toHaveBeenCalledTimes(1);
+      // No caching — reads fresh on every call so admin config changes take effect immediately
+      expect(mockGetConfigValue).toHaveBeenCalledTimes(2);
     });
 
-    it("invalidateAppUrlCache() busts cache", async () => {
+    it("reflects config changes immediately (no cache invalidation needed)", async () => {
       mockGetConfigValue
         .mockResolvedValueOnce("https://old.example.com")
         .mockResolvedValueOnce("https://new.example.com");
@@ -74,8 +77,7 @@ describe("url-builder", () => {
       const url1 = await getAppUrl();
       expect(url1).toBe("https://old.example.com");
 
-      invalidateAppUrlCache();
-
+      // No need to call invalidateAppUrlCache() — the value is fresh on every call
       const url2 = await getAppUrl();
       expect(url2).toBe("https://new.example.com");
       expect(mockGetConfigValue).toHaveBeenCalledTimes(2);

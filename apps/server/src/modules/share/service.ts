@@ -415,19 +415,18 @@ export class ShareService {
       expiration: shareData.expiration ? new Date(shareData.expiration) : null,
     };
 
-    // If expiration is being extended, reset both notification flags to allow re-notification
-    if (shareData.expiration && share.expiration) {
-      const newExp = new Date(shareData.expiration);
-      if (newExp > share.expiration) {
-        updateData.notifiedForExpiring = false;
-        updateData.notifiedForExpired = false;
-      }
+    // Reset notification flags when expiration is added or extended (allows re-notification)
+    const newExp = shareData.expiration ? new Date(shareData.expiration) : null;
+    const oldExp = share.expiration;
+    if (newExp && (!oldExp || newExp > oldExp)) {
+      updateData.notifiedForExpiring = false;
+      updateData.notifiedForExpired = false;
     }
 
     await this.shareRepository.updateShare(shareId, updateData);
     const shareWithRelations = await this.shareRepository.findShareById(shareId);
 
-    return await this.formatShareResponse(shareWithRelations);
+    return ShareResponseSchema.parse(await this.formatShareResponse(shareWithRelations));
   }
 
   async deleteShare(id: string) {

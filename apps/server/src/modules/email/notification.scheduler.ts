@@ -44,6 +44,10 @@ async function checkExpiringShares(): Promise<void> {
     },
   });
 
+  // TODO: Performance — batch updateMany after processing. Current sequential
+  // per-share approach is fine for typical deployments (< 1000 active shares).
+  // For large deployments, collect successful IDs and use a single
+  // prisma.share.updateMany({ where: { id: { in: ids } }, data: { notifiedForExpiring: true } }).
   for (const share of shares) {
     if (!share.creator || !share.creatorId) continue;
     if (!share.expiration) continue;

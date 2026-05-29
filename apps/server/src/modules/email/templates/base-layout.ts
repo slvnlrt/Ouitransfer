@@ -57,6 +57,21 @@ function nlToBr(text: string): string {
   return text.replace(/\n/g, "<br>");
 }
 
+/**
+ * Validates a URL scheme and HTML-escapes it for safe use in `href` attributes.
+ * Only allows `http:`, `https:`, and `mailto:` schemes. Returns `"#"` for
+ * invalid URLs or dangerous schemes (e.g., `javascript:`).
+ */
+export function safeHref(url: string): string {
+  try {
+    const u = new URL(url);
+    if (!["http:", "https:", "mailto:"].includes(u.protocol)) return "#";
+    return escapeHtml(url);
+  } catch {
+    return "#";
+  }
+}
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
@@ -157,11 +172,11 @@ function renderHtml(slots: LayoutSlots, config: LayoutConfig, tr?: TranslationFn
 
 function renderCtaHtml(cta: { url: string; label: string }): string {
   const safeLabel = escapeHtml(cta.label);
-  const safeUrl = escapeHtml(cta.url);
+  const safeUrl = safeHref(cta.url);
   return `
-              <div style="text-align:center;margin:32px 0;">
-                <a href="${safeUrl}" style="display:inline-block;background-color:${COLOR.indigo};color:${COLOR.white};text-decoration:none;padding:13px 28px;font-weight:600;font-size:15px;border-radius:6px;font-family:${FONT_STACK};">${safeLabel}</a>
-              </div>`;
+               <div style="text-align:center;margin:32px 0;">
+                 <a href="${safeUrl}" style="display:inline-block;background-color:${COLOR.indigo};color:${COLOR.white};text-decoration:none;padding:13px 28px;font-weight:600;font-size:15px;border-radius:6px;font-family:${FONT_STACK};">${safeLabel}</a>
+               </div>`;
 }
 
 function renderInfoBoxHtml(content: string): string {
@@ -172,11 +187,11 @@ function renderInfoBoxHtml(content: string): string {
 }
 
 function renderUnsubscribeHtml(url: string, label: string): string {
-  const safeUrl = escapeHtml(url);
+  const safeUrl = safeHref(url);
   return `
-              <p style="margin:8px 0 0 0;color:${COLOR.textMuted};font-size:12px;font-family:${FONT_STACK};">
-                <a href="${safeUrl}" style="color:${COLOR.textMuted};text-decoration:underline;">${label}</a>
-              </p>`;
+               <p style="margin:8px 0 0 0;color:${COLOR.textMuted};font-size:12px;font-family:${FONT_STACK};">
+                 <a href="${safeUrl}" style="color:${COLOR.textMuted};text-decoration:underline;">${label}</a>
+               </p>`;
 }
 
 // ─── Plain-text renderer ──────────────────────────────────────────────────────

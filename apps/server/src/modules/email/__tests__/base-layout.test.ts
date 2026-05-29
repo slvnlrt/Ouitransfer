@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { TranslationFn } from "../i18n/loader.js";
-import { renderLayout } from "../templates/base-layout.js";
+import { renderLayout, safeHref } from "../templates/base-layout.js";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -306,5 +306,94 @@ describe("renderLayout", () => {
 
     expect(html).not.toContain("<img");
     expect(html).toContain("&lt;img");
+  });
+
+  // ── CTA URL scheme validation ──────────────────────────────────────────────
+
+  it("renders CTA with https URL", () => {
+    const { html } = renderLayout(
+      {
+        ...DEFAULT_SLOTS,
+        cta: { url: "https://example.com/safe", label: "Click" },
+      },
+      DEFAULT_CONFIG,
+    );
+
+    expect(html).toContain('href="https://example.com/safe"');
+  });
+
+  it("blocks javascript: scheme in CTA URL", () => {
+    const { html } = renderLayout(
+      {
+        ...DEFAULT_SLOTS,
+        cta: { url: "javascript:alert(1)", label: "Click" },
+      },
+      DEFAULT_CONFIG,
+    );
+
+    expect(html).not.toContain("javascript:");
+    expect(html).toContain('href="#"');
+  });
+
+  it("blocks data: scheme in CTA URL", () => {
+    const { html } = renderLayout(
+      {
+        ...DEFAULT_SLOTS,
+        cta: { url: "data:text/html,<h1>hi</h1>", label: "Click" },
+      },
+      DEFAULT_CONFIG,
+    );
+
+    expect(html).not.toContain("data:");
+    expect(html).toContain('href="#"');
+  });
+
+  it("blocks javascript: scheme in unsubscribe URL", () => {
+    const { html } = renderLayout(
+      {
+        ...DEFAULT_SLOTS,
+        unsubscribeUrl: "javascript:alert(1)",
+      },
+      DEFAULT_CONFIG,
+    );
+
+    expect(html).not.toContain("javascript:");
+    expect(html).toContain('href="#"');
+  });
+});
+
+// ─── safeHref ─────────────────────────────────────────────────────────────────
+
+describe("safeHref", () => {
+  it("allows https URLs", () => {
+    expect(safeHref("https://example.com")).toBe("https://example.com");
+  });
+
+  it("allows http URLs", () => {
+    expect(safeHref("http://example.com")).toBe("http://example.com");
+  });
+
+  it("allows mailto URLs", () => {
+    expect(safeHref("mailto:user@example.com")).toBe("mailto:user@example.com");
+  });
+
+  it("rejects javascript: scheme", () => {
+    expect(safeHref("javascript:alert(1)")).toBe("#");
+  });
+
+  it("rejects data: scheme", () => {
+    expect(safeHref("data:text/html,<h1>hi</h1>")).toBe("#");
+  });
+
+  it("rejects ftp: scheme", () => {
+    expect(safeHref("ftp://example.com/file")).toBe("#");
+  });
+
+  it("returns # for invalid URLs", () => {
+    expect(safeHref("not a valid url")).toBe("#");
+  });
+
+  it("HTML-escapes valid URLs", () => {
+    expect(safeHref("https://example.com/?a=1&b=2")).toBe("https://example.com/?a=1&amp;b=2");
   });
 });

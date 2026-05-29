@@ -340,6 +340,31 @@ describe("Email migration — ShareService.notifyRecipients()", () => {
     expect(result.notifiedRecipients).toHaveLength(2);
   });
 
+  it("rejects empty selectedEmails array with ValidationError", async () => {
+    mockShareRepository.findShareById.mockResolvedValue(makeShare());
+
+    await expect(shareService.notifyRecipients("share-1", "user-1", [])).rejects.toThrow(
+      "selectedEmails must not be empty when provided",
+    );
+
+    expect(mockEmailServiceSend).not.toHaveBeenCalled();
+  });
+
+  it("rejects selectedEmails where none match any recipient email", async () => {
+    const share = makeShare({
+      recipients: [
+        makeRecipient({ id: "r-1", email: "alice@example.com", trackingToken: "tok-a" }),
+      ],
+    });
+    mockShareRepository.findShareById.mockResolvedValue(share);
+
+    await expect(
+      shareService.notifyRecipients("share-1", "user-1", ["nonexistent@example.com"]),
+    ).rejects.toThrow("None of the selected emails match this share's recipients");
+
+    expect(mockEmailServiceSend).not.toHaveBeenCalled();
+  });
+
   it("rejects notification for shares without an alias", async () => {
     const share = makeShare({ alias: null });
     mockShareRepository.findShareById.mockResolvedValue(share);
@@ -438,8 +463,11 @@ describe("Email migration — ShareService.updateShare() recipient upsert", () =
       id: "r-existing",
       shareId: "share-1",
       email: "alice@example.com",
+      name: null,
       trackingToken: "preserved-token-xyz",
       notifiedAt: new Date("2025-01-01"),
+      lastAccessedAt: null,
+      accessCount: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -478,8 +506,11 @@ describe("Email migration — ShareService.updateShare() recipient upsert", () =
       id: "r-alice",
       shareId: "share-1",
       email: "alice@example.com",
+      name: null,
       trackingToken: "tok-alice",
       notifiedAt: null,
+      lastAccessedAt: null,
+      accessCount: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -487,8 +518,11 @@ describe("Email migration — ShareService.updateShare() recipient upsert", () =
       id: "r-bob",
       shareId: "share-1",
       email: "bob@example.com",
+      name: null,
       trackingToken: "tok-bob",
       notifiedAt: null,
+      lastAccessedAt: null,
+      accessCount: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
     };

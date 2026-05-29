@@ -1,30 +1,28 @@
 import { getConfigValue } from "../config/service.js";
 
-// ─── App URL cache ────────────────────────────────────────────────────────────
-
-// NOTE: Process-local cache. In a multi-instance deployment, config changes
-// on one instance won't propagate to others until restart. Acceptable for
-// current single-instance architecture. See also: transport.ts hash cache.
-let cachedAppUrl: string | null = null;
+// ─── App URL ──────────────────────────────────────────────────────────────────
 
 /**
  * Returns the configured application base URL (e.g. "https://transfer.example.com").
- * The value is cached after the first successful read.
+ *
+ * Reads from the config store on every call — `getConfigValue` is fast (in-memory
+ * config cache with DB fallback) and the queue processes emails one at a time,
+ * so per-call overhead is negligible. This ensures admin config changes take
+ * effect immediately without server restart.
  */
 export async function getAppUrl(): Promise<string> {
-  if (cachedAppUrl) return cachedAppUrl;
   const url = await getConfigValue("appUrl");
   if (!url) throw new Error("appUrl is not configured or empty");
-  cachedAppUrl = url;
   return url;
 }
 
 /**
- * Clears the cached appUrl so the next call to `getAppUrl()` will
- * re-read from the database. Call after an admin changes the setting.
+ * No-op retained for backward compatibility with callers that invalidate the cache.
+ * The cache has been removed — `getAppUrl()` now reads fresh on every call.
+ * @deprecated No longer needed; will be removed in a future cleanup.
  */
 export function invalidateAppUrlCache(): void {
-  cachedAppUrl = null;
+  // No-op: appUrl is no longer cached
 }
 
 // ─── URL builders ─────────────────────────────────────────────────────────────

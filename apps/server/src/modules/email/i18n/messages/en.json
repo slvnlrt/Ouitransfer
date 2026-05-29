@@ -38,7 +38,8 @@
     "cta": "View Shared Files",
     "info": "This share is available to anyone with the link.",
     "infoPassword": "This share is password-protected. You will be prompted to enter a password.",
-    "infoExpires": "This share link will expire on {expiresAt}."
+    "infoExpires": "This share link will expire on {expiresAt}.",
+    "infoPasswordExpires": "This share is password-protected and will expire on {expiresAt}."
   },
   "shareAccessed": {
     "subject": "{appName} - Your share was accessed",
@@ -83,7 +84,8 @@
     "cta": "Upload Files",
     "info": "Anyone with this link can upload files.",
     "infoPassword": "This upload link is password-protected. You will be prompted to enter a password.",
-    "infoExpires": "This upload link will expire on {expiresAt}."
+    "infoExpires": "This upload link will expire on {expiresAt}.",
+    "infoPasswordExpires": "This upload link is password-protected and will expire on {expiresAt}."
   },
   "reverseShareUploaded": {
     "subject": "{appName} - New files uploaded to your request",

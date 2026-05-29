@@ -443,7 +443,7 @@ export class ReverseShareUploadService {
   }
 
   private async sendBatchFileUploadNotification(
-    reverseShare: Pick<ReverseShareWithCreator, "creatorId" | "name">,
+    reverseShare: Pick<ReverseShareWithCreator, "id" | "creatorId" | "name">,
     uploaderName: string,
     fileNames: string[],
     uploaderEmail?: string,
@@ -467,6 +467,7 @@ export class ReverseShareUploadService {
         to: creator.email,
         locale: creator.locale ?? "en",
         userId: creator.id,
+        relatedId: reverseShare.id,
         data: {
           reverseShareName,
           fileCount,

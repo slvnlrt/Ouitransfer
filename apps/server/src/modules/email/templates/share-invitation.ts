@@ -17,10 +17,13 @@ export function renderShareInvitation(data: ShareInvitationData, t: TranslationF
       shareName: data.shareName,
     }),
     cta: { url: data.shareLink, label: t("shareInvitation.cta") },
-    infoBox: data.hasPassword
-      ? t("shareInvitation.infoPassword")
-      : data.expiresAt
-        ? t("shareInvitation.infoExpires", { expiresAt: data.expiresAt })
-        : t("shareInvitation.info"),
+    infoBox:
+      data.hasPassword && data.expiresAt
+        ? t("shareInvitation.infoPasswordExpires", { expiresAt: data.expiresAt })
+        : data.hasPassword
+          ? t("shareInvitation.infoPassword")
+          : data.expiresAt
+            ? t("shareInvitation.infoExpires", { expiresAt: data.expiresAt })
+            : t("shareInvitation.info"),
   };
 }

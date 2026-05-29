@@ -137,11 +137,15 @@ async function checkFileAccess(
  * Verifies the file belongs to the share, checks if requester is the owner,
  * and if not: records a ShareVisit, updates lastDownloadedAt, and sends
  * a share_downloaded notification — all fire-and-forget.
+ *
+ * @param requestUserId - The authenticated user's ID, or undefined for anonymous access.
+ *   Passed from the route handler to avoid redundant `request.jwtVerify()` calls.
  */
 async function trackShareDownload(
   request: FastifyRequest,
   fileRecord: { id: string; name: string },
   shareId: string,
+  requestUserId?: string,
 ): Promise<void> {
   // Verify file belongs to this share
   const shareWithFile = await prisma.share.findFirst({
@@ -157,14 +161,7 @@ async function trackShareDownload(
   if (!shareWithFile) return;
 
   // Determine if the requester is the share owner
-  let requestUserId: string | undefined;
-  try {
-    await request.jwtVerify();
-    requestUserId = request.user?.userId;
-  } catch {
-    // Anonymous access — not the owner
-  }
-  const isOwner = requestUserId === shareWithFile.creatorId;
+  const isOwner = requestUserId !== undefined && requestUserId === shareWithFile.creatorId;
 
   if (isOwner) return;
 
@@ -982,7 +979,7 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
 
       // Track download if shareId provided (fire-and-forget)
       if (shareId) {
-        trackShareDownload(request, fileRecord, shareId).catch((err) =>
+        trackShareDownload(request, fileRecord, shareId, request.user?.userId).catch((err) =>
           getLogger().error({ err }, "Failed to track share download"),
         );
       }
@@ -1079,7 +1076,7 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
 
       // Track download if shareId provided (fire-and-forget)
       if (shareId) {
-        trackShareDownload(request, fileRecord, shareId).catch((err) =>
+        trackShareDownload(request, fileRecord, shareId, request.user?.userId).catch((err) =>
           getLogger().error({ err }, "Failed to track share download"),
         );
       }

@@ -38,7 +38,8 @@
     "cta": "Voir les fichiers partagés",
     "info": "Ce partage est accessible à toute personne disposant du lien.",
     "infoPassword": "Ce partage est protégé par un mot de passe. Vous serez invité à le saisir.",
-    "infoExpires": "Ce lien de partage expirera le {expiresAt}."
+    "infoExpires": "Ce lien de partage expirera le {expiresAt}.",
+    "infoPasswordExpires": "Ce partage est protégé par un mot de passe et expirera le {expiresAt}."
   },
   "shareAccessed": {
     "subject": "{appName} - Votre partage a été consulté",
@@ -83,7 +84,8 @@
     "cta": "Déposer des fichiers",
     "info": "Toute personne disposant de ce lien peut déposer des fichiers.",
     "infoPassword": "Ce lien de dépôt est protégé par un mot de passe. Vous serez invité à le saisir.",
-    "infoExpires": "Ce lien de dépôt expirera le {expiresAt}."
+    "infoExpires": "Ce lien de dépôt expirera le {expiresAt}.",
+    "infoPasswordExpires": "Ce lien de dépôt est protégé par un mot de passe et expirera le {expiresAt}."
   },
   "reverseShareUploaded": {
     "subject": "{appName} - De nouveaux fichiers ont été déposés",
