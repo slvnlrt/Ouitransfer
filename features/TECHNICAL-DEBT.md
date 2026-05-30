@@ -640,3 +640,24 @@ This is a significant usability gap for active reverse share users.
 
 **Found during:** 8.2 review pass 5 (mai 2026)
 **Severity:** High — useful feature gap that affects daily workflow for reverse share users
+
+---
+
+## TD-35 — `checkFileAccess` doesn't recognize folder-nested files (share download tracking gap)
+
+**Context:** `trackShareDownload` in `apps/server/src/modules/file/routes.ts` handles files
+nested inside shared folders (line ~157), but `checkFileAccess` — which gates the download
+before tracking runs — only recognizes files directly attached to a share (`files: { some: { id: fileId } }`),
+not folder-nested ones. For an anonymous visitor downloading a folder-nested file, access is
+denied at `checkFileAccess` before tracking is ever reached, making the folder branch in
+`trackShareDownload` effectively dead for the anonymous case.
+
+This is a pre-existing access-model inconsistency surfaced (not introduced) by 8.2's tracking code.
+
+**Fix options:**
+1. Extend `checkFileAccess` to traverse `folders → files` (recursive check)
+2. Or remove the unreachable folder branch in `trackShareDownload` to avoid implying support
+   that doesn't exist
+
+**Found during:** 8.2 review pass 6 (mai 2026)
+**Severity:** Low — pre-existing gap, no regression from 8.2
