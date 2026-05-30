@@ -718,6 +718,78 @@ describe("Visitor Tracking — integration", () => {
         }),
       );
     });
+
+    it("filters by identified=true (has identity)", async () => {
+      mockShareFindUnique.mockResolvedValue(makeShare());
+      mockShareVisitFindMany.mockResolvedValue([
+        { ...visitRecord, visitorEmail: "a@b.com", visitorName: "Alice" },
+      ]);
+      mockShareVisitCount.mockResolvedValue(1);
+
+      const token = signToken(CREATOR_ID);
+      const res = await app.inject({
+        method: "GET",
+        url: `/shares/${SHARE_ID}/visits?identified=true`,
+        headers: { cookie: `token=${token}` },
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(mockShareVisitFindMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            OR: [
+              { recipientId: { not: null } },
+              { visitorEmail: { not: null } },
+              { visitorName: { not: null } },
+            ],
+          }),
+        }),
+      );
+      expect(mockShareVisitCount).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            OR: [
+              { recipientId: { not: null } },
+              { visitorEmail: { not: null } },
+              { visitorName: { not: null } },
+            ],
+          }),
+        }),
+      );
+    });
+
+    it("filters by identified=false (anonymous)", async () => {
+      mockShareFindUnique.mockResolvedValue(makeShare());
+      mockShareVisitFindMany.mockResolvedValue([visitRecord]);
+      mockShareVisitCount.mockResolvedValue(1);
+
+      const token = signToken(CREATOR_ID);
+      const res = await app.inject({
+        method: "GET",
+        url: `/shares/${SHARE_ID}/visits?identified=false`,
+        headers: { cookie: `token=${token}` },
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(mockShareVisitFindMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            recipientId: null,
+            visitorEmail: null,
+            visitorName: null,
+          }),
+        }),
+      );
+      expect(mockShareVisitCount).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            recipientId: null,
+            visitorEmail: null,
+            visitorName: null,
+          }),
+        }),
+      );
+    });
   });
 
   // ═══════════════════════════════════════════════════════════════════════════

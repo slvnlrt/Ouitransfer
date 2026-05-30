@@ -355,7 +355,7 @@ export function ShareDetailsModal({
                   </div>
                 )}
 
-                <ShareDetailsActivitySection shareId={share.id} />
+                {isOwner && <ShareDetailsActivitySection shareId={share.id} />}
               </div>
             )}
           </div>

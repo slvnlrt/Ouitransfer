@@ -886,6 +886,12 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       }),
       querystring: z.object({
         action: z.enum(["access", "download"]).optional().describe("Filter by visit action"),
+        identified: z
+          .enum(["true", "false"])
+          .optional()
+          .describe(
+            "Filter by identification status: true = has recipientId, visitorEmail, or visitorName; false = anonymous",
+          ),
         page: z.coerce.number().int().positive().default(1).describe("Page number"),
         limit: z.coerce.number().int().positive().max(100).default(20).describe("Results per page"),
       }),
@@ -932,7 +938,7 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       }
 
       const { shareId } = request.params;
-      const { action, page, limit } = request.query;
+      const { action, identified, page, limit } = request.query;
 
       // Verify the requester is the share creator
       const share = await prisma.share.findUnique({ where: { id: shareId } });
@@ -943,10 +949,24 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         throw new ForbiddenError("Not share creator");
       }
 
-      const where = {
+      const where: Record<string, unknown> = {
         shareId,
         ...(action ? { action } : {}),
       };
+
+      if (identified === "true") {
+        // At least one identification field is set
+        where.OR = [
+          { recipientId: { not: null } },
+          { visitorEmail: { not: null } },
+          { visitorName: { not: null } },
+        ];
+      } else if (identified === "false") {
+        // No identification at all
+        where.recipientId = null;
+        where.visitorEmail = null;
+        where.visitorName = null;
+      }
 
       const [visits, total] = await Promise.all([
         prisma.shareVisit.findMany({

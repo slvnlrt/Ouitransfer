@@ -90,14 +90,26 @@ export function ShareDetailsActivitySection({ shareId }: ShareDetailsActivitySec
   }, [actionFilter, identityFilter]);
 
   const actionParam = actionFilter === "all" ? undefined : actionFilter;
+  const identifiedParam =
+    identityFilter === "identified"
+      ? ("true" as const)
+      : identityFilter === "anonymous"
+        ? ("false" as const)
+        : undefined;
 
   const visitsQuery = useQuery({
-    queryKey: queryKeys.shares.visits(shareId, { page, limit: PAGE_LIMIT, action: actionParam }),
+    queryKey: queryKeys.shares.visits(shareId, {
+      page,
+      limit: PAGE_LIMIT,
+      action: actionParam,
+      identified: identifiedParam,
+    }),
     queryFn: async () => {
       const response = await getShareVisits(shareId, {
         page,
         limit: PAGE_LIMIT,
         action: actionParam,
+        identified: identifiedParam,
       });
       return response.data;
     },
@@ -105,25 +117,18 @@ export function ShareDetailsActivitySection({ shareId }: ShareDetailsActivitySec
     placeholderData: keepPreviousData,
   });
 
-  // Client-side identification filter
-  const rawVisits = visitsQuery.data?.visits ?? [];
-  const visits =
-    identityFilter === "all"
-      ? rawVisits
-      : rawVisits.filter((v) => {
-          const hasIdentity = !!(v.visitorName || v.visitorEmail);
-          return identityFilter === "identified" ? hasIdentity : !hasIdentity;
-        });
+  const visits = visitsQuery.data?.visits ?? [];
   const total = visitsQuery.data?.total ?? 0;
-  const hasMore = rawVisits.length > 0 && page * PAGE_LIMIT < total;
+  const hasMore = visits.length > 0 && page * PAGE_LIMIT < total;
 
   // If we land on a page > 1 that returns no results (e.g. page deleted/expired),
   // auto-reset to page 1 instead of showing a misleading "no activity" message.
+  // Only fires when the server genuinely returns an empty page — not during loading.
   useEffect(() => {
-    if (visits.length === 0 && page > 1 && !visitsQuery.isLoading && !visitsQuery.isError) {
+    if (visits.length === 0 && page > 1 && visitsQuery.isSuccess) {
       setPage(1);
     }
-  }, [visits.length, page, visitsQuery.isLoading, visitsQuery.isError]);
+  }, [visits.length, page, visitsQuery.isSuccess]);
 
   return (
     <div className="space-y-3">
