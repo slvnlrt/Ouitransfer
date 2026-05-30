@@ -191,6 +191,11 @@ async function trackShareDownload(
     .catch((err) => getLogger().error({ err }, "Failed to update share lastDownloadedAt"));
 
   // Notify share owner (fire-and-forget)
+  // NOTE: Visitor identity (name/email from identification cookie or tracking token) is not
+  // passed in the download notification. The download path doesn't resolve visitor info from
+  // cookies/tokens — it only knows the share and file. Adding visitor context here would
+  // require parsing the identification cookie and/or resolving the tracking token, which is
+  // deferred to a future enhancement.
   // Skip notification when creator account is deactivated (consistent with scheduler checks)
   if (
     shareWithFile.creatorId &&

@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // ─── Hoisted mocks ───────────────────────────────────────────────────────────
 
@@ -18,19 +18,13 @@ import {
   buildShareManageUrl,
   buildUnsubscribeUrl,
   getAppUrl,
-  invalidateAppUrlCache,
 } from "../url-builder.js";
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 describe("url-builder", () => {
   beforeEach(() => {
-    invalidateAppUrlCache();
     mockGetConfigValue.mockReset();
-  });
-
-  afterEach(() => {
-    invalidateAppUrlCache();
   });
 
   // ── getAppUrl ──────────────────────────────────────────────────────────────

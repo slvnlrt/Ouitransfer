@@ -744,6 +744,23 @@ describe("Visitor Tracking — integration", () => {
       expect(responseShare).toHaveProperty("notifiedForExpired", false);
     });
 
+    it("owner sees notifyOnDownload in share response", async () => {
+      // Verify that notifyOnDownload default (false) is surfaced to the owner
+      const share = makeShare({ notifyOnDownload: false });
+      mockShareFindUnique.mockResolvedValue(share);
+
+      const token = signToken(CREATOR_ID);
+      const res = await app.inject({
+        method: "GET",
+        url: `/shares/${SHARE_ID}`,
+        headers: { cookie: `token=${token}` },
+      });
+
+      expect(res.statusCode).toBe(200);
+      const { share: responseShare } = res.json();
+      expect(responseShare).toHaveProperty("notifyOnDownload", false);
+    });
+
     it("includes extended recipient fields in share response", async () => {
       const now = new Date("2024-06-01T10:00:00Z");
       const share = makeShare({

@@ -159,6 +159,28 @@ describe("EmailService — integration with real i18n", () => {
     expect(createArg.data.subject).toBe("TestApp - Welcome!");
   });
 
+  it("share_invitation subject with XSS chars appears literally (no HTML escaping in subjects)", async () => {
+    await emailService.send("share_invitation", {
+      to: "recipient@test.com",
+      locale: "en",
+      data: {
+        senderName: '<script>alert("xss")</script>',
+        shareName: "test share",
+        shareLink: "https://test.example.com/s/abc",
+        hasPassword: false,
+      },
+    });
+
+    expect(mockPrisma.emailJob.create).toHaveBeenCalledOnce();
+    const createArg = mockPrisma.emailJob.create.mock.calls[0][0];
+    // en.json: "shareInvitation.subject" = "{appName} - {senderName} shared files with you"
+    // Subject uses t() (plain text interpolation), NOT tHtml() — XSS chars should appear
+    // literally after CR/LF sanitization but without HTML entity escaping.
+    expect(createArg.data.subject).toBe(
+      'TestApp - <script>alert("xss")</script> shared files with you',
+    );
+  });
+
   it("falls back to en.json when requested locale is unavailable", async () => {
     await emailService.send("welcome", {
       to: "user@test.com",

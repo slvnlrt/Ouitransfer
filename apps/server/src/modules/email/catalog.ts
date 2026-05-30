@@ -3,14 +3,12 @@ import type { TranslationFn } from "./i18n/loader.js";
 import { validateI18nKeys } from "./i18n/loader.js";
 
 /**
- * Zod refinement for ISO date/datetime strings.
- * Accepts both ISO 8601 datetime (`2026-01-01T00:00:00Z`) and date-only
- * (`2026-01-01`) strings, but rejects arbitrary text that `Date.parse` also
- * rejects.
+ * Strict ISO 8601 datetime string validation.
+ * Accepts `2026-01-01T00:00:00Z` and `2026-01-01T00:00:00+05:30` but rejects
+ * date-only strings and ambiguous formats that `Date.parse` would accept.
+ * All callers pass `.toISOString()` which always produces the required format.
  */
-const isoDateString = z.string().refine((s) => !Number.isNaN(Date.parse(s)), {
-  message: "Expected a valid ISO date or datetime string",
-});
+const isoDateString = z.string().datetime({ offset: true });
 
 import { renderAccountDeactivated } from "./templates/account-deactivated.js";
 import { renderAccountReactivated } from "./templates/account-reactivated.js";
@@ -156,7 +154,7 @@ const shareNoActivitySchema = z.object({
 const reverseShareUploadedSchema = z.object({
   reverseShareName: z.string(),
   fileCount: z.number(),
-  fileNames: z.array(z.string()),
+  fileNames: z.array(z.string()).min(1),
   uploaderName: z.string().optional(),
   uploaderEmail: z.string().optional(),
 });

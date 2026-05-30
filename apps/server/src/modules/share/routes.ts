@@ -56,7 +56,8 @@ function parseVisitorCookie(
       name: payload.name ?? undefined,
       email: payload.email ?? undefined,
     };
-  } catch {
+  } catch (err) {
+    request.log.debug({ err, alias }, "Failed to parse visitor identification cookie");
     return undefined;
   }
 }

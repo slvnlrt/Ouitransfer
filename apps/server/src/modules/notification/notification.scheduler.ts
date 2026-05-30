@@ -10,7 +10,9 @@ const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 /**
  * Number of days before expiration to send the "expiring" notification.
- * Will be made configurable in feature 5.2.
+ * TODO: Make configurable via a `shareExpiryWarnDays` config key (default 3).
+ * Depends on 5.2 (Lifecycle & Cleanup) which adds the config infrastructure
+ * for cleanup-related settings. Until then, this is a hardcoded default.
  */
 const EXPIRY_WARN_DAYS = 3;
 

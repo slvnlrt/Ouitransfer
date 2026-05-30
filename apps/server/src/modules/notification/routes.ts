@@ -38,68 +38,147 @@ const HTML_STYLES = `
   .error-icon { font-size: 3rem; margin-bottom: 16px; }
 `.trim();
 
-// LIMITATION: Unsubscribe confirmation pages are English-only. Localization would require
-// fetching the user's locale preference after token verification (the unsubscribe JWT contains
-// only userId + type, not locale). Deferred — acceptable for v1.
-function renderConfirmPage(token: string, type: string): string {
+// ─── Unsubscribe page i18n strings ────────────────────────────────────────────
+// Minimal inline map for localized unsubscribe pages. Covers English and French;
+// other locales fall back to English. The unsubscribe JWT contains userId + type
+// but not locale, so we fetch the user's locale from the DB after token verification.
+
+interface UnsubscribePageStrings {
+  lang: string;
+  confirmTitle: string;
+  confirmAbout: string;
+  confirmAction: string;
+  confirmButton: string;
+  successTitle: string;
+  successMessage: (type: string) => string;
+  successManage: string;
+  errorTitle: string;
+  errorMessage: string;
+  errorManage: string;
+}
+
+const PAGE_STRINGS: Record<string, UnsubscribePageStrings> = {
+  en: {
+    lang: "en",
+    confirmTitle: "Unsubscribe from notifications",
+    confirmAbout: "You are about to unsubscribe from:",
+    confirmAction: "You will no longer receive emails for this notification type.",
+    confirmButton: "Confirm Unsubscribe",
+    successTitle: "Successfully unsubscribed",
+    successMessage: (type) =>
+      `You have been unsubscribed from <strong>${escapeHtml(type)}</strong> notifications.`,
+    successManage: "You can manage all your notification preferences in your account settings.",
+    errorTitle: "Invalid or expired unsubscribe link",
+    errorMessage:
+      "This unsubscribe link is no longer valid. It may have expired or already been used.",
+    errorManage:
+      "You can manage your notification preferences directly from your account settings.",
+  },
+  fr: {
+    lang: "fr",
+    confirmTitle: "Se désabonner des notifications",
+    confirmAbout: "Vous êtes sur le point de vous désabonner de :",
+    confirmAction: "Vous ne recevrez plus d'e-mails pour ce type de notification.",
+    confirmButton: "Confirmer le désabonnement",
+    successTitle: "Désabonnement réussi",
+    successMessage: (type) =>
+      `Vous avez été désabonné des notifications <strong>${escapeHtml(type)}</strong>.`,
+    successManage:
+      "Vous pouvez gérer toutes vos préférences de notification dans les paramètres de votre compte.",
+    errorTitle: "Lien invalide ou expiré",
+    errorMessage:
+      "Ce lien de désabonnement n'est plus valide. Il a peut-être expiré ou a déjà été utilisé.",
+    errorManage:
+      "Vous pouvez gérer vos préférences de notification directement depuis les paramètres de votre compte.",
+  },
+};
+
+function getPageStrings(locale?: string | null): UnsubscribePageStrings {
+  if (locale && locale in PAGE_STRINGS) return PAGE_STRINGS[locale];
+  // Try base language (e.g. "fr-CA" → "fr")
+  if (locale) {
+    const base = locale.split("-")[0];
+    if (base in PAGE_STRINGS) return PAGE_STRINGS[base];
+  }
+  return PAGE_STRINGS.en;
+}
+
+/**
+ * Fetch the user's locale from the DB for unsubscribe page localization.
+ * Returns null if the user is not found (token may reference a deleted account).
+ */
+async function getUserLocale(userId: string): Promise<string | null> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { locale: true },
+    });
+    return user?.locale ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function renderConfirmPage(token: string, type: string, strings: UnsubscribePageStrings): string {
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="${strings.lang}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Unsubscribe</title>
+  <title>${strings.confirmTitle}</title>
   <style>${HTML_STYLES}</style>
 </head>
 <body>
   <div class="card">
-    <h1>Unsubscribe from notifications</h1>
-    <p>You are about to unsubscribe from:</p>
+    <h1>${strings.confirmTitle}</h1>
+    <p>${strings.confirmAbout}</p>
     <div class="type-badge">${escapeHtml(type)}</div>
-    <p>You will no longer receive emails for this notification type.</p>
+    <p>${strings.confirmAction}</p>
     <form method="POST">
       <input type="hidden" name="token" value="${escapeHtml(token)}" />
-      <button type="submit" class="btn">Confirm Unsubscribe</button>
+      <button type="submit" class="btn">${strings.confirmButton}</button>
     </form>
   </div>
 </body>
 </html>`;
 }
 
-function renderSuccessPage(type: string): string {
+function renderSuccessPage(type: string, strings: UnsubscribePageStrings): string {
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="${strings.lang}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Unsubscribed</title>
+  <title>${strings.successTitle}</title>
   <style>${HTML_STYLES}</style>
 </head>
 <body>
   <div class="card">
     <div class="success-icon">✅</div>
-    <h1>Successfully unsubscribed</h1>
-    <p>You have been unsubscribed from <strong>${escapeHtml(type)}</strong> notifications.</p>
-    <p>You can manage all your notification preferences in your account settings.</p>
+    <h1>${strings.successTitle}</h1>
+    <p>${strings.successMessage(type)}</p>
+    <p>${strings.successManage}</p>
   </div>
 </body>
 </html>`;
 }
 
-function renderErrorPage(): string {
+function renderErrorPage(strings?: UnsubscribePageStrings): string {
+  const s = strings ?? PAGE_STRINGS.en;
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="${s.lang}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Invalid Link</title>
+  <title>${s.errorTitle}</title>
   <style>${HTML_STYLES}</style>
 </head>
 <body>
   <div class="card">
     <div class="error-icon">⚠️</div>
-    <h1>Invalid or expired unsubscribe link</h1>
-    <p>This unsubscribe link is no longer valid. It may have expired or already been used.</p>
-    <p>You can manage your notification preferences directly from your account settings.</p>
+    <h1>${s.errorTitle}</h1>
+    <p>${s.errorMessage}</p>
+    <p>${s.errorManage}</p>
   </div>
 </body>
 </html>`;
@@ -197,10 +276,12 @@ export const notificationRoutes: FastifyPluginAsyncZod = async (app) => {
       const { token } = request.query;
 
       try {
-        const { type } = verifyUnsubscribeToken(token);
+        const { userId, type } = verifyUnsubscribeToken(token);
+        const locale = await getUserLocale(userId);
+        const strings = getPageStrings(locale);
         return reply
           .header("Content-Type", "text/html; charset=utf-8")
-          .send(renderConfirmPage(token, type));
+          .send(renderConfirmPage(token, type, strings));
       } catch {
         return reply.header("Content-Type", "text/html; charset=utf-8").send(renderErrorPage());
       }
@@ -245,9 +326,11 @@ export const notificationRoutes: FastifyPluginAsyncZod = async (app) => {
       try {
         const { userId, type } = verifyUnsubscribeToken(token);
         await unsubscribeUser(userId, type);
+        const locale = await getUserLocale(userId);
+        const strings = getPageStrings(locale);
         return reply
           .header("Content-Type", "text/html; charset=utf-8")
-          .send(renderSuccessPage(type));
+          .send(renderSuccessPage(type, strings));
       } catch {
         return reply.header("Content-Type", "text/html; charset=utf-8").send(renderErrorPage());
       }

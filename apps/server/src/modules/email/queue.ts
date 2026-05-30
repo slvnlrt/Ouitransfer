@@ -106,25 +106,56 @@ async function updateJobStatusWithRetry(
 // ─── Core operations ──────────────────────────────────────────────────────────
 
 /**
- * Resets "processing" jobs that have been locked for longer than STUCK_JOB_TIMEOUT_MS.
- * Called once on boot to recover from crashed/killed processes.
+ * Recovers "processing" jobs stuck for longer than STUCK_JOB_TIMEOUT_MS.
+ * Treats recovery as a failed attempt: increments `attempts`, sets `lastError`,
+ * and applies exponential backoff. If `attempts >= maxAttempts`, marks as `failed`.
+ *
+ * Uses per-job logic (not a bulk updateMany) because each job may have different
+ * attempt counts and max retries. Acceptable overhead — stuck jobs are rare.
  */
 async function recoverStuckJobs(): Promise<void> {
   const cutoff = new Date(Date.now() - STUCK_JOB_TIMEOUT_MS);
-  const result = await prisma.emailJob.updateMany({
+  const stuckJobs = await prisma.emailJob.findMany({
     where: {
       status: "processing",
       lockedAt: { lte: cutoff },
     },
-    data: {
-      status: "pending",
-      lockedAt: null,
-    },
+    select: { id: true, attempts: true, maxAttempts: true },
   });
 
-  if (result.count > 0) {
-    getLogger().info({ recoveredCount: result.count }, "Recovered stuck email jobs");
+  if (stuckJobs.length === 0) return;
+
+  for (const job of stuckJobs) {
+    const newAttempts = job.attempts + 1;
+    if (newAttempts >= job.maxAttempts) {
+      // Exhausted retries — mark as permanently failed
+      await prisma.emailJob.update({
+        where: { id: job.id },
+        data: {
+          status: "failed",
+          attempts: newAttempts,
+          lastError: "Recovered from stuck processing state (max attempts exhausted)",
+          lockedAt: null,
+        },
+      });
+    } else {
+      // Retry with exponential backoff: 60 × 2^(attempt-1), capped at MAX_BACKOFF_SECONDS
+      const backoffSeconds = Math.min(MAX_BACKOFF_SECONDS, 60 * 2 ** (newAttempts - 1));
+      const nextAttemptAt = new Date(Date.now() + backoffSeconds * 1000);
+      await prisma.emailJob.update({
+        where: { id: job.id },
+        data: {
+          status: "pending",
+          attempts: newAttempts,
+          lastError: "Recovered from stuck processing state",
+          nextAttemptAt,
+          lockedAt: null,
+        },
+      });
+    }
   }
+
+  getLogger().info({ recoveredCount: stuckJobs.length }, "Recovered stuck email jobs");
 }
 
 /**
@@ -195,15 +226,21 @@ async function processBatch(): Promise<void> {
     // NOTE: Sequential processing is intentional — SQLite has a single writer, and parallel
     // SMTP sends would increase memory/connection pressure. Acceptable at current scale.
     for (const job of jobs) {
-      // 1. Lock the job — if this fails, skip and continue to next job
+      // 1. Atomically lock the job — uses updateMany with a status guard so that
+      //    concurrent processes (if ever deployed) cannot both claim the same job.
+      //    If the job is no longer "pending" (already claimed or status changed), skip it.
       try {
-        await prisma.emailJob.update({
-          where: { id: job.id },
+        const lockResult = await prisma.emailJob.updateMany({
+          where: { id: job.id, status: "pending" },
           data: {
             status: "processing",
             lockedAt: new Date(),
           },
         });
+        if (lockResult.count !== 1) {
+          // Job was already claimed or status changed — skip
+          continue;
+        }
       } catch (lockError) {
         getLogger().warn({ jobId: job.id, err: lockError }, "Failed to lock email job, skipping");
         continue;

@@ -1,4 +1,5 @@
 import { escapeHtml } from "../../../utils/escape-html.js";
+import { getLogger } from "../../../utils/logger.js";
 import type { TranslationFn } from "../i18n/loader.js";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -60,14 +61,22 @@ function nlToBr(text: string): string {
 /**
  * Validates a URL scheme and HTML-escapes it for safe use in `href` attributes.
  * Only allows `http:`, `https:`, and `mailto:` schemes. Returns `"#"` for
- * invalid URLs or dangerous schemes (e.g., `javascript:`).
+ * invalid URLs or dangerous schemes (e.g., `javascript:`), and logs a warning
+ * so the operator can detect misconfigured URLs (e.g. wrong appUrl).
  */
 export function safeHref(url: string): string {
   try {
     const u = new URL(url);
-    if (!["http:", "https:", "mailto:"].includes(u.protocol)) return "#";
+    if (!["http:", "https:", "mailto:"].includes(u.protocol)) {
+      getLogger().warn(
+        { url, protocol: u.protocol },
+        "Rejected URL with disallowed protocol in email template",
+      );
+      return "#";
+    }
     return escapeHtml(url);
   } catch {
+    getLogger().warn({ url }, "Rejected invalid URL in email template");
     return "#";
   }
 }

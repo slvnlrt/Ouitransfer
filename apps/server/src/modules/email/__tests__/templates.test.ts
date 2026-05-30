@@ -256,12 +256,12 @@ describe("renderShareInvitation", () => {
         shareName: "Expiring Files",
         shareLink: "https://example.com/s/xyz",
         hasPassword: false,
-        expiresAt: "2026-12-31",
+        expiresAt: "2026-12-31T00:00:00.000Z",
       },
       mockT,
     );
     expect(slots.infoBox).toContain("shareInvitation.infoExpires");
-    expect(slots.infoBox).toContain("2026-12-31");
+    expect(slots.infoBox).toContain("2026-12-31T00:00:00.000Z");
   });
 
   it("shows default info when no password and no expiry", () => {
@@ -364,7 +364,7 @@ describe("renderShareExpiring", () => {
     const slots = renderShareExpiring(
       {
         shareName: "My Share",
-        expiresAt: "2026-12-31",
+        expiresAt: "2026-12-31T00:00:00.000Z",
         shareManageUrl: "https://example.com/manage",
       },
       mockT,
@@ -373,7 +373,7 @@ describe("renderShareExpiring", () => {
     expect(typeof slots.body).toBe("string");
     expect(slots.cta?.url).toBe("https://example.com/manage");
     expect(slots.body).toContain("My Share");
-    expect(slots.body).toContain("2026-12-31");
+    expect(slots.body).toContain("2026-12-31T00:00:00.000Z");
   });
 });
 
@@ -382,7 +382,7 @@ describe("renderShareExpired", () => {
     const slots = renderShareExpired(
       {
         shareName: "Old Share",
-        expiredAt: "2026-01-01",
+        expiredAt: "2026-01-01T00:00:00.000Z",
         shareManageUrl: "https://example.com/manage",
       },
       mockT,
@@ -391,7 +391,7 @@ describe("renderShareExpired", () => {
     expect(typeof slots.body).toBe("string");
     expect(slots.cta?.url).toBe("https://example.com/manage");
     expect(slots.body).toContain("Old Share");
-    expect(slots.body).toContain("2026-01-01");
+    expect(slots.body).toContain("2026-01-01T00:00:00.000Z");
   });
 });
 
@@ -471,12 +471,12 @@ describe("renderReverseShareInvitation", () => {
         reverseShareName: "Temp Upload",
         reverseShareLink: "https://example.com/r/xyz",
         hasPassword: false,
-        expiresAt: "2026-06-30",
+        expiresAt: "2026-06-30T00:00:00.000Z",
       },
       mockT,
     );
     expect(slots.infoBox).toContain("reverseShareInvitation.infoExpires");
-    expect(slots.infoBox).toContain("2026-06-30");
+    expect(slots.infoBox).toContain("2026-06-30T00:00:00.000Z");
   });
 });
 
@@ -528,13 +528,13 @@ describe("renderReverseShareUploaded", () => {
 describe("renderReverseShareExpiring", () => {
   it("returns valid LayoutSlots without CTA", () => {
     const slots = renderReverseShareExpiring(
-      { reverseShareName: "My Request", expiresAt: "2026-06-30" },
+      { reverseShareName: "My Request", expiresAt: "2026-06-30T00:00:00.000Z" },
       mockT,
     );
     expect(typeof slots.subtitle).toBe("string");
     expect(typeof slots.body).toBe("string");
     expect(slots.body).toContain("My Request");
-    expect(slots.body).toContain("2026-06-30");
+    expect(slots.body).toContain("2026-06-30T00:00:00.000Z");
     expect(slots.cta).toBeUndefined();
   });
 });
@@ -542,13 +542,13 @@ describe("renderReverseShareExpiring", () => {
 describe("renderReverseShareExpired", () => {
   it("returns valid LayoutSlots without CTA", () => {
     const slots = renderReverseShareExpired(
-      { reverseShareName: "Old Request", expiredAt: "2026-01-01" },
+      { reverseShareName: "Old Request", expiredAt: "2026-01-01T00:00:00.000Z" },
       mockT,
     );
     expect(typeof slots.subtitle).toBe("string");
     expect(typeof slots.body).toBe("string");
     expect(slots.body).toContain("Old Request");
-    expect(slots.body).toContain("2026-01-01");
+    expect(slots.body).toContain("2026-01-01T00:00:00.000Z");
     expect(slots.cta).toBeUndefined();
   });
 });

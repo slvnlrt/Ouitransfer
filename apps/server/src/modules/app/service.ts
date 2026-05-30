@@ -1,7 +1,6 @@
 import { prisma } from "../../shared/prisma.js";
 import { ForbiddenError, NotFoundError } from "../../utils/app-error.js";
 import { getConfigValue, validatePasswordAuthDisable } from "../config/service.js";
-import { invalidateAppUrlCache } from "../email/url-builder.js";
 
 export class AppService {
   async getAppInfo() {
@@ -83,11 +82,6 @@ export class AppService {
       data: { value },
     });
 
-    // Invalidate cached appUrl when it's updated
-    if (key === "appUrl") {
-      invalidateAppUrlCache();
-    }
-
     return result;
   }
 
@@ -121,11 +115,6 @@ export class AppService {
         }),
       ),
     );
-
-    // Invalidate cached appUrl if it was part of the bulk update
-    if (updates.some((update) => update.key === "appUrl")) {
-      invalidateAppUrlCache();
-    }
 
     return result;
   }

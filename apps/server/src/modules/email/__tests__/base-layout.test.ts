@@ -1,5 +1,17 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { TranslationFn } from "../i18n/loader.js";
+
+// ─── Logger mock (safeHref logs warnings for rejected URLs) ──────────────────
+
+vi.mock("../../../utils/logger.js", () => ({
+  getLogger: vi.fn(() => ({
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
+  })),
+}));
+
 import { renderLayout, safeHref } from "../templates/base-layout.js";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

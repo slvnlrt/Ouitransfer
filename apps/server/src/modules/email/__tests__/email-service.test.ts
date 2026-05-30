@@ -263,7 +263,7 @@ describe("EmailService", () => {
         userId: "user-1",
         data: {
           shareName: "My Share",
-          expiresAt: "2025-12-31",
+          expiresAt: "2025-12-31T00:00:00.000Z",
           shareManageUrl: "https://test.example.com/shares/1",
         },
       });
@@ -323,7 +323,7 @@ describe("EmailService", () => {
         userId: "user-1",
         data: {
           shareName: "My Share",
-          expiresAt: "2025-12-31",
+          expiresAt: "2025-12-31T00:00:00.000Z",
           shareManageUrl: "https://test.example.com/shares/1",
         },
       });
@@ -354,7 +354,7 @@ describe("EmailService", () => {
         // no userId
         data: {
           shareName: "My Share",
-          expiresAt: "2025-12-31",
+          expiresAt: "2025-12-31T00:00:00.000Z",
           shareManageUrl: "https://test.example.com/shares/1",
         },
       });
@@ -380,7 +380,7 @@ describe("EmailService", () => {
         userId: "user-1",
         data: {
           shareName: "My Share",
-          expiresAt: "2025-12-31",
+          expiresAt: "2025-12-31T00:00:00.000Z",
           shareManageUrl: "https://test.example.com/shares/1",
         },
       });
@@ -599,7 +599,7 @@ describe("EmailService", () => {
         userId: "user-1",
         data: {
           shareName: "My Share",
-          expiresAt: "2025-12-31",
+          expiresAt: "2025-12-31T00:00:00.000Z",
           shareManageUrl: "https://test.example.com/shares/1",
         },
       });

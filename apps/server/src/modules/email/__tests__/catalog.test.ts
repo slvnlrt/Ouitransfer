@@ -192,12 +192,12 @@ describe("notificationCatalog", () => {
       },
       share_expiring: {
         shareName: "My Share",
-        expiresAt: "2026-12-31",
+        expiresAt: "2026-12-31T00:00:00.000Z",
         shareManageUrl: "https://example.com/manage",
       },
       share_expired: {
         shareName: "My Share",
-        expiredAt: "2026-01-01",
+        expiredAt: "2026-01-01T00:00:00.000Z",
         shareManageUrl: "https://example.com/manage",
       },
       share_max_views_reached: {
@@ -217,11 +217,11 @@ describe("notificationCatalog", () => {
       },
       reverse_share_expiring: {
         reverseShareName: "Upload Request",
-        expiresAt: "2026-12-31",
+        expiresAt: "2026-12-31T00:00:00.000Z",
       },
       reverse_share_expired: {
         reverseShareName: "Upload Request",
-        expiredAt: "2026-01-01",
+        expiredAt: "2026-01-01T00:00:00.000Z",
       },
       quota_warning: { usedPercent: 80, usedBytes: 8_000_000_000, maxBytes: 10_000_000_000 },
       quota_exceeded: { usedBytes: 11_000_000_000, maxBytes: 10_000_000_000 },
@@ -363,12 +363,12 @@ describe("i18n key smoke tests — real en.json", () => {
       },
       share_expiring: {
         shareName: "My Share",
-        expiresAt: "2026-12-31",
+        expiresAt: "2026-12-31T00:00:00.000Z",
         shareManageUrl: "https://example.com/manage",
       },
       share_expired: {
         shareName: "My Share",
-        expiredAt: "2026-01-01",
+        expiredAt: "2026-01-01T00:00:00.000Z",
         shareManageUrl: "https://example.com/manage",
       },
       share_max_views_reached: {
@@ -388,11 +388,11 @@ describe("i18n key smoke tests — real en.json", () => {
       },
       reverse_share_expiring: {
         reverseShareName: "Upload Request",
-        expiresAt: "2026-12-31",
+        expiresAt: "2026-12-31T00:00:00.000Z",
       },
       reverse_share_expired: {
         reverseShareName: "Upload Request",
-        expiredAt: "2026-01-01",
+        expiredAt: "2026-01-01T00:00:00.000Z",
       },
       quota_warning: { usedPercent: 80, usedBytes: 8_000_000_000, maxBytes: 10_000_000_000 },
       quota_exceeded: { usedBytes: 11_000_000_000, maxBytes: 10_000_000_000 },

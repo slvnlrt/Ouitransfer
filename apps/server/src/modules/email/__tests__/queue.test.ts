@@ -118,7 +118,8 @@ function setupDefaultMocks() {
 
   // No pending jobs by default
   mockPrisma.emailJob.findMany.mockResolvedValue([]);
-  mockPrisma.emailJob.updateMany.mockResolvedValue({ count: 0 });
+  // Default: atomic lock succeeds (count: 1). Tests that need it to fail override this.
+  mockPrisma.emailJob.updateMany.mockResolvedValue({ count: 1 });
   mockPrisma.emailJob.update.mockResolvedValue({});
   mockPrisma.emailJob.deleteMany.mockResolvedValue({ count: 0 });
 
@@ -178,22 +179,36 @@ describe("EmailQueueScheduler", () => {
   // ── processBatch() — job lifecycle ──────────────────────────────────────
 
   describe("processBatch() — job lifecycle", () => {
-    it("locks each job (status='processing', lockedAt=now) before sending", async () => {
+    it("atomically locks each job (updateMany with status guard) before sending", async () => {
       const job = makeJob();
       mockPrisma.emailJob.findMany.mockResolvedValue([job]);
+      mockPrisma.emailJob.updateMany.mockResolvedValue({ count: 1 });
 
       startEmailQueueScheduler();
       await vi.advanceTimersByTimeAsync(30_000 + 1);
 
-      expect(mockPrisma.emailJob.update).toHaveBeenCalledWith(
+      expect(mockPrisma.emailJob.updateMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: { id: "job-1" },
+          where: { id: "job-1", status: "pending" },
           data: expect.objectContaining({
             status: "processing",
             lockedAt: expect.any(Date),
           }),
         }),
       );
+    });
+
+    it("skips job when atomic lock fails (count !== 1)", async () => {
+      const job = makeJob();
+      mockPrisma.emailJob.findMany.mockResolvedValue([job]);
+      // Lock fails — job was already claimed
+      mockPrisma.emailJob.updateMany.mockResolvedValue({ count: 0 });
+
+      startEmailQueueScheduler();
+      await vi.advanceTimersByTimeAsync(30_000 + 1);
+
+      // Should NOT attempt to send the email
+      expect(mockSmtpTransport.sendMail).not.toHaveBeenCalled();
     });
 
     it("marks job 'sent' with sentAt on successful send", async () => {
@@ -363,17 +378,52 @@ describe("EmailQueueScheduler", () => {
   // ── recoverStuckJobs() ────────────────────────────────────────────────────
 
   describe("recoverStuckJobs()", () => {
-    it("resets 'processing' jobs older than 5 minutes to 'pending'", async () => {
+    it("recovers stuck 'processing' jobs: increments attempts and applies backoff", async () => {
+      mockPrisma.emailJob.findMany.mockResolvedValueOnce([
+        { id: "stuck-1", attempts: 0, maxAttempts: 3 },
+      ]);
+
       await initEmailQueueOnBoot();
 
-      expect(mockPrisma.emailJob.updateMany).toHaveBeenCalledWith(
+      // Should call findMany to find stuck jobs
+      expect(mockPrisma.emailJob.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
             status: "processing",
             lockedAt: expect.objectContaining({ lte: expect.any(Date) }),
           }),
+        }),
+      );
+
+      // Should update the stuck job with incremented attempts and backoff
+      expect(mockPrisma.emailJob.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: "stuck-1" },
           data: expect.objectContaining({
             status: "pending",
+            attempts: 1,
+            lastError: "Recovered from stuck processing state",
+            lockedAt: null,
+            nextAttemptAt: expect.any(Date),
+          }),
+        }),
+      );
+    });
+
+    it("marks stuck job as failed when max attempts exhausted", async () => {
+      mockPrisma.emailJob.findMany.mockResolvedValueOnce([
+        { id: "stuck-2", attempts: 2, maxAttempts: 3 },
+      ]);
+
+      await initEmailQueueOnBoot();
+
+      expect(mockPrisma.emailJob.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: "stuck-2" },
+          data: expect.objectContaining({
+            status: "failed",
+            attempts: 3,
+            lastError: "Recovered from stuck processing state (max attempts exhausted)",
             lockedAt: null,
           }),
         }),
@@ -471,8 +521,14 @@ describe("EmailQueueScheduler", () => {
     it("runs recoverStuckJobs immediately on boot", async () => {
       await initEmailQueueOnBoot();
 
-      // updateMany for stuck jobs recovery should be called immediately
-      expect(mockPrisma.emailJob.updateMany).toHaveBeenCalled();
+      // findMany for stuck jobs recovery should be called immediately
+      expect(mockPrisma.emailJob.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            status: "processing",
+          }),
+        }),
+      );
     });
 
     it("starts the scheduler after boot", async () => {
@@ -484,7 +540,8 @@ describe("EmailQueueScheduler", () => {
     });
 
     it("does not throw when recoverStuckJobs fails", async () => {
-      mockPrisma.emailJob.updateMany.mockRejectedValue(new Error("DB unavailable"));
+      // recoverStuckJobs now uses findMany to find stuck jobs — fail this call
+      mockPrisma.emailJob.findMany.mockRejectedValueOnce(new Error("DB unavailable"));
 
       await expect(initEmailQueueOnBoot()).resolves.not.toThrow();
       expect(mockLogger.error).toHaveBeenCalled();

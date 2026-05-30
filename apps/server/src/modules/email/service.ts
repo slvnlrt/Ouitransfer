@@ -115,6 +115,10 @@ class EmailService {
     // 4. Check cooldown for noisy types
     //    Only non-failed jobs count toward the cooldown window. A failed send
     //    should not prevent a legitimate retry.
+    //    Cooldown key is scoped by (type, to, relatedId) — not per-visitor. This means
+    //    all visitors to the same share share the same cooldown window for the owner.
+    //    Per-visitor segregation was considered but adds complexity without significant
+    //    value — the owner still learns "someone accessed your share" within the window.
     const cooldown = (entry as NotificationTypeConfig).cooldownSeconds;
     if (cooldown && cooldown > 0) {
       const cutoff = new Date(Date.now() - cooldown * 1000);
@@ -144,6 +148,11 @@ class EmailService {
 
     // 6. Build string params from payload data for i18n interpolation.
     //    Convert all payload values to strings so they can be used in subjects and templates.
+    // TODO: Date localization — ISO datetime strings (expiresAt, accessedAt, downloadedAt, etc.)
+    // are currently rendered as raw ISO format in email bodies. For user-friendly emails, format
+    // date values with `Intl.DateTimeFormat(locale, { dateStyle: 'long' })` before interpolation.
+    // Requires identifying which payload keys are dates (via catalog metadata or naming convention)
+    // and threading the locale into this formatting step. Deferred — raw ISO dates are unambiguous.
     const dataParams: Record<string, string> = {};
     for (const [key, value] of Object.entries(validatedData as Record<string, unknown>)) {
       if (typeof value === "string") {

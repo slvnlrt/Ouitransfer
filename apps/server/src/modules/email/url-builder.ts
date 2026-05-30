@@ -16,15 +16,6 @@ export async function getAppUrl(): Promise<string> {
   return url;
 }
 
-/**
- * No-op retained for backward compatibility with callers that invalidate the cache.
- * The cache has been removed — `getAppUrl()` now reads fresh on every call.
- * @deprecated No longer needed; will be removed in a future cleanup.
- */
-export function invalidateAppUrlCache(): void {
-  // No-op: appUrl is no longer cached
-}
-
 // ─── URL builders ─────────────────────────────────────────────────────────────
 
 /**

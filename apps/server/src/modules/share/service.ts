@@ -760,10 +760,12 @@ export class ShareService {
       try {
         const result = await emailService.send("share_invitation", {
           to: recipient.email,
-          // Recipients receive invitations in English (system default).
+          // External recipients don't have an account, so we can't read their locale.
+          // Use the sender's locale as the best available signal — it's more likely to be
+          // correct for same-organization sharing than always defaulting to English.
           // Per-recipient locale requires adding a locale field to ShareRecipient model.
-          // Using the sender's locale would be wrong for external recipients.
-          locale: "en",
+          locale: user?.locale ?? "en",
+          relatedId: share.id,
           data: {
             senderName,
             shareName: share.name ?? "Shared files",
