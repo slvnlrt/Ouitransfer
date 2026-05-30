@@ -104,6 +104,8 @@ class EmailService {
     }
 
     // 4. Check cooldown for noisy types
+    //    Only non-failed jobs count toward the cooldown window. A failed send
+    //    should not prevent a legitimate retry.
     const cooldown = (entry as NotificationTypeConfig).cooldownSeconds;
     if (cooldown && cooldown > 0) {
       const cutoff = new Date(Date.now() - cooldown * 1000);
@@ -113,6 +115,7 @@ class EmailService {
           to: options.to,
           relatedId: effectiveRelatedId ?? null,
           createdAt: { gt: cutoff },
+          status: { in: ["pending", "processing", "sent", "digest_pending"] },
         },
       });
       if (recent) {
@@ -180,15 +183,15 @@ class EmailService {
       return { enqueued: true };
     }
 
-    // 8. Sanitize data params: strip CR/LF to prevent SMTP header injection
-    //    via user-controlled values (senderName, shareName, etc.)
-    const sanitizedParams = sanitizeForSubject(dataParams);
+    // 8. Sanitize data params AND appName: strip CR/LF to prevent SMTP header injection
+    //    via user-controlled values (senderName, shareName, appName, etc.)
+    const sanitizedParams = sanitizeForSubject({ appName, ...dataParams });
 
     // 9. Resolve subject from i18n with full payload params (plain text, no HTML escaping)
     let subject: string;
     try {
       const prefix = typeToI18nPrefix(type);
-      subject = await t(options.locale, `${prefix}.subject`, { appName, ...sanitizedParams });
+      subject = await t(options.locale, `${prefix}.subject`, sanitizedParams);
     } catch {
       // i18n key not found — use type as fallback subject
       log.warn(

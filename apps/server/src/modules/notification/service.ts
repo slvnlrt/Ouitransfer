@@ -1,6 +1,6 @@
 import { prisma } from "../../shared/prisma.js";
 import { ValidationError } from "../../utils/app-error.js";
-import { notificationCatalog } from "../email/catalog.js";
+import { type NotificationKey, notificationCatalog } from "../email/catalog.js";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -103,8 +103,30 @@ export { verifyUnsubscribeToken } from "../email/unsubscribe-token.js";
 /**
  * Sets a user's notification preference to "disabled" for the given type.
  * Idempotent — safe to call multiple times.
+ *
+ * Defense-in-depth: silently ignores types that are not in the catalog,
+ * are not configurable, or are critical (isCritical). This prevents
+ * unsubscribe tokens from disabling critical system notifications
+ * (e.g. password_reset, welcome) even if a token is crafted or reused.
  */
 export async function unsubscribeUser(userId: string, type: string): Promise<void> {
+  // Validate the type exists in the catalog
+  if (!(type in notificationCatalog)) {
+    return; // Silent no-op — don't leak catalog info
+  }
+
+  const entry = notificationCatalog[type as NotificationKey];
+
+  // Critical types cannot be unsubscribed (e.g. password_reset, welcome)
+  if (entry.isCritical) {
+    return; // Silent no-op
+  }
+
+  // Non-configurable types cannot be unsubscribed by the user
+  if (!entry.configurable) {
+    return; // Silent no-op
+  }
+
   await prisma.notificationPreference.upsert({
     where: { userId_type: { userId, type } },
     create: { userId, type, frequency: "disabled" },

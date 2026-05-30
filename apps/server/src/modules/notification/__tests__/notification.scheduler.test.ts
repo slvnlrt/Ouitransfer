@@ -26,6 +26,7 @@ const {
   mockReverseShareUpdate,
   mockEmailSend,
   mockBuildShareManageUrl,
+  mockGetConfigValue,
 } = vi.hoisted(() => ({
   mockShareFindMany: vi.fn(),
   mockShareUpdate: vi.fn().mockResolvedValue({}),
@@ -33,6 +34,10 @@ const {
   mockReverseShareUpdate: vi.fn().mockResolvedValue({}),
   mockEmailSend: vi.fn().mockResolvedValue({ enqueued: true }),
   mockBuildShareManageUrl: vi.fn().mockResolvedValue("https://app.test/shares/share-1"),
+  mockGetConfigValue: vi.fn().mockImplementation(async (key: string) => {
+    if (key === "emailDigestHour") return "8";
+    throw new Error(`Unknown config key: ${key}`);
+  }),
 }));
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
@@ -58,6 +63,10 @@ vi.mock("../../email/service.js", () => ({
 
 vi.mock("../../email/url-builder.js", () => ({
   buildShareManageUrl: mockBuildShareManageUrl,
+}));
+
+vi.mock("../../config/service.js", () => ({
+  getConfigValue: mockGetConfigValue,
 }));
 
 vi.mock("../../../utils/logger.js", () => ({
@@ -103,6 +112,10 @@ describe("Notification Scheduler", () => {
     vi.clearAllMocks();
     // Re-establish default return value after clearAllMocks (which resets implementations)
     mockEmailSend.mockResolvedValue({ enqueued: true });
+    mockGetConfigValue.mockImplementation(async (key: string) => {
+      if (key === "emailDigestHour") return "8";
+      throw new Error(`Unknown config key: ${key}`);
+    });
     vi.useFakeTimers();
     vi.setSystemTime(now);
   });
@@ -571,6 +584,39 @@ describe("Notification Scheduler", () => {
           }),
         }),
       );
+    });
+  });
+
+  // ── msUntilNextUtcHour (I-7) ────────────────────────────────────────────
+
+  describe("msUntilNextUtcHour()", () => {
+    it("computes correct delay when target hour is later today", async () => {
+      // now is 2024-06-15T12:00:00Z — target hour 14 → 2h away
+      const { msUntilNextUtcHour } = await import("../notification.scheduler.js");
+      const ms = msUntilNextUtcHour(14, now);
+      expect(ms).toBe(2 * 60 * 60 * 1000);
+    });
+
+    it("computes correct delay when target hour has already passed today", async () => {
+      // now is 2024-06-15T12:00:00Z — target hour 8 → already passed, next is +20h
+      const { msUntilNextUtcHour } = await import("../notification.scheduler.js");
+      const ms = msUntilNextUtcHour(8, now);
+      expect(ms).toBe(20 * 60 * 60 * 1000);
+    });
+
+    it("computes correct delay when target hour is exactly now", async () => {
+      // now is 2024-06-15T12:00:00Z — target hour 12 → exactly now → next day
+      const { msUntilNextUtcHour } = await import("../notification.scheduler.js");
+      const ms = msUntilNextUtcHour(12, now);
+      expect(ms).toBe(24 * 60 * 60 * 1000);
+    });
+
+    it("always returns a positive value", async () => {
+      const { msUntilNextUtcHour } = await import("../notification.scheduler.js");
+      for (let hour = 0; hour < 24; hour++) {
+        const ms = msUntilNextUtcHour(hour, now);
+        expect(ms).toBeGreaterThan(0);
+      }
     });
   });
 });

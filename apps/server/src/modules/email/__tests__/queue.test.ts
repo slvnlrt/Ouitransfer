@@ -66,6 +66,7 @@ vi.mock("../catalog.js", () => ({
 // ─── Imports (after mocks) ────────────────────────────────────────────────────
 
 import {
+  getMaxRetries,
   initEmailQueueOnBoot,
   startEmailQueueScheduler,
   stopEmailQueueScheduler,
@@ -499,6 +500,87 @@ describe("EmailQueueScheduler", () => {
         expect.objectContaining({ err: expect.any(Error) }),
         expect.stringContaining("i18n validation failed"),
       );
+    });
+  });
+
+  // ── getMaxRetries() ──────────────────────────────────────────────────────
+
+  describe("getMaxRetries()", () => {
+    it("returns 0 when config is '0' (fail-fast, no retries) (I-6)", async () => {
+      mockGetConfigValue.mockImplementation(async (key: string) => {
+        if (key === "emailQueueMaxRetries") return "0";
+        throw new Error(`Unknown config key: ${key}`);
+      });
+
+      const result = await getMaxRetries();
+      expect(result).toBe(0);
+    });
+
+    it("returns 3 for negative values", async () => {
+      mockGetConfigValue.mockImplementation(async (key: string) => {
+        if (key === "emailQueueMaxRetries") return "-1";
+        throw new Error(`Unknown config key: ${key}`);
+      });
+
+      const result = await getMaxRetries();
+      expect(result).toBe(3);
+    });
+
+    it("returns 3 when config key is missing", async () => {
+      mockGetConfigValue.mockRejectedValue(new Error("Config not found"));
+
+      const result = await getMaxRetries();
+      expect(result).toBe(3);
+    });
+
+    it("returns parsed value for valid positive integer", async () => {
+      mockGetConfigValue.mockImplementation(async (key: string) => {
+        if (key === "emailQueueMaxRetries") return "5";
+        throw new Error(`Unknown config key: ${key}`);
+      });
+
+      const result = await getMaxRetries();
+      expect(result).toBe(5);
+    });
+  });
+
+  // ── wake event during processing (I-2) ──────────────────────────────────
+
+  describe("wake event during processing (I-2)", () => {
+    it("wakePending flag ensures wake events are not lost during batch processing", async () => {
+      // Setup: one pending job that will take some processing time
+      const job = makeJob();
+      let findManyCallCount = 0;
+      mockPrisma.emailJob.findMany.mockImplementation(async () => {
+        findManyCallCount++;
+        // First call returns a job; second call (from wake re-tick) returns empty
+        return findManyCallCount === 1 ? [job] : [];
+      });
+
+      startEmailQueueScheduler();
+
+      // Capture the registered wake handler
+      const onCall = mockEmailQueueEvents.on.mock.calls.find(
+        (call: unknown[]) => call[0] === "wake",
+      );
+      expect(onCall).toBeDefined();
+      const wakeHandler = onCall![1] as () => void;
+
+      // Trigger the first tick (30s interval)
+      await vi.advanceTimersByTimeAsync(30_000 + 1);
+
+      // At this point, the first batch was processed. Now simulate a wake
+      // event that would have fired during processing. Since the test uses
+      // fake timers and everything is sequential, we trigger wake and then
+      // advance to let the immediate re-tick fire.
+      wakeHandler();
+
+      // The wake handler should have scheduled an immediate tick (setTimeout 0).
+      // Advance timers to let it fire.
+      await vi.advanceTimersByTimeAsync(1);
+
+      // The wake should have triggered a re-tick (findMany called again)
+      expect(findManyCallCount).toBeGreaterThanOrEqual(2);
     });
   });
 });

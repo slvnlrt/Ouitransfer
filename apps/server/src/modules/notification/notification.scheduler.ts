@@ -1,5 +1,6 @@
 import { prisma } from "../../shared/prisma.js";
 import { getLogger } from "../../utils/logger.js";
+import { getConfigValue } from "../config/service.js";
 import { emailService } from "../email/service.js";
 import { buildShareManageUrl } from "../email/url-builder.js";
 
@@ -338,17 +339,56 @@ async function runAllChecks(): Promise<void> {
 }
 
 /**
- * Schedule the next notification check.
+ * Returns the configured digest hour (0–23, UTC). Defaults to 8 if not set
+ * or invalid. Reads the `emailDigestHour` config key from the database.
+ */
+async function getDigestHourUtc(): Promise<number> {
+  try {
+    const value = await getConfigValue("emailDigestHour");
+    const parsed = parseInt(value, 10);
+    if (Number.isFinite(parsed) && parsed >= 0 && parsed <= 23) {
+      return parsed;
+    }
+  } catch {
+    // Config key not found — use default
+  }
+  return 8;
+}
+
+/**
+ * Computes the milliseconds until the next occurrence of `targetHour:00 UTC`.
+ * If the target hour has already passed today, returns the ms until that hour
+ * tomorrow. The result is always > 0.
+ */
+export function msUntilNextUtcHour(targetHour: number, now: Date = new Date()): number {
+  const next = new Date(now);
+  next.setUTCHours(targetHour, 0, 0, 0);
+
+  // If the target hour has already passed today, move to tomorrow
+  if (next.getTime() <= now.getTime()) {
+    next.setUTCDate(next.getUTCDate() + 1);
+  }
+
+  return next.getTime() - now.getTime();
+}
+
+/**
+ * Schedule the next notification check at the configured `emailDigestHour` UTC.
  * Uses chained setTimeout (not setInterval) to prevent overlapping runs.
  *
- * DESIGN LIMITATION: The scheduler runs at boot + N × 24h intervals.
- * This means notification timing depends on when the server started.
- * Wall-clock alignment (e.g., always run at 9am local time) would require
- * computing the delta to the next target hour via setTimeout. This is
- * acceptable for the current single-instance deployment but should be
- * revisited if user-facing timing guarantees are added.
+ * The first tick is wall-clock aligned to `emailDigestHour:00 UTC`, then
+ * subsequent ticks run every 24h from that point. This ensures consistent
+ * daily timing regardless of when the server was (re)started.
  */
-function scheduleNext(): void {
+async function scheduleNext(delayMs?: number): Promise<void> {
+  let delay: number;
+  if (delayMs !== undefined) {
+    delay = delayMs;
+  } else {
+    const digestHour = await getDigestHourUtc();
+    delay = msUntilNextUtcHour(digestHour);
+  }
+
   const handle = setTimeout(async () => {
     if (currentTimeout !== handle) return; // Superseded — skip
 
@@ -358,11 +398,11 @@ function scheduleNext(): void {
       getLogger().error({ err }, "Notification scheduler run failed");
     }
 
-    // Chain next run only if this timer is still active
+    // Chain next run at the next digest hour (24h from now, re-computed for drift correction)
     if (currentTimeout === handle) {
-      scheduleNext();
+      void scheduleNext();
     }
-  }, ONE_DAY_MS);
+  }, delay);
 
   currentTimeout = handle;
 }
@@ -371,11 +411,13 @@ function scheduleNext(): void {
 
 /**
  * Start the notification scheduler.
+ * Computes the delay until the next `emailDigestHour:00 UTC` and schedules
+ * the first tick at that time.
  */
-export function startNotificationScheduler(): void {
+export async function startNotificationScheduler(): Promise<void> {
   stopNotificationScheduler();
-  scheduleNext();
-  getLogger().info("Notification scheduler started (daily)");
+  await scheduleNext();
+  getLogger().info("Notification scheduler started (daily, wall-clock aligned)");
 }
 
 /**
@@ -392,11 +434,11 @@ export function stopNotificationScheduler(): void {
  * Initialize the notification scheduler on server boot.
  * Runs an immediate first check so notifications are not delayed up to 24h after a restart.
  *
- * Design: the scheduler checks once at boot (crash recovery / catch-up) + every 24h via
- * chained setTimeout. The boot-time run is safe because each check is idempotent — it
- * filters on `notifiedForExpiring: false` / `notifiedForExpired: false` and marks the
- * flag true after sending, so duplicate runs are no-ops. Wall-clock alignment to a
- * specific hour (e.g. `emailDigestHour`) is a future enhancement.
+ * Design: the scheduler checks once at boot (crash recovery / catch-up) + daily at
+ * `emailDigestHour:00 UTC` via chained setTimeout. The boot-time run is safe because
+ * each check is idempotent — it filters on `notifiedForExpiring: false` /
+ * `notifiedForExpired: false` and marks the flag true after sending, so duplicate
+ * runs are no-ops.
  */
 export async function initNotificationSchedulerOnBoot(): Promise<void> {
   try {
@@ -408,7 +450,7 @@ export async function initNotificationSchedulerOnBoot(): Promise<void> {
       getLogger().error({ err }, "Initial notification check failed");
     }
 
-    startNotificationScheduler();
+    await startNotificationScheduler();
   } catch (err) {
     getLogger().error({ err }, "Failed to initialize notification scheduler");
   }

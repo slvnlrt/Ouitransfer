@@ -61,12 +61,14 @@ async function getIntervalMs(): Promise<number> {
 /**
  * Returns the configured max retries. Value is captured per-job at enqueue time
  * (EmailJob.maxAttempts), so config changes only affect newly enqueued jobs.
+ *
+ * A value of 0 is valid and means "fail-fast" — no retries on SMTP failure.
  */
 export async function getMaxRetries(): Promise<number> {
   try {
     const value = await getConfigValue("emailQueueMaxRetries");
     const parsed = parseInt(value, 10);
-    return Number.isFinite(parsed) && parsed > 0 ? parsed : 3;
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : 3;
   } catch {
     return 3;
   }

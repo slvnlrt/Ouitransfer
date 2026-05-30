@@ -428,6 +428,34 @@ describe("EmailService", () => {
       );
     });
 
+    it("sanitizes CR/LF from appName in subject (I-4)", async () => {
+      // appName with embedded CR/LF (SMTP header injection attempt)
+      mockGetConfigValue.mockImplementation(async (key: string) => {
+        if (key === "smtpEnabled") return "true";
+        if (key === "appName") return "Evil\r\nBcc: attacker@evil.com";
+        if (key === "emailQueueMaxRetries") return "3";
+        throw new Error(`Unknown config key: ${key}`);
+      });
+
+      // t() should receive sanitized params — capture its args
+      mockT.mockResolvedValue("Subject text");
+
+      await emailService.send("welcome", {
+        to: "user@test.com",
+        locale: "en",
+        data: { firstName: "John", loginUrl: "https://test.example.com" },
+      });
+
+      // The subject i18n call should receive sanitized appName (CR/LF → spaces)
+      expect(mockT).toHaveBeenCalled();
+      const tCall = mockT.mock.calls[0];
+      // tCall = [locale, key, params]
+      const params = tCall[2] as Record<string, string>;
+      expect(params.appName).not.toContain("\r");
+      expect(params.appName).not.toContain("\n");
+      expect(params.appName).toBe("Evil  Bcc: attacker@evil.com");
+    });
+
     it("falls back to 'Ouitransfer' when appName config throws", async () => {
       mockGetConfigValue.mockImplementation(async (key: string) => {
         if (key === "smtpEnabled") return "true";
@@ -520,6 +548,40 @@ describe("EmailService", () => {
 
       // Should not call findFirst for cooldown check
       expect(mockPrisma.emailJob.findFirst).not.toHaveBeenCalled();
+      expect(mockPrisma.emailJob.create).toHaveBeenCalledOnce();
+    });
+
+    it("with cooldown: failed job does NOT block next send (I-1)", async () => {
+      // share_accessed has cooldownSeconds: 900 and defaultFrequency: "disabled"
+      // Set user preference to "immediate" so the flow reaches the cooldown check
+      mockPrisma.notificationPreference.findUnique.mockResolvedValue({
+        id: "pref-1",
+        userId: "user-1",
+        type: "share_accessed",
+        frequency: "immediate",
+      });
+
+      // No non-failed job found within cooldown → findFirst returns null
+      mockPrisma.emailJob.findFirst.mockResolvedValue(null);
+
+      await emailService.send("share_accessed", {
+        to: "user@test.com",
+        locale: "en",
+        userId: "user-1",
+        shareId: "share-1",
+        data: {
+          shareName: "My Share",
+          accessedAt: "2025-01-01T00:00:00Z",
+        },
+      });
+
+      // The cooldown query should filter by status — only non-failed statuses count
+      const findFirstArg = mockPrisma.emailJob.findFirst.mock.calls[0][0];
+      expect(findFirstArg.where.status).toEqual({
+        in: ["pending", "processing", "sent", "digest_pending"],
+      });
+
+      // Job should be created since the only recent job was failed (mocked as null)
       expect(mockPrisma.emailJob.create).toHaveBeenCalledOnce();
     });
 
