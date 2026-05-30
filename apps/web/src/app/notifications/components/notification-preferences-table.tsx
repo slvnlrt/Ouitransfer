@@ -113,6 +113,7 @@ export function NotificationPreferencesTable() {
     if (!hasUnsavedChanges) return;
     const handler = (e: BeforeUnloadEvent) => {
       e.preventDefault();
+      e.returnValue = "";
     };
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
@@ -181,8 +182,13 @@ export function NotificationPreferencesTable() {
     saveMutation.mutate(safeChanges);
   };
 
+  const KNOWN_FREQUENCIES = new Set(["immediate", "disabled"]);
+
   const getFrequency = (pref: NotificationPreference): string => {
-    return localChanges[pref.type] ?? pref.frequency;
+    const raw = localChanges[pref.type] ?? pref.frequency;
+    // Defensive: if the server returns a frequency the UI can't render (e.g. daily_digest),
+    // fall back to the type's default so the Select never renders blank.
+    return KNOWN_FREQUENCIES.has(raw) ? raw : pref.defaultFrequency;
   };
 
   return (
@@ -259,6 +265,7 @@ export function NotificationPreferencesTable() {
                                 <Select
                                   value={getFrequency(pref)}
                                   onValueChange={(value) => handleFrequencyChange(pref.type, value)}
+                                  disabled={saveMutation.isPending}
                                 >
                                   <SelectTrigger className="w-40">
                                     <SelectValue />
