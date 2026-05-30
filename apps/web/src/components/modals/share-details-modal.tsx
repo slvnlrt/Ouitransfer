@@ -14,6 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Loader } from "@/components/ui/loader";
+import { useAuth } from "@/contexts/auth-context";
 import { getShare } from "@/http/endpoints";
 import type { Share, ShareRecipient } from "@/http/endpoints/shares/types";
 import { logger } from "@/lib/logger";
@@ -58,6 +59,7 @@ export function ShareDetailsModal({
   const t = useTranslations();
   const format = useFormatter();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [editingField, setEditingField] = useState<{ field: "name" | "description" } | null>(null);
   const [editValue, setEditValue] = useState("");
   const [pendingChanges, setPendingChanges] = useState<{ name?: string; description?: string }>({});
@@ -191,9 +193,13 @@ export function ShareDetailsModal({
     }
   };
 
+  // Query is disabled when shareId is null, so no hooks are skipped — early return is safe.
   if (!shareId) return null;
 
   const shareLink = share?.alias?.alias ? `${window.location.origin}/s/${share.alias.alias}` : null;
+  // Defensive guard: only allow editing when the current user is the share creator.
+  // The modal can still display read-only information for non-owners.
+  const isOwner = !!(user && share?.creatorId && user.id === share.creatorId);
   const isEditingName = editingField?.field === "name";
   const isEditingDescription = editingField?.field === "description";
   const displayName = getDisplayValue("name");
@@ -243,8 +249,8 @@ export function ShareDetailsModal({
                     isEditingDescription={isEditingDescription}
                     editValue={editValue}
                     inputRef={inputRef}
-                    onUpdateName={onUpdateName}
-                    onUpdateDescription={onUpdateDescription}
+                    onUpdateName={isOwner ? onUpdateName : undefined}
+                    onUpdateDescription={isOwner ? onUpdateDescription : undefined}
                     onStartEdit={startEdit}
                     onSaveEdit={saveEdit}
                     onCancelEdit={cancelEdit}
@@ -263,27 +269,29 @@ export function ShareDetailsModal({
 
                 <ShareDetailsLinksSection
                   shareLink={shareLink}
-                  onEditLink={onGenerateLink ? () => setShowLinkModal(true) : undefined}
+                  onEditLink={isOwner && onGenerateLink ? () => setShowLinkModal(true) : undefined}
                 />
 
                 <div className="grid grid-cols-2 gap-4">
                   <ShareDetailsDatesSection
                     share={share}
                     onEditExpiration={
-                      onUpdateExpiration ? () => setShowExpirationModal(true) : undefined
+                      isOwner && onUpdateExpiration ? () => setShowExpirationModal(true) : undefined
                     }
                   />
 
                   <ShareDetailsSecuritySection
                     share={share}
-                    onEditSecurity={onUpdateSecurity ? () => setShowSecurityModal(true) : undefined}
+                    onEditSecurity={
+                      isOwner && onUpdateSecurity ? () => setShowSecurityModal(true) : undefined
+                    }
                   />
                 </div>
 
                 {share.files && share.files.length > 0 && (
                   <ShareDetailsFilesList
                     files={share.files}
-                    onManageFiles={onManageFiles}
+                    onManageFiles={isOwner ? onManageFiles : undefined}
                     share={share}
                   />
                 )}

@@ -1753,6 +1753,7 @@
       "pending": "Pending",
       "sentLast24h": "Sent (24h)",
       "failed": "Failed",
+      "digestQueue": "תור תקצירים",
       "sendTest": "Send Test Email",
       "testPlaceholder": "recipient@example.com",
       "testSending": "Sending...",
@@ -1830,6 +1831,8 @@
     "itemsSelected": "{count} פריטים נבחרו",
     "editSuccess": "השיתוף עודכן בהצלחה",
     "editError": "נכשל בעדכון שיתוף",
+    "editErrorMetadata": "עדכון פרטי השיתוף נכשל",
+    "editErrorPassword": "עדכון סיסמת השיתוף נכשל",
     "bulkDeleteConfirmation": "האם אתה בטוח שברצונך למחוק {count, plural, =1 {שיתוף אחד} other {# שיתופים}}? פעולה זו אינה ניתנת לביטול.",
     "bulkDeleteTitle": "מחק שיתופים נבחרים",
     "keepCurrentPasswordHint": "Leave empty to keep current password",
@@ -1889,6 +1892,15 @@
       }
     },
     "lastDownloaded": "Last Downloaded",
+    "privacySummary": "פרטיות",
+    "privacyNameField": "שם מבקר:",
+    "privacyEmailField": "אימייל מבקר:",
+    "privacyNotifyOnDownload": "התראות הורדה מופעלות",
+    "privacyInactivityAlert": "התראת חוסר פעילות לאחר {days} ימים",
+    "fieldValue": {
+      "OPTIONAL": "אופציונלי",
+      "REQUIRED": "חובה"
+    },
     "recipientNotified": "Notified",
     "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
     "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"

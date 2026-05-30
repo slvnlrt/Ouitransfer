@@ -1749,6 +1749,7 @@
       "pending": "Pending",
       "sentLast24h": "Sent (24h)",
       "failed": "Failed",
+      "digestQueue": "Digest-Warteschlange",
       "sendTest": "Send Test Email",
       "testPlaceholder": "recipient@example.com",
       "testSending": "Sending...",
@@ -1814,6 +1815,8 @@
     "manageRecipientsTitle": "Empfänger Verwalten",
     "editSuccess": "Freigabe erfolgreich aktualisiert",
     "editError": "Fehler beim Aktualisieren der Freigabe",
+    "editErrorMetadata": "Fehler beim Aktualisieren der Freigabedetails",
+    "editErrorPassword": "Fehler beim Aktualisieren des Freigabepassworts",
     "bulkDeleteConfirmation": "Sind Sie sicher, dass Sie {count, plural, =1 {1 Freigabe} other {# Freigaben}} löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
     "bulkDeleteTitle": "Ausgewählte Freigaben löschen",
     "aliasLabel": "Link-Alias",
@@ -1885,6 +1888,15 @@
       }
     },
     "lastDownloaded": "Last Downloaded",
+    "privacySummary": "Datenschutz",
+    "privacyNameField": "Besuchername:",
+    "privacyEmailField": "Besucher-E-Mail:",
+    "privacyNotifyOnDownload": "Download-Benachrichtigungen aktiviert",
+    "privacyInactivityAlert": "Inaktivitätswarnung nach {days} Tagen",
+    "fieldValue": {
+      "OPTIONAL": "Optional",
+      "REQUIRED": "Erforderlich"
+    },
     "recipientNotified": "Notified",
     "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
     "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"

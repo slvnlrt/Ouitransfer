@@ -1753,6 +1753,7 @@
       "pending": "Pending",
       "sentLast24h": "Sent (24h)",
       "failed": "Failed",
+      "digestQueue": "صف خلاصه",
       "sendTest": "Send Test Email",
       "testPlaceholder": "recipient@example.com",
       "testSending": "Sending...",
@@ -1830,6 +1831,8 @@
     "itemsSelected": "{count} مورد انتخاب شده",
     "editSuccess": "اشتراک با موفقیت به‌روز شد",
     "editError": "به‌روزرسانی اشتراک ناموفق بود",
+    "editErrorMetadata": "به‌روزرسانی جزئیات اشتراک ناموفق بود",
+    "editErrorPassword": "به‌روزرسانی رمز عبور اشتراک ناموفق بود",
     "bulkDeleteConfirmation": "آیا از حذف {count, plural, =1 {۱ اشتراک} other {# اشتراک}} اطمینان دارید؟ این عمل قابل بازگشت نیست.",
     "bulkDeleteTitle": "حذف اشتراک‌های انتخاب‌شده",
     "keepCurrentPasswordHint": "Leave empty to keep current password",
@@ -1889,6 +1892,15 @@
       }
     },
     "lastDownloaded": "Last Downloaded",
+    "privacySummary": "حریم خصوصی",
+    "privacyNameField": "نام بازدیدکننده:",
+    "privacyEmailField": "ایمیل بازدیدکننده:",
+    "privacyNotifyOnDownload": "اعلان‌های دانلود فعال",
+    "privacyInactivityAlert": "هشدار عدم فعالیت بعد از {days} روز",
+    "fieldValue": {
+      "OPTIONAL": "اختیاری",
+      "REQUIRED": "الزامی"
+    },
     "recipientNotified": "Notified",
     "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
     "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"

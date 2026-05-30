@@ -1749,6 +1749,7 @@
       "pending": "Pending",
       "sentLast24h": "Sent (24h)",
       "failed": "Failed",
+      "digestQueue": "摘要队列",
       "sendTest": "Send Test Email",
       "testPlaceholder": "recipient@example.com",
       "testSending": "Sending...",
@@ -1813,6 +1814,8 @@
     "manageRecipientsTitle": "管理收件人",
     "editSuccess": "共享更新成功",
     "editError": "更新共享失败",
+    "editErrorMetadata": "更新分享详情失败",
+    "editErrorPassword": "更新分享密码失败",
     "bulkDeleteConfirmation": "您确定要删除{count, plural, =1 {1个共享} other {#个共享}}吗？此操作无法撤销。",
     "bulkDeleteTitle": "删除选中的共享",
     "addDescriptionPlaceholder": "添加描述...",
@@ -1885,6 +1888,15 @@
       }
     },
     "lastDownloaded": "Last Downloaded",
+    "privacySummary": "隐私",
+    "privacyNameField": "访客姓名：",
+    "privacyEmailField": "访客邮箱：",
+    "privacyNotifyOnDownload": "下载通知已启用",
+    "privacyInactivityAlert": "{days}天后发送不活跃警报",
+    "fieldValue": {
+      "OPTIONAL": "可选",
+      "REQUIRED": "必填"
+    },
     "recipientNotified": "Notified",
     "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
     "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"

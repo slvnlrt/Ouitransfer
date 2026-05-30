@@ -1749,6 +1749,7 @@
       "pending": "Pending",
       "sentLast24h": "Sent (24h)",
       "failed": "Failed",
+      "digestQueue": "Kolejka podsumowań",
       "sendTest": "Send Test Email",
       "testPlaceholder": "recipient@example.com",
       "testSending": "Sending...",
@@ -1813,6 +1814,8 @@
     "manageRecipientsTitle": "Zarządzaj odbiorcami",
     "editSuccess": "Udostępnienie zaktualizowane pomyślnie",
     "editError": "Nie udało się zaktualizować udostępnienia",
+    "editErrorMetadata": "Nie udało się zaktualizować szczegółów udostępnienia",
+    "editErrorPassword": "Nie udało się zaktualizować hasła udostępnienia",
     "bulkDeleteConfirmation": "Czy na pewno chcesz usunąć {count, plural, =1 {1 udostępnienie} other {# udostępnień}}? Tej operacji nie można cofnąć.",
     "bulkDeleteTitle": "Usuń wybrane udostępnienia",
     "addDescriptionPlaceholder": "Dodaj opis...",
@@ -1885,6 +1888,15 @@
       }
     },
     "lastDownloaded": "Last Downloaded",
+    "privacySummary": "Prywatność",
+    "privacyNameField": "Nazwa odwiedzającego:",
+    "privacyEmailField": "Email odwiedzającego:",
+    "privacyNotifyOnDownload": "Powiadomienia o pobieraniu włączone",
+    "privacyInactivityAlert": "Alert braku aktywności po {days} dniach",
+    "fieldValue": {
+      "OPTIONAL": "Opcjonalne",
+      "REQUIRED": "Wymagane"
+    },
     "recipientNotified": "Notified",
     "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
     "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"

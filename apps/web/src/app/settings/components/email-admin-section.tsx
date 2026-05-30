@@ -50,7 +50,7 @@ export function EmailAdminSection() {
           <Activity className="h-4 w-4 text-primary" />
           <h3 className="text-sm font-semibold">{t("settings.emailAdmin.queueStatus")}</h3>
         </div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="flex flex-col items-center justify-center rounded-md border bg-muted/30 p-3 text-center">
             <span className="text-2xl font-bold tabular-nums">
               {emailStatsQuery.isError ? (
@@ -91,6 +91,20 @@ export function EmailAdminSection() {
             </span>
             <span className="mt-1 text-xs text-muted-foreground">
               {t("settings.emailAdmin.failed")}
+            </span>
+          </div>
+          <div className="flex flex-col items-center justify-center rounded-md border bg-muted/30 p-3 text-center">
+            <span className="text-2xl font-bold tabular-nums text-amber-600 dark:text-amber-400">
+              {emailStatsQuery.isError ? (
+                <span className="text-xs text-destructive">{t("common.unavailable")}</span>
+              ) : emailStatsQuery.isLoading ? (
+                <Loader className="h-5 w-5 animate-spin text-muted-foreground" />
+              ) : (
+                (stats?.digestPending ?? 0)
+              )}
+            </span>
+            <span className="mt-1 text-xs text-muted-foreground">
+              {t("settings.emailAdmin.digestQueue")}
             </span>
           </div>
         </div>

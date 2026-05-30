@@ -41,11 +41,13 @@ export function IdentificationForm({
   const [email, setEmail] = useState("");
   const [attempted, setAttempted] = useState(false);
   const firstInputRef = useRef<HTMLInputElement>(null);
+  const hasFocusedRef = useRef(false);
 
-  // Autofocus the first visible input when metadata arrives
+  // Autofocus the first visible input on first appearance only
   useEffect(() => {
-    if (metadata && firstInputRef.current) {
+    if (metadata && firstInputRef.current && !hasFocusedRef.current) {
       firstInputRef.current.focus();
+      hasFocusedRef.current = true;
     }
   }, [metadata]);
 

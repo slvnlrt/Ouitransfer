@@ -1749,6 +1749,7 @@
       "pending": "Pending",
       "sentLast24h": "Sent (24h)",
       "failed": "Failed",
+      "digestQueue": "Samenvattingswachtrij",
       "sendTest": "Send Test Email",
       "testPlaceholder": "recipient@example.com",
       "testSending": "Sending...",
@@ -1813,6 +1814,8 @@
     "manageRecipientsTitle": "Ontvangers Beheren",
     "editSuccess": "Delen succesvol bijgewerkt",
     "editError": "Fout bij bijwerken van delen",
+    "editErrorMetadata": "Kan deeldetails niet bijwerken",
+    "editErrorPassword": "Kan deelwachtwoord niet bijwerken",
     "bulkDeleteConfirmation": "Weet je zeker dat je {count, plural, =1 {1 deel} other {# delen}} wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
     "bulkDeleteTitle": "Geselecteerde Delen Verwijderen",
     "addDescriptionPlaceholder": "Beschrijving toevoegen...",
@@ -1885,6 +1888,15 @@
       }
     },
     "lastDownloaded": "Last Downloaded",
+    "privacySummary": "Privacy",
+    "privacyNameField": "Naam bezoeker:",
+    "privacyEmailField": "E-mail bezoeker:",
+    "privacyNotifyOnDownload": "Downloadmeldingen ingeschakeld",
+    "privacyInactivityAlert": "Inactiviteitswaarschuwing na {days} dagen",
+    "fieldValue": {
+      "OPTIONAL": "Optioneel",
+      "REQUIRED": "Verplicht"
+    },
     "recipientNotified": "Notified",
     "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
     "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"

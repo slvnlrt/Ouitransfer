@@ -1753,6 +1753,7 @@
       "pending": "Pending",
       "sentLast24h": "Sent (24h)",
       "failed": "Failed",
+      "digestQueue": "Черга дайджестів",
       "sendTest": "Send Test Email",
       "testPlaceholder": "recipient@example.com",
       "testSending": "Sending...",
@@ -1830,6 +1831,8 @@
     "itemsSelected": "Вибрано елементів: {count}",
     "editSuccess": "Спільне використання успішно оновлено",
     "editError": "Не вдалося оновити спільне використання",
+    "editErrorMetadata": "Не вдалося оновити деталі спільного доступу",
+    "editErrorPassword": "Не вдалося оновити пароль спільного доступу",
     "bulkDeleteConfirmation": "Ви впевнені, що хочете видалити {count, plural, =1 {1 спільне використання} few {# спільних використання} many {# спільних використань} other {# спільних використань}}? Цю дію неможливо скасувати.",
     "bulkDeleteTitle": "Видалити вибрані спільні використання",
     "keepCurrentPasswordHint": "Leave empty to keep current password",
@@ -1889,6 +1892,15 @@
       }
     },
     "lastDownloaded": "Last Downloaded",
+    "privacySummary": "Конфіденційність",
+    "privacyNameField": "Ім''я відвідувача:",
+    "privacyEmailField": "Email відвідувача:",
+    "privacyNotifyOnDownload": "Сповіщення про завантаження увімкнено",
+    "privacyInactivityAlert": "Попередження про неактивність через {days} днів",
+    "fieldValue": {
+      "OPTIONAL": "Необов''язково",
+      "REQUIRED": "Обов''язково"
+    },
     "recipientNotified": "Notified",
     "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
     "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"

@@ -1749,6 +1749,7 @@
       "pending": "Pending",
       "sentLast24h": "Sent (24h)",
       "failed": "Failed",
+      "digestQueue": "Очередь дайджестов",
       "sendTest": "Send Test Email",
       "testPlaceholder": "recipient@example.com",
       "testSending": "Sending...",
@@ -1813,6 +1814,8 @@
     "manageRecipientsTitle": "Управление Получателями",
     "editSuccess": "Общий доступ успешно обновлен",
     "editError": "Ошибка обновления общего доступа",
+    "editErrorMetadata": "Не удалось обновить данные общего доступа",
+    "editErrorPassword": "Не удалось обновить пароль общего доступа",
     "bulkDeleteConfirmation": "Вы уверены, что хотите удалить {count, plural, =1 {1 общую папку} other {# общих папок}}? Это действие нельзя отменить.",
     "bulkDeleteTitle": "Удалить Выбранные Общие Папки",
     "addDescriptionPlaceholder": "Добавить описание...",
@@ -1885,6 +1888,15 @@
       }
     },
     "lastDownloaded": "Last Downloaded",
+    "privacySummary": "Конфиденциальность",
+    "privacyNameField": "Имя посетителя:",
+    "privacyEmailField": "Email посетителя:",
+    "privacyNotifyOnDownload": "Уведомления о загрузках включены",
+    "privacyInactivityAlert": "Оповещение о неактивности через {days} дней",
+    "fieldValue": {
+      "OPTIONAL": "Необязательно",
+      "REQUIRED": "Обязательно"
+    },
     "recipientNotified": "Notified",
     "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
     "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"

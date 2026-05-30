@@ -1749,6 +1749,7 @@
       "pending": "Pending",
       "sentLast24h": "Sent (24h)",
       "failed": "Failed",
+      "digestQueue": "ダイジェストキュー",
       "sendTest": "Send Test Email",
       "testPlaceholder": "recipient@example.com",
       "testSending": "Sending...",
@@ -1813,6 +1814,8 @@
     "manageRecipientsTitle": "受信者管理",
     "editSuccess": "共有が正常に更新されました",
     "editError": "共有の更新に失敗しました",
+    "editErrorMetadata": "共有の詳細の更新に失敗しました",
+    "editErrorPassword": "共有パスワードの更新に失敗しました",
     "bulkDeleteConfirmation": "{count, plural, =1 {1つの共有} other {#つの共有}}を削除してもよろしいですか？この操作は元に戻せません。",
     "bulkDeleteTitle": "選択した共有を削除",
     "addDescriptionPlaceholder": "説明を追加...",
@@ -1885,6 +1888,15 @@
       }
     },
     "lastDownloaded": "Last Downloaded",
+    "privacySummary": "プライバシー",
+    "privacyNameField": "訪問者名:",
+    "privacyEmailField": "訪問者メール:",
+    "privacyNotifyOnDownload": "ダウンロード通知が有効",
+    "privacyInactivityAlert": "{days}日後に非アクティブ警告",
+    "fieldValue": {
+      "OPTIONAL": "任意",
+      "REQUIRED": "必須"
+    },
     "recipientNotified": "Notified",
     "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
     "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"

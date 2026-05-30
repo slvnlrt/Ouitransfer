@@ -1749,6 +1749,7 @@
       "pending": "Pending",
       "sentLast24h": "Sent (24h)",
       "failed": "Failed",
+      "digestQueue": "다이제스트 대기열",
       "sendTest": "Send Test Email",
       "testPlaceholder": "recipient@example.com",
       "testSending": "Sending...",
@@ -1813,6 +1814,8 @@
     "manageRecipientsTitle": "받는 사람 관리",
     "editSuccess": "공유가 성공적으로 업데이트되었습니다",
     "editError": "공유 업데이트에 실패했습니다",
+    "editErrorMetadata": "공유 세부 정보 업데이트 실패",
+    "editErrorPassword": "공유 비밀번호 업데이트 실패",
     "bulkDeleteConfirmation": "{count, plural, =1 {1개의 공유} other {#개의 공유}}를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
     "bulkDeleteTitle": "선택한 공유 삭제",
     "addDescriptionPlaceholder": "설명 추가...",
@@ -1885,6 +1888,15 @@
       }
     },
     "lastDownloaded": "Last Downloaded",
+    "privacySummary": "개인정보",
+    "privacyNameField": "방문자 이름:",
+    "privacyEmailField": "방문자 이메일:",
+    "privacyNotifyOnDownload": "다운로드 알림 활성화됨",
+    "privacyInactivityAlert": "{days}일 후 비활성 알림",
+    "fieldValue": {
+      "OPTIONAL": "선택사항",
+      "REQUIRED": "필수"
+    },
     "recipientNotified": "Notified",
     "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
     "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"

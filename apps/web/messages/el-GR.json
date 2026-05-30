@@ -1753,6 +1753,7 @@
       "pending": "Pending",
       "sentLast24h": "Sent (24h)",
       "failed": "Failed",
+      "digestQueue": "Ουρά σύνοψης",
       "sendTest": "Send Test Email",
       "testPlaceholder": "recipient@example.com",
       "testSending": "Sending...",
@@ -1830,6 +1831,8 @@
     "itemsSelected": "{count} στοιχεία επιλέχθηκαν",
     "editSuccess": "Η κοινή χρήση ενημερώθηκε με επιτυχία",
     "editError": "Αποτυχία ενημέρωσης κοινής χρήσης",
+    "editErrorMetadata": "Αποτυχία ενημέρωσης λεπτομερειών κοινοποίησης",
+    "editErrorPassword": "Αποτυχία ενημέρωσης κωδικού κοινοποίησης",
     "bulkDeleteConfirmation": "Είστε βέβαιοι ότι θέλετε να διαγράψετε {count, plural, =1 {1 κοινή χρήση} other {# κοινές χρήσεις}}; Η ενέργεια δεν αναιρείται.",
     "bulkDeleteTitle": "Διαγραφή επιλεγμένων κοινών χρήσεων",
     "keepCurrentPasswordHint": "Leave empty to keep current password",
@@ -1889,6 +1892,15 @@
       }
     },
     "lastDownloaded": "Last Downloaded",
+    "privacySummary": "Απόρρητο",
+    "privacyNameField": "Όνομα επισκέπτη:",
+    "privacyEmailField": "Email επισκέπτη:",
+    "privacyNotifyOnDownload": "Ειδοποιήσεις λήψης ενεργοποιημένες",
+    "privacyInactivityAlert": "Ειδοποίηση αδράνειας μετά από {days} ημέρες",
+    "fieldValue": {
+      "OPTIONAL": "Προαιρετικό",
+      "REQUIRED": "Υποχρεωτικό"
+    },
     "recipientNotified": "Notified",
     "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
     "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"

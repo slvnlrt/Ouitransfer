@@ -197,6 +197,9 @@ export function ShareActionsModals({
     if (isPasswordInvalid) return;
     setIsLoading(true);
 
+    const errors: string[] = [];
+
+    // Step 1: Update share metadata
     try {
       const updateData: UpdateShareData = {
         name: editForm.name,
@@ -212,21 +215,32 @@ export function ShareActionsModals({
       };
 
       await onEdit(shareToEdit.id, updateData);
+    } catch {
+      errors.push(t("shareActions.editErrorMetadata"));
+    }
 
+    // Step 2: Update password (only if metadata update succeeded or independently)
+    try {
       if (!editForm.isPasswordProtected && shareToEdit.security.hasPassword) {
         await updateSharePassword(shareToEdit.id, { password: "" });
       } else if (editForm.isPasswordProtected && editForm.password) {
         await updateSharePassword(shareToEdit.id, { password: editForm.password });
       }
+    } catch {
+      errors.push(t("shareActions.editErrorPassword"));
+    }
 
+    if (errors.length === 0) {
       onSuccess();
       onCloseEdit();
       toast.success(t("shareActions.editSuccess"));
-    } catch {
-      toast.error(t("shareActions.editError"));
-    } finally {
-      setIsLoading(false);
+    } else {
+      for (const error of errors) {
+        toast.error(error);
+      }
     }
+
+    setIsLoading(false);
   };
 
   const handleManageFilesSave = async () => {

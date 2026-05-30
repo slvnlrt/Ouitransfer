@@ -1753,6 +1753,7 @@
       "pending": "Pending",
       "sentLast24h": "Sent (24h)",
       "failed": "Failed",
+      "digestQueue": "คิวสรุป",
       "sendTest": "Send Test Email",
       "testPlaceholder": "recipient@example.com",
       "testSending": "Sending...",
@@ -1830,6 +1831,8 @@
     "itemsSelected": "เลือก {count} รายการแล้ว",
     "editSuccess": "อัปเดตแชร์เรียบร้อยแล้ว",
     "editError": "ไม่สามารถอัปเดตแชร์",
+    "editErrorMetadata": "ไม่สามารถอัปเดตรายละเอียดการแชร์ได้",
+    "editErrorPassword": "ไม่สามารถอัปเดตรหัสผ่านการแชร์ได้",
     "bulkDeleteConfirmation": "คุณแน่ใจว่าต้องการลบ {count, plural, =1 {1 แชร์} other {# แชร์}} หรือไม่? ไม่สามารถเลิกทำการกระทำนี้ได้",
     "bulkDeleteTitle": "ลบแชร์ที่เลือก",
     "keepCurrentPasswordHint": "Leave empty to keep current password",
@@ -1889,6 +1892,15 @@
       }
     },
     "lastDownloaded": "Last Downloaded",
+    "privacySummary": "ความเป็นส่วนตัว",
+    "privacyNameField": "ชื่อผู้เยี่ยมชม:",
+    "privacyEmailField": "อีเมลผู้เยี่ยมชม:",
+    "privacyNotifyOnDownload": "เปิดการแจ้งเตือนการดาวน์โหลดแล้ว",
+    "privacyInactivityAlert": "แจ้งเตือนเมื่อไม่มีกิจกรรมหลังจาก {days} วัน",
+    "fieldValue": {
+      "OPTIONAL": "ไม่บังคับ",
+      "REQUIRED": "จำเป็น"
+    },
     "recipientNotified": "Notified",
     "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
     "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"

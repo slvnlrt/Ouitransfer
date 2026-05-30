@@ -53,6 +53,21 @@ export interface ShareSecurity {
   hasPassword: boolean;
 }
 
+/**
+ * Full share object returned by the API.
+ *
+ * **Server redaction for non-owner responses**: When the requesting user is NOT
+ * the share creator, the server zeroes/empties several owner-only fields:
+ * - `recipients` → empty array
+ * - `nameFieldRequired` / `emailFieldRequired` → default "HIDDEN"
+ * - `notifyOnDownload` → false
+ * - `inactivityAlertDays` → null
+ * - `lastDownloadedAt` → null
+ * - `notifiedForExpiring` / `notifiedForExpired` → false
+ *
+ * These fields are only meaningful in owner contexts (dashboard, share details modal).
+ * The type keeps them non-optional for simplicity since they always exist on the wire.
+ */
 export interface Share {
   id: string;
   name: string | null;

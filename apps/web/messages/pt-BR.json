@@ -1753,6 +1753,7 @@
       "pending": "Pending",
       "sentLast24h": "Sent (24h)",
       "failed": "Failed",
+      "digestQueue": "Fila de resumo",
       "sendTest": "Send Test Email",
       "testPlaceholder": "recipient@example.com",
       "testSending": "Sending...",
@@ -1820,6 +1821,8 @@
     "manageRecipientsTitle": "Gerenciar Destinatários",
     "editSuccess": "Compartilhamento atualizado com sucesso",
     "editError": "Falha ao atualizar compartilhamento",
+    "editErrorMetadata": "Falha ao atualizar detalhes do compartilhamento",
+    "editErrorPassword": "Falha ao atualizar senha do compartilhamento",
     "aliasLabel": "Alias do link",
     "aliasPlaceholder": "Digite alias personalizado",
     "copyLink": "Copiar link",
@@ -1889,6 +1892,15 @@
       }
     },
     "lastDownloaded": "Last Downloaded",
+    "privacySummary": "Privacidade",
+    "privacyNameField": "Nome do visitante:",
+    "privacyEmailField": "Email do visitante:",
+    "privacyNotifyOnDownload": "Notificações de download ativadas",
+    "privacyInactivityAlert": "Alerta de inatividade após {days} dias",
+    "fieldValue": {
+      "OPTIONAL": "Opcional",
+      "REQUIRED": "Obrigatório"
+    },
     "recipientNotified": "Notified",
     "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
     "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"

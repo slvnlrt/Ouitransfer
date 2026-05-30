@@ -1749,6 +1749,7 @@
       "pending": "Pending",
       "sentLast24h": "Sent (24h)",
       "failed": "Failed",
+      "digestQueue": "قائمة الملخصات",
       "sendTest": "Send Test Email",
       "testPlaceholder": "recipient@example.com",
       "testSending": "Sending...",
@@ -1813,6 +1814,8 @@
     "manageRecipientsTitle": "إدارة المستقبلين",
     "editSuccess": "تم تحديث المشاركة بنجاح",
     "editError": "فشل في تحديث المشاركة",
+    "editErrorMetadata": "فشل تحديث تفاصيل المشاركة",
+    "editErrorPassword": "فشل تحديث كلمة مرور المشاركة",
     "bulkDeleteConfirmation": "هل أنت متأكد من أنك تريد حذف {count, plural, =1 {مشاركة واحدة} other {# مشاركات}} محددة؟ لا يمكن التراجع عن هذا الإجراء.",
     "bulkDeleteTitle": "حذف المشاركات المحددة",
     "addDescriptionPlaceholder": "إضافة وصف...",
@@ -1885,6 +1888,15 @@
       }
     },
     "lastDownloaded": "Last Downloaded",
+    "privacySummary": "الخصوصية",
+    "privacyNameField": "اسم الزائر:",
+    "privacyEmailField": "بريد الزائر:",
+    "privacyNotifyOnDownload": "إشعارات التنزيل مفعّلة",
+    "privacyInactivityAlert": "تنبيه عدم النشاط بعد {days} أيام",
+    "fieldValue": {
+      "OPTIONAL": "اختياري",
+      "REQUIRED": "مطلوب"
+    },
     "recipientNotified": "Notified",
     "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
     "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"

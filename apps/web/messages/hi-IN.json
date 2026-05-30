@@ -1749,6 +1749,7 @@
       "pending": "Pending",
       "sentLast24h": "Sent (24h)",
       "failed": "Failed",
+      "digestQueue": "डाइजेस्ट कतार",
       "sendTest": "Send Test Email",
       "testPlaceholder": "recipient@example.com",
       "testSending": "Sending...",
@@ -1813,6 +1814,8 @@
     "manageRecipientsTitle": "प्राप्तकर्ता प्रबंधित करें",
     "editSuccess": "साझाकरण सफलतापूर्वक अपडेट किया गया",
     "editError": "साझाकरण अपडेट करने में विफल",
+    "editErrorMetadata": "शेयर विवरण अपडेट करने में विफल",
+    "editErrorPassword": "शेयर पासवर्ड अपडेट करने में विफल",
     "bulkDeleteConfirmation": "क्या आप वाकई {count, plural, =1 {1 साझाकरण} other {# साझाकरण}} हटाना चाहते हैं? इस क्रिया को पूर्ववत नहीं किया जा सकता।",
     "bulkDeleteTitle": "चयनित साझाकरण हटाएं",
     "addDescriptionPlaceholder": "विवरण जोड़ें...",
@@ -1885,6 +1888,15 @@
       }
     },
     "lastDownloaded": "Last Downloaded",
+    "privacySummary": "गोपनीयता",
+    "privacyNameField": "आगंतुक का नाम:",
+    "privacyEmailField": "आगंतुक ईमेल:",
+    "privacyNotifyOnDownload": "डाउनलोड सूचनाएं सक्षम",
+    "privacyInactivityAlert": "{days} दिनों के बाद निष्क्रियता अलर्ट",
+    "fieldValue": {
+      "OPTIONAL": "वैकल्पिक",
+      "REQUIRED": "आवश्यक"
+    },
     "recipientNotified": "Notified",
     "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
     "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"

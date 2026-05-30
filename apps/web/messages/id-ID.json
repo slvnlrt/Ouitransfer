@@ -1753,6 +1753,7 @@
       "pending": "Pending",
       "sentLast24h": "Sent (24h)",
       "failed": "Failed",
+      "digestQueue": "Antrean ringkasan",
       "sendTest": "Send Test Email",
       "testPlaceholder": "recipient@example.com",
       "testSending": "Sending...",
@@ -1830,6 +1831,8 @@
     "itemsSelected": "{count} item dipilih",
     "editSuccess": "Berbagi berhasil diperbarui",
     "editError": "Gagal memperbarui berbagi",
+    "editErrorMetadata": "Gagal memperbarui detail berbagi",
+    "editErrorPassword": "Gagal memperbarui kata sandi berbagi",
     "bulkDeleteConfirmation": "Apakah Anda yakin ingin menghapus {count, plural, =1 {1 berbagi} other {# berbagi}}? Tindakan ini tidak dapat dibatalkan.",
     "bulkDeleteTitle": "Hapus Berbagi Terpilih",
     "keepCurrentPasswordHint": "Leave empty to keep current password",
@@ -1889,6 +1892,15 @@
       }
     },
     "lastDownloaded": "Last Downloaded",
+    "privacySummary": "Privasi",
+    "privacyNameField": "Nama pengunjung:",
+    "privacyEmailField": "Email pengunjung:",
+    "privacyNotifyOnDownload": "Notifikasi unduhan diaktifkan",
+    "privacyInactivityAlert": "Peringatan tidak aktif setelah {days} hari",
+    "fieldValue": {
+      "OPTIONAL": "Opsional",
+      "REQUIRED": "Wajib"
+    },
     "recipientNotified": "Notified",
     "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
     "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"

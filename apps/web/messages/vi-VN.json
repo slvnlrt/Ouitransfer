@@ -1753,6 +1753,7 @@
       "pending": "Pending",
       "sentLast24h": "Sent (24h)",
       "failed": "Failed",
+      "digestQueue": "Hàng đợi tóm tắt",
       "sendTest": "Send Test Email",
       "testPlaceholder": "recipient@example.com",
       "testSending": "Sending...",
@@ -1830,6 +1831,8 @@
     "itemsSelected": "{count} mục đã chọn",
     "editSuccess": "Đã cập nhật chia sẻ thành công",
     "editError": "Không thể cập nhật chia sẻ",
+    "editErrorMetadata": "Không thể cập nhật chi tiết chia sẻ",
+    "editErrorPassword": "Không thể cập nhật mật khẩu chia sẻ",
     "bulkDeleteConfirmation": "Bạn có chắc chắn muốn xóa {count, plural, =1 {1 chia sẻ} other {# chia sẻ}} không? Hành động này không thể hoàn tác.",
     "bulkDeleteTitle": "Xóa các chia sẻ đã chọn",
     "keepCurrentPasswordHint": "Leave empty to keep current password",
@@ -1889,6 +1892,15 @@
       }
     },
     "lastDownloaded": "Last Downloaded",
+    "privacySummary": "Quyền riêng tư",
+    "privacyNameField": "Tên khách:",
+    "privacyEmailField": "Email khách:",
+    "privacyNotifyOnDownload": "Thông báo tải xuống đã bật",
+    "privacyInactivityAlert": "Cảnh báo không hoạt động sau {days} ngày",
+    "fieldValue": {
+      "OPTIONAL": "Tùy chọn",
+      "REQUIRED": "Bắt buộc"
+    },
     "recipientNotified": "Notified",
     "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
     "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"

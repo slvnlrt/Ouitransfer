@@ -873,6 +873,9 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       });
 
       // Cookie path is "/" rather than "/api" to avoid coupling to the reverse-proxy topology.
+      // In dev mode, Next.js proxy rewrites /api/* → server:3333/api/*, so the cookie path
+      // must be "/" (not "/api") to ensure the browser sends it back through the proxy.
+      // In production, Traefik routes directly so "/" works there too.
       // The cookie name `sv_{alias}` is already scoped per-share, and httpOnly+signed prevents
       // tampering, so a broad path is safe.
       reply.setCookie(`sv_${alias}`, payload, {

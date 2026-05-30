@@ -1753,6 +1753,7 @@
       "pending": "Pending",
       "sentLast24h": "Sent (24h)",
       "failed": "Failed",
+      "digestQueue": "Cola de resumen",
       "sendTest": "Send Test Email",
       "testPlaceholder": "recipient@example.com",
       "testSending": "Sending...",
@@ -1818,6 +1819,8 @@
     "manageRecipientsTitle": "Administrar Destinatarios",
     "editSuccess": "Compartir actualizado exitosamente",
     "editError": "Error al actualizar compartir",
+    "editErrorMetadata": "Error al actualizar los detalles del enlace",
+    "editErrorPassword": "Error al actualizar la contraseña del enlace",
     "bulkDeleteConfirmation": "¿Estás seguro de que quieres eliminar {count, plural, =1 {1 compartido} other {# compartidos}}? Esta acción no se puede deshacer.",
     "bulkDeleteTitle": "Eliminar Compartidos Seleccionados",
     "aliasLabel": "Alias del enlace",
@@ -1889,6 +1892,15 @@
       }
     },
     "lastDownloaded": "Last Downloaded",
+    "privacySummary": "Privacidad",
+    "privacyNameField": "Nombre del visitante:",
+    "privacyEmailField": "Email del visitante:",
+    "privacyNotifyOnDownload": "Notificaciones de descarga activadas",
+    "privacyInactivityAlert": "Alerta de inactividad después de {days} días",
+    "fieldValue": {
+      "OPTIONAL": "Opcional",
+      "REQUIRED": "Obligatorio"
+    },
     "recipientNotified": "Notified",
     "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
     "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"
