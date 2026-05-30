@@ -66,6 +66,26 @@ function formatDateIfApplicable(key: string, value: string, locale: string): str
   }
 }
 
+/**
+ * Creates a shallow copy of the validated data with date-shaped string values
+ * formatted for human-readable rendering in email bodies.
+ *
+ * This ensures templates receive "December 31, 2026 at 12:00 AM" instead of
+ * "2026-12-31T00:00:00.000Z" when interpolating fields like expiresAt, accessedAt, etc.
+ */
+function formatDataForRendering<T>(data: T, locale: string): T {
+  if (typeof data !== "object" || data === null) return data;
+
+  const formatted = { ...data } as Record<string, unknown>;
+  for (const [key, value] of Object.entries(formatted)) {
+    if (typeof value === "string") {
+      formatted[key] = formatDateIfApplicable(key, value, locale);
+    }
+    // Non-string values (numbers, booleans, arrays, objects) are left unchanged
+  }
+  return formatted as T;
+}
+
 // ─── EmailService ─────────────────────────────────────────────────────────────
 
 class EmailService {
@@ -136,8 +156,11 @@ class EmailService {
 
     // 3. For non-critical types, resolve frequency ONCE and reuse
     let frequency: "immediate" | "daily_digest" | "disabled" | null = null;
+    let skipCooldown = false;
     if (!entry.isCritical && options.userId) {
-      frequency = await this.resolveFrequency(type, options.userId, effectiveRelatedId);
+      const resolved = await this.resolveFrequency(type, options.userId, effectiveRelatedId);
+      frequency = resolved.frequency;
+      skipCooldown = resolved.overridden;
       if (frequency === "disabled") {
         log.debug({ type, userId: options.userId }, "Notification disabled by user preference");
         return { enqueued: false };
@@ -151,8 +174,10 @@ class EmailService {
     //    all visitors to the same share share the same cooldown window for the owner.
     //    Per-visitor segregation was considered but adds complexity without significant
     //    value — the owner still learns "someone accessed your share" within the window.
+    //    When the frequency was overridden by a per-share flag (e.g. notifyOnDownload),
+    //    the cooldown is bypassed — the owner explicitly opted in to every notification.
     const cooldown = (entry as NotificationTypeConfig).cooldownSeconds;
-    if (cooldown && cooldown > 0) {
+    if (cooldown && cooldown > 0 && !skipCooldown) {
       const cutoff = new Date(Date.now() - cooldown * 1000);
       const recent = await prisma.emailJob.findFirst({
         where: {
@@ -193,11 +218,14 @@ class EmailService {
     }
 
     // 7. Render template
+    //    Pass formatted data (dates as human-readable strings) to the render function
+    //    so email bodies show "December 31, 2026 at 12:00 AM" instead of ISO strings.
     let htmlBody: string;
     let textBody: string;
     try {
       const tr = await createTranslationFn(options.locale, { appName });
-      const slots = entry.render(validatedData as unknown, tr);
+      const formattedData = formatDataForRendering(validatedData, options.locale);
+      const slots = entry.render(formattedData as unknown, tr);
 
       // Add unsubscribe URL if applicable
       if (unsubscribeUrl) {
@@ -295,6 +323,12 @@ class EmailService {
   /**
    * Resolves the effective notification frequency for a user + type.
    *
+   * Returns `{ frequency, overridden }`:
+   * - `frequency`: the resolved frequency ("immediate", "daily_digest", or "disabled")
+   * - `overridden`: true when the frequency was upgraded by a per-share flag (e.g.
+   *   notifyOnDownload). When overridden, the caller should bypass the cooldown check
+   *   because the share owner explicitly opted in to every notification.
+   *
    * Cascade:
    * 1. User has an *explicit* NotificationPreference row → use its frequency
    * 2. Explicit user "disabled" always wins — no override can change it
@@ -307,7 +341,10 @@ class EmailService {
     type: string,
     userId: string,
     shareId?: string,
-  ): Promise<"immediate" | "daily_digest" | "disabled"> {
+  ): Promise<{
+    frequency: "immediate" | "daily_digest" | "disabled";
+    overridden: boolean;
+  }> {
     // Step 1: Check user preference
     const pref = await prisma.notificationPreference.findUnique({
       where: { userId_type: { userId, type } },
@@ -319,7 +356,7 @@ class EmailService {
 
     // Step 2: Explicit user "disabled" always wins — no override can change it
     if (explicitFrequency === "disabled") {
-      return "disabled";
+      return { frequency: "disabled", overridden: false };
     }
 
     // Step 3: Per-share notifyOnDownload upgrade (only for share_downloaded).
@@ -334,12 +371,16 @@ class EmailService {
         select: { notifyOnDownload: true },
       });
       if (share?.notifyOnDownload) {
-        return "immediate";
+        return { frequency: "immediate", overridden: true };
       }
     }
 
     // Step 4: Fall back to explicit pref or catalog default
-    return (explicitFrequency ?? defaultFrequency) as "immediate" | "daily_digest" | "disabled";
+    const frequency = (explicitFrequency ?? defaultFrequency) as
+      | "immediate"
+      | "daily_digest"
+      | "disabled";
+    return { frequency, overridden: false };
   }
 
   /**

@@ -675,6 +675,123 @@ describe("EmailService", () => {
       expect(result.reason).toBeUndefined();
       expect(mockPrisma.emailJob.create).toHaveBeenCalledOnce();
     });
+
+    it("passes formatted dates to template render, not raw ISO strings (SC-I-1)", async () => {
+      // Capture what the render function's translation fn receives
+      const translationCalls: Array<{ key: string; params?: Record<string, string> }> = [];
+      mockCreateTranslationFn.mockResolvedValue((key: string, params?: Record<string, string>) => {
+        translationCalls.push({ key, params });
+        return `translated:${key}`;
+      });
+
+      // share_downloaded has a downloadedAt ISO date field
+      // Set preference to "immediate" so it reaches render
+      mockPrisma.notificationPreference.findUnique.mockResolvedValue({
+        id: "pref-1",
+        userId: "user-1",
+        type: "share_downloaded",
+        frequency: "immediate",
+      });
+
+      await emailService.send("share_downloaded", {
+        to: "user@test.com",
+        locale: "en",
+        userId: "user-1",
+        relatedId: "share-1",
+        data: {
+          shareName: "My Share",
+          fileName: "report.pdf",
+          downloadedAt: "2026-12-31T00:00:00.000Z",
+        },
+      });
+
+      // Find the body translation call that includes downloadedAt
+      const bodyCall = translationCalls.find((c) => c.params && "downloadedAt" in c.params);
+      expect(bodyCall).toBeDefined();
+      // The downloadedAt value should be human-formatted, not raw ISO
+      expect(bodyCall!.params!.downloadedAt).not.toContain("T00:00:00");
+      expect(bodyCall!.params!.downloadedAt).not.toMatch(/^\d{4}-\d{2}-\d{2}T/);
+      // Should contain a human-readable date (e.g. "December 31, 2026")
+      expect(bodyCall!.params!.downloadedAt).toContain("2026");
+    });
+
+    it("notifyOnDownload=true bypasses cooldown (SC-I-2)", async () => {
+      // User has notifyOnDownload=true on the share
+      mockPrisma.share.findUnique.mockResolvedValue({ notifyOnDownload: true });
+
+      // User preference is immediate (or not set — notifyOnDownload overrides to immediate)
+      mockPrisma.notificationPreference.findUnique.mockResolvedValue({
+        id: "pref-1",
+        userId: "user-1",
+        type: "share_downloaded",
+        frequency: "immediate",
+      });
+
+      // There IS a recent job within the cooldown window — normally this would block
+      mockPrisma.emailJob.findFirst.mockResolvedValue({
+        id: "recent-job",
+        type: "share_downloaded",
+        to: "user@test.com",
+        createdAt: new Date(),
+      });
+
+      const result = await emailService.send("share_downloaded", {
+        to: "user@test.com",
+        locale: "en",
+        userId: "user-1",
+        relatedId: "share-1",
+        data: {
+          shareName: "My Share",
+          fileName: "file.txt",
+          downloadedAt: "2025-01-01T00:00:00Z",
+        },
+      });
+
+      // Should NOT be blocked by cooldown — notifyOnDownload bypasses it
+      expect(result.enqueued).toBe(true);
+      // The cooldown check (emailJob.findFirst) should NOT have been called
+      expect(mockPrisma.emailJob.findFirst).not.toHaveBeenCalled();
+      expect(mockPrisma.emailJob.create).toHaveBeenCalledOnce();
+    });
+
+    it("cooldown still applies for share_downloaded without notifyOnDownload (SC-I-2)", async () => {
+      // User preference is immediate but share does NOT have notifyOnDownload
+      mockPrisma.notificationPreference.findUnique.mockResolvedValue({
+        id: "pref-1",
+        userId: "user-1",
+        type: "share_downloaded",
+        frequency: "immediate",
+      });
+
+      // Share does NOT have notifyOnDownload (or it's false)
+      mockPrisma.share.findUnique.mockResolvedValue({ notifyOnDownload: false });
+
+      // There IS a recent job within the cooldown window
+      mockPrisma.emailJob.findFirst.mockResolvedValue({
+        id: "recent-job",
+        type: "share_downloaded",
+        to: "user@test.com",
+        createdAt: new Date(),
+      });
+
+      const result = await emailService.send("share_downloaded", {
+        to: "user@test.com",
+        locale: "en",
+        userId: "user-1",
+        relatedId: "share-1",
+        data: {
+          shareName: "My Share",
+          fileName: "file.txt",
+          downloadedAt: "2025-01-01T00:00:00Z",
+        },
+      });
+
+      // Should BE blocked by cooldown — no notifyOnDownload override
+      expect(result.enqueued).toBe(false);
+      // The cooldown check should have been called
+      expect(mockPrisma.emailJob.findFirst).toHaveBeenCalledOnce();
+      expect(mockPrisma.emailJob.create).not.toHaveBeenCalled();
+    });
   });
 
   // ── resolveFrequency() ─────────────────────────────────────────────────────
@@ -683,16 +800,18 @@ describe("EmailService", () => {
     it("returns catalog default when no preference exists", async () => {
       mockPrisma.notificationPreference.findUnique.mockResolvedValue(null);
 
-      const freq = await emailService.resolveFrequency("share_expiring", "user-1");
+      const result = await emailService.resolveFrequency("share_expiring", "user-1");
       // share_expiring defaults to "immediate"
-      expect(freq).toBe("immediate");
+      expect(result.frequency).toBe("immediate");
+      expect(result.overridden).toBe(false);
     });
 
     it("returns catalog default 'disabled' for noisy types", async () => {
       mockPrisma.notificationPreference.findUnique.mockResolvedValue(null);
 
-      const freq = await emailService.resolveFrequency("share_accessed", "user-1");
-      expect(freq).toBe("disabled");
+      const result = await emailService.resolveFrequency("share_accessed", "user-1");
+      expect(result.frequency).toBe("disabled");
+      expect(result.overridden).toBe(false);
     });
 
     it("returns disabled when user preference is disabled", async () => {
@@ -703,8 +822,9 @@ describe("EmailService", () => {
         frequency: "disabled",
       });
 
-      const freq = await emailService.resolveFrequency("share_expiring", "user-1");
-      expect(freq).toBe("disabled");
+      const result = await emailService.resolveFrequency("share_expiring", "user-1");
+      expect(result.frequency).toBe("disabled");
+      expect(result.overridden).toBe(false);
     });
 
     it("explicit disabled wins over notifyOnDownload=true", async () => {
@@ -717,11 +837,12 @@ describe("EmailService", () => {
 
       mockPrisma.share.findUnique.mockResolvedValue({ notifyOnDownload: true });
 
-      const freq = await emailService.resolveFrequency("share_downloaded", "user-1", "share-1");
-      expect(freq).toBe("disabled");
+      const result = await emailService.resolveFrequency("share_downloaded", "user-1", "share-1");
+      expect(result.frequency).toBe("disabled");
+      expect(result.overridden).toBe(false);
     });
 
-    it("notifyOnDownload=true upgrades daily_digest to immediate", async () => {
+    it("notifyOnDownload=true upgrades daily_digest to immediate and sets overridden", async () => {
       mockPrisma.notificationPreference.findUnique.mockResolvedValue({
         id: "pref-1",
         userId: "user-1",
@@ -731,8 +852,9 @@ describe("EmailService", () => {
 
       mockPrisma.share.findUnique.mockResolvedValue({ notifyOnDownload: true });
 
-      const freq = await emailService.resolveFrequency("share_downloaded", "user-1", "share-1");
-      expect(freq).toBe("immediate");
+      const result = await emailService.resolveFrequency("share_downloaded", "user-1", "share-1");
+      expect(result.frequency).toBe("immediate");
+      expect(result.overridden).toBe(true);
     });
 
     it("returns daily_digest when user prefers it", async () => {
@@ -743,18 +865,20 @@ describe("EmailService", () => {
         frequency: "daily_digest",
       });
 
-      const freq = await emailService.resolveFrequency("share_expiring", "user-1");
-      expect(freq).toBe("daily_digest");
+      const result = await emailService.resolveFrequency("share_expiring", "user-1");
+      expect(result.frequency).toBe("daily_digest");
+      expect(result.overridden).toBe(false);
     });
 
-    it("no preference + notifyOnDownload=true → immediate (catalog default overridden)", async () => {
+    it("no preference + notifyOnDownload=true → immediate with overridden (catalog default overridden)", async () => {
       // No user preference row — catalog default for share_downloaded is "disabled"
       mockPrisma.notificationPreference.findUnique.mockResolvedValue(null);
       // Share has notifyOnDownload=true
       mockPrisma.share.findUnique.mockResolvedValue({ notifyOnDownload: true });
 
-      const freq = await emailService.resolveFrequency("share_downloaded", "user-1", "share-1");
-      expect(freq).toBe("immediate");
+      const result = await emailService.resolveFrequency("share_downloaded", "user-1", "share-1");
+      expect(result.frequency).toBe("immediate");
+      expect(result.overridden).toBe(true);
     });
 
     it("no preference + notifyOnDownload=false → disabled (catalog default)", async () => {
@@ -763,8 +887,9 @@ describe("EmailService", () => {
       // Share has notifyOnDownload=false
       mockPrisma.share.findUnique.mockResolvedValue({ notifyOnDownload: false });
 
-      const freq = await emailService.resolveFrequency("share_downloaded", "user-1", "share-1");
-      expect(freq).toBe("disabled");
+      const result = await emailService.resolveFrequency("share_downloaded", "user-1", "share-1");
+      expect(result.frequency).toBe("disabled");
+      expect(result.overridden).toBe(false);
     });
 
     it("no preference + notifyOnDownload=true for share_accessed → disabled (notifyOnDownload only applies to downloads)", async () => {
@@ -773,9 +898,10 @@ describe("EmailService", () => {
       // Share has notifyOnDownload=true — but per spec, this only upgrades share_downloaded
       mockPrisma.share.findUnique.mockResolvedValue({ notifyOnDownload: true });
 
-      const freq = await emailService.resolveFrequency("share_accessed", "user-1", "share-1");
+      const result = await emailService.resolveFrequency("share_accessed", "user-1", "share-1");
       // notifyOnDownload does NOT upgrade share_accessed — only share_downloaded
-      expect(freq).toBe("disabled");
+      expect(result.frequency).toBe("disabled");
+      expect(result.overridden).toBe(false);
     });
   });
 
