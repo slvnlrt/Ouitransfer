@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Loader } from "@/components/ui/loader";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { useSecureConfigValue } from "@/hooks/use-secure-configs";
@@ -28,12 +29,13 @@ export function RecipientSelector({
   onSuccess,
 }: RecipientSelectorProps) {
   const t = useTranslations();
-  const { value: smtpEnabled } = useSecureConfigValue("smtpEnabled");
+  const { value: smtpEnabled, isLoading: isSmtpLoading } = useSecureConfigValue("smtpEnabled");
   const [recipients, setRecipients] = useState<ShareRecipient[]>(selectedRecipients ?? []);
   const [newRecipient, setNewRecipient] = useState("");
   const [newRecipientName, setNewRecipientName] = useState("");
   const [selectedForAction, setSelectedForAction] = useState<Set<string>>(new Set());
   const [isAddingRecipient, setIsAddingRecipient] = useState(false);
+  const [notifyingEmails, setNotifyingEmails] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     setRecipients(selectedRecipients ?? []);
@@ -111,6 +113,15 @@ export function RecipientSelector({
    * @param emails - specific emails to notify, or undefined to notify all
    */
   const notify = async (emails: string[] | undefined) => {
+    // Track which emails are in-flight to prevent double-clicks.
+    // For "notify all" (emails === undefined), use all current recipient emails.
+    const trackedEmails = emails ?? recipients.map((r) => r.email);
+    setNotifyingEmails((prev) => {
+      const next = new Set(prev);
+      for (const e of trackedEmails) next.add(e);
+      return next;
+    });
+
     const loadingToast = toast.loading(t("recipientSelector.sendingNotifications"));
 
     try {
@@ -146,6 +157,12 @@ export function RecipientSelector({
       } else {
         toast.error(t("recipientSelector.bulkNotifyError"));
       }
+    } finally {
+      setNotifyingEmails((prev) => {
+        const next = new Set(prev);
+        for (const e of trackedEmails) next.delete(e);
+        return next;
+      });
     }
   };
 
@@ -179,6 +196,10 @@ export function RecipientSelector({
 
   const isAllSelected = recipients.length > 0 && selectedForAction.size === recipients.length;
   const hasSelection = selectedForAction.size > 0;
+  const isNotifying = notifyingEmails.size > 0;
+  // SMTP controls: show as disabled while loading, show normally when enabled, hide when disabled
+  const smtpReady = smtpEnabled === "true";
+  const showSmtpControls = isSmtpLoading || smtpReady;
 
   return (
     <div className="space-y-6">
@@ -241,14 +262,15 @@ export function RecipientSelector({
             </h3>
           </div>
 
-          {recipients.length > 0 && shareAlias && smtpEnabled === "true" && (
+          {recipients.length > 0 && shareAlias && showSmtpControls && (
             <Button
               variant="outline"
               size="sm"
               onClick={handleNotifyAll}
+              disabled={!smtpReady || isNotifying}
               className="sm:w-auto w-full"
             >
-              <Bell className="h-4 w-4" />
+              {isNotifying ? <Loader size="sm" /> : <Bell className="h-4 w-4" />}
               {t("recipientSelector.notifyAll")}
             </Button>
           )}
@@ -263,14 +285,15 @@ export function RecipientSelector({
               </span>
             </div>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-              {smtpEnabled === "true" && shareAlias && (
+              {showSmtpControls && shareAlias && (
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleNotifySelected}
+                  disabled={!smtpReady || isNotifying}
                   className="sm:w-auto w-full"
                 >
-                  <Bell className="h-4 w-4" />
+                  {isNotifying ? <Loader size="sm" /> : <Bell className="h-4 w-4" />}
                   {t("recipientSelector.notifySelected")}
                 </Button>
               )}
@@ -373,15 +396,20 @@ export function RecipientSelector({
                       </div>
 
                       <div className="flex items-center gap-1">
-                        {smtpEnabled === "true" && shareAlias && (
+                        {showSmtpControls && shareAlias && (
                           <Button
                             variant="ghost"
                             size="sm"
                             className="h-8 w-8 p-0 text-primary hover:text-primary hover:bg-primary/10"
                             onClick={() => notify([email])}
+                            disabled={!smtpReady || notifyingEmails.has(email)}
                             title={t("recipientSelector.notifySingle")}
                           >
-                            <Bell className="h-4 w-4" />
+                            {notifyingEmails.has(email) ? (
+                              <Loader size="sm" />
+                            ) : (
+                              <Bell className="h-4 w-4" />
+                            )}
                           </Button>
                         )}
 

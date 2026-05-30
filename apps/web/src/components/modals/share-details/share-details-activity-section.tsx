@@ -28,6 +28,11 @@ interface VisitEntryProps {
   visit: ShareVisit;
 }
 
+const SOURCE_LABEL_KEY = {
+  tracking_token: "shareDetails.activity.source.tracking_token",
+  cookie: "shareDetails.activity.source.cookie",
+} as const;
+
 function VisitEntry({ visit }: VisitEntryProps) {
   const t = useTranslations();
   const format = useFormatter();
@@ -56,15 +61,12 @@ function VisitEntry({ visit }: VisitEntryProps) {
         ) : (
           <p className="text-xs text-muted-foreground">{t("shareDetails.activity.anonymous")}</p>
         )}
-        {visit.identificationSource !== "anonymous" && (
-          <span className="inline-block mt-0.5 px-1.5 py-0.5 text-[10px] rounded bg-muted text-muted-foreground">
-            {t(
-              `shareDetails.activity.source.${visit.identificationSource}` as Parameters<
-                typeof t
-              >[0],
-            )}
-          </span>
-        )}
+        {visit.identificationSource !== "anonymous" &&
+          visit.identificationSource in SOURCE_LABEL_KEY && (
+            <span className="inline-block mt-0.5 px-1.5 py-0.5 text-[10px] rounded bg-muted text-muted-foreground">
+              {t(SOURCE_LABEL_KEY[visit.identificationSource as keyof typeof SOURCE_LABEL_KEY])}
+            </span>
+          )}
       </div>
       <span className="text-xs text-muted-foreground flex-shrink-0 mt-0.5">
         {format.relativeTime(new Date(visit.createdAt))}

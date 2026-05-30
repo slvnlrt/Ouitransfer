@@ -57,21 +57,37 @@ vi.mock("@/components/modals/share-security-modal", () => ({
 
 import { ShareDetailsModal } from "@/components/modals/share-details-modal";
 import { getShare } from "@/http/endpoints";
+import type { GetShareResult, Share } from "@/http/endpoints/shares/types";
 
 const mockGetShare = vi.mocked(getShare);
 
-const MOCK_SHARE = {
+const MOCK_SHARE: Share = {
   id: "share-1",
   name: "My Share",
   description: "A test share",
   views: 5,
+  maxViews: null,
   files: [],
+  folders: [],
   recipients: [],
   createdAt: "2024-01-01T00:00:00Z",
+  updatedAt: "2024-01-01T00:00:00Z",
+  creatorId: "user-1",
   expiration: null,
   alias: null,
-  security: null,
+  security: { hasPassword: false },
+  nameFieldRequired: "HIDDEN",
+  emailFieldRequired: "HIDDEN",
+  notifyOnDownload: false,
+  inactivityAlertDays: null,
+  lastDownloadedAt: null,
+  notifiedForExpiring: false,
+  notifiedForExpired: false,
 };
+
+function mockShareResponse(): GetShareResult {
+  return { data: { share: MOCK_SHARE } } as GetShareResult;
+}
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -102,7 +118,7 @@ describe("ShareDetailsModal", () => {
   });
 
   it("calls getShare with the correct shareId when opened", async () => {
-    mockGetShare.mockResolvedValue({ data: { share: MOCK_SHARE } } as never);
+    mockGetShare.mockResolvedValue(mockShareResponse());
 
     const { Wrapper } = createWrapper();
     render(<ShareDetailsModal shareId="share-1" onClose={vi.fn()} />, { wrapper: Wrapper });
@@ -113,7 +129,7 @@ describe("ShareDetailsModal", () => {
   });
 
   it("renders share content once the query resolves", async () => {
-    mockGetShare.mockResolvedValue({ data: { share: MOCK_SHARE } } as never);
+    mockGetShare.mockResolvedValue(mockShareResponse());
 
     const { Wrapper } = createWrapper();
     render(<ShareDetailsModal shareId="share-1" onClose={vi.fn()} />, { wrapper: Wrapper });
@@ -141,7 +157,7 @@ describe("ShareDetailsModal", () => {
   it("fetches exactly once on mount (no infinite loop)", async () => {
     // The old useCallback+useEffect pattern could cause runaway fetches.
     // With useQuery, the query runs exactly once per mount (unless invalidated).
-    mockGetShare.mockResolvedValue({ data: { share: MOCK_SHARE } } as never);
+    mockGetShare.mockResolvedValue(mockShareResponse());
 
     const { Wrapper } = createWrapper();
     render(<ShareDetailsModal shareId="share-1" onClose={vi.fn()} />, { wrapper: Wrapper });
