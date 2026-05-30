@@ -4,6 +4,7 @@ import { ConflictError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
 import { emailService } from "../email/service.js";
+import { buildResetPasswordUrl } from "../email/url-builder.js";
 import { LdapConfigRepository } from "./config.repository.js";
 import { decrypt } from "./encryption.js";
 import type { LdapUserEntry } from "./ldap.client.js";
@@ -379,15 +380,14 @@ export class LdapSyncService {
       // Send welcome email outside transaction (non-fatal)
       if (resetToken && appUrl) {
         try {
-          const setPasswordUrl = new URL("/reset-password", appUrl);
-          setPasswordUrl.searchParams.set("token", resetToken);
+          const setPasswordUrl = await buildResetPasswordUrl(resetToken);
           await emailService.send("welcome", {
             to: newUser.email,
             locale: newUser.locale ?? "en",
             userId: newUser.id,
             data: {
               firstName: newUser.firstName ?? newUser.username,
-              loginUrl: setPasswordUrl.toString(),
+              loginUrl: setPasswordUrl,
             },
           });
         } catch (err) {

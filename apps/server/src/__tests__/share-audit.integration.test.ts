@@ -3,7 +3,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vites
 
 // ── Track audit event creation ───────────────────────────────────────────────
 const mockAuditCreate = vi.fn().mockResolvedValue({ id: "audit-1" });
-const mockShareUpdate = vi.fn().mockResolvedValue({});
+const mockShareUpdate = vi.fn().mockResolvedValue({ views: 1 });
 const mockShareUpdateMany = vi.fn().mockResolvedValue({ count: 1 });
 const mockShareFindUnique = vi.fn();
 
@@ -137,7 +137,7 @@ describe("Share audit events — integration", () => {
     vi.clearAllMocks();
     // Re-apply defaults cleared by clearAllMocks
     mockAuditCreate.mockResolvedValue({ id: "audit-1" });
-    mockShareUpdate.mockResolvedValue({});
+    mockShareUpdate.mockResolvedValue({ views: 1 });
     mockShareUpdateMany.mockResolvedValue({ count: 1 });
   });
 

@@ -21,7 +21,7 @@ const {
   mockEmailSend: vi.fn().mockResolvedValue(undefined),
   mockBuildResetPasswordUrl: vi
     .fn()
-    .mockResolvedValue("https://configured-app.example.com/auth/reset-password/some-token"),
+    .mockResolvedValue("https://configured-app.example.com/reset-password?token=some-token"),
   mockGetConfigValue: vi.fn(),
 }));
 
@@ -136,7 +136,7 @@ describe("AuthService.requestPasswordReset — URL security", () => {
       expect.objectContaining({
         to: "victim@example.com",
         data: expect.objectContaining({
-          resetUrl: "https://configured-app.example.com/auth/reset-password/some-token",
+          resetUrl: "https://configured-app.example.com/reset-password?token=some-token",
         }),
       }),
     );
@@ -146,5 +146,72 @@ describe("AuthService.requestPasswordReset — URL security", () => {
     // TypeScript compile-time check: the method signature should only accept email
     // This test documents the API contract change
     expect(authService.requestPasswordReset.length).toBeLessThanOrEqual(1);
+  });
+
+  // ── User-enumeration oracle prevention (C-1) ─────────────────────────────
+
+  it("does NOT throw when buildResetPasswordUrl fails (appUrl missing) — prevents user enumeration", async () => {
+    const user = {
+      id: "user-1",
+      email: "registered@example.com",
+      locale: "en",
+      ldapDn: null,
+      password: "hashed",
+    };
+    mockFindUserByEmail.mockResolvedValue(user);
+    mockBuildResetPasswordUrl.mockRejectedValue(new Error("appUrl is not configured or empty"));
+
+    // Must NOT throw — if it did, registered emails would return a different
+    // response than unregistered emails, leaking user existence.
+    await expect(authService.requestPasswordReset("registered@example.com")).resolves.not.toThrow();
+
+    // DB row was created (orphan token is acceptable — it will expire)
+    expect(mockPasswordResetCreate).toHaveBeenCalled();
+  });
+
+  it("returns identical result for registered and unregistered emails when appUrl is missing", async () => {
+    // Registered email — URL build fails
+    mockFindUserByEmail.mockResolvedValue({
+      id: "user-1",
+      email: "exists@example.com",
+      locale: "en",
+      ldapDn: null,
+      password: "hashed",
+    });
+    mockBuildResetPasswordUrl.mockRejectedValue(new Error("appUrl is not configured or empty"));
+
+    const registeredResult = await authService.requestPasswordReset("exists@example.com");
+
+    vi.clearAllMocks();
+    mockGetConfigValue.mockImplementation(async (key: string) => {
+      if (key === "passwordAuthEnabled") return "true";
+      if (key === "passwordResetTokenExpiration") return "3600";
+      if (key === "passwordMinLength") return "8";
+      return "";
+    });
+
+    // Unregistered email — returns early (no user found)
+    mockFindUserByEmail.mockResolvedValue(null);
+
+    const unregisteredResult = await authService.requestPasswordReset("noone@example.com");
+
+    // Both return undefined (no distinguishable difference)
+    expect(registeredResult).toBeUndefined();
+    expect(unregisteredResult).toBeUndefined();
+  });
+
+  it("does NOT throw when emailService.send fails — prevents user enumeration", async () => {
+    const user = {
+      id: "user-1",
+      email: "registered@example.com",
+      locale: "en",
+      ldapDn: null,
+      password: "hashed",
+    };
+    mockFindUserByEmail.mockResolvedValue(user);
+    mockBuildResetPasswordUrl.mockResolvedValue("https://app.example.com/reset-password?token=tok");
+    mockEmailSend.mockRejectedValue(new Error("SMTP connection refused"));
+
+    await expect(authService.requestPasswordReset("registered@example.com")).resolves.not.toThrow();
   });
 });

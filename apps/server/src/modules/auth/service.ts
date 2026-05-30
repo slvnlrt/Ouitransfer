@@ -7,7 +7,6 @@ import {
   ForbiddenError,
   NotFoundError,
   UnauthorizedError,
-  ValidationError,
 } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { getConfigValue } from "../config/service.js";
@@ -203,7 +202,10 @@ export class AuthService {
       });
     } catch (error) {
       getLogger().error({ err: error }, "Failed to send password reset email");
-      throw new ValidationError("Failed to send password reset email");
+      // Do NOT throw — preserve the no-user-enumeration contract.
+      // Throwing here would let an attacker distinguish registered emails
+      // (which fail with a validation error when appUrl is misconfigured)
+      // from unregistered emails (which return 200 silently).
     }
   }
 

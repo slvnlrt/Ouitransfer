@@ -33,20 +33,21 @@ export async function buildShareLink(alias: string, trackingToken?: string): Pro
 
 /**
  * Build the share management URL (owner dashboard).
- * Format: `{appUrl}/shares/{shareId}`.
+ * Format: `{appUrl}/shares?open={shareId}` — deep-links into the share list
+ * and auto-opens the detail modal for that share.
  */
 export async function buildShareManageUrl(shareId: string): Promise<string> {
   const base = await getAppUrl();
-  return `${base}/shares/${shareId}`;
+  return `${base}/shares?open=${shareId}`;
 }
 
 /**
  * Build the password reset URL.
- * Format: `{appUrl}/auth/reset-password/{token}`.
+ * Format: `{appUrl}/reset-password?token={token}`.
  */
 export async function buildResetPasswordUrl(token: string): Promise<string> {
   const base = await getAppUrl();
-  return `${base}/auth/reset-password/${token}`;
+  return `${base}/reset-password?token=${encodeURIComponent(token)}`;
 }
 
 /**

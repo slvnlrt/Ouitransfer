@@ -51,7 +51,7 @@ const {
   mockShareSecurityCreate: vi.fn(),
   mockShareUpdateMany: vi.fn(),
   mockFileFirst: vi.fn(),
-  mockEmailSend: vi.fn().mockResolvedValue(undefined),
+  mockEmailSend: vi.fn().mockResolvedValue({ enqueued: false }),
   mockUserCount: vi.fn().mockResolvedValue(1),
 }));
 
@@ -178,6 +178,7 @@ function makeShare(overrides: Record<string, unknown> = {}) {
     inactivityAlertSent: false,
     lastDownloadedAt: null,
     notifyOnDownload: false,
+    notifiedForMaxViews: false,
     notifiedForExpiring: false,
     notifiedForExpired: false,
     security: { id: SECURITY_ID, password: null, createdAt: new Date(), updatedAt: new Date() },
@@ -235,7 +236,7 @@ describe("Visitor Tracking — integration", () => {
     mockShareVisitCreate.mockResolvedValue({ id: "visit-1" });
     mockShareVisitFindMany.mockResolvedValue([]);
     mockShareVisitCount.mockResolvedValue(0);
-    mockShareUpdate.mockResolvedValue({});
+    mockShareUpdate.mockResolvedValue({ views: 1 });
     mockShareUpdateMany.mockResolvedValue({ count: 1 });
     mockShareRecipientFindUnique.mockResolvedValue(null);
     mockShareRecipientUpdate.mockResolvedValue({});
@@ -868,6 +869,84 @@ describe("Visitor Tracking — integration", () => {
       await new Promise((r) => setTimeout(r, 20));
 
       expect(mockEmailSend).not.toHaveBeenCalledWith("share_accessed", expect.anything());
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // share_max_views_reached — flag-after-enqueue (C-3 / I-2)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  describe("share_max_views_reached — flag-after-enqueue", () => {
+    it("sets notifiedForMaxViews ONLY after emailService.send returns { enqueued: true }", async () => {
+      const share = makeShare({
+        views: 4,
+        maxViews: 5,
+        notifiedForMaxViews: false,
+      });
+      mockShareAliasFindUnique.mockResolvedValue({ shareId: SHARE_ID });
+      // First call: findShareById returns the full share
+      // Second call: incrementViewsAtomic re-reads after updateMany
+      mockShareFindUnique.mockResolvedValueOnce(share).mockResolvedValueOnce({ views: 5 });
+      mockShareUpdateMany.mockResolvedValue({ count: 1 });
+      mockEmailSend.mockResolvedValue({ enqueued: true });
+
+      const res = await app.inject({
+        method: "GET",
+        url: `/shares/alias/${ALIAS}`,
+      });
+
+      expect(res.statusCode).toBe(200);
+
+      // Wait for fire-and-forget async operations
+      await new Promise((r) => setTimeout(r, 50));
+
+      // Email should have been sent
+      expect(mockEmailSend).toHaveBeenCalledWith(
+        "share_max_views_reached",
+        expect.objectContaining({
+          to: "creator@example.com",
+          data: expect.objectContaining({
+            maxViews: 5,
+          }),
+        }),
+      );
+
+      // Flag should be set via compare-and-set (updateMany with notifiedForMaxViews: false)
+      expect(mockShareUpdateMany).toHaveBeenCalledWith({
+        where: { id: SHARE_ID, notifiedForMaxViews: false },
+        data: { notifiedForMaxViews: true },
+      });
+    });
+
+    it("does NOT set notifiedForMaxViews when emailService.send returns { enqueued: false }", async () => {
+      const share = makeShare({
+        views: 4,
+        maxViews: 5,
+        notifiedForMaxViews: false,
+      });
+      mockShareAliasFindUnique.mockResolvedValue({ shareId: SHARE_ID });
+      mockShareFindUnique.mockResolvedValueOnce(share).mockResolvedValueOnce({ views: 5 });
+      mockShareUpdateMany.mockResolvedValue({ count: 1 });
+      // Email NOT enqueued (e.g. SMTP disabled, user unsubscribed)
+      mockEmailSend.mockResolvedValue({ enqueued: false });
+
+      const res = await app.inject({
+        method: "GET",
+        url: `/shares/alias/${ALIAS}`,
+      });
+
+      expect(res.statusCode).toBe(200);
+
+      await new Promise((r) => setTimeout(r, 50));
+
+      // The flag-setting updateMany should NOT have been called with notifiedForMaxViews
+      const flagUpdateCalls = mockShareUpdateMany.mock.calls.filter((call) => {
+        const arg = call[0] as Record<string, unknown> | undefined;
+        const where = arg?.where as Record<string, unknown> | undefined;
+        const data = arg?.data as Record<string, unknown> | undefined;
+        return where?.notifiedForMaxViews === false && data?.notifiedForMaxViews === true;
+      });
+      expect(flagUpdateCalls).toHaveLength(0);
     });
   });
 

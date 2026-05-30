@@ -1,5 +1,7 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
+import { useEffect, useRef } from "react";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { LoadingScreen } from "@/components/layout/loading-screen";
 import { PageLayout } from "@/components/layout/page-layout";
@@ -14,6 +16,9 @@ import { SharesTableContainer } from "./components/shares-table-container";
 import { useShares } from "./hooks/use-shares";
 
 export default function SharesPage() {
+  const searchParams = useSearchParams();
+  const openShareId = searchParams.get("open");
+
   const {
     shares,
     isLoading,
@@ -34,6 +39,17 @@ export default function SharesPage() {
   } = useDisclosure();
   const shareManager = useShareManager(loadShares);
   const fileManager = useEnhancedFileManager(loadShares);
+
+  // Auto-open the share details modal when ?open=<shareId> is present
+  const hasAutoOpened = useRef(false);
+  useEffect(() => {
+    if (!openShareId || isLoading || hasAutoOpened.current) return;
+    const matchingShare = shares.find((s) => s.id === openShareId);
+    if (matchingShare) {
+      shareManager.setShareToViewDetails(matchingShare);
+      hasAutoOpened.current = true;
+    }
+  }, [openShareId, shares, isLoading, shareManager]);
 
   if (isLoading) {
     return <LoadingScreen />;

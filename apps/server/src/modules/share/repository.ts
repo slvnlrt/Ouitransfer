@@ -26,7 +26,10 @@ export interface IShareRepository {
       maxViews?: number | null;
     },
   ): Promise<Share>;
-  incrementViewsAtomic(shareId: string, maxViews: number | null): Promise<boolean>;
+  incrementViewsAtomic(
+    shareId: string,
+    maxViews: number | null,
+  ): Promise<{ incremented: boolean; newViews: number }>;
   findShareById(id: string): Promise<
     | (Share & {
         security: ShareSecurity;
@@ -265,22 +268,39 @@ export class PrismaShareRepository implements IShareRepository {
 
   /**
    * Atomically increment the view count only if the current count is below maxViews.
-   * When maxViews is null (unlimited), always increments and returns true.
-   * Returns true if the increment happened, false if max views was already reached.
+   * When maxViews is null (unlimited), always increments.
+   * Returns { incremented: true/false, newViews: post-increment count }.
    */
-  async incrementViewsAtomic(shareId: string, maxViews: number | null): Promise<boolean> {
+  async incrementViewsAtomic(
+    shareId: string,
+    maxViews: number | null,
+  ): Promise<{ incremented: boolean; newViews: number }> {
     if (maxViews === null) {
-      await prisma.share.update({
+      const updated = await prisma.share.update({
         where: { id: shareId },
         data: { views: { increment: 1 } },
+        select: { views: true },
       });
-      return true;
+      return { incremented: true, newViews: updated.views };
     }
     const result = await prisma.share.updateMany({
       where: { id: shareId, views: { lt: maxViews } },
       data: { views: { increment: 1 } },
     });
-    return result.count > 0;
+    if (result.count === 0) {
+      // Max views already reached — read current count for the response
+      const current = await prisma.share.findUnique({
+        where: { id: shareId },
+        select: { views: true },
+      });
+      return { incremented: false, newViews: current?.views ?? 0 };
+    }
+    // Read the actual post-increment value (avoids pre-increment snapshot race)
+    const updated = await prisma.share.findUnique({
+      where: { id: shareId },
+      select: { views: true },
+    });
+    return { incremented: true, newViews: updated?.views ?? 0 };
   }
 
   async addFilesToShare(shareId: string, fileIds: string[]): Promise<void> {

@@ -32,7 +32,7 @@ const {
 } = vi.hoisted(() => ({
   mockShareVisitCreate: vi.fn().mockResolvedValue({ id: "visit-1" }),
   mockShareFindUnique: vi.fn(),
-  mockShareUpdate: vi.fn().mockResolvedValue({}),
+  mockShareUpdate: vi.fn().mockResolvedValue({ views: 1 }),
   mockShareUpdateMany: vi.fn().mockResolvedValue({ count: 1 }),
   mockShareRecipientFindUnique: vi.fn().mockResolvedValue(null),
   mockShareRecipientUpdate: vi.fn().mockResolvedValue({}),
@@ -203,7 +203,7 @@ describe("Visitor Identification — integration", () => {
     vi.clearAllMocks();
     vi.mocked(prisma.user.count).mockResolvedValue(1);
     mockShareVisitCreate.mockResolvedValue({ id: "visit-1" });
-    mockShareUpdate.mockResolvedValue({});
+    mockShareUpdate.mockResolvedValue({ views: 1 });
     mockShareUpdateMany.mockResolvedValue({ count: 1 });
     mockShareRecipientFindUnique.mockResolvedValue(null);
     mockShareRecipientUpdate.mockResolvedValue({});

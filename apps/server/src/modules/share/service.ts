@@ -286,7 +286,7 @@ export class ShareService {
       }
     }
 
-    const incremented = await this.shareRepository.incrementViewsAtomic(
+    const { incremented, newViews } = await this.shareRepository.incrementViewsAtomic(
       shareId,
       share.maxViews ?? null,
     );
@@ -360,46 +360,46 @@ export class ShareService {
         .catch((err) => getLogger().error({ err }, "Failed to send share_accessed notification"));
     }
 
-    // Trigger share_max_views_reached notification when the share just hit its limit
-    const newViewCount = share.views + 1;
+    // Trigger share_max_views_reached notification when the share just hit its limit.
+    // Uses the actual post-increment `newViews` from the atomic operation (not a snapshot).
+    // Flag is set AFTER email enqueue succeeds, with compare-and-set to prevent duplicates.
     if (
       share.maxViews !== null &&
-      newViewCount >= share.maxViews &&
+      newViews >= share.maxViews &&
       !share.notifiedForMaxViews &&
       share.creatorId &&
       share.creator?.email &&
       share.creator?.isActive !== false
     ) {
-      // Set flag first to prevent duplicate sends (fire-and-forget)
-      prisma.share
-        .update({
-          where: { id: shareId },
-          data: { notifiedForMaxViews: true },
-        })
-        .then(() =>
-          buildShareManageUrl(shareId).then((shareManageUrl) =>
-            emailService
-              .send("share_max_views_reached", {
-                to: share.creator!.email,
-                locale: share.creator!.locale ?? "en",
-                userId: share.creatorId!,
-                relatedId: shareId,
-                data: {
-                  shareName: share.name ?? "Unnamed share",
-                  maxViews: share.maxViews!,
-                  shareManageUrl,
-                },
-              })
-              .catch((err) =>
-                getLogger().error({ err }, "Failed to send share_max_views_reached notification"),
-              ),
-          ),
-        )
-        .catch((err) => getLogger().error({ err }, "Failed to update notifiedForMaxViews flag"));
+      (async () => {
+        try {
+          const shareManageUrl = await buildShareManageUrl(shareId);
+          const result = await emailService.send("share_max_views_reached", {
+            to: share.creator!.email,
+            locale: share.creator!.locale ?? "en",
+            userId: share.creatorId!,
+            relatedId: shareId,
+            data: {
+              shareName: share.name ?? "Unnamed share",
+              maxViews: share.maxViews!,
+              shareManageUrl,
+            },
+          });
+          if (result.enqueued) {
+            // Compare-and-set: only flip flag if still false (prevents duplicate sends)
+            await prisma.share.updateMany({
+              where: { id: shareId, notifiedForMaxViews: false },
+              data: { notifiedForMaxViews: true },
+            });
+          }
+        } catch (err) {
+          getLogger().error({ err }, "Failed to send share_max_views_reached notification");
+        }
+      })().catch(() => {});
     }
 
-    // Update view count in memory to avoid a second DB round-trip
-    const updatedShare = { ...share, views: newViewCount };
+    // Use actual post-increment view count from the atomic operation
+    const updatedShare = { ...share, views: newViews };
     return ShareResponseSchema.parse(await this.formatShareResponse(updatedShare, false));
   }
 

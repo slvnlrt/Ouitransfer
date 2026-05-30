@@ -99,22 +99,31 @@ describe("url-builder", () => {
   // ── buildShareManageUrl ────────────────────────────────────────────────────
 
   describe("buildShareManageUrl", () => {
-    it("returns correct path", async () => {
+    it("returns correct path with ?open= query param", async () => {
       mockGetConfigValue.mockResolvedValue("https://transfer.example.com");
 
       const url = await buildShareManageUrl("share-id-789");
-      expect(url).toBe("https://transfer.example.com/shares/share-id-789");
+      expect(url).toBe("https://transfer.example.com/shares?open=share-id-789");
     });
   });
 
   // ── buildResetPasswordUrl ──────────────────────────────────────────────────
 
   describe("buildResetPasswordUrl", () => {
-    it("returns correct path", async () => {
+    it("returns correct path with ?token= query param (no /auth prefix)", async () => {
       mockGetConfigValue.mockResolvedValue("https://transfer.example.com");
 
       const url = await buildResetPasswordUrl("reset-token-abc");
-      expect(url).toBe("https://transfer.example.com/auth/reset-password/reset-token-abc");
+      expect(url).toBe("https://transfer.example.com/reset-password?token=reset-token-abc");
+    });
+
+    it("encodes special characters in token", async () => {
+      mockGetConfigValue.mockResolvedValue("https://transfer.example.com");
+
+      const url = await buildResetPasswordUrl("token/with+special&chars=");
+      expect(url).toBe(
+        `https://transfer.example.com/reset-password?token=${encodeURIComponent("token/with+special&chars=")}`,
+      );
     });
   });
 
