@@ -12,6 +12,7 @@ import {
 } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
+import type { EmailPayloads } from "../email/catalog.js";
 import { emailService } from "../email/service.js";
 import { buildShareLink, buildShareManageUrl } from "../email/url-builder.js";
 import { FolderService } from "../folder/service.js";
@@ -126,6 +127,36 @@ export class ShareService {
       // Strip creator from response (internal use only)
       creator: undefined,
     };
+  }
+
+  /**
+   * Fire-and-forget notification to the share creator, with standard guards.
+   * Skips silently when creator is missing, has no email, or is deactivated.
+   * Returns the send result so callers can perform post-send work (e.g. flag updates).
+   */
+  private async notifyShareCreator<T extends keyof EmailPayloads>(
+    share: {
+      id: string;
+      creatorId: string | null;
+      creator?: { email: string; locale: string | null; isActive: boolean } | null;
+    },
+    type: T,
+    buildData: (shareManageUrl: string) => EmailPayloads[T],
+  ): Promise<{ enqueued: boolean; reason?: "invalid_payload" } | null> {
+    if (!share.creatorId || !share.creator?.email || share.creator.isActive === false) return null;
+    try {
+      const shareManageUrl = await buildShareManageUrl(share.id);
+      return await emailService.send(type, {
+        to: share.creator.email,
+        locale: share.creator.locale ?? "en",
+        userId: share.creatorId,
+        relatedId: share.id,
+        data: buildData(shareManageUrl),
+      });
+    } catch (err) {
+      getLogger().error({ err }, `Failed to send ${type} notification`);
+      return null;
+    }
   }
 
   async createShare(data: CreateShareInput, userId: string) {
@@ -320,7 +351,7 @@ export class ShareService {
       });
     }
 
-    // Or from identification cookie (Batch 9 will wire this)
+    // Or from identification cookie
     if (!recipientId && context?.visitorCookie) {
       visitorName = context.visitorCookie.name;
       visitorEmail = context.visitorCookie.email;
@@ -348,63 +379,35 @@ export class ShareService {
       }
 
       // Trigger share_accessed notification
-      // Skip notification when creator account is deactivated (consistent with scheduler checks)
-      if (share.creatorId && share.creator?.email && share.creator?.isActive !== false) {
-        try {
-          const shareManageUrl = await buildShareManageUrl(shareId);
-          await emailService.send("share_accessed", {
-            to: share.creator!.email,
-            locale: share.creator!.locale ?? "en",
-            userId: share.creatorId!,
-            relatedId: share.id,
-            data: {
-              shareName: share.name ?? "Unnamed share",
-              visitorName,
-              visitorEmail,
-              accessedAt: new Date().toISOString(),
-              shareManageUrl,
-            },
-          });
-        } catch (err) {
-          getLogger().error({ err }, "Failed to send share_accessed notification");
-        }
-      }
+      await this.notifyShareCreator(share, "share_accessed", (shareManageUrl) => ({
+        shareName: share.name ?? "Unnamed share",
+        visitorName,
+        visitorEmail,
+        accessedAt: new Date().toISOString(),
+        shareManageUrl,
+      }));
     })().catch(() => {});
 
     // Trigger share_max_views_reached notification when the share just hit its limit.
     // Uses the actual post-increment `newViews` from the atomic operation (not a snapshot).
     // Flag is set AFTER email enqueue succeeds, with compare-and-set to prevent duplicates.
-    if (
-      share.maxViews !== null &&
-      newViews >= share.maxViews &&
-      !share.notifiedForMaxViews &&
-      share.creatorId &&
-      share.creator?.email &&
-      share.creator?.isActive !== false
-    ) {
+    if (share.maxViews !== null && newViews >= share.maxViews && !share.notifiedForMaxViews) {
       (async () => {
-        try {
-          const shareManageUrl = await buildShareManageUrl(shareId);
-          const result = await emailService.send("share_max_views_reached", {
-            to: share.creator!.email,
-            locale: share.creator!.locale ?? "en",
-            userId: share.creatorId!,
-            relatedId: shareId,
-            data: {
-              shareName: share.name ?? "Unnamed share",
-              maxViews: share.maxViews!,
-              shareManageUrl,
-            },
+        const result = await this.notifyShareCreator(
+          share,
+          "share_max_views_reached",
+          (shareManageUrl) => ({
+            shareName: share.name ?? "Unnamed share",
+            maxViews: share.maxViews!,
+            shareManageUrl,
+          }),
+        );
+        if (result?.enqueued) {
+          // Compare-and-set: only flip flag if still false (prevents duplicate sends)
+          await prisma.share.updateMany({
+            where: { id: shareId, notifiedForMaxViews: false },
+            data: { notifiedForMaxViews: true },
           });
-          if (result.enqueued) {
-            // Compare-and-set: only flip flag if still false (prevents duplicate sends)
-            await prisma.share.updateMany({
-              where: { id: shareId, notifiedForMaxViews: false },
-              data: { notifiedForMaxViews: true },
-            });
-          }
-        } catch (err) {
-          getLogger().error({ err }, "Failed to send share_max_views_reached notification");
         }
       })().catch(() => {});
     }

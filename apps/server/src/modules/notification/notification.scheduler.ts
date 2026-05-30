@@ -344,21 +344,9 @@ async function runAllChecks(): Promise<void> {
  * Returns the configured notification check hour (0–23, UTC). Defaults to 8
  * if not set or invalid.
  *
- * Reads `notificationCheckHour` first, falling back to `emailDigestHour`
- * for backward compatibility, then to the hardcoded default of 8.
+ * Reads `emailDigestHour` from config, defaulting to 8 if not set or invalid.
  */
 async function getNotificationCheckHourUtc(): Promise<number> {
-  // Try dedicated config key first
-  try {
-    const value = await getConfigValue("notificationCheckHour");
-    const parsed = parseInt(value, 10);
-    if (Number.isFinite(parsed) && parsed >= 0 && parsed <= 23) {
-      return parsed;
-    }
-  } catch {
-    // Config key not found — try fallback
-  }
-  // Fall back to emailDigestHour (backward compatibility)
   try {
     const value = await getConfigValue("emailDigestHour");
     const parsed = parseInt(value, 10);

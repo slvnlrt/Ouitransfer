@@ -33,7 +33,7 @@ export class ReverseShareUploadService {
       reverseShareId: string;
       reverseShareCreatorId: string;
       reverseShareName: string | null;
-      uploaderName: string;
+      uploaderName: string | null;
       uploaderEmail?: string;
       files: string[];
       timeout: NodeJS.Timeout | null;
@@ -446,7 +446,7 @@ export class ReverseShareUploadService {
 
   private async sendBatchFileUploadNotification(
     reverseShare: Pick<ReverseShareWithCreator, "id" | "creatorId" | "name">,
-    uploaderName: string,
+    uploaderName: string | null,
     fileNames: string[],
     uploaderEmail?: string,
   ) {
@@ -482,7 +482,7 @@ export class ReverseShareUploadService {
           reverseShareName,
           fileCount,
           fileNames,
-          uploaderName: uploaderName !== "Someone" ? uploaderName : undefined,
+          uploaderName: uploaderName ?? undefined,
           uploaderEmail: uploaderEmail ?? undefined,
         },
       });
@@ -497,7 +497,7 @@ export class ReverseShareUploadService {
   ) {
     const uploaderIdentifier = fileData.uploaderEmail || fileData.uploaderName || "anonymous";
     const sessionKey = this.generateSessionKey(reverseShare.id, uploaderIdentifier);
-    const uploaderName = fileData.uploaderName || "Someone";
+    const uploaderName = fileData.uploaderName || null;
 
     const existingSession = this.uploadSessions.get(sessionKey);
     if (existingSession) {
