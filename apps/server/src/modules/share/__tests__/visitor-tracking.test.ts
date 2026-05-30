@@ -146,6 +146,21 @@ vi.mock("../../audit/service.js", () => ({
   logAuditEvent: vi.fn().mockResolvedValue(undefined),
 }));
 
+vi.mock("../../file/service.js", () => ({
+  FileService: class {
+    getPresignedGetUrl = vi.fn().mockResolvedValue("https://presigned.url/test.txt");
+    getPresignedPutUrl = vi.fn().mockResolvedValue("https://presigned.url/upload");
+    getObjectStream = vi.fn();
+    getObjectHead = vi.fn();
+    deleteObject = vi.fn();
+    createMultipartUpload = vi.fn();
+    getPresignedPartUrl = vi.fn();
+    completeMultipartUpload = vi.fn();
+    abortMultipartUpload = vi.fn();
+    listParts = vi.fn();
+  },
+}));
+
 // ─── Static imports (after vi.mock hoisting) ─────────────────────────────────
 
 import { prisma } from "../../../shared/prisma.js";
@@ -483,13 +498,7 @@ describe("Visitor Tracking — integration", () => {
       vi.mocked(prisma.share.findMany).mockResolvedValue([
         { id: SHARE_ID, security: { password: null } } as never,
       ]);
-      // Presigned URL mock
-      vi.doMock("../../../modules/file/service.js", () => ({
-        FileService: class {
-          getPresignedGetUrl = vi.fn().mockResolvedValue("https://presigned.url/test.txt");
-          getPresignedPutUrl = vi.fn();
-        },
-      }));
+      // FileService is mocked at the hoisted level (vi.mock) — no vi.doMock needed
     });
 
     it("creates ShareVisit with action 'download' when shareId is provided and user is not owner", async () => {
@@ -511,24 +520,27 @@ describe("Visitor Tracking — integration", () => {
         },
       });
 
-      // The file service mock may not be wired — just check for 200 or 500
-      // The important assertion is on ShareVisit creation
+      // Assert 200 unconditionally — the test setup must produce a reliable result
+      expect(res.statusCode).toBe(200);
+
+      // Wait for fire-and-forget operations to settle
       await new Promise((r) => setTimeout(r, 10));
 
-      if (res.statusCode === 200) {
-        expect(mockShareVisitCreate).toHaveBeenCalledWith({
-          data: expect.objectContaining({
-            shareId: SHARE_ID,
-            fileId: FILE_ID,
-            action: "download",
-          }),
-        });
+      expect(mockShareVisitCreate).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          shareId: SHARE_ID,
+          fileId: FILE_ID,
+          action: "download",
+        }),
+      });
 
-        expect(mockShareUpdate).toHaveBeenCalledWith({
-          where: { id: SHARE_ID },
-          data: { lastDownloadedAt: expect.any(Date) },
-        });
-      }
+      expect(mockShareUpdate).toHaveBeenCalledWith({
+        where: { id: SHARE_ID },
+        data: expect.objectContaining({
+          lastDownloadedAt: expect.any(Date),
+          inactivityAlertSent: false,
+        }),
+      });
     });
 
     it("does NOT create ShareVisit when shareId is not provided", async () => {
@@ -825,7 +837,7 @@ describe("Visitor Tracking — integration", () => {
         "share_accessed",
         expect.objectContaining({
           to: "creator@example.com",
-          shareId: SHARE_ID,
+          relatedId: SHARE_ID,
           data: expect.objectContaining({
             shareName: "Test Share",
           }),
@@ -995,7 +1007,7 @@ describe("Visitor Tracking — integration", () => {
       // Find the visitor identification cookie
       const svCookie = res.cookies.find((c: { name: string }) => c.name === `sv_${ALIAS}`);
       expect(svCookie).toBeDefined();
-      expect(svCookie!.path).toBe("/");
+      expect(svCookie!.path).toBe("/api");
     });
   });
 });

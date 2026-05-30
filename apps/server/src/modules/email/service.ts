@@ -47,12 +47,9 @@ class EmailService {
       locale: string;
       userId?: string;
       data: EmailPayloads[T];
-      /** @deprecated Use `relatedId` instead. Alias kept for backward compatibility. */
-      shareId?: string;
       /**
        * Free-form identifier for cooldown scoping and DB tracking.
        * For share notifications: the shareId. For reverse-share notifications: the reverseShareId.
-       * Falls back to `shareId` if not provided (backward compatibility).
        */
       relatedId?: string;
     },
@@ -69,8 +66,7 @@ class EmailService {
     // Use validated/parsed data for the rest of the method
     const validatedData = parsed.data as EmailPayloads[T];
 
-    // Resolve effective relatedId (relatedId takes priority over deprecated shareId)
-    const effectiveRelatedId = options.relatedId ?? options.shareId;
+    const effectiveRelatedId = options.relatedId;
 
     // 1. Check SMTP is enabled
     let smtpEnabled: string;
@@ -292,10 +288,11 @@ class EmailService {
       return "disabled";
     }
 
-    // Step 3: Per-share notifyOnDownload upgrade (only for share_downloaded / share_accessed).
+    // Step 3: Per-share notifyOnDownload upgrade (only for share_downloaded).
+    // The spec scopes notifyOnDownload to downloads only — share_accessed is not upgraded.
     // Checked BEFORE the catalog default so that users who never set a preference
     // can still get notified when the per-share toggle is on.
-    if (shareId && ["share_downloaded", "share_accessed"].includes(type)) {
+    if (shareId && type === "share_downloaded") {
       const share = await prisma.share.findUnique({
         where: { id: shareId },
         select: { notifyOnDownload: true },

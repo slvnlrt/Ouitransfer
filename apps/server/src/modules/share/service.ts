@@ -349,7 +349,7 @@ export class ShareService {
           to: share.creator.email,
           locale: share.creator.locale ?? "en",
           userId: share.creatorId,
-          shareId: share.id,
+          relatedId: share.id,
           data: {
             shareName: share.name ?? "Unnamed share",
             visitorName,
@@ -422,27 +422,34 @@ export class ShareService {
     }
 
     if (recipients !== undefined) {
-      // Normalize emails for consistent matching
-      const normalizedRecipients = recipients.map((e) => e.trim().toLowerCase());
+      // Normalize mixed-format recipients (string | {email, name?}) to {email, name?}
+      const normalizedRecipients = recipients.map((r) => {
+        if (typeof r === "string") {
+          return { email: r.trim().toLowerCase(), name: undefined as string | undefined };
+        }
+        return { email: r.email.trim().toLowerCase(), name: r.name };
+      });
 
       await prisma.$transaction(async (tx) => {
         const existing = await tx.shareRecipient.findMany({ where: { shareId } });
-        const existingByEmail = new Map(existing.map((r) => [r.email, r]));
-        const newEmailSet = new Set(normalizedRecipients);
+        const existingByEmail = new Map(existing.map((rec) => [rec.email, rec]));
+        const newEmailSet = new Set(normalizedRecipients.map((r) => r.email));
 
         // Remove recipients no longer in the list
-        const toRemove = existing.filter((r) => !newEmailSet.has(r.email));
+        const toRemove = existing.filter((rec) => !newEmailSet.has(rec.email));
         if (toRemove.length > 0) {
           await tx.shareRecipient.deleteMany({
-            where: { shareId, id: { in: toRemove.map((r) => r.id) } },
+            where: { shareId, id: { in: toRemove.map((rec) => rec.id) } },
           });
         }
 
-        // Add new recipients with tracking tokens
-        const toAdd = normalizedRecipients.filter((email) => !existingByEmail.has(email));
-        for (const email of toAdd) {
+        // Add new recipients with tracking tokens (and optional name)
+        const toAdd = normalizedRecipients.filter((r) => !existingByEmail.has(r.email));
+        for (const { email, name } of toAdd) {
           const trackingToken = crypto.randomBytes(24).toString("base64url");
-          await tx.shareRecipient.create({ data: { shareId, email, trackingToken } });
+          await tx.shareRecipient.create({
+            data: { shareId, email, trackingToken, name: name ?? null },
+          });
         }
         // Existing recipients are untouched — tokens, notifiedAt, stats preserved
       });

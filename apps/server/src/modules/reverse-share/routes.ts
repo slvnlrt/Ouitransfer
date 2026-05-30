@@ -30,6 +30,10 @@ const multipartService = new ReverseShareMultipartService();
 const preValidation = createJwtPreValidation();
 
 export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
+  // Flush pending upload session notifications on shutdown so no emails are lost
+  app.addHook("onClose", async () => {
+    await uploadService.flushPendingNotifications();
+  });
   app.route({
     method: "POST",
     url: "/reverse-shares",

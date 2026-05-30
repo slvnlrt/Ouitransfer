@@ -96,7 +96,16 @@ export class PrismaShareRepository implements IShareRepository {
 
     const validFiles = (files ?? []).filter((id) => id && id.trim().length > 0);
     const validFolders = (folders ?? []).filter((id) => id && id.trim().length > 0);
-    const validRecipients = (recipients ?? []).filter((email) => email && email.trim().length > 0);
+
+    // Normalize mixed-format recipients (string | {email, name?}) to {email, name?}
+    const normalizedRecipients = (recipients ?? [])
+      .map((r) => {
+        if (typeof r === "string") {
+          return { email: r.trim().toLowerCase(), name: undefined as string | undefined };
+        }
+        return { email: r.email.trim().toLowerCase(), name: r.name };
+      })
+      .filter((r) => r.email.length > 0);
 
     return prisma.share.create({
       data: {
@@ -115,10 +124,11 @@ export class PrismaShareRepository implements IShareRepository {
               }
             : undefined,
         recipients:
-          validRecipients?.length > 0
+          normalizedRecipients.length > 0
             ? {
-                create: validRecipients.map((email) => ({
-                  email: email.trim().toLowerCase(),
+                create: normalizedRecipients.map((r) => ({
+                  email: r.email,
+                  name: r.name ?? null,
                   trackingToken: crypto.randomBytes(24).toString("base64url"),
                 })),
               }

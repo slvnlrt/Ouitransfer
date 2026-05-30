@@ -207,7 +207,7 @@ async function trackShareDownload(
         to: shareWithFile.creator.email,
         locale: shareWithFile.creator.locale ?? "en",
         userId: shareWithFile.creatorId,
-        shareId,
+        relatedId: shareId,
         data: {
           shareName: shareWithFile.name ?? "Unnamed share",
           fileName: fileRecord.name,

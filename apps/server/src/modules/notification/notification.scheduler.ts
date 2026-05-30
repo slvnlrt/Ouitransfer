@@ -61,7 +61,7 @@ async function checkExpiringShares(): Promise<void> {
         to: share.creator.email,
         locale: share.creator.locale ?? "en",
         userId: share.creatorId,
-        shareId: share.id,
+        relatedId: share.id,
         data: {
           shareName: share.name ?? "Unnamed share",
           expiresAt: share.expiration.toISOString(),
@@ -113,7 +113,7 @@ async function checkExpiredShares(): Promise<void> {
         to: share.creator.email,
         locale: share.creator.locale ?? "en",
         userId: share.creatorId,
-        shareId: share.id,
+        relatedId: share.id,
         data: {
           shareName: share.name ?? "Unnamed share",
           expiredAt: share.expiration.toISOString(),
@@ -178,7 +178,7 @@ async function checkInactiveShares(): Promise<void> {
         to: share.creator.email,
         locale: share.creator.locale ?? "en",
         userId: share.creatorId,
-        shareId: share.id,
+        relatedId: share.id,
         data: {
           shareName: share.name ?? "Unnamed share",
           inactivityDays: share.inactivityAlertDays,
@@ -341,10 +341,24 @@ async function runAllChecks(): Promise<void> {
 }
 
 /**
- * Returns the configured digest hour (0–23, UTC). Defaults to 8 if not set
- * or invalid. Reads the `emailDigestHour` config key from the database.
+ * Returns the configured notification check hour (0–23, UTC). Defaults to 8
+ * if not set or invalid.
+ *
+ * Reads `notificationCheckHour` first, falling back to `emailDigestHour`
+ * for backward compatibility, then to the hardcoded default of 8.
  */
-async function getDigestHourUtc(): Promise<number> {
+async function getNotificationCheckHourUtc(): Promise<number> {
+  // Try dedicated config key first
+  try {
+    const value = await getConfigValue("notificationCheckHour");
+    const parsed = parseInt(value, 10);
+    if (Number.isFinite(parsed) && parsed >= 0 && parsed <= 23) {
+      return parsed;
+    }
+  } catch {
+    // Config key not found — try fallback
+  }
+  // Fall back to emailDigestHour (backward compatibility)
   try {
     const value = await getConfigValue("emailDigestHour");
     const parsed = parseInt(value, 10);
@@ -375,10 +389,10 @@ export function msUntilNextUtcHour(targetHour: number, now: Date = new Date()): 
 }
 
 /**
- * Schedule the next notification check at the configured `emailDigestHour` UTC.
+ * Schedule the next notification check at the configured check hour (UTC).
  * Uses chained setTimeout (not setInterval) to prevent overlapping runs.
  *
- * The first tick is wall-clock aligned to `emailDigestHour:00 UTC`, then
+ * The first tick is wall-clock aligned to the configured hour (UTC), then
  * subsequent ticks run every 24h from that point. This ensures consistent
  * daily timing regardless of when the server was (re)started.
  */
@@ -387,8 +401,8 @@ async function scheduleNext(delayMs?: number): Promise<void> {
   if (delayMs !== undefined) {
     delay = delayMs;
   } else {
-    const digestHour = await getDigestHourUtc();
-    delay = msUntilNextUtcHour(digestHour);
+    const checkHour = await getNotificationCheckHourUtc();
+    delay = msUntilNextUtcHour(checkHour);
   }
 
   const handle = setTimeout(async () => {
@@ -419,7 +433,7 @@ async function scheduleNext(delayMs?: number): Promise<void> {
 export async function startNotificationScheduler(): Promise<void> {
   stopNotificationScheduler();
   await scheduleNext();
-  getLogger().info("Notification scheduler started (daily, wall-clock aligned)");
+  getLogger().info("Notification scheduler started (daily, aligned to notificationCheckHour UTC)");
 }
 
 /**

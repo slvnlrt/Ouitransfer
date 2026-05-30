@@ -377,6 +377,21 @@ export class LdapSyncService {
       stats.created++;
       getLogger().info({ userId: newUser.id, username: newUser.username }, "LDAP: created user");
 
+      // Notify admins about new LDAP user (fire-and-forget, non-fatal)
+      emailService
+        .sendToAdmins("admin_user_registered", {
+          userName:
+            `${newUser.firstName ?? ""} ${newUser.lastName ?? ""}`.trim() || newUser.username,
+          userEmail: newUser.email,
+          registrationMethod: "ldap",
+        })
+        .catch((err) =>
+          getLogger().warn(
+            { err, userId: newUser.id },
+            "LDAP: admin_user_registered notification failed",
+          ),
+        );
+
       // Send welcome email outside transaction (non-fatal)
       if (resetToken && appUrl) {
         try {

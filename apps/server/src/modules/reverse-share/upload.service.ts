@@ -31,6 +31,8 @@ export class ReverseShareUploadService {
     string,
     {
       reverseShareId: string;
+      reverseShareCreatorId: string;
+      reverseShareName: string | null;
       uploaderName: string;
       uploaderEmail?: string;
       files: string[];
@@ -496,6 +498,8 @@ export class ReverseShareUploadService {
     } else {
       this.uploadSessions.set(sessionKey, {
         reverseShareId: reverseShare.id,
+        reverseShareCreatorId: reverseShare.creatorId,
+        reverseShareName: reverseShare.name ?? null,
         uploaderName,
         uploaderEmail: fileData.uploaderEmail,
         files: [fileData.name],
@@ -513,6 +517,44 @@ export class ReverseShareUploadService {
       );
       this.uploadSessions.delete(sessionKey);
     }, 5000);
+  }
+
+  /**
+   * Flush all pending upload sessions immediately, firing their batch
+   * notifications without waiting for the debounce timeout.
+   *
+   * Called during Fastify `onClose` to ensure pending notifications are not
+   * lost when the server shuts down. Each pending session's timeout is cleared
+   * and the notification is sent synchronously (best-effort).
+   */
+  async flushPendingNotifications(): Promise<void> {
+    const log = getLogger();
+    const entries = Array.from(this.uploadSessions.entries());
+    if (entries.length === 0) return;
+
+    log.info({ count: entries.length }, "Flushing pending reverse-share upload notifications");
+
+    for (const [sessionKey, session] of entries) {
+      if (session.timeout !== null) {
+        clearTimeout(session.timeout);
+        session.timeout = null;
+      }
+      try {
+        await this.sendBatchFileUploadNotification(
+          {
+            id: session.reverseShareId,
+            creatorId: session.reverseShareCreatorId,
+            name: session.reverseShareName,
+          },
+          session.uploaderName,
+          session.files,
+          session.uploaderEmail,
+        );
+      } catch (err) {
+        log.warn({ err, sessionKey }, "Failed to flush pending upload notification on shutdown");
+      }
+      this.uploadSessions.delete(sessionKey);
+    }
   }
 
   private formatFileResponse(file: {

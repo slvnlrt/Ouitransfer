@@ -287,7 +287,7 @@ describe("EmailService", () => {
         to: "user@test.com",
         locale: "en",
         userId: "user-1",
-        shareId: "share-1",
+        relatedId: "share-1",
         data: {
           shareName: "My Share",
           fileName: "file.txt",
@@ -489,7 +489,7 @@ describe("EmailService", () => {
         to: "user@test.com",
         locale: "en",
         userId: "user-1",
-        shareId: "share-1",
+        relatedId: "share-1",
         data: {
           shareName: "My Share",
           accessedAt: "2025-01-01T00:00:00Z",
@@ -517,7 +517,7 @@ describe("EmailService", () => {
         to: "user@test.com",
         locale: "en",
         userId: "user-1",
-        shareId: "share-1",
+        relatedId: "share-1",
         data: {
           shareName: "My Share",
           accessedAt: "2025-01-01T00:00:00Z",
@@ -568,7 +568,7 @@ describe("EmailService", () => {
         to: "user@test.com",
         locale: "en",
         userId: "user-1",
-        shareId: "share-1",
+        relatedId: "share-1",
         data: {
           shareName: "My Share",
           accessedAt: "2025-01-01T00:00:00Z",
@@ -731,14 +731,15 @@ describe("EmailService", () => {
       expect(freq).toBe("disabled");
     });
 
-    it("no preference + notifyOnDownload=true for share_accessed → immediate", async () => {
+    it("no preference + notifyOnDownload=true for share_accessed → disabled (notifyOnDownload only applies to downloads)", async () => {
       // No user preference row — catalog default for share_accessed is "disabled"
       mockPrisma.notificationPreference.findUnique.mockResolvedValue(null);
-      // Share has notifyOnDownload=true
+      // Share has notifyOnDownload=true — but per spec, this only upgrades share_downloaded
       mockPrisma.share.findUnique.mockResolvedValue({ notifyOnDownload: true });
 
       const freq = await emailService.resolveFrequency("share_accessed", "user-1", "share-1");
-      expect(freq).toBe("immediate");
+      // notifyOnDownload does NOT upgrade share_accessed — only share_downloaded
+      expect(freq).toBe("disabled");
     });
   });
 

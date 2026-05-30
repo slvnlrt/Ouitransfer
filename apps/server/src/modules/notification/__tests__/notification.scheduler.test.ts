@@ -141,7 +141,7 @@ describe("Notification Scheduler", () => {
           to: "creator@example.com",
           locale: "en",
           userId: CREATOR_ID,
-          shareId: SHARE_ID,
+          relatedId: SHARE_ID,
           data: expect.objectContaining({
             shareName: "Test Share",
             expiresAt: expiresAt.toISOString(),
@@ -229,7 +229,7 @@ describe("Notification Scheduler", () => {
           to: "creator@example.com",
           locale: "en",
           userId: CREATOR_ID,
-          shareId: SHARE_ID,
+          relatedId: SHARE_ID,
           data: expect.objectContaining({
             shareName: "Test Share",
             expiredAt: expiredAt.toISOString(),
@@ -296,7 +296,7 @@ describe("Notification Scheduler", () => {
         "share_expired",
         expect.objectContaining({
           to: "creator@example.com",
-          shareId: SHARE_ID,
+          relatedId: SHARE_ID,
         }),
       );
 
@@ -330,7 +330,7 @@ describe("Notification Scheduler", () => {
           to: "creator@example.com",
           locale: "en",
           userId: CREATOR_ID,
-          shareId: SHARE_ID,
+          relatedId: SHARE_ID,
           data: expect.objectContaining({
             shareName: "Test Share",
             inactivityDays: 7,

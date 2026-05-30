@@ -1,6 +1,19 @@
 import { z } from "zod";
 import { FieldRequirement } from "../../generated/prisma/client.js";
 
+/**
+ * A recipient can be specified as a plain email string or as an object with
+ * an email and optional name. The service layer normalizes both forms to
+ * `{ email: string; name?: string }`.
+ */
+const RecipientInputSchema = z.union([
+  z.string().email(),
+  z.object({
+    email: z.string().email(),
+    name: z.string().optional(),
+  }),
+]);
+
 export const CreateShareSchema = z
   .object({
     name: z.string().optional().describe("The share name"),
@@ -15,7 +28,10 @@ export const CreateShareSchema = z
     folders: z.array(z.string()).optional().describe("The folder IDs"),
     password: z.string().optional().describe("The share password"),
     maxViews: z.number().optional().nullable().describe("The maximum number of views"),
-    recipients: z.array(z.string().email()).optional().describe("The recipient emails"),
+    recipients: z
+      .array(RecipientInputSchema)
+      .optional()
+      .describe("The recipient emails (string or {email, name?})"),
     nameFieldRequired: z
       .nativeEnum(FieldRequirement)
       .optional()
@@ -51,7 +67,10 @@ export const UpdateShareSchema = z.object({
   expiration: z.string().datetime().optional(),
   password: z.string().optional(),
   maxViews: z.number().optional().nullable(),
-  recipients: z.array(z.string().email()).optional(),
+  recipients: z
+    .array(RecipientInputSchema)
+    .optional()
+    .describe("The recipient emails (string or {email, name?})"),
   nameFieldRequired: z
     .nativeEnum(FieldRequirement)
     .optional()
