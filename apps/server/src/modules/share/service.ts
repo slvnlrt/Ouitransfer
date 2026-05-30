@@ -710,7 +710,7 @@ export class ShareService {
         ? `${baseShareLink}?t=${trackingToken}`
         : baseShareLink;
       try {
-        await emailService.send("share_invitation", {
+        const result = await emailService.send("share_invitation", {
           to: recipient.email,
           // Recipients receive invitations in English (system default).
           // Per-recipient locale requires adding a locale field to ShareRecipient model.
@@ -725,13 +725,15 @@ export class ShareService {
           },
         });
 
-        // Track notification time
-        await prisma.shareRecipient.update({
-          where: { id: recipient.id },
-          data: { notifiedAt: new Date() },
-        });
+        if (result.enqueued) {
+          // Track notification time only when email was actually enqueued
+          await prisma.shareRecipient.update({
+            where: { id: recipient.id },
+            data: { notifiedAt: new Date() },
+          });
 
-        notifiedRecipients.push(recipient.email);
+          notifiedRecipients.push(recipient.email);
+        }
       } catch (error) {
         getLogger().error(
           { err: error, email: recipient.email },

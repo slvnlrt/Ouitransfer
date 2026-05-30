@@ -577,7 +577,7 @@ describe("EmailService", () => {
       expect(freq).toBe("disabled");
     });
 
-    it("disabled wins over notifyOnDownload=true", async () => {
+    it("explicit disabled wins over notifyOnDownload=true", async () => {
       mockPrisma.notificationPreference.findUnique.mockResolvedValue({
         id: "pref-1",
         userId: "user-1",
@@ -615,6 +615,36 @@ describe("EmailService", () => {
 
       const freq = await emailService.resolveFrequency("share_expiring", "user-1");
       expect(freq).toBe("daily_digest");
+    });
+
+    it("no preference + notifyOnDownload=true → immediate (catalog default overridden)", async () => {
+      // No user preference row — catalog default for share_downloaded is "disabled"
+      mockPrisma.notificationPreference.findUnique.mockResolvedValue(null);
+      // Share has notifyOnDownload=true
+      mockPrisma.share.findUnique.mockResolvedValue({ notifyOnDownload: true });
+
+      const freq = await emailService.resolveFrequency("share_downloaded", "user-1", "share-1");
+      expect(freq).toBe("immediate");
+    });
+
+    it("no preference + notifyOnDownload=false → disabled (catalog default)", async () => {
+      // No user preference row — catalog default for share_downloaded is "disabled"
+      mockPrisma.notificationPreference.findUnique.mockResolvedValue(null);
+      // Share has notifyOnDownload=false
+      mockPrisma.share.findUnique.mockResolvedValue({ notifyOnDownload: false });
+
+      const freq = await emailService.resolveFrequency("share_downloaded", "user-1", "share-1");
+      expect(freq).toBe("disabled");
+    });
+
+    it("no preference + notifyOnDownload=true for share_accessed → immediate", async () => {
+      // No user preference row — catalog default for share_accessed is "disabled"
+      mockPrisma.notificationPreference.findUnique.mockResolvedValue(null);
+      // Share has notifyOnDownload=true
+      mockPrisma.share.findUnique.mockResolvedValue({ notifyOnDownload: true });
+
+      const freq = await emailService.resolveFrequency("share_accessed", "user-1", "share-1");
+      expect(freq).toBe("immediate");
     });
   });
 

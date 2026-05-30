@@ -1,7 +1,7 @@
 import { prisma } from "../../shared/prisma.js";
 import { getLogger } from "../../utils/logger.js";
-import { emailService } from "./service.js";
-import { buildShareManageUrl } from "./url-builder.js";
+import { emailService } from "../email/service.js";
+import { buildShareManageUrl } from "../email/url-builder.js";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -54,7 +54,7 @@ async function checkExpiringShares(): Promise<void> {
     if (!share.expiration) continue;
     try {
       const shareManageUrl = await buildShareManageUrl(share.id);
-      await emailService.send("share_expiring", {
+      const result = await emailService.send("share_expiring", {
         to: share.creator.email,
         locale: share.creator.locale ?? "en",
         userId: share.creatorId,
@@ -65,10 +65,12 @@ async function checkExpiringShares(): Promise<void> {
           shareManageUrl,
         },
       });
-      await prisma.share.update({
-        where: { id: share.id },
-        data: { notifiedForExpiring: true },
-      });
+      if (result.enqueued) {
+        await prisma.share.update({
+          where: { id: share.id },
+          data: { notifiedForExpiring: true },
+        });
+      }
     } catch (err) {
       getLogger().error({ err, shareId: share.id }, "Failed to send share_expiring notification");
     }
@@ -104,7 +106,7 @@ async function checkExpiredShares(): Promise<void> {
     if (!share.expiration) continue;
     try {
       const shareManageUrl = await buildShareManageUrl(share.id);
-      await emailService.send("share_expired", {
+      const result = await emailService.send("share_expired", {
         to: share.creator.email,
         locale: share.creator.locale ?? "en",
         userId: share.creatorId,
@@ -115,10 +117,12 @@ async function checkExpiredShares(): Promise<void> {
           shareManageUrl,
         },
       });
-      await prisma.share.update({
-        where: { id: share.id },
-        data: { notifiedForExpired: true },
-      });
+      if (result.enqueued) {
+        await prisma.share.update({
+          where: { id: share.id },
+          data: { notifiedForExpired: true },
+        });
+      }
     } catch (err) {
       getLogger().error({ err, shareId: share.id }, "Failed to send share_expired notification");
     }
@@ -167,7 +171,7 @@ async function checkInactiveShares(): Promise<void> {
 
     try {
       const shareManageUrl = await buildShareManageUrl(share.id);
-      await emailService.send("share_no_activity", {
+      const result = await emailService.send("share_no_activity", {
         to: share.creator.email,
         locale: share.creator.locale ?? "en",
         userId: share.creatorId,
@@ -178,10 +182,12 @@ async function checkInactiveShares(): Promise<void> {
           shareManageUrl,
         },
       });
-      await prisma.share.update({
-        where: { id: share.id },
-        data: { inactivityAlertSent: true },
-      });
+      if (result.enqueued) {
+        await prisma.share.update({
+          where: { id: share.id },
+          data: { inactivityAlertSent: true },
+        });
+      }
     } catch (err) {
       getLogger().error(
         { err, shareId: share.id },
@@ -219,7 +225,7 @@ async function checkExpiringReverseShares(): Promise<void> {
   for (const rs of reverseShares) {
     if (!rs.expiration) continue;
     try {
-      await emailService.send("reverse_share_expiring", {
+      const result = await emailService.send("reverse_share_expiring", {
         to: rs.creator.email,
         locale: rs.creator.locale ?? "en",
         userId: rs.creatorId,
@@ -228,10 +234,12 @@ async function checkExpiringReverseShares(): Promise<void> {
           expiresAt: rs.expiration.toISOString(),
         },
       });
-      await prisma.reverseShare.update({
-        where: { id: rs.id },
-        data: { notifiedForExpiring: true },
-      });
+      if (result.enqueued) {
+        await prisma.reverseShare.update({
+          where: { id: rs.id },
+          data: { notifiedForExpiring: true },
+        });
+      }
     } catch (err) {
       getLogger().error(
         { err, reverseShareId: rs.id },
@@ -266,7 +274,7 @@ async function checkExpiredReverseShares(): Promise<void> {
   for (const rs of reverseShares) {
     if (!rs.expiration) continue;
     try {
-      await emailService.send("reverse_share_expired", {
+      const result = await emailService.send("reverse_share_expired", {
         to: rs.creator.email,
         locale: rs.creator.locale ?? "en",
         userId: rs.creatorId,
@@ -275,10 +283,12 @@ async function checkExpiredReverseShares(): Promise<void> {
           expiredAt: rs.expiration.toISOString(),
         },
       });
-      await prisma.reverseShare.update({
-        where: { id: rs.id },
-        data: { notifiedForExpired: true },
-      });
+      if (result.enqueued) {
+        await prisma.reverseShare.update({
+          where: { id: rs.id },
+          data: { notifiedForExpired: true },
+        });
+      }
     } catch (err) {
       getLogger().error(
         { err, reverseShareId: rs.id },

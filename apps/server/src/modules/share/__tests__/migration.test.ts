@@ -15,7 +15,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const { mockEmailServiceSend, mockPrisma, mockLogger, mockGetAppUrl, mockBuildShareLink } =
   vi.hoisted(() => ({
-    mockEmailServiceSend: vi.fn().mockResolvedValue(undefined),
+    mockEmailServiceSend: vi.fn().mockResolvedValue({ enqueued: true }),
     mockGetAppUrl: vi.fn().mockResolvedValue("https://app.example.com"),
     mockBuildShareLink: vi
       .fn()
@@ -423,7 +423,7 @@ describe("Email migration — ShareService.notifyRecipients()", () => {
     // First send fails, second succeeds
     mockEmailServiceSend
       .mockRejectedValueOnce(new Error("Queue error"))
-      .mockResolvedValueOnce(undefined);
+      .mockResolvedValueOnce({ enqueued: true });
 
     const result = await shareService.notifyRecipients("share-1", "user-1");
 

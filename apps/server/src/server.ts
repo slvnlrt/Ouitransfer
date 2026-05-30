@@ -16,10 +16,6 @@ import { cleanupExpiredTokens } from "./modules/auth/refresh-token.service.js";
 import { authRoutes } from "./modules/auth/routes.js";
 import { authProvidersRoutes } from "./modules/auth-providers/routes.js";
 import { backgroundImageRoutes } from "./modules/background-image/routes.js";
-import {
-  initNotificationSchedulerOnBoot,
-  stopNotificationScheduler,
-} from "./modules/email/notification.scheduler.js";
 import { initEmailQueueOnBoot, stopEmailQueueScheduler } from "./modules/email/queue.js";
 import { fileRoutes } from "./modules/file/routes.js";
 import { folderRoutes } from "./modules/folder/routes.js";
@@ -28,6 +24,10 @@ import { healthRoutes } from "./modules/health/routes.js";
 import { inviteRoutes } from "./modules/invite/routes.js";
 import { ldapRoutes } from "./modules/ldap/routes.js";
 import { initSchedulerOnBoot, stopScheduler } from "./modules/ldap/sync.scheduler.js";
+import {
+  initNotificationSchedulerOnBoot,
+  stopNotificationScheduler,
+} from "./modules/notification/notification.scheduler.js";
 import { notificationRoutes } from "./modules/notification/routes.js";
 import { quotaRoutes } from "./modules/quota/routes.js";
 import { reverseShareRoutes } from "./modules/reverse-share/routes.js";

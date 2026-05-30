@@ -56,7 +56,7 @@ class EmailService {
        */
       relatedId?: string;
     },
-  ): Promise<void> {
+  ): Promise<{ enqueued: boolean }> {
     const log = getLogger();
     const entry = notificationCatalog[type];
 
@@ -70,11 +70,11 @@ class EmailService {
     } catch {
       // Config key missing — SMTP not configured
       log.debug({ type }, "SMTP not configured, skipping email");
-      return;
+      return { enqueued: false };
     }
     if (smtpEnabled !== "true") {
       log.debug({ type }, "SMTP disabled, skipping email");
-      return;
+      return { enqueued: false };
     }
 
     // 1b. Check appUrl is configured (required for links in emails)
@@ -82,7 +82,7 @@ class EmailService {
       await getAppUrl();
     } catch {
       log.warn({ type }, "appUrl not configured, skipping email");
-      return;
+      return { enqueued: false };
     }
 
     // 2. Resolve appName once (used in render, subject, and layout)
@@ -99,7 +99,7 @@ class EmailService {
       frequency = await this.resolveFrequency(type, options.userId, effectiveRelatedId);
       if (frequency === "disabled") {
         log.debug({ type, userId: options.userId }, "Notification disabled by user preference");
-        return;
+        return { enqueued: false };
       }
     }
 
@@ -120,7 +120,7 @@ class EmailService {
           { type, to: options.to, relatedId: effectiveRelatedId },
           "Cooldown active, skipping",
         );
-        return;
+        return { enqueued: false };
       }
     }
 
@@ -177,7 +177,7 @@ class EmailService {
           maxAttempts: 0,
         },
       });
-      return;
+      return { enqueued: true };
     }
 
     // 8. Sanitize data params: strip CR/LF to prevent SMTP header injection
@@ -237,16 +237,20 @@ class EmailService {
     if (entry.priority === 1) {
       emailQueueEvents.emit("wake");
     }
+
+    return { enqueued: true };
   }
 
   /**
    * Resolves the effective notification frequency for a user + type.
    *
    * Cascade:
-   * 1. User has a NotificationPreference row → use its frequency
-   * 2. No row → use catalog defaultFrequency
+   * 1. User has an *explicit* NotificationPreference row → use its frequency
+   * 2. Explicit user "disabled" always wins — no override can change it
    * 3. Per-share override: if share.notifyOnDownload=true → upgrade to "immediate"
-   * 4. "disabled" always wins (no upgrade overrides it)
+   *    (checked BEFORE falling back to catalog default so that per-share toggles
+   *    work for users who have never set a preference)
+   * 4. Fall back to explicit preference or catalog defaultFrequency
    */
   async resolveFrequency(
     type: string,
@@ -258,16 +262,19 @@ class EmailService {
       where: { userId_type: { userId, type } },
     });
 
+    const explicitFrequency = pref?.frequency;
     const catalogEntry = notificationCatalog[type as NotificationKey];
-    const baseFrequency = pref ? pref.frequency : (catalogEntry?.defaultFrequency ?? "immediate");
+    const defaultFrequency = catalogEntry?.defaultFrequency ?? "immediate";
 
-    // Step 2: "disabled" always wins — no override can change it
-    if (baseFrequency === "disabled") {
+    // Step 2: Explicit user "disabled" always wins — no override can change it
+    if (explicitFrequency === "disabled") {
       return "disabled";
     }
 
-    // Step 3: Per-share notifyOnDownload upgrade (only for share_downloaded)
-    if (shareId && type === "share_downloaded") {
+    // Step 3: Per-share notifyOnDownload upgrade (only for share_downloaded / share_accessed).
+    // Checked BEFORE the catalog default so that users who never set a preference
+    // can still get notified when the per-share toggle is on.
+    if (shareId && ["share_downloaded", "share_accessed"].includes(type)) {
       const share = await prisma.share.findUnique({
         where: { id: shareId },
         select: { notifyOnDownload: true },
@@ -277,7 +284,8 @@ class EmailService {
       }
     }
 
-    return baseFrequency as "immediate" | "daily_digest";
+    // Step 4: Fall back to explicit pref or catalog default
+    return (explicitFrequency ?? defaultFrequency) as "immediate" | "daily_digest" | "disabled";
   }
 
   /**
@@ -294,20 +302,27 @@ class EmailService {
    * Each admin receives a separate `send()` call so that individual
    * preference checks and locale selection apply per-admin.
    */
-  async sendToAdmins<T extends NotificationKey>(type: T, data: EmailPayloads[T]): Promise<void> {
+  async sendToAdmins<T extends NotificationKey>(
+    type: T,
+    data: EmailPayloads[T],
+  ): Promise<{ enqueued: boolean }> {
     const admins = await prisma.user.findMany({
       where: { isAdmin: true, isActive: true },
       select: { id: true, email: true, locale: true },
     });
 
+    let anyEnqueued = false;
     for (const admin of admins) {
-      await this.send(type, {
+      const result = await this.send(type, {
         to: admin.email,
         locale: admin.locale ?? "en",
         userId: admin.id,
         data,
       });
+      if (result.enqueued) anyEnqueued = true;
     }
+
+    return { enqueued: anyEnqueued };
   }
 }
 

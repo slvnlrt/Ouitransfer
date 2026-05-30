@@ -1,7 +1,7 @@
 /**
  * notification.scheduler.test.ts
  *
- * Unit tests for the notification scheduler (Batch 9).
+ * Unit tests for the notification scheduler.
  *
  * Tests:
  * - checkExpiringShares sends share_expiring and sets notifiedForExpiring
@@ -12,6 +12,7 @@
  * - checkInactiveShares skips shares where inactivity threshold not reached
  * - checkExpiringReverseShares sends reverse_share_expiring and sets notifiedForExpiring
  * - checkExpiredReverseShares sends reverse_share_expired and sets notifiedForExpired
+ * - Scheduler does NOT set flags when emailService.send() returns { enqueued: false }
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -30,7 +31,7 @@ const {
   mockShareUpdate: vi.fn().mockResolvedValue({}),
   mockReverseShareFindMany: vi.fn(),
   mockReverseShareUpdate: vi.fn().mockResolvedValue({}),
-  mockEmailSend: vi.fn().mockResolvedValue(undefined),
+  mockEmailSend: vi.fn().mockResolvedValue({ enqueued: true }),
   mockBuildShareManageUrl: vi.fn().mockResolvedValue("https://app.test/shares/share-1"),
 }));
 
@@ -49,13 +50,13 @@ vi.mock("../../../shared/prisma.js", () => ({
   },
 }));
 
-vi.mock("../service.js", () => ({
+vi.mock("../../email/service.js", () => ({
   emailService: {
     send: mockEmailSend,
   },
 }));
 
-vi.mock("../url-builder.js", () => ({
+vi.mock("../../email/url-builder.js", () => ({
   buildShareManageUrl: mockBuildShareManageUrl,
 }));
 
@@ -100,6 +101,8 @@ function makeShare(overrides: Record<string, unknown> = {}) {
 describe("Notification Scheduler", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Re-establish default return value after clearAllMocks (which resets implementations)
+    mockEmailSend.mockResolvedValue({ enqueued: true });
     vi.useFakeTimers();
     vi.setSystemTime(now);
   });
@@ -181,6 +184,19 @@ describe("Notification Scheduler", () => {
 
       expect(mockEmailSend).not.toHaveBeenCalled();
     });
+
+    it("does NOT set notifiedForExpiring when send returns enqueued=false", async () => {
+      mockEmailSend.mockResolvedValue({ enqueued: false });
+      const expiresAt = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
+      const share = makeShare({ expiration: expiresAt, notifiedForExpiring: false });
+      mockShareFindMany.mockResolvedValue([share]);
+
+      const { checkExpiringShares } = await import("../notification.scheduler.js");
+      await checkExpiringShares();
+
+      expect(mockEmailSend).toHaveBeenCalledOnce();
+      expect(mockShareUpdate).not.toHaveBeenCalled();
+    });
   });
 
   // ── checkExpiredShares ─────────────────────────────────────────────────────
@@ -231,6 +247,19 @@ describe("Notification Scheduler", () => {
           }),
         }),
       );
+    });
+
+    it("does NOT set notifiedForExpired when send returns enqueued=false", async () => {
+      mockEmailSend.mockResolvedValue({ enqueued: false });
+      const expiredAt = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      const share = makeShare({ expiration: expiredAt, notifiedForExpired: false });
+      mockShareFindMany.mockResolvedValue([share]);
+
+      const { checkExpiredShares } = await import("../notification.scheduler.js");
+      await checkExpiredShares();
+
+      expect(mockEmailSend).toHaveBeenCalledOnce();
+      expect(mockShareUpdate).not.toHaveBeenCalled();
     });
   });
 
@@ -387,6 +416,7 @@ describe("Notification Scheduler", () => {
       // Step 2: simulate a download resetting the flag — now
       // inactivityAlertSent=false again, lastDownloadedAt=recently
       vi.clearAllMocks();
+      mockEmailSend.mockResolvedValue({ enqueued: true });
       const recentDownload = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000);
       const shareAfterDownload = makeShare({
         inactivityAlertDays: 7,
@@ -403,6 +433,7 @@ describe("Notification Scheduler", () => {
 
       // Step 3: time passes, share goes inactive again (last download now 10 days ago)
       vi.clearAllMocks();
+      mockEmailSend.mockResolvedValue({ enqueued: true });
       const staleDownload = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
       const shareInactiveAgain = makeShare({
         inactivityAlertDays: 7,
@@ -420,6 +451,24 @@ describe("Notification Scheduler", () => {
         where: { id: SHARE_ID },
         data: { inactivityAlertSent: true },
       });
+    });
+
+    it("does NOT set inactivityAlertSent when send returns enqueued=false", async () => {
+      mockEmailSend.mockResolvedValue({ enqueued: false });
+      const createdAt = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
+      const share = makeShare({
+        inactivityAlertDays: 7,
+        inactivityAlertSent: false,
+        lastDownloadedAt: null,
+        createdAt,
+      });
+      mockShareFindMany.mockResolvedValue([share]);
+
+      const { checkInactiveShares } = await import("../notification.scheduler.js");
+      await checkInactiveShares();
+
+      expect(mockEmailSend).toHaveBeenCalledOnce();
+      expect(mockShareUpdate).not.toHaveBeenCalled();
     });
   });
 

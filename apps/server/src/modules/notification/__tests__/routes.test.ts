@@ -42,7 +42,7 @@ vi.mock("../../../shared/prisma.js", () => ({
 
 vi.mock("../../email/service.js", () => ({
   emailService: {
-    send: vi.fn().mockResolvedValue(undefined),
+    send: vi.fn().mockResolvedValue({ enqueued: true }),
   },
 }));
 

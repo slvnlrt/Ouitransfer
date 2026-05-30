@@ -322,7 +322,17 @@ export const notificationRoutes: FastifyPluginAsyncZod = async (app) => {
         where: { id: request.user.userId },
         select: { locale: true },
       });
-      await emailService.send("test_email", { to, locale: admin?.locale ?? "en", data: {} });
+      const result = await emailService.send("test_email", {
+        to,
+        locale: admin?.locale ?? "en",
+        data: {},
+      });
+      if (!result.enqueued) {
+        return reply.code(400).send({
+          statusCode: 400,
+          error: "Email not sent — SMTP is not configured or disabled",
+        });
+      }
       return reply.send({ success: true, message: "Test email queued" });
     },
   });
