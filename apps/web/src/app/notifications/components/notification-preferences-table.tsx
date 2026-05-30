@@ -154,11 +154,25 @@ export function NotificationPreferencesTable() {
       toast.info(t("noChanges"));
       return;
     }
-    saveMutation.mutate(localChanges);
+    // Defense in depth: filter out any changes for non-configurable types
+    // before sending to the server (should not happen via UI, but just in case)
+    const configurableTypes = new Set(preferences.map((p) => p.type));
+    const safeChanges = Object.fromEntries(
+      Object.entries(localChanges).filter(([type]) =>
+        configurableTypes.has(type as NotificationType),
+      ),
+    ) as Partial<Record<NotificationType, string>>;
+    if (Object.keys(safeChanges).length === 0) {
+      toast.info(t("noChanges"));
+      return;
+    }
+    saveMutation.mutate(safeChanges);
   };
 
-  // Filter out non-configurable (critical) types — spec says they are not shown in preferences
-  const preferences = (data?.preferences ?? []).filter((pref) => !pref.isCritical);
+  // Filter out non-configurable types (critical + non-configurable like invitations)
+  const preferences = (data?.preferences ?? []).filter(
+    (pref) => !pref.isCritical && pref.configurable !== false,
+  );
   const grouped = groupByCategory(preferences);
 
   const getFrequency = (pref: NotificationPreference): string => {

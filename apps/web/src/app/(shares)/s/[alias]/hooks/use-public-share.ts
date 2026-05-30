@@ -80,7 +80,7 @@ export function usePublicShare() {
     queryKey: queryKeys.shares.metadata(alias),
     queryFn: async () => {
       const response = await getShareMetadata(alias);
-      return response.data.metadata;
+      return response.data;
     },
     enabled: !!alias && isIdentificationModalOpen,
     retry: false,

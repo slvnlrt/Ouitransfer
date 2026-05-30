@@ -209,6 +209,7 @@
     "nameFieldRequired": "Require visitor name",
     "emailFieldRequired": "Require visitor email",
     "notifyOnDownload": "Notify me on each download",
+    "notifyOnDownloadHelp": "When enabled, you'll receive email notifications when files are downloaded from this share, regardless of your global notification preferences.",
     "inactivityAlertDays": "Alert if no downloads after (days)",
     "inactivityAlertPlaceholder": "Leave empty to disable",
     "fieldHidden": "Hidden",
@@ -1877,11 +1878,16 @@
       "filterDownload": "Downloads only",
       "filterAllVisitors": "All visitors",
       "filterIdentified": "Identified",
-      "filterAnonymous": "Anonymous"
+      "filterAnonymous": "Anonymous",
+      "source": {
+        "tracking_token": "Via recipient link",
+        "cookie": "Self-identified"
+      }
     },
     "lastDownloaded": "Last Downloaded",
     "recipientNotified": "Notified",
-    "recipientAccess": "{count, plural, one {# access} other {# accesses}}{lastAccess, select, null {} other { · last {lastAccess}}}"
+    "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
+    "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"
   },
   "shareExpiration": {
     "neverExpires": "期限なし",

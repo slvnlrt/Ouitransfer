@@ -83,13 +83,18 @@ export function SharePrivacySection({ value, onChange, switchIdSuffix }: SharePr
           </Select>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Switch
-            checked={value.notifyOnDownload}
-            onCheckedChange={(checked) => onChange({ ...value, notifyOnDownload: checked })}
-            id={notifySwitchId}
-          />
-          <Label htmlFor={notifySwitchId}>{t("createShare.notifyOnDownload")}</Label>
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={value.notifyOnDownload}
+              onCheckedChange={(checked) => onChange({ ...value, notifyOnDownload: checked })}
+              id={notifySwitchId}
+            />
+            <Label htmlFor={notifySwitchId}>{t("createShare.notifyOnDownload")}</Label>
+          </div>
+          <p className="text-xs text-muted-foreground ps-9">
+            {t("createShare.notifyOnDownloadHelp")}
+          </p>
         </div>
 
         <div className="space-y-2">

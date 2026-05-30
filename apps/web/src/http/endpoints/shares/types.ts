@@ -226,6 +226,7 @@ export interface ShareVisit {
   shareId: string;
   fileId: string | null;
   recipient: { email: string; name: string | null } | null;
+  identificationSource: "tracking_token" | "cookie" | "anonymous";
 }
 
 export interface GetShareVisits200 {
@@ -258,9 +259,7 @@ export interface ShareMetadata {
   emailFieldRequired: "HIDDEN" | "OPTIONAL" | "REQUIRED";
 }
 
-export interface GetShareMetadata200 {
-  metadata: ShareMetadata;
-}
+export type GetShareMetadata200 = ShareMetadata;
 
 export type CreateShareResult = AxiosResponse<CreateShare201>;
 export type UpdateShareResult = AxiosResponse<UpdateShare200>;

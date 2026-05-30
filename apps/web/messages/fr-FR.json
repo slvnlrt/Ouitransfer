@@ -209,6 +209,7 @@
     "nameFieldRequired": "Exiger le nom du visiteur",
     "emailFieldRequired": "Exiger l'email du visiteur",
     "notifyOnDownload": "Me notifier à chaque téléchargement",
+    "notifyOnDownloadHelp": "Lorsque cette option est activée, vous recevrez des notifications par e-mail lorsque des fichiers sont téléchargés depuis ce partage, indépendamment de vos préférences de notification globales.",
     "inactivityAlertDays": "Alerter si aucun téléchargement après (jours)",
     "inactivityAlertPlaceholder": "Laisser vide pour désactiver",
     "fieldHidden": "Masqué",
@@ -1865,7 +1866,8 @@
     "qrCode": "Code QR",
     "lastDownloaded": "Dernier téléchargement",
     "recipientNotified": "Notifié",
-    "recipientAccess": "{count, plural, one {# accès} other {# accès}}{lastAccess, select, null {} other { · dernier {lastAccess}}}",
+    "recipientAccess": "{count, plural, one {# accès} other {# accès}}",
+    "recipientAccessWithLast": "{count, plural, one {# accès} other {# accès}} · dernier {lastAccess}",
     "activity": {
       "title": "Activité",
       "noActivity": "Aucune activité enregistrée pour l'instant.",
@@ -1880,7 +1882,11 @@
       "filterDownload": "Téléchargements uniquement",
       "filterAllVisitors": "Tous les visiteurs",
       "filterIdentified": "Identifiés",
-      "filterAnonymous": "Anonymes"
+      "filterAnonymous": "Anonymes",
+      "source": {
+        "tracking_token": "Via lien destinataire",
+        "cookie": "Auto-identifié"
+      }
     }
   },
   "shareExpiration": {

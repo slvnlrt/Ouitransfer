@@ -77,7 +77,6 @@ export function ShareDetailsModal({
   });
 
   const share = shareQuery.data ?? null;
-  const _isLoading = shareQuery.isLoading;
 
   const invalidateShare = () => {
     // Invalidate the specific share detail and the list (e.g. name/description changes
@@ -322,12 +321,16 @@ export function ShareDetailsModal({
                               {recipient.accessCount > 0 && (
                                 <span className="flex items-center gap-1 text-xs text-muted-foreground">
                                   <Eye className="h-3 w-3" />
-                                  {t("shareDetails.recipientAccess", {
-                                    count: recipient.accessCount,
-                                    lastAccess: recipient.lastAccessedAt
-                                      ? format.relativeTime(new Date(recipient.lastAccessedAt))
-                                      : "null",
-                                  })}
+                                  {recipient.lastAccessedAt
+                                    ? t("shareDetails.recipientAccessWithLast", {
+                                        count: recipient.accessCount,
+                                        lastAccess: format.relativeTime(
+                                          new Date(recipient.lastAccessedAt),
+                                        ),
+                                      })
+                                    : t("shareDetails.recipientAccess", {
+                                        count: recipient.accessCount,
+                                      })}
                                 </span>
                               )}
                             </div>
