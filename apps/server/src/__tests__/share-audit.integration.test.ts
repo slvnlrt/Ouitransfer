@@ -97,7 +97,7 @@ const makeShare = (overrides: Record<string, unknown> = {}) => ({
   folders: [],
   recipients: [],
   alias: null,
-  creator: { email: "creator@example.com", locale: "en" },
+  creator: { email: "creator@example.com", locale: "en", isActive: true },
   security: {
     id: "sec-1",
     password: null,

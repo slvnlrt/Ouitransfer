@@ -16,7 +16,7 @@ type FolderWithCount = Folder & {
   _count: { files: number; children: number };
 };
 
-type CreatorInfo = Pick<User, "email" | "locale"> | null;
+type CreatorInfo = Pick<User, "email" | "locale" | "isActive"> | null;
 
 export interface IShareRepository {
   createShare(
@@ -154,6 +154,7 @@ export class PrismaShareRepository implements IShareRepository {
           select: {
             email: true,
             locale: true,
+            isActive: true,
           },
         },
       },
@@ -220,6 +221,7 @@ export class PrismaShareRepository implements IShareRepository {
               select: {
                 email: true,
                 locale: true,
+                isActive: true,
               },
             },
           },
@@ -411,6 +413,7 @@ export class PrismaShareRepository implements IShareRepository {
           select: {
             email: true,
             locale: true,
+            isActive: true,
           },
         },
       },

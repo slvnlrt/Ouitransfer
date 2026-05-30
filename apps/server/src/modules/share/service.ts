@@ -13,7 +13,7 @@ import {
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
 import { emailService } from "../email/service.js";
-import { buildShareLink } from "../email/url-builder.js";
+import { buildShareLink, buildShareManageUrl } from "../email/url-builder.js";
 import { FolderService } from "../folder/service.js";
 import { type CreateShareInput, ShareResponseSchema, type UpdateShareInput } from "./dto.js";
 import { type IShareRepository, PrismaShareRepository } from "./repository.js";
@@ -48,6 +48,7 @@ type ShareWithRelations = Prisma.ShareGetPayload<{
       select: {
         email: true;
         locale: true;
+        isActive: true;
       };
     };
   };
@@ -341,7 +342,8 @@ export class ShareService {
       .catch((err) => getLogger().error({ err }, "Failed to create ShareVisit"));
 
     // Trigger share_accessed notification (fire-and-forget)
-    if (share.creatorId && share.creator?.email) {
+    // Skip notification when creator account is deactivated (consistent with scheduler checks)
+    if (share.creatorId && share.creator?.email && share.creator?.isActive !== false) {
       emailService
         .send("share_accessed", {
           to: share.creator.email,
@@ -358,8 +360,46 @@ export class ShareService {
         .catch((err) => getLogger().error({ err }, "Failed to send share_accessed notification"));
     }
 
+    // Trigger share_max_views_reached notification when the share just hit its limit
+    const newViewCount = share.views + 1;
+    if (
+      share.maxViews !== null &&
+      newViewCount >= share.maxViews &&
+      !share.notifiedForMaxViews &&
+      share.creatorId &&
+      share.creator?.email &&
+      share.creator?.isActive !== false
+    ) {
+      // Set flag first to prevent duplicate sends (fire-and-forget)
+      prisma.share
+        .update({
+          where: { id: shareId },
+          data: { notifiedForMaxViews: true },
+        })
+        .then(() =>
+          buildShareManageUrl(shareId).then((shareManageUrl) =>
+            emailService
+              .send("share_max_views_reached", {
+                to: share.creator!.email,
+                locale: share.creator!.locale ?? "en",
+                userId: share.creatorId!,
+                relatedId: shareId,
+                data: {
+                  shareName: share.name ?? "Unnamed share",
+                  maxViews: share.maxViews!,
+                  shareManageUrl,
+                },
+              })
+              .catch((err) =>
+                getLogger().error({ err }, "Failed to send share_max_views_reached notification"),
+              ),
+          ),
+        )
+        .catch((err) => getLogger().error({ err }, "Failed to update notifiedForMaxViews flag"));
+    }
+
     // Update view count in memory to avoid a second DB round-trip
-    const updatedShare = { ...share, views: share.views + 1 };
+    const updatedShare = { ...share, views: newViewCount };
     return ShareResponseSchema.parse(await this.formatShareResponse(updatedShare, false));
   }
 
@@ -420,6 +460,14 @@ export class ShareService {
     if (newExp && (!oldExp || newExp > oldExp)) {
       updateData.notifiedForExpiring = false;
       updateData.notifiedForExpired = false;
+    }
+
+    // Reset maxViews notification flag when maxViews is increased (allows re-notification)
+    if (maxViews !== undefined) {
+      const oldMax = share.maxViews;
+      if (maxViews === null || (oldMax !== null && maxViews > oldMax)) {
+        updateData.notifiedForMaxViews = false;
+      }
     }
 
     await this.shareRepository.updateShare(shareId, updateData);

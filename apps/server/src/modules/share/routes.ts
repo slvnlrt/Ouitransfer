@@ -710,11 +710,18 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
     method: "POST",
     url: "/shares/:shareId/notify",
     preValidation,
+    config: {
+      rateLimit: { max: 5, timeWindow: "10 minutes" },
+    },
     schema: {
       tags: ["Share"],
       operationId: "notifyRecipients",
       summary: "Send email notification to share recipients",
-      description: "Send email notification with share link to all recipients",
+      description:
+        "Sends share-invitation emails to recipients that already exist on the share. " +
+        "Recipients (with optional names) are created via POST /shares/:shareId/recipients. " +
+        "This endpoint only triggers email delivery; it does not accept recipient names. " +
+        "Pass `emails` to notify a subset, or omit to notify all recipients.",
       params: z.object({
         shareId: z.string().describe("The share ID"),
       }),
@@ -864,8 +871,11 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         email: request.body.email ?? null,
       });
 
+      // Cookie path is "/" rather than "/api" to avoid coupling to the reverse-proxy topology.
+      // The cookie name `sv_{alias}` is already scoped per-share, and httpOnly+signed prevents
+      // tampering, so a broad path is safe.
       reply.setCookie(`sv_${alias}`, payload, {
-        path: "/api",
+        path: "/",
         httpOnly: true,
         sameSite: "strict",
         secure: env.SECURE_SITE === "true",

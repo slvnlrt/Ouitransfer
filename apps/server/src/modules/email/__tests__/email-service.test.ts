@@ -607,6 +607,38 @@ describe("EmailService", () => {
       const createArg = mockPrisma.emailJob.create.mock.calls[0][0];
       expect(createArg.data.status).toBe("digest_pending");
     });
+
+    it("with invalid payload → returns enqueued:false + reason:invalid_payload, no job created (I-6)", async () => {
+      // welcome requires { firstName: string, loginUrl: string }
+      // Send with missing required field
+      const result = await emailService.send("welcome", {
+        to: "user@test.com",
+        locale: "en",
+        // biome-ignore lint/suspicious/noExplicitAny: intentionally testing invalid payload
+        data: { firstName: 123 } as any,
+      });
+
+      expect(result.enqueued).toBe(false);
+      expect(result.reason).toBe("invalid_payload");
+      expect(mockPrisma.emailJob.create).not.toHaveBeenCalled();
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        expect.objectContaining({ type: "welcome", issues: expect.any(Array) }),
+        expect.stringContaining("Invalid email payload"),
+      );
+    });
+
+    it("with valid payload → uses parsed data (I-6)", async () => {
+      // Zod schema for welcome validates firstName as string, loginUrl as string
+      const result = await emailService.send("welcome", {
+        to: "user@test.com",
+        locale: "en",
+        data: { firstName: "John", loginUrl: "https://test.example.com" },
+      });
+
+      expect(result.enqueued).toBe(true);
+      expect(result.reason).toBeUndefined();
+      expect(mockPrisma.emailJob.create).toHaveBeenCalledOnce();
+    });
   });
 
   // ── resolveFrequency() ─────────────────────────────────────────────────────

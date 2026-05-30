@@ -151,10 +151,13 @@ async function trackShareDownload(
   const shareWithFile = await prisma.share.findFirst({
     where: {
       id: shareId,
-      files: { some: { id: fileRecord.id } },
+      OR: [
+        { files: { some: { id: fileRecord.id } } },
+        { folders: { some: { files: { some: { id: fileRecord.id } } } } },
+      ],
     },
     include: {
-      creator: { select: { email: true, locale: true } },
+      creator: { select: { email: true, locale: true, isActive: true } },
     },
   });
 
@@ -188,7 +191,12 @@ async function trackShareDownload(
     .catch((err) => getLogger().error({ err }, "Failed to update share lastDownloadedAt"));
 
   // Notify share owner (fire-and-forget)
-  if (shareWithFile.creatorId && shareWithFile.creator?.email) {
+  // Skip notification when creator account is deactivated (consistent with scheduler checks)
+  if (
+    shareWithFile.creatorId &&
+    shareWithFile.creator?.email &&
+    shareWithFile.creator?.isActive !== false
+  ) {
     emailService
       .send("share_downloaded", {
         to: shareWithFile.creator.email,

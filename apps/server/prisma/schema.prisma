@@ -118,6 +118,7 @@ model Share {
   notifyOnDownload     Boolean   @default(false)
   notifiedForExpiring  Boolean   @default(false)
   notifiedForExpired   Boolean   @default(false)
+  notifiedForMaxViews  Boolean   @default(false)
 
   files      File[]           @relation("ShareFiles")
   folders    Folder[]         @relation("ShareFolders")

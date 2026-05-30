@@ -169,7 +169,7 @@ function makeShare(overrides: Record<string, unknown> = {}) {
     folders: [],
     recipients: [],
     alias: null,
-    creator: { email: "creator@example.com", locale: "en" },
+    creator: { email: "creator@example.com", locale: "en", isActive: true },
     ...overrides,
   };
 }

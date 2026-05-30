@@ -184,7 +184,7 @@ function makeShare(overrides: Record<string, unknown> = {}) {
       createdAt: new Date(),
       updatedAt: new Date(),
     },
-    creator: { email: "creator@example.com", locale: "en" },
+    creator: { email: "creator@example.com", locale: "en", isActive: true },
     ...overrides,
   };
 }

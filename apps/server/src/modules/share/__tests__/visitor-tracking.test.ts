@@ -198,7 +198,7 @@ function makeShare(overrides: Record<string, unknown> = {}) {
     folders: [],
     recipients: [],
     alias: null,
-    creator: { email: "creator@example.com", locale: "en" },
+    creator: { email: "creator@example.com", locale: "en", isActive: true },
     ...overrides,
   };
 }
@@ -430,7 +430,7 @@ describe("Visitor Tracking — integration", () => {
           folders: [],
           recipients: [],
           security: { password: null },
-          creator: { email: "creator@example.com", locale: "en" },
+          creator: { email: "creator@example.com", locale: "en", isActive: true },
           nameFieldRequired: "HIDDEN",
           emailFieldRequired: "HIDDEN",
         },
@@ -473,7 +473,7 @@ describe("Visitor Tracking — integration", () => {
       name: "Test Share",
       creatorId: CREATOR_ID,
       notifyOnDownload: false,
-      creator: { email: "creator@example.com", locale: "en" },
+      creator: { email: "creator@example.com", locale: "en", isActive: true },
     };
 
     beforeEach(() => {
@@ -831,6 +831,75 @@ describe("Visitor Tracking — integration", () => {
       await new Promise((r) => setTimeout(r, 20));
 
       expect(mockEmailSend).not.toHaveBeenCalledWith("share_accessed", expect.anything());
+    });
+
+    it("does NOT send share_accessed email when creator.isActive is false (I-5)", async () => {
+      const share = makeShare({
+        creator: { email: "creator@example.com", locale: "en", isActive: false },
+      });
+      mockShareAliasFindUnique.mockResolvedValue({ shareId: SHARE_ID });
+      mockShareFindUnique.mockResolvedValue(share);
+      mockShareUpdateMany.mockResolvedValue({ count: 1 });
+
+      const res = await app.inject({
+        method: "GET",
+        url: `/shares/alias/${ALIAS}`,
+      });
+
+      expect(res.statusCode).toBe(200);
+
+      await new Promise((r) => setTimeout(r, 20));
+
+      expect(mockEmailSend).not.toHaveBeenCalledWith("share_accessed", expect.anything());
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Visitor identification cookie path (I-3)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  describe("POST /shares/alias/:alias/identify — cookie path", () => {
+    it("sets visitor identification cookie with path '/' (I-3)", async () => {
+      // Set up share metadata for identification
+      mockShareAliasFindUnique.mockResolvedValue({
+        share: {
+          id: SHARE_ID,
+          name: "Test Share",
+          description: null,
+          expiration: null,
+          views: 0,
+          maxViews: null,
+          files: [],
+          folders: [],
+          recipients: [],
+          security: { password: null },
+          creator: { email: "creator@example.com", locale: "en", isActive: true },
+          nameFieldRequired: "OPTIONAL",
+          emailFieldRequired: "OPTIONAL",
+        },
+      });
+
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const res = await app.inject({
+        method: "POST",
+        url: `/shares/alias/${ALIAS}/identify`,
+        headers: {
+          "content-type": "application/json",
+          cookie: `_csrf=${csrfCookie}`,
+          "x-csrf-token": csrfToken,
+        },
+        payload: {
+          name: "Test Visitor",
+          email: "visitor@test.com",
+        },
+      });
+
+      expect(res.statusCode).toBe(200);
+
+      // Find the visitor identification cookie
+      const svCookie = res.cookies.find((c: { name: string }) => c.name === `sv_${ALIAS}`);
+      expect(svCookie).toBeDefined();
+      expect(svCookie!.path).toBe("/");
     });
   });
 });

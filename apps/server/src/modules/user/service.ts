@@ -2,8 +2,11 @@ import bcrypt from "bcryptjs";
 
 import { prisma } from "../../shared/prisma.js";
 import { ConflictError, NotFoundError } from "../../utils/app-error.js";
+import { getLogger } from "../../utils/logger.js";
 import { revokeAllUserTokens } from "../auth/refresh-token.service.js";
 import { incrementTokenVersion, invalidateTokenVersionCache } from "../auth/token-version.js";
+import { emailService } from "../email/service.js";
+import { getAppUrl } from "../email/url-builder.js";
 import { type RegisterUserInput, UserResponseSchema } from "./dto.js";
 import { type IUserRepository, PrismaUserRepository } from "./repository.js";
 
@@ -54,6 +57,17 @@ export class UserService {
       });
     }
 
+    // Notify admins about new user registration (fire-and-forget, skip for first user)
+    if (!isFirstUser) {
+      emailService
+        .sendToAdmins("admin_user_registered", {
+          userName: `${data.firstName} ${data.lastName}`.trim(),
+          userEmail: data.email,
+          registrationMethod: "password",
+        })
+        .catch((err) => getLogger().error({ err }, "Failed to send admin_user_registered email"));
+    }
+
     return { ...UserResponseSchema.parse(user), isFirstUser };
   }
 
@@ -72,6 +86,12 @@ export class UserService {
 
   async updateUser(userId: string, data: Partial<UserWithPassword>) {
     const { password, ...rest } = data;
+
+    // Fetch old user state to detect isActive transitions
+    const oldUser = await this.userRepository.findUserById(userId);
+    if (!oldUser) {
+      throw new NotFoundError("User not found");
+    }
 
     const updateData: Omit<Partial<UserWithPassword>, "password"> & { password?: string } = {
       ...rest,
@@ -95,6 +115,41 @@ export class UserService {
       await revokeAllUserTokens(userId);
     }
 
+    // Send account activation/deactivation emails when isActive changes via PUT /users
+    if (data.isActive !== undefined && data.isActive !== oldUser.isActive) {
+      if (data.isActive) {
+        // Reactivated via admin update
+        try {
+          const loginUrl = await getAppUrl();
+          emailService
+            .send("account_reactivated", {
+              to: user.email,
+              locale: user.locale ?? "en",
+              userId: user.id,
+              data: {
+                firstName: user.firstName,
+                loginUrl,
+              },
+            })
+            .catch((err) => getLogger().error({ err }, "Failed to send account_reactivated email"));
+        } catch (err) {
+          getLogger().error({ err }, "Failed to build loginUrl for account_reactivated email");
+        }
+      } else {
+        // Deactivated via admin update
+        emailService
+          .send("account_deactivated", {
+            to: user.email,
+            locale: user.locale ?? "en",
+            userId: user.id,
+            data: {
+              firstName: user.firstName,
+            },
+          })
+          .catch((err) => getLogger().error({ err }, "Failed to send account_deactivated email"));
+      }
+    }
+
     return UserResponseSchema.parse(user);
   }
 
@@ -108,6 +163,25 @@ export class UserService {
 
   async activateUser(id: string) {
     const user = await this.userRepository.activateUser(id);
+
+    // Notify the reactivated user (fire-and-forget)
+    try {
+      const loginUrl = await getAppUrl();
+      emailService
+        .send("account_reactivated", {
+          to: user.email,
+          locale: user.locale ?? "en",
+          userId: user.id,
+          data: {
+            firstName: user.firstName,
+            loginUrl,
+          },
+        })
+        .catch((err) => getLogger().error({ err }, "Failed to send account_reactivated email"));
+    } catch (err) {
+      getLogger().error({ err }, "Failed to build loginUrl for account_reactivated email");
+    }
+
     return UserResponseSchema.parse(user);
   }
 
@@ -116,6 +190,19 @@ export class UserService {
     // Deactivated user must not be able to use existing sessions
     await incrementTokenVersion(id);
     await revokeAllUserTokens(id);
+
+    // Notify the deactivated user (fire-and-forget)
+    emailService
+      .send("account_deactivated", {
+        to: user.email,
+        locale: user.locale ?? "en",
+        userId: user.id,
+        data: {
+          firstName: user.firstName,
+        },
+      })
+      .catch((err) => getLogger().error({ err }, "Failed to send account_deactivated email"));
+
     return UserResponseSchema.parse(user);
   }
 

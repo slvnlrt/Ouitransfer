@@ -56,9 +56,18 @@ class EmailService {
        */
       relatedId?: string;
     },
-  ): Promise<{ enqueued: boolean }> {
+  ): Promise<{ enqueued: boolean; reason?: "invalid_payload" }> {
     const log = getLogger();
     const entry = notificationCatalog[type];
+
+    // 0. Validate payload against the catalog's Zod schema
+    const parsed = entry.payloadSchema.safeParse(options.data);
+    if (!parsed.success) {
+      log.error({ type, issues: parsed.error.issues }, "Invalid email payload — refusing to send");
+      return { enqueued: false, reason: "invalid_payload" as const };
+    }
+    // Use validated/parsed data for the rest of the method
+    const validatedData = parsed.data as EmailPayloads[T];
 
     // Resolve effective relatedId (relatedId takes priority over deprecated shareId)
     const effectiveRelatedId = options.relatedId ?? options.shareId;
@@ -136,7 +145,7 @@ class EmailService {
     // 6. Build string params from payload data for i18n interpolation.
     //    Convert all payload values to strings so they can be used in subjects and templates.
     const dataParams: Record<string, string> = {};
-    for (const [key, value] of Object.entries(options.data as Record<string, unknown>)) {
+    for (const [key, value] of Object.entries(validatedData as Record<string, unknown>)) {
       if (typeof value === "string") {
         dataParams[key] = value;
       } else if (typeof value === "number" || typeof value === "boolean") {
@@ -150,7 +159,7 @@ class EmailService {
     let textBody: string;
     try {
       const tr = await createTranslationFn(options.locale, { appName });
-      const slots = entry.render(options.data as unknown, tr);
+      const slots = entry.render(validatedData as unknown, tr);
 
       // Add unsubscribe URL if applicable
       if (unsubscribeUrl) {
@@ -226,7 +235,7 @@ class EmailService {
         subject,
         htmlBody: isDigest ? null : htmlBody,
         textBody: isDigest ? null : textBody,
-        payload: isDigest ? JSON.stringify({ v: 1, type, data: options.data }) : undefined,
+        payload: isDigest ? JSON.stringify({ v: 1, type, data: validatedData }) : undefined,
         locale: options.locale,
         status,
         priority: entry.priority,
