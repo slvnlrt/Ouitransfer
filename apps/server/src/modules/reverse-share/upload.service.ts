@@ -453,12 +453,20 @@ export class ReverseShareUploadService {
     try {
       const creator = await prisma.user.findUnique({
         where: { id: reverseShare.creatorId },
-        select: { id: true, email: true, locale: true },
+        select: { id: true, email: true, locale: true, isActive: true },
       });
       if (!creator) {
         getLogger().warn(
           { creatorId: reverseShare.creatorId },
           "Reverse share creator not found, skipping notification",
+        );
+        return;
+      }
+      // Skip notification when creator account is deactivated (consistent with scheduler checks)
+      if (creator.isActive === false) {
+        getLogger().debug(
+          { creatorId: reverseShare.creatorId },
+          "Reverse share creator is deactivated, skipping notification",
         );
         return;
       }

@@ -183,38 +183,43 @@ async function trackShareDownload(
     }
   }
 
-  // Create ShareVisit for download (fire-and-forget)
-  prisma.shareVisit
-    .create({
-      data: {
-        shareId,
-        fileId: fileRecord.id,
-        visitorName,
-        visitorEmail,
-        ipAddress: request.ip,
-        userAgent: request.headers["user-agent"],
-        action: "download",
-      },
-    })
-    .catch((err) => getLogger().error({ err }, "Failed to create ShareVisit for download"));
+  // Fire and forget — don't block the response.
+  // Await visit insert before notification: if the visit record fails,
+  // don't notify the owner about a download that was never recorded.
+  (async () => {
+    try {
+      await prisma.shareVisit.create({
+        data: {
+          shareId,
+          fileId: fileRecord.id,
+          visitorName,
+          visitorEmail,
+          ipAddress: request.ip,
+          userAgent: request.headers["user-agent"],
+          action: "download",
+        },
+      });
+    } catch (err) {
+      getLogger().error({ err }, "Failed to create ShareVisit for download");
+      return; // Don't notify — the visit was never recorded
+    }
 
-  // Update lastDownloadedAt and reset inactivityAlertSent so a future
-  // inactivity cycle can trigger another alert (fire-and-forget)
-  prisma.share
-    .update({
-      where: { id: shareId },
-      data: { lastDownloadedAt: new Date(), inactivityAlertSent: false },
-    })
-    .catch((err) => getLogger().error({ err }, "Failed to update share lastDownloadedAt"));
+    // Update lastDownloadedAt and reset inactivityAlertSent so a future
+    // inactivity cycle can trigger another alert (independent, non-blocking)
+    prisma.share
+      .update({
+        where: { id: shareId },
+        data: { lastDownloadedAt: new Date(), inactivityAlertSent: false },
+      })
+      .catch((err) => getLogger().error({ err }, "Failed to update share lastDownloadedAt"));
 
-  // Notify share owner (fire-and-forget)
-  // Skip notification when creator account is deactivated (consistent with scheduler checks)
-  if (
-    shareWithFile.creatorId &&
-    shareWithFile.creator?.email &&
-    shareWithFile.creator?.isActive !== false
-  ) {
-    (async () => {
+    // Notify share owner
+    // Skip notification when creator account is deactivated (consistent with scheduler checks)
+    if (
+      shareWithFile.creatorId &&
+      shareWithFile.creator?.email &&
+      shareWithFile.creator?.isActive !== false
+    ) {
       try {
         const { buildShareManageUrl } = await import("../email/url-builder.js");
         const shareManageUrl = await buildShareManageUrl(shareId);
@@ -235,8 +240,8 @@ async function trackShareDownload(
       } catch (err) {
         getLogger().error({ err }, "Failed to send share_downloaded notification");
       }
-    })().catch(() => {});
-  }
+    }
+  })().catch(() => {});
 }
 
 // ── Pre-validation hook ──────────────────────────────────────

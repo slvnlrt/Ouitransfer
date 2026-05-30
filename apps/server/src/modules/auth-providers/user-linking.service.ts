@@ -1,6 +1,8 @@
 import type { Prisma } from "../../generated/prisma/client.js";
 import { prisma } from "../../shared/prisma.js";
 import { ForbiddenError, ValidationError } from "../../utils/app-error.js";
+import { getLogger } from "../../utils/logger.js";
+import { emailService } from "../email/service.js";
 import type { AuthProviderModel, ProviderUserInfo } from "./types.js";
 
 type ExistingUser = Prisma.UserGetPayload<Record<string, never>>;
@@ -147,7 +149,7 @@ export class UserLinkingService {
   ) {
     const { firstName, lastName } = this.generateUserNames(userInfo);
 
-    return await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         email: userInfo.email,
         username: userInfo.email.split("@")[0],
@@ -163,5 +165,22 @@ export class UserLinkingService {
         },
       },
     });
+
+    // Notify admins about new SSO/OIDC user registration (fire-and-forget).
+    // Skip if this is the very first user (no admins to notify).
+    const usersCount = await prisma.user.count();
+    if (usersCount > 1) {
+      emailService
+        .sendToAdmins("admin_user_registered", {
+          userName: `${firstName} ${lastName}`.trim() || user.username,
+          userEmail: user.email,
+          registrationMethod: "oidc",
+        })
+        .catch((err) =>
+          getLogger().error({ err }, "Failed to send admin_user_registered email for OIDC user"),
+        );
+    }
+
+    return user;
   }
 }

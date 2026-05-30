@@ -326,25 +326,30 @@ export class ShareService {
       visitorEmail = context.visitorCookie.email;
     }
 
-    // Fire and forget — don't block the response
-    prisma.shareVisit
-      .create({
-        data: {
-          shareId: share.id,
-          recipientId,
-          visitorName,
-          visitorEmail,
-          ipAddress: context?.ipAddress,
-          userAgent: context?.userAgent,
-          action: "access",
-        },
-      })
-      .catch((err) => getLogger().error({ err }, "Failed to create ShareVisit"));
+    // Fire and forget — don't block the response.
+    // Await visit insert before notification: if the visit record fails,
+    // don't notify the owner about a visit that was never recorded.
+    (async () => {
+      try {
+        await prisma.shareVisit.create({
+          data: {
+            shareId: share.id,
+            recipientId,
+            visitorName,
+            visitorEmail,
+            ipAddress: context?.ipAddress,
+            userAgent: context?.userAgent,
+            action: "access",
+          },
+        });
+      } catch (err) {
+        getLogger().error({ err }, "Failed to create ShareVisit");
+        return; // Don't notify — the visit was never recorded
+      }
 
-    // Trigger share_accessed notification (fire-and-forget)
-    // Skip notification when creator account is deactivated (consistent with scheduler checks)
-    if (share.creatorId && share.creator?.email && share.creator?.isActive !== false) {
-      (async () => {
+      // Trigger share_accessed notification
+      // Skip notification when creator account is deactivated (consistent with scheduler checks)
+      if (share.creatorId && share.creator?.email && share.creator?.isActive !== false) {
         try {
           const shareManageUrl = await buildShareManageUrl(shareId);
           await emailService.send("share_accessed", {
@@ -363,8 +368,8 @@ export class ShareService {
         } catch (err) {
           getLogger().error({ err }, "Failed to send share_accessed notification");
         }
-      })().catch(() => {});
-    }
+      }
+    })().catch(() => {});
 
     // Trigger share_max_views_reached notification when the share just hit its limit.
     // Uses the actual post-increment `newViews` from the atomic operation (not a snapshot).

@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs";
 
 import { prisma } from "../../shared/prisma.js";
 import { ConflictError, GoneError, NotFoundError } from "../../utils/app-error.js";
+import { getLogger } from "../../utils/logger.js";
+import { emailService } from "../email/service.js";
 
 export class InviteService {
   async generateInviteToken(
@@ -106,6 +108,18 @@ export class InviteService {
 
       return { ...user, inviteTokenId: inviteToken.id };
     });
+
+    // Notify admins about new invite-based registration (fire-and-forget).
+    // An admin created the invite, so there's always at least one user — but guard anyway.
+    emailService
+      .sendToAdmins("admin_user_registered", {
+        userName: `${data.firstName} ${data.lastName}`.trim(),
+        userEmail: data.email,
+        registrationMethod: "invite",
+      })
+      .catch((err) =>
+        getLogger().error({ err }, "Failed to send admin_user_registered email for invited user"),
+      );
 
     return result;
   }
