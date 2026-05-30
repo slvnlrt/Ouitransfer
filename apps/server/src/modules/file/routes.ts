@@ -30,6 +30,7 @@ import { validateObjectName } from "../../utils/validate-object-name.js";
 import { logAuditEvent } from "../audit/service.js";
 import { emailService } from "../email/service.js";
 import { quotaService } from "../quota/service.js";
+import { parseVisitorCookie } from "../share/visitor-cookie.js";
 import {
   CheckFileSchema,
   ListFilesSchema,
@@ -158,6 +159,7 @@ async function trackShareDownload(
     },
     include: {
       creator: { select: { email: true, locale: true, isActive: true } },
+      alias: true,
     },
   });
 
@@ -168,12 +170,27 @@ async function trackShareDownload(
 
   if (isOwner) return;
 
+  // Resolve visitor identity from the signed identification cookie (sv_{alias}).
+  // The cookie is set during share access when the visitor identifies themselves.
+  let visitorName: string | undefined;
+  let visitorEmail: string | undefined;
+
+  if (shareWithFile.alias) {
+    const visitor = parseVisitorCookie(request, shareWithFile.alias.alias);
+    if (visitor) {
+      visitorName = visitor.name;
+      visitorEmail = visitor.email;
+    }
+  }
+
   // Create ShareVisit for download (fire-and-forget)
   prisma.shareVisit
     .create({
       data: {
         shareId,
         fileId: fileRecord.id,
+        visitorName,
+        visitorEmail,
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
         action: "download",
@@ -191,8 +208,6 @@ async function trackShareDownload(
     .catch((err) => getLogger().error({ err }, "Failed to update share lastDownloadedAt"));
 
   // Notify share owner (fire-and-forget)
-  // TODO: Parse sv_{alias} cookie and ?t= tracking token to include visitor identity
-  // in share_downloaded notifications.
   // Skip notification when creator account is deactivated (consistent with scheduler checks)
   if (
     shareWithFile.creatorId &&
@@ -211,6 +226,8 @@ async function trackShareDownload(
           data: {
             shareName: shareWithFile.name ?? "Unnamed share",
             fileName: fileRecord.name,
+            visitorName,
+            visitorEmail,
             downloadedAt: new Date().toISOString(),
             shareManageUrl,
           },

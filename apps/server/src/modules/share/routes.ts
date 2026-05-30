@@ -24,43 +24,7 @@ import {
   UpdateShareSchema,
 } from "./dto.js";
 import { type ShareAccessContext, ShareService } from "./service.js";
-
-/** Zod schema for the signed visitor identification cookie payload. */
-const VisitorCookiePayload = z.object({
-  alias: z.string(),
-  name: z.string().nullable().optional(),
-  email: z.string().nullable().optional(),
-});
-
-/**
- * Parse a signed visitor identification cookie for the given alias.
- * Returns the parsed payload if valid, undefined otherwise.
- */
-function parseVisitorCookie(
-  request: FastifyRequest,
-  alias: string,
-): { name?: string; email?: string; alias: string } | undefined {
-  const raw = request.cookies[`sv_${alias}`];
-  if (!raw) return undefined;
-  const unsigned = request.unsignCookie(raw);
-  if (!unsigned.valid || !unsigned.value) return undefined;
-  try {
-    const parsed = VisitorCookiePayload.safeParse(JSON.parse(unsigned.value));
-    if (!parsed.success) return undefined;
-    const payload = parsed.data;
-    if (payload.alias !== alias) return undefined;
-    // Treat empty-content cookies as absent — both fields blank is the same as no identification
-    if (!payload.name && !payload.email) return undefined;
-    return {
-      alias: payload.alias,
-      name: payload.name ?? undefined,
-      email: payload.email ?? undefined,
-    };
-  } catch (err) {
-    request.log.debug({ err, alias }, "Failed to parse visitor identification cookie");
-    return undefined;
-  }
-}
+import { parseVisitorCookie } from "./visitor-cookie.js";
 
 const ShareAccessQuery = z.object({
   t: z
@@ -182,10 +146,17 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         // JWT verification failure is expected for unauthenticated share access
         request.log.debug({ err }, "JWT verification skipped (anonymous access)");
       }
-      // Note: This route does not parse the visitor identification cookie (sv_*).
-      // Only alias-based routes (/shares/alias/:alias) support cookie-based identification.
+      // Resolve the share's alias so we can parse the visitor identification cookie (sv_{alias}).
+      // The alias lookup is indexed (unique constraint) and avoids coupling the service layer
+      // to Fastify's cookie API.
+      const shareAlias = await prisma.shareAlias.findUnique({
+        where: { shareId: request.params.shareId },
+        select: { alias: true },
+      });
+      const visitorCookie = shareAlias ? parseVisitorCookie(request, shareAlias.alias) : undefined;
       const context: ShareAccessContext = {
         trackingToken: request.query.t,
+        visitorCookie,
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
       };
@@ -229,8 +200,15 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         // JWT verification failure is expected for unauthenticated share access
         request.log.debug({ err }, "JWT verification skipped (anonymous access)");
       }
+      // Resolve alias for visitor cookie parsing (same pattern as GET /shares/:shareId above)
+      const shareAlias = await prisma.shareAlias.findUnique({
+        where: { shareId: request.params.shareId },
+        select: { alias: true },
+      });
+      const visitorCookie = shareAlias ? parseVisitorCookie(request, shareAlias.alias) : undefined;
       const context: ShareAccessContext = {
         trackingToken: request.query.t,
+        visitorCookie,
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
       };
