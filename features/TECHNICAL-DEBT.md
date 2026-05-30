@@ -549,3 +549,94 @@ was explicitly deferred because reverse shares do not have a recipient model. Th
 
 **Found during:** 8.2 review pass 4 remediation (mai 2026)
 **Severity:** Low — dead code with no runtime impact; explicitly documented as deferred
+
+---
+
+## TD-31 — Audit PII sweep: `deleteUser` doesn't clean `AuditLog.metadata.emails`
+
+**Context:** `POST /shares/:shareId/recipients` logs recipient emails in `AuditLog.metadata.emails`
+as plaintext for forensics (see `apps/server/src/modules/share/routes.ts:512-519`). When a user
+is deleted via `deleteUser`, these audit log rows are not swept or redacted. This means a deleted
+user's email can persist in audit metadata indefinitely (subject to `auditRetentionDays`).
+
+**Impact:** GDPR data-subject deletion compliance gap. No impact today (app not in production,
+no real users). The audit retention mechanism partially mitigates this (rows are auto-deleted
+after `auditRetentionDays`), but a request for immediate erasure would not be honored.
+
+**Fix:** When `deleteUser` runs, either:
+1. Delete `AuditLog` rows where `metadata` contains the deleted user's email
+2. Or redact the email in `metadata` (replace with `[deleted]`)
+
+Option 2 preserves audit trail structure while removing PII.
+
+**Depends on:** No external dependencies — can be implemented independently.
+
+**Found during:** 8.2 review pass 5 (mai 2026)
+**Severity:** Low — no current users; mitigated by audit retention policy
+
+---
+
+## TD-32 — Sender locale used for external recipient invitation emails
+
+**Context:** External share recipients (people without an account) receive invitation emails
+in the *sender's* locale, not their own (see `apps/server/src/modules/share/service.ts:781-785`).
+A French user sharing files with a German colleague sends a French email. This is the best
+available heuristic today since external recipients have no account and thus no locale preference.
+
+**Fix:** Add an optional `locale` field to the `ShareRecipient` Prisma model. Options:
+1. Let the sender pick per-recipient locale in the UI (adds complexity)
+2. Default to sender locale but allow override
+3. Accept current behavior with documentation (least effort)
+
+**Found during:** 8.2 review pass 5 (mai 2026)
+**Severity:** Low — sender locale is a reasonable heuristic for same-organization sharing
+
+---
+
+## TD-33 — Email subject frozen at enqueue time — admin `appName` changes invisible on queued jobs
+
+**Context:** The email system resolves the subject line (including `appName` from config) at
+enqueue time. If an admin changes `appName` in settings while there are pending email jobs in
+the queue, those jobs will be sent with the old app name.
+
+**Impact:** Extremely minor. Only affects the short window between an `appName` config change
+and queue flush. In practice, the queue processes quickly and `appName` changes are rare events.
+
+**Fix options:**
+1. Resolve subject at send time instead of enqueue time (defers `appName` lookup)
+2. Show a warning in admin email settings UI when there are pending jobs
+3. Accept as inherent design trade-off (recommended)
+
+**Found during:** 8.2 review pass 5 (mai 2026)
+**Severity:** Very low — cosmetic edge case with negligible real-world impact
+
+---
+
+## TD-34 — No `notifyOnUpload` per-reverse-share override (asymmetry with shares)
+
+**Context:** Shares have a `notifyOnDownload` boolean field that lets the owner override
+notification behavior per-share. When `notifyOnDownload=true`, the `resolveFrequency` cascade
+upgrades `share_downloaded` notifications to "immediate" regardless of the user's default
+preference (see `apps/server/src/modules/email/service.ts:325-339`).
+
+Reverse shares have no equivalent `notifyOnUpload` toggle. The `reverse_share_uploaded`
+notification type uses only the global preference cascade (user preference → catalog default).
+A comment at `email/service.ts:329-330` notes this gap:
+```
+// Known gap: reverse_share_uploaded has a cooldown but no per-share override mechanism
+// analogous to notifyOnDownload. If needed, add a similar toggle on the ReverseShare model.
+```
+
+**Impact:** Users who create many reverse shares cannot selectively enable/disable upload
+notifications per reverse share. They can only toggle all upload notifications globally.
+This is a significant usability gap for active reverse share users.
+
+**Fix:** Mirror the `notifyOnDownload` pattern:
+1. Add `notifyOnUpload` boolean field to `ReverseShare` Prisma model (default: `false`)
+2. Expose in reverse share create/update DTOs and API
+3. Add Step 3b in `resolveFrequency`: if `type === "reverse_share_uploaded"` and
+   `reverseShare.notifyOnUpload === true`, upgrade to "immediate"
+4. Add toggle UI in the reverse share management view (create modal + detail modal)
+
+**Found during:** 8.2 review pass 5 (mai 2026)
+**Severity:** High — useful feature gap that affects daily workflow for reverse share users

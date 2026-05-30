@@ -410,7 +410,7 @@ export class ShareService {
   }
 
   async updateShare(shareId: string, data: Omit<UpdateShareInput, "id">, userId: string) {
-    const { password, maxViews, recipients, ...shareData } = data;
+    const { password, maxViews, recipients, expiration, ...shareData } = data;
 
     const share = await this.shareRepository.findShareById(shareId);
     if (!share) {
@@ -466,11 +466,16 @@ export class ShareService {
     const updateData: Partial<Parameters<typeof this.shareRepository.updateShare>[1]> = {
       ...shareData,
       maxViews: maxViews !== undefined ? maxViews : undefined,
-      expiration: shareData.expiration ? new Date(shareData.expiration) : null,
+      // Only touch expiration if it was explicitly included in the payload.
+      // undefined = not sent (preserve existing value), null-ish string = clear, valid string = set.
+      ...(expiration !== undefined && {
+        expiration: expiration ? new Date(expiration) : null,
+      }),
     };
 
     // Reset notification flags when expiration is added or extended (allows re-notification)
-    const newExp = shareData.expiration ? new Date(shareData.expiration) : null;
+    const newExp =
+      expiration !== undefined ? (expiration ? new Date(expiration) : null) : undefined;
     const oldExp = share.expiration;
     if (newExp && (!oldExp || newExp > oldExp)) {
       updateData.notifiedForExpiring = false;
