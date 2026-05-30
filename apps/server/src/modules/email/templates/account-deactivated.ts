@@ -13,7 +13,7 @@ export function renderAccountDeactivated(
   return {
     subtitle: t("accountDeactivated.subtitle"),
     body: t("accountDeactivated.body", { firstName: data.firstName }),
-    infoBox: data.adminContactEmail
+    infoBox: data.adminContactEmail?.trim()
       ? t("accountDeactivated.infoContact", { adminContactEmail: data.adminContactEmail })
       : t("accountDeactivated.info"),
   };

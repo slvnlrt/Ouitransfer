@@ -411,7 +411,8 @@ describe("Notification routes — integration", () => {
 
       const html = res.payload;
       expect(html).toContain("Unsubscribe from notifications");
-      expect(html).toContain("share_expiring");
+      // Uses the human-readable displayName from the catalog instead of the raw type key
+      expect(html).toContain("Share Expiring Soon");
       expect(html).toContain("Confirm Unsubscribe");
 
       // The GET endpoint must NOT have unsubscribed the user
@@ -462,7 +463,8 @@ describe("Notification routes — integration", () => {
 
       const html = res.payload;
       expect(html).toContain("Successfully unsubscribed");
-      expect(html).toContain("share_expiring");
+      // Uses the human-readable displayName from the catalog instead of the raw type key
+      expect(html).toContain("Share Expiring Soon");
 
       // Should have called upsert to set frequency to disabled
       expect(mockPrisma.notificationPreference.upsert).toHaveBeenCalledOnce();

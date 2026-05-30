@@ -3,7 +3,8 @@
     "footer": "This email was sent by <strong>{appName}</strong>",
     "footerIgnore": "If you didn't expect this email, you can safely ignore it.",
     "poweredBy": "Powered by Ouitransfer",
-    "unsubscribe": "Unsubscribe from these notifications"
+    "unsubscribe": "Unsubscribe from these notifications",
+    "viewShare": "View Share"
   },
   "welcome": {
     "subject": "{appName} - Welcome!",

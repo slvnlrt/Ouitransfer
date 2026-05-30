@@ -182,6 +182,8 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         // JWT verification failure is expected for unauthenticated share access
         request.log.debug({ err }, "JWT verification skipped (anonymous access)");
       }
+      // Note: This route does not parse the visitor identification cookie (sv_*).
+      // Only alias-based routes (/shares/alias/:alias) support cookie-based identification.
       const context: ShareAccessContext = {
         trackingToken: request.query.t,
         ipAddress: request.ip,
@@ -506,6 +508,7 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       const emailList = recipientList.map((r) => r.email);
       // NOTE: Recipient emails are stored in the audit log for forensics. PII retention follows
       // auditRetentionDays (default 365). If privacy requirements change, hash or redact emails here.
+      // TODO: When data-subject deletion ships, sweep AuditLog.metadata.emails for deleted users.
       logAuditEvent({
         action: "SHARE_RECIPIENT_ADD",
         ipAddress: request.ip,

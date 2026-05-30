@@ -432,8 +432,11 @@ async function scheduleNext(delayMs?: number): Promise<void> {
  */
 export async function startNotificationScheduler(): Promise<void> {
   stopNotificationScheduler();
+  const checkHour = await getNotificationCheckHourUtc();
   await scheduleNext();
-  getLogger().info("Notification scheduler started (daily, aligned to notificationCheckHour UTC)");
+  getLogger().info(
+    `Notification scheduler started — next run aligned to ${String(checkHour).padStart(2, "0")}:00 UTC`,
+  );
 }
 
 /**
@@ -457,18 +460,47 @@ export function stopNotificationScheduler(): void {
  * runs are no-ops.
  */
 export async function initNotificationSchedulerOnBoot(): Promise<void> {
-  try {
-    // Run initial check on boot
+  const log = getLogger();
+
+  // Run initial check on boot with retry for transient DB errors.
+  // Backoff: 30s, 60s, 120s. If all 3 attempts fail, log an error and
+  // continue with the scheduled timer — the first scheduled run will retry.
+  const RETRY_DELAYS_MS = [30_000, 60_000, 120_000];
+
+  let bootCheckSucceeded = false;
+  for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt++) {
     try {
       await runAllChecks();
-      getLogger().info("Notification scheduler initial check completed");
+      const checkHour = await getNotificationCheckHourUtc();
+      log.info(
+        `Notification scheduler boot check completed — next scheduled run aligned to ${String(checkHour).padStart(2, "0")}:00 UTC`,
+      );
+      bootCheckSucceeded = true;
+      break;
     } catch (err) {
-      getLogger().error({ err }, "Initial notification check failed");
+      if (attempt < RETRY_DELAYS_MS.length) {
+        const delayMs = RETRY_DELAYS_MS[attempt];
+        log.warn(
+          { err, attempt: attempt + 1, nextRetryMs: delayMs },
+          "Boot-time notification check failed, retrying",
+        );
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      } else {
+        log.error(
+          { err, attempts: attempt + 1 },
+          "Boot-time notification check failed after all retries — continuing with scheduled timer",
+        );
+      }
     }
+  }
 
+  try {
     await startNotificationScheduler();
+    if (!bootCheckSucceeded) {
+      log.info("Notification scheduler started (boot check failed, relying on scheduled runs)");
+    }
   } catch (err) {
-    getLogger().error({ err }, "Failed to initialize notification scheduler");
+    log.error({ err }, "Failed to start notification scheduler");
   }
 }
 

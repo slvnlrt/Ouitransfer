@@ -335,7 +335,9 @@ describe("i18n key smoke tests — real en.json", () => {
   it("all catalog entries have valid i18n keys in en.json", async () => {
     // Use real en.json via createTranslationFn (no mocks).
     // This validates that every key referenced by templates actually exists.
-    const tr = await createTranslationFn("en");
+    // appName is always provided as a default param in production (see service.ts),
+    // so we include it here to avoid false positives from the unresolved-placeholder check.
+    const tr = await createTranslationFn("en", { appName: "TestApp" });
 
     /** Minimal valid payloads matching each catalog entry's Zod schema. */
     const samplePayloads: Record<NotificationKey, unknown> = {

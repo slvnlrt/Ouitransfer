@@ -7,6 +7,7 @@ export interface ShareDownloadedData {
   visitorName?: string;
   visitorEmail?: string;
   downloadedAt: string;
+  shareManageUrl?: string;
 }
 
 export function renderShareDownloaded(data: ShareDownloadedData, t: TranslationFn): LayoutSlots {
@@ -28,5 +29,8 @@ export function renderShareDownloaded(data: ShareDownloadedData, t: TranslationF
   return {
     subtitle: t("shareDownloaded.subtitle"),
     body,
+    ...(data.shareManageUrl
+      ? { cta: { url: data.shareManageUrl, label: t("common.viewShare") } }
+      : {}),
   };
 }

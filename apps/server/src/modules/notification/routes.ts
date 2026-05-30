@@ -6,6 +6,7 @@ import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
 import { prisma } from "../../shared/prisma.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { escapeHtml } from "../../utils/escape-html.js";
+import { type NotificationKey, notificationCatalog } from "../email/catalog.js";
 import { emailService } from "../email/service.js";
 import {
   getUserPreferences,
@@ -42,6 +43,8 @@ const HTML_STYLES = `
 // Minimal inline map for localized unsubscribe pages. Covers English and French;
 // other locales fall back to English. The unsubscribe JWT contains userId + type
 // but not locale, so we fetch the user's locale from the DB after token verification.
+// TODO: These inline strings should eventually use the email i18n system (loader.ts)
+// for full locale coverage. Deferred — only en/fr are needed for the unsubscribe flow.
 
 interface UnsubscribePageStrings {
   lang: string;
@@ -92,6 +95,15 @@ const PAGE_STRINGS: Record<string, UnsubscribePageStrings> = {
       "Vous pouvez gérer vos préférences de notification directement depuis les paramètres de votre compte.",
   },
 };
+
+/**
+ * Returns the human-readable display name for a notification type.
+ * Falls back to the raw type key if the type is not in the catalog.
+ */
+function getTypeDisplayName(type: string): string {
+  const entry = notificationCatalog[type as NotificationKey];
+  return entry?.displayName ?? type;
+}
 
 function getPageStrings(locale?: string | null): UnsubscribePageStrings {
   if (locale && locale in PAGE_STRINGS) return PAGE_STRINGS[locale];
@@ -279,9 +291,11 @@ export const notificationRoutes: FastifyPluginAsyncZod = async (app) => {
         const { userId, type } = verifyUnsubscribeToken(token);
         const locale = await getUserLocale(userId);
         const strings = getPageStrings(locale);
+        // Use human-readable displayName from catalog instead of raw snake_case type key
+        const displayName = getTypeDisplayName(type);
         return reply
           .header("Content-Type", "text/html; charset=utf-8")
-          .send(renderConfirmPage(token, type, strings));
+          .send(renderConfirmPage(token, displayName, strings));
       } catch {
         return reply.header("Content-Type", "text/html; charset=utf-8").send(renderErrorPage());
       }
@@ -328,9 +342,11 @@ export const notificationRoutes: FastifyPluginAsyncZod = async (app) => {
         await unsubscribeUser(userId, type);
         const locale = await getUserLocale(userId);
         const strings = getPageStrings(locale);
+        // Use human-readable displayName from catalog instead of raw snake_case type key
+        const displayName = getTypeDisplayName(type);
         return reply
           .header("Content-Type", "text/html; charset=utf-8")
-          .send(renderSuccessPage(type, strings));
+          .send(renderSuccessPage(displayName, strings));
       } catch {
         return reply.header("Content-Type", "text/html; charset=utf-8").send(renderErrorPage());
       }

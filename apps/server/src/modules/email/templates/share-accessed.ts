@@ -6,6 +6,7 @@ export interface ShareAccessedData {
   visitorName?: string;
   visitorEmail?: string;
   accessedAt: string;
+  shareManageUrl?: string;
 }
 
 export function renderShareAccessed(data: ShareAccessedData, t: TranslationFn): LayoutSlots {
@@ -25,5 +26,8 @@ export function renderShareAccessed(data: ShareAccessedData, t: TranslationFn): 
   return {
     subtitle: t("shareAccessed.subtitle"),
     body,
+    ...(data.shareManageUrl
+      ? { cta: { url: data.shareManageUrl, label: t("common.viewShare") } }
+      : {}),
   };
 }

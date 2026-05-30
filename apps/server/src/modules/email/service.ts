@@ -30,6 +30,42 @@ function sanitizeForSubject(params: Record<string, string>): Record<string, stri
   return clean;
 }
 
+/**
+ * ISO 8601 datetime regex (e.g. "2026-01-15T09:30:00.000Z" or "2026-01-15T09:30:00+05:30").
+ */
+const ISO_DATETIME_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
+
+/**
+ * Detects date-shaped string values and formats them for human-readable email rendering.
+ * A value is considered a date if the key ends with "At" (e.g. expiresAt, accessedAt,
+ * downloadedAt, expiredAt) or matches the ISO datetime pattern.
+ * Returns the original value unchanged if it's not a date.
+ */
+function formatDateIfApplicable(key: string, value: string, locale: string): string {
+  const isDateKey = key.endsWith("At");
+  const isIsoDate = ISO_DATETIME_RE.test(value);
+
+  if (!isDateKey && !isIsoDate) return value;
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+
+  try {
+    return new Intl.DateTimeFormat(locale, {
+      dateStyle: "long",
+      timeStyle: "short",
+      timeZone: "UTC",
+    }).format(date);
+  } catch {
+    // Invalid locale — fall back to English formatting
+    return new Intl.DateTimeFormat("en", {
+      dateStyle: "long",
+      timeStyle: "short",
+      timeZone: "UTC",
+    }).format(date);
+  }
+}
+
 // ─── EmailService ─────────────────────────────────────────────────────────────
 
 class EmailService {
@@ -144,15 +180,12 @@ class EmailService {
 
     // 6. Build string params from payload data for i18n interpolation.
     //    Convert all payload values to strings so they can be used in subjects and templates.
-    // TODO: Date localization — ISO datetime strings (expiresAt, accessedAt, downloadedAt, etc.)
-    // are currently rendered as raw ISO format in email bodies. For user-friendly emails, format
-    // date values with `Intl.DateTimeFormat(locale, { dateStyle: 'long' })` before interpolation.
-    // Requires identifying which payload keys are dates (via catalog metadata or naming convention)
-    // and threading the locale into this formatting step. Deferred — raw ISO dates are unambiguous.
+    //    Date-shaped values (keys ending in "At" or ISO datetime strings) are automatically
+    //    formatted with Intl.DateTimeFormat for human-readable rendering in emails.
     const dataParams: Record<string, string> = {};
     for (const [key, value] of Object.entries(validatedData as Record<string, unknown>)) {
       if (typeof value === "string") {
-        dataParams[key] = value;
+        dataParams[key] = formatDateIfApplicable(key, value, options.locale);
       } else if (typeof value === "number" || typeof value === "boolean") {
         dataParams[key] = String(value);
       }
@@ -201,7 +234,8 @@ class EmailService {
     //    via user-controlled values (senderName, shareName, appName, etc.)
     const sanitizedParams = sanitizeForSubject({ appName, ...dataParams });
 
-    // 9. Resolve subject from i18n with full payload params (plain text, no HTML escaping)
+    // 9. Resolve subject from i18n with full payload params (plain text, no HTML escaping).
+    // Note: subject is frozen at enqueue time — admin appName changes won't affect queued jobs.
     let subject: string;
     try {
       const prefix = typeToI18nPrefix(type);
@@ -292,6 +326,8 @@ class EmailService {
     // The spec scopes notifyOnDownload to downloads only — share_accessed is not upgraded.
     // Checked BEFORE the catalog default so that users who never set a preference
     // can still get notified when the per-share toggle is on.
+    // Known gap: reverse_share_uploaded has a cooldown but no per-share override mechanism
+    // analogous to notifyOnDownload. If needed, add a similar toggle on the ReverseShare model.
     if (shareId && type === "share_downloaded") {
       const share = await prisma.share.findUnique({
         where: { id: shareId },

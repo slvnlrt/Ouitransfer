@@ -40,6 +40,8 @@ export function IdentificationForm({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [attempted, setAttempted] = useState(false);
+  // firstInputRef is attached to whichever input renders first (name or email).
+  // The hasFocusedRef guard ensures autofocus fires once on first appearance only.
   const firstInputRef = useRef<HTMLInputElement>(null);
   const hasFocusedRef = useRef(false);
 

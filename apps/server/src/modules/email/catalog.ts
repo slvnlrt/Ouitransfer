@@ -55,6 +55,8 @@ export interface NotificationTypeConfig {
   cooldownSeconds?: number;
   /** i18n keys required by the render function. */
   requiredI18nKeys: string[];
+  /** Human-readable display name for this notification type (shown in unsubscribe pages). */
+  displayName: string;
 }
 
 // ─── Render adapter ───────────────────────────────────────────────────────────
@@ -117,6 +119,7 @@ const shareAccessedSchema = z.object({
   visitorName: z.string().optional(),
   visitorEmail: z.string().optional(),
   accessedAt: isoDateString,
+  shareManageUrl: z.string().optional(),
 });
 
 const shareDownloadedSchema = z.object({
@@ -125,6 +128,7 @@ const shareDownloadedSchema = z.object({
   visitorName: z.string().optional(),
   visitorEmail: z.string().optional(),
   downloadedAt: isoDateString,
+  shareManageUrl: z.string().optional(),
 });
 
 const shareExpiringSchema = z.object({
@@ -223,6 +227,7 @@ export const notificationCatalog = {
     configurable: false,
     hasUnsubscribe: false,
     requiredI18nKeys: ["welcome.subject", "welcome.subtitle", "welcome.body", "welcome.cta"],
+    displayName: "Welcome",
   },
 
   password_reset: {
@@ -240,6 +245,7 @@ export const notificationCatalog = {
       "passwordReset.cta",
       "passwordReset.info",
     ],
+    displayName: "Password Reset",
   },
 
   account_deactivated: {
@@ -257,6 +263,7 @@ export const notificationCatalog = {
       "accountDeactivated.info",
       "accountDeactivated.infoContact",
     ],
+    displayName: "Account Deactivated",
   },
 
   account_reactivated: {
@@ -273,6 +280,7 @@ export const notificationCatalog = {
       "accountReactivated.body",
       "accountReactivated.cta",
     ],
+    displayName: "Account Reactivated",
   },
 
   // ── Share invitations (non-configurable, one-shot) ─────────────────────────
@@ -295,6 +303,7 @@ export const notificationCatalog = {
       "shareInvitation.infoExpires",
       "shareInvitation.infoPasswordExpires",
     ],
+    displayName: "Share Invitations",
   },
 
   // DEFERRED: Reverse shares do not have a recipient model. Trigger will be added
@@ -317,6 +326,7 @@ export const notificationCatalog = {
       "reverseShareInvitation.infoExpires",
       "reverseShareInvitation.infoPasswordExpires",
     ],
+    displayName: "Reverse Share Invitations",
   },
 
   // ── Share activity (configurable, noisy) ───────────────────────────────────
@@ -336,6 +346,7 @@ export const notificationCatalog = {
       "shareAccessed.bodyIdentified",
       "shareAccessed.bodyAnonymous",
     ],
+    displayName: "Share Access Notifications",
   },
 
   /**
@@ -359,6 +370,7 @@ export const notificationCatalog = {
       "shareDownloaded.bodyIdentified",
       "shareDownloaded.bodyAnonymous",
     ],
+    displayName: "Share Download Notifications",
   },
 
   // ── Share lifecycle (configurable) ─────────────────────────────────────────
@@ -377,6 +389,7 @@ export const notificationCatalog = {
       "shareExpiring.body",
       "shareExpiring.cta",
     ],
+    displayName: "Share Expiring Soon",
   },
 
   share_expired: {
@@ -393,6 +406,7 @@ export const notificationCatalog = {
       "shareExpired.body",
       "shareExpired.cta",
     ],
+    displayName: "Share Expired",
   },
 
   share_max_views_reached: {
@@ -409,6 +423,7 @@ export const notificationCatalog = {
       "shareMaxViewsReached.body",
       "shareMaxViewsReached.cta",
     ],
+    displayName: "Share Max Views Reached",
   },
 
   share_no_activity: {
@@ -425,6 +440,7 @@ export const notificationCatalog = {
       "shareNoActivity.body",
       "shareNoActivity.cta",
     ],
+    displayName: "Share No Activity Alert",
   },
 
   // ── Reverse share lifecycle (configurable) ─────────────────────────────────
@@ -437,7 +453,10 @@ export const notificationCatalog = {
     defaultFrequency: "immediate",
     configurable: true,
     hasUnsubscribe: true,
-    // Prevent flooding from script-driven upload bursts (5-minute cooldown)
+    // Prevent flooding from script-driven upload bursts (5-minute cooldown).
+    // The 5-second debounce in upload.service.ts batches files from a single upload session.
+    // The 300-second cooldown here prevents notification flooding from multiple rapid upload
+    // sessions to the same reverse share.
     cooldownSeconds: 300,
     requiredI18nKeys: [
       "reverseShareUploaded.subject",
@@ -445,6 +464,7 @@ export const notificationCatalog = {
       "reverseShareUploaded.bodyIdentified",
       "reverseShareUploaded.bodyAnonymous",
     ],
+    displayName: "Reverse Share Upload Notifications",
   },
 
   reverse_share_expiring: {
@@ -460,6 +480,7 @@ export const notificationCatalog = {
       "reverseShareExpiring.subtitle",
       "reverseShareExpiring.body",
     ],
+    displayName: "Reverse Share Expiring Soon",
   },
 
   reverse_share_expired: {
@@ -475,6 +496,7 @@ export const notificationCatalog = {
       "reverseShareExpired.subtitle",
       "reverseShareExpired.body",
     ],
+    displayName: "Reverse Share Expired",
   },
 
   // ── Quota & cleanup (configurable) ─────────────────────────────────────────
@@ -493,6 +515,7 @@ export const notificationCatalog = {
       "quotaWarning.body",
       "quotaWarning.info",
     ],
+    displayName: "Storage Quota Warning",
   },
 
   quota_exceeded: {
@@ -510,6 +533,7 @@ export const notificationCatalog = {
       "quotaExceeded.bodyGrace",
       "quotaExceeded.info",
     ],
+    displayName: "Storage Quota Exceeded",
   },
 
   files_auto_deleted: {
@@ -526,6 +550,7 @@ export const notificationCatalog = {
       "filesAutoDeleted.body",
       "filesAutoDeleted.info",
     ],
+    displayName: "Files Auto-Deleted",
   },
 
   share_auto_deleted: {
@@ -542,6 +567,7 @@ export const notificationCatalog = {
       "shareAutoDeleted.body",
       "shareAutoDeleted.info",
     ],
+    displayName: "Share Auto-Deleted",
   },
 
   // ── Admin notifications (configurable) ─────────────────────────────────────
@@ -559,6 +585,7 @@ export const notificationCatalog = {
       "adminUserRegistered.subtitle",
       "adminUserRegistered.body",
     ],
+    displayName: "New User Registration (Admin)",
   },
 
   admin_quota_alert: {
@@ -575,6 +602,7 @@ export const notificationCatalog = {
       "adminQuotaAlert.body",
       "adminQuotaAlert.info",
     ],
+    displayName: "User Quota Alert (Admin)",
   },
 
   // ── System / testing (critical) ────────────────────────────────────────────
@@ -594,6 +622,7 @@ export const notificationCatalog = {
       "testEmail.bodyCustom",
       "testEmail.info",
     ],
+    displayName: "Test Email",
   },
 } as const satisfies Record<string, NotificationTypeConfig>;
 

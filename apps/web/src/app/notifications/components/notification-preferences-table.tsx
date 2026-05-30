@@ -145,8 +145,20 @@ export function NotificationPreferencesTable() {
     },
   });
 
+  // Filter out non-configurable types (critical + non-configurable like invitations)
+  const preferences = (data?.preferences ?? []).filter(
+    (pref) => !pref.isCritical && pref.configurable !== false,
+  );
+  const grouped = groupByCategory(preferences);
+
   const handleFrequencyChange = (type: NotificationType, frequency: string) => {
-    setLocalChanges((prev) => ({ ...prev, [type]: frequency }));
+    setLocalChanges((prev) => {
+      const next = { ...prev, [type]: frequency };
+      // Remove entry if the new value matches the server-side value (no real change)
+      const serverPref = data?.preferences.find((p) => p.type === type);
+      if (serverPref?.frequency === frequency) delete next[type];
+      return next;
+    });
   };
 
   const handleSave = () => {
@@ -168,12 +180,6 @@ export function NotificationPreferencesTable() {
     }
     saveMutation.mutate(safeChanges);
   };
-
-  // Filter out non-configurable types (critical + non-configurable like invitations)
-  const preferences = (data?.preferences ?? []).filter(
-    (pref) => !pref.isCritical && pref.configurable !== false,
-  );
-  const grouped = groupByCategory(preferences);
 
   const getFrequency = (pref: NotificationPreference): string => {
     return localChanges[pref.type] ?? pref.frequency;

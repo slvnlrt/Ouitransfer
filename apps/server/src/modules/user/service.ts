@@ -57,7 +57,9 @@ export class UserService {
       });
     }
 
-    // Notify admins about new user registration (fire-and-forget, skip for first user)
+    // Notify admins about new user registration (fire-and-forget, skip for first user).
+    // Note: The acting admin (if they created the user) also receives the notification.
+    // This is acceptable — some teams want confirmation that user creation succeeded.
     if (!isFirstUser) {
       emailService
         .sendToAdmins("admin_user_registered", {

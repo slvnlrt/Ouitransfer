@@ -21,7 +21,8 @@ export function EmailAdminSection() {
       const res = await getEmailStats();
       return res.data;
     },
-    refetchInterval: 30000,
+    // Poll every 60s — this is a settings page, not a real-time dashboard.
+    refetchInterval: 60000,
   });
 
   const stats = emailStatsQuery.data;

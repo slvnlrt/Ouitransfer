@@ -3,7 +3,6 @@ import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { escapeHtml } from "../../../utils/escape-html.js";
-import { getLogger } from "../../../utils/logger.js";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -306,12 +305,15 @@ function interpolate(
     return htmlEscape ? escapeHtml(value) : value;
   });
 
-  // Warn about unresolved placeholders in development
+  // In non-production environments, throw on unresolved placeholders so the test
+  // suite catches template authoring bugs (e.g. missing params, typos in keys).
+  // In production, unresolved placeholders are left as-is for resilience.
   if (process.env.NODE_ENV !== "production") {
     const unresolved = result.match(/\{(\w+)\}/g);
     if (unresolved) {
-      getLogger().warn(
-        `[email-i18n] Unresolved placeholders in template: ${unresolved.join(", ")}`,
+      throw new Error(
+        `[email-i18n] Unresolved placeholders in template: ${unresolved.join(", ")}. ` +
+          "Check that all required params are passed to the translation function.",
       );
     }
   }

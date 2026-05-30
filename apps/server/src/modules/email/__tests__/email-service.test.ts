@@ -608,6 +608,42 @@ describe("EmailService", () => {
       expect(createArg.data.status).toBe("digest_pending");
     });
 
+    it("stores raw payload as JSON in digest_pending jobs (M-11)", async () => {
+      mockPrisma.notificationPreference.findUnique.mockResolvedValue({
+        id: "pref-1",
+        userId: "user-1",
+        type: "share_expiring",
+        frequency: "daily_digest",
+      });
+
+      await emailService.send("share_expiring", {
+        to: "user@test.com",
+        locale: "en",
+        userId: "user-1",
+        data: {
+          shareName: "My Share",
+          expiresAt: "2025-12-31T00:00:00.000Z",
+          shareManageUrl: "https://test.example.com/shares/1",
+        },
+      });
+
+      const createArg = mockPrisma.emailJob.create.mock.calls[0][0];
+      expect(createArg.data.status).toBe("digest_pending");
+      // Digest jobs store payload as JSON, not pre-rendered HTML/text
+      expect(createArg.data.htmlBody).toBeNull();
+      expect(createArg.data.textBody).toBeNull();
+      const payload = JSON.parse(createArg.data.payload);
+      expect(payload).toEqual({
+        v: 1,
+        type: "share_expiring",
+        data: {
+          shareName: "My Share",
+          expiresAt: "2025-12-31T00:00:00.000Z",
+          shareManageUrl: "https://test.example.com/shares/1",
+        },
+      });
+    });
+
     it("with invalid payload → returns enqueued:false + reason:invalid_payload, no job created (I-6)", async () => {
       // welcome requires { firstName: string, loginUrl: string }
       // Send with missing required field

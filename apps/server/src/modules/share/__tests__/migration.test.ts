@@ -431,6 +431,27 @@ describe("Email migration — ShareService.notifyRecipients()", () => {
     expect(result.notifiedRecipients).toEqual(["bob@example.com"]);
     expect(mockLogger.error).toHaveBeenCalled();
   });
+
+  it("does not set notifiedAt when SMTP is disabled (enqueued: false)", async () => {
+    mockShareRepository.findShareById.mockResolvedValue(makeShare());
+
+    // Simulate SMTP disabled — send returns enqueued: false
+    mockEmailServiceSend.mockResolvedValue({ enqueued: false });
+
+    const result = await shareService.notifyRecipients("share-1", "user-1");
+
+    // No recipients should have been notified
+    expect(result.notifiedRecipients).toEqual([]);
+
+    // notifiedAt should NOT be set on any recipient (shareRecipient.update not called
+    // with notifiedAt data)
+    const updateCalls = mockPrisma.shareRecipient.update.mock.calls;
+    const notifiedAtCalls = updateCalls.filter(
+      (c: unknown[]) =>
+        (c[0] as { data?: { notifiedAt?: unknown } }).data?.notifiedAt !== undefined,
+    );
+    expect(notifiedAtCalls).toHaveLength(0);
+  });
 });
 
 describe("Email migration — ShareService.updateShare() recipient upsert", () => {

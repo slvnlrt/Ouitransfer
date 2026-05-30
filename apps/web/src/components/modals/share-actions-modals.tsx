@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Loader } from "@/components/ui/loader";
 import { Switch } from "@/components/ui/switch";
 import {
   addFiles,
@@ -420,7 +421,14 @@ export function ShareActionsModals({
               {t("common.cancel")}
             </Button>
             <Button disabled={isLoading || isPasswordInvalid} onClick={handleEdit}>
-              {t("common.save")}
+              {isLoading ? (
+                <>
+                  <Loader size="sm" />
+                  {t("common.saving")}
+                </>
+              ) : (
+                t("common.save")
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

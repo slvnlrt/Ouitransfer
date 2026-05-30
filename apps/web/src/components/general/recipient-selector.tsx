@@ -376,7 +376,7 @@ export function RecipientSelector({
                           <div className="flex items-center gap-2 mt-0.5">
                             {notifiedAt && (
                               <span className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
-                                <Check className="h-3 w-3" />
+                                <Check className="h-3 w-3" aria-hidden="true" />
                                 {t("recipientSelector.notified")}
                               </span>
                             )}

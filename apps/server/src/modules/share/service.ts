@@ -344,20 +344,26 @@ export class ShareService {
     // Trigger share_accessed notification (fire-and-forget)
     // Skip notification when creator account is deactivated (consistent with scheduler checks)
     if (share.creatorId && share.creator?.email && share.creator?.isActive !== false) {
-      emailService
-        .send("share_accessed", {
-          to: share.creator.email,
-          locale: share.creator.locale ?? "en",
-          userId: share.creatorId,
-          relatedId: share.id,
-          data: {
-            shareName: share.name ?? "Unnamed share",
-            visitorName,
-            visitorEmail,
-            accessedAt: new Date().toISOString(),
-          },
-        })
-        .catch((err) => getLogger().error({ err }, "Failed to send share_accessed notification"));
+      (async () => {
+        try {
+          const shareManageUrl = await buildShareManageUrl(shareId);
+          await emailService.send("share_accessed", {
+            to: share.creator!.email,
+            locale: share.creator!.locale ?? "en",
+            userId: share.creatorId!,
+            relatedId: share.id,
+            data: {
+              shareName: share.name ?? "Unnamed share",
+              visitorName,
+              visitorEmail,
+              accessedAt: new Date().toISOString(),
+              shareManageUrl,
+            },
+          });
+        } catch (err) {
+          getLogger().error({ err }, "Failed to send share_accessed notification");
+        }
+      })().catch(() => {});
     }
 
     // Trigger share_max_views_reached notification when the share just hit its limit.
@@ -455,6 +461,8 @@ export class ShareService {
       });
     }
 
+    // Note: Toggling notifyOnDownload does not reset notification cooldowns.
+    // The standard 15-minute cooldown still applies after toggling.
     const updateData: Partial<Parameters<typeof this.shareRepository.updateShare>[1]> = {
       ...shareData,
       maxViews: maxViews !== undefined ? maxViews : undefined,
@@ -765,6 +773,9 @@ export class ShareService {
         ? `${baseShareLink}?t=${trackingToken}`
         : baseShareLink;
       try {
+        // userId intentionally omitted — invitations are to external recipients who have no
+        // account. Adding userId would trigger the preference cascade for a type that's not
+        // configurable, which is unnecessary overhead.
         const result = await emailService.send("share_invitation", {
           to: recipient.email,
           // External recipients don't have an account, so we can't read their locale.

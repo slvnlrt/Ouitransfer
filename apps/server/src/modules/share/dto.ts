@@ -40,7 +40,12 @@ export const CreateShareSchema = z
       .nativeEnum(FieldRequirement)
       .optional()
       .describe("Email field requirement for visitor identification"),
-    notifyOnDownload: z.boolean().optional().describe("Notify owner on file download"),
+    notifyOnDownload: z
+      .boolean()
+      .optional()
+      .describe(
+        "Notify owner on each file download (overrides global share_downloaded preference for this share)",
+      ),
     inactivityAlertDays: z
       .number()
       .int()
@@ -79,7 +84,12 @@ export const UpdateShareSchema = z.object({
     .nativeEnum(FieldRequirement)
     .optional()
     .describe("Email field requirement for visitor identification"),
-  notifyOnDownload: z.boolean().optional().describe("Notify owner on file download"),
+  notifyOnDownload: z
+    .boolean()
+    .optional()
+    .describe(
+      "Notify owner on each file download (overrides global share_downloaded preference for this share)",
+    ),
   inactivityAlertDays: z
     .number()
     .int()

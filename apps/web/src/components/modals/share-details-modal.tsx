@@ -86,6 +86,11 @@ export function ShareDetailsModal({
     // which would also bust visit/alias/metadata caches unnecessarily.
     queryClient.invalidateQueries({ queryKey: queryKeys.shares.detail(shareId!) });
     queryClient.invalidateQueries({ queryKey: queryKeys.shares.list() });
+    // Also invalidate the byAlias cache if this share has an alias, so the public
+    // share page reflects changes (e.g. name, description, expiration).
+    if (share?.alias?.alias) {
+      queryClient.invalidateQueries({ queryKey: queryKeys.shares.byAlias(share.alias.alias) });
+    }
   };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: invalidateShare is stable (reads queryClient + shareId which are stable references)
@@ -193,6 +198,7 @@ export function ShareDetailsModal({
     }
   };
 
+  // Early return is after all hooks to maintain consistent hook count per React rules.
   // Query is disabled when shareId is null, so no hooks are skipped — early return is safe.
   if (!shareId) return null;
 
@@ -322,7 +328,7 @@ export function ShareDetailsModal({
                             <div className="flex items-center gap-2 mt-0.5">
                               {recipient.notifiedAt && (
                                 <span className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
-                                  <Check className="h-3 w-3" />
+                                  <Check className="h-3 w-3" aria-hidden="true" />
                                   {t("shareDetails.recipientNotified")}
                                 </span>
                               )}
