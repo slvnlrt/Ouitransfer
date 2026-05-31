@@ -37,6 +37,7 @@ export interface BaseReverseShare {
   hasPassword: boolean;
   nameFieldRequired: string;
   emailFieldRequired: string;
+  notifyOnUpload: boolean;
   backgroundImageId: string | null;
   createdAt: string;
   updatedAt: string;
@@ -113,6 +114,7 @@ export interface CreateReverseShareBody {
   backgroundImageId?: string | null;
   nameFieldRequired?: FieldRequirement;
   emailFieldRequired?: FieldRequirement;
+  notifyOnUpload?: boolean;
 }
 
 export interface UpdateReverseShareBody {
@@ -129,6 +131,7 @@ export interface UpdateReverseShareBody {
   isActive?: boolean;
   nameFieldRequired?: FieldRequirement;
   emailFieldRequired?: FieldRequirement;
+  notifyOnUpload?: boolean;
 }
 
 export interface UpdateReverseSharePasswordBody {

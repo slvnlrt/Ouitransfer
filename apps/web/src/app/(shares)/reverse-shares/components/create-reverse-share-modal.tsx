@@ -2,6 +2,7 @@
 
 import { Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useId } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -14,7 +15,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import type { CreateReverseShareBody } from "@/http/endpoints/reverse-shares/types";
 import { BasicInfoSection } from "./create-reverse-share/basic-info-section";
 import { ExpirationSection } from "./create-reverse-share/expiration-section";
@@ -43,6 +46,7 @@ function buildPayload(formData: CreateReverseShareFormData): CreateReverseShareB
     backgroundImageId: formData.backgroundImageId ?? null,
     nameFieldRequired: formData.nameFieldRequired,
     emailFieldRequired: formData.emailFieldRequired,
+    notifyOnUpload: formData.notifyOnUpload,
   };
 
   if (formData.description?.trim()) {
@@ -84,6 +88,7 @@ export function CreateReverseShareModal({
   isCreating,
 }: CreateReverseShareModalProps) {
   const t = useTranslations();
+  const notifyUploadSwitchId = useId();
 
   const form = useForm<CreateReverseShareFormData>({
     defaultValues: DEFAULT_FORM_VALUES,
@@ -151,6 +156,22 @@ export function CreateReverseShareModal({
                 form={form}
                 hasFieldRequirements={watchedValues.hasFieldRequirements}
               />
+              <Separator />
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={form.watch("notifyOnUpload")}
+                    onCheckedChange={(checked) => form.setValue("notifyOnUpload", checked)}
+                    id={notifyUploadSwitchId}
+                  />
+                  <Label htmlFor={notifyUploadSwitchId}>
+                    {t("reverseShares.form.notifyOnUpload")}
+                  </Label>
+                </div>
+                <p className="text-xs text-muted-foreground ps-9">
+                  {t("reverseShares.form.notifyOnUploadHelp")}
+                </p>
+              </div>
 
               <DialogFooter className="gap-2">
                 <Button type="button" variant="outline" onClick={handleClose} disabled={isCreating}>
