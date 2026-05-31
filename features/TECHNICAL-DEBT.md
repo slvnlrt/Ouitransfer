@@ -1,5 +1,7 @@
 # Technical Debt — Items to Fix in Future Sessions
 
+> **Voir aussi :** [`SECURITY.md`](SECURITY.md) — findings sécurité (Aikido SAST/SCA) · [`BUGS.md`](BUGS.md) — bugs
+
 Items discovered during feature work that are out of scope for the current session
 but must be addressed. Each item includes context and the fix needed.
 
@@ -686,6 +688,54 @@ pattern is adopted.
 **Found during:** Deferred work audit (mai 2026, AR-5)
 **Severity:** Very Low — the error boundary exists precisely for catastrophic failures
 where UX perfection is secondary to recovery
+
+---
+
+## TD-42 — Dashboard System Status: afficher l'état SMTP/notifications
+
+**Context:** Le System Status du dashboard admin affiche l'état des services (DB, S3, etc.)
+mais pas l'état du sous-système email/notifications. Or on a déjà des stats de queue
+disponibles côté serveur (email queue metrics). Un administrateur devrait pouvoir voir
+d'un coup d'œil si le SMTP est configuré/fonctionnel et combien de messages sont en queue.
+
+**Fix:** Ajouter une section "Email / Notifications" au System Status avec :
+- État SMTP (configuré / non configuré / erreur de connexion)
+- Taille de la queue (pending, failed, total envoyés)
+- Dernière erreur d'envoi (si applicable)
+
+**Found during:** Revue utilisateur (mai 2026)
+**Severity:** Low — informatif, pas de bug fonctionnel
+
+---
+
+## TD-43 — Descriptions manquantes pour les types de notifications activables
+
+**Context:** Dans les préférences de notifications utilisateur, les différents types de
+notifications (share_downloaded, reverse_share_uploaded, etc.) sont listés avec juste un
+label court. Il n'y a pas de description expliquant quand chaque notification est déclenchée,
+ce qui rend le choix peu intuitif pour l'utilisateur.
+
+**Fix:** Ajouter un texte descriptif sous chaque type de notification dans la modale de
+préférences. Ajouter les clés i18n correspondantes dans les 23 locales.
+
+**Found during:** Revue utilisateur (mai 2026)
+**Severity:** Low — UX improvement, fonctionnellement correct
+
+---
+
+## TD-44 — Modale notifications: libellé "Alerter si aucun téléchargements après (jours)" confus
+
+**Context:** Dans la modale de création/détails, l'option "Alerter si aucun téléchargements
+après (jours)" avec un champ numérique en dessous n'est pas claire. Le "(jours)" accolé au
+label est ambigu — on ne comprend pas immédiatement que le champ en dessous est un nombre
+de jours. Le wording et le layout doivent être revus.
+
+**Fix:** Reformuler le label (ex: "Envoyer une alerte si le partage n'a reçu aucun
+téléchargement après N jours") et intégrer l'unité directement dans le champ input
+(suffix "jours" / "days" dans le placeholder ou comme addon). Mettre à jour les clés i18n.
+
+**Found during:** Revue utilisateur (mai 2026)
+**Severity:** Low — UX clarity issue, pas de bug fonctionnel
 
 ---
 

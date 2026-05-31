@@ -1,5 +1,40 @@
 # Session Log
 
+## 2026-05-31 (session 18)
+
+**CI Playwright hang fix + PR #2 security analysis + Docker server crash + housekeeping**
+
+- **CI Playwright hang (root cause + fix)**:
+  - Hang root cause: Node.js 24.16+ régression `duplexPair` dans `extract-zip`/`yauzl` — extraction ZIP chromium se suspend silencieusement
+  - Fix: `@playwright/test` bumped `^1.59.1` → `^1.60.0` (contient `yauzl` patché) — tag v0.8.3
+  - Autres améliorations préalables (v0.8.2): `--only-shell` flag, actions @v5/@v6, exclusion firefox/webkit en CI
+  - `playwright.config.ts`: Firefox et WebKit exclus en CI via spread conditionnel
+  - `ci.yml` + `e2e.yml`: `actions/checkout@v5`, `pnpm/action-setup@v6`, `actions/setup-node@v6`, `actions/upload-artifact@v5`
+
+- **PR #2 — Aikido Security analysis**:
+  - `@fastify/cors` 10→11 (CRITICAL): default methods réduits — 41 routes PUT/PATCH/DELETE bloquées. Fix: ajouter `methods: [...]` explicite dans `app.ts`. Un seul fichier, une ligne.
+  - `zod` v4.3.6→v4.4.0: impact nul — seul `fumadocs-mdx` utilise zod v4, notre code reste sur v3
+  - `next-intl` 4.9.1→4.9.2: impact nul — CVE nécessite `experimental.messages.precompile` non utilisé
+  - `fast-xml-parser` 5.5.8→5.7.2: impact très faible — dep transitive AWS SDK, ne traite que les réponses S3
+  - Plan écrit dans `features/plans/security-pr2-remediation.md` (T-1 à T-6)
+
+- **Docker CI server crash (root cause + fix)** — tag v0.8.5:
+  - Root cause: `tsc` ne copie pas les fichiers non-TS → `dist/modules/email/i18n/messages/{en,fr}.json` absents en Docker → `validateI18nKeys` throw → server crash-loop
+  - Fix 1: build script étendu avec `cpSync` pour copier les JSON après `tsc`
+  - Fix 2: `initEmailQueueOnBoot` passe de `throw err` à `return` (graceful degradation)
+  - Fix test: `rejects.toThrow` → `resolves.not.toThrow`
+  - Précédent (v0.8.4): `docker-compose.ci.yml` override `depends_on` → `service_started` + step "Dump Docker logs on failure" ajouté dans `e2e.yml`
+
+- **Infra / housekeeping**:
+  - `just docker-start-published`: nouvelle recipe pour tester avec les images GHCR (sans build local)
+  - `proxy.ts`: suppression de la condition `NODE_ENV === "development" || process.env.API_BASE_URL` (toujours true, no-op)
+  - TD-42/43/44 ajoutés (System Status SMTP, descriptions notifications, libellé jours confus)
+
+- **Tags**: v0.8.2 (Playwright fixes), v0.8.3 (bump 1.60.0), v0.8.4 (Docker CI), v0.8.5 (i18n JSON copy)
+- **CI**: v0.8.5 all green
+
+---
+
 ## 2026-05-31 (session 17)
 
 **TD-34 + TD-39 Remediation — Token Hashing + notifyOnUpload**

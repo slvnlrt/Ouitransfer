@@ -2,6 +2,11 @@
 
 > Findings from Aikido.dev SAST scans and manual review.
 > Tracked here until resolved.
+>
+> **Voir aussi :** [`TECHNICAL-DEBT.md`](TECHNICAL-DEBT.md) — dettes techniques · [`BUGS.md`](BUGS.md) — bugs
+>
+> **Plan de remédiation actif :** [`features/plans/security-pr2-remediation.md`](plans/security-pr2-remediation.md)
+> (couvre S-4, S-5, S-6 — T-1 `@fastify/cors` CRITICAL, T-5 `axios`, T-4 `zod`, T-6 hash pinning)
 
 ---
 
