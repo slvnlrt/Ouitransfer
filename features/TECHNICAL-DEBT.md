@@ -733,21 +733,29 @@ Commit: `fix(server): TD-45 routerOptions + TD-46 enable SQLite WAL mode on boot
 
 ---
 
-## TD-47 — pnpm version outdated: 10.6.0 → 11+
+## ~~TD-47 — pnpm version outdated: 10.6.0 → 11+~~ ✅ RESOLVED
 
-**Context:** `package.json` (`packageManager: "pnpm@10.6.0"`) and `Dockerfile`
-(`corepack prepare pnpm@10.6.0 --activate`) both pin pnpm 10.6.0. pnpm is now at
+Resolved in TD-47 session (mai 2026). Bumped `packageManager` to `pnpm@11.5.0` in root and
+3 app `package.json` files. `Dockerfile` updated (`corepack prepare pnpm@11.5.0 --activate`).
+`pnpm-workspace.yaml`: migrated `onlyBuiltDependencies` → `allowBuilds` map (9 packages);
+migrated `pnpm.overrides` from `package.json` → `pnpm-workspace.yaml overrides:`. `.npmrc`
+deleted — project settings migrated to `pnpm-workspace.yaml`; only `autoInstallPeers: true`
+differs from pnpm 11 defaults (others matched defaults and were dropped). Lockfile regenerated
+(lockfileVersion 9.0). `apps/docs` prerequisites table updated to 11.5.0. Tests: 1086 server +
+274 web — all pass.
+
+⚠️ **Note:** `allowBuilds` map is load-bearing for CI — `pnpm install --frozen-lockfile` will
+hard-fail if a new package with a build script is added without updating `allowBuilds` in
+`pnpm-workspace.yaml`.
+
+Commit: `99ca0bf`
+
+---
+
+**Context (archived):** `package.json` (`packageManager: "pnpm@10.6.0"`) and `Dockerfile`
+(`corepack prepare pnpm@10.6.0 --activate`) both pinned pnpm 10.6.0. pnpm is now at
 version 11+, a major version bump. Corepack may print "newer version available"
 warnings during Docker builds.
-
-**Migration considerations:**
-- pnpm 11 may have breaking changes vs 10.x (catalog syntax, workspace behavior, lifecycle hooks)
-- Requires auditing `pnpm-workspace.yaml`, `.npmrc`, and all `pnpm install` flags used in
-  Dockerfile and CI workflows before bumping
-- `pnpm-lock.yaml` will need to be regenerated
-
-**Fix:** Review pnpm 11 changelog/migration guide, bump `packageManager` in `package.json`
-and `pnpm@10.6.0` in `Dockerfile`, regenerate lockfile, verify full test suite and Docker build pass.
 
 **Found during:** Docker build logs review + user observation, session 18 (mai 2026)
 **Severity:** Low — no current breakage; pnpm 10 still supported; worthwhile to stay current

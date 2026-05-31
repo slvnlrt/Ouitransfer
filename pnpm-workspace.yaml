@@ -19,6 +19,9 @@ allowBuilds:
   prisma: true
   sharp: true
 
+# Project settings (migrated from .npmrc — pnpm 11 ignores .npmrc for project config)
+autoInstallPeers: true
+
 catalog:
   # ── Runtime (shared across 2+ apps) ──────────────────────────
   motion: "^12.23.0"

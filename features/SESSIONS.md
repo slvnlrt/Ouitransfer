@@ -1,5 +1,27 @@
 # Session Log
 
+## 2026-05-31 (TD-44 + TD-47)
+
+**TD-44 — Fix inactivity alert field label (UX + i18n)**
+
+- `share-privacy-section.tsx`: wrapped input in `relative` div, added `end-3` absolute span `{t("common.days")}`, `pe-14` padding on input
+- All 23 locale files: removed parenthesized unit from `createShare.inactivityAlertDays`, added `common.days` key with translations
+- RTL fix (post-review): `right-3`/`pr-14` → `end-3`/`pe-14` (logical CSS for Arabic/Persian/Hebrew)
+- **Commits**: `fix(web): TD-44 — clarify inactivity alert field with inline unit`, `fix(web): TD-44 RTL — use logical end-3/pe-14 instead of right-3/pr-14`
+
+**TD-47 — pnpm 10.6.0 → 11.5.0**
+
+- Bumped `packageManager` in root + 3 app `package.json` files
+- `Dockerfile`: `corepack prepare pnpm@11.5.0 --activate`
+- `pnpm-workspace.yaml`: `onlyBuiltDependencies` → `allowBuilds` map (9 packages), `pnpm.overrides` migrated from `package.json`
+- `.npmrc`: deleted (project settings migrated to `pnpm-workspace.yaml`; only `autoInstallPeers: true` differs from pnpm 11 defaults)
+- Lockfile regenerated (lockfileVersion 9.0)
+- `apps/docs`: prerequisites table updated to 11.5.0
+- Tests: 1086 server + 274 web — all pass
+- **Commit**: `99ca0bf` (`chore(deps): upgrade pnpm 10.6.0 → 11.5.0`)
+
+---
+
 ## 2026-05-31 (session 19 continued — review + CI fix)
 
 **Code Review + Fixes + CI**
