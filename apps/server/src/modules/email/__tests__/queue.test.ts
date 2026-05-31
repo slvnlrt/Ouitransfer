@@ -547,12 +547,12 @@ describe("EmailQueueScheduler", () => {
       expect(mockLogger.error).toHaveBeenCalled();
     });
 
-    it("throws when i18n validation fails (fail-fast)", async () => {
+    it("disables email subsystem gracefully when i18n validation fails", async () => {
       mockValidateAllI18nKeys.mockRejectedValue(
         new Error("Missing i18n key: shareExpiring.subject"),
       );
 
-      await expect(initEmailQueueOnBoot()).rejects.toThrow("Missing i18n key");
+      await expect(initEmailQueueOnBoot()).resolves.not.toThrow();
       expect(mockLogger.fatal).toHaveBeenCalledWith(
         expect.objectContaining({ err: expect.any(Error) }),
         expect.stringContaining("i18n validation failed"),

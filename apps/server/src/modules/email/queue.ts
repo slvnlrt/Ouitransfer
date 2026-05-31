@@ -466,17 +466,18 @@ export function stopEmailQueueScheduler(): void {
 
 /**
  * Initialize the email queue on server boot.
- * Validates i18n keys (fail-fast on missing keys — catches typos during development),
- * recovers stuck jobs, then starts the scheduler.
+ * Validates i18n keys, recovers stuck jobs, then starts the scheduler.
  *
- * Throws on i18n validation failure so the server fails to start deterministically.
+ * If i18n validation fails (e.g. message files not found), the email subsystem
+ * is disabled gracefully — the server continues without email capability.
+ * This prevents a missing translation file from crashing the entire application.
  */
 export async function initEmailQueueOnBoot(): Promise<void> {
   try {
     await validateAllI18nKeys();
   } catch (err) {
     getLogger().fatal({ err }, "i18n validation failed — email subsystem disabled");
-    throw err;
+    return;
   }
 
   try {
