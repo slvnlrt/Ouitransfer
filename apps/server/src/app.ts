@@ -38,10 +38,12 @@ export async function buildApp() {
     keepAliveTimeout: envTimeoutOverrides.keepAliveTimeout,
     requestTimeout: envTimeoutOverrides.requestTimeout,
     trustProxy: parseTrustProxy(env.TRUST_PROXY),
-    maxParamLength: 500,
+    routerOptions: {
+      ignoreTrailingSlash: true,
+      maxParamLength: 500,
+    },
     onProtoPoisoning: "error",
     onConstructorPoisoning: "error",
-    ignoreTrailingSlash: true,
     serverFactory: (handler: (req: http.IncomingMessage, res: http.ServerResponse) => void) => {
       const server = http.createServer((req: http.IncomingMessage, res: http.ServerResponse) => {
         // Do not call res.setTimeout(0) or req.setTimeout(0) here — Fastify manages

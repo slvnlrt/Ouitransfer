@@ -81,14 +81,14 @@ export function stopAuditRetentionScheduler(): void {
  */
 export async function initAuditRetentionOnBoot(): Promise<void> {
   try {
-    // Verify WAL mode
-    const result = await prisma.$queryRawUnsafe<{ journal_mode: string }[]>("PRAGMA journal_mode");
+    // Enable WAL mode (idempotent, persists across restarts)
+    const result =
+      await prisma.$queryRawUnsafe<{ journal_mode: string }[]>("PRAGMA journal_mode=WAL");
     const journalMode = result[0]?.journal_mode;
     if (journalMode !== "wal") {
       getLogger().warn(
         { journalMode },
-        "SQLite is NOT in WAL mode. Audit write volume may cause contention. " +
-          "Set journal_mode=WAL in your migration or deployment config.",
+        "Failed to enable SQLite WAL mode — audit write volume may cause contention.",
       );
     }
 

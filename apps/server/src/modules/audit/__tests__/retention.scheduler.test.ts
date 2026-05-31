@@ -177,7 +177,7 @@ describe("Audit retention scheduler", () => {
       expect(deleteOldAuditLogs).not.toHaveBeenCalled();
     });
 
-    it("warns when SQLite is not in WAL mode", async () => {
+    it("warns when WAL mode cannot be enabled", async () => {
       vi.mocked(prisma.$queryRawUnsafe).mockResolvedValue([{ journal_mode: "delete" }] as never);
 
       await initAuditRetentionOnBoot();
