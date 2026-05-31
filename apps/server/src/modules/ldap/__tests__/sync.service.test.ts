@@ -279,6 +279,14 @@ describe("LdapSyncService", () => {
         }),
       }),
     );
+    // TD-39: verify the reset token is stored as a SHA-256 hash, never plaintext
+    expect(vi.mocked(prisma.passwordReset.create)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          token: expect.stringMatching(/^hashed-/),
+        }),
+      }),
+    );
     expect(vi.mocked(syncRepo.complete)).toHaveBeenCalledWith(
       "log-1",
       expect.objectContaining({ usersCreated: 1 }),

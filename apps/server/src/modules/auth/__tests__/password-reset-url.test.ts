@@ -126,9 +126,22 @@ describe("AuthService.requestPasswordReset — URL security", () => {
     // The method no longer accepts an origin parameter
     await authService.requestPasswordReset("victim@example.com");
 
-    // buildResetPasswordUrl must have been called with the generated token
+    // buildResetPasswordUrl must have been called with the raw token (for the email link)
     expect(mockBuildResetPasswordUrl).toHaveBeenCalledOnce();
-    expect(mockBuildResetPasswordUrl).toHaveBeenCalledWith(expect.any(String));
+    const rawToken = mockBuildResetPasswordUrl.mock.calls[0][0] as string;
+    expect(rawToken).toMatch(/^[0-9a-f]{64}$/); // 32 bytes hex
+
+    // TD-39: the stored token must be a SHA-256 hash, NOT the raw token
+    expect(mockPasswordResetCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          token: expect.stringMatching(/^[0-9a-f]{64}$/),
+        }),
+      }),
+    );
+    const storedToken = (mockPasswordResetCreate.mock.calls[0][0] as { data: { token: string } })
+      .data.token;
+    expect(storedToken).not.toBe(rawToken); // hash differs from raw
 
     // The email must use the URL from buildResetPasswordUrl
     expect(mockEmailSend).toHaveBeenCalledWith(
