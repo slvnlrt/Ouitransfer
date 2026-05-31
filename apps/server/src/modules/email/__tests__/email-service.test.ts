@@ -25,6 +25,9 @@ const {
     share: {
       findUnique: vi.fn(),
     },
+    reverseShare: {
+      findUnique: vi.fn(),
+    },
     user: {
       findMany: vi.fn(),
     },
@@ -143,6 +146,7 @@ function resetAllMocks() {
   mockPrisma.emailJob.findFirst.mockReset();
   mockPrisma.notificationPreference.findUnique.mockReset();
   mockPrisma.share.findUnique.mockReset();
+  mockPrisma.reverseShare.findUnique.mockReset();
   mockPrisma.user.findMany.mockReset();
   mockLogger.info.mockReset();
   mockLogger.warn.mockReset();
@@ -900,6 +904,88 @@ describe("EmailService", () => {
 
       const result = await emailService.resolveFrequency("share_accessed", "user-1", "share-1");
       // notifyOnDownload does NOT upgrade share_accessed — only share_downloaded
+      expect(result.frequency).toBe("disabled");
+      expect(result.overridden).toBe(false);
+    });
+
+    // ── reverse_share_uploaded + notifyOnUpload ─────────────────────────────
+
+    it("notifyOnUpload=true upgrades reverse_share_uploaded to immediate with overridden", async () => {
+      mockPrisma.notificationPreference.findUnique.mockResolvedValue({
+        id: "pref-1",
+        userId: "user-1",
+        type: "reverse_share_uploaded",
+        frequency: "daily_digest",
+      });
+
+      mockPrisma.reverseShare.findUnique.mockResolvedValue({ notifyOnUpload: true });
+
+      const result = await emailService.resolveFrequency(
+        "reverse_share_uploaded",
+        "user-1",
+        "rs-1",
+      );
+      expect(result.frequency).toBe("immediate");
+      expect(result.overridden).toBe(true);
+    });
+
+    it("notifyOnUpload=false does not override reverse_share_uploaded preference", async () => {
+      mockPrisma.notificationPreference.findUnique.mockResolvedValue({
+        id: "pref-1",
+        userId: "user-1",
+        type: "reverse_share_uploaded",
+        frequency: "daily_digest",
+      });
+
+      mockPrisma.reverseShare.findUnique.mockResolvedValue({ notifyOnUpload: false });
+
+      const result = await emailService.resolveFrequency(
+        "reverse_share_uploaded",
+        "user-1",
+        "rs-1",
+      );
+      expect(result.frequency).toBe("daily_digest");
+      expect(result.overridden).toBe(false);
+    });
+
+    it("explicit disabled wins over notifyOnUpload=true", async () => {
+      mockPrisma.notificationPreference.findUnique.mockResolvedValue({
+        id: "pref-1",
+        userId: "user-1",
+        type: "reverse_share_uploaded",
+        frequency: "disabled",
+      });
+
+      mockPrisma.reverseShare.findUnique.mockResolvedValue({ notifyOnUpload: true });
+
+      const result = await emailService.resolveFrequency(
+        "reverse_share_uploaded",
+        "user-1",
+        "rs-1",
+      );
+      expect(result.frequency).toBe("disabled");
+      expect(result.overridden).toBe(false);
+    });
+
+    it("no preference + notifyOnUpload=true → immediate (overrides catalog default)", async () => {
+      mockPrisma.notificationPreference.findUnique.mockResolvedValue(null);
+      mockPrisma.reverseShare.findUnique.mockResolvedValue({ notifyOnUpload: true });
+
+      const result = await emailService.resolveFrequency(
+        "reverse_share_uploaded",
+        "user-1",
+        "rs-1",
+      );
+      expect(result.frequency).toBe("immediate");
+      expect(result.overridden).toBe(true);
+    });
+
+    it("notifyOnUpload=true does not affect share_downloaded (scoped to uploads only)", async () => {
+      mockPrisma.notificationPreference.findUnique.mockResolvedValue(null);
+      mockPrisma.reverseShare.findUnique.mockResolvedValue({ notifyOnUpload: true });
+      mockPrisma.share.findUnique.mockResolvedValue({ notifyOnDownload: false });
+
+      const result = await emailService.resolveFrequency("share_downloaded", "user-1", "rs-1");
       expect(result.frequency).toBe("disabled");
       expect(result.overridden).toBe(false);
     });

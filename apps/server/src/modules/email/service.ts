@@ -352,7 +352,8 @@ class EmailService {
    * Cascade:
    * 1. User has an *explicit* NotificationPreference row → use its frequency
    * 2. Explicit user "disabled" always wins — no override can change it
-   * 3. Per-share override: if share.notifyOnDownload=true → upgrade to "immediate"
+   * 3a. Per-share override: if share.notifyOnDownload=true → upgrade to "immediate"
+   * 3b. Per-reverse-share override: if reverseShare.notifyOnUpload=true → upgrade to "immediate"
    *    (checked BEFORE falling back to catalog default so that per-share toggles
    *    work for users who have never set a preference)
    * 4. Fall back to explicit preference or catalog defaultFrequency
@@ -379,19 +380,30 @@ class EmailService {
       return { frequency: "disabled", overridden: false };
     }
 
-    // Step 3: Per-share notifyOnDownload upgrade (only for share_downloaded).
-    // The spec scopes notifyOnDownload to downloads only — share_accessed is not upgraded.
+    // Step 3: Per-share/reverse-share notification overrides.
     // Checked BEFORE the catalog default so that users who never set a preference
     // can still get notified when the per-share toggle is on.
-    // Known gap: reverse_share_uploaded has a cooldown but no per-share override mechanism
-    // analogous to notifyOnDownload. If needed, add a similar toggle on the ReverseShare model.
-    if (shareId && type === "share_downloaded") {
-      const share = await prisma.share.findUnique({
-        where: { id: shareId },
-        select: { notifyOnDownload: true },
-      });
-      if (share?.notifyOnDownload) {
-        return { frequency: "immediate", overridden: true };
+    if (shareId) {
+      // Step 3a: notifyOnDownload (only for share_downloaded — not share_accessed)
+      if (type === "share_downloaded") {
+        const share = await prisma.share.findUnique({
+          where: { id: shareId },
+          select: { notifyOnDownload: true },
+        });
+        if (share?.notifyOnDownload) {
+          return { frequency: "immediate", overridden: true };
+        }
+      }
+
+      // Step 3b: notifyOnUpload (only for reverse_share_uploaded)
+      if (type === "reverse_share_uploaded") {
+        const reverseShare = await prisma.reverseShare.findUnique({
+          where: { id: shareId },
+          select: { notifyOnUpload: true },
+        });
+        if (reverseShare?.notifyOnUpload) {
+          return { frequency: "immediate", overridden: true };
+        }
       }
     }
 
