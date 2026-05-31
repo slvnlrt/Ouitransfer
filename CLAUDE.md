@@ -140,6 +140,13 @@ Reserve separate agents for tasks requiring distinct architectural decisions or 
    - Commit, stage, or modify anything in the working tree
    - Take ANY follow-up action whatsoever
    Simply tell the user: "The agent returned empty output (likely a timeout). I'm stopping — let me know when you'd like to proceed." Then wait for explicit user instructions before doing anything else.
+1b. **NEVER discard uncommitted changes without understanding them.** After a subagent completes, if there are uncommitted modifications in the working tree, your first assumption must be that the agent forgot to stage them — NOT that they are unwanted. Before running `git checkout`, `git restore`, or any reset:
+   - Read the diff (`git diff`) to understand what changed
+   - Correlate with what the agent was supposed to do
+   - If the changes look related to the agent's task, stage and commit them (or ask the user)
+   - Only discard if you can explain WHY they are wrong
+   - **When in doubt, ask the user — never silently discard.**
+   This rule applies equally to `git stash drop`, `git checkout -- .`, `git restore`, or any operation that destroys uncommitted work.
 2. **Consistency over compatibility** — prefer clean implementations, no need to preserve legacy behavior
 3. **One concern per commit** — atomic changes, clear commit messages
 4. **Check for side effects** — search for all callers/importers before changing a function signature
