@@ -5,8 +5,8 @@
 >
 > **Voir aussi :** [`TECHNICAL-DEBT.md`](TECHNICAL-DEBT.md) — dettes techniques · [`BUGS.md`](BUGS.md) — bugs
 >
-> **Plan de remédiation actif :** [`features/plans/security-pr2-remediation.md`](plans/security-pr2-remediation.md)
-> (couvre S-4, S-5, S-6 — T-1 `@fastify/cors` CRITICAL, T-5 `axios`, T-4 `zod`, T-6 hash pinning)
+> **Plan de remédiation :** [`features/plans/security-pr2-remediation.md`](plans/security-pr2-remediation.md) — ✅ Terminé
+> (S-5, S-6 fixés + `@fastify/cors` v11 + lockfile updates. S-4 hash pinning reste à faire.)
 
 ---
 
@@ -175,11 +175,11 @@ Pratique recommandée par GitHub Security (Supply Chain Security). Risque réel 
 
 ---
 
-## S-5 — Dépendance axios 1.16.0 (2 CVEs)
+## S-5 — Dépendance axios (2 CVEs)
 
 **Source :** Aikido.dev SCA
-**Dépendance :** `apps/web` — `axios@1.16.0` → `1.16.1`
-**Statut :** 🔴 Mettre à jour
+**Dépendance :** `apps/web` — `axios` `^1.15.2` → `^1.16.1`
+**Statut :** ✅ Fixé — `axios` bumped `^1.15.2` → `^1.16.1` (commit `fix(web): bump axios ^1.15.2→^1.16.1`)
 
 ### CVEs
 
@@ -188,18 +188,9 @@ Pratique recommandée par GitHub Security (Supply Chain Security). Risque réel 
 | AIKIDO-2026-10823 | **High** | Proxy Cleartext Leak : données HTTPS en clair vers un proxy HTTP sous certaines configurations. Node.js adapter uniquement. |
 | AIKIDO-2026-10822 | **Low** | Prototype Pollution — durcissement défense en profondeur. |
 
-### Breaking change (1.16.0 → 1.16.1)
+### Résolution
 
-Réversion du support des `URL` objects dans `config.url` (introduit en 1.16.0, retiré en 1.16.1). **Aucun impact** — le codebase utilise uniquement des strings pour les URLs axios.
-
-### Risque réel
-
-- **Proxy Cleartext Leak** : Concerne le Node.js HTTP adapter. En pratique, l'app Next.js en SSR utilise `fetch` directement ou via le middleware de rewrite local (`apps/web/src/proxy.ts`), pas axios côté serveur. Axios n'est utilisé que côté browser. Risque **très faible**.
-- **Prototype Pollution** : Nécessite une vulnérabilité PP dans une autre dépendance pour être exploitable (gadget, pas vulnérabilité directe). Risque **très faible**.
-
-### Recommandation
-
-Mettre à jour vers `axios@1.16.1` — upgrade sans breaking change.
+Mise à jour `axios` de `^1.15.2` vers `^1.16.1` dans `apps/web/package.json`. Aucun breaking change impactant le codebase (réversion du support `URL` objects en `config.url`, non utilisé).
 
 ---
 
@@ -207,13 +198,13 @@ Mettre à jour vers `axios@1.16.1` — upgrade sans breaking change.
 
 **Source :** Aikido.dev SCA
 **Dépendance :** `zod@4.3.6` (transitif via fumadocs) → `4.4.0`
-**Statut :** 🔴 Mettre à jour (transitif)
+**Statut :** ✅ Fixé — zod v4 overridé à `4.4.3` via pnpm overrides (commit `fix(deps): security lockfile updates — next-intl, AWS SDK, zod v4 override`)
 
 ### Description
 
 L'application utilise zod **v3.25.76** (catalog `^3.25.67`). C'est la seule version utilisée par le code applicatif.
 
-Zod **v4.3.6** est présent dans l'arbre de dépendances uniquement via fumadocs (le site de docs). Aikido détecte 2 CVEs sur cette version transitive. Aucun impact sur l'application.
+Zod **v4.3.6** était présent dans l'arbre de dépendances uniquement via fumadocs (le site de docs). Aikido détectait 2 CVEs sur cette version transitive.
 
 ### CVEs (zod v4 uniquement)
 
@@ -221,6 +212,10 @@ Zod **v4.3.6** est présent dans l'arbre de dépendances uniquement via fumadocs
 |----|----------|-------------|
 | AIKIDO-2026-10707 | Medium | Prototype Pollution (v4) |
 | AIKIDO-2026-10706 | Medium | Missing input validation (v4) |
+
+### Résolution
+
+Ajout d'un pnpm override `"zod@^4.0.0": "4.4.3"` dans `package.json` racine. Zod v4 transitive est maintenant à `4.4.3` (CVEs corrigés). Zod v3 applicatif reste inchangé à `3.25.76`.
 
 ### Note : Migration zod v3 → v4
 
@@ -235,7 +230,7 @@ Migration non triviale estimée à **46 fichiers**, avec des risques:
 | Bulk rename `from "zod"` → `from "zod/v4"` | Faible (mécanique) |
 | `z.record(z.string())` → 2 args | Faible (1 occurence) |
 
-**Recommandation :** Ne pas migrer maintenant. Les CVEs sont sur la version transitive (fumadocs), pas sur notre zod v3. La migration v3→v4 est un chantier à planifier séparément, pas un quick fix de sécurité.
+**Recommandation :** Ne pas migrer maintenant. La migration v3→v4 est un chantier à planifier séparément.
 
 ---
 
@@ -247,5 +242,5 @@ Migration non triviale estimée à **46 fichiers**, avec des risques:
 | S-2 | Open redirect via `redirect_uri` | Low | ✅ Fixé | — |
 | S-3 | XSS via `window.location.href` | — | ✅ Fixé | — |
 | S-4 | GitHub Action non épinglée par hash (`pnpm/action-setup@v4`) | Medium | 🔴 À faire | Basse |
-| S-5 | axios 1.16.0 (2 CVEs) → 1.16.1 | High/Low | 🔴 Mettre à jour | Haute |
-| S-6 | zod v4.3.6 transitif via fumadocs (2 CVEs) | Medium | 🔴 Mettre à jour (transitif) | Basse |
+| S-5 | axios 1.16.0 (2 CVEs) → 1.16.1 | High/Low | ✅ Fixé | — |
+| S-6 | zod v4.3.6 transitif via fumadocs (2 CVEs) | Medium | ✅ Fixé | — |
