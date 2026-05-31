@@ -1,5 +1,16 @@
 # Session Log
 
+## 2026-05-31 (session 19 continued)
+
+**Technical Debt — TD-37, TD-35, TD-29**
+
+- **TD-37 — Structured error codes for register-with-invite** : Remplacement du string matching fragile (`includes("already been used")` etc.) par des `ErrorCodes` structurés. 4 nouveaux codes (`INVITE_TOKEN_USED`, `INVITE_TOKEN_EXPIRED`, `USERNAME_EXISTS`, `EMAIL_EXISTS`) ajoutés dans `@ouitransfer/shared/error-codes`. Service `invite/service.ts` utilise `AppError(409/410, ..., code)`. Frontend `register-form.tsx` utilise `parseApiError()` + comparaison de codes. Route schema mise à jour (404/409/410). 6 tests integration ajoutés. Total: 1071 tests serveur (71 fichiers).
+- **TD-35 — checkFileAccess + trackShareDownload gèrent les fichiers en sous-dossiers** : Bug fonctionnel — les fichiers dans des dossiers partagés étaient inaccessibles en téléchargement individuel (401). Root-cause fix: helper `getAncestorFolderIds()` (CTE récursive ascendante), utilisé par `checkFileAccess` et `trackShareDownload`. Gère toute profondeur de nesting. 7 tests integration ajoutés. Total: 1078 tests serveur (72 fichiers).
+- **TD-29 — Marqué comme résolu** : Le guard BOM existait déjà dans `locale-keys.test.ts` (lignes 61-74), exécuté en CI via `turbo test`. Aucun travail supplémentaire.
+- **3 commits** sur `main`
+
+---
+
 ## 2026-05-31 (session 19)
 
 **Security Remediation — PR #2 Aikido CVEs**
