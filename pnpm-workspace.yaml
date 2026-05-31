@@ -2,8 +2,22 @@ packages:
   - "apps/*"
   - "packages/*"
 
-onlyBuiltDependencies:
-  - better-sqlite3
+overrides:
+  fast-uri: ">=3.1.2"
+  fast-xml-builder: ">=1.1.7"
+  fast-xml-parser: ">=5.7.2"
+  "zod@^4.0.0": "4.4.3"
+
+allowBuilds:
+  "@parcel/watcher": true
+  "@prisma/engines": true
+  "@swc/core": true
+  "@tailwindcss/oxide": true
+  better-sqlite3: true
+  esbuild: true
+  lefthook: true
+  prisma: true
+  sharp: true
 
 catalog:
   # ── Runtime (shared across 2+ apps) ──────────────────────────
@@ -30,3 +44,4 @@ catalog:
   "@types/react": "^19.1.8"
   "@types/react-dom": "^19.1.6"
   "@types/qrcode": "^1.5.5"
+
