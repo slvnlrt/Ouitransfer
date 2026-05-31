@@ -9,6 +9,7 @@ import {
   UnauthorizedError,
 } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
+import { hashToken } from "../../utils/token-hash.js";
 import { getConfigValue } from "../config/service.js";
 import { emailService } from "../email/service.js";
 import { buildResetPasswordUrl } from "../email/url-builder.js";
@@ -178,13 +179,13 @@ export class AuthService {
       }
     }
 
-    const token = crypto.randomBytes(128).toString("hex");
+    const token = crypto.randomBytes(32).toString("hex");
     const expirationSeconds = Number(await getConfigValue("passwordResetTokenExpiration"));
 
     await prisma.passwordReset.create({
       data: {
         userId: user.id,
-        token,
+        token: hashToken(token),
         expiresAt: new Date(Date.now() + expirationSeconds * 1000),
       },
     });
@@ -214,7 +215,7 @@ export class AuthService {
     // LDAP users need to set their initial app password even when password auth is disabled.
     const resetRequest = await prisma.passwordReset.findFirst({
       where: {
-        token,
+        token: hashToken(token),
         used: false,
         expiresAt: {
           gt: new Date(),
