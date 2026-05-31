@@ -112,15 +112,14 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // API Routing (Development / Docker Dev fallback)
-  // In production with Traefik, this is bypassed because Traefik intercepts /api before it reaches Next.js.
-  // We use this fallback when running `just dev` or `just docker-start` locally.
+  // API Routing — proxy /api/* to the Fastify server.
+  // In production with Traefik, this is never reached because Traefik
+  // intercepts /api before it hits Next.js. Without Traefik (local dev,
+  // docker-start), this provides the routing.
   if (pathname === "/api" || pathname.startsWith("/api/")) {
-    if (process.env.NODE_ENV === "development" || process.env.API_BASE_URL) {
-      const targetPath = pathname.replace(/^\/api/, "");
-      const rewriteUrl = new URL((targetPath || "/") + request.nextUrl.search, env.API_BASE_URL);
-      return NextResponse.rewrite(rewriteUrl);
-    }
+    const targetPath = pathname.replace(/^\/api/, "");
+    const rewriteUrl = new URL((targetPath || "/") + request.nextUrl.search, env.API_BASE_URL);
+    return NextResponse.rewrite(rewriteUrl);
   }
 
   const token = request.cookies.get("token")?.value;

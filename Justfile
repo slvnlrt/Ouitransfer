@@ -146,9 +146,14 @@ docker-push tag="latest":
         --push \
         .
 
-# Start all services (build + docker compose up -d)
+# Start all services (build locally + docker compose up -d)
 docker-start:
     docker compose -f docker-compose.yaml -f docker-compose.ci.yml up -d --build
+
+# Start services using published GHCR images (no local build)
+# Uses dev defaults from docker-compose.yaml — override with a .env file (see .env.docker.example)
+docker-start-published:
+    docker compose up -d --pull always
 
 # Stop all services (docker compose down)
 docker-stop:
