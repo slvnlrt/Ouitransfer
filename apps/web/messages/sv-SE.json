@@ -1394,6 +1394,8 @@
         "optionalDescription": "Valfritt: Fältet visas men är inte obligatoriskt",
         "requiredDescription": "Obligatoriskt: Fältet måste fyllas i före uppladdning"
       },
+      "notifyOnUpload": "Notify me on each upload",
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
       "submit": "Skapa mottagningslänk"
     },
     "messages": {

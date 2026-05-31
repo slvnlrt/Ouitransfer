@@ -1394,6 +1394,8 @@
         "optionalDescription": "Необов'язкове: Поле відображатиметься, але не є обов'язковим",
         "requiredDescription": "Обов'язкове: Поле потрібно заповнити перед завантаженням"
       },
+      "notifyOnUpload": "Notify me on each upload",
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
       "submit": "Створити посилання для отримання"
     },
     "messages": {

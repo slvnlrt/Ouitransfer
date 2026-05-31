@@ -1390,7 +1390,9 @@
       "nameFieldRequired": {
         "label": "नाम क्षेत्र की आवश्यकता",
         "description": "कॉन्फ़िगर करें कि क्या अपलोडर नाम फ़ील्ड दिखाया जाना चाहिए और यदि आवश्यक है"
-      }
+      },
+      "notifyOnUpload": "Notify me on each upload",
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences."
     },
     "messages": {
       "created": "प्राप्ति लिंक सफलतापूर्वक बनाया गया!",

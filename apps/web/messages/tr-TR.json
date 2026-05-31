@@ -1390,7 +1390,9 @@
       "nameFieldRequired": {
         "label": "İsim alanı gereksinimi",
         "description": "Yükleyici adı alanının gösterilmesi gerekip gerekmediğini ve gerekli olup olmadığını yapılandırın"
-      }
+      },
+      "notifyOnUpload": "Notify me on each upload",
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences."
     },
     "messages": {
       "created": "Alma bağlantısı başarıyla oluşturuldu!",

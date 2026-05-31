@@ -1390,7 +1390,9 @@
       "nameFieldRequired": {
         "label": "Requisiti del campo Nome",
         "description": "Configurare se il campo Nome del caricatore deve essere visualizzato e se è richiesto"
-      }
+      },
+      "notifyOnUpload": "Notify me on each upload",
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences."
     },
     "messages": {
       "created": "Link di ricezione creato con successo!",

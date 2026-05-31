@@ -1394,6 +1394,8 @@
         "optionalDescription": "Tùy chọn: Trường sẽ hiển thị nhưng không bắt buộc",
         "requiredDescription": "Bắt buộc: Trường phải được điền trước khi tải lên"
       },
+      "notifyOnUpload": "Notify me on each upload",
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
       "submit": "Tạo liên kết nhận"
     },
     "messages": {

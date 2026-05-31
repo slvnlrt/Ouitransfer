@@ -1394,6 +1394,8 @@
         "optionalDescription": "Opsional: Bidang akan muncul tetapi tidak wajib",
         "requiredDescription": "Wajib: Bidang harus diisi sebelum mengunggah"
       },
+      "notifyOnUpload": "Notify me on each upload",
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
       "submit": "Buat Tautan Terima"
     },
     "messages": {

@@ -1390,7 +1390,9 @@
       "nameFieldRequired": {
         "label": "Champ nom obligatoire",
         "description": "Configurer si le champ Nom du téléchargeur doit être affiché et s'il est requis"
-      }
+      },
+      "notifyOnUpload": "Me notifier à chaque envoi de fichier",
+      "notifyOnUploadHelp": "Lorsque activé, vous recevrez des notifications par email quand des fichiers sont envoyés vers ce lien de réception, indépendamment de vos préférences de notification globales."
     },
     "messages": {
       "created": "Lien de réception créé avec succès !",

@@ -1394,6 +1394,8 @@
         "optionalDescription": "Προαιρετικό: Το πεδίο θα εμφανιστεί αλλά δεν είναι υποχρεωτικό",
         "requiredDescription": "Υποχρεωτικό: Το πεδίο πρέπει να συμπληρωθεί πριν τη μεταφόρτωση"
       },
+      "notifyOnUpload": "Notify me on each upload",
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
       "submit": "Δημιουργία συνδέσμου λήψης"
     },
     "messages": {

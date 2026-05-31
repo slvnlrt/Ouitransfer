@@ -1390,7 +1390,9 @@
       "nameFieldRequired": {
         "label": "名称字段要求",
         "description": "配置是否应显示上传器名称字段以及是否需要"
-      }
+      },
+      "notifyOnUpload": "Notify me on each upload",
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences."
     },
     "messages": {
       "created": "接收链接创建成功！",

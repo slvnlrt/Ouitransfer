@@ -1394,7 +1394,9 @@
       "nameFieldRequired": {
         "label": "Nome Requisito de campo",
         "description": "Configure se o campo de nome do upload deve ser mostrado e se for necessário"
-      }
+      },
+      "notifyOnUpload": "Notify me on each upload",
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences."
     },
     "messages": {
       "created": "Link de recebimento criado com sucesso!",

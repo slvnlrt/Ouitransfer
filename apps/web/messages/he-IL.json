@@ -1394,6 +1394,8 @@
         "optionalDescription": "אופציונלי: השדה יוצג אך אינו חובה",
         "requiredDescription": "חובה: יש למלא את השדה לפני ההעלאה"
       },
+      "notifyOnUpload": "Notify me on each upload",
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
       "submit": "צור קישור קבלה"
     },
     "messages": {

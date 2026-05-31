@@ -1390,7 +1390,9 @@
       "nameFieldRequired": {
         "label": "Требование поля имени",
         "description": "Настройка, если должно быть показано поле имени загрузчика и если оно требуется"
-      }
+      },
+      "notifyOnUpload": "Notify me on each upload",
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences."
     },
     "messages": {
       "created": "Ссылка для получения успешно создана!",

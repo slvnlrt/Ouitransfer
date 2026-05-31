@@ -1390,7 +1390,9 @@
       "nameFieldRequired": {
         "label": "Nazwa Wymagania pola",
         "description": "Skonfiguruj, czy należy wyświetlić pole nazwy przesyłania, a jeśli jest to wymagane"
-      }
+      },
+      "notifyOnUpload": "Notify me on each upload",
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences."
     },
     "messages": {
       "created": "Link do odbierania utworzony pomyślnie!",

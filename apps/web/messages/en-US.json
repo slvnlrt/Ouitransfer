@@ -1530,6 +1530,8 @@
         "optionalDescription": "Optional: Field will appear but isn't mandatory",
         "requiredDescription": "Required: Field must be filled before upload"
       },
+      "notifyOnUpload": "Notify me on each upload",
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
       "submit": "Create Receive Link"
     },
     "messages": {

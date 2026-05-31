@@ -1394,7 +1394,9 @@
       "nameFieldRequired": {
         "label": "Requisito de campo de nombre",
         "description": "Configurar si se debe mostrar el campo Nombre del cargador y si es necesario"
-      }
+      },
+      "notifyOnUpload": "Notify me on each upload",
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences."
     },
     "messages": {
       "created": "¡Enlace de recepción creado con éxito!",

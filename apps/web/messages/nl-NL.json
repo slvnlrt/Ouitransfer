@@ -1390,7 +1390,9 @@
       "nameFieldRequired": {
         "label": "Naam veldvereiste",
         "description": "Configureer of het veld Uploader Naam moet worden getoond en of het vereist is"
-      }
+      },
+      "notifyOnUpload": "Notify me on each upload",
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences."
     },
     "messages": {
       "created": "Ontvangstlink succesvol aangemaakt!",

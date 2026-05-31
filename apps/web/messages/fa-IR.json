@@ -1394,6 +1394,8 @@
         "optionalDescription": "اختیاری: فیلد نمایش داده می‌شود اما اجباری نیست",
         "requiredDescription": "اجباری: فیلد باید قبل از آپلود تکمیل شود"
       },
+      "notifyOnUpload": "Notify me on each upload",
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
       "submit": "ایجاد لینک دریافت"
     },
     "messages": {

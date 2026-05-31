@@ -1390,7 +1390,9 @@
       "nameFieldRequired": {
         "label": "Namensfeldbedarf",
         "description": "Konfigurieren Sie, ob das Feld Uploader-Name angezeigt werden soll und ob es erforderlich ist"
-      }
+      },
+      "notifyOnUpload": "Notify me on each upload",
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences."
     },
     "messages": {
       "created": "Empfangslink erfolgreich erstellt!",

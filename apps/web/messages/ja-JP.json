@@ -1390,7 +1390,9 @@
       "nameFieldRequired": {
         "label": "名前フィールドの要件",
         "description": "アップローダー名フィールドが表示されるかどうか、そしてそれが必要かどうかを構成します"
-      }
+      },
+      "notifyOnUpload": "Notify me on each upload",
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences."
     },
     "messages": {
       "created": "受信リンクを作成しました！",

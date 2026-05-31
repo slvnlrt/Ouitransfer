@@ -1394,6 +1394,8 @@
         "optionalDescription": "ทางเลือก: ฟิลด์จะปรากฏแต่ไม่บังคับ",
         "requiredDescription": "จำเป็น: ต้องกรอกฟิลด์ก่อนอัปโหลด"
       },
+      "notifyOnUpload": "Notify me on each upload",
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
       "submit": "สร้างลิงค์การรับ"
     },
     "messages": {

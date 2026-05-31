@@ -1390,7 +1390,9 @@
       "nameFieldRequired": {
         "label": "اسم حقل الاسم",
         "description": "تكوين إذا كان يجب عرض حقل اسم التحميل وإذا كان مطلوبًا"
-      }
+      },
+      "notifyOnUpload": "Notify me on each upload",
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences."
     },
     "messages": {
       "created": "تم إنشاء رابط الاستلام بنجاح!",
