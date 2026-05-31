@@ -99,13 +99,19 @@ export function SharePrivacySection({ value, onChange, switchIdSuffix }: SharePr
 
         <div className="space-y-2">
           <Label>{t("createShare.inactivityAlertDays")}</Label>
-          <Input
-            type="number"
-            min="1"
-            value={value.inactivityAlertDays}
-            onChange={(e) => onChange({ ...value, inactivityAlertDays: e.target.value })}
-            placeholder={t("createShare.inactivityAlertPlaceholder")}
-          />
+          <div className="relative">
+            <Input
+              type="number"
+              min="1"
+              className="pr-14"
+              value={value.inactivityAlertDays}
+              onChange={(e) => onChange({ ...value, inactivityAlertDays: e.target.value })}
+              placeholder={t("createShare.inactivityAlertPlaceholder")}
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none select-none">
+              {t("common.days")}
+            </span>
+          </div>
         </div>
       </CollapsibleContent>
     </Collapsible>

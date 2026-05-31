@@ -175,7 +175,8 @@
     "copied": "Gekopieerd",
     "copy": "Kopiëren",
     "retry": "Retry",
-    "unavailable": "unavailable"
+    "unavailable": "unavailable",
+    "days": "dagen"
   },
   "createShare": {
     "title": "Delen Maken",
@@ -210,7 +211,7 @@
     "emailFieldRequired": "Require visitor email",
     "notifyOnDownload": "Notify me on each download",
     "notifyOnDownloadHelp": "When enabled, you'll receive email notifications when files are downloaded from this share, regardless of your global notification preferences.",
-    "inactivityAlertDays": "Alert if no downloads after (days)",
+    "inactivityAlertDays": "Alert if no downloads after",
     "inactivityAlertPlaceholder": "Leave empty to disable",
     "fieldHidden": "Hidden",
     "fieldOptional": "Optional",

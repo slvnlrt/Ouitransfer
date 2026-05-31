@@ -175,7 +175,8 @@
     "copied": "Copié",
     "copy": "Copier",
     "retry": "Retry",
-    "unavailable": "indisponible"
+    "unavailable": "indisponible",
+    "days": "jours"
   },
   "createShare": {
     "title": "Créer un Partage",
@@ -210,7 +211,7 @@
     "emailFieldRequired": "Exiger l'email du visiteur",
     "notifyOnDownload": "Me notifier à chaque téléchargement",
     "notifyOnDownloadHelp": "Lorsque cette option est activée, vous recevrez des notifications par e-mail lorsque des fichiers sont téléchargés depuis ce partage, indépendamment de vos préférences de notification globales.",
-    "inactivityAlertDays": "Alerter si aucun téléchargement après (jours)",
+    "inactivityAlertDays": "Alerter si aucun téléchargement après",
     "inactivityAlertPlaceholder": "Laisser vide pour désactiver",
     "fieldHidden": "Masqué",
     "fieldOptional": "Optionnel",
