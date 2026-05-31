@@ -1,5 +1,20 @@
 # Session Log
 
+## 2026-05-31 (session 19)
+
+**Security Remediation — PR #2 Aikido CVEs**
+
+- Exécution du plan `features/plans/security-pr2-remediation.md` (écrit en session 18)
+- **T-1 — `@fastify/cors` 10→11** : bump `^10.0.2`→`^11.0.0` + `methods` explicites (`GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS`) dans `app.ts`. Commit: `fix(server): bump @fastify/cors 10→11 + add explicit methods`
+- **T-5 — `axios`** : bump `^1.15.2`→`^1.16.1` (AIKIDO-2026-10823 Proxy Cleartext Leak, AIKIDO-2026-10822 Prototype Pollution). Commit: `fix(web): bump axios ^1.15.2→^1.16.1`
+- **T-2+T-3+T-4 groupés** : `pnpm update next-intl` (GHSA-4c35-wcg5-mm9h), `pnpm update @aws-sdk/client-s3 @aws-sdk/s3-request-presigner` (→ fast-xml-parser 5.7.3), pnpm overrides `fast-xml-parser >=5.7.2` + `zod@^4.0.0 → 4.4.3`. Commit: `fix(deps): security lockfile updates — next-intl, AWS SDK, zod v4 override`
+- **Vérification complète** : 1065 tests serveur + 274 tests web — tous passent. Type-check serveur + web OK. Build complet (4 packages) OK.
+- **SECURITY.md** : S-5 et S-6 marqués ✅ Fixé. Commit: `docs: update SECURITY.md — mark S-5, S-6 as fixed`
+- **PR #2** : fermée avec commentaire (CVEs couverts manuellement, 1339 tests vérifiés)
+- **Poussé sur `main`** : 4 commits (`466028c`..`47a6334`)
+
+---
+
 ## 2026-05-31 (session 18)
 
 **CI Playwright hang fix + PR #2 security analysis + Docker server crash + housekeeping**

@@ -1,5 +1,8 @@
 # Security Remediation — PR #2 (Aikido Autofix) + Dep Bumps
 
+> **✅ DONE — 2026-05-31 (session 19)**
+> Plan exécuté intégralement. PR #2 fermée. S-5 + S-6 fixés. 4 commits sur `main`.
+
 > Plan de remédiation pour les CVEs identifiées par Aikido Security (PR #2) et les mises à jour de sécurité associées.
 > **Ne PAS merger la PR #2 telle quelle** — elle est stale (2 semaines de retard) et ne gère pas le breaking change `@fastify/cors` 11.
 
