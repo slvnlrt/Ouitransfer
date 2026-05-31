@@ -86,6 +86,11 @@ function formatDataForRendering<T>(data: T, locale: string): T {
   return formatted as T;
 }
 
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+/** Fallback application name used when the `appName` config key is unavailable. */
+const DEFAULT_APP_NAME = "Ouitransfer";
+
 // ─── EmailService ─────────────────────────────────────────────────────────────
 
 class EmailService {
@@ -95,6 +100,9 @@ class EmailService {
    * This is the single entry point for all notification emails.
    * It validates the payload, checks preferences, renders the template,
    * and inserts an EmailJob for the queue worker to pick up.
+   *
+   * **No-throw contract**: this method never throws. All internal errors are
+   * caught and logged; the caller always receives `{ enqueued: boolean }`.
    */
   async send<T extends NotificationKey>(
     type: T,
@@ -138,9 +146,11 @@ class EmailService {
       return { enqueued: false };
     }
 
-    // 1b. Check appUrl is configured (required for links in emails)
+    // 1b. Check appUrl is configured (required for links in emails).
+    //     Read once here and pass to URL builders below to avoid redundant DB reads.
+    let appUrl: string;
     try {
-      await getAppUrl();
+      appUrl = await getAppUrl();
     } catch {
       log.warn({ type }, "appUrl not configured, skipping email");
       return { enqueued: false };
@@ -151,7 +161,7 @@ class EmailService {
     try {
       appName = await getConfigValue("appName");
     } catch {
-      appName = "Ouitransfer";
+      appName = DEFAULT_APP_NAME;
     }
 
     // 3. For non-critical types, resolve frequency ONCE and reuse
@@ -197,10 +207,11 @@ class EmailService {
       }
     }
 
-    // 5. Generate unsubscribe URL ONCE (used in both footer link and List-Unsubscribe header)
+    // 5. Generate unsubscribe URL ONCE (used in both footer link and List-Unsubscribe header).
+    //    Pass the already-resolved appUrl to avoid a second DB round-trip.
     let unsubscribeUrl: string | undefined;
     if (entry.hasUnsubscribe && options.userId) {
-      unsubscribeUrl = await this.generateUnsubscribeUrl(options.userId, type);
+      unsubscribeUrl = await this.generateUnsubscribeUrl(options.userId, type, appUrl);
     }
 
     // 6. Build string params from payload data for i18n interpolation.
@@ -242,19 +253,23 @@ class EmailService {
       const errorMessage =
         renderError instanceof Error ? renderError.message : "Unknown render error";
 
-      await prisma.emailJob.create({
-        data: {
-          type,
-          to: options.to,
-          subject: type,
-          locale: options.locale,
-          status: "failed",
-          priority: entry.priority,
-          lastError: `Render failed: ${errorMessage}`,
-          relatedId: effectiveRelatedId,
-          maxAttempts: 0,
-        },
-      });
+      try {
+        await prisma.emailJob.create({
+          data: {
+            type,
+            to: options.to,
+            subject: type,
+            locale: options.locale,
+            status: "failed",
+            priority: entry.priority,
+            lastError: `Render failed: ${errorMessage}`,
+            relatedId: effectiveRelatedId,
+            maxAttempts: 0,
+          },
+        });
+      } catch (dbError) {
+        log.error({ type, error: dbError }, "Failed to persist render-failure job to DB");
+      }
       return { enqueued: true };
     }
 
@@ -295,22 +310,27 @@ class EmailService {
     // pre-rendered HTML/text bodies (payload null).
     const isDigest = status === "digest_pending";
     const maxAttempts = await getMaxRetries();
-    await prisma.emailJob.create({
-      data: {
-        type,
-        to: options.to,
-        subject,
-        htmlBody: isDigest ? null : htmlBody,
-        textBody: isDigest ? null : textBody,
-        payload: isDigest ? JSON.stringify({ v: 1, type, data: validatedData }) : undefined,
-        locale: options.locale,
-        status,
-        priority: entry.priority,
-        relatedId: effectiveRelatedId,
-        listUnsubscribe,
-        maxAttempts,
-      },
-    });
+    try {
+      await prisma.emailJob.create({
+        data: {
+          type,
+          to: options.to,
+          subject,
+          htmlBody: isDigest ? null : htmlBody,
+          textBody: isDigest ? null : textBody,
+          payload: isDigest ? JSON.stringify({ v: 1, type, data: validatedData }) : undefined,
+          locale: options.locale,
+          status,
+          priority: entry.priority,
+          relatedId: effectiveRelatedId,
+          listUnsubscribe,
+          maxAttempts,
+        },
+      });
+    } catch (dbError) {
+      log.error({ type, to: options.to, error: dbError }, "Failed to persist email job to DB");
+      return { enqueued: false };
+    }
 
     // 13. Wake the queue for priority 1 jobs
     if (entry.priority === 1) {
@@ -386,10 +406,13 @@ class EmailService {
   /**
    * Generates a signed unsubscribe URL for the given user + notification type.
    * The token is a compact HS256 JWT with a 90-day expiry.
+   *
+   * Pass a pre-fetched `appUrl` to avoid a redundant DB round-trip when the
+   * caller has already resolved it.
    */
-  async generateUnsubscribeUrl(userId: string, type: string): Promise<string> {
+  async generateUnsubscribeUrl(userId: string, type: string, appUrl?: string): Promise<string> {
     const token = signUnsubscribeToken({ userId, type });
-    return buildUnsubscribeUrl(token);
+    return buildUnsubscribeUrl(token, appUrl);
   }
 
   /**

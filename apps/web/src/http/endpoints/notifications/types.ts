@@ -15,7 +15,7 @@ export interface GetNotificationPreferences200 {
 
 export interface UpdatePreferenceItem {
   type: NotificationType;
-  frequency: string;
+  frequency: "immediate" | "disabled";
 }
 
 export interface UpdateNotificationPreferencesBody {

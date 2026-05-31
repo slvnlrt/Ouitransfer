@@ -210,7 +210,7 @@ const UpdatePreferencesBodySchema = z.object({
   preferences: z.array(
     z.object({
       type: z.string(),
-      frequency: z.string(),
+      frequency: z.enum(["immediate", "disabled"]),
     }),
   ),
 });

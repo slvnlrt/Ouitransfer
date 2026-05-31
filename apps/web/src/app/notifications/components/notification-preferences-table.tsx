@@ -104,8 +104,10 @@ export function NotificationPreferencesTable() {
   const tCommon = useTranslations("common");
   const queryClient = useQueryClient();
 
-  // Local state: track user-modified frequencies (type -> frequency)
-  const [localChanges, setLocalChanges] = useState<Partial<Record<NotificationType, string>>>({});
+  // Local state: track user-modified frequencies (type -> writable frequency)
+  const [localChanges, setLocalChanges] = useState<
+    Partial<Record<NotificationType, "immediate" | "disabled">>
+  >({});
   const hasUnsavedChanges = Object.keys(localChanges).length > 0;
 
   // Warn about unsaved changes when navigating away
@@ -128,10 +130,10 @@ export function NotificationPreferencesTable() {
   });
 
   const saveMutation = useMutation({
-    mutationFn: async (changes: Partial<Record<NotificationType, string>>) => {
+    mutationFn: async (changes: Partial<Record<NotificationType, "immediate" | "disabled">>) => {
       const preferences = Object.entries(changes).map(([type, frequency]) => ({
         type: type as NotificationType,
-        frequency: frequency as string,
+        frequency: frequency as "immediate" | "disabled",
       }));
       await updateNotificationPreferences({ preferences });
     },
@@ -152,7 +154,7 @@ export function NotificationPreferencesTable() {
   );
   const grouped = groupByCategory(preferences);
 
-  const handleFrequencyChange = (type: NotificationType, frequency: string) => {
+  const handleFrequencyChange = (type: NotificationType, frequency: "immediate" | "disabled") => {
     setLocalChanges((prev) => {
       const next = { ...prev, [type]: frequency };
       // Remove entry if the new value matches the server-side value (no real change)
@@ -174,7 +176,7 @@ export function NotificationPreferencesTable() {
       Object.entries(localChanges).filter(([type]) =>
         configurableTypes.has(type as NotificationType),
       ),
-    ) as Partial<Record<NotificationType, string>>;
+    ) as Partial<Record<NotificationType, "immediate" | "disabled">>;
     if (Object.keys(safeChanges).length === 0) {
       toast.info(t("noChanges"));
       return;
@@ -264,7 +266,12 @@ export function NotificationPreferencesTable() {
                               <TableCell>
                                 <Select
                                   value={getFrequency(pref)}
-                                  onValueChange={(value) => handleFrequencyChange(pref.type, value)}
+                                  onValueChange={(value) =>
+                                    handleFrequencyChange(
+                                      pref.type,
+                                      value as "immediate" | "disabled",
+                                    )
+                                  }
                                   disabled={saveMutation.isPending}
                                 >
                                   <SelectTrigger className="w-40">

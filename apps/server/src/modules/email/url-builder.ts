@@ -5,10 +5,9 @@ import { getConfigValue } from "../config/service.js";
 /**
  * Returns the configured application base URL (e.g. "https://transfer.example.com").
  *
- * Reads from the config store on every call — `getConfigValue` is fast (in-memory
- * config cache with DB fallback) and the queue processes emails one at a time,
- * so per-call overhead is negligible. This ensures admin config changes take
- * effect immediately without server restart.
+ * Reads from the config store on every call. Callers that need the URL multiple
+ * times in one request should read it once and pass it as a parameter (e.g.
+ * `buildUnsubscribeUrl(token, appUrl)`) to avoid redundant DB round-trips.
  */
 export async function getAppUrl(): Promise<string> {
   const url = await getConfigValue("appUrl");
@@ -35,9 +34,12 @@ export async function buildShareLink(alias: string, trackingToken?: string): Pro
  * Build the share management URL (owner dashboard).
  * Format: `{appUrl}/shares?open={shareId}` — deep-links into the share list
  * and auto-opens the detail modal for that share.
+ *
+ * Pass a pre-fetched `appUrl` to avoid a redundant DB round-trip when the
+ * caller has already resolved it.
  */
-export async function buildShareManageUrl(shareId: string): Promise<string> {
-  const base = await getAppUrl();
+export async function buildShareManageUrl(shareId: string, appUrl?: string): Promise<string> {
+  const base = appUrl ?? (await getAppUrl());
   return `${base}/shares?open=${shareId}`;
 }
 
@@ -53,8 +55,11 @@ export async function buildResetPasswordUrl(token: string): Promise<string> {
 /**
  * Build the one-click unsubscribe URL.
  * Format: `{appUrl}/api/notifications/unsubscribe?token={token}`.
+ *
+ * Pass a pre-fetched `appUrl` to avoid a redundant DB round-trip when the
+ * caller has already resolved it.
  */
-export async function buildUnsubscribeUrl(token: string): Promise<string> {
-  const base = await getAppUrl();
+export async function buildUnsubscribeUrl(token: string, appUrl?: string): Promise<string> {
+  const base = appUrl ?? (await getAppUrl());
   return `${base}/api/notifications/unsubscribe?token=${token}`;
 }

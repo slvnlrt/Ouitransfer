@@ -6,10 +6,10 @@ interface LayoutProps {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations();
+  const t = await getTranslations("notificationPreferences");
 
   return {
-    title: `${t("notificationPreferences.pageTitle")}`,
+    title: t("pageTitle"),
   };
 }
 
