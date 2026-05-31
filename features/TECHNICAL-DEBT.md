@@ -243,24 +243,9 @@ obsolètes et ne correspondent plus à l'architecture actuelle du projet.
 
 ---
 
-## TD-16 — Traductions B-17/B-19 perdues dans 22 locales (placeholders EN)
+## ~~TD-16 — Traductions B-17/B-19 perdues dans 22 locales (placeholders EN)~~ SUPERSEDED
 
-**Context:** Les corrections B-17 (description "Show Home Page") et B-19 (messages stockage)
-ont remplacé les traductions existantes dans 22 locales (toutes sauf en-US et fr-FR) par des
-placeholders en anglais. Les anciennes traductions étaient certes incorrectes/incomplètes,
-mais elles étaient dans la bonne langue. L'anglais est une régression pour les utilisateurs non-EN/FR.
-
-**Fix:** Faire une passe de traduction sur les 22 locales pour les 4 clés modifiées :
-- `settings.fields.showHomePage.title`
-- `settings.fields.showHomePage.description`
-- `settings.fields.maxFileSize.description`
-- `settings.fields.maxTotalStoragePerUser.description`
-
-Option : utiliser un outil de traduction automatique ou restaurer les anciens titres depuis git
-et n'ajouter que la phrase supplémentaire.
-
-**Found during:** Code review session bugfixes B-8 à B-19 (mai 2026)
-**Severity:** Low — app pas en production, les 22 locales ont un placeholder fonctionnel
+Superseded by TD-36 (strings non traduites — scope élargi). TD-16 was a subset of the broader issue.
 
 ---
 
@@ -313,19 +298,9 @@ are ever allowed to pick custom aliases. No data loss or security impact.
 
 ---
 
-## TD-21 — Quickshare i18n: 21 locales have English fallback translations
+## ~~TD-21 — Quickshare i18n: 21 locales have English fallback translations~~ SUPERSEDED
 
-**Context:** The `quickShare.*` namespace (35 keys) was added with proper French translations
-to `en-US.json` and `fr-FR.json`, but the remaining 21 locale files received English fallback
-copies. Users of those languages will see English text in the QuickShare component.
-
-**Files:** All 21 locale JSON files in `apps/web/messages/` (excluding `en-US.json` and `fr-FR.json`)
-
-**Fix:** Translate the 35 `quickShare.*` keys to each locale's native language. Can use
-automated translation tools or community contributions.
-
-**Found during:** Quickshare 9.1 implementation (mai 2026)
-**Severity:** Low — app not in production, English fallback is functional
+Superseded by TD-36 (strings non traduites — scope élargi). TD-21 was a subset of the broader issue.
 
 ---
 
@@ -487,10 +462,10 @@ Planifier la migration complète en s'appuyant sur l'assessment détaillé dispo
 
 ---
 
-## TD-26 — Strings non traduites dans 21 locales (scope élargi)
+## TD-36 — Strings non traduites dans 21 locales (scope élargi)
 
-**Context:** Audit de mai 2026 (TD-25A). TD-16 et TD-21 avaient identifié des strings en anglais
-pour 4 clés settings et les 35 clés quickShare. L'audit complet révèle que le problème est plus
+**Context:** Audit de mai 2026 (TD-25A). Anciennement TD-16 (4 clés settings) et TD-21
+(35 clés quickShare), désormais consolidés ici. L'audit complet révèle que le problème est plus
 large : plusieurs namespaces ajoutés pendant le refactor n'ont jamais été traduits dans les
 21 locales non-FR (toutes sauf en-US et fr-FR).
 
@@ -519,7 +494,8 @@ les valeurs.
 (DeepL, Google Translate) pour les 21 locales, puis vérifier manuellement les termes techniques.
 Priorité : `errors.*` (UX critique), `audit.*` (grand nombre), `quickShare.*` (TD-21).
 
-**Référence :** TD-16 (4 clés settings), TD-21 (35 clés quickShare) sont des sous-ensembles de ce TD.
+**Référence :** Anciens TD-16 (4 clés settings) et TD-21 (35 clés quickShare) sont désormais
+marqués SUPERSEDED et consolidés dans ce TD-36.
 
 **Found during:** Audit scripts traduction (mai 2026)
 **Severity:** Low — app pas en production ; les valeurs anglaises sont fonctionnelles mais dégradent
@@ -661,3 +637,77 @@ This is a pre-existing access-model inconsistency surfaced (not introduced) by 8
 
 **Found during:** 8.2 review pass 6 (mai 2026)
 **Severity:** Low — pre-existing gap, no regression from 8.2
+
+---
+
+## TD-37 — Register-with-invite error handling relies on English string matching
+
+**Context:** The catch block in `apps/web/src/app/register-with-invite/[token]/components/register-form.tsx:69`
+detects specific error conditions by `includes()`-matching English strings from the server response
+body (`"already been used"`, `"expired"`, `"Username already exists"`, `"Email already exists"`).
+If any server message changes wording (e.g., during a refactor or locale change), the error
+detection silently breaks and the user sees the generic "createFailed" toast.
+
+**Fix:** Add structured `AppError` error codes to the server-side registration handler
+(e.g., `INVITE_TOKEN_USED`, `INVITE_TOKEN_EXPIRED`, `USERNAME_EXISTS`, `EMAIL_EXISTS`) and
+replace the string matching with code comparisons on the frontend. Low-effort, high-reliability
+improvement consistent with how other endpoints return structured codes.
+
+**Found during:** Deferred work audit (mai 2026, AR-1)
+**Severity:** Medium — fragile error detection, silent degradation on server message changes
+
+---
+
+## TD-38 — Notification unsubscribe page only supports English and French
+
+**Context:** The unsubscribe confirmation and result pages (served as HTML by the server at
+`apps/server/src/modules/notification/routes.ts:46`) use a hardcoded inline map with only
+`en` and `fr` locale strings. All other 21 supported locales fall back to English.
+The i18n infrastructure (`loader.ts`, email message files) already exists to support all locales.
+
+**Fix:** Migrate the unsubscribe page strings to the email i18n system. Add corresponding
+keys to `apps/server/src/modules/email/i18n/messages/en.json` (and `fr.json`). Use
+`createTranslationFn(userLocale)` to render the page. Medium effort, clear path.
+
+**Found during:** Deferred work audit (mai 2026, AR-2)
+**Severity:** Low — moderate UX degradation for non-EN/FR users clicking unsubscribe links
+
+---
+
+## TD-39 — Password reset tokens stored in plaintext
+
+**Context:** The `PasswordReset` Prisma model stores the raw random hex token
+(`crypto.randomBytes(32).toString("hex")`) as a plaintext string in the database. If the
+database is compromised, all active reset tokens are immediately usable. This affects the
+entire `passwordReset` flow (`auth/service.ts`, `ldap/sync.service.ts:361`). Acknowledged
+in the LDAP review (M-10, `features/reviews/archive/5.3-ldap-server.md:37`) but never
+formally tracked until now.
+
+**Fix:** Hash reset tokens before storing (SHA-256 is sufficient; bcrypt is unnecessary
+since the token is already high-entropy random). At verification time, hash the incoming
+token and compare. This pattern is standard (used by GitHub, Django, etc.). ~30 lines of change.
+
+**Found during:** Deferred work audit (mai 2026, AR-3)
+**Severity:** Medium — not exploitable without database access, but violates defense-in-depth
+
+---
+
+## TD-40 — Global error boundary hardcoded in English — no i18n possible
+
+**Context:** `apps/web/src/app/global-error.tsx:12` catches root layout crashes where all
+providers (i18n, theme, auth) are unavailable, so `useTranslations()` cannot be called.
+The component renders hardcoded English strings ("Something went wrong", "An unexpected
+error occurred", "Try again", "Go to home page").
+
+This is a known, correct trade-off — root layout crashes are rare, and loading provider
+infrastructure into the error boundary would introduce its own failure modes. The fix is
+non-trivial (would require inlining pre-translated strings for each locale via some other
+mechanism, e.g., a static translation map similar to the unsubscribe page pattern in TD-38).
+
+**Fix:** Optionally, inline a small static translation map covering the handful of strings
+in the most common supported locales. Best done alongside TD-38 if the same inline-map
+pattern is adopted.
+
+**Found during:** Deferred work audit (mai 2026, AR-5)
+**Severity:** Very Low — the error boundary exists precisely for catastrophic failures
+where UX perfection is secondary to recovery
