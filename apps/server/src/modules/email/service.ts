@@ -402,7 +402,7 @@ class EmailService {
           select: { notifyOnUpload: true },
         });
         if (reverseShare?.notifyOnUpload) {
-          return { frequency: "immediate", overridden: true };
+          return { frequency: "immediate", overridden: false };
         }
       }
     }

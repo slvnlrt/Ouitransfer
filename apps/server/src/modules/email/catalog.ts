@@ -450,7 +450,7 @@ export const notificationCatalog = {
     payloadSchema: reverseShareUploadedSchema,
     priority: 0,
     isCritical: false,
-    defaultFrequency: "immediate",
+    defaultFrequency: "disabled",
     configurable: true,
     hasUnsubscribe: true,
     // Prevent flooding from script-driven upload bursts (5-minute cooldown).

@@ -910,7 +910,7 @@ describe("EmailService", () => {
 
     // ── reverse_share_uploaded + notifyOnUpload ─────────────────────────────
 
-    it("notifyOnUpload=true upgrades reverse_share_uploaded to immediate with overridden", async () => {
+    it("notifyOnUpload=true enables reverse_share_uploaded as immediate without cooldown bypass", async () => {
       mockPrisma.notificationPreference.findUnique.mockResolvedValue({
         id: "pref-1",
         userId: "user-1",
@@ -926,7 +926,7 @@ describe("EmailService", () => {
         "rs-1",
       );
       expect(result.frequency).toBe("immediate");
-      expect(result.overridden).toBe(true);
+      expect(result.overridden).toBe(false);
     });
 
     it("notifyOnUpload=false does not override reverse_share_uploaded preference", async () => {
@@ -967,7 +967,7 @@ describe("EmailService", () => {
       expect(result.overridden).toBe(false);
     });
 
-    it("no preference + notifyOnUpload=true → immediate (overrides catalog default)", async () => {
+    it("no preference + notifyOnUpload=true → immediate (catalog default is disabled)", async () => {
       mockPrisma.notificationPreference.findUnique.mockResolvedValue(null);
       mockPrisma.reverseShare.findUnique.mockResolvedValue({ notifyOnUpload: true });
 
@@ -977,7 +977,7 @@ describe("EmailService", () => {
         "rs-1",
       );
       expect(result.frequency).toBe("immediate");
-      expect(result.overridden).toBe(true);
+      expect(result.overridden).toBe(false);
     });
 
     it("notifyOnUpload=true does not affect share_downloaded (scoped to uploads only)", async () => {
@@ -986,6 +986,19 @@ describe("EmailService", () => {
       mockPrisma.share.findUnique.mockResolvedValue({ notifyOnDownload: false });
 
       const result = await emailService.resolveFrequency("share_downloaded", "user-1", "rs-1");
+      expect(result.frequency).toBe("disabled");
+      expect(result.overridden).toBe(false);
+    });
+
+    it("no preference + notifyOnUpload=false → disabled (catalog default)", async () => {
+      mockPrisma.notificationPreference.findUnique.mockResolvedValue(null);
+      mockPrisma.reverseShare.findUnique.mockResolvedValue({ notifyOnUpload: false });
+
+      const result = await emailService.resolveFrequency(
+        "reverse_share_uploaded",
+        "user-1",
+        "rs-1",
+      );
       expect(result.frequency).toBe("disabled");
       expect(result.overridden).toBe(false);
     });
