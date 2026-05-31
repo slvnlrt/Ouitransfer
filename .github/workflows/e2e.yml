@@ -20,14 +20,16 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
         with:
           node-version-file: ".node-version"
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps chromium
+      # --only-shell: skip the full headed Chromium build (~170 MiB) and install
+      # only the headless shell binary, which is all CI needs for headless E2E tests.
+      - run: pnpm exec playwright install --with-deps --only-shell chromium
 
       # ── Build ──────────────────────────────────────────────────────────
       # docker compose build tags images using the `image:` field from the
@@ -62,7 +64,7 @@ jobs:
         run: pnpm e2e
 
       - name: Upload Playwright report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: ${{ !cancelled() }}
         with:
           name: playwright-report
