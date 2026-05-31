@@ -55,6 +55,10 @@ vi.mock("../../email/service.js", () => ({
   },
 }));
 
+vi.mock("../../../utils/token-hash.js", () => ({
+  hashToken: vi.fn((token: string) => `hashed-${token}`),
+}));
+
 vi.mock("../../config/service.js", () => ({
   getConfigValue: vi.fn(),
 }));

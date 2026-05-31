@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import { prisma } from "../../shared/prisma.js";
 import { ConflictError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
+import { hashToken } from "../../utils/token-hash.js";
 import { logAuditEvent } from "../audit/service.js";
 import { emailService } from "../email/service.js";
 import { buildResetPasswordUrl } from "../email/url-builder.js";
@@ -358,13 +359,10 @@ export class LdapSyncService {
         let token: string | null = null;
         if (appUrl) {
           const tokenStr = crypto.randomBytes(32).toString("hex");
-          // NOTE: Password reset tokens are stored in plaintext — this is pre-existing
-          // tech debt affecting the entire password reset system, not just LDAP.
-          // Tracked separately from this PR.
           await tx.passwordReset.create({
             data: {
               userId: user.id,
-              token: tokenStr,
+              token: hashToken(tokenStr),
               expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
             },
           });
