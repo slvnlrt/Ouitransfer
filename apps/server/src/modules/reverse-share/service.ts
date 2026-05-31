@@ -25,6 +25,7 @@ interface ReverseShareData {
   isActive: boolean;
   nameFieldRequired: string;
   emailFieldRequired: string;
+  notifyOnUpload: boolean;
   createdAt: Date;
   updatedAt: Date;
   creatorId: string;
@@ -487,6 +488,7 @@ export class ReverseShareService {
         : null,
       nameFieldRequired: reverseShare.nameFieldRequired,
       emailFieldRequired: reverseShare.emailFieldRequired,
+      notifyOnUpload: reverseShare.notifyOnUpload,
     };
 
     return result;

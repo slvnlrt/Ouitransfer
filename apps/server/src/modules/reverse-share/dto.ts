@@ -43,6 +43,10 @@ export const CreateReverseShareSchema = z.object({
   emailFieldRequired: FieldRequirementSchema.default("OPTIONAL").describe(
     "Email field requirement setting",
   ),
+  notifyOnUpload: z
+    .boolean()
+    .default(false)
+    .describe("Notify on each file upload, overriding global preference"),
 });
 
 export const UpdateReverseShareSchema = z.object({
@@ -63,6 +67,7 @@ export const UpdateReverseShareSchema = z.object({
   isActive: z.boolean().optional(),
   nameFieldRequired: FieldRequirementSchema.optional().describe("Name field requirement setting"),
   emailFieldRequired: FieldRequirementSchema.optional().describe("Email field requirement setting"),
+  notifyOnUpload: z.boolean().optional().describe("Notify on each file upload"),
 });
 
 export const ReverseShareFileSchema = z.object({
@@ -92,6 +97,7 @@ export const ReverseShareResponseSchema = z.object({
   hasPassword: z.boolean().describe("Whether the reverse share has a password"),
   nameFieldRequired: z.string().describe("Name field requirement setting"),
   emailFieldRequired: z.string().describe("Email field requirement setting"),
+  notifyOnUpload: z.boolean().describe("Whether to notify on each file upload"),
   createdAt: z.string().describe("The reverse share creation date"),
   updatedAt: z.string().describe("The reverse share update date"),
   creatorId: z.string().describe("The creator ID"),

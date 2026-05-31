@@ -333,6 +333,7 @@ model ReverseShare {
   isActive           Boolean          @default(true)
   nameFieldRequired  FieldRequirement @default(OPTIONAL)
   emailFieldRequired FieldRequirement @default(OPTIONAL)
+  notifyOnUpload     Boolean          @default(false)
   notifiedForExpiring  Boolean          @default(false)
   notifiedForExpired   Boolean          @default(false)
   createdAt          DateTime         @default(now())
