@@ -103,12 +103,12 @@ export function SharePrivacySection({ value, onChange, switchIdSuffix }: SharePr
             <Input
               type="number"
               min="1"
-              className="pr-14"
+              className="pe-14"
               value={value.inactivityAlertDays}
               onChange={(e) => onChange({ ...value, inactivityAlertDays: e.target.value })}
               placeholder={t("createShare.inactivityAlertPlaceholder")}
             />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none select-none">
+            <span className="absolute end-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none select-none">
               {t("common.days")}
             </span>
           </div>
