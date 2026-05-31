@@ -588,34 +588,13 @@ and queue flush. In practice, the queue processes quickly and `appName` changes 
 
 ---
 
-## TD-34 — No `notifyOnUpload` per-reverse-share override (asymmetry with shares)
+## TD-34 — ~~No `notifyOnUpload` per-reverse-share override (asymmetry with shares)~~ DONE
 
-**Context:** Shares have a `notifyOnDownload` boolean field that lets the owner override
-notification behavior per-share. When `notifyOnDownload=true`, the `resolveFrequency` cascade
-upgrades `share_downloaded` notifications to "immediate" regardless of the user's default
-preference (see `apps/server/src/modules/email/service.ts:325-339`).
-
-Reverse shares have no equivalent `notifyOnUpload` toggle. The `reverse_share_uploaded`
-notification type uses only the global preference cascade (user preference → catalog default).
-A comment at `email/service.ts:329-330` notes this gap:
-```
-// Known gap: reverse_share_uploaded has a cooldown but no per-share override mechanism
-// analogous to notifyOnDownload. If needed, add a similar toggle on the ReverseShare model.
-```
-
-**Impact:** Users who create many reverse shares cannot selectively enable/disable upload
-notifications per reverse share. They can only toggle all upload notifications globally.
-This is a significant usability gap for active reverse share users.
-
-**Fix:** Mirror the `notifyOnDownload` pattern:
-1. Add `notifyOnUpload` boolean field to `ReverseShare` Prisma model (default: `false`)
-2. Expose in reverse share create/update DTOs and API
-3. Add Step 3b in `resolveFrequency`: if `type === "reverse_share_uploaded"` and
-   `reverseShare.notifyOnUpload === true`, upgrade to "immediate"
-4. Add toggle UI in the reverse share management view (create modal + detail modal)
-
-**Found during:** 8.2 review pass 5 (mai 2026)
-**Severity:** High — useful feature gap that affects daily workflow for reverse share users
+**Status:** DONE (2026-05-31)
+**Commits:** `17ac636`, `592d8cb`, `248c733`, `8f6c8fb`, `0c3f36d`
+**Changes:** Added `notifyOnUpload` boolean to ReverseShare model + DTOs + service.
+Added Step 3b in `resolveFrequency` for `reverse_share_uploaded` (TDD, 5 tests).
+Added Switch toggle in create modal + details modal. i18n keys in all 23 locales.
 
 ---
 
@@ -674,21 +653,14 @@ keys to `apps/server/src/modules/email/i18n/messages/en.json` (and `fr.json`). U
 
 ---
 
-## TD-39 — Password reset tokens stored in plaintext
+## TD-39 — ~~Password reset tokens stored in plaintext~~ DONE
 
-**Context:** The `PasswordReset` Prisma model stores the raw random hex token
-(`crypto.randomBytes(32).toString("hex")`) as a plaintext string in the database. If the
-database is compromised, all active reset tokens are immediately usable. This affects the
-entire `passwordReset` flow (`auth/service.ts`, `ldap/sync.service.ts:361`). Acknowledged
-in the LDAP review (M-10, `features/reviews/archive/5.3-ldap-server.md:37`) but never
-formally tracked until now.
-
-**Fix:** Hash reset tokens before storing (SHA-256 is sufficient; bcrypt is unnecessary
-since the token is already high-entropy random). At verification time, hash the incoming
-token and compare. This pattern is standard (used by GitHub, Django, etc.). ~30 lines of change.
-
-**Found during:** Deferred work audit (mai 2026, AR-3)
-**Severity:** Medium — not exploitable without database access, but violates defense-in-depth
+**Status:** DONE (2026-05-31)
+**Commits:** `dfc59fc`, `c260239`, `7ffc041`
+**Changes:** Created `hashToken` utility (`utils/token-hash.ts`, SHA-256). Updated
+`auth/service.ts` and `ldap/sync.service.ts` to hash before storage and hash on lookup.
+Normalized token entropy to 32 bytes (256 bits) in both code paths. Removed plaintext
+tech debt comment from LDAP sync.
 
 ---
 
