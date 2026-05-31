@@ -1,5 +1,34 @@
 # Session Log
 
+## 2026-05-31 (session 19 continued — review + CI fix)
+
+**Code Review + Fixes + CI**
+
+- **Review pass** sur le travail de la session (security + TD-45/46 + TD-37/35) — 0 Critical, 2 Important, 5 Minor
+- **I-1 (Important)** : TS7022 circulaire dans `folder-ancestors.test.ts:136` (boucle `let parentId` + `folder.id` réassigné) → annotation `const folder: { id: string }`. Type-check CI était cassé.
+- **I-2 (Important)** : `trackShareDownload` zéro couverture sur le chemin folder-nested → ajout test 7 dans `file-access-folder-nested.integration.test.ts` : vérifie `share.findFirst` avec branche `OR folders`, et `shareVisit.create` appelé
+- **M-1** : Commentaire header "LIMIT 100 cycle would be caught" → corrigé ("terminates unbounded recursion")
+- **M-2** : Mock mort `file.findUnique` dans `visitor-tracking.test.ts` supprimé
+- **M-3** : Branche `isNetworkError` redondante dans `register-form.tsx` supprimée (même toast que `else`)
+- **M-5 (pre-existing)** : TOCTOU sur invite token single-use → tracké en **B-26** dans `BUGS.md`
+- **Tests** : 1086 server (73 fichiers) + 274 web — tous passent. Type-check OK.
+- **Commit** : `fix(server): review fixes — TS7022, trackShareDownload test, dead mock, B-26 tracked`
+
+**CI lockfile fix**
+
+- Root cause : lors du T-3 (session 18/19), `pnpm update @aws-sdk` a modifié les specifiers dans `apps/server/package.json` et `apps/web/package.json`, mais l'orchestrateur a **reseté ces fichiers** au lieu de les commiter avec le reste → lockfile avait `^3.1057.0` / `^4.13.0`, les `package.json` disaient `^3.817.0` / `^4.3.1` → `ERR_PNPM_OUTDATED_LOCKFILE` en CI depuis 6 runs
+- Fix : `pnpm install` pour réaligner les specifiers lockfile sur les `package.json`. Versions résolues inchangées.
+- 6 PRs Devin (tentatives de fix stale) fermées, 8 branches remote supprimées
+- **Commit** : `fix(deps): align lockfile specifiers with package.json (fixes CI frozen-lockfile)`
+- **CI verte** : 2 runs consécutifs ✅
+
+**CLAUDE.md rule 1b**
+
+- Ajout de la règle 1b : "NEVER discard uncommitted changes without understanding them" — suite au bug ci-dessus où l'orchestrateur a effacé des changements légitimes non-commités d'un agent worker
+- **Commit** : `docs: add rule 1b — never discard uncommitted changes without understanding them`
+
+---
+
 ## 2026-05-31 (session 19 continued)
 
 **Technical Debt — TD-37, TD-35, TD-29**
