@@ -695,7 +695,18 @@ préférences. Ajouter les clés i18n correspondantes dans les 23 locales.
 
 ---
 
-## TD-44 — Modale notifications: libellé "Alerter si aucun téléchargements après (jours)" confus
+## ~~TD-44 — Modale notifications: libellé "Alerter si aucun téléchargements après (jours)" confus~~ ✅ RESOLVED
+
+Resolved in TD-44 session (mai 2026). `share-privacy-section.tsx` : label épuré (suppression
+du `(jours)` / `(days)` en fin de chaîne), input enveloppé dans un `<div className="relative">`
+avec un `<span>` absolu affichant `{t("common.days")}` en suffix (padding `pe-14` / position
+`end-3` pour la compatibilité RTL). 23 locales mises à jour : `createShare.inactivityAlertDays`
+épuré + nouvelle clé `common.days` avec traductions.
+
+Commits: `fix(web): TD-44 — clarify inactivity alert field with inline unit`,
+`fix(web): TD-44 RTL — use logical end-3/pe-14 instead of right-3/pr-14`
+
+---
 
 **Context:** Dans la modale de création/détails, l'option "Alerter si aucun téléchargements
 après (jours)" avec un champ numérique en dessous n'est pas claire. Le "(jours)" accolé au
