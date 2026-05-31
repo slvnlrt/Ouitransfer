@@ -198,7 +198,7 @@ export class ReverseShareService {
 
     const updatedReverseShare = await this.reverseShareRepository.update(
       id,
-      // biome-ignore lint/suspicious/noExplicitAny: notification flags are valid ReverseShare fields not in the DTO input type
+      // biome-ignore lint/suspicious/noExplicitAny: notifiedForExpiring/notifiedForExpired are internal fields not in UpdateReverseShareInput
       updateData as any,
     );
 
