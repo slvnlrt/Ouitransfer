@@ -591,10 +591,13 @@ and queue flush. In practice, the queue processes quickly and `appName` changes 
 ## TD-34 — ~~No `notifyOnUpload` per-reverse-share override (asymmetry with shares)~~ DONE
 
 **Status:** DONE (2026-05-31)
-**Commits:** `17ac636`, `592d8cb`, `248c733`, `8f6c8fb`, `0c3f36d`
+**Commits:** `17ac636`, `592d8cb`, `248c733`, `8f6c8fb`, `0c3f36d`, `c015c9a`
 **Changes:** Added `notifyOnUpload` boolean to ReverseShare model + DTOs + service.
-Added Step 3b in `resolveFrequency` for `reverse_share_uploaded` (TDD, 5 tests).
+Added Step 3b in `resolveFrequency` for `reverse_share_uploaded` (TDD, 6 tests).
 Added Switch toggle in create modal + details modal. i18n keys in all 23 locales.
+Changed `reverse_share_uploaded` catalog default from `"immediate"` to `"disabled"` so
+the toggle means "enable/disable per-reverse-share upload notifications" (not cooldown
+bypass). `overridden: false` ensures the 300s cooldown always applies.
 
 ---
 
@@ -683,3 +686,25 @@ pattern is adopted.
 **Found during:** Deferred work audit (mai 2026, AR-5)
 **Severity:** Very Low — the error boundary exists precisely for catastrophic failures
 where UX perfection is secondary to recovery
+
+---
+
+## TD-41 — Optional per-reverse-share cooldown bypass toggle
+
+**Context:** `reverse_share_uploaded` notifications have a 300-second cooldown
+(`cooldownSeconds: 300` in `email/catalog.ts`) to prevent spam from rapid upload sessions.
+The `notifyOnUpload` toggle (TD-34) enables/disables notifications per reverse share but
+intentionally preserves the cooldown (`overridden: false`).
+
+Some power users (e.g., receiving batch uploads from automated systems) may want to receive
+a notification for every upload session without the 5-minute throttle. This would require
+a second toggle (e.g., `bypassUploadCooldown`) that only appears when `notifyOnUpload` is
+enabled, and returns `overridden: true` from `resolveFrequency` Step 3b.
+
+**Fix:** Add `bypassUploadCooldown` boolean to ReverseShare model (default: `false`).
+In `resolveFrequency` Step 3b, return `overridden: bypassUploadCooldown` instead of
+`overridden: false`. Add conditional toggle in create/details modals (visible only when
+`notifyOnUpload` is on). ~20 lines backend + ~20 lines frontend.
+
+**Found during:** TD-34 implementation review (mai 2026)
+**Severity:** Very Low — the default cooldown is sensible; bypass is a niche power-user need

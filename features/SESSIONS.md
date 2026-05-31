@@ -1,5 +1,34 @@
 # Session Log
 
+## 2026-05-31 (session 17)
+
+**TD-34 + TD-39 Remediation — Token Hashing + notifyOnUpload**
+
+- **Backlog consolidation**: Archived BUGS.md, consolidated deferred-work-audit findings into TECHNICAL-DEBT.md (TD-37..TD-40), marked TD-16/TD-21 SUPERSEDED by TD-36.
+- **TD-39 — Password reset token hashing (3 tasks)**:
+  - T1: `hashToken` utility (`utils/token-hash.ts`) + 4 unit tests
+  - T2: Auth service — `randomBytes(128)→randomBytes(32)`, hash before store + lookup
+  - T3: LDAP sync service — hash before store, removed plaintext tech debt comment
+- **TD-34 — notifyOnUpload per-reverse-share (7 tasks)**:
+  - T4: Prisma `notifyOnUpload Boolean @default(false)` on ReverseShare + DTOs + service
+  - T5: TDD — `resolveFrequency` Step 3b for `reverse_share_uploaded` + 6 tests
+  - T6: Frontend types + create modal Switch toggle
+  - T7: Details modal Switch toggle (widened `handleUpdateField` for booleans)
+  - T8: i18n keys across all 23 locales
+  - T9: SQLite dev DB recreated
+  - T10: Verification — 1065 tests pass, both type-checks clean
+- **Design fix**: Changed `reverse_share_uploaded` catalog default from `"immediate"` to `"disabled"` so the toggle means "enable/disable notifications" (not "bypass cooldown"). `overridden: false` preserves the 300s cooldown.
+- **Review** (full range `53e8668..c015c9a`): 0C, 1I, 4M — all fixed:
+  - I-1: Added token-hashing assertions in auth + LDAP tests
+  - M-2: Fixed stale `as any` biome-ignore comment in reverse-share service
+  - M-4: Aligned details modal notify toggle styling to match create modal
+  - Removed TD-39 ticket-reference comments from test files
+- **TD-41 added**: Optional per-reverse-share cooldown bypass toggle (Very Low, future)
+- **Tests**: Server 1065/1065, Web type-check clean
+- **Commits**: 12 commits (`dfc59fc`..`c015c9a` + review fixes + docs)
+
+---
+
 ## 2026-05-31 (session 16)
 
 **8.2 Email Notifications — TODO cleanup + Review Passes 6-7**
