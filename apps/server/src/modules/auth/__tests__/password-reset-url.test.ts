@@ -131,7 +131,6 @@ describe("AuthService.requestPasswordReset — URL security", () => {
     const rawToken = mockBuildResetPasswordUrl.mock.calls[0][0] as string;
     expect(rawToken).toMatch(/^[0-9a-f]{64}$/); // 32 bytes hex
 
-    // TD-39: the stored token must be a SHA-256 hash, NOT the raw token
     expect(mockPasswordResetCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
