@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { LazyQRCode } from "@/components/ui/lazy-qr-code";
+import { Switch } from "@/components/ui/switch";
 import { logger } from "@/lib/logger";
 import { useReverseShareDetails } from "../hooks/use-reverse-share-details";
 import type { ReverseShare } from "../hooks/use-reverse-shares";
@@ -67,7 +68,7 @@ export function ReverseShareDetailsModal({
 }: ReverseShareDetailsModalProps) {
   const t = useTranslations();
   const [pendingChanges, setPendingChanges] = useState<
-    Record<string, string | number | null | undefined>
+    Record<string, string | number | boolean | null | undefined>
   >({});
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -91,7 +92,7 @@ export function ReverseShareDetailsModal({
     reverseShare?.alias?.alias,
   ]);
 
-  const handleUpdateField = async (field: string, value: string | number | null) => {
+  const handleUpdateField = async (field: string, value: string | number | boolean | null) => {
     if (!reverseShare || !onUpdateReverseShare) return;
 
     setPendingChanges((prev) => ({ ...prev, [field]: value }));
@@ -484,6 +485,26 @@ export function ReverseShareDetailsModal({
                           : t("reverseShares.modals.details.activate")}
                       </Button>
                     )}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-xs font-medium text-muted-foreground mb-1">
+                    {t("reverseShares.form.notifyOnUpload")}
+                  </div>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Switch
+                      checked={
+                        pendingChanges.notifyOnUpload !== undefined
+                          ? (pendingChanges.notifyOnUpload as boolean)
+                          : reverseShare.notifyOnUpload
+                      }
+                      onCheckedChange={(checked) => handleUpdateField("notifyOnUpload", checked)}
+                      disabled={!onUpdateReverseShare}
+                    />
+                    <span className="text-sm text-muted-foreground">
+                      {t("reverseShares.form.notifyOnUploadHelp")}
+                    </span>
                   </div>
                 </div>
 
