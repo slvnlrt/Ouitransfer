@@ -11,7 +11,7 @@ import {
   ToggleRight,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +23,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { LazyQRCode } from "@/components/ui/lazy-qr-code";
 import { Switch } from "@/components/ui/switch";
 import { logger } from "@/lib/logger";
@@ -67,6 +68,7 @@ export function ReverseShareDetailsModal({
   onSuccess,
 }: ReverseShareDetailsModalProps) {
   const t = useTranslations();
+  const notifyUploadSwitchId = useId();
   const [pendingChanges, setPendingChanges] = useState<
     Record<string, string | number | boolean | null | undefined>
   >({});
@@ -488,11 +490,8 @@ export function ReverseShareDetailsModal({
                   </div>
                 </div>
 
-                <div>
-                  <div className="text-xs font-medium text-muted-foreground mb-1">
-                    {t("reverseShares.form.notifyOnUpload")}
-                  </div>
-                  <div className="flex items-center gap-2 mt-1">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
                     <Switch
                       checked={
                         pendingChanges.notifyOnUpload !== undefined
@@ -501,11 +500,15 @@ export function ReverseShareDetailsModal({
                       }
                       onCheckedChange={(checked) => handleUpdateField("notifyOnUpload", checked)}
                       disabled={!onUpdateReverseShare}
+                      id={notifyUploadSwitchId}
                     />
-                    <span className="text-sm text-muted-foreground">
-                      {t("reverseShares.form.notifyOnUploadHelp")}
-                    </span>
+                    <Label htmlFor={notifyUploadSwitchId}>
+                      {t("reverseShares.form.notifyOnUpload")}
+                    </Label>
                   </div>
+                  <p className="text-xs text-muted-foreground ps-9">
+                    {t("reverseShares.form.notifyOnUploadHelp")}
+                  </p>
                 </div>
 
                 <EditableField
