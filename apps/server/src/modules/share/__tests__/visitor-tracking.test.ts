@@ -89,6 +89,7 @@ vi.mock("../../../shared/prisma.js", () => ({
     },
     file: {
       findFirst: mockFileFirst,
+      findUnique: vi.fn().mockResolvedValue({ folderId: null }),
       findMany: vi.fn().mockResolvedValue([]),
     },
     folder: {

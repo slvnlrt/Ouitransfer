@@ -5,8 +5,8 @@ import bcrypt from "bcryptjs";
 import type { FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
-
 import { env } from "../../env.js";
+import type { Prisma } from "../../generated/prisma/client.js";
 import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
 import { prisma } from "../../shared/prisma.js";
 import {
@@ -44,6 +44,26 @@ import { FileService } from "./service.js";
 const fileService = new FileService();
 
 // ── Module-level helpers ─────────────────────────────────────
+
+/**
+ * Given a folderId, returns all ancestor folder IDs (including itself)
+ * by walking UP the folder tree via a recursive CTE.
+ * Returns empty array if folderId is null/undefined.
+ */
+async function getAncestorFolderIds(folderId: string | null | undefined): Promise<string[]> {
+  if (!folderId) return [];
+  const rows = await prisma.$queryRaw<{ id: string }[]>`
+    WITH RECURSIVE ancestors(id, "parentId") AS (
+      SELECT id, "parentId" FROM "folders"
+      WHERE id = ${folderId}
+      UNION ALL
+      SELECT f.id, f."parentId" FROM "folders" f
+      JOIN ancestors a ON f.id = a."parentId"
+    )
+    SELECT id FROM ancestors
+  `;
+  return rows.map((r) => r.id);
+}
 
 /**
  * Recursively retrieve all files for a user across all folders.
@@ -98,11 +118,26 @@ async function checkFileAccess(
   password: string | undefined,
   request: FastifyRequest,
 ): Promise<boolean> {
-  // Check share-based access
+  // Resolve ancestor folder chain for folder-nested file access
+  const file = await prisma.file.findUnique({
+    where: { id: fileId },
+    select: { folderId: true },
+  });
+  const ancestorFolderIds = await getAncestorFolderIds(file?.folderId);
+
+  // Check share-based access: direct file OR file in shared folder tree
+  const shareWhere: Prisma.ShareWhereInput =
+    ancestorFolderIds.length > 0
+      ? {
+          OR: [
+            { files: { some: { id: fileId } } },
+            { folders: { some: { id: { in: ancestorFolderIds } } } },
+          ],
+        }
+      : { files: { some: { id: fileId } } };
+
   const shares = await prisma.share.findMany({
-    where: {
-      files: { some: { id: fileId } },
-    },
+    where: shareWhere,
     include: { security: true },
   });
 
@@ -148,15 +183,30 @@ async function trackShareDownload(
   shareId: string,
   requestUserId?: string,
 ): Promise<void> {
+  // Resolve ancestor folders for deep nesting support
+  const fileForTracking = await prisma.file.findUnique({
+    where: { id: fileRecord.id },
+    select: { folderId: true },
+  });
+  const trackingAncestorIds = await getAncestorFolderIds(fileForTracking?.folderId);
+
+  const trackingShareWhere =
+    trackingAncestorIds.length > 0
+      ? {
+          id: shareId,
+          OR: [
+            { files: { some: { id: fileRecord.id } } },
+            { folders: { some: { id: { in: trackingAncestorIds } } } },
+          ],
+        }
+      : {
+          id: shareId,
+          files: { some: { id: fileRecord.id } },
+        };
+
   // Verify file belongs to this share
   const shareWithFile = await prisma.share.findFirst({
-    where: {
-      id: shareId,
-      OR: [
-        { files: { some: { id: fileRecord.id } } },
-        { folders: { some: { files: { some: { id: fileRecord.id } } } } },
-      ],
-    },
+    where: trackingShareWhere,
     include: {
       creator: { select: { email: true, locale: true, isActive: true } },
       alias: true,
