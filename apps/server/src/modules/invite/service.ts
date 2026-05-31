@@ -1,8 +1,9 @@
 import { randomBytes } from "node:crypto";
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import bcrypt from "bcryptjs";
 
 import { prisma } from "../../shared/prisma.js";
-import { ConflictError, GoneError, NotFoundError } from "../../utils/app-error.js";
+import { AppError, NotFoundError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { emailService } from "../email/service.js";
 
@@ -59,10 +60,14 @@ export class InviteService {
 
     if (!validation.valid) {
       if (validation.used) {
-        throw new ConflictError("This invite link has already been used");
+        throw new AppError(
+          409,
+          "This invite link has already been used",
+          ErrorCodes.INVITE_TOKEN_USED,
+        );
       }
       if (validation.expired) {
-        throw new GoneError("This invite link has expired");
+        throw new AppError(410, "This invite link has expired", ErrorCodes.INVITE_TOKEN_EXPIRED);
       }
       throw new NotFoundError("Invalid invite link");
     }
@@ -75,10 +80,10 @@ export class InviteService {
 
     if (existingUser) {
       if (existingUser.username === data.username) {
-        throw new ConflictError("Username already exists");
+        throw new AppError(409, "Username already exists", ErrorCodes.USERNAME_EXISTS);
       }
       if (existingUser.email === data.email) {
-        throw new ConflictError("Email already exists");
+        throw new AppError(409, "Email already exists", ErrorCodes.EMAIL_EXISTS);
       }
     }
 

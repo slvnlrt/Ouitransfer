@@ -1,5 +1,6 @@
 "use client";
 
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import { Eye, EyeOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -10,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { registerWithInvite } from "@/http/endpoints/invite";
 import { logger } from "@/lib/logger";
+import { parseApiError } from "@/utils/api-error";
 
 interface RegisterFormData {
   firstName: string;
@@ -66,16 +68,16 @@ export function RegisterForm({ token, onSuccess }: RegisterFormProps) {
         err: error instanceof Error ? error.message : String(error),
       });
 
-      // TODO: Server should return structured error codes instead of English messages
-      const errorMessage = (error as { response?: { data?: { error?: string } } } | null)?.response
-        ?.data?.error;
-      if (errorMessage?.includes("already been used")) {
+      const apiError = parseApiError(error);
+      if (apiError.isNetworkError) {
+        toast.error(t("registerWithInvite.errors.createFailed"));
+      } else if (apiError.code === ErrorCodes.INVITE_TOKEN_USED) {
         toast.error(t("registerWithInvite.errors.tokenUsed"));
-      } else if (errorMessage?.includes("expired")) {
+      } else if (apiError.code === ErrorCodes.INVITE_TOKEN_EXPIRED) {
         toast.error(t("registerWithInvite.errors.tokenExpired"));
-      } else if (errorMessage?.includes("Username already exists")) {
+      } else if (apiError.code === ErrorCodes.USERNAME_EXISTS) {
         toast.error(t("registerWithInvite.errors.usernameExists"));
-      } else if (errorMessage?.includes("Email already exists")) {
+      } else if (apiError.code === ErrorCodes.EMAIL_EXISTS) {
         toast.error(t("registerWithInvite.errors.emailExists"));
       } else {
         toast.error(t("registerWithInvite.errors.createFailed"));

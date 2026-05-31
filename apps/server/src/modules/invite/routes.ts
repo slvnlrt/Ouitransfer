@@ -85,6 +85,9 @@ export const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
       response: {
         200: RegisterWithInviteResponseSchema,
         400: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+        409: ErrorResponseSchema,
+        410: ErrorResponseSchema,
         500: ErrorResponseSchema,
       },
     },
