@@ -739,48 +739,25 @@ téléchargement après N jours") et intégrer l'unité directement dans le cham
 
 ---
 
-## TD-45 — Fastify deprecation warning: router options access pattern (FSTDEP022)
+## ~~TD-45 — Fastify deprecation warning: router options access pattern (FSTDEP022)~~ ✅ RESOLVED
 
-**Context:** Every server boot (including Docker) logs:
-```
-[FSTDEP022] FastifyWarning: The router options for ignoreTrailingSlash, maxParamLength
-property access is deprecated. Please use "options.routerOptions" instead.
-The router options will be removed in `fastify@6`.
-```
-The router options (`ignoreTrailingSlash`, `maxParamLength`) are currently set at the top
-level of the Fastify config in `apps/server/src/app.ts`. They need to be moved under
-`routerOptions: { ... }` to comply with the Fastify 5 API and avoid breaking in Fastify 6.
+Resolved in session 19 (mai 2026). Moved `ignoreTrailingSlash` and `maxParamLength` from
+top-level `fastify({...})` into `routerOptions: { ignoreTrailingSlash: true, maxParamLength: 500 }`
+in `apps/server/src/app.ts`. FSTDEP022 warning no longer emitted at boot.
 
-**Fix:** In `apps/server/src/app.ts`, move router options:
-```ts
-// Before:
-const app = Fastify({ ignoreTrailingSlash: true, maxParamLength: 200, ... })
-// After:
-const app = Fastify({ routerOptions: { ignoreTrailingSlash: true, maxParamLength: 200 }, ... })
-```
-
-**Found during:** Docker CI logs, session 18 (mai 2026)
-**Severity:** Low — warning only, no runtime impact; becomes breaking in Fastify 6
+Commit: `fix(server): TD-45 routerOptions + TD-46 enable SQLite WAL mode on boot`
 
 ---
 
-## TD-46 — SQLite WAL mode not enabled — audit write contention risk
+## ~~TD-46 — SQLite WAL mode not enabled — audit write contention risk~~ ✅ RESOLVED
 
-**Context:** Every server boot logs:
-```
-SQLite is NOT in WAL mode. Audit write volume may cause contention.
-Set journal_mode=WAL in your migration or deployment config.
-```
-The server already detects and warns about this. SQLite's default journal mode (`DELETE`)
-serializes all writes, which can cause lock contention when high-volume audit events are
-written concurrently with user operations.
+Resolved in session 19 (mai 2026). Changed `PRAGMA journal_mode` (read-only check) to
+`PRAGMA journal_mode=WAL` (idempotent set) in `initAuditRetentionOnBoot` in
+`apps/server/src/modules/audit/retention.scheduler.ts`. WAL mode is now enabled at every
+boot (persists across restarts). If WAL cannot be set (read-only filesystem), a warn is
+logged. Test updated accordingly.
 
-**Fix:** Add `PRAGMA journal_mode=WAL;` to the Prisma migration or to the server startup
-sequence (after DB connection, before first query). WAL mode is persistent and survives
-restarts. Already referenced in `apps/server/src/config/timeout.config.ts` comments.
-
-**Found during:** Docker CI logs, session 18 (mai 2026)
-**Severity:** Low-Medium — no impact at low volume; becomes a real issue under audit-heavy workloads
+Commit: `fix(server): TD-45 routerOptions + TD-46 enable SQLite WAL mode on boot`
 
 ---
 
