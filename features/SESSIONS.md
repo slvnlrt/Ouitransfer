@@ -1,5 +1,59 @@
 # Session Log
 
+## 2026-05-31 (session 16)
+
+**8.2 Email Notifications — TODO cleanup + Review Passes 6-7**
+
+- **TODO-2026-05-30.md cleanup**: Triaged 8 items + B-26 from previous session's deferred work.
+  - B-26 (updateShare clears expiration): Fixed — conditional spread in `share/service.ts`
+  - Item 1 (visitor identity in download notifications): Fixed — extracted `parseVisitorCookie` to `share/visitor-cookie.ts`, wired into `trackShareDownload`
+  - Item 2 (getShare by ID visitor cookie parsing): Fixed — alias lookup + cookie parse in GET/POST share routes
+  - Items 3, 5, 6, 7: Tracked as TD-31 through TD-34 in TECHNICAL-DEBT.md
+  - Item 4 (admin_user_registered includes acting admin): Accepted as design decision
+  - Item 8 (date formatting): Already fixed (`Intl.DateTimeFormat` in `email/service.ts`)
+- **Deferred work scan**: Created `scripts/scan-deferred-work.ps1` (ripgrep-based, 11 pattern categories). Installed ripgrep via winget. Scan found 50 raw matches → 21 meaningful items. Audit report written to `features/reviews/deferred-work-audit-2026-05-30.md`.
+
+- **Pass 6 review** (3 agents — server-core, server-integration, frontend):
+  - Server Core: 0C/3I/4M — SC-I-1 dates raw in email body, SC-I-2 notifyOnDownload throttled by cooldown, SC-I-3 visit/notification ordering
+  - Server Integration: 0C/3I/4M (SI-I-1 dup of SC-I-2) — SI-I-2 reverse_share_uploaded skips deactivated, SI-I-3 admin_user_registered missing for OIDC/invite
+  - Frontend: 0C/2I/3M — FE-I-1 activity filter client-side, FE-I-2 activity not gated by isOwner
+  - All findings fixed in 4 batches:
+    - Batch 2a: `formatDataForRendering` for email bodies + cooldown bypass for notifyOnDownload override
+    - Batch 2b: Visit-before-notify ordering, isActive guard, admin_user_registered coverage (OIDC + invite)
+    - Batch 3: Server-side identity filter (`identified` query param), isOwner gate
+    - Batch 4a: Server minors (dead config, "Someone" sentinel, notifyShareCreator helper, stale comment)
+    - Batch 4b: Frontend minors (disabled Select during save, beforeunload returnValue, frequency fallback)
+    - SC-M-1: i18n placeholder consistency test (196 tests, 2 locales × 22 types)
+  - TD-35 added (folder-nested files access gap)
+  - All 19 findings checked off
+
+- **Pass 7 review** (3 agents — server-core, server-integration, frontend):
+  - Server Core: 0C/0I/5M — send() no-throw, appUrl read twice, hardcoded fallback, loose Zod, hand-rolled JWT
+  - Server Integration: 0C/0I/2M — cooldown drop awareness (both documented design decisions)
+  - Frontend: 0C/0I/3M — write-side frequency type, layout translator, load more label
+  - **Stop criterion met**: 0 Critical + 0 Important across all scopes
+  - 6 minors fixed (send() no-throw contract, appUrl read-once-pass-down, DEFAULT_APP_NAME constant, Zod enum tightening, write-side frequency union type, layout translator scope)
+  - 4 no-action (acknowledged TD, documented design decisions, cosmetic)
+  - All 10 findings checked off
+
+- **Integration test fix**: 8 "pre-existing" failures in `share-audit.integration.test.ts` and `share-error-codes.integration.test.ts` were actually caused by our Item 2 fix (missing `shareAlias` mock). Fixed — added `shareAlias: { findUnique: vi.fn().mockResolvedValue(null) }` to both test files.
+
+- **Final test counts**: Server 1055/1055 (zero failures), Web 274/274. Both type-checks clean.
+- **Commits**: 10 commits (B-26 fix, Items 1+2 fix, scan script, audit report, TODO status, pass 6 reviews, 4 remediation batches, pass 7 reviews, test fix, pass 7 remediation, check-offs)
+
+---
+
+## 2026-05-30 (session 15)
+
+**8.2 Email Notifications — Review Passes 3-5**
+
+- Third through fifth review passes with escalating rigor
+- Details in pass 3-5 review files (`features/reviews/8.2-review-{3,4,5}-*.md`)
+- Multiple batches of fixes per pass
+- Deferred items captured in `features/TODO-2026-05-30.md` for next session
+
+---
+
 ## 2026-05-29 (session 14)
 
 **8.2 Email Notifications — Review Fixes (2 rounds)**
