@@ -69,9 +69,7 @@ export function RegisterForm({ token, onSuccess }: RegisterFormProps) {
       });
 
       const apiError = parseApiError(error);
-      if (apiError.isNetworkError) {
-        toast.error(t("registerWithInvite.errors.createFailed"));
-      } else if (apiError.code === ErrorCodes.INVITE_TOKEN_USED) {
+      if (apiError.code === ErrorCodes.INVITE_TOKEN_USED) {
         toast.error(t("registerWithInvite.errors.tokenUsed"));
       } else if (apiError.code === ErrorCodes.INVITE_TOKEN_EXPIRED) {
         toast.error(t("registerWithInvite.errors.tokenExpired"));

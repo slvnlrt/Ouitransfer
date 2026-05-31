@@ -10,7 +10,7 @@
  * 2. Single folder (no parent) → returns [self]
  * 3. Linear chain (3 levels) → returns [self, parent, grandparent]
  * 4. Deep chain (5 levels) → correct full traversal
- * 5. LIMIT 100 safety guard (cycle would be caught)
+ * 5. LIMIT 100 safety guard (terminates unbounded recursion)
  */
 
 import { execSync } from "node:child_process";
@@ -133,7 +133,7 @@ describe("getAncestorFolderIds — real SQLite", () => {
     // Create a chain: level0 → level1 → level2 → level3 → level4
     let parentId: string | null = null;
     for (let i = 0; i < 5; i++) {
-      const folder = await prisma.folder.create({
+      const folder: { id: string } = await prisma.folder.create({
         data: {
           name: `${TEST_PREFIX}-deep-${i}`,
           objectName: uniqueObjectName(),

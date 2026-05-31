@@ -368,7 +368,68 @@ describe("POST /files/download-url — folder-nested file access (TD-35)", () =>
     expect(body.error).toBeDefined();
   });
 
-  // ── Test 7: File with no folderId and no share → 401 ───────────────────────
+  // ── Test 7: trackShareDownload records visit for folder-nested file ────────
+  it("calls trackShareDownload and creates ShareVisit for a folder-nested file", async () => {
+    const { prisma } = await import("../shared/prisma.js");
+
+    // File is in DEEP_FOLDER_ID (deeply nested)
+    const fileRecord = makeFileRecord({ folderId: DEEP_FOLDER_ID });
+    vi.mocked(prisma.file.findFirst).mockResolvedValue(fileRecord as never);
+    vi.mocked(prisma.file.findUnique).mockResolvedValue({ folderId: DEEP_FOLDER_ID } as never);
+
+    // Ancestor CTE: DEEP → SUB → ROOT
+    vi.mocked(prisma.$queryRaw).mockResolvedValue([
+      { id: DEEP_FOLDER_ID },
+      { id: SUB_FOLDER_ID },
+      { id: ROOT_FOLDER_ID },
+    ] as never);
+
+    // checkFileAccess: share links to ROOT_FOLDER_ID via ancestor match
+    vi.mocked(prisma.share.findMany).mockResolvedValue([makeShare()] as never);
+
+    // trackShareDownload: share.findFirst should match via folder branch
+    vi.mocked(prisma.share.findFirst).mockResolvedValue({
+      id: SHARE_ID,
+      creatorId: "different-user",
+      alias: null,
+      creator: { email: "owner@test.com", locale: "en-US", isActive: true },
+    } as never);
+
+    const res = await downloadUrl(OBJECT_NAME, { shareId: SHARE_ID });
+
+    expect(res.statusCode).toBe(200);
+
+    // Verify trackShareDownload queried using the folder OR branch
+    expect(prisma.share.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          id: SHARE_ID,
+          OR: expect.arrayContaining([
+            { files: { some: { id: FILE_ID } } },
+            {
+              folders: {
+                some: { id: { in: [DEEP_FOLDER_ID, SUB_FOLDER_ID, ROOT_FOLDER_ID] } },
+              },
+            },
+          ]),
+        }),
+      }),
+    );
+
+    // Verify ShareVisit was created (download tracked)
+    // Give fire-and-forget async a tick to resolve
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(prisma.shareVisit.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          shareId: SHARE_ID,
+          fileId: FILE_ID,
+        }),
+      }),
+    );
+  });
+
+  // ── Test 8: File with no folderId and no share → 401 ───────────────────────
   it("returns 401 for a file with no folder and no share link", async () => {
     const { prisma } = await import("../shared/prisma.js");
 
