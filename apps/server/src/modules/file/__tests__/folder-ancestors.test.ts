@@ -133,7 +133,7 @@ describe("getAncestorFolderIds — real SQLite", () => {
     // Create a chain: level0 → level1 → level2 → level3 → level4
     let parentId: string | null = null;
     for (let i = 0; i < 5; i++) {
-      const folder = await prisma.folder.create({
+      const { id } = await prisma.folder.create({
         data: {
           name: `${TEST_PREFIX}-deep-${i}`,
           objectName: uniqueObjectName(),
@@ -141,8 +141,8 @@ describe("getAncestorFolderIds — real SQLite", () => {
           parentId,
         },
       });
-      ids.push(folder.id);
-      parentId = folder.id;
+      ids.push(id);
+      parentId = id;
     }
 
     // Query from the deepest folder (level4)
