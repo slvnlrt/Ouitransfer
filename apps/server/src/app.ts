@@ -101,6 +101,7 @@ export async function buildApp() {
       }
     },
     credentials: true,
+    methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   });
 
   const isDevMode = process.env.NODE_ENV !== "production";
