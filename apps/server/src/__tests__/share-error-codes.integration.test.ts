@@ -23,6 +23,7 @@ vi.mock("../shared/prisma.js", () => ({
       // incrementViewsAtomic uses updateMany for atomic max-views enforcement
       updateMany: vi.fn().mockResolvedValue({ count: 0 }),
     },
+    shareAlias: { findUnique: vi.fn().mockResolvedValue(null) },
     shareSecurity: { findUnique: vi.fn() },
   },
 }));

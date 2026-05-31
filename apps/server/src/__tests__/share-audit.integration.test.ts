@@ -22,6 +22,9 @@ vi.mock("../shared/prisma.js", () => ({
       findUnique: vi.fn().mockResolvedValue(null),
       update: vi.fn().mockResolvedValue({}),
     },
+    shareAlias: {
+      findUnique: vi.fn().mockResolvedValue(null),
+    },
     shareVisit: {
       create: vi.fn().mockResolvedValue({ id: "visit-1" }),
     },
