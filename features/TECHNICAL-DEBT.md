@@ -120,22 +120,11 @@ Commits: `refactor(server): extract shared quotaOverrideField schema`, `fix: add
 
 ---
 
-## TD-29 — No CI guard against UTF-8 BOM in locale files
+## ~~TD-29 — No CI guard against UTF-8 BOM in locale files~~ ✅ RESOLVED
 
-**Context:** `apps/web/messages/*.json` locale files must not have a UTF-8 BOM
-(Byte Order Mark, `0xEF 0xBB 0xBF`). A BOM causes JSON.parse to fail at runtime,
-breaking all i18n for the affected locale. This has happened at least once during
-the project (introduced by a text editor that adds BOM by default).
-
-**Currently:** There is no automated CI check to catch BOM insertion. The issue
-is only caught at runtime when the locale fails to load.
-
-**Fix:** Add a CI step (e.g., a `grep -rP '\xEF\xBB\xBF'` pre-commit hook or
-a Vitest test in `locale-keys.test.ts`) that scans all `apps/web/messages/*.json`
-files for BOM bytes and fails the build if any are found.
-
-**Found during:** Post-review audit (8.2 batch 5b, mai 2026)
-**Severity:** Low — no current BOM in any locale file; risk is from future editor misconfiguration
+Resolved: already implemented. `apps/web/src/__tests__/locale-keys.test.ts` (lines 61-74)
+explicitly tests every locale file for BOM presence (`\uFEFF` prefix). The test runs in CI
+via `turbo test` in `.github/workflows/ci.yml`. No additional work needed.
 
 ---
 
@@ -603,42 +592,25 @@ bypass). `overridden: false` ensures the 300s cooldown always applies.
 
 ---
 
-## TD-35 — `checkFileAccess` doesn't recognize folder-nested files (share download tracking gap)
+## ~~TD-35 — `checkFileAccess` doesn't recognize folder-nested files (share download tracking gap)~~ ✅ RESOLVED
 
-**Context:** `trackShareDownload` in `apps/server/src/modules/file/routes.ts` handles files
-nested inside shared folders (line ~157), but `checkFileAccess` — which gates the download
-before tracking runs — only recognizes files directly attached to a share (`files: { some: { id: fileId } }`),
-not folder-nested ones. For an anonymous visitor downloading a folder-nested file, access is
-denied at `checkFileAccess` before tracking is ever reached, making the folder branch in
-`trackShareDownload` effectively dead for the anonymous case.
-
-This is a pre-existing access-model inconsistency surfaced (not introduced) by 8.2's tracking code.
-
-**Fix options:**
-1. Extend `checkFileAccess` to traverse `folders → files` (recursive check)
-2. Or remove the unreachable folder branch in `trackShareDownload` to avoid implying support
-   that doesn't exist
-
-**Found during:** 8.2 review pass 6 (mai 2026)
-**Severity:** Low — pre-existing gap, no regression from 8.2
+Resolved in session 19 (mai 2026). Root-cause fix: added `getAncestorFolderIds()` helper
+(recursive CTE walking UP the folder tree) and refactored both `checkFileAccess` and
+`trackShareDownload` to use it. Now handles files at any depth of folder nesting within a share.
+Previously, `checkFileAccess` checked only direct files, and `trackShareDownload` checked only
+one level of folder nesting. Both now correctly resolve the full ancestor chain and match any
+shared folder in the hierarchy. 7 integration tests added (`file-access-folder-nested.integration.test.ts`).
 
 ---
 
-## TD-37 — Register-with-invite error handling relies on English string matching
+## ~~TD-37 — Register-with-invite error handling relies on English string matching~~ ✅ RESOLVED
 
-**Context:** The catch block in `apps/web/src/app/register-with-invite/[token]/components/register-form.tsx:69`
-detects specific error conditions by `includes()`-matching English strings from the server response
-body (`"already been used"`, `"expired"`, `"Username already exists"`, `"Email already exists"`).
-If any server message changes wording (e.g., during a refactor or locale change), the error
-detection silently breaks and the user sees the generic "createFailed" toast.
-
-**Fix:** Add structured `AppError` error codes to the server-side registration handler
-(e.g., `INVITE_TOKEN_USED`, `INVITE_TOKEN_EXPIRED`, `USERNAME_EXISTS`, `EMAIL_EXISTS`) and
-replace the string matching with code comparisons on the frontend. Low-effort, high-reliability
-improvement consistent with how other endpoints return structured codes.
-
-**Found during:** Deferred work audit (mai 2026, AR-1)
-**Severity:** Medium — fragile error detection, silent degradation on server message changes
+Resolved in session 19 (mai 2026). Added 4 structured error codes to `@ouitransfer/shared/error-codes`:
+`INVITE_TOKEN_USED`, `INVITE_TOKEN_EXPIRED`, `USERNAME_EXISTS`, `EMAIL_EXISTS`. Server
+`invite/service.ts` now throws `AppError` with specific codes instead of generic `ConflictError`/`GoneError`.
+Frontend `register-form.tsx` uses `parseApiError()` + `ErrorCodes.*` comparisons (same pattern as
+`use-login.ts`, `use-public-share.ts`). Route schema updated with 404/409/410 response codes.
+6 integration tests added (`register-with-invite.integration.test.ts`).
 
 ---
 
