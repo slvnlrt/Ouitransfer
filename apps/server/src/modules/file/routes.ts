@@ -39,31 +39,12 @@ import {
   UpdateFileSchema,
 } from "./dto.js";
 import { createEmbedToken, verifyEmbedToken } from "./embed-token.js";
+import { getAncestorFolderIds } from "./folder-ancestors.js";
 import { FileService } from "./service.js";
 
 const fileService = new FileService();
 
 // ── Module-level helpers ─────────────────────────────────────
-
-/**
- * Given a folderId, returns all ancestor folder IDs (including itself)
- * by walking UP the folder tree via a recursive CTE.
- * Returns empty array if folderId is null/undefined.
- */
-async function getAncestorFolderIds(folderId: string | null | undefined): Promise<string[]> {
-  if (!folderId) return [];
-  const rows = await prisma.$queryRaw<{ id: string }[]>`
-    WITH RECURSIVE ancestors(id, "parentId") AS (
-      SELECT id, "parentId" FROM "folders"
-      WHERE id = ${folderId}
-      UNION ALL
-      SELECT f.id, f."parentId" FROM "folders" f
-      JOIN ancestors a ON f.id = a."parentId"
-    )
-    SELECT id FROM ancestors
-  `;
-  return rows.map((r) => r.id);
-}
 
 /**
  * Recursively retrieve all files for a user across all folders.
@@ -111,20 +92,18 @@ async function getAllUserFilesRecursively(userId: string): Promise<
  * Shared access-check logic for file downloads.
  * Verifies the caller has access to a file via share password, public share,
  * or file ownership (JWT). Returns true if access is granted.
+ *
+ * @param ancestorFolderIds - Pre-resolved ancestor folder IDs for the file (from
+ *   getAncestorFolderIds). Passed in to avoid redundant DB lookups — the caller
+ *   already has the file record with folderId.
  */
 async function checkFileAccess(
   fileId: string,
   fileUserId: string,
   password: string | undefined,
   request: FastifyRequest,
+  ancestorFolderIds: string[],
 ): Promise<boolean> {
-  // Resolve ancestor folder chain for folder-nested file access
-  const file = await prisma.file.findUnique({
-    where: { id: fileId },
-    select: { folderId: true },
-  });
-  const ancestorFolderIds = await getAncestorFolderIds(file?.folderId);
-
   // Check share-based access: direct file OR file in shared folder tree
   const shareWhere: Prisma.ShareWhereInput =
     ancestorFolderIds.length > 0
@@ -176,27 +155,23 @@ async function checkFileAccess(
  *
  * @param requestUserId - The authenticated user's ID, or undefined for anonymous access.
  *   Passed from the route handler to avoid redundant `request.jwtVerify()` calls.
+ * @param ancestorFolderIds - Pre-resolved ancestor folder IDs (from getAncestorFolderIds).
+ *   Shared with checkFileAccess to avoid duplicate DB lookups.
  */
 async function trackShareDownload(
   request: FastifyRequest,
   fileRecord: { id: string; name: string },
   shareId: string,
-  requestUserId?: string,
+  requestUserId: string | undefined,
+  ancestorFolderIds: string[],
 ): Promise<void> {
-  // Resolve ancestor folders for deep nesting support
-  const fileForTracking = await prisma.file.findUnique({
-    where: { id: fileRecord.id },
-    select: { folderId: true },
-  });
-  const trackingAncestorIds = await getAncestorFolderIds(fileForTracking?.folderId);
-
   const trackingShareWhere =
-    trackingAncestorIds.length > 0
+    ancestorFolderIds.length > 0
       ? {
           id: shareId,
           OR: [
             { files: { some: { id: fileRecord.id } } },
-            { folders: { some: { id: { in: trackingAncestorIds } } } },
+            { folders: { some: { id: { in: ancestorFolderIds } } } },
           ],
         }
       : {
@@ -1045,7 +1020,16 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         throw new NotFoundError("File not found.");
       }
 
-      const hasAccess = await checkFileAccess(fileRecord.id, fileRecord.userId, password, request);
+      // Resolve ancestor folders once — shared between access check and download tracking
+      const ancestorFolderIds = await getAncestorFolderIds(prisma, fileRecord.folderId);
+
+      const hasAccess = await checkFileAccess(
+        fileRecord.id,
+        fileRecord.userId,
+        password,
+        request,
+        ancestorFolderIds,
+      );
 
       if (!hasAccess) {
         throw new UnauthorizedError("Unauthorized access to file.");
@@ -1068,9 +1052,13 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
 
       // Track download if shareId provided (fire-and-forget)
       if (shareId) {
-        trackShareDownload(request, fileRecord, shareId, request.user?.userId).catch((err) =>
-          getLogger().error({ err }, "Failed to track share download"),
-        );
+        trackShareDownload(
+          request,
+          fileRecord,
+          shareId,
+          request.user?.userId,
+          ancestorFolderIds,
+        ).catch((err) => getLogger().error({ err }, "Failed to track share download"));
       }
 
       return reply.send({ url, expiresIn: expires });
@@ -1147,7 +1135,16 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         throw new NotFoundError("File not found.");
       }
 
-      const hasAccess = await checkFileAccess(fileRecord.id, fileRecord.userId, password, request);
+      // Resolve ancestor folders once — shared between access check and download tracking
+      const ancestorFolderIds = await getAncestorFolderIds(prisma, fileRecord.folderId);
+
+      const hasAccess = await checkFileAccess(
+        fileRecord.id,
+        fileRecord.userId,
+        password,
+        request,
+        ancestorFolderIds,
+      );
 
       if (!hasAccess) {
         throw new UnauthorizedError("Unauthorized access to file.");
@@ -1165,9 +1162,13 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
 
       // Track download if shareId provided (fire-and-forget)
       if (shareId) {
-        trackShareDownload(request, fileRecord, shareId, request.user?.userId).catch((err) =>
-          getLogger().error({ err }, "Failed to track share download"),
-        );
+        trackShareDownload(
+          request,
+          fileRecord,
+          shareId,
+          request.user?.userId,
+          ancestorFolderIds,
+        ).catch((err) => getLogger().error({ err }, "Failed to track share download"));
       }
 
       const stream = await fileService.getObjectStream(objectName);
