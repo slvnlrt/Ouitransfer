@@ -24,12 +24,6 @@ autoInstallPeers: true
 # Disable pnpm's built-in minimumReleaseAge check — Renovate's own
 # minimumReleaseAge (3 days) already gates dependency freshness.
 minimumReleaseAge: 0
-# Disable pnpm 11's automatic dependency sync check before pnpm exec/run.
-# The default ('install') causes pnpm to run `pnpm install` implicitly when any
-# workspace member's node_modules are missing — which happens in Docker builds
-# where only the target package's deps are installed. That implicit install runs
-# lifecycle scripts (prepare → lefthook install) which fail without a git repo.
-verifyDepsBeforeRun: false
 
 catalog:
   # ── Runtime (shared across 2+ apps) ──────────────────────────
