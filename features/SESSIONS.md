@@ -1,5 +1,23 @@
 # Session Log
 
+## 2026-06-01 (Documentation update — shares, reverse-shares, notifications)
+
+**Documentation — Filling gaps for features added since session 10**
+
+- **Analysis**: audited all docs vs. implemented features; identified 3 missing pages and 5 pages needing updates (8.2 Email Notifications, TD-34 notifyOnUpload, 10.1 System Status Bar undocumented)
+- **`shares.mdx`** (new, Usage): creation from file manager, all share options, recipients & invitation emails with tracking tokens, visitor identification (3 mechanisms: token / form / anonymous), activity tracking tab with filters, per-share notification overrides (notifyOnDownload, inactivityAlertDays), share lifecycle
+- **`reverse-shares.mdx`** (new, Usage): concept, all form options (basic info, page layout, expiration, password, file limits, visitor identification fields, notifyOnUpload), managing uploaded files, uploader experience
+- **`notification-preferences.mdx`** (new, Usage): 15 configurable notification types in 4 categories (shares, reverse shares, quota, admin), 7 non-configurable critical types, per-share overrides, cooldown periods, unsubscribe mechanism, API reference
+- **`configuring-smtp.mdx`** (updated): expanded "Why configure SMTP" section; added email delivery system section (async queue, retry, cooldowns), admin monitoring section (queue stats dashboard), test email button explanation
+- **`api.mdx`** (updated): added share visits endpoint, share identify endpoint, tracking token `?t=` parameter, Notifications section (4 endpoints), Admin email queue section (2 endpoints)
+- **`meta.json`** (updated): added shares, reverse-shares, notification-preferences in Usage section
+- **`index.mdx`** (updated): added "Email notifications" and "System Status Bar" feature sections
+- **`quick-share.mdx`** (updated): cross-references to shares page and SMTP page, recipients section enriched with tracking token info
+- **Build**: clean (42 pages, no errors)
+- **Commit**: `docs: add shares, reverse-shares, notification-preferences; update api and smtp`
+
+---
+
 ## 2026-05-31 (TD-44 + TD-47)
 
 **TD-44 — Fix inactivity alert field label (UX + i18n)**
