@@ -124,6 +124,8 @@ RUN pnpm install --frozen-lockfile --ignore-scripts --filter ouitransfer-web
 
 # === WEB BUILD STAGE ===
 FROM base AS web-builder
+# Workspace context (pnpm needs pnpm-workspace.yaml to resolve catalog: specifiers)
+COPY --from=web-deps /app/pnpm-workspace.yaml /app/package.json /app/pnpm-lock.yaml ./
 COPY --from=web-deps /app/node_modules ./node_modules
 COPY --from=web-deps /app/apps/web/node_modules ./apps/web/node_modules
 COPY --from=shared-builder /app/packages ./packages/
