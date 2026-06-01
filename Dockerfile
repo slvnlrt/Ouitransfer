@@ -14,10 +14,12 @@
 # === SHARED BUILD BASE ===
 FROM node:24.16.0-alpine AS base
 RUN corepack enable && corepack prepare pnpm@11.5.0 --activate
-# Disable lefthook in Docker builds — pnpm 11 runs lifecycle scripts during
-# automatic dependency checks (runDepsStatusCheck), which triggers the root
-# 'prepare' script (lefthook install).  Git is not available in Alpine images.
-ENV LEFTHOOK=0
+# pnpm 11 verifies dependency sync before exec/run and triggers a full implicit
+# `pnpm install` when any workspace member has stale/missing node_modules.
+# In Docker builds only the target package is installed (--filter), so the check
+# always fires and runs lifecycle scripts for packages whose source files aren't
+# present — causing cascading failures.  Disable only in Docker context.
+ENV pnpm_config_verify_deps_before_run=false
 WORKDIR /app
 
 

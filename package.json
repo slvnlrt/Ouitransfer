@@ -5,7 +5,7 @@
   "private": true,
   "packageManager": "pnpm@11.5.0",
   "scripts": {
-    "prepare": "lefthook install || true",
+    "prepare": "lefthook install",
     "dev": "turbo dev",
     "build": "turbo build",
     "lint": "turbo lint",
