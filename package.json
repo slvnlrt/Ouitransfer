@@ -26,14 +26,14 @@
     "knip": "knip"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.12",
-    "@commitlint/cli": "^20.5.0",
-    "@commitlint/config-conventional": "^20.5.0",
+    "@biomejs/biome": "^2.4.16",
+    "@commitlint/cli": "^20.5.3",
+    "@commitlint/config-conventional": "^20.5.3",
     "@playwright/test": "^1.60.0",
-    "@lhci/cli": "^0.14.0",
-    "knip": "^6.6.0",
-    "lefthook": "^2.1.6",
-    "turbo": "^2.9.14",
+    "@lhci/cli": "^0.15.1",
+    "knip": "^6.15.0",
+    "lefthook": "^2.1.9",
+    "turbo": "^2.9.16",
     "vitest": "catalog:"
   }
 }
