@@ -46,7 +46,9 @@ RUN pnpm --filter @ouitransfer/shared run build
 # === SERVER BUILD STAGE ===
 FROM base AS server-builder
 # Build tools for native modules (better-sqlite3 prebuild fallback)
-RUN apk add --no-cache python3 make g++
+# git: required because pnpm 11's runDepsStatusCheck triggers the root
+# 'prepare' script (lefthook install) which shells out to git.
+RUN apk add --no-cache python3 make g++ git
 # Workspace context (pnpm deploy needs workspace config at root)
 COPY --from=server-deps /app/pnpm-workspace.yaml /app/package.json /app/pnpm-lock.yaml ./
 COPY --from=server-deps /app/node_modules ./node_modules
