@@ -1,0 +1,197 @@
+---
+title: Partages
+icon: Share2
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+
+Les partages constituent le principal moyen d'envoyer des fichiers dans Ouitransfer. Sélectionnez des fichiers depuis votre gestionnaire de fichiers, configurez les options de partage, puis envoyez le lien à vos destinataires. Chaque partage dispose d'une URL unique et d'un QR code optionnel.
+
+Pour une alternative plus rapide avec glisser-déposer, consultez le widget [Partage rapide](/docs/v1-beta/quick-share).
+
+Pour recevoir des fichiers de personnes extérieures, consultez les [Partages inversés](/docs/v1-beta/reverse-shares).
+
+---
+
+## Créer un partage
+
+<Steps>
+<Step>
+
+### Sélectionner les fichiers
+
+Accédez au **gestionnaire de fichiers** et sélectionnez les fichiers et dossiers que vous souhaitez partager à l'aide des cases à cocher, puis cliquez sur le bouton **Partager** dans la barre d'outils. La boîte de dialogue de création de partage s'ouvre.
+
+</Step>
+<Step>
+
+### Configurer le partage
+
+Renseignez les détails du partage :
+
+| Option | Obligatoire | Description |
+|---|---|---|
+| **Nom** | Oui | Un libellé pour le partage. Texte libre. |
+| **Description** | Non | Une description optionnelle affichée aux destinataires sur la page du partage. |
+| **Mot de passe** | Non | Activez cette option pour exiger un mot de passe avant d'accéder au partage. |
+| **Expiration** | Non | Une date (et une heure optionnelle) après laquelle le partage devient inaccessible. Si seule une date est sélectionnée, le partage expire en fin de journée (23:59:59). |
+| **Vues max.** | Non | Nombre maximum d'accès à la page du partage avant qu'il devienne indisponible. |
+
+</Step>
+<Step>
+
+### Confirmer la sélection de fichiers
+
+Basculez vers l'onglet **Fichiers** pour vérifier et ajuster votre sélection. Vous pouvez rechercher, cocher et décocher des fichiers et dossiers avant de finaliser.
+
+</Step>
+<Step>
+
+### Partager
+
+Cliquez sur **Créer**. Vous recevez un lien partageable et un QR code. Copiez le lien ou téléchargez le QR code au format PNG.
+
+</Step>
+</Steps>
+
+---
+
+## Gérer un partage
+
+Cliquez sur un partage dans votre liste **Mes partages** pour ouvrir le panneau de détails. Depuis ce panneau, vous pouvez :
+
+- **Consulter les statistiques** — nombre total de vues, nombre de fichiers, nombre de destinataires
+- **Modifier le nom et la description** en ligne (cliquez sur le texte pour le modifier)
+- **Copier le lien du partage** ou scanner le QR code
+- **Modifier l'expiration** — activer/désactiver, définir une nouvelle date
+- **Mettre à jour la protection par mot de passe** — ajouter, modifier ou supprimer le mot de passe
+- **Gérer les fichiers** — ajouter ou supprimer des fichiers et dossiers
+- **Ajouter des destinataires** — envoyer des e-mails d'invitation (voir ci-dessous)
+- **Consulter l'activité** — suivre qui a accédé au partage et téléchargé les fichiers (voir ci-dessous)
+
+### Alias du partage
+
+Chaque partage reçoit un alias court qui génère une URL propre et lisible (`/s/mon-alias`). L'alias est généré automatiquement à partir du nom du partage, mais peut être personnalisé.
+
+---
+
+## Destinataires et invitations
+
+Vous pouvez ajouter des destinataires par e-mail à un partage. Chaque destinataire reçoit un e-mail d'invitation contenant un lien personnalisé pointant vers le partage.
+
+<Callout type="info">
+  L'envoi d'e-mails d'invitation nécessite la configuration de SMTP. Consultez [Configuration SMTP](/docs/v1-beta/configuring-smtp).
+</Callout>
+
+### Ajouter des destinataires
+
+Dans le panneau de détails du partage, utilisez la section **Destinataires** pour ajouter des adresses e-mail. Vous pouvez associer un nom optionnel à chaque adresse e-mail.
+
+### Liens de suivi personnalisés
+
+Chaque destinataire reçoit un lien unique contenant un **jeton de suivi**. Lorsqu'un destinataire accède au partage via son lien personnalisé, Ouitransfer l'identifie automatiquement — aucune action supplémentaire n'est requise de la part du visiteur.
+
+Vous pouvez ainsi voir dans l'[onglet Activité](#activity-tracking) exactement quel destinataire a accédé au partage et combien de fois, sans lui demander de remplir un formulaire.
+
+### Envoyer des notifications
+
+Une fois les destinataires ajoutés, cliquez sur **Notifier** pour envoyer l'e-mail d'invitation. L'e-mail contient le nom du partage, un bouton de téléchargement avec le lien personnalisé, et le nom de l'expéditeur. Les destinataires sont notifiés en un seul envoi groupé.
+
+---
+
+## Identification des visiteurs
+
+Ouitransfer propose trois mécanismes pour identifier les personnes qui accèdent à un partage, du plus au moins précis :
+
+### 1. Jetons de suivi (automatique)
+
+Lorsqu'un partage possède des **destinataires avec des adresses e-mail**, le lien d'invitation de chaque destinataire contient un jeton de suivi unique. Si un visiteur arrive via l'un de ces liens, il est identifié automatiquement et sans friction.
+
+### 2. Formulaire d'identification
+
+Les partages peuvent exiger des visiteurs qu'ils s'identifient avant d'accéder au contenu. Deux champs peuvent être configurés indépendamment :
+
+| Champ | Options | Description |
+|---|---|---|
+| **Nom** | Masqué / Optionnel / Obligatoire | Si le nom du visiteur est collecté |
+| **E-mail** | Masqué / Optionnel / Obligatoire | Si l'adresse e-mail du visiteur est collectée |
+
+Lorsqu'au moins un champ est défini sur **Optionnel** ou **Obligatoire**, les visiteurs voient une boîte de dialogue d'identification avant d'accéder au partage. Les champs obligatoires doivent être renseignés pour continuer ; les champs optionnels peuvent être ignorés.
+
+<Callout type="info">
+  Si un visiteur a déjà été identifié via un jeton de suivi (depuis un lien d'invitation destinataire), le formulaire d'identification n'est pas affiché — le jeton est prioritaire.
+</Callout>
+
+### 3. Accès anonyme
+
+Lorsqu'aucun jeton de suivi n'est présent et qu'aucun champ d'identification n'est configuré (ou que tous sont définis sur Masqué), le visiteur est enregistré comme **anonyme**. Seules son adresse IP et son agent utilisateur sont capturés à des fins d'audit.
+
+### Configurer les exigences d'identification
+
+Pour les partages classiques, les champs d'identification des visiteurs (`nameFieldRequired`, `emailFieldRequired`) peuvent être définis lors de la création ou de la mise à jour d'un partage via l'[API](/docs/v1-beta/api) (`POST /shares` ou `PUT /shares`). Les deux champs acceptent les valeurs `HIDDEN`, `OPTIONAL` ou `REQUIRED` et sont par défaut à `HIDDEN`.
+
+<Callout type="warn">
+  La boîte de dialogue de création de partage dans l'interface web n'expose pas encore ces champs. Utilisez l'API pour configurer l'identification des visiteurs sur les partages classiques. Pour les [partages inversés](/docs/v1-beta/reverse-shares), le formulaire de création inclut une section dédiée à l'**Identification des visiteurs**.
+</Callout>
+
+---
+
+## Suivi de l'activité
+
+Les propriétaires de partages peuvent surveiller qui accède à leurs fichiers partagés et les télécharge via l'onglet **Activité** dans le panneau de détails du partage.
+
+### Ce qui est suivi
+
+Chaque visite enregistre :
+
+| Champ | Description |
+|---|---|
+| **Action** | `Access` (page du partage chargée) ou `Download` (fichier téléchargé) |
+| **Identité du visiteur** | Nom et/ou e-mail du visiteur, ou « Anonyme » |
+| **Source d'identification** | Comment le visiteur a été identifié : `tracking_token`, `cookie`, ou `anonymous` |
+| **Destinataire** | Si le visiteur est arrivé via le lien de suivi d'un destinataire, l'adresse e-mail du destinataire associé est affichée |
+| **Horodatage** | Date et heure de l'événement |
+
+### Filtres
+
+L'onglet Activité propose deux listes déroulantes de filtres :
+
+- **Action** — afficher tous les événements, uniquement les accès, ou uniquement les téléchargements
+- **Identité** — afficher tous les visiteurs, uniquement les visiteurs identifiés, ou uniquement les visiteurs anonymes
+
+Les résultats sont paginés (10 par page).
+
+<Callout type="info">
+  Le suivi de l'activité est visible uniquement par le **propriétaire** du partage. Les autres utilisateurs qui disposent du lien ne voient pas l'onglet Activité.
+</Callout>
+
+---
+
+## Notifications par partage
+
+En complément de vos [préférences de notification globales](/docs/v1-beta/notification-preferences), vous pouvez activer des notifications pour des partages spécifiques :
+
+| Option | Description |
+|---|---|
+| **Notifier à chaque téléchargement** | Recevoir un e-mail chaque fois que quelqu'un télécharge un fichier depuis ce partage. Remplace votre préférence globale `Notifications de téléchargement de partage` pour ce partage spécifique. |
+| **Alerte d'inactivité** | Recevoir un e-mail si aucun téléchargement n'a eu lieu sur le partage pendant un nombre de jours configuré. Déclenche la notification `Alerte d'inactivité du partage`. |
+
+Ces paramètres sont visibles dans le résumé **Confidentialité** du panneau de détails du partage.
+
+<Callout type="info">
+  Les notifications par partage nécessitent SMTP et sont soumises à des périodes de limitation pour éviter un volume excessif d'e-mails. Les notifications de téléchargement et d'accès ont une limitation de 15 minutes par partage.
+</Callout>
+
+---
+
+## Expiration et cycle de vie du partage
+
+Les partages peuvent expirer selon deux conditions :
+
+- **Date d'expiration** — le partage devient inaccessible après la date configurée. Les visiteurs voient un message « expiré ».
+- **Vues max.** — le partage devient inaccessible après le nombre d'accès configuré.
+
+Lorsqu'un partage est sur le point d'expirer (ou a expiré), le propriétaire reçoit une notification si elle est activée dans ses [préférences de notification](/docs/v1-beta/notification-preferences).
+
+Les partages expirés ne sont pas automatiquement supprimés — ils restent dans la liste du propriétaire et peuvent être réactivés en prolongeant la date d'expiration ou en augmentant la limite de vues.
