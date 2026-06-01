@@ -12,7 +12,7 @@
 # ==============================================================================
 
 # === SHARED BUILD BASE ===
-FROM node:24-alpine AS base
+FROM node:24.16.0-alpine AS base
 RUN corepack enable && corepack prepare pnpm@11.5.0 --activate
 WORKDIR /app
 
@@ -73,7 +73,7 @@ RUN node node_modules/prisma/build/index.js generate
 
 
 # === SERVER PRODUCTION IMAGE ===
-FROM node:24-alpine AS server-runner
+FROM node:24.16.0-alpine AS server-runner
 
 RUN apk add --no-cache gcompat curl openssl su-exec
 
@@ -137,7 +137,7 @@ RUN pnpm run build
 
 
 # === WEB PRODUCTION IMAGE ===
-FROM node:24-alpine AS web-runner
+FROM node:24.16.0-alpine AS web-runner
 
 RUN apk add --no-cache curl
 
