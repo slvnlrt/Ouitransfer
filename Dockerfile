@@ -19,7 +19,7 @@ WORKDIR /app
 
 # === SERVER DEPENDENCY STAGE ===
 FROM base AS server-deps
-COPY pnpm-workspace.yaml .npmrc package.json pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
 COPY apps/server/package.json apps/server/
 COPY packages/shared/package.json packages/shared/
 COPY packages/config/package.json packages/config/
@@ -31,7 +31,7 @@ RUN pnpm install --frozen-lockfile --ignore-scripts --filter ouitransfer-api
 # Webpack (Next.js) resolves the "default" export condition → dist/mime-types.js.
 # .dockerignore correctly excludes **/dist, so we must build from source in Docker.
 FROM base AS shared-builder
-COPY pnpm-workspace.yaml .npmrc package.json pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
 COPY packages/shared/package.json packages/shared/
 COPY packages/config/package.json packages/config/
 RUN pnpm install --frozen-lockfile --ignore-scripts --filter @ouitransfer/shared
@@ -44,7 +44,7 @@ FROM base AS server-builder
 # Build tools for native modules (better-sqlite3 prebuild fallback)
 RUN apk add --no-cache python3 make g++
 # Workspace context (pnpm deploy needs workspace config at root)
-COPY --from=server-deps /app/pnpm-workspace.yaml /app/package.json /app/pnpm-lock.yaml /app/.npmrc ./
+COPY --from=server-deps /app/pnpm-workspace.yaml /app/package.json /app/pnpm-lock.yaml ./
 COPY --from=server-deps /app/node_modules ./node_modules
 COPY --from=server-deps /app/apps/server/node_modules ./apps/server/node_modules
 # Reuse pnpm content-addressable store so deploy doesn't re-download
@@ -114,7 +114,7 @@ CMD ["/app/server-start.sh"]
 
 # === WEB DEPENDENCY STAGE ===
 FROM base AS web-deps
-COPY pnpm-workspace.yaml .npmrc package.json pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
 COPY apps/web/package.json apps/web/
 COPY packages/shared/package.json packages/shared/
 COPY packages/config/package.json packages/config/
