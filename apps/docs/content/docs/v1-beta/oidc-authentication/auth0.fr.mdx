@@ -1,0 +1,370 @@
+---
+title: Auth0
+icon: Lock
+---
+
+import { ZoomableImage } from "@/components/ui/zoomable-image";
+
+Auth0 est l'un des fournisseurs OIDC officiellement pris en charge par OUITRANSFER, offrant une authentification de niveau entreprise via la plateforme d'identité Auth0. Cette intégration permet aux utilisateurs de se connecter à OUITRANSFER grâce au système d'authentification complet d'Auth0, ce qui en fait une solution idéale pour les organisations d'entreprise, les applications nécessitant des fonctionnalités de sécurité avancées, et les équipes ayant besoin d'une gestion centralisée des identités.
+
+<ZoomableImage src="/assets/v3/oidc/auth0/sign-in-with-auth0.png" alt="Connexion avec Auth0" />
+
+## Pourquoi utiliser l'authentification Auth0 ?
+
+L'authentification Auth0 offre plusieurs avantages pour les organisations d'entreprise et axées sur la sécurité :
+
+- **Sécurité de niveau entreprise** - Fonctionnalités de sécurité avancées telles que MFA, authentification adaptative et détection des menaces
+- **Gestion centralisée des identités** - Plateforme unique pour gérer les utilisateurs de plusieurs applications
+- **Options d'authentification flexibles** - Prise en charge des connexions sociales, SSO d'entreprise et bases de données personnalisées
+- **Conformité intégrée** - Conforme à SOC 2, RGPD, HIPAA et autres normes
+- **Personnalisation avancée** - Règles, hooks et capacités de personnalisation de l'interface
+
+---
+
+## Prérequis
+
+Avant de configurer l'authentification Auth0, assurez-vous de disposer des éléments suivants :
+
+- **Compte Auth0** - Capacité à créer des applications et gérer des tenants
+- **Privilèges administrateur dans OUITRANSFER** - Requis pour configurer les paramètres OIDC
+- **Configuration de domaine** - Pour les déploiements en production avec des domaines personnalisés
+
+> **Remarque :** Auth0 est préconfiguré en tant que fournisseur officiel dans OUITRANSFER, ce qui signifie que la configuration technique est gérée automatiquement. Vous n'avez qu'à fournir vos identifiants OAuth.
+
+---
+
+## Configuration de l'application Auth0
+
+### Créer une application Auth0
+
+Pour commencer avec l'authentification Auth0, vous devez créer une application dans votre tableau de bord Auth0.
+
+1. **Accéder au tableau de bord Auth0** : Rendez-vous sur [manage.auth0.com](https://manage.auth0.com)
+
+<ZoomableImage src="/assets/v3/oidc/auth0/auth0-dashboard.png" alt="Tableau de bord Auth0" />
+
+2. **Créer une nouvelle application** : Cliquez sur **"Applications"** dans la barre latérale gauche, puis sur **"+ Create Application"**
+
+<ZoomableImage src="/assets/v3/oidc/auth0/create-application.png" alt="Créer une application Auth0" />
+
+3. **Sélectionner le type d'application** : Choisissez **"Single Page Application"** pour les instances OUITRANSFER basées sur le web
+
+<ZoomableImage
+  src="/assets/v3/oidc/auth0/application-type.png"
+  alt="Sélection du type d'application Auth0"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+4. **Renseigner les détails de l'application** :
+   - **Name** : Saisissez un nom explicite, par exemple "OUITRANSFER File Sharing"
+
+5. **Créer l'application** : Cliquez sur **"Create"** pour générer votre application Auth0
+
+### Configurer les paramètres de l'application
+
+Après la création de votre application, vous devez configurer les paramètres qu'OUITRANSFER utilisera. Accédez à la page de l'application et cliquez sur l'onglet **"Settings"**.
+
+<ZoomableImage
+  src="/assets/v3/oidc/auth0/application-settings.png"
+  alt="Paramètres de l'application Auth0"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+1. **Configurer les URL de l'application** :
+
+Vous devez configurer plusieurs URL dans les paramètres de votre application Auth0. Voici ce qu'il faut ajouter pour chaque environnement :
+
+### URI de connexion de l'application
+
+| Environnement     | URL                                 |
+| ----------------- | ----------------------------------- |
+| Production        | `https://yourdomain.com/login`      |
+| Développement     | Don't add anything here             |
+| Port personnalisé | `https://yourdomain.com:5487/login` |
+
+### URL de déconnexion autorisées
+
+| Environnement     | URL                           |
+| ----------------- | ----------------------------- |
+| Production        | `https://yourdomain.com`      |
+| Développement     | `http://localhost:3000`       |
+| Port personnalisé | `https://yourdomain.com:5487` |
+
+### Origines web autorisées
+
+| Environnement     | URL                           |
+| ----------------- | ----------------------------- |
+| Production        | `https://yourdomain.com`      |
+| Développement     | `http://localhost:3000`       |
+| Port personnalisé | `https://yourdomain.com:5487` |
+
+### URL de rappel autorisées
+
+| Environnement     | URL                                                             |
+| ----------------- | --------------------------------------------------------------- |
+| Production        | `https://yourdomain.com/api/auth/providers/auth0/callback`      |
+| Développement     | `http://localhost:3000/api/auth/providers/auth0/callback`       |
+| Port personnalisé | `https://yourdomain.com:5487/api/auth/providers/auth0/callback` |
+
+> **Remarque :** Remplacez `yourdomain.com` par votre nom de domaine réel dans toutes les URL de production et à port personnalisé.
+
+<ZoomableImage
+  src="/assets/v3/oidc/auth0/config-urls.png"
+  alt="Configuration des URL de l'application Auth0"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+2. **Sauvegarder les modifications** : Cliquez sur **"Save"** pour appliquer votre configuration
+
+### Obtenir les identifiants OAuth
+
+Vous allez maintenant récupérer les identifiants qu'OUITRANSFER utilisera pour s'authentifier auprès d'Auth0.
+
+1. **Copier le domaine** : Notez votre domaine Auth0 (ex. : `your-tenant.auth0.com`) et ajoutez `https://` au début
+
+2. **Copier le Client ID** : Le Client ID est affiché dans le champ **"Client ID"**
+
+3. **Générer le Client Secret** : Cliquez sur **"Show"** à côté du Client Secret pour le révéler
+
+<ZoomableImage
+  src="/assets/v3/oidc/auth0/oauth-credentials.png"
+  alt="Identifiants OAuth Auth0"
+  legend="Le Client ID et le Client Secret affichés dans l'image sont des exemples uniquement (identifiants fictifs). Vous devez utiliser vos propres identifiants provenant d'Auth0."
+/>
+
+4. **Sauvegarder les identifiants** : Copiez le **Domain**, le **Client ID** et le **Client Secret** pour une utilisation ultérieure
+
+> **Important :** Remplacez `yourdomain.com` par votre domaine réel. Vous pouvez ajouter plusieurs URL de rappel pour différents environnements (développement, staging, production).
+
+---
+
+## Configuration d'OUITRANSFER
+
+### Accéder aux paramètres OIDC
+
+Pour configurer l'authentification Auth0 dans OUITRANSFER, vous devez disposer d'un accès administrateur au panneau de paramètres.
+
+1. **Se connecter en tant qu'administrateur** : Connectez-vous à OUITRANSFER avec un compte administrateur
+
+2. **Accéder aux paramètres** : Cliquez sur votre photo de profil dans l'en-tête et sélectionnez **Settings**
+
+3. **Naviguer vers l'authentification** : Trouvez et cliquez sur la section de configuration **Authentication Providers**
+
+<ZoomableImage src="/assets/v3/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
+
+### Activer le fournisseur Auth0
+
+Auth0 est préconfiguré en tant que fournisseur officiel, ce qui simplifie le processus de configuration.
+
+1. **Localiser le fournisseur Auth0** : Trouvez Auth0 dans la liste des fournisseurs disponibles
+
+2. **Activer le fournisseur** : Basculez le statut sur **Enabled**
+
+<ZoomableImage src="/assets/v3/oidc/auth0/enabled-auth0.png" alt="Fournisseur Auth0 OUITRANSFER activé" />
+
+Après avoir activé le fournisseur, cliquez sur l'icône en forme de crayon pour le configurer.
+
+3. **Configurer les identifiants** :
+   - **Provider URL** : Collez votre domaine Auth0 (ex. : `https://your-tenant.auth0.com`) — n'oubliez pas d'ajouter `https://` au début
+   - **Client ID** : Collez le Client ID de votre application Auth0
+   - **Client Secret** : Collez le Client Secret de votre application Auth0
+   - **Scopes** : Ajoutez les scopes que vous souhaitez utiliser. Les scopes par défaut sont `openid`, `profile` et `email`.
+
+<ZoomableImage
+  src="/assets/v3/oidc/auth0/edit-auth0.png"
+  alt="Modifier le fournisseur Auth0"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+### Options de configuration avancées
+
+Configurez des paramètres supplémentaires pour personnaliser le comportement de l'authentification :
+
+**Auto Registration** : Activez cette option pour créer automatiquement des comptes utilisateurs lors de la première authentification.
+
+**Sort Order** : Contrôlez l'ordre d'affichage du bouton de connexion Auth0 par rapport aux autres fournisseurs d'authentification.
+
+**Icon** : Vous pouvez choisir l'icône à utiliser pour le bouton de connexion Auth0 (la valeur par défaut est `SiAuth0`).
+
+<ZoomableImage src="/assets/v3/oidc/auth0/auth0-icon.png" alt="Icône Auth0" />
+
+> **Conseil entreprise :** L'authentification Auth0 convient parfaitement aux organisations d'entreprise nécessitant des fonctionnalités de sécurité avancées et une gestion centralisée des identités.
+
+---
+
+## Liaison de comptes
+
+Par défaut, si un utilisateur est déjà inscrit dans OUITRANSFER avec son adresse e-mail Auth0, il sera automatiquement lié à son compte OUITRANSFER.
+
+> **Remarque :** Il n'est pas possible de désactiver la liaison de comptes. Si vous souhaitez dissocier un utilisateur de son compte Auth0, vous devez supprimer l'utilisateur d'OUITRANSFER.
+
+---
+
+## Configuration technique
+
+La configuration technique d'Auth0 est gérée automatiquement, mais comprendre le paramétrage peut aider lors du dépannage :
+
+```yaml
+Provider Type: OAuth 2.0 with OIDC Discovery
+Issuer URL: https://your-tenant.auth0.com
+Authorization Endpoint: /authorize
+Token Endpoint: /oauth/token
+UserInfo Endpoint: /userinfo
+Scopes: openid profile email
+```
+
+### Correspondances de champs
+
+OUITRANSFER mappe automatiquement les informations utilisateur Auth0 vers les comptes utilisateurs locaux :
+
+- **User ID** : Correspond au champ `sub` d'Auth0
+- **Email** : Correspond au champ `email` d'Auth0
+- **Full Name** : Correspond au champ `name` d'Auth0
+- **First Name** : Correspond au champ `given_name` d'Auth0
+- **Last Name** : Correspond au champ `family_name` d'Auth0
+- **Avatar** : Correspond au champ `picture` d'Auth0
+- **Username** : Correspond au champ `nickname` d'Auth0
+
+### Fonctionnalités spécifiques à Auth0
+
+- **Claims personnalisés** : Possibilité d'inclure des métadonnées utilisateur et des métadonnées d'application personnalisées
+- **Support des connexions** : Compatible avec les connexions par base de données, sociales et d'entreprise
+- **Règles et hooks** : Possibilité de personnaliser le flux d'authentification avec une logique sur mesure
+- **Authentification multifacteur** : Prend en charge les fonctionnalités MFA d'Auth0
+- **SSO d'entreprise** : Intégration avec SAML, LDAP et autres systèmes d'entreprise
+
+---
+
+## Test de la configuration
+
+### Vérifier la configuration
+
+Après avoir configuré l'authentification Auth0, testez l'intégration pour vous assurer que tout fonctionne correctement.
+
+1. **Vérifier la page de connexion** : Accédez à la page de connexion de votre instance OUITRANSFER et vérifiez que le bouton "Sign in with Auth0" apparaît
+
+2. **Tester le flux d'authentification** : Cliquez sur le bouton de connexion Auth0 et effectuez le processus d'authentification
+
+3. **Vérifier la création du compte** : Confirmez qu'un nouveau compte utilisateur est créé (si l'inscription automatique est activée)
+
+### Vérification du flux de connexion
+
+Le processus d'authentification complet doit se dérouler comme suit :
+
+1. **L'utilisateur clique sur "Sign in with Auth0"** : Le navigateur redirige vers la page d'autorisation d'Auth0
+2. **L'utilisateur s'authentifie** : L'utilisateur complète l'authentification via Auth0 (connexion, MFA, etc.)
+3. **Auth0 redirige vers OUITRANSFER** : L'utilisateur revient sur OUITRANSFER avec les jetons d'authentification
+4. **OUITRANSFER crée ou met à jour l'utilisateur** : Le compte utilisateur est géré automatiquement avec les informations Auth0
+5. **L'utilisateur accède à OUITRANSFER** : L'utilisateur est connecté avec son identité Auth0
+
+---
+
+## Résolution des problèmes courants
+
+### Erreur de non-concordance de l'URI de redirection
+
+**Message d'erreur** : `invalid_redirect_uri`
+
+**Cause** : L'URI de redirection dans votre requête ne correspond pas à celle configurée dans l'application Auth0.
+
+**Solution** :
+
+1. Vérifiez l'URL exacte indiquée dans le message d'erreur
+2. Ajoutez cette URL exacte aux URL de rappel de votre application Auth0
+3. Assurez-vous d'inclure le protocole correct (http/https) et le port
+4. Supprimez les barres obliques de fin sauf si elles font partie de l'URL de rappel
+
+### Erreur d'accès refusé
+
+**Message d'erreur** : `access_denied`
+
+**Cause** : L'utilisateur a refusé les permissions ou l'application n'est pas correctement configurée.
+
+**Solution** :
+
+1. Vérifiez que votre application Auth0 demande les scopes corrects
+2. Assurez-vous que les utilisateurs accordent les permissions lors du flux d'autorisation
+3. Vérifiez que votre application n'est pas restreinte ou désactivée
+4. Confirmez que l'application dispose des permissions appropriées
+
+### Erreur de client invalide
+
+**Message d'erreur** : `invalid_client`
+
+**Cause** : Client ID, Client Secret ou domaine incorrects.
+
+**Solution** :
+
+1. Vérifiez que vous avez correctement copié les identifiants depuis Auth0
+2. Assurez-vous qu'il n'y a pas d'espaces superflus ou de caractères parasites dans les identifiants
+3. Vérifiez que vous utilisez le format de domaine correct (ex. : `your-tenant.auth0.com`)
+4. Générez un nouveau Client Secret si nécessaire
+
+### Problèmes de configuration du domaine
+
+**Message d'erreur** : Domain not found or invalid
+
+**Cause** : Domaine Auth0 incorrect ou configuration du tenant défaillante.
+
+**Solution** :
+
+1. Vérifiez que votre domaine Auth0 est correct (ex. : `your-tenant.auth0.com`)
+2. Assurez-vous que votre tenant Auth0 est actif et non suspendu
+3. Vérifiez que vous utilisez la région correcte pour votre tenant
+4. Vérifiez la résolution DNS de votre domaine Auth0
+
+### Claims personnalisés non disponibles
+
+**Cause** : Les claims personnalisés ne sont pas correctement configurés dans les règles ou actions Auth0.
+
+**Solution** :
+
+1. Vérifiez les règles et actions Auth0 pour la configuration des claims personnalisés
+2. Assurez-vous que les claims personnalisés sont inclus dans le jeton d'identité
+3. Vérifiez que les claims sont correctement formatés et accessibles
+4. Testez avec un utilisateur disposant des claims personnalisés attendus
+
+---
+
+## Bonnes pratiques de sécurité
+
+### Gestion des identifiants
+
+- **Ne jamais exposer les secrets** : Gardez votre Client Secret sécurisé et ne le commitez jamais dans un système de contrôle de version
+- **Faire tourner les identifiants régulièrement** : Générez de nouveaux Client Secrets périodiquement pour renforcer la sécurité
+- **Utiliser des variables d'environnement** : Stockez la configuration sensible dans des variables d'environnement, pas dans des fichiers de configuration
+- **Surveiller les journaux d'accès** : Examinez régulièrement les journaux d'authentification pour détecter toute activité suspecte
+
+### Gestion des scopes et des permissions
+
+- **Scopes minimaux** : Ne demandez que les scopes `openid`, `profile` et `email` requis par OUITRANSFER
+- **Consentement des utilisateurs** : Assurez-vous que les utilisateurs comprennent les permissions qu'ils accordent
+- **Audits réguliers** : Vérifiez quels utilisateurs ont connecté leur compte Auth0
+- **Révisions des accès** : Vérifiez périodiquement les accès utilisateurs et supprimez les comptes inactifs
+
+### Considérations en production
+
+- **Utiliser HTTPS** : Utilisez toujours HTTPS dans les environnements de production
+- **Configurer les domaines appropriés** : Utilisez des domaines de production dans les paramètres de l'application Auth0
+- **Tester minutieusement** : Vérifiez le flux d'authentification complet avant la mise en production
+- **Prévoir les défaillances** : Disposez de méthodes d'authentification de secours
+
+---
+
+## Prochaines étapes
+
+Une fois l'authentification Auth0 configurée, vous pourriez vouloir :
+
+- **Configurer des fournisseurs supplémentaires** : Mettez en place d'autres fournisseurs OIDC pour plus d'options d'authentification
+- **Personnaliser la gestion des utilisateurs** : Affinez les règles d'inscription automatique et d'attribution des rôles administrateur
+- **Revoir les paramètres de sécurité** : Assurez-vous que votre configuration d'authentification répond à vos exigences de sécurité
+- **Surveiller l'utilisation** : Suivez les schémas d'authentification et l'activité des utilisateurs
+
+Pour plus d'informations sur l'authentification OIDC dans OUITRANSFER, consultez la [vue d'ensemble de l'authentification OIDC](/docs/v1-beta/oidc-authentication).
+
+## Ressources utiles
+
+- [Documentation Auth0](https://auth0.com/docs)
+- [Guide OAuth 2.0 Auth0](https://auth0.com/docs/protocols/oauth2)
+- [OpenID Connect Auth0](https://auth0.com/docs/protocols/openid-connect)
+- [Tableau de bord Auth0](https://manage.auth0.com)
