@@ -37,9 +37,19 @@ OUITRANSFER is a canvas for customization, letting you shape every detail to mat
 - Hook up an **SMTP server** for seamless email notifications about transfers or updates.
 - Rewrite **interface text** to vibe with your audience and keep your brand’s voice.
 
+### Email notifications
+
+Stay informed about what happens with your shared files. Ouitransfer sends email notifications for share access, downloads, quota warnings, expiration alerts, and more. Each user can control which notifications they receive from the [Notification Preferences](/docs/v1-beta/notification-preferences) page, and individual shares can override global settings.
+
+Emails are delivered via an asynchronous queue with automatic retry — see [Configuring SMTP](/docs/v1-beta/configuring-smtp) to set up email.
+
+### System Status Bar
+
+The dashboard includes a collapsible **System Status Bar** below the navigation bar. It shows at-a-glance system health (database and storage connectivity), disk space usage, and your personal storage quota indicator. Expand it to see details; a warning badge appears on the collapsed tab when your quota is running low.
+
 ### Manage users like a pro
 
-Take charge of your file-sharing world with OUITRANSFER’s robust **user and admin management** system:
+Take charge of your file-sharing world with OUITRANSFER's robust **user and admin management** system:
 
 - Set up multiple **admins** to share the load and keep things running smoothly.
 - Add as many **users** as you need, from small crews to huge teams.

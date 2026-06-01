@@ -13,10 +13,12 @@ Configuring SMTP is essential for enabling key email functionalities that enhanc
 
 The main functionalities that depend on SMTP configuration are:
 
-- **Password Reset** – Users who forget their password and cannot access the **Settings** panel need this feature to regain access to their accounts.
-- **Email Notifications** – Recipients will receive email notifications when new shares are sent to them, keeping them informed about shared content.
+- **Password Reset** – Users who forget their password need this feature to regain access to their accounts.
+- **Share Invitations** – Recipients receive email invitations with personalized links when added to a [share](/docs/v1-beta/shares) or [reverse share](/docs/v1-beta/reverse-shares).
+- **Email Notifications** – The notification system sends emails for share access, downloads, quota warnings, expiration alerts, and more. Users control which notifications they receive via [Notification Preferences](/docs/v1-beta/notification-preferences).
+- **Unsubscribe** – Each non-critical notification email includes an unsubscribe link that requires SMTP to function.
 
-Without proper SMTP configuration, these features will not work, potentially leaving users unable to recover their accounts or stay informed about shared files.
+Without proper SMTP configuration, these features will not work. Password reset, share invitations, and all notification emails are silently skipped when SMTP is disabled.
 
 Now, let's go through the step-by-step process to configure the **SMTP Server**.
 
@@ -267,7 +269,61 @@ After entering the correct information and testing the functionality, save the s
 Your OUITRANSFER installation is now ready to:
 
 - Send password reset emails to users who need account recovery
-- Deliver share notifications to recipients automatically
+- Deliver share invitation emails to recipients automatically
+- Send notification emails for share access, downloads, quota alerts, and more
 - Provide a complete user experience with reliable email communication
 
 With SMTP properly configured, users can take full advantage of OUITRANSFER's email-dependent features, ensuring a smooth and professional experience when sharing files and managing their accounts.
+
+---
+
+## Email delivery system
+
+Ouitransfer uses an **asynchronous email queue** backed by the database. When a notification is triggered, the email is not sent immediately — it is added to a queue and processed in the background.
+
+### How the queue works
+
+1. **Enqueue** — when an event triggers a notification (e.g., a file is downloaded), the system checks the user's [notification preferences](/docs/v1-beta/notification-preferences) and any per-share overrides. If the notification is enabled, an email job is added to the queue with status `pending`.
+2. **Process** — a background worker picks up pending jobs and sends them via SMTP. Successfully sent emails are marked as `sent`.
+3. **Retry** — if sending fails (SMTP timeout, temporary server error), the job is retried up to **3 times** with increasing delays. After all retries are exhausted, the job is marked as `failed`.
+
+This architecture ensures that email delivery does not block request processing — the API responds immediately while emails are sent asynchronously.
+
+### Cooldown periods
+
+Some notification types enforce cooldown periods to prevent flooding. For example, share access and download notifications have a 15-minute cooldown per share. If the same event type occurs again within the cooldown window, the notification is silently skipped. See [Notification Preferences](/docs/v1-beta/notification-preferences) for the full cooldown table.
+
+---
+
+## Monitoring email delivery
+
+Administrators can monitor the email queue from **Admin > Email Queue**. The dashboard shows:
+
+| Counter | Description |
+|---------|-------------|
+| **Pending** | Emails waiting to be sent |
+| **Sent** | Successfully delivered emails |
+| **Failed** | Emails that failed after all retry attempts |
+
+This provides a quick health check on email delivery. A growing "Pending" count may indicate SMTP connectivity issues. A non-zero "Failed" count warrants investigation — check the server logs for detailed error messages.
+
+### Sending a test email
+
+The email queue dashboard includes a **Send Test Email** button. This sends a test email through the full delivery pipeline (queue → SMTP → delivery) to the administrator's own email address. Use this to verify that:
+
+- SMTP credentials are correct
+- The queue is processing jobs
+- Emails are arriving in the inbox (not the spam folder)
+
+<Callout type="info">
+  The **Send Test Email** button sends a real email through the queue — it is different from the **Test Connection** button in the SMTP settings, which only verifies the SMTP connection without sending any email.
+</Callout>
+
+### API endpoints
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| `GET` | `/admin/email/stats` | Admin | Get email queue counters (pending, sent, failed) |
+| `POST` | `/admin/email/test` | Admin | Send a test email to the current admin's address |
+
+For the full API reference, see the [API documentation](/docs/v1-beta/api).

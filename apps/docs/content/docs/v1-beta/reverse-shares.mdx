@@ -1,0 +1,137 @@
+---
+title: Reverse Shares
+icon: Upload
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Reverse shares let you create upload links that anyone — even unauthenticated visitors — can use to send files directly to your account. Think of them as "upload portals": you create the link, share it, and files uploaded through it land in your file manager.
+
+This is the opposite of a regular [share](/docs/v1-beta/shares), where you send your own files to others.
+
+---
+
+## Creating a reverse share
+
+Navigate to **Reverse Shares** in the sidebar and click **Create**. The creation form is organized in collapsible sections.
+
+### Basic information
+
+| Option | Required | Default | Description |
+|---|---|---|---|
+| **Name** | Yes | — | A label for the reverse share, visible to you and to uploaders |
+| **Description** | No | — | Optional description displayed on the upload page |
+| **Page layout** | No | Default | Choose between **Default** (standard layout) or **WeTransfer** (branded layout with background image) |
+| **Background image** | No | — | Only shown when the WeTransfer layout is selected. Pick from uploaded background images. |
+
+### Expiration
+
+Toggle on to set an expiration date. After this date, the upload link becomes inactive and visitors see an "expired" message.
+
+### Password protection
+
+Toggle on to require a password before accessing the upload page. Visitors must enter the password before they can upload files.
+
+### File limits
+
+Toggle on to configure upload constraints:
+
+| Option | Default | Description |
+|---|---|---|
+| **Max files** | No limit | Maximum number of files that can be uploaded through this link |
+| **Max file size** | No limit | Maximum size per individual file |
+| **Allowed file types** | All types | Restrict uploads to specific extensions (e.g., `jpg`, `png`, `pdf`). Enter extensions as tags. |
+
+<Callout type="info">
+  File limits are enforced on the server side. Even if a visitor bypasses the client-side validation, uploads that exceed the configured limits are rejected.
+</Callout>
+
+### Visitor identification
+
+Configure whether uploaders must identify themselves before uploading:
+
+| Field | Options | Default | Description |
+|---|---|---|---|
+| **Name** | Hidden / Optional / Required | Optional | Whether the uploader's name is collected |
+| **Email** | Hidden / Optional / Required | Optional | Whether the uploader's email is collected |
+
+The setting controls the behavior of each field:
+
+- **Hidden** — the field is not shown to the uploader
+- **Optional** — the field is shown but can be left empty
+- **Required** — the field must be filled before uploading
+
+When at least one field is visible, uploaders see an identification section on the upload page. The provided name and email are attached to each uploaded file and appear in the reverse share details alongside the files.
+
+### Upload notifications
+
+| Option | Default | Description |
+|---|---|---|
+| **Notify on upload** | Off | Receive an email notification each time a file is uploaded through this link |
+
+<Callout type="info">
+  Upload notifications require [SMTP to be configured](/docs/v1-beta/configuring-smtp). The notification is subject to a 5-minute cooldown per reverse share to avoid excessive emails when multiple files are uploaded in quick succession.
+</Callout>
+
+This setting overrides your global [Reverse Share Upload Notifications](/docs/v1-beta/notification-preferences) preference for this specific reverse share.
+
+---
+
+## Managing a reverse share
+
+### Activate / deactivate
+
+Each reverse share has an **active/inactive** toggle. Deactivating a reverse share keeps it in your list but prevents new uploads — visitors see the upload page but cannot submit files. You can reactivate it at any time.
+
+### Reverse share alias
+
+Like regular shares, reverse shares get a short alias for clean URLs (`/r/my-upload-link`). The alias is auto-generated from the name but can be customized.
+
+### Viewing uploaded files
+
+Open a reverse share to see all files that have been uploaded to it. For each file, you can see:
+
+- File name, size, and extension
+- Uploader name and email (if provided via the identification fields)
+- Upload date
+
+### Actions on uploaded files
+
+| Action | Description |
+|---|---|
+| **Download** | Download the file to your local machine |
+| **Copy to my files** | Copy the file into your personal file manager — it becomes a regular file you own |
+| **Edit** | Update the file name or description |
+| **Delete** | Permanently remove the file from the reverse share |
+
+<Callout type="warn">
+  Files uploaded through a reverse share count toward the **creator's** storage quota. See [Storage Quotas](/docs/v1-beta/quotas) for details.
+</Callout>
+
+---
+
+## Expiration and lifecycle
+
+Reverse shares can expire based on:
+
+- **Expiration date** — the upload link becomes inactive after the configured date
+- **File limits** — once the maximum file count is reached, no more files can be uploaded
+
+When a reverse share is about to expire (or has expired), the owner receives a notification if enabled in their [notification preferences](/docs/v1-beta/notification-preferences).
+
+Expired reverse shares are not automatically deleted — they remain in your list and uploaded files are still accessible. You can extend the expiration or deactivate/delete the reverse share manually.
+
+---
+
+## Uploader experience
+
+When a visitor opens a reverse share link, they see an upload page with:
+
+1. **Identification fields** (if configured) — name and/or email inputs
+2. **Drag-and-drop zone** — drop files or click to browse
+3. **Upload progress** — per-file progress bars during upload
+4. **Confirmation** — success message once files are uploaded
+
+If the reverse share is **password-protected**, the visitor must enter the password first. If it has **expired** or reached its **file limit**, the visitor sees an appropriate message.
+
+The visitor does not need an Ouitransfer account. The upload page is fully public (after password, if set).

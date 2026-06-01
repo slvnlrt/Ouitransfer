@@ -8,6 +8,8 @@ import { Step, Steps } from "fumadocs-ui/components/steps";
 
 Quick Share is the fastest way to share files from the dashboard. Drop files, set options, and get a shareable link — without navigating away from the main page.
 
+For the full set of share options (visitor identification, per-share notifications, activity tracking), see the [Shares](/docs/v1-beta/shares) page. Quick Share creates a regular share with a simplified interface.
+
 ## How it works
 
 The Quick Share widget lives at the top of the dashboard and guides you through three steps.
@@ -57,9 +59,9 @@ You can add more files after the initial drop, either by clicking **Add more fil
 
 ## Recipients
 
-The **Recipients** field is only shown when SMTP is configured. Add email addresses by typing an address and pressing **Enter**. Remove an address by clicking the × on its tag.
+The **Recipients** field is only shown when [SMTP is configured](/docs/v1-beta/configuring-smtp). Add email addresses by typing an address and pressing **Enter**. Remove an address by clicking the × on its tag.
 
-When the share is created, Ouitransfer sends a notification email to each recipient with the share link. This happens automatically — there is no separate "send" step.
+When the share is created, Ouitransfer sends an invitation email to each recipient with a personalized link. This happens automatically — there is no separate "send" step. Each recipient's link contains a tracking token so you can see who accessed the share. See [Shares — Recipients and invitations](/docs/v1-beta/shares#recipients-and-invitations) for details.
 
 
 
