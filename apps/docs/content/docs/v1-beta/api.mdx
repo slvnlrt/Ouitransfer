@@ -146,8 +146,14 @@ Both provide endpoint exploration, request builders, and response visualization 
 | GET | `/shares/alias/:alias` | — | Get share by alias (public) |
 | POST | `/shares/alias/:alias/access` | — | Access password-protected share by alias |
 | GET | `/shares/alias/:alias/metadata` | — | Get share metadata for Open Graph previews |
+| POST | `/shares/alias/:alias/identify` | — | Submit visitor identification form (name/email) |
+| GET | `/shares/:shareId/visits` | User | List share visits (paginated, filterable by action and identification status) |
 
 **Share access:** For password-protected shares, the password must be sent in the request body via the `/access` endpoints — never as a query parameter. Non-password-protected shares are accessible without authentication.
+
+**Tracking tokens:** Share access endpoints accept an optional `?t=<token>` query parameter. When present, the visitor is automatically identified as the recipient who owns that tracking token. See [Shares — Visitor identification](/docs/v1-beta/shares#visitor-identification).
+
+**Share visits:** The `GET /shares/:shareId/visits` endpoint returns paginated visit records. Query parameters: `page` (default 1), `limit` (default 10), `action` (`access` or `download`), `identified` (`true` or `false`). Only the share owner can access this endpoint.
 
 ---
 
@@ -340,6 +346,30 @@ All audit log endpoints require **admin** authentication.
 | GET | `/admin/audit-logs/export` | Admin | Export audit logs as CSV or JSON (streaming) |
 
 For detailed query parameter documentation, see the [Activity Log](/docs/v1-beta/activity-log) page.
+
+---
+
+### Notifications
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/notifications/preferences` | User | Get all notification preferences (merged with catalog defaults) |
+| PUT | `/notifications/preferences` | User | Update notification preferences (array of `{ type, frequency }`) |
+| GET | `/notifications/unsubscribe?token=...` | — | Validate unsubscribe token and return notification type |
+| POST | `/notifications/unsubscribe` | — | Confirm unsubscribe (sets frequency to `disabled`) |
+
+The preferences endpoint returns all 22 notification types with their current frequency, whether they are configurable, and whether they are critical. Only configurable, non-critical types can be updated. For details, see [Notification Preferences](/docs/v1-beta/notification-preferences).
+
+---
+
+### Admin email queue
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/admin/email/stats` | Admin | Get email queue counters (pending, sent, failed) |
+| POST | `/admin/email/test` | Admin | Send a test email to the current admin's email address |
+
+For details on the email delivery system, see [Configuring SMTP — Email delivery system](/docs/v1-beta/configuring-smtp#email-delivery-system).
 
 ---
 
