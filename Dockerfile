@@ -14,12 +14,6 @@
 # === SHARED BUILD BASE ===
 FROM node:24.16.0-alpine AS base
 RUN corepack enable && corepack prepare pnpm@11.5.0 --activate
-# pnpm 11 verifies dependency sync before exec/run and triggers a full implicit
-# `pnpm install` when any workspace member has stale/missing node_modules.
-# In Docker builds only the target package is installed (--filter), so the check
-# always fires and runs lifecycle scripts for packages whose source files aren't
-# present — causing cascading failures.  Disable only in Docker context.
-ENV pnpm_config_verify_deps_before_run=false
 WORKDIR /app
 
 
@@ -51,6 +45,12 @@ FROM base AS server-builder
 RUN apk add --no-cache python3 make g++
 # Workspace context (pnpm deploy needs workspace config at root)
 COPY --from=server-deps /app/pnpm-workspace.yaml /app/package.json /app/pnpm-lock.yaml ./
+# pnpm 11 verifies dependency sync before exec/run and triggers an implicit
+# `pnpm install` when any workspace member has stale/missing node_modules.
+# In Docker builds only the target package is installed (--filter), so other
+# workspace members appear stale — causing cascading postinstall failures.
+# Disable in-place (pnpm 11 reads project config from pnpm-workspace.yaml only).
+RUN echo 'verifyDepsBeforeRun: false' >> pnpm-workspace.yaml
 COPY --from=server-deps /app/node_modules ./node_modules
 COPY --from=server-deps /app/apps/server/node_modules ./apps/server/node_modules
 # Reuse pnpm content-addressable store so deploy doesn't re-download
@@ -132,6 +132,8 @@ RUN pnpm install --frozen-lockfile --ignore-scripts --filter ouitransfer-web
 FROM base AS web-builder
 # Workspace context (pnpm needs pnpm-workspace.yaml to resolve catalog: specifiers)
 COPY --from=web-deps /app/pnpm-workspace.yaml /app/package.json /app/pnpm-lock.yaml ./
+# Disable pnpm 11 verify-deps-before-run (see server-builder comment above).
+RUN echo 'verifyDepsBeforeRun: false' >> pnpm-workspace.yaml
 COPY --from=web-deps /app/node_modules ./node_modules
 COPY --from=web-deps /app/apps/web/node_modules ./apps/web/node_modules
 COPY --from=shared-builder /app/packages ./packages/
