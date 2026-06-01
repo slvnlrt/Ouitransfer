@@ -12,10 +12,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import type { SiteContent } from "@/lib/content-i18n";
 
 const V1_BETA_MODAL_KEY = "OUITRANSFER-v1-beta-modal-shown";
 
-export function V1BetaModal() {
+interface V1BetaModalProps {
+  /** Localized modal copy. */
+  content: SiteContent["modal"];
+  /** Locale-prefixed path to the quick-start guide. */
+  quickStartHref: string;
+}
+
+export function V1BetaModal({ content, quickStartHref }: V1BetaModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -45,7 +53,7 @@ export function V1BetaModal() {
 
   const handleGoToQuickStart = () => {
     handleClose();
-    router.push("/docs/v1-beta/quick-start");
+    router.push(quickStartHref);
   };
 
   return (
@@ -56,23 +64,18 @@ export function V1BetaModal() {
             <div className="p-2">
               <FlaskConical className="h-8 w-8 text-indigo-500" />
             </div>
-            <DialogTitle className="text-xl font-bold">Welcome to v1-beta</DialogTitle>
+            <DialogTitle className="text-xl font-bold">{content.title}</DialogTitle>
           </div>
           <DialogDescription asChild className="text-left space-y-4 pt-2 text-base leading-relaxed">
             <div>
               <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-lg p-4 mb-4">
                 <p className="text-indigo-800 dark:text-indigo-200 text-sm font-medium">
-                  <strong>Note:</strong> OUITRANSFER is currently in beta. Features may evolve and
-                  some rough edges may remain. Your feedback helps us improve.
+                  {content.note}
                 </p>
               </div>
+              <p>{content.intro}</p>
               <p>
-                This is the first public release of{" "}
-                <strong className="text-indigo-600">OUITRANSFER</strong> — a self-hosted,
-                open-source file transfer platform built for speed, privacy, and simplicity.
-              </p>
-              <p>
-                Found a bug or have a suggestion? Open an issue on{" "}
+                {content.feedback}{" "}
                 <a
                   href="https://github.com/slvnlrt/ouitransfer"
                   target="_blank"
@@ -88,10 +91,10 @@ export function V1BetaModal() {
         </DialogHeader>
         <div className="flex gap-3 justify-end pt-6">
           <Button onClick={handleClose} className="px-6">
-            Got it
+            {content.gotIt}
           </Button>
           <Button onClick={handleGoToQuickStart} className="px-6">
-            Get Started
+            {content.getStarted}
           </Button>
         </div>
       </DialogContent>

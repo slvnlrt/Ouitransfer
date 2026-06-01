@@ -1,5 +1,3 @@
-"use client";
-
 import {
   BatteryChargingIcon,
   BookOpenText,
@@ -19,6 +17,7 @@ import {
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { localizedPath } from "@/app/layout.config";
 import { AnimatedGridPattern } from "@/components/magicui/animated-grid-pattern";
 import { PulsatingButton } from "@/components/magicui/pulsating-button";
 import { RippleButton } from "@/components/magicui/ripple-button";
@@ -26,13 +25,14 @@ import { TypingAnimation } from "@/components/magicui/typing-animation";
 import { WordRotate } from "@/components/magicui/word-rotate";
 import { ThreeDMarquee } from "@/components/ui/3d-marquee";
 import { TextHoverEffect } from "@/components/ui/text-hover-effect";
+import { LATEST_VERSION } from "@/config/constants";
+import { getSiteContent, type SiteContent } from "@/lib/content-i18n";
 
 // TODO: replace with current screenshots once they are taken
 const images: string[] = [];
 
-const docsLink = "/docs/v1-beta";
-
-function Hero() {
+function Hero({ content, docsLink }: { content: SiteContent; docsLink: string }) {
+  const t = content.home.hero;
   return (
     <section className="relative z-[2] flex flex-col border-x border-t px-6 pt-12 pb-10 md:px-12 md:pt-16 max-md:text-center overflow-hidden">
       <div className="relative flex flex-col">
@@ -44,21 +44,16 @@ function Hero() {
           <h1 className="mb-8 text-6xl font-bold">
             OUITRANSFER{" "}
             <span className="text-[13px] font-light text-muted-foreground/50 font-mono">
-              v1-beta
+              {LATEST_VERSION}
             </span>
           </h1>
-          <h1 className="hidden text-4xl font-medium max-w-[600px] md:block mb-4">
-            Modern & efficient file sharing
-          </h1>
-          <p className="mb-8 text-fd-muted-foreground md:max-w-[80%] md:text-xl">
-            OUITRANSFER is a fast and secure platform for sharing files, built with performance and
-            privacy in mind.
-          </p>
+          <h1 className="hidden text-4xl font-medium max-w-[600px] md:block mb-4">{t.tagline}</h1>
+          <p className="mb-8 text-fd-muted-foreground md:max-w-[80%] md:text-xl">{t.description}</p>
           <div className="inline-flex items-center gap-6 max-md:mx-auto mb-4 pointer-events-auto">
             <PulsatingButton>
               <div className="flex gap-2 items-center">
                 <BookOpenText size={18} />
-                <Link href={docsLink}>Documentation</Link>
+                <Link href={docsLink}>{t.documentation}</Link>
               </div>
             </PulsatingButton>
             <RippleButton>
@@ -69,7 +64,7 @@ function Hero() {
                 className="flex gap-2 items-center"
               >
                 <GithubIcon size={18} />
-                GitHub
+                {t.github}
               </a>
             </RippleButton>
           </div>
@@ -88,16 +83,13 @@ function LogoShowcase() {
   );
 }
 
-function Feedback() {
+function Feedback({ content }: { content: SiteContent }) {
+  const t = content.home.feedback;
   return (
     <section className="relative flex flex-col items-center overflow-hidden border-x border-t px-6 py-8 md:py-16">
       <p className="text-xl font-medium flex items-center justify-center gap-2">
-        A modern way to share files
-        <WordRotate
-          duration={4000}
-          words={["efficiently", "securely", "privately", "reliably", "seamlessly"]}
-          className="min-w-[100px] inline-block"
-        />
+        {t.title}
+        <WordRotate duration={4000} words={t.words} className="min-w-[100px] inline-block" />
       </p>
     </section>
   );
@@ -123,7 +115,10 @@ function Highlight({
   );
 }
 
-function Features() {
+function Features({ content }: { content: SiteContent }) {
+  const core = content.home.coreFeatures;
+  const callout = content.home.callout;
+  const key = content.home.keyFeatures;
   return (
     <>
       {/* Core Features */}
@@ -133,22 +128,18 @@ function Features() {
             <div className="flex items-center gap-3 text-muted-foreground border border-foreground w-fit p-3 rounded-lg">
               <UploadIcon className="size-6 text-foreground" />
             </div>
-            <h3 className="text-2xl font-semibold">Upload & Share</h3>
+            <h3 className="text-2xl font-semibold">{core.uploadTitle}</h3>
           </div>
-          <p className="text-muted-foreground">
-            Send your files quickly and safely. Share easily with anyone through secure links.
-          </p>
+          <p className="text-muted-foreground">{core.uploadDescription}</p>
         </div>
         <div className="flex flex-col gap-4 border-r p-8 md:p-12">
           <div className="flex gap-4 items-center">
             <div className="flex items-center gap-3 text-muted-foreground border border-foreground w-fit p-3 rounded-lg">
               <LockIcon className="size-6 text-foreground" />
             </div>
-            <h3 className="text-2xl font-semibold">Secure & Private</h3>
+            <h3 className="text-2xl font-semibold">{core.secureTitle}</h3>
           </div>
-          <p className="text-muted-foreground">
-            Files are encrypted and protected. You control your data completely.
-          </p>
+          <p className="text-muted-foreground">{core.secureDescription}</p>
         </div>
       </section>
 
@@ -162,13 +153,11 @@ function Features() {
       >
         <div className="text-center">
           <p className="mb-4 w-fit bg-fd-primary px-3 py-1 text-sm font-bold font-mono text-fd-primary-foreground mx-auto">
-            Open Source & Self-Hosted
+            {callout.badge}
           </p>
-          <h2 className="text-center text-2xl font-semibold sm:text-3xl mb-4">
-            Complete File Sharing Solution
-          </h2>
+          <h2 className="text-center text-2xl font-semibold sm:text-3xl mb-4">{callout.title}</h2>
           <TypingAnimation className="text-center text-xl text-muted-foreground">
-            Built with Next.js, Fastify, and SQLite
+            {callout.subtitle}
           </TypingAnimation>
         </div>
         <AnimatedGridPattern className="opacity-5" />
@@ -178,49 +167,47 @@ function Features() {
       <section className="grid grid-cols-1 border-r md:grid-cols-2 lg:grid-cols-3">
         <div className="col-span-full flex items-start justify-center border-l border-t p-8 pb-2 text-center">
           <h2 className="bg-fd-primary px-1 text-2xl font-semibold text-fd-primary-foreground">
-            Key Features
+            {key.heading}
           </h2>
           <MousePointer className="-ml-1 mt-8" />
         </div>
 
-        <Highlight icon={TimerIcon} heading="Lightning Fast">
-          Optimized upload/download speeds with modern architecture
+        <Highlight icon={TimerIcon} heading={key.fastTitle}>
+          {key.fastDescription}
         </Highlight>
 
-        <Highlight icon={CloudIcon} heading="Flexible Storage">
-          S3-compatible storage options (internal or external)
+        <Highlight icon={CloudIcon} heading={key.storageTitle}>
+          {key.storageDescription}
         </Highlight>
 
-        <Highlight icon={KeyboardIcon} heading="Developer API">
-          Full REST API with webhooks for seamless integration
+        <Highlight icon={KeyboardIcon} heading={key.apiTitle}>
+          {key.apiDescription}
         </Highlight>
 
-        <Highlight icon={SearchIcon} heading="Smart Search">
-          Find and manage your shared files effortlessly
+        <Highlight icon={SearchIcon} heading={key.searchTitle}>
+          {key.searchDescription}
         </Highlight>
 
-        <Highlight icon={LayoutIcon} heading="Modern UI">
-          Clean, intuitive interface built with best practices
+        <Highlight icon={LayoutIcon} heading={key.uiTitle}>
+          {key.uiDescription}
         </Highlight>
 
-        <Highlight icon={DatabaseIcon} heading="SQLite Powered">
-          Lightweight, reliable database for efficient data handling
+        <Highlight icon={DatabaseIcon} heading={key.databaseTitle}>
+          {key.databaseDescription}
         </Highlight>
       </section>
     </>
   );
 }
 
-function GetStarted() {
+function GetStarted({ content, docsLink }: { content: SiteContent; docsLink: string }) {
+  const t = content.home.getStarted;
   return (
     <section className="flex w-full flex-1">
       <div className="w-full flex flex-col gap-8 overflow-hidden border px-8 py-14">
         <div className="text-center mb-6">
-          <h2 className="text-4xl font-extrabold font-mono uppercase mb-3">Get Started Today</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Deploy your own secure file sharing platform in minutes. Take control of your data with
-            our self-hosted solution.
-          </p>
+          <h2 className="text-4xl font-extrabold font-mono uppercase mb-3">{t.title}</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t.description}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
@@ -230,10 +217,8 @@ function GetStarted() {
                 <TimerIcon className="size-8 text-foreground" />
               </div>
             </div>
-            <h3 className="text-xl font-semibold">Quick Setup</h3>
-            <p className="text-muted-foreground">
-              Docker deployment or direct installation - get running in under 5 minutes
-            </p>
+            <h3 className="text-xl font-semibold">{t.quickSetupTitle}</h3>
+            <p className="text-muted-foreground">{t.quickSetupDescription}</p>
           </div>
 
           <div className="text-center space-y-4">
@@ -242,10 +227,8 @@ function GetStarted() {
                 <BatteryChargingIcon className="size-8 text-foreground" />
               </div>
             </div>
-            <h3 className="text-xl font-semibold">Full Control</h3>
-            <p className="text-muted-foreground">
-              Self-hosted means you own your data and control every aspect of the platform
-            </p>
+            <h3 className="text-xl font-semibold">{t.fullControlTitle}</h3>
+            <p className="text-muted-foreground">{t.fullControlDescription}</p>
           </div>
 
           <div className="text-center space-y-4">
@@ -254,10 +237,8 @@ function GetStarted() {
                 <RocketIcon className="size-8 text-foreground" />
               </div>
             </div>
-            <h3 className="text-xl font-semibold">Production Ready</h3>
-            <p className="text-muted-foreground">
-              Latest technologies optimized for performance and security
-            </p>
+            <h3 className="text-xl font-semibold">{t.productionTitle}</h3>
+            <p className="text-muted-foreground">{t.productionDescription}</p>
           </div>
         </div>
 
@@ -266,7 +247,7 @@ function GetStarted() {
             <PulsatingButton>
               <div className="flex gap-2 items-center">
                 <BookOpenText size={18} />
-                <Link href={docsLink}>Read documentation</Link>
+                <Link href={docsLink}>{t.readDocs}</Link>
               </div>
             </PulsatingButton>
             <RippleButton>
@@ -277,7 +258,7 @@ function GetStarted() {
                 className="flex gap-2 items-center"
               >
                 <GithubIcon size={18} />
-                View on GitHub
+                {t.viewGithub}
               </a>
             </RippleButton>
           </div>
@@ -287,30 +268,34 @@ function GetStarted() {
   );
 }
 
-function FullWidthFooter() {
+function FullWidthFooter({ content }: { content: SiteContent }) {
   return (
     <footer className="w-full flex items-center justify-center p-6 border-t font-light container max-w-7xl">
       <div className="flex items-center gap-1 text-sm max-w-7xl">
-        <span>Powered by</span>
+        <span>{content.home.footer.poweredBy}</span>
         <span className="flex items-center text-green-500 font-light">Burger&amp;Cie ©</span>
       </div>
     </footer>
   );
 }
 
-export default function HomePage() {
+export default async function HomePage(props: { params: Promise<{ lang: string }> }) {
+  const { lang } = await props.params;
+  const content = getSiteContent(lang);
+  const docsLink = localizedPath(`/docs/${LATEST_VERSION}`, lang);
+
   return (
     <>
       <main className="relative z-[2] w-full px-4 py-6 sm:px-6 lg:px-8">
         <div className="relative mx-auto max-w-screen-xl bg-background">
-          <Hero />
+          <Hero content={content} docsLink={docsLink} />
           <LogoShowcase />
-          <Feedback />
-          <Features />
-          <GetStarted />
+          <Feedback content={content} />
+          <Features content={content} />
+          <GetStarted content={content} docsLink={docsLink} />
         </div>
       </main>
-      <FullWidthFooter />
+      <FullWidthFooter content={content} />
     </>
   );
 }
