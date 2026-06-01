@@ -21,6 +21,9 @@ allowBuilds:
 
 # Project settings (migrated from .npmrc — pnpm 11 ignores .npmrc for project config)
 autoInstallPeers: true
+# Disable pnpm's built-in minimumReleaseAge check — Renovate's own
+# minimumReleaseAge (3 days) already gates dependency freshness.
+minimumReleaseAge: 0
 
 catalog:
   # ── Runtime (shared across 2+ apps) ──────────────────────────
