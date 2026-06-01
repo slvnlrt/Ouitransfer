@@ -19,6 +19,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      actions: write
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v6
@@ -133,3 +134,15 @@ jobs:
             docker push "${FULL}:${VERSION}"
             docker push "${FULL}:${MINOR}"
           done
+
+      - name: Cleanup stale caches
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Cleaning unused and stale caches..."
+          cutoff=$(date -u -d '2 days ago' '+%Y-%m-%dT%H:%M:%SZ')
+          gh cache list --limit 100 --json id,createdAt,lastAccessedAt \
+            --jq ".[] | select(.createdAt == .lastAccessedAt or .createdAt < \"$cutoff\") | .id" \
+            | xargs -r -I{} gh cache delete {} 2>/dev/null || true
+          echo "Done."
