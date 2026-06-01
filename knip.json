@@ -16,7 +16,7 @@
     "apps/server": {
       "entry": ["src/scripts/reset-password.ts"],
       "project": ["src/**/*.ts"],
-      "ignoreDependencies": ["@vitest/coverage-v8", "@prisma/client"]
+      "ignoreDependencies": ["@prisma/client"]
     },
     "apps/web": {
       "entry": [
@@ -25,7 +25,7 @@
         "src/http/endpoints/index.ts"
       ],
       "project": ["src/**/*.{ts,tsx}"],
-      "ignoreDependencies": ["@vitest/coverage-v8", "postcss", "tw-animate-css", "tailwindcss"]
+      "ignoreDependencies": ["tailwindcss", "tw-animate-css"]
     },
     "apps/docs": {
       "entry": [
@@ -35,7 +35,7 @@
         "src/components/ui/*.{ts,tsx}"
       ],
       "project": ["src/**/*.{ts,tsx}"],
-      "ignoreDependencies": ["tw-animate-css"],
+      "ignoreDependencies": ["tailwindcss", "tw-animate-css"],
       "ignoreFiles": ["src/components/V1BetaModal.tsx"]
     }
   }
