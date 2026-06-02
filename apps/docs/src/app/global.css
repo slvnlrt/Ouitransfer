@@ -210,6 +210,8 @@ h4 {
   --animate-marquee: marquee 36s linear infinite;
   --animate-gradient: gradient-pan 6s ease infinite;
   --animate-float: float 7s ease-in-out infinite;
+  --animate-spin-slow: spin 22s linear infinite;
+  --animate-sheen: sheen 7s ease-in-out infinite;
 
   @keyframes aurora {
     0%,
@@ -257,6 +259,16 @@ h4 {
       transform: translateY(-10px);
     }
   }
+  @keyframes sheen {
+    0%,
+    65%,
+    100% {
+      transform: translateX(-150%) skewX(-18deg);
+    }
+    82% {
+      transform: translateX(280%) skewX(-18deg);
+    }
+  }
 }
 
 @layer utilities {
@@ -296,6 +308,26 @@ h4 {
   .marquee-track:hover {
     animation-play-state: paused;
   }
+
+  /* Ultra-subtle film grain for a matte, premium surface. */
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+/* Unlayered: crisp 1px gradient border that tracks the cursor (set via JS). */
+.spotlight-border {
+  background: radial-gradient(
+    220px circle at var(--mx, 50%) var(--my, 50%),
+    var(--brand),
+    transparent 60%
+  );
+  padding: 1px;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
 }
 
 /* Unlayered rules win over Tailwind's layered animation utilities, so no
@@ -306,7 +338,9 @@ h4 {
   .animate-shimmer,
   .animate-marquee,
   .animate-gradient,
-  .animate-float {
+  .animate-float,
+  .animate-spin-slow,
+  .animate-sheen {
     animation: none;
   }
 }

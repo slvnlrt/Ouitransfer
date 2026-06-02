@@ -35,7 +35,12 @@ export interface SiteContent {
       copied: string;
       expires: string;
     };
-    highlights: string[];
+    stats: {
+      languages: string;
+      providers: string;
+      maxSize: string;
+      openSource: string;
+    };
     features: {
       eyebrow: string;
       heading: string;
@@ -103,13 +108,12 @@ const en: SiteContent = {
       copied: "Copied!",
       expires: "Link expires in 7 days",
     },
-    highlights: [
-      "100% open source",
-      "Self-hosted",
-      "SSO, 2FA & LDAP",
-      "Audit trail",
-      "No size limits",
-    ],
+    stats: {
+      languages: "Languages",
+      providers: "Identity providers",
+      maxSize: "Max file size",
+      openSource: "Open source",
+    },
     features: {
       eyebrow: "Why OUITRANSFER",
       heading: "Everything teams need to share files — under your control.",
@@ -214,13 +218,12 @@ const fr: SiteContent = {
       copied: "Copié !",
       expires: "Le lien expire dans 7 jours",
     },
-    highlights: [
-      "100% open source",
-      "Auto-hébergé",
-      "SSO, 2FA & LDAP",
-      "Journal d'audit",
-      "Sans limite de taille",
-    ],
+    stats: {
+      languages: "Langues",
+      providers: "Fournisseurs d'identité",
+      maxSize: "Taille de fichier max",
+      openSource: "Open source",
+    },
     features: {
       eyebrow: "Pourquoi OUITRANSFER",
       heading: "Tout ce qu'il faut aux équipes pour partager — sous votre contrôle.",

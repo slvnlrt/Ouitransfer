@@ -19,11 +19,20 @@ export function FinalCta({
     <section className="mx-auto max-w-screen-xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
       <Reveal>
         <div className="relative overflow-hidden rounded-3xl border border-brand/20 bg-gradient-brand bg-[length:200%_200%] px-6 py-16 text-center animate-gradient sm:px-12">
-          {/* Soft texture overlay */}
+          {/* Soft radial texture */}
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-20 [background-image:radial-gradient(circle_at_30%_20%,#fff_0,transparent_40%),radial-gradient(circle_at_70%_80%,#fff_0,transparent_35%)]"
           />
+          {/* Fine grid */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-[0.08] [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:40px_40px]"
+          />
+          {/* Periodic light sweep */}
+          <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+            <div className="absolute inset-y-0 left-0 w-1/4 animate-sheen bg-gradient-to-r from-transparent via-white/25 to-transparent" />
+          </div>
           <div className="relative mx-auto max-w-2xl">
             <h2 className="text-balance text-3xl font-bold tracking-tight text-white sm:text-4xl">
               {t.title}

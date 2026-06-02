@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Bell,
   Inbox,
@@ -9,7 +11,9 @@ import {
   Server,
   Users,
 } from "lucide-react";
-import type { ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
+import { useRef } from "react";
+
 import {
   AuditFeed,
   NotificationStack,
@@ -45,23 +49,46 @@ function BentoCard({
   description: string;
   children?: ReactNode;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Track the cursor as CSS variables (no re-render) to drive the spotlight.
+  const onMove = (e: MouseEvent<HTMLDivElement>) => {
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty("--mx", `${e.clientX - r.left}px`);
+    el.style.setProperty("--my", `${e.clientY - r.top}px`);
+  };
+
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: decorative cursor spotlight only — no semantic interaction or keyboard affordance needed
     <div
-      className={cn(
-        "group relative flex h-full flex-col overflow-hidden rounded-2xl border border-fd-border bg-fd-card/40 p-6 transition-all duration-300 hover:border-brand/40 hover:shadow-lg hover:shadow-brand/5",
-        className,
-      )}
+      ref={ref}
+      onMouseMove={onMove}
+      className={cn("group relative h-full rounded-2xl", className)}
     >
+      <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-fd-border bg-fd-card/50 p-6 backdrop-blur-sm transition-all duration-300 group-hover:shadow-xl group-hover:shadow-brand/5">
+        {/* Soft interior glow that follows the cursor */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+          style={{
+            background:
+              "radial-gradient(360px circle at var(--mx) var(--my), color-mix(in oklch, var(--brand) 10%, transparent), transparent 70%)",
+          }}
+        />
+        <div className="relative flex flex-1 flex-col">
+          <IconChip icon={icon} />
+          <h3 className="mt-4 text-lg font-semibold text-fd-foreground">{title}</h3>
+          <p className="mt-2 text-sm leading-relaxed text-fd-muted-foreground">{description}</p>
+          {children}
+        </div>
+      </div>
+      {/* Crisp 1px gradient border tracking the cursor */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 -top-24 h-40 bg-brand/10 opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100"
+        className="spotlight-border pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
       />
-      <div className="relative flex flex-1 flex-col">
-        <IconChip icon={icon} />
-        <h3 className="mt-4 text-lg font-semibold text-fd-foreground">{title}</h3>
-        <p className="mt-2 text-sm leading-relaxed text-fd-muted-foreground">{description}</p>
-        {children}
-      </div>
     </div>
   );
 }

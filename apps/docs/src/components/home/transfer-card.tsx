@@ -52,10 +52,14 @@ export function TransferCard({ demo }: { demo: SiteContent["home"]["demo"] }) {
 
   return (
     <div className="relative w-full max-w-md">
-      {/* Glow behind the card */}
+      {/* Slowly rotating conic halo behind the card */}
       <div
         aria-hidden
-        className="absolute -inset-6 -z-10 rounded-[2rem] bg-gradient-brand opacity-25 blur-3xl"
+        className="absolute -inset-10 -z-10 animate-spin-slow rounded-full opacity-30 blur-2xl"
+        style={{
+          background:
+            "conic-gradient(from 0deg, var(--brand-from), var(--brand-via), var(--brand-to), var(--brand-from))",
+        }}
       />
 
       <div className="rounded-2xl border border-white/15 bg-fd-card/70 p-5 shadow-2xl shadow-black/10 backdrop-blur-xl dark:shadow-black/40">

@@ -1,28 +1,11 @@
-import { Check } from "lucide-react";
-
 import { localizedPath } from "@/app/layout.config";
 import { FeatureBento } from "@/components/home/feature-bento";
 import { FinalCta } from "@/components/home/final-cta";
 import { Hero } from "@/components/home/hero";
-import { Reveal } from "@/components/home/reveal";
+import { Stats } from "@/components/home/stats";
 import { TechMarquee } from "@/components/home/tech-marquee";
 import { LATEST_VERSION } from "@/config/constants";
 import { getSiteContent, type SiteContent } from "@/lib/content-i18n";
-
-function HighlightsBand({ items }: { items: string[] }) {
-  return (
-    <Reveal className="mx-auto max-w-screen-xl px-4 pb-4 sm:px-6 lg:px-8">
-      <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
-        {items.map((item) => (
-          <li key={item} className="flex items-center gap-2 text-sm text-fd-muted-foreground">
-            <Check className="size-4 text-brand" />
-            {item}
-          </li>
-        ))}
-      </ul>
-    </Reveal>
-  );
-}
 
 function Footer({ content }: { content: SiteContent["home"] }) {
   return (
@@ -42,13 +25,20 @@ export default async function HomePage(props: { params: Promise<{ lang: string }
   const docsLink = localizedPath(`/docs/${LATEST_VERSION}`, lang);
 
   return (
-    <main className="flex flex-col">
-      <Hero content={home} docsLink={docsLink} version={LATEST_VERSION} />
-      <HighlightsBand items={home.highlights} />
-      <FeatureBento content={home} />
-      <TechMarquee content={home} />
-      <FinalCta content={home} docsLink={docsLink} />
-      <Footer content={home} />
-    </main>
+    <>
+      {/* Ultra-subtle film grain over the whole page */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 z-50 bg-noise opacity-[0.025] mix-blend-soft-light"
+      />
+      <main className="relative flex flex-col">
+        <Hero content={home} docsLink={docsLink} version={LATEST_VERSION} />
+        <Stats content={home} />
+        <FeatureBento content={home} />
+        <TechMarquee content={home} />
+        <FinalCta content={home} docsLink={docsLink} />
+        <Footer content={home} />
+      </main>
+    </>
   );
 }
