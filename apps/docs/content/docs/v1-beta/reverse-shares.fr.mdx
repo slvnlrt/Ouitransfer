@@ -1,0 +1,137 @@
+---
+title: Partages inversés
+icon: Upload
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Les partages inversés vous permettent de créer des liens de téléversement que n'importe qui — même des visiteurs non authentifiés — peut utiliser pour envoyer des fichiers directement vers votre compte. Considérez-les comme des « portails de téléversement » : vous créez le lien, le partagez, et les fichiers téléversés via ce lien arrivent dans votre gestionnaire de fichiers.
+
+C'est l'inverse d'un [partage](/docs/v1-beta/shares) classique, où vous envoyez vos propres fichiers à d'autres personnes.
+
+---
+
+## Créer un partage inversé
+
+Accédez aux **Partages inversés** dans la barre latérale et cliquez sur **Créer**. Le formulaire de création est organisé en sections repliables.
+
+### Informations de base
+
+| Option | Obligatoire | Défaut | Description |
+|---|---|---|---|
+| **Nom** | Oui | — | Un libellé pour le partage inversé, visible par vous et par les personnes qui téléversent |
+| **Description** | Non | — | Description optionnelle affichée sur la page de téléversement |
+| **Mise en page** | Non | Défaut | Choisissez entre **Défaut** (mise en page standard) ou **WeTransfer** (mise en page personnalisée avec image d'arrière-plan) |
+| **Image d'arrière-plan** | Non | — | Affiché uniquement lorsque la mise en page WeTransfer est sélectionnée. Choisissez parmi les images d'arrière-plan téléversées. |
+
+### Expiration
+
+Activez cette option pour définir une date d'expiration. Après cette date, le lien de téléversement devient inactif et les visiteurs voient un message « expiré ».
+
+### Protection par mot de passe
+
+Activez cette option pour exiger un mot de passe avant d'accéder à la page de téléversement. Les visiteurs doivent saisir le mot de passe avant de pouvoir téléverser des fichiers.
+
+### Limites de fichiers
+
+Activez cette option pour configurer des contraintes de téléversement :
+
+| Option | Défaut | Description |
+|---|---|---|
+| **Nombre max. de fichiers** | Illimité | Nombre maximum de fichiers pouvant être téléversés via ce lien |
+| **Taille max. de fichier** | Illimitée | Taille maximale par fichier individuel |
+| **Types de fichiers autorisés** | Tous les types | Restreindre les téléversements à des extensions spécifiques (ex. : `jpg`, `png`, `pdf`). Saisissez les extensions sous forme d'étiquettes. |
+
+<Callout type="info">
+  Les limites de fichiers sont appliquées côté serveur. Même si un visiteur contourne la validation côté client, les téléversements dépassant les limites configurées sont rejetés.
+</Callout>
+
+### Identification des visiteurs
+
+Configurez si les personnes qui téléversent doivent s'identifier avant de pouvoir le faire :
+
+| Champ | Options | Défaut | Description |
+|---|---|---|---|
+| **Nom** | Masqué / Optionnel / Obligatoire | Optionnel | Si le nom de la personne est collecté |
+| **E-mail** | Masqué / Optionnel / Obligatoire | Optionnel | Si l'adresse e-mail de la personne est collectée |
+
+Le paramètre contrôle le comportement de chaque champ :
+
+- **Masqué** — le champ n'est pas affiché
+- **Optionnel** — le champ est affiché mais peut être laissé vide
+- **Obligatoire** — le champ doit être renseigné avant le téléversement
+
+Lorsqu'au moins un champ est visible, les personnes qui téléversent voient une section d'identification sur la page de téléversement. Le nom et l'adresse e-mail fournis sont associés à chaque fichier téléversé et apparaissent dans les détails du partage inversé aux côtés des fichiers.
+
+### Notifications de téléversement
+
+| Option | Défaut | Description |
+|---|---|---|
+| **Notifier lors d'un téléversement** | Désactivé | Recevoir une notification par e-mail chaque fois qu'un fichier est téléversé via ce lien |
+
+<Callout type="info">
+  Les notifications de téléversement nécessitent que [SMTP soit configuré](/docs/v1-beta/configuring-smtp). La notification est soumise à une limitation de 5 minutes par partage inversé afin d'éviter un volume excessif d'e-mails lorsque plusieurs fichiers sont téléversés en succession rapide.
+</Callout>
+
+Ce paramètre remplace votre préférence globale [Notifications de téléversement sur partage inversé](/docs/v1-beta/notification-preferences) pour ce partage inversé spécifique.
+
+---
+
+## Gérer un partage inversé
+
+### Activer / désactiver
+
+Chaque partage inversé dispose d'un bouton bascule **actif/inactif**. Désactiver un partage inversé le conserve dans votre liste mais empêche de nouveaux téléversements — les visiteurs voient la page de téléversement mais ne peuvent pas envoyer de fichiers. Vous pouvez le réactiver à tout moment.
+
+### Alias du partage inversé
+
+Comme les partages classiques, les partages inversés reçoivent un alias court pour des URLs propres (`/r/mon-lien-de-téléversement`). L'alias est généré automatiquement à partir du nom, mais peut être personnalisé.
+
+### Consulter les fichiers téléversés
+
+Ouvrez un partage inversé pour voir tous les fichiers qui y ont été téléversés. Pour chaque fichier, vous pouvez voir :
+
+- Le nom, la taille et l'extension du fichier
+- Le nom et l'adresse e-mail de la personne (si fournis via les champs d'identification)
+- La date de téléversement
+
+### Actions sur les fichiers téléversés
+
+| Action | Description |
+|---|---|
+| **Télécharger** | Télécharger le fichier sur votre machine locale |
+| **Copier dans mes fichiers** | Copier le fichier dans votre gestionnaire de fichiers personnel — il devient un fichier ordinaire vous appartenant |
+| **Modifier** | Mettre à jour le nom ou la description du fichier |
+| **Supprimer** | Supprimer définitivement le fichier du partage inversé |
+
+<Callout type="warn">
+  Les fichiers téléversés via un partage inversé sont comptabilisés dans le quota de stockage du **créateur**. Consultez [Quotas de stockage](/docs/v1-beta/quotas) pour plus de détails.
+</Callout>
+
+---
+
+## Expiration et cycle de vie
+
+Les partages inversés peuvent expirer selon :
+
+- **Date d'expiration** — le lien de téléversement devient inactif après la date configurée
+- **Limites de fichiers** — une fois le nombre maximum de fichiers atteint, aucun autre fichier ne peut être téléversé
+
+Lorsqu'un partage inversé est sur le point d'expirer (ou a expiré), le propriétaire reçoit une notification si elle est activée dans ses [préférences de notification](/docs/v1-beta/notification-preferences).
+
+Les partages inversés expirés ne sont pas automatiquement supprimés — ils restent dans votre liste et les fichiers téléversés restent accessibles. Vous pouvez prolonger l'expiration ou désactiver/supprimer le partage inversé manuellement.
+
+---
+
+## Expérience de la personne qui téléverse
+
+Lorsqu'un visiteur ouvre un lien de partage inversé, il voit une page de téléversement avec :
+
+1. **Champs d'identification** (si configurés) — champs pour le nom et/ou l'adresse e-mail
+2. **Zone de glisser-déposer** — déposez des fichiers ou cliquez pour parcourir
+3. **Progression du téléversement** — barres de progression par fichier pendant le téléversement
+4. **Confirmation** — message de succès une fois les fichiers téléversés
+
+Si le partage inversé est **protégé par mot de passe**, le visiteur doit d'abord saisir le mot de passe. S'il a **expiré** ou atteint sa **limite de fichiers**, le visiteur voit un message approprié.
+
+Le visiteur n'a pas besoin d'un compte Ouitransfer. La page de téléversement est entièrement publique (après saisie du mot de passe, le cas échéant).

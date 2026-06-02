@@ -1,0 +1,467 @@
+---
+title: Autres fournisseurs
+icon: Settings
+---
+
+import { ZoomableImage } from "@/components/ui/zoomable-image";
+
+OUITRANSFER prend en charge les fournisseurs OIDC (OpenID Connect) et OAuth 2.0 personnalisés, ce qui vous permet de vous intégrer à n'importe quel fournisseur d'identité conforme à ces standards. Cette flexibilité permet aux organisations d'utiliser leur infrastructure d'identité existante, qu'il s'agisse d'un système d'authentification personnalisé, d'une solution SSO d'entreprise ou de tout autre fournisseur compatible OIDC.
+
+<ZoomableImage src="/assets/v3/oidc/custom/custom-provider-login.png" alt="Fournisseurs OIDC personnalisés" />
+
+## Pourquoi utiliser des fournisseurs OIDC personnalisés ?
+
+Les fournisseurs OIDC personnalisés offrent plusieurs avantages pour les organisations ayant des exigences d'authentification spécifiques :
+
+- **Flexibilité** - Intégration avec n'importe quel fournisseur d'identité compatible OIDC
+- **Intégration d'entreprise** - Connexion aux systèmes SSO d'entreprise existants
+- **Flux d'authentification personnalisés** - Prise en charge de besoins d'authentification spécialisés
+- **Absence de dépendance fournisseur** - Utilisez le fournisseur d'identité de votre choix
+- **Conformité** - Répondez à des exigences spécifiques de sécurité et de conformité
+
+---
+
+## Prérequis
+
+Avant de configurer un fournisseur OIDC personnalisé, assurez-vous de disposer des éléments suivants :
+
+- **Fournisseur OIDC/OAuth 2.0** - Un fournisseur d'identité opérationnel prenant en charge OIDC ou OAuth 2.0
+- **Privilèges administrateur dans OUITRANSFER** - Nécessaires pour configurer les paramètres d'authentification
+- **Documentation du fournisseur** - Accès aux détails de configuration OIDC de votre fournisseur
+
+> **Remarque :** Le processus de configuration nécessite des connaissances techniques des standards OIDC/OAuth 2.0. Vous devrez obtenir les identifiants et les points de terminaison nécessaires auprès de votre fournisseur d'identité.
+
+---
+
+## Comprendre la configuration OIDC
+
+### Méthodes de configuration
+
+OUITRANSFER prend en charge deux méthodes pour configurer des fournisseurs personnalisés :
+
+#### 1. Découverte automatique
+
+Pour les fournisseurs qui prennent en charge la découverte OIDC, OUITRANSFER peut découvrir automatiquement les points de terminaison requis à partir de l'URL de l'émetteur.
+
+**Exigences :**
+
+- Le fournisseur doit prendre en charge la découverte OIDC
+- L'URL de l'émetteur doit être accessible
+- Le fournisseur doit exposer un point de terminaison `.well-known/openid_configuration`
+
+#### 2. Configuration manuelle des points de terminaison (recommandée)
+
+Pour les fournisseurs qui ne prennent pas en charge la découverte OIDC ou qui nécessitent des points de terminaison personnalisés.
+
+**Points de terminaison requis :**
+
+- Point de terminaison d'autorisation
+- Point de terminaison de jeton
+- Point de terminaison d'informations utilisateur
+
+### Informations requises
+
+Vous aurez besoin des informations suivantes de la part de votre fournisseur d'identité :
+
+- **Provider URL / Issuer URL** - L'URL de base de votre fournisseur d'identité
+- **Client ID** - L'identifiant du client OAuth
+- **Client Secret** - Le secret du client OAuth
+- **Scopes** - Les scopes OAuth requis pour l'authentification
+- **Points de terminaison** (si vous utilisez la configuration manuelle) :
+  - Point de terminaison d'autorisation
+  - Point de terminaison de jeton
+  - Point de terminaison d'informations utilisateur
+
+---
+
+## Configuration d'OUITRANSFER
+
+### Accès aux paramètres d'authentification
+
+Pour configurer un fournisseur OIDC personnalisé dans OUITRANSFER, vous devez disposer d'un accès administrateur au panneau de paramètres.
+
+1. **Connexion en tant qu'administrateur** : Connectez-vous à OUITRANSFER avec un compte administrateur
+
+2. **Accéder aux paramètres** : Cliquez sur votre photo de profil dans l'en-tête et sélectionnez **Settings**
+
+3. **Accéder à l'authentification** : Recherchez et cliquez sur la section de configuration **Authentication Providers**
+
+<ZoomableImage src="/assets/v3/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
+
+### Ajout d'un fournisseur personnalisé
+
+1. **Ajouter un nouveau fournisseur** : Cliquez sur le bouton **"Add Provider"** dans la section Authentication Providers
+
+<ZoomableImage src="/assets/v3/oidc/custom/add-provider.png" alt="Ajouter un fournisseur" />
+
+2. **Configurer les informations de base** :
+   - **Provider Name** : Saisissez un identifiant unique (ex. : `custom-provider`)
+   - **Display Name** : Saisissez le nom que verront les utilisateurs (ex. : `Custom SSO`)
+   - **Type** : Sélectionnez `OIDC` pour OpenID Connect ou `OAuth2` pour OAuth 2.0
+   - **Icon** : Choisissez une icône appropriée pour le bouton de connexion
+
+<ZoomableImage src="/assets/v3/oidc/custom/provider-basic-info.png" alt="Informations de base du fournisseur" />
+
+### Sélection de la méthode de configuration
+
+Choisissez entre la découverte automatique et la configuration manuelle des points de terminaison :
+
+#### Configuration par découverte automatique
+
+1. **Sélectionner la découverte automatique** : Choisissez l'option "Auto Discovery"
+2. **Provider URL** : Saisissez l'URL de l'émetteur de votre fournisseur d'identité (ex. : `https://your-provider.com`)
+3. **OUITRANSFER tentera de découvrir automatiquement** :
+   - Le point de terminaison d'autorisation
+   - Le point de terminaison de jeton
+   - Le point de terminaison d'informations utilisateur
+   - Les scopes pris en charge
+
+> **Remarque :** Si la découverte automatique échoue, vous pouvez passer à la configuration manuelle des points de terminaison et les renseigner manuellement (recommandé).
+
+#### Configuration manuelle des points de terminaison
+
+1. **Sélectionner la configuration manuelle** : Choisissez l'option "Manual Endpoints"
+2. **Provider URL** : Saisissez l'URL de base de votre fournisseur d'identité
+3. **Configurer les points de terminaison** :
+   - **Authorization Endpoint** : Le point de terminaison d'autorisation OAuth
+   - **Token Endpoint** : Le point de terminaison de jeton OAuth
+   - **User Info Endpoint** : Le point de terminaison d'informations utilisateur
+
+<ZoomableImage src="/assets/v3/oidc/custom/manual-endpoints.png" alt="Points de terminaison manuels" />
+
+> **Remarque :** Le `User info endpoint` peut être une URL complète ou un chemin relatif. (ex. : `/userinfo` ou `https://other-any-url.com/userinfo`)
+> **Remarque :** Le `Token endpoint` et l'`Authorization endpoint` doivent être uniquement le chemin. (ex. : `/oauth/token` ou `/oauth/authorize`). OUITRANSFER ajoutera automatiquement l'URL de base aux points de terminaison en fonction de la `Provider URL` que vous avez fournie.
+
+### Identifiants OAuth
+
+Configurez les identifiants OAuth obtenus auprès de votre fournisseur d'identité :
+
+1. **Client ID** : Saisissez l'identifiant du client OAuth
+2. **Client Secret** : Saisissez le secret du client OAuth
+3. **Scopes** : Configurez les scopes OAuth requis
+
+**Scopes OIDC courants :**
+
+- `openid` - Requis pour OIDC
+- `profile` - Accès aux informations du profil utilisateur
+- `email` - Accès à l'adresse e-mail de l'utilisateur
+
+**Scopes OAuth 2.0 courants :**
+
+- `profile` - Accès aux informations du profil utilisateur
+- `email` - Accès à l'adresse e-mail de l'utilisateur
+
+### Configuration avancée
+
+Configurez des paramètres supplémentaires pour personnaliser le comportement de l'authentification :
+
+**Auto Registration** : Activez cette option pour créer automatiquement des comptes utilisateurs lors de la première authentification.
+
+**Admin Email Domains** : Indiquez les domaines qui doivent recevoir automatiquement des privilèges administrateur. Par exemple, saisir `yourcompany.com` accordera l'accès administrateur à toute personne disposant d'une adresse e-mail de ce domaine.
+
+**Sort Order** : Contrôlez la position du bouton de connexion du fournisseur personnalisé par rapport aux autres fournisseurs d'authentification.
+
+---
+
+## Configuration de l'URL de rappel
+
+OUITRANSFER affichera l'URL de rappel requise que vous devrez configurer dans votre fournisseur d'identité :
+
+### Format de l'URL de rappel
+
+```
+https://yourdomain.com/api/auth/providers/{provider-name}/callback
+```
+
+### URLs par environnement
+
+| Environnement     | URL de rappel                                                             |
+| ----------------- | ------------------------------------------------------------------------- |
+| Production        | `https://yourdomain.com/api/auth/providers/custom-provider/callback`      |
+| Développement     | `http://localhost:3000/api/auth/providers/custom-provider/callback`       |
+| Port personnalisé | `https://yourdomain.com:5487/api/auth/providers/custom-provider/callback` |
+
+> **Important :** Remplacez `yourdomain.com` par votre domaine réel et `custom-provider` par le nom réel de votre fournisseur.
+
+### Considérations finales
+
+> **Remarque :** N'oubliez pas d'activer votre fournisseur dans la section `Authentication Providers` après l'avoir ajouté.
+
+Après avoir configuré votre fournisseur personnalisé, il sera disponible dans la section `Authentication Providers`.
+
+<ZoomableImage src="/assets/v3/oidc/custom/enabled-provider.png" alt="Fournisseur activé" />
+
+---
+
+## Test de la configuration
+
+### Vérification de la configuration
+
+Après avoir configuré votre fournisseur personnalisé, testez l'intégration pour vous assurer que tout fonctionne correctement.
+
+1. **Vérifier la page de connexion** : Accédez à la page de connexion OUITRANSFER et vérifiez que le bouton de votre fournisseur personnalisé apparaît
+
+2. **Tester le flux d'authentification** : Cliquez sur le bouton de connexion du fournisseur personnalisé et terminez le processus d'authentification
+
+3. **Vérifier la création de l'utilisateur** : Confirmez qu'un nouveau compte utilisateur est créé (si l'inscription automatique est activée)
+
+### Résolution des problèmes
+
+Problèmes courants et solutions :
+
+**Erreur "Invalid redirect URI" :**
+
+- Vérifiez que l'URL de rappel est correctement configurée dans votre fournisseur d'identité
+- Assurez-vous que le nom du fournisseur dans l'URL de rappel correspond au nom de votre fournisseur configuré
+
+**Erreur "Invalid client credentials" :**
+
+- Vérifiez que le Client ID et le Client Secret sont corrects
+- Assurez-vous que les identifiants correspondent à la bonne application / au bon environnement
+
+**Erreur "Invalid scope" :**
+
+- Vérifiez que les scopes configurés sont pris en charge par votre fournisseur d'identité
+- Vérifiez que les scopes requis (comme `openid` pour OIDC) sont bien inclus
+
+**Erreur "User info endpoint error" :**
+
+- Vérifiez que l'URL du point de terminaison d'informations utilisateur est correcte
+- Assurez-vous que le point de terminaison retourne les informations utilisateur dans le format attendu
+
+---
+
+## Considérations de sécurité
+
+Lors de la configuration de fournisseurs OIDC personnalisés, tenez compte des bonnes pratiques de sécurité suivantes :
+
+### Sécurité des identifiants
+
+- **Stockage sécurisé** : Assurez-vous que les Client Secrets sont stockés de manière sécurisée
+- **Rotation régulière** : Renouvelez périodiquement les Client Secrets
+- **Séparation des environnements** : Utilisez des identifiants différents pour le développement et la production
+
+### Sécurité du fournisseur
+
+- **HTTPS uniquement** : Assurez-vous que tous les points de terminaison utilisent HTTPS en production
+- **Certificats valides** : Vérifiez que les certificats SSL sont valides et de confiance
+- **Contrôles d'accès** : Mettez en place des contrôles d'accès appropriés sur votre fournisseur d'identité
+
+### Configuration OUITRANSFER
+
+- **Accès administrateur** : Limitez l'accès aux paramètres d'authentification aux administrateurs autorisés
+- **Journalisation des audits** : Surveillez les événements d'authentification et les accès des utilisateurs
+- **Tests réguliers** : Testez périodiquement le flux d'authentification
+
+---
+
+## Liaison de comptes
+
+Par défaut, si un utilisateur est déjà inscrit dans OUITRANSFER avec son adresse e-mail, il sera automatiquement lié à son compte lorsqu'il s'authentifie via votre fournisseur personnalisé.
+
+> **Remarque :** Vous ne pouvez pas désactiver la liaison de comptes. Si vous souhaitez dissocier un utilisateur de son compte de fournisseur personnalisé, vous devez le supprimer d'OUITRANSFER.
+
+---
+
+## Configuration technique
+
+### Découverte OIDC
+
+Si votre fournisseur prend en charge la découverte OIDC, OUITRANSFER récupérera automatiquement la configuration depuis :
+
+```
+{issuer-url}/.well-known/openid_configuration
+```
+
+Ce point de terminaison doit retourner un document JSON contenant :
+
+```json
+{
+  "authorization_endpoint": "https://your-provider.com/oauth/authorize",
+  "grant_types_supported": ["authorization_code"],
+  "issuer": "https://your-provider.com",
+  "response_types_supported": ["code"],
+  "scopes_supported": ["openid", "profile", "email"],
+  "token_endpoint": "https://your-provider.com/oauth/token",
+  "userinfo_endpoint": "https://your-provider.com/oauth/userinfo"
+}
+```
+
+### Configuration manuelle
+
+Pour la configuration manuelle des points de terminaison, assurez-vous que vos points de terminaison respectent les standards OAuth 2.0/OIDC :
+
+- **Authorization Endpoint** : Gère l'authentification et l'autorisation de l'utilisateur
+- **Token Endpoint** : Échange les codes d'autorisation contre des jetons d'accès
+- **User Info Endpoint** : Retourne les informations utilisateur à partir du jeton d'accès
+
+---
+
+## Support et résolution des problèmes
+
+Si vous rencontrez des problèmes avec la configuration de votre fournisseur OIDC personnalisé :
+
+1. **Consulter la documentation du fournisseur** : Vérifiez votre configuration par rapport à la documentation de votre fournisseur
+2. **Examiner les journaux** : Consultez les journaux du serveur OUITRANSFER pour des messages d'erreur détaillés
+3. **Tester les points de terminaison** : Vérifiez que tous les points de terminaison sont accessibles et retournent les réponses attendues
+4. **Support communautaire** : Sollicitez l'aide de la communauté OUITRANSFER ou du support de votre fournisseur
+
+> **Remarque :** La configuration de fournisseurs personnalisés requiert une expertise technique en OIDC/OAuth 2.0. Assurez-vous d'avoir accès à la documentation technique et aux ressources de support de votre fournisseur.
+
+## Demande d'ajout d'un fournisseur officiellement pris en charge
+
+Si vous avez configuré avec succès un fournisseur OIDC personnalisé et souhaitez demander son ajout comme fournisseur officiellement pris en charge dans OUITRANSFER, vous pouvez ouvrir une issue détaillée avec toutes les informations de configuration nécessaires.
+
+### Pourquoi demander un support officiel ?
+
+Disposer d'un fournisseur officiellement pris en charge offre plusieurs avantages :
+
+- **Configuration simplifiée** - Les fournisseurs préconfigurés nécessitent une configuration minimale
+- **Meilleure documentation** - Guides de configuration officiels et aide à la résolution des problèmes
+- **Support communautaire** - D'autres utilisateurs peuvent bénéficier de votre configuration
+- **Maintenance** - L'équipe OUITRANSFER assure la maintenance et les mises à jour du fournisseur
+
+### Avant d'ouvrir une issue
+
+Assurez-vous de disposer des éléments suivants :
+
+- **Configuration fonctionnelle** - Votre fournisseur doit être entièrement opérationnel et testé
+- **Documentation complète** - Toutes les étapes de configuration et exigences documentées
+- **Informations sur le fournisseur** - Toutes les URLs, points de terminaison et détails de configuration nécessaires
+- **Tests terminés** - Flux d'authentification et gestion des utilisateurs testés de manière approfondie
+
+### Modèle d'issue
+
+Utilisez le modèle suivant lors de l'ouverture de votre issue. Copiez-le et remplissez toutes les informations requises :
+
+```markdown
+## Provider Support Request: [Provider Name]
+
+### Provider Information
+
+**Provider Name:** [e.g., CustomOIDC, EnterpriseSSO, CompanyAuth]
+**Provider Type:** [OIDC / OAuth 2.0]
+**Provider Website:** [URL to provider's website]
+**Provider Documentation:** [URL to OIDC/OAuth documentation]
+
+### Configuration Details
+
+#### Basic Information
+
+- **Provider URL/Issuer:** `https://your-provider.com`
+- **Client ID:** [Your OAuth client ID]
+- **Client Secret:** [Your OAuth client secret]
+- **Scopes:** `openid profile email` [List all required scopes]
+
+#### Endpoints
+
+- **Authorization Endpoint:** `/oauth/authorize` [or full URL if different]
+- **Token Endpoint:** `/oauth/token` [or full URL if different]
+- **User Info Endpoint:** `/oauth/userinfo` [or full URL if different]
+- **Discovery Endpoint:** `/.well-known/openid_configuration` [if supported]
+
+#### OIDC Discovery Information
+
+**Does your provider support OIDC Discovery?** [Yes/No]
+**Discovery URL:** `https://your-provider.com/.well-known/openid_configuration` [if yes]
+
+### Setup Instructions
+
+#### Prerequisites
+
+- [List any required software, accounts, or permissions]
+- [Any specific requirements for the provider]
+
+#### Step-by-Step Configuration
+
+1. [Detailed step 1]
+2. [Detailed step 2]
+3. [Detailed step 3]
+4. [Continue with all necessary steps]
+
+#### OUITRANSFER Configuration
+
+**Provider Name:** `custom-provider` [suggested internal name]
+**Display Name:** `Custom SSO` [name users will see]
+**Icon:** [suggested icon or describe what icon to use]
+
+### Testing Information
+
+#### Tested Environments
+
+- **Operating Systems:** [Windows, macOS, Linux, etc.]
+- **Browsers:** [Chrome, Firefox, Safari, Edge, etc.]
+- **OUITRANSFER Version:** [Version you tested with]
+
+#### Authentication Flow
+
+- [ ] User can successfully authenticate
+- [ ] User account is created automatically (if enabled)
+- [ ] Admin domain restrictions work correctly
+- [ ] User profile information is retrieved correctly
+- [ ] Account linking works with existing users
+
+#### Known Issues
+
+[List any known limitations, restrictions, or special considerations]
+
+### Screenshots
+
+**Provider Login Page:** [Screenshot of the provider's login page]
+**OUITRANSFER Configuration:** [Screenshot of your OUITRANSFER provider configuration]
+**Authentication Flow:** [Screenshots of the authentication process]
+
+### Additional Information
+
+#### Special Requirements
+
+[Any special configuration requirements, custom headers, or unique settings]
+
+#### Security Considerations
+
+[Any security-specific requirements or recommendations]
+
+#### Performance Notes
+
+[Any performance implications or recommendations]
+
+### Contact Information
+
+**Your Name:** [Optional - for follow-up questions]
+**Email:** [Optional - for follow-up questions]
+**GitHub Username:** [Your GitHub username]
+
+### Checklist
+
+Before submitting this issue, please ensure:
+
+- [ ] All required information is provided
+- [ ] Configuration has been tested and works
+- [ ] Screenshots are included (if applicable)
+- [ ] Setup instructions are complete and accurate
+- [ ] No sensitive information (like actual client secrets) is included
+```
+
+### Que se passe-t-il ensuite ?
+
+1. **Examen de l'issue** - L'équipe OUITRANSFER examinera votre demande
+2. **Questions complémentaires** - Des informations supplémentaires pourront vous être demandées
+3. **Implémentation** - Si approuvé, le fournisseur sera ajouté à OUITRANSFER
+4. **Documentation** - Une documentation officielle sera créée
+5. **Publication** - Le fournisseur sera disponible dans la prochaine version
+
+### Conseils pour une demande réussie
+
+- **Soyez complet** - Incluez toutes les informations nécessaires
+- **Testez tout** - Assurez-vous que votre configuration fonctionne parfaitement
+- **Fournissez des captures d'écran** - Les supports visuels facilitent l'implémentation
+- **Documentez clairement** - Rédigez des instructions claires, étape par étape
+- **Vérifiez les fournisseurs existants** - Assurez-vous que votre fournisseur n'est pas déjà pris en charge
+
+### Besoin d'aide ?
+
+Si vous avez besoin d'assistance pour votre demande :
+
+- **Consultez les issues existantes** - Examinez d'autres demandes de fournisseurs à titre d'exemple
+- **Rejoignez la communauté** - Participez aux discussions et posez vos questions
+- **Lisez la documentation** - Assurez-vous de bien comprendre les exigences OIDC/OAuth

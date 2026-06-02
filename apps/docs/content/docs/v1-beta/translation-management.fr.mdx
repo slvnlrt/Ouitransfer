@@ -1,0 +1,460 @@
+---
+title: Gestion des traductions
+icon: Languages
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+
+OUITRANSFER inclut un système complet de gestion des clés de traduction qui automatise la synchronisation et la validation des fichiers d'internationalisation de l'application.
+
+## Vue d'ensemble
+
+Le système de gestion des traductions est composé de scripts Python qui aident à maintenir la cohérence entre toutes les langues supportées :
+
+- **Synchronisation** : Ajout automatique des clés de traduction manquantes
+- **Validation** : Vérification du statut et de la complétude des traductions
+- **Gestion des clés** : Gestion de la structure et de la cohérence des clés de traduction
+- **Rapports** : Génération de rapports de traduction détaillés
+
+## Démarrage rapide
+
+<Tabs items={['npm/pnpm', 'Python Direct']}>
+  <Tab value="npm/pnpm">
+    ```bash
+    # Complete workflow (recommended)
+    pnpm run translations
+
+    # Check translation status
+    pnpm run translations:check
+
+    # Synchronize missing keys
+    pnpm run translations:sync
+
+    # Test workflow without changes (dry run)
+    pnpm run translations:dry-run
+
+    # Show help
+    pnpm run translations:help
+    ```
+
+  </Tab>
+  <Tab value="Python Direct">
+    ```bash
+    cd apps/web/scripts
+
+    # Complete workflow (recommended)
+    python3 run_translations.py all
+
+    # Individual commands
+    python3 run_translations.py check
+    python3 run_translations.py sync
+    python3 run_translations.py all --dry-run
+    python3 run_translations.py help
+    ```
+
+  </Tab>
+</Tabs>
+
+## Scripts disponibles
+
+### Commandes principales (npm/pnpm)
+
+| Commande                         | Description                                                  |
+| -------------------------------- | ------------------------------------------------------------ |
+| `pnpm run translations`          | Workflow complet : vérification → synchronisation → vérification |
+| `pnpm run translations:check`    | Vérifier le statut et la complétude des traductions          |
+| `pnpm run translations:sync`     | Synchroniser les clés manquantes depuis en-US.json           |
+| `pnpm run translations:prune`    | Supprimer les clés obsolètes absentes de en-US.json          |
+| `pnpm run translations:dry-run`  | Tester le workflow complet sans apporter de modifications    |
+| `pnpm run translations:help`     | Afficher l'aide détaillée et des exemples                    |
+
+## Workflow
+
+### 1. Ajout de nouvelles clés de traduction
+
+Lorsque vous ajoutez du nouveau texte à l'application :
+
+1. **Ajoutez en anglais** : Mettez à jour `apps/web/messages/en-US.json` avec vos nouvelles clés
+2. **Synchronisez les traductions** : Exécutez `pnpm run translations:sync` pour ajouter les clés manquantes dans toutes les langues
+3. **Traduction manuelle** : Traduisez les chaînes marquées `[TO_TRANSLATE]` manuellement
+4. **Testez dans l'interface** : Vérifiez que les traductions fonctionnent correctement dans l'interface de l'application
+
+<Callout type="important">
+  **Traduction manuelle requise** : Toutes les chaînes marquées `[TO_TRANSLATE]` doivent être traduites manuellement par des locuteurs natifs ou des traducteurs professionnels pour garantir l'exactitude.
+</Callout>
+
+### 2. Vérification du statut des traductions
+
+<Callout>Exécutez toujours `pnpm run translations:check` avant les releases pour vérifier la complétude.</Callout>
+
+<Callout type="warn">
+  **Une "complétude à 100%" ne signifie pas que tout est traduit.** Le script de vérification ne détecte que les chaînes marquées `[TO_TRANSLATE]`. Si une chaîne a été ajoutée à tous les fichiers de locale avec sa valeur anglaise (sans le marqueur), elle sera comptée comme complète même si elle n'a jamais été traduite. Consultez toujours la colonne **"SUSPECTED EN"** — les chaînes identiques à l'anglais (>15 caractères) qui pourraient nécessiter une traduction humaine. Remarque : certaines sont des faux positifs (cognats orthographiés de manière identique dans plusieurs langues, ex. "Position").
+</Callout>
+
+```bash
+# Generate detailed translation report
+pnpm run translations:check
+```
+
+Le rapport affiche :
+
+- Le **pourcentage de complétude** pour chaque langue
+- Les **chaînes non traduites** marquées `[TO_TRANSLATE]`
+- Les **chaînes identiques** pouvant nécessiter une localisation
+- Les **clés manquantes** par rapport à la référence anglaise
+
+### 3. Processus de traduction manuelle
+
+Pour toutes les chaînes de traduction :
+
+1. **Repérez les chaînes non traduites** : Recherchez `[TO_TRANSLATE] Original text` dans les fichiers de langue
+2. **Remplacez par la traduction** : Supprimez le préfixe et ajoutez la traduction appropriée
+3. **Validez** : Exécutez `pnpm run translations:check` pour vérifier la complétude
+
+## Structure des fichiers
+
+```
+apps/web/
+├── messages/           # Translation files
+│   ├── en-US.json     # Reference language (English)
+│   ├── pt-BR.json     # Portuguese (Brazil)
+│   ├── es-ES.json     # Spanish
+│   └── ...            # Other languages
+│
+└── scripts/           # Management scripts
+    ├── run_translations.py     # Main wrapper (check, sync, all, help)
+    ├── sync_translations.py    # Add missing keys to all languages
+    ├── check_translations.py   # Report translation completeness
+    └── prune_translations.py   # Remove stale keys from all languages
+```
+
+## Prérequis
+
+- **Python 3.6 ou supérieur** — requis pour exécuter les scripts de traduction
+- **Aucune dépendance externe** — les scripts n'utilisent que les bibliothèques standard Python
+- **Support UTF-8** — assurez-vous que votre terminal supporte UTF-8 pour un affichage correct des traductions
+
+## Détails des scripts
+
+### Script principal (`run_translations.py`)
+
+Le script principal fournit une interface unifiée pour toutes les opérations de traduction :
+
+#### Commandes disponibles
+
+- `check` — Vérifier le statut des traductions et générer des rapports
+- `sync` — Synchroniser les clés manquantes depuis la langue de référence
+- `all` — Exécuter le workflow complet (sync + check)
+- `help` — Afficher l'aide détaillée avec des exemples
+
+#### Fonctionnement
+
+1. Valide les paramètres et le répertoire de travail
+2. Appelle les scripts individuels appropriés avec les paramètres transmis
+3. Fournit une gestion unifiée des erreurs et des rapports de progression
+4. Supporte tous les paramètres des scripts individuels
+
+### Script de synchronisation (`sync_translations.py`)
+
+Maintient la cohérence entre tous les fichiers de langue :
+
+#### Processus
+
+1. **Chargement de la référence** : Lit `en-US.json` comme source de vérité
+2. **Parcours des langues** : Trouve tous les fichiers `*.json` dans le répertoire de messages
+3. **Comparaison des clés** : Identifie les clés manquantes dans chaque fichier de langue
+4. **Ajout des clés manquantes** : Copie la structure depuis la référence avec le préfixe `[TO_TRANSLATE]`
+5. **Sauvegarde des mises à jour** : Conserve le formatage JSON et l'encodage UTF-8
+
+#### Fonctionnalités clés
+
+- **Détection récursive des clés** : Gère les objets JSON imbriqués
+- **Mises à jour sécurisées** : Préserve les traductions existantes
+- **Formatage cohérent** : Maintient la structure JSON appropriée
+- **Rapport de progression** : Affiche les résultats de synchronisation détaillés
+
+### Script de vérification du statut (`check_translations.py`)
+
+Fournit une analyse complète des traductions :
+
+#### Rapports générés
+
+- **Pourcentage de complétude** : Dans quelle mesure chaque langue est traduite
+- **Compteur non traduit** : Chaînes encore marquées `[TO_TRANSLATE]`
+- **Chaînes identiques** : Texte identique à l'anglais (peut nécessiter une localisation)
+- **Clés manquantes** : Clés présentes dans la référence mais absentes de la langue cible
+
+#### Fonctionnalités d'analyse
+
+- **Indicateurs visuels** : Des icônes indiquent le statut de complétude (✅ complet, ⚠️ chaînes probablement non traduites)
+- **Détails par langue** : Analyse par langue avec les clés spécifiques
+- **Informations qualitatives** : Identifie les problèmes potentiels de traduction
+- **Export facile** : La sortie peut être redirigée vers des fichiers pour les rapports
+
+### Script de nettoyage (`prune_translations.py`)
+
+Supprime les clés de traduction obsolètes — c'est-à-dire les clés qui existent encore dans un fichier de langue mais ont été supprimées de la référence anglaise (`en-US.json`). Exécutez-le après avoir supprimé des clés de l'application pour garder les fichiers de langue propres.
+
+```bash
+# Preview what would be removed (recommended first)
+python3 scripts/prune_translations.py --dry-run
+
+# Apply removal
+pnpm run translations:prune
+```
+
+Supporte les flags `--dry-run`, `--messages-dir` et `--reference`, comme les autres scripts.
+
+## Utilisation avancée
+
+### Paramètres personnalisés
+
+Vous pouvez passer des paramètres supplémentaires aux scripts Python sous-jacents pour plus de contrôle :
+
+#### Paramètres de synchronisation (`sync`)
+
+```bash
+# Sync without marking new keys as [TO_TRANSLATE]
+python3 scripts/run_translations.py sync --no-mark-untranslated
+
+# Use a different reference file (default: en-US.json)
+python3 scripts/run_translations.py sync --reference pt-BR.json
+
+# Specify custom messages directory
+python3 scripts/run_translations.py sync --messages-dir /path/to/messages
+
+# Dry run mode - see what would be changed
+python3 scripts/run_translations.py sync --dry-run
+```
+
+#### Paramètres de vérification (`check`)
+
+```bash
+# Use different reference file for comparison
+python3 scripts/run_translations.py check --reference pt-BR.json
+
+# Check translations in custom directory
+python3 scripts/run_translations.py check --messages-dir /path/to/messages
+```
+
+### Référence des paramètres
+
+| Paramètre                | Commandes       | Description                                             |
+| ------------------------ | --------------- | ------------------------------------------------------- |
+| `--dry-run`              | `sync`, `all`   | Prévisualiser les modifications sans toucher les fichiers |
+| `--messages-dir`         | Toutes          | Répertoire personnalisé contenant les fichiers de traduction |
+| `--reference`            | `sync`, `check` | Fichier de référence à utiliser (défaut : en-US.json)   |
+| `--no-mark-untranslated` | `sync`          | Ne pas ajouter le préfixe [TO_TRANSLATE] aux nouvelles clés |
+
+### Mode simulation (dry run)
+
+Testez toujours les modifications en premier :
+
+```bash
+# Test complete workflow (recommended)
+pnpm run translations:dry-run
+
+# Alternative: Direct Python commands
+python3 scripts/run_translations.py all --dry-run
+python3 scripts/run_translations.py sync --dry-run
+```
+
+### Cas d'utilisation courants
+
+#### Scénario 1 : Ajout de clés sans marquage pour traduction
+
+```bash
+# Sync new keys without auto-marking for translation
+python3 scripts/run_translations.py sync --no-mark-untranslated
+
+# Manually mark specific keys that need translation
+# Edit files to add [TO_TRANSLATE] prefix where needed
+```
+
+#### Scénario 2 : Structure de projet personnalisée
+
+```bash
+# Work with translations in different directory
+python3 scripts/run_translations.py all --messages-dir ../custom-translations
+```
+
+#### Scénario 3 : Assurance qualité
+
+```bash
+# Use different language as reference for comparison
+python3 scripts/run_translations.py check --reference pt-BR.json
+
+# This helps identify inconsistencies when you have high-quality translations
+```
+
+## Format des clés de traduction
+
+Les fichiers de traduction utilisent une structure JSON imbriquée :
+
+```json
+{
+  "common": {
+    "actions": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
+    "messages": {
+      "success": "Operation completed successfully",
+      "error": "An error occurred"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome to OUITRANSFER"
+  }
+}
+```
+
+## Traduction manuelle
+
+<Callout type="warning">
+  **Traduction professionnelle recommandée** : Pour les applications en production, envisagez de faire appel à des services de traduction professionnels ou à des locuteurs natifs pour garantir des traductions de haute qualité et culturellement appropriées.
+</Callout>
+
+Le système marque les chaînes nécessitant une traduction avec le préfixe `[TO_TRANSLATE]` :
+
+```json
+{
+  "key": "[TO_TRANSLATE] Original English text"
+}
+```
+
+Après traduction manuelle :
+
+```json
+{
+  "key": "Texto original em inglês"
+}
+```
+
+### Processus de révision des traductions
+
+1. **Identification** : Utilisez `pnpm run translations:check` pour trouver les chaînes non traduites
+2. **Traduction** : Remplacez les chaînes `[TO_TRANSLATE]` par des traductions appropriées
+3. **Révision** : Vérifiez chaque traduction pour :
+   - **Exactitude contextuelle** : Est-ce cohérent dans l'interface ?
+   - **Termes techniques** : Sont-ils correctement traduits ?
+   - **Cohérence du ton** : Correspond-il au registre de l'application ?
+   - **Pertinence culturelle** : Approprié pour le public cible ?
+4. **Test** : Vérifiez les traductions dans l'interface réelle de l'application
+5. **Documentation** : Notez les décisions de traduction significatives pour référence future
+
+### Points de révision courants
+
+- **Libellés de boutons** : Vérifiez qu'ils s'intègrent dans les contraintes de l'interface
+- **Messages d'erreur** : Doivent être clairs et utiles pour les utilisateurs
+- **Éléments de navigation** : Doivent être intuitifs dans la langue cible
+- **Termes techniques** : Certains peuvent être mieux laissés en anglais
+- **Espaces réservés** : Conserver le formatage et les noms de variables
+
+## Directives de développement
+
+<Callout type="important">
+  **Langue principale** : Utilisez toujours `en-US.json` comme langue parent pour le développement. Toutes les nouvelles clés de traduction doivent d'abord être ajoutées en anglais.
+</Callout>
+
+### Workflow de traduction pour le développement
+
+1. **L'anglais en premier** : Ajoutez tout nouveau texte dans `apps/web/messages/en-US.json`
+2. **Synchronisation des clés** : Utilisez les scripts pour générer la structure des clés pour les autres langues
+3. **Traduction manuelle** : Toutes les chaînes doivent être traduites manuellement pour garantir l'exactitude
+4. **Contrôle qualité** : Exécutez la validation des traductions avant de fusionner les pull requests
+
+### Pourquoi l'anglais comme langue parent ?
+
+- **Cohérence** : Garantit que toutes les langues ont la même structure de clés
+- **Référence** : L'anglais sert de source de vérité pour le sens
+- **Gestion des clés** : Les scripts utilisent l'anglais comme source pour la synchronisation des clés
+- **Documentation** : La majorité de la documentation technique est en anglais
+
+## Bonnes pratiques
+
+### Pour les développeurs
+
+1. **Utilisez toujours l'anglais comme référence** : Ajoutez les nouvelles clés dans `en-US.json` en premier — ne les ajoutez jamais directement dans d'autres langues
+2. **Utilisez des noms de clés sémantiques** : `dashboard.welcome` plutôt que `text1`
+3. **Testez la synchronisation des clés** : Exécutez `pnpm run translations:dry-run` avant de committer
+4. **Coordonnez avec les traducteurs** : Assurez-vous que l'équipe de traduction est informée des nouvelles clés
+5. **Maintenez la cohérence** : Utilisez les patterns existants pour les éléments d'interface similaires
+
+### Pour les traducteurs
+
+1. **Concentrez-vous sur les chaînes `[TO_TRANSLATE]`** : Celles-ci nécessitent une attention immédiate
+2. **Vérifiez les chaînes identiques** : Peuvent nécessiter une localisation même si identiques à l'anglais
+3. **Utilisez un formatage approprié** : Conservez les balises HTML et les espaces réservés
+4. **Testez en contexte** : Vérifiez les traductions dans l'interface réelle de l'application
+5. **Maintenez un glossaire** : Assurez une terminologie cohérente dans toutes les traductions
+
+## Dépannage
+
+### Problèmes courants
+
+**Python introuvable** : Vérifiez que Python 3.6+ est installé et dans le PATH
+
+**Erreurs de permissions** : Vérifiez que vous avez les droits d'écriture sur les fichiers de messages
+
+**Problèmes d'encodage** : Vérifiez que votre terminal supporte UTF-8
+
+### Obtenir de l'aide
+
+- Exécutez `pnpm run translations:help` pour des exemples de commandes détaillés
+- Consultez les rapports de traduction générés pour les problèmes spécifiques
+- Consultez la documentation officielle pour la référence complète
+
+## Exemples de sorties
+
+### Sortie de synchronisation
+
+```
+Loading reference file: en-US.json
+Reference file contains 2285 keys
+Processing 22 translation files...
+
+Processing: pt-BR.json
+  ✅ Complete (2285/2285 keys)
+Processing: fr-FR.json
+  🔍 Found 12 missing keys
+  ✅ Updated successfully (2285/2285 keys)
+
+============================================================
+SUMMARY
+============================================================
+✅ ar-SA.json      - 2285/2285 keys
+🔄 fr-FR.json      - 2285/2285 keys (+12 added)
+```
+
+### Rapport de statut des traductions
+
+```
+📊 TRANSLATION REPORT
+Reference: en-US.json (1958 strings)
+================================================================================
+LANGUAGE        COMPLETENESS STRINGS         [TO_TRANSLATE]   SUSPECTED EN
+--------------------------------------------------------------------------------
+✅ pt-BR         100.0%       1958/1958       0 (0.0%)         0
+✅ fr-FR         100.0%       1958/1958       0 (0.0%)         0
+⚠️ de-DE         100.0%       1958/1958       0 (0.0%)         1
+================================================================================
+```
+
+<Callout type="info">
+  **Différence de comptage des clés** : `check` rapporte 1958 *chaînes feuilles* (valeurs réellement traduisibles). `sync` rapporte 2285 *chemins de clés total* (y compris les nœuds d'objet intermédiaires dans la hiérarchie JSON). Les deux sont corrects — ils mesurent des choses différentes. Utilisez `check` comme comptage de référence des chaînes nécessitant une traduction humaine.
+</Callout>
+
+## Contribution
+
+Lors de la contribution aux traductions :
+
+1. **Suivez le workflow** : Utilisez les scripts fournis pour la cohérence
+2. **Testez en profondeur** : Effectuez des vérifications complètes avant de soumettre
+3. **Documentez les changements** : Notez les décisions de traduction significatives
+4. **Maintenez la qualité** : Assurez-vous que les traductions manuelles sont exactes et appropriées
+
+Le système de gestion des traductions garantit la cohérence et facilite le maintien d'une localisation de haute qualité dans toutes les langues supportées.

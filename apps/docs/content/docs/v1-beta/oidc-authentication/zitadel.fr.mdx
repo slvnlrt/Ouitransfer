@@ -1,0 +1,423 @@
+---
+title: Zitadel
+icon: Shield
+---
+
+import { ZoomableImage } from "@/components/ui/zoomable-image";
+
+Zitadel est l'un des fournisseurs OIDC officiellement pris en charge par OUITRANSFER, offrant une authentification de niveau entreprise via la plateforme d'identité Zitadel. Cette intégration permet aux utilisateurs de se connecter à OUITRANSFER grâce au système d'authentification complet de Zitadel, ce qui en fait une solution idéale pour les organisations d'entreprise, les applications nécessitant des fonctionnalités de sécurité avancées, et les équipes ayant besoin d'une gestion centralisée des identités avec des options de déploiement cloud ou auto-hébergé.
+
+<ZoomableImage src="/assets/v3/oidc/zitadel/sign-in-with-zitadel.png" alt="Connexion avec Zitadel" />
+
+## Pourquoi utiliser l'authentification Zitadel ?
+
+L'authentification Zitadel offre plusieurs avantages pour les organisations d'entreprise et axées sur la sécurité :
+
+- **Sécurité de niveau entreprise** - Fonctionnalités de sécurité avancées telles que MFA, authentification adaptative et détection des menaces
+- **Déploiement flexible** - Choisissez entre un déploiement cloud hébergé ou auto-hébergé
+- **Gestion centralisée des identités** - Plateforme unique pour gérer les utilisateurs de plusieurs applications
+- **Conformité intégrée** - Conforme au RGPD, SOC 2 et autres normes d'entreprise
+- **Personnalisation avancée** - Actions, flux et capacités de personnalisation de l'interface
+
+---
+
+## Prérequis
+
+Avant de configurer l'authentification Zitadel, assurez-vous de disposer des éléments suivants :
+
+- **Instance Zitadel** - Installation Zitadel cloud hébergée ou auto-hébergée
+- **Privilèges administrateur dans OUITRANSFER** - Requis pour configurer les paramètres OIDC
+- **Configuration de domaine** - Pour les déploiements en production avec des domaines personnalisés
+
+> **Remarque :** Zitadel est préconfiguré en tant que fournisseur officiel dans OUITRANSFER, ce qui signifie que la configuration technique est gérée automatiquement. Vous n'avez qu'à fournir vos identifiants OAuth.
+
+---
+
+## Configuration de l'application Zitadel
+
+### Créer une application Zitadel
+
+Pour commencer avec l'authentification Zitadel, vous devez créer une application dans votre console Zitadel.
+
+1. **Accéder à la console Zitadel** : Rendez-vous sur l'URL de votre instance Zitadel (ex. : `your-instance.zitadel.cloud` pour le cloud ou votre URL auto-hébergée)
+
+<ZoomableImage src="/assets/v3/oidc/zitadel/zitadel-console.png" alt="Console Zitadel" />
+
+2. **Créer une nouvelle application** : Cliquez sur le bouton **"Create Application"** dans l'écran d'accueil.
+3. **Renseigner les détails de l'application** :
+
+- Saisissez un nom explicite tel que "OUITRANSFER File Sharing" pour votre projet, ou sélectionnez un projet existant.
+- Sélectionnez le framework : choisissez **"`Other (OIDC, SAML, API)`"**
+
+<ZoomableImage src="/assets/v3/oidc/zitadel/create-application.png" alt="Créer une application Zitadel" />
+
+4. **Créer l'application** : Cliquez sur **"Create"** pour générer votre application Zitadel
+
+Après la création de votre application, vous serez redirigé vers la page de configuration étape par étape. Sur cette page, vous pouvez configurer votre application.
+
+### Configurer les paramètres de l'application
+
+5. **Sélectionner le type d'application** : à la première étape :
+
+- Choisissez **"Web"** pour les instances OUITRANSFER basées sur le web
+- Ajoutez un nom descriptif pour votre application (ex. : "OUITRANSFER File Sharing")
+
+<ZoomableImage
+  src="/assets/v3/oidc/zitadel/step-1.png"
+  alt="Sélection du type d'application Zitadel"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+Cliquez sur **"Continue"** pour passer à l'étape suivante.
+
+6. **Sélectionner la méthode d'authentification** : à la deuxième étape :
+
+- Choisissez **"CODE"** comme méthode d'authentification et cliquez sur **"Continue"** pour passer à l'étape suivante.
+
+<ZoomableImage
+  src="/assets/v3/oidc/zitadel/step-2.png"
+  alt="Sélection de la méthode d'authentification Zitadel"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+7. **Configurer les URL de l'application** :
+
+Vous devez configurer plusieurs URL dans les paramètres de votre application Zitadel. Voici ce qu'il faut ajouter pour chaque environnement :
+
+### URI de redirection
+
+| Environnement     | URL                                                               |
+| ----------------- | ----------------------------------------------------------------- |
+| Production        | `https://yourdomain.com/api/auth/providers/zitadel/callback`      |
+| Développement     | `http://localhost:3000/api/auth/providers/zitadel/callback`       |
+| Port personnalisé | `https://yourdomain.com:5487/api/auth/providers/zitadel/callback` |
+
+### URI de redirection post-déconnexion
+
+| Environnement     | URL                           |
+| ----------------- | ----------------------------- |
+| Production        | `https://yourdomain.com`      |
+| Développement     | `http://localhost:3000`       |
+| Port personnalisé | `https://yourdomain.com:5487` |
+
+> **Remarque :** Remplacez `yourdomain.com` par votre nom de domaine réel dans toutes les URL de production et à port personnalisé.
+> **Remarque :** Si vous utilisez http:// (et non https://) dans vos URI de redirection, vous devez activer le commutateur `Development mode`.
+> **Remarque :** Vous pouvez ajouter plusieurs URI de redirection pour différents environnements (développement, staging, production).
+
+<ZoomableImage
+  src="/assets/v3/oidc/zitadel/config-urls.png"
+  alt="Configuration des URL de l'application Zitadel"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+Cliquez sur **"Continue"** pour passer à la dernière étape. Celle-ci n'est qu'un récapitulatif de la configuration effectuée.
+
+8. **Sauvegarder les modifications** : Cliquez sur **"Save"** pour appliquer votre configuration
+
+<ZoomableImage
+  src="/assets/v3/oidc/zitadel/config-overview.png"
+  alt="Récapitulatif de l'application Zitadel"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+Vous pouvez cliquer sur **"Create"** pour créer votre application.
+
+### Obtenir les identifiants OAuth
+
+Après la création de votre application, une fenêtre modale apparaît avec les identifiants qu'OUITRANSFER utilisera pour s'authentifier auprès de Zitadel.
+
+<ZoomableImage
+  src="/assets/v3/oidc/zitadel/credentials-modal.png"
+  alt="Identifiants OAuth Zitadel"
+  legend="Le Client ID et le Client Secret affichés dans l'image sont des exemples uniquement (identifiants fictifs). Vous devez utiliser vos propres identifiants provenant de Zitadel."
+/>
+
+Vous pouvez copier les identifiants et les sauvegarder en lieu sûr pour une utilisation ultérieure.
+
+### Configuration finale de Zitadel
+
+**Confirmer la configuration de l'application Zitadel** :
+
+Après avoir fermé la fenêtre modale, vous serez redirigé vers la page de l'application Zitadel.
+
+<ZoomableImage
+  src="/assets/v3/oidc/zitadel/application-page.png"
+  alt="Page de l'application Zitadel"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+Confirmez les champs de configuration de l'application :
+
+- **Application Type** : Le type d'application a été défini sur **"Web"**
+- **Response Type** : Le type de réponse a été défini sur **"Code"**
+- **Authentication Method** : La méthode d'authentification a été définie sur **"Basic"**
+- **Grant Types** : Les types d'autorisation ont été définis sur **"Authorization Code"**
+- **Refresh Token** : Le jeton de rafraîchissement a été défini sur **"Disabled"**
+
+Vous pouvez modifier la configuration de l'application si vous souhaitez changer quelque chose, puis cliquer sur **"Save"** pour enregistrer.
+
+> **Remarque :** Si vous modifiez votre Client ID, vous devez mettre à jour les identifiants sauvegardés à l'étape précédente.
+
+Sélectionnez la section **"Token Settings"** dans le menu latéral pour configurer les paramètres de jeton de votre application.
+
+Le type de jeton d'authentification par défaut est **"Bearer"** ; vous pouvez le remplacer par **"JWT"** et cliquer sur **"Save"** pour enregistrer les paramètres de jeton.
+
+<ZoomableImage
+  src="/assets/v3/oidc/zitadel/token-settings.png"
+  alt="Paramètres du jeton d'authentification Zitadel"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+Cliquez sur la section **Redirect Settings** dans le menu latéral pour configurer les paramètres de redirection de votre application. Confirmez simplement les URL que vous avez configurées à l'étape précédente. Pour ajouter d'autres URL de redirection, cliquez sur le bouton **"+"**. Pour modifier les URL existantes, cliquez sur l'icône en forme de crayon.
+
+<ZoomableImage
+  src="/assets/v3/oidc/zitadel/redirect-settings-page.png"
+  alt="Paramètres de redirection Zitadel"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+La dernière étape dans Zitadel consiste à récupérer l'URL de votre instance. Vous la trouverez en cliquant sur **"URLs"** dans le menu latéral.
+
+<ZoomableImage
+  src="/assets/v3/oidc/zitadel/urls-page.png"
+  alt="URL de l'instance Zitadel"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+Vous n'avez pas besoin de copier l'URL complète, seulement le nom de domaine avec le protocole et le port si vous utilisez un port personnalisé.
+Par exemple : `https://OUITRANSFER-zaxijp.us1.zitadel.cloud` (cas de l'image ci-dessous) ou `https://zitadel.yourdomain.com` ou `https://zitadel.yourdomain.com:5487` si vous utilisez un port personnalisé.
+
+> **Remarque :** La configuration dans Zitadel est terminée. Passons maintenant à OUITRANSFER pour configurer le fournisseur. Rappel : vous aurez besoin du `Client ID`, du `Client Secret` et de l'`Instance URL` pour configurer le fournisseur dans OUITRANSFER.
+
+---
+
+## Configuration d'OUITRANSFER
+
+### Accéder aux paramètres OIDC
+
+Pour configurer l'authentification Zitadel dans OUITRANSFER, vous devez disposer d'un accès administrateur au panneau de paramètres.
+
+1. **Se connecter en tant qu'administrateur** : Connectez-vous à OUITRANSFER avec un compte administrateur
+
+2. **Accéder aux paramètres** : Cliquez sur votre photo de profil dans l'en-tête et sélectionnez **Settings**
+
+3. **Naviguer vers l'authentification** : Trouvez et cliquez sur la section de configuration **Authentication Providers**
+
+<ZoomableImage src="/assets/v3/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
+
+### Activer le fournisseur Zitadel
+
+Zitadel est préconfiguré en tant que fournisseur officiel, ce qui simplifie le processus de configuration.
+
+1. **Localiser le fournisseur Zitadel** : Trouvez Zitadel dans la liste des fournisseurs disponibles
+
+2. **Activer le fournisseur** : Basculez le statut sur **Enabled**
+
+<ZoomableImage src="/assets/v3/oidc/zitadel/enabled-zitadel.png" alt="Fournisseur Zitadel OUITRANSFER activé" />
+
+Après avoir activé le fournisseur, cliquez sur l'icône en forme de crayon pour le configurer.
+
+3. **Configurer les identifiants** :
+   - **Provider URL** : Collez l'URL de votre instance Zitadel (ex. : `https://your-instance.zitadel.cloud`)
+   - **Client ID** : Collez le Client ID de votre application Zitadel
+   - **Client Secret** : Collez le Client Secret de votre application Zitadel
+   - **Scopes** : Ajoutez les scopes que vous souhaitez utiliser. Les scopes par défaut sont `openid`, `profile` et `email`. Il n'est pas nécessaire de les modifier si vous n'êtes pas sûr.
+
+<ZoomableImage
+  src="/assets/v3/oidc/zitadel/edit-zitadel.png"
+  alt="Modifier le fournisseur Zitadel"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+### Options de configuration avancées
+
+Configurez des paramètres supplémentaires pour personnaliser le comportement de l'authentification :
+
+**Auto Registration** : Activez cette option pour créer automatiquement des comptes utilisateurs lors de la première authentification.
+
+**Sort Order** : Contrôlez l'ordre d'affichage du bouton de connexion Zitadel par rapport aux autres fournisseurs d'authentification.
+
+**Icon** : Vous pouvez choisir l'icône à utiliser pour le bouton de connexion Zitadel (la valeur par défaut est `FaShieldAlt`).
+
+<ZoomableImage src="/assets/v3/oidc/zitadel/zitadel-icon.png" alt="Icône Zitadel" />
+
+> **Conseil entreprise :** L'authentification Zitadel convient parfaitement aux organisations d'entreprise nécessitant des fonctionnalités de sécurité avancées et une gestion centralisée des identités avec flexibilité de déploiement.
+
+---
+
+## Liaison de comptes
+
+Par défaut, si un utilisateur est déjà inscrit dans OUITRANSFER avec son adresse e-mail Zitadel, il sera automatiquement lié à son compte OUITRANSFER.
+
+> **Remarque :** Il n'est pas possible de désactiver la liaison de comptes. Si vous souhaitez dissocier un utilisateur de son compte Zitadel, vous devez supprimer l'utilisateur d'OUITRANSFER.
+
+---
+
+## Configuration technique
+
+La configuration technique de Zitadel est gérée automatiquement, mais comprendre le paramétrage peut aider lors du dépannage :
+
+```yaml
+Provider Type: OAuth 2.0 with OIDC Discovery
+Issuer URL: https://your-instance.zitadel.cloud
+Authorization Endpoint: /oauth/v2/authorize
+Token Endpoint: /oauth/v2/token
+UserInfo Endpoint: /oidc/v1/userinfo
+Scopes: openid profile email
+```
+
+### Correspondances de champs
+
+OUITRANSFER mappe automatiquement les informations utilisateur Zitadel vers les comptes utilisateurs locaux :
+
+- **User ID** : Correspond au champ `sub` de Zitadel
+- **Email** : Correspond au champ `email` de Zitadel
+- **Full Name** : Correspond au champ `name` de Zitadel
+- **First Name** : Correspond au champ `given_name` de Zitadel
+- **Last Name** : Correspond au champ `family_name` de Zitadel
+- **Avatar** : Correspond au champ `picture` de Zitadel
+- **Username** : Correspond au champ `preferred_username` de Zitadel
+
+### Fonctionnalités spécifiques à Zitadel
+
+- **Claims personnalisés** : Possibilité d'inclure des métadonnées utilisateur et des métadonnées d'application personnalisées
+- **Support des actions** : Possibilité de personnaliser le flux d'authentification avec des actions sur mesure
+- **Authentification multifacteur** : Prend en charge les fonctionnalités MFA de Zitadel
+- **SSO d'entreprise** : Intégration avec SAML, LDAP et autres systèmes d'entreprise
+- **Support auto-hébergé** : Fonctionnalité complète avec les instances Zitadel auto-hébergées
+
+---
+
+## Test de la configuration
+
+### Vérifier la configuration
+
+Après avoir configuré l'authentification Zitadel, testez l'intégration pour vous assurer que tout fonctionne correctement.
+
+1. **Vérifier la page de connexion** : Accédez à la page de connexion de votre instance OUITRANSFER et vérifiez que le bouton "Sign in with Zitadel" apparaît
+
+2. **Tester le flux d'authentification** : Cliquez sur le bouton de connexion Zitadel et effectuez le processus d'authentification
+
+3. **Vérifier la création du compte** : Confirmez qu'un nouveau compte utilisateur est créé (si l'inscription automatique est activée)
+
+### Vérification du flux de connexion
+
+Le processus d'authentification complet doit se dérouler comme suit :
+
+1. **L'utilisateur clique sur "Sign in with Zitadel"** : Le navigateur redirige vers la page d'autorisation de Zitadel
+2. **L'utilisateur s'authentifie** : L'utilisateur complète l'authentification via Zitadel (connexion, MFA, etc.)
+3. **Zitadel redirige vers OUITRANSFER** : L'utilisateur revient sur OUITRANSFER avec les jetons d'authentification
+4. **OUITRANSFER crée ou met à jour l'utilisateur** : Le compte utilisateur est géré automatiquement avec les informations Zitadel
+5. **L'utilisateur accède à OUITRANSFER** : L'utilisateur est connecté avec son identité Zitadel
+
+---
+
+## Résolution des problèmes courants
+
+### Erreur de non-concordance de l'URI de redirection
+
+**Message d'erreur** : `invalid_redirect_uri`
+
+**Cause** : L'URI de redirection dans votre requête ne correspond pas à celle configurée dans l'application Zitadel.
+
+**Solution** :
+
+1. Vérifiez l'URL exacte indiquée dans le message d'erreur
+2. Ajoutez cette URL exacte aux URI de redirection de votre application Zitadel
+3. Assurez-vous d'inclure le protocole correct (http/https) et le port
+4. Supprimez les barres obliques de fin sauf si elles font partie de l'URL de rappel
+
+### Erreur d'accès refusé
+
+**Message d'erreur** : `access_denied`
+
+**Cause** : L'utilisateur a refusé les permissions ou l'application n'est pas correctement configurée.
+
+**Solution** :
+
+1. Vérifiez que votre application Zitadel demande les scopes corrects
+2. Assurez-vous que les utilisateurs accordent les permissions lors du flux d'autorisation
+3. Vérifiez que votre application n'est pas restreinte ou désactivée
+4. Confirmez que l'application dispose des permissions appropriées
+
+### Erreur de client invalide
+
+**Message d'erreur** : `invalid_client`
+
+**Cause** : Client ID, Client Secret ou URL d'instance incorrects.
+
+**Solution** :
+
+1. Vérifiez que vous avez correctement copié les identifiants depuis Zitadel
+2. Assurez-vous qu'il n'y a pas d'espaces superflus ou de caractères parasites dans les identifiants
+3. Vérifiez que vous utilisez le format d'URL d'instance correct
+4. Générez un nouveau Client Secret si nécessaire
+
+### Problèmes de configuration de l'URL d'instance
+
+**Message d'erreur** : Instance not found or invalid
+
+**Cause** : URL d'instance Zitadel incorrecte ou configuration de l'instance défaillante.
+
+**Solution** :
+
+1. Vérifiez que l'URL de votre instance Zitadel est correcte
+2. Assurez-vous que votre instance Zitadel est active et accessible
+3. Vérifiez que vous utilisez le protocole correct (https://)
+4. Vérifiez la résolution DNS de votre instance Zitadel
+
+### Problèmes de connectivité auto-hébergée
+
+**Cause** : Problèmes de connectivité réseau avec l'instance Zitadel auto-hébergée.
+
+**Solution** :
+
+1. Vérifiez le pare-feu du serveur et la connectivité réseau
+2. Vérifiez la résolution DNS de votre serveur vers l'instance Zitadel
+3. Assurez-vous que l'instance Zitadel est correctement configurée et en cours d'exécution
+4. Vérifiez la validité du certificat SSL de l'instance Zitadel
+
+---
+
+## Bonnes pratiques de sécurité
+
+### Gestion des identifiants
+
+- **Ne jamais exposer les secrets** : Gardez votre Client Secret sécurisé et ne le commitez jamais dans un système de contrôle de version
+- **Faire tourner les identifiants régulièrement** : Générez de nouveaux Client Secrets périodiquement pour renforcer la sécurité
+- **Utiliser des variables d'environnement** : Stockez la configuration sensible dans des variables d'environnement, pas dans des fichiers de configuration
+- **Surveiller les journaux d'accès** : Examinez régulièrement les journaux d'authentification pour détecter toute activité suspecte
+
+### Gestion des scopes et des permissions
+
+- **Scopes minimaux** : Ne demandez que les scopes `openid`, `profile` et `email` requis par OUITRANSFER
+- **Consentement des utilisateurs** : Assurez-vous que les utilisateurs comprennent les permissions qu'ils accordent
+- **Audits réguliers** : Vérifiez quels utilisateurs ont connecté leur compte Zitadel
+- **Révisions des accès** : Vérifiez périodiquement les accès utilisateurs et supprimez les comptes inactifs
+
+### Considérations en production
+
+- **Utiliser HTTPS** : Utilisez toujours HTTPS dans les environnements de production
+- **Configurer les domaines appropriés** : Utilisez des domaines de production dans les paramètres de l'application Zitadel
+- **Tester minutieusement** : Vérifiez le flux d'authentification complet avant la mise en production
+- **Prévoir les défaillances** : Disposez de méthodes d'authentification de secours
+
+---
+
+## Prochaines étapes
+
+Une fois l'authentification Zitadel configurée, vous pourriez vouloir :
+
+- **Configurer des fournisseurs supplémentaires** : Mettez en place d'autres fournisseurs OIDC pour plus d'options d'authentification
+- **Personnaliser la gestion des utilisateurs** : Affinez les règles d'inscription automatique et d'attribution des rôles administrateur
+- **Revoir les paramètres de sécurité** : Assurez-vous que votre configuration d'authentification répond à vos exigences de sécurité
+- **Surveiller l'utilisation** : Suivez les schémas d'authentification et l'activité des utilisateurs
+
+Pour plus d'informations sur l'authentification OIDC dans OUITRANSFER, consultez la [vue d'ensemble de l'authentification OIDC](/docs/v1-beta/oidc-authentication).
+
+## Ressources utiles
+
+- [Documentation Zitadel](https://zitadel.com/docs)
+- [Guide OAuth 2.0 Zitadel](https://zitadel.com/docs/apis/openidoauth)
+- [OpenID Connect Zitadel](https://zitadel.com/docs/apis/openidoauth/oidc)
+- [Console Zitadel](https://cloud.zitadel.com)

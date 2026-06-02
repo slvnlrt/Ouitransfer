@@ -1,5 +1,18 @@
 # Session Log
 
+## 2026-06-01 (Docs i18n — French translation system)
+
+**Documentation site — internationalization (English + French)**
+
+- **Infrastructure**: set up Fumadocs i18n on `apps/docs` (`fumadocs-core` `defineI18n`, `en` default + `fr`, `hideLocale: "default-locale"` so existing English URLs stay at `/docs/...` and French lives under `/fr/docs/...`). Enabled i18n on the source loader, added the i18n proxy (`src/proxy.ts`, Next.js 16 convention), and restructured the app router under a `[lang]` segment.
+- **UI chrome**: localized Fumadocs UI strings (search, TOC, theme, language selector, page actions…) via the non-deprecated translations API (`i18n.translations().extend(uiTranslations()).add("ui", { fr })`) + `i18nProvider` in the root layout.
+- **Marketing surfaces**: localized the home page, beta modal, banner, and OIDC provider cards through a typed content dictionary (`src/lib/content-i18n.ts`) and a pathname-aware `OIDCProviderCards`. Added a locale-aware MDX link override so absolute `/docs/...` links keep users in their language.
+- **Content**: translated all 37 MDX pages to French (`*.fr.mdx`) plus navigation metadata (`meta.fr.json`), coordinated across 8 sequential translation subagents with a shared glossary. Code blocks, imports, JSX prop names, env vars, URLs, and frontmatter keys preserved byte-for-byte.
+- **Review**: verified EN/FR parity (code-fence, import, heading, and link-target counts), fixed 2 broken in-page anchors (translated headings) and 1 untranslated title. Lint + type-check clean; production build green (80 static pages, both locales).
+- **Commits**: i18n infrastructure, locale link override, navigation metadata, 8 translation batches, review fixes.
+
+---
+
 ## 2026-06-01 (Documentation update — shares, reverse-shares, notifications)
 
 **Documentation — Filling gaps for features added since session 10**

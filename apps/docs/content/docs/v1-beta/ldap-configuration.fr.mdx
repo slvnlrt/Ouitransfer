@@ -1,0 +1,344 @@
+---
+title: LDAP / Active Directory
+icon: Network
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+
+La synchronisation LDAP / Active Directory importe les comptes utilisateurs depuis votre Active Directory d'entreprise dans Ouitransfer et les maintient à jour. L'AD est la source de référence pour l'identité et l'appartenance aux groupes des utilisateurs importés. **L'authentification reste locale** — les utilisateurs se connectent avec des mots de passe propres à l'application, et non avec leurs identifiants AD.
+
+## Vue d'ensemble
+
+Lorsque la synchronisation LDAP est activée, Ouitransfer se connecte périodiquement à votre serveur AD via un compte de service en lecture seule, lit les membres d'un groupe de synchronisation désigné et réconcilie la base de données locale des utilisateurs :
+
+- Les **nouveaux membres** sont créés en tant qu'utilisateurs Ouitransfer et reçoivent un e-mail de bienvenue contenant un lien de configuration du mot de passe.
+- Les **membres existants** voient leur nom, adresse e-mail et groupe mis à jour pour correspondre à l'AD.
+- Les **membres retirés** du groupe de synchronisation sont désactivés (non supprimés) — leurs fichiers et partages sont conservés.
+- Les **membres de retour** (précédemment désactivés) sont automatiquement réactivés.
+
+### Pourquoi des mots de passe propres à l'application ?
+
+Ouitransfer utilise **LDAP comme source d'importation, non comme proxy d'authentification**. Les utilisateurs s'authentifient avec un mot de passe dédié à l'application, géré entièrement au sein d'Ouitransfer.
+
+Ce choix de conception présente des avantages concrets en matière de sécurité :
+
+- Le serveur **ne voit jamais** les mots de passe AD — seul un compte de service en lecture seule se connecte à l'AD lors de la synchronisation.
+- Un serveur Ouitransfer compromis ne livrerait que des hachages bcrypt de mots de passe propres à l'application, et non des identifiants de domaine.
+- Les mots de passe AD donnent accès aux e-mails, aux partages de fichiers, au VPN et bien plus encore — le rayon d'impact d'une compromission est bien plus limité grâce à l'isolation des identifiants.
+- La pile d'authentification existante (bcrypt, JWT, 2FA, verrouillage de compte) est réutilisée telle quelle.
+- La synchronisation continue même lorsque l'AD est temporairement inaccessible — les utilisateurs continuent de travailler.
+
+Le « mot de passe supplémentaire » est une fonctionnalité, pas une limitation.
+
+---
+
+## Prérequis
+
+Avant de configurer LDAP, assurez-vous que les éléments suivants sont en place :
+
+### 1. Variable d'environnement `ENCRYPTION_SECRET`
+
+Ouitransfer chiffre le mot de passe de liaison LDAP avec AES-256-GCM. La clé de chiffrement est dérivée de `ENCRYPTION_SECRET`. Cette variable est **obligatoire** pour utiliser LDAP.
+
+Générez un secret :
+
+```bash
+openssl rand -hex 32
+```
+
+Ajoutez-le à votre environnement :
+
+<Tabs items={["Docker Compose", ".env file"]}>
+  <Tab value="Docker Compose">
+```yaml
+services:
+  server:
+    environment:
+      ENCRYPTION_SECRET: "your-generated-secret-here"
+```
+  </Tab>
+  <Tab value=".env file">
+```bash
+ENCRYPTION_SECRET=your-generated-secret-here
+```
+  </Tab>
+</Tabs>
+
+<Callout type="warn">
+  Conservez `ENCRYPTION_SECRET` identique entre les redémarrages et les déploiements. Si elle change, le mot de passe de liaison stocké ne pourra plus être déchiffré et vous devrez le saisir à nouveau dans le formulaire de configuration.
+</Callout>
+
+### 2. Compte de service AD
+
+Vous avez besoin d'un compte de service Active Directory **en lecture seule** disposant des permissions pour :
+
+- Se lier au serveur AD (s'authentifier)
+- Lire les membres du groupe (`member` attribut du groupe de synchronisation)
+- Lire les attributs utilisateur (`sAMAccountName`, `mail`, `displayName`, `memberOf`)
+
+Aucun accès en écriture à l'AD n'est requis ni recommandé.
+
+### 3. Accès réseau
+
+Le serveur Ouitransfer doit pouvoir atteindre votre serveur AD :
+
+- **LDAPS (recommandé)** : port 636
+- **STARTTLS** : port 389
+
+Assurez-vous que votre pare-feu ou groupe de sécurité autorise les connexions sortantes depuis le conteneur du serveur Ouitransfer vers le serveur AD sur le port approprié.
+
+---
+
+## Configuration
+
+Accédez à **Admin → LDAP** pour ouvrir la page de configuration LDAP.
+
+### Paramètres de connexion
+
+| Champ | Description | Exemple |
+|-------|-------------|---------|
+| **URL du serveur** | URL complète de votre serveur AD, incluant le protocole et le port | `ldaps://ad.corp.local:636` |
+| **DN de liaison** | Nom distinctif du compte de service | `CN=ldap-reader,OU=Service Accounts,DC=corp,DC=local` |
+| **Mot de passe de liaison** | Mot de passe du compte de service (stocké chiffré) | — |
+| **Base de recherche** | DN racine pour les recherches dans l'annuaire | `DC=corp,DC=local` |
+| **DN du groupe de synchronisation** | DN du groupe AD dont les membres sont importés | `CN=Ouitransfer Users,OU=Groups,DC=corp,DC=local` |
+
+### Paramètres TLS
+
+| Champ | Description | Par défaut |
+|-------|-------------|------------|
+| **Utiliser TLS** | `true` = LDAPS (port 636), `false` = STARTTLS (port 389) | `true` |
+| **Ignorer la vérification TLS** | Désactive la validation du certificat (certificats auto-signés) | `false` |
+
+<Callout type="warn">
+  N'activez **Ignorer la vérification TLS** qu'en environnement de développement ou de laboratoire. En production, utilisez un certificat approuvé pour prévenir les attaques de type man-in-the-middle.
+</Callout>
+
+### Correspondance d'attributs
+
+Ces champs font correspondre les attributs AD aux champs utilisateur Ouitransfer. Les valeurs par défaut fonctionnent pour les installations Active Directory standard.
+
+| Champ | Description | Par défaut |
+|-------|-------------|------------|
+| **Attribut nom d'utilisateur** | Attribut AD utilisé comme nom d'utilisateur Ouitransfer | `sAMAccountName` |
+| **Attribut e-mail** | Attribut AD utilisé comme adresse e-mail | `mail` |
+| **Attribut nom d'affichage** | Attribut AD utilisé pour le nom complet de l'utilisateur | `displayName` |
+
+### Intervalle de synchronisation
+
+L'**intervalle de synchronisation** (en minutes) contrôle la fréquence d'exécution de la synchronisation automatique. Il doit être compris entre 15 minutes et 7 jours (10 080 minutes). La valeur par défaut est **360 minutes** (6 heures).
+
+### URL de l'application
+
+Le champ **URL de l'application** est l'URL de base publique de votre instance Ouitransfer (ex. `https://transfer.company.com`). Il est utilisé pour générer le lien de configuration du mot de passe dans l'e-mail de bienvenue envoyé aux nouveaux utilisateurs.
+
+<Callout type="warn">
+  **L'URL de l'application est obligatoire lorsque LDAP est activé.** Enregistrer la configuration avec une URL d'application vide alors que le commutateur Activé est actif échouera avec l'erreur : *« Application URL is required when LDAP is enabled (used for welcome emails). »*
+</Callout>
+
+---
+
+## Test de la connexion
+
+Avant d'activer LDAP, utilisez le bouton **Tester la connexion** pour vérifier vos paramètres. Le test :
+
+1. Se connecte au serveur AD en utilisant l'URL et les paramètres TLS fournis
+2. Se lie avec les identifiants du compte de service
+3. Recherche le groupe de synchronisation et lit ses membres directs
+4. Retourne le résultat : statut de la liaison, si le groupe a été trouvé, et le nombre de membres
+
+<Callout type="info">
+  Le test de connexion utilise les identifiants saisis dans le formulaire au moment du test, non la configuration enregistrée. Vous pouvez tester avant d'enregistrer.
+</Callout>
+
+Une réponse de test réussie ressemble à :
+
+```json
+{
+  "success": true,
+  "memberCount": 42,
+  "message": "Connection successful. Found 42 members in the sync group."
+}
+```
+
+Si le test échoue, la réponse contient un message d'erreur décrivant la défaillance (erreur de liaison, groupe introuvable, erreur TLS, etc.). Consultez la section [Dépannage](#dépannage) pour les problèmes courants.
+
+---
+
+## Correspondance de groupes
+
+Les groupes Ouitransfer peuvent être associés à des groupes AD afin que la synchronisation affecte automatiquement les utilisateurs au groupe approprié. La correspondance est stockée dans le champ `ldapDn` du modèle Group — chaque groupe peut contenir le nom distinctif du groupe AD correspondant.
+
+Configurez la correspondance dans l'interface de gestion des **Groupes** : ouvrez le dialogue Créer ou Modifier un groupe et renseignez le champ **DN LDAP** avec le nom distinctif du groupe AD correspondant (ex. `CN=Finance,OU=Groups,DC=corp,DC=local`). Vous pouvez également le définir via l'API REST (`POST /groups` ou `PUT /groups/:id`).
+
+Lors de chaque synchronisation, pour chaque utilisateur importé, Ouitransfer vérifie l'attribut `memberOf` de l'utilisateur (appartenances directes aux groupes uniquement) et affecte le premier groupe correspondant.
+
+**Détails du comportement :**
+
+- Seules les appartenances directes aux groupes AD sont prises en compte. La résolution récursive/imbriquée des groupes n'est pas prise en charge.
+- L'ordre de correspondance dépend de l'ordre de résultat de la requête en base de données pour les groupes avec un `ldapDn` défini. Si un utilisateur appartient à plusieurs groupes AD associés, **l'un d'eux est assigné mais le choix n'est pas déterministe**. Évitez les appartenances qui se chevauchent pour des résultats prévisibles.
+- Si aucun groupe associé ne correspond aux groupes AD de l'utilisateur, l'utilisateur n'est affecté à aucun groupe (`null`).
+- L'affectation de groupe est **écrasée à chaque synchronisation** — si vous réaffectez manuellement le groupe d'un utilisateur synchronisé dans Ouitransfer, il sera réinitialisé lors de la prochaine synchronisation.
+
+<Callout type="info">
+  La page LDAP affiche un résumé en lecture seule de tous les groupes qui ont actuellement un `ldapDn` configuré. Utilisez-le comme référence rapide lors de la révision de vos correspondances de groupes.
+</Callout>
+
+---
+
+## Exécution d'une synchronisation
+
+### Synchronisation manuelle
+
+Cliquez sur le bouton **Synchroniser maintenant** sur la page LDAP pour déclencher une synchronisation immédiate. Le bouton est désactivé pendant qu'une synchronisation est en cours.
+
+### Synchronisation automatique
+
+Si LDAP est activé et qu'un intervalle de synchronisation est configuré, le planificateur démarre automatiquement au démarrage du serveur et exécute une synchronisation à l'intervalle configuré. La page LDAP affiche l'heure de la **prochaine synchronisation planifiée**.
+
+Le planificateur utilise des délais enchaînés (pas une expression cron fixe), ce qui rend impossible le chevauchement des synchronisations — si une synchronisation est déjà en cours au moment où le prochain intervalle se déclenche, le déclencheur planifié est ignoré.
+
+**Garde contre la réentrance** : une seule synchronisation peut s'exécuter à la fois, qu'elle soit déclenchée manuellement ou par le planificateur. Si vous tentez une synchronisation manuelle alors qu'une est déjà en cours, l'API retourne une réponse `409 Conflict`.
+
+### Ce qui se passe lors d'une synchronisation
+
+1. Le serveur se lie à l'AD en utilisant le compte de service.
+2. Il recherche les membres directs du groupe de synchronisation configuré.
+3. Pour chaque utilisateur AD :
+   - Lit `username`, `email` et `displayName` via la correspondance d'attributs configurée.
+   - Lit les appartenances directes aux groupes (`memberOf`) pour la correspondance de groupes.
+4. Le serveur compare les utilisateurs AD aux utilisateurs locaux gérés par LDAP et applique les règles suivantes :
+
+| Scénario | Action |
+|----------|--------|
+| Utilisateur dans l'AD, absent de la base locale | Créer l'utilisateur, envoyer l'e-mail de bienvenue |
+| Utilisateur dans l'AD, présent dans la base locale | Mettre à jour le nom, l'e-mail et le groupe si modifiés |
+| Utilisateur absent de l'AD, actif dans la base locale | Désactiver (`isActive = false`) |
+| Utilisateur absent de l'AD, désactivé dans la base locale | Déjà désactivé — aucun changement |
+| Utilisateur de retour dans l'AD après désactivation | Réactiver (`isActive = true`) |
+| Collision d'e-mail ou de nom d'utilisateur avec un compte local | Ignorer — enregistré comme événement de saut |
+
+5. Un journal de synchronisation est écrit avec les compteurs et les détails.
+
+<Callout type="info">
+  Les utilisateurs synchronisés ne sont **jamais supprimés**. La désactivation préserve tous les fichiers et partages. Un utilisateur désactivé ne peut pas se connecter, mais ses données restent intactes.
+</Callout>
+
+---
+
+## Journaux de synchronisation
+
+La page LDAP affiche un historique de toutes les exécutions de synchronisation. Chaque entrée du journal indique :
+
+- **Date et heure** de début de la synchronisation
+- **Déclencheur** (`manual` ou `scheduled`)
+- **Durée**
+- **Statistiques** : utilisateurs créés, mis à jour, désactivés, réactivés et ignorés
+- Badge de **statut**
+
+### Types de statut
+
+| Statut | Signification |
+|--------|---------------|
+| `success` | Tous les utilisateurs traités sans erreurs ni sauts |
+| `partial` | Synchronisation terminée, mais certains utilisateurs ont été ignorés ou ont présenté des erreurs non fatales |
+| `error` | Défaillance critique — la synchronisation n'a pas pu se terminer (ex. liaison échouée, LDAP inaccessible) |
+
+Cliquez sur n'importe quelle ligne du journal pour ouvrir la **vue détaillée**, qui affiche la liste complète des événements de saut et d'erreur avec leurs messages. Utilisez-la pour comprendre pourquoi des utilisateurs spécifiques n'ont pas été synchronisés.
+
+---
+
+## Expérience utilisateur
+
+### E-mail de bienvenue
+
+Lorsqu'un nouvel utilisateur est créé par une synchronisation, Ouitransfer envoie un e-mail de bienvenue contenant un **lien de configuration du mot de passe** (valable 7 jours). L'utilisateur clique sur le lien pour définir son mot de passe d'application, puis se connecte normalement. Si le champ **URL de l'application** n'est pas configuré, aucun e-mail de bienvenue n'est envoyé et un administrateur doit définir le mot de passe manuellement.
+
+### Badge LDAP
+
+Les utilisateurs importés depuis l'AD affichent un badge **LDAP** dans la liste de la Gestion des utilisateurs. Cela indique que le compte est géré par la synchronisation AD.
+
+### Champs gérés
+
+Les champs suivants sont **contrôlés par l'AD** et seront écrasés lors de la prochaine synchronisation :
+
+- Prénom et nom (depuis `displayName`)
+- Adresse e-mail
+- Appartenance au groupe
+
+Les administrateurs peuvent toujours modifier les autres champs utilisateur (indicateur administrateur, dérogations de quota, paramètres 2FA) sans qu'ils soient affectés par la synchronisation.
+
+### Gestion du mot de passe
+
+Les utilisateurs synchronisés gèrent leur mot de passe d'application via les flux de mot de passe Ouitransfer standard :
+
+- **Configuration initiale** : lien de configuration du mot de passe dans l'e-mail de bienvenue
+- **Réinitialisation en libre-service** : flux de mot de passe oublié sur la page de connexion (réinitialise uniquement le mot de passe de l'application — aucune interaction avec l'AD)
+- **Réinitialisation par l'administrateur** : les administrateurs peuvent définir directement un mot de passe dans la Gestion des utilisateurs
+
+---
+
+## Dépannage
+
+### Liaison échouée
+
+**Symptôme** : le test de connexion retourne une erreur de liaison ou un journal de synchronisation en statut `error` avec la phase `connect`.
+
+**Vérifications** :
+- Vérifiez que le DN de liaison est le nom distinctif complet du compte de service (pas seulement le nom d'utilisateur).
+- Confirmez que le mot de passe de liaison est correct. Le champ mot de passe est masqué après l'enregistrement — ressaisissez-le et ré-enregistrez si vous suspectez un changement.
+- Assurez-vous que la variable d'environnement `ENCRYPTION_SECRET` est définie et n'a pas changé depuis le dernier enregistrement de la configuration.
+- Vérifiez que l'URL du serveur est accessible depuis le conteneur du serveur Ouitransfer.
+
+### Aucun utilisateur trouvé / groupe de synchronisation vide
+
+**Symptôme** : la synchronisation se termine avec `usersCreated = 0` et aucune erreur.
+
+**Vérifications** :
+- Confirmez que le DN du groupe de synchronisation est le nom distinctif complet et correct.
+- Vérifiez que le compte de service a accès en lecture à l'attribut `member` du groupe.
+- Utilisez le bouton **Tester la connexion** — il rapporte directement le nombre de membres.
+- Ouitransfer ne lit que les membres **directs**. Les utilisateurs dans des groupes imbriqués ne sont pas inclus.
+
+### Erreurs TLS / certificat
+
+**Symptôme** : le test de connexion ou la synchronisation échoue avec une erreur de négociation TLS ou de certificat.
+
+**Vérifications** :
+- Si vous utilisez un certificat auto-signé, activez **Ignorer la vérification TLS** (dev/laboratoire uniquement).
+- Si le serveur AD utilise LDAPS (port 636), assurez-vous que **Utiliser TLS** est activé.
+- Si vous utilisez STARTTLS (port 389), désactivez **Utiliser TLS**.
+- Assurez-vous qu'aucun pare-feu ne bloque la connexion sur le port choisi.
+
+### Collision d'e-mail / utilisateur ignoré
+
+**Symptôme** : un utilisateur apparaît dans le groupe de synchronisation mais n'est pas créé dans Ouitransfer. Le journal de synchronisation affiche un événement de saut.
+
+**Cause** : un compte Ouitransfer existant (local ou provenant d'une autre entrée LDAP) utilise déjà la même adresse e-mail ou le même nom d'utilisateur.
+
+**Résolution** : supprimez ou renommez le compte local en conflit, ou retirez le doublon du groupe de synchronisation AD.
+
+### Mot de passe de liaison perdu après redémarrage
+
+**Symptôme** : après le redémarrage du serveur, le test LDAP ou la synchronisation échoue avec une erreur de déchiffrement dans les journaux du serveur (ex. `Invalid encrypted data format` ou un échec d'authentification AES-GCM).
+
+**Cause** : `ENCRYPTION_SECRET` a changé entre les redémarrages. Le mot de passe de liaison stocké a été chiffré avec la clé précédente et ne peut plus être déchiffré.
+
+**Résolution** : assurez-vous que `ENCRYPTION_SECRET` est persisté en tant que variable d'environnement stable dans votre déploiement (pas générée dynamiquement au démarrage). Ressaisissez le mot de passe de liaison dans le formulaire de configuration et enregistrez — il sera rechiffré avec la clé actuelle.
+
+---
+
+## Référence API (administrateur)
+
+Tous les points de terminaison nécessitent une session administrateur active. Les requêtes non authentifiées retournent `401`. Les requêtes non administrateur retournent `403`.
+
+| Méthode | Chemin | Description |
+|---------|--------|-------------|
+| `GET` | `/admin/ldap/config` | Obtenir la configuration actuelle (le mot de passe de liaison est masqué en `••••••••`) |
+| `PUT` | `/admin/ldap/config` | Créer ou mettre à jour la configuration (upsert). Passez `bindPassword: ""` pour conserver le mot de passe existant. |
+| `POST` | `/admin/ldap/test` | Tester la connexion avec les paramètres fournis. Nécessite `bindPassword` (non masqué). |
+| `POST` | `/admin/ldap/sync` | Déclencher une synchronisation manuelle. Retourne `{ logId }`. Retourne `409` si une synchronisation est déjà en cours. |
+| `GET` | `/admin/ldap/sync/logs` | Lister l'historique des synchronisations. Paramètres de requête : `limit` (1–100, par défaut 20), `offset` (par défaut 0). |
+| `GET` | `/admin/ldap/sync/logs/:id` | Obtenir le détail complet d'une entrée du journal de synchronisation, y compris les événements de saut et d'erreur. |
+| `GET` | `/admin/ldap/status` | Statut rapide : indicateur d'activation, dernier résultat de synchronisation, heure de la prochaine synchronisation planifiée et éventuels avertissements de configuration. |

@@ -1,0 +1,289 @@
+---
+title: Installation manuelle
+icon: Cog
+---
+
+Vous souhaitez exécuter **Ouitransfer** à votre façon, avec un contrôle total sur chaque composant de la pile ? Ce guide d'installation manuelle est fait pour vous. Pas de Docker, pas de conteneurs préconstruits — juste le code source brut à modifier, personnaliser et déployer comme vous l'entendez.
+
+> **Vous préférez une installation plus rapide ?** Si cette approche vous semble trop fastidieuse, consultez notre guide [**Démarrage rapide (Docker)**](/docs/v1-beta/quick-start) pour un déploiement rapide et conteneurisé. Ce chemin manuel est destiné aux développeurs qui souhaitent approfondir, modifier le code source ou intégrer des services personnalisés.
+
+Voici ce que vous allez faire en résumé :
+
+1. **Cloner** le dépôt pour récupérer le code.
+2. **Configurer** votre fichier `.env` avec les secrets requis et les paramètres de stockage.
+3. **Installer** les dépendances JavaScript avec `pnpm` (depuis la racine du dépôt).
+4. **Générer** le client Prisma et exécuter les migrations de base de données.
+5. **Initialiser** la base de données avec les données de départ.
+6. **Construire et démarrer** le backend (API Fastify).
+7. **Construire et servir** le frontend (application Next.js).
+
+---
+
+## Avant de commencer
+
+### Prérequis
+
+| Outil | Version | Notes |
+|-------|---------|-------|
+| Node.js | **24** | Requis — les versions antérieures ne sont pas prises en charge |
+| pnpm | **11.5.0** | `npm install -g pnpm@11.5.0` |
+| Git | toute version récente | Pour cloner le dépôt |
+
+⚠️ **Gestionnaire de paquets** : Ouitransfer est construit et testé avec `pnpm`. N'utilisez pas `npm`, `yarn` ou `bun` — le fichier de verrouillage et la configuration des workspaces sont spécifiques à pnpm.
+
+### Configuration système requise
+
+- **OS** : macOS ou Linux (recommandé). Windows fonctionne mais n'est pas rigoureusement testé.
+- **Mémoire** : 4 Go de RAM minimum.
+- **Stockage compatible S3** : Requis pour la production. Optionnel pour le développement local — si S3 n'est pas configuré ou inaccessible, le serveur démarre en mode dégradé (l'authentification et la configuration fonctionnent ; les opérations sur les fichiers sont indisponibles).
+
+---
+
+## Étape 1 : Cloner le dépôt
+
+```bash
+git clone https://github.com/slvnlrt/Ouitransfer.git
+cd Ouitransfer
+```
+
+Le dépôt est un **monorepo pnpm**. Exécutez toujours les commandes depuis la **racine du dépôt** sauf indication contraire. Les répertoires clés sont :
+
+- `apps/server` — Backend API Fastify
+- `apps/web` — Frontend Next.js
+- `packages/shared` + `packages/config` — Packages internes (construits automatiquement par Turborepo lors de `pnpm build`)
+
+---
+
+## Étape 2 : Configurer les variables d'environnement
+
+Copiez le modèle et renseignez vos valeurs :
+
+```bash
+cp .env.example .env
+```
+
+### ⚠️ Secrets de sécurité obligatoires
+
+Le serveur **plantera au démarrage** si ces trois variables sont manquantes ou trop courtes. Chacune doit comporter au moins 32 caractères et les trois doivent être distinctes.
+
+Générez chaque secret avec :
+
+```bash
+openssl rand -hex 32
+```
+
+Puis définissez-les dans votre `.env` :
+
+```bash
+JWT_SECRET=<output of openssl rand -hex 32>
+CSRF_SECRET=<output of openssl rand -hex 32>
+COOKIE_SECRET=<output of openssl rand -hex 32>
+```
+
+### Configuration du stockage
+
+**Option 1 — RustFS local (pour le développement)**
+
+Démarrez RustFS en premier :
+
+```bash
+docker run -p 9000:9000 \
+  -e RUSTFS_ACCESS_KEY=dev \
+  -e RUSTFS_SECRET_KEY=devsecret \
+  rustfs/rustfs:latest rustfs server /data
+```
+
+Puis configurez votre `.env` :
+
+```bash
+S3_ENDPOINT=localhost
+S3_PORT=9000
+S3_USE_SSL=false
+S3_ACCESS_KEY=dev
+S3_SECRET_KEY=devsecret
+S3_BUCKET_NAME=ouitransfer-files
+S3_FORCE_PATH_STYLE=true
+STORAGE_URL=http://localhost:9000
+```
+
+`STORAGE_URL` est l'URL publique que les navigateurs utilisent pour accéder au service de stockage. Pour RustFS local, c'est `http://localhost:9000`.
+
+**Option 2 — Service S3 externe (AWS S3, DigitalOcean Spaces, Backblaze B2, etc.)**
+
+```bash
+ENABLE_S3=true
+S3_ENDPOINT=s3.amazonaws.com
+S3_ACCESS_KEY=your-access-key
+S3_SECRET_KEY=your-secret-key
+S3_BUCKET_NAME=ouitransfer-files
+S3_REGION=us-east-1
+```
+
+Lorsque `ENABLE_S3=true`, `STORAGE_URL` n'est pas requis — les URLs présignées utilisent directement le point d'accès S3.
+
+### Autres paramètres importants
+
+```bash
+# Base de données (SQLite, relative à apps/server)
+DATABASE_URL="file:./ouitransfer.db"
+
+# URL du backend telle que vue par le frontend Next.js
+API_BASE_URL=http://localhost:3333
+
+# Langue d'interface par défaut
+NEXT_PUBLIC_DEFAULT_LANGUAGE=en-US
+
+# Clé de chiffrement pour les données sensibles au repos (requis pour LDAP)
+# ENCRYPTION_SECRET=<output of openssl rand -hex 32>
+
+# Paramètre de proxy de confiance (requis derrière un proxy inverse)
+# TRUST_PROXY=loopback
+
+# Activer la documentation API en production (Scalar + Swagger)
+# ENABLE_API_DOCS=true
+```
+
+---
+
+## Étape 3 : Installer les dépendances
+
+Depuis la **racine du dépôt** :
+
+```bash
+pnpm install
+```
+
+Ceci installe les dépendances pour tous les workspaces (`apps/server`, `apps/web`, `apps/docs`, `packages/shared`, `packages/config`) en une seule passe.
+
+---
+
+## Étape 4 : Générer le client Prisma
+
+```bash
+cd apps/server
+pnpm exec prisma generate
+```
+
+Ou avec le gestionnaire de tâches `just` (si installé) :
+
+```bash
+just db-generate
+```
+
+---
+
+## Étape 5 : Appliquer les migrations de base de données
+
+```bash
+cd apps/server
+pnpm exec prisma migrate deploy
+```
+
+Ou :
+
+```bash
+just db-migrate-dev   # développement (crée l'historique des migrations)
+```
+
+---
+
+## Étape 6 : Initialiser la base de données
+
+```bash
+just db-seed
+```
+
+Cette étape crée l'utilisateur administrateur initial et la configuration de base.
+
+---
+
+## Étape 7 : Construire et démarrer le backend
+
+```bash
+pnpm --filter=ouitransfer-api run build
+pnpm --filter=ouitransfer-api start
+```
+
+Vérifiez que l'API est opérationnelle :
+
+```
+http://localhost:3333/health
+```
+
+> **Remarque** : La documentation API (`/docs` pour Scalar, `/swagger` pour Swagger UI) est disponible en mode développement par défaut. Pour l'activer en production, définissez `ENABLE_API_DOCS=true`.
+
+---
+
+## Étape 8 : Construire et servir le frontend
+
+```bash
+pnpm --filter=ouitransfer-web run build
+pnpm --filter=ouitransfer-web start
+```
+
+Le frontend tourne sur le **port 5487** en production :
+
+```
+http://localhost:5487
+```
+
+---
+
+## Aide-mémoire des commandes
+
+```bash
+# --- Prérequis (si utilisation de RustFS local) ---
+docker run -p 9000:9000 \
+  -e RUSTFS_ACCESS_KEY=dev \
+  -e RUSTFS_SECRET_KEY=devsecret \
+  rustfs/rustfs:latest rustfs server /data
+
+# --- Depuis la racine du dépôt ---
+pnpm install
+
+# Générer les secrets (exécuter 3 fois pour JWT_SECRET, CSRF_SECRET, COOKIE_SECRET)
+openssl rand -hex 32
+
+# Configuration de la base de données (doit être exécuté depuis apps/server — prisma.config.ts est lu depuis le CWD)
+cd apps/server
+pnpm exec prisma generate
+pnpm exec prisma migrate deploy
+cd ../..
+just db-seed
+
+# Construire et démarrer le backend
+pnpm --filter=ouitransfer-api run build
+pnpm --filter=ouitransfer-api start
+
+# Construire et démarrer le frontend
+pnpm --filter=ouitransfer-web run build
+pnpm --filter=ouitransfer-web start
+```
+
+> **Astuce** : Installez [`just`](https://github.com/casey/just) et utilisez `just --list` pour voir tous les raccourcis disponibles, notamment `just dev` pour tout exécuter en mode développement.
+
+---
+
+## Chemins d'installation personnalisés
+
+Si vous utilisez des liens symboliques pour le stockage (ex. `/opt/ouitransfer_data/uploads -> /mnt/data/uploads`), définissez `CUSTOM_PATH` pour que la détection de l'espace disque fonctionne correctement :
+
+```bash
+CUSTOM_PATH=/opt/ouitransfer_data
+```
+
+---
+
+## Et ensuite ?
+
+Ouitransfer est maintenant opérationnel. Voici quelques étapes suivantes suggérées :
+
+- **Sécurisez votre instance** : Placez Ouitransfer derrière un proxy inverse (Nginx ou Caddy) et activez HTTPS. Définissez `SECURE_SITE=true` dans votre `.env`.
+- **Explorez les mécanismes internes** : Consultez la vue d'ensemble de l'[Architecture](/docs/v1-beta/architecture).
+
+## Ressources utiles
+
+- [Documentation Node.js](https://nodejs.org/en/docs/)
+- [Documentation pnpm](https://pnpm.io/)
+- [Documentation Prisma](https://www.prisma.io/docs/)
+- [Gestionnaire de tâches just](https://github.com/casey/just)

@@ -1,0 +1,324 @@
+---
+title: Frontegg
+icon: Egg
+---
+
+import { ZoomableImage } from "@/components/ui/zoomable-image";
+
+Frontegg est l'un des fournisseurs OIDC officiellement pris en charge par OUITRANSFER, offrant une authentification de niveau entreprise via la plateforme d'identité Frontegg. Cette intégration permet aux utilisateurs de se connecter à OUITRANSFER grâce au système d'authentification complet de Frontegg, ce qui en fait une solution idéale pour les organisations de type entreprise, les applications nécessitant des fonctionnalités de sécurité avancées et les équipes ayant besoin d'une gestion centralisée des identités avec une expérience développeur moderne.
+
+<ZoomableImage src="/assets/v3/oidc/frontegg/sign-in-with-frontegg.png" alt="Connexion avec Frontegg" />
+
+## Pourquoi utiliser l'authentification Frontegg ?
+
+L'authentification Frontegg présente plusieurs avantages pour les organisations axées sur l'entreprise et les développeurs :
+
+- **Expérience développeur moderne** - API claires, SDK complets et outils adaptés aux développeurs
+- **Sécurité de niveau entreprise** - Fonctionnalités de sécurité avancées telles que la MFA, l'authentification adaptative et la détection des menaces
+- **Gestion centralisée des identités** - Plateforme unique pour gérer les utilisateurs de plusieurs applications
+- **Conformité intégrée** - Conformité native avec le RGPD, SOC 2 et d'autres standards d'entreprise
+- **Personnalisation avancée** - Thèmes, flux et capacités de marque personnalisée
+
+---
+
+## Prérequis
+
+Avant de configurer l'authentification Frontegg, assurez-vous de disposer des éléments suivants :
+
+- **Compte Frontegg** - Capacité à créer des applications et à gérer des tenants
+- **Privilèges administrateur dans OUITRANSFER** - Nécessaires pour configurer les paramètres OIDC
+- **Configuration du domaine** - Pour les déploiements en production avec des domaines personnalisés
+
+> **Remarque :** Frontegg est préconfiguré comme fournisseur officiel dans OUITRANSFER, ce qui signifie que la configuration technique est gérée automatiquement. Vous n'avez qu'à fournir vos identifiants OAuth.
+
+---
+
+## Configuration de l'application Frontegg
+
+### Création d'une application Frontegg
+
+Pour démarrer avec l'authentification Frontegg, vous devez créer une application dans votre portail d'administration Frontegg.
+
+1. **Accédez au portail d'administration Frontegg** : Rendez-vous sur [https://portal.frontegg.com/development/applications](https://portal.frontegg.com/development/applications) par exemple (environnement de développement). Pour l'environnement de production, allez sur [https://portal.frontegg.com/production/applications](https://portal.frontegg.com/production/applications) — cela peut varier selon votre environnement.
+
+<ZoomableImage src="/assets/v3/oidc/frontegg/frontegg-admin.png" alt="Portail d'administration Frontegg" />
+
+2. **Créer une nouvelle application** : Cliquez sur **"Create new"**
+
+3. **Remplir les détails de l'application** :
+   - **Name** : Saisissez un nom descriptif tel que "OUITRANSFER File Sharing"
+   - **Description** : Ajoutez une description claire de votre instance OUITRANSFER
+   - **Type** : Choisissez **"Web"** pour les instances OUITRANSFER basées sur le Web
+   - **Frontend stack** : Choisissez **"React"** pour les instances OUITRANSFER basées sur le Web
+   - **App URL** : Ajoutez l'URL de votre instance OUITRANSFER — consultez le tableau ci-dessous pour un exemple d'URL.
+
+   | Environnement   | URL                                                                |
+   | --------------- | ------------------------------------------------------------------ |
+   | Production      | `https://yourdomain.com/api/auth/providers/frontegg/callback`      |
+   | Développement   | `http://localhost:3000/api/auth/providers/frontegg/callback`       |
+   | Port personnalisé | `https://yourdomain.com:5487/api/auth/providers/frontegg/callback` |
+
+   > **Remarque :** Remplacez `yourdomain.com` par votre nom de domaine réel dans toutes les URLs de production et de port personnalisé.
+
+<ZoomableImage
+  src="/assets/v3/oidc/frontegg/application-details.png"
+  alt="Détails de l'application Frontegg"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+5. **Créer l'application** : Cliquez sur **"Create"** pour générer votre application Frontegg
+
+### Configuration des paramètres de l'application
+
+Après avoir créé votre application, vous devrez récupérer les paramètres qu'OUITRANSFER utilisera. Vous serez redirigé vers la page de l'application, où vous pourrez consulter les détails de celle-ci.
+
+<ZoomableImage
+  src="/assets/v3/oidc/frontegg/application-page.png"
+  alt="Page de l'application Frontegg"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+### Récupération des identifiants OAuth
+
+Vous allez maintenant obtenir les identifiants qu'OUITRANSFER utilisera pour s'authentifier auprès de Frontegg.
+
+1. **Copier le domaine** : Notez votre domaine Frontegg (ex. : `your-tenant.frontegg.com`) — vous le trouverez sur la page de l'application dans le champ **"Login URL"**. Copiez uniquement le domaine, sans le chemin.
+
+2. **Copier le Client ID** : Vous le trouverez sur la page de l'application dans le champ **"ID"**.
+
+3. **Copier le Client Secret** : Vous le trouverez sur la page de l'application dans le champ **"API key"**.
+
+La configuration dans Frontegg est terminée, mais il reste à configurer OUITRANSFER pour l'utiliser.
+
+---
+
+## Configuration d'OUITRANSFER
+
+### Accès aux paramètres OIDC
+
+Pour configurer l'authentification Frontegg dans OUITRANSFER, vous devez disposer d'un accès administrateur au panneau de paramètres.
+
+1. **Connexion en tant qu'administrateur** : Connectez-vous à OUITRANSFER avec un compte administrateur
+
+2. **Accéder aux paramètres** : Cliquez sur votre photo de profil dans l'en-tête et sélectionnez **Settings**
+
+3. **Accéder à l'authentification** : Recherchez et cliquez sur la section de configuration **Authentication Providers**
+
+<ZoomableImage src="/assets/v3/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
+
+### Activation du fournisseur Frontegg
+
+Frontegg est préconfiguré comme fournisseur officiel, ce qui simplifie le processus de configuration.
+
+1. **Localiser le fournisseur Frontegg** : Trouvez Frontegg dans la liste des fournisseurs disponibles
+
+2. **Activer le fournisseur** : Basculez le statut sur **Enabled**
+
+<ZoomableImage src="/assets/v3/oidc/frontegg/enabled-frontegg.png" alt="Fournisseur Frontegg activé dans OUITRANSFER" />
+
+Après avoir activé le fournisseur, cliquez sur l'icône de crayon pour le configurer.
+
+3. **Configurer les identifiants** :
+   - **Provider URL** : Collez votre domaine Frontegg (ex. : `https://your-tenant.frontegg.com`) — il s'agit du même **"Login URL"** copié à l'étape précédente.
+   - **Client ID** : Collez le Client ID de l'application Frontegg — il s'agit du même **"ID"** copié à l'étape précédente.
+   - **Client Secret** : Collez le Client Secret de l'application Frontegg — il s'agit de la même **"API key"** copiée à l'étape précédente.
+   - **Scopes** : Ajoutez les scopes que vous souhaitez utiliser. Les scopes par défaut sont `openid`, `profile` et `email`. Vous n'avez pas besoin de les modifier, mais vous pouvez le faire si vous le souhaitez.
+
+<ZoomableImage
+  src="/assets/v3/oidc/frontegg/edit-frontegg.png"
+  alt="Modifier le fournisseur Frontegg"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+### Options de configuration avancées
+
+Configurez des paramètres supplémentaires pour personnaliser le comportement de l'authentification :
+
+**Auto Registration** : Activez cette option pour créer automatiquement des comptes utilisateurs lors de la première authentification.
+
+**Sort Order** : Contrôlez la position du bouton de connexion Frontegg par rapport aux autres fournisseurs d'authentification.
+
+**Icon** : vous pouvez choisir l'icône à utiliser pour le bouton de connexion Frontegg (par défaut : `TbEggs`).
+
+<ZoomableImage src="/assets/v3/oidc/frontegg/frontegg-icon.png" alt="Icône Frontegg" />
+
+> **Conseil développeur :** L'authentification Frontegg convient parfaitement aux organisations qui ont besoin d'une expérience développeur moderne et de fonctionnalités de sécurité de niveau entreprise.
+
+---
+
+## Liaison de comptes
+
+Par défaut, si un utilisateur est déjà inscrit dans OUITRANSFER avec son adresse e-mail Frontegg, il sera automatiquement lié à son compte OUITRANSFER.
+
+> **Remarque :** Vous ne pouvez pas désactiver la liaison de comptes. Si vous souhaitez dissocier un utilisateur de son compte Frontegg, vous devez le supprimer d'OUITRANSFER.
+
+---
+
+## Configuration technique
+
+La configuration technique de Frontegg est gérée automatiquement, mais comprendre la mise en place peut aider au dépannage :
+
+```yaml
+Provider Type: OAuth 2.0 with OIDC Discovery
+Issuer URL: https://your-tenant.frontegg.com
+Authorization Endpoint: /oauth/authorize
+Token Endpoint: /oauth/token
+UserInfo Endpoint: /oauth/userinfo
+Scopes: openid profile email
+```
+
+### Correspondances de champs
+
+OUITRANSFER mappe automatiquement les informations utilisateur Frontegg vers les comptes utilisateurs locaux :
+
+- **User ID** : Provient du champ `sub` de Frontegg
+- **Email** : Provient du champ `email` de Frontegg
+- **Full Name** : Provient du champ `name` de Frontegg
+- **First Name** : Provient du champ `given_name` de Frontegg
+- **Last Name** : Provient du champ `family_name` de Frontegg
+- **Avatar** : Provient du champ `picture` de Frontegg
+- **Username** : Provient du champ `preferred_username` de Frontegg
+
+### Fonctionnalités spécifiques à Frontegg
+
+- **Custom Claims** : Peuvent inclure des métadonnées utilisateur personnalisées et des métadonnées d'application
+- **Themes Support** : Permet de personnaliser l'interface d'authentification avec des thèmes personnalisés
+- **Multi-factor Authentication** : Prend en charge les fonctionnalités MFA de Frontegg
+- **Enterprise SSO** : S'intègre avec SAML, LDAP et d'autres systèmes d'entreprise
+- **Modern APIs** : API REST claires et SDK complets
+
+---
+
+## Test de la configuration
+
+### Vérification de la configuration
+
+Après avoir configuré l'authentification Frontegg, testez l'intégration pour vous assurer que tout fonctionne correctement.
+
+1. **Vérifier la page de connexion** : Accédez à la page de connexion OUITRANSFER et vérifiez que le bouton "Sign in with Frontegg" apparaît
+
+2. **Tester le flux d'authentification** : Cliquez sur le bouton de connexion Frontegg et terminez le processus d'authentification
+
+3. **Vérifier la création de l'utilisateur** : Confirmez qu'un nouveau compte utilisateur est créé (si l'inscription automatique est activée)
+
+### Vérification du flux de connexion
+
+Le processus d'authentification complet doit fonctionner comme suit :
+
+1. **L'utilisateur clique sur "Sign in with Frontegg"** : Le navigateur est redirigé vers la page d'autorisation de Frontegg
+2. **L'utilisateur s'authentifie** : L'utilisateur termine l'authentification via Frontegg (connexion, MFA, etc.)
+3. **Frontegg redirige vers OUITRANSFER** : L'utilisateur revient sur OUITRANSFER avec les jetons d'authentification
+4. **OUITRANSFER crée ou met à jour l'utilisateur** : Le compte utilisateur est géré automatiquement avec les informations Frontegg
+5. **L'utilisateur accède à OUITRANSFER** : L'utilisateur est connecté avec son identité Frontegg
+
+---
+
+## Résolution des problèmes courants
+
+### Erreur de non-concordance de l'URI de redirection
+
+**Message d'erreur** : `invalid_redirect_uri`
+
+**Cause** : L'URI de redirection de votre requête ne correspond pas à celle configurée dans l'application Frontegg.
+
+**Solution** :
+
+1. Vérifiez l'URL exacte dans le message d'erreur
+2. Ajoutez cette URL exacte aux URI de redirection de votre application Frontegg
+3. Assurez-vous d'inclure le bon protocole (http/https) et le bon port
+4. Supprimez les barres obliques finales sauf si elles font partie de l'URL de rappel
+
+### Erreur d'accès refusé
+
+**Message d'erreur** : `access_denied`
+
+**Cause** : L'utilisateur a refusé les autorisations ou l'application n'est pas correctement configurée.
+
+**Solution** :
+
+1. Vérifiez que votre application Frontegg demande les scopes corrects
+2. Assurez-vous que les utilisateurs accordent les autorisations pendant le flux d'autorisation
+3. Vérifiez que votre application n'est pas restreinte ou désactivée
+4. Vérifiez que l'application dispose des autorisations appropriées
+
+### Erreur de client non valide
+
+**Message d'erreur** : `invalid_client`
+
+**Cause** : Client ID, Client Secret ou domaine incorrect.
+
+**Solution** :
+
+1. Vérifiez que vous avez copié correctement les identifiants depuis Frontegg
+2. Assurez-vous qu'il n'y a pas d'espaces ou de caractères supplémentaires dans les identifiants
+3. Vérifiez que vous utilisez le bon format de domaine (ex. : `your-tenant.frontegg.com`)
+4. Générez un nouveau Client Secret si nécessaire
+
+### Problèmes de configuration de domaine
+
+**Message d'erreur** : Domaine introuvable ou non valide
+
+**Cause** : Domaine Frontegg incorrect ou configuration du tenant erronée.
+
+**Solution** :
+
+1. Vérifiez que votre domaine Frontegg est correct (ex. : `your-tenant.frontegg.com`)
+2. Assurez-vous que votre tenant Frontegg est actif et non suspendu
+3. Vérifiez que vous utilisez la bonne région pour votre tenant
+4. Vérifiez la résolution DNS de votre domaine Frontegg
+
+### Claims personnalisés indisponibles
+
+**Cause** : Les claims personnalisés ne sont pas correctement configurés dans Frontegg.
+
+**Solution** :
+
+1. Vérifiez la configuration des claims personnalisés dans Frontegg
+2. Vérifiez que les claims personnalisés sont inclus dans le jeton ID
+3. Assurez-vous que les claims sont correctement formatés et accessibles
+4. Testez avec un utilisateur possédant les claims personnalisés attendus
+
+---
+
+## Bonnes pratiques de sécurité
+
+### Gestion des identifiants
+
+- **Ne jamais exposer les secrets** : Gardez votre Client Secret sécurisé et ne le committez jamais dans un système de gestion de version
+- **Rotation régulière des identifiants** : Générez régulièrement de nouveaux Client Secrets pour renforcer la sécurité
+- **Utiliser des variables d'environnement** : Stockez les configurations sensibles dans des variables d'environnement, pas dans des fichiers de configuration
+- **Surveiller les journaux d'accès** : Examinez régulièrement les journaux d'authentification pour détecter toute activité suspecte
+
+### Gestion des scopes et des autorisations
+
+- **Scopes minimaux** : Demandez uniquement les scopes `openid`, `profile` et `email` requis par OUITRANSFER
+- **Consentement des utilisateurs** : Assurez-vous que les utilisateurs comprennent les autorisations qu'ils accordent
+- **Audits réguliers** : Examinez quels utilisateurs ont connecté leurs comptes Frontegg
+- **Revues d'accès** : Vérifiez périodiquement les accès des utilisateurs et supprimez les comptes inactifs
+
+### Considérations pour la production
+
+- **Utiliser HTTPS** : Utilisez toujours HTTPS dans les environnements de production
+- **Configurer les bons domaines** : Utilisez les domaines de production dans les paramètres de l'application Frontegg
+- **Tester minutieusement** : Vérifiez le flux d'authentification complet avant la mise en production
+- **Prévoir les pannes** : Disposez de méthodes d'authentification de secours
+
+---
+
+## Prochaines étapes
+
+Avec l'authentification Frontegg configurée, vous pourriez souhaiter :
+
+- **Configurer des fournisseurs supplémentaires** : Mettre en place d'autres fournisseurs OIDC pour plus d'options d'authentification
+- **Personnaliser la gestion des utilisateurs** : Affiner les règles d'inscription automatique et d'attribution des droits administrateur
+- **Vérifier les paramètres de sécurité** : S'assurer que votre configuration d'authentification répond à vos exigences de sécurité
+- **Surveiller l'utilisation** : Suivre les schémas d'authentification et l'activité des utilisateurs
+
+Pour plus d'informations sur l'authentification OIDC dans OUITRANSFER, consultez la [vue d'ensemble de l'authentification OIDC](/docs/v1-beta/oidc-authentication).
+
+## Ressources utiles
+
+- [Documentation Frontegg](https://docs.frontegg.com)
+- [Guide OAuth 2.0 Frontegg](https://docs.frontegg.com/oauth2)
+- [OpenID Connect Frontegg](https://docs.frontegg.com/openid-connect)
+- [Portail d'administration Frontegg](https://admin.frontegg.com)

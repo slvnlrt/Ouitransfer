@@ -1,0 +1,384 @@
+---
+title: Authentik
+icon: Key
+---
+
+import { ZoomableImage } from "@/components/ui/zoomable-image";
+
+Authentik est l'un des fournisseurs OIDC officiellement pris en charge par OUITRANSFER, offrant une authentification de niveau entreprise via la plateforme d'identité Authentik. Cette intégration permet aux utilisateurs de se connecter à OUITRANSFER grâce au système d'authentification complet d'Authentik, ce qui en fait une solution idéale pour les organisations d'entreprise, les applications nécessitant des fonctionnalités de sécurité avancées, et les équipes souhaitant un contrôle total sur leur infrastructure d'authentification.
+
+<ZoomableImage src="/assets/v3/oidc/authentik/sign-in-with-authentik.png" alt="Connexion avec Authentik" />
+
+## Pourquoi utiliser l'authentification Authentik ?
+
+L'authentification Authentik offre plusieurs avantages pour les organisations d'entreprise et axées sur la sécurité :
+
+- **Contrôle auto-hébergé total** - Maîtrise complète de votre infrastructure d'authentification et de vos données
+- **Sécurité de niveau entreprise** - Fonctionnalités de sécurité avancées telles que MFA, authentification adaptative et détection des menaces
+- **Gestion centralisée des identités** - Plateforme unique pour gérer les utilisateurs de plusieurs applications
+- **Conformité intégrée** - Conforme au RGPD, SOC 2 et autres normes d'entreprise
+- **Personnalisation avancée** - Politiques, flux et capacités de personnalisation de l'interface
+
+---
+
+## Prérequis
+
+Avant de configurer l'authentification Authentik, assurez-vous de disposer des éléments suivants :
+
+- **Instance Authentik** - Installation Authentik auto-hébergée en cours d'exécution et accessible
+- **Privilèges administrateur dans OUITRANSFER** - Requis pour configurer les paramètres OIDC
+- **Configuration de domaine** - Pour les déploiements en production avec des domaines personnalisés
+
+> **Remarque :** Authentik est préconfiguré en tant que fournisseur officiel dans OUITRANSFER, ce qui signifie que la configuration technique est gérée automatiquement. Vous n'avez qu'à fournir vos identifiants OAuth.
+
+---
+
+## Configuration du fournisseur OAuth2/OpenID Authentik
+
+### Créer un fournisseur OAuth2/OpenID Authentik
+
+Pour commencer avec l'authentification Authentik, vous devez créer un fournisseur OAuth2/OpenID dans l'interface d'administration Authentik.
+
+1. **Accéder à l'interface d'administration Authentik** : Rendez-vous sur l'URL de votre instance Authentik (ex. : `https://your-authentik-domain.com`)
+
+<ZoomableImage src="/assets/v3/oidc/authentik/authentik-admin.png" alt="Interface d'administration Authentik" />
+
+2. **Créer un nouveau fournisseur OAuth2/OpenID** : Cliquez sur **"Applications"** dans la barre latérale gauche, puis sur **"Providers"** et enfin sur **"+ Create"**
+
+<ZoomableImage src="/assets/v3/oidc/authentik/create-provider.png" alt="Créer un fournisseur Authentik" />
+
+3. **Sélectionner le type de fournisseur** : Choisissez **"OAuth2/OpenID Provider"** pour l'authentification OIDC et cliquez sur le bouton **"Next"**.
+
+<ZoomableImage
+  src="/assets/v3/oidc/authentik/provider-type.png"
+  alt="Sélection du type de fournisseur Authentik"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+### Configurer les paramètres du fournisseur
+
+1. **Renseigner les détails du fournisseur** :
+   - **Name** : Saisissez un nom explicite, par exemple "OUITRANSFER File Sharing"
+   - **Authorization Flow** : sélectionnez **default-provider-authorization-explicit-consent (Authorize Application)**
+   - **Protocol Settings (Client type)** : sélectionnez **Confidential**
+   - **Protocol Settings (Client ID)** : Copiez le Client ID depuis le champ Authentik (vous pouvez le modifier) - `(Copiez cette valeur et sauvegardez-la pour une utilisation ultérieure)`
+   - **Protocol Settings (Client Secret)** : Copiez le Client Secret depuis le champ Authentik (vous pouvez le modifier) - `(Copiez cette valeur et sauvegardez-la pour une utilisation ultérieure)`
+   - **Protocol Settings (Redirect URIs/Origins (RegEx))** : Sélectionnez 'Strict' et ajoutez l'URI de redirection de votre application (ex. : `https://your-OUITRANSFER-domain.com/api/auth/providers/authentik/callback`) — un exemple d'URI de redirection est affiché sous le champ.
+   - **Protocol Settings (Signing key)** : sélectionnez **"authentik Self-signed Certificate"**
+
+<ZoomableImage
+  src="/assets/v3/oidc/authentik/provider-settings-1.png"
+  alt="Paramètres du fournisseur Authentik"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+<ZoomableImage
+  src="/assets/v3/oidc/authentik/provider-settings-2.png"
+  alt="Paramètres du fournisseur Authentik"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+2. **Configurer les URL du fournisseur** :
+
+Vous devez configurer plusieurs URL dans les paramètres de votre fournisseur Authentik. Voici ce qu'il faut ajouter pour chaque environnement :
+
+### URI de redirection
+
+| Environnement     | URL                                                                 |
+| ----------------- | ------------------------------------------------------------------- |
+| Production        | `https://yourdomain.com/api/auth/providers/authentik/callback`      |
+| Développement     | `http://localhost:3000/api/auth/providers/authentik/callback`       |
+| Port personnalisé | `https://yourdomain.com:5487/api/auth/providers/authentik/callback` |
+
+> **Remarque :** Remplacez `yourdomain.com` par votre nom de domaine réel dans toutes les URL de production et à port personnalisé.
+> **Remarque :** Vous pouvez ajouter plusieurs URI de redirection pour différents environnements (développement, staging, production).
+
+**Sauvegarder les modifications** : Cliquez sur **"Finish"** pour appliquer votre configuration.
+
+> **Remarque :** Vous pouvez configurer d'autres paramètres pour le fournisseur si vous le souhaitez, mais les paramètres nécessaires sont déjà configurés à cette étape.
+
+Après avoir cliqué sur **"Finish"**, votre fournisseur apparaîtra dans la liste des fournisseurs avec un message d'avertissement du type : « Warning: Provider not assigned to any application. ».
+
+<ZoomableImage
+  src="/assets/v3/oidc/authentik/warning-message.png"
+  alt="Message d'avertissement du fournisseur Authentik"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+### Créer une application avec le fournisseur créé
+
+Après la création de votre fournisseur, vous devez créer une application qui l'utilise. Pour ce faire, cliquez sur **"Applications"** dans la barre latérale gauche, puis sur **"+ Create"**.
+
+<ZoomableImage
+  src="/assets/v3/oidc/authentik/applications-page.png"
+  alt="Page des applications Authentik"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+1. **Configurer l'application** :
+
+- **Name** : Saisissez un nom explicite, par exemple "OUITRANSFER File Sharing"
+- **Slug** : Saisissez un identifiant unique (ex. : `OUITRANSFER-file-sharing`)
+- **Provider** : Sélectionnez le fournisseur que vous venez de créer dans la liste des fournisseurs.
+
+<ZoomableImage
+  src="/assets/v3/oidc/authentik/application-modal.png"
+  alt="Fenêtre de création d'application Authentik"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+Les autres champs ne sont pas importants pour l'instant, vous pouvez les laisser tels quels. Si vous souhaitez modifier quelque chose, vous pouvez le faire.
+
+2. **Sauvegarder l'application** : Cliquez sur **"Create"** pour enregistrer l'application.
+
+<ZoomableImage
+  src="/assets/v3/oidc/authentik/application-modal.png"
+  alt="Fenêtre de création d'application Authentik"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+### Dernière étape dans Authentik
+
+La dernière étape dans Authentik consiste à récupérer l'URL de votre instance. Vous la trouverez en cliquant sur **"providers"** dans le menu latéral, onglet **"overview"**.
+
+<ZoomableImage
+  src="/assets/v3/oidc/authentik/provider-overview.png"
+  alt="URL de l'instance Authentik"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+Vous n'avez pas besoin de copier l'URL complète, seulement le nom de domaine avec le protocole et le port si vous utilisez un port personnalisé.
+Par exemple : `https://your-authentik-domain.com`.
+
+> **Remarque :** La configuration dans Authentik est terminée. Passons maintenant à OUITRANSFER pour configurer le fournisseur. Rappel : vous aurez besoin du `Client ID`, du `Client Secret` et de l'`Instance URL` pour configurer le fournisseur dans OUITRANSFER.
+
+---
+
+## Configuration d'OUITRANSFER
+
+### Accéder aux paramètres OIDC
+
+Pour configurer l'authentification Authentik dans OUITRANSFER, vous devez disposer d'un accès administrateur au panneau de paramètres.
+
+1. **Se connecter en tant qu'administrateur** : Connectez-vous à OUITRANSFER avec un compte administrateur
+
+2. **Accéder aux paramètres** : Cliquez sur votre photo de profil dans l'en-tête et sélectionnez **Settings**
+
+3. **Naviguer vers l'authentification** : Trouvez et cliquez sur la section de configuration **Authentication Providers**
+
+<ZoomableImage src="/assets/v3/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
+
+### Activer le fournisseur Authentik
+
+Authentik est préconfiguré en tant que fournisseur officiel, ce qui simplifie le processus de configuration.
+
+1. **Localiser le fournisseur Authentik** : Trouvez Authentik dans la liste des fournisseurs disponibles
+
+2. **Activer le fournisseur** : Basculez le statut sur **Enabled**
+
+<ZoomableImage src="/assets/v3/oidc/authentik/enabled-authentik.png" alt="Fournisseur Authentik OUITRANSFER activé" />
+
+Après avoir activé le fournisseur, cliquez sur l'icône en forme de crayon pour le configurer.
+
+3. **Configurer les identifiants** :
+   - **Provider URL** : Collez l'URL de votre instance Authentik (ex. : `https://your-authentik-domain.com`)
+   - **Client ID** : Collez le Client ID de votre fournisseur Authentik
+   - **Client Secret** : Collez le Client Secret de votre fournisseur Authentik
+   - **Scopes** : Ajoutez les scopes que vous souhaitez utiliser. Les scopes par défaut sont `openid`, `profile` et `email`. Il n'est pas nécessaire de les modifier si vous n'êtes pas sûr.
+
+<ZoomableImage
+  src="/assets/v3/oidc/authentik/edit-authentik.png"
+  alt="Modifier le fournisseur Authentik"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+### Options de configuration avancées
+
+Configurez des paramètres supplémentaires pour personnaliser le comportement de l'authentification :
+
+**Auto Registration** : Activez cette option pour créer automatiquement des comptes utilisateurs lors de la première authentification.
+
+**Sort Order** : Contrôlez l'ordre d'affichage du bouton de connexion Authentik par rapport aux autres fournisseurs d'authentification.
+
+**Icon** : Vous pouvez choisir l'icône à utiliser pour le bouton de connexion Authentik (la valeur par défaut est `FaShieldAlt`).
+
+<ZoomableImage src="/assets/v3/oidc/authentik/authentik-icon.png" alt="Icône Authentik" />
+
+---
+
+## Liaison de comptes
+
+Par défaut, si un utilisateur est déjà inscrit dans OUITRANSFER avec son adresse e-mail Authentik, il sera automatiquement lié à son compte OUITRANSFER.
+
+> **Remarque :** Il n'est pas possible de désactiver la liaison de comptes. Si vous souhaitez dissocier un utilisateur de son compte Authentik, vous devez supprimer l'utilisateur d'OUITRANSFER.
+
+---
+
+## Configuration technique
+
+La configuration technique d'Authentik est gérée automatiquement, mais comprendre le paramétrage peut aider lors du dépannage :
+
+```yaml
+Provider Type: OAuth 2.0 with OIDC Discovery
+Issuer URL: https://your-authentik-domain.com
+Authorization Endpoint: /application/o/authorize
+Token Endpoint: /application/o/token
+UserInfo Endpoint: /application/o/userinfo
+Scopes: openid profile email
+```
+
+### Correspondances de champs
+
+OUITRANSFER mappe automatiquement les informations utilisateur Authentik vers les comptes utilisateurs locaux :
+
+- **User ID** : Correspond au champ `sub` d'Authentik
+- **Email** : Correspond au champ `email` d'Authentik
+- **Full Name** : Correspond au champ `name` d'Authentik
+- **First Name** : Correspond au champ `given_name` d'Authentik
+- **Last Name** : Correspond au champ `family_name` d'Authentik
+- **Avatar** : Correspond au champ `picture` d'Authentik
+- **Username** : Correspond au champ `preferred_username` d'Authentik
+
+### Fonctionnalités spécifiques à Authentik
+
+- **Claims personnalisés** : Possibilité d'inclure des métadonnées utilisateur et des métadonnées d'application personnalisées
+- **Support des politiques** : Possibilité de personnaliser le flux d'authentification avec des politiques sur mesure
+- **Authentification multifacteur** : Prend en charge les fonctionnalités MFA d'Authentik
+- **SSO d'entreprise** : Intégration avec SAML, LDAP et autres systèmes d'entreprise
+- **Auto-hébergé uniquement** : Contrôle total sur votre infrastructure d'authentification
+
+---
+
+## Test de la configuration
+
+### Vérifier la configuration
+
+Après avoir configuré l'authentification Authentik, testez l'intégration pour vous assurer que tout fonctionne correctement.
+
+1. **Vérifier la page de connexion** : Accédez à la page de connexion de votre instance OUITRANSFER et vérifiez que le bouton "Sign in with Authentik" apparaît
+
+2. **Tester le flux d'authentification** : Cliquez sur le bouton de connexion Authentik et effectuez le processus d'authentification
+
+3. **Vérifier la création du compte** : Confirmez qu'un nouveau compte utilisateur est créé (si l'inscription automatique est activée)
+
+### Vérification du flux de connexion
+
+Le processus d'authentification complet doit se dérouler comme suit :
+
+1. **L'utilisateur clique sur "Sign in with Authentik"** : Le navigateur redirige vers la page d'autorisation d'Authentik
+2. **L'utilisateur s'authentifie** : L'utilisateur complète l'authentification via Authentik (connexion, MFA, etc.)
+3. **Authentik redirige vers OUITRANSFER** : L'utilisateur revient sur OUITRANSFER avec les jetons d'authentification
+4. **OUITRANSFER crée ou met à jour l'utilisateur** : Le compte utilisateur est géré automatiquement avec les informations Authentik
+5. **L'utilisateur accède à OUITRANSFER** : L'utilisateur est connecté avec son identité Authentik
+
+---
+
+## Résolution des problèmes courants
+
+### Erreur de non-concordance de l'URI de redirection
+
+**Message d'erreur** : `invalid_redirect_uri`
+
+**Cause** : L'URI de redirection dans votre requête ne correspond pas à celle configurée dans le fournisseur Authentik.
+
+**Solution** :
+
+1. Vérifiez l'URL exacte indiquée dans le message d'erreur
+2. Ajoutez cette URL exacte aux URI de redirection de votre fournisseur Authentik
+3. Assurez-vous d'inclure le protocole correct (http/https) et le port
+4. Supprimez les barres obliques de fin sauf si elles font partie de l'URL de rappel
+
+### Erreur d'accès refusé
+
+**Message d'erreur** : `access_denied`
+
+**Cause** : L'utilisateur a refusé les permissions ou le fournisseur n'est pas correctement configuré.
+
+**Solution** :
+
+1. Vérifiez que votre fournisseur Authentik demande les scopes corrects
+2. Assurez-vous que les utilisateurs accordent les permissions lors du flux d'autorisation
+3. Vérifiez que votre fournisseur n'est pas restreint ou désactivé
+4. Confirmez que le fournisseur dispose des permissions appropriées
+
+### Erreur de client invalide
+
+**Message d'erreur** : `invalid_client`
+
+**Cause** : Client ID, Client Secret ou URL d'instance incorrects.
+
+**Solution** :
+
+1. Vérifiez que vous avez correctement copié les identifiants depuis Authentik
+2. Assurez-vous qu'il n'y a pas d'espaces superflus ou de caractères parasites dans les identifiants
+3. Vérifiez que vous utilisez le format d'URL d'instance correct
+4. Générez un nouveau Client Secret si nécessaire
+
+### Problèmes de configuration de l'URL d'instance
+
+**Message d'erreur** : Instance not found or invalid
+
+**Cause** : URL d'instance Authentik incorrecte ou configuration de l'instance défaillante.
+
+**Solution** :
+
+1. Vérifiez que l'URL de votre instance Authentik est correcte
+2. Assurez-vous que votre instance Authentik est active et accessible
+3. Vérifiez que vous utilisez le protocole correct (https://)
+4. Vérifiez la résolution DNS de votre instance Authentik
+
+### Problèmes de connectivité auto-hébergée
+
+**Cause** : Problèmes de connectivité réseau avec l'instance Authentik auto-hébergée.
+
+**Solution** :
+
+1. Vérifiez le pare-feu du serveur et la connectivité réseau
+2. Vérifiez la résolution DNS de votre serveur vers l'instance Authentik
+3. Assurez-vous que l'instance Authentik est correctement configurée et en cours d'exécution
+4. Vérifiez la validité du certificat SSL de l'instance Authentik
+
+---
+
+## Bonnes pratiques de sécurité
+
+### Gestion des identifiants
+
+- **Ne jamais exposer les secrets** : Gardez votre Client Secret sécurisé et ne le commitez jamais dans un système de contrôle de version
+- **Faire tourner les identifiants régulièrement** : Générez de nouveaux Client Secrets périodiquement pour renforcer la sécurité
+- **Utiliser des variables d'environnement** : Stockez la configuration sensible dans des variables d'environnement, pas dans des fichiers de configuration
+- **Surveiller les journaux d'accès** : Examinez régulièrement les journaux d'authentification pour détecter toute activité suspecte
+
+### Gestion des scopes et des permissions
+
+- **Scopes minimaux** : Ne demandez que les scopes `openid`, `profile` et `email` requis par OUITRANSFER
+- **Consentement des utilisateurs** : Assurez-vous que les utilisateurs comprennent les permissions qu'ils accordent
+- **Audits réguliers** : Vérifiez quels utilisateurs ont connecté leur compte Authentik
+- **Révisions des accès** : Vérifiez périodiquement les accès utilisateurs et supprimez les comptes inactifs
+
+### Considérations en production
+
+- **Utiliser HTTPS** : Utilisez toujours HTTPS dans les environnements de production
+- **Configurer les domaines appropriés** : Utilisez des domaines de production dans les paramètres du fournisseur Authentik
+- **Tester minutieusement** : Vérifiez le flux d'authentification complet avant la mise en production
+- **Prévoir les défaillances** : Disposez de méthodes d'authentification de secours
+
+---
+
+## Prochaines étapes
+
+Une fois l'authentification Authentik configurée, vous pourriez vouloir :
+
+- **Configurer des fournisseurs supplémentaires** : Mettez en place d'autres fournisseurs OIDC pour plus d'options d'authentification
+- **Personnaliser la gestion des utilisateurs** : Affinez les règles d'inscription automatique et d'attribution des rôles administrateur
+- **Revoir les paramètres de sécurité** : Assurez-vous que votre configuration d'authentification répond à vos exigences de sécurité
+- **Surveiller l'utilisation** : Suivez les schémas d'authentification et l'activité des utilisateurs
+
+Pour plus d'informations sur l'authentification OIDC dans OUITRANSFER, consultez la [vue d'ensemble de l'authentification OIDC](/docs/v1-beta/oidc-authentication).
+
+## Ressources utiles
+
+- [Documentation Authentik](https://goauthentik.io/docs)
+- [Fournisseur OAuth2/OpenID Authentik](https://goauthentik.io/docs/providers/oauth2)
+- [Guide d'installation Authentik](https://goauthentik.io/docs/installation)
+- [Interface d'administration Authentik](https://goauthentik.io/docs/administration)

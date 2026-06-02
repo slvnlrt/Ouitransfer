@@ -35,8 +35,7 @@
         "src/components/ui/*.{ts,tsx}"
       ],
       "project": ["src/**/*.{ts,tsx}"],
-      "ignoreDependencies": ["tailwindcss", "tw-animate-css"],
-      "ignoreFiles": ["src/components/V1BetaModal.tsx"]
+      "ignoreDependencies": ["tailwindcss", "tw-animate-css"]
     }
   }
 }

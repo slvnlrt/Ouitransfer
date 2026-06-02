@@ -1,0 +1,404 @@
+---
+title: Démarrage rapide (Docker)
+icon: "Rocket"
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+import { Card, CardGrid } from "@/components/ui/card";
+
+Ce guide vous permet de passer de zéro à une instance OUITRANSFER opérationnelle en environ 5 minutes. À la fin, l'interface web sera accessible à l'adresse **`http://YOUR_IP:5487`**, avec le stockage, l'API et le frontend qui fonctionnent et communiquent entre eux.
+
+## Prérequis
+
+Avant de commencer, assurez-vous de disposer de :
+
+- **Docker** — Environnement d'exécution de conteneurs ([guide d'installation](https://docs.docker.com/get-docker/))
+- **Docker Compose** — Orchestration multi-conteneurs ([guide d'installation](https://docs.docker.com/compose/install/))
+- **2 Go+ d'espace disque disponible** pour l'application et vos fichiers
+
+**Ports à rendre disponibles :**
+- **5487** — Interface web (requis)
+- **9000** — Service de stockage. Les navigateurs téléversent et téléchargent les fichiers directement sur ce port lors de l'utilisation du stockage intégré. Non requis si vous utilisez un fournisseur S3 externe ou un proxy inverse qui expose le stockage sur un domaine.
+- **3333** — Serveur API, usage interne uniquement. Ne l'exposez que si vous souhaitez un accès direct à l'API ou à sa documentation.
+
+<Callout>
+  **Support des plateformes** : Grâce à l'architecture conteneurisée de Docker, OUITRANSFER peut être
+  déployé sur n'importe quelle plateforme prenant en charge Docker — Linux, macOS, Windows, périphériques NAS
+  et machines virtuelles cloud. Pour ceux qui ne connaissent pas Docker : il regroupe l'ensemble de
+  l'application et ses dépendances dans des conteneurs isolés, rendant le système d'exploitation hôte très
+  peu important. Cela dit, **un serveur Linux est recommandé pour la production** — il offre de
+  meilleures performances d'E/S, une surcharge moindre et un comportement plus prévisible pour les
+  charges de travail de conteneurs longue durée.
+</Callout>
+
+## Fonctionnement
+
+OUITRANSFER s'exécute sous la forme de trois conteneurs Docker qui démarrent en séquence :
+
+| Service | Image | Port | Description |
+|---------|-------|------|-------------|
+| **storage** | `rustfs/rustfs:latest` | 9000 | Stockage objet compatible S3 (RustFS) |
+| **server** | `ghcr.io/slvnlrt/ouitransfer-server:latest` | 3333 | Serveur API Fastify |
+| **web** | `ghcr.io/slvnlrt/ouitransfer-web:latest` | 5487 | Frontend web Next.js |
+
+Docker Compose gère automatiquement l'ordre de démarrage : le stockage démarre en premier, puis le serveur (une fois le stockage opérationnel), puis le frontend web (une fois le serveur opérationnel). Au premier démarrage, le serveur crée la base de données et initialise la configuration de base automatiquement.
+
+---
+
+## Étape 1 — Générez vos secrets
+
+OUITRANSFER requiert trois secrets cryptographiques indépendants. Exécutez cette commande trois fois séparément et sauvegardez chaque résultat :
+
+```bash
+openssl rand -hex 32
+```
+
+Vous utiliserez les trois valeurs comme `JWT_SECRET`, `CSRF_SECRET` et `COOKIE_SECRET` à l'étape suivante. Ils **doivent tous être différents** les uns des autres.
+
+<Callout type="warn">
+  Ne réutilisez pas la même valeur pour plusieurs secrets. Chacun doit être unique.
+</Callout>
+
+---
+
+## Étape 2 — Configurez votre environnement
+
+Créez un fichier `.env` à partir de l'exemple fourni :
+
+```bash
+cp .env.docker.example .env
+```
+
+Ouvrez `.env` dans un éditeur de texte et renseignez les valeurs suivantes :
+
+```bash
+# ── URLs publiques ────────────────────────────────────────────────────────────
+# Ces URLs doivent être accessibles depuis le NAVIGATEUR de l'utilisateur.
+# "localhost" ne fonctionne que si le navigateur tourne sur la même machine que Docker.
+
+# URL où les utilisateurs accèdent à l'application. Utilisée pour le CORS sur l'API et le service de stockage.
+FRONTEND_ORIGIN=http://192.168.1.100:5487
+
+# URL utilisée par les navigateurs pour téléverser et télécharger les fichiers (accès S3 direct via URLs présignées).
+# Dans la plupart des configurations, même IP que ci-dessus mais sur le port 9000.
+STORAGE_PUBLIC_URL=http://192.168.1.100:9000
+
+# ── Identifiants de stockage S3 ───────────────────────────────────────────────
+# Partagés entre le conteneur de stockage RustFS et le serveur API.
+# Non visibles par les utilisateurs — choisissez n'importe quelle chaîne, gardez-les cohérents entre les deux.
+S3_ACCESS_KEY=my-access-key
+S3_SECRET_KEY=my-secret-key
+
+# ── Secrets de sécurité ───────────────────────────────────────────────────────
+# Collez les trois valeurs générées à l'étape 1.
+JWT_SECRET=<first openssl output>
+CSRF_SECRET=<second openssl output>
+COOKIE_SECRET=<third openssl output>
+```
+
+<Callout type="info">
+  **Vous utilisez la même machine ?** Si votre navigateur et Docker sont sur le même hôte, utilisez `localhost` :
+  ```bash
+  FRONTEND_ORIGIN=http://localhost:5487
+  STORAGE_PUBLIC_URL=http://localhost:9000
+  ```
+</Callout>
+
+<Callout type="info">
+  **Pourquoi deux variables d'URL ?** OUITRANSFER génère des URLs présignées — des URLs signées de courte durée
+  que les navigateurs utilisent pour téléverser et télécharger des fichiers **directement** depuis le service de
+  stockage, en contournant le serveur API. Les deux variables doivent être des adresses accessibles depuis le
+  **navigateur de l'utilisateur**, et non des noms d'hôtes Docker internes comme `server:3333` ou `storage:9000`.
+
+  Chaque variable se propage vers deux variables d'environnement internes dans le fichier Docker Compose :
+  - `FRONTEND_ORIGIN` → `CORS_ORIGINS` sur le serveur API + `RUSTFS_CORS_ALLOWED_ORIGINS` sur le stockage
+  - `STORAGE_PUBLIC_URL` → `STORAGE_URL` sur le serveur API (intégrée dans les URLs présignées) + `CSP_STORAGE_ORIGINS` sur le conteneur web
+
+  Pour une explication détaillée, notamment pour les configurations avec proxy inverse où le stockage
+  est accessible via un domaine, consultez
+  [Configuration des URLs](/docs/v1-beta/reverse-proxy-configuration#url-configuration).
+</Callout>
+
+---
+
+## Étape 3 — Créez votre docker-compose.yml
+
+Créez un fichier `docker-compose.yml` dans le même répertoire que votre `.env` :
+
+```yaml
+services:
+  # ─── Stockage objet compatible S3 ────────────────────────────
+  storage:
+    image: rustfs/rustfs:latest
+    container_name: ouitransfer-storage
+    environment:
+      RUSTFS_VOLUMES: /data
+      RUSTFS_ACCESS_KEY: "${S3_ACCESS_KEY}"
+      RUSTFS_SECRET_KEY: "${S3_SECRET_KEY}"
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_CORS_ALLOWED_ORIGINS: "${FRONTEND_ORIGIN}"
+    volumes:
+      - storage_data:/data
+    ports:
+      - "9000:9000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:9000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  # ─── Serveur API Fastify ─────────────────────────────────────
+  server:
+    image: ghcr.io/slvnlrt/ouitransfer-server:latest
+    container_name: ouitransfer-server
+    environment:
+      S3_ENDPOINT: storage       # Nom du service Docker — ne pas modifier
+      S3_PORT: "9000"
+      S3_USE_SSL: "false"
+      S3_ACCESS_KEY: "${S3_ACCESS_KEY}"
+      S3_SECRET_KEY: "${S3_SECRET_KEY}"
+      S3_BUCKET_NAME: ouitransfer-files
+      S3_REGION: auto
+      S3_FORCE_PATH_STYLE: "true"
+      STORAGE_URL: "${STORAGE_PUBLIC_URL}"
+      JWT_SECRET: "${JWT_SECRET}"
+      CSRF_SECRET: "${CSRF_SECRET}"
+      COOKIE_SECRET: "${COOKIE_SECRET}"
+      CORS_ORIGINS: "${FRONTEND_ORIGIN}"
+    volumes:
+      - server_data:/app/server
+    ports:
+      - "3333:3333"              # Optionnel : retirez si vous n'avez pas besoin d'un accès direct à l'API
+    depends_on:
+      storage:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3333/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+  # ─── Frontend web Next.js ────────────────────────────────────
+  web:
+    image: ghcr.io/slvnlrt/ouitransfer-web:latest
+    container_name: ouitransfer-web
+    environment:
+      API_BASE_URL: "http://server:3333"   # Réseau Docker interne — ne pas modifier
+      JWT_SECRET: "${JWT_SECRET}"
+      CSP_STORAGE_ORIGINS: "${STORAGE_PUBLIC_URL}"
+    ports:
+      - "5487:5487"
+    depends_on:
+      server:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  storage_data:
+  server_data:
+```
+
+Cette configuration utilise des **volumes nommés gérés par Docker** pour le stockage et les données du serveur — l'approche recommandée pour la plupart des déploiements. Docker gère automatiquement les permissions et les performances d'E/S sont optimales.
+
+<Callout type="info">
+  **Besoin d'un accès direct aux fichiers sur votre système hôte ?** (par ex. NAS, sauvegardes manuelles,
+  montages bind) Consultez la section [Montages bind](#montages-bind) en bas de cette page.
+</Callout>
+
+---
+
+## Étape 4 — Démarrez OUITRANSFER
+
+```bash
+docker compose up -d
+```
+
+Docker télécharge les images au premier démarrage (quelques centaines de Mo — cela peut prendre une minute selon votre connexion). Pour surveiller les journaux de démarrage en temps réel :
+
+```bash
+docker compose logs -f
+```
+
+Attendez que les journaux du serveur affichent `Fastify server listening`. Le premier démarrage exécute également les migrations de base de données et initialise la configuration de l'application automatiquement — aucune étape manuelle n'est nécessaire.
+
+---
+
+## Étape 5 — Accès et première configuration
+
+Ouvrez votre navigateur et accédez à :
+
+```
+http://YOUR_IP:5487
+```
+
+Remplacez `YOUR_IP` par la valeur que vous avez utilisée dans `FRONTEND_ORIGIN` (ou `localhost` si vous exécutez en local).
+
+**Création de votre compte administrateur :**
+
+Sur une installation fraîche, vous verrez la page de connexion. Cliquez sur **S'inscrire** pour créer le premier compte — le premier utilisateur inscrit obtient automatiquement les **privilèges d'administrateur**.
+
+<Callout type="warn">
+  **Inscrivez-vous immédiatement.** Si votre instance est accessible depuis un réseau local ou internet,
+  créez votre compte administrateur dès le premier démarrage pour éviter que quelqu'un d'autre
+  revendique l'accès administrateur.
+</Callout>
+
+Une fois connecté, explorez le panneau **Paramètres** (accessible depuis le menu de profil en haut à droite) pour configurer votre instance.
+
+---
+
+## Après la première connexion — Configuration recommandée
+
+### Personnalisez votre instance
+
+Accédez à **Paramètres → Général** pour définir le nom de votre application, votre logo et votre description. Ces éléments apparaissent dans toute l'interface et dans les emails de notification.
+
+### Configurez l'email (fortement recommandé)
+
+Accédez à **Paramètres → Email** pour configurer un serveur SMTP. Cela active :
+- **Réinitialisation du mot de passe** — les utilisateurs qui ont oublié leur mot de passe peuvent récupérer leur compte par email.
+- **Notifications de partage** — les destinataires reçoivent un email lorsqu'un fichier est partagé avec eux.
+
+Sans SMTP, les utilisateurs qui perdent l'accès à leur compte ne peuvent le récupérer sans intervention de l'administrateur.
+
+Consultez [Configuration SMTP](/docs/v1-beta/configuring-smtp) pour des instructions étape par étape.
+
+Si vous ne pouvez pas configurer SMTP pour l'instant, consultez [Réinitialisation du mot de passe sans SMTP](/docs/v1-beta/password-reset-without-smtp) pour la solution de contournement via l'administrateur.
+
+### Passage en production avec HTTPS ?
+
+Si vous déployez derrière un proxy inverse (Traefik, Nginx, Caddy) avec HTTPS :
+
+1. Ajoutez `SECURE_SITE=true` aux variables d'environnement du service **server** dans votre `docker-compose.yml`. Cela indique à l'API d'émettre des cookies avec le flag `Secure`, requis pour que les cookies fonctionnent en HTTPS.
+2. Définissez `FRONTEND_ORIGIN` et `STORAGE_PUBLIC_URL` avec vos URLs en `https://`.
+3. Configurez votre proxy inverse pour transmettre les requêtes vers les bons conteneurs.
+
+Consultez [Configuration du proxy inverse](/docs/v1-beta/reverse-proxy-configuration) pour un guide complet.
+
+---
+
+## Montages bind
+
+Si vous avez besoin que les fichiers de données résident à un chemin connu sur votre système hôte (utile pour les NAS, les outils de sauvegarde avec montages bind, ou l'inspection manuelle), remplacez les volumes nommés dans votre `docker-compose.yml` :
+
+```yaml
+# Remplacez ceci dans le service storage :
+volumes:
+  - ./storage-data:/data        # était : storage_data:/data
+
+# Remplacez ceci dans le service server :
+volumes:
+  - ./server-data:/app/server   # était : server_data:/app/server
+
+# Supprimez entièrement le bloc volumes: de niveau supérieur (ou retirez les entrées inutilisées).
+```
+
+<Callout type="warn">
+  **Permissions de stockage** : RustFS s'exécute avec l'UID 10001. Pré-créez le répertoire avec les permissions correctes :
+  ```bash
+  mkdir -p storage-data
+  chown -R 10001:10001 storage-data
+  ```
+  Pour les permissions des données du serveur (SQLite, téléversements), consultez [Configuration UID/GID](/docs/v1-beta/uid-gid-configuration).
+</Callout>
+
+---
+
+## Référence de configuration
+
+### `.env` — Variables obligatoires
+
+| Variable | Description |
+|----------|-------------|
+| `FRONTEND_ORIGIN` | URL où les utilisateurs accèdent à l'interface web (ex. `http://192.168.1.100:5487`). Utilisée pour le CORS sur l'API et le service de stockage. |
+| `STORAGE_PUBLIC_URL` | URL où les navigateurs accèdent au service de stockage (ex. `http://192.168.1.100:9000`). Utilisée pour générer les URLs présignées et configurer la politique de sécurité du contenu. |
+| `S3_ACCESS_KEY` | Clé d'accès S3 partagée entre RustFS et le serveur API. |
+| `S3_SECRET_KEY` | Clé secrète S3 partagée entre RustFS et le serveur API. |
+| `JWT_SECRET` | Clé de signature JWT — au moins 32 caractères. Générez avec `openssl rand -hex 32`. |
+| `CSRF_SECRET` | Clé HMAC CSRF — au moins 32 caractères, doit différer de `JWT_SECRET`. |
+| `COOKIE_SECRET` | Clé de signature des cookies — au moins 32 caractères, doit différer des deux autres. |
+
+### `.env` — Variables optionnelles
+
+| Variable | Défaut | Description |
+|----------|--------|-------------|
+| `SECURE_SITE` | `false` | Définissez `true` lors de la diffusion en HTTPS derrière un proxy inverse. Requis pour que les cookies fonctionnent correctement avec HTTPS. |
+| `OUITRANSFER_UID` | `1001` | ID utilisateur pour les processus du conteneur serveur. Utile pour les NAS ou les montages bind. |
+| `OUITRANSFER_GID` | `1001` | ID de groupe pour les processus du conteneur serveur. |
+| `DEFAULT_LANGUAGE` | `en-US` | Langue d'interface par défaut. Voir [langues disponibles](/docs/v1-beta/available-languages). |
+| `ENCRYPTION_SECRET` | — | Clé AES-256-GCM pour chiffrer les données sensibles au repos. Requis pour LDAP. Générez avec `openssl rand -hex 32`. |
+| `PRESIGNED_URL_EXPIRATION` | `3600` | Durée d'expiration des URLs présignées de téléversement en secondes (défaut : 1 heure). |
+| `PRESIGNED_GET_URL_EXPIRATION` | `900` | Durée d'expiration des URLs présignées de téléchargement en secondes (défaut : 15 min). |
+| `TRUST_PROXY` | `loopback` | Paramètre de proxy de confiance Fastify. Utilisez `loopback` pour les déploiements directs ; définissez l'IP de votre proxy derrière un proxy inverse. |
+| `OAUTH_ALLOWED_REDIRECT_HOSTS` | — | Hôtes de redirection supplémentaires séparés par des virgules pour les fournisseurs OIDC personnalisés. |
+| `ENABLE_API_DOCS` | `false` | Expose la documentation API sur `/docs` et `/swagger` en production. |
+
+### Variables fixes (définies dans docker-compose.yml)
+
+Ces variables sont définies directement dans `docker-compose.yml` et ne nécessitent normalement pas de modification :
+
+| Variable | Valeur | Description |
+|----------|--------|-------------|
+| `S3_ENDPOINT` | `storage` | Nom du service Docker pour le stockage interne — ne pas modifier. |
+| `S3_PORT` | `9000` | Port de stockage interne. |
+| `S3_USE_SSL` | `false` | Pas de TLS sur le réseau Docker interne. |
+| `S3_BUCKET_NAME` | `ouitransfer-files` | Nom du bucket créé au démarrage. |
+| `API_BASE_URL` | `http://server:3333` | URL API interne — utilise le nom du service Docker, ne pas modifier. |
+
+---
+
+## Maintenance
+
+### Mises à jour
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+Les migrations de base de données et les mises à jour d'initialisation s'exécutent automatiquement au démarrage. Aucune étape de migration manuelle n'est nécessaire.
+
+### Vérifier l'état
+
+```bash
+# État et santé des conteneurs
+docker compose ps
+
+# Journaux en temps réel
+docker compose logs -f
+
+# Point de contrôle de santé de l'API (si le port 3333 est exposé)
+curl http://localhost:3333/health
+```
+
+---
+
+## Et ensuite ?
+
+### Déploiement
+
+- **[Configuration du proxy inverse](/docs/v1-beta/reverse-proxy-configuration)** — HTTPS avec Traefik, Nginx ou Caddy ; `SECURE_SITE=true`
+- **[Configuration UID/GID](/docs/v1-beta/uid-gid-configuration)** — Permissions de fichiers pour les NAS et les montages bind
+- **[Fournisseurs de stockage S3](/docs/v1-beta/s3-providers)** — Utiliser un S3 externe (AWS, Backblaze B2, DigitalOcean Spaces, etc.) au lieu de RustFS intégré
+- **[Installation manuelle](/docs/v1-beta/manual-installation)** — Exécuter sans Docker, directement depuis le code source
+
+### Fonctionnalités
+
+- **[Quotas de stockage](/docs/v1-beta/quotas)** — Limites de stockage par utilisateur et par groupe
+- **[Groupes](/docs/v1-beta/groups)** — Organisez les utilisateurs avec des politiques de quota par groupe
+- **[LDAP / Active Directory](/docs/v1-beta/ldap-configuration)** — Synchronisez utilisateurs et groupes depuis Active Directory
+- **[OIDC / SSO](/docs/v1-beta/oidc-authentication)** — Authentification unique avec Google, GitHub, et plus
+
+### Intégration et développement
+
+- **[Référence API](/docs/v1-beta/api)** — Intégrez OUITRANSFER à vos applications
+- **[Architecture](/docs/v1-beta/architecture)** — Comment les composants s'articulent
+
+---
+
+**Questions ou problèmes ?** Ouvrez un ticket sur [GitHub](https://github.com/slvnlrt/ouitransfer/issues).

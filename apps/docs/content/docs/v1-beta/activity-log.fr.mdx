@@ -1,0 +1,328 @@
+---
+title: Journal d'activité
+icon: ScrollText
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Le journal d'activité est une piste d'audit réservée aux administrateurs qui enregistre un ensemble défini d'actions effectuées dans Ouitransfer — notamment les actions authentifiées, l'accès aux partages publics, les téléversements et téléchargements de fichiers, les modifications de configuration et les événements système. Il offre un historique consultable, filtrable et exportable de ce qui s'est passé, par qui et quand.
+
+## Vue d'ensemble
+
+Le journal d'activité est accessible via **Admin → Journal d'activité**. Seuls les administrateurs peuvent consulter le journal. Les utilisateurs ordinaires n'ont pas accès à cette vue.
+
+Dans l'API et le code source, cette fonctionnalité est désignée sous le nom de **journal d'audit** — l'interface utilisateur l'appelle Journal d'activité. Les deux termes désignent les mêmes données.
+
+Chaque entrée du journal enregistre :
+
+- **Horodatage** — date et heure de l'événement (UTC)
+- **Acteur** — l'utilisateur authentifié ayant effectué l'action, ou « Système » pour les tâches planifiées, ou « Anonyme » pour les accès publics ou non authentifiés
+- **Action** — un code d'action typé (ex. `SHARE_CREATE`, `FILE_DOWNLOAD`, `LOGIN_FAILURE`)
+- **Cible** — l'entité sur laquelle l'action a été effectuée (ex. un partage, un fichier ou un utilisateur spécifique), avec son type et son identifiant
+- **Adresse IP** — l'adresse IP d'origine (compatible avec les proxys)
+- **Métadonnées** — contexte spécifique à l'action (ex. nom de fichier, ancien et nouveau rôle, adresse e-mail du destinataire)
+
+<Callout type="info">
+  Les mots de passe, tokens et autres secrets ne sont **jamais stockés** dans les métadonnées du journal. Une liste de blocage appliquée à l'exécution supprime les clés sensibles (`password`, `token`, `secret`, `bindPassword`, `clientSecret`, etc.) avant toute persistance d'événement.
+</Callout>
+
+---
+
+## Lecture du journal
+
+Le tableau du journal affiche les événements les plus récents en premier. Chaque ligne présente :
+
+| Colonne | Description |
+|---------|-------------|
+| **Date** | Horodatage de l'événement |
+| **Utilisateur** | Avatar et nom de l'acteur authentifié, « Système » pour les planificateurs, ou « Anonyme » pour les actions publiques |
+| **Action** | Badge coloré indiquant le type d'action, regroupé par catégorie |
+| **Cible** | Icône de type et identifiant de l'entité (ex. le partage ou le fichier concerné par l'action) |
+| **Adresse IP** | L'adresse IP d'origine |
+| **Détails** | Panneau extensible affichant les métadonnées spécifiques à l'action |
+
+### Panneau de détails
+
+Cliquer sur une ligne développe le panneau des métadonnées. Exemples courants :
+
+- `USER_QUOTA_CHANGE` → affiche « 10 Go → 50 Go » (et non les valeurs brutes en octets)
+- `USER_ROLE_CHANGE` → affiche l'ancien et le nouveau rôle
+- `SHARE_RECIPIENT_ADD` → affiche la liste des adresses e-mail des destinataires
+- `LDAP_SYNC_COMPLETED` → renvoie vers l'entrée du journal de synchronisation avec les statistiques complètes
+
+<Callout type="info">
+  Les métadonnées sont consultables dans le panneau de détails mais ne sont pas indexées en recherche plein texte. Le champ de recherche couvre uniquement l'adresse IP et le nom de l'action.
+</Callout>
+
+---
+
+## Filtrage
+
+La barre de filtres située au-dessus du tableau permet de restreindre les événements affichés :
+
+| Filtre | Description |
+|--------|-------------|
+| **Type d'action** | Liste déroulante à sélection multiple, regroupée par catégorie (Auth, Share, File, Folder, Reverse Share, Group, LDAP, Admin, User, System) |
+| **Type de cible** | Liste déroulante — filtre par type d'entité (utilisateur, partage, fichier, dossier, groupe, etc.) |
+| **Plage de dates** | Deux sélecteurs de date « Du » et « Au » (tous deux inclusifs) |
+| **Recherche** | Champ texte — recherche par adresse IP et nom d'action (correspondance partielle) |
+
+Utilisez **Effacer tous les filtres** pour réinitialiser la barre de filtres et revenir au journal complet.
+
+### Sémantique du filtre de dates
+
+- `dateFrom` est inclusif : les événements de ce jour à partir de 00:00:00 UTC sont inclus.
+- `dateTo` est inclusif : les événements de ce jour jusqu'à 23:59:59 UTC sont inclus.
+
+Les sélecteurs de date de l'interface d'administration convertissent automatiquement les dates sélectionnées en limites de journée UTC avant soumission : « Du » devient `YYYY-MM-DDT00:00:00.000Z` et « Au » devient `YYYY-MM-DDT23:59:59.999Z`. Les appelants de l'API doivent fournir des datetimes ISO 8601 complets avec fuseau horaire (ex. `2026-01-01T00:00:00.000Z`) — les chaînes date seule ne sont pas acceptées.
+
+---
+
+## Exportation
+
+Cliquez sur le bouton **Exporter** pour télécharger le journal sous forme de fichier. Vous devez définir une plage de dates avant d'exporter — le bouton reste désactivé tant que les deux dates « Du » et « Au » ne sont pas sélectionnées.
+
+| Option | Description |
+|--------|-------------|
+| **CSV** | Valeurs séparées par des virgules, UTF-8 avec BOM pour la compatibilité Excel |
+| **JSON** | Tableau d'objets de journal avec métadonnées analysées |
+
+L'exportation applique tous les filtres actifs (action, type de cible, recherche, plage de dates).
+
+**Plafond absolu :** les exportations sont limitées à **100 000 lignes**. Si votre plage de dates produit davantage de lignes, l'exportation est tronquée à 100 000. Le comportement de troncature diffère selon le format :
+
+- **CSV :** un commentaire d'avertissement (`# Export truncated at 100000 rows...`) est ajouté à la fin du fichier.
+- **JSON :** le fichier est silencieusement tronqué à 100 000 entrées (sans avertissement inline).
+
+Pour obtenir des données complètes, réduisez la plage de dates et exportez en plusieurs fois.
+
+L'exportation est transmise directement au navigateur sous forme de fichier téléchargeable — aucun fichier temporaire n'est stocké sur le serveur.
+
+**Format du nom de fichier exporté :** `audit-logs-{dateFrom}-{dateTo}.csv` / `.json`
+
+---
+
+## Rétention
+
+Le paramètre **Rétention des journaux d'audit** contrôle la durée de conservation des entrées avant leur suppression automatique.
+
+Accédez à **Admin → Paramètres** (section Sécurité) pour configurer :
+
+| Paramètre | Description |
+|-----------|-------------|
+| **Durée de rétention des journaux d'audit (jours)** | Nombre de jours de conservation des journaux d'audit. Valeur par défaut : `365`. Minimum recommandé : `7`. Définissez la valeur à `0` pour conserver les journaux indéfiniment. |
+
+Le planificateur de rétention s'exécute quotidiennement et supprime les entrées plus anciennes que le seuil configuré, par lots de 1 000 lignes à la fois, afin d'éviter de verrouiller la base de données. Lorsqu'une exécution de nettoyage se termine, un événement `AUDIT_RETENTION_CLEANUP` est écrit dans le journal avec le nombre de lignes supprimées.
+
+<Callout type="warn">
+  La durée de rétention minimale recommandée est de **7 jours**. Le paramètre accepte tout entier non négatif — les valeurs inférieures à 7 ne sont pas rejetées par le serveur. Définissez la valeur à `0` pour conserver les journaux indéfiniment (aucune suppression automatique).
+</Callout>
+
+---
+
+## Ce qui est journalisé
+
+Ouitransfer enregistre environ 77 types d'actions distincts pour l'ensemble des modules de l'application. Le tableau ci-dessous liste les catégories et des exemples représentatifs — il ne s'agit pas d'une liste exhaustive. Notez que les regroupements ci-dessous sont fournis à des fins de documentation ; dans le menu déroulant de l'interface, les actions 2FA apparaissent dans la catégorie **Auth**.
+
+### Auth
+
+| Action | Description |
+|--------|-------------|
+| `LOGIN_SUCCESS` | Connexion réussie (mot de passe ou 2FA) |
+| `LOGIN_FAILURE` | Tentative de connexion échouée |
+| `LOGOUT` | Déconnexion de l'utilisateur |
+| `PASSWORD_CHANGE` | L'utilisateur a modifié son mot de passe |
+| `PASSWORD_RESET` | Réinitialisation du mot de passe effectuée |
+| `PASSWORD_RESET_REQUEST` | Demande de mot de passe oublié soumise |
+| `ACCOUNT_LOCKED` | Compte verrouillé après trop de tentatives échouées |
+| `TRUSTED_DEVICE_REMOVE` | Un appareil mémorisé a été supprimé |
+| `AUTH_PROVIDER_LOGIN` | Connexion via un fournisseur SSO / OAuth |
+
+### Authentification à deux facteurs
+
+| Action | Description |
+|--------|-------------|
+| `TWO_FACTOR_ENABLE` | 2FA activée sur le compte |
+| `TWO_FACTOR_DISABLE` | 2FA désactivée sur le compte |
+| `TWO_FACTOR_BACKUP_REGENERATED` | Codes de récupération régénérés (invalide les codes précédents) |
+
+### Utilisateurs
+
+| Action | Description |
+|--------|-------------|
+| `USER_CREATE` | Compte utilisateur créé (inclut la méthode de création : admin, invite, registration, ldap) |
+| `USER_UPDATE` | Champs du profil mis à jour |
+| `USER_DELETE` | Compte utilisateur supprimé |
+| `USER_ROLE_CHANGE` | Indicateur administrateur modifié (inclut l'ancien et le nouveau rôle) |
+| `USER_QUOTA_CHANGE` | Quota de stockage personnel modifié |
+| `USER_ACTIVATE` | Compte réactivé |
+| `USER_DEACTIVATE` | Compte désactivé (suppression logique) |
+
+### Partages
+
+| Action | Description |
+|--------|-------------|
+| `SHARE_CREATE` | Partage créé |
+| `SHARE_DELETE` | Partage supprimé |
+| `SHARE_ACCESS` | Page du partage chargée par un non-créateur (anonyme ou authentifié) |
+| `SHARE_PASSWORD_VERIFIED` | Mot de passe saisi correctement sur un partage protégé |
+| `SHARE_PASSWORD_FAILED` | Tentative de mot de passe incorrecte sur un partage protégé |
+| `SHARE_RECIPIENT_ADD` | Destinataires e-mail ajoutés à un partage |
+| `SHARE_RECIPIENT_NOTIFY` | E-mails de notification envoyés aux destinataires du partage |
+
+### Fichiers
+
+| Action | Description |
+|--------|-------------|
+| `FILE_UPLOAD` | Fichier téléversé |
+| `FILE_DOWNLOAD` | Téléchargement de fichier demandé |
+| `FILE_DELETE` | Fichier supprimé |
+| `FILE_MOVE` | Fichier déplacé vers un autre dossier |
+| `FILE_EMBED_ACCESS` | Lecteur multimédia intégré consulté (requête de plage) |
+
+### Dossiers
+
+| Action | Description |
+|--------|-------------|
+| `FOLDER_CREATE` | Dossier créé |
+| `FOLDER_DELETE` | Dossier supprimé |
+| `FOLDER_MOVE` | Dossier déplacé |
+
+### Partages inversés
+
+| Action | Description |
+|--------|-------------|
+| `REVERSE_SHARE_CREATE` | Lien de téléversement créé |
+| `REVERSE_SHARE_ACCESS` | Page de téléversement visitée (anonyme) |
+| `REVERSE_SHARE_UPLOAD` | Fichier téléversé via un lien de téléversement (inclut l'e-mail/nom de l'expéditeur si fourni) |
+| `REVERSE_SHARE_FILE_DOWNLOAD` | Fichier téléchargé depuis un lien de téléversement |
+| `REVERSE_SHARE_ACTIVATE` / `REVERSE_SHARE_DEACTIVATE` | Lien de téléversement activé ou désactivé |
+
+### Groupes
+
+| Action | Description |
+|--------|-------------|
+| `GROUP_CREATE` | Groupe créé |
+| `GROUP_DELETE` | Groupe supprimé |
+| `GROUP_MEMBER_ADD` | Utilisateur ajouté à un groupe |
+| `GROUP_MEMBER_REMOVE` | Utilisateur retiré d'un groupe |
+
+### LDAP
+
+| Action | Description |
+|--------|-------------|
+| `LDAP_CONFIG_UPDATE` | Configuration LDAP modifiée |
+| `LDAP_SYNC_TRIGGERED` | Synchronisation déclenchée (manuellement ou par le planificateur) |
+| `LDAP_SYNC_COMPLETED` | Synchronisation terminée — `targetId` pointe vers l'entrée du journal de synchronisation |
+| `LDAP_SYNC_ERROR` | Synchronisation échouée — `targetId` pointe vers l'entrée du journal de synchronisation |
+
+### Paramètres de l'application
+
+| Action | Description |
+|--------|-------------|
+| `ADMIN_CONFIG_CHANGE` | Paramètre administrateur modifié (clé et groupe enregistrés, jamais la valeur) |
+| `LOGO_UPLOAD` / `LOGO_REMOVE` | Logo de l'application modifié |
+| `SMTP_TEST` | E-mail de test SMTP envoyé |
+| `AUTH_PROVIDER_CREATE` / `AUTH_PROVIDER_UPDATE` / `AUTH_PROVIDER_DELETE` | Fournisseur SSO configuré |
+| `INVITE_TOKEN_CREATE` / `INVITE_TOKEN_USED` | Lien d'invitation créé ou utilisé |
+
+### Système
+
+| Action | Description |
+|--------|-------------|
+| `AUDIT_RETENTION_CLEANUP` | Exécution de nettoyage planifiée — enregistre le nombre d'entrées anciennes supprimées |
+
+---
+
+## Notes sur la confidentialité et la sécurité
+
+- **Les données sensibles ne sont jamais journalisées.** La couche de service applique une liste de blocage à l'exécution avant d'écrire tout événement. Les clés telles que `password`, `token`, `secret`, `bindPassword`, `clientSecret`, `smtpPass`, `twoFactorSecret` et `twoFactorBackupCodes` sont automatiquement supprimées des métadonnées, même si elles sont transmises par inadvertance à `logAuditEvent()`.
+
+- **Les identifiants utilisateur sont conservés après la suppression du compte.** Les entrées du journal d'audit conservent le champ `userId` même si le compte référencé est ultérieurement supprimé. C'est intentionnel — l'intégrité légale et sécuritaire exige une piste d'audit complète. Si le nom d'affichage n'est plus disponible, le journal affiche l'identifiant utilisateur brut.
+
+- **L'identité des visiteurs est limitée.** Pour l'accès anonyme aux partages (`SHARE_ACCESS`), seuls l'adresse IP et le user-agent sont enregistrés — aucun nom ni e-mail de visiteur. Les champs d'identité des visiteurs (`uploaderEmail`, `uploaderName`) ne sont renseignés que pour les événements `REVERSE_SHARE_UPLOAD`, lorsque le visiteur a fourni activement son identité.
+
+- **Les écritures d'audit sont de type « fire-and-forget ».** Les événements d'audit sont des enregistrements d'observabilité, pas des mécanismes d'application. Ils ne bloquent pas le traitement des requêtes. L'application des compteurs de vues et des limites d'accès utilise des compteurs atomiques en base de données, distincts du journal d'audit.
+
+---
+
+## Référence API
+
+Tous les points de terminaison du journal d'audit nécessitent une **session administrateur** active. Les requêtes non authentifiées retournent `401`. Les requêtes non administrateurs retournent `403`.
+
+<Callout type="info">
+  Le filtre `userId` est disponible en tant que paramètre **API uniquement**. L'interface d'administration n'expose pas de liste déroulante d'utilisateurs — le filtrage par utilisateur doit être effectué via des appels API directs.
+</Callout>
+
+### `GET /admin/audit-logs`
+
+Retourne une liste paginée d'entrées du journal d'audit.
+
+**Paramètres de requête :**
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|--------|-------------|
+| `userId` | string | Non | Filtre par identifiant d'acteur |
+| `action` | string (enum) | Non | Filtre par type d'action (doit être un code d'action valide) |
+| `targetType` | string (enum) | Non | Filtre par type de cible (`user`, `share`, `file`, `folder`, `group`, `reverse_share`, `ldap_config`, `ldap_sync_log`, `setting`, `auth_provider`, `background_image`, `invite_token`, `trusted_device`, `logo`) |
+| `targetId` | string | Non | Filtre par identifiant d'entité cible |
+| `dateFrom` | datetime ISO 8601 | Non | Début de la plage de dates (inclusif) |
+| `dateTo` | datetime ISO 8601 | Non | Fin de la plage de dates (inclusif) |
+| `search` | string | Non | Correspondance partielle sur l'adresse IP et le nom de l'action |
+| `limit` | integer (1–100) | Non | Taille de page. Par défaut : `50` |
+| `offset` | integer | Non | Décalage de pagination. Par défaut : `0` |
+
+**Réponse (200) :**
+
+```json
+{
+  "logs": [
+    {
+      "id": "cm9abc123",
+      "userId": "cm9user456",
+      "action": "FILE_DOWNLOAD",
+      "ipAddress": "192.168.1.1",
+      "userAgent": "Mozilla/5.0 ...",
+      "metadata": { "fileName": "report.pdf", "shareId": "cm9share789" },
+      "targetType": "file",
+      "targetId": "cm9file012",
+      "createdAt": "2026-05-20T14:32:00.000Z"
+    }
+  ],
+  "total": 1248
+}
+```
+
+`userId` est `null` pour les événements anonymes ou système. `metadata` est `null` lorsqu'aucun contexte supplémentaire n'a été capturé. `targetType` et `targetId` sont `null` pour les événements sans cible spécifique (ex. `PASSWORD_RESET_REQUEST`, `SMTP_TEST`).
+
+---
+
+### `GET /admin/audit-logs/export`
+
+Transmet un fichier d'exportation du journal d'audit au navigateur.
+
+**Paramètres de requête :**
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|--------|-------------|
+| `format` | `csv` \| `json` | **Oui** | Format de sortie |
+| `dateFrom` | datetime ISO 8601 | **Oui** | Début de la plage d'exportation |
+| `dateTo` | datetime ISO 8601 | **Oui** | Fin de la plage d'exportation |
+| `userId` | string | Non | Identique au point de terminaison liste |
+| `action` | string (enum) | Non | Identique au point de terminaison liste |
+| `targetType` | string (enum) | Non | Identique au point de terminaison liste |
+| `targetId` | string | Non | Identique au point de terminaison liste |
+| `search` | string | Non | Identique au point de terminaison liste |
+
+**En-têtes de réponse :**
+
+```
+Content-Type: text/csv; charset=utf-8
+Content-Disposition: attachment; filename="audit-logs-2026-01-01-2026-01-31.csv"
+```
+
+Le corps de la réponse est un fichier en téléchargement par flux. Pour le format JSON, le corps est un tableau JSON (`[...]`). Pour le format CSV, la première ligne est une ligne d'en-tête et le fichier commence par un BOM UTF-8 pour la compatibilité Excel.
+
+**Colonnes CSV :** `id`, `userId`, `action`, `ipAddress`, `userAgent`, `targetType`, `targetId`, `metadata`, `createdAt`
+
+Si le jeu de résultats dépasse 100 000 lignes, l'exportation est tronquée et un commentaire d'avertissement (`# Export truncated at 100000 rows...`) est ajouté à la fin du fichier CSV. Pour JSON, le serveur enregistre un avertissement mais le fichier est silencieusement tronqué à 100 000 entrées — réduisez la plage de dates pour récupérer des données complètes.
