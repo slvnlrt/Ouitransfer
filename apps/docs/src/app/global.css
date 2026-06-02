@@ -133,10 +133,14 @@ h4 {
   }
 }
 
-/* Sidebar: compact the icon+theme bar so it doesn't stretch full width */
+/* Sidebar icon+theme bar: center items instead of spreading across full width.
+   Fumadocs applies ms-auto to the theme switch, creating a gap between icons
+   and toggle. Override both to keep the group compact and centered. */
 #nd-sidebar .items-center.border.rounded-lg {
-  width: fit-content;
-  margin-inline-start: auto;
+  justify-content: center;
+}
+#nd-sidebar .items-center.border.rounded-lg > :last-child {
+  margin-inline-start: 0;
 }
 
 /* Frosted glass effect for the sticky banner */
