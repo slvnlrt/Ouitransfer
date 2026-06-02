@@ -36,6 +36,7 @@ export function baseOptions(locale: string): BaseLayoutProps {
         url: "https://github.com/slvnlrt/ouitransfer",
         icon: <Github />,
         external: true,
+        on: "nav",
       },
     ],
   };
