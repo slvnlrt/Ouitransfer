@@ -186,15 +186,20 @@ export class ReverseShareService {
       throw new ForbiddenError("Unauthorized to update this reverse share");
     }
 
-    // If expiration is being extended, include notification flag reset in the same update
-    // to avoid a stale-read window between the two separate writes.
+    // If expiration is being added or extended, include notification flag reset in the same
+    // update to avoid a stale-read window between the two separate writes. Setting an
+    // expiration where there was none (oldExp null) also re-arms the warnings.
     const shouldResetNotifications =
       data.expiration &&
-      reverseShare.expiration &&
-      new Date(data.expiration) > reverseShare.expiration;
+      (!reverseShare.expiration || new Date(data.expiration) > reverseShare.expiration);
 
     const updateData = shouldResetNotifications
-      ? { ...data, notifiedForExpiring: false, notifiedForExpired: false }
+      ? {
+          ...data,
+          notifiedForExpiring: false,
+          notifiedForExpired: false,
+          notifiedForPendingDeletion: false,
+        }
       : data;
 
     const updatedReverseShare = await this.reverseShareRepository.update(

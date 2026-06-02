@@ -17,6 +17,7 @@ model User {
   image     String?
   isAdmin   Boolean  @default(false)
   isActive  Boolean  @default(true)
+  deactivatedAt DateTime? // Set when the account is deactivated; cleared on reactivation. Drives delayed file cleanup.
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -119,6 +120,7 @@ model Share {
   notifiedForExpiring  Boolean   @default(false)
   notifiedForExpired   Boolean   @default(false)
   notifiedForMaxViews  Boolean   @default(false)
+  notifiedForPendingDeletion Boolean @default(false)
 
   files      File[]           @relation("ShareFiles")
   folders    Folder[]         @relation("ShareFolders")
@@ -337,6 +339,7 @@ model ReverseShare {
   bypassUploadCooldown Boolean          @default(false)
   notifiedForExpiring  Boolean          @default(false)
   notifiedForExpired   Boolean          @default(false)
+  notifiedForPendingDeletion Boolean    @default(false)
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
 

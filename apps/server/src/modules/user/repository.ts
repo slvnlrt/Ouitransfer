@@ -12,7 +12,9 @@ export interface IUserRepository {
   findUserByUsername(username: string): Promise<User | null>;
   findUserByEmailOrUsername(emailOrUsername: string): Promise<User | null>;
   listUsers(): Promise<UserWithGroup[]>;
-  updateUser(data: UpdateUserInput & { password?: string }): Promise<UserWithGroup>;
+  updateUser(
+    data: UpdateUserInput & { password?: string; deactivatedAt?: Date | null },
+  ): Promise<UserWithGroup>;
   deleteUser(id: string): Promise<UserWithGroup>;
   activateUser(id: string): Promise<UserWithGroup>;
   deactivateUser(id: string): Promise<UserWithGroup>;
@@ -83,7 +85,7 @@ export class PrismaUserRepository implements IUserRepository {
   async activateUser(id: string): Promise<UserWithGroup> {
     return prisma.user.update({
       where: { id },
-      data: { isActive: true },
+      data: { isActive: true, deactivatedAt: null },
       include: { group: { select: { id: true, name: true } } },
     });
   }
@@ -91,7 +93,7 @@ export class PrismaUserRepository implements IUserRepository {
   async deactivateUser(id: string): Promise<UserWithGroup> {
     return prisma.user.update({
       where: { id },
-      data: { isActive: false },
+      data: { isActive: false, deactivatedAt: new Date() },
       include: { group: { select: { id: true, name: true } } },
     });
   }

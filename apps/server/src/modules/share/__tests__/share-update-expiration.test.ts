@@ -163,6 +163,7 @@ describe("updateShare — notification flag reset", () => {
       expect.objectContaining({
         notifiedForExpiring: false,
         notifiedForExpired: false,
+        notifiedForPendingDeletion: false,
       }),
     );
   });
@@ -188,6 +189,7 @@ describe("updateShare — notification flag reset", () => {
     const updateCall = mockUpdateShare.mock.calls[0][1];
     expect(updateCall.notifiedForExpiring).toBeUndefined();
     expect(updateCall.notifiedForExpired).toBeUndefined();
+    expect(updateCall.notifiedForPendingDeletion).toBeUndefined();
   });
 
   it("resets notification flags when expiration is added to a share that had none", async () => {
@@ -212,6 +214,7 @@ describe("updateShare — notification flag reset", () => {
       expect.objectContaining({
         notifiedForExpiring: false,
         notifiedForExpired: false,
+        notifiedForPendingDeletion: false,
       }),
     );
   });

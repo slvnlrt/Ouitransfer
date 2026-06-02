@@ -96,12 +96,21 @@ export class UserService {
       throw new NotFoundError("User not found");
     }
 
-    const updateData: Omit<Partial<UserWithPassword>, "password"> & { password?: string } = {
+    const updateData: Omit<Partial<UserWithPassword>, "password"> & {
+      password?: string;
+      deactivatedAt?: Date | null;
+    } = {
       ...rest,
     };
 
     if (password) {
       updateData.password = await bcrypt.hash(password, 10);
+    }
+
+    // Keep deactivatedAt in sync with isActive transitions made via admin edit, so the
+    // delayed-cleanup window matches the dedicated activate/deactivate paths.
+    if (data.isActive !== undefined && data.isActive !== oldUser.isActive) {
+      updateData.deactivatedAt = data.isActive ? null : new Date();
     }
 
     const user = await this.userRepository.updateUser({

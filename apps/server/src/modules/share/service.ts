@@ -488,6 +488,8 @@ export class ShareService {
     if (newExp && (!oldExp || newExp > oldExp)) {
       updateData.notifiedForExpiring = false;
       updateData.notifiedForExpired = false;
+      // Extending expiration moves the pending-deletion window, so re-arm the warning.
+      updateData.notifiedForPendingDeletion = false;
     }
 
     // Reset maxViews notification flag when maxViews is increased (allows re-notification)
@@ -495,6 +497,9 @@ export class ShareService {
       const oldMax = share.maxViews;
       if (maxViews === null || (oldMax !== null && maxViews > oldMax)) {
         updateData.notifiedForMaxViews = false;
+        // Raising/clearing maxViews can take the share back under its threshold,
+        // so a previously-armed pending-deletion warning should re-arm too.
+        updateData.notifiedForPendingDeletion = false;
       }
     }
 
