@@ -227,6 +227,71 @@ const defaultConfigs = [
     group: "email",
     isSystem: true,
   },
+  // Lifecycle Management & Automatic Cleanup (5.2 Phase A).
+  // Conservative defaults: every destructive operation is opt-in and off by default.
+  {
+    key: "autoCleanupEnabled",
+    value: "false",
+    type: "boolean",
+    group: "cleanup",
+    isSystem: true,
+  },
+  {
+    key: "autoCleanupIntervalHours",
+    value: "24",
+    type: "number",
+    group: "cleanup",
+    isSystem: true,
+  },
+  {
+    key: "autoCleanupGracePeriodDays",
+    value: "7",
+    type: "number",
+    group: "cleanup",
+    isSystem: true,
+  },
+  {
+    key: "autoCleanupNotifyDaysBefore",
+    value: "3",
+    type: "number",
+    group: "cleanup",
+    isSystem: true,
+  },
+  {
+    key: "maxViewsCleanupDays",
+    value: "30",
+    type: "number",
+    group: "cleanup",
+    isSystem: true,
+  },
+  {
+    key: "accountDeactivationCleanupEnabled",
+    value: "false",
+    type: "boolean",
+    group: "cleanup",
+    isSystem: true,
+  },
+  {
+    key: "accountDeactivationCleanupDays",
+    value: "30",
+    type: "number",
+    group: "cleanup",
+    isSystem: true,
+  },
+  {
+    key: "autoCleanupOrphansEnabled",
+    value: "false",
+    type: "boolean",
+    group: "cleanup",
+    isSystem: true,
+  },
+  {
+    key: "autoCleanupOrphanMinAgeHours",
+    value: "24",
+    type: "number",
+    group: "cleanup",
+    isSystem: true,
+  },
 ];
 
 const defaultAuthProviders = [
