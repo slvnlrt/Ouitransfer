@@ -2,6 +2,8 @@
 
 **Ouitransfer** est une solution de transfert de fichiers auto-hébergée, alternative à WeTransfer, SendGB et Files.fm.
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/slvnlrt)
+
 > Distribué sous licence Apache-2.0. Voir [LICENSE](LICENSE) pour le texte complet.
 
 ## Fonctionnalités
