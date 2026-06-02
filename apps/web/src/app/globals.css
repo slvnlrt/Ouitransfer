@@ -45,7 +45,8 @@
 }
 
 :root {
-  --radius: 0.625rem;
+  /* Matches the "Medium" preset in the customization radius picker. */
+  --radius: 0.5rem;
   --background: var(--custom-background-light, oklch(0.985 0.005 265));
   --foreground: oklch(0.145 0.015 265);
   --card: oklch(1 0 0);
