@@ -40,7 +40,7 @@ export default async function Layout({
   return (
     <html lang={lang} className={inter.className} suppressHydrationWarning>
       <body className="flex flex-col min-h-screen">
-        <Banner variant="rainbow" className="!items-start pt-2">
+        <Banner variant="rainbow" id="banner-v1-beta" className="!items-start pt-2">
           <BannerModalTrigger>
             OUITRANSFER {LATEST_VERSION} {content.banner.text}
           </BannerModalTrigger>
