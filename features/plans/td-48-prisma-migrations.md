@@ -424,14 +424,14 @@ Expected: exit `0`, "No difference detected."
 
 - [ ] **Step 3: Verify the guard actually catches drift (negative test)**
 
-Temporarily append a scratch model to the schema, run the check, then revert:
+Temporarily append a scratch model to the schema, run the check, then revert. NOTE: the model MUST use valid multi-line PSL syntax (a one-line `model X { ... }` raises a P1012 parse error, not a clean diff) and a name that does not start with `_`:
 ```powershell
-Add-Content apps/server/prisma/schema.prisma "`nmodel _DriftProbe { id String @id }"
+Add-Content apps/server/prisma/schema.prisma "`nmodel DriftProbe {`n  id String @id`n}"
 pnpm --filter ouitransfer-api exec prisma migrate diff --from-migrations prisma/migrations --to-schema prisma/schema.prisma --exit-code
-# Expected: exit code 2 (difference detected) — the guard works.
-git checkout -- apps/server/prisma/schema.prisma
+# Expected: diff prints "[+] Added tables" and the command exits NON-ZERO — the guard works.
+rtk git checkout -- apps/server/prisma/schema.prisma
 ```
-Expected: the command exits `2` while the probe is present, then the schema is restored.
+Expected: `prisma migrate diff` detects the added table and exits `2`; because the command runs through `pnpm --filter ... exec`, pnpm remaps that to its own non-zero exit (`1`, `ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL`). Either way the CI step fails on drift (non-zero) and passes only on a clean schema (exit `0`). Then the schema is restored.
 
 - [ ] **Step 4: Commit**
 
