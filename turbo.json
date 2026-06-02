@@ -3,8 +3,12 @@
   "globalDependencies": ["biome.json", ".node-version"],
   "globalEnv": ["NODE_ENV", "CI"],
   "tasks": {
+    "db:generate": {
+      "inputs": ["prisma/schema.prisma", "prisma.config.ts"],
+      "outputs": ["src/generated/**"]
+    },
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "db:generate"],
       "inputs": ["src/**", "package.json", "tsconfig.json", "tsconfig*.json"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
       "env": ["NODE_ENV"],
@@ -29,6 +33,7 @@
       "inputs": ["src/**/*.{ts,tsx,js,jsx}", "biome.json", "package.json"]
     },
     "type-check": {
+      "dependsOn": ["db:generate"],
       "inputs": ["src/**/*.{ts,tsx}", "tsconfig.json", "tsconfig*.json", "package.json"]
     },
     "format": {
@@ -38,7 +43,7 @@
       "dependsOn": ["lint", "type-check"]
     },
     "test": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "db:generate"],
       "inputs": ["src/**/*.{ts,tsx}", "vitest.config.*", "package.json"],
       "outputs": ["coverage/**"]
     }
