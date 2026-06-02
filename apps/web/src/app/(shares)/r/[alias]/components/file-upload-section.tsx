@@ -317,7 +317,7 @@ export function FileUploadSection({
         <p className="text-xs text-muted-foreground">{formatFileSize(upload.file.size)}</p>
         {upload.status === "uploading" && <Progress value={upload.progress} className="mt-2 h-2" />}
         {upload.status === "error" && upload.error && (
-          <p className="text-xs text-red-500 mt-1">{upload.error}</p>
+          <p className="text-xs text-destructive mt-1">{upload.error}</p>
         )}
       </div>
       <div className="flex items-center gap-2">
@@ -389,7 +389,7 @@ export function FileUploadSection({
                   ? t("reverseShares.upload.form.nameLabelOptional")
                   : t("reverseShares.upload.form.nameLabel")}
                 {reverseShare.nameFieldRequired === "REQUIRED" && (
-                  <span className="text-red-500 ms-1">*</span>
+                  <span className="text-destructive ms-1">*</span>
                 )}
               </Label>
               <Input
@@ -410,7 +410,7 @@ export function FileUploadSection({
                   ? t("reverseShares.upload.form.emailLabelOptional")
                   : t("reverseShares.upload.form.emailLabel")}
                 {reverseShare.emailFieldRequired === "REQUIRED" && (
-                  <span className="text-red-500 ms-1">*</span>
+                  <span className="text-destructive ms-1">*</span>
                 )}
               </Label>
               <Input
