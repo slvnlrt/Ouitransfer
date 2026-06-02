@@ -111,9 +111,16 @@ db-studio:
 db-seed:
     pnpm --filter=ouitransfer-api run db:seed
 
-# Reset database: drop all data and re-run migrations — DEV ONLY
+# Reset database: delete the SQLite file and recreate from migrations + seed — DEV ONLY
+# Resilient to corruption — deletes the file directly (bypasses SQLite entirely,
+# unlike `prisma migrate reset` which requires a working DB connection to proceed).
 db-reset:
-    pnpm --filter=ouitransfer-api exec prisma migrate reset
+    #!/usr/bin/env sh
+    rm -f apps/server/prisma/ouitransfer.db \
+          apps/server/prisma/ouitransfer.db-wal \
+          apps/server/prisma/ouitransfer.db-shm
+    pnpm --filter=ouitransfer-api exec prisma migrate deploy
+    pnpm --filter=ouitransfer-api run db:seed
 
 # Initialize local dev SQLite database (one-time, no S3 required)
 # Creates apps/server/prisma/ouitransfer.db from the schema and seeds it
