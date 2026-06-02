@@ -7,8 +7,8 @@ export function Favicon() {
 
   return (
     <>
-      <link rel="icon" type="image/x-icon" href={appLogo || "/favicon.ico"} />
-      <link rel="shortcut icon" type="image/x-icon" href={appLogo || "/favicon.ico"} />
+      <link rel="icon" type="image/svg+xml" href={appLogo || "/icon.svg"} />
+      <link rel="shortcut icon" type="image/svg+xml" href={appLogo || "/icon.svg"} />
     </>
   );
 }
