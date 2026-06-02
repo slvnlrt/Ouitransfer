@@ -60,22 +60,30 @@ if [ ! -f "/app/server/prisma/configs.json" ]; then
     fi
 fi
 
-# Database setup
-if [ ! -f "/app/server/prisma/ouitransfer.db" ]; then
-    echo "First run: creating database..."
-    run_as_user node $PRISMA_CLI db push --schema=./prisma/schema.prisma
-    run_as_user $TSX ./prisma/seed.js
-    echo "Database setup complete."
-else
-    echo "Existing database found. Checking for schema updates..."
-    run_as_user node $PRISMA_CLI db push --schema=./prisma/schema.prisma
+# Database setup — apply migrations (creates the DB on first run, applies pending migrations otherwise)
+DB_FILE="/app/server/prisma/ouitransfer.db"
 
-    NEEDS_SEEDING=$(run_as_user $TSX ./prisma/check-missing.js check-seeding 2>/dev/null || echo "true")
-    if [ "$NEEDS_SEEDING" = "true" ]; then
-        echo "New data needed, running seed..."
-        run_as_user $TSX ./prisma/seed.js
+# Safety net: before applying pending migrations to an EXISTING database, take a
+# WAL-safe backup. migrate status exits non-zero when migrations are pending.
+if [ -f "$DB_FILE" ]; then
+    if run_as_user node "$PRISMA_CLI" migrate status --schema=./prisma/schema.prisma >/dev/null 2>&1; then
+        echo "Database schema is up to date."
+    else
+        echo "Pending migrations detected — backing up database first..."
+        run_as_user $TSX ./src/scripts/db-backup.ts
     fi
 fi
+
+echo "Applying database migrations..."
+run_as_user node "$PRISMA_CLI" migrate deploy --schema=./prisma/schema.prisma
+
+# Seed when required: fresh DB, or missing config/provider/admin rows.
+NEEDS_SEEDING=$(run_as_user $TSX ./prisma/check-missing.js check-seeding 2>/dev/null || echo "true")
+if [ "$NEEDS_SEEDING" = "true" ]; then
+    echo "Seeding database..."
+    run_as_user $TSX ./prisma/seed.js
+fi
+echo "Database setup complete."
 
 # Start server
 echo "Starting Fastify server..."
