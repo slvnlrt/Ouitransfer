@@ -1393,7 +1393,9 @@
         "description": "Configurer si le champ Nom du téléchargeur doit être affiché et s'il est requis"
       },
       "notifyOnUpload": "Me notifier à chaque envoi de fichier",
-      "notifyOnUploadHelp": "Lorsque activé, vous recevrez des notifications par email quand des fichiers sont envoyés vers ce lien de réception, indépendamment de vos préférences de notification globales."
+      "notifyOnUploadHelp": "Lorsque activé, vous recevrez des notifications par email quand des fichiers sont envoyés vers ce lien de réception, indépendamment de vos préférences de notification globales.",
+      "bypassUploadCooldown": "Notifier à chaque session d'envoi",
+      "bypassUploadCooldownHelp": "Par défaut, les notifications d'envoi sont regroupées dans une courte fenêtre anti-spam. Activez cette option pour recevoir une notification distincte à chaque session d'envoi."
     },
     "messages": {
       "created": "Lien de réception créé avec succès !",

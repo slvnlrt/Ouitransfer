@@ -47,6 +47,10 @@ export const CreateReverseShareSchema = z.object({
     .boolean()
     .default(false)
     .describe("Notify on each file upload, overriding global preference"),
+  bypassUploadCooldown: z
+    .boolean()
+    .default(false)
+    .describe("Bypass the upload-notification cooldown (notify on every upload session)"),
 });
 
 export const UpdateReverseShareSchema = z.object({
@@ -68,6 +72,7 @@ export const UpdateReverseShareSchema = z.object({
   nameFieldRequired: FieldRequirementSchema.optional().describe("Name field requirement setting"),
   emailFieldRequired: FieldRequirementSchema.optional().describe("Email field requirement setting"),
   notifyOnUpload: z.boolean().optional().describe("Notify on each file upload"),
+  bypassUploadCooldown: z.boolean().optional().describe("Bypass the upload-notification cooldown"),
 });
 
 export const ReverseShareFileSchema = z.object({
@@ -98,6 +103,9 @@ export const ReverseShareResponseSchema = z.object({
   nameFieldRequired: z.string().describe("Name field requirement setting"),
   emailFieldRequired: z.string().describe("Email field requirement setting"),
   notifyOnUpload: z.boolean().describe("Whether to notify on each file upload"),
+  bypassUploadCooldown: z
+    .boolean()
+    .describe("Whether the upload-notification cooldown is bypassed"),
   createdAt: z.string().describe("The reverse share creation date"),
   updatedAt: z.string().describe("The reverse share update date"),
   creatorId: z.string().describe("The creator ID"),

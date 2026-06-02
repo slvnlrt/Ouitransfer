@@ -18,6 +18,7 @@ export interface CreateReverseShareFormData {
   noSizeLimit: boolean;
   allFileTypes: boolean;
   notifyOnUpload: boolean;
+  bypassUploadCooldown: boolean;
 }
 
 export const DEFAULT_FORM_VALUES: CreateReverseShareFormData = {
@@ -40,4 +41,5 @@ export const DEFAULT_FORM_VALUES: CreateReverseShareFormData = {
   noSizeLimit: true,
   allFileTypes: true,
   notifyOnUpload: false,
+  bypassUploadCooldown: false,
 };

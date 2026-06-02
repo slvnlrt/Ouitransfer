@@ -71,6 +71,7 @@ export function ReverseShareDetailsModal({
 }: ReverseShareDetailsModalProps) {
   const t = useTranslations();
   const notifyUploadSwitchId = useId();
+  const bypassCooldownSwitchId = useId();
   const qrContainerRef = useRef<HTMLButtonElement>(null);
   const { isDownloading, downloadQr } = useQrDownload();
   const [pendingChanges, setPendingChanges] = useState<
@@ -97,13 +98,15 @@ export function ReverseShareDetailsModal({
     reverseShare?.alias?.alias,
   ]);
 
-  const handleUpdateField = async (field: string, value: string | number | boolean | null) => {
+  const handleUpdateFields = async (
+    changes: Record<string, string | number | boolean | null | undefined>,
+  ) => {
     if (!reverseShare || !onUpdateReverseShare) return;
 
-    setPendingChanges((prev) => ({ ...prev, [field]: value }));
+    setPendingChanges((prev) => ({ ...prev, ...changes }));
 
     try {
-      await onUpdateReverseShare(reverseShare.id, { [field]: value });
+      await onUpdateReverseShare(reverseShare.id, changes);
       onSuccess?.();
     } catch (error) {
       logger.error("Failed to update:", {
@@ -111,11 +114,16 @@ export function ReverseShareDetailsModal({
       });
       setPendingChanges((prev) => {
         const newState = { ...prev };
-        delete newState[field];
+        for (const field of Object.keys(changes)) {
+          delete newState[field];
+        }
         return newState;
       });
     }
   };
+
+  const handleUpdateField = (field: string, value: string | number | boolean | null) =>
+    handleUpdateFields({ [field]: value });
 
   const handleCopyLink = () => {
     if (reverseShare && onCopyLink) {
@@ -475,7 +483,14 @@ export function ReverseShareDetailsModal({
                           ? (pendingChanges.notifyOnUpload as boolean)
                           : reverseShare.notifyOnUpload
                       }
-                      onCheckedChange={(checked) => handleUpdateField("notifyOnUpload", checked)}
+                      onCheckedChange={(checked) =>
+                        // Turning notifications off also clears the cooldown bypass.
+                        handleUpdateFields(
+                          checked
+                            ? { notifyOnUpload: true }
+                            : { notifyOnUpload: false, bypassUploadCooldown: false },
+                        )
+                      }
                       disabled={!onUpdateReverseShare}
                       id={notifyUploadSwitchId}
                     />
@@ -486,6 +501,32 @@ export function ReverseShareDetailsModal({
                   <p className="text-xs text-muted-foreground ps-9">
                     {t("reverseShares.form.notifyOnUploadHelp")}
                   </p>
+                  {(pendingChanges.notifyOnUpload !== undefined
+                    ? (pendingChanges.notifyOnUpload as boolean)
+                    : reverseShare.notifyOnUpload) && (
+                    <div className="space-y-1 ps-9 pt-2">
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={
+                            pendingChanges.bypassUploadCooldown !== undefined
+                              ? (pendingChanges.bypassUploadCooldown as boolean)
+                              : reverseShare.bypassUploadCooldown
+                          }
+                          onCheckedChange={(checked) =>
+                            handleUpdateField("bypassUploadCooldown", checked)
+                          }
+                          disabled={!onUpdateReverseShare}
+                          id={bypassCooldownSwitchId}
+                        />
+                        <Label htmlFor={bypassCooldownSwitchId}>
+                          {t("reverseShares.form.bypassUploadCooldown")}
+                        </Label>
+                      </div>
+                      <p className="text-xs text-muted-foreground ps-9">
+                        {t("reverseShares.form.bypassUploadCooldownHelp")}
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <EditableField

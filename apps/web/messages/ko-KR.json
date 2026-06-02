@@ -1393,7 +1393,9 @@
         "description": "업로더 이름 필드를 표시 해야하는지 확인하고 필요한 경우 구성하십시오."
       },
       "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences."
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
+      "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
     "messages": {
       "created": "수신 링크가 성공적으로 생성되었습니다!",

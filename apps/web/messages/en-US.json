@@ -1533,6 +1533,8 @@
       },
       "notifyOnUpload": "Notify me on each upload",
       "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "bypassUploadCooldown": "Notify on every upload session",
+      "bypassUploadCooldownHelp": "By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session.",
       "submit": "Create Receive Link"
     },
     "messages": {
