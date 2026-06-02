@@ -115,10 +115,7 @@ db-seed:
 # Resilient to corruption — deletes the file directly (bypasses SQLite entirely,
 # unlike `prisma migrate reset` which requires a working DB connection to proceed).
 db-reset:
-    #!/usr/bin/env sh
-    rm -f apps/server/prisma/ouitransfer.db \
-          apps/server/prisma/ouitransfer.db-wal \
-          apps/server/prisma/ouitransfer.db-shm
+    -rm -f apps/server/prisma/ouitransfer.db apps/server/prisma/ouitransfer.db-wal apps/server/prisma/ouitransfer.db-shm
     pnpm --filter=ouitransfer-api exec prisma migrate deploy
     pnpm --filter=ouitransfer-api run db:seed
 
