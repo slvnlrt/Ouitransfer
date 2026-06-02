@@ -5,14 +5,13 @@ import { Hero } from "@/components/home/hero";
 import { Stats } from "@/components/home/stats";
 import { TechMarquee } from "@/components/home/tech-marquee";
 import { LATEST_VERSION } from "@/config/constants";
-import { getSiteContent, type SiteContent } from "@/lib/content-i18n";
+import { getSiteContent } from "@/lib/content-i18n";
 
-function Footer({ content }: { content: SiteContent["home"] }) {
+function Footer() {
   return (
     <footer className="border-t border-fd-border">
-      <div className="mx-auto flex max-w-screen-xl items-center justify-center gap-1.5 px-4 py-8 text-sm text-fd-muted-foreground sm:px-6 lg:px-8">
-        <span>{content.footer.poweredBy}</span>
-        <span className="font-medium text-brand">Burger&amp;Cie ©</span>
+      <div className="mx-auto flex max-w-screen-xl items-center justify-center px-4 py-8 text-sm text-fd-muted-foreground sm:px-6 lg:px-8">
+        OUITRANSFER &copy; {new Date().getFullYear()}
       </div>
     </footer>
   );
@@ -37,7 +36,7 @@ export default async function HomePage(props: { params: Promise<{ lang: string }
         <FeatureBento content={home} />
         <TechMarquee content={home} />
         <FinalCta content={home} docsLink={docsLink} />
-        <Footer content={home} />
+        <Footer />
       </main>
     </>
   );

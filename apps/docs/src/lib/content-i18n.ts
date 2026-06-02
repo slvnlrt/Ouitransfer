@@ -63,9 +63,7 @@ export interface SiteContent {
       primaryCta: string;
       secondaryCta: string;
     };
-    footer: {
-      poweredBy: string;
-    };
+    footer: Record<string, never>;
   };
   modal: {
     title: string;
@@ -171,9 +169,7 @@ const en: SiteContent = {
       primaryCta: "Get started",
       secondaryCta: "View on GitHub",
     },
-    footer: {
-      poweredBy: "Powered by",
-    },
+    footer: {},
   },
   modal: {
     title: "Welcome to v1-beta",
@@ -281,9 +277,7 @@ const fr: SiteContent = {
       primaryCta: "Commencer",
       secondaryCta: "Voir sur GitHub",
     },
-    footer: {
-      poweredBy: "Propulsé par",
-    },
+    footer: {},
   },
   modal: {
     title: "Bienvenue dans la v1-beta",

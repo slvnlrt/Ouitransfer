@@ -6,7 +6,7 @@ export function registerSwagger(app: FastifyInstance) {
   app.register(fastifySwagger, {
     openapi: {
       info: {
-        title: "🌴 OUITRANSFER. API",
+        title: "OUITRANSFER API",
         description: "API documentation for OUITRANSFER file sharing system",
         version: "1.0.0",
       },

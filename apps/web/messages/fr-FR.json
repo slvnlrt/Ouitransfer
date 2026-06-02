@@ -571,7 +571,7 @@
     "deleteAnyway": "Supprimer quand même"
   },
   "footer": {
-    "kyanHomepage": "Page d'accueil de Burger&Cie"
+    "projectHomepage": "Page d'accueil d'OUITRANSFER"
   },
   "forgotPassword": {
     "emailLabel": "Adresse Email",

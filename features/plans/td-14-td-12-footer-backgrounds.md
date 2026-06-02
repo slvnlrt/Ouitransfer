@@ -929,7 +929,7 @@ export function DefaultFooter() {
           target="_blank"
           className="flex items-center gap-1 text-current"
           href={displayUrl}
-          title={t("footer.kyanHomepage")}
+          title={t("footer.projectHomepage")}
         >
           <span className="text-default-600 text-xs sm:text-sm">{t("footer.poweredBy")}</span>
           <p className="text-primary text-xs sm:text-sm">{displayText}</p>
@@ -977,7 +977,7 @@ export function TransparentFooter() {
           target="_blank"
           className="flex items-center gap-1 text-white/80 hover:text-primary transition-colors"
           href={displayUrl}
-          title={t("footer.kyanHomepage")}
+          title={t("footer.projectHomepage")}
         >
           <span className="text-white/70 text-xs sm:text-sm">{t("footer.poweredBy")}</span>
           <p className="text-primary text-xs sm:text-sm font-medium cursor-pointer hover:text-primary/80">

@@ -33,7 +33,7 @@ export function TransparentFooter() {
           target="_blank"
           className="text-white/80 hover:text-primary transition-colors"
           href={displayUrl}
-          title={t("footer.kyanHomepage")}
+          title={t("footer.projectHomepage")}
         >
           <p className="text-primary text-xs sm:text-sm font-medium cursor-pointer hover:text-primary/80">
             {displayText}
