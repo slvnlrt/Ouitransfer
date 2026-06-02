@@ -40,11 +40,13 @@ export interface SiteContent {
       eyebrow: string;
       heading: string;
       subtitle: string;
-      secure: { title: string; description: string };
-      fast: { title: string; description: string };
-      storage: { title: string; description: string };
-      api: { title: string; description: string };
-      search: { title: string; description: string };
+      shares: { title: string; description: string; tags: string[] };
+      identity: { title: string; description: string };
+      directory: { title: string; description: string };
+      teams: { title: string; description: string };
+      audit: { title: string; description: string };
+      reverseShare: { title: string; description: string };
+      notifications: { title: string; description: string };
       selfHosted: { title: string; description: string };
     };
     stack: {
@@ -101,37 +103,58 @@ const en: SiteContent = {
       copied: "Copied!",
       expires: "Link expires in 7 days",
     },
-    highlights: ["100% open source", "Self-hosted", "S3-compatible", "Zero tracking", "REST API"],
+    highlights: [
+      "100% open source",
+      "Self-hosted",
+      "SSO, 2FA & LDAP",
+      "Audit trail",
+      "No size limits",
+    ],
     features: {
       eyebrow: "Why OUITRANSFER",
-      heading: "Everything you need to share files — and nothing you don't.",
+      heading: "Everything teams need to share files — under your control.",
       subtitle:
-        "A focused, production-ready transfer platform. Secure by default, fully yours, and ready to deploy in minutes.",
-      secure: {
-        title: "Secure & private by design",
+        "Single sign-on, directory sync, quotas and audit trails: the controls organizations need, in a platform you fully own and self-host.",
+      shares: {
+        title: "Shares you fully control",
         description:
-          "Password-protected links, expiring downloads and per-share access control. Your data stays encrypted and entirely under your roof — no third party ever sees it.",
+          "Protect every link with a password, an expiry date or a view limit. Add recipients with personalized tracking links, require visitor identification, and hand out a clean URL with a QR code.",
+        tags: ["Password", "Expiry date", "View limit", "QR code", "Tracking links"],
       },
-      fast: {
-        title: "Built for speed",
-        description: "Streaming uploads and downloads on a modern Fastify core.",
+      identity: {
+        title: "SSO & two-factor",
+        description:
+          "OpenID Connect single sign-on with 7+ providers, plus built-in TOTP two-factor and brute-force lockout.",
       },
-      storage: {
-        title: "Flexible storage",
-        description: "Bundled storage or any S3-compatible backend, internal or external.",
+      directory: {
+        title: "Active Directory sync",
+        description:
+          "Provision users automatically from LDAP / AD, with group mapping and scheduled synchronization.",
       },
-      api: {
-        title: "Developer-first API",
-        description: "A full REST API with webhooks to automate every transfer.",
+      teams: {
+        title: "Groups & quotas",
+        description:
+          "Organize users into groups and set per-user storage quotas that cascade from group to global.",
       },
-      search: {
-        title: "Manage with ease",
-        description: "A clean dashboard to track, search and revoke shares in a click.",
+      audit: {
+        title: "Compliance-ready audit trail",
+        description:
+          "Every access, download and admin action is logged with visitor IP — filterable, exportable, with retention policies.",
+      },
+      reverseShare: {
+        title: "Request files from anyone",
+        description:
+          "Publish a reverse-share upload form to collect files from external people — no account required on their side.",
+      },
+      notifications: {
+        title: "Email notifications",
+        description:
+          "Share access, downloads, quota warnings and expiry alerts over SMTP, with per-user and per-share preferences.",
       },
       selfHosted: {
-        title: "Self-hosted in minutes",
+        title: "Self-hosted, with no limits",
         description:
-          "One Docker Compose command brings up storage, API and web. Own your infrastructure, your data and every byte that flows through it.",
+          "One Docker Compose command brings up storage, API and web. Bundled storage or any S3-compatible backend, and no artificial file-size caps — the only limit is your own disk.",
       },
     },
     stack: {
@@ -191,37 +214,58 @@ const fr: SiteContent = {
       copied: "Copié !",
       expires: "Le lien expire dans 7 jours",
     },
-    highlights: ["100% open source", "Auto-hébergé", "Compatible S3", "Zéro tracking", "API REST"],
+    highlights: [
+      "100% open source",
+      "Auto-hébergé",
+      "SSO, 2FA & LDAP",
+      "Journal d'audit",
+      "Sans limite de taille",
+    ],
     features: {
       eyebrow: "Pourquoi OUITRANSFER",
-      heading: "Tout ce qu'il faut pour partager des fichiers — et rien de superflu.",
+      heading: "Tout ce qu'il faut aux équipes pour partager — sous votre contrôle.",
       subtitle:
-        "Une plateforme de transfert ciblée et prête pour la production. Sécurisée par défaut, entièrement à vous, déployable en quelques minutes.",
-      secure: {
-        title: "Sécurisé et privé par conception",
+        "Authentification unique, synchro d'annuaire, quotas et journal d'audit : les contrôles dont les organisations ont besoin, dans une plateforme que vous possédez et hébergez.",
+      shares: {
+        title: "Des partages maîtrisés de bout en bout",
         description:
-          "Liens protégés par mot de passe, téléchargements expirants et contrôle d'accès par partage. Vos données restent chiffrées et entièrement chez vous — aucun tiers n'y accède.",
+          "Protégez chaque lien par mot de passe, date d'expiration ou limite de vues. Ajoutez des destinataires avec liens de suivi personnalisés, exigez l'identification des visiteurs, et obtenez une URL propre avec QR code.",
+        tags: ["Mot de passe", "Expiration", "Limite de vues", "QR code", "Liens de suivi"],
       },
-      fast: {
-        title: "Conçu pour la vitesse",
-        description: "Envois et téléchargements en streaming sur un cœur Fastify moderne.",
+      identity: {
+        title: "SSO & double authentification",
+        description:
+          "Authentification unique OpenID Connect avec 7+ fournisseurs, plus 2FA TOTP intégrée et verrouillage anti-force brute.",
       },
-      storage: {
-        title: "Stockage flexible",
-        description: "Stockage intégré ou tout backend compatible S3, interne ou externe.",
+      directory: {
+        title: "Synchro Active Directory",
+        description:
+          "Provisionnez automatiquement les utilisateurs depuis LDAP / AD, avec mappage de groupes et synchronisation planifiée.",
       },
-      api: {
-        title: "API pensée pour les devs",
-        description: "Une API REST complète avec webhooks pour automatiser chaque transfert.",
+      teams: {
+        title: "Groupes & quotas",
+        description:
+          "Organisez les utilisateurs en groupes et fixez des quotas de stockage par utilisateur, hérités du groupe puis du global.",
       },
-      search: {
-        title: "Gestion sans effort",
-        description: "Un tableau de bord clair pour suivre, rechercher et révoquer vos partages.",
+      audit: {
+        title: "Journal d'audit pour la conformité",
+        description:
+          "Chaque accès, téléchargement et action admin est journalisé avec l'IP du visiteur — filtrable, exportable, avec rétention configurable.",
+      },
+      reverseShare: {
+        title: "Recevez des fichiers de n'importe qui",
+        description:
+          "Publiez un formulaire de reverse-share pour collecter des fichiers auprès de personnes externes — sans compte de leur côté.",
+      },
+      notifications: {
+        title: "Notifications email",
+        description:
+          "Accès, téléchargements, alertes de quota et d'expiration par SMTP, avec préférences par utilisateur et par partage.",
       },
       selfHosted: {
-        title: "Auto-hébergé en quelques minutes",
+        title: "Auto-hébergé, sans limites",
         description:
-          "Une seule commande Docker Compose lance le stockage, l'API et le web. Maîtrisez votre infrastructure, vos données et chaque octet qui y transite.",
+          "Une seule commande Docker Compose lance le stockage, l'API et le web. Stockage intégré ou tout backend compatible S3, et aucune limite artificielle de taille — la seule limite, c'est votre disque.",
       },
     },
     stack: {

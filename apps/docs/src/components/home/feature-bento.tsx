@@ -1,20 +1,22 @@
-"use client";
-
 import {
-  Cloud,
-  Container,
-  Gauge,
-  LayoutDashboard,
+  Bell,
+  Inbox,
+  KeyRound,
+  Lock,
   type LucideIcon,
-  ShieldCheck,
-  TerminalSquare,
+  Network,
+  ScrollText,
+  Server,
+  Users,
 } from "lucide-react";
-import { motion, useReducedMotion } from "motion/react";
 import type { ReactNode } from "react";
 
 import { Reveal } from "@/components/home/reveal";
 import type { SiteContent } from "@/lib/content-i18n";
 import { cn } from "@/lib/utils";
+
+/** OIDC providers shipped out of the box (proper nouns, not translated). */
+const SSO_PROVIDERS = ["Google", "GitHub", "Authentik", "Zitadel", "Auth0"];
 
 function IconChip({ icon: Icon }: { icon: LucideIcon }) {
   return (
@@ -40,7 +42,7 @@ function BentoCard({
   return (
     <div
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-2xl border border-fd-border bg-fd-card/40 p-6 transition-all duration-300 hover:border-brand/40 hover:shadow-lg hover:shadow-brand/5",
+        "group relative flex h-full flex-col overflow-hidden rounded-2xl border border-fd-border bg-fd-card/40 p-6 transition-all duration-300 hover:border-brand/40 hover:shadow-lg hover:shadow-brand/5",
         className,
       )}
     >
@@ -48,33 +50,12 @@ function BentoCard({
         aria-hidden
         className="pointer-events-none absolute inset-x-0 -top-24 h-40 bg-brand/10 opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100"
       />
-      <div className="relative flex flex-col">
+      <div className="relative flex flex-1 flex-col">
         <IconChip icon={icon} />
         <h3 className="mt-4 text-lg font-semibold text-fd-foreground">{title}</h3>
         <p className="mt-2 text-sm leading-relaxed text-fd-muted-foreground">{description}</p>
         {children}
       </div>
-    </div>
-  );
-}
-
-/** Three bars that animate to width when the card scrolls into view. */
-function SpeedBars() {
-  const reduceMotion = useReducedMotion();
-  const widths = [92, 74, 58];
-  return (
-    <div className="mt-5 space-y-2">
-      {widths.map((w, i) => (
-        <div key={w} className="h-1.5 overflow-hidden rounded-full bg-fd-secondary">
-          <motion.div
-            className="h-full rounded-full bg-gradient-brand"
-            initial={reduceMotion ? false : { width: 0 }}
-            whileInView={{ width: `${w}%` }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.9, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] }}
-          />
-        </div>
-      ))}
     </div>
   );
 }
@@ -93,16 +74,11 @@ export function FeatureBento({ content }: { content: SiteContent["home"] }) {
       </Reveal>
 
       <div className="mt-14 grid gap-4 lg:grid-cols-6">
-        {/* Secure — large */}
+        {/* Shares — large, with capability tags */}
         <Reveal className="lg:col-span-4" delay={0}>
-          <BentoCard
-            className="h-full"
-            icon={ShieldCheck}
-            title={f.secure.title}
-            description={f.secure.description}
-          >
+          <BentoCard icon={Lock} title={f.shares.title} description={f.shares.description}>
             <div className="mt-6 flex flex-wrap gap-2">
-              {["Password", "Expiry", "Access control", "Encrypted at rest"].map((tag) => (
+              {f.shares.tags.map((tag) => (
                 <span
                   key={tag}
                   className="rounded-lg border border-fd-border bg-fd-background/60 px-2.5 py-1 font-mono text-xs text-fd-muted-foreground"
@@ -114,59 +90,66 @@ export function FeatureBento({ content }: { content: SiteContent["home"] }) {
           </BentoCard>
         </Reveal>
 
-        {/* Fast */}
+        {/* Identity — SSO & 2FA, with provider pills */}
         <Reveal className="lg:col-span-2" delay={0.08}>
-          <BentoCard
-            className="h-full"
-            icon={Gauge}
-            title={f.fast.title}
-            description={f.fast.description}
-          >
-            <SpeedBars />
+          <BentoCard icon={KeyRound} title={f.identity.title} description={f.identity.description}>
+            <div className="mt-auto flex flex-wrap gap-1.5 pt-5">
+              {SSO_PROVIDERS.map((p) => (
+                <span
+                  key={p}
+                  className="rounded-md border border-fd-border bg-fd-background/60 px-2 py-0.5 text-[11px] text-fd-muted-foreground"
+                >
+                  {p}
+                </span>
+              ))}
+              <span className="rounded-md border border-brand/30 bg-brand/10 px-2 py-0.5 text-[11px] font-medium text-brand">
+                +more
+              </span>
+            </div>
           </BentoCard>
         </Reveal>
 
-        {/* Storage */}
+        {/* Directory sync */}
         <Reveal className="lg:col-span-2" delay={0}>
           <BentoCard
-            className="h-full"
-            icon={Cloud}
-            title={f.storage.title}
-            description={f.storage.description}
+            icon={Network}
+            title={f.directory.title}
+            description={f.directory.description}
           />
         </Reveal>
 
-        {/* API */}
+        {/* Groups & quotas */}
         <Reveal className="lg:col-span-2" delay={0.08}>
-          <BentoCard
-            className="h-full"
-            icon={TerminalSquare}
-            title={f.api.title}
-            description={f.api.description}
-          >
-            <pre className="mt-5 overflow-hidden rounded-lg border border-fd-border bg-fd-background/70 p-3 font-mono text-[11px] leading-relaxed text-fd-muted-foreground">
-              <span className="text-brand">POST</span> /api/transfers{"\n"}
-              {"{ "}
-              <span className="text-emerald-500">&quot;expiresIn&quot;</span>: &quot;7d&quot;{" }"}
-            </pre>
-          </BentoCard>
+          <BentoCard icon={Users} title={f.teams.title} description={f.teams.description} />
         </Reveal>
 
-        {/* Search / dashboard */}
+        {/* Audit trail */}
         <Reveal className="lg:col-span-2" delay={0.16}>
+          <BentoCard icon={ScrollText} title={f.audit.title} description={f.audit.description} />
+        </Reveal>
+
+        {/* Reverse shares */}
+        <Reveal className="lg:col-span-3" delay={0}>
           <BentoCard
-            className="h-full"
-            icon={LayoutDashboard}
-            title={f.search.title}
-            description={f.search.description}
+            icon={Inbox}
+            title={f.reverseShare.title}
+            description={f.reverseShare.description}
           />
         </Reveal>
 
-        {/* Self-hosted — wide */}
+        {/* Email notifications */}
+        <Reveal className="lg:col-span-3" delay={0.08}>
+          <BentoCard
+            icon={Bell}
+            title={f.notifications.title}
+            description={f.notifications.description}
+          />
+        </Reveal>
+
+        {/* Self-hosted — wide, with docker snippet */}
         <Reveal className="lg:col-span-6" delay={0}>
           <BentoCard
-            className="overflow-hidden"
-            icon={Container}
+            icon={Server}
             title={f.selfHosted.title}
             description={f.selfHosted.description}
           >
