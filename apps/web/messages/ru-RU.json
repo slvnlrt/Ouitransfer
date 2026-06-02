@@ -176,7 +176,13 @@
     "copy": "Копировать",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "дней"
+    "days": "дней",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "Создать общий доступ",
@@ -1237,12 +1243,6 @@
         "updating": "Обновление...",
         "create": "Создать псевдоним",
         "update": "Обновить псевдоним",
-        "validation": {
-          "required": "Псевдоним обязателен",
-          "minLength": "Псевдоним должен содержать минимум 3 символа",
-          "maxLength": "Псевдоним должен содержать максимум 50 символов",
-          "pattern": "Псевдоним может содержать только буквы, цифры, дефисы и подчеркивания"
-        },
         "help": "3-50 символов. Пробелы будут автоматически заменены на дефисы."
       },
       "password": {

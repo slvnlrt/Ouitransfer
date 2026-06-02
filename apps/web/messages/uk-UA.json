@@ -180,7 +180,13 @@
     "copied": "Скопійовано",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "днів"
+    "days": "днів",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "Створити спільний доступ",
@@ -1241,12 +1247,6 @@
         "updating": "Оновлення...",
         "create": "Створити псевдонім",
         "update": "Оновити псевдонім",
-        "validation": {
-          "required": "Псевдонім обов'язковий",
-          "minLength": "Псевдонім має бути щонайменше 3 символи",
-          "maxLength": "Псевдонім має бути не більше 50 символів",
-          "pattern": "Псевдонім може містити лише літери, цифри, дефіси та підкреслення"
-        },
         "help": "3-50 символів. Пробіли будуть автоматично перетворені на дефіси."
       },
       "password": {

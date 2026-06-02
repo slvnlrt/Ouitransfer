@@ -176,7 +176,13 @@
     "copy": "复制",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "天"
+    "days": "天",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "创建分享",
@@ -1237,12 +1243,6 @@
         "updating": "更新中...",
         "create": "创建别名",
         "update": "更新别名",
-        "validation": {
-          "required": "别名是必需的",
-          "minLength": "别名至少需要3个字符",
-          "maxLength": "别名最多50个字符",
-          "pattern": "别名只能包含字母、数字、连字符和下划线"
-        },
         "help": "3-50个字符。空格将自动转换为连字符。"
       },
       "password": {

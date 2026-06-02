@@ -176,7 +176,13 @@
     "copy": "نسخ",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "أيام"
+    "days": "أيام",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "إنشاء مشاركة",
@@ -1237,12 +1243,6 @@
         "updating": "جارٍ التحديث...",
         "create": "إنشاء اسم مستعار",
         "update": "تحديث الاسم المستعار",
-        "validation": {
-          "required": "الاسم المستعار مطلوب",
-          "minLength": "يجب أن يكون الاسم المستعار 3 أحرف على الأقل",
-          "maxLength": "يجب أن يكون الاسم المستعار 50 حرفاً كحد أقصى",
-          "pattern": "يجب أن يحتوي الاسم المستعار على أحرف وأرقام وشرطات وشرطات سفلية فقط"
-        },
         "help": "3-50 حرفاً. سيتم تحويل المسافات إلى شرطات تلقائياً."
       },
       "password": {

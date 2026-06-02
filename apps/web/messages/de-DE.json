@@ -176,7 +176,13 @@
     "copy": "Kopieren",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "Tage"
+    "days": "Tage",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "Freigabe Erstellen",
@@ -1237,12 +1243,6 @@
         "updating": "Wird aktualisiert...",
         "create": "Alias erstellen",
         "update": "Alias aktualisieren",
-        "validation": {
-          "required": "Alias ist erforderlich",
-          "minLength": "Alias muss mindestens 3 Zeichen lang sein",
-          "maxLength": "Alias darf maximal 50 Zeichen lang sein",
-          "pattern": "Alias darf nur Buchstaben, Zahlen, Bindestriche und Unterstriche enthalten"
-        },
         "help": "3-50 Zeichen. Leerzeichen werden automatisch in Bindestriche umgewandelt."
       },
       "password": {

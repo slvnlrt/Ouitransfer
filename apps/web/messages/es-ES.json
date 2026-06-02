@@ -180,7 +180,13 @@
     "copy": "Copiar",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "días"
+    "days": "días",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "Crear Compartir",
@@ -1241,12 +1247,6 @@
         "updating": "Actualizando...",
         "create": "Crear Alias",
         "update": "Actualizar Alias",
-        "validation": {
-          "required": "El alias es obligatorio",
-          "minLength": "El alias debe tener al menos 3 caracteres",
-          "maxLength": "El alias debe tener máximo 50 caracteres",
-          "pattern": "El alias solo puede contener letras, números, guiones y guiones bajos"
-        },
         "help": "3-50 caracteres. Los espacios se convertirán automáticamente en guiones."
       },
       "password": {

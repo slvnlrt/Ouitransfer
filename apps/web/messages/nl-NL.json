@@ -176,7 +176,13 @@
     "copy": "Kopiëren",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "dagen"
+    "days": "dagen",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "Delen Maken",
@@ -1237,12 +1243,6 @@
         "updating": "Bijwerken...",
         "create": "Alias Aanmaken",
         "update": "Alias Bijwerken",
-        "validation": {
-          "required": "Alias is verplicht",
-          "minLength": "Alias moet minimaal 3 tekens bevatten",
-          "maxLength": "Alias mag maximaal 50 tekens bevatten",
-          "pattern": "Alias mag alleen letters, cijfers, streepjes en underscores bevatten"
-        },
         "help": "3-50 tekens. Spaties worden automatisch omgezet in streepjes."
       },
       "password": {

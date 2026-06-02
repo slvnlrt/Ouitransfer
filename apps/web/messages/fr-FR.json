@@ -148,6 +148,12 @@
     "download": "Télécharger le ZIP"
   },
   "common": {
+    "aliasValidation": {
+      "required": "L'alias est requis",
+      "minLength": "L'alias doit contenir au moins {min} caractères",
+      "maxLength": "L'alias doit contenir au plus {max} caractères",
+      "pattern": "L'alias ne peut contenir que des lettres, chiffres et tirets internes simples"
+    },
     "loading": "Chargement, veuillez patienter...",
     "cancel": "Annuler",
     "save": "Enregistrer",
@@ -1237,13 +1243,7 @@
         "updating": "Mise à jour...",
         "create": "Créer l'Alias",
         "update": "Mettre à jour l'Alias",
-        "validation": {
-          "required": "L'alias est requis",
-          "minLength": "L'alias doit contenir au moins 3 caractères",
-          "maxLength": "L'alias doit contenir au maximum 50 caractères",
-          "pattern": "L'alias ne doit contenir que des lettres, chiffres, tirets et underscores"
-        },
-        "help": "3-50 caractères. Les espaces seront automatiquement convertis en tirets."
+        "help": "5 à 30 caractères. Lettres, chiffres et tirets internes simples."
       },
       "password": {
         "title": "Modifier la Protection par Mot de Passe",

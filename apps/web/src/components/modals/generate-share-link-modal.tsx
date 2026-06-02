@@ -18,6 +18,7 @@ import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { useQrDownload } from "@/hooks/use-qr-download";
 import type { Share } from "@/http/endpoints/shares/types";
 import { customNanoid } from "@/lib/utils";
+import { ALIAS_MAX_LENGTH, ALIAS_MIN_LENGTH, getAliasValidationError } from "@/utils/alias";
 import { generateQrFilename } from "@/utils/qr-download";
 
 interface GenerateShareLinkModalProps {
@@ -57,6 +58,14 @@ export function GenerateShareLinkModal({
     }
     setGeneratedLink("");
   }, [shareId, share]);
+
+  const aliasErrorKey = getAliasValidationError(alias);
+  const aliasError = aliasErrorKey
+    ? t(`common.aliasValidation.${aliasErrorKey}`, {
+        min: ALIAS_MIN_LENGTH,
+        max: ALIAS_MAX_LENGTH,
+      })
+    : null;
 
   const handleGenerate = async () => {
     if (!shareId) return;
@@ -102,7 +111,9 @@ export function GenerateShareLinkModal({
               placeholder={t("generateShareLink.aliasPlaceholder")}
               value={alias}
               onChange={(e) => setAlias(e.target.value)}
+              aria-invalid={aliasError !== null}
             />
+            {aliasError && <p className="text-sm text-destructive">{aliasError}</p>}
           </div>
         ) : (
           <div className="space-y-6">
@@ -151,7 +162,7 @@ export function GenerateShareLinkModal({
         )}
         {!generatedLink && (
           <DialogFooter>
-            <Button disabled={!alias || isLoading} onClick={handleGenerate}>
+            <Button disabled={!alias || isLoading || aliasError !== null} onClick={handleGenerate}>
               {isEdit ? t("generateShareLink.updateButton") : t("generateShareLink.generateButton")}
             </Button>
           </DialogFooter>

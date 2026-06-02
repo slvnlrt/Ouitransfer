@@ -23,6 +23,7 @@ import { useQrDownload } from "@/hooks/use-qr-download";
 import { createShare, createShareAlias, listFiles, listFolders } from "@/http/endpoints";
 import { logger } from "@/lib/logger";
 import { customNanoid } from "@/lib/utils";
+import { ALIAS_MAX_LENGTH, ALIAS_MIN_LENGTH, getAliasValidationError } from "@/utils/alias";
 import { SharePrivacySection } from "./share-privacy-section";
 
 type ShareFile = Pick<
@@ -67,6 +68,11 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
   const [alias, setAlias] = useState(() => generateCustomId());
   const [generatedLink, setGeneratedLink] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const aliasErrorKey = getAliasValidationError(alias);
+  const aliasError = aliasErrorKey
+    ? t(`common.aliasValidation.${aliasErrorKey}`, { min: ALIAS_MIN_LENGTH, max: ALIAS_MAX_LENGTH })
+    : null;
 
   const item = file || folder;
   const itemType = file ? "file" : "folder";
@@ -352,7 +358,9 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
                     placeholder={t("shareActions.aliasPlaceholder")}
                     value={alias}
                     onChange={(e) => setAlias(e.target.value)}
+                    aria-invalid={aliasError !== null}
                   />
+                  {aliasError && <p className="text-sm text-destructive">{aliasError}</p>}
                 </div>
               </>
             ) : (
@@ -409,7 +417,10 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
               <Button variant="outline" onClick={() => setStep("create")}>
                 {t("common.back")}
               </Button>
-              <Button disabled={!alias || isLoading} onClick={handleGenerateLink}>
+              <Button
+                disabled={!alias || isLoading || aliasError !== null}
+                onClick={handleGenerateLink}
+              >
                 {isLoading ? <Loader size="sm" /> : t("shareActions.generateLink")}
               </Button>
             </>

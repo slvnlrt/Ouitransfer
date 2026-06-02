@@ -176,7 +176,13 @@
     "copy": "복사",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "일"
+    "days": "일",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "공유 생성",
@@ -1237,12 +1243,6 @@
         "updating": "업데이트 중...",
         "create": "별칭 생성",
         "update": "별칭 업데이트",
-        "validation": {
-          "required": "별칭이 필요합니다",
-          "minLength": "별칭은 최소 3자 이상이어야 합니다",
-          "maxLength": "별칭은 최대 50자까지 가능합니다",
-          "pattern": "별칭은 문자, 숫자, 하이픈, 밑줄만 포함할 수 있습니다"
-        },
         "help": "3-50자. 공백은 자동으로 하이픈으로 변환됩니다."
       },
       "password": {

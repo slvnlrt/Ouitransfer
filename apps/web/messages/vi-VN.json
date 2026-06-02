@@ -180,7 +180,13 @@
     "copied": "Đã sao chép",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "ngày"
+    "days": "ngày",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "Tạo chia sẻ",
@@ -1241,12 +1247,6 @@
         "updating": "Đang cập nhật...",
         "create": "Tạo bí danh",
         "update": "Cập nhật bí danh",
-        "validation": {
-          "required": "Bí danh là bắt buộc",
-          "minLength": "Bí danh phải có ít nhất 3 ký tự",
-          "maxLength": "Bí danh phải có tối đa 50 ký tự",
-          "pattern": "Bí danh chỉ được chứa chữ cái, số, dấu gạch ngang và dấu gạch dưới"
-        },
         "help": "3-50 ký tự. Dấu cách sẽ tự động được chuyển đổi thành dấu gạch ngang."
       },
       "password": {

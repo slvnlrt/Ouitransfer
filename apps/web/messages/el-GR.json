@@ -180,7 +180,13 @@
     "copied": "Αντιγράφηκε",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "ημέρες"
+    "days": "ημέρες",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "Δημιουργία κοινής χρήσης",
@@ -1241,12 +1247,6 @@
         "updating": "Ενημέρωση...",
         "create": "Δημιουργία ψευδωνύμου",
         "update": "Ενημέρωση ψευδωνύμου",
-        "validation": {
-          "required": "Απαιτείται ψευδώνυμο",
-          "minLength": "Το ψευδώνυμο πρέπει να έχει τουλάχιστον 3 χαρακτήρες",
-          "maxLength": "Το ψευδώνυμο πρέπει να έχει το πολύ 50 χαρακτήρες",
-          "pattern": "Το ψευδώνυμο πρέπει να περιέχει μόνο γράμματα, αριθμούς, παύλες και κάτω παύλες"
-        },
         "help": "3-50 χαρακτήρες. Τα κενά θα μετατραπούν αυτόματα σε παύλες."
       },
       "password": {

@@ -176,7 +176,13 @@
     "copy": "Copia",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "giorni"
+    "days": "giorni",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "Crea Condivisione",
@@ -1237,12 +1243,6 @@
         "updating": "Aggiornamento in corso...",
         "create": "Crea Alias",
         "update": "Aggiorna Alias",
-        "validation": {
-          "required": "Alias obbligatorio",
-          "minLength": "L'alias deve contenere almeno 3 caratteri",
-          "maxLength": "L'alias deve contenere al massimo 50 caratteri",
-          "pattern": "L'alias può contenere solo lettere, numeri, trattini e underscore"
-        },
         "help": "3-50 caratteri. Gli spazi saranno convertiti automaticamente in trattini."
       },
       "password": {

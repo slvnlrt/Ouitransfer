@@ -176,7 +176,13 @@
     "copy": "कॉपी करें",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "दिन"
+    "days": "दिन",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "साझाकरण बनाएं",
@@ -1237,12 +1243,6 @@
         "updating": "अपडेट हो रहा है...",
         "create": "उपनाम बनाएं",
         "update": "उपनाम अपडेट करें",
-        "validation": {
-          "required": "उपनाम आवश्यक है",
-          "minLength": "उपनाम कम से कम 3 अक्षर का होना चाहिए",
-          "maxLength": "उपनाम अधिकतम 50 अक्षर का हो सकता है",
-          "pattern": "उपनाम में केवल अक्षर, संख्याएं, हाइफन और अंडरस्कोर हो सकते हैं"
-        },
         "help": "3-50 अक्षर। स्पेस स्वचालित रूप से हाइफन में बदल जाएंगे।"
       },
       "password": {

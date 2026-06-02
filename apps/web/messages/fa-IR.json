@@ -180,7 +180,13 @@
     "copied": "کپی شد",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "روز"
+    "days": "روز",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "ایجاد اشتراک",
@@ -1241,12 +1247,6 @@
         "updating": "در حال به‌روزرسانی...",
         "create": "ایجاد نام مستعار",
         "update": "به‌روزرسانی نام مستعار",
-        "validation": {
-          "required": "نام مستعار الزامی است",
-          "minLength": "نام مستعار باید حداقل ۳ کاراکتر باشد",
-          "maxLength": "نام مستعار باید حداکثر ۵۰ کاراکتر باشد",
-          "pattern": "نام مستعار فقط می‌تواند شامل حروف، اعداد، خط تیره و زیرخط باشد"
-        },
         "help": "۳ تا ۵۰ کاراکتر. فاصله‌ها به‌صورت خودکار به خط تیره تبدیل می‌شوند."
       },
       "password": {

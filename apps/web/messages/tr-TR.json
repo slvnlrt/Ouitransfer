@@ -176,7 +176,13 @@
     "copy": "Kopyala",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "gün"
+    "days": "gün",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "Paylaşım Oluştur",
@@ -1237,12 +1243,6 @@
         "updating": "Güncelleniyor...",
         "create": "Takma Ad Oluştur",
         "update": "Takma Adı Güncelle",
-        "validation": {
-          "required": "Takma ad gereklidir",
-          "minLength": "Takma ad en az 3 karakter olmalıdır",
-          "maxLength": "Takma ad en fazla 50 karakter olmalıdır",
-          "pattern": "Takma ad sadece harf, rakam, tire ve alt çizgi içerebilir"
-        },
         "help": "3-50 karakter. Boşluklar otomatik olarak tireye dönüştürülecektir."
       },
       "password": {

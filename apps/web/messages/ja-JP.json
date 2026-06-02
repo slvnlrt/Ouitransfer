@@ -176,7 +176,13 @@
     "copy": "コピー",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "日"
+    "days": "日",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "共有を作成",
@@ -1237,12 +1243,6 @@
         "updating": "更新中...",
         "create": "エイリアスを作成",
         "update": "エイリアスを更新",
-        "validation": {
-          "required": "エイリアスは必須です",
-          "minLength": "エイリアスは3文字以上必要です",
-          "maxLength": "エイリアスは50文字以内である必要があります",
-          "pattern": "エイリアスには文字、数字、ハイフン、アンダースコアのみ使用できます"
-        },
         "help": "3-50文字。スペースは自動的にハイフンに変換されます。"
       },
       "password": {

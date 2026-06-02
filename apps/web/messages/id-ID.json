@@ -180,7 +180,13 @@
     "copied": "Disalin",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "hari"
+    "days": "hari",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "Buat Berbagi",
@@ -1241,12 +1247,6 @@
         "updating": "Memperbarui...",
         "create": "Buat Alias",
         "update": "Perbarui Alias",
-        "validation": {
-          "required": "Alias wajib diisi",
-          "minLength": "Alias harus minimal 3 karakter",
-          "maxLength": "Alias harus maksimal 50 karakter",
-          "pattern": "Alias hanya boleh berisi huruf, angka, tanda hubung dan garis bawah"
-        },
         "help": "3-50 karakter. Spasi akan otomatis diubah menjadi tanda hubung."
       },
       "password": {

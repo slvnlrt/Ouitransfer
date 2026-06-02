@@ -2,6 +2,7 @@ import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
+import { aliasSchema } from "../../shared/alias-schema.js";
 import { AppError, UnauthorizedError, ValidationError } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { getLogger } from "../../utils/logger.js";
@@ -786,11 +787,7 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         reverseShareId: z.string().describe("The reverse share ID"),
       }),
       body: z.object({
-        alias: z
-          .string()
-          .regex(/^[a-zA-Z0-9-]+$/, "Alias must contain only letters, numbers, and hyphens")
-          .min(3, "Alias must be at least 3 characters long")
-          .max(30, "Alias must not exceed 30 characters"),
+        alias: aliasSchema,
       }),
       response: {
         200: z.object({

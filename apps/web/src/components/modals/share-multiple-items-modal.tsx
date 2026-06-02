@@ -24,6 +24,7 @@ import { useQrDownload } from "@/hooks/use-qr-download";
 import { createShare, createShareAlias, listFiles, listFolders } from "@/http/endpoints";
 import { logger } from "@/lib/logger";
 import { customNanoid } from "@/lib/utils";
+import { ALIAS_MAX_LENGTH, ALIAS_MIN_LENGTH, getAliasValidationError } from "@/utils/alias";
 import { getFileIcon } from "@/utils/file-icons";
 import { SharePrivacySection } from "./share-privacy-section";
 
@@ -80,6 +81,11 @@ export function ShareMultipleItemsModal({
   const [alias, setAlias] = useState(() => generateCustomId());
   const [generatedLink, setGeneratedLink] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const aliasErrorKey = getAliasValidationError(alias);
+  const aliasError = aliasErrorKey
+    ? t(`common.aliasValidation.${aliasErrorKey}`, { min: ALIAS_MIN_LENGTH, max: ALIAS_MAX_LENGTH })
+    : null;
 
   // Stable key derived from IDs — only changes when the actual items change, not on reference changes.
   const itemsKey = useMemo(() => {
@@ -474,7 +480,9 @@ export function ShareMultipleItemsModal({
                       placeholder={t("shareActions.aliasPlaceholder")}
                       value={alias}
                       onChange={(e) => setAlias(e.target.value)}
+                      aria-invalid={aliasError !== null}
                     />
+                    {aliasError && <p className="text-sm text-destructive">{aliasError}</p>}
                   </div>
                 </>
               ) : (
@@ -532,7 +540,10 @@ export function ShareMultipleItemsModal({
               <Button variant="outline" onClick={() => setStep("create")}>
                 {t("common.back")}
               </Button>
-              <Button disabled={!alias || isLoading} onClick={handleGenerateLink}>
+              <Button
+                disabled={!alias || isLoading || aliasError !== null}
+                onClick={handleGenerateLink}
+              >
                 {isLoading ? <Loader size="sm" /> : t("shareActions.generateLink")}
               </Button>
             </>

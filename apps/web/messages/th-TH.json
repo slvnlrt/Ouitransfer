@@ -180,7 +180,13 @@
     "copied": "คัดลอกแล้ว",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "วัน"
+    "days": "วัน",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "สร้างแชร์",
@@ -1241,12 +1247,6 @@
         "updating": "กำลังอัปเดต...",
         "create": "สร้างนามแฝง",
         "update": "อัปเดตนามแฝง",
-        "validation": {
-          "required": "ต้องระบุนามแฝง",
-          "minLength": "นามแฝงต้องมีอย่างน้อย 3 ตัวอักษร",
-          "maxLength": "นามแฝงต้องมีไม่เกิน 50 ตัวอักษร",
-          "pattern": "นามแฝงต้องมีเฉพาะตัวอักษร ตัวเลข ขีดและเครื่องหมายขีดใต้เท่านั้น"
-        },
         "help": "3-50 ตัวอักษร ช่องว่างจะถูกแปลงเป็นขีดอัตโนมัติ"
       },
       "password": {
