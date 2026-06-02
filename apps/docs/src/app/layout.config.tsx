@@ -1,5 +1,5 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
-import { ChevronRight, Github } from "lucide-react";
+import { ChevronRight, Coffee, Github } from "lucide-react";
 
 import { LATEST_VERSION } from "@/config/constants";
 import { i18n } from "@/lib/i18n";
@@ -36,7 +36,13 @@ export function baseOptions(locale: string): BaseLayoutProps {
         url: "https://github.com/slvnlrt/ouitransfer",
         icon: <Github />,
         external: true,
-        on: "nav",
+      },
+      {
+        type: "icon",
+        text: "Ko-fi",
+        url: "https://ko-fi.com/slvnlrt",
+        icon: <Coffee />,
+        external: true,
       },
     ],
   };
