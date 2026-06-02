@@ -15,52 +15,46 @@ export interface SiteContent {
   };
   home: {
     hero: {
-      tagline: string;
-      description: string;
-      documentation: string;
-      github: string;
-    };
-    feedback: {
-      title: string;
-      words: string[];
-    };
-    coreFeatures: {
-      uploadTitle: string;
-      uploadDescription: string;
-      secureTitle: string;
-      secureDescription: string;
-    };
-    callout: {
       badge: string;
       title: string;
-      subtitle: string;
+      titleAccent: string;
+      description: string;
+      primaryCta: string;
+      secondaryCta: string;
+      note: string;
     };
-    keyFeatures: {
+    demo: {
+      label: string;
+      encrypted: string;
+      file: string;
+      size: string;
+      uploading: string;
+      ready: string;
+      link: string;
+      copy: string;
+      copied: string;
+      expires: string;
+    };
+    highlights: string[];
+    features: {
+      eyebrow: string;
       heading: string;
-      fastTitle: string;
-      fastDescription: string;
-      storageTitle: string;
-      storageDescription: string;
-      apiTitle: string;
-      apiDescription: string;
-      searchTitle: string;
-      searchDescription: string;
-      uiTitle: string;
-      uiDescription: string;
-      databaseTitle: string;
-      databaseDescription: string;
+      subtitle: string;
+      secure: { title: string; description: string };
+      fast: { title: string; description: string };
+      storage: { title: string; description: string };
+      api: { title: string; description: string };
+      search: { title: string; description: string };
+      selfHosted: { title: string; description: string };
     };
-    getStarted: {
+    stack: {
+      heading: string;
+    };
+    cta: {
       title: string;
       description: string;
-      quickSetupTitle: string;
-      quickSetupDescription: string;
-      fullControlTitle: string;
-      fullControlDescription: string;
-      productionTitle: string;
-      productionDescription: string;
-      readDocs: string;
-      viewGithub: string;
+      primaryCta: string;
+      secondaryCta: string;
     };
     footer: {
       poweredBy: string;
@@ -86,57 +80,69 @@ const en: SiteContent = {
   },
   home: {
     hero: {
-      tagline: "Modern & efficient file sharing",
+      badge: "Open source · Self-hosted",
+      title: "Send files,",
+      titleAccent: "keep control.",
       description:
-        "OUITRANSFER is a fast and secure platform for sharing files, built with performance and privacy in mind.",
-      documentation: "Documentation",
-      github: "GitHub",
+        "OUITRANSFER is a fast, self-hosted file transfer platform. Drop a file, share a secure link — on your own server, with zero tracking and no third parties.",
+      primaryCta: "Read the docs",
+      secondaryCta: "Star on GitHub",
+      note: "No account required · No tracking · Your server, your rules",
     },
-    feedback: {
-      title: "A modern way to share files",
-      words: ["efficiently", "securely", "privately", "reliably", "seamlessly"],
+    demo: {
+      label: "New transfer",
+      encrypted: "Encrypted",
+      file: "design-handoff.zip",
+      size: "248 MB",
+      uploading: "Uploading…",
+      ready: "Ready to share",
+      link: "oui.tr/a7Kf2x",
+      copy: "Copy link",
+      copied: "Copied!",
+      expires: "Link expires in 7 days",
     },
-    coreFeatures: {
-      uploadTitle: "Upload & Share",
-      uploadDescription:
-        "Send your files quickly and safely. Share easily with anyone through secure links.",
-      secureTitle: "Secure & Private",
-      secureDescription: "Files are encrypted and protected. You control your data completely.",
+    highlights: ["100% open source", "Self-hosted", "S3-compatible", "Zero tracking", "REST API"],
+    features: {
+      eyebrow: "Why OUITRANSFER",
+      heading: "Everything you need to share files — and nothing you don't.",
+      subtitle:
+        "A focused, production-ready transfer platform. Secure by default, fully yours, and ready to deploy in minutes.",
+      secure: {
+        title: "Secure & private by design",
+        description:
+          "Password-protected links, expiring downloads and per-share access control. Your data stays encrypted and entirely under your roof — no third party ever sees it.",
+      },
+      fast: {
+        title: "Built for speed",
+        description: "Streaming uploads and downloads on a modern Fastify core.",
+      },
+      storage: {
+        title: "Flexible storage",
+        description: "Bundled storage or any S3-compatible backend, internal or external.",
+      },
+      api: {
+        title: "Developer-first API",
+        description: "A full REST API with webhooks to automate every transfer.",
+      },
+      search: {
+        title: "Manage with ease",
+        description: "A clean dashboard to track, search and revoke shares in a click.",
+      },
+      selfHosted: {
+        title: "Self-hosted in minutes",
+        description:
+          "One Docker Compose command brings up storage, API and web. Own your infrastructure, your data and every byte that flows through it.",
+      },
     },
-    callout: {
-      badge: "Open Source & Self-Hosted",
-      title: "Complete File Sharing Solution",
-      subtitle: "Built with Next.js, Fastify, and SQLite",
+    stack: {
+      heading: "Built on a modern, battle-tested stack",
     },
-    keyFeatures: {
-      heading: "Key Features",
-      fastTitle: "Lightning Fast",
-      fastDescription: "Optimized upload/download speeds with modern architecture",
-      storageTitle: "Flexible Storage",
-      storageDescription: "S3-compatible storage options (internal or external)",
-      apiTitle: "Developer API",
-      apiDescription: "Full REST API with webhooks for seamless integration",
-      searchTitle: "Smart Search",
-      searchDescription: "Find and manage your shared files effortlessly",
-      uiTitle: "Modern UI",
-      uiDescription: "Clean, intuitive interface built with best practices",
-      databaseTitle: "SQLite Powered",
-      databaseDescription: "Lightweight, reliable database for efficient data handling",
-    },
-    getStarted: {
-      title: "Get Started Today",
+    cta: {
+      title: "Deploy your own transfer platform today.",
       description:
-        "Deploy your own secure file sharing platform in minutes. Take control of your data with our self-hosted solution.",
-      quickSetupTitle: "Quick Setup",
-      quickSetupDescription:
-        "Docker deployment or direct installation - get running in under 5 minutes",
-      fullControlTitle: "Full Control",
-      fullControlDescription:
-        "Self-hosted means you own your data and control every aspect of the platform",
-      productionTitle: "Production Ready",
-      productionDescription: "Latest technologies optimized for performance and security",
-      readDocs: "Read documentation",
-      viewGithub: "View on GitHub",
+        "Free, open source and self-hosted. Be up and running in under five minutes — no account, no limits, no strings attached.",
+      primaryCta: "Get started",
+      secondaryCta: "View on GitHub",
     },
     footer: {
       poweredBy: "Powered by",
@@ -164,60 +170,69 @@ const fr: SiteContent = {
   },
   home: {
     hero: {
-      tagline: "Partage de fichiers moderne et efficace",
+      badge: "Open source · Auto-hébergé",
+      title: "Partagez vos fichiers,",
+      titleAccent: "gardez le contrôle.",
       description:
-        "OUITRANSFER est une plateforme rapide et sécurisée pour partager vos fichiers, conçue pour la performance et le respect de la vie privée.",
-      documentation: "Documentation",
-      github: "GitHub",
+        "OUITRANSFER est une plateforme de transfert de fichiers rapide et auto-hébergée. Déposez un fichier, partagez un lien sécurisé — sur votre propre serveur, sans tracking ni tiers.",
+      primaryCta: "Lire la documentation",
+      secondaryCta: "Star sur GitHub",
+      note: "Aucun compte requis · Aucun tracking · Votre serveur, vos règles",
     },
-    feedback: {
-      title: "Une manière moderne de partager des fichiers",
-      words: ["efficacement", "en toute sécurité", "en privé", "de façon fiable", "sans effort"],
+    demo: {
+      label: "Nouveau transfert",
+      encrypted: "Chiffré",
+      file: "remise-design.zip",
+      size: "248 Mo",
+      uploading: "Envoi en cours…",
+      ready: "Prêt à partager",
+      link: "oui.tr/a7Kf2x",
+      copy: "Copier le lien",
+      copied: "Copié !",
+      expires: "Le lien expire dans 7 jours",
     },
-    coreFeatures: {
-      uploadTitle: "Envoyer & Partager",
-      uploadDescription:
-        "Envoyez vos fichiers rapidement et en toute sécurité. Partagez-les facilement avec n'importe qui grâce à des liens sécurisés.",
-      secureTitle: "Sécurisé & Privé",
-      secureDescription:
-        "Les fichiers sont chiffrés et protégés. Vous gardez le contrôle total de vos données.",
+    highlights: ["100% open source", "Auto-hébergé", "Compatible S3", "Zéro tracking", "API REST"],
+    features: {
+      eyebrow: "Pourquoi OUITRANSFER",
+      heading: "Tout ce qu'il faut pour partager des fichiers — et rien de superflu.",
+      subtitle:
+        "Une plateforme de transfert ciblée et prête pour la production. Sécurisée par défaut, entièrement à vous, déployable en quelques minutes.",
+      secure: {
+        title: "Sécurisé et privé par conception",
+        description:
+          "Liens protégés par mot de passe, téléchargements expirants et contrôle d'accès par partage. Vos données restent chiffrées et entièrement chez vous — aucun tiers n'y accède.",
+      },
+      fast: {
+        title: "Conçu pour la vitesse",
+        description: "Envois et téléchargements en streaming sur un cœur Fastify moderne.",
+      },
+      storage: {
+        title: "Stockage flexible",
+        description: "Stockage intégré ou tout backend compatible S3, interne ou externe.",
+      },
+      api: {
+        title: "API pensée pour les devs",
+        description: "Une API REST complète avec webhooks pour automatiser chaque transfert.",
+      },
+      search: {
+        title: "Gestion sans effort",
+        description: "Un tableau de bord clair pour suivre, rechercher et révoquer vos partages.",
+      },
+      selfHosted: {
+        title: "Auto-hébergé en quelques minutes",
+        description:
+          "Une seule commande Docker Compose lance le stockage, l'API et le web. Maîtrisez votre infrastructure, vos données et chaque octet qui y transite.",
+      },
     },
-    callout: {
-      badge: "Open Source & Auto-hébergé",
-      title: "Une solution complète de partage de fichiers",
-      subtitle: "Construit avec Next.js, Fastify et SQLite",
+    stack: {
+      heading: "Bâti sur une stack moderne et éprouvée",
     },
-    keyFeatures: {
-      heading: "Fonctionnalités clés",
-      fastTitle: "Ultra rapide",
-      fastDescription:
-        "Vitesses d'envoi et de téléchargement optimisées grâce à une architecture moderne",
-      storageTitle: "Stockage flexible",
-      storageDescription: "Options de stockage compatibles S3 (interne ou externe)",
-      apiTitle: "API développeur",
-      apiDescription: "API REST complète avec webhooks pour une intégration transparente",
-      searchTitle: "Recherche intelligente",
-      searchDescription: "Retrouvez et gérez vos fichiers partagés sans effort",
-      uiTitle: "Interface moderne",
-      uiDescription: "Interface claire et intuitive, conçue selon les meilleures pratiques",
-      databaseTitle: "Propulsé par SQLite",
-      databaseDescription: "Base de données légère et fiable pour une gestion efficace des données",
-    },
-    getStarted: {
-      title: "Commencez dès aujourd'hui",
+    cta: {
+      title: "Déployez votre plateforme de transfert dès aujourd'hui.",
       description:
-        "Déployez votre propre plateforme de partage de fichiers sécurisée en quelques minutes. Gardez le contrôle de vos données avec notre solution auto-hébergée.",
-      quickSetupTitle: "Installation rapide",
-      quickSetupDescription:
-        "Déploiement Docker ou installation directe — opérationnel en moins de 5 minutes",
-      fullControlTitle: "Contrôle total",
-      fullControlDescription:
-        "L'auto-hébergement signifie que vous possédez vos données et maîtrisez chaque aspect de la plateforme",
-      productionTitle: "Prêt pour la production",
-      productionDescription:
-        "Les dernières technologies optimisées pour la performance et la sécurité",
-      readDocs: "Lire la documentation",
-      viewGithub: "Voir sur GitHub",
+        "Gratuit, open source et auto-hébergé. Opérationnel en moins de cinq minutes — sans compte, sans limites, sans contrepartie.",
+      primaryCta: "Commencer",
+      secondaryCta: "Voir sur GitHub",
     },
     footer: {
       poweredBy: "Propulsé par",

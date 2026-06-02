@@ -57,36 +57,6 @@ h4 {
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --animate-ripple: ripple var(--duration, 2s) ease calc(var(--i, 0) * 0.2s) infinite;
-  @keyframes ripple {
-    0%,
-    100% {
-      transform: translate(-50%, -50%) scale(1);
-    }
-    50% {
-      transform: translate(-50%, -50%) scale(0.9);
-    }
-  }
-  --animate-pulse: pulse var(--duration) ease-out infinite;
-  @keyframes pulse {
-    0%,
-    100% {
-      boxshadow: 0 0 0 0 var(--pulse-color);
-    }
-    50% {
-      boxshadow: 0 0 0 8px var(--pulse-color);
-    }
-  }
-  --animate-rippling: rippling var(--duration) ease-out;
-  @keyframes rippling {
-    0% {
-      opacity: 1;
-    }
-    100% {
-      transform: scale(2);
-      opacity: 0;
-    }
-  }
 }
 
 :root {
@@ -202,30 +172,141 @@ h4 {
   }
 }
 
-@theme inline {
-  --animate-pulse: pulse var(--duration) ease-out infinite;
+/* ===========================================================================
+   Landing page identity — indigo brand (hue 265, aligned with the product UI)
+   =========================================================================== */
 
-  @keyframes pulse {
+:root {
+  /* Core brand + gradient stops (violet -> indigo -> cyan) */
+  --brand: oklch(0.45 0.2 265);
+  --brand-strong: oklch(0.4 0.21 265);
+  --brand-from: oklch(0.55 0.22 300);
+  --brand-via: oklch(0.5 0.2 265);
+  --brand-to: oklch(0.62 0.16 230);
+  /* Soft tints for surfaces */
+  --brand-soft: oklch(0.95 0.03 265);
+}
+
+.dark {
+  --brand: oklch(0.65 0.18 265);
+  --brand-strong: oklch(0.7 0.17 265);
+  --brand-from: oklch(0.7 0.2 300);
+  --brand-via: oklch(0.66 0.18 265);
+  --brand-to: oklch(0.75 0.14 230);
+  --brand-soft: oklch(0.24 0.04 265);
+}
+
+@theme inline {
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-from: var(--brand-from);
+  --color-brand-via: var(--brand-via);
+  --color-brand-to: var(--brand-to);
+  --color-brand-soft: var(--brand-soft);
+
+  --animate-aurora: aurora 18s ease-in-out infinite;
+  --animate-aurora-slow: aurora 26s ease-in-out infinite reverse;
+  --animate-shimmer: shimmer 2.2s linear infinite;
+  --animate-marquee: marquee 36s linear infinite;
+  --animate-gradient: gradient-pan 6s ease infinite;
+  --animate-float: float 7s ease-in-out infinite;
+
+  @keyframes aurora {
     0%,
     100% {
-      box-shadow: 0 0 0 0 var(--pulse-color);
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    33% {
+      transform: translate3d(6%, -8%, 0) scale(1.12);
+    }
+    66% {
+      transform: translate3d(-7%, 5%, 0) scale(0.94);
+    }
+  }
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-120%);
+    }
+    100% {
+      transform: translateX(220%);
+    }
+  }
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes gradient-pan {
+    0%,
+    100% {
+      background-position: 0% 50%;
     }
     50% {
-      box-shadow: 0 0 0 8px var(--pulse-color);
+      background-position: 100% 50%;
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
     }
   }
 }
 
-@theme inline {
-  --animate-rippling: rippling var(--duration) ease-out;
+@layer utilities {
+  /* Brand gradient text */
+  .text-gradient-brand {
+    background-image: linear-gradient(
+      110deg,
+      var(--brand-from),
+      var(--brand-via) 45%,
+      var(--brand-to)
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
 
-  @keyframes rippling {
-    0% {
-      opacity: 1;
-    }
-    100% {
-      transform: scale(2);
-      opacity: 0;
-    }
+  /* Animated brand gradient (panned) for big surfaces */
+  .bg-gradient-brand {
+    background-image: linear-gradient(
+      110deg,
+      var(--brand-from),
+      var(--brand-via) 45%,
+      var(--brand-to)
+    );
+    background-size: 200% 200%;
+  }
+
+  /* Subtle dotted grid that fades toward the edges */
+  .bg-grid-fade {
+    background-image: radial-gradient(circle, var(--color-fd-border) 1px, transparent 1px);
+    background-size: 28px 28px;
+    -webkit-mask-image: radial-gradient(ellipse 75% 75% at 50% 40%, #000 40%, transparent 100%);
+    mask-image: radial-gradient(ellipse 75% 75% at 50% 40%, #000 40%, transparent 100%);
+  }
+
+  /* Pause CSS marquees on hover for readability */
+  .marquee-track:hover {
+    animation-play-state: paused;
+  }
+}
+
+/* Unlayered rules win over Tailwind's layered animation utilities, so no
+   !important is needed to disable motion for users who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-aurora,
+  .animate-aurora-slow,
+  .animate-shimmer,
+  .animate-marquee,
+  .animate-gradient,
+  .animate-float {
+    animation: none;
   }
 }
