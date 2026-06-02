@@ -2,6 +2,7 @@ import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import type { ReactNode } from "react";
 
 import { baseOptions } from "@/app/layout.config";
+import { SidebarFooter } from "@/components/sidebar-footer";
 import { source } from "@/lib/source";
 
 export default async function Layout({
@@ -13,7 +14,12 @@ export default async function Layout({
 }) {
   const { lang } = await params;
   return (
-    <DocsLayout tree={source.pageTree[lang]} {...baseOptions(lang)}>
+    <DocsLayout
+      tree={source.pageTree[lang]}
+      {...baseOptions(lang)}
+      themeSwitch={{ enabled: false }}
+      sidebar={{ footer: <SidebarFooter /> }}
+    >
       {children}
     </DocsLayout>
   );

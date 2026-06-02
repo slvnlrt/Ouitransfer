@@ -32,6 +32,7 @@ export function baseOptions(locale: string): BaseLayoutProps {
       },
       {
         type: "icon",
+        on: "nav",
         text: "GitHub",
         url: "https://github.com/slvnlrt/ouitransfer",
         icon: <Github />,
@@ -39,6 +40,7 @@ export function baseOptions(locale: string): BaseLayoutProps {
       },
       {
         type: "icon",
+        on: "nav",
         text: "Ko-fi",
         url: "https://ko-fi.com/slvnlrt",
         icon: <Coffee />,
