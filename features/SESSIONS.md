@@ -1,5 +1,16 @@
 # Session Log
 
+## 2026-06-02 (Code hygiene — remove TD-xx ticket references from code)
+
+**Stripped all internal tech-debt ticket citations (`TD-N`) from source code files and test labels**
+
+- Surveyed entire repo via grep; left `features/`, `audit/`, and all `*.md`/`*.mdx` untouched (those are the legitimate tracking system).
+- Removed 9 citations from comments in `.ts`, `.yml`, and `.tsx` files (`21c0b30`).
+- Removed 5 `(TD-N)` suffixes from `describe(...)` test-suite labels across `apps/server` and `apps/web` (follow-up commit).
+- Zero `TD-[0-9]+` remaining in `apps/`, `infra/`, `.github/`, `packages/`.
+
+---
+
 ## 2026-06-02 (TD-48 — Adopt Prisma Migrate)
 
 **Adopted incremental Prisma Migrate workflow; replaced `db push` throughout**
