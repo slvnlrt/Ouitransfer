@@ -2,7 +2,7 @@
 
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -167,79 +167,76 @@ export function AuditLogTable({
               const isSystemAction = SYSTEM_ACTIONS.has(log.action);
 
               return (
-                <TableRow
-                  key={log.id}
-                  className={hasMetadata ? "cursor-pointer" : ""}
-                  onClick={() => hasMetadata && toggleRow(log.id)}
-                >
-                  <TableCell className="whitespace-nowrap">{formatDate(log.createdAt)}</TableCell>
-                  <TableCell>
-                    {log.userId ? (
-                      <span className="text-sm">
-                        {userMap?.get(log.userId) ?? (
-                          <span className="font-mono text-xs text-muted-foreground">
-                            {log.userId.slice(0, 8)}…
-                          </span>
-                        )}
-                      </span>
-                    ) : isSystemAction ? (
-                      <Badge variant="secondary">{t("table.system")}</Badge>
-                    ) : (
-                      <Badge variant="outline">{t("table.anonymous")}</Badge>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <span
-                      className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ring-current/10 ${getActionBadgeClasses(log.action)}`}
-                    >
-                      {safeTranslate(t, `actions.${log.action}`, log.action)}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    {log.targetType ? (
-                      <span className="text-sm">
-                        <span className="text-muted-foreground">
-                          {safeTranslate(t, `targetTypes.${log.targetType}`, log.targetType)}
+                <Fragment key={log.id}>
+                  <TableRow
+                    className={hasMetadata ? "cursor-pointer" : ""}
+                    onClick={() => hasMetadata && toggleRow(log.id)}
+                  >
+                    <TableCell className="whitespace-nowrap">{formatDate(log.createdAt)}</TableCell>
+                    <TableCell>
+                      {log.userId ? (
+                        <span className="text-sm">
+                          {userMap?.get(log.userId) ?? (
+                            <span className="font-mono text-xs text-muted-foreground">
+                              {log.userId.slice(0, 8)}…
+                            </span>
+                          )}
                         </span>
-                        {log.targetId && (
-                          <span className="ml-1 font-mono text-xs">
-                            {log.targetId.slice(0, 8)}…
-                          </span>
-                        )}
+                      ) : isSystemAction ? (
+                        <Badge variant="secondary">{t("table.system")}</Badge>
+                      ) : (
+                        <Badge variant="outline">{t("table.anonymous")}</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <span
+                        className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ring-current/10 ${getActionBadgeClasses(log.action)}`}
+                      >
+                        {safeTranslate(t, `actions.${log.action}`, log.action)}
                       </span>
-                    ) : (
-                      "—"
-                    )}
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell font-mono text-xs">
-                    {log.ipAddress}
-                  </TableCell>
-                  <TableCell className="hidden lg:table-cell">
-                    {hasMetadata && (
-                      <ChevronDown
-                        className={`h-4 w-4 text-muted-foreground transition-transform ${
-                          isExpanded ? "rotate-180" : ""
-                        }`}
-                      />
-                    )}
-                  </TableCell>
-                </TableRow>
+                    </TableCell>
+                    <TableCell>
+                      {log.targetType ? (
+                        <span className="text-sm">
+                          <span className="text-muted-foreground">
+                            {safeTranslate(t, `targetTypes.${log.targetType}`, log.targetType)}
+                          </span>
+                          {log.targetId && (
+                            <span className="ml-1 font-mono text-xs">
+                              {log.targetId.slice(0, 8)}…
+                            </span>
+                          )}
+                        </span>
+                      ) : (
+                        "—"
+                      )}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell font-mono text-xs">
+                      {log.ipAddress}
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell">
+                      {hasMetadata && (
+                        <ChevronDown
+                          className={`h-4 w-4 text-muted-foreground transition-transform ${
+                            isExpanded ? "rotate-180" : ""
+                          }`}
+                        />
+                      )}
+                    </TableCell>
+                  </TableRow>
+                  {isExpanded && hasMetadata && (
+                    <TableRow className="bg-muted/20 hover:bg-muted/20">
+                      <TableCell colSpan={6} className="p-4">
+                        <AuditMetadataDisplay action={log.action} metadata={log.metadata} />
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </Fragment>
               );
             })
           )}
         </TableBody>
       </Table>
-
-      {/* Expanded metadata rows — rendered outside the table for layout */}
-      {!isLoading &&
-        logs.map((log) => {
-          if (expandedRow !== log.id) return null;
-          return (
-            <div key={`detail-${log.id}`} className="rounded-md border bg-muted/30 p-4">
-              <AuditMetadataDisplay action={log.action} metadata={log.metadata} />
-            </div>
-          );
-        })}
 
       {/* Pagination */}
       {totalPages > 1 && (
