@@ -229,12 +229,17 @@ h4 {
       transform: translateX(220%);
     }
   }
+  /* Scroll by exactly ONE copy of the content, regardless of how many copies
+     the track renders. The track sets `--marquee-copies` to its copy count, so
+     `-100% / copies` always equals one copy's width. Rendering several copies
+     guarantees the strip still fills wide viewports at the translation extreme
+     (no empty gap after the last item before the loop restarts). */
   @keyframes marquee {
     from {
       transform: translateX(0);
     }
     to {
-      transform: translateX(-50%);
+      transform: translateX(calc(-100% / var(--marquee-copies, 2)));
     }
   }
   @keyframes gradient-pan {
