@@ -1,6 +1,6 @@
 import { Download } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,6 +11,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { LazyQRCode } from "@/components/ui/lazy-qr-code";
+import { useQrDownload } from "@/hooks/use-qr-download";
+import { generateQrFilename } from "@/utils/qr-download";
 
 interface QrCodeModalProps {
   isOpen: boolean;
@@ -21,54 +23,8 @@ interface QrCodeModalProps {
 
 export function QrCodeModal({ isOpen, onClose, shareLink, shareName }: QrCodeModalProps) {
   const t = useTranslations();
-  const [isDownloading, setIsDownloading] = useState(false);
   const qrContainerRef = useRef<HTMLDivElement>(null);
-
-  const downloadQRCode = () => {
-    setIsDownloading(true);
-
-    const svg = qrContainerRef.current?.querySelector("svg");
-    if (!svg) {
-      setIsDownloading(false);
-      return;
-    }
-
-    // Create a canvas
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    // Set dimensions (with some padding)
-    const padding = 20;
-    canvas.width = 256 + padding * 2;
-    canvas.height = 256 + padding * 2;
-
-    // Fill white background
-    if (ctx) {
-      ctx.fillStyle = "#FFFFFF";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Convert SVG to data URL
-      const svgData = new XMLSerializer().serializeToString(svg);
-      const img = new Image();
-
-      img.onload = () => {
-        // Draw the image in the center of the canvas with padding
-        ctx.drawImage(img, padding, padding, 256, 256);
-
-        // Create a download link
-        const link = document.createElement("a");
-        link.download = `${shareName.replace(/[^a-z0-9]/gi, "-").toLowerCase()}-qr-code.png`;
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-
-        setIsDownloading(false);
-      };
-
-      img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
-    } else {
-      setIsDownloading(false);
-    }
-  };
+  const { isDownloading, downloadQr } = useQrDownload();
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -101,7 +57,11 @@ export function QrCodeModal({ isOpen, onClose, shareLink, shareName }: QrCodeMod
           <Button variant="outline" onClick={onClose} className="mt-2 sm:mt-0">
             {t("common.close")}
           </Button>
-          <Button onClick={downloadQRCode} className="mt-2 sm:mt-0" disabled={isDownloading}>
+          <Button
+            onClick={() => downloadQr(qrContainerRef.current, generateQrFilename(shareName))}
+            className="mt-2 sm:mt-0"
+            disabled={isDownloading}
+          >
             <Download className="h-4 w-4" />
             {t("qrCodeModal.download", { defaultValue: "Download QR Code" })}
           </Button>

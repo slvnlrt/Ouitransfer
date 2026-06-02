@@ -2,7 +2,7 @@
 
 import { Check, Copy, Download, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useRef } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { LazyQRCode } from "@/components/ui/lazy-qr-code";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+import { useQrDownload } from "@/hooks/use-qr-download";
+import { generateQrFilename } from "@/utils/qr-download";
 
 import type { QuickShareSettings } from "../../hooks/use-quick-share";
 
@@ -29,53 +31,13 @@ export function QuickShareConfirmation({
   const t = useTranslations("quickShare.confirmation");
   const tExp = useTranslations("quickShare.upload.expiration");
   const { copy } = useCopyToClipboard();
-  const [isDownloading, setIsDownloading] = useState(false);
+  const qrContainerRef = useRef<HTMLDivElement>(null);
+  const { isDownloading, downloadQr } = useQrDownload();
 
   const handleCopy = async () => {
     const ok = await copy(shareLink);
     if (ok) {
       toast.success(t("copied"));
-    }
-  };
-
-  const downloadQRCode = () => {
-    setIsDownloading(true);
-
-    const svg = document.getElementById("quickshare-qr-code");
-    if (!svg) {
-      setIsDownloading(false);
-      return;
-    }
-
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    const padding = 20;
-    canvas.width = 256 + padding * 2;
-    canvas.height = 256 + padding * 2;
-
-    if (ctx) {
-      ctx.fillStyle = "#FFFFFF";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      const svgData = new XMLSerializer().serializeToString(svg);
-      const img = new Image();
-
-      img.onload = () => {
-        ctx.drawImage(img, padding, padding, 256, 256);
-        const link = document.createElement("a");
-        link.download = `${settings.name?.replace(/[^a-z0-9]/gi, "-").toLowerCase() || "quickshare"}-qr-code.png`;
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-        setIsDownloading(false);
-      };
-
-      img.onerror = () => {
-        setIsDownloading(false);
-      };
-
-      img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
-    } else {
-      setIsDownloading(false);
     }
   };
 
@@ -101,9 +63,8 @@ export function QuickShareConfirmation({
           <h3 className="text-xl font-semibold text-foreground">{t("title")}</h3>
 
           {/* QR code */}
-          <div className="p-4 bg-card border rounded-lg">
+          <div ref={qrContainerRef} className="p-4 bg-card border rounded-lg">
             <LazyQRCode
-              id="quickshare-qr-code"
               value={shareLink}
               size={180}
               level="H"
@@ -125,7 +86,13 @@ export function QuickShareConfirmation({
 
           {/* Actions */}
           <div className="flex gap-3">
-            <Button variant="outline" onClick={downloadQRCode} disabled={isDownloading}>
+            <Button
+              variant="outline"
+              onClick={() =>
+                downloadQr(qrContainerRef.current, generateQrFilename(settings.name, "quickshare"))
+              }
+              disabled={isDownloading}
+            >
               <Download className="size-4 mr-2" />
               {t("downloadQr")}
             </Button>

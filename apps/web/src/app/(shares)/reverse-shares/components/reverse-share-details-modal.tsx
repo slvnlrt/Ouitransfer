@@ -11,7 +11,7 @@ import {
   ToggleRight,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +26,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LazyQRCode } from "@/components/ui/lazy-qr-code";
 import { Switch } from "@/components/ui/switch";
+import { useQrDownload } from "@/hooks/use-qr-download";
 import { logger } from "@/lib/logger";
+import { generateQrFilename } from "@/utils/qr-download";
 import { useReverseShareDetails } from "../hooks/use-reverse-share-details";
 import type { ReverseShare } from "../hooks/use-reverse-shares";
 import { BackgroundImagePicker } from "./background-image-picker";
@@ -69,10 +71,11 @@ export function ReverseShareDetailsModal({
 }: ReverseShareDetailsModalProps) {
   const t = useTranslations();
   const notifyUploadSwitchId = useId();
+  const qrContainerRef = useRef<HTMLButtonElement>(null);
+  const { isDownloading, downloadQr } = useQrDownload();
   const [pendingChanges, setPendingChanges] = useState<
     Record<string, string | number | boolean | null | undefined>
   >({});
-  const [isDownloading, setIsDownloading] = useState(false);
 
   const {
     showAliasModal,
@@ -234,38 +237,12 @@ export function ReverseShareDetailsModal({
                       size="icon"
                       variant="ghost"
                       className="h-5 w-5 text-muted-foreground hover:text-foreground"
-                      onClick={() => {
-                        const svg = document.getElementById("reverse-share-details-qr-code");
-                        if (!svg) return;
-
-                        setIsDownloading(true);
-                        const canvas = document.createElement("canvas");
-                        const ctx = canvas.getContext("2d");
-                        const padding = 20;
-                        canvas.width = 200 + padding * 2;
-                        canvas.height = 200 + padding * 2;
-
-                        if (ctx) {
-                          ctx.fillStyle = "#FFFFFF";
-                          ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                          const svgData = new XMLSerializer().serializeToString(svg);
-                          const img = new Image();
-
-                          img.onload = () => {
-                            ctx.drawImage(img, padding, padding, 200, 200);
-                            const link = document.createElement("a");
-                            link.download = `${reverseShare?.name?.replace(/[^a-z0-9]/gi, "-").toLowerCase() || "reverse-share"}-qr-code.png`;
-                            link.href = canvas.toDataURL("image/png");
-                            link.click();
-                            setIsDownloading(false);
-                          };
-
-                          img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
-                        } else {
-                          setIsDownloading(false);
-                        }
-                      }}
+                      onClick={() =>
+                        downloadQr(
+                          qrContainerRef.current,
+                          generateQrFilename(reverseShare?.name, "reverse-share"),
+                        )
+                      }
                       disabled={isDownloading}
                       title={t("qrCodeModal.download")}
                     >
@@ -274,13 +251,13 @@ export function ReverseShareDetailsModal({
                   </div>
                   <div className="flex flex-col items-start justify-start">
                     <button
+                      ref={qrContainerRef}
                       type="button"
                       className="p-2 bg-card rounded-lg cursor-pointer hover:opacity-80 transition-opacity duration-300 border-0"
                       onClick={() => onViewQrCode?.(reverseShare)}
                       title={t("reverseShares.actions.viewQrCode")}
                     >
                       <LazyQRCode
-                        id="reverse-share-details-qr-code"
                         value={reverseShareLink}
                         size={100}
                         level="H"

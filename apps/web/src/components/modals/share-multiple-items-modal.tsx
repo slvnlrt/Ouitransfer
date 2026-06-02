@@ -2,7 +2,7 @@
 
 import { Calendar, Copy, Download, Eye, Folder, Link, Lock, Share } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { FileItem, FolderItem } from "@/components/tables/files-table-types";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ import { Loader } from "@/components/ui/loader";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+import { useQrDownload } from "@/hooks/use-qr-download";
 import { createShare, createShareAlias, listFiles, listFolders } from "@/http/endpoints";
 import { logger } from "@/lib/logger";
 import { customNanoid } from "@/lib/utils";
@@ -60,6 +61,8 @@ export function ShareMultipleItemsModal({
 }: ShareMultipleItemsModalProps) {
   const t = useTranslations();
   const { copy } = useCopyToClipboard();
+  const qrContainerRef = useRef<HTMLDivElement>(null);
+  const { isDownloading, downloadQr } = useQrDownload();
   const [step, setStep] = useState<"create" | "link">("create");
   const [shareId, setShareId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -246,19 +249,6 @@ export function ShareMultipleItemsModal({
     const ok = await copy(generatedLink);
     if (ok) {
       toast.success(t("generateShareLink.copied"));
-    }
-  };
-
-  const downloadQRCode = () => {
-    const qrCodeElement = document.getElementById("share-multiple-files-qr-code");
-    if (qrCodeElement) {
-      const canvas = qrCodeElement.querySelector("canvas");
-      if (canvas) {
-        const link = document.createElement("a");
-        link.download = "share-multiple-files-qr-code.png";
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-      }
     }
   };
 
@@ -490,10 +480,8 @@ export function ShareMultipleItemsModal({
               ) : (
                 <>
                   <div className="flex flex-col items-center justify-center">
-                    <div className="p-4 bg-card rounded-lg">
-                      <svg style={{ display: "none" }} /> {/* For SSR safety */}
+                    <div ref={qrContainerRef} className="p-4 bg-card rounded-lg">
                       <LazyQRCode
-                        id="share-multiple-files-qr-code"
                         value={generatedLink}
                         size={250}
                         level="H"
@@ -555,7 +543,12 @@ export function ShareMultipleItemsModal({
               <Button variant="outline" onClick={handleSuccess}>
                 {t("common.close")}
               </Button>
-              <Button onClick={downloadQRCode}>
+              <Button
+                onClick={() =>
+                  downloadQr(qrContainerRef.current, "share-multiple-files-qr-code.png")
+                }
+                disabled={isDownloading}
+              >
                 <Download className="h-4 w-4" />
                 {t("qrCodeModal.download")}
               </Button>
