@@ -289,11 +289,11 @@ Si vous avez besoin que les fichiers de données résident à un chemin connu su
 ```yaml
 # Remplacez ceci dans le service storage :
 volumes:
-  - ./storage-data:/data        # était : storage_data:/data
+  - ./storage-data:/data
 
 # Remplacez ceci dans le service server :
 volumes:
-  - ./server-data:/app/server   # était : server_data:/app/server
+  - ./server-data:/app/server
 
 # Supprimez entièrement le bloc volumes: de niveau supérieur (ou retirez les entrées inutilisées).
 ```

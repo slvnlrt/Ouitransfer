@@ -287,11 +287,11 @@ If you need the data files to live at a known path on your host filesystem (usef
 ```yaml
 # Replace this in the storage service:
 volumes:
-  - ./storage-data:/data        # was: storage_data:/data
+  - ./storage-data:/data
 
 # Replace this in the server service:
 volumes:
-  - ./server-data:/app/server   # was: server_data:/app/server
+  - ./server-data:/app/server
 
 # Remove the top-level volumes: block entirely (or remove unused entries).
 ```

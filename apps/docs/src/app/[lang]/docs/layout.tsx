@@ -13,12 +13,7 @@ export default async function Layout({
 }) {
   const { lang } = await params;
   return (
-    <DocsLayout
-      tree={source.pageTree[lang]}
-      {...baseOptions(lang)}
-      githubUrl="https://github.com/slvnlrt/ouitransfer"
-      links={[]}
-    >
+    <DocsLayout tree={source.pageTree[lang]} {...baseOptions(lang)}>
       {children}
     </DocsLayout>
   );
