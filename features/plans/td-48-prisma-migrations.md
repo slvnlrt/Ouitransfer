@@ -515,6 +515,22 @@ Expected: no matches.
 
 ---
 
+## Task 8: Prisma client generation guard (root-cause fix, added during execution)
+
+**Context:** During implementation, `type-check` failed because the gitignored Prisma client (`apps/server/src/generated/prisma`) had drifted from the schema (missing `bypassUploadCooldown`/`notifyOnUpload`). Root cause: the client is regenerated only by the `postinstall` hook (`pnpm install`); nothing in the turbo inner loop (`type-check`/`build`/`test`) regenerates it, so a schema change without a reinstall silently breaks (or stales) type-check. This guards the whole class of stale-client bugs.
+
+**Files:**
+- Modify: `apps/server/package.json` (add `db:generate` script)
+- Modify: `turbo.json` (add `db:generate` task; make `type-check`/`build`/`test` depend on it)
+
+- [x] **Step 1:** Add `"db:generate": "prisma generate"` to `apps/server/package.json` scripts.
+- [x] **Step 2:** Add turbo task `db:generate` with `inputs: ["prisma/schema.prisma", "prisma.config.ts"]` and `outputs: ["src/generated/**"]`.
+- [x] **Step 3:** Add `"db:generate"` to `dependsOn` of `build`, `test`, and `type-check`.
+- [x] **Step 4 (verify):** Delete `apps/server/src/generated`, run `pnpm exec turbo run type-check --filter=ouitransfer-api` → turbo runs `db:generate` (regenerates client) then `type-check` passes (2 tasks successful).
+- [x] **Step 5:** Commit `fix(monorepo): regenerate Prisma client in turbo pipeline before type-check/build/test (TD-48)` (`58f2da4`).
+
+---
+
 ## Risks & notes for the implementer
 
 - **Baseline assumes no pre-existing `db push` production database.** There is no production and no users (per CLAUDE.md), so the first real deployment creates the DB fresh via `migrate deploy`. If a pre-release `db push` database ever needs adopting, baseline it once with `prisma migrate resolve --applied <timestamp>_init` before `migrate deploy` — do not add this to the boot path.
