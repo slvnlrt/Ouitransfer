@@ -141,7 +141,7 @@ export function LoginForm({
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
           {renderEmailOrUsernameField()}
           {passwordAuthEnabled && renderPasswordField()}
-          <Button className="w-full mt-4 cursor-pointer" variant="default" size="lg" type="submit">
+          <Button className="w-full mt-4 cursor-pointer" variant="brand" size="lg" type="submit">
             {isSubmitting ? t("login.signingIn") : t("login.signIn")}
           </Button>
         </form>

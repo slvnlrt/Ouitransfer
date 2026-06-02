@@ -53,8 +53,8 @@ export function TwoFactorVerification({
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="text-center">
         <div className="flex justify-center mb-4">
-          <div className="p-3 rounded-full bg-primary/10">
-            <Shield className="h-8 w-8 text-primary" />
+          <div className="flex size-14 items-center justify-center rounded-full bg-gradient-brand text-white shadow-lg shadow-primary/20">
+            <Shield className="size-7" />
           </div>
         </div>
         <CardTitle>{t("twoFactor.verification.title")}</CardTitle>
@@ -114,6 +114,7 @@ export function TwoFactorVerification({
 
           <Button
             type="submit"
+            variant="brand"
             className="w-full"
             disabled={isSubmitting || twoFactorCode.length < (showBackupCode ? 8 : 6)}
           >

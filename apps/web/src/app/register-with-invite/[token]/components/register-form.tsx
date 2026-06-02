@@ -200,7 +200,7 @@ export function RegisterForm({ token, onSuccess }: RegisterFormProps) {
         )}
       </div>
 
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
+      <Button type="submit" variant="brand" size="lg" className="w-full" disabled={isSubmitting}>
         {isSubmitting
           ? t("registerWithInvite.buttons.creating")
           : t("registerWithInvite.buttons.createAccount")}

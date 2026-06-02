@@ -27,26 +27,24 @@ export function ProfileForm({ form, onSubmit }: ProfileFormProps) {
               <Label>{t("profile.form.firstName")}</Label>
               <Input
                 {...register("firstName")}
-                className={errors.firstName ? "border-red-500" : ""}
                 aria-invalid={!!errors.firstName}
                 aria-errormessage={errors.firstName?.message}
                 placeholder={t("profile.form.firstName")}
               />
               {errors.firstName && (
-                <span className="text-sm text-red-500">{errors.firstName.message}</span>
+                <span className="text-destructive text-xs">{errors.firstName.message}</span>
               )}
             </div>
             <div className="flex flex-col gap-2">
               <Label>{t("profile.form.lastName")}</Label>
               <Input
                 {...register("lastName")}
-                className={errors.lastName ? "border-red-500" : ""}
                 aria-invalid={!!errors.lastName}
                 aria-errormessage={errors.lastName?.message}
                 placeholder={t("profile.form.lastName")}
               />
               {errors.lastName && (
-                <span className="text-sm text-red-500">{errors.lastName.message}</span>
+                <span className="text-destructive text-xs">{errors.lastName.message}</span>
               )}
             </div>
           </div>
@@ -54,13 +52,12 @@ export function ProfileForm({ form, onSubmit }: ProfileFormProps) {
             <Label>{t("profile.form.username")}</Label>
             <Input
               {...register("username")}
-              className={errors.username ? "border-red-500" : ""}
               aria-invalid={!!errors.username}
               aria-errormessage={errors.username?.message}
               placeholder={t("profile.form.username")}
             />
             {errors.username && (
-              <span className="text-sm text-red-500">{errors.username.message}</span>
+              <span className="text-destructive text-xs">{errors.username.message}</span>
             )}
           </div>
           <div className="flex flex-col gap-2">
@@ -68,12 +65,13 @@ export function ProfileForm({ form, onSubmit }: ProfileFormProps) {
             <Input
               {...register("email")}
               type="email"
-              className={errors.email ? "border-red-500" : ""}
               aria-invalid={!!errors.email}
               aria-errormessage={errors.email?.message}
               placeholder={t("profile.form.email")}
             />
-            {errors.email && <span className="text-sm text-red-500">{errors.email.message}</span>}
+            {errors.email && (
+              <span className="text-destructive text-xs">{errors.email.message}</span>
+            )}
           </div>
           <div className="flex justify-end">
             <Button

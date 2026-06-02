@@ -7,10 +7,6 @@
 
 @source "../../node_modules/fumadocs-ui/dist/**/*.js";
 
-code {
-  color: #eb5757;
-}
-
 h4 {
   margin-bottom: 1rem;
   margin-top: 3rem;
@@ -57,36 +53,6 @@ h4 {
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --animate-ripple: ripple var(--duration, 2s) ease calc(var(--i, 0) * 0.2s) infinite;
-  @keyframes ripple {
-    0%,
-    100% {
-      transform: translate(-50%, -50%) scale(1);
-    }
-    50% {
-      transform: translate(-50%, -50%) scale(0.9);
-    }
-  }
-  --animate-pulse: pulse var(--duration) ease-out infinite;
-  @keyframes pulse {
-    0%,
-    100% {
-      boxshadow: 0 0 0 0 var(--pulse-color);
-    }
-    50% {
-      boxshadow: 0 0 0 8px var(--pulse-color);
-    }
-  }
-  --animate-rippling: rippling var(--duration) ease-out;
-  @keyframes rippling {
-    0% {
-      opacity: 1;
-    }
-    100% {
-      transform: scale(2);
-      opacity: 0;
-    }
-  }
 }
 
 :root {
@@ -202,30 +168,278 @@ h4 {
   }
 }
 
-@theme inline {
-  --animate-pulse: pulse var(--duration) ease-out infinite;
+/* ===========================================================================
+   Landing page identity — indigo brand (hue 265, aligned with the product UI)
+   =========================================================================== */
 
-  @keyframes pulse {
+:root {
+  /* Core brand + gradient stops (violet -> indigo -> cyan) */
+  --brand: oklch(0.45 0.2 265);
+  --brand-strong: oklch(0.4 0.21 265);
+  --brand-from: oklch(0.55 0.22 300);
+  --brand-via: oklch(0.5 0.2 265);
+  --brand-to: oklch(0.62 0.16 230);
+  /* Soft tints for surfaces */
+  --brand-soft: oklch(0.95 0.03 265);
+}
+
+.dark {
+  --brand: oklch(0.65 0.18 265);
+  --brand-strong: oklch(0.7 0.17 265);
+  --brand-from: oklch(0.7 0.2 300);
+  --brand-via: oklch(0.66 0.18 265);
+  --brand-to: oklch(0.75 0.14 230);
+  --brand-soft: oklch(0.24 0.04 265);
+}
+
+@theme inline {
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-from: var(--brand-from);
+  --color-brand-via: var(--brand-via);
+  --color-brand-to: var(--brand-to);
+  --color-brand-soft: var(--brand-soft);
+
+  --animate-aurora: aurora 18s ease-in-out infinite;
+  --animate-aurora-slow: aurora 26s ease-in-out infinite reverse;
+  --animate-shimmer: shimmer 2.2s linear infinite;
+  --animate-marquee: marquee 36s linear infinite;
+  --animate-gradient: gradient-pan 6s ease infinite;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-spin-slow: spin 22s linear infinite;
+  --animate-sheen: sheen 7s ease-in-out infinite;
+
+  @keyframes aurora {
     0%,
     100% {
-      box-shadow: 0 0 0 0 var(--pulse-color);
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    33% {
+      transform: translate3d(6%, -8%, 0) scale(1.12);
+    }
+    66% {
+      transform: translate3d(-7%, 5%, 0) scale(0.94);
+    }
+  }
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-120%);
+    }
+    100% {
+      transform: translateX(220%);
+    }
+  }
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes gradient-pan {
+    0%,
+    100% {
+      background-position: 0% 50%;
     }
     50% {
-      box-shadow: 0 0 0 8px var(--pulse-color);
+      background-position: 100% 50%;
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  @keyframes sheen {
+    0%,
+    65%,
+    100% {
+      transform: translateX(-150%) skewX(-18deg);
+    }
+    82% {
+      transform: translateX(280%) skewX(-18deg);
     }
   }
 }
 
-@theme inline {
-  --animate-rippling: rippling var(--duration) ease-out;
+@layer utilities {
+  /* Brand gradient text */
+  .text-gradient-brand {
+    background-image: linear-gradient(
+      110deg,
+      var(--brand-from),
+      var(--brand-via) 45%,
+      var(--brand-to)
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
 
-  @keyframes rippling {
-    0% {
-      opacity: 1;
-    }
-    100% {
-      transform: scale(2);
-      opacity: 0;
-    }
+  /* Animated brand gradient (panned) for big surfaces */
+  .bg-gradient-brand {
+    background-image: linear-gradient(
+      110deg,
+      var(--brand-from),
+      var(--brand-via) 45%,
+      var(--brand-to)
+    );
+    background-size: 200% 200%;
+  }
+
+  /* Subtle dotted grid that fades toward the edges */
+  .bg-grid-fade {
+    background-image: radial-gradient(circle, var(--color-fd-border) 1px, transparent 1px);
+    background-size: 28px 28px;
+    -webkit-mask-image: radial-gradient(ellipse 75% 75% at 50% 40%, #000 40%, transparent 100%);
+    mask-image: radial-gradient(ellipse 75% 75% at 50% 40%, #000 40%, transparent 100%);
+  }
+
+  /* Pause CSS marquees on hover for readability */
+  .marquee-track:hover {
+    animation-play-state: paused;
+  }
+
+  /* Ultra-subtle film grain for a matte, premium surface. */
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+/* Unlayered: crisp 1px gradient border that tracks the cursor (set via JS). */
+.spotlight-border {
+  background: radial-gradient(
+    220px circle at var(--mx, 50%) var(--my, 50%),
+    var(--brand),
+    transparent 60%
+  );
+  padding: 1px;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* Unlayered rules win over Tailwind's layered animation utilities, so no
+   !important is needed to disable motion for users who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-aurora,
+  .animate-aurora-slow,
+  .animate-shimmer,
+  .animate-marquee,
+  .animate-gradient,
+  .animate-float,
+  .animate-spin-slow,
+  .animate-sheen {
+    animation: none;
+  }
+}
+
+/* ===========================================================================
+   Indigo identity across the rest of the docs (Fumadocs UI + prose content)
+   =========================================================================== */
+
+/* Brand the shared shadcn tokens (nav chevron, custom components, focus rings) */
+:root {
+  --primary: var(--brand);
+  --primary-foreground: oklch(0.985 0 0);
+  --ring: var(--brand);
+}
+.dark {
+  --primary: var(--brand);
+  --primary-foreground: oklch(0.16 0.01 265);
+  --ring: var(--brand);
+}
+
+/* Tint the Fumadocs chrome: links, active nav/sidebar/TOC, buttons, hovers */
+:root {
+  --color-fd-primary: var(--brand);
+  --color-fd-primary-foreground: oklch(0.985 0 0);
+  --color-fd-ring: var(--brand);
+  --color-fd-accent: oklch(0.95 0.015 265);
+  --color-fd-accent-foreground: oklch(0.4 0.12 265);
+}
+.dark {
+  --color-fd-primary: var(--brand);
+  --color-fd-primary-foreground: oklch(0.16 0.01 265);
+  --color-fd-ring: var(--brand);
+  --color-fd-accent: oklch(0.27 0.02 265);
+  --color-fd-accent-foreground: oklch(0.9 0.03 265);
+}
+
+/* --- Enriched prose components --------------------------------------------- */
+
+/* Inline code: subtle brand chip (replaces the old red) */
+.prose :not(pre) > code {
+  color: var(--brand-strong);
+  background-color: color-mix(in oklch, var(--brand) 9%, transparent);
+  border: 1px solid color-mix(in oklch, var(--brand) 18%, transparent);
+  border-radius: var(--radius-sm);
+  padding: 0.1rem 0.35rem;
+  font-weight: 500;
+}
+.dark .prose :not(pre) > code {
+  color: var(--brand);
+}
+
+/* Links: branded with a refined underline */
+.prose a {
+  text-decoration-color: color-mix(in oklch, var(--brand) 45%, transparent);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s;
+}
+.prose a:hover {
+  text-decoration-color: var(--brand);
+}
+
+/* Blockquotes: brand accent rail with a faint wash */
+.prose blockquote {
+  border-inline-start-color: var(--brand);
+  background-color: color-mix(in oklch, var(--brand) 4%, transparent);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+/* Tables: branded header, soft row hover */
+.prose table thead {
+  background-color: color-mix(in oklch, var(--brand) 7%, transparent);
+}
+.prose table tbody tr {
+  transition: background-color 0.15s;
+}
+.prose table tbody tr:hover {
+  background-color: color-mix(in oklch, var(--brand) 4%, transparent);
+}
+
+/* Horizontal rules: gradient hairline */
+.prose hr {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(to right, transparent, var(--color-fd-border), transparent);
+}
+
+/* Headings: a small brand tick before h2 for rhythm */
+.prose h2 {
+  position: relative;
+}
+.prose h2::before {
+  content: "";
+  position: absolute;
+  left: -0.85rem;
+  top: 0.15em;
+  height: 0.85em;
+  width: 3px;
+  border-radius: 9999px;
+  background: linear-gradient(to bottom, var(--brand-from), var(--brand-to));
+  opacity: 0;
+}
+@media (min-width: 1024px) {
+  .prose h2::before {
+    opacity: 1;
   }
 }

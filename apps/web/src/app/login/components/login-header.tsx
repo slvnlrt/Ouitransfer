@@ -20,7 +20,7 @@ export function LoginHeader({ firstAccess }: { firstAccess: boolean }) {
       transition={{ delay: 0.2, duration: 0.5 }}
     >
       <h1 className="text-2xl font-semibold tracking-tight text-center">
-        {t("login.welcome")} {appName}
+        {t("login.welcome")} <span className="text-gradient-brand">{appName}</span>
       </h1>
       {!firstAccess && <p className="text-default-500 text-sm">{t("login.signInToContinue")}</p>}
     </motion.div>

@@ -90,7 +90,7 @@ export function ResetPasswordForm({
           )}
         />
 
-        <Button className="w-full" disabled={isSubmitting} size="lg" type="submit">
+        <Button className="w-full" variant="brand" disabled={isSubmitting} size="lg" type="submit">
           {isSubmitting ? t("resetPassword.form.resetting") : t("resetPassword.form.submit")}
         </Button>
 
