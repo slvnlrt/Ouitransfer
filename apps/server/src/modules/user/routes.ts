@@ -375,7 +375,10 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
         userAgent: request.headers["user-agent"],
         targetType: "user",
         targetId: request.params.id,
-        metadata: { deletedUserId: request.params.id, email: user.email },
+        // Intentionally omit the deleted user's email: this event runs as part
+        // of GDPR erasure, so re-persisting the email here would undo the
+        // redaction performed in deleteUser. targetId identifies the user.
+        metadata: { deletedUserId: request.params.id },
       }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
 
       return reply.send(serializeUser(user));

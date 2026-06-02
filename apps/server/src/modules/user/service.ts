@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "../../shared/prisma.js";
 import { ConflictError, NotFoundError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
+import { redactEmailFromAuditLogs } from "../audit/service.js";
 import { revokeAllUserTokens } from "../auth/refresh-token.service.js";
 import { incrementTokenVersion, invalidateTokenVersionCache } from "../auth/token-version.js";
 import { emailService } from "../email/service.js";
@@ -160,6 +161,19 @@ export class UserService {
     // DB cascade deletes refresh tokens, but we must clear the in-memory
     // tokenVersion cache so validateTokenVersion rejects stale JWTs immediately.
     invalidateTokenVersionCache(id);
+
+    // GDPR erasure: redact the deleted user's email from historical audit
+    // metadata (e.g. share-recipient logs). Best-effort — the user row is
+    // already gone, so a failure here must not surface as a delete error.
+    try {
+      const redacted = await redactEmailFromAuditLogs(deleted.email);
+      if (redacted > 0) {
+        getLogger().info({ userId: id, redacted }, "Redacted deleted user email from audit logs");
+      }
+    } catch (err) {
+      getLogger().error({ err, userId: id }, "Failed to redact deleted user email from audit logs");
+    }
+
     return UserResponseSchema.parse(deleted);
   }
 

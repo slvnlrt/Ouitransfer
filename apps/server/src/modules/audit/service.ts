@@ -416,3 +416,88 @@ export async function deleteOldAuditLogs(olderThan: Date): Promise<number> {
 
   return totalDeleted;
 }
+
+/** Placeholder written in place of a redacted email in audit metadata. */
+export const REDACTED_EMAIL = "[deleted]";
+
+/**
+ * Recursively replaces every string value exactly equal to `email` with the
+ * redaction placeholder. Returns the (possibly new) value and whether anything
+ * changed. Non-matching values are returned unchanged (same reference).
+ */
+function redactEmailDeep(value: unknown, email: string): { value: unknown; changed: boolean } {
+  if (value === email) {
+    return { value: REDACTED_EMAIL, changed: true };
+  }
+
+  if (Array.isArray(value)) {
+    let changed = false;
+    const next = value.map((item) => {
+      const result = redactEmailDeep(item, email);
+      changed ||= result.changed;
+      return result.value;
+    });
+    return changed ? { value: next, changed } : { value, changed: false };
+  }
+
+  if (value !== null && typeof value === "object") {
+    let changed = false;
+    const next: Record<string, unknown> = {};
+    for (const [key, item] of Object.entries(value as Record<string, unknown>)) {
+      const result = redactEmailDeep(item, email);
+      changed ||= result.changed;
+      next[key] = result.value;
+    }
+    return changed ? { value: next, changed } : { value, changed: false };
+  }
+
+  return { value, changed: false };
+}
+
+/**
+ * Redacts an email from existing audit log metadata (GDPR erasure).
+ *
+ * Recipient emails are persisted in plaintext in `AuditLog.metadata` (e.g.
+ * `metadata.emails` from share recipients, `metadata.email` from auth/invite
+ * events). When a user is deleted, this replaces every exact occurrence of
+ * their email — anywhere in the metadata JSON — with {@link REDACTED_EMAIL},
+ * preserving the audit trail structure (counts, actions, ids) while removing
+ * the PII.
+ *
+ * `metadata` is a JSON string, so a substring `contains` filter narrows the
+ * candidate set before parsing; the deep walk then redacts only exact matches.
+ *
+ * Returns the number of audit rows updated.
+ */
+export async function redactEmailFromAuditLogs(email: string): Promise<number> {
+  if (!email) return 0;
+
+  const candidates = await prisma.auditLog.findMany({
+    where: { metadata: { contains: email } },
+    select: { id: true, metadata: true },
+  });
+
+  let updated = 0;
+  for (const row of candidates) {
+    if (!row.metadata) continue;
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(row.metadata);
+    } catch {
+      getLogger().warn({ logId: row.id }, "Skipping unparseable audit metadata during redaction");
+      continue;
+    }
+
+    const { value, changed } = redactEmailDeep(parsed, email);
+    if (!changed) continue;
+
+    await prisma.auditLog.update({
+      where: { id: row.id },
+      data: { metadata: JSON.stringify(value) },
+    });
+    updated++;
+  }
+
+  return updated;
+}
