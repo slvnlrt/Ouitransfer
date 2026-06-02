@@ -30,12 +30,20 @@ export default function LoginPage() {
       <div className="container mx-auto max-w-7xl px-6 flex-grow flex items-center justify-center">
         <BackgroundLights />
         <div className="relative w-full max-w-sm">
+          <div
+            aria-hidden
+            className="absolute -inset-3 -z-10 rounded-3xl bg-gradient-brand opacity-[0.12] blur-2xl"
+          />
           <motion.div
             animate={{ opacity: 1, y: 0 }}
-            className="flex w-full max-w-sm flex-col gap-4 rounded-xl bg-card/90 backdrop-blur-sm px-8 pb-10 pt-6 shadow-xl border border-border/60"
+            className="relative flex w-full max-w-sm flex-col gap-4 overflow-hidden rounded-xl bg-card/90 backdrop-blur-sm px-8 pb-10 pt-6 shadow-xl border border-border/60"
             initial={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.5 }}
           >
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 -z-10 bg-grid-fade opacity-50"
+            />
             <LoginHeader firstAccess={firstAccess as boolean} />
             {firstAccess ? (
               <RegisterForm

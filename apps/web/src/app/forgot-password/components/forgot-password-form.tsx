@@ -39,7 +39,7 @@ export function ForgotPasswordForm({ form, onSubmit }: ForgotPasswordFormProps) 
           )}
         />
 
-        <Button className="w-full" disabled={isSubmitting} size="lg" type="submit">
+        <Button className="w-full" variant="brand" disabled={isSubmitting} size="lg" type="submit">
           {isSubmitting ? t("forgotPassword.sending") : t("forgotPassword.submit")}
         </Button>
 

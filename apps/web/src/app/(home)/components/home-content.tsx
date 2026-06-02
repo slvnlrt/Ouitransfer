@@ -84,11 +84,7 @@ function EmployeeSection() {
       </motion.p>
 
       <motion.div variants={fadeInUp} transition={{ duration: 0.5 }} className="mt-8">
-        <Button
-          asChild
-          size="lg"
-          className="group bg-gradient-brand bg-[length:200%_200%] text-white text-base font-semibold px-8 shadow-lg shadow-primary/20 transition-all duration-500 hover:bg-right hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/25"
-        >
+        <Button asChild variant="brand" size="lg" className="group text-base font-semibold px-8">
           <Link href="/login">
             {t("login")}
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />

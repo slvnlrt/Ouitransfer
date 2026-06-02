@@ -102,12 +102,18 @@ export default function RegisterWithInvitePage() {
         <div className="relative flex h-full w-full items-center justify-center">
           <motion.div
             animate={{ opacity: 1, y: 0 }}
-            className="flex w-full max-w-md flex-col gap-6 rounded-xl bg-card/90 backdrop-blur-sm px-8 pb-10 pt-6 shadow-xl border border-border/60"
+            className="relative flex w-full max-w-md flex-col gap-6 overflow-hidden rounded-xl bg-card/90 backdrop-blur-sm px-8 pb-10 pt-6 shadow-xl border border-border/60"
             initial={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.5 }}
           >
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 -z-10 bg-grid-fade opacity-50"
+            />
             <div className="text-center">
-              <h1 className="text-2xl font-bold">{t("registerWithInvite.title")}</h1>
+              <h1 className="text-2xl font-bold text-gradient-brand">
+                {t("registerWithInvite.title")}
+              </h1>
               <p className="text-muted-foreground text-sm mt-2">
                 {t("registerWithInvite.description")}
               </p>

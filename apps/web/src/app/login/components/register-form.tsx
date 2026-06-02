@@ -171,7 +171,7 @@ export function RegisterForm({ isVisible, onToggleVisibility }: RegisterFormProp
           )}
         />
 
-        <Button className="w-full mt-4 cursor-pointer" variant="default" size="lg" type="submit">
+        <Button className="w-full mt-4 cursor-pointer" variant="brand" size="lg" type="submit">
           {form.formState.isSubmitting
             ? t("register.buttons.creating")
             : t("register.buttons.createAdmin")}
