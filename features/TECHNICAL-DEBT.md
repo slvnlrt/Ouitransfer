@@ -790,27 +790,19 @@ Commit: `feat(monorepo): TD-41 — optional per-reverse-share upload cooldown by
 
 ---
 
-## TD-48 — `prisma/migrations/` is stale relative to `schema.prisma`
+## ~~TD-48 — `prisma/migrations/` is stale relative to `schema.prisma`~~ ✅ RESOLVED
 
-**Context:** Découvert pendant TD-41. Le dossier `apps/server/prisma/migrations/` s'arrête à
-`20260520083415_add_ldap_support`, alors que de nombreuses colonnes plus récentes existent dans
-`schema.prisma` sans migration correspondante : `reverse_shares.notifyOnUpload`,
-`bypassUploadCooldown`, `backgroundImageId`, `notifiedForExpiring/Expired`,
-`background_images`, etc. Le développement utilise visiblement `prisma db push` (cf.
-`just db-push`), conforme à la règle CLAUDE.md « No incremental migrations ».
+Resolved in TD-48 session (juin 2026).
 
-**Risque :** Un déploiement qui exécuterait `prisma migrate deploy` (plutôt que `db push`)
-créerait une base **incomplète** (colonnes manquantes → erreurs runtime). Le dossier
-`migrations/` est trompeur : il suggère un workflow migrations qui n'est plus suivi.
-
-**Fix (au choix) :**
-1. Supprimer `prisma/migrations/` et documenter explicitement le workflow `db push`, ou
-2. Régénérer une migration « init » unique à partir du schéma courant (baseline propre), ou
-3. Reprendre un vrai workflow de migrations incrémentales (contraire à CLAUDE.md actuel).
-
-**Found during:** TD-41 (juin 2026)
-**Severity:** Low — aucun impact en dev (`db push`) ; piège potentiel pour un déploiement prod
-ou un nouveau contributeur. À trancher avec la stratégie de déploiement.
+Migration history reset to a single clean baseline (`20260602091201_init`) covering the full
+current schema. The container boot now runs `prisma migrate deploy` with a WAL-safe pre-migrate
+backup (`apps/server/src/scripts/db-backup.ts`, keeps last 3 copies, uses better-sqlite3
+online backup + `wal_checkpoint(TRUNCATE)`). Dev workflow: `just db-migrate-dev` to author new
+migrations, `just db-dev-init` to create a local DB. A CI `prisma migrate diff --exit-code`
+drift guard was added (`.github/workflows/ci.yml`) to fail on any schema↔migrations divergence.
+Additionally, a turbo `db:generate` guard now regenerates the Prisma client before
+`type-check`/`build`/`test`, fixing a stale-client root cause discovered during the work
+(missing `bypassUploadCooldown` in gitignored generated client).
 
 ---
 

@@ -100,7 +100,7 @@ features/
 ## Important: No Production, No Legacy
 The app is **not in production** and has no existing users. This means:
 - **No backward compatibility required** — APIs, env vars, DB schemas can be changed freely
-- **No incremental migrations** — Prisma schema can be reset/recreated from scratch
+- **Migrations are the workflow** — schema changes go through `prisma migrate dev` (authored, committed); the container applies them at boot via `prisma migrate deploy`. The migration history was reset to a single clean baseline (TD-48); from there it is incremental. Resetting the local dev DB is still free (no prod data).
 - **No legacy shims** — dead code, deprecated patterns, and proxy layers can be deleted outright
 - **No gradual rollouts** — breaking changes are fine, no feature flags needed
 - **Clean slate** — prefer the correct solution over the compatible one

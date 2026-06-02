@@ -1,5 +1,28 @@
 # Session Log
 
+## 2026-06-02 (TD-48 — Adopt Prisma Migrate)
+
+**Adopted incremental Prisma Migrate workflow; replaced `db push` throughout**
+
+- **Clean baseline**: reset migration history to a single `20260602091201_init` migration
+  covering the full current schema (all columns, tables, indices).
+- **WAL-safe backup script**: `apps/server/src/scripts/db-backup.ts` — checkpoints WAL,
+  uses better-sqlite3 online `.backup()`, rotates to last 3 copies.
+- **Container boot**: `infra/server-start.sh` runs `prisma migrate deploy` at startup,
+  preceded by a WAL-safe backup when an existing DB file is found.
+- **Dev workflow**: `just db-migrate-dev` to author new migrations; `just db-dev-init`
+  now runs `migrate deploy` + seed (replaced `db push`).
+- **CI drift guard**: `.github/workflows/ci.yml` step runs `prisma migrate diff
+  --exit-code`; fails the build if `schema.prisma` was changed without a matching migration.
+- **Turbo `db:generate` guard**: `type-check`/`build`/`test` now depend on `db:generate`
+  (regenerates Prisma client from schema). Root-cause fix for a stale gitignored client
+  (`apps/server/src/generated/prisma`) that broke local type-check (missing
+  `bypassUploadCooldown`/`notifyOnUpload`).
+- **CLAUDE.md**: replaced "No incremental migrations" bullet with "Migrations are the workflow".
+- **TD-48 closed**: resolved in `features/TECHNICAL-DEBT.md`.
+
+---
+
 ## 2026-06-02 (Technical-debt sweep — TD-19, TD-24, TD-18, TD-41, TD-31)
 
 **Self-contained tech-debt items from `TECHNICAL-DEBT.md` — perfect/zero-debt bar**
