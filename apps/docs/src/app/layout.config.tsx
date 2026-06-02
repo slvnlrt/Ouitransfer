@@ -31,14 +31,11 @@ export function baseOptions(locale: string): BaseLayoutProps {
         active: "nested-url",
       },
       {
-        text: "Github",
+        type: "icon",
+        text: "GitHub",
         url: "https://github.com/slvnlrt/ouitransfer",
-        active: "nested-url",
-        icon: (
-          <>
-            <Github fill="currentColor" />
-          </>
-        ),
+        icon: <Github />,
+        external: true,
       },
     ],
   };

@@ -23,11 +23,11 @@ export function TechMarquee({ content }: { content: SiteContent["home"] }) {
         {content.stack.heading}
       </p>
       <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_12%,#000_88%,transparent)]">
-        <div className="marquee-track flex w-max animate-marquee items-center gap-4">
+        <div className="marquee-track flex w-max animate-marquee items-center">
           {[...STACK, ...STACK].map((tech, i) => (
             <span
               key={`${tech}-${i}`}
-              className="flex shrink-0 items-center gap-2 rounded-full border border-fd-border bg-fd-background/60 px-5 py-2 font-mono text-sm text-fd-foreground"
+              className="mx-2 flex shrink-0 items-center gap-2 rounded-full border border-fd-border bg-fd-background/60 px-5 py-2 font-mono text-sm text-fd-foreground"
             >
               <span className="size-1.5 rounded-full bg-brand" />
               {tech}
