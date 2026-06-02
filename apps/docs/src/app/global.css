@@ -133,6 +133,12 @@ h4 {
   }
 }
 
+/* Sidebar: compact the icon+theme bar so it doesn't stretch full width */
+#nd-sidebar .items-center.border.rounded-lg {
+  width: fit-content;
+  margin-inline-start: auto;
+}
+
 /* Frosted glass effect for the sticky banner */
 #banner-v1-beta {
   background: transparent;
