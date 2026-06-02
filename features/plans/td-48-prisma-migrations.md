@@ -65,7 +65,7 @@ Expected: Prisma creates `prisma/migrations/<timestamp>_init/migration.sql` cont
 
 Run:
 ```
-pnpm --filter=ouitransfer-api exec prisma migrate diff --from-migrations prisma/migrations --to-schema-datamodel prisma/schema.prisma --exit-code
+pnpm --filter=ouitransfer-api exec prisma migrate diff --from-migrations prisma/migrations --to-schema prisma/schema.prisma --exit-code
 ```
 Expected: exit code `0` and output "No difference detected." (If exit code is `2`, the baseline is incomplete — re-run Step 3 after deleting the generated migration.)
 
@@ -410,7 +410,7 @@ In `.github/workflows/ci.yml`, immediately after the `- run: pnpm install --froz
         run: >-
           pnpm --filter ouitransfer-api exec prisma migrate diff
           --from-migrations prisma/migrations
-          --to-schema-datamodel prisma/schema.prisma
+          --to-schema prisma/schema.prisma
           --exit-code
 ```
 
@@ -418,7 +418,7 @@ In `.github/workflows/ci.yml`, immediately after the `- run: pnpm install --froz
 
 Run:
 ```
-pnpm --filter ouitransfer-api exec prisma migrate diff --from-migrations prisma/migrations --to-schema-datamodel prisma/schema.prisma --exit-code
+pnpm --filter ouitransfer-api exec prisma migrate diff --from-migrations prisma/migrations --to-schema prisma/schema.prisma --exit-code
 ```
 Expected: exit `0`, "No difference detected."
 
@@ -427,7 +427,7 @@ Expected: exit `0`, "No difference detected."
 Temporarily append a scratch model to the schema, run the check, then revert:
 ```powershell
 Add-Content apps/server/prisma/schema.prisma "`nmodel _DriftProbe { id String @id }"
-pnpm --filter ouitransfer-api exec prisma migrate diff --from-migrations prisma/migrations --to-schema-datamodel prisma/schema.prisma --exit-code
+pnpm --filter ouitransfer-api exec prisma migrate diff --from-migrations prisma/migrations --to-schema prisma/schema.prisma --exit-code
 # Expected: exit code 2 (difference detected) — the guard works.
 git checkout -- apps/server/prisma/schema.prisma
 ```
@@ -505,7 +505,7 @@ Expected: clean. (Knip must not report `db-backup.ts` as unused — it is refere
 
 - [ ] **Step 3: Final drift check**
 
-Run: `pnpm --filter ouitransfer-api exec prisma migrate diff --from-migrations prisma/migrations --to-schema-datamodel prisma/schema.prisma --exit-code`
+Run: `pnpm --filter ouitransfer-api exec prisma migrate diff --from-migrations prisma/migrations --to-schema prisma/schema.prisma --exit-code`
 Expected: exit `0`.
 
 - [ ] **Step 4: Confirm no `db push` remains in the committed workflow**

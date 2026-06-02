@@ -88,7 +88,7 @@ So TD-48 can **never silently return**, add a CI check that detects schema↔mig
 ```
 prisma migrate diff \
   --from-migrations prisma/migrations \
-  --to-schema-datamodel prisma/schema.prisma \
+  --to-schema prisma/schema.prisma \
   --exit-code
 ```
 
