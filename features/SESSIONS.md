@@ -1,5 +1,36 @@
 # Session Log
 
+## 2026-06-02 (Technical-debt sweep — TD-19, TD-24, TD-18, TD-41, TD-31)
+
+**Self-contained tech-debt items from `TECHNICAL-DEBT.md` — perfect/zero-debt bar**
+
+- **TD-19 (QR download)**: consolidated 7 components with 3 divergent QR-download
+  implementations onto a single `useQrDownload` hook + SVG-ref-based
+  `downloadQrCodeAsPng` util — no global DOM ids left. Fixed 3 broken download paths
+  (SVG→`HTMLCanvasElement` cast, `querySelector("canvas")` on an SVG, `btoa` on
+  non-Latin1). Unit tests for the util + hook.
+- **TD-24 (`auditRetentionDays`)**: centralized per-config-key validation registry
+  applied in both single + bulk update paths (0 or ≥ 7). Client `superRefine` +
+  inline error + server backstop; i18n in 23 locales. 16 unit + 10 integration tests.
+- **TD-18 (alias validation)**: single source of truth `shared/alias-schema.ts`
+  (5–30, alphanumerics + single internal hyphens) for both share + reverse-share
+  endpoints; fixed pre-existing charset/length drift and a frontend/server mismatch
+  (underscore, max 50). Inline validation in all 4 alias inputs. **User decisions:**
+  min 5, no reserved-word blocklist (namespaced `/s/` `/r/`), hyphens unified.
+  16 unit + 20 integration tests.
+- **TD-41 (cooldown bypass)**: `bypassUploadCooldown` on ReverseShare;
+  `resolveFrequency` step 3b returns `overridden: bypassUploadCooldown`. Conditional
+  toggle in create + details modals. 3 resolveFrequency + 2 integration tests.
+- **TD-31 (audit PII)**: `redactEmailFromAuditLogs` deep-redacts a deleted user's
+  email (arrays + scalars) from `AuditLog.metadata` on `deleteUser` (best-effort);
+  `USER_DELETE` no longer re-logs the email. 7 unit + 3 integration tests.
+- **Discovered & logged**: TD-48 (stale `prisma/migrations/` vs schema — `db push`
+  workflow), TD-49 (missing user/reverse-share service test coverage).
+- **Quality**: all suites green (server 1163, web 284); type-check, biome, knip clean
+  on every commit. 5 commits, one per TD.
+
+---
+
 ## 2026-06-01 (Docs i18n — French translation system)
 
 **Documentation site — internationalization (English + French)**
