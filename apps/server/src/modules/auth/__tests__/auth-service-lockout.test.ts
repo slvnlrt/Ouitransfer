@@ -74,7 +74,7 @@ async function catchLoginError(authService: AuthService): Promise<unknown> {
     .catch((e: unknown) => e);
 }
 
-describe("AuthService.login — account lockout (TD-2)", () => {
+describe("AuthService.login — account lockout", () => {
   let authService: AuthService;
 
   beforeEach(() => {

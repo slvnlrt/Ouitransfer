@@ -96,7 +96,7 @@ function makeApiError(
   };
 }
 
-describe("useLogin — ACCOUNT_LOCKED error handling (TD-2)", () => {
+describe("useLogin — ACCOUNT_LOCKED error handling", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();

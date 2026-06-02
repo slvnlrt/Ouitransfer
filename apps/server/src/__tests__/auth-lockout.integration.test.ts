@@ -73,7 +73,7 @@ vi.mock("../modules/user/dto.js", () => ({
   },
 }));
 
-describe("POST /api/auth/login — account lockout integration (TD-2)", () => {
+describe("POST /api/auth/login — account lockout integration", () => {
   let app: FastifyInstance;
 
   beforeAll(async () => {

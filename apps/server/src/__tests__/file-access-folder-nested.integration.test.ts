@@ -110,7 +110,7 @@ vi.mock("../modules/email/service.js", () => ({
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe("POST /files/download-url — folder-nested file access (TD-35)", () => {
+describe("POST /files/download-url — folder-nested file access", () => {
   let app: FastifyInstance;
 
   const FILE_OWNER_ID = "user-owner-1";

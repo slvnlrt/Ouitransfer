@@ -72,7 +72,7 @@ const validPayload = () => ({
 });
 
 // ── Test suite ───────────────────────────────────────────────────────────────
-describe("POST /register-with-invite — structured error codes (TD-37)", () => {
+describe("POST /register-with-invite — structured error codes", () => {
   let app: FastifyInstance;
   let prismaModule: {
     prisma: {
