@@ -1728,7 +1728,8 @@
     "errors": {
       "loadFailed": "נכשל בטעינת הגדרות",
       "updateFailed": "נכשל בעדכון הגדרות",
-      "passwordAuthRequiresProvider": "לא ניתן להשבית אימות סיסמה ללא ספק אימות פעיל אחד לפחות"
+      "passwordAuthRequiresProvider": "לא ניתן להשבית אימות סיסמה ללא ספק אימות פעיל אחד לפחות",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "אין שינויים לשמור",

@@ -1864,7 +1864,8 @@
     "errors": {
       "loadFailed": "Failed to load settings",
       "updateFailed": "Failed to update settings",
-      "passwordAuthRequiresProvider": "Cannot disable password authentication without having at least one active authentication provider"
+      "passwordAuthRequiresProvider": "Cannot disable password authentication without having at least one active authentication provider",
+      "auditRetentionInvalid": "Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "No changes to save",

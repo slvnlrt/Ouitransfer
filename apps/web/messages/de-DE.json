@@ -1724,7 +1724,8 @@
     "errors": {
       "loadFailed": "Fehler beim Laden der Einstellungen",
       "updateFailed": "Fehler beim Aktualisieren der Einstellungen",
-      "passwordAuthRequiresProvider": "Passwort-basierte Authentifizierung kann nicht deaktiviert werden, wenn kein aktiver Authentifizierungsanbieter vorhanden ist"
+      "passwordAuthRequiresProvider": "Passwort-basierte Authentifizierung kann nicht deaktiviert werden, wenn kein aktiver Authentifizierungsanbieter vorhanden ist",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "Keine Änderungen zum Speichern",

@@ -1736,7 +1736,8 @@
     "errors": {
       "loadFailed": "Falha ao carregar configurações",
       "updateFailed": "Falha ao atualizar configurações",
-      "passwordAuthRequiresProvider": "Não é possível desabilitar a autenticação por senha sem ter pelo menos um provedor de autenticação ativo"
+      "passwordAuthRequiresProvider": "Não é possível desabilitar a autenticação por senha sem ter pelo menos um provedor de autenticação ativo",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "Nenhuma alteração para salvar",

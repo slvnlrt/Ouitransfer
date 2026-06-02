@@ -1724,7 +1724,8 @@
     "errors": {
       "loadFailed": "Ayarlar yüklenemedi",
       "updateFailed": "Ayarlar güncellenemedi",
-      "passwordAuthRequiresProvider": "En az bir aktif kimlik doğrulama sağlayıcısı olmadan şifre doğrulaması devre dışı bırakılamaz"
+      "passwordAuthRequiresProvider": "En az bir aktif kimlik doğrulama sağlayıcısı olmadan şifre doğrulaması devre dışı bırakılamaz",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "Kaydedilecek değişiklik yok",

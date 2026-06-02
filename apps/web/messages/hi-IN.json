@@ -1724,7 +1724,8 @@
     "errors": {
       "loadFailed": "सेटिंग्स लोड करने में विफल",
       "updateFailed": "सेटिंग्स अपडेट करने में विफल",
-      "passwordAuthRequiresProvider": "कम से कम एक सक्रिय प्रमाणीकरण प्रदाता के बिना पासवर्ड प्रमाणीकरण अक्षम नहीं किया जा सकता"
+      "passwordAuthRequiresProvider": "कम से कम एक सक्रिय प्रमाणीकरण प्रदाता के बिना पासवर्ड प्रमाणीकरण अक्षम नहीं किया जा सकता",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "सहेजने के लिए कोई परिवर्तन नहीं",

@@ -1728,7 +1728,8 @@
     "errors": {
       "loadFailed": "Αποτυχία φόρτωσης ρυθμίσεων",
       "updateFailed": "Αποτυχία ενημέρωσης ρυθμίσεων",
-      "passwordAuthRequiresProvider": "Δεν είναι δυνατή η απενεργοποίηση του ελέγχου με κωδικό χωρίς τουλάχιστον έναν ενεργό πάροχο ελέγχου ταυτότητας"
+      "passwordAuthRequiresProvider": "Δεν είναι δυνατή η απενεργοποίηση του ελέγχου με κωδικό χωρίς τουλάχιστον έναν ενεργό πάροχο ελέγχου ταυτότητας",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "Καμία αλλαγή για αποθήκευση",

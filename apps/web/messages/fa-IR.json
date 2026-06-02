@@ -1728,7 +1728,8 @@
     "errors": {
       "loadFailed": "بارگذاری تنظیمات ناموفق بود",
       "updateFailed": "به‌روزرسانی تنظیمات ناموفق بود",
-      "passwordAuthRequiresProvider": "نمی‌توان احراز هویت با گذرواژه را بدون داشتن حداقل یک ارائه‌دهنده احراز هویت فعال غیرفعال کرد"
+      "passwordAuthRequiresProvider": "نمی‌توان احراز هویت با گذرواژه را بدون داشتن حداقل یک ارائه‌دهنده احراز هویت فعال غیرفعال کرد",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "تغییری برای ذخیره وجود ندارد",

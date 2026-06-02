@@ -1728,7 +1728,8 @@
     "errors": {
       "loadFailed": "Gagal memuat pengaturan",
       "updateFailed": "Gagal memperbarui pengaturan",
-      "passwordAuthRequiresProvider": "Tidak dapat menonaktifkan autentikasi kata sandi tanpa memiliki setidaknya satu penyedia autentikasi aktif"
+      "passwordAuthRequiresProvider": "Tidak dapat menonaktifkan autentikasi kata sandi tanpa memiliki setidaknya satu penyedia autentikasi aktif",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "Tidak ada perubahan untuk disimpan",

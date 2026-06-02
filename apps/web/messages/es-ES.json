@@ -1728,7 +1728,8 @@
     "errors": {
       "loadFailed": "Error al cargar la configuración",
       "updateFailed": "Error al actualizar la configuración",
-      "passwordAuthRequiresProvider": "No se puede deshabilitar la autenticación por contraseña sin tener al menos un proveedor de autenticación activo"
+      "passwordAuthRequiresProvider": "No se puede deshabilitar la autenticación por contraseña sin tener al menos un proveedor de autenticación activo",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "No hay cambios para guardar",

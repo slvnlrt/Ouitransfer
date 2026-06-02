@@ -1728,7 +1728,8 @@
     "errors": {
       "loadFailed": "Không thể tải cài đặt",
       "updateFailed": "Không thể cập nhật cài đặt",
-      "passwordAuthRequiresProvider": "Không thể tắt xác thực bằng mật khẩu mà không có ít nhất một nhà cung cấp xác thực đang hoạt động"
+      "passwordAuthRequiresProvider": "Không thể tắt xác thực bằng mật khẩu mà không có ít nhất một nhà cung cấp xác thực đang hoạt động",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "Không có thay đổi nào để lưu",

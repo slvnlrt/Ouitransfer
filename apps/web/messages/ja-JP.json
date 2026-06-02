@@ -1724,7 +1724,8 @@
     "errors": {
       "loadFailed": "設定の読み込みに失敗しました",
       "updateFailed": "設定の更新に失敗しました",
-      "passwordAuthRequiresProvider": "少なくとも1つのアクティブな認証プロバイダーがない場合、パスワード認証を無効にできません"
+      "passwordAuthRequiresProvider": "少なくとも1つのアクティブな認証プロバイダーがない場合、パスワード認証を無効にできません",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "保存する変更はありません",

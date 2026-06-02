@@ -1728,7 +1728,8 @@
     "errors": {
       "loadFailed": "Det gick inte att läsa in inställningarna",
       "updateFailed": "Det gick inte att uppdatera inställningarna",
-      "passwordAuthRequiresProvider": "Det går inte att inaktivera lösenordsautentisering utan att ha minst en aktiv autentiseringsleverantör"
+      "passwordAuthRequiresProvider": "Det går inte att inaktivera lösenordsautentisering utan att ha minst en aktiv autentiseringsleverantör",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "Inga ändringar att spara",

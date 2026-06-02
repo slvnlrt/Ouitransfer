@@ -1724,7 +1724,8 @@
     "errors": {
       "loadFailed": "فشل في تحميل الإعدادات",
       "updateFailed": "فشل في تحديث الإعدادات",
-      "passwordAuthRequiresProvider": "لا يمكن تعطيل المصادقة بالكلمة السرية دون وجود على الأقل موفرين مصادقة مفعلين"
+      "passwordAuthRequiresProvider": "لا يمكن تعطيل المصادقة بالكلمة السرية دون وجود على الأقل موفرين مصادقة مفعلين",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "لا توجد تغييرات للحفظ",

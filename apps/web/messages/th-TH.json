@@ -1728,7 +1728,8 @@
     "errors": {
       "loadFailed": "ไม่สามารถโหลดการตั้งค่า",
       "updateFailed": "ไม่สามารถอัปเดตการตั้งค่า",
-      "passwordAuthRequiresProvider": "ไม่สามารถปิดใช้งานการยืนยันตัวตนด้วยรหัสผ่านโดยไม่มีผู้ให้บริการยืนยันตัวตนที่ใช้งานอยู่"
+      "passwordAuthRequiresProvider": "ไม่สามารถปิดใช้งานการยืนยันตัวตนด้วยรหัสผ่านโดยไม่มีผู้ให้บริการยืนยันตัวตนที่ใช้งานอยู่",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "ไม่มีการเปลี่ยนแปลง",

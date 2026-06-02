@@ -1724,7 +1724,8 @@
     "errors": {
       "loadFailed": "加载设置失败",
       "updateFailed": "更新设置失败",
-      "passwordAuthRequiresProvider": "没有至少一个活动认证提供者时，无法禁用密码认证"
+      "passwordAuthRequiresProvider": "没有至少一个活动认证提供者时，无法禁用密码认证",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "没有需要保存的更改",

@@ -1724,7 +1724,8 @@
     "errors": {
       "loadFailed": "Errore durante il caricamento delle impostazioni",
       "updateFailed": "Errore durante l'aggiornamento delle impostazioni",
-      "passwordAuthRequiresProvider": "Impossibile disabilitare l'autenticazione password senza avere almeno un provider di autenticazione attivo"
+      "passwordAuthRequiresProvider": "Impossibile disabilitare l'autenticazione password senza avere almeno un provider di autenticazione attivo",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "Nessuna modifica da salvare",

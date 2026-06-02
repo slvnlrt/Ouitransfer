@@ -1728,7 +1728,8 @@
     "errors": {
       "loadFailed": "Не вдалося завантажити налаштування",
       "updateFailed": "Не вдалося оновити налаштування",
-      "passwordAuthRequiresProvider": "Неможливо вимкнути автентифікацію паролем без принаймні одного активного постачальника автентифікації"
+      "passwordAuthRequiresProvider": "Неможливо вимкнути автентифікацію паролем без принаймні одного активного постачальника автентифікації",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "Немає змін для збереження",

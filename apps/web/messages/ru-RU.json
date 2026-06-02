@@ -1724,7 +1724,8 @@
     "errors": {
       "loadFailed": "Ошибка загрузки настроек",
       "updateFailed": "Ошибка обновления настроек",
-      "passwordAuthRequiresProvider": "Парольную аутентификацию нельзя отключить, если нет хотя бы одного активного поставщика аутентификации"
+      "passwordAuthRequiresProvider": "Парольную аутентификацию нельзя отключить, если нет хотя бы одного активного поставщика аутентификации",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "Изменений для сохранения нет",
