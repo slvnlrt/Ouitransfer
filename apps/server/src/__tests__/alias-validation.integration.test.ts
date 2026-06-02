@@ -1,5 +1,5 @@
 /**
- * Integration tests for TD-18 — server-side alias validation.
+ * Integration tests for server-side alias validation.
  *
  * Both POST /shares/:shareId/alias and POST /reverse-shares/:reverseShareId/alias
  * validate the alias against the shared aliasSchema (min 5, max 30, alphanumeric

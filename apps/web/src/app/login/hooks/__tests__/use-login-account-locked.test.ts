@@ -1,7 +1,7 @@
 /**
  * @vitest-environment jsdom
  *
- * Tests for ACCOUNT_LOCKED error handling in use-login.ts (TD-2).
+ * Tests for ACCOUNT_LOCKED error handling in use-login.ts.
  * When the server returns ACCOUNT_LOCKED, the frontend shows a user-friendly
  * lockout message with the remaining minutes, distinct from other errors.
  */

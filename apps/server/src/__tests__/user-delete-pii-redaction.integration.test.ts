@@ -1,5 +1,5 @@
 /**
- * Integration test for TD-31 — deleting a user redacts their email from
+ * Integration test — deleting a user redacts their email from
  * historical audit metadata (GDPR erasure), and the deletion event itself does
  * not re-persist the email.
  */

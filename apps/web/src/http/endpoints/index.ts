@@ -4,7 +4,6 @@
  * Convention: endpoint functions use concrete return types (e.g., Promise<LoginResult>),
  * NOT generic type parameters like <TData = LoginResult>. The generic pattern allowed
  * callers to override the return type to anything, defeating type safety.
- * See TD-1 for details.
  */
 
 export * from "./admin";

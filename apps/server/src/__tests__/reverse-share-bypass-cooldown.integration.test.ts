@@ -1,5 +1,5 @@
 /**
- * Integration test for TD-41 — bypassUploadCooldown round-trips through the
+ * Integration test — bypassUploadCooldown round-trips through the
  * reverse-share create endpoint and is surfaced in the response payload.
  */
 

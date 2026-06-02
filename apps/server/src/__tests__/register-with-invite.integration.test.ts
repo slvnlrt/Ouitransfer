@@ -3,7 +3,7 @@
  *
  * Integration tests verifying that POST /register-with-invite returns structured
  * error codes (INVITE_TOKEN_USED, INVITE_TOKEN_EXPIRED, USERNAME_EXISTS,
- * EMAIL_EXISTS) instead of relying on human-readable English messages (TD-37).
+ * EMAIL_EXISTS) instead of relying on human-readable English messages.
  *
  * Uses app.inject() to exercise the full Fastify request lifecycle:
  *   routing → Zod schema → controller → service → globalErrorHandler → response

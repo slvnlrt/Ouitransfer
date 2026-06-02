@@ -1,7 +1,7 @@
 /**
  * file-access-folder-nested.integration.test.ts
  *
- * Integration tests for folder-nested file access via shares (TD-35).
+ * Integration tests for folder-nested file access via shares.
  *
  * Verifies that `checkFileAccess` and `trackShareDownload` correctly handle
  * files at any depth in a shared folder tree, not just direct file→share links.
