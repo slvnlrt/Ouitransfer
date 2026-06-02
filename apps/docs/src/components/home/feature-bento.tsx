@@ -10,7 +10,13 @@ import {
   Users,
 } from "lucide-react";
 import type { ReactNode } from "react";
-
+import {
+  AuditFeed,
+  NotificationStack,
+  QuotaBars,
+  ReverseUpload,
+  SyncFlow,
+} from "@/components/home/feature-visuals";
 import { Reveal } from "@/components/home/reveal";
 import type { SiteContent } from "@/lib/content-i18n";
 import { cn } from "@/lib/utils";
@@ -111,21 +117,23 @@ export function FeatureBento({ content }: { content: SiteContent["home"] }) {
 
         {/* Directory sync */}
         <Reveal className="lg:col-span-2" delay={0}>
-          <BentoCard
-            icon={Network}
-            title={f.directory.title}
-            description={f.directory.description}
-          />
+          <BentoCard icon={Network} title={f.directory.title} description={f.directory.description}>
+            <SyncFlow />
+          </BentoCard>
         </Reveal>
 
         {/* Groups & quotas */}
         <Reveal className="lg:col-span-2" delay={0.08}>
-          <BentoCard icon={Users} title={f.teams.title} description={f.teams.description} />
+          <BentoCard icon={Users} title={f.teams.title} description={f.teams.description}>
+            <QuotaBars />
+          </BentoCard>
         </Reveal>
 
         {/* Audit trail */}
         <Reveal className="lg:col-span-2" delay={0.16}>
-          <BentoCard icon={ScrollText} title={f.audit.title} description={f.audit.description} />
+          <BentoCard icon={ScrollText} title={f.audit.title} description={f.audit.description}>
+            <AuditFeed />
+          </BentoCard>
         </Reveal>
 
         {/* Reverse shares */}
@@ -134,7 +142,9 @@ export function FeatureBento({ content }: { content: SiteContent["home"] }) {
             icon={Inbox}
             title={f.reverseShare.title}
             description={f.reverseShare.description}
-          />
+          >
+            <ReverseUpload />
+          </BentoCard>
         </Reveal>
 
         {/* Email notifications */}
@@ -143,7 +153,9 @@ export function FeatureBento({ content }: { content: SiteContent["home"] }) {
             icon={Bell}
             title={f.notifications.title}
             description={f.notifications.description}
-          />
+          >
+            <NotificationStack />
+          </BentoCard>
         </Reveal>
 
         {/* Self-hosted — wide, with docker snippet */}
