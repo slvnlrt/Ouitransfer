@@ -25,6 +25,13 @@ jobs:
           node-version-file: ".node-version"
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
+      - name: Prisma migration drift check
+        # Fails if schema.prisma was changed without a matching migration (TD-48 guard).
+        run: >-
+          pnpm --filter ouitransfer-api exec prisma migrate diff
+          --from-migrations prisma/migrations
+          --to-schema prisma/schema.prisma
+          --exit-code
       - uses: actions/cache@v5
         with:
           path: .turbo
