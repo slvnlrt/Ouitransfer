@@ -180,7 +180,13 @@
     "copied": "הועתק",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "ימים"
+    "days": "ימים",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "צור שיתוף",
@@ -1241,12 +1247,6 @@
         "updating": "מעדכן...",
         "create": "צור כינוי",
         "update": "עדכן כינוי",
-        "validation": {
-          "required": "כינוי נדרש",
-          "minLength": "כינוי חייב להכיל לפחות 3 תווים",
-          "maxLength": "כינוי יכול להכיל עד 50 תווים",
-          "pattern": "כינוי חייב להכיל רק אותיות, מספרים, מקפים וקווים תחתונים"
-        },
         "help": "3-50 תווים. רווחים יומרו אוטומטית למקפים."
       },
       "password": {
@@ -1397,7 +1397,9 @@
       },
       "notifyOnUpload": "Notify me on each upload",
       "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
-      "submit": "צור קישור קבלה"
+      "submit": "צור קישור קבלה",
+      "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
+      "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
     "messages": {
       "created": "קישור קבלה נוצר בהצלחה!",
@@ -1728,7 +1730,8 @@
     "errors": {
       "loadFailed": "נכשל בטעינת הגדרות",
       "updateFailed": "נכשל בעדכון הגדרות",
-      "passwordAuthRequiresProvider": "לא ניתן להשבית אימות סיסמה ללא ספק אימות פעיל אחד לפחות"
+      "passwordAuthRequiresProvider": "לא ניתן להשבית אימות סיסמה ללא ספק אימות פעיל אחד לפחות",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "אין שינויים לשמור",

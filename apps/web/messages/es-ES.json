@@ -180,7 +180,13 @@
     "copy": "Copiar",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "días"
+    "days": "días",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "Crear Compartir",
@@ -1241,12 +1247,6 @@
         "updating": "Actualizando...",
         "create": "Crear Alias",
         "update": "Actualizar Alias",
-        "validation": {
-          "required": "El alias es obligatorio",
-          "minLength": "El alias debe tener al menos 3 caracteres",
-          "maxLength": "El alias debe tener máximo 50 caracteres",
-          "pattern": "El alias solo puede contener letras, números, guiones y guiones bajos"
-        },
         "help": "3-50 caracteres. Los espacios se convertirán automáticamente en guiones."
       },
       "password": {
@@ -1397,7 +1397,9 @@
         "description": "Configurar si se debe mostrar el campo Nombre del cargador y si es necesario"
       },
       "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences."
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
+      "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
     "messages": {
       "created": "¡Enlace de recepción creado con éxito!",
@@ -1728,7 +1730,8 @@
     "errors": {
       "loadFailed": "Error al cargar la configuración",
       "updateFailed": "Error al actualizar la configuración",
-      "passwordAuthRequiresProvider": "No se puede deshabilitar la autenticación por contraseña sin tener al menos un proveedor de autenticación activo"
+      "passwordAuthRequiresProvider": "No se puede deshabilitar la autenticación por contraseña sin tener al menos un proveedor de autenticación activo",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "No hay cambios para guardar",

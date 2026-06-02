@@ -176,7 +176,13 @@
     "copy": "Kopiëren",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "dagen"
+    "days": "dagen",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "Delen Maken",
@@ -1237,12 +1243,6 @@
         "updating": "Bijwerken...",
         "create": "Alias Aanmaken",
         "update": "Alias Bijwerken",
-        "validation": {
-          "required": "Alias is verplicht",
-          "minLength": "Alias moet minimaal 3 tekens bevatten",
-          "maxLength": "Alias mag maximaal 50 tekens bevatten",
-          "pattern": "Alias mag alleen letters, cijfers, streepjes en underscores bevatten"
-        },
         "help": "3-50 tekens. Spaties worden automatisch omgezet in streepjes."
       },
       "password": {
@@ -1393,7 +1393,9 @@
         "description": "Configureer of het veld Uploader Naam moet worden getoond en of het vereist is"
       },
       "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences."
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
+      "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
     "messages": {
       "created": "Ontvangstlink succesvol aangemaakt!",
@@ -1724,7 +1726,8 @@
     "errors": {
       "loadFailed": "Fout bij het laden van instellingen",
       "updateFailed": "Fout bij het bijwerken van instellingen",
-      "passwordAuthRequiresProvider": "Wachtwoordauthenticatie kan niet worden uitgeschakeld zonder ten minste één actieve authenticatieprovider"
+      "passwordAuthRequiresProvider": "Wachtwoordauthenticatie kan niet worden uitgeschakeld zonder ten minste één actieve authenticatieprovider",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "Geen wijzigingen om op te slaan",

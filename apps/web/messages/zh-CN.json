@@ -176,7 +176,13 @@
     "copy": "复制",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "天"
+    "days": "天",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "创建分享",
@@ -1237,12 +1243,6 @@
         "updating": "更新中...",
         "create": "创建别名",
         "update": "更新别名",
-        "validation": {
-          "required": "别名是必需的",
-          "minLength": "别名至少需要3个字符",
-          "maxLength": "别名最多50个字符",
-          "pattern": "别名只能包含字母、数字、连字符和下划线"
-        },
         "help": "3-50个字符。空格将自动转换为连字符。"
       },
       "password": {
@@ -1393,7 +1393,9 @@
         "description": "配置是否应显示上传器名称字段以及是否需要"
       },
       "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences."
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
+      "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
     "messages": {
       "created": "接收链接创建成功！",
@@ -1724,7 +1726,8 @@
     "errors": {
       "loadFailed": "加载设置失败",
       "updateFailed": "更新设置失败",
-      "passwordAuthRequiresProvider": "没有至少一个活动认证提供者时，无法禁用密码认证"
+      "passwordAuthRequiresProvider": "没有至少一个活动认证提供者时，无法禁用密码认证",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "没有需要保存的更改",

@@ -176,7 +176,13 @@
     "copy": "Copia",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "giorni"
+    "days": "giorni",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "Crea Condivisione",
@@ -1237,12 +1243,6 @@
         "updating": "Aggiornamento in corso...",
         "create": "Crea Alias",
         "update": "Aggiorna Alias",
-        "validation": {
-          "required": "Alias obbligatorio",
-          "minLength": "L'alias deve contenere almeno 3 caratteri",
-          "maxLength": "L'alias deve contenere al massimo 50 caratteri",
-          "pattern": "L'alias può contenere solo lettere, numeri, trattini e underscore"
-        },
         "help": "3-50 caratteri. Gli spazi saranno convertiti automaticamente in trattini."
       },
       "password": {
@@ -1393,7 +1393,9 @@
         "description": "Configurare se il campo Nome del caricatore deve essere visualizzato e se è richiesto"
       },
       "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences."
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
+      "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
     "messages": {
       "created": "Link di ricezione creato con successo!",
@@ -1724,7 +1726,8 @@
     "errors": {
       "loadFailed": "Errore durante il caricamento delle impostazioni",
       "updateFailed": "Errore durante l'aggiornamento delle impostazioni",
-      "passwordAuthRequiresProvider": "Impossibile disabilitare l'autenticazione password senza avere almeno un provider di autenticazione attivo"
+      "passwordAuthRequiresProvider": "Impossibile disabilitare l'autenticazione password senza avere almeno un provider di autenticazione attivo",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "Nessuna modifica da salvare",

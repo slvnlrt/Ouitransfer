@@ -180,7 +180,13 @@
     "copied": "Αντιγράφηκε",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "ημέρες"
+    "days": "ημέρες",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "Δημιουργία κοινής χρήσης",
@@ -1241,12 +1247,6 @@
         "updating": "Ενημέρωση...",
         "create": "Δημιουργία ψευδωνύμου",
         "update": "Ενημέρωση ψευδωνύμου",
-        "validation": {
-          "required": "Απαιτείται ψευδώνυμο",
-          "minLength": "Το ψευδώνυμο πρέπει να έχει τουλάχιστον 3 χαρακτήρες",
-          "maxLength": "Το ψευδώνυμο πρέπει να έχει το πολύ 50 χαρακτήρες",
-          "pattern": "Το ψευδώνυμο πρέπει να περιέχει μόνο γράμματα, αριθμούς, παύλες και κάτω παύλες"
-        },
         "help": "3-50 χαρακτήρες. Τα κενά θα μετατραπούν αυτόματα σε παύλες."
       },
       "password": {
@@ -1397,7 +1397,9 @@
       },
       "notifyOnUpload": "Notify me on each upload",
       "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
-      "submit": "Δημιουργία συνδέσμου λήψης"
+      "submit": "Δημιουργία συνδέσμου λήψης",
+      "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
+      "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
     "messages": {
       "created": "Ο σύνδεσμος λήψης δημιουργήθηκε με επιτυχία!",
@@ -1728,7 +1730,8 @@
     "errors": {
       "loadFailed": "Αποτυχία φόρτωσης ρυθμίσεων",
       "updateFailed": "Αποτυχία ενημέρωσης ρυθμίσεων",
-      "passwordAuthRequiresProvider": "Δεν είναι δυνατή η απενεργοποίηση του ελέγχου με κωδικό χωρίς τουλάχιστον έναν ενεργό πάροχο ελέγχου ταυτότητας"
+      "passwordAuthRequiresProvider": "Δεν είναι δυνατή η απενεργοποίηση του ελέγχου με κωδικό χωρίς τουλάχιστον έναν ενεργό πάροχο ελέγχου ταυτότητας",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "Καμία αλλαγή για αποθήκευση",

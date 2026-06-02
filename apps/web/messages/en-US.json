@@ -152,6 +152,12 @@
     "download": "Download ZIP"
   },
   "common": {
+    "aliasValidation": {
+      "required": "Alias is required",
+      "minLength": "Alias must be at least {min} characters",
+      "maxLength": "Alias must be at most {max} characters",
+      "pattern": "Alias may contain only letters, numbers, and single internal hyphens"
+    },
     "loading": "Loading, please wait...",
     "loadingSimple": "Loading...",
     "cancel": "Cancel",
@@ -1377,13 +1383,7 @@
         "updating": "Updating...",
         "create": "Create Alias",
         "update": "Update Alias",
-        "validation": {
-          "required": "Alias is required",
-          "minLength": "Alias must be at least 3 characters",
-          "maxLength": "Alias must be at most 50 characters",
-          "pattern": "Alias must contain only letters, numbers, hyphens and underscores"
-        },
-        "help": "3-50 characters. Spaces will be automatically converted to hyphens."
+        "help": "5-30 characters. Letters, numbers, and single internal hyphens."
       },
       "password": {
         "title": "Edit Password Protection",
@@ -1533,6 +1533,8 @@
       },
       "notifyOnUpload": "Notify me on each upload",
       "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "bypassUploadCooldown": "Notify on every upload session",
+      "bypassUploadCooldownHelp": "By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session.",
       "submit": "Create Receive Link"
     },
     "messages": {
@@ -1864,7 +1866,8 @@
     "errors": {
       "loadFailed": "Failed to load settings",
       "updateFailed": "Failed to update settings",
-      "passwordAuthRequiresProvider": "Cannot disable password authentication without having at least one active authentication provider"
+      "passwordAuthRequiresProvider": "Cannot disable password authentication without having at least one active authentication provider",
+      "auditRetentionInvalid": "Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "No changes to save",

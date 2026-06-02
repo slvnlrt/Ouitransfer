@@ -180,7 +180,13 @@
     "copied": "คัดลอกแล้ว",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "วัน"
+    "days": "วัน",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "สร้างแชร์",
@@ -1241,12 +1247,6 @@
         "updating": "กำลังอัปเดต...",
         "create": "สร้างนามแฝง",
         "update": "อัปเดตนามแฝง",
-        "validation": {
-          "required": "ต้องระบุนามแฝง",
-          "minLength": "นามแฝงต้องมีอย่างน้อย 3 ตัวอักษร",
-          "maxLength": "นามแฝงต้องมีไม่เกิน 50 ตัวอักษร",
-          "pattern": "นามแฝงต้องมีเฉพาะตัวอักษร ตัวเลข ขีดและเครื่องหมายขีดใต้เท่านั้น"
-        },
         "help": "3-50 ตัวอักษร ช่องว่างจะถูกแปลงเป็นขีดอัตโนมัติ"
       },
       "password": {
@@ -1397,7 +1397,9 @@
       },
       "notifyOnUpload": "Notify me on each upload",
       "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
-      "submit": "สร้างลิงค์การรับ"
+      "submit": "สร้างลิงค์การรับ",
+      "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
+      "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
     "messages": {
       "created": "สร้างลิงค์การรับเรียบร้อยแล้ว!",
@@ -1728,7 +1730,8 @@
     "errors": {
       "loadFailed": "ไม่สามารถโหลดการตั้งค่า",
       "updateFailed": "ไม่สามารถอัปเดตการตั้งค่า",
-      "passwordAuthRequiresProvider": "ไม่สามารถปิดใช้งานการยืนยันตัวตนด้วยรหัสผ่านโดยไม่มีผู้ให้บริการยืนยันตัวตนที่ใช้งานอยู่"
+      "passwordAuthRequiresProvider": "ไม่สามารถปิดใช้งานการยืนยันตัวตนด้วยรหัสผ่านโดยไม่มีผู้ให้บริการยืนยันตัวตนที่ใช้งานอยู่",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "ไม่มีการเปลี่ยนแปลง",

@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { customNanoid } from "@/lib/utils";
+import { ALIAS_MAX_LENGTH, ALIAS_MIN_LENGTH, getAliasValidationError } from "@/utils/alias";
 import type { ReverseShare } from "../hooks/use-reverse-shares";
 
 interface GenerateAliasFormData {
@@ -57,6 +58,7 @@ export function GenerateAliasModal({
   }, []);
 
   const form = useForm<GenerateAliasFormData>({
+    mode: "onChange",
     defaultValues: {
       alias: "",
     },
@@ -117,18 +119,14 @@ export function GenerateAliasModal({
               control={form.control}
               name="alias"
               rules={{
-                required: t("reverseShares.modals.alias.validation.required"),
-                minLength: {
-                  value: 3,
-                  message: t("reverseShares.modals.alias.validation.minLength"),
-                },
-                maxLength: {
-                  value: 50,
-                  message: t("reverseShares.modals.alias.validation.maxLength"),
-                },
-                pattern: {
-                  value: /^[a-zA-Z0-9-_]+$/,
-                  message: t("reverseShares.modals.alias.validation.pattern"),
+                validate: (value: string) => {
+                  const error = getAliasValidationError(value);
+                  return error
+                    ? t(`common.aliasValidation.${error}`, {
+                        min: ALIAS_MIN_LENGTH,
+                        max: ALIAS_MAX_LENGTH,
+                      })
+                    : true;
                 },
               }}
               render={({ field }) => (
@@ -215,7 +213,7 @@ export function GenerateAliasModal({
               </Button>
               <Button
                 type="submit"
-                disabled={isSubmitting || !form.formState.isValid || form.watch("alias").length < 3}
+                disabled={isSubmitting || getAliasValidationError(form.watch("alias")) !== null}
               >
                 {isSubmitting ? (
                   <div className="flex items-center gap-2">

@@ -180,7 +180,13 @@
     "copied": "Kopierade",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "dagar"
+    "days": "dagar",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "Skapa Share",
@@ -1241,12 +1247,6 @@
         "updating": "Uppdaterar...",
         "create": "Skapa Alias",
         "update": "Uppdatera Alias",
-        "validation": {
-          "required": "Alias ​​krävs",
-          "minLength": "Alias ​​måste bestå av minst 3 tecken",
-          "maxLength": "Alias ​​får vara högst 50 tecken",
-          "pattern": "Alias ​​får endast innehålla bokstäver, siffror, bindestreck och understreck"
-        },
         "help": "3-50 tecken. Mellanslag konverteras automatiskt till bindestreck."
       },
       "password": {
@@ -1397,7 +1397,9 @@
       },
       "notifyOnUpload": "Notify me on each upload",
       "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
-      "submit": "Skapa mottagningslänk"
+      "submit": "Skapa mottagningslänk",
+      "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
+      "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
     "messages": {
       "created": "Ta emot länk skapad framgångsrikt!",
@@ -1728,7 +1730,8 @@
     "errors": {
       "loadFailed": "Det gick inte att läsa in inställningarna",
       "updateFailed": "Det gick inte att uppdatera inställningarna",
-      "passwordAuthRequiresProvider": "Det går inte att inaktivera lösenordsautentisering utan att ha minst en aktiv autentiseringsleverantör"
+      "passwordAuthRequiresProvider": "Det går inte att inaktivera lösenordsautentisering utan att ha minst en aktiv autentiseringsleverantör",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "Inga ändringar att spara",

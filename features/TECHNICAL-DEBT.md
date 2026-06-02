@@ -265,27 +265,30 @@ monitoring of logs. No customer data loss, but wastes storage quota.
 
 ---
 
-## TD-18 — Client-side alias generation: no server-side minting or reserved-word validation
+## ~~TD-18 — Client-side alias generation: no server-side minting or reserved-word validation~~ ✅ RESOLVED
 
-**Context:** Share aliases are generated client-side via `customNanoid(10, alphanumeric)`
-and sent to `POST /api/shares/alias/create/:shareId`. The server validates uniqueness
-(collision → 409) but does not enforce minimum length, charset, or reject reserved words
-(e.g., `admin`, `login`, `api`). A malicious client could squat on short or memorable aliases.
+Resolved (juin 2026). Charset/length validation already existed (added in TD-4) but had
+**drifted**: share aliases allowed `[a-z0-9]` min 3, reverse-share aliases allowed
+`[a-z0-9-]` min 3, and the reverse-share **frontend** modal allowed underscores up to 50
+chars — values the server rejected.
 
-**Used in:**
-- `apps/web/src/components/modals/generate-share-link-modal.tsx:29-30`
-- `apps/web/src/app/dashboard/hooks/use-quick-share.ts` (Quickshare 9.1)
+Introduced a single source of truth (`apps/server/src/shared/alias-schema.ts`): **5–30
+chars, alphanumerics with single internal hyphens** (no leading/trailing/double hyphen).
+Both alias endpoints now use it. The web mirrors it in `utils/alias.ts` and wires inline
+validation into all four alias inputs (generate-share-link, share-item,
+share-multiple-items, reverse-share generate-alias), consolidating messages under
+`common.aliasValidation` (old `reverseShares.modals.alias.validation.*` keys pruned from
+all 23 locales).
 
-**Risk:** Low for auto-generated aliases (62^10 ≈ 8.4×10¹⁷ entropy). Medium if users
-are ever allowed to pick custom aliases. No data loss or security impact.
+**Decisions (user):** min length **5** (compromise vs the TD's suggested 8);
+**no reserved-word blocklist** (aliases are namespaced under `/s/` and `/r/`, no route
+collision); charset **unified to allow hyphens** everywhere. Server-side minting
+(`generateAlias` flag) was **not** done — the security gap is closed by validation;
+single-call minting remains a possible future ergonomics improvement.
 
-**Fix:**
-1. Server: validate alias length ≥ 8, charset `[a-zA-Z0-9]`, reject reserved words list
-2. Ideally: add `generateAlias: true` flag to `createShare` and let server mint the alias
-   in the same transaction (1 API call instead of 2)
+Tests: 16 unit (`aliasSchema`) + 20 `app.inject` integration tests across both endpoints.
 
-**Found during:** Quickshare 9.1 spec review (mai 2026)
-**Severity:** Low — defense-in-depth, no current exploit path
+Commit: `feat(monorepo): TD-18 — unify and harden share/reverse-share alias validation`
 
 ---
 
@@ -312,21 +315,21 @@ after DB delete, orphaned S3 object is acceptable (GC can clean).
 
 ---
 
-## TD-24 — No server-side validation on `auditRetentionDays` (min: 0, if > 0 then >= 7)
+## ~~TD-24 — No server-side validation on `auditRetentionDays` (min: 0, if > 0 then >= 7)~~ ✅ RESOLVED
 
-**Context:** The admin UI shows a help text suggesting 7 days as a minimum retention period,
-but neither the client nor the server enforces this. The `auditRetentionDays` setting accepts
-any integer (including negative values) without rejection.
+Resolved (juin 2026). Introduced a centralized per-config-key validation registry
+(`apps/server/src/modules/config/config-validation.ts`) applied in **both**
+`updateConfig` and `bulkUpdateConfigs` so the single and bulk paths never drift.
+`auditRetentionDays` must be an integer that is either 0 (keep forever) or >= 7;
+invalid values throw a 400 `ValidationError` carrying the offending key in `details`.
 
-**Fix:**
-- Add Zod validation on the `auditRetentionDays` config setting: `z.number().int().min(0)`
-- Add a refinement: if the value is > 0, it must be >= 7 (i.e., values 1–6 are rejected)
-- Return a clear validation error message explaining the constraint
-- Update the admin UI to show an inline validation error rather than just help text
+The settings form's zod resolver gained a `superRefine` mirroring the rule (inline
+field error), with a server-error backstop mapping `VALIDATION_ERROR` (via
+`details.key`) to the same localized message. i18n key added to all 23 locales.
 
-**Found during:** 8.1 Activity Log docs quality review (mai 2026)
-**Severity:** Low — the scheduler uses the value as-is (a value of 1 would delete logs older
-than 1 day), but an admin setting this intentionally low is unlikely in practice
+Tests: 16 unit (`validateConfigValue`) + 10 `app.inject` integration tests.
+
+Commit: `feat(monorepo): TD-24 — validate auditRetentionDays (0 or >= 7 days)`
 
 ---
 
@@ -378,22 +381,23 @@ correct (DB→S3 + S3→DB), soit supprimer et intégrer directement dans la fut
 
 ---
 
-## TD-19 — Hardcoded QR code element ID prevents multiple instances
+## ~~TD-19 — Hardcoded QR code element ID prevents multiple instances~~ ✅ RESOLVED
 
-**Context:** Both `generate-share-link-modal.tsx` and `quick-share-confirmation.tsx`
-use `id="quickshare-qr-code"` / `id="share-qr-code"` to locate the SVG element for
-PNG export (`document.getElementById(...)`). If two instances mount simultaneously
-(e.g., modal + dashboard block), the second getElementById finds the first DOM element.
+Resolved (juin 2026). The hazard turned out to span **7 components** with three
+divergent QR-download implementations. Instead of `useId()`, all were consolidated
+onto a single `useQrDownload` hook + `downloadQrCodeAsPng(svg, filename)` util that
+operates on an **SVG element reference** (via a container `ref` + `querySelector`),
+so there are no global DOM ids at all — multiple instances are inherently safe.
 
-**Used in:**
-- `apps/web/src/components/modals/generate-share-link-modal.tsx`
-- `apps/web/src/app/dashboard/components/quick-share/quick-share-confirmation.tsx`
+Three broken download paths were fixed along the way:
+- `share-item-modal`: cast the QR `<svg>` to `HTMLCanvasElement` and called
+  `toDataURL()` on it (threw at runtime).
+- `share-multiple-items-modal`: queried for a non-existent `<canvas>` child → silent no-op.
+- inline `btoa()` paths broke on non-Latin1 payloads (util now serializes via a Blob URL).
 
-**Fix:** Use `React.useId()` to generate a unique ID per instance and pass it to both
-the `LazyQRCode` `id` prop and the `getElementById` call in the download function.
+Unit tests added for `generateQrFilename` and the hook (null-container / success / failure).
 
-**Found during:** Quickshare 9.1 spec review (mai 2026)
-**Severity:** Very low — no current scenario where both mount at the same time
+Commit: `fix(web): TD-19 — consolidate QR download into shared hook, drop global ids`
 
 ---
 
@@ -519,27 +523,21 @@ was explicitly deferred because reverse shares do not have a recipient model. Th
 
 ---
 
-## TD-31 — Audit PII sweep: `deleteUser` doesn't clean `AuditLog.metadata.emails`
+## ~~TD-31 — Audit PII sweep: `deleteUser` doesn't clean `AuditLog.metadata.emails`~~ ✅ RESOLVED
 
-**Context:** `POST /shares/:shareId/recipients` logs recipient emails in `AuditLog.metadata.emails`
-as plaintext for forensics (see `apps/server/src/modules/share/routes.ts:512-519`). When a user
-is deleted via `deleteUser`, these audit log rows are not swept or redacted. This means a deleted
-user's email can persist in audit metadata indefinitely (subject to `auditRetentionDays`).
+Resolved (juin 2026) via option 2 (redaction). Added `redactEmailFromAuditLogs(email)` to the
+audit service: it narrows candidates with a substring `contains` filter on the JSON `metadata`
+string, then deep-walks each parsed payload and replaces **every exact occurrence** of the email
+— in arrays (`metadata.emails`) or scalar fields (`metadata.email`) — with `[deleted]`,
+preserving counts/actions/ids. `deleteUser` invokes it as a best-effort step (a failure is
+logged but does not turn the already-completed deletion into an error). The `USER_DELETE` event
+no longer logs the deleted email (`targetId` already identifies the user), so the erasure is not
+immediately undone.
 
-**Impact:** GDPR data-subject deletion compliance gap. No impact today (app not in production,
-no real users). The audit retention mechanism partially mitigates this (rows are auto-deleted
-after `auditRetentionDays`), but a request for immediate erasure would not be honored.
+Tests: 7 unit (array/scalar redaction, exact-vs-substring, unparseable metadata, change counting)
++ 3 `app.inject` integration tests on `DELETE /users/:id`.
 
-**Fix:** When `deleteUser` runs, either:
-1. Delete `AuditLog` rows where `metadata` contains the deleted user's email
-2. Or redact the email in `metadata` (replace with `[deleted]`)
-
-Option 2 preserves audit trail structure while removing PII.
-
-**Depends on:** No external dependencies — can be implemented independently.
-
-**Found during:** 8.2 review pass 5 (mai 2026)
-**Severity:** Low — no current users; mitigated by audit retention policy
+Commit: `feat(server): TD-31 — redact deleted user's email from audit metadata (GDPR)`
 
 ---
 
@@ -773,22 +771,64 @@ warnings during Docker builds.
 
 ---
 
-## TD-41 — Optional per-reverse-share cooldown bypass toggle
+## ~~TD-41 — Optional per-reverse-share cooldown bypass toggle~~ ✅ RESOLVED
 
-**Context:** `reverse_share_uploaded` notifications have a 300-second cooldown
-(`cooldownSeconds: 300` in `email/catalog.ts`) to prevent spam from rapid upload sessions.
-The `notifyOnUpload` toggle (TD-34) enables/disables notifications per reverse share but
-intentionally preserves the cooldown (`overridden: false`).
+Resolved (juin 2026). Added `bypassUploadCooldown Boolean @default(false)` to the ReverseShare
+model. `resolveFrequency` Step 3b now returns `overridden: bypassUploadCooldown`, so the 300s
+cooldown is bypassed only when the owner explicitly opts in (and only while `notifyOnUpload` is
+on). DTOs, response schema, and service mapping carry the field through create/update.
 
-Some power users (e.g., receiving batch uploads from automated systems) may want to receive
-a notification for every upload session without the 5-minute throttle. This would require
-a second toggle (e.g., `bypassUploadCooldown`) that only appears when `notifyOnUpload` is
-enabled, and returns `overridden: true` from `resolveFrequency` Step 3b.
+A second toggle appears under "Notify on each upload" in both the create and details modals,
+visible only when notifications are enabled; turning notifications off clears the bypass (the
+details modal's single-field update helper was generalized to a multi-field variant for the
+atomic reset). i18n keys added to all 23 locales.
 
-**Fix:** Add `bypassUploadCooldown` boolean to ReverseShare model (default: `false`).
-In `resolveFrequency` Step 3b, return `overridden: bypassUploadCooldown` instead of
-`overridden: false`. Add conditional toggle in create/details modals (visible only when
-`notifyOnUpload` is on). ~20 lines backend + ~20 lines frontend.
+Tests: 3 `resolveFrequency` cases (bypass true/false, ignored when notify off) + 2 `app.inject`
+integration tests (create round-trip + default).
 
-**Found during:** TD-34 implementation review (mai 2026)
-**Severity:** Very Low — the default cooldown is sensible; bypass is a niche power-user need
+Commit: `feat(monorepo): TD-41 — optional per-reverse-share upload cooldown bypass`
+
+---
+
+## TD-48 — `prisma/migrations/` is stale relative to `schema.prisma`
+
+**Context:** Découvert pendant TD-41. Le dossier `apps/server/prisma/migrations/` s'arrête à
+`20260520083415_add_ldap_support`, alors que de nombreuses colonnes plus récentes existent dans
+`schema.prisma` sans migration correspondante : `reverse_shares.notifyOnUpload`,
+`bypassUploadCooldown`, `backgroundImageId`, `notifiedForExpiring/Expired`,
+`background_images`, etc. Le développement utilise visiblement `prisma db push` (cf.
+`just db-push`), conforme à la règle CLAUDE.md « No incremental migrations ».
+
+**Risque :** Un déploiement qui exécuterait `prisma migrate deploy` (plutôt que `db push`)
+créerait une base **incomplète** (colonnes manquantes → erreurs runtime). Le dossier
+`migrations/` est trompeur : il suggère un workflow migrations qui n'est plus suivi.
+
+**Fix (au choix) :**
+1. Supprimer `prisma/migrations/` et documenter explicitement le workflow `db push`, ou
+2. Régénérer une migration « init » unique à partir du schéma courant (baseline propre), ou
+3. Reprendre un vrai workflow de migrations incrémentales (contraire à CLAUDE.md actuel).
+
+**Found during:** TD-41 (juin 2026)
+**Severity:** Low — aucun impact en dev (`db push`) ; piège potentiel pour un déploiement prod
+ou un nouveau contributeur. À trancher avec la stratégie de déploiement.
+
+---
+
+## TD-49 — Couverture de tests manquante : services `user` et `reverse-share`
+
+**Context:** Découvert pendant TD-31/TD-41. Les modules `user` et `reverse-share` n'avaient
+**aucun** fichier de test de service/route avant cette session (seul `email-service.test.ts`
+référençait `notifyOnUpload`). `deleteUser`, `createReverseShare`, `updateReverseShare`,
+`formatReverseShareResponse`, etc. n'étaient pas couverts — c'est pourquoi l'ajout d'un champ
+requis à `ReverseShareResponseSchema` n'a fait échouer aucun test existant.
+
+Des tests d'intégration ciblés ont été ajoutés pour les flux touchés
+(`alias-validation`, `reverse-share-bypass-cooldown`, `user-delete-pii-redaction`), mais la
+couverture de base de ces deux modules reste lacunaire.
+
+**Fix :** Ajouter des tests de service (repository mocké) pour `user/service.ts` et
+`reverse-share/service.ts` couvrant create/update/delete + le formatage des réponses
+(parsing strict des schémas Zod).
+
+**Found during:** TD-31 / TD-41 (juin 2026)
+**Severity:** Low — pas de bug connu, mais une régression sur ces chemins passerait inaperçue.

@@ -176,7 +176,13 @@
     "copy": "Копировать",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "дней"
+    "days": "дней",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "Создать общий доступ",
@@ -1237,12 +1243,6 @@
         "updating": "Обновление...",
         "create": "Создать псевдоним",
         "update": "Обновить псевдоним",
-        "validation": {
-          "required": "Псевдоним обязателен",
-          "minLength": "Псевдоним должен содержать минимум 3 символа",
-          "maxLength": "Псевдоним должен содержать максимум 50 символов",
-          "pattern": "Псевдоним может содержать только буквы, цифры, дефисы и подчеркивания"
-        },
         "help": "3-50 символов. Пробелы будут автоматически заменены на дефисы."
       },
       "password": {
@@ -1393,7 +1393,9 @@
         "description": "Настройка, если должно быть показано поле имени загрузчика и если оно требуется"
       },
       "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences."
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
+      "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
     "messages": {
       "created": "Ссылка для получения успешно создана!",
@@ -1724,7 +1726,8 @@
     "errors": {
       "loadFailed": "Ошибка загрузки настроек",
       "updateFailed": "Ошибка обновления настроек",
-      "passwordAuthRequiresProvider": "Парольную аутентификацию нельзя отключить, если нет хотя бы одного активного поставщика аутентификации"
+      "passwordAuthRequiresProvider": "Парольную аутентификацию нельзя отключить, если нет хотя бы одного активного поставщика аутентификации",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "Изменений для сохранения нет",

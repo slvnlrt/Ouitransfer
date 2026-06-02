@@ -180,7 +180,13 @@
     "copied": "کپی شد",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "روز"
+    "days": "روز",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "ایجاد اشتراک",
@@ -1241,12 +1247,6 @@
         "updating": "در حال به‌روزرسانی...",
         "create": "ایجاد نام مستعار",
         "update": "به‌روزرسانی نام مستعار",
-        "validation": {
-          "required": "نام مستعار الزامی است",
-          "minLength": "نام مستعار باید حداقل ۳ کاراکتر باشد",
-          "maxLength": "نام مستعار باید حداکثر ۵۰ کاراکتر باشد",
-          "pattern": "نام مستعار فقط می‌تواند شامل حروف، اعداد، خط تیره و زیرخط باشد"
-        },
         "help": "۳ تا ۵۰ کاراکتر. فاصله‌ها به‌صورت خودکار به خط تیره تبدیل می‌شوند."
       },
       "password": {
@@ -1397,7 +1397,9 @@
       },
       "notifyOnUpload": "Notify me on each upload",
       "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
-      "submit": "ایجاد لینک دریافت"
+      "submit": "ایجاد لینک دریافت",
+      "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
+      "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
     "messages": {
       "created": "لینک دریافت با موفقیت ایجاد شد!",
@@ -1728,7 +1730,8 @@
     "errors": {
       "loadFailed": "بارگذاری تنظیمات ناموفق بود",
       "updateFailed": "به‌روزرسانی تنظیمات ناموفق بود",
-      "passwordAuthRequiresProvider": "نمی‌توان احراز هویت با گذرواژه را بدون داشتن حداقل یک ارائه‌دهنده احراز هویت فعال غیرفعال کرد"
+      "passwordAuthRequiresProvider": "نمی‌توان احراز هویت با گذرواژه را بدون داشتن حداقل یک ارائه‌دهنده احراز هویت فعال غیرفعال کرد",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "تغییری برای ذخیره وجود ندارد",

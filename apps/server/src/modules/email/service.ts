@@ -395,14 +395,17 @@ class EmailService {
         }
       }
 
-      // Step 3b: notifyOnUpload (only for reverse_share_uploaded)
+      // Step 3b: notifyOnUpload (only for reverse_share_uploaded).
+      // overridden mirrors bypassUploadCooldown: when the owner opted into
+      // bypassing the throttle, every upload session notifies immediately;
+      // otherwise the catalog cooldown still applies (notify, but throttled).
       if (type === "reverse_share_uploaded") {
         const reverseShare = await prisma.reverseShare.findUnique({
           where: { id: shareId },
-          select: { notifyOnUpload: true },
+          select: { notifyOnUpload: true, bypassUploadCooldown: true },
         });
         if (reverseShare?.notifyOnUpload) {
-          return { frequency: "immediate", overridden: false };
+          return { frequency: "immediate", overridden: reverseShare.bypassUploadCooldown };
         }
       }
     }

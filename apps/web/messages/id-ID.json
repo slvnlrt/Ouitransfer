@@ -180,7 +180,13 @@
     "copied": "Disalin",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "hari"
+    "days": "hari",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "Buat Berbagi",
@@ -1241,12 +1247,6 @@
         "updating": "Memperbarui...",
         "create": "Buat Alias",
         "update": "Perbarui Alias",
-        "validation": {
-          "required": "Alias wajib diisi",
-          "minLength": "Alias harus minimal 3 karakter",
-          "maxLength": "Alias harus maksimal 50 karakter",
-          "pattern": "Alias hanya boleh berisi huruf, angka, tanda hubung dan garis bawah"
-        },
         "help": "3-50 karakter. Spasi akan otomatis diubah menjadi tanda hubung."
       },
       "password": {
@@ -1397,7 +1397,9 @@
       },
       "notifyOnUpload": "Notify me on each upload",
       "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
-      "submit": "Buat Tautan Terima"
+      "submit": "Buat Tautan Terima",
+      "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
+      "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
     "messages": {
       "created": "Tautan terima berhasil dibuat!",
@@ -1728,7 +1730,8 @@
     "errors": {
       "loadFailed": "Gagal memuat pengaturan",
       "updateFailed": "Gagal memperbarui pengaturan",
-      "passwordAuthRequiresProvider": "Tidak dapat menonaktifkan autentikasi kata sandi tanpa memiliki setidaknya satu penyedia autentikasi aktif"
+      "passwordAuthRequiresProvider": "Tidak dapat menonaktifkan autentikasi kata sandi tanpa memiliki setidaknya satu penyedia autentikasi aktif",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "Tidak ada perubahan untuk disimpan",

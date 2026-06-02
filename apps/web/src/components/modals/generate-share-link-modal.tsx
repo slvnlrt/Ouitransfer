@@ -2,7 +2,7 @@
 
 import { Copy, Download } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,8 +15,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { LazyQRCode } from "@/components/ui/lazy-qr-code";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+import { useQrDownload } from "@/hooks/use-qr-download";
 import type { Share } from "@/http/endpoints/shares/types";
 import { customNanoid } from "@/lib/utils";
+import { ALIAS_MAX_LENGTH, ALIAS_MIN_LENGTH, getAliasValidationError } from "@/utils/alias";
+import { generateQrFilename } from "@/utils/qr-download";
 
 interface GenerateShareLinkModalProps {
   shareId: string | null;
@@ -38,11 +41,12 @@ export function GenerateShareLinkModal({
 }: GenerateShareLinkModalProps) {
   const t = useTranslations();
   const { copy } = useCopyToClipboard();
+  const qrContainerRef = useRef<HTMLDivElement>(null);
+  const { isDownloading, downloadQr } = useQrDownload();
   const [alias, setAlias] = useState(() => generateCustomId());
   const [isLoading, setIsLoading] = useState(false);
   const [generatedLink, setGeneratedLink] = useState("");
   const [isEdit, setIsEdit] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     if (shareId && share?.alias?.alias) {
@@ -54,6 +58,14 @@ export function GenerateShareLinkModal({
     }
     setGeneratedLink("");
   }, [shareId, share]);
+
+  const aliasErrorKey = getAliasValidationError(alias);
+  const aliasError = aliasErrorKey
+    ? t(`common.aliasValidation.${aliasErrorKey}`, {
+        min: ALIAS_MIN_LENGTH,
+        max: ALIAS_MAX_LENGTH,
+      })
+    : null;
 
   const handleGenerate = async () => {
     if (!shareId) return;
@@ -80,53 +92,6 @@ export function GenerateShareLinkModal({
     }
   };
 
-  const downloadQRCode = () => {
-    setIsDownloading(true);
-
-    // Get the SVG element
-    const svg = document.getElementById("share-link-qr-code");
-    if (!svg) {
-      setIsDownloading(false);
-      return;
-    }
-
-    // Create a canvas
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    // Set dimensions (with some padding)
-    const padding = 20;
-    canvas.width = 256 + padding * 2;
-    canvas.height = 256 + padding * 2;
-
-    // Fill white background
-    if (ctx) {
-      ctx.fillStyle = "#FFFFFF";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Convert SVG to data URL
-      const svgData = new XMLSerializer().serializeToString(svg);
-      const img = new Image();
-
-      img.onload = () => {
-        // Draw the image in the center of the canvas with padding
-        ctx.drawImage(img, padding, padding, 256, 256);
-
-        // Create a download link
-        const link = document.createElement("a");
-        link.download = `${share?.name?.replace(/[^a-z0-9]/gi, "-").toLowerCase() || "share"}-qr-code.png`;
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-
-        setIsDownloading(false);
-      };
-
-      img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
-    } else {
-      setIsDownloading(false);
-    }
-  };
-
   return (
     <Dialog open={!!shareId} onOpenChange={() => onClose()}>
       <DialogContent className="sm:max-w-md">
@@ -146,7 +111,9 @@ export function GenerateShareLinkModal({
               placeholder={t("generateShareLink.aliasPlaceholder")}
               value={alias}
               onChange={(e) => setAlias(e.target.value)}
+              aria-invalid={aliasError !== null}
             />
+            {aliasError && <p className="text-sm text-destructive">{aliasError}</p>}
           </div>
         ) : (
           <div className="space-y-6">
@@ -157,9 +124,8 @@ export function GenerateShareLinkModal({
               })}
             </p>
             <div className="flex flex-col items-center justify-center">
-              <div className="p-4 bg-card rounded-lg">
+              <div ref={qrContainerRef} className="p-4 bg-card rounded-lg">
                 <LazyQRCode
-                  id="share-link-qr-code"
                   value={generatedLink}
                   size={200}
                   level="H"
@@ -184,7 +150,10 @@ export function GenerateShareLinkModal({
             </div>
 
             <DialogFooter>
-              <Button onClick={downloadQRCode} disabled={isDownloading}>
+              <Button
+                onClick={() => downloadQr(qrContainerRef.current, generateQrFilename(share?.name))}
+                disabled={isDownloading}
+              >
                 <Download className="h-4 w-4" />
                 {t("qrCodeModal.download")}
               </Button>
@@ -193,7 +162,7 @@ export function GenerateShareLinkModal({
         )}
         {!generatedLink && (
           <DialogFooter>
-            <Button disabled={!alias || isLoading} onClick={handleGenerate}>
+            <Button disabled={!alias || isLoading || aliasError !== null} onClick={handleGenerate}>
               {isEdit ? t("generateShareLink.updateButton") : t("generateShareLink.generateButton")}
             </Button>
           </DialogFooter>

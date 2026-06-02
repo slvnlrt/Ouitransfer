@@ -47,6 +47,7 @@ function buildPayload(formData: CreateReverseShareFormData): CreateReverseShareB
     nameFieldRequired: formData.nameFieldRequired,
     emailFieldRequired: formData.emailFieldRequired,
     notifyOnUpload: formData.notifyOnUpload,
+    bypassUploadCooldown: formData.notifyOnUpload ? formData.bypassUploadCooldown : false,
   };
 
   if (formData.description?.trim()) {
@@ -89,6 +90,7 @@ export function CreateReverseShareModal({
 }: CreateReverseShareModalProps) {
   const t = useTranslations();
   const notifyUploadSwitchId = useId();
+  const bypassCooldownSwitchId = useId();
 
   const form = useForm<CreateReverseShareFormData>({
     defaultValues: DEFAULT_FORM_VALUES,
@@ -171,6 +173,25 @@ export function CreateReverseShareModal({
                 <p className="text-xs text-muted-foreground ps-9">
                   {t("reverseShares.form.notifyOnUploadHelp")}
                 </p>
+                {form.watch("notifyOnUpload") && (
+                  <div className="space-y-1 ps-9 pt-2">
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={form.watch("bypassUploadCooldown")}
+                        onCheckedChange={(checked) =>
+                          form.setValue("bypassUploadCooldown", checked)
+                        }
+                        id={bypassCooldownSwitchId}
+                      />
+                      <Label htmlFor={bypassCooldownSwitchId}>
+                        {t("reverseShares.form.bypassUploadCooldown")}
+                      </Label>
+                    </div>
+                    <p className="text-xs text-muted-foreground ps-9">
+                      {t("reverseShares.form.bypassUploadCooldownHelp")}
+                    </p>
+                  </div>
+                )}
               </div>
 
               <DialogFooter className="gap-2">

@@ -180,7 +180,13 @@
     "copied": "Скопійовано",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "днів"
+    "days": "днів",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "Створити спільний доступ",
@@ -1241,12 +1247,6 @@
         "updating": "Оновлення...",
         "create": "Створити псевдонім",
         "update": "Оновити псевдонім",
-        "validation": {
-          "required": "Псевдонім обов'язковий",
-          "minLength": "Псевдонім має бути щонайменше 3 символи",
-          "maxLength": "Псевдонім має бути не більше 50 символів",
-          "pattern": "Псевдонім може містити лише літери, цифри, дефіси та підкреслення"
-        },
         "help": "3-50 символів. Пробіли будуть автоматично перетворені на дефіси."
       },
       "password": {
@@ -1397,7 +1397,9 @@
       },
       "notifyOnUpload": "Notify me on each upload",
       "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
-      "submit": "Створити посилання для отримання"
+      "submit": "Створити посилання для отримання",
+      "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
+      "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
     "messages": {
       "created": "Посилання для отримання створено успішно!",
@@ -1728,7 +1730,8 @@
     "errors": {
       "loadFailed": "Не вдалося завантажити налаштування",
       "updateFailed": "Не вдалося оновити налаштування",
-      "passwordAuthRequiresProvider": "Неможливо вимкнути автентифікацію паролем без принаймні одного активного постачальника автентифікації"
+      "passwordAuthRequiresProvider": "Неможливо вимкнути автентифікацію паролем без принаймні одного активного постачальника автентифікації",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "Немає змін для збереження",

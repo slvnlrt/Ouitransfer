@@ -4,6 +4,7 @@ import { z } from "zod";
 import { env } from "../../env.js";
 import { FieldRequirement } from "../../generated/prisma/client.js";
 import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
+import { aliasSchema } from "../../shared/alias-schema.js";
 import { prisma } from "../../shared/prisma.js";
 import {
   ForbiddenError,
@@ -565,11 +566,7 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         shareId: z.string().describe("The share ID"),
       }),
       body: z.object({
-        alias: z
-          .string()
-          .regex(/^[a-zA-Z0-9]+$/, "Alias must contain only letters and numbers")
-          .min(3, "Alias must be at least 3 characters long")
-          .max(30, "Alias must not exceed 30 characters"),
+        alias: aliasSchema,
       }),
       response: {
         200: z.object({

@@ -38,6 +38,7 @@ export interface BaseReverseShare {
   nameFieldRequired: string;
   emailFieldRequired: string;
   notifyOnUpload: boolean;
+  bypassUploadCooldown: boolean;
   backgroundImageId: string | null;
   createdAt: string;
   updatedAt: string;
@@ -115,6 +116,7 @@ export interface CreateReverseShareBody {
   nameFieldRequired?: FieldRequirement;
   emailFieldRequired?: FieldRequirement;
   notifyOnUpload?: boolean;
+  bypassUploadCooldown?: boolean;
 }
 
 export interface UpdateReverseShareBody {
@@ -132,6 +134,7 @@ export interface UpdateReverseShareBody {
   nameFieldRequired?: FieldRequirement;
   emailFieldRequired?: FieldRequirement;
   notifyOnUpload?: boolean;
+  bypassUploadCooldown?: boolean;
 }
 
 export interface UpdateReverseSharePasswordBody {

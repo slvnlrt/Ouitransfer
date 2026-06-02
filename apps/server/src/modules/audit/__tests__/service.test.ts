@@ -6,10 +6,16 @@ vi.mock("../../../shared/prisma.js", () => ({
       create: vi.fn(),
       findMany: vi.fn(),
       count: vi.fn(),
+      update: vi.fn(),
     },
     $executeRawUnsafe: vi.fn(),
   },
 }));
+
+vi.mock("../../../utils/logger.js", () => {
+  const logger = { info: vi.fn(), warn: vi.fn(), error: vi.fn() };
+  return { getLogger: vi.fn(() => logger) };
+});
 
 import { prisma } from "../../../shared/prisma.js";
 import {
@@ -19,6 +25,8 @@ import {
   exportAuditLogs,
   getAuditLogs,
   logAuditEvent,
+  REDACTED_EMAIL,
+  redactEmailFromAuditLogs,
 } from "../service.js";
 
 // Helper to collect an async generator into an array
@@ -293,6 +301,100 @@ describe("Audit service", () => {
 
     it("AuditTargetTypeSchema rejects unknown types", () => {
       expect(() => AuditTargetTypeSchema.parse("invalid_type")).toThrow();
+    });
+  });
+
+  describe("redactEmailFromAuditLogs", () => {
+    const EMAIL = "victim@example.com";
+
+    it("returns 0 and queries nothing for an empty email", async () => {
+      const result = await redactEmailFromAuditLogs("");
+      expect(result).toBe(0);
+      expect(prisma.auditLog.findMany).not.toHaveBeenCalled();
+    });
+
+    it("narrows candidates with a substring filter on metadata", async () => {
+      vi.mocked(prisma.auditLog.findMany).mockResolvedValue([]);
+
+      await redactEmailFromAuditLogs(EMAIL);
+
+      expect(prisma.auditLog.findMany).toHaveBeenCalledWith({
+        where: { metadata: { contains: EMAIL } },
+        select: { id: true, metadata: true },
+      });
+    });
+
+    it("redacts the email inside a recipients array, preserving other entries", async () => {
+      vi.mocked(prisma.auditLog.findMany).mockResolvedValue([
+        {
+          id: "log-1",
+          metadata: JSON.stringify({ count: 2, emails: [EMAIL, "other@example.com"] }),
+        },
+      ] as never);
+      vi.mocked(prisma.auditLog.update).mockResolvedValue({} as never);
+
+      const result = await redactEmailFromAuditLogs(EMAIL);
+
+      expect(result).toBe(1);
+      expect(prisma.auditLog.update).toHaveBeenCalledWith({
+        where: { id: "log-1" },
+        data: {
+          metadata: JSON.stringify({ count: 2, emails: [REDACTED_EMAIL, "other@example.com"] }),
+        },
+      });
+    });
+
+    it("redacts a scalar email field anywhere in the metadata", async () => {
+      vi.mocked(prisma.auditLog.findMany).mockResolvedValue([
+        { id: "log-2", metadata: JSON.stringify({ email: EMAIL, userId: "u-1" }) },
+      ] as never);
+      vi.mocked(prisma.auditLog.update).mockResolvedValue({} as never);
+
+      const result = await redactEmailFromAuditLogs(EMAIL);
+
+      expect(result).toBe(1);
+      expect(prisma.auditLog.update).toHaveBeenCalledWith({
+        where: { id: "log-2" },
+        data: { metadata: JSON.stringify({ email: REDACTED_EMAIL, userId: "u-1" }) },
+      });
+    });
+
+    it("does not redact substring (non-exact) matches", async () => {
+      // "victim@example.com" is a substring of "joanvictim@example.com" so the
+      // contains filter returns the row, but the value is not an exact match.
+      vi.mocked(prisma.auditLog.findMany).mockResolvedValue([
+        { id: "log-3", metadata: JSON.stringify({ emails: [`joan${EMAIL}`] }) },
+      ] as never);
+
+      const result = await redactEmailFromAuditLogs(EMAIL);
+
+      expect(result).toBe(0);
+      expect(prisma.auditLog.update).not.toHaveBeenCalled();
+    });
+
+    it("skips unparseable metadata without throwing", async () => {
+      vi.mocked(prisma.auditLog.findMany).mockResolvedValue([
+        { id: "log-4", metadata: "not-json" },
+        { id: "log-5", metadata: null },
+      ] as never);
+
+      const result = await redactEmailFromAuditLogs(EMAIL);
+
+      expect(result).toBe(0);
+      expect(prisma.auditLog.update).not.toHaveBeenCalled();
+    });
+
+    it("counts only rows that actually changed", async () => {
+      vi.mocked(prisma.auditLog.findMany).mockResolvedValue([
+        { id: "log-6", metadata: JSON.stringify({ emails: [EMAIL] }) },
+        { id: "log-7", metadata: JSON.stringify({ note: `mailto:${EMAIL}` }) }, // substring, no exact match
+      ] as never);
+      vi.mocked(prisma.auditLog.update).mockResolvedValue({} as never);
+
+      const result = await redactEmailFromAuditLogs(EMAIL);
+
+      expect(result).toBe(1);
+      expect(prisma.auditLog.update).toHaveBeenCalledTimes(1);
     });
   });
 });

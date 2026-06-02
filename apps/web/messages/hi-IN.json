@@ -176,7 +176,13 @@
     "copy": "कॉपी करें",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "दिन"
+    "days": "दिन",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    }
   },
   "createShare": {
     "title": "साझाकरण बनाएं",
@@ -1237,12 +1243,6 @@
         "updating": "अपडेट हो रहा है...",
         "create": "उपनाम बनाएं",
         "update": "उपनाम अपडेट करें",
-        "validation": {
-          "required": "उपनाम आवश्यक है",
-          "minLength": "उपनाम कम से कम 3 अक्षर का होना चाहिए",
-          "maxLength": "उपनाम अधिकतम 50 अक्षर का हो सकता है",
-          "pattern": "उपनाम में केवल अक्षर, संख्याएं, हाइफन और अंडरस्कोर हो सकते हैं"
-        },
         "help": "3-50 अक्षर। स्पेस स्वचालित रूप से हाइफन में बदल जाएंगे।"
       },
       "password": {
@@ -1393,7 +1393,9 @@
         "description": "कॉन्फ़िगर करें कि क्या अपलोडर नाम फ़ील्ड दिखाया जाना चाहिए और यदि आवश्यक है"
       },
       "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences."
+      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
+      "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
     "messages": {
       "created": "प्राप्ति लिंक सफलतापूर्वक बनाया गया!",
@@ -1724,7 +1726,8 @@
     "errors": {
       "loadFailed": "सेटिंग्स लोड करने में विफल",
       "updateFailed": "सेटिंग्स अपडेट करने में विफल",
-      "passwordAuthRequiresProvider": "कम से कम एक सक्रिय प्रमाणीकरण प्रदाता के बिना पासवर्ड प्रमाणीकरण अक्षम नहीं किया जा सकता"
+      "passwordAuthRequiresProvider": "कम से कम एक सक्रिय प्रमाणीकरण प्रदाता के बिना पासवर्ड प्रमाणीकरण अक्षम नहीं किया जा सकता",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
     },
     "messages": {
       "noChanges": "सहेजने के लिए कोई परिवर्तन नहीं",

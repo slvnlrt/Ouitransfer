@@ -1,5 +1,6 @@
 import { prisma } from "../../shared/prisma.js";
 import { ForbiddenError, NotFoundError } from "../../utils/app-error.js";
+import { validateConfigValue } from "../config/config-validation.js";
 import { getConfigValue, validatePasswordAuthDisable } from "../config/service.js";
 
 export class AppService {
@@ -58,6 +59,8 @@ export class AppService {
   }
 
   async updateConfig(key: string, value: string) {
+    validateConfigValue(key, value);
+
     if (key === "passwordAuthEnabled") {
       if (value === "false") {
         const canDisable = await validatePasswordAuthDisable();
@@ -86,6 +89,10 @@ export class AppService {
   }
 
   async bulkUpdateConfigs(updates: Array<{ key: string; value: string }>) {
+    for (const update of updates) {
+      validateConfigValue(update.key, update.value);
+    }
+
     const passwordAuthUpdate = updates.find((update) => update.key === "passwordAuthEnabled");
     if (passwordAuthUpdate && passwordAuthUpdate.value === "false") {
       const canDisable = await validatePasswordAuthDisable();

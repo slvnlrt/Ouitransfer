@@ -2,7 +2,7 @@
 
 import { Calendar, Copy, Download, Eye, Link, Lock, Share } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { FileItem, FolderItem } from "@/components/tables/files-table-types";
 import { Button } from "@/components/ui/button";
@@ -19,9 +19,11 @@ import { LazyQRCode } from "@/components/ui/lazy-qr-code";
 import { Loader } from "@/components/ui/loader";
 import { Switch } from "@/components/ui/switch";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+import { useQrDownload } from "@/hooks/use-qr-download";
 import { createShare, createShareAlias, listFiles, listFolders } from "@/http/endpoints";
 import { logger } from "@/lib/logger";
 import { customNanoid } from "@/lib/utils";
+import { ALIAS_MAX_LENGTH, ALIAS_MIN_LENGTH, getAliasValidationError } from "@/utils/alias";
 import { SharePrivacySection } from "./share-privacy-section";
 
 type ShareFile = Pick<
@@ -47,6 +49,8 @@ const generateCustomId = () =>
 export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: ShareItemModalProps) {
   const t = useTranslations();
   const { copy } = useCopyToClipboard();
+  const qrContainerRef = useRef<HTMLDivElement>(null);
+  const { isDownloading, downloadQr } = useQrDownload();
   const [step, setStep] = useState<"create" | "link">("create");
   const [shareId, setShareId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -64,6 +68,11 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
   const [alias, setAlias] = useState(() => generateCustomId());
   const [generatedLink, setGeneratedLink] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const aliasErrorKey = getAliasValidationError(alias);
+  const aliasError = aliasErrorKey
+    ? t(`common.aliasValidation.${aliasErrorKey}`, { min: ALIAS_MIN_LENGTH, max: ALIAS_MAX_LENGTH })
+    : null;
 
   const item = file || folder;
   const itemType = file ? "file" : "folder";
@@ -194,18 +203,6 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
     const ok = await copy(generatedLink);
     if (ok) {
       toast.success(t("generateShareLink.copied"));
-    }
-  };
-
-  const downloadQRCode = () => {
-    const canvas = document.getElementById("share-item-qr-code") as HTMLCanvasElement;
-    if (canvas) {
-      const link = document.createElement("a");
-      link.download = `share-${itemType}-qr-code.png`;
-      link.href = canvas.toDataURL("image/png");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
     }
   };
 
@@ -361,16 +358,16 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
                     placeholder={t("shareActions.aliasPlaceholder")}
                     value={alias}
                     onChange={(e) => setAlias(e.target.value)}
+                    aria-invalid={aliasError !== null}
                   />
+                  {aliasError && <p className="text-sm text-destructive">{aliasError}</p>}
                 </div>
               </>
             ) : (
               <>
                 <div className="flex flex-col items-center justify-center">
-                  <div className="p-4 bg-card rounded-lg">
-                    <svg style={{ display: "none" }} /> {/* For SSR safety */}
+                  <div ref={qrContainerRef} className="p-4 bg-card rounded-lg">
                     <LazyQRCode
-                      id="share-item-qr-code"
                       value={generatedLink}
                       size={250}
                       level="H"
@@ -420,7 +417,10 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
               <Button variant="outline" onClick={() => setStep("create")}>
                 {t("common.back")}
               </Button>
-              <Button disabled={!alias || isLoading} onClick={handleGenerateLink}>
+              <Button
+                disabled={!alias || isLoading || aliasError !== null}
+                onClick={handleGenerateLink}
+              >
                 {isLoading ? <Loader size="sm" /> : t("shareActions.generateLink")}
               </Button>
             </>
@@ -431,7 +431,10 @@ export function ShareItemModal({ isOpen, file, folder, onClose, onSuccess }: Sha
               <Button variant="outline" onClick={handleSuccess}>
                 {t("common.close")}
               </Button>
-              <Button onClick={downloadQRCode}>
+              <Button
+                onClick={() => downloadQr(qrContainerRef.current, `share-${itemType}-qr-code.png`)}
+                disabled={isDownloading}
+              >
                 <Download className="h-4 w-4" />
                 {t("qrCodeModal.download")}
               </Button>

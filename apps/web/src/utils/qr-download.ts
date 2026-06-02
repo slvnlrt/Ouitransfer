@@ -1,22 +1,20 @@
 /**
- * Downloads a QR code SVG element as a PNG image.
+ * Downloads a QR code SVG element as a high-resolution PNG image.
  *
- * Converts an SVG element to a canvas-rendered PNG with white padding,
- * then triggers a download via a temporary anchor element.
+ * Converts the given SVG element to a canvas-rendered PNG with a white quiet
+ * zone, then triggers a download via a temporary anchor element. Because it
+ * operates on an SVG element reference (not a global DOM id), it is inherently
+ * safe to render multiple QR codes on the same page.
+ *
+ * The SVG is serialized through a Blob URL (rather than a base64 data URI) so
+ * that QR payloads containing non-Latin1 characters do not break `btoa`.
  */
-export function downloadQrCodeAsPng(svgElementId: string, filename: string): Promise<void> {
+export function downloadQrCodeAsPng(svg: SVGElement, filename: string, size = 1024): Promise<void> {
   return new Promise((resolve, reject) => {
-    const svg = document.getElementById(svgElementId);
-    if (!svg) {
-      reject(new Error(`SVG element with id "${svgElementId}" not found`));
-      return;
-    }
-
-    const padding = 20;
-    const qrSize = 200;
+    const padding = Math.round(size * 0.1);
     const canvas = document.createElement("canvas");
-    canvas.width = qrSize + padding * 2;
-    canvas.height = qrSize + padding * 2;
+    canvas.width = size + padding * 2;
+    canvas.height = size + padding * 2;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) {
@@ -33,7 +31,7 @@ export function downloadQrCodeAsPng(svgElementId: string, filename: string): Pro
     const img = new Image();
 
     img.onload = () => {
-      ctx.drawImage(img, padding, padding, qrSize, qrSize);
+      ctx.drawImage(img, padding, padding, size, size);
       URL.revokeObjectURL(url);
 
       const link = document.createElement("a");
@@ -55,8 +53,10 @@ export function downloadQrCodeAsPng(svgElementId: string, filename: string): Pro
 
 /**
  * Generates a safe filename for QR code downloads.
+ *
+ * Falls back to `fallback` (default `"share"`) when no usable name is provided.
  */
-export function generateQrFilename(name: string | undefined | null): string {
-  const safeName = name?.replace(/[^a-z0-9]/gi, "-").toLowerCase() || "share";
+export function generateQrFilename(name: string | undefined | null, fallback = "share"): string {
+  const safeName = name?.replace(/[^a-z0-9]/gi, "-").toLowerCase() || fallback;
   return `${safeName}-qr-code.png`;
 }

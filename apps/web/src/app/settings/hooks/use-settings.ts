@@ -16,15 +16,39 @@ import { queryKeys } from "@/lib/query-keys";
 import { parseApiError } from "@/utils/api-error";
 import type { Config, ConfigType, GroupFormData } from "../types";
 
-const createSchemas = () => ({
-  settingsSchema: z.object({
-    configs: z.record(z.string()),
-  }),
+type TranslateFn = ReturnType<typeof useTranslations>;
+
+/**
+ * Validates the audit retention value, mirroring the server-side rule in
+ * config-validation.ts: an integer that is either 0 (keep forever) or >= 7 days.
+ */
+function isValidAuditRetention(raw: string): boolean {
+  const value = raw.trim();
+  if (value === "") return false;
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed >= 0 && (parsed === 0 || parsed >= 7);
+}
+
+const createSchemas = (t: TranslateFn) => ({
+  settingsSchema: z
+    .object({
+      configs: z.record(z.string()),
+    })
+    .superRefine((data, ctx) => {
+      const auditRetention = data.configs.auditRetentionDays;
+      if (auditRetention !== undefined && !isValidAuditRetention(auditRetention)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["configs", "auditRetentionDays"],
+          message: t("settings.errors.auditRetentionInvalid"),
+        });
+      }
+    }),
 });
 
 export function useSettings() {
   const t = useTranslations();
-  const { settingsSchema } = createSchemas();
+  const { settingsSchema } = createSchemas(t);
   const [isLoading, setIsLoading] = useState(true);
   const [configs, setConfigs] = useState<Record<string, string>>({});
   const [groupedConfigs, setGroupedConfigs] = useState<Record<string, Config[]>>({});
@@ -186,6 +210,11 @@ export function useSettings() {
       const apiError = parseApiError(error);
       if (apiError.isNetworkError) {
         toast.error(t("errors.networkError"));
+      } else if (
+        apiError.code === ErrorCodes.VALIDATION_ERROR &&
+        apiError.details?.key === "auditRetentionDays"
+      ) {
+        toast.error(t("settings.errors.auditRetentionInvalid"));
       } else if (
         apiError.code === ErrorCodes.VALIDATION_ERROR &&
         (apiError.message.includes("password authentication") ||
