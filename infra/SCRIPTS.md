@@ -17,7 +17,7 @@ Ouitransfer runs as 3 containers via Docker Compose:
 | `Dockerfile`            | Multi-target build (server-runner, web-runner). Server uses `pnpm deploy` for flat node_modules. Web uses Next.js standalone with `outputFileTracingRoot` for monorepo. |
 | `docker-compose.yaml`   | 3-service orchestration (production, uses GHCR images) |
 | `docker-compose.ci.yml` | CI overlay: adds `build:` directives + test env vars (secrets, CORS). Use `-f docker-compose.yaml -f docker-compose.ci.yml` for local builds and all `just docker-*` recipes. |
-| `server-start.sh`       | Server entrypoint (DB setup via `prisma db push`, privilege drop) |
+| `server-start.sh`       | Server entrypoint (DB setup via `prisma migrate deploy` + WAL-safe pre-migrate backup, privilege drop) |
 | `.env.example`          | Environment variable reference                    |
 
 ## Common Commands

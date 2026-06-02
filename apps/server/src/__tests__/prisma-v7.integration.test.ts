@@ -30,8 +30,12 @@ import { globalErrorHandler } from "../utils/error-handler.js";
 
 // ── File-level setup: ensure the database schema exists ─────────────────────
 // This is the only test file that uses the real database (not mocked).
-// In CI, no `prisma migrate deploy` runs before tests, so we push the schema
-// here to guarantee the tables exist.
+// We use `db push` here purely as TEST SCAFFOLDING to materialise the schema on
+// whatever DB the test points at — independent of migration history, so it works
+// whether the dev DB was created by migrations or pre-dates them. This is NOT the
+// app's dev/prod workflow (that path uses `prisma migrate dev` / `migrate deploy`
+// at boot — see TD-48); `migrate deploy` is intentionally avoided here because it
+// raises P3005 on a non-empty DB that has no `_prisma_migrations` table.
 const SERVER_DIR = resolve(import.meta.dirname!, "..", "..");
 
 beforeAll(() => {

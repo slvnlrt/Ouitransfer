@@ -54,6 +54,28 @@ describe("backupDatabase", () => {
     restored.close();
     expect(count.n).toBe(3);
   });
+
+  it("captures committed rows still sitting in the -wal file (not yet checkpointed)", async () => {
+    const dbPath = join(dir, "ouitransfer.db");
+    // Keep a writer open with autocheckpoint disabled so the committed rows stay
+    // in the -wal sidecar (the exact scenario the script's wal_checkpoint guards).
+    const writer = new Database(dbPath);
+    writer.pragma("journal_mode = WAL");
+    writer.pragma("wal_autocheckpoint = 0");
+    writer.exec("CREATE TABLE t (id INTEGER PRIMARY KEY)");
+    const insert = writer.prepare("INSERT INTO t (id) VALUES (?)");
+    for (let i = 1; i <= 5; i++) insert.run(i);
+    // Rows are committed but live in the -wal file, not yet folded into the main db.
+    expect(existsSync(`${dbPath}-wal`)).toBe(true);
+
+    const { backupPath } = await backupDatabase(dbPath);
+    writer.close();
+
+    const restored = new Database(backupPath, { readonly: true });
+    const count = restored.prepare("SELECT count(*) AS n FROM t").get() as { n: number };
+    restored.close();
+    expect(count.n).toBe(5);
+  });
 });
 
 describe("pruneBackups", () => {
