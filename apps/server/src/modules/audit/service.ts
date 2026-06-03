@@ -106,6 +106,7 @@ const AUDIT_ACTIONS = [
   "ACCOUNT_FILES_CLEANED",
   "ORPHAN_S3_DELETED",
   "ORPHAN_DB_DELETED",
+  "QUOTA_FILES_DELETED",
 ] as const;
 
 export const AuditActionSchema = z.enum(AUDIT_ACTIONS);

@@ -5,6 +5,8 @@ import { logAuditEvent } from "../audit/service.js";
 import { t } from "../email/i18n/loader.js";
 import { emailService } from "../email/service.js";
 import { buildReverseShareManageUrl, buildShareManageUrl } from "../email/url-builder.js";
+import type { DeletionCandidateFile } from "../quota/repository.js";
+import { quotaService } from "../quota/service.js";
 import { ReverseShareRepository } from "../reverse-share/repository.js";
 import { AUTO_DELETABLE_REASONS, deactivationFields } from "../share/lifecycle.js";
 
@@ -65,7 +67,7 @@ function emptyDeactivationSummary(): DeactivationSummary {
  */
 async function resolveReason(
   locale: string,
-  kind: "expired" | "viewLimitReached" | "accountDeactivated",
+  kind: "expired" | "viewLimitReached" | "accountDeactivated" | "quotaExceeded",
 ): Promise<string> {
   return t(locale, `cleanupReason.${kind}`);
 }
@@ -881,6 +883,218 @@ export async function cleanupDeactivatedAccounts(opts: {
     } catch (err) {
       summary.errors++;
       log.error({ err, userId: account.id }, "Failed to clean up deactivated account content");
+    }
+  }
+
+  return summary;
+}
+
+// ─── Quota overage smart deletion (B2) ─────────────────────────────────────────
+
+/** Outcome of the opt-in quota-overage smart-deletion sweep (5.2 Phase B B2). */
+export interface QuotaOverageSummary {
+  /** Users whose grace window has elapsed and were evaluated this run. */
+  usersProcessed: number;
+  /** Total `File` rows deleted across all processed users. */
+  filesDeleted: number;
+  /** Total bytes freed (sum of the deleted files' sizes). */
+  bytesFreed: number;
+  /**
+   * Users left blocked: their grace had elapsed and they were still over the
+   * limit, but no safe deletion candidate existed (everything is in an active
+   * share), so NOTHING was deleted — they simply stay blocked at the hard limit.
+   */
+  blocked: number;
+  /** Best-effort S3 delete failures; one never aborts the rest of the sweep. */
+  errors: number;
+}
+
+/**
+ * Permanently delete a single user-manager `File` for the quota smart-deletion
+ * sweep: the DB row first (DB-before-S3), then a best-effort S3 object delete.
+ *
+ * Mirrors the File-deletion approach used by {@link purgeUserContent} (delete the
+ * `File` row, best-effort `deleteObject`). Deleting the `File` row automatically
+ * detaches it from any `ShareFiles` / folder links it was part of (the join rows
+ * cascade) — a share left empty as a result is **not** removed (§7); it is simply
+ * left empty.
+ *
+ * Returns whether the S3 object delete failed (the DB row is always gone on
+ * return — an S3 failure leaves at most an orphan that the A9 sweep reclaims).
+ */
+async function deleteUserFileWithStorage(
+  file: DeletionCandidateFile,
+  userId: string,
+): Promise<{ s3Failed: boolean }> {
+  // DB first so the row never survives an S3 failure (DB-before-S3).
+  await prisma.file.delete({ where: { id: file.id } });
+  try {
+    await storageProvider.deleteObject(file.objectName);
+    return { s3Failed: false };
+  } catch (err) {
+    getLogger().error(
+      { err, userId, objectName: file.objectName },
+      "Failed to delete user File S3 object during quota smart-deletion",
+    );
+    return { s3Failed: true };
+  }
+}
+
+/**
+ * Opt-in quota-overage smart-deletion sweep (5.2 Phase B B2).
+ *
+ * For every user whose usage has stayed over their hard limit longer than the
+ * grace window (`quotaExceededSince < now - graceDays`), free space by deleting
+ * the user's own files in the **safe order** computed by
+ * {@link QuotaService.pickDeletionCandidates} — orphan uploads (in no share)
+ * oldest-first, then files whose every referencing share has been inactive for
+ * ≥ `inactiveShareDays`, oldest-first — until projected usage is back under the
+ * limit. The candidate list is already capped at `bytesToFree` AND can never
+ * contain a file that is in an active (recently-used) share, so deleting all of
+ * it is correct and respects the never-delete-active-share invariant.
+ *
+ * If there is **no** safe candidate (everything the user owns is in an active
+ * share), NOTHING is deleted: the user is counted as `blocked` and simply stays
+ * at the hard limit for new direct uploads. Conservative by design — data safety
+ * over storage economy.
+ *
+ * Per user (isolated try/catch — one failure increments `errors`, never aborts
+ * the batch):
+ *  1. Resolve the effective limit. Unlimited (`0n`) ⇒ defensively clear the stale
+ *     `quotaExceededSince` and skip.
+ *  2. `bytesToFree = used - limit`. If ≤ 0 the user is already under (a drop the
+ *     event path missed) ⇒ clear `quotaExceededSince` via the centralized path
+ *     and skip.
+ *  3. Pick candidates. Empty ⇒ `blocked++`, no deletion, no destructive audit.
+ *  4. Else delete each candidate (DB-before-S3, S3 failures counted in `errors`
+ *     but never fatal), accumulating `filesDeleted` / `bytesFreed`.
+ *  5. Recompute usage and call `evaluateAndNotifyQuota` so `quotaExceededSince`
+ *     is cleared centrally when back under the limit (it never sends a spurious
+ *     warning here — usage only ever drops). Emit a `QUOTA_FILES_DELETED` audit
+ *     event and a `files_auto_deleted` notification (with the deleted file names)
+ *     to the owner.
+ *
+ * The opt-in `quotaSmartDeletionEnabled` gate is enforced by the scheduler before
+ * this is called (mirroring A7/A9); this function performs the work unconditionally.
+ */
+export async function enforceQuotaOverage(opts: {
+  graceDays: number;
+  inactiveShareDays: number;
+  now?: Date;
+}): Promise<QuotaOverageSummary> {
+  const { graceDays, inactiveShareDays } = opts;
+  const now = opts.now ?? new Date();
+  const summary: QuotaOverageSummary = {
+    usersProcessed: 0,
+    filesDeleted: 0,
+    bytesFreed: 0,
+    blocked: 0,
+    errors: 0,
+  };
+  const log = getLogger();
+  const cutoff = new Date(now.getTime() - graceDays * ONE_DAY_MS);
+
+  const users = await prisma.user.findMany({
+    where: { quotaExceededSince: { not: null, lt: cutoff } },
+    select: { id: true, email: true, locale: true, isActive: true },
+  });
+
+  for (const user of users) {
+    try {
+      summary.usersProcessed++;
+
+      const [limits, used] = await Promise.all([
+        quotaService.resolveEffectiveLimits(user.id),
+        quotaService.calculateStorageUsed(user.id),
+      ]);
+      const limit = limits.maxTotalStorage;
+
+      // Unlimited limit ⇒ the grace clock is stale; clear it and move on.
+      if (limit <= 0n) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { quotaExceededSince: null },
+        });
+        continue;
+      }
+
+      const bytesToFree = used - limit;
+      if (bytesToFree <= 0n) {
+        // Already back under the limit (a drop the event path missed). Clear the
+        // grace clock through the centralized path so all state stays consistent.
+        await quotaService.evaluateAndNotifyQuota(user.id, { oldUsed: used, newUsed: used });
+        continue;
+      }
+
+      const candidates = await quotaService.pickDeletionCandidates(
+        user.id,
+        bytesToFree,
+        inactiveShareDays,
+        now,
+      );
+
+      // No safe candidate ⇒ leave the user blocked at the hard limit. Never
+      // delete active-share content; no deletion, no destructive audit.
+      if (candidates.length === 0) {
+        summary.blocked++;
+        continue;
+      }
+
+      // Capture names before deletion so the notification can list them (the
+      // candidates only carry id/objectName/size).
+      const candidateIds = candidates.map((c) => c.id);
+      const named = await prisma.file.findMany({
+        where: { id: { in: candidateIds } },
+        select: { id: true, name: true },
+      });
+      const nameById = new Map(named.map((f) => [f.id, f.name]));
+
+      let freed = 0n;
+      let deletedCount = 0;
+      const deletedNames: string[] = [];
+      for (const candidate of candidates) {
+        const { s3Failed } = await deleteUserFileWithStorage(candidate, user.id);
+        if (s3Failed) summary.errors++;
+        freed += candidate.size;
+        deletedCount++;
+        const name = nameById.get(candidate.id);
+        if (name) deletedNames.push(name);
+      }
+      summary.filesDeleted += deletedCount;
+      summary.bytesFreed += Number(freed);
+
+      // Recompute usage and clear `quotaExceededSince` centrally when back under
+      // the limit. Usage only ever drops here, so this never sends a spurious
+      // warning — it just reconciles state (and may clear the grace clock).
+      const usedAfter = await quotaService.calculateStorageUsed(user.id);
+      await quotaService.evaluateAndNotifyQuota(user.id, { oldUsed: used, newUsed: usedAfter });
+
+      await logAuditEvent({
+        userId: user.id,
+        action: "QUOTA_FILES_DELETED",
+        ipAddress: SYSTEM_IP,
+        targetType: "user",
+        targetId: user.id,
+        metadata: { filesDeleted: deletedCount, bytesFreed: Number(freed) },
+      });
+
+      // Notify the owner (skip deactivated accounts — consistent with the other
+      // notifiers; a deactivated user's content is handled by A7 anyway).
+      if (user.isActive) {
+        const locale = user.locale ?? "en";
+        await emailService.send("files_auto_deleted", {
+          to: user.email,
+          locale,
+          userId: user.id,
+          data: {
+            fileNames: deletedNames,
+            reason: await resolveReason(locale, "quotaExceeded"),
+          },
+        });
+      }
+    } catch (err) {
+      summary.errors++;
+      log.error({ err, userId: user.id }, "Failed to enforce quota overage for user");
     }
   }
 

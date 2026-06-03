@@ -6,6 +6,7 @@ import {
   deactivateEndedShares,
   deleteDeactivatedReverseShares,
   deleteDeactivatedShares,
+  enforceQuotaOverage,
   sweepOrphans,
 } from "./service.js";
 
@@ -84,8 +85,9 @@ async function getIntervalMs(): Promise<number> {
  *
  * All config is read fresh on every invocation so that live config changes take
  * effect without a restart. The master `autoCleanupEnabled` toggle gates the
- * content-cleanup phase (A2–A5); `accountDeactivationCleanupEnabled` (A7) and
- * `autoCleanupOrphansEnabled` (A9) are independent opt-in sub-gates.
+ * content-cleanup phase (A2–A5); `accountDeactivationCleanupEnabled` (A7),
+ * `autoCleanupOrphansEnabled` (A9), and `quotaSmartDeletionEnabled` (B2) are
+ * independent opt-in sub-gates.
  *
  * Each sub-call is wrapped so that one throwing does not abort the others.
  * (The cleanup functions are already failure-tolerant internally, but guarding
@@ -110,6 +112,13 @@ export async function runCleanup(): Promise<void> {
     deletedReverseShares?: { warned: number; deleted: number; errors: number };
     deactivatedAccounts?: { purgedAccounts: number; errors: number };
     orphans?: { dbDeleted: number; s3Deleted: number; errors: number };
+    quotaOverage?: {
+      usersProcessed: number;
+      filesDeleted: number;
+      bytesFreed: number;
+      blocked: number;
+      errors: number;
+    };
   } = {};
 
   try {
@@ -176,6 +185,19 @@ export async function runCleanup(): Promise<void> {
         summary.orphans = await sweepOrphans({ minAgeHours });
       } catch (error) {
         log.error({ err: error }, "Cleanup scheduler: sweepOrphans failed");
+      }
+    }
+
+    // ── Quota-overage smart deletion (B2), independent opt-in gate ───────────
+    // Destructive: only runs when an admin has explicitly enabled it. Uses the
+    // grace window and inactive-share threshold from config.
+    if (await getBoolConfig("quotaSmartDeletionEnabled")) {
+      try {
+        const graceDays = await getIntConfig("quotaGracePeriodDays", 7);
+        const inactiveShareDays = await getIntConfig("quotaInactiveShareDays", 30);
+        summary.quotaOverage = await enforceQuotaOverage({ graceDays, inactiveShareDays });
+      } catch (error) {
+        log.error({ err: error }, "Cleanup scheduler: enforceQuotaOverage failed");
       }
     }
 

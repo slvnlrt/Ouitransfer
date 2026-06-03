@@ -133,7 +133,8 @@
   "cleanupReason": {
     "expired": "expiré",
     "viewLimitReached": "limite de vues atteinte",
-    "accountDeactivated": "compte désactivé"
+    "accountDeactivated": "compte désactivé",
+    "quotaExceeded": "quota de stockage dépassé"
   },
   "sharePendingDeletion": {
     "subject": "{appName} - Votre partage sera bientôt supprimé définitivement",
