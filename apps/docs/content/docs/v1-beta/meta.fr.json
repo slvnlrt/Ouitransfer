@@ -22,6 +22,7 @@
     "oidc-authentication",
     "activity-log",
     "quotas",
+    "automatic-cleanup",
     "groups",
     "ldap-configuration",
     "---Développeurs---",

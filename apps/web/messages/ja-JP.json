@@ -760,8 +760,6 @@
       "REVERSE_SHARE_CREATE": "逆共有作成",
       "REVERSE_SHARE_UPDATE": "逆共有更新",
       "REVERSE_SHARE_DELETE": "逆共有削除",
-      "REVERSE_SHARE_ACTIVATE": "逆共有有効化",
-      "REVERSE_SHARE_DEACTIVATE": "逆共有無効化",
       "REVERSE_SHARE_ACCESS": "逆共有アクセス",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "逆共有パスワード確認",
       "REVERSE_SHARE_PASSWORD_FAILED": "逆共有パスワード失敗",
@@ -790,7 +788,18 @@
       "SMTP_TEST": "SMTP テスト実行",
       "BACKGROUND_IMAGE_UPLOAD": "背景画像アップロード",
       "BACKGROUND_IMAGE_DELETE": "背景画像削除",
-      "AUDIT_RETENTION_CLEANUP": "監査ログクリーンアップ"
+      "AUDIT_RETENTION_CLEANUP": "監査ログクリーンアップ",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated",
+      "SHARE_AUTO_DELETED": "Share auto-deleted",
+      "REVERSE_SHARE_AUTO_DELETED": "Reverse share auto-deleted",
+      "ACCOUNT_FILES_CLEANED": "Account files cleaned",
+      "ORPHAN_S3_DELETED": "Orphan storage object deleted",
+      "ORPHAN_DB_DELETED": "Orphan database record deleted",
+      "ORPHAN_MULTIPART_ABORTED": "Incomplete multipart upload aborted",
+      "QUOTA_FILES_DELETED": "Over-quota files deleted"
     },
     "targetTypes": {
       "user": "ユーザー",
@@ -1567,6 +1576,10 @@
       "backgrounds": {
         "title": "背景画像",
         "description": "WeTransferスタイルのアップロードページの背景画像を管理"
+      },
+      "cleanup": {
+        "title": "Automatic Cleanup",
+        "description": "Lifecycle management for expired content, deactivated accounts, and orphaned files. Auto-deletion is off by default."
       }
     },
     "fields": {
@@ -1643,6 +1656,34 @@
         "title": "ユーザーごとの最大ストレージ",
         "description": "ユーザーごとの合計ストレージ制限。ユーザーごと、グループごとにオーバーライド可能。"
       },
+      "quotaWarningThresholds": {
+        "title": "Quota Warning Thresholds (%)",
+        "description": "Comma-separated percentages, e.g. \"80,90\", at which a user is emailed a quota warning. Each value must be a whole number between 1 and 99. A separate alert is sent when storage reaches 100%."
+      },
+      "quotaGracePeriodDays": {
+        "title": "Quota Grace Period (days)",
+        "description": "How many days a user may stay over their quota before smart deletion may act (only when smart deletion is enabled below). Minimum 0."
+      },
+      "quotaSmartDeletionEnabled": {
+        "title": "Smart Deletion of Over-Quota Files",
+        "description": "Off by default. When enabled, after the grace period the oldest unsafe files of an over-quota user are deleted in a safe order: first unshared uploads, then files in shares inactive for the period below. Files in active shares are never deleted — if nothing is safe to remove, new uploads are simply blocked instead."
+      },
+      "quotaInactiveShareDays": {
+        "title": "Inactive Share Threshold (days)",
+        "description": "A share's files are eligible for smart deletion once the share has had no activity for this many days. Minimum 1."
+      },
+      "reverseShareQuotaSoftEnforcement": {
+        "title": "Reverse Share Soft Enforcement",
+        "description": "On by default. Lets external guests keep uploading to a reverse share even if the owner is slightly over quota, so collections are not interrupted. Uploads are still blocked once the owner exceeds the tolerance set below, and the owner is alerted to free up space."
+      },
+      "reverseShareMaxOverageFactor": {
+        "title": "Reverse Share Overage Factor",
+        "description": "Soft enforcement allows reverse-share uploads until usage reaches this multiple of the owner's quota (e.g. 3 = up to three times the limit). Minimum 1."
+      },
+      "reverseShareAbsoluteMaxBytes": {
+        "title": "Reverse Share Absolute Cap",
+        "description": "Hard ceiling for reverse-share soft enforcement regardless of the factor above. Set to 0 for no absolute cap."
+      },
       "firstUserAccess": {
         "description": "新規ユーザーの初回アクセス設定",
         "title": "初回ユーザーアクセス"
@@ -1716,6 +1757,38 @@
       "auditRetentionDays": {
         "title": "監査ログ保持期間",
         "description": "監査ログを保持する日数（0 = 永遠、最小 7）"
+      },
+      "autoCleanupEnabled": {
+        "title": "Enable Automatic Cleanup",
+        "description": "Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on."
+      },
+      "autoCleanupIntervalHours": {
+        "title": "Cleanup Interval (hours)",
+        "description": "How often the cleanup task runs. Minimum 1 hour."
+      },
+      "autoCleanupGracePeriodDays": {
+        "title": "Grace Period (days)",
+        "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
+      },
+      "autoCleanupNotifyDaysBefore": {
+        "title": "Warn Before Deletion (days)",
+        "description": "Send the owner a \"pending permanent deletion\" warning email this many days before the content is deleted. 0 disables the warning. Should be at most the grace period."
+      },
+      "accountDeactivationCleanupEnabled": {
+        "title": "Delete Deactivated Accounts' Files",
+        "description": "When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files."
+      },
+      "accountDeactivationCleanupDays": {
+        "title": "Deactivation Cleanup Delay (days)",
+        "description": "Days after an account is deactivated before its files are deleted (only when the option above is enabled). Minimum 1."
+      },
+      "autoCleanupOrphansEnabled": {
+        "title": "Sweep Orphaned Files",
+        "description": "When on, runs a two-way sweep that removes database records pointing to missing storage objects and storage objects with no database record. Off by default."
+      },
+      "autoCleanupOrphanMinAgeHours": {
+        "title": "Orphan Minimum Age (hours)",
+        "description": "Only files and objects older than this are considered during the orphan sweep, protecting uploads still in progress. Minimum 1."
       }
     },
     "buttons": {
@@ -1727,7 +1800,10 @@
       "loadFailed": "設定の読み込みに失敗しました",
       "updateFailed": "設定の更新に失敗しました",
       "passwordAuthRequiresProvider": "少なくとも1つのアクティブな認証プロバイダーがない場合、パスワード認証を無効にできません",
-      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
+      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
+      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent",
+      "quotaThresholdsInvalid": "Enter comma-separated percentages between 1 and 99, for example \"80,90\""
     },
     "messages": {
       "noChanges": "保存する変更はありません",
@@ -1966,7 +2042,11 @@
     "zipDownloadSuccess": "zipファイルは正常にダウンロードされました",
     "errors": {
       "multipleDownloadNotSupported": "複数の共有のダウンロードはまだサポートされていません - 共有を個別にダウンロードしてください"
-    }
+    },
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "複数ファイルを共有",
@@ -2060,7 +2140,9 @@
     "status": {
       "neverExpires": "期限なし",
       "active": "アクティブ",
-      "expired": "期限切れ"
+      "expired": "期限切れ",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "保護済み",
@@ -2080,7 +2162,10 @@
       "notifyRecipients": "受信者に通知",
       "delete": "削除",
       "downloadShareFiles": "すべてのファイルをダウンロードします",
-      "viewQrCode": "QRコードを表示"
+      "viewQrCode": "QRコードを表示",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "delete": "削除",

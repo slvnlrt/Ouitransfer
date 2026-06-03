@@ -9,9 +9,11 @@ import { sanitizeFilename } from "../../utils/sanitize-filename.js";
 import { isMimeTypeConsistent } from "../../utils/validate-file-content.js";
 import { validateObjectName } from "../../utils/validate-object-name.js";
 import { logAuditEvent } from "../audit/service.js";
+import { getConfigValue } from "../config/service.js";
 import { emailService } from "../email/service.js";
 import { FileService } from "../file/service.js";
 import { quotaService } from "../quota/service.js";
+import { assertOwnerActive } from "./assert-owner-active.js";
 import type { UploadToReverseShareInput } from "./dto.js";
 import { ReverseShareRepository } from "./repository.js";
 
@@ -50,7 +52,15 @@ export class ReverseShareUploadService {
       throw new AppError(403, "Reverse share is inactive", ErrorCodes.SHARE_INACTIVE);
     }
 
+    // A6 deactivated-owner gate (single source of truth in assert-owner-active).
+    assertOwnerActive(reverseShare);
+
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
+      // Persist the expiry deactivation (Phase A.1) so the cleanup sweep can act,
+      // then block. Fire-and-forget: the upload entry point must not fail if the write does.
+      void this.reverseShareRepository
+        .markExpiredInactive(reverseShare.id, new Date(reverseShare.expiration))
+        .catch((err) => getLogger().error({ err }, "Failed to persist reverse-share expiry"));
       throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 
@@ -104,7 +114,15 @@ export class ReverseShareUploadService {
       throw new AppError(403, "Reverse share is inactive", ErrorCodes.SHARE_INACTIVE);
     }
 
+    // A6 deactivated-owner gate (single source of truth in assert-owner-active).
+    assertOwnerActive(reverseShare);
+
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
+      // Persist the expiry deactivation (Phase A.1) so the cleanup sweep can act,
+      // then block. Fire-and-forget: the upload entry point must not fail if the write does.
+      void this.reverseShareRepository
+        .markExpiredInactive(reverseShare.id, new Date(reverseShare.expiration))
+        .catch((err) => getLogger().error({ err }, "Failed to persist reverse-share expiry"));
       throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 
@@ -159,7 +177,15 @@ export class ReverseShareUploadService {
       throw new AppError(403, "Reverse share is inactive", ErrorCodes.SHARE_INACTIVE);
     }
 
+    // A6 deactivated-owner gate (single source of truth in assert-owner-active).
+    assertOwnerActive(reverseShare);
+
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
+      // Persist the expiry deactivation (Phase A.1) so the cleanup sweep can act,
+      // then block. Fire-and-forget: the upload entry point must not fail if the write does.
+      void this.reverseShareRepository
+        .markExpiredInactive(reverseShare.id, new Date(reverseShare.expiration))
+        .catch((err) => getLogger().error({ err }, "Failed to persist reverse-share expiry"));
       throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 
@@ -205,10 +231,26 @@ export class ReverseShareUploadService {
       }
     }
 
+    // B3 owner-quota enforcement (soft by default; hard when disabled).
+    const uploadSize = BigInt(fileData.size);
+    const usedBefore = await this.enforceReverseShareQuota(reverseShare.creatorId, uploadSize);
+
     const file = await this.reverseShareRepository.createFile(reverseShareId, {
       ...fileData,
-      size: BigInt(fileData.size),
+      size: uploadSize,
     });
+
+    // B1 threshold warnings: evaluate the owner's usage transition after the
+    // file exists. Fire-and-forget — never blocks the upload, never throws.
+    // When the upload lands the owner in the overage zone (allowed but over the
+    // limit), evaluateAndNotifyQuota emits quota_exceeded + admin_quota_alert
+    // once, deduped by quotaExceededSince.
+    if (usedBefore !== null) {
+      void quotaService.evaluateAndNotifyQuota(reverseShare.creatorId, {
+        oldUsed: usedBefore,
+        newUsed: usedBefore + uploadSize,
+      });
+    }
 
     if (context) {
       logAuditEvent({
@@ -246,7 +288,15 @@ export class ReverseShareUploadService {
       throw new AppError(403, "Reverse share is inactive", ErrorCodes.SHARE_INACTIVE);
     }
 
+    // A6 deactivated-owner gate (single source of truth in assert-owner-active).
+    assertOwnerActive(reverseShare);
+
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
+      // Persist the expiry deactivation (Phase A.1) so the cleanup sweep can act,
+      // then block. Fire-and-forget: the upload entry point must not fail if the write does.
+      void this.reverseShareRepository
+        .markExpiredInactive(reverseShare.id, new Date(reverseShare.expiration))
+        .catch((err) => getLogger().error({ err }, "Failed to persist reverse-share expiry"));
       throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 
@@ -293,10 +343,23 @@ export class ReverseShareUploadService {
       }
     }
 
+    // B3 owner-quota enforcement (soft by default; hard when disabled).
+    const uploadSize = BigInt(fileData.size);
+    const usedBefore = await this.enforceReverseShareQuota(reverseShare.creatorId, uploadSize);
+
     const file = await this.reverseShareRepository.createFile(reverseShare.id, {
       ...fileData,
-      size: BigInt(fileData.size),
+      size: uploadSize,
     });
+
+    // B1 threshold warnings: evaluate the owner's usage transition after the
+    // file exists. Fire-and-forget — never blocks the upload, never throws.
+    if (usedBefore !== null) {
+      void quotaService.evaluateAndNotifyQuota(reverseShare.creatorId, {
+        oldUsed: usedBefore,
+        newUsed: usedBefore + uploadSize,
+      });
+    }
 
     if (context) {
       logAuditEvent({
@@ -317,6 +380,63 @@ export class ReverseShareUploadService {
     this.addFileToUploadSession(reverseShare, fileData);
 
     return this.formatFileResponse(file);
+  }
+
+  /**
+   * Enforce the owner's storage quota for an **external** reverse-share upload
+   * (5.2 Phase B B3) and return the owner's usage *before* this upload so the
+   * caller can drive the B1 warning evaluation afterward.
+   *
+   * - Unlimited owner quota (`0n`) ⇒ no limit; returns `null` (no warning state
+   *   to track, no usage computed).
+   * - When `reverseShareQuotaSoftEnforcement` is ON, external uploads are
+   *   tolerated past 100% up to `min(limit × factor, absoluteCap)` via
+   *   {@link QuotaService.isReverseUploadAllowed}; blocked beyond that.
+   * - When OFF, the historical hard block applies (`used + size <= limit`).
+   *
+   * Direct uploads (the owner's own files) are NOT routed through here — they
+   * keep hard enforcement in `file/routes.ts`.
+   *
+   * @throws {AppError} 400 `INSUFFICIENT_STORAGE` when the upload is not allowed.
+   * @returns the owner's `usedBefore` byte count, or `null` for unlimited owners.
+   */
+  private async enforceReverseShareQuota(creatorId: string, size: bigint): Promise<bigint | null> {
+    const limits = await quotaService.resolveEffectiveLimits(creatorId);
+    const limit = limits.maxTotalStorage;
+    // Unlimited owner ⇒ no quota tracking for reverse uploads.
+    if (limit <= 0n) return null;
+
+    const usedBefore = await quotaService.calculateStorageUsed(creatorId);
+
+    const softEnforcement = (await getConfigValue("reverseShareQuotaSoftEnforcement")) === "true";
+
+    let allowed: boolean;
+    if (softEnforcement) {
+      const factor = Number(await getConfigValue("reverseShareMaxOverageFactor"));
+      const capBytes = BigInt(await getConfigValue("reverseShareAbsoluteMaxBytes"));
+      allowed = quotaService.isReverseUploadAllowed(
+        usedBefore,
+        size,
+        limit,
+        Number.isFinite(factor) && factor >= 1 ? factor : 1,
+        capBytes,
+      );
+    } else {
+      // Hard block (today's behavior): refuse once the limit would be exceeded.
+      allowed = usedBefore + size <= limit;
+    }
+
+    if (!allowed) {
+      const availableSpace = Number(limit - usedBefore) / (1024 * 1024);
+      throw new AppError(
+        400,
+        `Insufficient storage space. You have ${availableSpace.toFixed(2)}MB available`,
+        ErrorCodes.INSUFFICIENT_STORAGE,
+        { availableSpaceMB: availableSpace.toFixed(2) },
+      );
+    }
+
+    return usedBefore;
   }
 
   async copyReverseShareFileToUserFiles(fileId: string, creatorId: string) {

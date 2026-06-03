@@ -169,6 +169,8 @@ Ouitransfer logs approximately 77 distinct action types across all application m
 | `SHARE_PASSWORD_FAILED` | Incorrect password attempt on a protected share |
 | `SHARE_RECIPIENT_ADD` | Email recipients added to a share |
 | `SHARE_RECIPIENT_NOTIFY` | Notification emails sent to share recipients |
+| `SHARE_DEACTIVATED` | Share deactivated — manually paused, or automatically when it expires or hits its view limit (reason recorded) |
+| `SHARE_REACTIVATED` | Share reactivated — resumed manually, or by extending its expiration / raising its view limit |
 
 ### Files
 
@@ -196,7 +198,8 @@ Ouitransfer logs approximately 77 distinct action types across all application m
 | `REVERSE_SHARE_ACCESS` | Upload page visited (anonymous) |
 | `REVERSE_SHARE_UPLOAD` | File uploaded through an upload link (includes uploader email/name if provided) |
 | `REVERSE_SHARE_FILE_DOWNLOAD` | File downloaded from an upload link |
-| `REVERSE_SHARE_ACTIVATE` / `REVERSE_SHARE_DEACTIVATE` | Upload link toggled on or off |
+| `REVERSE_SHARE_DEACTIVATED` | Upload link deactivated — manually paused, or automatically when it expires (reason recorded) |
+| `REVERSE_SHARE_REACTIVATED` | Upload link reactivated — resumed manually, or by extending its expiration |
 
 ### Groups
 
@@ -231,6 +234,10 @@ Ouitransfer logs approximately 77 distinct action types across all application m
 | Action | Description |
 |--------|-------------|
 | `AUDIT_RETENTION_CLEANUP` | Scheduled cleanup run — records how many old entries were deleted |
+| `SHARE_AUTO_DELETED` | Deactivated share link permanently deleted by [Automatic Cleanup](/docs/v1-beta/automatic-cleanup) after the grace period |
+| `REVERSE_SHARE_AUTO_DELETED` | Expired reverse share and its uploaded files permanently deleted by Automatic Cleanup |
+| `ACCOUNT_FILES_CLEANED` | Deactivated account's files deleted by Automatic Cleanup |
+| `ORPHAN_S3_DELETED` / `ORPHAN_DB_DELETED` | Orphan sweep removed a storage object with no database record, or a record pointing to a missing object |
 
 ---
 

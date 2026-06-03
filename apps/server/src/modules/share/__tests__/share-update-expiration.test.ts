@@ -116,6 +116,10 @@ function makeFullShare(overrides: Record<string, unknown> = {}) {
     notifyOnDownload: false,
     notifiedForExpiring: true, // already notified
     notifiedForExpired: true,
+    notifiedForPendingDeletion: false,
+    isActive: true,
+    deactivatedAt: null,
+    deactivationReason: null,
     security: { id: SECURITY_ID, password: null, createdAt: new Date(), updatedAt: new Date() },
     files: [],
     folders: [],
@@ -163,6 +167,7 @@ describe("updateShare — notification flag reset", () => {
       expect.objectContaining({
         notifiedForExpiring: false,
         notifiedForExpired: false,
+        notifiedForPendingDeletion: false,
       }),
     );
   });
@@ -188,6 +193,7 @@ describe("updateShare — notification flag reset", () => {
     const updateCall = mockUpdateShare.mock.calls[0][1];
     expect(updateCall.notifiedForExpiring).toBeUndefined();
     expect(updateCall.notifiedForExpired).toBeUndefined();
+    expect(updateCall.notifiedForPendingDeletion).toBeUndefined();
   });
 
   it("resets notification flags when expiration is added to a share that had none", async () => {
@@ -212,6 +218,7 @@ describe("updateShare — notification flag reset", () => {
       expect.objectContaining({
         notifiedForExpiring: false,
         notifiedForExpired: false,
+        notifiedForPendingDeletion: false,
       }),
     );
   });

@@ -764,8 +764,6 @@
       "REVERSE_SHARE_CREATE": "שיתוף הפוך נוצר",
       "REVERSE_SHARE_UPDATE": "שיתוף הפוך עודכן",
       "REVERSE_SHARE_DELETE": "שיתוף הפוך נמחק",
-      "REVERSE_SHARE_ACTIVATE": "שיתוף הפוך הופעל",
-      "REVERSE_SHARE_DEACTIVATE": "שיתוף הפוך הושבת",
       "REVERSE_SHARE_ACCESS": "שיתוף הפוך נגיש",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "סיסמת שיתוף הפוך אומתה",
       "REVERSE_SHARE_PASSWORD_FAILED": "סיסמת שיתוף הפוך נכשלה",
@@ -794,7 +792,18 @@
       "SMTP_TEST": "בדיקת SMTP בוצעה",
       "BACKGROUND_IMAGE_UPLOAD": "תמונת רקע הועלתה",
       "BACKGROUND_IMAGE_DELETE": "תמונת רקע נמחקה",
-      "AUDIT_RETENTION_CLEANUP": "ניקוי יומן ביקורת"
+      "AUDIT_RETENTION_CLEANUP": "ניקוי יומן ביקורת",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated",
+      "SHARE_AUTO_DELETED": "Share auto-deleted",
+      "REVERSE_SHARE_AUTO_DELETED": "Reverse share auto-deleted",
+      "ACCOUNT_FILES_CLEANED": "Account files cleaned",
+      "ORPHAN_S3_DELETED": "Orphan storage object deleted",
+      "ORPHAN_DB_DELETED": "Orphan database record deleted",
+      "ORPHAN_MULTIPART_ABORTED": "Incomplete multipart upload aborted",
+      "QUOTA_FILES_DELETED": "Over-quota files deleted"
     },
     "targetTypes": {
       "user": "משתמש",
@@ -1571,6 +1580,10 @@
       "backgrounds": {
         "title": "תמונות רקע",
         "description": "ניהול תמונות רקע לעמודי העלאה בסגנון WeTransfer"
+      },
+      "cleanup": {
+        "title": "Automatic Cleanup",
+        "description": "Lifecycle management for expired content, deactivated accounts, and orphaned files. Auto-deletion is off by default."
       }
     },
     "fields": {
@@ -1685,6 +1698,34 @@
         "title": "אחסון מרבי למשתמש",
         "description": "מגבלת אחסון כוללת למשתמש. ניתן לעקוף לכל משתמש או קבוצה."
       },
+      "quotaWarningThresholds": {
+        "title": "Quota Warning Thresholds (%)",
+        "description": "Comma-separated percentages, e.g. \"80,90\", at which a user is emailed a quota warning. Each value must be a whole number between 1 and 99. A separate alert is sent when storage reaches 100%."
+      },
+      "quotaGracePeriodDays": {
+        "title": "Quota Grace Period (days)",
+        "description": "How many days a user may stay over their quota before smart deletion may act (only when smart deletion is enabled below). Minimum 0."
+      },
+      "quotaSmartDeletionEnabled": {
+        "title": "Smart Deletion of Over-Quota Files",
+        "description": "Off by default. When enabled, after the grace period the oldest unsafe files of an over-quota user are deleted in a safe order: first unshared uploads, then files in shares inactive for the period below. Files in active shares are never deleted — if nothing is safe to remove, new uploads are simply blocked instead."
+      },
+      "quotaInactiveShareDays": {
+        "title": "Inactive Share Threshold (days)",
+        "description": "A share's files are eligible for smart deletion once the share has had no activity for this many days. Minimum 1."
+      },
+      "reverseShareQuotaSoftEnforcement": {
+        "title": "Reverse Share Soft Enforcement",
+        "description": "On by default. Lets external guests keep uploading to a reverse share even if the owner is slightly over quota, so collections are not interrupted. Uploads are still blocked once the owner exceeds the tolerance set below, and the owner is alerted to free up space."
+      },
+      "reverseShareMaxOverageFactor": {
+        "title": "Reverse Share Overage Factor",
+        "description": "Soft enforcement allows reverse-share uploads until usage reaches this multiple of the owner's quota (e.g. 3 = up to three times the limit). Minimum 1."
+      },
+      "reverseShareAbsoluteMaxBytes": {
+        "title": "Reverse Share Absolute Cap",
+        "description": "Hard ceiling for reverse-share soft enforcement regardless of the factor above. Set to 0 for no absolute cap."
+      },
       "firstUserAccess": {
         "title": "גישת משתמש ראשון",
         "description": "הגדרות לגישה ראשונה של משתמשים חדשים"
@@ -1720,6 +1761,38 @@
       "auditRetentionDays": {
         "title": "שמירת ביקורת",
         "description": "מספר הימים לשמירת יומני ביקורת (0 = לעולם, מינימום 7)"
+      },
+      "autoCleanupEnabled": {
+        "title": "Enable Automatic Cleanup",
+        "description": "Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on."
+      },
+      "autoCleanupIntervalHours": {
+        "title": "Cleanup Interval (hours)",
+        "description": "How often the cleanup task runs. Minimum 1 hour."
+      },
+      "autoCleanupGracePeriodDays": {
+        "title": "Grace Period (days)",
+        "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
+      },
+      "autoCleanupNotifyDaysBefore": {
+        "title": "Warn Before Deletion (days)",
+        "description": "Send the owner a \"pending permanent deletion\" warning email this many days before the content is deleted. 0 disables the warning. Should be at most the grace period."
+      },
+      "accountDeactivationCleanupEnabled": {
+        "title": "Delete Deactivated Accounts' Files",
+        "description": "When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files."
+      },
+      "accountDeactivationCleanupDays": {
+        "title": "Deactivation Cleanup Delay (days)",
+        "description": "Days after an account is deactivated before its files are deleted (only when the option above is enabled). Minimum 1."
+      },
+      "autoCleanupOrphansEnabled": {
+        "title": "Sweep Orphaned Files",
+        "description": "When on, runs a two-way sweep that removes database records pointing to missing storage objects and storage objects with no database record. Off by default."
+      },
+      "autoCleanupOrphanMinAgeHours": {
+        "title": "Orphan Minimum Age (hours)",
+        "description": "Only files and objects older than this are considered during the orphan sweep, protecting uploads still in progress. Minimum 1."
       }
     },
     "buttons": {
@@ -1731,7 +1804,10 @@
       "loadFailed": "נכשל בטעינת הגדרות",
       "updateFailed": "נכשל בעדכון הגדרות",
       "passwordAuthRequiresProvider": "לא ניתן להשבית אימות סיסמה ללא ספק אימות פעיל אחד לפחות",
-      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
+      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
+      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent",
+      "quotaThresholdsInvalid": "Enter comma-separated percentages between 1 and 99, for example \"80,90\""
     },
     "messages": {
       "noChanges": "אין שינויים לשמור",
@@ -1970,7 +2046,11 @@
     },
     "singleShareZipName": "{shareName}_files.zip",
     "multipleSharesZipName": "{count}_shares_files.zip",
-    "defaultShareName": "שיתוף"
+    "defaultShareName": "שיתוף",
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "שתף מספר קבצים",
@@ -2064,7 +2144,9 @@
     "status": {
       "neverExpires": "לא פג תוקף",
       "active": "פעיל",
-      "expired": "פג תוקף"
+      "expired": "פג תוקף",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "מוגן",
@@ -2085,7 +2167,10 @@
       "viewQrCode": "צפה בקוד QR",
       "notifyRecipients": "הודע לנמענים",
       "downloadShareFiles": "הורד כל הקבצים",
-      "delete": "מחק"
+      "delete": "מחק",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "actions": "פעולות",

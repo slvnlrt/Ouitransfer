@@ -439,9 +439,15 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         );
       }
 
-      // Total storage check (skip if unlimited)
+      // Total storage check (skip if unlimited). Direct uploads keep HARD
+      // enforcement at the limit — only reverse-share external uploads get the
+      // B3 soft-overage tolerance. `usedBefore` is captured so the post-register
+      // B1 warning evaluation can compute the usage transition without an extra
+      // query (only meaningful when a limit applies).
+      let usedBefore: bigint | null = null;
       if (limits.maxTotalStorage > 0n) {
         const currentStorage = await quotaService.calculateStorageUsed(userId);
+        usedBefore = currentStorage;
         if (currentStorage + BigInt(input.size) > limits.maxTotalStorage) {
           const availableSpace = Number(limits.maxTotalStorage - currentStorage) / (1024 * 1024);
           throw new AppError(
@@ -504,6 +510,15 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
           size: fileRecord.size.toString(),
         },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
+      // B1 threshold warnings (5.2 Phase B): evaluate the usage transition AFTER
+      // the file row exists. Fire-and-forget — never block the upload response and
+      // never throw into this path (the method swallows its own errors). Skipped
+      // for unlimited quotas, where `usedBefore` is null.
+      if (usedBefore !== null) {
+        const newUsed = usedBefore + BigInt(input.size);
+        void quotaService.evaluateAndNotifyQuota(userId, { oldUsed: usedBefore, newUsed });
+      }
 
       return reply.status(201).send({
         file: fileResponse,

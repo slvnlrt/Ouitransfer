@@ -112,7 +112,8 @@ describe("ensureBucket — actual function from storage.config.ts", () => {
         { bucket: "test-bucket" },
         "[STORAGE] Bucket exists",
       );
-      expect(mockSend).toHaveBeenCalledTimes(1);
+      // Head + lifecycle PUT (internal storage backstop).
+      expect(mockSend).toHaveBeenCalledTimes(2);
 
       // Verify the correct command type was sent
       const { HeadBucketCommand } = await import("@aws-sdk/client-s3");
@@ -136,11 +137,17 @@ describe("ensureBucket — actual function from storage.config.ts", () => {
         { bucket: "test-bucket" },
         "[STORAGE] Bucket created",
       );
-      expect(mockSend).toHaveBeenCalledTimes(2);
+      // Head (NotFound) → Create → lifecycle PUT (internal storage backstop).
+      expect(mockSend).toHaveBeenCalledTimes(3);
 
-      const { HeadBucketCommand, CreateBucketCommand } = await import("@aws-sdk/client-s3");
+      const { HeadBucketCommand, CreateBucketCommand, PutBucketLifecycleConfigurationCommand } =
+        await import("@aws-sdk/client-s3");
       expect(mockSend).toHaveBeenNthCalledWith(1, expect.any(HeadBucketCommand));
       expect(mockSend).toHaveBeenNthCalledWith(2, expect.any(CreateBucketCommand));
+      expect(mockSend).toHaveBeenNthCalledWith(
+        3,
+        expect.any(PutBucketLifecycleConfigurationCommand),
+      );
     });
 
     it("creates bucket when HeadBucket returns NoSuchBucket", async () => {
@@ -162,7 +169,8 @@ describe("ensureBucket — actual function from storage.config.ts", () => {
         { bucket: "test-bucket" },
         "[STORAGE] Bucket created",
       );
-      expect(mockSend).toHaveBeenCalledTimes(2);
+      // Head (NoSuchBucket) → Create → lifecycle PUT (internal storage backstop).
+      expect(mockSend).toHaveBeenCalledTimes(3);
     });
 
     it("rethrows non-NotFound errors from HeadBucket", async () => {
@@ -179,6 +187,73 @@ describe("ensureBucket — actual function from storage.config.ts", () => {
       expect(mockLoggerError).toHaveBeenCalledWith(
         expect.objectContaining({ bucket: "test-bucket" }),
         "[STORAGE] Bucket check failed",
+      );
+    });
+
+    it("applies the AbortIncompleteMultipartUpload lifecycle rule for INTERNAL storage", async () => {
+      // ENABLE_S3 is unset in S3_ENV → internal storage. HeadBucket succeeds,
+      // then the lifecycle rule is applied.
+      const mockSend = vi.fn().mockResolvedValue({});
+      mockS3ClientModule(mockSend);
+
+      const { ensureBucket } = await import("../../config/storage.config.js");
+
+      await ensureBucket();
+
+      const { HeadBucketCommand, PutBucketLifecycleConfigurationCommand } = await import(
+        "@aws-sdk/client-s3"
+      );
+      expect(mockSend).toHaveBeenCalledTimes(2);
+      expect(mockSend).toHaveBeenNthCalledWith(1, expect.any(HeadBucketCommand));
+      expect(mockSend).toHaveBeenNthCalledWith(
+        2,
+        expect.any(PutBucketLifecycleConfigurationCommand),
+      );
+
+      const lifecycleCmd = mockSend.mock.calls[1][0] as InstanceType<
+        typeof PutBucketLifecycleConfigurationCommand
+      >;
+      const rule = lifecycleCmd.input.LifecycleConfiguration?.Rules?.[0];
+      expect(rule?.Status).toBe("Enabled");
+      expect(rule?.AbortIncompleteMultipartUpload?.DaysAfterInitiation).toBe(7);
+    });
+
+    it("does NOT apply the lifecycle rule for EXTERNAL S3 (never mutates an admin bucket)", async () => {
+      vi.stubEnv("ENABLE_S3", "true"); // external S3
+      const mockSend = vi.fn().mockResolvedValue({});
+      mockS3ClientModule(mockSend);
+
+      const { ensureBucket } = await import("../../config/storage.config.js");
+
+      await ensureBucket();
+
+      const { PutBucketLifecycleConfigurationCommand } = await import("@aws-sdk/client-s3");
+      // Only HeadBucket — no lifecycle command.
+      expect(mockSend).toHaveBeenCalledTimes(1);
+      expect(mockSend).not.toHaveBeenCalledWith(expect.any(PutBucketLifecycleConfigurationCommand));
+    });
+
+    it("does not crash boot when the lifecycle rule is rejected (best-effort)", async () => {
+      // HeadBucket succeeds; lifecycle PUT is rejected (backend without support).
+      const lifecycleError = Object.assign(new Error("Not Implemented"), {
+        name: "NotImplemented",
+      });
+      const mockSend = vi.fn().mockResolvedValueOnce({}).mockRejectedValueOnce(lifecycleError);
+      mockS3ClientModule(mockSend);
+
+      const mockLoggerWarn = vi.fn();
+      vi.doMock("../../utils/logger.js", () => ({
+        getLogger: () => ({ info: mockLoggerInfo, error: mockLoggerError, warn: mockLoggerWarn }),
+        setLogger: vi.fn(),
+      }));
+
+      const { ensureBucket } = await import("../../config/storage.config.js");
+
+      // Must resolve (not throw) despite the lifecycle failure.
+      await expect(ensureBucket()).resolves.toBeUndefined();
+      expect(mockLoggerWarn).toHaveBeenCalledWith(
+        expect.objectContaining({ bucket: "test-bucket", err: lifecycleError }),
+        expect.stringContaining("Could not apply multipart-upload lifecycle rule"),
       );
     });
 

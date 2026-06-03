@@ -1,5 +1,123 @@
 # Session Log
 
+## 2026-06-03 (5.2 Auto-cleanup — Phase B: quota overage policy)
+
+**Aggressive quota-overage policy delivered across 5 sequential batches — feature now complete**
+
+- **Owner decisions.** Smart deletion is **included but opt-in, off by default**, with a strict
+  safe deletion order; reverse-share external uploads use **soft enforcement, on by default**.
+  Conservative defaults throughout. Reuses the Phase A cleanup scheduler, the existing
+  `quota_warning` / `quota_exceeded` / `admin_quota_alert` / `files_auto_deleted` notifications,
+  and 8.1 audit.
+- **Batch 1 — schema + config + helpers.** Additive migration `quota_overage`:
+  `User.quotaLastWarnedThreshold`, `User.quotaExceededSince` (state tracking). Seeded + validated
+  the 7 Phase B config keys in the **Storage** group (CSV thresholds 1–99, grace ≥ 0, inactive-share
+  ≥ 1, overage factor ≥ 1, absolute cap ≥ 0). Pure `QuotaService` helpers: `parseThresholds`,
+  `crossedThreshold`, `isReverseUploadAllowed`, `pickDeletionCandidates`.
+- **Batch 2 — B1 warnings + B3 soft enforcement.** Event-driven `evaluateAndNotifyQuota` on direct
+  and reverse-share file register: emails the owner the first time usage crosses a threshold upward
+  (`quota_warning` / `quota_exceeded` at ≥100%), deduped via `quotaLastWarnedThreshold` and re-armed
+  when usage drops below the lowest threshold; set/clear `quotaExceededSince` at the 100% boundary.
+  Reverse uploads switched to `isReverseUploadAllowed` (soft) when the toggle is on, blocked at
+  `min(limit × factor, cap)`; the owner's own direct uploads keep the hard block. **Fixed a
+  pre-existing bug** where `quota_exceeded` was coupled to the configured warning thresholds — it
+  now fires purely on the 100% boundary, independent of the threshold list.
+- **Batch 3 — B2 smart-deletion sweep (opt-in).** `enforceQuotaOverage` in `cleanup/service.ts`:
+  for users over 100% past the grace period, deletes files (DB before S3, failure-tolerant) in the
+  safe order — orphan uploads oldest-first, then inactive-share files — stopping at the limit; if
+  nothing safe remains (everything in active shares), deletes **nothing** and counts the user as
+  `blocked`. Emits `QUOTA_FILES_DELETED` audit + `files_auto_deleted` notice; clears
+  `quotaExceededSince` when back under. Emptied shares left as-is (§7). Scheduler gates the sweep on
+  `quotaSmartDeletionEnabled` and feeds it into the aggregated run summary.
+- **Batch 4 — admin UI + i18n.** Surfaced the 7 keys in the Storage settings group (Switches +
+  number/text/bytes inputs) with client-side validation mirroring the server (CSV thresholds, factor
+  ≥ 1, BigInt-safe non-negative bytes); reassuring copy (smart deletion off by default). i18n in 23
+  locales + the `audit.actions.QUOTA_FILES_DELETED` label.
+- **Batch 5 — docs + tracking.** Extended the docs "Automatic Cleanup" page (EN + FR) with a
+  "Storage quota policy" section: threshold warnings, grace + opt-in smart deletion (safe order,
+  never touches active-share files, off by default), reverse-share soft enforcement (factor/cap,
+  external vs the owner's own direct uploads, on by default), and a table of all 7 config keys.
+- **Tests:** server 1453 (91 files), web 321 (33 files), shared 14 (2) = **1788 total**, all green.
+  Docs build green (EN/FR parity); Biome + knip clean.
+
+---
+
+## 2026-06-03 (5.2 Auto-cleanup — Phase A.1: explicit lifecycle + manual pause)
+
+**Reworked the share/reverse-share cleanup into an explicit two-phase lifecycle across 5 sequential batches**
+
+- **Owner decision.** Replace Phase A's implicit "expired/maxViews → 410 at read time → hard-delete
+  after grace" with an **explicit, persisted, two-phase lifecycle**:
+  `active → deactivated (expired | max_views | manual pause) → deleted`, uniform across triggers,
+  with a single grace measured from `deactivatedAt`, manual pause/resume, and **manual pauses never
+  auto-deleted**. Applies equally to shares and reverse shares. Reuses Phase A's delete helpers +
+  notification types.
+- **Batch 1 — schema.** Additive migration `share_lifecycle`: `Share.isActive` / `deactivatedAt` /
+  `deactivationReason`; `ReverseShare.deactivatedAt` / `deactivationReason` (already had `isActive`).
+  Shared `DeactivationReason = "expired" | "max_views" | "manual"`.
+- **Batch 2 — read-time gating + transitions.** `getShare` gates on `isActive` first (with defensive
+  expiry/maxViews checks); maxViews increment sets deactivation inline; manual `pauseShare`/
+  `resumeShare`; extending expiration / raising maxViews reactivates and resets notified flags.
+  Reverse-share `isActive` toggle aligned to set/clear `deactivatedAt`/reason.
+- **Batch 3 — scheduler sweeps.** Split the three old cleanup functions into a **deactivation sweep**
+  (`deactivateEndedShares`/`…ReverseShares` — persist `expired`/`max_views`, upgrade stale `manual`
+  pauses to `expired`, notify once) and a **deletion sweep** (`deleteDeactivatedShares`/`…ReverseShares`
+  — delete where reason ∈ {expired, max_views} AND `deactivatedAt < now − grace`, manual excluded,
+  warn once). Scheduler now drops the `maxViewsCleanupDays` read.
+- **Batch 4 — endpoint + UI.** Owner-only pause/resume endpoint; share card/list shows a
+  deactivated/paused state with a reason badge (`expired` / view limit / paused), resume + renew/extend
+  affordances, mirroring the reverse-share toggle; API client + query invalidation; i18n in 23 locales.
+- **Batch 5 — config retirement + docs + tracking.** **Retired `maxViewsCleanupDays`** everywhere
+  (seed, server validation, web settings group + 23-locale i18n, tests, docs) — superseded by the
+  single uniform `autoCleanupGracePeriodDays` from `deactivatedAt`. Reworded the grace-period docs/i18n
+  to "days after deactivation". New audit actions `SHARE_DEACTIVATED`/`SHARE_REACTIVATED` +
+  reverse-share variants documented; retired `REVERSE_SHARE_ACTIVATE`/`REVERSE_SHARE_DEACTIVATE`.
+  Rewrote the docs "Automatic Cleanup" page (EN + FR) around the two-phase lifecycle + manual pause.
+- **Tests:** server 1344 (89 files), web 310 (32 files), shared 14 (2) = **1668 total**, all green.
+  Docs build green (EN/FR parity); Biome + knip clean; zero `maxViewsCleanupDays` references in `apps/`.
+
+---
+
+## 2026-06-03 (5.2 Auto-cleanup — Phase A complete)
+
+**Lifecycle management & automatic cleanup — Phase A shipped across 8 sequential batches**
+
+- **Scope & design.** Phased delivery: Phase A is safe, mostly non-destructive-by-default
+  lifecycle management; Phase B (aggressive quota-overage policy) remains. Binding decisions:
+  auto-deletion is **opt-in and off by default**; **conservative defaults** (long grace,
+  warn-before-delete, never touch content inside an active share); every automated deletion
+  emits an audit event; warnings reuse the 8.2 notification catalog/queue/preferences.
+- **Batch 1 — schema + config.** Additive migration `cleanup_lifecycle`: `User.deactivatedAt`,
+  `Share.notifiedForPendingDeletion`, `ReverseShare.notifiedForPendingDeletion`. Seeded the
+  9-key `cleanup` config group (conservative defaults) with per-key bounds validation in both
+  single + bulk update paths.
+- **Batch 2 — email.** New notification types `share_pending_deletion`,
+  `reverse_share_pending_deletion`, `reverse_share_auto_deleted` (catalog + Zod payloads +
+  Outlook-safe indigo templates + en/fr keys), reusing existing `share_auto_deleted` /
+  `files_auto_deleted` where present.
+- **Batch 3 — expired/maxViews cleanup (A2–A5).** New `modules/cleanup/service.ts`:
+  **share-link-only** deletion for expired + maxViews regular shares (never the owner's
+  File/Folder/S3 — files live in the file manager and can be in multiple shares), storage-
+  reclaiming deletion for expired reverse shares + their S3 objects, warn-once pending-deletion
+  emails, all wrapped failure-tolerant with `{ warned, deleted, errors }` summaries.
+- **Batch 4 — account lifecycle (A6–A8).** Read-time **reversible** block on shares/reverse
+  shares of a deactivated owner (derived from `creator.isActive`, ungated); `purgeUserContent`
+  helper; **full deletion cascade** on `deleteUser` (files, shares, reverse shares, S3) fixing
+  the old `SetNull` orphaning; opt-in `cleanupDeactivatedAccounts`. This landed meaningful
+  `user` + `reverse-share` service/integration coverage → **TD-49 resolved**.
+- **Batch 5 — orphan sweep (A9).** Paginated `listObjects` on the S3 provider; bidirectional
+  `sweepOrphans` (DB→missing-S3 and S3→no-DB-row) with a min-age guard; retired the one-shot
+  `cleanup-orphan-files.ts` into a thin CLI wrapper → **TD-17 and TD-25 resolved**.
+- **Batch 6 — scheduler (A1).** In-process chained-`setTimeout` scheduler modeled on the audit
+  retention scheduler; reads config live each run; registered in `server.ts` boot + `onClose`.
+- **Batch 7 — admin UI (A10).** Rendered the `cleanup` settings group with client-side bounds
+  validation mirroring the server; labels/descriptions across all 23 locales.
+- **Batch 8 — docs + tracking.** New "Automatic Cleanup" Configuration page (EN + FR) in the
+  docs site; this tracking update.
+- **Tests:** server 1300 (83 files), web 291 (30 files), shared 14 (2) = **1605 total**, all green.
+
+---
+
 ## 2026-06-02 (Code hygiene — remove TD-xx ticket references from code)
 
 **Stripped all internal tech-debt ticket citations (`TD-N`) from source code files and test labels**

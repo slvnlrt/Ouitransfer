@@ -17,6 +17,7 @@ model User {
   image     String?
   isAdmin   Boolean  @default(false)
   isActive  Boolean  @default(true)
+  deactivatedAt DateTime? // Set when the account is deactivated; cleared on reactivation. Drives delayed file cleanup.
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -27,6 +28,9 @@ model User {
 
   maxFileSizeOverride     BigInt? // Per-user max file size override (bytes). null=inherit, 0=unlimited.
   maxTotalStorageOverride BigInt? // Per-user max total storage override (bytes). null=inherit, 0=unlimited.
+
+  quotaLastWarnedThreshold Int?      // Highest quota-usage threshold already warned about (5.2 Phase B B1 dedup). null = re-armed.
+  quotaExceededSince       DateTime? // When usage first crossed 100% (5.2 Phase B B2 grace); cleared when back under.
 
   groupId String?
   group   Group?  @relation(fields: [groupId], references: [id], onDelete: SetNull)
@@ -116,9 +120,13 @@ model Share {
   inactivityAlertSent  Boolean   @default(false)
   lastDownloadedAt     DateTime?
   notifyOnDownload     Boolean   @default(false)
+  isActive             Boolean   @default(true)
+  deactivatedAt        DateTime? // Set when the share is deactivated (expired/maxViews/manual); cleared on reactivation. Drives delayed deletion.
+  deactivationReason   String? // DeactivationReason: "expired" | "max_views" | "manual"
   notifiedForExpiring  Boolean   @default(false)
   notifiedForExpired   Boolean   @default(false)
   notifiedForMaxViews  Boolean   @default(false)
+  notifiedForPendingDeletion Boolean @default(false)
 
   files      File[]           @relation("ShareFiles")
   folders    Folder[]         @relation("ShareFolders")
@@ -331,12 +339,15 @@ model ReverseShare {
   password           String?
   pageLayout         PageLayout       @default(DEFAULT)
   isActive           Boolean          @default(true)
+  deactivatedAt      DateTime? // Set when the reverse share is deactivated (expired/manual); cleared on reactivation. Drives delayed deletion.
+  deactivationReason String? // DeactivationReason (reverse share): "expired" | "manual"
   nameFieldRequired  FieldRequirement @default(OPTIONAL)
   emailFieldRequired FieldRequirement @default(OPTIONAL)
   notifyOnUpload       Boolean          @default(false)
   bypassUploadCooldown Boolean          @default(false)
   notifiedForExpiring  Boolean          @default(false)
   notifiedForExpired   Boolean          @default(false)
+  notifiedForPendingDeletion Boolean    @default(false)
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
 

@@ -1,6 +1,6 @@
 import type { UseFormReturn } from "react-hook-form";
 
-export type ValidGroup = "security" | "email" | "general" | "storage";
+export type ValidGroup = "security" | "email" | "general" | "storage" | "cleanup";
 
 export type GroupFormData = {
   configs: Record<string, string>;

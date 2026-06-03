@@ -17,6 +17,7 @@ import { emailService } from "../email/service.js";
 import { buildShareLink, buildShareManageUrl } from "../email/url-builder.js";
 import { FolderService } from "../folder/service.js";
 import { type CreateShareInput, ShareResponseSchema, type UpdateShareInput } from "./dto.js";
+import { type DeactivationReason, deactivationFields, reactivationFields } from "./lifecycle.js";
 import { type IShareRepository, PrismaShareRepository } from "./repository.js";
 
 export interface ShareAccessContext {
@@ -76,6 +77,9 @@ export class ShareService {
           }
         : null,
       maxViews: share.maxViews,
+      isActive: share.isActive,
+      deactivatedAt: share.deactivatedAt?.toISOString() ?? null,
+      deactivationReason: (share.deactivationReason as DeactivationReason | null) ?? null,
       security: {
         hasPassword: !!share.security.password,
       },
@@ -123,6 +127,11 @@ export class ShareService {
             lastDownloadedAt: null,
             notifiedForExpiring: false,
             notifiedForExpired: false,
+            // Lifecycle internals are owner-only. A non-owner only ever reaches
+            // this path for an active share, so report the visible (active) state.
+            isActive: true,
+            deactivatedAt: null,
+            deactivationReason: null,
           }),
       // Strip creator from response (internal use only)
       creator: undefined,
@@ -236,6 +245,34 @@ export class ShareService {
       return ShareResponseSchema.parse(await this.formatShareResponse(share));
     }
 
+    // Block public access when the share's owner is deactivated. This is a
+    // read-time gate derived from `creator.isActive`, so it auto-reverses when
+    // the account is reactivated (no stored flag). The owner's own access is
+    // already returned above, so they are never blocked from their own share.
+    if (share.creator && share.creator.isActive === false) {
+      throw new AppError(403, "Share owner is inactive", ErrorCodes.OWNER_INACTIVE);
+    }
+
+    // Persisted deactivation gate (Phase A.1). A deactivated share is blocked from
+    // public access; the response is chosen by *why* it was deactivated so the
+    // visitor sees a meaningful error. Owner-self access is already returned above,
+    // so the owner is never blocked from managing their own paused/expired share.
+    if (!share.isActive) {
+      switch (share.deactivationReason) {
+        case "max_views":
+          throw new AppError(410, "Share has reached maximum views", ErrorCodes.MAX_VIEWS_REACHED);
+        case "manual":
+          throw new AppError(403, "Share is inactive", ErrorCodes.SHARE_INACTIVE);
+        // `expired` and any unexpected/null reason fall through to SHARE_EXPIRED:
+        // a deactivated share is, by default, no longer available.
+        default:
+          throw new AppError(410, "Share has expired", ErrorCodes.SHARE_EXPIRED);
+      }
+    }
+
+    // Defensive expiry check: a share that expires between scheduler sweeps is
+    // still `isActive=true` here, so block immediately by date even though the
+    // persisted deactivation hasn't been written yet (the sweep backfills it).
     if (share.expiration && new Date() > new Date(share.expiration)) {
       throw new AppError(410, "Share has expired", ErrorCodes.SHARE_EXPIRED);
     }
@@ -323,6 +360,22 @@ export class ShareService {
     );
     if (!incremented) {
       throw new AppError(410, "Share has reached maximum views", ErrorCodes.MAX_VIEWS_REACHED);
+    }
+
+    // maxViews transition (Phase A.1): when this access is the one that hits the
+    // limit, persist the deactivation so the read gate above blocks subsequent
+    // visitors and Batch 3's deletion sweep can act. Race-safe: the atomic
+    // increment only lets `views < maxViews` advance, so exactly one request
+    // observes `newViews === maxViews` as the hitting request. The compare-and-set
+    // (`isActive: true` guard) is idempotent — it never clobbers an earlier
+    // deactivatedAt set by a manual pause or the scheduler.
+    if (share.maxViews !== null && newViews >= share.maxViews && share.isActive) {
+      await prisma.share
+        .updateMany({
+          where: { id: shareId, isActive: true },
+          data: deactivationFields("max_views"),
+        })
+        .catch((err) => getLogger().error({ err }, "Failed to persist maxViews deactivation"));
     }
 
     if (context?.ipAddress) {
@@ -417,7 +470,12 @@ export class ShareService {
     return ShareResponseSchema.parse(await this.formatShareResponse(updatedShare, false));
   }
 
-  async updateShare(shareId: string, data: Omit<UpdateShareInput, "id">, userId: string) {
+  async updateShare(
+    shareId: string,
+    data: Omit<UpdateShareInput, "id">,
+    userId: string,
+    context?: ShareAccessContext,
+  ) {
     const { password, maxViews, recipients, expiration, ...shareData } = data;
 
     const share = await this.shareRepository.findShareById(shareId);
@@ -488,6 +546,8 @@ export class ShareService {
     if (newExp && (!oldExp || newExp > oldExp)) {
       updateData.notifiedForExpiring = false;
       updateData.notifiedForExpired = false;
+      // Extending expiration moves the pending-deletion window, so re-arm the warning.
+      updateData.notifiedForPendingDeletion = false;
     }
 
     // Reset maxViews notification flag when maxViews is increased (allows re-notification)
@@ -495,13 +555,133 @@ export class ShareService {
       const oldMax = share.maxViews;
       if (maxViews === null || (oldMax !== null && maxViews > oldMax)) {
         updateData.notifiedForMaxViews = false;
+        // Raising/clearing maxViews can take the share back under its threshold,
+        // so a previously-armed pending-deletion warning should re-arm too.
+        updateData.notifiedForPendingDeletion = false;
+      }
+    }
+
+    // Reactivation on extend (Phase A.1): if the share is currently deactivated and
+    // the update extends `expiration` / raises-or-clears `maxViews` such that it is
+    // valid again, bring it back to active and clear the deactivation metadata. A
+    // share that is still expired or still maxed after the update stays deactivated
+    // (read-time gate stays closed) — the owner must extend it for real to revive it.
+    let reactivated = false;
+    if (!share.isActive) {
+      // Effective values after this update (undefined = unchanged → keep existing).
+      const effectiveExpiration = newExp !== undefined ? newExp : share.expiration;
+      const effectiveMaxViews = maxViews !== undefined ? maxViews : share.maxViews;
+
+      const stillExpired = !!effectiveExpiration && new Date() > new Date(effectiveExpiration);
+      const stillMaxed = effectiveMaxViews !== null && share.views >= effectiveMaxViews;
+
+      if (!stillExpired && !stillMaxed) {
+        Object.assign(updateData, reactivationFields());
+        reactivated = true;
       }
     }
 
     await this.shareRepository.updateShare(shareId, updateData);
+
+    // A renew-via-extend that revives a deactivated share is a lifecycle transition,
+    // so it writes SHARE_REACTIVATED (with `via: "extend"`) on top of the generic
+    // SHARE_UPDATE the route emits — mirroring the manual `resumeShare` audit so the
+    // activity log records every active⇄deactivated transition uniformly.
+    if (reactivated) {
+      logAuditEvent({
+        action: "SHARE_REACTIVATED",
+        userId,
+        ipAddress: context?.ipAddress ?? "system",
+        userAgent: context?.userAgent,
+        targetType: "share",
+        targetId: shareId,
+        metadata: { via: "extend" },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+    }
+
     const shareWithRelations = await this.shareRepository.findShareById(shareId);
 
     return ShareResponseSchema.parse(await this.formatShareResponse(shareWithRelations));
+  }
+
+  /**
+   * Manually pause a share (owner action, Phase A.1). Sets the share inactive with
+   * reason `manual` and stamps `deactivatedAt`. Manual pauses are never auto-deleted
+   * by the cleanup sweep. Idempotent on the audit metadata — pausing an
+   * already-paused share simply refreshes `deactivatedAt`.
+   *
+   * @param shareId  the share to pause
+   * @param ownerId  the authenticated user; must own the share
+   * @param context  optional request context for the audit event (ip / user-agent)
+   */
+  async pauseShare(shareId: string, ownerId: string, context?: ShareAccessContext) {
+    const share = await this.shareRepository.findShareById(shareId);
+    if (!share) {
+      throw new NotFoundError("Share not found");
+    }
+    if (share.creatorId !== ownerId) {
+      throw new ForbiddenError("Unauthorized to update this share");
+    }
+
+    await this.shareRepository.updateShare(shareId, deactivationFields("manual"));
+
+    logAuditEvent({
+      action: "SHARE_DEACTIVATED",
+      userId: ownerId,
+      ipAddress: context?.ipAddress ?? "system",
+      userAgent: context?.userAgent,
+      targetType: "share",
+      targetId: shareId,
+      metadata: { reason: "manual" },
+    }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
+    const updated = await this.shareRepository.findShareById(shareId);
+    return ShareResponseSchema.parse(await this.formatShareResponse(updated));
+  }
+
+  /**
+   * Manually resume a paused share (owner action, Phase A.1). Clears the
+   * deactivation metadata and re-arms the pending-deletion warning. Refuses to
+   * resume a share that would still be expired or maxed — those cannot be revived
+   * without extending `expiration` / raising `maxViews` (read-time stays blocked),
+   * so resuming them would be a no-op that misleads the owner.
+   *
+   * @param shareId  the share to resume
+   * @param ownerId  the authenticated user; must own the share
+   * @param context  optional request context for the audit event (ip / user-agent)
+   */
+  async resumeShare(shareId: string, ownerId: string, context?: ShareAccessContext) {
+    const share = await this.shareRepository.findShareById(shareId);
+    if (!share) {
+      throw new NotFoundError("Share not found");
+    }
+    if (share.creatorId !== ownerId) {
+      throw new ForbiddenError("Unauthorized to update this share");
+    }
+
+    // Cannot truly revive a share that is still past its limits — the read-time
+    // gate would block it again immediately. The owner must extend it instead.
+    const stillExpired = !!share.expiration && new Date() > new Date(share.expiration);
+    const stillMaxed = share.maxViews !== null && share.views >= share.maxViews;
+    if (stillExpired || stillMaxed) {
+      throw new ValidationError(
+        "Cannot resume a share that is still expired or has reached its view limit; extend it instead",
+      );
+    }
+
+    await this.shareRepository.updateShare(shareId, reactivationFields());
+
+    logAuditEvent({
+      action: "SHARE_REACTIVATED",
+      userId: ownerId,
+      ipAddress: context?.ipAddress ?? "system",
+      userAgent: context?.userAgent,
+      targetType: "share",
+      targetId: shareId,
+    }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
+    const updated = await this.shareRepository.findShareById(shareId);
+    return ShareResponseSchema.parse(await this.formatShareResponse(updated));
   }
 
   async deleteShare(id: string) {

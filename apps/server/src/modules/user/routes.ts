@@ -365,7 +365,7 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     handler: async (request, reply) => {
-      const user = await userService.deleteUser(request.params.id);
+      const { user, purge } = await userService.deleteUser(request.params.id);
 
       // Audit user deletion (fire-and-forget)
       logAuditEvent({
@@ -378,7 +378,15 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
         // Intentionally omit the deleted user's email: this event runs as part
         // of GDPR erasure, so re-persisting the email here would undo the
         // redaction performed in deleteUser. targetId identifies the user.
-        metadata: { deletedUserId: request.params.id },
+        // Enriched with the cascade counts removed by the full purge (A8).
+        metadata: {
+          deletedUserId: request.params.id,
+          files: purge.files,
+          shares: purge.shares,
+          reverseShares: purge.reverseShares,
+          folders: purge.folders,
+          s3Errors: purge.s3Errors,
+        },
       }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
 
       return reply.send(serializeUser(user));

@@ -1,4 +1,3 @@
-// TODO: finalize when 5.2 triggers are implemented
 import type { TranslationFn } from "../i18n/loader.js";
 import type { LayoutSlots } from "./base-layout.js";
 

@@ -170,7 +170,10 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         );
       }
       const { id, ...updateData } = request.body;
-      const reverseShare = await reverseShareService.updateReverseShare(id, updateData, userId);
+      const reverseShare = await reverseShareService.updateReverseShare(id, updateData, userId, {
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+      });
       logAuditEvent({
         action: "REVERSE_SHARE_UPDATE",
         ipAddress: request.ip,
@@ -847,7 +850,7 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         userId,
       );
       logAuditEvent({
-        action: "REVERSE_SHARE_ACTIVATE",
+        action: "REVERSE_SHARE_REACTIVATED",
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
         userId,
@@ -891,12 +894,13 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         userId,
       );
       logAuditEvent({
-        action: "REVERSE_SHARE_DEACTIVATE",
+        action: "REVERSE_SHARE_DEACTIVATED",
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
         userId,
         targetType: "reverse_share",
         targetId: request.params.id,
+        metadata: { reason: "manual" },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
       return reply.send({ reverseShare });
     },

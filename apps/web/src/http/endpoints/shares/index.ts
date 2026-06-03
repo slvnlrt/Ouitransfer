@@ -23,11 +23,13 @@ import type {
   ListUserSharesResult,
   NotifyRecipientsBody,
   NotifyRecipientsResult,
+  PauseShareResult,
   RemoveFilesBody,
   RemoveFilesResult,
   RemoveFoldersResult,
   RemoveRecipientsBody,
   RemoveRecipientsResult,
+  ResumeShareResult,
   UpdateShareBody,
   UpdateSharePasswordBody,
   UpdateSharePasswordResult,
@@ -98,6 +100,31 @@ export const deleteShare = (
   options?: AxiosRequestConfig,
 ): Promise<DeleteShareResult> => {
   return apiInstance.delete(`/api/shares/${id}`, options);
+};
+
+/**
+ * Manually pause (deactivate) a share. Owner-only. The share is set inactive
+ * with reason "manual" and is no longer accessible until resumed.
+ * @summary Pause a share
+ */
+export const pauseShare = (
+  shareId: string,
+  options?: AxiosRequestConfig,
+): Promise<PauseShareResult> => {
+  return apiInstance.patch(`/api/shares/${shareId}/pause`, undefined, options);
+};
+
+/**
+ * Resume a manually-paused share. Owner-only. Rejected by the server (400) if
+ * the share is still expired or has reached its view limit — extend it via
+ * {@link updateShare} instead, which also reactivates it.
+ * @summary Resume a paused share
+ */
+export const resumeShare = (
+  shareId: string,
+  options?: AxiosRequestConfig,
+): Promise<ResumeShareResult> => {
+  return apiInstance.patch(`/api/shares/${shareId}/resume`, undefined, options);
 };
 
 /**

@@ -196,6 +196,10 @@ function makeShare(overrides: Record<string, unknown> = {}) {
     notifiedForMaxViews: false,
     notifiedForExpiring: false,
     notifiedForExpired: false,
+    notifiedForPendingDeletion: false,
+    isActive: true,
+    deactivatedAt: null,
+    deactivationReason: null,
     security: { id: SECURITY_ID, password: null, createdAt: new Date(), updatedAt: new Date() },
     files: [
       {
@@ -935,7 +939,7 @@ describe("Visitor Tracking — integration", () => {
       expect(mockEmailSend).not.toHaveBeenCalledWith("share_accessed", expect.anything());
     });
 
-    it("does NOT send share_accessed email when creator.isActive is false (I-5)", async () => {
+    it("blocks access and sends no share_accessed email when creator.isActive is false (I-5 / A6)", async () => {
       const share = makeShare({
         creator: { email: "creator@example.com", locale: "en", isActive: false },
       });
@@ -948,7 +952,10 @@ describe("Visitor Tracking — integration", () => {
         url: `/shares/alias/${ALIAS}`,
       });
 
-      expect(res.statusCode).toBe(200);
+      // A6: a deactivated owner's share is blocked at read time (auto-reverses on
+      // reactivation), so public access is refused and no notification fires.
+      expect(res.statusCode).toBe(403);
+      expect(res.json().code).toBe("OWNER_INACTIVE");
 
       await new Promise((r) => setTimeout(r, 20));
 

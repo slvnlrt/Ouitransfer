@@ -87,7 +87,11 @@ export function SettingsInput({
       );
     }
 
-    if (config.key === "maxFileSize" || config.key === "maxTotalStoragePerUser") {
+    if (
+      config.key === "maxFileSize" ||
+      config.key === "maxTotalStoragePerUser" ||
+      config.key === "reverseShareAbsoluteMaxBytes"
+    ) {
       const currentValue = watch(`configs.${config.key}`) || "0";
       return (
         <FileSizeInput

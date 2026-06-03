@@ -169,6 +169,8 @@ Ouitransfer enregistre environ 77 types d'actions distincts pour l'ensemble des 
 | `SHARE_PASSWORD_FAILED` | Tentative de mot de passe incorrecte sur un partage protégé |
 | `SHARE_RECIPIENT_ADD` | Destinataires e-mail ajoutés à un partage |
 | `SHARE_RECIPIENT_NOTIFY` | E-mails de notification envoyés aux destinataires du partage |
+| `SHARE_DEACTIVATED` | Partage désactivé — mis en pause manuellement, ou automatiquement à son expiration ou à l'atteinte de sa limite de vues (raison enregistrée) |
+| `SHARE_REACTIVATED` | Partage réactivé — repris manuellement, ou en prolongeant son expiration / en augmentant sa limite de vues |
 
 ### Fichiers
 
@@ -196,7 +198,8 @@ Ouitransfer enregistre environ 77 types d'actions distincts pour l'ensemble des 
 | `REVERSE_SHARE_ACCESS` | Page de téléversement visitée (anonyme) |
 | `REVERSE_SHARE_UPLOAD` | Fichier téléversé via un lien de téléversement (inclut l'e-mail/nom de l'expéditeur si fourni) |
 | `REVERSE_SHARE_FILE_DOWNLOAD` | Fichier téléchargé depuis un lien de téléversement |
-| `REVERSE_SHARE_ACTIVATE` / `REVERSE_SHARE_DEACTIVATE` | Lien de téléversement activé ou désactivé |
+| `REVERSE_SHARE_DEACTIVATED` | Lien de téléversement désactivé — mis en pause manuellement, ou automatiquement à son expiration (raison enregistrée) |
+| `REVERSE_SHARE_REACTIVATED` | Lien de téléversement réactivé — repris manuellement, ou en prolongeant son expiration |
 
 ### Groupes
 
@@ -231,6 +234,10 @@ Ouitransfer enregistre environ 77 types d'actions distincts pour l'ensemble des 
 | Action | Description |
 |--------|-------------|
 | `AUDIT_RETENTION_CLEANUP` | Exécution de nettoyage planifiée — enregistre le nombre d'entrées anciennes supprimées |
+| `SHARE_AUTO_DELETED` | Lien de partage désactivé supprimé définitivement par le [Nettoyage automatique](/docs/v1-beta/automatic-cleanup) après la période de grâce |
+| `REVERSE_SHARE_AUTO_DELETED` | Partage inversé expiré et ses fichiers téléversés supprimés définitivement par le Nettoyage automatique |
+| `ACCOUNT_FILES_CLEANED` | Fichiers d'un compte désactivé supprimés par le Nettoyage automatique |
+| `ORPHAN_S3_DELETED` / `ORPHAN_DB_DELETED` | Le balayage des orphelins a supprimé un objet de stockage sans enregistrement, ou un enregistrement pointant vers un objet manquant |
 
 ---
 

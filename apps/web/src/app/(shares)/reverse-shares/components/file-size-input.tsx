@@ -19,48 +19,100 @@ export interface FileSizeInputProps {
 
 type Unit = "MB" | "GB" | "TB" | "PB";
 
-const UNIT_MULTIPLIERS: Record<Unit, number> = {
-  MB: 1024 * 1024,
-  GB: 1024 * 1024 * 1024,
-  TB: 1024 * 1024 * 1024 * 1024,
-  PB: 1024 * 1024 * 1024 * 1024 * 1024,
+// Byte multipliers as BigInt so conversions stay exact for whole-number sizes
+// well above Number.MAX_SAFE_INTEGER (~9PB). The byte `value` flowing in/out of
+// this widget feeds BigInt-exact fields (maxFileSize, maxTotalStoragePerUser,
+// reverseShareAbsoluteMaxBytes), so the round-trip must not lose precision.
+// (The `BigInt(...)` constructor is used instead of `n` literals because the
+// web tsconfig targets ES2017, which predates BigInt-literal syntax.)
+const ZERO = BigInt(0);
+const KIB = BigInt(1024);
+const UNIT_MULTIPLIERS: Record<Unit, bigint> = {
+  MB: KIB * KIB,
+  GB: KIB * KIB * KIB,
+  TB: KIB * KIB * KIB * KIB,
+  PB: KIB * KIB * KIB * KIB * KIB,
 };
 
-function bytesToHumanReadable(bytes: string): { value: string; unit: Unit } {
-  const numBytes = parseInt(bytes, 10);
+const UNITS_DESC: Unit[] = ["PB", "TB", "GB", "MB"];
 
-  if (!numBytes || numBytes <= 0) {
+/** Parse a decimal byte string into a non-negative BigInt; 0 on any garbage. */
+function parseBytes(bytes: string): bigint {
+  if (!/^\d+$/.test(bytes.trim())) return ZERO;
+  try {
+    const n = BigInt(bytes.trim());
+    return n > ZERO ? n : ZERO;
+  } catch {
+    return ZERO;
+  }
+}
+
+/**
+ * Pick a human-readable {value, unit} for a byte count.
+ *
+ * When the byte count is an exact multiple of a unit, the value is rendered as a
+ * whole number using BigInt division — exact at any magnitude. Otherwise it
+ * falls back to a two-decimal Number rendering of the largest unit ≥ 1 (purely
+ * for display; the exact byte value is preserved in the form state and is only
+ * recomputed from the display on an explicit edit).
+ */
+function bytesToHumanReadable(bytes: string): { value: string; unit: Unit } {
+  const numBytes = parseBytes(bytes);
+  if (numBytes <= ZERO) {
     return { value: "0", unit: "MB" };
   }
 
-  const units: Unit[] = ["PB", "TB", "GB", "MB"];
-
-  for (const unit of units) {
+  // Prefer the largest unit that divides the byte count exactly → clean integer.
+  for (const unit of UNITS_DESC) {
     const multiplier = UNIT_MULTIPLIERS[unit];
-    const value = numBytes / multiplier;
-
-    if (value >= 1) {
-      const rounded = Math.round(value * 100) / 100;
-
-      if (Math.abs(rounded - Math.round(rounded)) < 0.01) {
-        return { value: Math.round(rounded).toString(), unit };
-      } else {
-        return { value: rounded.toFixed(2), unit };
-      }
+    if (numBytes >= multiplier && numBytes % multiplier === ZERO) {
+      return { value: (numBytes / multiplier).toString(), unit };
     }
   }
 
-  const mbValue = numBytes / UNIT_MULTIPLIERS.MB;
-  return { value: mbValue.toFixed(2), unit: "MB" as Unit };
+  // No exact division: render the largest unit with magnitude ≥ 1, two decimals.
+  // (Fractional human values are inherently approximate; realistic fractional
+  // inputs are small, so Number precision is not a concern here.)
+  for (const unit of UNITS_DESC) {
+    const multiplier = UNIT_MULTIPLIERS[unit];
+    if (numBytes >= multiplier) {
+      const value = Number(numBytes) / Number(multiplier);
+      const rounded = Math.round(value * 100) / 100;
+      return { value: rounded.toFixed(2), unit };
+    }
+  }
+
+  const mbValue = Number(numBytes) / Number(UNIT_MULTIPLIERS.MB);
+  return { value: mbValue.toFixed(2), unit: "MB" };
 }
 
+/**
+ * Convert a human value + unit back to an exact byte string.
+ *
+ * A whole-number value uses BigInt multiplication (exact at any magnitude). A
+ * fractional value uses scaled-integer math: it splits on the decimal point and
+ * combines `intPart * multiplier + fracPart * multiplier / 10^fracDigits`, all
+ * in BigInt, so even fractional inputs convert without Number rounding.
+ */
 function humanReadableToBytes(value: string, unit: Unit): string {
-  const numValue = parseFloat(value);
-  if (Number.isNaN(numValue) || numValue <= 0) {
+  const trimmed = value.trim();
+  if (trimmed === "" || !/^\d*\.?\d*$/.test(trimmed) || trimmed === ".") {
     return "0";
   }
 
-  return Math.floor(numValue * UNIT_MULTIPLIERS[unit]).toString();
+  const multiplier = UNIT_MULTIPLIERS[unit];
+  const [intPartRaw, fracPartRaw = ""] = trimmed.split(".");
+  const intPart = intPartRaw === "" ? ZERO : BigInt(intPartRaw);
+
+  let bytes = intPart * multiplier;
+  if (fracPartRaw !== "") {
+    const fracValue = BigInt(fracPartRaw);
+    const scale = BigInt(10) ** BigInt(fracPartRaw.length);
+    // floor(fracValue / 10^fracDigits * multiplier) via integer arithmetic.
+    bytes += (fracValue * multiplier) / scale;
+  }
+
+  return bytes > ZERO ? bytes.toString() : "0";
 }
 
 export function FileSizeInput({

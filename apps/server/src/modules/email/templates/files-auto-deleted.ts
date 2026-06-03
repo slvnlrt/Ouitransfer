@@ -1,4 +1,3 @@
-// TODO: finalize when 5.2 triggers are implemented
 import type { TranslationFn } from "../i18n/loader.js";
 import type { LayoutSlots } from "./base-layout.js";
 
@@ -8,14 +7,20 @@ export interface FilesAutoDeletedData {
 }
 
 export function renderFilesAutoDeleted(data: FilesAutoDeletedData, t: TranslationFn): LayoutSlots {
-  const fileList = data.fileNames.join(", ");
+  // Account-level deletion (A7) passes no file names — the whole account's files
+  // were purged — so render the account variant instead of an empty list. The
+  // per-file `body` is used when explicit file names are supplied.
+  const body =
+    data.fileNames.length === 0
+      ? t("filesAutoDeleted.bodyAccount", { reason: data.reason })
+      : t("filesAutoDeleted.body", {
+          fileList: data.fileNames.join(", "),
+          reason: data.reason,
+        });
 
   return {
     subtitle: t("filesAutoDeleted.subtitle"),
-    body: t("filesAutoDeleted.body", {
-      fileList,
-      reason: data.reason,
-    }),
+    body,
     infoBox: t("filesAutoDeleted.info"),
   };
 }

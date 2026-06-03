@@ -12,6 +12,7 @@ import {
   UnauthorizedError,
   ValidationError,
 } from "../../utils/app-error.js";
+import { getClientInfo } from "../../utils/auth-cookies.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
@@ -247,7 +248,10 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         throw new UnauthorizedError();
       }
       const { id, ...updateData } = request.body;
-      const share = await shareService.updateShare(id, updateData, userId);
+      const share = await shareService.updateShare(id, updateData, userId, {
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+      });
       logAuditEvent({
         action: "SHARE_UPDATE",
         ipAddress: request.ip,
@@ -257,6 +261,84 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         targetId: id,
         metadata: { fields: Object.keys(updateData) },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+      return reply.send({ share });
+    },
+  });
+
+  app.route({
+    method: "PATCH",
+    url: "/shares/:shareId/pause",
+    preValidation,
+    schema: {
+      tags: ["Share"],
+      operationId: "pauseShare",
+      summary: "Pause a share",
+      description:
+        "Manually deactivate (pause) a share so it can no longer be accessed. Only the share creator can pause it. The share is set inactive with reason `manual`; manual pauses are never auto-deleted by the cleanup sweep. Resume with PATCH /shares/:shareId/resume.",
+      params: z.object({
+        shareId: z.string().describe("The share ID"),
+      }),
+      response: {
+        200: z.object({
+          share: ShareResponseSchema,
+        }),
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
+      }
+      const share = await shareService.pauseShare(
+        request.params.shareId,
+        userId,
+        getClientInfo(request),
+      );
+      return reply.send({ share });
+    },
+  });
+
+  app.route({
+    method: "PATCH",
+    url: "/shares/:shareId/resume",
+    preValidation,
+    schema: {
+      tags: ["Share"],
+      operationId: "resumeShare",
+      summary: "Resume a paused share",
+      description:
+        "Reactivate a manually-paused share. Only the share creator can resume it. Refused with 400 if the share is still expired or has reached its view limit — extend the expiration or raise maxViews via PUT /shares instead, which also reactivates it.",
+      params: z.object({
+        shareId: z.string().describe("The share ID"),
+      }),
+      response: {
+        200: z.object({
+          share: ShareResponseSchema,
+        }),
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
+      }
+      const share = await shareService.resumeShare(
+        request.params.shareId,
+        userId,
+        getClientInfo(request),
+      );
       return reply.send({ share });
     },
   });

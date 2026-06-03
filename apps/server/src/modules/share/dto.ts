@@ -164,6 +164,16 @@ export const ShareResponseSchema = z.object({
   lastDownloadedAt: z.string().datetime().nullable().describe("Last download timestamp"),
   notifiedForExpiring: z.boolean().describe("Whether expiring-soon notification was sent"),
   notifiedForExpired: z.boolean().describe("Whether expired notification was sent"),
+  isActive: z.boolean().describe("Whether the share is active (false = deactivated/paused)"),
+  deactivatedAt: z
+    .string()
+    .datetime()
+    .nullable()
+    .describe("When the share was deactivated; null while active"),
+  deactivationReason: z
+    .enum(["expired", "max_views", "manual"])
+    .nullable()
+    .describe("Why the share was deactivated; null while active"),
   recipients: z.array(
     z.object({
       id: z.string().describe("The recipient ID"),

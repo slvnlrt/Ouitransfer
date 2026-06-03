@@ -19,9 +19,11 @@ import { renderFilesAutoDeleted } from "./templates/files-auto-deleted.js";
 import { renderPasswordReset } from "./templates/password-reset.js";
 import { renderQuotaExceeded } from "./templates/quota-exceeded.js";
 import { renderQuotaWarning } from "./templates/quota-warning.js";
+import { renderReverseShareAutoDeleted } from "./templates/reverse-share-auto-deleted.js";
 import { renderReverseShareExpired } from "./templates/reverse-share-expired.js";
 import { renderReverseShareExpiring } from "./templates/reverse-share-expiring.js";
 import { renderReverseShareInvitation } from "./templates/reverse-share-invitation.js";
+import { renderReverseSharePendingDeletion } from "./templates/reverse-share-pending-deletion.js";
 import { renderReverseShareUploaded } from "./templates/reverse-share-uploaded.js";
 import { renderShareAccessed } from "./templates/share-accessed.js";
 import { renderShareAutoDeleted } from "./templates/share-auto-deleted.js";
@@ -31,6 +33,7 @@ import { renderShareExpiring } from "./templates/share-expiring.js";
 import { renderShareInvitation } from "./templates/share-invitation.js";
 import { renderShareMaxViewsReached } from "./templates/share-max-views-reached.js";
 import { renderShareNoActivity } from "./templates/share-no-activity.js";
+import { renderSharePendingDeletion } from "./templates/share-pending-deletion.js";
 import { renderTestEmail } from "./templates/test-email.js";
 import { renderWelcome } from "./templates/welcome.js";
 
@@ -143,6 +146,12 @@ const shareExpiredSchema = z.object({
   shareManageUrl: z.string(),
 });
 
+const sharePendingDeletionSchema = z.object({
+  shareName: z.string(),
+  deletionAt: isoDateString,
+  shareManageUrl: z.string(),
+});
+
 const shareMaxViewsReachedSchema = z.object({
   shareName: z.string(),
   maxViews: z.number(),
@@ -171,6 +180,17 @@ const reverseShareExpiringSchema = z.object({
 const reverseShareExpiredSchema = z.object({
   reverseShareName: z.string(),
   expiredAt: isoDateString,
+});
+
+const reverseSharePendingDeletionSchema = z.object({
+  reverseShareName: z.string(),
+  deletionAt: isoDateString,
+  reverseShareManageUrl: z.string(),
+});
+
+const reverseShareAutoDeletedSchema = z.object({
+  reverseShareName: z.string(),
+  deletedAt: isoDateString,
 });
 
 const quotaWarningSchema = z.object({
@@ -409,6 +429,24 @@ export const notificationCatalog = {
     displayName: "Share Expired",
   },
 
+  share_pending_deletion: {
+    render: asRender(renderSharePendingDeletion),
+    payloadSchema: sharePendingDeletionSchema,
+    priority: 0,
+    isCritical: false,
+    defaultFrequency: "immediate",
+    configurable: true,
+    hasUnsubscribe: true,
+    requiredI18nKeys: [
+      "sharePendingDeletion.subject",
+      "sharePendingDeletion.subtitle",
+      "sharePendingDeletion.body",
+      "sharePendingDeletion.cta",
+      "sharePendingDeletion.info",
+    ],
+    displayName: "Share Pending Deletion",
+  },
+
   share_max_views_reached: {
     render: asRender(renderShareMaxViewsReached),
     payloadSchema: shareMaxViewsReachedSchema,
@@ -499,6 +537,41 @@ export const notificationCatalog = {
     displayName: "Reverse Share Expired",
   },
 
+  reverse_share_pending_deletion: {
+    render: asRender(renderReverseSharePendingDeletion),
+    payloadSchema: reverseSharePendingDeletionSchema,
+    priority: 0,
+    isCritical: false,
+    defaultFrequency: "immediate",
+    configurable: true,
+    hasUnsubscribe: true,
+    requiredI18nKeys: [
+      "reverseSharePendingDeletion.subject",
+      "reverseSharePendingDeletion.subtitle",
+      "reverseSharePendingDeletion.body",
+      "reverseSharePendingDeletion.cta",
+      "reverseSharePendingDeletion.info",
+    ],
+    displayName: "Reverse Share Pending Deletion",
+  },
+
+  reverse_share_auto_deleted: {
+    render: asRender(renderReverseShareAutoDeleted),
+    payloadSchema: reverseShareAutoDeletedSchema,
+    priority: 0,
+    isCritical: false,
+    defaultFrequency: "immediate",
+    configurable: true,
+    hasUnsubscribe: true,
+    requiredI18nKeys: [
+      "reverseShareAutoDeleted.subject",
+      "reverseShareAutoDeleted.subtitle",
+      "reverseShareAutoDeleted.body",
+      "reverseShareAutoDeleted.info",
+    ],
+    displayName: "Reverse Share Auto-Deleted",
+  },
+
   // ── Quota & cleanup (configurable) ─────────────────────────────────────────
 
   quota_warning: {
@@ -548,6 +621,7 @@ export const notificationCatalog = {
       "filesAutoDeleted.subject",
       "filesAutoDeleted.subtitle",
       "filesAutoDeleted.body",
+      "filesAutoDeleted.bodyAccount",
       "filesAutoDeleted.info",
     ],
     displayName: "Files Auto-Deleted",

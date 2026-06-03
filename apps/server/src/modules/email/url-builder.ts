@@ -44,6 +44,24 @@ export async function buildShareManageUrl(shareId: string, appUrl?: string): Pro
 }
 
 /**
+ * Build the reverse-share management URL (owner dashboard).
+ * Format: `{appUrl}/reverse-shares` — lands the owner on their reverse-share
+ * management list. Unlike {@link buildShareManageUrl}, no `?open=` deep-link is
+ * appended because the reverse-shares page does not yet consume that param; a
+ * dead anchor would be misleading, so we link to the list page instead.
+ *
+ * Pass a pre-fetched `appUrl` to avoid a redundant DB round-trip when the
+ * caller has already resolved it.
+ */
+export async function buildReverseShareManageUrl(
+  _reverseShareId: string,
+  appUrl?: string,
+): Promise<string> {
+  const base = appUrl ?? (await getAppUrl());
+  return `${base}/reverse-shares`;
+}
+
+/**
  * Build the password reset URL.
  * Format: `{appUrl}/reset-password?token={token}`.
  */

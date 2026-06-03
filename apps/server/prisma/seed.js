@@ -227,6 +227,115 @@ const defaultConfigs = [
     group: "email",
     isSystem: true,
   },
+  // Lifecycle Management & Automatic Cleanup (5.2 Phase A).
+  // Conservative defaults: every destructive operation is opt-in and off by default.
+  {
+    key: "autoCleanupEnabled",
+    value: "false",
+    type: "boolean",
+    group: "cleanup",
+    isSystem: true,
+  },
+  {
+    key: "autoCleanupIntervalHours",
+    value: "24",
+    type: "number",
+    group: "cleanup",
+    isSystem: true,
+  },
+  {
+    key: "autoCleanupGracePeriodDays",
+    value: "7",
+    type: "number",
+    group: "cleanup",
+    isSystem: true,
+  },
+  {
+    key: "autoCleanupNotifyDaysBefore",
+    value: "3",
+    type: "number",
+    group: "cleanup",
+    isSystem: true,
+  },
+  {
+    key: "accountDeactivationCleanupEnabled",
+    value: "false",
+    type: "boolean",
+    group: "cleanup",
+    isSystem: true,
+  },
+  {
+    key: "accountDeactivationCleanupDays",
+    value: "30",
+    type: "number",
+    group: "cleanup",
+    isSystem: true,
+  },
+  {
+    key: "autoCleanupOrphansEnabled",
+    value: "false",
+    type: "boolean",
+    group: "cleanup",
+    isSystem: true,
+  },
+  {
+    key: "autoCleanupOrphanMinAgeHours",
+    value: "24",
+    type: "number",
+    group: "cleanup",
+    isSystem: true,
+  },
+  // Quota Overage Policy (5.2 Phase B). Grouped with the storage limits they govern.
+  // Conservative defaults: smart deletion is opt-in and off; reverse-share soft enforcement on.
+  {
+    key: "quotaWarningThresholds",
+    value: "80,90",
+    type: "string",
+    group: "storage",
+    isSystem: true,
+  },
+  {
+    key: "quotaGracePeriodDays",
+    value: "7",
+    type: "number",
+    group: "storage",
+    isSystem: true,
+  },
+  {
+    key: "quotaSmartDeletionEnabled",
+    value: "false",
+    type: "boolean",
+    group: "storage",
+    isSystem: true,
+  },
+  {
+    key: "quotaInactiveShareDays",
+    value: "30",
+    type: "number",
+    group: "storage",
+    isSystem: true,
+  },
+  {
+    key: "reverseShareQuotaSoftEnforcement",
+    value: "true",
+    type: "boolean",
+    group: "storage",
+    isSystem: true,
+  },
+  {
+    key: "reverseShareMaxOverageFactor",
+    value: "3",
+    type: "number",
+    group: "storage",
+    isSystem: true,
+  },
+  {
+    key: "reverseShareAbsoluteMaxBytes",
+    value: "0",
+    type: "bigint",
+    group: "storage",
+    isSystem: true,
+  },
 ];
 
 const defaultAuthProviders = [
