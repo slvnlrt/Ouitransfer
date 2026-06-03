@@ -10,7 +10,7 @@ This directory tracks all feature development for Ouitransfer (post-refactor pha
 |---|---------|--------|------------|
 | 5.1 | [Per-User Storage Quotas](specs/5.1-quotas.md) | Done | — |
 | 5.4 | [Groups](specs/5.4-groups.md) | Done | 5.1 |
-| 5.2 | [Automatic Cleanup of Expired Content](specs/5.2-cleanup.md) | Phase A done (Phase B not started) | — |
+| 5.2 | [Automatic Cleanup of Expired Content](specs/5.2-cleanup.md) | Phase A.1 done — explicit two-phase lifecycle + manual pause (Phase B not started) | — |
 | 5.3 | [LDAP / Active Directory Sync](specs/5.3-ldap.md) | Done | 5.4 |
 
 ### 6.x — UI Overhaul
@@ -65,7 +65,7 @@ This directory tracks all feature development for Ouitransfer (post-refactor pha
 ```
 5.1 Quotas  →  5.4 Groups  →  5.3 LDAP/AD sync
 
-5.2 Auto-cleanup — Phase A done (independent); Phase B (aggressive quota-overage) remains
+5.2 Auto-cleanup — Phase A.1 done (independent); Phase B (aggressive quota-overage) remains
 ```
 
 ### UI (6.x)
@@ -114,10 +114,10 @@ features/
 
 ## Current Focus
 
-**Completed:** 5.1 Quotas, 5.2 Auto-cleanup Phase A, 5.4 Groups, 5.3 LDAP, 6.1-6.3 UI Overhaul, 7.1 Error Handling, 9.1 Quickshare, 10.1 System Status Bar, 8.1 Audit Trail, 8.2 Email Notifications.
+**Completed:** 5.1 Quotas, 5.2 Auto-cleanup Phase A.1, 5.4 Groups, 5.3 LDAP, 6.1-6.3 UI Overhaul, 7.1 Error Handling, 9.1 Quickshare, 10.1 System Status Bar, 8.1 Audit Trail, 8.2 Email Notifications.
 All resolved: B-1 through B-25, TD-1 through TD-4, TD-6 through TD-19, TD-21, TD-24, TD-25, TD-29, TD-31, TD-35, TD-37, TD-41, TD-45, TD-46, TD-48, TD-49.
 
-**Test counts:** 83 server test files (1300 tests) + 30 web test files (291 tests) + 2 shared (14 tests) = **1605 total**.
+**Test counts:** 89 server test files (1344 tests) + 32 web test files (310 tests) + 2 shared (14 tests) = **1668 total**.
 
 **Open bugs:** B-26 (TOCTOU invite token — low priority)
 **Open tech debt:** TD-5, TD-10, TD-20, TD-27, TD-28, TD-30, TD-32, TD-33, TD-36, TD-38, TD-40, TD-42, TD-43 — see `TECHNICAL-DEBT.md`

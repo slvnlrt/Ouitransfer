@@ -1,5 +1,41 @@
 # Session Log
 
+## 2026-06-03 (5.2 Auto-cleanup — Phase A.1: explicit lifecycle + manual pause)
+
+**Reworked the share/reverse-share cleanup into an explicit two-phase lifecycle across 5 sequential batches**
+
+- **Owner decision.** Replace Phase A's implicit "expired/maxViews → 410 at read time → hard-delete
+  after grace" with an **explicit, persisted, two-phase lifecycle**:
+  `active → deactivated (expired | max_views | manual pause) → deleted`, uniform across triggers,
+  with a single grace measured from `deactivatedAt`, manual pause/resume, and **manual pauses never
+  auto-deleted**. Applies equally to shares and reverse shares. Reuses Phase A's delete helpers +
+  notification types.
+- **Batch 1 — schema.** Additive migration `share_lifecycle`: `Share.isActive` / `deactivatedAt` /
+  `deactivationReason`; `ReverseShare.deactivatedAt` / `deactivationReason` (already had `isActive`).
+  Shared `DeactivationReason = "expired" | "max_views" | "manual"`.
+- **Batch 2 — read-time gating + transitions.** `getShare` gates on `isActive` first (with defensive
+  expiry/maxViews checks); maxViews increment sets deactivation inline; manual `pauseShare`/
+  `resumeShare`; extending expiration / raising maxViews reactivates and resets notified flags.
+  Reverse-share `isActive` toggle aligned to set/clear `deactivatedAt`/reason.
+- **Batch 3 — scheduler sweeps.** Split the three old cleanup functions into a **deactivation sweep**
+  (`deactivateEndedShares`/`…ReverseShares` — persist `expired`/`max_views`, upgrade stale `manual`
+  pauses to `expired`, notify once) and a **deletion sweep** (`deleteDeactivatedShares`/`…ReverseShares`
+  — delete where reason ∈ {expired, max_views} AND `deactivatedAt < now − grace`, manual excluded,
+  warn once). Scheduler now drops the `maxViewsCleanupDays` read.
+- **Batch 4 — endpoint + UI.** Owner-only pause/resume endpoint; share card/list shows a
+  deactivated/paused state with a reason badge (`expired` / view limit / paused), resume + renew/extend
+  affordances, mirroring the reverse-share toggle; API client + query invalidation; i18n in 23 locales.
+- **Batch 5 — config retirement + docs + tracking.** **Retired `maxViewsCleanupDays`** everywhere
+  (seed, server validation, web settings group + 23-locale i18n, tests, docs) — superseded by the
+  single uniform `autoCleanupGracePeriodDays` from `deactivatedAt`. Reworded the grace-period docs/i18n
+  to "days after deactivation". New audit actions `SHARE_DEACTIVATED`/`SHARE_REACTIVATED` +
+  reverse-share variants documented; retired `REVERSE_SHARE_ACTIVATE`/`REVERSE_SHARE_DEACTIVATE`.
+  Rewrote the docs "Automatic Cleanup" page (EN + FR) around the two-phase lifecycle + manual pause.
+- **Tests:** server 1344 (89 files), web 310 (32 files), shared 14 (2) = **1668 total**, all green.
+  Docs build green (EN/FR parity); Biome + knip clean; zero `maxViewsCleanupDays` references in `apps/`.
+
+---
+
 ## 2026-06-03 (5.2 Auto-cleanup — Phase A complete)
 
 **Lifecycle management & automatic cleanup — Phase A shipped across 8 sequential batches**
