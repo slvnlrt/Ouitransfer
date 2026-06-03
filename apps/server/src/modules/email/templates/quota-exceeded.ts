@@ -1,4 +1,4 @@
-// TODO: finalize when 5.2 triggers are implemented
+// Note: the template is final; its trigger is wired in 5.2 Phase B (quota-overage policy).
 import type { TranslationFn } from "../i18n/loader.js";
 import type { LayoutSlots } from "./base-layout.js";
 
