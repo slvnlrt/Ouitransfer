@@ -107,6 +107,67 @@ Lorsque **Nettoyer les fichiers orphelins** est activé, le planificateur exécu
 
 Seuls les éléments plus anciens que l'**Âge minimum des orphelins** sont pris en compte, ce qui protège les téléversements encore en cours. Un objet référencé par un enregistrement n'est jamais supprimé.
 
+## Politique de quota de stockage
+
+Au-delà du nettoyage fondé sur l'expiration, Ouitransfer applique des quotas de stockage par utilisateur via une politique en couches : il **avertit** les propriétaires à l'approche de leur limite, **libère prudemment de l'espace** de façon optionnelle s'ils restent au-dessus, et applique une **règle plus souple aux téléversements entrants (partages inversés)** afin que les contributeurs externes ne soient pas bloqués par un dépassement du propriétaire. Comme le reste du nettoyage automatique, la partie destructrice est **désactivée par défaut**.
+
+<Callout type="info">
+  Cette politique ne s'applique qu'aux utilisateurs disposant d'un quota fini. Les utilisateurs avec un quota illimité ne sont jamais avertis, ne subissent jamais de suppression automatique de fichiers pour dépassement, et ne voient jamais leurs téléversements entrants bloqués par ces règles.
+</Callout>
+
+### Avertissements de seuil
+
+À mesure que l'utilisation du stockage d'un utilisateur augmente, le propriétaire est averti par e-mail la première fois qu'elle **franchit un seuil configuré vers le haut** :
+
+- Les **seuils** sont définis avec **Seuils d'avertissement de quota**, une liste de pourcentages séparés par des virgules (défaut `"80,90"`). Chaque valeur est un entier compris entre 1 et 99.
+- Lorsque l'utilisation franchit un seuil pour la première fois (par exemple en dépassant 80 %), le propriétaire reçoit un e-mail d'**avertissement de quota**. À 100 % ou plus, il reçoit plutôt un e-mail de **quota dépassé**.
+- Les avertissements sont **dédupliqués** : le système mémorise le seuil le plus élevé déjà signalé et ne renvoie pas d'avertissement pour le même niveau à chaque téléversement. Si l'utilisation redescend ensuite sous le seuil le plus bas, les avertissements se **réarment**, de sorte que le propriétaire est averti à nouveau la prochaine fois que l'utilisation augmente.
+
+Ces e-mails sont déclenchés par événement — ils partent lors de la finalisation d'un téléversement, aussi bien pour les fichiers propres du propriétaire que pour les fichiers reçus via un partage inversé. Ils utilisent le [système de notifications](/docs/v1-beta/notification-preferences) standard et nécessitent que le SMTP soit configuré.
+
+### Période de grâce et suppression intelligente (optionnelle)
+
+Lorsque **Activer la suppression intelligente de quota** est activé, un utilisateur qui reste au-dessus de 100 % de son quota plus longtemps que la **Période de grâce de quota** peut voir des fichiers supprimés automatiquement pour repasser sous la limite. C'est la seule fonction de quota qui détruit du contenu, et elle est **désactivée par défaut**.
+
+<Callout type="warn">
+  La suppression intelligente est **désactivée par défaut**. Tant qu'un administrateur ne l'active pas, dépasser un quota ne produit que des e-mails d'avertissement et bloque les nouveaux téléversements directs — aucun fichier n'est jamais supprimé pour cause de dépassement.
+</Callout>
+
+Lorsqu'elle s'exécute, le planificateur libère de l'espace dans un **ordre sécurisé** strict, du plus ancien au plus récent, en ne supprimant que ce qui est nécessaire pour repasser sous la limite :
+
+1. **D'abord les téléversements orphelins.** Les fichiers que l'utilisateur a téléversés mais qui ne font partie d'aucun partage sont supprimés en premier, du plus ancien au plus récent.
+2. **Puis les fichiers des partages inactifs.** Les fichiers dont les partages n'ont vu aucune activité depuis au moins la fenêtre **Jours d'inactivité de partage pour quota** deviennent ensuite éligibles, du plus ancien au plus récent.
+3. **Sinon, blocage — ne jamais toucher aux partages actifs.** Si libérer de l'espace nécessitait de supprimer des fichiers encore présents dans un partage actif et récemment utilisé, la suppression intelligente **ne supprime rien**. L'utilisateur reste simplement bloqué pour les nouveaux téléversements directs jusqu'à ce qu'il libère lui-même de l'espace.
+
+<Callout type="warn">
+  **Les fichiers présents dans un partage actif ne sont jamais supprimés automatiquement pour dépassement de quota.** Lorsque tout ce que possède un utilisateur se trouve dans un partage actif, le système préfère le maintenir bloqué plutôt que de supprimer un contenu que quelqu'un est peut-être encore en train de télécharger. La sécurité des données prime sur l'économie de stockage.
+</Callout>
+
+Lorsque des fichiers sont supprimés de cette façon, le propriétaire reçoit un avis « supprimé automatiquement » et l'action est inscrite au [Journal d'activité](/docs/v1-beta/activity-log) sous `QUOTA_FILES_DELETED`. Un partage qu'une suppression laisse vide n'est **pas** supprimé — il est simplement laissé vide.
+
+### Application souple pour les partages inversés
+
+Les contributeurs externes qui téléversent vers un [partage inversé](/docs/v1-beta/reverse-shares) ne devraient pas être refusés simplement parce que le propriétaire du partage dépasse son quota. **Application souple pour les partages inversés** (activée par défaut) assouplit la limite pour ces téléversements entrants :
+
+- Un téléversement externe vers un partage inversé est autorisé **même lorsque le propriétaire dépasse son quota**, jusqu'à ce que l'utilisation projetée dépasse `min(limite × facteur, plafond absolu)`, où le facteur est le **Facteur de dépassement maximal pour partages inversés** (défaut `3`) et le plafond est **Octets maximaux absolus pour partages inversés** (`0` signifie aucun plafond absolu). Au-delà de ce plafond, le téléversement est bloqué.
+- Tant que le propriétaire se trouve dans cette zone de dépassement, il est alerté pour régulariser son stockage.
+- Les **téléversements directs propres** au propriétaire conservent l'application stricte — ils restent bloqués à 100 % du quota, exactement comme auparavant. La règle souple ne s'applique qu'aux téléversements entrants des partages inversés.
+- Lorsque **Application souple pour les partages inversés** est désactivée, les téléversements de partages inversés reviennent au même blocage strict que les téléversements directs.
+
+### Clés de configuration de la politique de quota
+
+Ces sept clés se trouvent dans le groupe de paramètres **Stockage** de la page **Admin → Paramètres**.
+
+| Clé | Défaut | Signification |
+|-----|-------:|---------------|
+| **Seuils d'avertissement de quota** | `80,90` | Pourcentages séparés par des virgules (chacun de 1 à 99) auxquels le propriétaire reçoit un avertissement de quota par e-mail. |
+| **Période de grâce de quota (jours)** | `7` | Durée pendant laquelle un utilisateur peut rester au-dessus de 100 % avant que la suppression intelligente puisse agir. Minimum 0. |
+| **Activer la suppression intelligente de quota** | `désactivé` | Activation principale de la suppression automatique des fichiers d'un utilisateur en dépassement. Désactivée par défaut. |
+| **Jours d'inactivité de partage pour quota** | `30` | Les fichiers d'un partage deviennent éligibles à la suppression intelligente après ce nombre de jours sans activité. Minimum 1. |
+| **Application souple pour les partages inversés** | `activé` | Autorise les téléversements externes de partages inversés au-delà du quota du propriétaire, jusqu'au plafond ci-dessous. Activée par défaut. |
+| **Facteur de dépassement maximal pour partages inversés** | `3` | Multiple de la limite du propriétaire jusqu'auquel les téléversements inversés sont tolérés. Minimum 1. |
+| **Octets maximaux absolus pour partages inversés** | `0` | Plafond absolu de stockage pour la tolérance des partages inversés. `0` signifie aucun plafond absolu. |
+
 ## E-mails d'avertissement
 
 Avant qu'un partage ou un partage inversé expiré ne soit supprimé définitivement, Ouitransfer peut envoyer au propriétaire un e-mail d'avertissement « suppression définitive imminente ». Il est envoyé le nombre de jours configuré avant la suppression, et une seule fois par élément. Définissez **Avertir avant suppression** sur `0` pour désactiver ces avertissements. Lorsqu'un contenu est supprimé, le propriétaire reçoit également un avis « supprimé automatiquement ». Ces e-mails utilisent le [système de notifications](/docs/v1-beta/notification-preferences) standard, ils respectent donc les préférences de chaque utilisateur et nécessitent que le SMTP soit configuré.
@@ -117,4 +178,4 @@ Avant qu'un partage ou un partage inversé expiré ne soit supprimé définitive
 
 ## Journalisation d'audit
 
-Les deux transitions du cycle de vie sont enregistrées dans le [Journal d'activité](/docs/v1-beta/activity-log). La désactivation et la réactivation écrivent `SHARE_DEACTIVATED` / `SHARE_REACTIVATED` (et les équivalents pour les partages inversés), avec la raison dans leurs métadonnées. Chaque suppression automatique écrit également sa propre entrée : suppressions de liens de partage expirés et à vues maximales, suppressions de partages inversés, nettoyages de fichiers de comptes désactivés, cascade complète de suppression d'utilisateur, et les deux directions du balayage des orphelins. Cela donne aux administrateurs un enregistrement complet et consultable de ce que le système de nettoyage a désactivé, supprimé, et quand.
+Les deux transitions du cycle de vie sont enregistrées dans le [Journal d'activité](/docs/v1-beta/activity-log). La désactivation et la réactivation écrivent `SHARE_DEACTIVATED` / `SHARE_REACTIVATED` (et les équivalents pour les partages inversés), avec la raison dans leurs métadonnées. Chaque suppression automatique écrit également sa propre entrée : suppressions de liens de partage expirés et à vues maximales, suppressions de partages inversés, nettoyages de fichiers de comptes désactivés, suppression intelligente de quota (`QUOTA_FILES_DELETED`), cascade complète de suppression d'utilisateur, et les deux directions du balayage des orphelins. Cela donne aux administrateurs un enregistrement complet et consultable de ce que le système de nettoyage a désactivé, supprimé, et quand.

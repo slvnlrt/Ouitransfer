@@ -107,6 +107,67 @@ When **Sweep Orphaned Files** is enabled, the scheduler runs a bidirectional rec
 
 Only items older than the **Orphan Minimum Age** are considered, which protects uploads that are still in progress. An object referenced by any record is never deleted.
 
+## Storage quota policy
+
+Beyond expiry-based cleanup, Ouitransfer enforces per-user storage quotas with a layered policy: it **warns** owners as they approach their limit, optionally **frees space conservatively** once they stay over it, and applies a **softer rule to inbound (reverse-share) uploads** so external contributors are not blocked by an owner's overage. Like the rest of automatic cleanup, the destructive part is **off by default**.
+
+<Callout type="info">
+  This policy only applies to users who have a finite quota. Users with an unlimited quota are never warned, never have files auto-deleted for overage, and never have inbound uploads blocked by these rules.
+</Callout>
+
+### Threshold warnings
+
+As a user's storage usage climbs, the owner is emailed the first time it **crosses a configured threshold upward**:
+
+- **Thresholds** are set with **Quota Warning Thresholds**, a comma-separated list of percentages (default `"80,90"`). Each value is a whole number between 1 and 99.
+- When usage first crosses a threshold (for example, passing 80%), the owner receives a **quota warning** email. At 100% or more, they receive a **quota exceeded** email instead.
+- Warnings are **deduplicated**: the system remembers the highest threshold already warned and will not re-send for the same level on every upload. If usage later drops back below the lowest threshold, the warnings **re-arm**, so the owner is warned again the next time usage climbs.
+
+These emails are event-driven — they fire as part of completing an upload, both for the owner's own files and for files received through a reverse share. They use the standard [notification system](/docs/v1-beta/notification-preferences) and require SMTP to be configured.
+
+### Grace period and smart deletion (opt-in)
+
+When **Enable Quota Smart Deletion** is turned on, a user who stays over 100% of their quota for longer than the **Quota Grace Period** can have files automatically deleted to bring them back under the limit. This is the only quota feature that destroys content, and it is **off by default**.
+
+<Callout type="warn">
+  Smart deletion is **off by default**. Until an administrator enables it, exceeding a quota only produces warning emails and blocks new direct uploads — no files are ever deleted for being over quota.
+</Callout>
+
+When it runs, the scheduler frees space in a strict **safe order**, oldest first, deleting only as much as needed to get back under the limit:
+
+1. **Orphan uploads first.** Files the user has uploaded but that are not part of any share are deleted first, oldest first.
+2. **Then files in inactive shares.** Files whose shares have seen no activity for at least the **Quota Inactive Share Days** window become eligible next, oldest first.
+3. **Otherwise, block — never touch active shares.** If freeing space would require deleting files that are still in an active, recently-used share, smart deletion **deletes nothing**. The user simply stays blocked from new direct uploads until they free space themselves.
+
+<Callout type="warn">
+  **Files inside an active share are never auto-deleted for quota overage.** When everything a user owns is in an active share, the system prefers to keep the user blocked rather than delete content someone might still be downloading. Data safety beats storage economy.
+</Callout>
+
+When files are deleted this way, the owner receives an "auto-deleted" notice and the action is written to the [Activity Log](/docs/v1-beta/activity-log) as `QUOTA_FILES_DELETED`. A share that a deletion happens to leave empty is **not** removed — it is simply left empty.
+
+### Reverse-share soft enforcement
+
+External contributors uploading to a [reverse share](/docs/v1-beta/reverse-shares) should not be turned away just because the share's owner is over quota. **Reverse Share Soft Enforcement** (on by default) relaxes the limit for these inbound uploads:
+
+- An external upload to a reverse share is allowed **even when the owner is over quota**, until the projected usage would exceed `min(limit × factor, absolute cap)`, where the factor is **Reverse Share Max Overage Factor** (default `3`) and the cap is **Reverse Share Absolute Max Bytes** (`0` means no absolute cap). Past that ceiling the upload is blocked.
+- While the owner is in this overage zone, they are alerted to regularize their storage.
+- The owner's **own direct uploads keep hard enforcement** — they are still blocked at 100% of the quota, exactly as before. The soft rule applies only to inbound reverse-share uploads.
+- When **Reverse Share Soft Enforcement** is turned off, reverse-share uploads fall back to the same hard block as direct uploads.
+
+### Quota policy configuration keys
+
+These seven keys live in the **Storage** settings group on the **Admin → Settings** page.
+
+| Key | Default | Meaning |
+|-----|--------:|---------|
+| **Quota Warning Thresholds** | `80,90` | Comma-separated percentages (each 1–99) at which the owner is emailed a quota warning. |
+| **Quota Grace Period (days)** | `7` | How long a user may stay over 100% before smart deletion may act. Minimum 0. |
+| **Enable Quota Smart Deletion** | `off` | Master opt-in for automatic deletion of an over-quota user's files. Off by default. |
+| **Quota Inactive Share Days** | `30` | A share's files become eligible for smart deletion after this many days without activity. Minimum 1. |
+| **Reverse Share Soft Enforcement** | `on` | Allow external reverse-share uploads beyond the owner's quota, up to the ceiling below. On by default. |
+| **Reverse Share Max Overage Factor** | `3` | Multiple of the owner's limit up to which reverse uploads are tolerated. Minimum 1. |
+| **Reverse Share Absolute Max Bytes** | `0` | Absolute storage ceiling for the reverse-share tolerance. `0` means no absolute cap. |
+
 ## Warning emails
 
 Before an expired share or reverse share is permanently deleted, Ouitransfer can send the owner a "pending permanent deletion" warning email. It is sent the configured number of days ahead of the deletion, and is sent only once per item. Set **Warn Before Deletion** to `0` to disable these warnings. When content is deleted, the owner also receives an "auto-deleted" notice. These emails use the standard [notification system](/docs/v1-beta/notification-preferences), so they respect each user's preferences and require SMTP to be configured.
@@ -117,4 +178,4 @@ Before an expired share or reverse share is permanently deleted, Ouitransfer can
 
 ## Audit logging
 
-Both lifecycle transitions are recorded in the [Activity Log](/docs/v1-beta/activity-log). Deactivation and reactivation write `SHARE_DEACTIVATED` / `SHARE_REACTIVATED` (and the reverse-share equivalents), with the reason in their metadata. Every automated deletion writes its own entry too: expired and max-views share-link removals, reverse-share deletions, deactivated-account file cleanups, the full user-deletion cascade, and both directions of the orphan sweep. This gives administrators a complete, searchable record of what the cleanup system deactivated, removed, and when.
+Both lifecycle transitions are recorded in the [Activity Log](/docs/v1-beta/activity-log). Deactivation and reactivation write `SHARE_DEACTIVATED` / `SHARE_REACTIVATED` (and the reverse-share equivalents), with the reason in their metadata. Every automated deletion writes its own entry too: expired and max-views share-link removals, reverse-share deletions, deactivated-account file cleanups, quota smart-deletion (`QUOTA_FILES_DELETED`), the full user-deletion cascade, and both directions of the orphan sweep. This gives administrators a complete, searchable record of what the cleanup system deactivated, removed, and when.
