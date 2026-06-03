@@ -104,8 +104,17 @@ Lorsque **Nettoyer les fichiers orphelins** est activé, le planificateur exécu
 
 - **Enregistrement de base de données sans objet de stockage** — l'enregistrement de base de données orphelin est supprimé.
 - **Objet de stockage sans enregistrement de base de données** — l'objet de stockage orphelin est supprimé.
+- **Téléversement multipart incomplet (abandonné)** — lorsqu'un fichier volumineux est téléversé en plusieurs parties et que le téléversement n'est jamais finalisé ni abandonné (par exemple, le navigateur a été fermé en cours de transfert ou le client a planté), ses parties subsistent dans le stockage et consomment de l'espace, tout en restant invisibles au listage habituel des objets. Le balayage énumère désormais aussi ces téléversements multipart incomplets et **abandonne** ceux qui ont été initiés avant l'âge minimum, en supprimant leurs parties.
 
 Seuls les éléments plus anciens que l'**Âge minimum des orphelins** sont pris en compte, ce qui protège les téléversements encore en cours. Un objet référencé par un enregistrement n'est jamais supprimé.
+
+### Filet de sécurité pour les téléversements multipart (stockage interne)
+
+Indépendamment du balayage, le stockage interne bénéficie d'un **filet de sécurité toujours actif** : au démarrage, Ouitransfer applique une règle de cycle de vie `AbortIncompleteMultipartUpload` à son bucket afin que le backend de stockage abandonne automatiquement tout téléversement multipart incomplet **7 jours** après son initiation. Cela s'exécute que **Nettoyer les fichiers orphelins** soit activé ou non, et est appliqué au mieux (si le backend ne prend pas en charge les règles de cycle de vie, le démarrage se poursuit sans).
+
+<Callout type="info">
+  Ce filet de sécurité de cycle de vie n'est appliqué qu'au stockage interne propre à Ouitransfer — il n'est jamais appliqué à un bucket S3 externe que vous fournissez. Si vous utilisez un S3 externe, configurez une règle de cycle de vie `AbortIncompleteMultipartUpload` équivalente sur votre propre bucket. Le balayage des orphelins au niveau de l'application décrit ci-dessus abandonne tout de même les téléversements multipart abandonnés sur le stockage externe lorsqu'il est activé.
+</Callout>
 
 ## Politique de quota de stockage
 
@@ -178,4 +187,4 @@ Avant qu'un partage ou un partage inversé expiré ne soit supprimé définitive
 
 ## Journalisation d'audit
 
-Les deux transitions du cycle de vie sont enregistrées dans le [Journal d'activité](/docs/v1-beta/activity-log). La désactivation et la réactivation écrivent `SHARE_DEACTIVATED` / `SHARE_REACTIVATED` (et les équivalents pour les partages inversés), avec la raison dans leurs métadonnées. Chaque suppression automatique écrit également sa propre entrée : suppressions de liens de partage expirés et à vues maximales, suppressions de partages inversés, nettoyages de fichiers de comptes désactivés, suppression intelligente de quota (`QUOTA_FILES_DELETED`), cascade complète de suppression d'utilisateur, et les deux directions du balayage des orphelins. Cela donne aux administrateurs un enregistrement complet et consultable de ce que le système de nettoyage a désactivé, supprimé, et quand.
+Les deux transitions du cycle de vie sont enregistrées dans le [Journal d'activité](/docs/v1-beta/activity-log). La désactivation et la réactivation écrivent `SHARE_DEACTIVATED` / `SHARE_REACTIVATED` (et les équivalents pour les partages inversés), avec la raison dans leurs métadonnées. Chaque suppression automatique écrit également sa propre entrée : suppressions de liens de partage expirés et à vues maximales, suppressions de partages inversés, nettoyages de fichiers de comptes désactivés, suppression intelligente de quota (`QUOTA_FILES_DELETED`), cascade complète de suppression d'utilisateur, les deux directions du balayage des orphelins, et les téléversements multipart incomplets abandonnés (`ORPHAN_MULTIPART_ABORTED`). Cela donne aux administrateurs un enregistrement complet et consultable de ce que le système de nettoyage a désactivé, supprimé, et quand.

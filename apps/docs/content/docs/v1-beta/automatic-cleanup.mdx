@@ -104,8 +104,17 @@ When **Sweep Orphaned Files** is enabled, the scheduler runs a bidirectional rec
 
 - **Database record with no storage object** — the dangling database record is removed.
 - **Storage object with no database record** — the orphaned storage object is deleted.
+- **Incomplete (abandoned) multipart upload** — when a large file is uploaded in parts and the upload is never completed or aborted (for example, the browser was closed mid-transfer or the client crashed), its parts linger in storage consuming space and are invisible to the ordinary object listing. The sweep now also enumerates these incomplete multipart uploads and **aborts** any that were initiated before the minimum age, discarding their parts.
 
 Only items older than the **Orphan Minimum Age** are considered, which protects uploads that are still in progress. An object referenced by any record is never deleted.
+
+### Multipart upload backstop (internal storage)
+
+Independently of the sweep, internal storage gets an **always-on safety net**: at startup Ouitransfer applies an `AbortIncompleteMultipartUpload` lifecycle rule to its bucket so the storage backend automatically aborts any incomplete multipart upload **7 days** after it was initiated. This runs regardless of whether **Sweep Orphaned Files** is enabled, and is applied on a best-effort basis (if the backend does not support lifecycle rules, startup continues without it).
+
+<Callout type="info">
+  This lifecycle backstop is applied only to Ouitransfer's own internal storage — it is never applied to an external S3 bucket you provide. If you use external S3, configure an equivalent `AbortIncompleteMultipartUpload` lifecycle rule on your own bucket. The application-level orphan sweep above still aborts abandoned multipart uploads on external storage when it is enabled.
+</Callout>
 
 ## Storage quota policy
 
@@ -178,4 +187,4 @@ Before an expired share or reverse share is permanently deleted, Ouitransfer can
 
 ## Audit logging
 
-Both lifecycle transitions are recorded in the [Activity Log](/docs/v1-beta/activity-log). Deactivation and reactivation write `SHARE_DEACTIVATED` / `SHARE_REACTIVATED` (and the reverse-share equivalents), with the reason in their metadata. Every automated deletion writes its own entry too: expired and max-views share-link removals, reverse-share deletions, deactivated-account file cleanups, quota smart-deletion (`QUOTA_FILES_DELETED`), the full user-deletion cascade, and both directions of the orphan sweep. This gives administrators a complete, searchable record of what the cleanup system deactivated, removed, and when.
+Both lifecycle transitions are recorded in the [Activity Log](/docs/v1-beta/activity-log). Deactivation and reactivation write `SHARE_DEACTIVATED` / `SHARE_REACTIVATED` (and the reverse-share equivalents), with the reason in their metadata. Every automated deletion writes its own entry too: expired and max-views share-link removals, reverse-share deletions, deactivated-account file cleanups, quota smart-deletion (`QUOTA_FILES_DELETED`), the full user-deletion cascade, both directions of the orphan sweep, and aborted incomplete multipart uploads (`ORPHAN_MULTIPART_ABORTED`). This gives administrators a complete, searchable record of what the cleanup system deactivated, removed, and when.
