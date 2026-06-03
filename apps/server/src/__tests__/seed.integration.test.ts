@@ -2,19 +2,26 @@
  * seed.integration.test.ts
  *
  * Guards the database seeding contract that the container boot relies on
- * (infra/server-start.sh runs `prisma/seed.js` UNCONDITIONALLY on every boot).
+ * (infra/server-start.sh runs `prisma/seed.js` unconditionally on every boot).
  *
- * Two concerns:
+ * Three concerns (all runnable in fast PR CI, no Docker):
  *
  * 1. Data integrity (no DB) — the seed data is well-formed: unique config keys,
  *    every entry has the columns `app_configs` requires, unique provider names.
  *    A malformed entry here would make the boot-time seed throw and (with set -e)
- *    abort the container, so this fast check catches it in PR CI.
+ *    abort the container.
  *
- * 2. Idempotency + completeness (real SQLite) — seeding a fresh database creates
+ * 2. Packaging — every `../src/...` directory imported by the `prisma/seed.js`
+ *    runner is in `package.json` `files`, so `pnpm deploy` ships it into the
+ *    image (otherwise the boot seed throws `Cannot find module`).
+ *
+ * 3. Idempotency + completeness (real SQLite) — seeding a fresh database creates
  *    every config/provider, and running it AGAIN is a no-op (creates nothing,
- *    throws nothing). This is the property that lets server-start.sh seed on
- *    every boot to backfill new keys without a fragile completeness gate.
+ *    throws nothing) — the property that lets the boot reseed unconditionally.
+ *
+ * NOTE: this exercises `seedDatabase` and the packaging, not the runner process
+ * itself (dotenv `quiet`, client creation under tsx) — that is covered end-to-end
+ * by the image build+boot in the release-validation workflow (e2e.yml).
  *
  * The regression this protects against: a boot path that skips seeding (the
  * `NEEDS_SEEDING` stdout-capture gate, broken by dotenv's banner) left the
@@ -22,7 +29,7 @@
  */
 
 import { execSync } from "node:child_process";
-import { existsSync, rmSync } from "node:fs";
+import { existsSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -57,7 +64,40 @@ describe("seed data integrity", () => {
   });
 });
 
-// ── 2. Idempotency + completeness (real SQLite, isolated temp DB) ─────────────
+// ── 2. Packaging — the boot seed must be shipped to the production image ──────
+//
+// `prisma/seed.js` runs at container boot via tsx and imports application source
+// (`../src/...`). The Docker image is built with `pnpm deploy --prod`, which
+// honors package.json `files`: any imported src directory NOT in that allowlist
+// is omitted from the image, so the boot seed throws `Cannot find module` and the
+// server crash-loops. (This exact gap shipped seed-data under an unlisted dir.)
+
+describe("seed runner is packaged for the production image", () => {
+  it("every ../src import in prisma/seed.js is covered by package.json files", () => {
+    const pkg = JSON.parse(readFileSync(join(SERVER_DIR, "package.json"), "utf8")) as {
+      files?: string[];
+    };
+    const files = pkg.files ?? [];
+    const seedSource = readFileSync(join(SERVER_DIR, "prisma", "seed.js"), "utf8");
+
+    const importedDirs = [...seedSource.matchAll(/from\s+["']\.\.\/src\/([^/"']+)\//g)].map(
+      (m) => m[1],
+    );
+
+    // Sanity: the runner genuinely depends on src (guards against a silent regex break).
+    expect(importedDirs.length).toBeGreaterThan(0);
+
+    for (const dir of new Set(importedDirs)) {
+      const covered = files.includes("src") || files.includes(`src/${dir}`);
+      expect(
+        covered,
+        `prisma/seed.js imports ../src/${dir}/ but "src/${dir}" is not in apps/server/package.json "files" — pnpm deploy will omit it and the boot seed will crash`,
+      ).toBe(true);
+    }
+  });
+});
+
+// ── 3. Idempotency + completeness (real SQLite, isolated temp DB) ─────────────
 
 describe("seedDatabase is complete and idempotent", () => {
   const dbPath = join(tmpdir(), `ouitransfer-seed-test-${process.pid}-${Date.now()}.db`);

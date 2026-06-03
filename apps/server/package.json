@@ -20,6 +20,7 @@
     "prisma",
     "prisma.config.ts",
     "reset-password.sh",
+    "src/db",
     "src/scripts",
     "src/shared"
   ],
