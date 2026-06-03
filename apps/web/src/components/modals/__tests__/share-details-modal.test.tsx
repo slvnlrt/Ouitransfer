@@ -83,6 +83,9 @@ const MOCK_SHARE: Share = {
   lastDownloadedAt: null,
   notifiedForExpiring: false,
   notifiedForExpired: false,
+  isActive: true,
+  deactivatedAt: null,
+  deactivationReason: null,
 };
 
 function mockShareResponse(): GetShareResult {
