@@ -10,7 +10,7 @@ This directory tracks all feature development for Ouitransfer (post-refactor pha
 |---|---------|--------|------------|
 | 5.1 | [Per-User Storage Quotas](specs/5.1-quotas.md) | Done | — |
 | 5.4 | [Groups](specs/5.4-groups.md) | Done | 5.1 |
-| 5.2 | [Automatic Cleanup of Expired Content](specs/5.2-cleanup.md) | Not started | — |
+| 5.2 | [Automatic Cleanup of Expired Content](specs/5.2-cleanup.md) | Phase A done (Phase B not started) | — |
 | 5.3 | [LDAP / Active Directory Sync](specs/5.3-ldap.md) | Done | 5.4 |
 
 ### 6.x — UI Overhaul
@@ -65,7 +65,7 @@ This directory tracks all feature development for Ouitransfer (post-refactor pha
 ```
 5.1 Quotas  →  5.4 Groups  →  5.3 LDAP/AD sync
 
-5.2 Auto-cleanup (independent — can run in parallel)
+5.2 Auto-cleanup — Phase A done (independent); Phase B (aggressive quota-overage) remains
 ```
 
 ### UI (6.x)
@@ -114,11 +114,11 @@ features/
 
 ## Current Focus
 
-**Completed:** 5.1 Quotas, 5.4 Groups, 5.3 LDAP, 6.1-6.3 UI Overhaul, 7.1 Error Handling, 9.1 Quickshare, 10.1 System Status Bar, 8.1 Audit Trail, 8.2 Email Notifications.
-All resolved: B-1 through B-25, TD-1 through TD-4, TD-6 through TD-16, TD-18, TD-19, TD-21, TD-24, TD-29, TD-31, TD-35, TD-37, TD-41, TD-45, TD-46, TD-48.
+**Completed:** 5.1 Quotas, 5.2 Auto-cleanup Phase A, 5.4 Groups, 5.3 LDAP, 6.1-6.3 UI Overhaul, 7.1 Error Handling, 9.1 Quickshare, 10.1 System Status Bar, 8.1 Audit Trail, 8.2 Email Notifications.
+All resolved: B-1 through B-25, TD-1 through TD-4, TD-6 through TD-19, TD-21, TD-24, TD-25, TD-29, TD-31, TD-35, TD-37, TD-41, TD-45, TD-46, TD-48, TD-49.
 
-**Test counts:** 80 server test files (1168 tests) + 27 web test files (284 tests) + 2 shared (14 tests) = **1466 total**.
+**Test counts:** 83 server test files (1300 tests) + 30 web test files (291 tests) + 2 shared (14 tests) = **1605 total**.
 
 **Open bugs:** B-26 (TOCTOU invite token — low priority)
-**Open tech debt:** TD-5, TD-10, TD-17, TD-20, TD-25, TD-27, TD-28, TD-30, TD-32, TD-33, TD-36, TD-38, TD-40, TD-42, TD-43, TD-49 — see `TECHNICAL-DEBT.md`
-**Next features:** 5.2 Auto-cleanup (depends on 8.2 ✓), 8.3 Download Tracking (depends on 8.1+8.2 ✓) — both unblocked
+**Open tech debt:** TD-5, TD-10, TD-20, TD-27, TD-28, TD-30, TD-32, TD-33, TD-36, TD-38, TD-40, TD-42, TD-43 — see `TECHNICAL-DEBT.md`
+**Next features:** 5.2 Auto-cleanup Phase B (aggressive quota-overage policy), 8.3 Download Tracking (depends on 8.1+8.2 ✓) — both unblocked

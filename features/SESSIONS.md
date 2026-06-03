@@ -1,5 +1,45 @@
 # Session Log
 
+## 2026-06-03 (5.2 Auto-cleanup — Phase A complete)
+
+**Lifecycle management & automatic cleanup — Phase A shipped across 8 sequential batches**
+
+- **Scope & design.** Phased delivery: Phase A is safe, mostly non-destructive-by-default
+  lifecycle management; Phase B (aggressive quota-overage policy) remains. Binding decisions:
+  auto-deletion is **opt-in and off by default**; **conservative defaults** (long grace,
+  warn-before-delete, never touch content inside an active share); every automated deletion
+  emits an audit event; warnings reuse the 8.2 notification catalog/queue/preferences.
+- **Batch 1 — schema + config.** Additive migration `cleanup_lifecycle`: `User.deactivatedAt`,
+  `Share.notifiedForPendingDeletion`, `ReverseShare.notifiedForPendingDeletion`. Seeded the
+  9-key `cleanup` config group (conservative defaults) with per-key bounds validation in both
+  single + bulk update paths.
+- **Batch 2 — email.** New notification types `share_pending_deletion`,
+  `reverse_share_pending_deletion`, `reverse_share_auto_deleted` (catalog + Zod payloads +
+  Outlook-safe indigo templates + en/fr keys), reusing existing `share_auto_deleted` /
+  `files_auto_deleted` where present.
+- **Batch 3 — expired/maxViews cleanup (A2–A5).** New `modules/cleanup/service.ts`:
+  **share-link-only** deletion for expired + maxViews regular shares (never the owner's
+  File/Folder/S3 — files live in the file manager and can be in multiple shares), storage-
+  reclaiming deletion for expired reverse shares + their S3 objects, warn-once pending-deletion
+  emails, all wrapped failure-tolerant with `{ warned, deleted, errors }` summaries.
+- **Batch 4 — account lifecycle (A6–A8).** Read-time **reversible** block on shares/reverse
+  shares of a deactivated owner (derived from `creator.isActive`, ungated); `purgeUserContent`
+  helper; **full deletion cascade** on `deleteUser` (files, shares, reverse shares, S3) fixing
+  the old `SetNull` orphaning; opt-in `cleanupDeactivatedAccounts`. This landed meaningful
+  `user` + `reverse-share` service/integration coverage → **TD-49 resolved**.
+- **Batch 5 — orphan sweep (A9).** Paginated `listObjects` on the S3 provider; bidirectional
+  `sweepOrphans` (DB→missing-S3 and S3→no-DB-row) with a min-age guard; retired the one-shot
+  `cleanup-orphan-files.ts` into a thin CLI wrapper → **TD-17 and TD-25 resolved**.
+- **Batch 6 — scheduler (A1).** In-process chained-`setTimeout` scheduler modeled on the audit
+  retention scheduler; reads config live each run; registered in `server.ts` boot + `onClose`.
+- **Batch 7 — admin UI (A10).** Rendered the `cleanup` settings group with client-side bounds
+  validation mirroring the server; labels/descriptions across all 23 locales.
+- **Batch 8 — docs + tracking.** New "Automatic Cleanup" Configuration page (EN + FR) in the
+  docs site; this tracking update.
+- **Tests:** server 1300 (83 files), web 291 (30 files), shared 14 (2) = **1605 total**, all green.
+
+---
+
 ## 2026-06-02 (Code hygiene — remove TD-xx ticket references from code)
 
 **Stripped all internal tech-debt ticket citations (`TD-N`) from source code files and test labels**

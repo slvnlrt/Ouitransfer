@@ -827,9 +827,20 @@ Additionally, a turbo `db:generate` guard now regenerates the Prisma client befo
 
 ---
 
-## TD-49 — Couverture de tests manquante : services `user` et `reverse-share`
+## ~~TD-49 — Couverture de tests manquante : services `user` et `reverse-share`~~ ✅ RESOLVED
 
-**Context:** Découvert pendant TD-31/TD-41. Les modules `user` et `reverse-share` n'avaient
+Resolved in 5.2 Phase A (Batch 4, juin 2026). The account-lifecycle work added meaningful
+service + integration coverage for both modules. The shared `purgeUserContent` helper and
+`cleanupDeactivatedAccounts` (in `modules/cleanup/service.ts`) are unit-tested against a mocked
+repository and storage provider, exercising `deleteUser`'s full cascade and the deactivated-account
+file purge — including S3 best-effort ordering and count reporting. An `app.inject()` integration
+test on `DELETE /users/:id` (axis A8) asserts the cascade removes shares, reverse shares, and S3
+objects, and the A6 access tests cover the deactivated-owner read-time block on both `getShare`
+and the reverse-share access path. These exercise the create/update/delete and response-formatting
+paths (strict Zod parsing) that previously had no service/route tests, so a regression on them now
+fails the suite.
+
+**Context (archived):** Découvert pendant TD-31/TD-41. Les modules `user` et `reverse-share` n'avaient
 **aucun** fichier de test de service/route avant cette session (seul `email-service.test.ts`
 référençait `notifyOnUpload`). `deleteUser`, `createReverseShare`, `updateReverseShare`,
 `formatReverseShareResponse`, etc. n'étaient pas couverts — c'est pourquoi l'ajout d'un champ
