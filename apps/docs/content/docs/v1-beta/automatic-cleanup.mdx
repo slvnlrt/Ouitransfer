@@ -21,6 +21,27 @@ All settings live in the **Automatic Cleanup** group on the **Admin → Settings
 
 A background scheduler runs at a configurable interval. On each run — and only when the relevant toggle is enabled — it performs the cleanup tasks described below. Configuration is re-read on every run, so changes take effect without a restart.
 
+## The two-phase share lifecycle
+
+Shares and reverse shares follow an explicit, persisted lifecycle with two distinct phases. Nothing jumps straight from "live" to "gone":
+
+```
+active ──(expires │ hits view limit │ manually paused)──▶ deactivated ──(grace period)──▶ deleted
+   ▲                                                            │
+   └──────────── resumed / renewed / extended ──────────────────┘
+```
+
+1. **Deactivated** (reversible). When a share's expiration passes, it reaches its view limit, or its owner manually pauses it, the share is marked **deactivated**: it stops being accessible to visitors, a reason is recorded (`expired`, `view limit`, or `paused`), and the moment of deactivation is timestamped. The owner sees the state and reason on the share, and can resume or renew it. No content is deleted in this phase.
+2. **Deleted** (permanent). After a single, uniform **grace period** measured from the moment of deactivation, the deactivated content is permanently deleted — but **only** when it was deactivated automatically (expired or view limit). The deletion scope is the same as before: an expired/max-views regular share loses only its share link; an expired reverse share loses its uploaded files and their storage objects.
+
+<Callout type="warn">
+  **Manually paused content is never auto-deleted.** A share you pause by hand stays deactivated indefinitely until you resume it — the deletion phase only applies to content that was deactivated automatically. If a manually paused share later also expires, its reason is upgraded to `expired` and the grace clock starts from that point.
+</Callout>
+
+### Pausing, resuming, and renewing
+
+Owners (and administrators) can **pause** a share or reverse share at any time, which deactivates it immediately with the `paused` reason. **Resuming** reactivates it and clears the deactivation state. Content that is deactivated because it **expired** or hit its **view limit** cannot simply be resumed — it must be **renewed** by extending its expiration date or raising its view limit, which reactivates it and restarts its life. Each reactivation is recorded in the [Activity Log](/docs/v1-beta/activity-log).
+
 ## What is and isn't deleted
 
 This is the most important section to understand before enabling cleanup. Ouitransfer's data model is **file-manager-centric**, not transfer-centric: a file lives in the owner's file manager and can be referenced by several shares at once.
@@ -28,7 +49,7 @@ This is the most important section to understand before enabling cleanup. Ouitra
 | Content | What cleanup does |
 |---------|-------------------|
 | **Expired regular share** | Deletes the **share link only** (the share, its password/security, recipients, visit records, and alias). The owner's underlying files and folders are **never** deleted. |
-| **Max-views regular share** | Same as above — deletes the **share link only**, after a delay of inactivity. |
+| **Max-views regular share** | Same as above — deletes the **share link only**, after the grace period that follows deactivation. |
 | **Expired reverse share** | Deletes the reverse share **and the files uploaded to it**, including their storage objects. This reclaims storage. |
 | **Deactivated account** | Account deactivation immediately **blocks** the user's shares (reversible). File deletion happens only later, and only if explicitly enabled. |
 | **Deleted account** | Full cascade — all of the user's files, shares, reverse shares, and storage objects are removed. |
@@ -40,15 +61,14 @@ This is the most important section to understand before enabling cleanup. Ouitra
 
 ## Configuration keys
 
-All nine keys live in the **Automatic Cleanup** settings group. Defaults are conservative and the three destructive features are off by default.
+All eight keys live in the **Automatic Cleanup** settings group. Defaults are conservative and the three destructive features are off by default.
 
 | Key | Default | Meaning |
 |-----|--------:|---------|
-| **Enable Automatic Cleanup** | `off` | Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on. |
+| **Enable Automatic Cleanup** | `off` | Master switch for the scheduled cleanup of deactivated share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on. |
 | **Cleanup Interval (hours)** | `24` | How often the cleanup task runs. Minimum 1 hour. |
-| **Grace Period (days)** | `7` | Extra days kept after a share or reverse share expires before it is permanently deleted. `0` means delete as soon as it expires. |
+| **Grace Period (days)** | `7` | Days a share or reverse share is kept after it is **deactivated** (because it expired or hit its view limit) before it is permanently deleted. `0` means delete as soon as the grace period elapses. The same uniform grace applies to every automatic deactivation reason. Manually paused content is never deleted. |
 | **Warn Before Deletion (days)** | `3` | Send the owner a "pending permanent deletion" warning email this many days before the content is deleted. `0` disables the warning. Should be at most the grace period. |
-| **Max-Views Cleanup Delay (days)** | `30` | Days of inactivity after a share reaches its view limit before the share link is removed. Minimum 1. |
 | **Delete Deactivated Accounts' Files** | `off` | When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files. |
 | **Deactivation Cleanup Delay (days)** | `30` | Days after an account is deactivated before its files are deleted (only when the option above is enabled). Minimum 1. |
 | **Sweep Orphaned Files** | `off` | When on, runs a two-way sweep that removes database records pointing to missing storage objects and storage objects with no database record. Off by default. |
@@ -56,16 +76,16 @@ All nine keys live in the **Automatic Cleanup** settings group. Defaults are con
 
 ## Expired and max-views shares
 
-When **Enable Automatic Cleanup** is on, the scheduler removes share links that have outlived their usefulness:
+When **Enable Automatic Cleanup** is on, the scheduler removes share links that have outlived their usefulness, always going through the two-phase lifecycle: the share is first **deactivated** (with reason `expired` or `view limit`), then deleted once the grace period measured from deactivation has elapsed.
 
-- **Expired shares** — once a share is past its expiration date *plus* the grace period, its link is deleted. The owner's files stay in the file manager.
-- **Max-views shares** — when a share reaches its view limit and then sees no further activity for the configured number of days, its link is deleted.
+- **Expired shares** — when a share passes its expiration date it is deactivated. Its link is deleted once the grace period since deactivation has elapsed. The owner's files stay in the file manager.
+- **Max-views shares** — when a share reaches its view limit it is deactivated. Its link is deleted once the grace period since deactivation has elapsed.
 
-In both cases only the **share link** is removed. The owner keeps their files.
+In both cases only the **share link** is removed. The owner keeps their files. The same single grace period applies to both reasons.
 
 ## Reverse shares
 
-Files uploaded through a reverse share have no independent existence — they belong solely to that reverse share. When a reverse share expires (past expiration plus the grace period), the reverse share and all of its uploaded files are deleted, including their storage objects. This is the path that reclaims storage from inbound transfers.
+Files uploaded through a reverse share have no independent existence — they belong solely to that reverse share. A reverse share follows the same two-phase lifecycle: when it expires it is **deactivated** (reason `expired`), and once the grace period measured from deactivation has elapsed the reverse share and all of its uploaded files are deleted, including their storage objects. This is the path that reclaims storage from inbound transfers. A manually paused reverse share is never auto-deleted.
 
 ## Account deactivation
 
@@ -97,4 +117,4 @@ Before an expired share or reverse share is permanently deleted, Ouitransfer can
 
 ## Audit logging
 
-Every automated deletion writes an entry to the [Activity Log](/docs/v1-beta/activity-log): expired and max-views share-link removals, reverse-share deletions, deactivated-account file cleanups, the full user-deletion cascade, and both directions of the orphan sweep. This gives administrators a complete, searchable record of what the cleanup system removed and when.
+Both lifecycle transitions are recorded in the [Activity Log](/docs/v1-beta/activity-log). Deactivation and reactivation write `SHARE_DEACTIVATED` / `SHARE_REACTIVATED` (and the reverse-share equivalents), with the reason in their metadata. Every automated deletion writes its own entry too: expired and max-views share-link removals, reverse-share deletions, deactivated-account file cleanups, the full user-deletion cascade, and both directions of the orphan sweep. This gives administrators a complete, searchable record of what the cleanup system deactivated, removed, and when.

@@ -21,6 +21,27 @@ Tous les paramètres se trouvent dans le groupe **Nettoyage automatique** de la 
 
 Un planificateur d'arrière-plan s'exécute à un intervalle configurable. À chaque exécution — et uniquement lorsque la bascule concernée est activée — il effectue les tâches de nettoyage décrites ci-dessous. La configuration est relue à chaque exécution, de sorte que les modifications prennent effet sans redémarrage.
 
+## Le cycle de vie en deux phases des partages
+
+Les partages et les partages inversés suivent un cycle de vie explicite et persistant comportant deux phases distinctes. Rien ne passe directement de « actif » à « supprimé » :
+
+```
+actif ──(expire │ limite de vues atteinte │ mis en pause)──▶ désactivé ──(période de grâce)──▶ supprimé
+   ▲                                                              │
+   └──────────── repris / renouvelé / prolongé ───────────────────┘
+```
+
+1. **Désactivé** (réversible). Lorsque la date d'expiration d'un partage est dépassée, qu'il atteint sa limite de vues ou que son propriétaire le met manuellement en pause, le partage est marqué **désactivé** : il cesse d'être accessible aux visiteurs, une raison est enregistrée (`expiré`, `limite de vues` ou `en pause`) et l'instant de désactivation est horodaté. Le propriétaire voit l'état et la raison sur le partage, et peut le reprendre ou le renouveler. Aucun contenu n'est supprimé dans cette phase.
+2. **Supprimé** (définitif). Après une **période de grâce** unique et uniforme mesurée à partir de l'instant de désactivation, le contenu désactivé est supprimé définitivement — mais **uniquement** s'il a été désactivé automatiquement (expiré ou limite de vues). La portée de la suppression reste la même : un partage classique expiré / à vues maximales perd uniquement son lien de partage ; un partage inversé expiré perd ses fichiers téléversés et leurs objets de stockage.
+
+<Callout type="warn">
+  **Le contenu mis en pause manuellement n'est jamais supprimé automatiquement.** Un partage que vous mettez en pause à la main reste désactivé indéfiniment jusqu'à ce que vous le repreniez — la phase de suppression ne s'applique qu'au contenu désactivé automatiquement. Si un partage mis en pause manuellement expire ensuite, sa raison est promue en `expiré` et le compte à rebours de la grâce démarre à ce moment-là.
+</Callout>
+
+### Mettre en pause, reprendre et renouveler
+
+Les propriétaires (et les administrateurs) peuvent **mettre en pause** un partage ou un partage inversé à tout moment, ce qui le désactive immédiatement avec la raison `en pause`. La **reprise** le réactive et efface l'état de désactivation. Un contenu désactivé parce qu'il a **expiré** ou atteint sa **limite de vues** ne peut pas être simplement repris — il doit être **renouvelé** en prolongeant sa date d'expiration ou en augmentant sa limite de vues, ce qui le réactive et relance son cycle de vie. Chaque réactivation est enregistrée dans le [Journal d'activité](/docs/v1-beta/activity-log).
+
 ## Ce qui est supprimé et ce qui ne l'est pas
 
 C'est la section la plus importante à comprendre avant d'activer le nettoyage. Le modèle de données de Ouitransfer est centré sur le **gestionnaire de fichiers**, et non sur le transfert : un fichier vit dans le gestionnaire de fichiers du propriétaire et peut être référencé par plusieurs partages à la fois.
@@ -28,7 +49,7 @@ C'est la section la plus importante à comprendre avant d'activer le nettoyage. 
 | Contenu | Ce que fait le nettoyage |
 |---------|--------------------------|
 | **Partage classique expiré** | Supprime **uniquement le lien de partage** (le partage, son mot de passe / sa sécurité, ses destinataires, ses enregistrements de visites et son alias). Les fichiers et dossiers sous-jacents du propriétaire ne sont **jamais** supprimés. |
-| **Partage classique à vues maximales** | Identique à ci-dessus — supprime **uniquement le lien de partage**, après un délai d'inactivité. |
+| **Partage classique à vues maximales** | Identique à ci-dessus — supprime **uniquement le lien de partage**, après la période de grâce qui suit la désactivation. |
 | **Partage inversé expiré** | Supprime le partage inversé **et les fichiers qui y ont été téléversés**, y compris leurs objets de stockage. Cela libère du stockage. |
 | **Compte désactivé** | La désactivation d'un compte **bloque** immédiatement les partages de l'utilisateur (réversible). La suppression des fichiers n'intervient que plus tard, et uniquement si elle est explicitement activée. |
 | **Compte supprimé** | Cascade complète — tous les fichiers, partages, partages inversés et objets de stockage de l'utilisateur sont supprimés. |
@@ -40,15 +61,14 @@ C'est la section la plus importante à comprendre avant d'activer le nettoyage. 
 
 ## Clés de configuration
 
-Les neuf clés se trouvent dans le groupe de paramètres **Nettoyage automatique**. Les valeurs par défaut sont conservatrices et les trois fonctions destructrices sont désactivées par défaut.
+Les huit clés se trouvent dans le groupe de paramètres **Nettoyage automatique**. Les valeurs par défaut sont conservatrices et les trois fonctions destructrices sont désactivées par défaut.
 
 | Clé | Défaut | Signification |
 |-----|-------:|---------------|
-| **Activer le nettoyage automatique** | `désactivé` | Interrupteur principal du nettoyage planifié des liens de partage expirés, des fichiers de partage inversé expirés et des orphelins. Désactivé par défaut — rien n'est supprimé automatiquement tant que vous ne l'activez pas. |
+| **Activer le nettoyage automatique** | `désactivé` | Interrupteur principal du nettoyage planifié des liens de partage désactivés, des fichiers de partage inversé expirés et des orphelins. Désactivé par défaut — rien n'est supprimé automatiquement tant que vous ne l'activez pas. |
 | **Intervalle de nettoyage (heures)** | `24` | Fréquence d'exécution de la tâche de nettoyage. Minimum 1 heure. |
-| **Période de grâce (jours)** | `7` | Jours supplémentaires conservés après l'expiration d'un partage ou d'un partage inversé avant sa suppression définitive. `0` signifie une suppression dès l'expiration. |
+| **Période de grâce (jours)** | `7` | Jours pendant lesquels un partage ou un partage inversé est conservé après sa **désactivation** (parce qu'il a expiré ou atteint sa limite de vues) avant sa suppression définitive. `0` signifie une suppression dès l'écoulement de la période de grâce. La même grâce uniforme s'applique à toutes les raisons de désactivation automatique. Le contenu mis en pause manuellement n'est jamais supprimé. |
 | **Avertir avant suppression (jours)** | `3` | Envoie au propriétaire un e-mail d'avertissement « suppression définitive imminente » ce nombre de jours avant la suppression. `0` désactive l'avertissement. Doit être au plus égal à la période de grâce. |
-| **Délai de nettoyage des vues max (jours)** | `30` | Jours d'inactivité après qu'un partage a atteint sa limite de vues avant la suppression du lien de partage. Minimum 1. |
 | **Supprimer les fichiers des comptes désactivés** | `désactivé` | Lorsqu'activé, les fichiers d'un compte désactivé sont supprimés définitivement après le délai ci-dessous. Désactivé par défaut — la désactivation seule ne supprime jamais de fichiers. |
 | **Délai de nettoyage après désactivation (jours)** | `30` | Jours après la désactivation d'un compte avant la suppression de ses fichiers (uniquement si l'option ci-dessus est activée). Minimum 1. |
 | **Nettoyer les fichiers orphelins** | `désactivé` | Lorsqu'activé, exécute un balayage bidirectionnel qui supprime les enregistrements de base de données pointant vers des objets de stockage manquants et les objets de stockage sans enregistrement. Désactivé par défaut. |
@@ -56,16 +76,16 @@ Les neuf clés se trouvent dans le groupe de paramètres **Nettoyage automatique
 
 ## Partages expirés et à vues maximales
 
-Lorsque **Activer le nettoyage automatique** est activé, le planificateur supprime les liens de partage qui ont fait leur temps :
+Lorsque **Activer le nettoyage automatique** est activé, le planificateur supprime les liens de partage qui ont fait leur temps, toujours via le cycle de vie en deux phases : le partage est d'abord **désactivé** (avec la raison `expiré` ou `limite de vues`), puis supprimé une fois écoulée la période de grâce mesurée depuis la désactivation.
 
-- **Partages expirés** — une fois qu'un partage a dépassé sa date d'expiration *plus* la période de grâce, son lien est supprimé. Les fichiers du propriétaire restent dans le gestionnaire de fichiers.
-- **Partages à vues maximales** — lorsqu'un partage atteint sa limite de vues puis ne connaît plus aucune activité pendant le nombre de jours configuré, son lien est supprimé.
+- **Partages expirés** — lorsqu'un partage dépasse sa date d'expiration, il est désactivé. Son lien est supprimé une fois écoulée la période de grâce depuis la désactivation. Les fichiers du propriétaire restent dans le gestionnaire de fichiers.
+- **Partages à vues maximales** — lorsqu'un partage atteint sa limite de vues, il est désactivé. Son lien est supprimé une fois écoulée la période de grâce depuis la désactivation.
 
-Dans les deux cas, seul le **lien de partage** est supprimé. Le propriétaire conserve ses fichiers.
+Dans les deux cas, seul le **lien de partage** est supprimé. Le propriétaire conserve ses fichiers. La même période de grâce unique s'applique aux deux raisons.
 
 ## Partages inversés
 
-Les fichiers téléversés via un partage inversé n'ont pas d'existence indépendante — ils appartiennent uniquement à ce partage inversé. Lorsqu'un partage inversé expire (au-delà de l'expiration plus la période de grâce), le partage inversé et tous ses fichiers téléversés sont supprimés, y compris leurs objets de stockage. C'est le chemin qui récupère le stockage des transferts entrants.
+Les fichiers téléversés via un partage inversé n'ont pas d'existence indépendante — ils appartiennent uniquement à ce partage inversé. Un partage inversé suit le même cycle de vie en deux phases : lorsqu'il expire, il est **désactivé** (raison `expiré`), et une fois écoulée la période de grâce mesurée depuis la désactivation, le partage inversé et tous ses fichiers téléversés sont supprimés, y compris leurs objets de stockage. C'est le chemin qui récupère le stockage des transferts entrants. Un partage inversé mis en pause manuellement n'est jamais supprimé automatiquement.
 
 ## Désactivation de compte
 
@@ -97,4 +117,4 @@ Avant qu'un partage ou un partage inversé expiré ne soit supprimé définitive
 
 ## Journalisation d'audit
 
-Chaque suppression automatique écrit une entrée dans le [Journal d'activité](/docs/v1-beta/activity-log) : suppressions de liens de partage expirés et à vues maximales, suppressions de partages inversés, nettoyages de fichiers de comptes désactivés, cascade complète de suppression d'utilisateur, et les deux directions du balayage des orphelins. Cela donne aux administrateurs un enregistrement complet et consultable de ce que le système de nettoyage a supprimé, et quand.
+Les deux transitions du cycle de vie sont enregistrées dans le [Journal d'activité](/docs/v1-beta/activity-log). La désactivation et la réactivation écrivent `SHARE_DEACTIVATED` / `SHARE_REACTIVATED` (et les équivalents pour les partages inversés), avec la raison dans leurs métadonnées. Chaque suppression automatique écrit également sa propre entrée : suppressions de liens de partage expirés et à vues maximales, suppressions de partages inversés, nettoyages de fichiers de comptes désactivés, cascade complète de suppression d'utilisateur, et les deux directions du balayage des orphelins. Cela donne aux administrateurs un enregistrement complet et consultable de ce que le système de nettoyage a désactivé, supprimé, et quand.
