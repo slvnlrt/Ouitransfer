@@ -47,11 +47,14 @@
 :root {
   /* Matches the "Medium" preset in the customization radius picker. */
   --radius: 0.5rem;
-  --background: var(--custom-background-light, oklch(0.985 0.005 265));
+  --background: var(--custom-background-light, oklch(0.975 0.007 265));
   --foreground: oklch(0.145 0.015 265);
-  --card: oklch(1 0 0);
+  /* Off-white, faintly indigo-tinted surfaces — pure white (oklch(1 0 0)) was
+     too harsh on large card/popover areas. Kept brighter than --background so
+     surfaces still lift off the page. */
+  --card: oklch(0.99 0.004 265);
   --card-foreground: oklch(0.145 0.015 265);
-  --popover: oklch(1 0 0);
+  --popover: oklch(0.99 0.004 265);
   --popover-foreground: oklch(0.145 0.015 265);
   --primary: oklch(0.45 0.2 265);
   --primary-foreground: oklch(0.985 0 0);

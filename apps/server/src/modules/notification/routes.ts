@@ -7,6 +7,8 @@ import { prisma } from "../../shared/prisma.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { escapeHtml } from "../../utils/escape-html.js";
 import { type NotificationKey, notificationCatalog } from "../email/catalog.js";
+import { createTranslationFn, type TranslationFn } from "../email/i18n/loader.js";
+import { UNSUBSCRIBE_I18N } from "../email/i18n/unsubscribe-keys.js";
 import { emailService } from "../email/service.js";
 import {
   getUserPreferences,
@@ -39,62 +41,13 @@ const HTML_STYLES = `
   .error-icon { font-size: 3rem; margin-bottom: 16px; }
 `.trim();
 
-// ─── Unsubscribe page i18n strings ────────────────────────────────────────────
-// Minimal inline map for localized unsubscribe pages. Covers English and French;
-// other locales fall back to English. The unsubscribe JWT contains userId + type
-// but not locale, so we fetch the user's locale from the DB after token verification.
-// TODO: These inline strings should eventually use the email i18n system (loader.ts)
-// for full locale coverage. Deferred — only en/fr are needed for the unsubscribe flow.
-
-interface UnsubscribePageStrings {
-  lang: string;
-  confirmTitle: string;
-  confirmAbout: string;
-  confirmAction: string;
-  confirmButton: string;
-  successTitle: string;
-  successMessage: (type: string) => string;
-  successManage: string;
-  errorTitle: string;
-  errorMessage: string;
-  errorManage: string;
-}
-
-const PAGE_STRINGS: Record<string, UnsubscribePageStrings> = {
-  en: {
-    lang: "en",
-    confirmTitle: "Unsubscribe from notifications",
-    confirmAbout: "You are about to unsubscribe from:",
-    confirmAction: "You will no longer receive emails for this notification type.",
-    confirmButton: "Confirm Unsubscribe",
-    successTitle: "Successfully unsubscribed",
-    successMessage: (type) =>
-      `You have been unsubscribed from <strong>${escapeHtml(type)}</strong> notifications.`,
-    successManage: "You can manage all your notification preferences in your account settings.",
-    errorTitle: "Invalid or expired unsubscribe link",
-    errorMessage:
-      "This unsubscribe link is no longer valid. It may have expired or already been used.",
-    errorManage:
-      "You can manage your notification preferences directly from your account settings.",
-  },
-  fr: {
-    lang: "fr",
-    confirmTitle: "Se désabonner des notifications",
-    confirmAbout: "Vous êtes sur le point de vous désabonner de :",
-    confirmAction: "Vous ne recevrez plus d'e-mails pour ce type de notification.",
-    confirmButton: "Confirmer le désabonnement",
-    successTitle: "Désabonnement réussi",
-    successMessage: (type) =>
-      `Vous avez été désabonné des notifications <strong>${escapeHtml(type)}</strong>.`,
-    successManage:
-      "Vous pouvez gérer toutes vos préférences de notification dans les paramètres de votre compte.",
-    errorTitle: "Lien invalide ou expiré",
-    errorMessage:
-      "Ce lien de désabonnement n'est plus valide. Il a peut-être expiré ou a déjà été utilisé.",
-    errorManage:
-      "Vous pouvez gérer vos préférences de notification directement depuis les paramètres de votre compte.",
-  },
-};
+// ─── Unsubscribe page i18n ─────────────────────────────────────────────────────
+// The localized unsubscribe pages reuse the email i18n system (loader.ts) so they
+// share a single source of truth and the same locale-resolution/fallback rules as
+// the notification emails themselves (requested locale → English). The unsubscribe
+// JWT carries userId + type but not locale, so we resolve the user's locale from
+// the DB after token verification. Strings live under the `unsubscribe.*` namespace
+// in `../email/i18n/messages/*.json`.
 
 /**
  * Returns the human-readable display name for a notification type.
@@ -105,92 +58,98 @@ function getTypeDisplayName(type: string): string {
   return entry?.displayName ?? type;
 }
 
-function getPageStrings(locale?: string | null): UnsubscribePageStrings {
-  if (locale && locale in PAGE_STRINGS) return PAGE_STRINGS[locale];
-  // Try base language (e.g. "fr-CA" → "fr")
-  if (locale) {
-    const base = locale.split("-")[0];
-    if (base in PAGE_STRINGS) return PAGE_STRINGS[base];
-  }
-  return PAGE_STRINGS.en;
-}
-
 /**
  * Fetch the user's locale from the DB for unsubscribe page localization.
- * Returns null if the user is not found (token may reference a deleted account).
+ * Returns "en" if the user is not found (token may reference a deleted account).
  */
-async function getUserLocale(userId: string): Promise<string | null> {
+async function getUserLocale(userId: string): Promise<string> {
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { locale: true },
     });
-    return user?.locale ?? null;
+    return user?.locale ?? "en";
   } catch {
-    return null;
+    return "en";
   }
 }
 
-function renderConfirmPage(token: string, type: string, strings: UnsubscribePageStrings): string {
+/**
+ * Renders the error page. Used whenever the token is missing, invalid, or
+ * expired — at which point no user (and therefore no locale) is known, so it
+ * always renders in English, matching the email i18n fallback.
+ */
+async function renderErrorPage(): Promise<string> {
+  const tr = await createTranslationFn("en");
+  return renderErrorPageHtml(tr, "en");
+}
+
+// `tr` is the HTML-escaping translation function from createTranslationFn: the
+// interpolated `{type}` value is escaped, while markup in the template (e.g.
+// <strong>) is preserved. All other strings have no placeholders and pass through
+// verbatim — translation values are developer-controlled, so they are safe to
+// embed directly. The `lang` attribute mirrors the requested locale exactly as the
+// email base layout does.
+
+function renderConfirmPage(token: string, type: string, tr: TranslationFn, lang: string): string {
   return `<!DOCTYPE html>
-<html lang="${strings.lang}">
+<html lang="${escapeHtml(lang)}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${strings.confirmTitle}</title>
+  <title>${tr(UNSUBSCRIBE_I18N.confirmTitle)}</title>
   <style>${HTML_STYLES}</style>
 </head>
 <body>
   <div class="card">
-    <h1>${strings.confirmTitle}</h1>
-    <p>${strings.confirmAbout}</p>
+    <h1>${tr(UNSUBSCRIBE_I18N.confirmTitle)}</h1>
+    <p>${tr(UNSUBSCRIBE_I18N.confirmAbout)}</p>
     <div class="type-badge">${escapeHtml(type)}</div>
-    <p>${strings.confirmAction}</p>
+    <p>${tr(UNSUBSCRIBE_I18N.confirmAction)}</p>
     <form method="POST">
       <input type="hidden" name="token" value="${escapeHtml(token)}" />
-      <button type="submit" class="btn">${strings.confirmButton}</button>
+      <button type="submit" class="btn">${tr(UNSUBSCRIBE_I18N.confirmButton)}</button>
     </form>
   </div>
 </body>
 </html>`;
 }
 
-function renderSuccessPage(type: string, strings: UnsubscribePageStrings): string {
+function renderSuccessPage(type: string, tr: TranslationFn, lang: string): string {
   return `<!DOCTYPE html>
-<html lang="${strings.lang}">
+<html lang="${escapeHtml(lang)}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${strings.successTitle}</title>
+  <title>${tr(UNSUBSCRIBE_I18N.successTitle)}</title>
   <style>${HTML_STYLES}</style>
 </head>
 <body>
   <div class="card">
     <div class="success-icon">✅</div>
-    <h1>${strings.successTitle}</h1>
-    <p>${strings.successMessage(type)}</p>
-    <p>${strings.successManage}</p>
+    <h1>${tr(UNSUBSCRIBE_I18N.successTitle)}</h1>
+    <p>${tr(UNSUBSCRIBE_I18N.successMessage, { type })}</p>
+    <p>${tr(UNSUBSCRIBE_I18N.successManage)}</p>
   </div>
 </body>
 </html>`;
 }
 
-function renderErrorPage(strings?: UnsubscribePageStrings): string {
-  const s = strings ?? PAGE_STRINGS.en;
+function renderErrorPageHtml(tr: TranslationFn, lang: string): string {
   return `<!DOCTYPE html>
-<html lang="${s.lang}">
+<html lang="${escapeHtml(lang)}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${s.errorTitle}</title>
+  <title>${tr(UNSUBSCRIBE_I18N.errorTitle)}</title>
   <style>${HTML_STYLES}</style>
 </head>
 <body>
   <div class="card">
     <div class="error-icon">⚠️</div>
-    <h1>${s.errorTitle}</h1>
-    <p>${s.errorMessage}</p>
-    <p>${s.errorManage}</p>
+    <h1>${tr(UNSUBSCRIBE_I18N.errorTitle)}</h1>
+    <p>${tr(UNSUBSCRIBE_I18N.errorMessage)}</p>
+    <p>${tr(UNSUBSCRIBE_I18N.errorManage)}</p>
   </div>
 </body>
 </html>`;
@@ -290,14 +249,16 @@ export const notificationRoutes: FastifyPluginAsyncZod = async (app) => {
       try {
         const { userId, type } = verifyUnsubscribeToken(token);
         const locale = await getUserLocale(userId);
-        const strings = getPageStrings(locale);
+        const tr = await createTranslationFn(locale);
         // Use human-readable displayName from catalog instead of raw snake_case type key
         const displayName = getTypeDisplayName(type);
         return reply
           .header("Content-Type", "text/html; charset=utf-8")
-          .send(renderConfirmPage(token, displayName, strings));
+          .send(renderConfirmPage(token, displayName, tr, locale));
       } catch {
-        return reply.header("Content-Type", "text/html; charset=utf-8").send(renderErrorPage());
+        return reply
+          .header("Content-Type", "text/html; charset=utf-8")
+          .send(await renderErrorPage());
       }
     },
   });
@@ -334,21 +295,25 @@ export const notificationRoutes: FastifyPluginAsyncZod = async (app) => {
       const token = body?.token ?? query.token;
 
       if (!token) {
-        return reply.header("Content-Type", "text/html; charset=utf-8").send(renderErrorPage());
+        return reply
+          .header("Content-Type", "text/html; charset=utf-8")
+          .send(await renderErrorPage());
       }
 
       try {
         const { userId, type } = verifyUnsubscribeToken(token);
         await unsubscribeUser(userId, type);
         const locale = await getUserLocale(userId);
-        const strings = getPageStrings(locale);
+        const tr = await createTranslationFn(locale);
         // Use human-readable displayName from catalog instead of raw snake_case type key
         const displayName = getTypeDisplayName(type);
         return reply
           .header("Content-Type", "text/html; charset=utf-8")
-          .send(renderSuccessPage(displayName, strings));
+          .send(renderSuccessPage(displayName, tr, locale));
       } catch {
-        return reply.header("Content-Type", "text/html; charset=utf-8").send(renderErrorPage());
+        return reply
+          .header("Content-Type", "text/html; charset=utf-8")
+          .send(await renderErrorPage());
       }
     },
   });

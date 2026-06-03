@@ -173,5 +173,17 @@
     "body": "Ceci est un e-mail de test envoyé par {appName}. Si vous avez reçu ce message, votre configuration e-mail fonctionne correctement.",
     "bodyCustom": "Ceci est un e-mail de test envoyé par {appName}.\n\n{testMessage}",
     "info": "Cet e-mail a été envoyé à titre de test. Aucune action n'est requise."
+  },
+  "unsubscribe": {
+    "confirmTitle": "Se désabonner des notifications",
+    "confirmAbout": "Vous êtes sur le point de vous désabonner de :",
+    "confirmAction": "Vous ne recevrez plus d'e-mails pour ce type de notification.",
+    "confirmButton": "Confirmer le désabonnement",
+    "successTitle": "Désabonnement réussi",
+    "successMessage": "Vous avez été désabonné des notifications <strong>{type}</strong>.",
+    "successManage": "Vous pouvez gérer toutes vos préférences de notification dans les paramètres de votre compte.",
+    "errorTitle": "Lien invalide ou expiré",
+    "errorMessage": "Ce lien de désabonnement n'est plus valide. Il a peut-être expiré ou a déjà été utilisé.",
+    "errorManage": "Vous pouvez gérer vos préférences de notification directement depuis les paramètres de votre compte."
   }
 }

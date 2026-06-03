@@ -173,5 +173,17 @@
     "body": "This is a test email sent from {appName}. If you received this message, your email configuration is working correctly.",
     "bodyCustom": "This is a test email sent from {appName}.\n\n{testMessage}",
     "info": "This email was sent as a test. No action is required."
+  },
+  "unsubscribe": {
+    "confirmTitle": "Unsubscribe from notifications",
+    "confirmAbout": "You are about to unsubscribe from:",
+    "confirmAction": "You will no longer receive emails for this notification type.",
+    "confirmButton": "Confirm Unsubscribe",
+    "successTitle": "Successfully unsubscribed",
+    "successMessage": "You have been unsubscribed from <strong>{type}</strong> notifications.",
+    "successManage": "You can manage all your notification preferences in your account settings.",
+    "errorTitle": "Invalid or expired unsubscribe link",
+    "errorMessage": "This unsubscribe link is no longer valid. It may have expired or already been used.",
+    "errorManage": "You can manage your notification preferences directly from your account settings."
   }
 }

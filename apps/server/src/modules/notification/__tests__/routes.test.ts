@@ -138,8 +138,10 @@ describe("Notification routes — integration", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // Re-establish defaults after clearAllMocks
+    // Re-establish defaults after clearAllMocks (clearAllMocks keeps
+    // implementations, so reset findUnique to avoid locale leaking between tests).
     vi.mocked(mockPrisma.user.count).mockResolvedValue(1);
+    vi.mocked(mockPrisma.user.findUnique).mockResolvedValue(null as never);
     vi.mocked(mockPrisma.notificationPreference.findMany).mockResolvedValue([]);
     vi.mocked(mockPrisma.notificationPreference.upsert).mockResolvedValue({} as never);
     vi.mocked(mockPrisma.emailJob.count).mockResolvedValue(0);
@@ -419,6 +421,22 @@ describe("Notification routes — integration", () => {
       expect(mockPrisma.notificationPreference.upsert).not.toHaveBeenCalled();
     });
 
+    it("renders the confirmation page in the user's locale (French)", async () => {
+      vi.mocked(mockPrisma.user.findUnique).mockResolvedValue({ locale: "fr" } as never);
+      const token = signUnsubscribeToken({ userId: "user-1", type: "share_expiring" });
+
+      const res = await app.inject({
+        method: "GET",
+        url: `/notifications/unsubscribe?token=${token}`,
+      });
+
+      expect(res.statusCode).toBe(200);
+      const html = res.payload;
+      expect(html).toContain('<html lang="fr">');
+      expect(html).toContain("Se désabonner des notifications");
+      expect(html).toContain("Confirmer le désabonnement");
+    });
+
     it("returns error HTML page with an invalid token", async () => {
       const res = await app.inject({
         method: "GET",
@@ -474,6 +492,23 @@ describe("Notification routes — integration", () => {
       });
       expect(upsertCall.create.frequency).toBe("disabled");
       expect(upsertCall.update.frequency).toBe("disabled");
+    });
+
+    it("renders the success page in the user's locale (French)", async () => {
+      vi.mocked(mockPrisma.user.findUnique).mockResolvedValue({ locale: "fr" } as never);
+      const token = signUnsubscribeToken({ userId: "user-1", type: "share_expiring" });
+
+      const res = await app.inject({
+        method: "POST",
+        url: "/notifications/unsubscribe",
+        headers: { "content-type": "application/json" },
+        payload: JSON.stringify({ token }),
+      });
+
+      expect(res.statusCode).toBe(200);
+      const html = res.payload;
+      expect(html).toContain('<html lang="fr">');
+      expect(html).toContain("Désabonnement réussi");
     });
 
     it("returns error HTML page with expired token", async () => {

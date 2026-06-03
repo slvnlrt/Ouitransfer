@@ -22,7 +22,6 @@ vi.mock("../shared/prisma.js", () => ({
     },
     inviteToken: {
       findUnique: vi.fn(),
-      update: vi.fn(),
     },
     $transaction: vi.fn(),
   },
@@ -83,7 +82,6 @@ describe("POST /register-with-invite — structured error codes", () => {
       };
       inviteToken: {
         findUnique: ReturnType<typeof vi.fn>;
-        update: ReturnType<typeof vi.fn>;
       };
       $transaction: ReturnType<typeof vi.fn>;
     };
@@ -213,7 +211,9 @@ describe("POST /register-with-invite — structured error codes", () => {
             create: vi.fn().mockResolvedValue(newUser),
           },
           inviteToken: {
-            update: vi.fn().mockResolvedValue({ id: "invite-token-1" }),
+            // Atomic claim succeeds (one row matched).
+            updateMany: vi.fn().mockResolvedValue({ count: 1 }),
+            findUnique: vi.fn().mockResolvedValue(makeInviteToken()),
           },
         };
         return fn(tx as unknown as typeof prismaModule.prisma);
@@ -228,5 +228,70 @@ describe("POST /register-with-invite — structured error codes", () => {
     expect(body.user.username).toBe("alicesmith");
     expect(body.user.email).toBe("alice@example.com");
     expect(body.user.id).toBe("new-user-1");
+  });
+
+  // ── Lost-race paths (B-26): atomic claim matched 0 rows ──────────────────
+  //
+  // Pre-flight passes (token looks valid), but a concurrent request claims the
+  // token first, so the atomic `updateMany` matches 0 rows. The service must
+  // then re-read the token and surface the precise reason instead of creating
+  // a second user with an already-consumed invite.
+
+  /**
+   * Drives the success-path pre-flight (valid token, no user conflict) and a
+   * transaction whose atomic claim loses the race. `claimedState` is what the
+   * in-transaction re-read returns once the claim has failed.
+   */
+  function mockLostRace(claimedState: ReturnType<typeof makeInviteToken> | null) {
+    prismaModule.prisma.inviteToken.findUnique.mockResolvedValue(makeInviteToken());
+    prismaModule.prisma.user.findFirst.mockResolvedValue(null);
+    const txUserCreate = vi.fn();
+    prismaModule.prisma.$transaction.mockImplementation(
+      async (fn: (tx: typeof prismaModule.prisma) => Promise<unknown>) => {
+        const tx = {
+          user: { create: txUserCreate },
+          inviteToken: {
+            updateMany: vi.fn().mockResolvedValue({ count: 0 }),
+            findUnique: vi.fn().mockResolvedValue(claimedState),
+          },
+        };
+        return fn(tx as unknown as typeof prismaModule.prisma);
+      },
+    );
+    return { txUserCreate };
+  }
+
+  it("returns INVITE_TOKEN_USED (409) and creates no user when the claim is lost to a used token", async () => {
+    const { txUserCreate } = mockLostRace(
+      makeInviteToken({ usedAt: new Date(Date.now() - 1_000) }),
+    );
+
+    const res = await postRegister(validPayload());
+
+    expect(res.statusCode).toBe(409);
+    expect(res.json().code).toBe("INVITE_TOKEN_USED");
+    expect(txUserCreate).not.toHaveBeenCalled();
+  });
+
+  it("returns INVITE_TOKEN_EXPIRED (410) when the claim is lost to an expired token", async () => {
+    const { txUserCreate } = mockLostRace(
+      makeInviteToken({ expiresAt: new Date(Date.now() - 1_000) }),
+    );
+
+    const res = await postRegister(validPayload());
+
+    expect(res.statusCode).toBe(410);
+    expect(res.json().code).toBe("INVITE_TOKEN_EXPIRED");
+    expect(txUserCreate).not.toHaveBeenCalled();
+  });
+
+  it("returns NOT_FOUND (404) when the token vanishes before the claim", async () => {
+    const { txUserCreate } = mockLostRace(null);
+
+    const res = await postRegister(validPayload());
+
+    expect(res.statusCode).toBe(404);
+    expect(res.json().code).toBe("NOT_FOUND");
+    expect(txUserCreate).not.toHaveBeenCalled();
   });
 });

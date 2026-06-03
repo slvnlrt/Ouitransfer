@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { TranslationFn } from "./i18n/loader.js";
 import { validateI18nKeys } from "./i18n/loader.js";
+import { UNSUBSCRIBE_I18N_KEYS } from "./i18n/unsubscribe-keys.js";
 
 /**
  * Strict ISO 8601 datetime string validation.
@@ -726,12 +727,14 @@ export function typeToI18nPrefix(type: NotificationKey): string {
 }
 
 /**
- * Validates that all i18n keys required by the notification catalog exist in en.json.
+ * Validates that all i18n keys required by the notification catalog — plus the
+ * standalone unsubscribe-page keys — exist in en.json.
  * Call this on boot to catch missing translations early.
  *
  * @throws Error listing all missing keys.
  */
 export async function validateAllI18nKeys(): Promise<void> {
-  const allKeys = Object.values(notificationCatalog).flatMap((c) => c.requiredI18nKeys);
+  const catalogKeys = Object.values(notificationCatalog).flatMap((c) => c.requiredI18nKeys);
+  const allKeys = [...catalogKeys, ...UNSUBSCRIBE_I18N_KEYS];
   await validateI18nKeys([...new Set(allKeys)]);
 }
