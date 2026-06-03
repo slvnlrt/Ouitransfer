@@ -28,6 +28,7 @@ import { afterAll, describe, expect, it } from "vitest";
 
 import { notificationCatalog } from "../catalog.js";
 import { clearLocaleCache } from "../i18n/loader.js";
+import { UNSUBSCRIBE_I18N } from "../i18n/unsubscribe-keys.js";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -212,5 +213,28 @@ describe("i18n placeholder consistency", () => {
         });
       }
     });
+  }
+});
+
+describe("unsubscribe page i18n keys", () => {
+  const locales = discoverLocales();
+  const keys = Object.values(UNSUBSCRIBE_I18N);
+
+  // The unsubscribe pages are not catalog notification types, so they are not
+  // covered by the loop above. validateAllI18nKeys() now validates these keys
+  // against en.json at boot; this test additionally asserts they resolve in
+  // every shipped locale file (en + fr today) so the pages never silently fall
+  // back, and guards against drift between the key map and the message files.
+  for (const locale of locales) {
+    for (const key of keys) {
+      it(`[${locale}] ${key} resolves to a string`, () => {
+        const messages = loadMessages(locale);
+        expect(messages, `Could not load messages for locale "${locale}"`).not.toBeNull();
+        const value = messages ? resolvePath(messages, key) : undefined;
+        expect(value, `[${locale}] missing or non-string unsubscribe key "${key}"`).toBeTypeOf(
+          "string",
+        );
+      });
+    }
   }
 });

@@ -8,6 +8,7 @@ import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { escapeHtml } from "../../utils/escape-html.js";
 import { type NotificationKey, notificationCatalog } from "../email/catalog.js";
 import { createTranslationFn, type TranslationFn } from "../email/i18n/loader.js";
+import { UNSUBSCRIBE_I18N } from "../email/i18n/unsubscribe-keys.js";
 import { emailService } from "../email/service.js";
 import {
   getUserPreferences,
@@ -96,18 +97,18 @@ function renderConfirmPage(token: string, type: string, tr: TranslationFn, lang:
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${tr("unsubscribe.confirmTitle")}</title>
+  <title>${tr(UNSUBSCRIBE_I18N.confirmTitle)}</title>
   <style>${HTML_STYLES}</style>
 </head>
 <body>
   <div class="card">
-    <h1>${tr("unsubscribe.confirmTitle")}</h1>
-    <p>${tr("unsubscribe.confirmAbout")}</p>
+    <h1>${tr(UNSUBSCRIBE_I18N.confirmTitle)}</h1>
+    <p>${tr(UNSUBSCRIBE_I18N.confirmAbout)}</p>
     <div class="type-badge">${escapeHtml(type)}</div>
-    <p>${tr("unsubscribe.confirmAction")}</p>
+    <p>${tr(UNSUBSCRIBE_I18N.confirmAction)}</p>
     <form method="POST">
       <input type="hidden" name="token" value="${escapeHtml(token)}" />
-      <button type="submit" class="btn">${tr("unsubscribe.confirmButton")}</button>
+      <button type="submit" class="btn">${tr(UNSUBSCRIBE_I18N.confirmButton)}</button>
     </form>
   </div>
 </body>
@@ -120,15 +121,15 @@ function renderSuccessPage(type: string, tr: TranslationFn, lang: string): strin
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${tr("unsubscribe.successTitle")}</title>
+  <title>${tr(UNSUBSCRIBE_I18N.successTitle)}</title>
   <style>${HTML_STYLES}</style>
 </head>
 <body>
   <div class="card">
     <div class="success-icon">✅</div>
-    <h1>${tr("unsubscribe.successTitle")}</h1>
-    <p>${tr("unsubscribe.successMessage", { type })}</p>
-    <p>${tr("unsubscribe.successManage")}</p>
+    <h1>${tr(UNSUBSCRIBE_I18N.successTitle)}</h1>
+    <p>${tr(UNSUBSCRIBE_I18N.successMessage, { type })}</p>
+    <p>${tr(UNSUBSCRIBE_I18N.successManage)}</p>
   </div>
 </body>
 </html>`;
@@ -140,15 +141,15 @@ function renderErrorPageHtml(tr: TranslationFn, lang: string): string {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${tr("unsubscribe.errorTitle")}</title>
+  <title>${tr(UNSUBSCRIBE_I18N.errorTitle)}</title>
   <style>${HTML_STYLES}</style>
 </head>
 <body>
   <div class="card">
     <div class="error-icon">⚠️</div>
-    <h1>${tr("unsubscribe.errorTitle")}</h1>
-    <p>${tr("unsubscribe.errorMessage")}</p>
-    <p>${tr("unsubscribe.errorManage")}</p>
+    <h1>${tr(UNSUBSCRIBE_I18N.errorTitle)}</h1>
+    <p>${tr(UNSUBSCRIBE_I18N.errorMessage)}</p>
+    <p>${tr(UNSUBSCRIBE_I18N.errorManage)}</p>
   </div>
 </body>
 </html>`;
