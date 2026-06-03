@@ -13,6 +13,7 @@ vi.mock("../service.js", () => ({
   deleteDeactivatedReverseShares: vi.fn(),
   cleanupDeactivatedAccounts: vi.fn(),
   sweepOrphans: vi.fn(),
+  enforceQuotaOverage: vi.fn(),
 }));
 
 vi.mock("../../../utils/logger.js", () => {
@@ -36,6 +37,7 @@ import {
   deactivateEndedShares,
   deleteDeactivatedReverseShares,
   deleteDeactivatedShares,
+  enforceQuotaOverage,
   sweepOrphans,
 } from "../service.js";
 
@@ -63,6 +65,9 @@ function mockConfig(overrides: Record<string, string>): void {
     accountDeactivationCleanupDays: "30",
     autoCleanupOrphansEnabled: "false",
     autoCleanupOrphanMinAgeHours: "24",
+    quotaSmartDeletionEnabled: "false",
+    quotaGracePeriodDays: "7",
+    quotaInactiveShareDays: "30",
   };
   const map = { ...defaults, ...overrides };
   vi.mocked(getConfigValue).mockImplementation(async (key: string) => {
@@ -75,6 +80,13 @@ const DEACTIVATION_SUMMARY = { deactivated: 0, errors: 0 };
 const DELETION_SUMMARY = { warned: 0, deleted: 0, errors: 0 };
 const ACCOUNT_SUMMARY = { purgedAccounts: 0, errors: 0 };
 const ORPHAN_SUMMARY = { dbDeleted: 0, s3Deleted: 0, errors: 0 };
+const QUOTA_OVERAGE_SUMMARY = {
+  usersProcessed: 0,
+  filesDeleted: 0,
+  bytesFreed: 0,
+  blocked: 0,
+  errors: 0,
+};
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
@@ -90,6 +102,7 @@ describe("Cleanup scheduler", () => {
     vi.mocked(deleteDeactivatedReverseShares).mockResolvedValue({ ...DELETION_SUMMARY });
     vi.mocked(cleanupDeactivatedAccounts).mockResolvedValue({ ...ACCOUNT_SUMMARY });
     vi.mocked(sweepOrphans).mockResolvedValue({ ...ORPHAN_SUMMARY });
+    vi.mocked(enforceQuotaOverage).mockResolvedValue({ ...QUOTA_OVERAGE_SUMMARY });
   });
 
   afterEach(() => {
@@ -171,12 +184,13 @@ describe("Cleanup scheduler", () => {
     });
   });
 
-  describe("sub-gates (A7 / A9)", () => {
-    it("skips account + orphan cleanups when their flags are false", async () => {
+  describe("sub-gates (A7 / A9 / B2)", () => {
+    it("skips account + orphan + quota cleanups when their flags are false", async () => {
       mockConfig({
         autoCleanupEnabled: "true",
         accountDeactivationCleanupEnabled: "false",
         autoCleanupOrphansEnabled: "false",
+        quotaSmartDeletionEnabled: "false",
       });
       await startCleanupScheduler();
 
@@ -184,6 +198,32 @@ describe("Cleanup scheduler", () => {
 
       expect(cleanupDeactivatedAccounts).not.toHaveBeenCalled();
       expect(sweepOrphans).not.toHaveBeenCalled();
+      expect(enforceQuotaOverage).not.toHaveBeenCalled();
+    });
+
+    it("runs quota smart deletion only when its flag is true (with config-derived args)", async () => {
+      mockConfig({
+        autoCleanupEnabled: "true",
+        quotaSmartDeletionEnabled: "true",
+        quotaGracePeriodDays: "10",
+        quotaInactiveShareDays: "45",
+      });
+      await startCleanupScheduler();
+
+      await vi.advanceTimersByTimeAsync(24 * ONE_HOUR_MS + 1);
+
+      expect(enforceQuotaOverage).toHaveBeenCalledWith({ graceDays: 10, inactiveShareDays: 45 });
+      expect(cleanupDeactivatedAccounts).not.toHaveBeenCalled();
+      expect(sweepOrphans).not.toHaveBeenCalled();
+    });
+
+    it("does not run quota smart deletion when its flag is off", async () => {
+      mockConfig({ autoCleanupEnabled: "true", quotaSmartDeletionEnabled: "false" });
+      await startCleanupScheduler();
+
+      await vi.advanceTimersByTimeAsync(24 * ONE_HOUR_MS + 1);
+
+      expect(enforceQuotaOverage).not.toHaveBeenCalled();
     });
 
     it("runs account cleanup only when its flag is true", async () => {
@@ -267,17 +307,25 @@ describe("Cleanup scheduler", () => {
         autoCleanupEnabled: "true",
         accountDeactivationCleanupEnabled: "true",
         autoCleanupOrphansEnabled: "true",
+        quotaSmartDeletionEnabled: "true",
       });
       vi.mocked(deactivateEndedShares).mockResolvedValue({ deactivated: 6, errors: 0 });
       vi.mocked(deleteDeactivatedShares).mockResolvedValue({ warned: 1, deleted: 2, errors: 0 });
       vi.mocked(cleanupDeactivatedAccounts).mockResolvedValue({ purgedAccounts: 3, errors: 0 });
       vi.mocked(sweepOrphans).mockResolvedValue({ dbDeleted: 4, s3Deleted: 5, errors: 0 });
+      vi.mocked(enforceQuotaOverage).mockResolvedValue({
+        usersProcessed: 7,
+        filesDeleted: 8,
+        bytesFreed: 9000,
+        blocked: 2,
+        errors: 0,
+      });
 
       await startCleanupScheduler();
       await vi.advanceTimersByTimeAsync(24 * ONE_HOUR_MS + 1);
 
       // Aggregated summary carries the new phase-1 (deactivated) + phase-2
-      // (deleted) sub-shapes alongside the account + orphan shapes.
+      // (deleted) sub-shapes alongside the account + orphan + quota shapes.
       expect(mockLogger.info).toHaveBeenCalledWith(
         {
           summary: expect.objectContaining({
@@ -285,6 +333,13 @@ describe("Cleanup scheduler", () => {
             deletedShares: { warned: 1, deleted: 2, errors: 0 },
             deactivatedAccounts: { purgedAccounts: 3, errors: 0 },
             orphans: { dbDeleted: 4, s3Deleted: 5, errors: 0 },
+            quotaOverage: {
+              usersProcessed: 7,
+              filesDeleted: 8,
+              bytesFreed: 9000,
+              blocked: 2,
+              errors: 0,
+            },
           }),
         },
         "Cleanup run completed",

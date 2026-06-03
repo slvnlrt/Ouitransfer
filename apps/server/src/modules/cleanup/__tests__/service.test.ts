@@ -7,6 +7,7 @@ vi.mock("../../../shared/prisma.js", () => ({
     $transaction: vi.fn(),
     user: {
       findMany: vi.fn(),
+      update: vi.fn(),
     },
     file: {
       findMany: vi.fn(),
@@ -59,6 +60,15 @@ vi.mock("../../audit/service.js", () => ({
   logAuditEvent: vi.fn(),
 }));
 
+vi.mock("../../quota/service.js", () => ({
+  quotaService: {
+    resolveEffectiveLimits: vi.fn(),
+    calculateStorageUsed: vi.fn(),
+    pickDeletionCandidates: vi.fn(),
+    evaluateAndNotifyQuota: vi.fn(),
+  },
+}));
+
 vi.mock("../../email/service.js", () => ({
   emailService: {
     send: vi.fn(),
@@ -85,6 +95,7 @@ vi.mock("../../../utils/logger.js", () => {
 import { prisma } from "../../../shared/prisma.js";
 import { logAuditEvent } from "../../audit/service.js";
 import { emailService } from "../../email/service.js";
+import { quotaService } from "../../quota/service.js";
 import {
   cleanupDeactivatedAccounts,
   deactivateEndedReverseShares,
@@ -93,6 +104,7 @@ import {
   deleteDeactivatedShares,
   deleteReverseShareWithStorage,
   deleteShareLink,
+  enforceQuotaOverage,
   purgeUserContent,
   sweepOrphans,
 } from "../service.js";
@@ -1183,5 +1195,293 @@ describe("sweepOrphans", () => {
       { table: "file", id: "f1", objectName: "u1/missing.bin" },
     ]);
     expect(summary.s3Candidates).toEqual(["truly-orphan.bin"]);
+  });
+});
+
+// ── enforceQuotaOverage (B2) ────────────────────────────────────────────────────
+
+describe("enforceQuotaOverage", () => {
+  /** Build a minimal EffectiveLimits-shaped object exposing only maxTotalStorage. */
+  function limits(maxTotalStorage: bigint) {
+    return { maxTotalStorage } as never;
+  }
+
+  /** A DeletionCandidateFile. */
+  function candidate(id: string, objectName: string, size: bigint) {
+    return { id, objectName, size };
+  }
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-03T00:00:00.000Z"));
+    // Sensible defaults: no users, nothing to delete, S3 ok.
+    vi.mocked(prisma.user.findMany).mockResolvedValue([] as never);
+    vi.mocked(prisma.user.update).mockResolvedValue(undefined as never);
+    vi.mocked(prisma.file.findMany).mockResolvedValue([] as never);
+    vi.mocked(prisma.file.delete).mockResolvedValue(undefined as never);
+    mockDeleteObject.mockResolvedValue(undefined);
+    vi.mocked(quotaService.resolveEffectiveLimits).mockResolvedValue(limits(100n));
+    vi.mocked(quotaService.calculateStorageUsed).mockResolvedValue(0n);
+    vi.mocked(quotaService.pickDeletionCandidates).mockResolvedValue([]);
+    vi.mocked(quotaService.evaluateAndNotifyQuota).mockResolvedValue(undefined);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("selects only users whose grace window has elapsed (boundary: just-over vs just-under)", async () => {
+    await enforceQuotaOverage({ graceDays: 7, inactiveShareDays: 30 });
+
+    const where = vi.mocked(prisma.user.findMany).mock.calls[0][0]?.where as {
+      quotaExceededSince: { not: null; lt: Date };
+    };
+    // now - 7d
+    expect(where.quotaExceededSince.lt.toISOString()).toBe("2026-05-27T00:00:00.000Z");
+  });
+
+  it("deletes orphans before inactive-share files, stops at the limit, frees bytes, audits, notifies, clears state", async () => {
+    vi.mocked(prisma.user.findMany).mockResolvedValue([
+      { id: "u1", email: "u1@example.com", locale: "en", isActive: true },
+    ] as never);
+    vi.mocked(quotaService.resolveEffectiveLimits).mockResolvedValue(limits(100n));
+    // used 160 → bytesToFree 60.
+    vi.mocked(quotaService.calculateStorageUsed)
+      .mockResolvedValueOnce(160n) // initial
+      .mockResolvedValueOnce(60n); // after deletion (160 - 100 freed)
+    // pickDeletionCandidates is the authority on order (orphans first, then
+    // inactive-share, oldest-first, capped at bytesToFree). The sweep deletes
+    // exactly what it returns, in order.
+    const cands = [
+      candidate("orphan1", "u1/orphan1.bin", 40n),
+      candidate("inactive1", "u1/inactive1.bin", 60n),
+    ];
+    vi.mocked(quotaService.pickDeletionCandidates).mockResolvedValue(cands);
+    vi.mocked(prisma.file.findMany).mockResolvedValue([
+      { id: "orphan1", name: "Orphan One.bin" },
+      { id: "inactive1", name: "Inactive One.bin" },
+    ] as never);
+
+    const summary = await enforceQuotaOverage({ graceDays: 7, inactiveShareDays: 30 });
+
+    // pickDeletionCandidates called with the user's bytesToFree and inactiveShareDays.
+    expect(quotaService.pickDeletionCandidates).toHaveBeenCalledWith(
+      "u1",
+      60n,
+      30,
+      expect.any(Date),
+    );
+
+    // Both files deleted DB-before-S3, in candidate order.
+    expect(vi.mocked(prisma.file.delete).mock.calls.map((c) => c[0])).toEqual([
+      { where: { id: "orphan1" } },
+      { where: { id: "inactive1" } },
+    ]);
+    expect(mockDeleteObject.mock.calls.map((c) => c[0])).toEqual([
+      "u1/orphan1.bin",
+      "u1/inactive1.bin",
+    ]);
+
+    // Accounting.
+    expect(summary).toEqual({
+      usersProcessed: 1,
+      filesDeleted: 2,
+      bytesFreed: 100,
+      blocked: 0,
+      errors: 0,
+    });
+
+    // State cleared through the centralized path with recomputed usage.
+    expect(quotaService.evaluateAndNotifyQuota).toHaveBeenCalledWith("u1", {
+      oldUsed: 160n,
+      newUsed: 60n,
+    });
+
+    // Audit + notification.
+    expect(logAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "QUOTA_FILES_DELETED",
+        targetType: "user",
+        targetId: "u1",
+        ipAddress: "system",
+        metadata: { filesDeleted: 2, bytesFreed: 100 },
+      }),
+    );
+    expect(emailService.send).toHaveBeenCalledWith(
+      "files_auto_deleted",
+      expect.objectContaining({
+        to: "u1@example.com",
+        userId: "u1",
+        data: expect.objectContaining({
+          fileNames: ["Orphan One.bin", "Inactive One.bin"],
+          reason: "cleanupReason.quotaExceeded",
+        }),
+      }),
+    );
+  });
+
+  it("deletes NOTHING and counts the user as blocked when everything is in an active share", async () => {
+    vi.mocked(prisma.user.findMany).mockResolvedValue([
+      { id: "u1", email: "u1@example.com", locale: "en", isActive: true },
+    ] as never);
+    vi.mocked(quotaService.resolveEffectiveLimits).mockResolvedValue(limits(100n));
+    vi.mocked(quotaService.calculateStorageUsed).mockResolvedValue(160n);
+    // No safe candidate — everything is in an active share.
+    vi.mocked(quotaService.pickDeletionCandidates).mockResolvedValue([]);
+
+    const summary = await enforceQuotaOverage({ graceDays: 7, inactiveShareDays: 30 });
+
+    expect(prisma.file.delete).not.toHaveBeenCalled();
+    expect(mockDeleteObject).not.toHaveBeenCalled();
+    // No destructive audit, no clearing of state (user stays over, blocked).
+    expect(logAuditEvent).not.toHaveBeenCalled();
+    expect(quotaService.evaluateAndNotifyQuota).not.toHaveBeenCalled();
+    expect(emailService.send).not.toHaveBeenCalled();
+
+    expect(summary).toEqual({
+      usersProcessed: 1,
+      filesDeleted: 0,
+      bytesFreed: 0,
+      blocked: 1,
+      errors: 0,
+    });
+  });
+
+  it("tolerates an S3 delete failure: DB row still gone, deletion continues, error counted", async () => {
+    vi.mocked(prisma.user.findMany).mockResolvedValue([
+      { id: "u1", email: "u1@example.com", locale: "en", isActive: true },
+    ] as never);
+    vi.mocked(quotaService.resolveEffectiveLimits).mockResolvedValue(limits(100n));
+    vi.mocked(quotaService.calculateStorageUsed)
+      .mockResolvedValueOnce(150n)
+      .mockResolvedValueOnce(60n);
+    const cands = [candidate("f1", "u1/f1.bin", 30n), candidate("f2", "u1/f2.bin", 60n)];
+    vi.mocked(quotaService.pickDeletionCandidates).mockResolvedValue(cands);
+    vi.mocked(prisma.file.findMany).mockResolvedValue([
+      { id: "f1", name: "f1.bin" },
+      { id: "f2", name: "f2.bin" },
+    ] as never);
+    // First S3 delete throws; second succeeds.
+    mockDeleteObject.mockRejectedValueOnce(new Error("s3 down")).mockResolvedValueOnce(undefined);
+
+    const summary = await enforceQuotaOverage({ graceDays: 7, inactiveShareDays: 30 });
+
+    // Both DB rows deleted despite the first S3 failure (DB-before-S3, tolerant).
+    expect(vi.mocked(prisma.file.delete).mock.calls.map((c) => c[0])).toEqual([
+      { where: { id: "f1" } },
+      { where: { id: "f2" } },
+    ]);
+    expect(summary.filesDeleted).toBe(2);
+    expect(summary.bytesFreed).toBe(90);
+    expect(summary.errors).toBe(1);
+    // The run still completes: audit + notification emitted.
+    expect(logAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({ action: "QUOTA_FILES_DELETED" }),
+    );
+  });
+
+  it("clears quotaExceededSince and skips when the user is already back under the limit", async () => {
+    vi.mocked(prisma.user.findMany).mockResolvedValue([
+      { id: "u1", email: "u1@example.com", locale: "en", isActive: true },
+    ] as never);
+    vi.mocked(quotaService.resolveEffectiveLimits).mockResolvedValue(limits(100n));
+    // used 80 < limit 100 ⇒ bytesToFree <= 0.
+    vi.mocked(quotaService.calculateStorageUsed).mockResolvedValue(80n);
+
+    const summary = await enforceQuotaOverage({ graceDays: 7, inactiveShareDays: 30 });
+
+    expect(quotaService.pickDeletionCandidates).not.toHaveBeenCalled();
+    expect(prisma.file.delete).not.toHaveBeenCalled();
+    // Cleared centrally (no spurious warning — usage equal old/new).
+    expect(quotaService.evaluateAndNotifyQuota).toHaveBeenCalledWith("u1", {
+      oldUsed: 80n,
+      newUsed: 80n,
+    });
+    expect(logAuditEvent).not.toHaveBeenCalled();
+    expect(summary).toEqual({
+      usersProcessed: 1,
+      filesDeleted: 0,
+      bytesFreed: 0,
+      blocked: 0,
+      errors: 0,
+    });
+  });
+
+  it("clears the stale grace clock and skips an unlimited-quota user", async () => {
+    vi.mocked(prisma.user.findMany).mockResolvedValue([
+      { id: "u1", email: "u1@example.com", locale: "en", isActive: true },
+    ] as never);
+    vi.mocked(quotaService.resolveEffectiveLimits).mockResolvedValue(limits(0n));
+
+    const summary = await enforceQuotaOverage({ graceDays: 7, inactiveShareDays: 30 });
+
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: "u1" },
+      data: { quotaExceededSince: null },
+    });
+    expect(quotaService.pickDeletionCandidates).not.toHaveBeenCalled();
+    expect(prisma.file.delete).not.toHaveBeenCalled();
+    expect(summary).toEqual({
+      usersProcessed: 1,
+      filesDeleted: 0,
+      bytesFreed: 0,
+      blocked: 0,
+      errors: 0,
+    });
+  });
+
+  it("does not email a deactivated owner but still deletes, audits, and clears state", async () => {
+    vi.mocked(prisma.user.findMany).mockResolvedValue([
+      { id: "u1", email: "u1@example.com", locale: "en", isActive: false },
+    ] as never);
+    vi.mocked(quotaService.resolveEffectiveLimits).mockResolvedValue(limits(100n));
+    vi.mocked(quotaService.calculateStorageUsed)
+      .mockResolvedValueOnce(150n)
+      .mockResolvedValueOnce(50n);
+    vi.mocked(quotaService.pickDeletionCandidates).mockResolvedValue([
+      candidate("f1", "u1/f1.bin", 100n),
+    ]);
+    vi.mocked(prisma.file.findMany).mockResolvedValue([{ id: "f1", name: "f1.bin" }] as never);
+
+    const summary = await enforceQuotaOverage({ graceDays: 7, inactiveShareDays: 30 });
+
+    expect(prisma.file.delete).toHaveBeenCalledWith({ where: { id: "f1" } });
+    expect(logAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({ action: "QUOTA_FILES_DELETED" }),
+    );
+    // No email to a deactivated owner.
+    expect(emailService.send).not.toHaveBeenCalled();
+    expect(summary.filesDeleted).toBe(1);
+  });
+
+  it("isolates a per-user failure without aborting the batch", async () => {
+    vi.mocked(prisma.user.findMany).mockResolvedValue([
+      { id: "u1", email: "u1@example.com", locale: "en", isActive: true },
+      { id: "u2", email: "u2@example.com", locale: "en", isActive: true },
+    ] as never);
+    vi.mocked(quotaService.resolveEffectiveLimits)
+      .mockRejectedValueOnce(new Error("limits boom")) // u1 fails outright
+      .mockResolvedValueOnce(limits(100n)); // u2 ok
+    vi.mocked(quotaService.calculateStorageUsed).mockResolvedValue(0n); // u2: under ⇒ skip
+    vi.mocked(quotaService.evaluateAndNotifyQuota).mockResolvedValue(undefined);
+
+    const summary = await enforceQuotaOverage({ graceDays: 7, inactiveShareDays: 30 });
+
+    expect(summary.usersProcessed).toBe(2);
+    expect(summary.errors).toBe(1);
+  });
+
+  it("returns a zero summary when no users are over the grace window", async () => {
+    vi.mocked(prisma.user.findMany).mockResolvedValue([] as never);
+
+    const summary = await enforceQuotaOverage({ graceDays: 7, inactiveShareDays: 30 });
+
+    expect(summary).toEqual({
+      usersProcessed: 0,
+      filesDeleted: 0,
+      bytesFreed: 0,
+      blocked: 0,
+      errors: 0,
+    });
   });
 });
