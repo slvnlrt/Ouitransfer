@@ -48,6 +48,9 @@ export const ErrorCodes = {
   MAX_VIEWS_REACHED: "MAX_VIEWS_REACHED",
   SHARE_INACTIVE: "SHARE_INACTIVE",
   IDENTIFICATION_REQUIRED: "IDENTIFICATION_REQUIRED",
+  // The share/reverse-share owner's account is deactivated, so the resource is
+  // no longer publicly accessible (read-time gate, auto-reverses on reactivation).
+  OWNER_INACTIVE: "OWNER_INACTIVE",
 
   // Upload
   UPLOAD_FAILED: "UPLOAD_FAILED",

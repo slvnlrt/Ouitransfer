@@ -236,6 +236,14 @@ export class ShareService {
       return ShareResponseSchema.parse(await this.formatShareResponse(share));
     }
 
+    // Block public access when the share's owner is deactivated. This is a
+    // read-time gate derived from `creator.isActive`, so it auto-reverses when
+    // the account is reactivated (no stored flag). The owner's own access is
+    // already returned above, so they are never blocked from their own share.
+    if (share.creator && share.creator.isActive === false) {
+      throw new AppError(403, "Share owner is inactive", ErrorCodes.OWNER_INACTIVE);
+    }
+
     if (share.expiration && new Date() > new Date(share.expiration)) {
       throw new AppError(410, "Share has expired", ErrorCodes.SHARE_EXPIRED);
     }

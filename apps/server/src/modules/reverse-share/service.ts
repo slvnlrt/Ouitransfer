@@ -94,6 +94,14 @@ export class ReverseShareService {
       throw new AppError(403, "Reverse share is inactive", ErrorCodes.SHARE_INACTIVE);
     }
 
+    // Block external access/upload when the owner's account is deactivated. This
+    // is a read-time gate derived from `creator.isActive`, so it auto-reverses
+    // when the account is reactivated (no stored flag). Mirrors the regular-share
+    // A6 gate in share/service.ts.
+    if (reverseShare.creator && reverseShare.creator.isActive === false) {
+      throw new AppError(403, "Reverse share owner is inactive", ErrorCodes.OWNER_INACTIVE);
+    }
+
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
       throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
     }
@@ -137,6 +145,12 @@ export class ReverseShareService {
 
     if (!reverseShare.isActive) {
       throw new AppError(403, "Reverse share is inactive", ErrorCodes.SHARE_INACTIVE);
+    }
+
+    // Block external access/upload when the owner's account is deactivated (see
+    // the by-id path above for rationale).
+    if (reverseShare.creator && reverseShare.creator.isActive === false) {
+      throw new AppError(403, "Reverse share owner is inactive", ErrorCodes.OWNER_INACTIVE);
     }
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
