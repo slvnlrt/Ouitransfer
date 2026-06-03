@@ -258,13 +258,6 @@ const defaultConfigs = [
     isSystem: true,
   },
   {
-    key: "maxViewsCleanupDays",
-    value: "30",
-    type: "number",
-    group: "cleanup",
-    isSystem: true,
-  },
-  {
     key: "accountDeactivationCleanupEnabled",
     value: "false",
     type: "boolean",

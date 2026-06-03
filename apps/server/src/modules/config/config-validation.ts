@@ -108,10 +108,6 @@ const configValueValidators: Record<string, ConfigValueValidator> = {
     "autoCleanupNotifyDaysBefore",
     intMin("Notify days before deletion", 0),
   ),
-  maxViewsCleanupDays: fromSchema(
-    "maxViewsCleanupDays",
-    intMin("Max-views cleanup delay (days)", 1),
-  ),
   accountDeactivationCleanupEnabled: fromSchema(
     "accountDeactivationCleanupEnabled",
     booleanString("Deactivated-account cleanup"),
