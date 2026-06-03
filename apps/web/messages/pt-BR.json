@@ -1751,10 +1751,6 @@
         "title": "Warn Before Deletion (days)",
         "description": "Send the owner a \"pending permanent deletion\" warning email this many days before the content is deleted. 0 disables the warning. Should be at most the grace period."
       },
-      "maxViewsCleanupDays": {
-        "title": "Max-Views Cleanup Delay (days)",
-        "description": "Days of inactivity after a share reaches its view limit before the share link is removed. Minimum 1."
-      },
       "accountDeactivationCleanupEnabled": {
         "title": "Delete Deactivated Accounts' Files",
         "description": "When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files."

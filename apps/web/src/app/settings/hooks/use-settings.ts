@@ -50,7 +50,6 @@ export const CLEANUP_INT_BOUNDS: Record<string, number> = {
   autoCleanupIntervalHours: 1,
   autoCleanupGracePeriodDays: 0,
   autoCleanupNotifyDaysBefore: 0,
-  maxViewsCleanupDays: 1,
   accountDeactivationCleanupDays: 1,
   autoCleanupOrphanMinAgeHours: 1,
 };
@@ -214,7 +213,6 @@ export function useSettings() {
               "autoCleanupIntervalHours",
               "autoCleanupGracePeriodDays",
               "autoCleanupNotifyDaysBefore",
-              "maxViewsCleanupDays",
               "accountDeactivationCleanupEnabled",
               "accountDeactivationCleanupDays",
               "autoCleanupOrphansEnabled",

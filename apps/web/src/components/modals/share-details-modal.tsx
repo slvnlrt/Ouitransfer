@@ -93,11 +93,12 @@ export function ShareDetailsModal({
     }
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: invalidateShare is stable (reads queryClient + shareId which are stable references)
   useEffect(() => {
     if (refreshTrigger) {
       invalidateShare();
     }
+    // invalidateShare is recreated each render but only reads stable refs (queryClient,
+    // shareId, share.alias); re-running solely on refreshTrigger is intentional.
   }, [refreshTrigger]);
 
   useEffect(() => {

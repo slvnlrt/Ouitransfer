@@ -1873,15 +1873,11 @@
       },
       "autoCleanupGracePeriodDays": {
         "title": "Grace Period (days)",
-        "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
+        "description": "Days kept after a share or reverse share is deactivated (expired or view limit reached) before it is permanently deleted. Manually paused shares are never auto-deleted. 0 means delete as soon as it is deactivated."
       },
       "autoCleanupNotifyDaysBefore": {
         "title": "Warn Before Deletion (days)",
         "description": "Send the owner a \"pending permanent deletion\" warning email this many days before the content is deleted. 0 disables the warning. Should be at most the grace period."
-      },
-      "maxViewsCleanupDays": {
-        "title": "Max-Views Cleanup Delay (days)",
-        "description": "Days of inactivity after a share reaches its view limit before the share link is removed. Minimum 1."
       },
       "accountDeactivationCleanupEnabled": {
         "title": "Delete Deactivated Accounts' Files",

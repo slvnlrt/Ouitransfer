@@ -52,7 +52,6 @@ const CLEANUP_CONFIGS: Config[] = [
   { key: "autoCleanupIntervalHours", value: "24", group: "cleanup", type: "number" },
   { key: "autoCleanupGracePeriodDays", value: "7", group: "cleanup", type: "number" },
   { key: "autoCleanupNotifyDaysBefore", value: "3", group: "cleanup", type: "number" },
-  { key: "maxViewsCleanupDays", value: "30", group: "cleanup", type: "number" },
   {
     key: "accountDeactivationCleanupEnabled",
     value: "false",
@@ -90,7 +89,6 @@ describe("cleanup settings schema", () => {
       autoCleanupIntervalHours: 1,
       autoCleanupGracePeriodDays: 0,
       autoCleanupNotifyDaysBefore: 0,
-      maxViewsCleanupDays: 1,
       accountDeactivationCleanupDays: 1,
       autoCleanupOrphanMinAgeHours: 1,
     });
@@ -156,7 +154,6 @@ describe("cleanup settings schema", () => {
         autoCleanupIntervalHours: "24",
         autoCleanupGracePeriodDays: "0",
         autoCleanupNotifyDaysBefore: "0",
-        maxViewsCleanupDays: "1",
         accountDeactivationCleanupDays: "1",
         autoCleanupOrphanMinAgeHours: "1",
       },

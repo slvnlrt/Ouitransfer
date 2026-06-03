@@ -1736,15 +1736,11 @@
       },
       "autoCleanupGracePeriodDays": {
         "title": "Période de grâce (jours)",
-        "description": "Jours supplémentaires conservés après l'expiration d'un partage ou d'un partage inversé avant sa suppression définitive. 0 signifie une suppression dès l'expiration."
+        "description": "Jours conservés après la désactivation d'un partage ou d'un partage inversé (expiré ou limite de vues atteinte) avant sa suppression définitive. Les partages mis en pause manuellement ne sont jamais supprimés automatiquement. 0 signifie une suppression dès la désactivation."
       },
       "autoCleanupNotifyDaysBefore": {
         "title": "Avertir avant suppression (jours)",
         "description": "Envoie au propriétaire un e-mail d'avertissement « suppression définitive imminente » ce nombre de jours avant la suppression. 0 désactive l'avertissement. Doit être au plus égal à la période de grâce."
-      },
-      "maxViewsCleanupDays": {
-        "title": "Délai de nettoyage des vues max (jours)",
-        "description": "Jours d'inactivité après qu'un partage a atteint sa limite de vues avant la suppression du lien de partage. Minimum 1."
       },
       "accountDeactivationCleanupEnabled": {
         "title": "Supprimer les fichiers des comptes désactivés",

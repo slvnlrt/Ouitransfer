@@ -84,7 +84,6 @@ export const createFieldDescriptions = (t: ReturnType<typeof createTranslator>) 
   autoCleanupIntervalHours: t("settings.fields.autoCleanupIntervalHours.description"),
   autoCleanupGracePeriodDays: t("settings.fields.autoCleanupGracePeriodDays.description"),
   autoCleanupNotifyDaysBefore: t("settings.fields.autoCleanupNotifyDaysBefore.description"),
-  maxViewsCleanupDays: t("settings.fields.maxViewsCleanupDays.description"),
   accountDeactivationCleanupEnabled: t(
     "settings.fields.accountDeactivationCleanupEnabled.description",
   ),
