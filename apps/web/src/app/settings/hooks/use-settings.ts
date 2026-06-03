@@ -84,6 +84,28 @@ export const createSettingsSchema = (t: TranslateFn) =>
           });
         }
       }
+
+      // Cross-field rule: the warning lead time must be <= the grace period,
+      // otherwise no warning ever fires (the warn window opens before the share
+      // is even eligible for deletion). Only enforceable here where both values
+      // are present together — the server validates each key independently, so
+      // this cross-field check lives on the client (the per-key registry has no
+      // cross-field hook by design).
+      const notifyRaw = data.configs.autoCleanupNotifyDaysBefore;
+      const graceRaw = data.configs.autoCleanupGracePeriodDays;
+      if (
+        notifyRaw !== undefined &&
+        graceRaw !== undefined &&
+        isValidIntMin(notifyRaw, CLEANUP_INT_BOUNDS.autoCleanupNotifyDaysBefore) &&
+        isValidIntMin(graceRaw, CLEANUP_INT_BOUNDS.autoCleanupGracePeriodDays) &&
+        Number(notifyRaw) > Number(graceRaw)
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["configs", "autoCleanupNotifyDaysBefore"],
+          message: t("settings.errors.notifyDaysExceedsGrace"),
+        });
+      }
     });
 
 const createSchemas = (t: TranslateFn) => ({

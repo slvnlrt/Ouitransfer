@@ -121,6 +121,34 @@ describe("cleanup settings schema", () => {
     }
   });
 
+  it("flags notifyDaysBefore greater than the grace period (cross-field rule)", () => {
+    const schema = createSettingsSchema(t);
+    const result = schema.safeParse({
+      configs: {
+        autoCleanupGracePeriodDays: "3",
+        autoCleanupNotifyDaysBefore: "5",
+      },
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issue = result.error.issues.find(
+        (i) => i.path.join(".") === "configs.autoCleanupNotifyDaysBefore",
+      );
+      expect(issue?.message).toContain("settings.errors.notifyDaysExceedsGrace");
+    }
+  });
+
+  it("accepts notifyDaysBefore equal to the grace period (cross-field rule)", () => {
+    const schema = createSettingsSchema(t);
+    const result = schema.safeParse({
+      configs: {
+        autoCleanupGracePeriodDays: "7",
+        autoCleanupNotifyDaysBefore: "7",
+      },
+    });
+    expect(result.success).toBe(true);
+  });
+
   it("accepts in-bounds values via the schema", () => {
     const schema = createSettingsSchema(t);
     const result = schema.safeParse({

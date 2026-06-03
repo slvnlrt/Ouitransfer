@@ -1772,7 +1772,8 @@
       "updateFailed": "Không thể cập nhật cài đặt",
       "passwordAuthRequiresProvider": "Không thể tắt xác thực bằng mật khẩu mà không có ít nhất một nhà cung cấp xác thực đang hoạt động",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}"
+      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
+      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent"
     },
     "messages": {
       "noChanges": "Không có thay đổi nào để lưu",

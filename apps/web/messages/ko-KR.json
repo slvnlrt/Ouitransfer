@@ -1768,7 +1768,8 @@
       "updateFailed": "설정 업데이트에 실패했습니다",
       "passwordAuthRequiresProvider": "최소 하나의 활성 인증 제공자가 없으면 비밀번호 인증을 비활성화할 수 없습니다",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}"
+      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
+      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent"
     },
     "messages": {
       "noChanges": "저장할 변경 사항이 없습니다",

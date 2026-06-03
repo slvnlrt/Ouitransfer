@@ -1772,7 +1772,8 @@
       "updateFailed": "Det gick inte att uppdatera inställningarna",
       "passwordAuthRequiresProvider": "Det går inte att inaktivera lösenordsautentisering utan att ha minst en aktiv autentiseringsleverantör",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}"
+      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
+      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent"
     },
     "messages": {
       "noChanges": "Inga ändringar att spara",

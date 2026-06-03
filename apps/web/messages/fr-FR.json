@@ -1771,7 +1771,8 @@
       "updateFailed": "Échec de la mise à jour des paramètres",
       "passwordAuthRequiresProvider": "Impossible de désactiver l'authentification par mot de passe sans avoir au moins un fournisseur d'authentification actif",
       "auditRetentionInvalid": "La rétention des journaux d'audit doit être 0 (conservation illimitée) ou au moins 7 jours",
-      "cleanupValueInvalid": "La valeur doit être un nombre entier d'au moins {min}"
+      "cleanupValueInvalid": "La valeur doit être un nombre entier d'au moins {min}",
+      "notifyDaysExceedsGrace": "Le délai d'avertissement ne doit pas dépasser la période de grâce, sinon aucun avertissement n'est envoyé"
     },
     "messages": {
       "noChanges": "Aucun changement à enregistrer",

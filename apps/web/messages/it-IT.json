@@ -1768,7 +1768,8 @@
       "updateFailed": "Errore durante l'aggiornamento delle impostazioni",
       "passwordAuthRequiresProvider": "Impossibile disabilitare l'autenticazione password senza avere almeno un provider di autenticazione attivo",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}"
+      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
+      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent"
     },
     "messages": {
       "noChanges": "Nessuna modifica da salvare",

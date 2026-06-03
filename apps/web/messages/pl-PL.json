@@ -1768,7 +1768,8 @@
       "updateFailed": "Nie udało się zaktualizować ustawień",
       "passwordAuthRequiresProvider": "Uwierzytelnianie oparte na haśle nie może być wyłączone, jeśli nie ma co najmniej jednego aktywnego dostawcy uwierzytelniania",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}"
+      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
+      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent"
     },
     "messages": {
       "noChanges": "Brak zmian do zapisania",

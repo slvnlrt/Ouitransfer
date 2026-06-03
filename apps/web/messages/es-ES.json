@@ -1772,7 +1772,8 @@
       "updateFailed": "Error al actualizar la configuración",
       "passwordAuthRequiresProvider": "No se puede deshabilitar la autenticación por contraseña sin tener al menos un proveedor de autenticación activo",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}"
+      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
+      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent"
     },
     "messages": {
       "noChanges": "No hay cambios para guardar",

@@ -1908,7 +1908,8 @@
       "updateFailed": "Failed to update settings",
       "passwordAuthRequiresProvider": "Cannot disable password authentication without having at least one active authentication provider",
       "auditRetentionInvalid": "Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}"
+      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
+      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent"
     },
     "messages": {
       "noChanges": "No changes to save",

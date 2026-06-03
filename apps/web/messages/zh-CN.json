@@ -1768,7 +1768,8 @@
       "updateFailed": "更新设置失败",
       "passwordAuthRequiresProvider": "没有至少一个活动认证提供者时，无法禁用密码认证",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}"
+      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
+      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent"
     },
     "messages": {
       "noChanges": "没有需要保存的更改",
