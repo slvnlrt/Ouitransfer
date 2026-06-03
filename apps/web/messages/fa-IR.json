@@ -801,7 +801,8 @@
       "REVERSE_SHARE_AUTO_DELETED": "Reverse share auto-deleted",
       "ACCOUNT_FILES_CLEANED": "Account files cleaned",
       "ORPHAN_S3_DELETED": "Orphan storage object deleted",
-      "ORPHAN_DB_DELETED": "Orphan database record deleted"
+      "ORPHAN_DB_DELETED": "Orphan database record deleted",
+      "QUOTA_FILES_DELETED": "Over-quota files deleted"
     },
     "targetTypes": {
       "user": "کاربر",
@@ -1696,6 +1697,34 @@
         "title": "حداکثر ذخیره‌سازی به ازای هر کاربر",
         "description": "حد کل ذخیره‌سازی برای هر کاربر. می‌توان برای هر کاربر یا گروه نادیده گرفت."
       },
+      "quotaWarningThresholds": {
+        "title": "Quota Warning Thresholds (%)",
+        "description": "Comma-separated percentages, e.g. \"80,90\", at which a user is emailed a quota warning. Each value must be a whole number between 1 and 99. A separate alert is sent when storage reaches 100%."
+      },
+      "quotaGracePeriodDays": {
+        "title": "Quota Grace Period (days)",
+        "description": "How many days a user may stay over their quota before smart deletion may act (only when smart deletion is enabled below). Minimum 0."
+      },
+      "quotaSmartDeletionEnabled": {
+        "title": "Smart Deletion of Over-Quota Files",
+        "description": "Off by default. When enabled, after the grace period the oldest unsafe files of an over-quota user are deleted in a safe order: first unshared uploads, then files in shares inactive for the period below. Files in active shares are never deleted — if nothing is safe to remove, new uploads are simply blocked instead."
+      },
+      "quotaInactiveShareDays": {
+        "title": "Inactive Share Threshold (days)",
+        "description": "A share's files are eligible for smart deletion once the share has had no activity for this many days. Minimum 1."
+      },
+      "reverseShareQuotaSoftEnforcement": {
+        "title": "Reverse Share Soft Enforcement",
+        "description": "On by default. Lets external guests keep uploading to a reverse share even if the owner is slightly over quota, so collections are not interrupted. Uploads are still blocked once the owner exceeds the tolerance set below, and the owner is alerted to free up space."
+      },
+      "reverseShareMaxOverageFactor": {
+        "title": "Reverse Share Overage Factor",
+        "description": "Soft enforcement allows reverse-share uploads until usage reaches this multiple of the owner's quota (e.g. 3 = up to three times the limit). Minimum 1."
+      },
+      "reverseShareAbsoluteMaxBytes": {
+        "title": "Reverse Share Absolute Cap",
+        "description": "Hard ceiling for reverse-share soft enforcement regardless of the factor above. Set to 0 for no absolute cap."
+      },
       "firstUserAccess": {
         "title": "دسترسی اولین کاربر",
         "description": "تنظیمات برای دسترسی اولیه کاربران جدید"
@@ -1776,7 +1805,8 @@
       "passwordAuthRequiresProvider": "نمی‌توان احراز هویت با گذرواژه را بدون داشتن حداقل یک ارائه‌دهنده احراز هویت فعال غیرفعال کرد",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
       "cleanupValueInvalid": "Value must be a whole number of at least {min}",
-      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent"
+      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent",
+      "quotaThresholdsInvalid": "Enter comma-separated percentages between 1 and 99, for example \"80,90\""
     },
     "messages": {
       "noChanges": "تغییری برای ذخیره وجود ندارد",

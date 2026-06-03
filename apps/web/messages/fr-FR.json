@@ -797,7 +797,8 @@
       "REVERSE_SHARE_AUTO_DELETED": "Partage inversé supprimé automatiquement",
       "ACCOUNT_FILES_CLEANED": "Fichiers du compte nettoyés",
       "ORPHAN_S3_DELETED": "Objet de stockage orphelin supprimé",
-      "ORPHAN_DB_DELETED": "Enregistrement de base de données orphelin supprimé"
+      "ORPHAN_DB_DELETED": "Enregistrement de base de données orphelin supprimé",
+      "QUOTA_FILES_DELETED": "Fichiers hors quota supprimés"
     },
     "targetTypes": {
       "user": "Utilisateur",
@@ -1657,6 +1658,34 @@
         "title": "Stockage Maximum par Utilisateur",
         "description": "Limite totale de stockage par utilisateur. Peut être surchargé par utilisateur ou par groupe."
       },
+      "quotaWarningThresholds": {
+        "title": "Seuils d'avertissement de quota (%)",
+        "description": "Pourcentages séparés par des virgules, par ex. « 80,90 », à partir desquels un e-mail d'avertissement de quota est envoyé à l'utilisateur. Chaque valeur doit être un entier compris entre 1 et 99. Une alerte distincte est envoyée lorsque le stockage atteint 100 %."
+      },
+      "quotaGracePeriodDays": {
+        "title": "Période de grâce du quota (jours)",
+        "description": "Nombre de jours pendant lesquels un utilisateur peut rester au-dessus de son quota avant que la suppression intelligente puisse agir (uniquement si la suppression intelligente est activée ci-dessous). Minimum 0."
+      },
+      "quotaSmartDeletionEnabled": {
+        "title": "Suppression intelligente des fichiers hors quota",
+        "description": "Désactivée par défaut. Une fois activée, après la période de grâce, les fichiers non sécurisés les plus anciens d'un utilisateur hors quota sont supprimés dans un ordre sûr : d'abord les fichiers téléversés mais non partagés, puis les fichiers des partages inactifs depuis la durée définie ci-dessous. Les fichiers des partages actifs ne sont jamais supprimés — si rien ne peut être supprimé en toute sécurité, les nouveaux téléversements sont simplement bloqués."
+      },
+      "quotaInactiveShareDays": {
+        "title": "Seuil d'inactivité des partages (jours)",
+        "description": "Les fichiers d'un partage deviennent éligibles à la suppression intelligente lorsque le partage est resté sans activité pendant ce nombre de jours. Minimum 1."
+      },
+      "reverseShareQuotaSoftEnforcement": {
+        "title": "Tolérance des partages inversés",
+        "description": "Activée par défaut. Permet aux invités externes de continuer à téléverser vers un partage inversé même si le propriétaire dépasse légèrement son quota, afin de ne pas interrompre la collecte. Les téléversements sont tout de même bloqués lorsque le propriétaire dépasse la tolérance définie ci-dessous, et le propriétaire est alerté pour libérer de l'espace."
+      },
+      "reverseShareMaxOverageFactor": {
+        "title": "Facteur de dépassement des partages inversés",
+        "description": "La tolérance autorise les téléversements vers un partage inversé jusqu'à ce que l'utilisation atteigne ce multiple du quota du propriétaire (par ex. 3 = jusqu'à trois fois la limite). Minimum 1."
+      },
+      "reverseShareAbsoluteMaxBytes": {
+        "title": "Plafond absolu des partages inversés",
+        "description": "Plafond strict pour la tolérance des partages inversés, indépendamment du facteur ci-dessus. Mettre 0 pour aucun plafond absolu."
+      },
       "firstUserAccess": {
         "description": "Paramètres pour le premier accès des nouveaux utilisateurs",
         "title": "Premier Accès Utilisateur"
@@ -1775,7 +1804,8 @@
       "passwordAuthRequiresProvider": "Impossible de désactiver l'authentification par mot de passe sans avoir au moins un fournisseur d'authentification actif",
       "auditRetentionInvalid": "La rétention des journaux d'audit doit être 0 (conservation illimitée) ou au moins 7 jours",
       "cleanupValueInvalid": "La valeur doit être un nombre entier d'au moins {min}",
-      "notifyDaysExceedsGrace": "Le délai d'avertissement ne doit pas dépasser la période de grâce, sinon aucun avertissement n'est envoyé"
+      "notifyDaysExceedsGrace": "Le délai d'avertissement ne doit pas dépasser la période de grâce, sinon aucun avertissement n'est envoyé",
+      "quotaThresholdsInvalid": "Saisissez des pourcentages séparés par des virgules compris entre 1 et 99, par exemple « 80,90 »"
     },
     "messages": {
       "noChanges": "Aucun changement à enregistrer",
