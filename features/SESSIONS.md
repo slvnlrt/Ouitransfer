@@ -1,5 +1,47 @@
 # Session Log
 
+## 2026-06-03 (5.2 Auto-cleanup — Phase B: quota overage policy)
+
+**Aggressive quota-overage policy delivered across 5 sequential batches — feature now complete**
+
+- **Owner decisions.** Smart deletion is **included but opt-in, off by default**, with a strict
+  safe deletion order; reverse-share external uploads use **soft enforcement, on by default**.
+  Conservative defaults throughout. Reuses the Phase A cleanup scheduler, the existing
+  `quota_warning` / `quota_exceeded` / `admin_quota_alert` / `files_auto_deleted` notifications,
+  and 8.1 audit.
+- **Batch 1 — schema + config + helpers.** Additive migration `quota_overage`:
+  `User.quotaLastWarnedThreshold`, `User.quotaExceededSince` (state tracking). Seeded + validated
+  the 7 Phase B config keys in the **Storage** group (CSV thresholds 1–99, grace ≥ 0, inactive-share
+  ≥ 1, overage factor ≥ 1, absolute cap ≥ 0). Pure `QuotaService` helpers: `parseThresholds`,
+  `crossedThreshold`, `isReverseUploadAllowed`, `pickDeletionCandidates`.
+- **Batch 2 — B1 warnings + B3 soft enforcement.** Event-driven `evaluateAndNotifyQuota` on direct
+  and reverse-share file register: emails the owner the first time usage crosses a threshold upward
+  (`quota_warning` / `quota_exceeded` at ≥100%), deduped via `quotaLastWarnedThreshold` and re-armed
+  when usage drops below the lowest threshold; set/clear `quotaExceededSince` at the 100% boundary.
+  Reverse uploads switched to `isReverseUploadAllowed` (soft) when the toggle is on, blocked at
+  `min(limit × factor, cap)`; the owner's own direct uploads keep the hard block. **Fixed a
+  pre-existing bug** where `quota_exceeded` was coupled to the configured warning thresholds — it
+  now fires purely on the 100% boundary, independent of the threshold list.
+- **Batch 3 — B2 smart-deletion sweep (opt-in).** `enforceQuotaOverage` in `cleanup/service.ts`:
+  for users over 100% past the grace period, deletes files (DB before S3, failure-tolerant) in the
+  safe order — orphan uploads oldest-first, then inactive-share files — stopping at the limit; if
+  nothing safe remains (everything in active shares), deletes **nothing** and counts the user as
+  `blocked`. Emits `QUOTA_FILES_DELETED` audit + `files_auto_deleted` notice; clears
+  `quotaExceededSince` when back under. Emptied shares left as-is (§7). Scheduler gates the sweep on
+  `quotaSmartDeletionEnabled` and feeds it into the aggregated run summary.
+- **Batch 4 — admin UI + i18n.** Surfaced the 7 keys in the Storage settings group (Switches +
+  number/text/bytes inputs) with client-side validation mirroring the server (CSV thresholds, factor
+  ≥ 1, BigInt-safe non-negative bytes); reassuring copy (smart deletion off by default). i18n in 23
+  locales + the `audit.actions.QUOTA_FILES_DELETED` label.
+- **Batch 5 — docs + tracking.** Extended the docs "Automatic Cleanup" page (EN + FR) with a
+  "Storage quota policy" section: threshold warnings, grace + opt-in smart deletion (safe order,
+  never touches active-share files, off by default), reverse-share soft enforcement (factor/cap,
+  external vs the owner's own direct uploads, on by default), and a table of all 7 config keys.
+- **Tests:** server 1453 (91 files), web 321 (33 files), shared 14 (2) = **1788 total**, all green.
+  Docs build green (EN/FR parity); Biome + knip clean.
+
+---
+
 ## 2026-06-03 (5.2 Auto-cleanup — Phase A.1: explicit lifecycle + manual pause)
 
 **Reworked the share/reverse-share cleanup into an explicit two-phase lifecycle across 5 sequential batches**
