@@ -51,12 +51,15 @@ const configurableShareKeys: NotificationKey[] = [
   "reverse_share_expired",
 ];
 
-/** Types 16-19: deferred triggers. */
+/** Types 16-19 + 5.2 cleanup lifecycle: configurable cleanup/quota triggers. */
 const deferredTriggerKeys: NotificationKey[] = [
   "quota_warning",
   "quota_exceeded",
   "files_auto_deleted",
   "share_auto_deleted",
+  "share_pending_deletion",
+  "reverse_share_pending_deletion",
+  "reverse_share_auto_deleted",
 ];
 
 /** Types 20-21: admin fan-out. */
@@ -65,8 +68,8 @@ const adminKeys: NotificationKey[] = ["admin_user_registered", "admin_quota_aler
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 describe("notificationCatalog", () => {
-  it("has exactly 22 entries", () => {
-    expect(allKeys).toHaveLength(22);
+  it("has exactly 25 entries", () => {
+    expect(allKeys).toHaveLength(25);
   });
 
   it("all entries have required fields", () => {
@@ -132,7 +135,7 @@ describe("notificationCatalog", () => {
     }
   });
 
-  it("types 16-19 have configurable true", () => {
+  it("cleanup/quota triggers are configurable with unsubscribe", () => {
     for (const [key, entry] of getEntries(deferredTriggerKeys)) {
       expect(entry.configurable, `${key} should be configurable`).toBe(true);
       expect(entry.hasUnsubscribe, `${key} should have unsubscribe`).toBe(true);
@@ -238,6 +241,20 @@ describe("notificationCatalog", () => {
         usedPercent: 95,
         usedBytes: 9_500_000_000,
         maxBytes: 10_000_000_000,
+      },
+      share_pending_deletion: {
+        shareName: "My Share",
+        deletionAt: "2026-01-08T00:00:00.000Z",
+        shareManageUrl: "https://example.com/manage",
+      },
+      reverse_share_pending_deletion: {
+        reverseShareName: "Upload Request",
+        deletionAt: "2026-01-08T00:00:00.000Z",
+        reverseShareManageUrl: "https://example.com/manage",
+      },
+      reverse_share_auto_deleted: {
+        reverseShareName: "Upload Request",
+        deletedAt: "2026-01-01T00:00:00.000Z",
       },
       test_email: {},
     };
@@ -411,6 +428,20 @@ describe("i18n key smoke tests — real en.json", () => {
         usedPercent: 95,
         usedBytes: 9_500_000_000,
         maxBytes: 10_000_000_000,
+      },
+      share_pending_deletion: {
+        shareName: "My Share",
+        deletionAt: "2026-01-08T00:00:00.000Z",
+        shareManageUrl: "https://example.com/manage",
+      },
+      reverse_share_pending_deletion: {
+        reverseShareName: "Upload Request",
+        deletionAt: "2026-01-08T00:00:00.000Z",
+        reverseShareManageUrl: "https://example.com/manage",
+      },
+      reverse_share_auto_deleted: {
+        reverseShareName: "Upload Request",
+        deletedAt: "2026-01-01T00:00:00.000Z",
       },
       test_email: {},
     };

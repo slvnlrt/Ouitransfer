@@ -129,6 +129,26 @@
     "body": "Votre partage <strong>{shareName}</strong> a été supprimé automatiquement. Raison : {reason}.",
     "info": "Cette action a été effectuée automatiquement par la politique de nettoyage du système."
   },
+  "sharePendingDeletion": {
+    "subject": "{appName} - Votre partage sera bientôt supprimé définitivement",
+    "subtitle": "Partage programmé pour suppression",
+    "body": "Votre partage expiré <strong>{shareName}</strong> sera définitivement supprimé le {deletionAt}. Téléchargez-le ou renouvelez-le d'ici là si vous en avez encore besoin.",
+    "cta": "Gérer le partage",
+    "info": "Ceci est effectué automatiquement par la politique de nettoyage du système. Renouveler le partage annule la suppression."
+  },
+  "reverseSharePendingDeletion": {
+    "subject": "{appName} - Votre demande de fichiers et ses fichiers seront bientôt supprimés",
+    "subtitle": "Demande de dépôt programmée pour suppression",
+    "body": "Votre demande de fichiers expirée <strong>{reverseShareName}</strong> et les fichiers qui y ont été déposés seront définitivement supprimés le {deletionAt}. Téléchargez les fichiers ou renouvelez la demande d'ici là si vous en avez encore besoin.",
+    "cta": "Gérer la demande",
+    "info": "Ceci est effectué automatiquement par la politique de nettoyage du système. Renouveler la demande annule la suppression."
+  },
+  "reverseShareAutoDeleted": {
+    "subject": "{appName} - Votre demande de fichiers a été supprimée automatiquement",
+    "subtitle": "Demande de dépôt supprimée automatiquement",
+    "body": "Votre demande de fichiers expirée <strong>{reverseShareName}</strong> et les fichiers qui y ont été déposés ont été définitivement supprimés le {deletedAt}.",
+    "info": "Cette action a été effectuée automatiquement par la politique de nettoyage du système."
+  },
   "adminUserRegistered": {
     "subject": "{appName} - Nouvel utilisateur enregistré",
     "subtitle": "Nouvel utilisateur enregistré",

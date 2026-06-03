@@ -9,9 +9,11 @@ import { renderFilesAutoDeleted } from "../templates/files-auto-deleted.js";
 import { renderPasswordReset } from "../templates/password-reset.js";
 import { renderQuotaExceeded } from "../templates/quota-exceeded.js";
 import { renderQuotaWarning } from "../templates/quota-warning.js";
+import { renderReverseShareAutoDeleted } from "../templates/reverse-share-auto-deleted.js";
 import { renderReverseShareExpired } from "../templates/reverse-share-expired.js";
 import { renderReverseShareExpiring } from "../templates/reverse-share-expiring.js";
 import { renderReverseShareInvitation } from "../templates/reverse-share-invitation.js";
+import { renderReverseSharePendingDeletion } from "../templates/reverse-share-pending-deletion.js";
 import { renderReverseShareUploaded } from "../templates/reverse-share-uploaded.js";
 import { renderShareAccessed } from "../templates/share-accessed.js";
 import { renderShareAutoDeleted } from "../templates/share-auto-deleted.js";
@@ -21,6 +23,7 @@ import { renderShareExpiring } from "../templates/share-expiring.js";
 import { renderShareInvitation } from "../templates/share-invitation.js";
 import { renderShareMaxViewsReached } from "../templates/share-max-views-reached.js";
 import { renderShareNoActivity } from "../templates/share-no-activity.js";
+import { renderSharePendingDeletion } from "../templates/share-pending-deletion.js";
 import { renderTestEmail } from "../templates/test-email.js";
 import { renderWelcome } from "../templates/welcome.js";
 
@@ -688,5 +691,61 @@ describe("renderShareAutoDeleted", () => {
     expect(slots.infoBox).toBeDefined();
     expect(slots.body).toContain("Ancient Share");
     expect(slots.body).toContain("inactivity");
+  });
+});
+
+describe("renderSharePendingDeletion", () => {
+  it("returns valid LayoutSlots with CTA, name and deletion date", () => {
+    const slots = renderSharePendingDeletion(
+      {
+        shareName: "Soon-Gone Share",
+        deletionAt: "2026-01-08T00:00:00.000Z",
+        shareManageUrl: "https://example.com/manage",
+      },
+      mockT,
+    );
+    expect(typeof slots.subtitle).toBe("string");
+    expect(typeof slots.body).toBe("string");
+    expect(slots.cta?.url).toBe("https://example.com/manage");
+    expect(slots.infoBox).toBeDefined();
+    expect(slots.body).toContain("Soon-Gone Share");
+    expect(slots.body).toContain("2026-01-08T00:00:00.000Z");
+  });
+});
+
+describe("renderReverseSharePendingDeletion", () => {
+  it("returns valid LayoutSlots with CTA, name and deletion date", () => {
+    const slots = renderReverseSharePendingDeletion(
+      {
+        reverseShareName: "Soon-Gone Request",
+        deletionAt: "2026-01-08T00:00:00.000Z",
+        reverseShareManageUrl: "https://example.com/manage",
+      },
+      mockT,
+    );
+    expect(typeof slots.subtitle).toBe("string");
+    expect(typeof slots.body).toBe("string");
+    expect(slots.cta?.url).toBe("https://example.com/manage");
+    expect(slots.infoBox).toBeDefined();
+    expect(slots.body).toContain("Soon-Gone Request");
+    expect(slots.body).toContain("2026-01-08T00:00:00.000Z");
+  });
+});
+
+describe("renderReverseShareAutoDeleted", () => {
+  it("returns valid LayoutSlots with name and deletion date, no CTA", () => {
+    const slots = renderReverseShareAutoDeleted(
+      {
+        reverseShareName: "Gone Request",
+        deletedAt: "2026-01-01T00:00:00.000Z",
+      },
+      mockT,
+    );
+    expect(typeof slots.subtitle).toBe("string");
+    expect(typeof slots.body).toBe("string");
+    expect(slots.cta).toBeUndefined();
+    expect(slots.infoBox).toBeDefined();
+    expect(slots.body).toContain("Gone Request");
+    expect(slots.body).toContain("2026-01-01T00:00:00.000Z");
   });
 });

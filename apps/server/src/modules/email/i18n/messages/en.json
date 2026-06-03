@@ -129,6 +129,26 @@
     "body": "Your share <strong>{shareName}</strong> was automatically deleted. Reason: {reason}.",
     "info": "This action was performed automatically by the system cleanup policy."
   },
+  "sharePendingDeletion": {
+    "subject": "{appName} - Your share will be permanently deleted soon",
+    "subtitle": "Share Scheduled for Deletion",
+    "body": "Your expired share <strong>{shareName}</strong> will be permanently deleted on {deletionAt}. Download or renew it before then if you still need it.",
+    "cta": "Manage Share",
+    "info": "This is performed automatically by the system cleanup policy. Renewing the share cancels the deletion."
+  },
+  "reverseSharePendingDeletion": {
+    "subject": "{appName} - Your file request and its files will be deleted soon",
+    "subtitle": "Upload Request Scheduled for Deletion",
+    "body": "Your expired file request <strong>{reverseShareName}</strong> and the files uploaded to it will be permanently deleted on {deletionAt}. Download the files or renew the request before then if you still need them.",
+    "cta": "Manage Request",
+    "info": "This is performed automatically by the system cleanup policy. Renewing the request cancels the deletion."
+  },
+  "reverseShareAutoDeleted": {
+    "subject": "{appName} - Your file request was automatically deleted",
+    "subtitle": "Upload Request Automatically Deleted",
+    "body": "Your expired file request <strong>{reverseShareName}</strong> and the files uploaded to it were permanently deleted on {deletedAt}.",
+    "info": "This action was performed automatically by the system cleanup policy."
+  },
   "adminUserRegistered": {
     "subject": "{appName} - New user registration",
     "subtitle": "New User Registered",
