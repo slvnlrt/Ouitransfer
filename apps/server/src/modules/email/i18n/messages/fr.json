@@ -121,6 +121,7 @@
     "subject": "{appName} - Fichiers supprimés automatiquement",
     "subtitle": "Fichiers supprimés automatiquement",
     "body": "Les fichiers suivants ont été supprimés automatiquement : {fileList}. Raison : {reason}.",
+    "bodyAccount": "Tous les fichiers associés à votre compte désactivé ont été supprimés automatiquement. Raison : {reason}.",
     "info": "Cette action a été effectuée automatiquement par la politique de nettoyage du système."
   },
   "shareAutoDeleted": {

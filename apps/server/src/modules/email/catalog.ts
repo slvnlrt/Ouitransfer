@@ -621,6 +621,7 @@ export const notificationCatalog = {
       "filesAutoDeleted.subject",
       "filesAutoDeleted.subtitle",
       "filesAutoDeleted.body",
+      "filesAutoDeleted.bodyAccount",
       "filesAutoDeleted.info",
     ],
     displayName: "Files Auto-Deleted",

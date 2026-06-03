@@ -121,6 +121,7 @@
     "subject": "{appName} - Files automatically deleted",
     "subtitle": "Files Automatically Deleted",
     "body": "The following files were automatically deleted: {fileList}. Reason: {reason}.",
+    "bodyAccount": "All files associated with your deactivated account were automatically deleted. Reason: {reason}.",
     "info": "This action was performed automatically by the system cleanup policy."
   },
   "shareAutoDeleted": {

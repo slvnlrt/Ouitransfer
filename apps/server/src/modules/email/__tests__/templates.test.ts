@@ -677,6 +677,17 @@ describe("renderFilesAutoDeleted", () => {
     expect(slots.body).toContain("old-file.zip");
     expect(slots.body).toContain("backup.tar.gz");
     expect(slots.body).toContain("expired");
+    // Per-file body key, not the account variant.
+    expect(slots.body).toContain("filesAutoDeleted.body");
+    expect(slots.body).not.toContain("filesAutoDeleted.bodyAccount");
+  });
+
+  it("renders the account-level variant (no empty list) when fileNames is empty", () => {
+    const slots = renderFilesAutoDeleted({ fileNames: [], reason: "account deactivated" }, mockT);
+    // Uses the account variant — never the per-file body with an empty list.
+    expect(slots.body).toContain("filesAutoDeleted.bodyAccount");
+    expect(slots.body).not.toContain('"fileList"');
+    expect(slots.body).toContain("account deactivated");
   });
 });
 
