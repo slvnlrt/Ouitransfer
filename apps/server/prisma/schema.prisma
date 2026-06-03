@@ -29,6 +29,9 @@ model User {
   maxFileSizeOverride     BigInt? // Per-user max file size override (bytes). null=inherit, 0=unlimited.
   maxTotalStorageOverride BigInt? // Per-user max total storage override (bytes). null=inherit, 0=unlimited.
 
+  quotaLastWarnedThreshold Int?      // Highest quota-usage threshold already warned about (5.2 Phase B B1 dedup). null = re-armed.
+  quotaExceededSince       DateTime? // When usage first crossed 100% (5.2 Phase B B2 grace); cleared when back under.
+
   groupId String?
   group   Group?  @relation(fields: [groupId], references: [id], onDelete: SetNull)
 
