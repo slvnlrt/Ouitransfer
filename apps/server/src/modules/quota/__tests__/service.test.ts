@@ -499,3 +499,216 @@ describe("QuotaService.getQuotaStatus", () => {
     expect(status.uploadAllowed).toBe(true);
   });
 });
+
+// ─── QuotaService.parseThresholds ───────────────────────────────────────────
+
+describe("QuotaService.parseThresholds", () => {
+  const service = new QuotaService();
+
+  it("parses a simple ascending CSV", () => {
+    expect(service.parseThresholds("80,90")).toEqual([80, 90]);
+  });
+
+  it("sorts ascending regardless of input order", () => {
+    expect(service.parseThresholds("90,80,50")).toEqual([50, 80, 90]);
+  });
+
+  it("de-duplicates repeated values", () => {
+    expect(service.parseThresholds("80,80,90,80")).toEqual([80, 90]);
+  });
+
+  it("trims whitespace around entries", () => {
+    expect(service.parseThresholds(" 80 , 90 ")).toEqual([80, 90]);
+  });
+
+  it("ignores empty segments (defensive — validator already rejects them)", () => {
+    expect(service.parseThresholds("80,,90")).toEqual([80, 90]);
+  });
+
+  it("handles a single threshold", () => {
+    expect(service.parseThresholds("95")).toEqual([95]);
+  });
+});
+
+// ─── QuotaService.highestCrossedThreshold ───────────────────────────────────
+
+describe("QuotaService.highestCrossedThreshold", () => {
+  const service = new QuotaService();
+  const LIMIT = 1000n; // boundaries: 80% = 800, 90% = 900, 100% = 1000
+
+  it("returns null when no threshold is crossed", () => {
+    expect(service.highestCrossedThreshold(0n, 500n, LIMIT, [80, 90])).toBeNull();
+  });
+
+  it("returns the threshold crossed by an upward transition", () => {
+    expect(service.highestCrossedThreshold(700n, 850n, LIMIT, [80, 90])).toBe(80);
+  });
+
+  it("returns the HIGHEST threshold when several are crossed at once", () => {
+    expect(service.highestCrossedThreshold(700n, 950n, LIMIT, [80, 90])).toBe(90);
+  });
+
+  it("treats >= 100 as the limit boundary (exceeded)", () => {
+    expect(service.highestCrossedThreshold(950n, 1000n, LIMIT, [80, 90, 100])).toBe(100);
+    expect(service.highestCrossedThreshold(950n, 1200n, LIMIT, [80, 90, 100])).toBe(100);
+  });
+
+  it("crosses exactly at the boundary (newUsed === boundary)", () => {
+    expect(service.highestCrossedThreshold(799n, 800n, LIMIT, [80])).toBe(80);
+  });
+
+  it("does NOT re-cross a boundary already at/below oldUsed", () => {
+    // oldUsed already at 800 (the 80% boundary) — 80% is not newly crossed.
+    expect(service.highestCrossedThreshold(800n, 850n, LIMIT, [80, 90])).toBeNull();
+    expect(service.highestCrossedThreshold(800n, 900n, LIMIT, [80, 90])).toBe(90);
+  });
+
+  it("never crosses on a downward transition", () => {
+    expect(service.highestCrossedThreshold(950n, 700n, LIMIT, [80, 90])).toBeNull();
+  });
+
+  it("returns null for an unlimited limit (0n)", () => {
+    expect(service.highestCrossedThreshold(0n, 10_000_000n, 0n, [80, 90])).toBeNull();
+  });
+
+  it("returns the max crossed value even when thresholds are unsorted", () => {
+    expect(service.highestCrossedThreshold(0n, 1000n, LIMIT, [90, 80, 100])).toBe(100);
+  });
+});
+
+// ─── QuotaService.isReverseUploadAllowed ────────────────────────────────────
+
+describe("QuotaService.isReverseUploadAllowed", () => {
+  const service = new QuotaService();
+  const LIMIT = 1000n;
+
+  it("always allows when the limit is unlimited (0n)", () => {
+    expect(service.isReverseUploadAllowed(10_000n, 10_000n, 0n, 3, 0n)).toBe(true);
+  });
+
+  it("allows when projected usage stays within limit * factor (no absolute cap)", () => {
+    // used 2000 + size 500 = 2500 <= 1000 * 3 = 3000
+    expect(service.isReverseUploadAllowed(2000n, 500n, LIMIT, 3, 0n)).toBe(true);
+  });
+
+  it("blocks when projected usage exceeds limit * factor", () => {
+    // used 2800 + size 500 = 3300 > 3000
+    expect(service.isReverseUploadAllowed(2800n, 500n, LIMIT, 3, 0n)).toBe(false);
+  });
+
+  it("allows exactly at the relative cap boundary (projected === limit * factor)", () => {
+    expect(service.isReverseUploadAllowed(2500n, 500n, LIMIT, 3, 0n)).toBe(true);
+  });
+
+  it("blocks when the absolute cap is exceeded even if within the relative cap", () => {
+    // relative cap 3000 (within), absolute cap 2000 (exceeded): 1800 + 500 = 2300 > 2000
+    expect(service.isReverseUploadAllowed(1800n, 500n, LIMIT, 3, 2000n)).toBe(false);
+  });
+
+  it("allows exactly at the absolute cap boundary", () => {
+    expect(service.isReverseUploadAllowed(1500n, 500n, LIMIT, 3, 2000n)).toBe(true);
+  });
+
+  it("a non-positive absolute cap (<= 0n) means no absolute cap", () => {
+    // projected 2900 within relative cap 3000; capBytes 0n is ignored.
+    expect(service.isReverseUploadAllowed(2900n, 0n, LIMIT, 3, 0n)).toBe(true);
+  });
+
+  it("enforces both caps together (relative wins when smaller)", () => {
+    // factor 3 → relative 3000; absolute 5000. 2900 + 200 = 3100 > 3000 → blocked.
+    expect(service.isReverseUploadAllowed(2900n, 200n, LIMIT, 3, 5000n)).toBe(false);
+  });
+
+  it("a factor of 1 collapses the relative cap to the limit", () => {
+    expect(service.isReverseUploadAllowed(900n, 100n, LIMIT, 1, 0n)).toBe(true); // 1000 <= 1000
+    expect(service.isReverseUploadAllowed(900n, 200n, LIMIT, 1, 0n)).toBe(false); // 1100 > 1000
+  });
+});
+
+// ─── QuotaService.pickDeletionCandidates ────────────────────────────────────
+
+describe("QuotaService.pickDeletionCandidates", () => {
+  let service: QuotaService;
+  let findOrphan: ReturnType<typeof vi.spyOn>;
+  let findInactive: ReturnType<typeof vi.spyOn>;
+
+  const orphan = (id: string, size: bigint) => ({ id, objectName: `o/${id}`, size });
+  const inactive = (id: string, size: bigint) => ({ id, objectName: `i/${id}`, size });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    service = new QuotaService();
+    findOrphan = vi.spyOn(QuotaRepository.prototype, "findOrphanFiles");
+    findInactive = vi.spyOn(QuotaRepository.prototype, "findInactiveShareFiles");
+  });
+
+  it("returns nothing when bytesToFree is zero or negative", async () => {
+    const result = await service.pickDeletionCandidates("user-1", 0n, 30);
+    expect(result).toEqual([]);
+    expect(findOrphan).not.toHaveBeenCalled();
+    expect(findInactive).not.toHaveBeenCalled();
+  });
+
+  it("selects orphan uploads first, oldest-first as returned by the repo", async () => {
+    findOrphan.mockResolvedValue([orphan("a", 100n), orphan("b", 100n)]);
+    findInactive.mockResolvedValue([]);
+
+    const result = await service.pickDeletionCandidates("user-1", 150n, 30);
+
+    // Stops once cumulative size (200) reaches bytesToFree (150) — both orphans needed.
+    expect(result.map((f) => f.id)).toEqual(["a", "b"]);
+    expect(findInactive).not.toHaveBeenCalled();
+  });
+
+  it("stops as soon as the cumulative size reaches bytesToFree", async () => {
+    findOrphan.mockResolvedValue([orphan("a", 200n), orphan("b", 200n), orphan("c", 200n)]);
+    findInactive.mockResolvedValue([]);
+
+    const result = await service.pickDeletionCandidates("user-1", 150n, 30);
+
+    expect(result.map((f) => f.id)).toEqual(["a"]);
+  });
+
+  it("falls through to inactive-share files only after exhausting orphans", async () => {
+    findOrphan.mockResolvedValue([orphan("a", 100n)]);
+    findInactive.mockResolvedValue([inactive("x", 100n), inactive("y", 100n)]);
+
+    const result = await service.pickDeletionCandidates("user-1", 250n, 30);
+
+    // orphan (100) + 2 inactive (200) = 300 >= 250, stops after y.
+    expect(result.map((f) => f.id)).toEqual(["a", "x", "y"]);
+    expect(findOrphan).toHaveBeenCalledWith("user-1");
+  });
+
+  it("returns ALL safe candidates when they cannot free enough (caller stays blocked)", async () => {
+    findOrphan.mockResolvedValue([orphan("a", 100n)]);
+    findInactive.mockResolvedValue([inactive("x", 100n)]);
+
+    const result = await service.pickDeletionCandidates("user-1", 10_000n, 30);
+
+    // Only 200 bytes available across all safe candidates — far below 10_000.
+    expect(result.map((f) => f.id)).toEqual(["a", "x"]);
+  });
+
+  it("never includes active-share files (the repo query excludes them by construction)", async () => {
+    // The repo returns ONLY orphans and inactive-share files; an active-share
+    // file is never in either list, so it can never be selected.
+    findOrphan.mockResolvedValue([]);
+    findInactive.mockResolvedValue([]);
+
+    const result = await service.pickDeletionCandidates("user-1", 1000n, 30);
+
+    expect(result).toEqual([]);
+  });
+
+  it("computes the inactive cutoff as now - inactiveShareDays", async () => {
+    findOrphan.mockResolvedValue([]);
+    findInactive.mockResolvedValue([]);
+    const now = new Date("2026-06-03T00:00:00.000Z");
+
+    await service.pickDeletionCandidates("user-1", 1000n, 30, now);
+
+    const expectedCutoff = new Date("2026-05-04T00:00:00.000Z");
+    expect(findInactive).toHaveBeenCalledWith("user-1", expectedCutoff);
+  });
+});
