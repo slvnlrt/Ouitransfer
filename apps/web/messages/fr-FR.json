@@ -2850,7 +2850,10 @@
       "share_auto_deleted": "Partage supprimé automatiquement",
       "admin_user_registered": "Nouvel utilisateur inscrit (admin)",
       "admin_quota_alert": "Alerte quota utilisateur (admin)",
-      "test_email": "Email de test"
+      "test_email": "Email de test",
+      "reverse_share_auto_deleted": "Partage inversé supprimé automatiquement",
+      "reverse_share_pending_deletion": "Partage inversé en attente de suppression",
+      "share_pending_deletion": "Partage en attente de suppression"
     },
     "categories": {
       "account": "Compte",

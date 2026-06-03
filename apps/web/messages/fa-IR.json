@@ -2846,7 +2846,10 @@
       "share_auto_deleted": "Share auto-deleted",
       "admin_user_registered": "New user registered (admin)",
       "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email"
+      "test_email": "Test email",
+      "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
+      "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
+      "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
     },
     "categories": {
       "account": "Account",

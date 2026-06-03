@@ -21,12 +21,15 @@ export type NotificationType =
   // Share lifecycle (configurable)
   | "share_expiring"
   | "share_expired"
+  | "share_pending_deletion"
   | "share_max_views_reached"
   | "share_no_activity"
   // Reverse share lifecycle (configurable)
   | "reverse_share_uploaded"
   | "reverse_share_expiring"
   | "reverse_share_expired"
+  | "reverse_share_pending_deletion"
+  | "reverse_share_auto_deleted"
   // Quota & cleanup (configurable)
   | "quota_warning"
   | "quota_exceeded"
