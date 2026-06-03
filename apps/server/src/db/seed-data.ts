@@ -82,6 +82,10 @@ export const defaultConfigs = [
   // Security Configurations
   {
     key: "embedSecret",
+    // Computed at module load (so a fresh value is generated on every boot-time
+    // reseed) but only persisted on first seed — "protected mode" skips the row
+    // when it already exists, so the regenerated value is intentionally discarded
+    // and the originally-seeded secret stays stable across restarts.
     value: crypto.randomBytes(32).toString("hex"),
     type: "string",
     group: "security",
@@ -523,7 +527,8 @@ export async function seedDatabase(prisma: PrismaClient) {
     });
 
     if (existingConfig) {
-      console.log(`⏭️  Configuration '${config.key}' already exists, skipping...`);
+      // Silent: this runs on every boot, so per-key skip logs would be pure noise.
+      // The summary below reports the skipped count.
       skippedCount++;
       continue;
     }
@@ -554,7 +559,7 @@ export async function seedDatabase(prisma: PrismaClient) {
     });
 
     if (existingProvider) {
-      console.log(`⏭️  Auth provider '${provider.name}' already exists, skipping...`);
+      // Silent on every-boot reseed (see config loop above); summary reports count.
       providersSkippedCount++;
       continue;
     }
