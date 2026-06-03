@@ -14,7 +14,11 @@ vi.mock("../../../shared/prisma.js", () => ({
       delete: vi.fn(),
     },
     folder: {
+      findMany: vi.fn(),
       deleteMany: vi.fn(),
+    },
+    backgroundImage: {
+      findMany: vi.fn(),
     },
     share: {
       findMany: vi.fn(),
@@ -125,6 +129,9 @@ beforeEach(() => {
   mockDeleteObject.mockResolvedValue(undefined);
   mockFileExists.mockResolvedValue(true);
   mockListObjects.mockResolvedValue([]);
+  // Default: no folders / background images own any keys (overridden per test).
+  vi.mocked(prisma.folder.findMany).mockResolvedValue([] as never);
+  vi.mocked(prisma.backgroundImage.findMany).mockResolvedValue([] as never);
 });
 
 afterEach(() => {
@@ -345,7 +352,7 @@ describe("cleanupMaxViewsShares", () => {
       },
     ] as never);
 
-    const summary = await cleanupMaxViewsShares({ inactiveDays: 30 });
+    const summary = await cleanupMaxViewsShares({ inactiveDays: 30, notifyDaysBefore: 0 });
 
     expect(summary.deleted).toBe(1);
     expect(logAuditEvent).toHaveBeenCalledWith(
@@ -377,7 +384,7 @@ describe("cleanupMaxViewsShares", () => {
       },
     ] as never);
 
-    const summary = await cleanupMaxViewsShares({ inactiveDays: 30 });
+    const summary = await cleanupMaxViewsShares({ inactiveDays: 30, notifyDaysBefore: 0 });
 
     expect(summary.deleted).toBe(0);
     expect(logAuditEvent).not.toHaveBeenCalled();
@@ -387,7 +394,7 @@ describe("cleanupMaxViewsShares", () => {
     const now = Date.now();
     vi.mocked(prisma.share.findMany).mockResolvedValue([] as never);
 
-    await cleanupMaxViewsShares({ inactiveDays: 30 });
+    await cleanupMaxViewsShares({ inactiveDays: 30, notifyDaysBefore: 0 });
 
     const call = vi.mocked(prisma.share.findMany).mock.calls[0][0] as {
       where: { OR: { lastDownloadedAt?: { lt: Date }; updatedAt?: { lt: Date } }[] };
@@ -395,6 +402,48 @@ describe("cleanupMaxViewsShares", () => {
     const cutoff = now - 30 * ONE_DAY_MS;
     expect(call.where.OR[0].lastDownloadedAt?.lt.getTime()).toBe(cutoff);
     expect(call.where.OR[1].updatedAt?.lt.getTime()).toBe(cutoff);
+  });
+
+  it("warns once before max-views deletion and sets the flag only when enqueued", async () => {
+    const now = Date.now();
+    // inactive 30d, notify 3d: deletion moment within 3 days means the activity
+    // anchor falls in (now-30d, now-27d]. Pick lastDownloadedAt = now - 28d.
+    const lastDownloadedAt = new Date(now - 28 * ONE_DAY_MS);
+    vi.mocked(prisma.share.findMany)
+      .mockResolvedValueOnce([
+        {
+          id: "s1",
+          name: "Report",
+          views: 10,
+          maxViews: 10,
+          lastDownloadedAt,
+          updatedAt: lastDownloadedAt,
+          creatorId: "u1",
+          creator: { id: "u1", email: "u@x.com", locale: "en" },
+        },
+      ] as never) // warn query
+      .mockResolvedValueOnce([] as never); // delete query
+
+    const summary = await cleanupMaxViewsShares({ inactiveDays: 30, notifyDaysBefore: 3 });
+
+    expect(emailService.send).toHaveBeenCalledWith(
+      "share_pending_deletion",
+      expect.objectContaining({ relatedId: "s1" }),
+    );
+    expect(prisma.share.update).toHaveBeenCalledWith({
+      where: { id: "s1" },
+      data: { notifiedForPendingDeletion: true },
+    });
+    expect(summary.warned).toBe(1);
+  });
+
+  it("skips the warn phase entirely when notifyDaysBefore is 0", async () => {
+    vi.mocked(prisma.share.findMany).mockResolvedValueOnce([] as never); // delete query only
+
+    await cleanupMaxViewsShares({ inactiveDays: 30, notifyDaysBefore: 0 });
+
+    // Only the delete query ran (no warn query).
+    expect(prisma.share.findMany).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -557,6 +606,29 @@ describe("purgeUserContent", () => {
     });
   });
 
+  it("deletes the user's Folder S3 objects (skipping null object names)", async () => {
+    vi.mocked(prisma.file.findMany).mockResolvedValue([] as never);
+    vi.mocked(prisma.folder.findMany).mockResolvedValue([
+      { objectName: "u1/folder-a.placeholder" },
+      { objectName: null }, // a folder without a placeholder object → skipped
+      { objectName: "u1/folder-b.placeholder" },
+    ] as never);
+    vi.mocked(prisma.folder.deleteMany).mockResolvedValue({ count: 3 } as never);
+
+    const result = await purgeUserContent("u1");
+
+    expect(prisma.folder.findMany).toHaveBeenCalledWith({
+      where: { userId: "u1" },
+      select: { objectName: true },
+    });
+    expect(mockDeleteObject).toHaveBeenCalledWith("u1/folder-a.placeholder");
+    expect(mockDeleteObject).toHaveBeenCalledWith("u1/folder-b.placeholder");
+    // The null-object folder is skipped (no delete attempt, no error).
+    expect(mockDeleteObject).toHaveBeenCalledTimes(2);
+    expect(result.folders).toBe(3);
+    expect(result.s3Errors).toBe(0);
+  });
+
   it("never touches the user row", async () => {
     await purgeUserContent("u1");
     // The mock prisma surface has no `user.delete` — assert the purge does not
@@ -680,7 +752,9 @@ describe("sweepOrphans", () => {
       .mockResolvedValueOnce([{ id: "f1", objectName: "u1/missing.bin" }] as never) // DB→S3
       .mockResolvedValueOnce([] as never); // S3→DB known-keys
     vi.mocked(prisma.reverseShareFile.findMany)
-      .mockResolvedValueOnce([{ id: "rf1", objectName: "rs1/missing.bin" }] as never) // DB→S3
+      .mockResolvedValueOnce([
+        { id: "rf1", objectName: "rs1/missing.bin", reverseShareId: "rs1" },
+      ] as never) // DB→S3
       .mockResolvedValueOnce([] as never); // S3→DB known-keys
     mockFileExists.mockResolvedValue(false); // both objects missing
 
@@ -697,12 +771,14 @@ describe("sweepOrphans", () => {
         metadata: { objectName: "u1/missing.bin" },
       }),
     );
+    // For a ReverseShareFile orphan the audit targets the PARENT reverse share
+    // (which resolves) with the file id + key in metadata.
     expect(logAuditEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         action: "ORPHAN_DB_DELETED",
         targetType: "reverse_share",
-        targetId: "rf1",
-        metadata: { objectName: "rs1/missing.bin" },
+        targetId: "rs1",
+        metadata: { fileId: "rf1", objectName: "rs1/missing.bin" },
       }),
     );
     expect(summary.dbDeleted).toBe(2);
@@ -822,5 +898,57 @@ describe("sweepOrphans", () => {
   it("returns a zero summary when there are no orphans on either side", async () => {
     const summary = await sweepOrphans({ minAgeHours: 24 });
     expect(summary).toEqual({ dbDeleted: 0, s3Deleted: 0, errors: 0 });
+  });
+
+  it("S3→DB: NEVER deletes objects referenced by BackgroundImage or Folder (regression)", async () => {
+    const oldObj = new Date(Date.now() - 48 * 60 * 60 * 1000);
+    // Folder owns a placeholder object; BackgroundImage owns an image + thumbnail.
+    vi.mocked(prisma.folder.findMany).mockResolvedValueOnce([
+      { objectName: "folder-placeholder.bin" },
+    ] as never);
+    vi.mocked(prisma.backgroundImage.findMany).mockResolvedValueOnce([
+      { s3Key: "backgrounds/bg1.webp", thumbnailS3Key: "backgrounds/bg1_thumb.webp" },
+    ] as never);
+    mockListObjects.mockResolvedValue([
+      { key: "backgrounds/bg1.webp", size: 1, lastModified: oldObj },
+      { key: "backgrounds/bg1_thumb.webp", size: 1, lastModified: oldObj },
+      { key: "folder-placeholder.bin", size: 1, lastModified: oldObj },
+      { key: "truly-orphan.bin", size: 1, lastModified: oldObj },
+    ]);
+
+    const summary = await sweepOrphans({ minAgeHours: 24 });
+
+    // Only the truly-unreferenced object is swept; protected objects are kept.
+    expect(mockDeleteObject).toHaveBeenCalledTimes(1);
+    expect(mockDeleteObject).toHaveBeenCalledWith("truly-orphan.bin");
+    expect(mockDeleteObject).not.toHaveBeenCalledWith("backgrounds/bg1.webp");
+    expect(mockDeleteObject).not.toHaveBeenCalledWith("backgrounds/bg1_thumb.webp");
+    expect(mockDeleteObject).not.toHaveBeenCalledWith("folder-placeholder.bin");
+    expect(summary.s3Deleted).toBe(1);
+  });
+
+  it("dryRun: computes candidates but deletes nothing and emits no audit events", async () => {
+    const oldObj = new Date(Date.now() - 48 * 60 * 60 * 1000);
+    // One missing-object DB row (File) and one unreferenced S3 object.
+    vi.mocked(prisma.file.findMany)
+      .mockResolvedValueOnce([{ id: "f1", objectName: "u1/missing.bin" }] as never) // DB→S3
+      .mockResolvedValueOnce([] as never); // known-keys
+    mockFileExists.mockResolvedValue(false);
+    mockListObjects.mockResolvedValue([{ key: "truly-orphan.bin", size: 1, lastModified: oldObj }]);
+
+    const summary = await sweepOrphans({ minAgeHours: 24, dryRun: true });
+
+    // Nothing deleted, no audit emitted.
+    expect(prisma.file.delete).not.toHaveBeenCalled();
+    expect(mockDeleteObject).not.toHaveBeenCalled();
+    expect(logAuditEvent).not.toHaveBeenCalled();
+
+    // Candidates returned with the same counts the real run would report.
+    expect(summary.dbDeleted).toBe(1);
+    expect(summary.s3Deleted).toBe(1);
+    expect(summary.dbCandidates).toEqual([
+      { table: "file", id: "f1", objectName: "u1/missing.bin" },
+    ]);
+    expect(summary.s3Candidates).toEqual(["truly-orphan.bin"]);
   });
 });

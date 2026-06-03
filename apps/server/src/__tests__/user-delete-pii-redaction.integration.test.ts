@@ -18,6 +18,7 @@ const mockAuditUpdate = vi.fn();
 const mockAuditCreate = vi.fn();
 const mockFileFindMany = vi.fn();
 const mockFileDeleteMany = vi.fn();
+const mockFolderFindMany = vi.fn();
 const mockFolderDeleteMany = vi.fn();
 const mockShareFindMany = vi.fn();
 const mockReverseShareFindMany = vi.fn();
@@ -39,7 +40,7 @@ vi.mock("../shared/prisma.js", () => ({
     },
     // Surface used by purgeUserContent (A8 full cascade).
     file: { findMany: mockFileFindMany, deleteMany: mockFileDeleteMany },
-    folder: { deleteMany: mockFolderDeleteMany },
+    folder: { findMany: mockFolderFindMany, deleteMany: mockFolderDeleteMany },
     share: { findMany: mockShareFindMany },
     reverseShare: { findMany: mockReverseShareFindMany, delete: mockReverseShareDelete },
     reverseShareFile: { findMany: mockReverseShareFileFindMany },
@@ -123,6 +124,7 @@ describe("DELETE /users/:id — audit PII redaction (integration)", () => {
     // purgeUserContent defaults: no content for the deleted user.
     mockFileFindMany.mockResolvedValue([]);
     mockFileDeleteMany.mockResolvedValue({ count: 0 });
+    mockFolderFindMany.mockResolvedValue([]);
     mockFolderDeleteMany.mockResolvedValue({ count: 0 });
     mockShareFindMany.mockResolvedValue([]);
     mockReverseShareFindMany.mockResolvedValue([]);
@@ -196,10 +198,13 @@ describe("DELETE /users/:id — audit PII redaction (integration)", () => {
     expect(res.statusCode).toBe(200);
   });
 
-  it("performs the full A8 cascade: deletes the user's shares and their files' S3 objects", async () => {
-    // The user owns one file (with an S3 object) and one share.
+  it("performs the full A8 cascade: deletes the user's shares and their files' & folders' S3 objects", async () => {
+    // The user owns one file (with an S3 object), one folder (with a placeholder
+    // S3 object), and one share.
     mockFileFindMany.mockResolvedValue([{ objectName: "user/victim-1/photo.jpg" }]);
     mockFileDeleteMany.mockResolvedValue({ count: 1 });
+    mockFolderFindMany.mockResolvedValue([{ objectName: "user/victim-1/album/.placeholder" }]);
+    mockFolderDeleteMany.mockResolvedValue({ count: 1 });
     mockShareFindMany.mockResolvedValue([{ id: "share-1" }]);
 
     const res = await app.inject({
@@ -218,8 +223,9 @@ describe("DELETE /users/:id — audit PII redaction (integration)", () => {
     });
     expect(mockTransaction).toHaveBeenCalled();
 
-    // The user's File S3 object is deleted so nothing dangles in storage.
+    // The user's File and Folder S3 objects are deleted so nothing dangles.
     expect(mockDeleteObject).toHaveBeenCalledWith("user/victim-1/photo.jpg");
+    expect(mockDeleteObject).toHaveBeenCalledWith("user/victim-1/album/.placeholder");
 
     // The user row itself is removed only after the purge.
     expect(mockUserDelete).toHaveBeenCalledWith({

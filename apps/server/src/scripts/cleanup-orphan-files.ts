@@ -34,16 +34,37 @@ async function main(): Promise<void> {
   console.log(`  min age: ${minAgeHours}h (objects/rows younger than this are protected)`);
 
   if (!confirm) {
+    console.log("\nDry run: previewing candidates (nothing will be deleted).");
+    const preview = await sweepOrphans({ minAgeHours, dryRun: true });
+
+    console.log("\nDB rows that WOULD be deleted (missing S3 object):");
+    if (preview.dbCandidates && preview.dbCandidates.length > 0) {
+      for (const c of preview.dbCandidates) {
+        console.log(`  [${c.table}] id=${c.id} object=${c.objectName}`);
+      }
+    } else {
+      console.log("  (none)");
+    }
+
+    console.log("\nS3 objects that WOULD be deleted (no DB row):");
+    if (preview.s3Candidates && preview.s3Candidates.length > 0) {
+      for (const key of preview.s3Candidates) {
+        console.log(`  ${key}`);
+      }
+    } else {
+      console.log("  (none)");
+    }
+
+    console.log(`\nTotals: ${preview.dbDeleted} DB row(s), ${preview.s3Deleted} S3 object(s).`);
     console.log(
-      "\nDry run: no objects or rows will be deleted. " +
-        "Re-run with --confirm to perform the sweep:\n" +
+      "\nRe-run with --confirm to perform the sweep:\n" +
         "  pnpm --filter ouitransfer-api cleanup:orphan-files:confirm",
     );
     return;
   }
 
   console.log("\nSweeping...");
-  const summary = await sweepOrphans({ minAgeHours });
+  const summary = await sweepOrphans({ minAgeHours, dryRun: false });
 
   console.log("\nDone:");
   console.log(`  DB rows deleted (missing S3 object):   ${summary.dbDeleted}`);

@@ -253,18 +253,90 @@ export async function cleanupExpiredShares(opts: {
  *
  * A share qualifies when `maxViews != null && views >= maxViews` and its last
  * activity (`lastDownloadedAt`, falling back to `updatedAt`) is older than
- * `inactiveDays`. Deletes the share link (link only), audits, and notifies the
- * creator with `share_auto_deleted` (reason "view limit reached").
+ * `inactiveDays`. Mirrors {@link cleanupExpiredShares}:
+ *
+ * - **Warn**: for maxViews-reached shares whose deletion moment
+ *   (`(lastDownloadedAt ?? updatedAt) + inactiveDays`) is within
+ *   `notifyDaysBefore` and that have not yet been warned, send a
+ *   `share_pending_deletion` email and set `notifiedForPendingDeletion` — but
+ *   only when the email was actually enqueued (spec A5: warn before A2–A4).
+ * - **Delete**: deletes the share link (link only), audits, and notifies the
+ *   creator with `share_auto_deleted` (reason "view limit reached").
  */
 export async function cleanupMaxViewsShares(opts: {
   inactiveDays: number;
+  notifyDaysBefore: number;
 }): Promise<CleanupSummary> {
-  const { inactiveDays } = opts;
+  const { inactiveDays, notifyDaysBefore } = opts;
   const summary = emptySummary();
   const now = new Date();
-  const inactiveBefore = new Date(now.getTime() - inactiveDays * ONE_DAY_MS);
+  const inactiveMs = inactiveDays * ONE_DAY_MS;
+  const inactiveBefore = new Date(now.getTime() - inactiveMs);
   const log = getLogger();
 
+  // The "last activity" anchor used for both the warn window and deletion is
+  // `lastDownloadedAt ?? updatedAt`. Deletion moment = anchor + inactiveDays.
+  const lastActivity = (share: { lastDownloadedAt: Date | null; updatedAt: Date }): Date =>
+    share.lastDownloadedAt ?? share.updatedAt;
+
+  // ── Warn phase ──
+  // We warn when the deletion moment is within notifyDaysBefore of now (and not
+  // yet reached), i.e. anchor ∈ (now - inactive, now - inactive + notifyDaysBefore].
+  if (notifyDaysBefore > 0) {
+    const warnLower = new Date(now.getTime() - inactiveMs);
+    const warnUpper = new Date(now.getTime() - inactiveMs + notifyDaysBefore * ONE_DAY_MS);
+
+    // `views >= maxViews` is a field-to-field comparison Prisma cannot express,
+    // so filter `maxViews != null` in SQL and apply it in JS below.
+    const warnCandidates = await prisma.share.findMany({
+      where: {
+        maxViews: { not: null },
+        notifiedForPendingDeletion: false,
+        creatorId: { not: null },
+        creator: { isActive: true },
+        OR: [
+          { lastDownloadedAt: { not: null, gt: warnLower, lte: warnUpper } },
+          { lastDownloadedAt: null, updatedAt: { gt: warnLower, lte: warnUpper } },
+        ],
+      },
+      include: { creator: { select: { id: true, email: true, locale: true } } },
+    });
+
+    for (const share of warnCandidates) {
+      if (share.maxViews === null || share.views < share.maxViews) continue;
+      if (!share.creator || !share.creatorId) continue;
+      try {
+        const deletionAt = new Date(lastActivity(share).getTime() + inactiveMs);
+        const shareManageUrl = await buildShareManageUrl(share.id);
+        const result = await emailService.send("share_pending_deletion", {
+          to: share.creator.email,
+          locale: share.creator.locale ?? "en",
+          userId: share.creatorId,
+          relatedId: share.id,
+          data: {
+            shareName: share.name ?? UNNAMED_SHARE,
+            deletionAt: deletionAt.toISOString(),
+            shareManageUrl,
+          },
+        });
+        if (result.enqueued) {
+          await prisma.share.update({
+            where: { id: share.id },
+            data: { notifiedForPendingDeletion: true },
+          });
+          summary.warned++;
+        }
+      } catch (err) {
+        summary.errors++;
+        log.error(
+          { err, shareId: share.id },
+          "Failed to warn for pending max-views share deletion",
+        );
+      }
+    }
+  }
+
+  // ── Delete phase ──
   // `views >= maxViews` cannot be expressed directly in a Prisma `where`
   // (field-to-field comparison), so filter `maxViews != null` in SQL and apply
   // the comparison in JS.
@@ -460,9 +532,9 @@ export interface PurgeUserContentResult {
  *     removes the `ReverseShareFile` rows (DB cascade) and best-effort deletes
  *     their S3 objects.
  *  4. Delete the user's `File` and `Folder` rows.
- *  5. Best-effort delete the collected `File` S3 objects. One failure is logged
- *     and counted but never aborts the rest — at most an orphaned S3 object
- *     remains, which the orphan sweep (A9) reclaims later.
+ *  5. Best-effort delete the collected `File` and `Folder` S3 objects. One
+ *     failure is logged and counted but never aborts the rest — at most an
+ *     orphaned S3 object remains, which the orphan sweep (A9) reclaims later.
  */
 export async function purgeUserContent(userId: string): Promise<PurgeUserContentResult> {
   const log = getLogger();
@@ -474,11 +546,15 @@ export async function purgeUserContent(userId: string): Promise<PurgeUserContent
     s3Errors: 0,
   };
 
-  // 1. Snapshot the user's File object names before deleting the rows.
-  const files = await prisma.file.findMany({
-    where: { userId },
-    select: { objectName: true },
-  });
+  // 1. Snapshot the user's File and Folder object names before deleting rows.
+  //    Both are real S3 keys (File.objectName, Folder.objectName).
+  const [files, folders] = await Promise.all([
+    prisma.file.findMany({ where: { userId }, select: { objectName: true } }),
+    prisma.folder.findMany({
+      where: { userId },
+      select: { objectName: true },
+    }),
+  ]);
 
   // 2. Delete the user's shares (link only). Done explicitly so the SetNull FK
   //    never orphans them when the user row is later removed.
@@ -507,7 +583,7 @@ export async function purgeUserContent(userId: string): Promise<PurgeUserContent
   const deletedFolders = await prisma.folder.deleteMany({ where: { userId } });
   result.folders = deletedFolders.count;
 
-  // 5. Best-effort delete the File S3 objects (DB-before-S3).
+  // 5. Best-effort delete the File and Folder S3 objects (DB-before-S3).
   for (const file of files) {
     try {
       await storageProvider.deleteObject(file.objectName);
@@ -516,6 +592,18 @@ export async function purgeUserContent(userId: string): Promise<PurgeUserContent
       log.error(
         { err, userId, objectName: file.objectName },
         "Failed to delete user File S3 object during purge",
+      );
+    }
+  }
+  for (const folder of folders) {
+    if (!folder.objectName) continue;
+    try {
+      await storageProvider.deleteObject(folder.objectName);
+    } catch (err) {
+      result.s3Errors++;
+      log.error(
+        { err, userId, objectName: folder.objectName },
+        "Failed to delete user Folder S3 object during purge",
       );
     }
   }
@@ -606,12 +694,22 @@ export async function cleanupDeactivatedAccounts(opts: {
 
 /** Outcome of a bidirectional orphan sweep. */
 export interface OrphanSweepSummary {
-  /** DB rows removed because their S3 object was missing. */
+  /** DB rows removed because their S3 object was missing (count actually deleted, or candidate count in a dry run). */
   dbDeleted: number;
-  /** S3 objects removed because no DB row references them. */
+  /** S3 objects removed because no DB row references them (count actually deleted, or candidate count in a dry run). */
   s3Deleted: number;
   /** Per-item failures (DB or S3); one failure never aborts the sweep. */
   errors: number;
+  /**
+   * Dry-run only: the identifiers of the DB rows that *would* be deleted
+   * (their S3 object is missing). One entry per candidate row.
+   */
+  dbCandidates?: Array<{ table: "file" | "reverse_share_file"; id: string; objectName: string }>;
+  /**
+   * Dry-run only: the S3 object keys that *would* be deleted (no referencing
+   * DB row, older than the cutoff).
+   */
+  s3Candidates?: string[];
 }
 
 /**
@@ -629,11 +727,22 @@ export interface OrphanSweepSummary {
  * and an `ORPHAN_DB_DELETED` audit event is logged.
  *
  * **S3 → DB**: every object in the bucket is listed once; an in-memory set of
- * all known `objectName`s is built from both tables. Any object older than the
- * cutoff whose key is **not** in that set is deleted and an `ORPHAN_S3_DELETED`
- * audit event is logged. Building the known-keys set from the DB up front
- * guarantees an object referenced by *any* row — in either table — is never
- * deleted (correctness-critical: the set is the union of both tables' keys).
+ * all known `objectName`s is built from **every** S3-key-bearing table. Any
+ * object older than the cutoff whose key is **not** in that set is deleted and
+ * an `ORPHAN_S3_DELETED` audit event is logged. Building the known-keys set
+ * from the DB up front guarantees an object referenced by *any* row — in any of
+ * those tables — is never deleted (correctness-critical).
+ *
+ * **Known-keys registry (S3-owning tables).** `listObjects()` enumerates the
+ * **whole** bucket with no prefix, so the known-keys union MUST include every
+ * table that stores an S3 object key, or those objects will be wrongly swept as
+ * orphans. The complete registry is:
+ *   - `File.objectName`            (file-manager files, `<userId>/...`)
+ *   - `ReverseShareFile.objectName`(reverse-share uploads, `reverse-shares/...`)
+ *   - `Folder.objectName`          (folder placeholder objects)
+ *   - `BackgroundImage.s3Key`      (`backgrounds/<id>.webp`)
+ *   - `BackgroundImage.thumbnailS3Key` (`backgrounds/<id>_thumb.webp`)
+ * Any future table that persists an S3 key MUST be added here.
  *
  * Scale note (Phase A): the known-keys set is held entirely in memory. For the
  * self-hosted, single-tenant target this is more than sufficient; a future
@@ -643,15 +752,25 @@ export interface OrphanSweepSummary {
  * Every deletion is wrapped so a single failure increments `errors` without
  * aborting the sweep.
  *
+ * When `dryRun` is true nothing is deleted and no audit events are emitted: the
+ * summary's `dbDeleted`/`s3Deleted` report the candidate counts and
+ * `dbCandidates`/`s3Candidates` list the identifiers that *would* be removed.
+ *
  * This function does **not** check `autoCleanupOrphansEnabled` — that opt-in
  * gate is enforced by the scheduler (Batch 6), which also supplies
  * `minAgeHours` from `autoCleanupOrphanMinAgeHours`.
  */
-export async function sweepOrphans(opts: { minAgeHours: number }): Promise<OrphanSweepSummary> {
-  const { minAgeHours } = opts;
+export async function sweepOrphans(opts: {
+  minAgeHours: number;
+  dryRun?: boolean;
+}): Promise<OrphanSweepSummary> {
+  const { minAgeHours, dryRun = false } = opts;
   const summary: OrphanSweepSummary = { dbDeleted: 0, s3Deleted: 0, errors: 0 };
   const log = getLogger();
   const cutoff = new Date(Date.now() - minAgeHours * ONE_HOUR_MS);
+
+  const dbCandidates: NonNullable<OrphanSweepSummary["dbCandidates"]> = [];
+  const s3Candidates: string[] = [];
 
   // ── DB → S3: rows whose S3 object is missing ──
   const files = await prisma.file.findMany({
@@ -661,6 +780,11 @@ export async function sweepOrphans(opts: { minAgeHours: number }): Promise<Orpha
   for (const file of files) {
     try {
       if (await storageProvider.fileExists(file.objectName)) continue;
+      if (dryRun) {
+        dbCandidates.push({ table: "file", id: file.id, objectName: file.objectName });
+        summary.dbDeleted++;
+        continue;
+      }
       await prisma.file.delete({ where: { id: file.id } });
       summary.dbDeleted++;
       await logAuditEvent({
@@ -681,19 +805,30 @@ export async function sweepOrphans(opts: { minAgeHours: number }): Promise<Orpha
 
   const reverseShareFiles = await prisma.reverseShareFile.findMany({
     where: { createdAt: { lt: cutoff } },
-    select: { id: true, objectName: true },
+    select: { id: true, objectName: true, reverseShareId: true },
   });
   for (const rsFile of reverseShareFiles) {
     try {
       if (await storageProvider.fileExists(rsFile.objectName)) continue;
+      if (dryRun) {
+        dbCandidates.push({
+          table: "reverse_share_file",
+          id: rsFile.id,
+          objectName: rsFile.objectName,
+        });
+        summary.dbDeleted++;
+        continue;
+      }
       await prisma.reverseShareFile.delete({ where: { id: rsFile.id } });
       summary.dbDeleted++;
       await logAuditEvent({
         action: "ORPHAN_DB_DELETED",
         ipAddress: SYSTEM_IP,
+        // No `reverse_share_file` audit target type exists; point at the parent
+        // reverse share (which resolves) and keep the file id + key in metadata.
         targetType: "reverse_share",
-        targetId: rsFile.id,
-        metadata: { objectName: rsFile.objectName },
+        targetId: rsFile.reverseShareId,
+        metadata: { fileId: rsFile.id, objectName: rsFile.objectName },
       });
     } catch (err) {
       summary.errors++;
@@ -705,24 +840,39 @@ export async function sweepOrphans(opts: { minAgeHours: number }): Promise<Orpha
   }
 
   // ── S3 → DB: objects with no referencing row ──
-  // Build the union of every known object key from BOTH tables first, so an
-  // object referenced by any row is never deleted. The DB rows are re-read here
-  // (rather than reusing the lists above) because the DB→S3 phase may have
-  // removed some, and so that rows created after the cutoff — which we did not
-  // sweep — still protect their objects.
-  const [allFiles, allReverseShareFiles] = await Promise.all([
+  // Build the union of every known object key from EVERY S3-key-bearing table
+  // first (see the registry in the doc comment above), so an object referenced
+  // by any row is never deleted. The DB rows are re-read here (rather than
+  // reusing the lists above) because the DB→S3 phase may have removed some, and
+  // so that rows created after the cutoff — which we did not sweep — still
+  // protect their objects.
+  const [allFiles, allReverseShareFiles, allFolders, allBackgrounds] = await Promise.all([
     prisma.file.findMany({ select: { objectName: true } }),
     prisma.reverseShareFile.findMany({ select: { objectName: true } }),
+    prisma.folder.findMany({ select: { objectName: true } }),
+    prisma.backgroundImage.findMany({ select: { s3Key: true, thumbnailS3Key: true } }),
   ]);
   const knownKeys = new Set<string>();
   for (const f of allFiles) knownKeys.add(f.objectName);
   for (const f of allReverseShareFiles) knownKeys.add(f.objectName);
+  for (const folder of allFolders) {
+    if (folder.objectName) knownKeys.add(folder.objectName);
+  }
+  for (const bg of allBackgrounds) {
+    if (bg.s3Key) knownKeys.add(bg.s3Key);
+    if (bg.thumbnailS3Key) knownKeys.add(bg.thumbnailS3Key);
+  }
 
   const objects = await storageProvider.listObjects();
   for (const object of objects) {
     if (object.lastModified >= cutoff) continue;
     if (knownKeys.has(object.key)) continue;
     try {
+      if (dryRun) {
+        s3Candidates.push(object.key);
+        summary.s3Deleted++;
+        continue;
+      }
       await storageProvider.deleteObject(object.key);
       summary.s3Deleted++;
       await logAuditEvent({
@@ -734,6 +884,11 @@ export async function sweepOrphans(opts: { minAgeHours: number }): Promise<Orpha
       summary.errors++;
       log.error({ err, key: object.key }, "Failed to sweep orphan S3 object");
     }
+  }
+
+  if (dryRun) {
+    summary.dbCandidates = dbCandidates;
+    summary.s3Candidates = s3Candidates;
   }
 
   return summary;
