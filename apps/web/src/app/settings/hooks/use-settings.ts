@@ -29,8 +29,38 @@ function isValidAuditRetention(raw: string): boolean {
   return Number.isInteger(parsed) && parsed >= 0 && (parsed === 0 || parsed >= 7);
 }
 
-const createSchemas = (t: TranslateFn) => ({
-  settingsSchema: z
+/**
+ * Returns true when `raw` is a whole number `>= min`, mirroring the server-side
+ * `intMin` validator in config-validation.ts (rejects empty/whitespace and
+ * non-integer input). Used for the 5.2 cleanup numeric config keys.
+ */
+export function isValidIntMin(raw: string, min: number): boolean {
+  const value = raw.trim();
+  if (value === "") return false;
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed >= min;
+}
+
+/**
+ * Minimum bound for each integer cleanup config key, mirroring the server-side
+ * bounds in `modules/config/config-validation.ts`. Boolean toggles are not
+ * listed (the Switch widget can only emit "true"/"false").
+ */
+export const CLEANUP_INT_BOUNDS: Record<string, number> = {
+  autoCleanupIntervalHours: 1,
+  autoCleanupGracePeriodDays: 0,
+  autoCleanupNotifyDaysBefore: 0,
+  maxViewsCleanupDays: 1,
+  accountDeactivationCleanupDays: 1,
+  autoCleanupOrphanMinAgeHours: 1,
+};
+
+/**
+ * Builds the settings form schema. Exported so component/unit tests can exercise
+ * the exact validation the page uses (audit retention + the 5.2 cleanup bounds).
+ */
+export const createSettingsSchema = (t: TranslateFn) =>
+  z
     .object({
       configs: z.record(z.string()),
     })
@@ -43,7 +73,21 @@ const createSchemas = (t: TranslateFn) => ({
           message: t("settings.errors.auditRetentionInvalid"),
         });
       }
-    }),
+
+      for (const [key, min] of Object.entries(CLEANUP_INT_BOUNDS)) {
+        const value = data.configs[key];
+        if (value !== undefined && !isValidIntMin(value, min)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["configs", key],
+            message: t("settings.errors.cleanupValueInvalid", { min }),
+          });
+        }
+      }
+    });
+
+const createSchemas = (t: TranslateFn) => ({
+  settingsSchema: createSettingsSchema(t),
 });
 
 export function useSettings() {
@@ -57,6 +101,7 @@ export function useSettings() {
     email: true,
     security: true,
     storage: true,
+    cleanup: true,
   });
   const { refreshAppInfo } = useAppInfo();
   const queryClient = useQueryClient();
@@ -73,6 +118,7 @@ export function useSettings() {
   const emailForm = useForm<GroupFormData>({ resolver: zodResolver(settingsSchema) });
   const securityForm = useForm<GroupFormData>({ resolver: zodResolver(settingsSchema) });
   const storageForm = useForm<GroupFormData>({ resolver: zodResolver(settingsSchema) });
+  const cleanupForm = useForm<GroupFormData>({ resolver: zodResolver(settingsSchema) });
 
   const groupForms = useMemo(
     () => ({
@@ -80,8 +126,9 @@ export function useSettings() {
       email: emailForm,
       security: securityForm,
       storage: storageForm,
+      cleanup: cleanupForm,
     }),
-    [generalForm, emailForm, securityForm, storageForm],
+    [generalForm, emailForm, securityForm, storageForm, cleanupForm],
   );
 
   type ValidGroup = keyof typeof groupForms;
@@ -137,6 +184,31 @@ export function useSettings() {
             if (b.key === "authProvidersEnabled") return 1;
           }
 
+          if (group === "cleanup") {
+            // Logical order: master toggle → its thresholds → account-cleanup
+            // toggle + delay → orphan toggle + min-age.
+            const cleanupOrder = [
+              "autoCleanupEnabled",
+              "autoCleanupIntervalHours",
+              "autoCleanupGracePeriodDays",
+              "autoCleanupNotifyDaysBefore",
+              "maxViewsCleanupDays",
+              "accountDeactivationCleanupEnabled",
+              "accountDeactivationCleanupDays",
+              "autoCleanupOrphansEnabled",
+              "autoCleanupOrphanMinAgeHours",
+            ];
+
+            const aIndex = cleanupOrder.indexOf(a.key);
+            const bIndex = cleanupOrder.indexOf(b.key);
+
+            if (aIndex !== -1 && bIndex !== -1) {
+              return aIndex - bIndex;
+            }
+            if (aIndex !== -1) return -1;
+            if (bIndex !== -1) return 1;
+          }
+
           return a.key.localeCompare(b.key);
         });
 
@@ -155,7 +227,8 @@ export function useSettings() {
           groupName === "general" ||
           groupName === "email" ||
           groupName === "security" ||
-          groupName === "storage"
+          groupName === "storage" ||
+          groupName === "cleanup"
         ) {
           const group = groupName as ValidGroup;
           const groupConfigData = groupConfigs.reduce(
@@ -215,6 +288,16 @@ export function useSettings() {
         apiError.details?.key === "auditRetentionDays"
       ) {
         toast.error(t("settings.errors.auditRetentionInvalid"));
+      } else if (
+        apiError.code === ErrorCodes.VALIDATION_ERROR &&
+        typeof apiError.details?.key === "string" &&
+        apiError.details.key in CLEANUP_INT_BOUNDS
+      ) {
+        toast.error(
+          t("settings.errors.cleanupValueInvalid", {
+            min: CLEANUP_INT_BOUNDS[apiError.details.key as string],
+          }),
+        );
       } else if (
         apiError.code === ErrorCodes.VALIDATION_ERROR &&
         (apiError.message.includes("password authentication") ||

@@ -12,7 +12,14 @@ import { BackgroundImageManager } from "./background-image-manager";
 import { EmailAdminSection } from "./email-admin-section";
 import { SettingsGroup } from "./settings-group";
 
-const GROUP_ORDER: string[] = ["general", "email", "auth-providers", "security", "storage"];
+const GROUP_ORDER: string[] = [
+  "general",
+  "email",
+  "auth-providers",
+  "security",
+  "storage",
+  "cleanup",
+];
 
 export function SettingsForm({
   groupedConfigs,

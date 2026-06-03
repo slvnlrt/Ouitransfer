@@ -1,4 +1,4 @@
-import { Database, ImagePlus, Mail, Settings, Shield, UserCheck } from "lucide-react";
+import { Database, ImagePlus, Mail, Settings, Shield, Trash2, UserCheck } from "lucide-react";
 import type { createTranslator } from "next-intl";
 
 export const createGroupMetadata = (t: ReturnType<typeof createTranslator>) => ({
@@ -31,6 +31,11 @@ export const createGroupMetadata = (t: ReturnType<typeof createTranslator>) => (
     title: t("settings.groups.backgrounds.title"),
     description: t("settings.groups.backgrounds.description"),
     icon: ImagePlus,
+  },
+  cleanup: {
+    title: t("settings.groups.cleanup.title"),
+    description: t("settings.groups.cleanup.description"),
+    icon: Trash2,
   },
 });
 
@@ -73,4 +78,17 @@ export const createFieldDescriptions = (t: ReturnType<typeof createTranslator>) 
   // Storage settings
   maxFileSize: t("settings.fields.maxFileSize.description"),
   maxTotalStoragePerUser: t("settings.fields.maxTotalStoragePerUser.description"),
+
+  // Cleanup / lifecycle settings (5.2)
+  autoCleanupEnabled: t("settings.fields.autoCleanupEnabled.description"),
+  autoCleanupIntervalHours: t("settings.fields.autoCleanupIntervalHours.description"),
+  autoCleanupGracePeriodDays: t("settings.fields.autoCleanupGracePeriodDays.description"),
+  autoCleanupNotifyDaysBefore: t("settings.fields.autoCleanupNotifyDaysBefore.description"),
+  maxViewsCleanupDays: t("settings.fields.maxViewsCleanupDays.description"),
+  accountDeactivationCleanupEnabled: t(
+    "settings.fields.accountDeactivationCleanupEnabled.description",
+  ),
+  accountDeactivationCleanupDays: t("settings.fields.accountDeactivationCleanupDays.description"),
+  autoCleanupOrphansEnabled: t("settings.fields.autoCleanupOrphansEnabled.description"),
+  autoCleanupOrphanMinAgeHours: t("settings.fields.autoCleanupOrphanMinAgeHours.description"),
 });
