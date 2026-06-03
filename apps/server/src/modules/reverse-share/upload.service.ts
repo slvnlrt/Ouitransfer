@@ -12,6 +12,7 @@ import { logAuditEvent } from "../audit/service.js";
 import { emailService } from "../email/service.js";
 import { FileService } from "../file/service.js";
 import { quotaService } from "../quota/service.js";
+import { assertOwnerActive } from "./assert-owner-active.js";
 import type { UploadToReverseShareInput } from "./dto.js";
 import { ReverseShareRepository } from "./repository.js";
 
@@ -49,6 +50,9 @@ export class ReverseShareUploadService {
     if (!reverseShare.isActive) {
       throw new AppError(403, "Reverse share is inactive", ErrorCodes.SHARE_INACTIVE);
     }
+
+    // A6 deactivated-owner gate (single source of truth in assert-owner-active).
+    assertOwnerActive(reverseShare);
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
       throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
@@ -104,6 +108,9 @@ export class ReverseShareUploadService {
       throw new AppError(403, "Reverse share is inactive", ErrorCodes.SHARE_INACTIVE);
     }
 
+    // A6 deactivated-owner gate (single source of truth in assert-owner-active).
+    assertOwnerActive(reverseShare);
+
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
       throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
     }
@@ -158,6 +165,9 @@ export class ReverseShareUploadService {
     if (!reverseShare.isActive) {
       throw new AppError(403, "Reverse share is inactive", ErrorCodes.SHARE_INACTIVE);
     }
+
+    // A6 deactivated-owner gate (single source of truth in assert-owner-active).
+    assertOwnerActive(reverseShare);
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
       throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
@@ -245,6 +255,9 @@ export class ReverseShareUploadService {
     if (!reverseShare.isActive) {
       throw new AppError(403, "Reverse share is inactive", ErrorCodes.SHARE_INACTIVE);
     }
+
+    // A6 deactivated-owner gate (single source of truth in assert-owner-active).
+    assertOwnerActive(reverseShare);
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
       throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);

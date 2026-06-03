@@ -4,6 +4,7 @@ import { prisma } from "../../shared/prisma.js";
 import { AppError, ConflictError, ForbiddenError, NotFoundError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { FileService } from "../file/service.js";
+import { assertOwnerActive } from "./assert-owner-active.js";
 import {
   type CreateReverseShareInput,
   ReverseShareResponseSchema,
@@ -94,13 +95,8 @@ export class ReverseShareService {
       throw new AppError(403, "Reverse share is inactive", ErrorCodes.SHARE_INACTIVE);
     }
 
-    // Block external access/upload when the owner's account is deactivated. This
-    // is a read-time gate derived from `creator.isActive`, so it auto-reverses
-    // when the account is reactivated (no stored flag). Mirrors the regular-share
-    // A6 gate in share/service.ts.
-    if (reverseShare.creator && reverseShare.creator.isActive === false) {
-      throw new AppError(403, "Reverse share owner is inactive", ErrorCodes.OWNER_INACTIVE);
-    }
+    // A6 deactivated-owner gate (single source of truth in assert-owner-active).
+    assertOwnerActive(reverseShare);
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
       throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
@@ -147,11 +143,8 @@ export class ReverseShareService {
       throw new AppError(403, "Reverse share is inactive", ErrorCodes.SHARE_INACTIVE);
     }
 
-    // Block external access/upload when the owner's account is deactivated (see
-    // the by-id path above for rationale).
-    if (reverseShare.creator && reverseShare.creator.isActive === false) {
-      throw new AppError(403, "Reverse share owner is inactive", ErrorCodes.OWNER_INACTIVE);
-    }
+    // A6 deactivated-owner gate (single source of truth in assert-owner-active).
+    assertOwnerActive(reverseShare);
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
       throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);

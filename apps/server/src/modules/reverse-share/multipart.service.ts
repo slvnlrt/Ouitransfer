@@ -4,6 +4,7 @@ import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import { env } from "../../env.js";
 import { AppError, NotFoundError } from "../../utils/app-error.js";
 import { FileService } from "../file/service.js";
+import { assertOwnerActive } from "./assert-owner-active.js";
 import { ReverseShareRepository } from "./repository.js";
 
 export class ReverseShareMultipartService {
@@ -20,6 +21,9 @@ export class ReverseShareMultipartService {
     if (!reverseShare.isActive) {
       throw new AppError(403, "Reverse share is inactive", ErrorCodes.SHARE_INACTIVE);
     }
+
+    // A6 deactivated-owner gate (single source of truth in assert-owner-active).
+    assertOwnerActive(reverseShare);
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
       throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
