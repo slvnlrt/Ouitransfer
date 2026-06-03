@@ -5,6 +5,7 @@ import {
   DeleteObjectCommand,
   GetObjectCommand,
   HeadObjectCommand,
+  ListObjectsV2Command,
   ListPartsCommand,
   PutObjectCommand,
   UploadPartCommand,
@@ -344,5 +345,46 @@ export class S3StorageProvider implements StorageProvider {
     } while (partNumberMarker !== undefined);
 
     return allParts;
+  }
+
+  /**
+   * List every object in the bucket (optionally under `prefix`).
+   *
+   * S3 `ListObjectsV2` returns at most 1000 keys per call, so we loop on the
+   * `ContinuationToken` until `IsTruncated` is false, concatenating each page's
+   * `Contents`. An empty bucket yields an empty array. Each entry exposes the
+   * key, byte size, and last-modified timestamp — enough for the orphan sweep
+   * to reconcile S3 against the database and apply its min-age guard.
+   */
+  async listObjects(
+    prefix?: string,
+  ): Promise<Array<{ key: string; size: number; lastModified: Date }>> {
+    const client = this.ensureClient();
+    const objects: Array<{ key: string; size: number; lastModified: Date }> = [];
+    let continuationToken: string | undefined;
+
+    do {
+      const command = new ListObjectsV2Command({
+        Bucket: bucketName,
+        ...(prefix !== undefined && { Prefix: prefix }),
+        ...(continuationToken !== undefined && { ContinuationToken: continuationToken }),
+      });
+
+      const response = await client.send(command);
+
+      for (const object of response.Contents ?? []) {
+        if (object.Key != null) {
+          objects.push({
+            key: object.Key,
+            size: object.Size ?? 0,
+            lastModified: object.LastModified ?? new Date(0),
+          });
+        }
+      }
+
+      continuationToken = response.IsTruncated ? response.NextContinuationToken : undefined;
+    } while (continuationToken !== undefined);
+
+    return objects;
   }
 }

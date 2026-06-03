@@ -24,6 +24,9 @@ export interface StorageProvider {
     objectName: string,
     uploadId: string,
   ): Promise<Array<{ PartNumber: number; Size: number; ETag: string }>>;
+
+  // Bucket enumeration (orphan sweep)
+  listObjects(prefix?: string): Promise<Array<{ key: string; size: number; lastModified: Date }>>;
 }
 
 export interface StorageConfig {
