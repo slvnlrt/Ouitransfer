@@ -1,6 +1,8 @@
 import { prisma } from "../../shared/prisma.js";
 import { NotFoundError } from "../../utils/app-error.js";
+import { getLogger } from "../../utils/logger.js";
 import { getConfigValue } from "../config/service.js";
+import { emailService } from "../email/service.js";
 import { type DeletionCandidateFile, QuotaRepository } from "./repository.js";
 
 export type WarningLevel = "none" | "warning" | "critical" | "exceeded";
@@ -299,6 +301,166 @@ export class QuotaService {
     const inactive = await this.repository.findInactiveShareFiles(userId, inactiveBefore);
     take(inactive);
     return selected;
+  }
+
+  // ─── B1 threshold warnings (event-driven) ─────────────────────────────────
+
+  /**
+   * Evaluate a user's storage usage after an upload register and notify them
+   * the first time usage **crosses** a configured warning threshold upward
+   * (5.2 Phase B B1). Centralizes the dedup + re-arm bookkeeping so any path
+   * that changes a user's usage (direct file register, reverse-share register,
+   * and later the smart-deletion sweep) gets consistent behavior.
+   *
+   * Behavior:
+   * - Unlimited limit (`0n`) ⇒ no-op (no thresholds, no exceeded state).
+   * - Computes the highest threshold newly crossed via
+   *   {@link highestCrossedThreshold}. A warning fires only when that crossed
+   *   threshold is **higher** than the stored `quotaLastWarnedThreshold`
+   *   (dedup) — so repeated uploads in the same band never re-spam.
+   * - `>= 100%`: enqueues `quota_exceeded` to the owner (with the configured
+   *   `gracePeriodDays`) and, when the user **transitions** into the exceeded
+   *   state (`quotaExceededSince` was null), also alerts admins via
+   *   `admin_quota_alert`. `quotaExceededSince` is set iff currently null.
+   * - sub-100% crossing: enqueues `quota_warning` to the owner.
+   * - **Re-arm**: when `newUsed` drops below the lowest threshold boundary,
+   *   `quotaLastWarnedThreshold` is reset to null; when `newUsed < limit`,
+   *   `quotaExceededSince` is cleared. These keep the Batch 3 grace clock
+   *   (`quotaExceededSince`) correct: it is SET on the first crossing into
+   *   ≥100% and CLEARED as soon as usage is back under the limit.
+   *
+   * **No-throw / fire-and-forget contract**: this never throws into the upload
+   * path. All errors are caught and logged. Callers invoke it without awaiting
+   * (or with a `.catch`) so it never blocks the upload response.
+   *
+   * @param userId  The owner whose quota is being evaluated.
+   * @param usage   `{ oldUsed, newUsed }` byte counts around the upload. When
+   *   the caller only knows the size delta, pass `oldUsed = newUsed - size`.
+   */
+  async evaluateAndNotifyQuota(
+    userId: string,
+    usage: { oldUsed: bigint; newUsed: bigint },
+  ): Promise<void> {
+    const log = getLogger();
+    try {
+      const { oldUsed, newUsed } = usage;
+
+      const limits = await this.resolveEffectiveLimits(userId);
+      const limit = limits.maxTotalStorage;
+      // Unlimited ⇒ nothing to warn about; also clear any stale state defensively.
+      if (limit <= 0n) return;
+
+      const thresholdsCsv = await getConfigValue("quotaWarningThresholds");
+      const thresholds = this.parseThresholds(thresholdsCsv);
+
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          email: true,
+          locale: true,
+          firstName: true,
+          lastName: true,
+          isActive: true,
+          quotaLastWarnedThreshold: true,
+          quotaExceededSince: true,
+        },
+      });
+      if (!user) return;
+
+      // Re-arm bookkeeping (independent of any new crossing).
+      const updates: {
+        quotaLastWarnedThreshold?: number | null;
+        quotaExceededSince?: Date | null;
+      } = {};
+      const lowestBoundary =
+        thresholds.length > 0 ? this.thresholdBoundary(thresholds[0]!, limit) : null;
+      // Drop below the lowest threshold ⇒ re-arm the warning dedup.
+      if (
+        lowestBoundary !== null &&
+        newUsed < lowestBoundary &&
+        user.quotaLastWarnedThreshold !== null
+      ) {
+        updates.quotaLastWarnedThreshold = null;
+      }
+      // Back under the hard limit ⇒ clear the exceeded grace clock.
+      if (newUsed < limit && user.quotaExceededSince !== null) {
+        updates.quotaExceededSince = null;
+      }
+
+      const crossed = this.highestCrossedThreshold(oldUsed, newUsed, limit, thresholds);
+      const exceeded = newUsed >= limit;
+      const transitionsIntoExceeded = exceeded && user.quotaExceededSince === null;
+
+      // A warning/exceeded email fires only when the newly-crossed threshold is
+      // strictly higher than the one we last warned about (dedup), OR when the
+      // user transitions into the exceeded state for the first time.
+      const lastWarned = user.quotaLastWarnedThreshold;
+      const shouldNotify = crossed !== null && (lastWarned === null || crossed > lastWarned);
+
+      if (shouldNotify) {
+        updates.quotaLastWarnedThreshold = crossed;
+      }
+      if (transitionsIntoExceeded) {
+        updates.quotaExceededSince = new Date();
+      }
+
+      // Persist state first so the grace clock / dedup are durable even if the
+      // (best-effort) notifications below fail.
+      if (Object.keys(updates).length > 0) {
+        await prisma.user.update({ where: { id: userId }, data: updates });
+      }
+
+      // Skip emails for deactivated accounts (consistent with other notifiers),
+      // but the state updates above still apply.
+      if (user.isActive === false) return;
+
+      const usedBytes = Number(newUsed);
+      const maxBytes = Number(limit);
+      const usedPercent = Math.max(1, Math.round((Number(newUsed) / Number(limit)) * 100));
+
+      if (shouldNotify && exceeded) {
+        const gracePeriodDays = await this.resolveGracePeriodDays();
+        await emailService.send("quota_exceeded", {
+          to: user.email,
+          locale: user.locale ?? "en",
+          userId,
+          data: { usedBytes, maxBytes, gracePeriodDays },
+        });
+      } else if (shouldNotify) {
+        await emailService.send("quota_warning", {
+          to: user.email,
+          locale: user.locale ?? "en",
+          userId,
+          data: { usedPercent, usedBytes, maxBytes },
+        });
+      }
+
+      // Alert admins only on the transition into exceeded — deduped by the same
+      // quotaExceededSince set-iff-null gate, so it never spams per upload.
+      if (transitionsIntoExceeded) {
+        const userName = `${user.firstName} ${user.lastName}`.trim();
+        await emailService.sendToAdmins("admin_quota_alert", {
+          userName: userName || user.email,
+          userEmail: user.email,
+          usedPercent,
+          usedBytes,
+          maxBytes,
+        });
+      }
+    } catch (err) {
+      log.error({ err, userId }, "evaluateAndNotifyQuota failed (non-fatal)");
+    }
+  }
+
+  /** Read `quotaGracePeriodDays` (≥ 0); fall back to 7 if unset/invalid. */
+  private async resolveGracePeriodDays(): Promise<number> {
+    try {
+      const raw = await getConfigValue("quotaGracePeriodDays");
+      const n = Number(raw);
+      return Number.isFinite(n) && n >= 0 ? Math.trunc(n) : 7;
+    } catch {
+      return 7;
+    }
   }
 }
 
