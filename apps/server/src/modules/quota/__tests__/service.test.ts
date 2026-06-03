@@ -4,7 +4,7 @@ vi.mock("../../../shared/prisma.js", () => ({
   prisma: {
     file: { aggregate: vi.fn() },
     reverseShareFile: { aggregate: vi.fn() },
-    user: { findUnique: vi.fn() },
+    user: { findUnique: vi.fn(), update: vi.fn() },
   },
 }));
 
@@ -12,9 +12,27 @@ vi.mock("../../config/service.js", () => ({
   getConfigValue: vi.fn(),
 }));
 
+vi.mock("../../email/service.js", () => ({
+  emailService: {
+    send: vi.fn().mockResolvedValue({ enqueued: true }),
+    sendToAdmins: vi.fn().mockResolvedValue({ enqueued: true }),
+  },
+}));
+
+vi.mock("../../../utils/logger.js", () => ({
+  setLogger: vi.fn(),
+  getLogger: vi.fn(() => ({
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
+  })),
+}));
+
 import { prisma } from "../../../shared/prisma.js";
 import { NotFoundError } from "../../../utils/app-error.js";
 import { getConfigValue } from "../../config/service.js";
+import { emailService } from "../../email/service.js";
 import { QuotaRepository } from "../repository.js";
 import { QuotaService } from "../service.js";
 
@@ -710,5 +728,210 @@ describe("QuotaService.pickDeletionCandidates", () => {
 
     const expectedCutoff = new Date("2026-05-04T00:00:00.000Z");
     expect(findInactive).toHaveBeenCalledWith("user-1", expectedCutoff);
+  });
+});
+
+// ─── QuotaService.evaluateAndNotifyQuota ────────────────────────────────────
+
+describe("QuotaService.evaluateAndNotifyQuota", () => {
+  let service: QuotaService;
+
+  // Limit 1000n via a per-user override → boundaries: 80% = 800, 90% = 900,
+  // 100% = 1000. The merged user record satisfies BOTH findUnique selects
+  // (resolveEffectiveLimits + the warning state read).
+  const LIMIT = 1000n;
+
+  function mockUser(state: {
+    quotaLastWarnedThreshold: number | null;
+    quotaExceededSince: Date | null;
+    isActive?: boolean;
+    limit?: bigint;
+  }) {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      // resolveEffectiveLimits select
+      isAdmin: false,
+      maxFileSizeOverride: 0n,
+      maxTotalStorageOverride: state.limit ?? LIMIT,
+      group: null,
+      // warning-state select
+      email: "owner@example.com",
+      locale: "en",
+      firstName: "Owner",
+      lastName: "User",
+      isActive: state.isActive ?? true,
+      quotaLastWarnedThreshold: state.quotaLastWarnedThreshold,
+      quotaExceededSince: state.quotaExceededSince,
+    } as never);
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    service = new QuotaService();
+    vi.mocked(getConfigValue).mockImplementation(async (key: string) => {
+      if (key === "quotaWarningThresholds") return "80,90";
+      if (key === "quotaGracePeriodDays") return "7";
+      throw new Error(`Unknown config key: ${key}`);
+    });
+    vi.mocked(prisma.user.update).mockResolvedValue({} as never);
+  });
+
+  it("no-ops for an unlimited (0n) owner — no email, no state write", async () => {
+    mockUser({ quotaLastWarnedThreshold: null, quotaExceededSince: null, limit: 0n });
+
+    await service.evaluateAndNotifyQuota("user-1", { oldUsed: 0n, newUsed: 10_000n });
+
+    expect(emailService.send).not.toHaveBeenCalled();
+    expect(emailService.sendToAdmins).not.toHaveBeenCalled();
+    expect(prisma.user.update).not.toHaveBeenCalled();
+  });
+
+  it("crossing 80% sends ONE quota_warning and stores the threshold", async () => {
+    mockUser({ quotaLastWarnedThreshold: null, quotaExceededSince: null });
+
+    // 750 → 850 crosses the 80% boundary (800).
+    await service.evaluateAndNotifyQuota("user-1", { oldUsed: 750n, newUsed: 850n });
+
+    expect(emailService.send).toHaveBeenCalledTimes(1);
+    expect(emailService.send).toHaveBeenCalledWith(
+      "quota_warning",
+      expect.objectContaining({
+        to: "owner@example.com",
+        data: expect.objectContaining({ usedPercent: 85 }),
+      }),
+    );
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: "user-1" },
+      data: { quotaLastWarnedThreshold: 80 },
+    });
+    expect(emailService.sendToAdmins).not.toHaveBeenCalled();
+  });
+
+  it("a second upload still in the 80–90 band does NOT re-send (dedup)", async () => {
+    // lastWarned already 80; 850 → 880 stays under the 90% boundary (900).
+    mockUser({ quotaLastWarnedThreshold: 80, quotaExceededSince: null });
+
+    await service.evaluateAndNotifyQuota("user-1", { oldUsed: 850n, newUsed: 880n });
+
+    expect(emailService.send).not.toHaveBeenCalled();
+    // No new crossing and no re-arm ⇒ no state write.
+    expect(prisma.user.update).not.toHaveBeenCalled();
+  });
+
+  it("crossing 90% after already warning at 80% sends quota_warning at 90", async () => {
+    mockUser({ quotaLastWarnedThreshold: 80, quotaExceededSince: null });
+
+    // 880 → 950 crosses the 90% boundary (900).
+    await service.evaluateAndNotifyQuota("user-1", { oldUsed: 880n, newUsed: 950n });
+
+    expect(emailService.send).toHaveBeenCalledTimes(1);
+    expect(emailService.send).toHaveBeenCalledWith("quota_warning", expect.anything());
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: "user-1" },
+      data: { quotaLastWarnedThreshold: 90 },
+    });
+  });
+
+  it("reaching 100% sends quota_exceeded, alerts admins, and sets quotaExceededSince", async () => {
+    mockUser({ quotaLastWarnedThreshold: 90, quotaExceededSince: null });
+
+    // 950 → 1000 reaches the limit. The exceeded trigger is independent of the
+    // configured thresholds (which are only 80/90 here).
+    await service.evaluateAndNotifyQuota("user-1", { oldUsed: 950n, newUsed: 1000n });
+
+    // The owner gets quota_exceeded (not quota_warning), exactly once.
+    expect(emailService.send).toHaveBeenCalledTimes(1);
+    expect(emailService.send).toHaveBeenCalledWith(
+      "quota_exceeded",
+      expect.objectContaining({
+        to: "owner@example.com",
+        data: expect.objectContaining({ gracePeriodDays: 7 }),
+      }),
+    );
+    expect(emailService.sendToAdmins).toHaveBeenCalledWith(
+      "admin_quota_alert",
+      expect.objectContaining({ userEmail: "owner@example.com" }),
+    );
+    // quotaExceededSince is set (a Date); the warning dedup threshold is left
+    // untouched (exceeded is owned by quotaExceededSince, not the threshold).
+    const updateArg = vi.mocked(prisma.user.update).mock.calls[0]?.[0] as {
+      data: { quotaLastWarnedThreshold?: number | null; quotaExceededSince?: Date | null };
+    };
+    expect(updateArg.data.quotaExceededSince).toBeInstanceOf(Date);
+    expect(updateArg.data.quotaLastWarnedThreshold).toBeUndefined();
+  });
+
+  it("reaching 100% alerts even when 100 is NOT in the configured thresholds (no warning at 90 needed first)", async () => {
+    // Fresh user (never warned), jump straight from 50% to 100%.
+    mockUser({ quotaLastWarnedThreshold: null, quotaExceededSince: null });
+
+    await service.evaluateAndNotifyQuota("user-1", { oldUsed: 500n, newUsed: 1000n });
+
+    // Exceeded wins — quota_exceeded only (the 80/90 crossings are suppressed in
+    // favor of the stronger exceeded notice).
+    expect(emailService.send).toHaveBeenCalledTimes(1);
+    expect(emailService.send).toHaveBeenCalledWith("quota_exceeded", expect.anything());
+    expect(emailService.sendToAdmins).toHaveBeenCalledWith("admin_quota_alert", expect.anything());
+  });
+
+  it("a second over-limit upload does NOT re-alert admins (quotaExceededSince already set)", async () => {
+    mockUser({ quotaLastWarnedThreshold: 100, quotaExceededSince: new Date("2026-01-01") });
+
+    // Already over the limit; pushing further still over.
+    await service.evaluateAndNotifyQuota("user-1", { oldUsed: 1000n, newUsed: 1100n });
+
+    expect(emailService.sendToAdmins).not.toHaveBeenCalled();
+    expect(emailService.send).not.toHaveBeenCalled();
+    // No re-arm, no transition ⇒ no state write.
+    expect(prisma.user.update).not.toHaveBeenCalled();
+  });
+
+  it("dropping below the lowest threshold re-arms quotaLastWarnedThreshold", async () => {
+    mockUser({ quotaLastWarnedThreshold: 90, quotaExceededSince: null });
+
+    // 950 → 500 drops below the 80% boundary (800).
+    await service.evaluateAndNotifyQuota("user-1", { oldUsed: 950n, newUsed: 500n });
+
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: "user-1" },
+      data: { quotaLastWarnedThreshold: null },
+    });
+    expect(emailService.send).not.toHaveBeenCalled();
+  });
+
+  it("dropping back under the limit clears quotaExceededSince", async () => {
+    mockUser({ quotaLastWarnedThreshold: 90, quotaExceededSince: new Date("2026-01-01") });
+
+    // 1000 → 850: under the limit (clears exceededSince) but still above the
+    // lowest threshold (80% = 800), so the warning dedup stays armed.
+    await service.evaluateAndNotifyQuota("user-1", { oldUsed: 1000n, newUsed: 850n });
+
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: "user-1" },
+      data: { quotaExceededSince: null },
+    });
+  });
+
+  it("updates state but skips the email for a deactivated owner", async () => {
+    mockUser({ quotaLastWarnedThreshold: null, quotaExceededSince: null, isActive: false });
+
+    await service.evaluateAndNotifyQuota("user-1", { oldUsed: 750n, newUsed: 850n });
+
+    // State (dedup threshold) is still persisted...
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: "user-1" },
+      data: { quotaLastWarnedThreshold: 80 },
+    });
+    // ...but no email goes out to a deactivated account.
+    expect(emailService.send).not.toHaveBeenCalled();
+    expect(emailService.sendToAdmins).not.toHaveBeenCalled();
+  });
+
+  it("never throws — a failing user.update is swallowed", async () => {
+    mockUser({ quotaLastWarnedThreshold: null, quotaExceededSince: null });
+    vi.mocked(prisma.user.update).mockRejectedValue(new Error("db down"));
+
+    await expect(
+      service.evaluateAndNotifyQuota("user-1", { oldUsed: 750n, newUsed: 850n }),
+    ).resolves.toBeUndefined();
   });
 });

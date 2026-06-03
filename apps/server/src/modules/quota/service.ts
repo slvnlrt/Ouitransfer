@@ -312,17 +312,20 @@ export class QuotaService {
    * that changes a user's usage (direct file register, reverse-share register,
    * and later the smart-deletion sweep) gets consistent behavior.
    *
-   * Behavior:
+   * Behavior — two independent triggers, each with its own dedup state:
    * - Unlimited limit (`0n`) ⇒ no-op (no thresholds, no exceeded state).
-   * - Computes the highest threshold newly crossed via
-   *   {@link highestCrossedThreshold}. A warning fires only when that crossed
-   *   threshold is **higher** than the stored `quotaLastWarnedThreshold`
-   *   (dedup) — so repeated uploads in the same band never re-spam.
-   * - `>= 100%`: enqueues `quota_exceeded` to the owner (with the configured
-   *   `gracePeriodDays`) and, when the user **transitions** into the exceeded
-   *   state (`quotaExceededSince` was null), also alerts admins via
-   *   `admin_quota_alert`. `quotaExceededSince` is set iff currently null.
-   * - sub-100% crossing: enqueues `quota_warning` to the owner.
+   * - **Exceeded (≥ 100%)**: enqueues `quota_exceeded` to the owner (with the
+   *   configured `gracePeriodDays`) and alerts admins via `admin_quota_alert`,
+   *   but ONLY on the **transition** into the exceeded state (when
+   *   `quotaExceededSince` was null) — deduped by `quotaExceededSince`, which is
+   *   then set. This is **independent of the configured thresholds**: reaching
+   *   100% always alerts even when `100` is not listed in
+   *   `quotaWarningThresholds`.
+   * - **Sub-100% crossing**: enqueues `quota_warning` to the owner when a newly
+   *   crossed configured threshold (< 100) is strictly **higher** than the
+   *   stored `quotaLastWarnedThreshold` (dedup) — so repeated uploads in the
+   *   same band never re-spam. A transition into exceeded suppresses the
+   *   warning (the owner gets the stronger `quota_exceeded` instead).
    * - **Re-arm**: when `newUsed` drops below the lowest threshold boundary,
    *   `quotaLastWarnedThreshold` is reset to null; when `newUsed < limit`,
    *   `quotaExceededSince` is cleared. These keep the Batch 3 grace clock
@@ -387,18 +390,28 @@ export class QuotaService {
         updates.quotaExceededSince = null;
       }
 
-      const crossed = this.highestCrossedThreshold(oldUsed, newUsed, limit, thresholds);
+      // Two independent triggers, with separate dedup state:
+      //
+      // - Exceeded (≥ 100%): fires `quota_exceeded` on the TRANSITION into the
+      //   exceeded state (deduped by `quotaExceededSince`). This is independent
+      //   of the configured sub-100 thresholds — reaching 100% always alerts,
+      //   even when `100` is not listed in `quotaWarningThresholds`.
+      // - Sub-100 crossing: fires `quota_warning` when a newly-crossed
+      //   configured threshold is strictly higher than the last one warned
+      //   about (deduped by `quotaLastWarnedThreshold`).
       const exceeded = newUsed >= limit;
       const transitionsIntoExceeded = exceeded && user.quotaExceededSince === null;
 
-      // A warning/exceeded email fires only when the newly-crossed threshold is
-      // strictly higher than the one we last warned about (dedup), OR when the
-      // user transitions into the exceeded state for the first time.
+      const crossed = this.highestCrossedThreshold(oldUsed, newUsed, limit, thresholds);
       const lastWarned = user.quotaLastWarnedThreshold;
-      const shouldNotify = crossed !== null && (lastWarned === null || crossed > lastWarned);
+      // Sub-100 warning: ignore any crossed threshold at/above 100 here — that
+      // band is owned by the exceeded trigger above.
+      const crossedWarning = crossed !== null && crossed < 100 ? crossed : null;
+      const shouldWarn =
+        crossedWarning !== null && (lastWarned === null || crossedWarning > lastWarned);
 
-      if (shouldNotify) {
-        updates.quotaLastWarnedThreshold = crossed;
+      if (shouldWarn) {
+        updates.quotaLastWarnedThreshold = crossedWarning;
       }
       if (transitionsIntoExceeded) {
         updates.quotaExceededSince = new Date();
@@ -418,7 +431,7 @@ export class QuotaService {
       const maxBytes = Number(limit);
       const usedPercent = Math.max(1, Math.round((Number(newUsed) / Number(limit)) * 100));
 
-      if (shouldNotify && exceeded) {
+      if (transitionsIntoExceeded) {
         const gracePeriodDays = await this.resolveGracePeriodDays();
         await emailService.send("quota_exceeded", {
           to: user.email,
@@ -426,7 +439,7 @@ export class QuotaService {
           userId,
           data: { usedBytes, maxBytes, gracePeriodDays },
         });
-      } else if (shouldNotify) {
+      } else if (shouldWarn) {
         await emailService.send("quota_warning", {
           to: user.email,
           locale: user.locale ?? "en",
