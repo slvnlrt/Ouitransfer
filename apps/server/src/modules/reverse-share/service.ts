@@ -10,7 +10,7 @@ import {
   ReverseShareResponseSchema,
   type UpdateReverseShareInput,
 } from "./dto.js";
-import { ReverseShareRepository } from "./repository.js";
+import { type ReverseShareInternalUpdate, ReverseShareRepository } from "./repository.js";
 
 interface ReverseShareData {
   id: string;
@@ -99,6 +99,11 @@ export class ReverseShareService {
     assertOwnerActive(reverseShare);
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
+      // Persist the expiry deactivation (Phase A.1) so the cleanup sweep can act,
+      // then block. Fire-and-forget: read access must not fail if the write does.
+      void this.reverseShareRepository
+        .markExpiredInactive(reverseShare.id, new Date(reverseShare.expiration))
+        .catch((err) => getLogger().error({ err }, "Failed to persist reverse-share expiry"));
       throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 
@@ -147,6 +152,11 @@ export class ReverseShareService {
     assertOwnerActive(reverseShare);
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
+      // Persist the expiry deactivation (Phase A.1) so the cleanup sweep can act,
+      // then block. Fire-and-forget: read access must not fail if the write does.
+      void this.reverseShareRepository
+        .markExpiredInactive(reverseShare.id, new Date(reverseShare.expiration))
+        .catch((err) => getLogger().error({ err }, "Failed to persist reverse-share expiry"));
       throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 
@@ -200,20 +210,29 @@ export class ReverseShareService {
       data.expiration &&
       (!reverseShare.expiration || new Date(data.expiration) > reverseShare.expiration);
 
-    const updateData = shouldResetNotifications
-      ? {
-          ...data,
-          notifiedForExpiring: false,
-          notifiedForExpired: false,
-          notifiedForPendingDeletion: false,
-        }
-      : data;
+    const updateData: Partial<UpdateReverseShareInput> & ReverseShareInternalUpdate = {
+      ...data,
+      ...(shouldResetNotifications && {
+        notifiedForExpiring: false,
+        notifiedForExpired: false,
+        notifiedForPendingDeletion: false,
+      }),
+    };
 
-    const updatedReverseShare = await this.reverseShareRepository.update(
-      id,
-      // biome-ignore lint/suspicious/noExplicitAny: notifiedForExpiring/notifiedForExpired are internal fields not in UpdateReverseShareInput
-      updateData as any,
-    );
+    // Reactivation on extend (Phase A.1): mirror the regular-share behaviour. If the
+    // reverse share is currently deactivated and the new expiration takes it back into
+    // its valid window, bring it active again and clear the deactivation metadata.
+    if (!reverseShare.isActive && data.expiration) {
+      const newExpiration = new Date(data.expiration);
+      if (newExpiration > new Date()) {
+        updateData.isActive = true;
+        updateData.deactivatedAt = null;
+        updateData.deactivationReason = null;
+        updateData.notifiedForPendingDeletion = false;
+      }
+    }
+
+    const updatedReverseShare = await this.reverseShareRepository.update(id, updateData);
 
     return ReverseShareResponseSchema.parse(this.formatReverseShareResponse(updatedReverseShare));
   }
@@ -353,7 +372,16 @@ export class ReverseShareService {
       throw new ForbiddenError("Unauthorized to activate this reverse share");
     }
 
-    const updatedReverseShare = await this.reverseShareRepository.update(id, { isActive: true });
+    // Phase A.1: reactivating clears the deactivation metadata and re-arms the
+    // pending-deletion warning, mirroring the regular-share resume. The audit event
+    // (REVERSE_SHARE_REACTIVATED) is emitted by the route with the real request IP.
+    const updatedReverseShare = await this.reverseShareRepository.update(id, {
+      isActive: true,
+      deactivatedAt: null,
+      deactivationReason: null,
+      notifiedForPendingDeletion: false,
+    });
+
     return ReverseShareResponseSchema.parse(this.formatReverseShareResponse(updatedReverseShare));
   }
 
@@ -367,7 +395,15 @@ export class ReverseShareService {
       throw new ForbiddenError("Unauthorized to deactivate this reverse share");
     }
 
-    const updatedReverseShare = await this.reverseShareRepository.update(id, { isActive: false });
+    // Phase A.1: a manual deactivation stamps reason `manual` so the cleanup sweep
+    // never auto-deletes it (the owner chose to pause it, not retire it). The audit
+    // event (REVERSE_SHARE_DEACTIVATED) is emitted by the route with the real request IP.
+    const updatedReverseShare = await this.reverseShareRepository.update(id, {
+      isActive: false,
+      deactivatedAt: new Date(),
+      deactivationReason: "manual",
+    });
+
     return ReverseShareResponseSchema.parse(this.formatReverseShareResponse(updatedReverseShare));
   }
 

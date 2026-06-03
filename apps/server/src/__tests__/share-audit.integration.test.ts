@@ -82,6 +82,10 @@ const makeShare = (overrides: Record<string, unknown> = {}) => ({
   notifyOnDownload: false,
   notifiedForExpiring: false,
   notifiedForExpired: false,
+  notifiedForPendingDeletion: false,
+  isActive: true,
+  deactivatedAt: null,
+  deactivationReason: null,
   files: [
     {
       id: "file-1",

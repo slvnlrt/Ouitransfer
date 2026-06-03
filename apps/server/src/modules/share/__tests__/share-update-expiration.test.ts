@@ -116,6 +116,10 @@ function makeFullShare(overrides: Record<string, unknown> = {}) {
     notifyOnDownload: false,
     notifiedForExpiring: true, // already notified
     notifiedForExpired: true,
+    notifiedForPendingDeletion: false,
+    isActive: true,
+    deactivatedAt: null,
+    deactivationReason: null,
     security: { id: SECURITY_ID, password: null, createdAt: new Date(), updatedAt: new Date() },
     files: [],
     folders: [],

@@ -55,6 +55,11 @@ export class ReverseShareUploadService {
     assertOwnerActive(reverseShare);
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
+      // Persist the expiry deactivation (Phase A.1) so the cleanup sweep can act,
+      // then block. Fire-and-forget: the upload entry point must not fail if the write does.
+      void this.reverseShareRepository
+        .markExpiredInactive(reverseShare.id, new Date(reverseShare.expiration))
+        .catch((err) => getLogger().error({ err }, "Failed to persist reverse-share expiry"));
       throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 
@@ -112,6 +117,11 @@ export class ReverseShareUploadService {
     assertOwnerActive(reverseShare);
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
+      // Persist the expiry deactivation (Phase A.1) so the cleanup sweep can act,
+      // then block. Fire-and-forget: the upload entry point must not fail if the write does.
+      void this.reverseShareRepository
+        .markExpiredInactive(reverseShare.id, new Date(reverseShare.expiration))
+        .catch((err) => getLogger().error({ err }, "Failed to persist reverse-share expiry"));
       throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 
@@ -170,6 +180,11 @@ export class ReverseShareUploadService {
     assertOwnerActive(reverseShare);
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
+      // Persist the expiry deactivation (Phase A.1) so the cleanup sweep can act,
+      // then block. Fire-and-forget: the upload entry point must not fail if the write does.
+      void this.reverseShareRepository
+        .markExpiredInactive(reverseShare.id, new Date(reverseShare.expiration))
+        .catch((err) => getLogger().error({ err }, "Failed to persist reverse-share expiry"));
       throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 
@@ -260,6 +275,11 @@ export class ReverseShareUploadService {
     assertOwnerActive(reverseShare);
 
     if (reverseShare.expiration && new Date(reverseShare.expiration) < new Date()) {
+      // Persist the expiry deactivation (Phase A.1) so the cleanup sweep can act,
+      // then block. Fire-and-forget: the upload entry point must not fail if the write does.
+      void this.reverseShareRepository
+        .markExpiredInactive(reverseShare.id, new Date(reverseShare.expiration))
+        .catch((err) => getLogger().error({ err }, "Failed to persist reverse-share expiry"));
       throw new AppError(410, "Reverse share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 

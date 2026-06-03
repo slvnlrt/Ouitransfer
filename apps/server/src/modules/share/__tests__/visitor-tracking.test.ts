@@ -196,6 +196,10 @@ function makeShare(overrides: Record<string, unknown> = {}) {
     notifiedForMaxViews: false,
     notifiedForExpiring: false,
     notifiedForExpired: false,
+    notifiedForPendingDeletion: false,
+    isActive: true,
+    deactivatedAt: null,
+    deactivationReason: null,
     security: { id: SECURITY_ID, password: null, createdAt: new Date(), updatedAt: new Date() },
     files: [
       {

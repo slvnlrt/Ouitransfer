@@ -1,7 +1,23 @@
 import bcrypt from "bcryptjs";
 
 import { prisma } from "../../shared/prisma.js";
+import type { DeactivationReason } from "../share/lifecycle.js";
 import type { CreateReverseShareInput, UpdateReverseShareInput } from "./dto.js";
+
+/**
+ * Internal-only reverse-share fields the service may write alongside (or instead
+ * of) the public update DTO: notification idempotency flags and the Phase A.1
+ * lifecycle metadata. These are not part of `UpdateReverseShareInput` (they are
+ * never set directly by clients), so the repository accepts them explicitly
+ * rather than via an untyped cast.
+ */
+export interface ReverseShareInternalUpdate {
+  notifiedForExpiring?: boolean;
+  notifiedForExpired?: boolean;
+  notifiedForPendingDeletion?: boolean;
+  deactivatedAt?: Date | null;
+  deactivationReason?: DeactivationReason | null;
+}
 
 export class ReverseShareRepository {
   async create(data: CreateReverseShareInput, creatorId: string) {
@@ -92,11 +108,14 @@ export class ReverseShareRepository {
     });
   }
 
-  async update(id: string, data: Partial<UpdateReverseShareInput>) {
+  async update(id: string, data: Partial<UpdateReverseShareInput> & ReverseShareInternalUpdate) {
     // We need to transform number values to their DB types (password → hash, maxFileSize → bigint)
     const { password, maxFileSize, ...rest } = data;
 
-    type UpdatePayload = Omit<Partial<UpdateReverseShareInput>, "password" | "maxFileSize"> & {
+    type UpdatePayload = Omit<
+      Partial<UpdateReverseShareInput> & ReverseShareInternalUpdate,
+      "password" | "maxFileSize"
+    > & {
       password?: string | null;
       maxFileSize?: bigint | null;
     };
@@ -126,6 +145,26 @@ export class ReverseShareRepository {
         alias: true,
       },
     });
+  }
+
+  /**
+   * Persist an expired reverse share as deactivated (Phase A.1).
+   *
+   * Called from the read/upload paths when expiry is detected on a still-active
+   * reverse share, so the cleanup sweep (Batch 3) can later delete it + its
+   * uploaded files. Idempotent and race-safe: the `isActive: true` guard means a
+   * concurrent request or the scheduler cannot clobber an already-set
+   * `deactivatedAt` / `deactivationReason`. `deactivatedAt` is stamped at the
+   * expiration instant (not "now") so the grace window is measured uniformly.
+   *
+   * @returns the number of rows updated (0 = already deactivated, 1 = just set)
+   */
+  async markExpiredInactive(id: string, expiration: Date): Promise<number> {
+    const result = await prisma.reverseShare.updateMany({
+      where: { id, isActive: true },
+      data: { isActive: false, deactivatedAt: expiration, deactivationReason: "expired" },
+    });
+    return result.count;
   }
 
   async delete(id: string) {
