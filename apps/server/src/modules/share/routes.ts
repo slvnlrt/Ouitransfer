@@ -248,7 +248,10 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         throw new UnauthorizedError();
       }
       const { id, ...updateData } = request.body;
-      const share = await shareService.updateShare(id, updateData, userId);
+      const share = await shareService.updateShare(id, updateData, userId, {
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+      });
       logAuditEvent({
         action: "SHARE_UPDATE",
         ipAddress: request.ip,

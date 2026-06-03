@@ -10,17 +10,28 @@
 
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-const { mockFindById, mockUpdate, mockMarkExpiredInactive, mockCountFiles, mockComparePassword } =
-  vi.hoisted(() => ({
-    mockFindById: vi.fn(),
-    mockUpdate: vi.fn(),
-    mockMarkExpiredInactive: vi.fn().mockResolvedValue(1),
-    mockCountFiles: vi.fn().mockResolvedValue(0),
-    mockComparePassword: vi.fn().mockResolvedValue(true),
-  }));
+const {
+  mockFindById,
+  mockUpdate,
+  mockMarkExpiredInactive,
+  mockCountFiles,
+  mockComparePassword,
+  mockLogAuditEvent,
+} = vi.hoisted(() => ({
+  mockFindById: vi.fn(),
+  mockUpdate: vi.fn(),
+  mockMarkExpiredInactive: vi.fn().mockResolvedValue(1),
+  mockCountFiles: vi.fn().mockResolvedValue(0),
+  mockComparePassword: vi.fn().mockResolvedValue(true),
+  mockLogAuditEvent: vi.fn().mockResolvedValue(undefined),
+}));
 
 vi.mock("../../../shared/prisma.js", () => ({
   prisma: { reverseShare: {}, reverseShareAlias: {} },
+}));
+
+vi.mock("../../audit/service.js", () => ({
+  logAuditEvent: mockLogAuditEvent,
 }));
 
 vi.mock("../../../utils/logger.js", () => ({
@@ -161,6 +172,13 @@ describe("ReverseShareService — manual lifecycle toggle", () => {
         isActive: true,
         deactivatedAt: null,
         deactivationReason: null,
+      }),
+    );
+    expect(mockLogAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "REVERSE_SHARE_REACTIVATED",
+        targetId: RS_ID,
+        metadata: { via: "extend" },
       }),
     );
   });

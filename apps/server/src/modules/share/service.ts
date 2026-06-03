@@ -470,7 +470,12 @@ export class ShareService {
     return ShareResponseSchema.parse(await this.formatShareResponse(updatedShare, false));
   }
 
-  async updateShare(shareId: string, data: Omit<UpdateShareInput, "id">, userId: string) {
+  async updateShare(
+    shareId: string,
+    data: Omit<UpdateShareInput, "id">,
+    userId: string,
+    context?: ShareAccessContext,
+  ) {
     const { password, maxViews, recipients, expiration, ...shareData } = data;
 
     const share = await this.shareRepository.findShareById(shareId);
@@ -561,6 +566,7 @@ export class ShareService {
     // valid again, bring it back to active and clear the deactivation metadata. A
     // share that is still expired or still maxed after the update stays deactivated
     // (read-time gate stays closed) — the owner must extend it for real to revive it.
+    let reactivated = false;
     if (!share.isActive) {
       // Effective values after this update (undefined = unchanged → keep existing).
       const effectiveExpiration = newExp !== undefined ? newExp : share.expiration;
@@ -571,10 +577,28 @@ export class ShareService {
 
       if (!stillExpired && !stillMaxed) {
         Object.assign(updateData, reactivationFields());
+        reactivated = true;
       }
     }
 
     await this.shareRepository.updateShare(shareId, updateData);
+
+    // A renew-via-extend that revives a deactivated share is a lifecycle transition,
+    // so it writes SHARE_REACTIVATED (with `via: "extend"`) on top of the generic
+    // SHARE_UPDATE the route emits — mirroring the manual `resumeShare` audit so the
+    // activity log records every active⇄deactivated transition uniformly.
+    if (reactivated) {
+      logAuditEvent({
+        action: "SHARE_REACTIVATED",
+        userId,
+        ipAddress: context?.ipAddress ?? "system",
+        userAgent: context?.userAgent,
+        targetType: "share",
+        targetId: shareId,
+        metadata: { via: "extend" },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+    }
+
     const shareWithRelations = await this.shareRepository.findShareById(shareId);
 
     return ShareResponseSchema.parse(await this.formatShareResponse(shareWithRelations));

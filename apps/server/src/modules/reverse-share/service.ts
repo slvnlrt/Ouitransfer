@@ -3,6 +3,7 @@ import { env } from "../../env.js";
 import { prisma } from "../../shared/prisma.js";
 import { AppError, ConflictError, ForbiddenError, NotFoundError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
+import { logAuditEvent } from "../audit/service.js";
 import { FileService } from "../file/service.js";
 import { assertOwnerActive } from "./assert-owner-active.js";
 import {
@@ -193,7 +194,12 @@ export class ReverseShareService {
     };
   }
 
-  async updateReverseShare(id: string, data: Partial<UpdateReverseShareInput>, creatorId: string) {
+  async updateReverseShare(
+    id: string,
+    data: Partial<UpdateReverseShareInput>,
+    creatorId: string,
+    context?: { ipAddress?: string; userAgent?: string },
+  ) {
     const reverseShare = await this.reverseShareRepository.findById(id);
     if (!reverseShare) {
       throw new NotFoundError("Reverse share not found");
@@ -222,6 +228,7 @@ export class ReverseShareService {
     // Reactivation on extend (Phase A.1): mirror the regular-share behaviour. If the
     // reverse share is currently deactivated and the new expiration takes it back into
     // its valid window, bring it active again and clear the deactivation metadata.
+    let reactivated = false;
     if (!reverseShare.isActive && data.expiration) {
       const newExpiration = new Date(data.expiration);
       if (newExpiration > new Date()) {
@@ -229,10 +236,27 @@ export class ReverseShareService {
         updateData.deactivatedAt = null;
         updateData.deactivationReason = null;
         updateData.notifiedForPendingDeletion = false;
+        reactivated = true;
       }
     }
 
     const updatedReverseShare = await this.reverseShareRepository.update(id, updateData);
+
+    // A renew-via-extend that revives a deactivated reverse share is a lifecycle
+    // transition, so it writes REVERSE_SHARE_REACTIVATED (with `via: "extend"`) on top
+    // of the generic REVERSE_SHARE_UPDATE the route emits — mirroring the manual
+    // `activateReverseShare` audit so every active⇄deactivated transition is recorded.
+    if (reactivated) {
+      logAuditEvent({
+        action: "REVERSE_SHARE_REACTIVATED",
+        userId: creatorId,
+        ipAddress: context?.ipAddress ?? "system",
+        userAgent: context?.userAgent,
+        targetType: "reverse_share",
+        targetId: id,
+        metadata: { via: "extend" },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+    }
 
     return ReverseShareResponseSchema.parse(this.formatReverseShareResponse(updatedReverseShare));
   }

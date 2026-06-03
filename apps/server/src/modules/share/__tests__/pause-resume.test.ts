@@ -246,6 +246,13 @@ describe("ShareService.updateShare — reactivation on extend", () => {
         notifiedForPendingDeletion: false,
       }),
     );
+    expect(mockLogAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "SHARE_REACTIVATED",
+        targetId: SHARE_ID,
+        metadata: { via: "extend" },
+      }),
+    );
   });
 
   it("does NOT reactivate when the share remains maxed after the update", async () => {
@@ -268,6 +275,10 @@ describe("ShareService.updateShare — reactivation on extend", () => {
     const updateArg = mockUpdateShare.mock.calls[0]![1] as Record<string, unknown>;
     expect(updateArg.isActive).toBeUndefined();
     expect(updateArg.deactivationReason).toBeUndefined();
+    // No reactivation happened → no SHARE_REACTIVATED event.
+    expect(mockLogAuditEvent).not.toHaveBeenCalledWith(
+      expect.objectContaining({ action: "SHARE_REACTIVATED" }),
+    );
   });
 
   it("reactivates a maxed-deactivated share when maxViews is raised above the view count", async () => {
@@ -287,6 +298,13 @@ describe("ShareService.updateShare — reactivation on extend", () => {
     expect(mockUpdateShare).toHaveBeenCalledWith(
       SHARE_ID,
       expect.objectContaining({ isActive: true, deactivationReason: null }),
+    );
+    expect(mockLogAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "SHARE_REACTIVATED",
+        targetId: SHARE_ID,
+        metadata: { via: "extend" },
+      }),
     );
   });
 });

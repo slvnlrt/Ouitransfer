@@ -170,7 +170,10 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         );
       }
       const { id, ...updateData } = request.body;
-      const reverseShare = await reverseShareService.updateReverseShare(id, updateData, userId);
+      const reverseShare = await reverseShareService.updateReverseShare(id, updateData, userId, {
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+      });
       logAuditEvent({
         action: "REVERSE_SHARE_UPDATE",
         ipAddress: request.ip,
