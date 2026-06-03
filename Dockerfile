@@ -100,16 +100,6 @@ COPY --chown=ouitransfer:nodejs infra/server-start.sh /app/server-start.sh
 RUN chmod +x /app/server-start.sh
 RUN chmod +x ./reset-password.sh
 
-# Infra files: check-missing script + seed configs
-# Placed in prisma/ dir so server-start.sh can run ./prisma/check-missing.js directly.
-# Also kept in /app/infra/ as source for first-run copy into /app/server/prisma/ by server-start.sh.
-COPY --chown=ouitransfer:nodejs infra/configs.json /app/infra/configs.json
-COPY --chown=ouitransfer:nodejs infra/providers.json /app/infra/providers.json
-COPY --chown=ouitransfer:nodejs infra/check-missing.js /app/infra/check-missing.js
-COPY --chown=ouitransfer:nodejs infra/configs.json ./prisma/configs.json
-COPY --chown=ouitransfer:nodejs infra/providers.json ./prisma/providers.json
-COPY --chown=ouitransfer:nodejs infra/check-missing.js ./prisma/check-missing.js
-
 EXPOSE 3333
 
 HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=3 \
