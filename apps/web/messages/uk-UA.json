@@ -796,7 +796,12 @@
       "SHARE_DEACTIVATED": "Share deactivated",
       "SHARE_REACTIVATED": "Share reactivated",
       "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
-      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated",
+      "SHARE_AUTO_DELETED": "Share auto-deleted",
+      "REVERSE_SHARE_AUTO_DELETED": "Reverse share auto-deleted",
+      "ACCOUNT_FILES_CLEANED": "Account files cleaned",
+      "ORPHAN_S3_DELETED": "Orphan storage object deleted",
+      "ORPHAN_DB_DELETED": "Orphan database record deleted"
     },
     "targetTypes": {
       "user": "Користувач",

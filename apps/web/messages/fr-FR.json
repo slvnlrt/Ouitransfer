@@ -792,7 +792,12 @@
       "SHARE_DEACTIVATED": "Partage désactivé",
       "SHARE_REACTIVATED": "Partage réactivé",
       "REVERSE_SHARE_DEACTIVATED": "Partage inversé désactivé",
-      "REVERSE_SHARE_REACTIVATED": "Partage inversé réactivé"
+      "REVERSE_SHARE_REACTIVATED": "Partage inversé réactivé",
+      "SHARE_AUTO_DELETED": "Partage supprimé automatiquement",
+      "REVERSE_SHARE_AUTO_DELETED": "Partage inversé supprimé automatiquement",
+      "ACCOUNT_FILES_CLEANED": "Fichiers du compte nettoyés",
+      "ORPHAN_S3_DELETED": "Objet de stockage orphelin supprimé",
+      "ORPHAN_DB_DELETED": "Enregistrement de base de données orphelin supprimé"
     },
     "targetTypes": {
       "user": "Utilisateur",
