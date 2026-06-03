@@ -5,7 +5,12 @@ import { logAuditEvent } from "../audit/service.js";
 import { t } from "../email/i18n/loader.js";
 import { emailService } from "../email/service.js";
 import { buildReverseShareManageUrl, buildShareManageUrl } from "../email/url-builder.js";
+import { ReverseShareRepository } from "../reverse-share/repository.js";
 import { AUTO_DELETABLE_REASONS, deactivationFields } from "../share/lifecycle.js";
+
+// Stateless wrapper around prisma — reused so the deactivation sweep persists the
+// expired transition through the exact same write as the read-time path.
+const reverseShareRepository = new ReverseShareRepository();
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -525,12 +530,10 @@ export async function deactivateEndedReverseShares(): Promise<DeactivationSummar
     if (!rs.expiration) continue;
     try {
       // markExpiredInactive guards on `isActive: true` and stamps deactivatedAt
-      // at the expiration instant — identical to the read-path write.
-      const updated = await prisma.reverseShare.updateMany({
-        where: { id: rs.id, isActive: true },
-        data: { isActive: false, deactivatedAt: rs.expiration, deactivationReason: "expired" },
-      });
-      if (updated.count === 0) continue; // Already deactivated by a racing path.
+      // at the expiration instant — identical to the read-path write (single source
+      // of truth: the read path and this sweep call the same repository method).
+      const updatedCount = await reverseShareRepository.markExpiredInactive(rs.id, rs.expiration);
+      if (updatedCount === 0) continue; // Already deactivated by a racing path.
       summary.deactivated++;
 
       await logAuditEvent({

@@ -337,7 +337,7 @@ model ReverseShare {
   pageLayout         PageLayout       @default(DEFAULT)
   isActive           Boolean          @default(true)
   deactivatedAt      DateTime? // Set when the reverse share is deactivated (expired/manual); cleared on reactivation. Drives delayed deletion.
-  deactivationReason String? // DeactivationReason: "expired" | "max_views" | "manual"
+  deactivationReason String? // DeactivationReason (reverse share): "expired" | "manual"
   nameFieldRequired  FieldRequirement @default(OPTIONAL)
   emailFieldRequired FieldRequirement @default(OPTIONAL)
   notifyOnUpload       Boolean          @default(false)
