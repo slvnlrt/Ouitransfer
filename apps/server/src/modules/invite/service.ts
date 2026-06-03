@@ -7,6 +7,42 @@ import { AppError, NotFoundError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { emailService } from "../email/service.js";
 
+type InviteTokenVerdict = { valid: boolean; used?: boolean; expired?: boolean };
+
+/**
+ * Pure single-use/expiry evaluation for an invite token row. Shared between the
+ * GET validate route and the registration flow so the rules never drift.
+ */
+function evaluateInviteToken(
+  token: { usedAt: Date | null; expiresAt: Date } | null,
+): InviteTokenVerdict {
+  if (!token) {
+    return { valid: false };
+  }
+  if (token.usedAt) {
+    return { valid: false, used: true };
+  }
+  if (new Date() > token.expiresAt) {
+    return { valid: false, expired: true };
+  }
+  return { valid: true };
+}
+
+/** Maps an invalid verdict to the matching structured error. */
+function invalidInviteTokenError(verdict: InviteTokenVerdict): AppError {
+  if (verdict.used) {
+    return new AppError(
+      409,
+      "This invite link has already been used",
+      ErrorCodes.INVITE_TOKEN_USED,
+    );
+  }
+  if (verdict.expired) {
+    return new AppError(410, "This invite link has expired", ErrorCodes.INVITE_TOKEN_EXPIRED);
+  }
+  return new NotFoundError("Invalid invite link");
+}
+
 export class InviteService {
   async generateInviteToken(
     adminUserId: string,
@@ -26,26 +62,8 @@ export class InviteService {
     return { id: inviteToken.id, token, expiresAt };
   }
 
-  async validateInviteToken(
-    token: string,
-  ): Promise<{ valid: boolean; used?: boolean; expired?: boolean }> {
-    const inviteToken = await prisma.inviteToken.findUnique({
-      where: { token },
-    });
-
-    if (!inviteToken) {
-      return { valid: false };
-    }
-
-    if (inviteToken.usedAt) {
-      return { valid: false, used: true };
-    }
-
-    if (new Date() > inviteToken.expiresAt) {
-      return { valid: false, expired: true };
-    }
-
-    return { valid: true };
+  async validateInviteToken(token: string): Promise<InviteTokenVerdict> {
+    return evaluateInviteToken(await prisma.inviteToken.findUnique({ where: { token } }));
   }
 
   async registerWithInvite(data: {
@@ -56,20 +74,17 @@ export class InviteService {
     email: string;
     password: string;
   }): Promise<{ id: string; username: string; email: string; inviteTokenId: string }> {
-    const validation = await this.validateInviteToken(data.token);
-
-    if (!validation.valid) {
-      if (validation.used) {
-        throw new AppError(
-          409,
-          "This invite link has already been used",
-          ErrorCodes.INVITE_TOKEN_USED,
-        );
-      }
-      if (validation.expired) {
-        throw new AppError(410, "This invite link has expired", ErrorCodes.INVITE_TOKEN_EXPIRED);
-      }
+    // Fast-fail with friendly errors before the expensive bcrypt hash below.
+    // This is a pre-flight check only — the authoritative single-use guard is
+    // the atomic claim inside the transaction (closes the validate→update
+    // TOCTOU race where two concurrent requests both pass validation, B-26).
+    const preflightToken = await prisma.inviteToken.findUnique({ where: { token: data.token } });
+    if (!preflightToken) {
       throw new NotFoundError("Invalid invite link");
+    }
+    const preflight = evaluateInviteToken(preflightToken);
+    if (!preflight.valid) {
+      throw invalidInviteTokenError(preflight);
     }
 
     const existingUser = await prisma.user.findFirst({
@@ -89,6 +104,21 @@ export class InviteService {
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
     const result = await prisma.$transaction(async (tx) => {
+      // Atomically claim the token: the conditional `where` means only the
+      // first concurrent request whose update still matches (unused, unexpired)
+      // wins. A loser gets count === 0 and never creates a user.
+      const claim = await tx.inviteToken.updateMany({
+        where: { token: data.token, usedAt: null, expiresAt: { gt: new Date() } },
+        data: { usedAt: new Date() },
+      });
+
+      if (claim.count === 0) {
+        // Lost the race or the token was invalidated between pre-flight and
+        // claim. Re-read to surface the precise reason.
+        const current = await tx.inviteToken.findUnique({ where: { token: data.token } });
+        throw invalidInviteTokenError(evaluateInviteToken(current));
+      }
+
       const user = await tx.user.create({
         data: {
           firstName: data.firstName,
@@ -106,12 +136,8 @@ export class InviteService {
         },
       });
 
-      const inviteToken = await tx.inviteToken.update({
-        where: { token: data.token },
-        data: { usedAt: new Date() },
-      });
-
-      return { ...user, inviteTokenId: inviteToken.id };
+      // The token id is immutable; reuse the row fetched during pre-flight.
+      return { ...user, inviteTokenId: preflightToken.id };
     });
 
     // Notify admins about new invite-based registration (fire-and-forget).
