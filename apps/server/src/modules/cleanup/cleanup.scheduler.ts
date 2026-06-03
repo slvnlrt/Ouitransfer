@@ -111,7 +111,7 @@ export async function runCleanup(): Promise<void> {
     deletedShares?: { warned: number; deleted: number; errors: number };
     deletedReverseShares?: { warned: number; deleted: number; errors: number };
     deactivatedAccounts?: { purgedAccounts: number; errors: number };
-    orphans?: { dbDeleted: number; s3Deleted: number; errors: number };
+    orphans?: { dbDeleted: number; s3Deleted: number; multipartAborted: number; errors: number };
     quotaOverage?: {
       usersProcessed: number;
       filesDeleted: number;

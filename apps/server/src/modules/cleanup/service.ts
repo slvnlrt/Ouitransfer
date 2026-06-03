@@ -1109,7 +1109,13 @@ export interface OrphanSweepSummary {
   dbDeleted: number;
   /** S3 objects removed because no DB row references them (count actually deleted, or candidate count in a dry run). */
   s3Deleted: number;
-  /** Per-item failures (DB or S3); one failure never aborts the sweep. */
+  /**
+   * Incomplete/abandoned multipart uploads aborted because they were initiated
+   * before the min-age cutoff (count actually aborted, or candidate count in a
+   * dry run).
+   */
+  multipartAborted: number;
+  /** Per-item failures (DB, S3, or multipart); one failure never aborts the sweep. */
   errors: number;
   /**
    * Dry-run only: the identifiers of the DB rows that *would* be deleted
@@ -1121,6 +1127,11 @@ export interface OrphanSweepSummary {
    * DB row, older than the cutoff).
    */
   s3Candidates?: string[];
+  /**
+   * Dry-run only: the incomplete multipart uploads that *would* be aborted
+   * (initiated before the cutoff). One entry per candidate upload.
+   */
+  multipartCandidates?: Array<{ key: string; uploadId: string; initiatedAt: string }>;
 }
 
 /**
@@ -1144,6 +1155,17 @@ export interface OrphanSweepSummary {
  * from the DB up front guarantees an object referenced by *any* row — in any of
  * those tables — is never deleted (correctness-critical).
  *
+ * **Incomplete multipart uploads**: `ListObjectsV2` (the S3→DB phase) only sees
+ * *finalized* objects, so the parts of a multipart upload that was initiated but
+ * never completed or aborted (e.g. a large reverse-share upload where the browser
+ * was closed) are invisible to it and would linger in S3 forever. This third
+ * phase enumerates incomplete multipart uploads via
+ * {@link StorageProvider.listMultipartUploads} and aborts each one whose
+ * `initiated` timestamp is older than the cutoff — discarding its parts and
+ * reclaiming the storage. The same `minAgeHours` guard protects in-flight uploads
+ * (a multipart upload younger than the cutoff is still being assembled). Each real
+ * abort logs an `ORPHAN_MULTIPART_ABORTED` audit event.
+ *
  * **Known-keys registry (S3-owning tables).** `listObjects()` enumerates the
  * **whole** bucket with no prefix, so the known-keys union MUST include every
  * table that stores an S3 object key, or those objects will be wrongly swept as
@@ -1163,9 +1185,10 @@ export interface OrphanSweepSummary {
  * Every deletion is wrapped so a single failure increments `errors` without
  * aborting the sweep.
  *
- * When `dryRun` is true nothing is deleted and no audit events are emitted: the
- * summary's `dbDeleted`/`s3Deleted` report the candidate counts and
- * `dbCandidates`/`s3Candidates` list the identifiers that *would* be removed.
+ * When `dryRun` is true nothing is deleted or aborted and no audit events are
+ * emitted: the summary's `dbDeleted`/`s3Deleted`/`multipartAborted` report the
+ * candidate counts and `dbCandidates`/`s3Candidates`/`multipartCandidates` list
+ * the identifiers that *would* be removed.
  *
  * This function does **not** check `autoCleanupOrphansEnabled` — that opt-in
  * gate is enforced by the scheduler (Batch 6), which also supplies
@@ -1176,12 +1199,18 @@ export async function sweepOrphans(opts: {
   dryRun?: boolean;
 }): Promise<OrphanSweepSummary> {
   const { minAgeHours, dryRun = false } = opts;
-  const summary: OrphanSweepSummary = { dbDeleted: 0, s3Deleted: 0, errors: 0 };
+  const summary: OrphanSweepSummary = {
+    dbDeleted: 0,
+    s3Deleted: 0,
+    multipartAborted: 0,
+    errors: 0,
+  };
   const log = getLogger();
   const cutoff = new Date(Date.now() - minAgeHours * ONE_HOUR_MS);
 
   const dbCandidates: NonNullable<OrphanSweepSummary["dbCandidates"]> = [];
   const s3Candidates: string[] = [];
+  const multipartCandidates: NonNullable<OrphanSweepSummary["multipartCandidates"]> = [];
 
   // ── DB → S3: rows whose S3 object is missing ──
   const files = await prisma.file.findMany({
@@ -1297,9 +1326,48 @@ export async function sweepOrphans(opts: {
     }
   }
 
+  // ── Incomplete multipart uploads: abort those initiated before the cutoff ──
+  // These are invisible to `listObjects` above (it only lists finalized objects),
+  // so they are reconciled separately. The min-age guard protects an upload that
+  // is still being assembled (initiated within `minAgeHours`).
+  const incompleteUploads = await storageProvider.listMultipartUploads();
+  for (const upload of incompleteUploads) {
+    if (upload.initiated >= cutoff) continue;
+    try {
+      if (dryRun) {
+        multipartCandidates.push({
+          key: upload.key,
+          uploadId: upload.uploadId,
+          initiatedAt: upload.initiated.toISOString(),
+        });
+        summary.multipartAborted++;
+        continue;
+      }
+      await storageProvider.abortMultipartUpload(upload.key, upload.uploadId);
+      summary.multipartAborted++;
+      await logAuditEvent({
+        action: "ORPHAN_MULTIPART_ABORTED",
+        ipAddress: SYSTEM_IP,
+        targetType: "file",
+        metadata: {
+          key: upload.key,
+          uploadId: upload.uploadId,
+          initiatedAt: upload.initiated.toISOString(),
+        },
+      });
+    } catch (err) {
+      summary.errors++;
+      log.error(
+        { err, key: upload.key, uploadId: upload.uploadId },
+        "Failed to abort incomplete multipart upload",
+      );
+    }
+  }
+
   if (dryRun) {
     summary.dbCandidates = dbCandidates;
     summary.s3Candidates = s3Candidates;
+    summary.multipartCandidates = multipartCandidates;
   }
 
   return summary;

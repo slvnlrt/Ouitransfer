@@ -43,16 +43,26 @@ vi.mock("../../../shared/prisma.js", () => ({
   },
 }));
 
-const { mockDeleteObject, mockFileExists, mockListObjects } = vi.hoisted(() => ({
+const {
+  mockDeleteObject,
+  mockFileExists,
+  mockListObjects,
+  mockListMultipartUploads,
+  mockAbortMultipartUpload,
+} = vi.hoisted(() => ({
   mockDeleteObject: vi.fn(),
   mockFileExists: vi.fn(),
   mockListObjects: vi.fn(),
+  mockListMultipartUploads: vi.fn(),
+  mockAbortMultipartUpload: vi.fn(),
 }));
 vi.mock("../../../providers/s3-storage.provider.js", () => ({
   S3StorageProvider: class {
     deleteObject = mockDeleteObject;
     fileExists = mockFileExists;
     listObjects = mockListObjects;
+    listMultipartUploads = mockListMultipartUploads;
+    abortMultipartUpload = mockAbortMultipartUpload;
   },
 }));
 
@@ -148,6 +158,9 @@ beforeEach(() => {
   mockDeleteObject.mockResolvedValue(undefined);
   mockFileExists.mockResolvedValue(true);
   mockListObjects.mockResolvedValue([]);
+  // Default: no incomplete multipart uploads, abort succeeds.
+  mockListMultipartUploads.mockResolvedValue([]);
+  mockAbortMultipartUpload.mockResolvedValue(undefined);
   // Default: no folders / background images own any keys (overridden per test).
   vi.mocked(prisma.folder.findMany).mockResolvedValue([] as never);
   vi.mocked(prisma.backgroundImage.findMany).mockResolvedValue([] as never);
@@ -1142,7 +1155,81 @@ describe("sweepOrphans", () => {
 
   it("returns a zero summary when there are no orphans on either side", async () => {
     const summary = await sweepOrphans({ minAgeHours: 24 });
-    expect(summary).toEqual({ dbDeleted: 0, s3Deleted: 0, errors: 0 });
+    expect(summary).toEqual({ dbDeleted: 0, s3Deleted: 0, multipartAborted: 0, errors: 0 });
+  });
+
+  it("multipart: aborts an upload initiated before the cutoff and audits", async () => {
+    const oldInit = new Date(Date.now() - 48 * 60 * 60 * 1000);
+    mockListMultipartUploads.mockResolvedValue([
+      { key: "reverse-shares/rs1/big.bin", uploadId: "upload-1", initiated: oldInit },
+    ]);
+
+    const summary = await sweepOrphans({ minAgeHours: 24 });
+
+    expect(mockAbortMultipartUpload).toHaveBeenCalledWith("reverse-shares/rs1/big.bin", "upload-1");
+    expect(logAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "ORPHAN_MULTIPART_ABORTED",
+        ipAddress: "system",
+        targetType: "file",
+        metadata: {
+          key: "reverse-shares/rs1/big.bin",
+          uploadId: "upload-1",
+          initiatedAt: oldInit.toISOString(),
+        },
+      }),
+    );
+    expect(summary.multipartAborted).toBe(1);
+    expect(summary.errors).toBe(0);
+  });
+
+  it("multipart: NEVER aborts an upload younger than the min-age cutoff (boundary)", async () => {
+    const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+    mockListMultipartUploads.mockResolvedValue([
+      // 1 ms younger than the cutoff → protected (still being assembled).
+      { key: "fresh-upload.bin", uploadId: "u-fresh", initiated: new Date(cutoff + 1) },
+      // 1 ms older than the cutoff → aborted.
+      { key: "stale-upload.bin", uploadId: "u-stale", initiated: new Date(cutoff - 1) },
+    ]);
+
+    const summary = await sweepOrphans({ minAgeHours: 24 });
+
+    expect(mockAbortMultipartUpload).toHaveBeenCalledTimes(1);
+    expect(mockAbortMultipartUpload).toHaveBeenCalledWith("stale-upload.bin", "u-stale");
+    expect(summary.multipartAborted).toBe(1);
+  });
+
+  it("multipart: tolerates a single abort failure without aborting the rest", async () => {
+    const oldInit = new Date(Date.now() - 48 * 60 * 60 * 1000);
+    mockListMultipartUploads.mockResolvedValue([
+      { key: "a.bin", uploadId: "u-a", initiated: oldInit },
+      { key: "b.bin", uploadId: "u-b", initiated: oldInit },
+    ]);
+    mockAbortMultipartUpload
+      .mockRejectedValueOnce(new Error("S3 down"))
+      .mockResolvedValueOnce(undefined);
+
+    const summary = await sweepOrphans({ minAgeHours: 24 });
+
+    expect(mockAbortMultipartUpload).toHaveBeenCalledTimes(2);
+    expect(summary.multipartAborted).toBe(1);
+    expect(summary.errors).toBe(1);
+  });
+
+  it("multipart dryRun: lists candidates but aborts nothing and emits no audit", async () => {
+    const oldInit = new Date(Date.now() - 48 * 60 * 60 * 1000);
+    mockListMultipartUploads.mockResolvedValue([
+      { key: "abandoned.bin", uploadId: "u-1", initiated: oldInit },
+    ]);
+
+    const summary = await sweepOrphans({ minAgeHours: 24, dryRun: true });
+
+    expect(mockAbortMultipartUpload).not.toHaveBeenCalled();
+    expect(logAuditEvent).not.toHaveBeenCalled();
+    expect(summary.multipartAborted).toBe(1);
+    expect(summary.multipartCandidates).toEqual([
+      { key: "abandoned.bin", uploadId: "u-1", initiatedAt: oldInit.toISOString() },
+    ]);
   });
 
   it("S3→DB: NEVER deletes objects referenced by BackgroundImage or Folder (regression)", async () => {
@@ -1195,6 +1282,9 @@ describe("sweepOrphans", () => {
       { table: "file", id: "f1", objectName: "u1/missing.bin" },
     ]);
     expect(summary.s3Candidates).toEqual(["truly-orphan.bin"]);
+    // No incomplete multipart uploads in this scenario.
+    expect(summary.multipartAborted).toBe(0);
+    expect(summary.multipartCandidates).toEqual([]);
   });
 });
 

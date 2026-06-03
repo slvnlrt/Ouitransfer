@@ -79,7 +79,7 @@ function mockConfig(overrides: Record<string, string>): void {
 const DEACTIVATION_SUMMARY = { deactivated: 0, errors: 0 };
 const DELETION_SUMMARY = { warned: 0, deleted: 0, errors: 0 };
 const ACCOUNT_SUMMARY = { purgedAccounts: 0, errors: 0 };
-const ORPHAN_SUMMARY = { dbDeleted: 0, s3Deleted: 0, errors: 0 };
+const ORPHAN_SUMMARY = { dbDeleted: 0, s3Deleted: 0, multipartAborted: 0, errors: 0 };
 const QUOTA_OVERAGE_SUMMARY = {
   usersProcessed: 0,
   filesDeleted: 0,
@@ -312,7 +312,12 @@ describe("Cleanup scheduler", () => {
       vi.mocked(deactivateEndedShares).mockResolvedValue({ deactivated: 6, errors: 0 });
       vi.mocked(deleteDeactivatedShares).mockResolvedValue({ warned: 1, deleted: 2, errors: 0 });
       vi.mocked(cleanupDeactivatedAccounts).mockResolvedValue({ purgedAccounts: 3, errors: 0 });
-      vi.mocked(sweepOrphans).mockResolvedValue({ dbDeleted: 4, s3Deleted: 5, errors: 0 });
+      vi.mocked(sweepOrphans).mockResolvedValue({
+        dbDeleted: 4,
+        s3Deleted: 5,
+        multipartAborted: 3,
+        errors: 0,
+      });
       vi.mocked(enforceQuotaOverage).mockResolvedValue({
         usersProcessed: 7,
         filesDeleted: 8,
@@ -332,7 +337,7 @@ describe("Cleanup scheduler", () => {
             deactivatedShares: { deactivated: 6, errors: 0 },
             deletedShares: { warned: 1, deleted: 2, errors: 0 },
             deactivatedAccounts: { purgedAccounts: 3, errors: 0 },
-            orphans: { dbDeleted: 4, s3Deleted: 5, errors: 0 },
+            orphans: { dbDeleted: 4, s3Deleted: 5, multipartAborted: 3, errors: 0 },
             quotaOverage: {
               usersProcessed: 7,
               filesDeleted: 8,

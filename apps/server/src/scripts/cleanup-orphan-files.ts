@@ -11,9 +11,10 @@ import { prisma } from "../shared/prisma.js";
  *   pnpm --filter ouitransfer-api cleanup:orphan-files            # dry run (no deletes)
  *   pnpm --filter ouitransfer-api cleanup:orphan-files:confirm    # actually sweep
  *
- * Unlike the previous implementation it covers **both** directions —
- * DB rows pointing at missing S3 objects *and* S3 objects with no DB row —
- * and applies a min-age guard so in-flight uploads are never touched.
+ * It covers **both** reconciliation directions — DB rows pointing at missing S3
+ * objects *and* S3 objects with no DB row — plus incomplete/abandoned multipart
+ * uploads (initiated but never completed or aborted), and applies a min-age guard
+ * so in-flight uploads are never touched.
  */
 
 const DEFAULT_MIN_AGE_HOURS = 24;
@@ -55,7 +56,19 @@ async function main(): Promise<void> {
       console.log("  (none)");
     }
 
-    console.log(`\nTotals: ${preview.dbDeleted} DB row(s), ${preview.s3Deleted} S3 object(s).`);
+    console.log("\nIncomplete multipart uploads that WOULD be aborted (initiated before cutoff):");
+    if (preview.multipartCandidates && preview.multipartCandidates.length > 0) {
+      for (const c of preview.multipartCandidates) {
+        console.log(`  key=${c.key} uploadId=${c.uploadId} initiated=${c.initiatedAt}`);
+      }
+    } else {
+      console.log("  (none)");
+    }
+
+    console.log(
+      `\nTotals: ${preview.dbDeleted} DB row(s), ${preview.s3Deleted} S3 object(s), ` +
+        `${preview.multipartAborted} incomplete multipart upload(s).`,
+    );
     console.log(
       "\nRe-run with --confirm to perform the sweep:\n" +
         "  pnpm --filter ouitransfer-api cleanup:orphan-files:confirm",
@@ -69,6 +82,7 @@ async function main(): Promise<void> {
   console.log("\nDone:");
   console.log(`  DB rows deleted (missing S3 object):   ${summary.dbDeleted}`);
   console.log(`  S3 objects deleted (no DB row):        ${summary.s3Deleted}`);
+  console.log(`  incomplete multipart uploads aborted:  ${summary.multipartAborted}`);
   console.log(`  errors (logged, non-fatal):            ${summary.errors}`);
 }
 
