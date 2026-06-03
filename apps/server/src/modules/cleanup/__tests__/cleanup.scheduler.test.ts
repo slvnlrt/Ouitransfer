@@ -7,9 +7,10 @@ vi.mock("../../config/service.js", () => ({
 }));
 
 vi.mock("../service.js", () => ({
-  cleanupExpiredShares: vi.fn(),
-  cleanupMaxViewsShares: vi.fn(),
-  cleanupExpiredReverseShares: vi.fn(),
+  deactivateEndedShares: vi.fn(),
+  deactivateEndedReverseShares: vi.fn(),
+  deleteDeactivatedShares: vi.fn(),
+  deleteDeactivatedReverseShares: vi.fn(),
   cleanupDeactivatedAccounts: vi.fn(),
   sweepOrphans: vi.fn(),
 }));
@@ -31,9 +32,10 @@ import {
 } from "../cleanup.scheduler.js";
 import {
   cleanupDeactivatedAccounts,
-  cleanupExpiredReverseShares,
-  cleanupExpiredShares,
-  cleanupMaxViewsShares,
+  deactivateEndedReverseShares,
+  deactivateEndedShares,
+  deleteDeactivatedReverseShares,
+  deleteDeactivatedShares,
   sweepOrphans,
 } from "../service.js";
 
@@ -57,7 +59,6 @@ function mockConfig(overrides: Record<string, string>): void {
     autoCleanupIntervalHours: "24",
     autoCleanupGracePeriodDays: "7",
     autoCleanupNotifyDaysBefore: "3",
-    maxViewsCleanupDays: "30",
     accountDeactivationCleanupEnabled: "false",
     accountDeactivationCleanupDays: "30",
     autoCleanupOrphansEnabled: "false",
@@ -70,7 +71,8 @@ function mockConfig(overrides: Record<string, string>): void {
   });
 }
 
-const SHARE_SUMMARY = { warned: 0, deleted: 0, errors: 0 };
+const DEACTIVATION_SUMMARY = { deactivated: 0, errors: 0 };
+const DELETION_SUMMARY = { warned: 0, deleted: 0, errors: 0 };
 const ACCOUNT_SUMMARY = { purgedAccounts: 0, errors: 0 };
 const ORPHAN_SUMMARY = { dbDeleted: 0, s3Deleted: 0, errors: 0 };
 
@@ -82,9 +84,10 @@ describe("Cleanup scheduler", () => {
     vi.clearAllMocks();
 
     mockConfig({});
-    vi.mocked(cleanupExpiredShares).mockResolvedValue({ ...SHARE_SUMMARY });
-    vi.mocked(cleanupMaxViewsShares).mockResolvedValue({ ...SHARE_SUMMARY });
-    vi.mocked(cleanupExpiredReverseShares).mockResolvedValue({ ...SHARE_SUMMARY });
+    vi.mocked(deactivateEndedShares).mockResolvedValue({ ...DEACTIVATION_SUMMARY });
+    vi.mocked(deactivateEndedReverseShares).mockResolvedValue({ ...DEACTIVATION_SUMMARY });
+    vi.mocked(deleteDeactivatedShares).mockResolvedValue({ ...DELETION_SUMMARY });
+    vi.mocked(deleteDeactivatedReverseShares).mockResolvedValue({ ...DELETION_SUMMARY });
     vi.mocked(cleanupDeactivatedAccounts).mockResolvedValue({ ...ACCOUNT_SUMMARY });
     vi.mocked(sweepOrphans).mockResolvedValue({ ...ORPHAN_SUMMARY });
   });
@@ -101,9 +104,10 @@ describe("Cleanup scheduler", () => {
 
       // First scheduled run
       await vi.advanceTimersByTimeAsync(24 * ONE_HOUR_MS + 1);
-      expect(cleanupExpiredShares).not.toHaveBeenCalled();
-      expect(cleanupMaxViewsShares).not.toHaveBeenCalled();
-      expect(cleanupExpiredReverseShares).not.toHaveBeenCalled();
+      expect(deactivateEndedShares).not.toHaveBeenCalled();
+      expect(deactivateEndedReverseShares).not.toHaveBeenCalled();
+      expect(deleteDeactivatedShares).not.toHaveBeenCalled();
+      expect(deleteDeactivatedReverseShares).not.toHaveBeenCalled();
 
       // A second run fires — proving the timer rescheduled despite being disabled
       await vi.advanceTimersByTimeAsync(24 * ONE_HOUR_MS + 1);
@@ -111,26 +115,59 @@ describe("Cleanup scheduler", () => {
       expect(mockLogger.debug).toHaveBeenCalledWith(expect.stringContaining("disabled"));
     });
 
-    it("runs the three content cleanups with config-derived args when enabled", async () => {
+    it("runs the two-phase content lifecycle (deactivate then delete) with config-derived args", async () => {
       mockConfig({
         autoCleanupEnabled: "true",
         autoCleanupGracePeriodDays: "5",
         autoCleanupNotifyDaysBefore: "2",
-        maxViewsCleanupDays: "14",
       });
-      await startCleanupScheduler();
 
+      // Record relative call order across the four lifecycle functions.
+      const order: string[] = [];
+      vi.mocked(deactivateEndedShares).mockImplementation(async () => {
+        order.push("deactivateShares");
+        return { ...DEACTIVATION_SUMMARY };
+      });
+      vi.mocked(deactivateEndedReverseShares).mockImplementation(async () => {
+        order.push("deactivateReverseShares");
+        return { ...DEACTIVATION_SUMMARY };
+      });
+      vi.mocked(deleteDeactivatedShares).mockImplementation(async () => {
+        order.push("deleteShares");
+        return { ...DELETION_SUMMARY };
+      });
+      vi.mocked(deleteDeactivatedReverseShares).mockImplementation(async () => {
+        order.push("deleteReverseShares");
+        return { ...DELETION_SUMMARY };
+      });
+
+      await startCleanupScheduler();
       await vi.advanceTimersByTimeAsync(24 * ONE_HOUR_MS + 1);
 
-      expect(cleanupExpiredShares).toHaveBeenCalledWith({ graceDays: 5, notifyDaysBefore: 2 });
-      expect(cleanupMaxViewsShares).toHaveBeenCalledWith({
-        inactiveDays: 14,
-        notifyDaysBefore: 2,
-      });
-      expect(cleanupExpiredReverseShares).toHaveBeenCalledWith({
+      // Phase 1 (deactivate) takes no args; phase 2 (delete) takes grace + notify.
+      expect(deactivateEndedShares).toHaveBeenCalledWith();
+      expect(deactivateEndedReverseShares).toHaveBeenCalledWith();
+      expect(deleteDeactivatedShares).toHaveBeenCalledWith({ graceDays: 5, notifyDaysBefore: 2 });
+      expect(deleteDeactivatedReverseShares).toHaveBeenCalledWith({
         graceDays: 5,
         notifyDaysBefore: 2,
       });
+
+      // Both deactivation sweeps run before BOTH deletion sweeps.
+      expect(order).toEqual([
+        "deactivateShares",
+        "deactivateReverseShares",
+        "deleteShares",
+        "deleteReverseShares",
+      ]);
+    });
+
+    it("never reads the retired maxViewsCleanupDays config key", async () => {
+      mockConfig({ autoCleanupEnabled: "true" });
+      await startCleanupScheduler();
+      await vi.advanceTimersByTimeAsync(24 * ONE_HOUR_MS + 1);
+
+      expect(getConfigValue).not.toHaveBeenCalledWith("maxViewsCleanupDays");
     });
   });
 
@@ -185,11 +222,11 @@ describe("Cleanup scheduler", () => {
 
       // Just under 2h — should not fire
       await vi.advanceTimersByTimeAsync(2 * ONE_HOUR_MS - 1000);
-      expect(cleanupExpiredShares).not.toHaveBeenCalled();
+      expect(deactivateEndedShares).not.toHaveBeenCalled();
 
       // Past 2h — fires
       await vi.advanceTimersByTimeAsync(2000);
-      expect(cleanupExpiredShares).toHaveBeenCalledTimes(1);
+      expect(deactivateEndedShares).toHaveBeenCalledTimes(1);
     });
 
     it("falls back to the default interval when the value is unparseable", async () => {
@@ -198,10 +235,10 @@ describe("Cleanup scheduler", () => {
 
       // Should not fire before the 24h default
       await vi.advanceTimersByTimeAsync(23 * ONE_HOUR_MS);
-      expect(cleanupExpiredShares).not.toHaveBeenCalled();
+      expect(deactivateEndedShares).not.toHaveBeenCalled();
 
       await vi.advanceTimersByTimeAsync(ONE_HOUR_MS + 1);
-      expect(cleanupExpiredShares).toHaveBeenCalledTimes(1);
+      expect(deactivateEndedShares).toHaveBeenCalledTimes(1);
       expect(mockLogger.warn).toHaveBeenCalledWith(
         expect.objectContaining({ key: "autoCleanupIntervalHours" }),
         expect.stringContaining("parse"),
@@ -215,12 +252,12 @@ describe("Cleanup scheduler", () => {
       await startCleanupScheduler();
 
       await vi.advanceTimersByTimeAsync(24 * ONE_HOUR_MS + 1);
-      expect(cleanupExpiredShares).not.toHaveBeenCalled();
+      expect(deactivateEndedShares).not.toHaveBeenCalled();
 
       // Flip the master toggle on between runs
       mockConfig({ autoCleanupEnabled: "true" });
       await vi.advanceTimersByTimeAsync(24 * ONE_HOUR_MS + 1);
-      expect(cleanupExpiredShares).toHaveBeenCalledTimes(1);
+      expect(deactivateEndedShares).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -231,17 +268,21 @@ describe("Cleanup scheduler", () => {
         accountDeactivationCleanupEnabled: "true",
         autoCleanupOrphansEnabled: "true",
       });
-      vi.mocked(cleanupExpiredShares).mockResolvedValue({ warned: 1, deleted: 2, errors: 0 });
+      vi.mocked(deactivateEndedShares).mockResolvedValue({ deactivated: 6, errors: 0 });
+      vi.mocked(deleteDeactivatedShares).mockResolvedValue({ warned: 1, deleted: 2, errors: 0 });
       vi.mocked(cleanupDeactivatedAccounts).mockResolvedValue({ purgedAccounts: 3, errors: 0 });
       vi.mocked(sweepOrphans).mockResolvedValue({ dbDeleted: 4, s3Deleted: 5, errors: 0 });
 
       await startCleanupScheduler();
       await vi.advanceTimersByTimeAsync(24 * ONE_HOUR_MS + 1);
 
+      // Aggregated summary carries the new phase-1 (deactivated) + phase-2
+      // (deleted) sub-shapes alongside the account + orphan shapes.
       expect(mockLogger.info).toHaveBeenCalledWith(
         {
           summary: expect.objectContaining({
-            expiredShares: { warned: 1, deleted: 2, errors: 0 },
+            deactivatedShares: { deactivated: 6, errors: 0 },
+            deletedShares: { warned: 1, deleted: 2, errors: 0 },
             deactivatedAccounts: { purgedAccounts: 3, errors: 0 },
             orphans: { dbDeleted: 4, s3Deleted: 5, errors: 0 },
           }),
@@ -254,17 +295,18 @@ describe("Cleanup scheduler", () => {
   describe("failure tolerance", () => {
     it("continues other cleanups when one throws", async () => {
       mockConfig({ autoCleanupEnabled: "true" });
-      vi.mocked(cleanupExpiredShares).mockRejectedValue(new Error("boom"));
+      vi.mocked(deactivateEndedShares).mockRejectedValue(new Error("boom"));
 
       await startCleanupScheduler();
       await vi.advanceTimersByTimeAsync(24 * ONE_HOUR_MS + 1);
 
-      // The other content cleanups still ran
-      expect(cleanupMaxViewsShares).toHaveBeenCalledTimes(1);
-      expect(cleanupExpiredReverseShares).toHaveBeenCalledTimes(1);
+      // The other lifecycle sweeps still ran despite phase 1 throwing.
+      expect(deactivateEndedReverseShares).toHaveBeenCalledTimes(1);
+      expect(deleteDeactivatedShares).toHaveBeenCalledTimes(1);
+      expect(deleteDeactivatedReverseShares).toHaveBeenCalledTimes(1);
       expect(mockLogger.error).toHaveBeenCalledWith(
         expect.objectContaining({ err: expect.any(Error) }),
-        "Cleanup scheduler: cleanupExpiredShares failed",
+        "Cleanup scheduler: deactivateEndedShares failed",
       );
     });
   });
@@ -280,7 +322,7 @@ describe("Cleanup scheduler", () => {
       stopCleanupScheduler();
 
       await vi.advanceTimersByTimeAsync(24 * ONE_HOUR_MS + 1);
-      expect(cleanupExpiredShares).not.toHaveBeenCalled();
+      expect(deactivateEndedShares).not.toHaveBeenCalled();
     });
 
     it("is idempotent — can be called when no scheduler is running", () => {
@@ -296,7 +338,7 @@ describe("Cleanup scheduler", () => {
       await startCleanupScheduler();
 
       await vi.advanceTimersByTimeAsync(24 * ONE_HOUR_MS + 1);
-      expect(cleanupExpiredShares).toHaveBeenCalledTimes(1);
+      expect(deactivateEndedShares).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -306,19 +348,19 @@ describe("Cleanup scheduler", () => {
 
       await initCleanupOnBoot();
 
-      expect(cleanupExpiredShares).toHaveBeenCalledTimes(1);
+      expect(deactivateEndedShares).toHaveBeenCalledTimes(1);
     });
 
     it("does not run cleanup on boot when disabled, but still starts the scheduler", async () => {
       mockConfig({ autoCleanupEnabled: "false" });
 
       await initCleanupOnBoot();
-      expect(cleanupExpiredShares).not.toHaveBeenCalled();
+      expect(deactivateEndedShares).not.toHaveBeenCalled();
 
       // Scheduler is running — flip on and advance
       mockConfig({ autoCleanupEnabled: "true" });
       await vi.advanceTimersByTimeAsync(24 * ONE_HOUR_MS + 1);
-      expect(cleanupExpiredShares).toHaveBeenCalledTimes(1);
+      expect(deactivateEndedShares).toHaveBeenCalledTimes(1);
     });
 
     it("does not throw when the initial pass fails", async () => {

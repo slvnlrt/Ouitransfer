@@ -23,6 +23,7 @@ vi.mock("../../../shared/prisma.js", () => ({
     share: {
       findMany: vi.fn(),
       update: vi.fn(),
+      updateMany: vi.fn(),
       delete: vi.fn(),
     },
     shareSecurity: {
@@ -31,6 +32,7 @@ vi.mock("../../../shared/prisma.js", () => ({
     reverseShare: {
       findMany: vi.fn(),
       update: vi.fn(),
+      updateMany: vi.fn(),
       delete: vi.fn(),
     },
     reverseShareFile: {
@@ -85,9 +87,10 @@ import { logAuditEvent } from "../../audit/service.js";
 import { emailService } from "../../email/service.js";
 import {
   cleanupDeactivatedAccounts,
-  cleanupExpiredReverseShares,
-  cleanupExpiredShares,
-  cleanupMaxViewsShares,
+  deactivateEndedReverseShares,
+  deactivateEndedShares,
+  deleteDeactivatedReverseShares,
+  deleteDeactivatedShares,
   deleteReverseShareWithStorage,
   deleteShareLink,
   purgeUserContent,
@@ -126,6 +129,10 @@ beforeEach(() => {
   vi.mocked(logAuditEvent).mockResolvedValue(undefined);
   vi.mocked(prisma.share.update).mockResolvedValue(undefined as never);
   vi.mocked(prisma.reverseShare.update).mockResolvedValue(undefined as never);
+  // Default: a compare-and-set updateMany succeeds (1 row affected). Tests that
+  // exercise the race-loser path override this with { count: 0 }.
+  vi.mocked(prisma.share.updateMany).mockResolvedValue({ count: 1 } as never);
+  vi.mocked(prisma.reverseShare.updateMany).mockResolvedValue({ count: 1 } as never);
   mockDeleteObject.mockResolvedValue(undefined);
   mockFileExists.mockResolvedValue(true);
   mockListObjects.mockResolvedValue([]);
@@ -195,172 +202,297 @@ describe("deleteReverseShareWithStorage", () => {
   });
 });
 
-// ── cleanupExpiredShares ────────────────────────────────────────────────────────
+// ── deactivateEndedShares (phase 1) ─────────────────────────────────────────────
 
-describe("cleanupExpiredShares", () => {
+describe("deactivateEndedShares", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-06-03T00:00:00.000Z"));
-    // Default: no shares to warn or delete.
+    // Three findMany calls: expired-active, maxViews-candidates, expired-manual.
     vi.mocked(prisma.share.findMany).mockResolvedValue([] as never);
-    const tx = makeTxClient();
-    tx.share.delete.mockResolvedValue({ id: "s1", security: { id: "sec1" } });
-    installTxMock(tx);
   });
 
-  it("deletes a share past expiration + grace (just-after boundary)", async () => {
-    const now = Date.now();
-    // grace = 7 days. A share expired 8 days ago is past the deletion moment.
-    const expired = new Date(now - 8 * ONE_DAY_MS);
+  it("deactivates an active expired share with reason=expired, anchoring deactivatedAt at the expiration instant", async () => {
+    const expired = new Date(Date.now() - 2 * ONE_DAY_MS);
     vi.mocked(prisma.share.findMany)
-      .mockResolvedValueOnce([] as never) // warn query
       .mockResolvedValueOnce([
         {
           id: "s1",
           name: "Report",
+          maxViews: null,
           expiration: expired,
+          views: 0,
+          notifiedForExpired: false,
+          notifiedForMaxViews: false,
           creatorId: "u1",
           creator: { id: "u1", email: "u@x.com", locale: "en", isActive: true },
         },
-      ] as never); // delete query
+      ] as never) // expired-active
+      .mockResolvedValueOnce([] as never) // maxViews
+      .mockResolvedValueOnce([] as never); // expired-manual
 
-    const summary = await cleanupExpiredShares({ graceDays: 7, notifyDaysBefore: 3 });
+    const summary = await deactivateEndedShares();
 
-    expect(summary.deleted).toBe(1);
-    expect(summary.errors).toBe(0);
+    expect(summary).toEqual({ deactivated: 1, errors: 0 });
+    // Compare-and-set writes the deactivation fields with deactivatedAt = expiration.
+    expect(prisma.share.updateMany).toHaveBeenCalledWith({
+      where: { id: "s1", isActive: true },
+      data: { isActive: false, deactivatedAt: expired, deactivationReason: "expired" },
+    });
     expect(logAuditEvent).toHaveBeenCalledWith(
       expect.objectContaining({
-        action: "SHARE_AUTO_DELETED",
-        ipAddress: "system",
-        targetType: "share",
+        action: "SHARE_DEACTIVATED",
         targetId: "s1",
-        metadata: expect.objectContaining({ shareName: "Report", reason: "expired" }),
+        metadata: expect.objectContaining({ reason: "expired" }),
       }),
     );
     expect(emailService.send).toHaveBeenCalledWith(
-      "share_auto_deleted",
+      "share_expired",
       expect.objectContaining({
-        to: "u@x.com",
-        data: expect.objectContaining({ reason: "cleanupReason.expired" }),
+        relatedId: "s1",
+        data: expect.objectContaining({ expiredAt: expired.toISOString() }),
       }),
     );
   });
 
-  it("does NOT delete a share still inside the grace window (just-before boundary)", async () => {
-    const now = Date.now();
-    // grace = 7 days; expired only 6 days ago → deletion moment is in the future.
-    // The delete query uses `expiration < now - grace`, so this share is excluded.
+  it("deactivates a maxViews-reached active share with reason=max_views (views >= cap)", async () => {
     vi.mocked(prisma.share.findMany)
-      .mockResolvedValueOnce([] as never) // warn
-      .mockResolvedValueOnce([] as never); // delete returns nothing (filtered in SQL)
+      .mockResolvedValueOnce([] as never) // expired-active
+      .mockResolvedValueOnce([
+        {
+          id: "s2",
+          name: "Photos",
+          maxViews: 5,
+          expiration: null,
+          views: 5,
+          notifiedForExpired: false,
+          notifiedForMaxViews: false,
+          creatorId: "u1",
+          creator: { id: "u1", email: "u@x.com", locale: "en", isActive: true },
+        },
+      ] as never) // maxViews
+      .mockResolvedValueOnce([] as never); // expired-manual
 
-    const summary = await cleanupExpiredShares({ graceDays: 7, notifyDaysBefore: 3 });
+    const summary = await deactivateEndedShares();
 
-    expect(summary.deleted).toBe(0);
-    // Assert the delete query window is `now - grace`.
-    const deleteCall = vi.mocked(prisma.share.findMany).mock.calls[1][0] as {
-      where: { expiration: { lt: Date } };
-    };
-    expect(deleteCall.where.expiration.lt.getTime()).toBe(now - 7 * ONE_DAY_MS);
+    expect(summary.deactivated).toBe(1);
+    expect(prisma.share.updateMany).toHaveBeenCalledWith({
+      where: { id: "s2", isActive: true },
+      data: expect.objectContaining({ isActive: false, deactivationReason: "max_views" }),
+    });
+    expect(emailService.send).toHaveBeenCalledWith(
+      "share_max_views_reached",
+      expect.objectContaining({ relatedId: "s2", data: expect.objectContaining({ maxViews: 5 }) }),
+    );
   });
 
-  it("warns once and sets the flag only when the email is enqueued", async () => {
-    const now = Date.now();
-    // grace 7, notify 3: deletion moment within 3 days means expiration in
-    // (now-7d, now-4d]. Pick expiration = now - 5d.
-    const expiration = new Date(now - 5 * ONE_DAY_MS);
+  it("does NOT deactivate a maxViews candidate still below its cap", async () => {
+    vi.mocked(prisma.share.findMany)
+      .mockResolvedValueOnce([] as never)
+      .mockResolvedValueOnce([
+        {
+          id: "s2",
+          name: "Photos",
+          maxViews: 5,
+          expiration: null,
+          views: 4, // below cap
+          notifiedForExpired: false,
+          notifiedForMaxViews: false,
+          creatorId: "u1",
+          creator: { id: "u1", email: "u@x.com", locale: "en", isActive: true },
+        },
+      ] as never)
+      .mockResolvedValueOnce([] as never);
+
+    const summary = await deactivateEndedShares();
+
+    expect(summary.deactivated).toBe(0);
+    expect(prisma.share.updateMany).not.toHaveBeenCalled();
+  });
+
+  it("upgrades a manual pause whose expiration has passed to reason=expired, re-anchoring deactivatedAt", async () => {
+    const expired = new Date(Date.now() - 3 * ONE_DAY_MS);
+    vi.mocked(prisma.share.findMany)
+      .mockResolvedValueOnce([] as never) // expired-active
+      .mockResolvedValueOnce([] as never) // maxViews
+      .mockResolvedValueOnce([
+        {
+          id: "s3",
+          name: "Paused",
+          maxViews: null,
+          expiration: expired,
+          views: 0,
+          notifiedForExpired: false,
+          notifiedForMaxViews: false,
+          creatorId: "u1",
+          creator: { id: "u1", email: "u@x.com", locale: "en", isActive: true },
+        },
+      ] as never); // expired-manual
+
+    const summary = await deactivateEndedShares();
+
+    expect(summary.deactivated).toBe(1);
+    // Reason is upgraded from manual → expired, deactivatedAt re-anchored at expiration.
+    expect(prisma.share.updateMany).toHaveBeenCalledWith({
+      where: { id: "s3", isActive: false, deactivationReason: "manual" },
+      data: { deactivatedAt: expired, deactivationReason: "expired" },
+    });
+    expect(logAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "SHARE_DEACTIVATED",
+        targetId: "s3",
+        metadata: expect.objectContaining({ reason: "expired", upgradedFrom: "manual" }),
+      }),
+    );
+  });
+
+  it("is race-safe: a compare-and-set that affects 0 rows is not counted and emits no notice", async () => {
+    const expired = new Date(Date.now() - 2 * ONE_DAY_MS);
     vi.mocked(prisma.share.findMany)
       .mockResolvedValueOnce([
         {
           id: "s1",
           name: "Report",
-          expiration,
+          maxViews: null,
+          expiration: expired,
+          views: 0,
+          notifiedForExpired: false,
+          notifiedForMaxViews: false,
           creatorId: "u1",
-          creator: { id: "u1", email: "u@x.com", locale: "en" },
+          creator: { id: "u1", email: "u@x.com", locale: "en", isActive: true },
         },
-      ] as never) // warn query
-      .mockResolvedValueOnce([] as never); // delete query
+      ] as never)
+      .mockResolvedValueOnce([] as never)
+      .mockResolvedValueOnce([] as never);
+    // A concurrent path already deactivated it.
+    vi.mocked(prisma.share.updateMany).mockResolvedValue({ count: 0 } as never);
 
-    const summary = await cleanupExpiredShares({ graceDays: 7, notifyDaysBefore: 3 });
+    const summary = await deactivateEndedShares();
 
-    expect(emailService.send).toHaveBeenCalledWith(
-      "share_pending_deletion",
-      expect.objectContaining({ relatedId: "s1" }),
-    );
-    expect(prisma.share.update).toHaveBeenCalledWith({
-      where: { id: "s1" },
-      data: { notifiedForPendingDeletion: true },
-    });
-    expect(summary.warned).toBe(1);
+    expect(summary.deactivated).toBe(0);
+    expect(logAuditEvent).not.toHaveBeenCalled();
+    expect(emailService.send).not.toHaveBeenCalled();
   });
 
-  it("does NOT set the flag when the warning email is not enqueued (idempotency retry)", async () => {
-    const now = Date.now();
-    const expiration = new Date(now - 5 * ONE_DAY_MS);
+  it("notifies once: skips the deactivation notice when the flag is already set", async () => {
+    const expired = new Date(Date.now() - 2 * ONE_DAY_MS);
+    vi.mocked(prisma.share.findMany)
+      .mockResolvedValueOnce([
+        {
+          id: "s1",
+          name: "Report",
+          maxViews: null,
+          expiration: expired,
+          views: 0,
+          notifiedForExpired: true, // already notified
+          notifiedForMaxViews: false,
+          creatorId: "u1",
+          creator: { id: "u1", email: "u@x.com", locale: "en", isActive: true },
+        },
+      ] as never)
+      .mockResolvedValueOnce([] as never)
+      .mockResolvedValueOnce([] as never);
+
+    const summary = await deactivateEndedShares();
+
+    // Still deactivated + audited, but no email sent.
+    expect(summary.deactivated).toBe(1);
+    expect(emailService.send).not.toHaveBeenCalled();
+  });
+
+  it("flips notifiedForExpired only when the notice was enqueued (retry-safe)", async () => {
+    const expired = new Date(Date.now() - 2 * ONE_DAY_MS);
     vi.mocked(emailService.send).mockResolvedValue({ enqueued: false });
     vi.mocked(prisma.share.findMany)
       .mockResolvedValueOnce([
         {
           id: "s1",
           name: "Report",
-          expiration,
+          maxViews: null,
+          expiration: expired,
+          views: 0,
+          notifiedForExpired: false,
+          notifiedForMaxViews: false,
           creatorId: "u1",
-          creator: { id: "u1", email: "u@x.com", locale: "en" },
+          creator: { id: "u1", email: "u@x.com", locale: "en", isActive: true },
         },
       ] as never)
+      .mockResolvedValueOnce([] as never)
       .mockResolvedValueOnce([] as never);
 
-    const summary = await cleanupExpiredShares({ graceDays: 7, notifyDaysBefore: 3 });
+    await deactivateEndedShares();
 
-    expect(prisma.share.update).not.toHaveBeenCalled();
-    expect(summary.warned).toBe(0);
-  });
-
-  it("skips the warn phase entirely when notifyDaysBefore is 0", async () => {
-    vi.mocked(prisma.share.findMany).mockResolvedValueOnce([] as never); // delete query only
-
-    await cleanupExpiredShares({ graceDays: 7, notifyDaysBefore: 0 });
-
-    // Only the delete query ran (no warn query).
-    expect(prisma.share.findMany).toHaveBeenCalledTimes(1);
+    // The deactivation compare-and-set ran, but the notifiedForExpired flag was
+    // NOT flipped because the email did not enqueue.
+    expect(prisma.share.updateMany).not.toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ notifiedForExpired: false }) }),
+    );
   });
 });
 
-// ── cleanupMaxViewsShares ───────────────────────────────────────────────────────
+// ── deleteDeactivatedShares (phase 2) ───────────────────────────────────────────
 
-describe("cleanupMaxViewsShares", () => {
+describe("deleteDeactivatedShares", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-06-03T00:00:00.000Z"));
+    vi.mocked(prisma.share.findMany).mockResolvedValue([] as never);
     const tx = makeTxClient();
     tx.share.delete.mockResolvedValue({ id: "s1", security: { id: "sec1" } });
     installTxMock(tx);
   });
 
-  it("deletes a maxViews-reached share that has been inactive long enough", async () => {
-    const now = Date.now();
-    vi.mocked(prisma.share.findMany).mockResolvedValue([
-      {
-        id: "s1",
-        name: "Report",
-        views: 10,
-        maxViews: 10,
-        lastDownloadedAt: new Date(now - 40 * ONE_DAY_MS),
-        updatedAt: new Date(now - 40 * ONE_DAY_MS),
-        creatorId: "u1",
-        creator: { id: "u1", email: "u@x.com", locale: "en", isActive: true },
-      },
-    ] as never);
+  it("deletes a share deactivated past the grace window (measured from deactivatedAt)", async () => {
+    // grace = 7d; deactivated 8d ago → past the deletion moment.
+    const deactivatedAt = new Date(Date.now() - 8 * ONE_DAY_MS);
+    vi.mocked(prisma.share.findMany)
+      .mockResolvedValueOnce([] as never) // warn
+      .mockResolvedValueOnce([
+        {
+          id: "s1",
+          name: "Report",
+          deactivatedAt,
+          deactivationReason: "expired",
+          creatorId: "u1",
+          creator: { id: "u1", email: "u@x.com", locale: "en", isActive: true },
+        },
+      ] as never); // delete
 
-    const summary = await cleanupMaxViewsShares({ inactiveDays: 30, notifyDaysBefore: 0 });
+    const summary = await deleteDeactivatedShares({ graceDays: 7, notifyDaysBefore: 3 });
 
     expect(summary.deleted).toBe(1);
     expect(logAuditEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         action: "SHARE_AUTO_DELETED",
-        metadata: expect.objectContaining({ reason: "view limit reached" }),
+        targetId: "s1",
+        metadata: expect.objectContaining({ reason: "expired" }),
       }),
     );
+    expect(emailService.send).toHaveBeenCalledWith(
+      "share_auto_deleted",
+      expect.objectContaining({
+        data: expect.objectContaining({ reason: "cleanupReason.expired" }),
+      }),
+    );
+  });
+
+  it("uses a localized view-limit reason for a max_views deletion", async () => {
+    const deactivatedAt = new Date(Date.now() - 8 * ONE_DAY_MS);
+    vi.mocked(prisma.share.findMany)
+      .mockResolvedValueOnce([] as never)
+      .mockResolvedValueOnce([
+        {
+          id: "s1",
+          name: "Report",
+          deactivatedAt,
+          deactivationReason: "max_views",
+          creatorId: "u1",
+          creator: { id: "u1", email: "u@x.com", locale: "en", isActive: true },
+        },
+      ] as never);
+
+    await deleteDeactivatedShares({ graceDays: 7, notifyDaysBefore: 3 });
+
     expect(emailService.send).toHaveBeenCalledWith(
       "share_auto_deleted",
       expect.objectContaining({
@@ -369,62 +501,47 @@ describe("cleanupMaxViewsShares", () => {
     );
   });
 
-  it("skips a share that reached maxViews but is below the view cap (boundary)", async () => {
+  it("delete query measures grace from deactivatedAt and excludes manual pauses (auto-deletable reasons only)", async () => {
     const now = Date.now();
-    vi.mocked(prisma.share.findMany).mockResolvedValue([
-      {
-        id: "s1",
-        name: "Report",
-        views: 9, // below cap
-        maxViews: 10,
-        lastDownloadedAt: new Date(now - 40 * ONE_DAY_MS),
-        updatedAt: new Date(now - 40 * ONE_DAY_MS),
-        creatorId: "u1",
-        creator: { id: "u1", email: "u@x.com", locale: "en", isActive: true },
-      },
-    ] as never);
+    vi.mocked(prisma.share.findMany)
+      .mockResolvedValueOnce([] as never) // warn
+      .mockResolvedValueOnce([] as never); // delete
 
-    const summary = await cleanupMaxViewsShares({ inactiveDays: 30, notifyDaysBefore: 0 });
+    await deleteDeactivatedShares({ graceDays: 7, notifyDaysBefore: 3 });
 
-    expect(summary.deleted).toBe(0);
-    expect(logAuditEvent).not.toHaveBeenCalled();
-  });
-
-  it("uses the inactivity window of `now - inactiveDays` in the query", async () => {
-    const now = Date.now();
-    vi.mocked(prisma.share.findMany).mockResolvedValue([] as never);
-
-    await cleanupMaxViewsShares({ inactiveDays: 30, notifyDaysBefore: 0 });
-
-    const call = vi.mocked(prisma.share.findMany).mock.calls[0][0] as {
-      where: { OR: { lastDownloadedAt?: { lt: Date }; updatedAt?: { lt: Date } }[] };
+    const deleteCall = vi.mocked(prisma.share.findMany).mock.calls[1][0] as {
+      where: {
+        isActive: boolean;
+        deactivationReason: { in: string[] };
+        deactivatedAt: { lt: Date };
+      };
     };
-    const cutoff = now - 30 * ONE_DAY_MS;
-    expect(call.where.OR[0].lastDownloadedAt?.lt.getTime()).toBe(cutoff);
-    expect(call.where.OR[1].updatedAt?.lt.getTime()).toBe(cutoff);
+    expect(deleteCall.where.isActive).toBe(false);
+    // Grace boundary anchored on deactivatedAt = now - grace.
+    expect(deleteCall.where.deactivatedAt.lt.getTime()).toBe(now - 7 * ONE_DAY_MS);
+    // Manual pauses are excluded — only expired / max_views are eligible.
+    expect(deleteCall.where.deactivationReason.in).toEqual(["expired", "max_views"]);
+    expect(deleteCall.where.deactivationReason.in).not.toContain("manual");
   });
 
-  it("warns once before max-views deletion and sets the flag only when enqueued", async () => {
-    const now = Date.now();
-    // inactive 30d, notify 3d: deletion moment within 3 days means the activity
-    // anchor falls in (now-30d, now-27d]. Pick lastDownloadedAt = now - 28d.
-    const lastDownloadedAt = new Date(now - 28 * ONE_DAY_MS);
+  it("warns once and sets the flag only when the email is enqueued", async () => {
+    // grace 7, notify 3: deletion moment within 3 days → deactivatedAt in
+    // (now-7d, now-4d]. Pick deactivatedAt = now - 5d.
+    const deactivatedAt = new Date(Date.now() - 5 * ONE_DAY_MS);
     vi.mocked(prisma.share.findMany)
       .mockResolvedValueOnce([
         {
           id: "s1",
           name: "Report",
-          views: 10,
-          maxViews: 10,
-          lastDownloadedAt,
-          updatedAt: lastDownloadedAt,
+          deactivatedAt,
+          deactivationReason: "expired",
           creatorId: "u1",
           creator: { id: "u1", email: "u@x.com", locale: "en" },
         },
-      ] as never) // warn query
-      .mockResolvedValueOnce([] as never); // delete query
+      ] as never) // warn
+      .mockResolvedValueOnce([] as never); // delete
 
-    const summary = await cleanupMaxViewsShares({ inactiveDays: 30, notifyDaysBefore: 3 });
+    const summary = await deleteDeactivatedShares({ graceDays: 7, notifyDaysBefore: 3 });
 
     expect(emailService.send).toHaveBeenCalledWith(
       "share_pending_deletion",
@@ -437,19 +554,117 @@ describe("cleanupMaxViewsShares", () => {
     expect(summary.warned).toBe(1);
   });
 
+  it("warn query also excludes manual pauses (auto-deletable reasons only)", async () => {
+    vi.mocked(prisma.share.findMany)
+      .mockResolvedValueOnce([] as never) // warn
+      .mockResolvedValueOnce([] as never); // delete
+
+    await deleteDeactivatedShares({ graceDays: 7, notifyDaysBefore: 3 });
+
+    const warnCall = vi.mocked(prisma.share.findMany).mock.calls[0][0] as {
+      where: { deactivationReason: { in: string[] } };
+    };
+    expect(warnCall.where.deactivationReason.in).toEqual(["expired", "max_views"]);
+  });
+
   it("skips the warn phase entirely when notifyDaysBefore is 0", async () => {
-    vi.mocked(prisma.share.findMany).mockResolvedValueOnce([] as never); // delete query only
+    vi.mocked(prisma.share.findMany).mockResolvedValueOnce([] as never); // delete only
 
-    await cleanupMaxViewsShares({ inactiveDays: 30, notifyDaysBefore: 0 });
+    await deleteDeactivatedShares({ graceDays: 7, notifyDaysBefore: 0 });
 
-    // Only the delete query ran (no warn query).
     expect(prisma.share.findMany).toHaveBeenCalledTimes(1);
   });
 });
 
-// ── cleanupExpiredReverseShares ─────────────────────────────────────────────────
+// ── deactivateEndedReverseShares (phase 1) ──────────────────────────────────────
 
-describe("cleanupExpiredReverseShares", () => {
+describe("deactivateEndedReverseShares", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-03T00:00:00.000Z"));
+    vi.mocked(prisma.reverseShare.findMany).mockResolvedValue([] as never);
+  });
+
+  it("deactivates an active expired reverse share, anchoring deactivatedAt at expiration", async () => {
+    const expired = new Date(Date.now() - 2 * ONE_DAY_MS);
+    vi.mocked(prisma.reverseShare.findMany).mockResolvedValueOnce([
+      {
+        id: "rs1",
+        name: "Inbox",
+        expiration: expired,
+        notifiedForExpired: false,
+        creatorId: "u1",
+        creator: { id: "u1", email: "u@x.com", locale: "en", isActive: true },
+      },
+    ] as never);
+
+    const summary = await deactivateEndedReverseShares();
+
+    expect(summary).toEqual({ deactivated: 1, errors: 0 });
+    expect(prisma.reverseShare.updateMany).toHaveBeenCalledWith({
+      where: { id: "rs1", isActive: true },
+      data: { isActive: false, deactivatedAt: expired, deactivationReason: "expired" },
+    });
+    expect(logAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "REVERSE_SHARE_DEACTIVATED",
+        targetId: "rs1",
+        metadata: expect.objectContaining({ reason: "expired" }),
+      }),
+    );
+    expect(emailService.send).toHaveBeenCalledWith(
+      "reverse_share_expired",
+      expect.objectContaining({
+        relatedId: "rs1",
+        data: expect.objectContaining({ expiredAt: expired.toISOString() }),
+      }),
+    );
+  });
+
+  it("is race-safe: a 0-row compare-and-set is not counted and emits no notice", async () => {
+    const expired = new Date(Date.now() - 2 * ONE_DAY_MS);
+    vi.mocked(prisma.reverseShare.findMany).mockResolvedValueOnce([
+      {
+        id: "rs1",
+        name: "Inbox",
+        expiration: expired,
+        notifiedForExpired: false,
+        creatorId: "u1",
+        creator: { id: "u1", email: "u@x.com", locale: "en", isActive: true },
+      },
+    ] as never);
+    vi.mocked(prisma.reverseShare.updateMany).mockResolvedValue({ count: 0 } as never);
+
+    const summary = await deactivateEndedReverseShares();
+
+    expect(summary.deactivated).toBe(0);
+    expect(logAuditEvent).not.toHaveBeenCalled();
+    expect(emailService.send).not.toHaveBeenCalled();
+  });
+
+  it("notifies once: skips the notice when notifiedForExpired is already set", async () => {
+    const expired = new Date(Date.now() - 2 * ONE_DAY_MS);
+    vi.mocked(prisma.reverseShare.findMany).mockResolvedValueOnce([
+      {
+        id: "rs1",
+        name: "Inbox",
+        expiration: expired,
+        notifiedForExpired: true,
+        creatorId: "u1",
+        creator: { id: "u1", email: "u@x.com", locale: "en", isActive: true },
+      },
+    ] as never);
+
+    const summary = await deactivateEndedReverseShares();
+
+    expect(summary.deactivated).toBe(1);
+    expect(emailService.send).not.toHaveBeenCalled();
+  });
+});
+
+// ── deleteDeactivatedReverseShares (phase 2) ────────────────────────────────────
+
+describe("deleteDeactivatedReverseShares", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-06-03T00:00:00.000Z"));
@@ -457,30 +672,29 @@ describe("cleanupExpiredReverseShares", () => {
     vi.mocked(prisma.reverseShare.delete).mockResolvedValue({ id: "rs1" } as never);
   });
 
-  it("deletes an expired reverse share with its S3 objects and audits", async () => {
-    const now = Date.now();
-    const expired = new Date(now - 8 * ONE_DAY_MS);
+  it("deletes a reverse share deactivated past the grace window with its S3 objects and audits", async () => {
+    const deactivatedAt = new Date(Date.now() - 8 * ONE_DAY_MS);
     vi.mocked(prisma.reverseShare.findMany)
       .mockResolvedValueOnce([] as never) // warn
       .mockResolvedValueOnce([
         {
           id: "rs1",
           name: "Inbox",
-          expiration: expired,
+          deactivatedAt,
+          deactivationReason: "expired",
           creatorId: "u1",
           creator: { id: "u1", email: "u@x.com", locale: "en", isActive: true },
         },
       ] as never); // delete
     vi.mocked(prisma.reverseShareFile.findMany).mockResolvedValue([{ objectName: "o1" }] as never);
 
-    const summary = await cleanupExpiredReverseShares({ graceDays: 7, notifyDaysBefore: 3 });
+    const summary = await deleteDeactivatedReverseShares({ graceDays: 7, notifyDaysBefore: 3 });
 
     expect(summary.deleted).toBe(1);
     expect(mockDeleteObject).toHaveBeenCalledWith("o1");
     expect(logAuditEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         action: "REVERSE_SHARE_AUTO_DELETED",
-        ipAddress: "system",
         targetType: "reverse_share",
         targetId: "rs1",
       }),
@@ -491,16 +705,37 @@ describe("cleanupExpiredReverseShares", () => {
     );
   });
 
-  it("tolerates S3 best-effort failure: still deletes and counts the error", async () => {
+  it("delete query measures grace from deactivatedAt and excludes manual pauses", async () => {
     const now = Date.now();
-    const expired = new Date(now - 8 * ONE_DAY_MS);
+    vi.mocked(prisma.reverseShare.findMany)
+      .mockResolvedValueOnce([] as never)
+      .mockResolvedValueOnce([] as never);
+
+    await deleteDeactivatedReverseShares({ graceDays: 7, notifyDaysBefore: 3 });
+
+    const deleteCall = vi.mocked(prisma.reverseShare.findMany).mock.calls[1][0] as {
+      where: {
+        isActive: boolean;
+        deactivationReason: { in: string[] };
+        deactivatedAt: { lt: Date };
+      };
+    };
+    expect(deleteCall.where.isActive).toBe(false);
+    expect(deleteCall.where.deactivatedAt.lt.getTime()).toBe(now - 7 * ONE_DAY_MS);
+    expect(deleteCall.where.deactivationReason.in).toEqual(["expired", "max_views"]);
+    expect(deleteCall.where.deactivationReason.in).not.toContain("manual");
+  });
+
+  it("tolerates S3 best-effort failure: still deletes and counts the error", async () => {
+    const deactivatedAt = new Date(Date.now() - 8 * ONE_DAY_MS);
     vi.mocked(prisma.reverseShare.findMany)
       .mockResolvedValueOnce([] as never)
       .mockResolvedValueOnce([
         {
           id: "rs1",
           name: "Inbox",
-          expiration: expired,
+          deactivatedAt,
+          deactivationReason: "expired",
           creatorId: "u1",
           creator: { id: "u1", email: "u@x.com", locale: "en", isActive: true },
         },
@@ -508,31 +743,29 @@ describe("cleanupExpiredReverseShares", () => {
     vi.mocked(prisma.reverseShareFile.findMany).mockResolvedValue([{ objectName: "o1" }] as never);
     mockDeleteObject.mockRejectedValueOnce(new Error("S3 down"));
 
-    const summary = await cleanupExpiredReverseShares({ graceDays: 7, notifyDaysBefore: 3 });
+    const summary = await deleteDeactivatedReverseShares({ graceDays: 7, notifyDaysBefore: 3 });
 
-    // Deletion still counts; the failed S3 object is surfaced as an error.
     expect(summary.deleted).toBe(1);
     expect(summary.errors).toBe(1);
-    // The reverse share was still removed from the DB.
     expect(prisma.reverseShare.delete).toHaveBeenCalledWith({ where: { id: "rs1" } });
   });
 
   it("warns once before deletion and sets the flag only when enqueued", async () => {
-    const now = Date.now();
-    const expiration = new Date(now - 5 * ONE_DAY_MS);
+    const deactivatedAt = new Date(Date.now() - 5 * ONE_DAY_MS);
     vi.mocked(prisma.reverseShare.findMany)
       .mockResolvedValueOnce([
         {
           id: "rs1",
           name: "Inbox",
-          expiration,
+          deactivatedAt,
+          deactivationReason: "expired",
           creatorId: "u1",
           creator: { id: "u1", email: "u@x.com", locale: "en" },
         },
       ] as never) // warn
       .mockResolvedValueOnce([] as never); // delete
 
-    const summary = await cleanupExpiredReverseShares({ graceDays: 7, notifyDaysBefore: 3 });
+    const summary = await deleteDeactivatedReverseShares({ graceDays: 7, notifyDaysBefore: 3 });
 
     expect(emailService.send).toHaveBeenCalledWith(
       "reverse_share_pending_deletion",
