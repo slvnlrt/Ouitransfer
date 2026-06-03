@@ -17,6 +17,7 @@ import {
 import { useSecureConfigValue } from "@/hooks/use-secure-configs";
 import type { Share } from "@/http/endpoints/shares/types";
 import { formatDateTime } from "@/lib/format-date-time";
+import { getShareLifecycleState } from "@/lib/share-lifecycle";
 import { SharesTableBulkActions } from "./shares-table-bulk-actions";
 import { ShareRowActions } from "./shares-table-row-actions";
 import { useEditableItem } from "./use-editable-item";
@@ -29,6 +30,9 @@ export interface SharesTableProps {
   onUpdateDescription: (shareId: string, newDescription: string) => void;
   onUpdateSecurity?: (share: Share) => void;
   onUpdateExpiration?: (share: Share) => void;
+  onPauseShare?: (share: Share) => void;
+  onResumeShare?: (share: Share) => void;
+  onRenewShare?: (share: Share) => void;
   onManageFiles: (share: Share) => void;
   onManageRecipients: (share: Share) => void;
   onViewDetails: (share: Share) => void;
@@ -50,6 +54,9 @@ export function SharesTable({
   onUpdateDescription,
   onUpdateSecurity,
   onUpdateExpiration,
+  onPauseShare,
+  onResumeShare,
+  onRenewShare,
   onManageFiles,
   onManageRecipients,
   onViewDetails,
@@ -197,6 +204,8 @@ export function SharesTable({
               const isHoveringRecipients =
                 hoveredAction?.shareId === share.id && hoveredAction?.field === "recipients";
               const isSelected = selectedShares.has(share.id);
+              const lifecycle = getShareLifecycleState(share);
+              const isDeactivated = lifecycle.kind === "deactivated";
               const displayName = editing.getDisplayValue(
                 share.id,
                 "file",
@@ -211,7 +220,13 @@ export function SharesTable({
               );
 
               return (
-                <TableRow key={share.id} className="hover:bg-muted/50 transition-colors border-0">
+                <TableRow
+                  key={share.id}
+                  className={`hover:bg-muted/50 transition-colors border-0 ${
+                    isDeactivated ? "bg-muted/30" : ""
+                  }`}
+                  data-deactivated={isDeactivated || undefined}
+                >
                   <TableCell className="h-12 px-4 border-0">
                     <Checkbox
                       checked={isSelected}
@@ -393,20 +408,31 @@ export function SharesTable({
                     </div>
                   </TableCell>
                   <TableCell className="h-12 px-4">
-                    <Badge
-                      variant="secondary"
-                      className={
-                        !share.expiration || new Date(share.expiration) > new Date()
-                          ? "bg-green-500/20 hover:bg-green-500/30 text-green-600 dark:text-green-400"
-                          : "bg-red-500/20 hover:bg-red-500/30 text-red-600 dark:text-red-400"
-                      }
-                    >
-                      {!share.expiration
-                        ? t("sharesTable.status.neverExpires")
-                        : new Date(share.expiration) > new Date()
+                    {lifecycle.kind === "active" ? (
+                      <Badge
+                        variant="secondary"
+                        className="bg-green-500/20 hover:bg-green-500/30 text-green-600 dark:text-green-400"
+                      >
+                        {share.expiration
                           ? t("sharesTable.status.active")
-                          : t("sharesTable.status.expired")}
-                    </Badge>
+                          : t("sharesTable.status.neverExpires")}
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant="secondary"
+                        className={
+                          lifecycle.reason === "manual"
+                            ? "bg-amber-500/20 hover:bg-amber-500/30 text-amber-600 dark:text-amber-400"
+                            : "bg-red-500/20 hover:bg-red-500/30 text-red-600 dark:text-red-400"
+                        }
+                      >
+                        {lifecycle.reason === "manual"
+                          ? t("sharesTable.status.paused")
+                          : lifecycle.reason === "max_views"
+                            ? t("sharesTable.status.maxViewsReached")
+                            : t("sharesTable.status.expired")}
+                      </Badge>
+                    )}
                   </TableCell>
                   <TableCell
                     className="h-12 px-4"
@@ -506,9 +532,13 @@ export function SharesTable({
                   <TableCell className="h-12 px-4 text-end">
                     <ShareRowActions
                       share={share}
+                      lifecycle={lifecycle}
                       smtpEnabled={smtpEnabled}
                       onDelete={onDelete}
                       onEdit={onEdit}
+                      onPauseShare={onPauseShare}
+                      onResumeShare={onResumeShare}
+                      onRenewShare={onRenewShare}
                       onManageFiles={onManageFiles}
                       onManageRecipients={onManageRecipients}
                       onViewDetails={onViewDetails}

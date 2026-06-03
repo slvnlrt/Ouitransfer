@@ -857,8 +857,6 @@
       "REVERSE_SHARE_CREATE": "Reverse share created",
       "REVERSE_SHARE_UPDATE": "Reverse share updated",
       "REVERSE_SHARE_DELETE": "Reverse share deleted",
-      "REVERSE_SHARE_ACTIVATE": "Reverse share activated",
-      "REVERSE_SHARE_DEACTIVATE": "Reverse share deactivated",
       "REVERSE_SHARE_ACCESS": "Reverse share accessed",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "Reverse share password verified",
       "REVERSE_SHARE_PASSWORD_FAILED": "Reverse share password failed",
@@ -887,7 +885,11 @@
       "SMTP_TEST": "SMTP test performed",
       "BACKGROUND_IMAGE_UPLOAD": "Background image uploaded",
       "BACKGROUND_IMAGE_DELETE": "Background image deleted",
-      "AUDIT_RETENTION_CLEANUP": "Audit log cleanup"
+      "AUDIT_RETENTION_CLEANUP": "Audit log cleanup",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
     },
     "targetTypes": {
       "user": "User",
@@ -2148,7 +2150,11 @@
     },
     "singleShareZipName": "{shareName}_files.zip",
     "multipleSharesZipName": "{count}_shares_files.zip",
-    "defaultShareName": "Share"
+    "defaultShareName": "Share",
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "Share Multiple Files",
@@ -2242,7 +2248,9 @@
     "status": {
       "neverExpires": "Never Expires",
       "active": "Active",
-      "expired": "Expired"
+      "expired": "Expired",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "Protected",
@@ -2263,7 +2271,10 @@
       "viewQrCode": "View QR Code",
       "notifyRecipients": "Notify Recipients",
       "downloadShareFiles": "Download All Files",
-      "delete": "Delete"
+      "delete": "Delete",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "actions": "Actions",

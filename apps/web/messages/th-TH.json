@@ -764,8 +764,6 @@
       "REVERSE_SHARE_CREATE": "สร้างแชร์ย้อนกลับ",
       "REVERSE_SHARE_UPDATE": "อัปเดตแชร์ย้อนกลับ",
       "REVERSE_SHARE_DELETE": "ลบแชร์ย้อนกลับ",
-      "REVERSE_SHARE_ACTIVATE": "เปิดใช้งานแชร์ย้อนกลับ",
-      "REVERSE_SHARE_DEACTIVATE": "ปิดใช้งานแชร์ย้อนกลับ",
       "REVERSE_SHARE_ACCESS": "เข้าถึงแชร์ย้อนกลับ",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "ยืนยันรหัสผ่านแชร์ย้อนกลับ",
       "REVERSE_SHARE_PASSWORD_FAILED": "ยืนยันรหัสผ่านแชร์ย้อนกลับล้มเหลว",
@@ -794,7 +792,11 @@
       "SMTP_TEST": "ทดสอบ SMTP",
       "BACKGROUND_IMAGE_UPLOAD": "อัปโหลดรูปภาพพื้นหลัง",
       "BACKGROUND_IMAGE_DELETE": "ลบรูปภาพพื้นหลัง",
-      "AUDIT_RETENTION_CLEANUP": "ล้างข้อมูลประวัติการตรวจสอบ"
+      "AUDIT_RETENTION_CLEANUP": "ล้างข้อมูลประวัติการตรวจสอบ",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
     },
     "targetTypes": {
       "user": "ผู้ใช้",
@@ -2012,7 +2014,11 @@
     },
     "singleShareZipName": "{shareName}_ไฟล์.zip",
     "multipleSharesZipName": "{count}_แชร์_ไฟล์.zip",
-    "defaultShareName": "แชร์"
+    "defaultShareName": "แชร์",
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "แชร์ไฟล์หลายรายการ",
@@ -2106,7 +2112,9 @@
     "status": {
       "neverExpires": "ไม่เคยหมดอายุ",
       "active": "ใช้งานอยู่",
-      "expired": "หมดอายุแล้ว"
+      "expired": "หมดอายุแล้ว",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "ป้องกัน",
@@ -2127,7 +2135,10 @@
       "viewQrCode": "ดูรหัส QR",
       "notifyRecipients": "แจ้งให้ผู้รับทราบ",
       "downloadShareFiles": "ดาวน์โหลดไฟล์ทั้งหมด",
-      "delete": "ลบ"
+      "delete": "ลบ",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "actions": "การกระทำ",

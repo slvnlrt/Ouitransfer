@@ -760,8 +760,6 @@
       "REVERSE_SHARE_CREATE": "逆共有作成",
       "REVERSE_SHARE_UPDATE": "逆共有更新",
       "REVERSE_SHARE_DELETE": "逆共有削除",
-      "REVERSE_SHARE_ACTIVATE": "逆共有有効化",
-      "REVERSE_SHARE_DEACTIVATE": "逆共有無効化",
       "REVERSE_SHARE_ACCESS": "逆共有アクセス",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "逆共有パスワード確認",
       "REVERSE_SHARE_PASSWORD_FAILED": "逆共有パスワード失敗",
@@ -790,7 +788,11 @@
       "SMTP_TEST": "SMTP テスト実行",
       "BACKGROUND_IMAGE_UPLOAD": "背景画像アップロード",
       "BACKGROUND_IMAGE_DELETE": "背景画像削除",
-      "AUDIT_RETENTION_CLEANUP": "監査ログクリーンアップ"
+      "AUDIT_RETENTION_CLEANUP": "監査ログクリーンアップ",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
     },
     "targetTypes": {
       "user": "ユーザー",
@@ -2008,7 +2010,11 @@
     "zipDownloadSuccess": "zipファイルは正常にダウンロードされました",
     "errors": {
       "multipleDownloadNotSupported": "複数の共有のダウンロードはまだサポートされていません - 共有を個別にダウンロードしてください"
-    }
+    },
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "複数ファイルを共有",
@@ -2102,7 +2108,9 @@
     "status": {
       "neverExpires": "期限なし",
       "active": "アクティブ",
-      "expired": "期限切れ"
+      "expired": "期限切れ",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "保護済み",
@@ -2122,7 +2130,10 @@
       "notifyRecipients": "受信者に通知",
       "delete": "削除",
       "downloadShareFiles": "すべてのファイルをダウンロードします",
-      "viewQrCode": "QRコードを表示"
+      "viewQrCode": "QRコードを表示",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "delete": "削除",

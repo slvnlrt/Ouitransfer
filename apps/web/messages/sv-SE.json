@@ -764,8 +764,6 @@
       "REVERSE_SHARE_CREATE": "Omvänd delning skapad",
       "REVERSE_SHARE_UPDATE": "Omvänd delning uppdaterad",
       "REVERSE_SHARE_DELETE": "Omvänd delning borttagen",
-      "REVERSE_SHARE_ACTIVATE": "Omvänd delning aktiverad",
-      "REVERSE_SHARE_DEACTIVATE": "Omvänd delning inaktiverad",
       "REVERSE_SHARE_ACCESS": "Omvänd delning använd",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "Lösenord för omvänd delning verifierat",
       "REVERSE_SHARE_PASSWORD_FAILED": "Lösenord för omvänd delning misslyckad",
@@ -794,7 +792,11 @@
       "SMTP_TEST": "SMTP-test genomfört",
       "BACKGROUND_IMAGE_UPLOAD": "Bakgrundsbild uppladdad",
       "BACKGROUND_IMAGE_DELETE": "Bakgrundsbild borttagen",
-      "AUDIT_RETENTION_CLEANUP": "Rengöring av granskningslogg"
+      "AUDIT_RETENTION_CLEANUP": "Rengöring av granskningslogg",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
     },
     "targetTypes": {
       "user": "Användare",
@@ -2012,7 +2014,11 @@
     },
     "singleShareZipName": "{shareName}_files.zip",
     "multipleSharesZipName": "{count}_shares_files.zip",
-    "defaultShareName": "Dela"
+    "defaultShareName": "Dela",
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "Dela flera filer",
@@ -2106,7 +2112,9 @@
     "status": {
       "neverExpires": "Går aldrig ut",
       "active": "Aktiv",
-      "expired": "Utgått"
+      "expired": "Utgått",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "Skyddad",
@@ -2127,7 +2135,10 @@
       "viewQrCode": "Se QR-koden",
       "notifyRecipients": "Meddela mottagare",
       "downloadShareFiles": "Ladda ner alla filer",
-      "delete": "Radera"
+      "delete": "Radera",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "actions": "Åtgärder",

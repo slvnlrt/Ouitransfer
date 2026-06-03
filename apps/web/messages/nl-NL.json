@@ -760,8 +760,6 @@
       "REVERSE_SHARE_CREATE": "Omgekeerde deling aangemaakt",
       "REVERSE_SHARE_UPDATE": "Omgekeerde deling bijgewerkt",
       "REVERSE_SHARE_DELETE": "Omgekeerde deling verwijderd",
-      "REVERSE_SHARE_ACTIVATE": "Omgekeerde deling geactiveerd",
-      "REVERSE_SHARE_DEACTIVATE": "Omgekeerde deling gedeactiveerd",
       "REVERSE_SHARE_ACCESS": "Omgekeerde deling geopend",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "Omgekeerde delingwachtwoord geverifieerd",
       "REVERSE_SHARE_PASSWORD_FAILED": "Omgekeerde delingwachtwoord mislukt",
@@ -790,7 +788,11 @@
       "SMTP_TEST": "SMTP-test uitgevoerd",
       "BACKGROUND_IMAGE_UPLOAD": "Achtergrondafbeelding geüpload",
       "BACKGROUND_IMAGE_DELETE": "Achtergrondafbeelding verwijderd",
-      "AUDIT_RETENTION_CLEANUP": "Auditlogboek opgeruimd"
+      "AUDIT_RETENTION_CLEANUP": "Auditlogboek opgeruimd",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
     },
     "targetTypes": {
       "user": "Gebruiker",
@@ -2008,7 +2010,11 @@
     "zipDownloadSuccess": "Zipbestand met succes gedownload",
     "errors": {
       "multipleDownloadNotSupported": "Download van meerdere delen wordt nog niet ondersteund - download delen afzonderlijk"
-    }
+    },
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "Meerdere Bestanden Delen",
@@ -2102,7 +2108,9 @@
     "status": {
       "neverExpires": "Verloopt Nooit",
       "active": "Actief",
-      "expired": "Verlopen"
+      "expired": "Verlopen",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "Beveiligd",
@@ -2122,7 +2130,10 @@
       "notifyRecipients": "Ontvangers Informeren",
       "delete": "Verwijderen",
       "downloadShareFiles": "Download alle bestanden",
-      "viewQrCode": "QR Code Bekijken"
+      "viewQrCode": "QR Code Bekijken",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "delete": "Verwijderen",

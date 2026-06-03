@@ -760,8 +760,6 @@
       "REVERSE_SHARE_CREATE": "Ters paylaşım oluşturuldu",
       "REVERSE_SHARE_UPDATE": "Ters paylaşım güncellendi",
       "REVERSE_SHARE_DELETE": "Ters paylaşım silindi",
-      "REVERSE_SHARE_ACTIVATE": "Ters paylaşım etkinleştirildi",
-      "REVERSE_SHARE_DEACTIVATE": "Ters paylaşım devre dışı bırakıldı",
       "REVERSE_SHARE_ACCESS": "Ters paylaşıma erişildi",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "Ters paylaşım şifresi doğrulandı",
       "REVERSE_SHARE_PASSWORD_FAILED": "Ters paylaşım şifresi başarısız",
@@ -790,7 +788,11 @@
       "SMTP_TEST": "SMTP testi gerçekleştirildi",
       "BACKGROUND_IMAGE_UPLOAD": "Arka plan görüntüsü yüklendi",
       "BACKGROUND_IMAGE_DELETE": "Arka plan görüntüsü silindi",
-      "AUDIT_RETENTION_CLEANUP": "Denetim günlüğü temizliği"
+      "AUDIT_RETENTION_CLEANUP": "Denetim günlüğü temizliği",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
     },
     "targetTypes": {
       "user": "Kullanıcı",
@@ -2008,7 +2010,11 @@
     "zipDownloadSuccess": "Zip dosyası başarıyla indirildi",
     "errors": {
       "multipleDownloadNotSupported": "Çoklu paylaşım indirme henüz desteklenmiyor - lütfen paylaşımları ayrı ayrı indirin"
-    }
+    },
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "Çoklu Dosya Paylaş",
@@ -2102,7 +2108,9 @@
     "status": {
       "neverExpires": "Asla Sona Ermez",
       "active": "Aktif",
-      "expired": "Süresi Dolmuş"
+      "expired": "Süresi Dolmuş",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "Korumalı",
@@ -2122,7 +2130,10 @@
       "notifyRecipients": "Alıcıları Bilgilendir",
       "delete": "Sil",
       "downloadShareFiles": "Tüm dosyaları indirin",
-      "viewQrCode": "QR Kodu Görüntüle"
+      "viewQrCode": "QR Kodu Görüntüle",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "delete": "Sil",

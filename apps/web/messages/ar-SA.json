@@ -760,8 +760,6 @@
       "REVERSE_SHARE_CREATE": "تم إنشاء مشاركة عكسية",
       "REVERSE_SHARE_UPDATE": "تم تحديث المشاركة العكسية",
       "REVERSE_SHARE_DELETE": "تم حذف المشاركة العكسية",
-      "REVERSE_SHARE_ACTIVATE": "تم تفعيل المشاركة العكسية",
-      "REVERSE_SHARE_DEACTIVATE": "تم تعطيل المشاركة العكسية",
       "REVERSE_SHARE_ACCESS": "تم الوصول إلى المشاركة العكسية",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "تم التحقق من كلمة مرور المشاركة العكسية",
       "REVERSE_SHARE_PASSWORD_FAILED": "فشل التحقق من كلمة مرور المشاركة العكسية",
@@ -790,7 +788,11 @@
       "SMTP_TEST": "تم إجراء اختبار SMTP",
       "BACKGROUND_IMAGE_UPLOAD": "تم رفع صورة الخلفية",
       "BACKGROUND_IMAGE_DELETE": "تم حذف صورة الخلفية",
-      "AUDIT_RETENTION_CLEANUP": "تنظيف سجل التدقيق"
+      "AUDIT_RETENTION_CLEANUP": "تنظيف سجل التدقيق",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
     },
     "targetTypes": {
       "user": "المستخدم",
@@ -2008,7 +2010,11 @@
     "zipDownloadSuccess": "تم تنزيل ملف zip بنجاح",
     "errors": {
       "multipleDownloadNotSupported": "تنزيل مشاركات متعددة غير مدعوم حالياً - يرجى تنزيل المشاركات بشكل فردي"
-    }
+    },
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "مشاركة ملفات متعددة",
@@ -2102,7 +2108,9 @@
     "status": {
       "neverExpires": "لا تنتهي صلاحيتها أبداً",
       "active": "نشط",
-      "expired": "منتهي الصلاحية"
+      "expired": "منتهي الصلاحية",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "محمي",
@@ -2122,7 +2130,10 @@
       "notifyRecipients": "إشعار المستقبلين",
       "delete": "حذف",
       "downloadShareFiles": "قم بتنزيل جميع الملفات",
-      "viewQrCode": "عرض رمز QR"
+      "viewQrCode": "عرض رمز QR",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "delete": "حذف",

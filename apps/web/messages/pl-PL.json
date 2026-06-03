@@ -760,8 +760,6 @@
       "REVERSE_SHARE_CREATE": "Odwrócone udostępnienie utworzone",
       "REVERSE_SHARE_UPDATE": "Odwrócone udostępnienie zaktualizowane",
       "REVERSE_SHARE_DELETE": "Odwrócone udostępnienie usunięte",
-      "REVERSE_SHARE_ACTIVATE": "Odwrócone udostępnienie aktywowane",
-      "REVERSE_SHARE_DEACTIVATE": "Odwrócone udostępnienie dezaktywowane",
       "REVERSE_SHARE_ACCESS": "Odwrócone udostępnienie otwarte",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "Hasło do odwróconego udostępnienia zweryfikowane",
       "REVERSE_SHARE_PASSWORD_FAILED": "Weryfikacja hasła do odwróconego udostępnienia nie powiodła się",
@@ -790,7 +788,11 @@
       "SMTP_TEST": "Test SMTP wykonany",
       "BACKGROUND_IMAGE_UPLOAD": "Obraz tła przesłany",
       "BACKGROUND_IMAGE_DELETE": "Obraz tła usunięty",
-      "AUDIT_RETENTION_CLEANUP": "Czyszczenie dziennika audytu"
+      "AUDIT_RETENTION_CLEANUP": "Czyszczenie dziennika audytu",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
     },
     "targetTypes": {
       "user": "Użytkownik",
@@ -2008,7 +2010,11 @@
     "zipDownloadSuccess": "Plik zip pobrany pomyślnie",
     "errors": {
       "multipleDownloadNotSupported": "Pobieranie wielu udostępnień nie jest jeszcze obsługiwane - pobierz udostępnienia pojedynczo"
-    }
+    },
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "Udostępnij wiele plików",
@@ -2102,7 +2108,9 @@
     "status": {
       "neverExpires": "Nigdy nie wygasa",
       "active": "Aktywne",
-      "expired": "Wygasłe"
+      "expired": "Wygasłe",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "Chronione",
@@ -2122,7 +2130,10 @@
       "notifyRecipients": "Powiadom odbiorców",
       "delete": "Usuń",
       "downloadShareFiles": "Pobierz wszystkie pliki",
-      "viewQrCode": "Wyświetl kod QR"
+      "viewQrCode": "Wyświetl kod QR",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "delete": "Usuń",

@@ -1,4 +1,5 @@
 import {
+  CalendarClock,
   Copy,
   Download,
   EllipsisVertical,
@@ -6,7 +7,9 @@ import {
   Folder,
   Link,
   Mail,
+  Pause,
   Pencil,
+  Play,
   QrCode,
   Trash2,
   Users,
@@ -18,15 +21,21 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Share } from "@/http/endpoints/shares/types";
+import type { ShareLifecycleState } from "@/lib/share-lifecycle";
 
 interface ShareRowActionsProps {
   share: Share;
+  lifecycle: ShareLifecycleState;
   smtpEnabled: string | null;
   onDelete: (share: Share) => void;
   onEdit: (share: Share) => void;
+  onPauseShare?: (share: Share) => void;
+  onResumeShare?: (share: Share) => void;
+  onRenewShare?: (share: Share) => void;
   onManageFiles: (share: Share) => void;
   onManageRecipients: (share: Share) => void;
   onViewDetails: (share: Share) => void;
@@ -39,9 +48,13 @@ interface ShareRowActionsProps {
 
 export function ShareRowActions({
   share,
+  lifecycle,
   smtpEnabled,
   onDelete,
   onEdit,
+  onPauseShare,
+  onResumeShare,
+  onRenewShare,
   onManageFiles,
   onManageRecipients,
   onViewDetails,
@@ -53,6 +66,19 @@ export function ShareRowActions({
 }: ShareRowActionsProps) {
   const t = useTranslations();
 
+  // Lifecycle affordances (Phase A.1):
+  // - active            → Pause
+  // - deactivated/manual → Resume (re-activates instantly)
+  // - deactivated/expired|max_views → Renew (extend expiration / raise maxViews;
+  //   a plain resume would be refused by the server)
+  const showPause = lifecycle.kind === "active" && !!onPauseShare;
+  const showResume =
+    lifecycle.kind === "deactivated" && lifecycle.reason === "manual" && !!onResumeShare;
+  const showRenew =
+    lifecycle.kind === "deactivated" &&
+    (lifecycle.reason === "expired" || lifecycle.reason === "max_views") &&
+    !!onRenewShare;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -62,6 +88,36 @@ export function ShareRowActions({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[200px]">
+        {showPause && (
+          <>
+            <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onPauseShare?.(share)}>
+              <Pause className="h-4 w-4" />
+              {t("sharesTable.actions.pause")}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
+        {showResume && (
+          <>
+            <DropdownMenuItem
+              className="cursor-pointer py-2"
+              onClick={() => onResumeShare?.(share)}
+            >
+              <Play className="h-4 w-4" />
+              {t("sharesTable.actions.resume")}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
+        {showRenew && (
+          <>
+            <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onRenewShare?.(share)}>
+              <CalendarClock className="h-4 w-4" />
+              {t("sharesTable.actions.renew")}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
         <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onEdit(share)}>
           <Pencil className="h-4 w-4" />
           {t("sharesTable.actions.edit")}

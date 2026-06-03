@@ -63,6 +63,9 @@ export function RecentShares({
               onUpdateDescription={shareManager.handleUpdateDescription}
               onUpdateSecurity={shareManager.setShareToManageSecurity}
               onUpdateExpiration={shareManager.setShareToManageExpiration}
+              onPauseShare={shareManager.handlePauseShare}
+              onResumeShare={shareManager.handleResumeShare}
+              onRenewShare={shareManager.setShareToManageExpiration}
               onGenerateLink={shareManager.setShareToGenerateLink}
               onManageFiles={shareManager.setShareToManageFiles}
               onManageRecipients={shareManager.setShareToManageRecipients}

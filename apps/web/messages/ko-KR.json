@@ -760,8 +760,6 @@
       "REVERSE_SHARE_CREATE": "역방향 공유 생성됨",
       "REVERSE_SHARE_UPDATE": "역방향 공유 업데이트됨",
       "REVERSE_SHARE_DELETE": "역방향 공유 삭제됨",
-      "REVERSE_SHARE_ACTIVATE": "역방향 공유 활성화됨",
-      "REVERSE_SHARE_DEACTIVATE": "역방향 공유 비활성화됨",
       "REVERSE_SHARE_ACCESS": "역방향 공유 액세스됨",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "역방향 공유 비밀번호 확인됨",
       "REVERSE_SHARE_PASSWORD_FAILED": "역방향 공유 비밀번호 실패",
@@ -790,7 +788,11 @@
       "SMTP_TEST": "SMTP 테스트 수행됨",
       "BACKGROUND_IMAGE_UPLOAD": "배경 이미지 업로드됨",
       "BACKGROUND_IMAGE_DELETE": "배경 이미지 삭제됨",
-      "AUDIT_RETENTION_CLEANUP": "감사 로그 정리됨"
+      "AUDIT_RETENTION_CLEANUP": "감사 로그 정리됨",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
     },
     "targetTypes": {
       "user": "사용자",
@@ -2008,7 +2010,11 @@
     "zipDownloadSuccess": "zip 파일이 성공적으로 다운로드되었습니다",
     "errors": {
       "multipleDownloadNotSupported": "여러 공유 다운로드는 아직 지원되지 않습니다 - 공유를 개별적으로 다운로드해주세요"
-    }
+    },
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "여러 파일 공유",
@@ -2102,7 +2108,9 @@
     "status": {
       "neverExpires": "만료되지 않음",
       "active": "활성",
-      "expired": "만료됨"
+      "expired": "만료됨",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "보호됨",
@@ -2122,7 +2130,10 @@
       "notifyRecipients": "받는 사람에게 알림",
       "delete": "삭제",
       "downloadShareFiles": "모든 파일을 다운로드하십시오",
-      "viewQrCode": "QR 코드 보기"
+      "viewQrCode": "QR 코드 보기",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "delete": "삭제",

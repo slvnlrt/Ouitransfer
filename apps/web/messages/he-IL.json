@@ -764,8 +764,6 @@
       "REVERSE_SHARE_CREATE": "שיתוף הפוך נוצר",
       "REVERSE_SHARE_UPDATE": "שיתוף הפוך עודכן",
       "REVERSE_SHARE_DELETE": "שיתוף הפוך נמחק",
-      "REVERSE_SHARE_ACTIVATE": "שיתוף הפוך הופעל",
-      "REVERSE_SHARE_DEACTIVATE": "שיתוף הפוך הושבת",
       "REVERSE_SHARE_ACCESS": "שיתוף הפוך נגיש",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "סיסמת שיתוף הפוך אומתה",
       "REVERSE_SHARE_PASSWORD_FAILED": "סיסמת שיתוף הפוך נכשלה",
@@ -794,7 +792,11 @@
       "SMTP_TEST": "בדיקת SMTP בוצעה",
       "BACKGROUND_IMAGE_UPLOAD": "תמונת רקע הועלתה",
       "BACKGROUND_IMAGE_DELETE": "תמונת רקע נמחקה",
-      "AUDIT_RETENTION_CLEANUP": "ניקוי יומן ביקורת"
+      "AUDIT_RETENTION_CLEANUP": "ניקוי יומן ביקורת",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
     },
     "targetTypes": {
       "user": "משתמש",
@@ -2012,7 +2014,11 @@
     },
     "singleShareZipName": "{shareName}_files.zip",
     "multipleSharesZipName": "{count}_shares_files.zip",
-    "defaultShareName": "שיתוף"
+    "defaultShareName": "שיתוף",
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "שתף מספר קבצים",
@@ -2106,7 +2112,9 @@
     "status": {
       "neverExpires": "לא פג תוקף",
       "active": "פעיל",
-      "expired": "פג תוקף"
+      "expired": "פג תוקף",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "מוגן",
@@ -2127,7 +2135,10 @@
       "viewQrCode": "צפה בקוד QR",
       "notifyRecipients": "הודע לנמענים",
       "downloadShareFiles": "הורד כל הקבצים",
-      "delete": "מחק"
+      "delete": "מחק",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "actions": "פעולות",

@@ -764,8 +764,6 @@
       "REVERSE_SHARE_CREATE": "Αντίστροφη κοινή χρήση δημιουργήθηκε",
       "REVERSE_SHARE_UPDATE": "Αντίστροφη κοινή χρήση ενημερώθηκε",
       "REVERSE_SHARE_DELETE": "Αντίστροφη κοινή χρήση διαγράφηκε",
-      "REVERSE_SHARE_ACTIVATE": "Αντίστροφη κοινή χρήση ενεργοποιήθηκε",
-      "REVERSE_SHARE_DEACTIVATE": "Αντίστροφη κοινή χρήση απενεργοποιήθηκε",
       "REVERSE_SHARE_ACCESS": "Αντίστροφη κοινή χρήση προσβάθηκε",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "Κωδικός αντίστροφης κοινής χρήσης επαληθεύθηκε",
       "REVERSE_SHARE_PASSWORD_FAILED": "Κωδικός αντίστροφης κοινής χρήσης απέτυχε",
@@ -794,7 +792,11 @@
       "SMTP_TEST": "Δοκιμή SMTP εκτελέστηκε",
       "BACKGROUND_IMAGE_UPLOAD": "Εικόνα φόντου μεταφορτώθηκε",
       "BACKGROUND_IMAGE_DELETE": "Εικόνα φόντου διαγράφηκε",
-      "AUDIT_RETENTION_CLEANUP": "Εκκαθάριση αρχείου ελέγχου"
+      "AUDIT_RETENTION_CLEANUP": "Εκκαθάριση αρχείου ελέγχου",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
     },
     "targetTypes": {
       "user": "Χρήστης",
@@ -2012,7 +2014,11 @@
     },
     "singleShareZipName": "{shareName}_αρχεία.zip",
     "multipleSharesZipName": "{count}_κοινές_χρήσεις_αρχεία.zip",
-    "defaultShareName": "Κοινή χρήση"
+    "defaultShareName": "Κοινή χρήση",
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "Κοινή χρήση πολλών αρχείων",
@@ -2106,7 +2112,9 @@
     "status": {
       "neverExpires": "Δεν λήγει ποτέ",
       "active": "Ενεργή",
-      "expired": "Έχει λήξει"
+      "expired": "Έχει λήξει",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "Προστατευμένη",
@@ -2127,7 +2135,10 @@
       "viewQrCode": "Προβολή κωδικού QR",
       "notifyRecipients": "Ειδοποίηση παραληπτών",
       "downloadShareFiles": "Λήψη όλων των αρχείων",
-      "delete": "Διαγραφή"
+      "delete": "Διαγραφή",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "actions": "Ενέργειες",

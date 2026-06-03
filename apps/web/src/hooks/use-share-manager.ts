@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
-import { createShareAlias, updateShare } from "@/http/endpoints";
+import { createShareAlias, pauseShare, resumeShare, updateShare } from "@/http/endpoints";
 import { updateFolder } from "@/http/endpoints/folders";
 import type { Share, UpdateShareBody } from "@/http/endpoints/shares/types";
 import { useShareDelete } from "./use-share-delete";
@@ -43,6 +43,8 @@ export interface ShareManagerHook {
   handleUpdateDescription: (shareId: string, newDescription: string) => Promise<void>;
   handleUpdateSecurity: (share: Share) => Promise<void>;
   handleUpdateExpiration: (share: Share) => Promise<void>;
+  handlePauseShare: (share: Share) => Promise<void>;
+  handleResumeShare: (share: Share) => Promise<void>;
   handleManageFiles: () => Promise<void>;
   handleManageRecipients: (shareId: string, recipients: string[]) => Promise<void>;
   handleGenerateLink: (shareId: string, alias: string) => Promise<void>;
@@ -113,6 +115,28 @@ export function useShareManager(onSuccess: () => void) {
 
   const handleUpdateExpiration = async (share: Share) => {
     setShareToManageExpiration(share);
+  };
+
+  const handlePauseShare = async (share: Share) => {
+    try {
+      await pauseShare(share.id);
+      await onSuccess();
+      toast.success(t("shareManager.pauseSuccess"));
+    } catch {
+      toast.error(t("shareManager.pauseError"));
+    }
+  };
+
+  const handleResumeShare = async (share: Share) => {
+    try {
+      await resumeShare(share.id);
+      await onSuccess();
+      toast.success(t("shareManager.resumeSuccess"));
+    } catch {
+      // The server refuses (400) to resume a share that is still expired or
+      // maxed — the owner must extend it instead. Surface a targeted hint.
+      toast.error(t("shareManager.resumeError"));
+    }
   };
 
   const handleManageFiles = async () => {
@@ -188,6 +212,8 @@ export function useShareManager(onSuccess: () => void) {
     handleUpdateDescription,
     handleUpdateSecurity,
     handleUpdateExpiration,
+    handlePauseShare,
+    handleResumeShare,
     handleManageFiles,
     handleGenerateLink,
     setClearSelectionCallback,

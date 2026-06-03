@@ -760,8 +760,6 @@
       "REVERSE_SHARE_CREATE": "Condivisione inversa creata",
       "REVERSE_SHARE_UPDATE": "Condivisione inversa aggiornata",
       "REVERSE_SHARE_DELETE": "Condivisione inversa eliminata",
-      "REVERSE_SHARE_ACTIVATE": "Condivisione inversa attivata",
-      "REVERSE_SHARE_DEACTIVATE": "Condivisione inversa disattivata",
       "REVERSE_SHARE_ACCESS": "Condivisione inversa accessibile",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "Password di condivisione inversa verificata",
       "REVERSE_SHARE_PASSWORD_FAILED": "Password di condivisione inversa fallita",
@@ -790,7 +788,11 @@
       "SMTP_TEST": "Test SMTP eseguito",
       "BACKGROUND_IMAGE_UPLOAD": "Immagine di sfondo caricata",
       "BACKGROUND_IMAGE_DELETE": "Immagine di sfondo eliminata",
-      "AUDIT_RETENTION_CLEANUP": "Pulizia log di audit"
+      "AUDIT_RETENTION_CLEANUP": "Pulizia log di audit",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
     },
     "targetTypes": {
       "user": "Utente",
@@ -2008,7 +2010,11 @@
     "zipDownloadSuccess": "File zip scaricato correttamente",
     "errors": {
       "multipleDownloadNotSupported": "Il download di più condivisioni non è ancora supportato - scarica le condivisioni singolarmente"
-    }
+    },
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "Condividi File Multipli",
@@ -2102,7 +2108,9 @@
     "status": {
       "neverExpires": "Non Scade Mai",
       "active": "Attivo",
-      "expired": "Scaduto"
+      "expired": "Scaduto",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "Protetto",
@@ -2122,7 +2130,10 @@
       "notifyRecipients": "Notifica Destinatari",
       "delete": "Elimina",
       "downloadShareFiles": "Scarica tutti i file",
-      "viewQrCode": "Visualizza QR Code"
+      "viewQrCode": "Visualizza QR Code",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "delete": "Elimina",

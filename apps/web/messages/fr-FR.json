@@ -760,8 +760,6 @@
       "REVERSE_SHARE_CREATE": "Partage inversé créé",
       "REVERSE_SHARE_UPDATE": "Partage inversé modifié",
       "REVERSE_SHARE_DELETE": "Partage inversé supprimé",
-      "REVERSE_SHARE_ACTIVATE": "Partage inversé activé",
-      "REVERSE_SHARE_DEACTIVATE": "Partage inversé désactivé",
       "REVERSE_SHARE_ACCESS": "Partage inversé consulté",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "Mot de passe du partage inversé vérifié",
       "REVERSE_SHARE_PASSWORD_FAILED": "Mot de passe du partage inversé échoué",
@@ -790,7 +788,11 @@
       "SMTP_TEST": "Test SMTP effectué",
       "BACKGROUND_IMAGE_UPLOAD": "Image d'arrière-plan téléversée",
       "BACKGROUND_IMAGE_DELETE": "Image d'arrière-plan supprimée",
-      "AUDIT_RETENTION_CLEANUP": "Nettoyage du journal d'audit"
+      "AUDIT_RETENTION_CLEANUP": "Nettoyage du journal d'audit",
+      "SHARE_DEACTIVATED": "Partage désactivé",
+      "SHARE_REACTIVATED": "Partage réactivé",
+      "REVERSE_SHARE_DEACTIVATED": "Partage inversé désactivé",
+      "REVERSE_SHARE_REACTIVATED": "Partage inversé réactivé"
     },
     "targetTypes": {
       "user": "Utilisateur",
@@ -2008,7 +2010,11 @@
     "zipDownloadSuccess": "Fichier zip téléchargé avec succès",
     "errors": {
       "multipleDownloadNotSupported": "Le téléchargement de plusieurs partages n'est pas encore pris en charge - veuillez télécharger les partages individuellement"
-    }
+    },
+    "pauseSuccess": "Partage mis en pause",
+    "pauseError": "Échec de la mise en pause du partage",
+    "resumeSuccess": "Partage repris",
+    "resumeError": "Échec de la reprise du partage. S'il est expiré ou a atteint sa limite de vues, prolongez-le plutôt."
   },
   "shareMultipleFiles": {
     "title": "Partager Plusieurs Fichiers",
@@ -2102,7 +2108,9 @@
     "status": {
       "neverExpires": "N'expire Jamais",
       "active": "Actif",
-      "expired": "Expiré"
+      "expired": "Expiré",
+      "paused": "En pause",
+      "maxViewsReached": "Limite de vues atteinte"
     },
     "security": {
       "protected": "Protégé",
@@ -2122,7 +2130,10 @@
       "notifyRecipients": "Notifier les Destinataires",
       "delete": "Supprimer",
       "downloadShareFiles": "Télécharger tous les fichiers",
-      "viewQrCode": "Voir le QR Code"
+      "viewQrCode": "Voir le QR Code",
+      "pause": "Mettre en pause",
+      "resume": "Reprendre",
+      "renew": "Renouveler"
     },
     "bulkActions": {
       "delete": "Supprimer",

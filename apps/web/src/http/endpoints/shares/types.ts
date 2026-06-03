@@ -90,6 +90,12 @@ export interface Share {
   lastDownloadedAt: string | null;
   notifiedForExpiring: boolean;
   notifiedForExpired: boolean;
+  /** Lifecycle (Phase A.1): false when the share is deactivated/paused. */
+  isActive: boolean;
+  /** When the share was deactivated, or null while active. */
+  deactivatedAt: string | null;
+  /** Why the share was deactivated: "expired" | "max_views" | "manual" (null while active). */
+  deactivationReason: "expired" | "max_views" | "manual" | null;
 }
 
 export interface CreateShare201 {
@@ -113,6 +119,14 @@ export interface GetShareByAlias200 {
 }
 
 export interface DeleteShare200 {
+  share: Share;
+}
+
+export interface PauseShare200 {
+  share: Share;
+}
+
+export interface ResumeShare200 {
   share: Share;
 }
 
@@ -281,6 +295,8 @@ export type UpdateShareResult = AxiosResponse<UpdateShare200>;
 export type ListUserSharesResult = AxiosResponse<ListUserShares200>;
 export type GetShareResult = AxiosResponse<GetShare200>;
 export type DeleteShareResult = AxiosResponse<DeleteShare200>;
+export type PauseShareResult = AxiosResponse<PauseShare200>;
+export type ResumeShareResult = AxiosResponse<ResumeShare200>;
 export type UpdateSharePasswordResult = AxiosResponse<UpdateSharePassword200>;
 export type AddFilesResult = AxiosResponse<AddFiles200>;
 export type RemoveFilesResult = AxiosResponse<RemoveFiles200>;

@@ -760,8 +760,6 @@
       "REVERSE_SHARE_CREATE": "रिवर्स साझाकरण बनाया गया",
       "REVERSE_SHARE_UPDATE": "रिवर्स साझाकरण अपडेट किया गया",
       "REVERSE_SHARE_DELETE": "रिवर्स साझाकरण हटाया गया",
-      "REVERSE_SHARE_ACTIVATE": "रिवर्स साझाकरण सक्रिय किया गया",
-      "REVERSE_SHARE_DEACTIVATE": "रिवर्स साझाकरण निष्क्रिय किया गया",
       "REVERSE_SHARE_ACCESS": "रिवर्स साझाकरण एक्सेस किया गया",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "रिवर्स साझाकरण पासवर्ड सत्यापित",
       "REVERSE_SHARE_PASSWORD_FAILED": "रिवर्स साझाकरण पासवर्ड विफल",
@@ -790,7 +788,11 @@
       "SMTP_TEST": "SMTP परीक्षण किया गया",
       "BACKGROUND_IMAGE_UPLOAD": "पृष्ठभूमि छवि अपलोड की गई",
       "BACKGROUND_IMAGE_DELETE": "पृष्ठभूमि छवि हटाई गई",
-      "AUDIT_RETENTION_CLEANUP": "ऑडिट लॉग सफाई"
+      "AUDIT_RETENTION_CLEANUP": "ऑडिट लॉग सफाई",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
     },
     "targetTypes": {
       "user": "उपयोगकर्ता",
@@ -2008,7 +2010,11 @@
     "zipDownloadSuccess": "ज़िप फ़ाइल सफलतापूर्वक डाउनलोड की गई",
     "errors": {
       "multipleDownloadNotSupported": "कई साझाकरण डाउनलोड अभी तक समर्थित नहीं है - कृपया साझाकरण को अलग-अलग डाउनलोड करें"
-    }
+    },
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "कई फाइलें साझा करें",
@@ -2102,7 +2108,9 @@
     "status": {
       "neverExpires": "कभी समाप्त नहीं होता",
       "active": "सक्रिय",
-      "expired": "समाप्त"
+      "expired": "समाप्त",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "संरक्षित",
@@ -2122,7 +2130,10 @@
       "notifyRecipients": "प्राप्तकर्ताओं को सूचित करें",
       "delete": "हटाएं",
       "downloadShareFiles": "सभी फ़ाइलें डाउनलोड करें",
-      "viewQrCode": "QR कोड देखें"
+      "viewQrCode": "QR कोड देखें",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "delete": "हटाएं",

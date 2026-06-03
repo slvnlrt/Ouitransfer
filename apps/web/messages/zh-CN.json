@@ -760,8 +760,6 @@
       "REVERSE_SHARE_CREATE": "反向共享已创建",
       "REVERSE_SHARE_UPDATE": "反向共享已更新",
       "REVERSE_SHARE_DELETE": "反向共享已删除",
-      "REVERSE_SHARE_ACTIVATE": "反向共享已激活",
-      "REVERSE_SHARE_DEACTIVATE": "反向共享已停用",
       "REVERSE_SHARE_ACCESS": "反向共享已访问",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "反向共享密码已验证",
       "REVERSE_SHARE_PASSWORD_FAILED": "反向共享密码验证失败",
@@ -790,7 +788,11 @@
       "SMTP_TEST": "SMTP测试已执行",
       "BACKGROUND_IMAGE_UPLOAD": "背景图片已上传",
       "BACKGROUND_IMAGE_DELETE": "背景图片已删除",
-      "AUDIT_RETENTION_CLEANUP": "审计日志清理"
+      "AUDIT_RETENTION_CLEANUP": "审计日志清理",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
     },
     "targetTypes": {
       "user": "用户",
@@ -2008,7 +2010,11 @@
     "zipDownloadSuccess": "zip文件成功下载了",
     "errors": {
       "multipleDownloadNotSupported": "暂不支持多个分享下载 - 请分别下载各个分享"
-    }
+    },
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "分享多个文件",
@@ -2102,7 +2108,9 @@
     "status": {
       "neverExpires": "永不过期",
       "active": "活跃",
-      "expired": "已过期"
+      "expired": "已过期",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "受保护",
@@ -2122,7 +2130,10 @@
       "notifyRecipients": "通知收件人",
       "delete": "删除",
       "downloadShareFiles": "下载所有文件",
-      "viewQrCode": "查看QR Code"
+      "viewQrCode": "查看QR Code",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "delete": "删除",

@@ -764,8 +764,6 @@
       "REVERSE_SHARE_CREATE": "Berbagi terbalik dibuat",
       "REVERSE_SHARE_UPDATE": "Berbagi terbalik diperbarui",
       "REVERSE_SHARE_DELETE": "Berbagi terbalik dihapus",
-      "REVERSE_SHARE_ACTIVATE": "Berbagi terbalik diaktifkan",
-      "REVERSE_SHARE_DEACTIVATE": "Berbagi terbalik dinonaktifkan",
       "REVERSE_SHARE_ACCESS": "Akses berbagi terbalik",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "Kata sandi berbagi terbalik diverifikasi",
       "REVERSE_SHARE_PASSWORD_FAILED": "Kata sandi berbagi terbalik gagal",
@@ -794,7 +792,11 @@
       "SMTP_TEST": "Tes SMTP dilakukan",
       "BACKGROUND_IMAGE_UPLOAD": "Gambar latar diunggah",
       "BACKGROUND_IMAGE_DELETE": "Gambar latar dihapus",
-      "AUDIT_RETENTION_CLEANUP": "Pembersihan log audit"
+      "AUDIT_RETENTION_CLEANUP": "Pembersihan log audit",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
     },
     "targetTypes": {
       "user": "Pengguna",
@@ -2012,7 +2014,11 @@
     },
     "singleShareZipName": "{shareName}_files.zip",
     "multipleSharesZipName": "{count}_shares_files.zip",
-    "defaultShareName": "Berbagi"
+    "defaultShareName": "Berbagi",
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "Bagikan Beberapa File",
@@ -2106,7 +2112,9 @@
     "status": {
       "neverExpires": "Tidak pernah kedaluwarsa",
       "active": "Aktif",
-      "expired": "Kedaluwarsa"
+      "expired": "Kedaluwarsa",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "Terlindungi",
@@ -2127,7 +2135,10 @@
       "viewQrCode": "Lihat Kode QR",
       "notifyRecipients": "Beritahu Penerima",
       "downloadShareFiles": "Unduh Semua File",
-      "delete": "Hapus"
+      "delete": "Hapus",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "actions": "Tindakan",

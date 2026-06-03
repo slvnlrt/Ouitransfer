@@ -764,8 +764,6 @@
       "REVERSE_SHARE_CREATE": "Зворотний спільний доступ створено",
       "REVERSE_SHARE_UPDATE": "Зворотний спільний доступ оновлено",
       "REVERSE_SHARE_DELETE": "Зворотний спільний доступ видалено",
-      "REVERSE_SHARE_ACTIVATE": "Зворотний спільний доступ активовано",
-      "REVERSE_SHARE_DEACTIVATE": "Зворотний спільний доступ деактивовано",
       "REVERSE_SHARE_ACCESS": "Зворотний спільний доступ відкрито",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "Пароль зворотного спільного доступу підтверджено",
       "REVERSE_SHARE_PASSWORD_FAILED": "Помилка пароля зворотного спільного доступу",
@@ -794,7 +792,11 @@
       "SMTP_TEST": "SMTP тест виконано",
       "BACKGROUND_IMAGE_UPLOAD": "Фонове зображення завантажено",
       "BACKGROUND_IMAGE_DELETE": "Фонове зображення видалено",
-      "AUDIT_RETENTION_CLEANUP": "Очищення журналу аудиту"
+      "AUDIT_RETENTION_CLEANUP": "Очищення журналу аудиту",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
     },
     "targetTypes": {
       "user": "Користувач",
@@ -2012,7 +2014,11 @@
     },
     "singleShareZipName": "{shareName}_files.zip",
     "multipleSharesZipName": "{count}_shares_files.zip",
-    "defaultShareName": "Спільне використання"
+    "defaultShareName": "Спільне використання",
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "Поділитися кількома файлами",
@@ -2106,7 +2112,9 @@
     "status": {
       "neverExpires": "Ніколи не закінчується",
       "active": "Активне",
-      "expired": "Закінчилося"
+      "expired": "Закінчилося",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "Захищене",
@@ -2127,7 +2135,10 @@
       "viewQrCode": "Переглянути QR код",
       "notifyRecipients": "Сповістити одержувачів",
       "downloadShareFiles": "Завантажити всі файли",
-      "delete": "Видалити"
+      "delete": "Видалити",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "actions": "Дії",

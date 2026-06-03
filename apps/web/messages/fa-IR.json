@@ -764,8 +764,6 @@
       "REVERSE_SHARE_CREATE": "اشتراک معکوس ایجاد شد",
       "REVERSE_SHARE_UPDATE": "اشتراک معکوس به‌روز شد",
       "REVERSE_SHARE_DELETE": "اشتراک معکوس حذف شد",
-      "REVERSE_SHARE_ACTIVATE": "اشتراک معکوس فعال شد",
-      "REVERSE_SHARE_DEACTIVATE": "اشتراک معکوس غیرفعال شد",
       "REVERSE_SHARE_ACCESS": "اشتراک معکوس دسترسی پیدا کرد",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "گذرواژه اشتراک معکوس تأیید شد",
       "REVERSE_SHARE_PASSWORD_FAILED": "گذرواژه اشتراک معکوس ناموفق بود",
@@ -794,7 +792,11 @@
       "SMTP_TEST": "آزمایش SMTP انجام شد",
       "BACKGROUND_IMAGE_UPLOAD": "تصویر پس‌زمینه آپلود شد",
       "BACKGROUND_IMAGE_DELETE": "تصویر پس‌زمینه حذف شد",
-      "AUDIT_RETENTION_CLEANUP": "تمیزکاری سجل حسابرسی"
+      "AUDIT_RETENTION_CLEANUP": "تمیزکاری سجل حسابرسی",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
     },
     "targetTypes": {
       "user": "کاربر",
@@ -2012,7 +2014,11 @@
     },
     "singleShareZipName": "{shareName}_files.zip",
     "multipleSharesZipName": "{count}_shares_files.zip",
-    "defaultShareName": "اشتراک"
+    "defaultShareName": "اشتراک",
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "اشتراک‌گذاری چند فایل",
@@ -2106,7 +2112,9 @@
     "status": {
       "neverExpires": "هرگز منقضی نمی‌شود",
       "active": "فعال",
-      "expired": "منقضی شده"
+      "expired": "منقضی شده",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "محافظت‌شده",
@@ -2127,7 +2135,10 @@
       "viewQrCode": "مشاهده QR کد",
       "notifyRecipients": "اطلاع‌رسانی به گیرندگان",
       "downloadShareFiles": "دانلود همه فایل‌ها",
-      "delete": "حذف"
+      "delete": "حذف",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "actions": "اقدامات",

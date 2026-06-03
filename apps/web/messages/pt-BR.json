@@ -764,8 +764,6 @@
       "REVERSE_SHARE_CREATE": "Compartilhamento reverso criado",
       "REVERSE_SHARE_UPDATE": "Compartilhamento reverso atualizado",
       "REVERSE_SHARE_DELETE": "Compartilhamento reverso deletado",
-      "REVERSE_SHARE_ACTIVATE": "Compartilhamento reverso ativado",
-      "REVERSE_SHARE_DEACTIVATE": "Compartilhamento reverso desativado",
       "REVERSE_SHARE_ACCESS": "Compartilhamento reverso acessado",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "Senha de compartilhamento reverso verificada",
       "REVERSE_SHARE_PASSWORD_FAILED": "Falha na senha de compartilhamento reverso",
@@ -794,7 +792,11 @@
       "SMTP_TEST": "Teste SMTP executado",
       "BACKGROUND_IMAGE_UPLOAD": "Imagem de fundo enviada",
       "BACKGROUND_IMAGE_DELETE": "Imagem de fundo deletada",
-      "AUDIT_RETENTION_CLEANUP": "Limpeza de log de auditoria"
+      "AUDIT_RETENTION_CLEANUP": "Limpeza de log de auditoria",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
     },
     "targetTypes": {
       "user": "Usuário",
@@ -2012,7 +2014,11 @@
     "zipDownloadSuccess": "Arquivo ZIP baixado com sucesso",
     "errors": {
       "multipleDownloadNotSupported": "Download de múltiplos compartilhamentos ainda não é suportado - por favor, baixe os compartilhamentos individualmente"
-    }
+    },
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "Compartilhar Múltiplos Arquivos",
@@ -2114,7 +2120,9 @@
     "status": {
       "neverExpires": "Nunca Expira",
       "active": "Ativo",
-      "expired": "Expirado"
+      "expired": "Expirado",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "Protegido",
@@ -2134,7 +2142,10 @@
       "notifyRecipients": "Notificar Destinatários",
       "delete": "Excluir",
       "downloadShareFiles": "Baixar todos os arquivos",
-      "viewQrCode": "Visualizar QR Code"
+      "viewQrCode": "Visualizar QR Code",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "folderCount": "pastas"
   },

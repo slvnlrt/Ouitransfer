@@ -760,8 +760,6 @@
       "REVERSE_SHARE_CREATE": "Empfangsfreigabe erstellt",
       "REVERSE_SHARE_UPDATE": "Empfangsfreigabe aktualisiert",
       "REVERSE_SHARE_DELETE": "Empfangsfreigabe gelöscht",
-      "REVERSE_SHARE_ACTIVATE": "Empfangsfreigabe aktiviert",
-      "REVERSE_SHARE_DEACTIVATE": "Empfangsfreigabe deaktiviert",
       "REVERSE_SHARE_ACCESS": "Empfangsfreigabe aufgerufen",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "Empfangsfreigabe-Passwort überprüft",
       "REVERSE_SHARE_PASSWORD_FAILED": "Empfangsfreigabe-Passwort fehlgeschlagen",
@@ -790,7 +788,11 @@
       "SMTP_TEST": "SMTP-Test durchgeführt",
       "BACKGROUND_IMAGE_UPLOAD": "Hintergrundbild hochgeladen",
       "BACKGROUND_IMAGE_DELETE": "Hintergrundbild gelöscht",
-      "AUDIT_RETENTION_CLEANUP": "Audit-Protokoll-Cleanup"
+      "AUDIT_RETENTION_CLEANUP": "Audit-Protokoll-Cleanup",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
     },
     "targetTypes": {
       "user": "Benutzer",
@@ -2008,7 +2010,11 @@
     "zipDownloadSuccess": "ZIP-Datei erfolgreich heruntergeladen",
     "errors": {
       "multipleDownloadNotSupported": "Download mehrerer Freigaben wird noch nicht unterstützt - bitte laden Sie Freigaben einzeln herunter"
-    }
+    },
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "Mehrere Dateien Teilen",
@@ -2102,7 +2108,9 @@
     "status": {
       "neverExpires": "Läuft Nie Ab",
       "active": "Aktiv",
-      "expired": "Abgelaufen"
+      "expired": "Abgelaufen",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "Geschützt",
@@ -2122,7 +2130,10 @@
       "notifyRecipients": "Empfänger Benachrichtigen",
       "delete": "Löschen",
       "downloadShareFiles": "Laden Sie alle Dateien herunter",
-      "viewQrCode": "QR-Code anzeigen"
+      "viewQrCode": "QR-Code anzeigen",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "delete": "Löschen",

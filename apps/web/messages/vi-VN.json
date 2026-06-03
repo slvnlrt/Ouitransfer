@@ -764,8 +764,6 @@
       "REVERSE_SHARE_CREATE": "Chia sẻ ngược đã được tạo",
       "REVERSE_SHARE_UPDATE": "Chia sẻ ngược đã được cập nhật",
       "REVERSE_SHARE_DELETE": "Chia sẻ ngược đã bị xóa",
-      "REVERSE_SHARE_ACTIVATE": "Chia sẻ ngược đã được kích hoạt",
-      "REVERSE_SHARE_DEACTIVATE": "Chia sẻ ngược đã bị hủy kích hoạt",
       "REVERSE_SHARE_ACCESS": "Chia sẻ ngược đã được truy cập",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "Mật khẩu chia sẻ ngược đã được xác minh",
       "REVERSE_SHARE_PASSWORD_FAILED": "Mật khẩu chia sẻ ngược không thành công",
@@ -794,7 +792,11 @@
       "SMTP_TEST": "Kiểm tra SMTP đã được thực hiện",
       "BACKGROUND_IMAGE_UPLOAD": "Hình ảnh nền đã được tải lên",
       "BACKGROUND_IMAGE_DELETE": "Hình ảnh nền đã bị xóa",
-      "AUDIT_RETENTION_CLEANUP": "Dọn dẹp nhật ký kiểm tra"
+      "AUDIT_RETENTION_CLEANUP": "Dọn dẹp nhật ký kiểm tra",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
     },
     "targetTypes": {
       "user": "Người dùng",
@@ -2012,7 +2014,11 @@
     },
     "singleShareZipName": "{shareName}_files.zip",
     "multipleSharesZipName": "{count}_shares_files.zip",
-    "defaultShareName": "Chia sẻ"
+    "defaultShareName": "Chia sẻ",
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "Chia sẻ nhiều tệp",
@@ -2106,7 +2112,9 @@
     "status": {
       "neverExpires": "Không bao giờ hết hạn",
       "active": "Đang hoạt động",
-      "expired": "Đã hết hạn"
+      "expired": "Đã hết hạn",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "Được bảo vệ",
@@ -2127,7 +2135,10 @@
       "viewQrCode": "Xem mã QR",
       "notifyRecipients": "Thông báo cho người nhận",
       "downloadShareFiles": "Tải xuống tất cả các tệp",
-      "delete": "Xóa"
+      "delete": "Xóa",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "actions": "Hành động",

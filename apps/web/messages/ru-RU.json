@@ -760,8 +760,6 @@
       "REVERSE_SHARE_CREATE": "Обратный общий доступ создан",
       "REVERSE_SHARE_UPDATE": "Обратный общий доступ обновлен",
       "REVERSE_SHARE_DELETE": "Обратный общий доступ удален",
-      "REVERSE_SHARE_ACTIVATE": "Обратный общий доступ активирован",
-      "REVERSE_SHARE_DEACTIVATE": "Обратный общий доступ деактивирован",
       "REVERSE_SHARE_ACCESS": "Обратный общий доступ получен",
       "REVERSE_SHARE_PASSWORD_VERIFIED": "Пароль обратного общего доступа проверен",
       "REVERSE_SHARE_PASSWORD_FAILED": "Ошибка пароля обратного общего доступа",
@@ -790,7 +788,11 @@
       "SMTP_TEST": "SMTP тест выполнен",
       "BACKGROUND_IMAGE_UPLOAD": "Фоновое изображение загружено",
       "BACKGROUND_IMAGE_DELETE": "Фоновое изображение удалено",
-      "AUDIT_RETENTION_CLEANUP": "Очистка журнала аудита"
+      "AUDIT_RETENTION_CLEANUP": "Очистка журнала аудита",
+      "SHARE_DEACTIVATED": "Share deactivated",
+      "SHARE_REACTIVATED": "Share reactivated",
+      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
+      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated"
     },
     "targetTypes": {
       "user": "Пользователь",
@@ -2008,7 +2010,11 @@
     "zipDownloadSuccess": "Zip -файл успешно загружен",
     "errors": {
       "multipleDownloadNotSupported": "Множественная загрузка общих ресурсов пока не поддерживается - загружайте общие ресурсы по отдельности"
-    }
+    },
+    "pauseSuccess": "Share paused",
+    "pauseError": "Failed to pause share",
+    "resumeSuccess": "Share resumed",
+    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
   },
   "shareMultipleFiles": {
     "title": "Поделиться Несколькими Файлами",
@@ -2102,7 +2108,9 @@
     "status": {
       "neverExpires": "Никогда Не Истекает",
       "active": "Активный",
-      "expired": "Истекший"
+      "expired": "Истекший",
+      "paused": "Paused",
+      "maxViewsReached": "View Limit Reached"
     },
     "security": {
       "protected": "Защищен",
@@ -2122,7 +2130,10 @@
       "notifyRecipients": "Уведомить Получателей",
       "delete": "Удалить",
       "downloadShareFiles": "Загрузите все файлы",
-      "viewQrCode": "Просмотр QR-кода"
+      "viewQrCode": "Просмотр QR-кода",
+      "pause": "Pause",
+      "resume": "Resume",
+      "renew": "Renew"
     },
     "bulkActions": {
       "delete": "Удалить",
