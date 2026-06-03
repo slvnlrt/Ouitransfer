@@ -14,3 +14,49 @@ export const DEACTIVATION_REASONS = ["expired", "max_views", "manual"] as const;
 
 /** Reason a share/reverse-share was deactivated. */
 export type DeactivationReason = (typeof DEACTIVATION_REASONS)[number];
+
+/**
+ * The persisted fields that mark a share/reverse-share as deactivated.
+ *
+ * Single source of truth shared by the read-time transitions (this batch) and
+ * the scheduler's deactivation sweep (Batch 3) so they always write the same
+ * shape. `deactivatedAt` is the instant the share became inactive; for `expired`
+ * it is the expiration instant, otherwise "now".
+ */
+export interface DeactivationFields {
+  isActive: false;
+  deactivatedAt: Date;
+  deactivationReason: DeactivationReason;
+}
+
+/**
+ * The persisted fields that mark a share/reverse-share as active again.
+ *
+ * Used by manual resume and by reactivation-on-extend (raising `maxViews` /
+ * extending `expiration`). Clears the deactivation metadata and re-arms the
+ * pending-deletion warning so a future deactivation notifies afresh.
+ */
+export interface ReactivationFields {
+  isActive: true;
+  deactivatedAt: null;
+  deactivationReason: null;
+  notifiedForPendingDeletion: false;
+}
+
+/** Build the persisted fields that deactivate a share/reverse-share. */
+export function deactivationFields(
+  reason: DeactivationReason,
+  deactivatedAt: Date = new Date(),
+): DeactivationFields {
+  return { isActive: false, deactivatedAt, deactivationReason: reason };
+}
+
+/** Build the persisted fields that reactivate a share/reverse-share. */
+export function reactivationFields(): ReactivationFields {
+  return {
+    isActive: true,
+    deactivatedAt: null,
+    deactivationReason: null,
+    notifiedForPendingDeletion: false,
+  };
+}
