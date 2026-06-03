@@ -633,19 +633,32 @@ Frontend `register-form.tsx` uses `parseApiError()` + `ErrorCodes.*` comparisons
 
 ---
 
-## TD-38 — Notification unsubscribe page only supports English and French
+## ~~TD-38 — Notification unsubscribe page only supports English and French~~ ✅ RESOLVED
 
-**Context:** The unsubscribe confirmation and result pages (served as HTML by the server at
-`apps/server/src/modules/notification/routes.ts:46`) use a hardcoded inline map with only
-`en` and `fr` locale strings. All other 21 supported locales fall back to English.
-The i18n infrastructure (`loader.ts`, email message files) already exists to support all locales.
+Resolved (juin 2026). The hardcoded inline `PAGE_STRINGS` map (`UnsubscribePageStrings`
+interface + `getPageStrings`) was removed from `notification/routes.ts`. The unsubscribe
+confirmation/success/error pages now render through the **email i18n system**
+(`createTranslationFn`/`TranslationFn` from `email/i18n/loader.ts`) under a new
+`unsubscribe.*` namespace in `email/i18n/messages/en.json` + `fr.json`. This gives the
+pages a single source of truth and the **same locale-resolution and fallback rules as the
+notification emails themselves** (requested locale → English) — adding a new email locale
+file now extends the unsubscribe pages automatically, with no separate map to maintain.
 
-**Fix:** Migrate the unsubscribe page strings to the email i18n system. Add corresponding
-keys to `apps/server/src/modules/email/i18n/messages/en.json` (and `fr.json`). Use
-`createTranslationFn(userLocale)` to render the page. Medium effort, clear path.
+The HTML-escaping `tr` function escapes the interpolated `{type}` value while preserving
+template markup; the `lang` attribute mirrors the requested locale exactly as the email
+base layout does. `getUserLocale` now returns `"en"` (not `null`) on a missing user, and
+the error page (rendered when no user/locale is known) always renders in English.
+
+Tests: 2 new `app.inject` integration tests in `notification/__tests__/routes.test.ts`
+assert French rendering of the confirm and success pages (and `lang="fr"`); `beforeEach`
+now resets `user.findUnique` to prevent locale leaking between tests.
+
+**Note:** The email i18n subsystem itself currently ships only `en.json`/`fr.json`, so
+effective language coverage is en/fr (other locales fall back to English) — identical to
+before, but now consolidated and consistent. Broadening email/unsubscribe language coverage
+is the separate, larger translation effort tracked under TD-36.
 
 **Found during:** Deferred work audit (mai 2026, AR-2)
-**Severity:** Low — moderate UX degradation for non-EN/FR users clicking unsubscribe links
 
 ---
 
