@@ -117,6 +117,9 @@ model Share {
   inactivityAlertSent  Boolean   @default(false)
   lastDownloadedAt     DateTime?
   notifyOnDownload     Boolean   @default(false)
+  isActive             Boolean   @default(true)
+  deactivatedAt        DateTime? // Set when the share is deactivated (expired/maxViews/manual); cleared on reactivation. Drives delayed deletion.
+  deactivationReason   String? // DeactivationReason: "expired" | "max_views" | "manual"
   notifiedForExpiring  Boolean   @default(false)
   notifiedForExpired   Boolean   @default(false)
   notifiedForMaxViews  Boolean   @default(false)
@@ -333,6 +336,8 @@ model ReverseShare {
   password           String?
   pageLayout         PageLayout       @default(DEFAULT)
   isActive           Boolean          @default(true)
+  deactivatedAt      DateTime? // Set when the reverse share is deactivated (expired/manual); cleared on reactivation. Drives delayed deletion.
+  deactivationReason String? // DeactivationReason: "expired" | "max_views" | "manual"
   nameFieldRequired  FieldRequirement @default(OPTIONAL)
   emailFieldRequired FieldRequirement @default(OPTIONAL)
   notifyOnUpload       Boolean          @default(false)
