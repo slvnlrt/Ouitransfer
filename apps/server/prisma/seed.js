@@ -285,6 +285,57 @@ const defaultConfigs = [
     group: "cleanup",
     isSystem: true,
   },
+  // Quota Overage Policy (5.2 Phase B). Grouped with the storage limits they govern.
+  // Conservative defaults: smart deletion is opt-in and off; reverse-share soft enforcement on.
+  {
+    key: "quotaWarningThresholds",
+    value: "80,90",
+    type: "string",
+    group: "storage",
+    isSystem: true,
+  },
+  {
+    key: "quotaGracePeriodDays",
+    value: "7",
+    type: "number",
+    group: "storage",
+    isSystem: true,
+  },
+  {
+    key: "quotaSmartDeletionEnabled",
+    value: "false",
+    type: "boolean",
+    group: "storage",
+    isSystem: true,
+  },
+  {
+    key: "quotaInactiveShareDays",
+    value: "30",
+    type: "number",
+    group: "storage",
+    isSystem: true,
+  },
+  {
+    key: "reverseShareQuotaSoftEnforcement",
+    value: "true",
+    type: "boolean",
+    group: "storage",
+    isSystem: true,
+  },
+  {
+    key: "reverseShareMaxOverageFactor",
+    value: "3",
+    type: "number",
+    group: "storage",
+    isSystem: true,
+  },
+  {
+    key: "reverseShareAbsoluteMaxBytes",
+    value: "0",
+    type: "bigint",
+    group: "storage",
+    isSystem: true,
+  },
 ];
 
 const defaultAuthProviders = [

@@ -62,6 +62,65 @@ function intMin(label: string, min: number): z.ZodType {
 }
 
 /**
+ * A non-negative big-integer config value persisted as a string (a byte count
+ * that may exceed `Number.MAX_SAFE_INTEGER`), constrained to `>= min`. Parsed
+ * with the native `BigInt` so arbitrarily large values stay exact. Rejects
+ * empty/whitespace, non-numeric, and fractional input explicitly.
+ */
+function bigintMin(label: string, min: bigint): z.ZodType {
+  const wholeNumberMessage = `${label} must be a whole number of bytes.`;
+  return z
+    .string()
+    .trim()
+    .min(1, wholeNumberMessage)
+    .superRefine((value, ctx) => {
+      let parsed: bigint;
+      try {
+        parsed = BigInt(value);
+      } catch {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: wholeNumberMessage });
+        return;
+      }
+      if (parsed < min) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `${label} must be at least ${min}.`,
+        });
+      }
+    });
+}
+
+/**
+ * Comma-separated quota-usage warning percentages (5.2 Phase B). Each entry must
+ * be an integer in the inclusive range 1–99 (100% is the implicit "exceeded"
+ * boundary, never a configured warning). The list must be non-empty; order and
+ * duplicates are tolerated (the quota service sorts + dedupes at parse time).
+ */
+function quotaWarningThresholds(label: string): z.ZodType {
+  const message = `${label} must be a comma-separated list of whole percentages between 1 and 99.`;
+  return z
+    .string()
+    .trim()
+    .min(1, message)
+    .superRefine((value, ctx) => {
+      const parts = value.split(",");
+      const fail = () => ctx.addIssue({ code: z.ZodIssueCode.custom, message });
+      for (const part of parts) {
+        const trimmed = part.trim();
+        if (trimmed === "" || !/^\d+$/.test(trimmed)) {
+          fail();
+          return;
+        }
+        const n = Number(trimmed);
+        if (n < 1 || n > 99) {
+          fail();
+          return;
+        }
+      }
+    });
+}
+
+/**
  * Audit log retention, in days.
  *  - `0` means "keep audit logs forever".
  *  - Any positive value must be at least 7 days. This mirrors the admin UI
@@ -123,6 +182,33 @@ const configValueValidators: Record<string, ConfigValueValidator> = {
   autoCleanupOrphanMinAgeHours: fromSchema(
     "autoCleanupOrphanMinAgeHours",
     intMin("Orphan minimum age (hours)", 1),
+  ),
+
+  // Quota Overage Policy (5.2 Phase B).
+  quotaWarningThresholds: fromSchema(
+    "quotaWarningThresholds",
+    quotaWarningThresholds("Quota warning thresholds"),
+  ),
+  quotaGracePeriodDays: fromSchema("quotaGracePeriodDays", intMin("Quota grace period (days)", 0)),
+  quotaSmartDeletionEnabled: fromSchema(
+    "quotaSmartDeletionEnabled",
+    booleanString("Smart deletion"),
+  ),
+  quotaInactiveShareDays: fromSchema(
+    "quotaInactiveShareDays",
+    intMin("Inactive-share window (days)", 1),
+  ),
+  reverseShareQuotaSoftEnforcement: fromSchema(
+    "reverseShareQuotaSoftEnforcement",
+    booleanString("Reverse-share soft enforcement"),
+  ),
+  reverseShareMaxOverageFactor: fromSchema(
+    "reverseShareMaxOverageFactor",
+    intMin("Reverse-share max overage factor", 1),
+  ),
+  reverseShareAbsoluteMaxBytes: fromSchema(
+    "reverseShareAbsoluteMaxBytes",
+    bigintMin("Reverse-share absolute max bytes", 0n),
   ),
 };
 
