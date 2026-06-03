@@ -16,6 +16,15 @@ export const DEACTIVATION_REASONS = ["expired", "max_views", "manual"] as const;
 export type DeactivationReason = (typeof DEACTIVATION_REASONS)[number];
 
 /**
+ * Deactivation reasons that make a share/reverse-share eligible for the
+ * scheduler's deletion sweep (phase 2). Only the *automatic* reasons are
+ * deletable — a `manual` pause is never auto-deleted (the owner asked for it to
+ * stay). If a manually-paused share later also expires, the deactivation sweep
+ * upgrades its reason to `expired`, moving it into this set.
+ */
+export const AUTO_DELETABLE_REASONS = ["expired", "max_views"] as const;
+
+/**
  * The persisted fields that mark a share/reverse-share as deactivated.
  *
  * Single source of truth shared by the read-time transitions (this batch) and

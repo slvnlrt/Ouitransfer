@@ -5,6 +5,7 @@ import { logAuditEvent } from "../audit/service.js";
 import { t } from "../email/i18n/loader.js";
 import { emailService } from "../email/service.js";
 import { buildReverseShareManageUrl, buildShareManageUrl } from "../email/url-builder.js";
+import { AUTO_DELETABLE_REASONS, deactivationFields } from "../share/lifecycle.js";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -30,7 +31,7 @@ const storageProvider = new S3StorageProvider();
 
 // ─── Summary type ─────────────────────────────────────────────────────────────
 
-/** Per-batch outcome returned by every cleanup function for scheduler logging. */
+/** Outcome of a phase-2 deletion sweep (share or reverse share). */
 export interface CleanupSummary {
   warned: number;
   deleted: number;
@@ -39,6 +40,16 @@ export interface CleanupSummary {
 
 function emptySummary(): CleanupSummary {
   return { warned: 0, deleted: 0, errors: 0 };
+}
+
+/** Outcome of a phase-1 deactivation sweep (share or reverse share). */
+export interface DeactivationSummary {
+  deactivated: number;
+  errors: number;
+}
+
+function emptyDeactivationSummary(): DeactivationSummary {
+  return { deactivated: 0, errors: 0 };
 }
 
 /**
@@ -127,24 +138,254 @@ export async function deleteReverseShareWithStorage(reverseShareId: string): Pro
   return s3Errors;
 }
 
-// ─── Expired shares (A2 + A5 warning) ──────────────────────────────────────────
+// ─── Phase 1: deactivate ended shares (expired / maxViews) ─────────────────────
 
 /**
- * Clean up expired regular shares.
+ * Deactivation sweep for regular shares (Phase A.1, phase 1).
  *
- * - **Warn**: for shares whose deletion moment (`expiration + graceDays`) is
- *   within `notifyDaysBefore` and that have not yet been warned, send a
- *   `share_pending_deletion` email and set `notifiedForPendingDeletion` — but
- *   only when the email was actually enqueued, so a no-op send (SMTP disabled,
- *   preference off) leaves the flag clear for a later retry.
- * - **Delete**: for shares past `expiration + graceDays`, delete the share link
- *   (link only — never the owner's files), audit `SHARE_AUTO_DELETED`, and
- *   notify the creator with `share_auto_deleted` (reason "expired").
+ * Persists the `active → deactivated` transition for shares whose lifecycle has
+ * ended but which the read path never observed (a share that is never accessed
+ * again after expiring, or whose maxViews was reached without a final read that
+ * could have persisted it). This is the backstop that guarantees every ended
+ * share eventually becomes `isActive=false` with a `deactivationReason`, so the
+ * deletion sweep can later act on it.
+ *
+ * Three cases, all idempotent / race-safe via compare-and-set on `isActive`
+ * (and on the reason for the upgrade case):
+ *
+ *  1. **Active + expired** (`isActive=true AND expiration < now`) →
+ *     `deactivationFields("expired", expiration)`. `deactivatedAt` is stamped at
+ *     the expiration instant so the deletion grace is measured from the real end,
+ *     identical to the read-time {@link markExpiredInactive} shape.
+ *  2. **Active + maxViews reached** (`isActive=true AND maxViews != null AND
+ *     views >= maxViews`) → `deactivationFields("max_views")` (`deactivatedAt =
+ *     now`, since the limit was hit "now" from the sweep's point of view; the
+ *     read path stamps it precisely when it can). Expired-and-maxed shares are
+ *     handled by case 1 first (expired takes precedence — `deactivatedAt` =
+ *     expiration is the earlier, correct anchor).
+ *  3. **Manual pause that has since expired** (`isActive=false AND reason="manual"
+ *     AND expiration < now`) → upgrade the reason to `expired` and reset
+ *     `deactivatedAt` to the expiration instant, moving the share into the
+ *     auto-deletable set. (A manual pause is otherwise never auto-deleted.)
+ *
+ * The deactivation notice (`share_expired` / `share_max_views_reached`) is sent
+ * once, guarded by the existing `notifiedForExpired` / `notifiedForMaxViews`
+ * flags (compare-and-set, flag flipped only when the email is actually enqueued),
+ * and a `SHARE_DEACTIVATED` audit event records the reason. Each share is wrapped
+ * so a single failure increments `errors` without aborting the batch.
+ */
+export async function deactivateEndedShares(): Promise<DeactivationSummary> {
+  const summary = emptyDeactivationSummary();
+  const now = new Date();
+  const log = getLogger();
+
+  // ── Case 1: active + expired ──
+  const expiredActive = await prisma.share.findMany({
+    where: { isActive: true, expiration: { not: null, lt: now } },
+    include: { creator: { select: { id: true, email: true, locale: true, isActive: true } } },
+  });
+  for (const share of expiredActive) {
+    if (!share.expiration) continue;
+    try {
+      const updated = await prisma.share.updateMany({
+        where: { id: share.id, isActive: true },
+        data: deactivationFields("expired", share.expiration),
+      });
+      if (updated.count === 0) continue; // Already deactivated by a racing path.
+      summary.deactivated++;
+
+      await logAuditEvent({
+        userId: share.creatorId ?? undefined,
+        action: "SHARE_DEACTIVATED",
+        ipAddress: SYSTEM_IP,
+        targetType: "share",
+        targetId: share.id,
+        metadata: { shareName: share.name ?? UNNAMED_SHARE, reason: "expired" },
+      });
+
+      if (!share.notifiedForExpired) {
+        await sendShareDeactivationNotice(share, "expired", share.expiration);
+      }
+    } catch (err) {
+      summary.errors++;
+      log.error({ err, shareId: share.id }, "Failed to deactivate expired share");
+    }
+  }
+
+  // ── Case 2: active + maxViews reached ──
+  // `views >= maxViews` is a field-to-field comparison Prisma cannot express, so
+  // filter `maxViews != null` (and not already expired-handled) in SQL and apply
+  // the comparison in JS.
+  const maxViewsCandidates = await prisma.share.findMany({
+    where: {
+      isActive: true,
+      maxViews: { not: null },
+      OR: [{ expiration: null }, { expiration: { gte: now } }],
+    },
+    include: { creator: { select: { id: true, email: true, locale: true, isActive: true } } },
+  });
+  for (const share of maxViewsCandidates) {
+    if (share.maxViews === null || share.views < share.maxViews) continue;
+    try {
+      const updated = await prisma.share.updateMany({
+        where: { id: share.id, isActive: true },
+        data: deactivationFields("max_views"),
+      });
+      if (updated.count === 0) continue;
+      summary.deactivated++;
+
+      await logAuditEvent({
+        userId: share.creatorId ?? undefined,
+        action: "SHARE_DEACTIVATED",
+        ipAddress: SYSTEM_IP,
+        targetType: "share",
+        targetId: share.id,
+        metadata: { shareName: share.name ?? UNNAMED_SHARE, reason: "max_views" },
+      });
+
+      if (!share.notifiedForMaxViews) {
+        await sendShareDeactivationNotice(share, "max_views");
+      }
+    } catch (err) {
+      summary.errors++;
+      log.error({ err, shareId: share.id }, "Failed to deactivate max-views share");
+    }
+  }
+
+  // ── Case 3: manual pause that has since expired → upgrade to "expired" ──
+  const expiredManual = await prisma.share.findMany({
+    where: {
+      isActive: false,
+      deactivationReason: "manual",
+      expiration: { not: null, lt: now },
+    },
+    include: { creator: { select: { id: true, email: true, locale: true, isActive: true } } },
+  });
+  for (const share of expiredManual) {
+    if (!share.expiration) continue;
+    try {
+      // Compare-and-set on the reason so we never clobber a concurrent resume
+      // (which would set reason back to null / the share active again).
+      const updated = await prisma.share.updateMany({
+        where: { id: share.id, isActive: false, deactivationReason: "manual" },
+        // Re-anchor `deactivatedAt` to the expiration instant so grace counts
+        // from the real end, not the earlier manual-pause moment.
+        data: { deactivatedAt: share.expiration, deactivationReason: "expired" },
+      });
+      if (updated.count === 0) continue;
+      summary.deactivated++;
+
+      await logAuditEvent({
+        userId: share.creatorId ?? undefined,
+        action: "SHARE_DEACTIVATED",
+        ipAddress: SYSTEM_IP,
+        targetType: "share",
+        targetId: share.id,
+        metadata: {
+          shareName: share.name ?? UNNAMED_SHARE,
+          reason: "expired",
+          upgradedFrom: "manual",
+        },
+      });
+
+      if (!share.notifiedForExpired) {
+        await sendShareDeactivationNotice(share, "expired", share.expiration);
+      }
+    } catch (err) {
+      summary.errors++;
+      log.error({ err, shareId: share.id }, "Failed to upgrade manual pause to expired");
+    }
+  }
+
+  return summary;
+}
+
+/**
+ * Send the one-time deactivation notice for a share and flip the matching
+ * `notifiedFor*` flag — only when the email was actually enqueued, with a
+ * compare-and-set so a concurrent send cannot duplicate it. A deactivated owner
+ * is skipped (their shares are already blocked; notifying them is noise).
+ */
+async function sendShareDeactivationNotice(
+  share: {
+    id: string;
+    name: string | null;
+    maxViews: number | null;
+    creatorId: string | null;
+    creator: { email: string; locale: string | null; isActive: boolean } | null;
+  },
+  reason: "expired" | "max_views",
+  expiredAt?: Date,
+): Promise<void> {
+  if (!share.creatorId || !share.creator?.email || !share.creator.isActive) return;
+  const locale = share.creator.locale ?? "en";
+  const shareManageUrl = await buildShareManageUrl(share.id);
+
+  if (reason === "expired") {
+    const result = await emailService.send("share_expired", {
+      to: share.creator.email,
+      locale,
+      userId: share.creatorId,
+      relatedId: share.id,
+      data: {
+        shareName: share.name ?? UNNAMED_SHARE,
+        expiredAt: (expiredAt ?? new Date()).toISOString(),
+        shareManageUrl,
+      },
+    });
+    if (result.enqueued) {
+      await prisma.share.updateMany({
+        where: { id: share.id, notifiedForExpired: false },
+        data: { notifiedForExpired: true },
+      });
+    }
+    return;
+  }
+
+  const result = await emailService.send("share_max_views_reached", {
+    to: share.creator.email,
+    locale,
+    userId: share.creatorId,
+    relatedId: share.id,
+    data: {
+      shareName: share.name ?? UNNAMED_SHARE,
+      maxViews: share.maxViews ?? 0,
+      shareManageUrl,
+    },
+  });
+  if (result.enqueued) {
+    await prisma.share.updateMany({
+      where: { id: share.id, notifiedForMaxViews: false },
+      data: { notifiedForMaxViews: true },
+    });
+  }
+}
+
+// ─── Phase 2: delete deactivated shares (after grace) ──────────────────────────
+
+/**
+ * Deletion sweep for regular shares (Phase A.1, phase 2).
+ *
+ * Acts only on shares that the deactivation sweep (or the read path) has already
+ * moved to `isActive=false` with an **auto-deletable** reason
+ * ({@link AUTO_DELETABLE_REASONS}: `expired` / `max_views`). Manual pauses
+ * (`reason="manual"`) are deliberately excluded from BOTH the warn and the delete
+ * phase — the owner asked for the share to stay; it is only ever deleted if the
+ * deactivation sweep upgrades it to `expired`.
+ *
+ * Grace is measured uniformly from `deactivatedAt`: a share is deleted once
+ * `deactivatedAt < now - graceDays`. The warning fires when the deletion moment
+ * (`deactivatedAt + grace`) is within `notifyDaysBefore`.
+ *
+ * - **Warn**: `share_pending_deletion`; `notifiedForPendingDeletion` is flipped
+ *   only when the email was actually enqueued (so a no-op send retries later).
+ * - **Delete**: `deleteShareLink` (link only — never the owner's files), audit
+ *   `SHARE_AUTO_DELETED`, and notify with `share_auto_deleted`.
  *
  * Each item is wrapped so a single failure increments `errors` without aborting
  * the batch.
  */
-export async function cleanupExpiredShares(opts: {
+export async function deleteDeactivatedShares(opts: {
   graceDays: number;
   notifyDaysBefore: number;
 }): Promise<CleanupSummary> {
@@ -153,18 +394,21 @@ export async function cleanupExpiredShares(opts: {
   const now = new Date();
   const graceMs = graceDays * ONE_DAY_MS;
   const log = getLogger();
+  const autoDeletable = [...AUTO_DELETABLE_REASONS];
 
   // ── Warn phase ──
-  // Deletion moment = expiration + grace. We warn when that moment is within
+  // Deletion moment = deactivatedAt + grace. Warn when that moment is within
   // notifyDaysBefore of now (and not yet reached), i.e.
-  //   expiration ∈ (now - grace, now - grace + notifyDaysBefore]
+  //   deactivatedAt ∈ (now - grace, now - grace + notifyDaysBefore]
   if (notifyDaysBefore > 0) {
-    const warnLowerExpiration = new Date(now.getTime() - graceMs);
-    const warnUpperExpiration = new Date(now.getTime() - graceMs + notifyDaysBefore * ONE_DAY_MS);
+    const warnLower = new Date(now.getTime() - graceMs);
+    const warnUpper = new Date(now.getTime() - graceMs + notifyDaysBefore * ONE_DAY_MS);
 
     const toWarn = await prisma.share.findMany({
       where: {
-        expiration: { not: null, gt: warnLowerExpiration, lte: warnUpperExpiration },
+        isActive: false,
+        deactivationReason: { in: autoDeletable },
+        deactivatedAt: { not: null, gt: warnLower, lte: warnUpper },
         notifiedForPendingDeletion: false,
         creatorId: { not: null },
         creator: { isActive: true },
@@ -173,9 +417,9 @@ export async function cleanupExpiredShares(opts: {
     });
 
     for (const share of toWarn) {
-      if (!share.creator || !share.creatorId || !share.expiration) continue;
+      if (!share.creator || !share.creatorId || !share.deactivatedAt) continue;
       try {
-        const deletionAt = new Date(share.expiration.getTime() + graceMs);
+        const deletionAt = new Date(share.deactivatedAt.getTime() + graceMs);
         const shareManageUrl = await buildShareManageUrl(share.id);
         const result = await emailService.send("share_pending_deletion", {
           to: share.creator.email,
@@ -205,13 +449,19 @@ export async function cleanupExpiredShares(opts: {
   // ── Delete phase ──
   const deleteBefore = new Date(now.getTime() - graceMs);
   const toDelete = await prisma.share.findMany({
-    where: { expiration: { not: null, lt: deleteBefore } },
+    where: {
+      isActive: false,
+      deactivationReason: { in: autoDeletable },
+      deactivatedAt: { not: null, lt: deleteBefore },
+    },
     include: { creator: { select: { id: true, email: true, locale: true, isActive: true } } },
   });
 
   for (const share of toDelete) {
     try {
       const shareName = share.name ?? UNNAMED_SHARE;
+      // Localized reason mirrors the deactivation reason.
+      const reasonKey = share.deactivationReason === "max_views" ? "viewLimitReached" : "expired";
       await deleteShareLink(share.id);
       summary.deleted++;
 
@@ -221,7 +471,7 @@ export async function cleanupExpiredShares(opts: {
         ipAddress: SYSTEM_IP,
         targetType: "share",
         targetId: share.id,
-        metadata: { shareName, reason: "expired" },
+        metadata: { shareName, reason: share.deactivationReason ?? "expired" },
       });
 
       // Notify the creator (only if still active — a deactivated owner's shares
@@ -233,172 +483,109 @@ export async function cleanupExpiredShares(opts: {
           locale,
           userId: share.creatorId,
           relatedId: share.id,
-          data: { shareName, reason: await resolveReason(locale, "expired") },
+          data: { shareName, reason: await resolveReason(locale, reasonKey) },
         });
       }
     } catch (err) {
       summary.errors++;
-      log.error({ err, shareId: share.id }, "Failed to clean up expired share");
+      log.error({ err, shareId: share.id }, "Failed to delete deactivated share");
     }
   }
 
   return summary;
 }
 
-// ─── Max-views shares (A4) ─────────────────────────────────────────────────────
+// ─── Phase 1: deactivate ended reverse shares (expired) ────────────────────────
 
 /**
- * Clean up shares that have reached their `maxViews` cap and have seen no
- * further activity for `inactiveDays`.
+ * Deactivation sweep for reverse shares (Phase A.1, phase 1).
  *
- * A share qualifies when `maxViews != null && views >= maxViews` and its last
- * activity (`lastDownloadedAt`, falling back to `updatedAt`) is older than
- * `inactiveDays`. Mirrors {@link cleanupExpiredShares}:
+ * Persists the `active → deactivated` transition for reverse shares whose
+ * `expiration` has passed but which the read/upload path never observed. Reuses
+ * the read-time {@link markExpiredInactive} repository write (compare-and-set on
+ * `isActive`, `deactivatedAt` stamped at the expiration instant), sends the
+ * one-time `reverse_share_expired` notice (guarded by `notifiedForExpired`), and
+ * audits `REVERSE_SHARE_DEACTIVATED`. (Reverse shares have no maxViews concept,
+ * so expiry is the only automatic trigger.)
  *
- * - **Warn**: for maxViews-reached shares whose deletion moment
- *   (`(lastDownloadedAt ?? updatedAt) + inactiveDays`) is within
- *   `notifyDaysBefore` and that have not yet been warned, send a
- *   `share_pending_deletion` email and set `notifiedForPendingDeletion` — but
- *   only when the email was actually enqueued (spec A5: warn before A2–A4).
- * - **Delete**: deletes the share link (link only), audits, and notifies the
- *   creator with `share_auto_deleted` (reason "view limit reached").
+ * Each reverse share is wrapped so a single failure increments `errors` without
+ * aborting the batch.
  */
-export async function cleanupMaxViewsShares(opts: {
-  inactiveDays: number;
-  notifyDaysBefore: number;
-}): Promise<CleanupSummary> {
-  const { inactiveDays, notifyDaysBefore } = opts;
-  const summary = emptySummary();
+export async function deactivateEndedReverseShares(): Promise<DeactivationSummary> {
+  const summary = emptyDeactivationSummary();
   const now = new Date();
-  const inactiveMs = inactiveDays * ONE_DAY_MS;
-  const inactiveBefore = new Date(now.getTime() - inactiveMs);
   const log = getLogger();
 
-  // The "last activity" anchor used for both the warn window and deletion is
-  // `lastDownloadedAt ?? updatedAt`. Deletion moment = anchor + inactiveDays.
-  const lastActivity = (share: { lastDownloadedAt: Date | null; updatedAt: Date }): Date =>
-    share.lastDownloadedAt ?? share.updatedAt;
-
-  // ── Warn phase ──
-  // We warn when the deletion moment is within notifyDaysBefore of now (and not
-  // yet reached), i.e. anchor ∈ (now - inactive, now - inactive + notifyDaysBefore].
-  if (notifyDaysBefore > 0) {
-    const warnLower = new Date(now.getTime() - inactiveMs);
-    const warnUpper = new Date(now.getTime() - inactiveMs + notifyDaysBefore * ONE_DAY_MS);
-
-    // `views >= maxViews` is a field-to-field comparison Prisma cannot express,
-    // so filter `maxViews != null` in SQL and apply it in JS below.
-    const warnCandidates = await prisma.share.findMany({
-      where: {
-        maxViews: { not: null },
-        notifiedForPendingDeletion: false,
-        creatorId: { not: null },
-        creator: { isActive: true },
-        OR: [
-          { lastDownloadedAt: { not: null, gt: warnLower, lte: warnUpper } },
-          { lastDownloadedAt: null, updatedAt: { gt: warnLower, lte: warnUpper } },
-        ],
-      },
-      include: { creator: { select: { id: true, email: true, locale: true } } },
-    });
-
-    for (const share of warnCandidates) {
-      if (share.maxViews === null || share.views < share.maxViews) continue;
-      if (!share.creator || !share.creatorId) continue;
-      try {
-        const deletionAt = new Date(lastActivity(share).getTime() + inactiveMs);
-        const shareManageUrl = await buildShareManageUrl(share.id);
-        const result = await emailService.send("share_pending_deletion", {
-          to: share.creator.email,
-          locale: share.creator.locale ?? "en",
-          userId: share.creatorId,
-          relatedId: share.id,
-          data: {
-            shareName: share.name ?? UNNAMED_SHARE,
-            deletionAt: deletionAt.toISOString(),
-            shareManageUrl,
-          },
-        });
-        if (result.enqueued) {
-          await prisma.share.update({
-            where: { id: share.id },
-            data: { notifiedForPendingDeletion: true },
-          });
-          summary.warned++;
-        }
-      } catch (err) {
-        summary.errors++;
-        log.error(
-          { err, shareId: share.id },
-          "Failed to warn for pending max-views share deletion",
-        );
-      }
-    }
-  }
-
-  // ── Delete phase ──
-  // `views >= maxViews` cannot be expressed directly in a Prisma `where`
-  // (field-to-field comparison), so filter `maxViews != null` in SQL and apply
-  // the comparison in JS.
-  const candidates = await prisma.share.findMany({
-    where: {
-      maxViews: { not: null },
-      OR: [
-        { lastDownloadedAt: { not: null, lt: inactiveBefore } },
-        { lastDownloadedAt: null, updatedAt: { lt: inactiveBefore } },
-      ],
-    },
+  const expiredActive = await prisma.reverseShare.findMany({
+    where: { isActive: true, expiration: { not: null, lt: now } },
     include: { creator: { select: { id: true, email: true, locale: true, isActive: true } } },
   });
 
-  for (const share of candidates) {
-    if (share.maxViews === null || share.views < share.maxViews) continue;
-
+  for (const rs of expiredActive) {
+    if (!rs.expiration) continue;
     try {
-      const shareName = share.name ?? UNNAMED_SHARE;
-      await deleteShareLink(share.id);
-      summary.deleted++;
+      // markExpiredInactive guards on `isActive: true` and stamps deactivatedAt
+      // at the expiration instant — identical to the read-path write.
+      const updated = await prisma.reverseShare.updateMany({
+        where: { id: rs.id, isActive: true },
+        data: { isActive: false, deactivatedAt: rs.expiration, deactivationReason: "expired" },
+      });
+      if (updated.count === 0) continue; // Already deactivated by a racing path.
+      summary.deactivated++;
 
       await logAuditEvent({
-        userId: share.creatorId ?? undefined,
-        action: "SHARE_AUTO_DELETED",
+        userId: rs.creatorId,
+        action: "REVERSE_SHARE_DEACTIVATED",
         ipAddress: SYSTEM_IP,
-        targetType: "share",
-        targetId: share.id,
-        metadata: { shareName, reason: "view limit reached" },
+        targetType: "reverse_share",
+        targetId: rs.id,
+        metadata: { reverseShareName: rs.name ?? UNNAMED_REVERSE_SHARE, reason: "expired" },
       });
 
-      if (share.creator && share.creatorId && share.creator.isActive) {
-        const locale = share.creator.locale ?? "en";
-        await emailService.send("share_auto_deleted", {
-          to: share.creator.email,
-          locale,
-          userId: share.creatorId,
-          relatedId: share.id,
-          data: { shareName, reason: await resolveReason(locale, "viewLimitReached") },
+      if (!rs.notifiedForExpired && rs.creator.isActive) {
+        const result = await emailService.send("reverse_share_expired", {
+          to: rs.creator.email,
+          locale: rs.creator.locale ?? "en",
+          userId: rs.creatorId,
+          relatedId: rs.id,
+          data: {
+            reverseShareName: rs.name ?? UNNAMED_REVERSE_SHARE,
+            expiredAt: rs.expiration.toISOString(),
+          },
         });
+        if (result.enqueued) {
+          await prisma.reverseShare.updateMany({
+            where: { id: rs.id, notifiedForExpired: false },
+            data: { notifiedForExpired: true },
+          });
+        }
       }
     } catch (err) {
       summary.errors++;
-      log.error({ err, shareId: share.id }, "Failed to clean up max-views share");
+      log.error({ err, reverseShareId: rs.id }, "Failed to deactivate expired reverse share");
     }
   }
 
   return summary;
 }
 
-// ─── Expired reverse shares (A3 + A5 warning) ──────────────────────────────────
+// ─── Phase 2: delete deactivated reverse shares (after grace) ──────────────────
 
 /**
- * Clean up expired reverse shares. Mirrors {@link cleanupExpiredShares} but the
- * deletion path frees storage: it removes the `ReverseShareFile` rows (DB
- * cascade) and their S3 objects via {@link deleteReverseShareWithStorage}.
+ * Deletion sweep for reverse shares (Phase A.1, phase 2). Mirrors
+ * {@link deleteDeactivatedShares} but the deletion frees storage: it removes the
+ * `ReverseShareFile` rows (DB cascade) and their S3 objects via
+ * {@link deleteReverseShareWithStorage}.
+ *
+ * Acts only on reverse shares `isActive=false` with an auto-deletable reason
+ * (`expired`); manual pauses are excluded from warn and delete. Grace is measured
+ * uniformly from `deactivatedAt`.
  *
  * - **Warn** with `reverse_share_pending_deletion`.
- * - **Delete** then audit `REVERSE_SHARE_AUTO_DELETED` and notify the creator
- *   with `reverse_share_auto_deleted`.
+ * - **Delete** then audit `REVERSE_SHARE_AUTO_DELETED` and notify with
+ *   `reverse_share_auto_deleted`.
  */
-export async function cleanupExpiredReverseShares(opts: {
+export async function deleteDeactivatedReverseShares(opts: {
   graceDays: number;
   notifyDaysBefore: number;
 }): Promise<CleanupSummary> {
@@ -407,15 +594,18 @@ export async function cleanupExpiredReverseShares(opts: {
   const now = new Date();
   const graceMs = graceDays * ONE_DAY_MS;
   const log = getLogger();
+  const autoDeletable = [...AUTO_DELETABLE_REASONS];
 
   // ── Warn phase ──
   if (notifyDaysBefore > 0) {
-    const warnLowerExpiration = new Date(now.getTime() - graceMs);
-    const warnUpperExpiration = new Date(now.getTime() - graceMs + notifyDaysBefore * ONE_DAY_MS);
+    const warnLower = new Date(now.getTime() - graceMs);
+    const warnUpper = new Date(now.getTime() - graceMs + notifyDaysBefore * ONE_DAY_MS);
 
     const toWarn = await prisma.reverseShare.findMany({
       where: {
-        expiration: { not: null, gt: warnLowerExpiration, lte: warnUpperExpiration },
+        isActive: false,
+        deactivationReason: { in: autoDeletable },
+        deactivatedAt: { not: null, gt: warnLower, lte: warnUpper },
         notifiedForPendingDeletion: false,
         creator: { isActive: true },
       },
@@ -423,9 +613,9 @@ export async function cleanupExpiredReverseShares(opts: {
     });
 
     for (const rs of toWarn) {
-      if (!rs.expiration) continue;
+      if (!rs.deactivatedAt) continue;
       try {
-        const deletionAt = new Date(rs.expiration.getTime() + graceMs);
+        const deletionAt = new Date(rs.deactivatedAt.getTime() + graceMs);
         const reverseShareManageUrl = await buildReverseShareManageUrl(rs.id);
         const result = await emailService.send("reverse_share_pending_deletion", {
           to: rs.creator.email,
@@ -458,7 +648,11 @@ export async function cleanupExpiredReverseShares(opts: {
   // ── Delete phase ──
   const deleteBefore = new Date(now.getTime() - graceMs);
   const toDelete = await prisma.reverseShare.findMany({
-    where: { expiration: { not: null, lt: deleteBefore } },
+    where: {
+      isActive: false,
+      deactivationReason: { in: autoDeletable },
+      deactivatedAt: { not: null, lt: deleteBefore },
+    },
     include: { creator: { select: { id: true, email: true, locale: true, isActive: true } } },
   });
 
@@ -477,7 +671,7 @@ export async function cleanupExpiredReverseShares(opts: {
         ipAddress: SYSTEM_IP,
         targetType: "reverse_share",
         targetId: rs.id,
-        metadata: { reverseShareName, reason: "expired", s3Errors },
+        metadata: { reverseShareName, reason: rs.deactivationReason ?? "expired", s3Errors },
       });
 
       if (rs.creator.isActive) {
@@ -494,7 +688,7 @@ export async function cleanupExpiredReverseShares(opts: {
       }
     } catch (err) {
       summary.errors++;
-      log.error({ err, reverseShareId: rs.id }, "Failed to clean up expired reverse share");
+      log.error({ err, reverseShareId: rs.id }, "Failed to delete deactivated reverse share");
     }
   }
 

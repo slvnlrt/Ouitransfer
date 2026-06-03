@@ -2,9 +2,10 @@ import { getLogger } from "../../utils/logger.js";
 import { getConfigValue } from "../config/service.js";
 import {
   cleanupDeactivatedAccounts,
-  cleanupExpiredReverseShares,
-  cleanupExpiredShares,
-  cleanupMaxViewsShares,
+  deactivateEndedReverseShares,
+  deactivateEndedShares,
+  deleteDeactivatedReverseShares,
+  deleteDeactivatedShares,
   sweepOrphans,
 } from "./service.js";
 
@@ -103,9 +104,10 @@ export async function runCleanup(): Promise<void> {
 
   // Aggregated per-run summary (one structured log line at the end).
   const summary: {
-    expiredShares?: { warned: number; deleted: number; errors: number };
-    maxViewsShares?: { warned: number; deleted: number; errors: number };
-    expiredReverseShares?: { warned: number; deleted: number; errors: number };
+    deactivatedShares?: { deactivated: number; errors: number };
+    deactivatedReverseShares?: { deactivated: number; errors: number };
+    deletedShares?: { warned: number; deleted: number; errors: number };
+    deletedReverseShares?: { warned: number; deleted: number; errors: number };
     deactivatedAccounts?: { purgedAccounts: number; errors: number };
     orphans?: { dbDeleted: number; s3Deleted: number; errors: number };
   } = {};
@@ -118,33 +120,43 @@ export async function runCleanup(): Promise<void> {
       return;
     }
 
-    // ── Content cleanup (A2–A5), gated by the master toggle ──────────────────
+    // ── Content lifecycle (A2–A5), gated by the master toggle ────────────────
+    // Two-phase sweep (Phase A.1): phase 1 persists the `active → deactivated`
+    // transition for ended shares/reverse shares (expired / maxViews); phase 2
+    // deletes those that have been deactivated for longer than the uniform grace
+    // (measured from `deactivatedAt`). Phase 1 MUST run before phase 2 so a share
+    // that just ended is deactivated and starts its grace clock before the same
+    // run considers it for deletion.
     const graceDays = await getIntConfig("autoCleanupGracePeriodDays", 7);
     const notifyDaysBefore = await getIntConfig("autoCleanupNotifyDaysBefore", 3);
-    const maxViewsDays = await getIntConfig("maxViewsCleanupDays", 30);
 
+    // Phase 1 — deactivate ended shares + reverse shares.
     try {
-      summary.expiredShares = await cleanupExpiredShares({ graceDays, notifyDaysBefore });
+      summary.deactivatedShares = await deactivateEndedShares();
     } catch (error) {
-      log.error({ err: error }, "Cleanup scheduler: cleanupExpiredShares failed");
+      log.error({ err: error }, "Cleanup scheduler: deactivateEndedShares failed");
     }
 
     try {
-      summary.maxViewsShares = await cleanupMaxViewsShares({
-        inactiveDays: maxViewsDays,
-        notifyDaysBefore,
-      });
+      summary.deactivatedReverseShares = await deactivateEndedReverseShares();
     } catch (error) {
-      log.error({ err: error }, "Cleanup scheduler: cleanupMaxViewsShares failed");
+      log.error({ err: error }, "Cleanup scheduler: deactivateEndedReverseShares failed");
+    }
+
+    // Phase 2 — delete shares + reverse shares past the grace window.
+    try {
+      summary.deletedShares = await deleteDeactivatedShares({ graceDays, notifyDaysBefore });
+    } catch (error) {
+      log.error({ err: error }, "Cleanup scheduler: deleteDeactivatedShares failed");
     }
 
     try {
-      summary.expiredReverseShares = await cleanupExpiredReverseShares({
+      summary.deletedReverseShares = await deleteDeactivatedReverseShares({
         graceDays,
         notifyDaysBefore,
       });
     } catch (error) {
-      log.error({ err: error }, "Cleanup scheduler: cleanupExpiredReverseShares failed");
+      log.error({ err: error }, "Cleanup scheduler: deleteDeactivatedReverseShares failed");
     }
 
     // ── Deactivated-account file cleanup (A7), independent opt-in gate ────────
