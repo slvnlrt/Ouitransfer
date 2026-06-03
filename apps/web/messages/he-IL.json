@@ -802,6 +802,7 @@
       "ACCOUNT_FILES_CLEANED": "Account files cleaned",
       "ORPHAN_S3_DELETED": "Orphan storage object deleted",
       "ORPHAN_DB_DELETED": "Orphan database record deleted",
+      "ORPHAN_MULTIPART_ABORTED": "Incomplete multipart upload aborted",
       "QUOTA_FILES_DELETED": "Over-quota files deleted"
     },
     "targetTypes": {
