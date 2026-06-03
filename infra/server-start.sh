@@ -48,18 +48,6 @@ run_as_user() {
     fi
 }
 
-# Copy config files on first run
-if [ ! -f "/app/server/prisma/configs.json" ]; then
-    echo "First run: copying configuration files..."
-    cp -f /app/infra/configs.json /app/server/prisma/configs.json 2>/dev/null || true
-    cp -f /app/infra/providers.json /app/server/prisma/providers.json 2>/dev/null || true
-    cp -f /app/infra/check-missing.js /app/server/prisma/check-missing.js 2>/dev/null || true
-
-    if [ "$(id -u)" = "0" ]; then
-        chown "$TARGET_UID:$TARGET_GID" /app/server/prisma/configs.json /app/server/prisma/providers.json /app/server/prisma/check-missing.js 2>/dev/null || true
-    fi
-fi
-
 # Database setup — apply migrations (creates the DB on first run, applies pending migrations otherwise)
 DB_FILE="/app/server/prisma/ouitransfer.db"
 
@@ -77,12 +65,14 @@ fi
 echo "Applying database migrations..."
 run_as_user node "$PRISMA_CLI" migrate deploy --schema=./prisma/schema.prisma
 
-# Seed when required: fresh DB, or missing config/provider/admin rows.
-NEEDS_SEEDING=$(run_as_user $TSX ./prisma/check-missing.js check-seeding 2>/dev/null || echo "true")
-if [ "$NEEDS_SEEDING" = "true" ]; then
-    echo "Seeding database..."
-    run_as_user $TSX ./prisma/seed.js
-fi
+# Seed the database. Seeding is idempotent ("protected mode": it only inserts
+# MISSING config/provider rows), so it runs UNCONDITIONALLY on every boot — this
+# backfills newly-added config keys and self-heals a partially-seeded DB. There is
+# deliberately no completeness gate: a fragile gate previously skipped seeding,
+# leaving the server without its configuration. A failure here is fatal (set -e)
+# rather than silently booting an unconfigured server.
+echo "Seeding database..."
+run_as_user $TSX ./prisma/seed.js
 echo "Database setup complete."
 
 # Start server

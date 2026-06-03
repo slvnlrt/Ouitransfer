@@ -10,8 +10,7 @@
   "ignoreWorkspaces": ["packages/config"],
   "workspaces": {
     ".": {
-      "entry": [".lighthouserc.cjs", "infra/check-missing.js"],
-      "ignoreDependencies": ["dotenv"]
+      "entry": [".lighthouserc.cjs"]
     },
     "apps/server": {
       "entry": ["src/scripts/reset-password.ts"],
