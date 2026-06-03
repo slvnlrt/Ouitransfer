@@ -9,13 +9,17 @@
 
 ## Open
 
-### B-26: TOCTOU race condition on invite token single-use enforcement
+_None._
+
+## Resolved (recent)
+
+### B-26: TOCTOU race condition on invite token single-use enforcement — RESOLVED
 
 - **Severity**: Medium
-- **File**: `apps/server/src/modules/invite/service.ts:59-115`
-- **Description**: `validateInviteToken` checks `usedAt` is null, then the `$transaction` does an unconditional `inviteToken.update({ data: { usedAt } })`. Two concurrent requests with the same valid token can both pass validation and both create users before either sets `usedAt` — the single-use guarantee is not enforced atomically.
-- **Fix**: Make token consumption atomic: use `updateMany({ where: { token, usedAt: null }, data: { usedAt: new Date() } })` and throw `INVITE_TOKEN_USED` if `count === 0`. Only proceed with user creation after the token is successfully claimed.
-- **Priority**: Low (requires intentional concurrent exploitation; invite tokens are short-lived and typically used once interactively)
+- **File**: `apps/server/src/modules/invite/service.ts`
+- **Description**: `validateInviteToken` checked `usedAt` is null, then the `$transaction` did an unconditional `inviteToken.update({ data: { usedAt } })`. Two concurrent requests with the same valid token could both pass validation and both create users before either set `usedAt` — the single-use guarantee was not enforced atomically.
+- **Fix**: Token consumption is now atomic inside the transaction via `updateMany({ where: { token, usedAt: null, expiresAt: { gt: now } }, data: { usedAt: new Date() } })`; if `count === 0` the request re-reads the row and throws the precise structured error (`INVITE_TOKEN_USED` / `INVITE_TOKEN_EXPIRED` / `NOT_FOUND`) without creating a user. A fast-fail pre-flight check (before the bcrypt hash) is retained for friendly errors. Extracted pure `evaluateInviteToken()` (shared with the GET validate route) + `invalidInviteTokenError()`. Added 3 lost-race `app.inject` integration tests asserting no user is created when the claim matches 0 rows.
+- **Status**: Resolved (branch `claude/project-onboarding-debt-oJkhn`)
 
 ### B-27: Container boot skips DB seeding → empty config → crash loop — RESOLVED
 

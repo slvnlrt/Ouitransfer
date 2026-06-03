@@ -1,5 +1,29 @@
 # Session Log
 
+## 2026-06-03 (Autonomous debt sweep — B-26, TD-51, TD-38)
+
+**Three bounded, fully-tested fixes picked from open bugs/tech-debt.**
+
+- **B-26 — invite token single-use TOCTOU (security).** `registerWithInvite` validated the
+  token then ran an unconditional `inviteToken.update` inside the transaction, so two
+  concurrent requests with the same token could both create a user. Replaced with an atomic
+  conditional claim (`updateMany where usedAt: null AND not expired`); the loser gets
+  `count === 0`, re-reads the row, and surfaces the precise reason without creating an account.
+  Extracted pure `evaluateInviteToken()` (shared with the GET validate route) +
+  `invalidInviteTokenError()`. 3 new lost-race integration tests. `apps/server/src/modules/invite/service.ts`.
+- **TD-51 — harsh pure-white light-theme surfaces.** `--card`/`--popover` were `oklch(1 0 0)`;
+  softened to off-white indigo-tinted (`0.99 0.004 265`) and `--background` to `0.975 0.007 265`,
+  keeping surfaces brighter than the page. Dark theme untouched. `apps/web/src/app/globals.css`.
+- **TD-38 — unsubscribe pages migrated to the email i18n system.** Removed the hardcoded inline
+  `PAGE_STRINGS` map; the confirm/success/error pages now render via `createTranslationFn` under a
+  new `unsubscribe.*` namespace in `email/i18n/messages/{en,fr}.json`, sharing one source of truth
+  and the same locale fallback as the notification emails. 2 new French-rendering integration tests;
+  `beforeEach` resets `user.findUnique` to prevent locale leak. (Effective coverage stays en/fr —
+  broadening the email subsystem's languages remains TD-36.)
+
+**State:** server 1486 tests pass, type-check clean, Biome + knip clean. Commits on
+`claude/project-onboarding-debt-oJkhn` (pushed).
+
 ## 2026-06-03 (5.2 Auto-cleanup — Phase B: quota overage policy)
 
 **Aggressive quota-overage policy delivered across 5 sequential batches — feature now complete**
