@@ -11,6 +11,7 @@ vi.mock("../../../shared/prisma.js", () => ({
     file: {
       findMany: vi.fn(),
       deleteMany: vi.fn(),
+      delete: vi.fn(),
     },
     folder: {
       deleteMany: vi.fn(),
@@ -30,14 +31,21 @@ vi.mock("../../../shared/prisma.js", () => ({
     },
     reverseShareFile: {
       findMany: vi.fn(),
+      delete: vi.fn(),
     },
   },
 }));
 
-const { mockDeleteObject } = vi.hoisted(() => ({ mockDeleteObject: vi.fn() }));
+const { mockDeleteObject, mockFileExists, mockListObjects } = vi.hoisted(() => ({
+  mockDeleteObject: vi.fn(),
+  mockFileExists: vi.fn(),
+  mockListObjects: vi.fn(),
+}));
 vi.mock("../../../providers/s3-storage.provider.js", () => ({
   S3StorageProvider: class {
     deleteObject = mockDeleteObject;
+    fileExists = mockFileExists;
+    listObjects = mockListObjects;
   },
 }));
 
@@ -79,6 +87,7 @@ import {
   deleteReverseShareWithStorage,
   deleteShareLink,
   purgeUserContent,
+  sweepOrphans,
 } from "../service.js";
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
@@ -114,6 +123,8 @@ beforeEach(() => {
   vi.mocked(prisma.share.update).mockResolvedValue(undefined as never);
   vi.mocked(prisma.reverseShare.update).mockResolvedValue(undefined as never);
   mockDeleteObject.mockResolvedValue(undefined);
+  mockFileExists.mockResolvedValue(true);
+  mockListObjects.mockResolvedValue([]);
 });
 
 afterEach(() => {
@@ -647,5 +658,169 @@ describe("cleanupDeactivatedAccounts", () => {
 
     expect(summary).toEqual({ purgedAccounts: 0, errors: 0 });
     expect(emailService.send).not.toHaveBeenCalled();
+  });
+});
+
+// ── sweepOrphans (A9) ───────────────────────────────────────────────────────────
+
+describe("sweepOrphans", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-03T00:00:00.000Z"));
+    // Default: nothing in either table, empty bucket.
+    vi.mocked(prisma.file.findMany).mockResolvedValue([] as never);
+    vi.mocked(prisma.reverseShareFile.findMany).mockResolvedValue([] as never);
+    vi.mocked(prisma.file.delete).mockResolvedValue(undefined as never);
+    vi.mocked(prisma.reverseShareFile.delete).mockResolvedValue(undefined as never);
+  });
+
+  it("DB→S3: deletes File / ReverseShareFile rows whose S3 object is missing and audits", async () => {
+    // DB→S3 phase reads File then ReverseShareFile; S3→DB phase re-reads both.
+    vi.mocked(prisma.file.findMany)
+      .mockResolvedValueOnce([{ id: "f1", objectName: "u1/missing.bin" }] as never) // DB→S3
+      .mockResolvedValueOnce([] as never); // S3→DB known-keys
+    vi.mocked(prisma.reverseShareFile.findMany)
+      .mockResolvedValueOnce([{ id: "rf1", objectName: "rs1/missing.bin" }] as never) // DB→S3
+      .mockResolvedValueOnce([] as never); // S3→DB known-keys
+    mockFileExists.mockResolvedValue(false); // both objects missing
+
+    const summary = await sweepOrphans({ minAgeHours: 24 });
+
+    expect(prisma.file.delete).toHaveBeenCalledWith({ where: { id: "f1" } });
+    expect(prisma.reverseShareFile.delete).toHaveBeenCalledWith({ where: { id: "rf1" } });
+    expect(logAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "ORPHAN_DB_DELETED",
+        targetType: "file",
+        targetId: "f1",
+        ipAddress: "system",
+        metadata: { objectName: "u1/missing.bin" },
+      }),
+    );
+    expect(logAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "ORPHAN_DB_DELETED",
+        targetType: "reverse_share",
+        targetId: "rf1",
+        metadata: { objectName: "rs1/missing.bin" },
+      }),
+    );
+    expect(summary.dbDeleted).toBe(2);
+    expect(summary.errors).toBe(0);
+
+    // Asserts the min-age cutoff is now - 24h.
+    const fileWhere = vi.mocked(prisma.file.findMany).mock.calls[0][0]?.where as {
+      createdAt: { lt: Date };
+    };
+    expect(fileWhere.createdAt.lt.getTime()).toBe(Date.now() - 24 * 60 * 60 * 1000);
+  });
+
+  it("DB→S3: keeps a row whose S3 object still exists", async () => {
+    vi.mocked(prisma.file.findMany)
+      .mockResolvedValueOnce([{ id: "f1", objectName: "u1/present.bin" }] as never)
+      .mockResolvedValueOnce([{ objectName: "u1/present.bin" }] as never);
+    mockFileExists.mockResolvedValue(true);
+
+    const summary = await sweepOrphans({ minAgeHours: 24 });
+
+    expect(prisma.file.delete).not.toHaveBeenCalled();
+    expect(summary.dbDeleted).toBe(0);
+  });
+
+  it("S3→DB: deletes an old object referenced by no DB row and audits", async () => {
+    const oldObj = new Date(Date.now() - 48 * 60 * 60 * 1000);
+    mockListObjects.mockResolvedValue([{ key: "orphan.bin", size: 1, lastModified: oldObj }]);
+
+    const summary = await sweepOrphans({ minAgeHours: 24 });
+
+    expect(mockDeleteObject).toHaveBeenCalledWith("orphan.bin");
+    expect(logAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "ORPHAN_S3_DELETED",
+        ipAddress: "system",
+        metadata: { key: "orphan.bin" },
+      }),
+    );
+    expect(summary.s3Deleted).toBe(1);
+    expect(summary.errors).toBe(0);
+  });
+
+  it("S3→DB: NEVER deletes an object referenced by File OR ReverseShareFile (multi-reference safety)", async () => {
+    const oldObj = new Date(Date.now() - 48 * 60 * 60 * 1000);
+    // Known-keys reads (second call to each findMany): one key per table.
+    vi.mocked(prisma.file.findMany)
+      .mockResolvedValueOnce([] as never) // DB→S3
+      .mockResolvedValueOnce([{ objectName: "owned-by-file.bin" }] as never); // known-keys
+    vi.mocked(prisma.reverseShareFile.findMany)
+      .mockResolvedValueOnce([] as never) // DB→S3
+      .mockResolvedValueOnce([{ objectName: "owned-by-rsf.bin" }] as never); // known-keys
+    mockListObjects.mockResolvedValue([
+      { key: "owned-by-file.bin", size: 1, lastModified: oldObj },
+      { key: "owned-by-rsf.bin", size: 1, lastModified: oldObj },
+      { key: "truly-orphan.bin", size: 1, lastModified: oldObj },
+    ]);
+
+    const summary = await sweepOrphans({ minAgeHours: 24 });
+
+    // Only the unreferenced object is deleted.
+    expect(mockDeleteObject).toHaveBeenCalledTimes(1);
+    expect(mockDeleteObject).toHaveBeenCalledWith("truly-orphan.bin");
+    expect(summary.s3Deleted).toBe(1);
+  });
+
+  it("S3→DB: skips objects younger than the min-age cutoff (boundary)", async () => {
+    const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+    mockListObjects.mockResolvedValue([
+      // 1 ms younger than the cutoff → protected (in-flight upload).
+      { key: "fresh.bin", size: 1, lastModified: new Date(cutoff + 1) },
+      // 1 ms older than the cutoff → swept.
+      { key: "stale.bin", size: 1, lastModified: new Date(cutoff - 1) },
+    ]);
+
+    const summary = await sweepOrphans({ minAgeHours: 24 });
+
+    expect(mockDeleteObject).toHaveBeenCalledTimes(1);
+    expect(mockDeleteObject).toHaveBeenCalledWith("stale.bin");
+    expect(summary.s3Deleted).toBe(1);
+  });
+
+  it("tolerates a single S3 delete failure without aborting the rest", async () => {
+    const oldObj = new Date(Date.now() - 48 * 60 * 60 * 1000);
+    mockListObjects.mockResolvedValue([
+      { key: "orphan-a.bin", size: 1, lastModified: oldObj },
+      { key: "orphan-b.bin", size: 1, lastModified: oldObj },
+    ]);
+    mockDeleteObject.mockRejectedValueOnce(new Error("S3 down")).mockResolvedValueOnce(undefined);
+
+    const summary = await sweepOrphans({ minAgeHours: 24 });
+
+    // Both attempted; the first failed.
+    expect(mockDeleteObject).toHaveBeenCalledTimes(2);
+    expect(summary.s3Deleted).toBe(1);
+    expect(summary.errors).toBe(1);
+  });
+
+  it("tolerates a DB delete failure in the DB→S3 phase and continues", async () => {
+    vi.mocked(prisma.file.findMany)
+      .mockResolvedValueOnce([
+        { id: "f1", objectName: "miss-a.bin" },
+        { id: "f2", objectName: "miss-b.bin" },
+      ] as never)
+      .mockResolvedValueOnce([] as never);
+    mockFileExists.mockResolvedValue(false);
+    vi.mocked(prisma.file.delete)
+      .mockRejectedValueOnce(new Error("db down"))
+      .mockResolvedValueOnce(undefined as never);
+
+    const summary = await sweepOrphans({ minAgeHours: 24 });
+
+    expect(prisma.file.delete).toHaveBeenCalledTimes(2);
+    expect(summary.dbDeleted).toBe(1);
+    expect(summary.errors).toBe(1);
+  });
+
+  it("returns a zero summary when there are no orphans on either side", async () => {
+    const summary = await sweepOrphans({ minAgeHours: 24 });
+    expect(summary).toEqual({ dbDeleted: 0, s3Deleted: 0, errors: 0 });
   });
 });

@@ -9,6 +9,7 @@ import { buildReverseShareManageUrl, buildShareManageUrl } from "../email/url-bu
 // ─── Constants ──────────────────────────────────────────────────────────────
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+const ONE_HOUR_MS = 60 * 60 * 1000;
 
 /**
  * Sentinel `ipAddress` for audit events emitted by the scheduler rather than a
@@ -595,6 +596,143 @@ export async function cleanupDeactivatedAccounts(opts: {
     } catch (err) {
       summary.errors++;
       log.error({ err, userId: account.id }, "Failed to clean up deactivated account content");
+    }
+  }
+
+  return summary;
+}
+
+// ─── Orphan sweep (A9) ──────────────────────────────────────────────────────────
+
+/** Outcome of a bidirectional orphan sweep. */
+export interface OrphanSweepSummary {
+  /** DB rows removed because their S3 object was missing. */
+  dbDeleted: number;
+  /** S3 objects removed because no DB row references them. */
+  s3Deleted: number;
+  /** Per-item failures (DB or S3); one failure never aborts the sweep. */
+  errors: number;
+}
+
+/**
+ * Reconcile S3 and the database in both directions, deleting orphans on each
+ * side. The two S3-object-owning tables are `File` (file-manager files) and
+ * `ReverseShareFile` (uploads to reverse shares).
+ *
+ * A **min-age guard** (`minAgeHours`) protects in-flight uploads in both
+ * directions: only rows/objects older than `now - minAgeHours` are considered,
+ * so a file whose DB row exists but whose S3 object has not yet been finalized
+ * (or vice-versa) during an active upload is never mistaken for an orphan.
+ *
+ * **DB → S3**: for each `File`/`ReverseShareFile` row created before the cutoff
+ * whose object is missing in S3 (`fileExists` → false), the DB row is deleted
+ * and an `ORPHAN_DB_DELETED` audit event is logged.
+ *
+ * **S3 → DB**: every object in the bucket is listed once; an in-memory set of
+ * all known `objectName`s is built from both tables. Any object older than the
+ * cutoff whose key is **not** in that set is deleted and an `ORPHAN_S3_DELETED`
+ * audit event is logged. Building the known-keys set from the DB up front
+ * guarantees an object referenced by *any* row — in either table — is never
+ * deleted (correctness-critical: the set is the union of both tables' keys).
+ *
+ * Scale note (Phase A): the known-keys set is held entirely in memory. For the
+ * self-hosted, single-tenant target this is more than sufficient; a future
+ * very-large-bucket optimization could stream keys or query the DB per object,
+ * but that is explicitly out of scope here.
+ *
+ * Every deletion is wrapped so a single failure increments `errors` without
+ * aborting the sweep.
+ *
+ * This function does **not** check `autoCleanupOrphansEnabled` — that opt-in
+ * gate is enforced by the scheduler (Batch 6), which also supplies
+ * `minAgeHours` from `autoCleanupOrphanMinAgeHours`.
+ */
+export async function sweepOrphans(opts: { minAgeHours: number }): Promise<OrphanSweepSummary> {
+  const { minAgeHours } = opts;
+  const summary: OrphanSweepSummary = { dbDeleted: 0, s3Deleted: 0, errors: 0 };
+  const log = getLogger();
+  const cutoff = new Date(Date.now() - minAgeHours * ONE_HOUR_MS);
+
+  // ── DB → S3: rows whose S3 object is missing ──
+  const files = await prisma.file.findMany({
+    where: { createdAt: { lt: cutoff } },
+    select: { id: true, objectName: true },
+  });
+  for (const file of files) {
+    try {
+      if (await storageProvider.fileExists(file.objectName)) continue;
+      await prisma.file.delete({ where: { id: file.id } });
+      summary.dbDeleted++;
+      await logAuditEvent({
+        action: "ORPHAN_DB_DELETED",
+        ipAddress: SYSTEM_IP,
+        targetType: "file",
+        targetId: file.id,
+        metadata: { objectName: file.objectName },
+      });
+    } catch (err) {
+      summary.errors++;
+      log.error(
+        { err, fileId: file.id, objectName: file.objectName },
+        "Failed to sweep orphan File DB row",
+      );
+    }
+  }
+
+  const reverseShareFiles = await prisma.reverseShareFile.findMany({
+    where: { createdAt: { lt: cutoff } },
+    select: { id: true, objectName: true },
+  });
+  for (const rsFile of reverseShareFiles) {
+    try {
+      if (await storageProvider.fileExists(rsFile.objectName)) continue;
+      await prisma.reverseShareFile.delete({ where: { id: rsFile.id } });
+      summary.dbDeleted++;
+      await logAuditEvent({
+        action: "ORPHAN_DB_DELETED",
+        ipAddress: SYSTEM_IP,
+        targetType: "reverse_share",
+        targetId: rsFile.id,
+        metadata: { objectName: rsFile.objectName },
+      });
+    } catch (err) {
+      summary.errors++;
+      log.error(
+        { err, reverseShareFileId: rsFile.id, objectName: rsFile.objectName },
+        "Failed to sweep orphan ReverseShareFile DB row",
+      );
+    }
+  }
+
+  // ── S3 → DB: objects with no referencing row ──
+  // Build the union of every known object key from BOTH tables first, so an
+  // object referenced by any row is never deleted. The DB rows are re-read here
+  // (rather than reusing the lists above) because the DB→S3 phase may have
+  // removed some, and so that rows created after the cutoff — which we did not
+  // sweep — still protect their objects.
+  const [allFiles, allReverseShareFiles] = await Promise.all([
+    prisma.file.findMany({ select: { objectName: true } }),
+    prisma.reverseShareFile.findMany({ select: { objectName: true } }),
+  ]);
+  const knownKeys = new Set<string>();
+  for (const f of allFiles) knownKeys.add(f.objectName);
+  for (const f of allReverseShareFiles) knownKeys.add(f.objectName);
+
+  const objects = await storageProvider.listObjects();
+  for (const object of objects) {
+    if (object.lastModified >= cutoff) continue;
+    if (knownKeys.has(object.key)) continue;
+    try {
+      await storageProvider.deleteObject(object.key);
+      summary.s3Deleted++;
+      await logAuditEvent({
+        action: "ORPHAN_S3_DELETED",
+        ipAddress: SYSTEM_IP,
+        metadata: { key: object.key },
+      });
+    } catch (err) {
+      summary.errors++;
+      log.error({ err, key: object.key }, "Failed to sweep orphan S3 object");
     }
   }
 
