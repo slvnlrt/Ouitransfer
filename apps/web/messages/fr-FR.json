@@ -1570,6 +1570,10 @@
       "backgrounds": {
         "title": "Images d'Arrière-plan",
         "description": "Gérer les images d'arrière-plan pour les pages de téléversement de style WeTransfer"
+      },
+      "cleanup": {
+        "title": "Nettoyage automatique",
+        "description": "Gestion du cycle de vie : contenus expirés, comptes désactivés et fichiers orphelins. La suppression automatique est désactivée par défaut."
       }
     },
     "fields": {
@@ -1719,6 +1723,42 @@
       "auditRetentionDays": {
         "title": "Rétention des audits",
         "description": "Nombre de jours de conservation des journaux d'audit (0 = indéfiniment, minimum 7)"
+      },
+      "autoCleanupEnabled": {
+        "title": "Activer le nettoyage automatique",
+        "description": "Interrupteur principal du nettoyage planifié des liens de partage expirés, des fichiers de partage inversé expirés et des orphelins. Désactivé par défaut — rien n'est supprimé automatiquement tant que vous ne l'activez pas."
+      },
+      "autoCleanupIntervalHours": {
+        "title": "Intervalle de nettoyage (heures)",
+        "description": "Fréquence d'exécution de la tâche de nettoyage. Minimum 1 heure."
+      },
+      "autoCleanupGracePeriodDays": {
+        "title": "Période de grâce (jours)",
+        "description": "Jours supplémentaires conservés après l'expiration d'un partage ou d'un partage inversé avant sa suppression définitive. 0 signifie une suppression dès l'expiration."
+      },
+      "autoCleanupNotifyDaysBefore": {
+        "title": "Avertir avant suppression (jours)",
+        "description": "Envoie au propriétaire un e-mail d'avertissement « suppression définitive imminente » ce nombre de jours avant la suppression. 0 désactive l'avertissement. Doit être au plus égal à la période de grâce."
+      },
+      "maxViewsCleanupDays": {
+        "title": "Délai de nettoyage des vues max (jours)",
+        "description": "Jours d'inactivité après qu'un partage a atteint sa limite de vues avant la suppression du lien de partage. Minimum 1."
+      },
+      "accountDeactivationCleanupEnabled": {
+        "title": "Supprimer les fichiers des comptes désactivés",
+        "description": "Lorsqu'activé, les fichiers d'un compte désactivé sont supprimés définitivement après le délai ci-dessous. Désactivé par défaut — la désactivation seule ne supprime jamais de fichiers."
+      },
+      "accountDeactivationCleanupDays": {
+        "title": "Délai de nettoyage après désactivation (jours)",
+        "description": "Jours après la désactivation d'un compte avant la suppression de ses fichiers (uniquement si l'option ci-dessus est activée). Minimum 1."
+      },
+      "autoCleanupOrphansEnabled": {
+        "title": "Nettoyer les fichiers orphelins",
+        "description": "Lorsqu'activé, exécute un balayage bidirectionnel qui supprime les enregistrements de base de données pointant vers des objets de stockage manquants et les objets de stockage sans enregistrement. Désactivé par défaut."
+      },
+      "autoCleanupOrphanMinAgeHours": {
+        "title": "Âge minimum des orphelins (heures)",
+        "description": "Seuls les fichiers et objets plus anciens que cette durée sont pris en compte lors du balayage des orphelins, ce qui protège les téléversements en cours. Minimum 1."
       }
     },
     "buttons": {
@@ -1730,7 +1770,8 @@
       "loadFailed": "Échec du chargement des paramètres",
       "updateFailed": "Échec de la mise à jour des paramètres",
       "passwordAuthRequiresProvider": "Impossible de désactiver l'authentification par mot de passe sans avoir au moins un fournisseur d'authentification actif",
-      "auditRetentionInvalid": "La rétention des journaux d'audit doit être 0 (conservation illimitée) ou au moins 7 jours"
+      "auditRetentionInvalid": "La rétention des journaux d'audit doit être 0 (conservation illimitée) ou au moins 7 jours",
+      "cleanupValueInvalid": "La valeur doit être un nombre entier d'au moins {min}"
     },
     "messages": {
       "noChanges": "Aucun changement à enregistrer",

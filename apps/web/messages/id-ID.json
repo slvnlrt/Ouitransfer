@@ -1571,6 +1571,10 @@
       "backgrounds": {
         "title": "Gambar Latar Belakang",
         "description": "Kelola gambar latar untuk halaman unggah gaya WeTransfer"
+      },
+      "cleanup": {
+        "title": "Automatic Cleanup",
+        "description": "Lifecycle management for expired content, deactivated accounts, and orphaned files. Auto-deletion is off by default."
       }
     },
     "fields": {
@@ -1720,6 +1724,42 @@
       "auditRetentionDays": {
         "title": "Retensi Audit",
         "description": "Jumlah hari untuk menyimpan log audit (0 = selamanya, minimal 7)"
+      },
+      "autoCleanupEnabled": {
+        "title": "Enable Automatic Cleanup",
+        "description": "Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on."
+      },
+      "autoCleanupIntervalHours": {
+        "title": "Cleanup Interval (hours)",
+        "description": "How often the cleanup task runs. Minimum 1 hour."
+      },
+      "autoCleanupGracePeriodDays": {
+        "title": "Grace Period (days)",
+        "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
+      },
+      "autoCleanupNotifyDaysBefore": {
+        "title": "Warn Before Deletion (days)",
+        "description": "Send the owner a \"pending permanent deletion\" warning email this many days before the content is deleted. 0 disables the warning. Should be at most the grace period."
+      },
+      "maxViewsCleanupDays": {
+        "title": "Max-Views Cleanup Delay (days)",
+        "description": "Days of inactivity after a share reaches its view limit before the share link is removed. Minimum 1."
+      },
+      "accountDeactivationCleanupEnabled": {
+        "title": "Delete Deactivated Accounts' Files",
+        "description": "When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files."
+      },
+      "accountDeactivationCleanupDays": {
+        "title": "Deactivation Cleanup Delay (days)",
+        "description": "Days after an account is deactivated before its files are deleted (only when the option above is enabled). Minimum 1."
+      },
+      "autoCleanupOrphansEnabled": {
+        "title": "Sweep Orphaned Files",
+        "description": "When on, runs a two-way sweep that removes database records pointing to missing storage objects and storage objects with no database record. Off by default."
+      },
+      "autoCleanupOrphanMinAgeHours": {
+        "title": "Orphan Minimum Age (hours)",
+        "description": "Only files and objects older than this are considered during the orphan sweep, protecting uploads still in progress. Minimum 1."
       }
     },
     "buttons": {
@@ -1731,7 +1771,8 @@
       "loadFailed": "Gagal memuat pengaturan",
       "updateFailed": "Gagal memperbarui pengaturan",
       "passwordAuthRequiresProvider": "Tidak dapat menonaktifkan autentikasi kata sandi tanpa memiliki setidaknya satu penyedia autentikasi aktif",
-      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days"
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
+      "cleanupValueInvalid": "Value must be a whole number of at least {min}"
     },
     "messages": {
       "noChanges": "Tidak ada perubahan untuk disimpan",
