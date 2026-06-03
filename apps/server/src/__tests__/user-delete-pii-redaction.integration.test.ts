@@ -16,6 +16,14 @@ const mockUserDelete = vi.fn();
 const mockAuditFindMany = vi.fn();
 const mockAuditUpdate = vi.fn();
 const mockAuditCreate = vi.fn();
+const mockFileFindMany = vi.fn();
+const mockFileDeleteMany = vi.fn();
+const mockFolderDeleteMany = vi.fn();
+const mockShareFindMany = vi.fn();
+const mockReverseShareFindMany = vi.fn();
+const mockReverseShareFileFindMany = vi.fn();
+const mockReverseShareDelete = vi.fn();
+const mockTransaction = vi.fn();
 
 vi.mock("../shared/prisma.js", () => ({
   prisma: {
@@ -29,8 +37,23 @@ vi.mock("../shared/prisma.js", () => ({
       update: mockAuditUpdate,
       create: mockAuditCreate,
     },
+    // Surface used by purgeUserContent (A8 full cascade).
+    file: { findMany: mockFileFindMany, deleteMany: mockFileDeleteMany },
+    folder: { deleteMany: mockFolderDeleteMany },
+    share: { findMany: mockShareFindMany },
+    reverseShare: { findMany: mockReverseShareFindMany, delete: mockReverseShareDelete },
+    reverseShareFile: { findMany: mockReverseShareFileFindMany },
+    $transaction: mockTransaction,
     // Read while building the register password schema during route registration.
     appConfig: { findUnique: vi.fn().mockResolvedValue({ value: "8" }) },
+  },
+}));
+
+// Storage provider — assert that purgeUserContent deletes the user's S3 objects.
+const mockDeleteObject = vi.fn();
+vi.mock("../providers/s3-storage.provider.js", () => ({
+  S3StorageProvider: class {
+    deleteObject = mockDeleteObject;
   },
 }));
 
@@ -97,6 +120,26 @@ describe("DELETE /users/:id — audit PII redaction (integration)", () => {
     mockAuditFindMany.mockResolvedValue([]);
     mockAuditUpdate.mockResolvedValue({});
     mockAuditCreate.mockResolvedValue({});
+    // purgeUserContent defaults: no content for the deleted user.
+    mockFileFindMany.mockResolvedValue([]);
+    mockFileDeleteMany.mockResolvedValue({ count: 0 });
+    mockFolderDeleteMany.mockResolvedValue({ count: 0 });
+    mockShareFindMany.mockResolvedValue([]);
+    mockReverseShareFindMany.mockResolvedValue([]);
+    mockReverseShareFileFindMany.mockResolvedValue([]);
+    mockReverseShareDelete.mockResolvedValue({});
+    mockDeleteObject.mockResolvedValue(undefined);
+    // deleteShareLink runs inside a transaction; invoke the callback with a
+    // minimal tx client exposing the surface it touches.
+    mockTransaction.mockImplementation(async (cb: (tx: unknown) => unknown) =>
+      cb({
+        share: {
+          update: vi.fn().mockResolvedValue(undefined),
+          delete: vi.fn().mockResolvedValue({ security: null }),
+        },
+        shareSecurity: { delete: vi.fn().mockResolvedValue(undefined) },
+      }),
+    );
   });
 
   it("redacts the deleted user's email from matching audit metadata", async () => {
@@ -151,5 +194,37 @@ describe("DELETE /users/:id — audit PII redaction (integration)", () => {
 
     // The user row is already gone; a redaction failure must not surface as an error.
     expect(res.statusCode).toBe(200);
+  });
+
+  it("performs the full A8 cascade: deletes the user's shares and their files' S3 objects", async () => {
+    // The user owns one file (with an S3 object) and one share.
+    mockFileFindMany.mockResolvedValue([{ objectName: "user/victim-1/photo.jpg" }]);
+    mockFileDeleteMany.mockResolvedValue({ count: 1 });
+    mockShareFindMany.mockResolvedValue([{ id: "share-1" }]);
+
+    const res = await app.inject({
+      method: "DELETE",
+      url: "/users/victim-1",
+      headers: await adminHeaders(),
+    });
+
+    expect(res.statusCode).toBe(200);
+
+    // The share is removed via deleteShareLink (runs in a transaction) — never
+    // left orphaned by the SetNull FK.
+    expect(mockShareFindMany).toHaveBeenCalledWith({
+      where: { creatorId: "victim-1" },
+      select: { id: true },
+    });
+    expect(mockTransaction).toHaveBeenCalled();
+
+    // The user's File S3 object is deleted so nothing dangles in storage.
+    expect(mockDeleteObject).toHaveBeenCalledWith("user/victim-1/photo.jpg");
+
+    // The user row itself is removed only after the purge.
+    expect(mockUserDelete).toHaveBeenCalledWith({
+      where: { id: "victim-1" },
+      include: { group: { select: { id: true, name: true } } },
+    });
   });
 });

@@ -48,7 +48,7 @@ function emptySummary(): CleanupSummary {
  */
 async function resolveReason(
   locale: string,
-  kind: "expired" | "viewLimitReached",
+  kind: "expired" | "viewLimitReached" | "accountDeactivated",
 ): Promise<string> {
   return t(locale, `cleanupReason.${kind}`);
 }
@@ -422,6 +422,179 @@ export async function cleanupExpiredReverseShares(opts: {
     } catch (err) {
       summary.errors++;
       log.error({ err, reverseShareId: rs.id }, "Failed to clean up expired reverse share");
+    }
+  }
+
+  return summary;
+}
+
+// ─── Account content purge (A7 + A8 shared helper) ─────────────────────────────
+
+/** Per-user purge outcome: row counts removed plus best-effort S3 failures. */
+export interface PurgeUserContentResult {
+  files: number;
+  shares: number;
+  reverseShares: number;
+  folders: number;
+  s3Errors: number;
+}
+
+/**
+ * Remove **all** content owned by a user: their regular shares (link only),
+ * reverse shares (+ their files and S3 objects), and their file-manager
+ * `File`/`Folder` rows together with the files' S3 objects.
+ *
+ * This is the shared engine behind both the full account-deletion cascade (A8,
+ * which deletes the user row afterwards) and the delayed deactivated-account
+ * cleanup (A7, which keeps the user row). It does **not** touch the `User` row,
+ * so it is safe to call whether or not the caller later deletes that row.
+ *
+ * Deletion order (DB-before-S3 throughout):
+ *  1. Collect the user's `File.objectName`s (before any deletion).
+ *  2. Delete each of the user's shares via {@link deleteShareLink} — this is
+ *     essential because `Share.creatorId` is `onDelete: SetNull`, so a later
+ *     `user.delete()` would otherwise *orphan* the shares rather than remove
+ *     them. Doing it here guarantees nothing dangles.
+ *  3. Delete each reverse share via {@link deleteReverseShareWithStorage}, which
+ *     removes the `ReverseShareFile` rows (DB cascade) and best-effort deletes
+ *     their S3 objects.
+ *  4. Delete the user's `File` and `Folder` rows.
+ *  5. Best-effort delete the collected `File` S3 objects. One failure is logged
+ *     and counted but never aborts the rest — at most an orphaned S3 object
+ *     remains, which the orphan sweep (A9) reclaims later.
+ */
+export async function purgeUserContent(userId: string): Promise<PurgeUserContentResult> {
+  const log = getLogger();
+  const result: PurgeUserContentResult = {
+    files: 0,
+    shares: 0,
+    reverseShares: 0,
+    folders: 0,
+    s3Errors: 0,
+  };
+
+  // 1. Snapshot the user's File object names before deleting the rows.
+  const files = await prisma.file.findMany({
+    where: { userId },
+    select: { objectName: true },
+  });
+
+  // 2. Delete the user's shares (link only). Done explicitly so the SetNull FK
+  //    never orphans them when the user row is later removed.
+  const shares = await prisma.share.findMany({
+    where: { creatorId: userId },
+    select: { id: true },
+  });
+  for (const share of shares) {
+    await deleteShareLink(share.id);
+    result.shares++;
+  }
+
+  // 3. Delete the user's reverse shares (DB rows + their S3 objects).
+  const reverseShares = await prisma.reverseShare.findMany({
+    where: { creatorId: userId },
+    select: { id: true },
+  });
+  for (const rs of reverseShares) {
+    result.s3Errors += await deleteReverseShareWithStorage(rs.id);
+    result.reverseShares++;
+  }
+
+  // 4. Delete the user's file-manager rows (DB first).
+  const deletedFiles = await prisma.file.deleteMany({ where: { userId } });
+  result.files = deletedFiles.count;
+  const deletedFolders = await prisma.folder.deleteMany({ where: { userId } });
+  result.folders = deletedFolders.count;
+
+  // 5. Best-effort delete the File S3 objects (DB-before-S3).
+  for (const file of files) {
+    try {
+      await storageProvider.deleteObject(file.objectName);
+    } catch (err) {
+      result.s3Errors++;
+      log.error(
+        { err, userId, objectName: file.objectName },
+        "Failed to delete user File S3 object during purge",
+      );
+    }
+  }
+
+  return result;
+}
+
+// ─── Deactivated-account cleanup (A7) ──────────────────────────────────────────
+
+/** Outcome of the deactivated-account cleanup pass. */
+export interface DeactivatedAccountsCleanupSummary {
+  purgedAccounts: number;
+  errors: number;
+}
+
+/**
+ * Delete the content of accounts that have stayed deactivated for at least
+ * `days` days, **keeping the user row** (the account can still be reactivated;
+ * only its stored content is reclaimed).
+ *
+ * Selects users with `isActive === false && deactivatedAt != null` whose
+ * `deactivatedAt` is older than `now - days`. For each, {@link purgeUserContent}
+ * removes their shares / reverse shares / files (+ S3), then a `files_auto_deleted`
+ * notification is sent and an `ACCOUNT_FILES_CLEANED` audit event is logged.
+ *
+ * This function does **not** check the `accountDeactivationCleanupEnabled` flag —
+ * that opt-in gate is enforced by the scheduler (Batch 6) before this is called.
+ * Each account is isolated: one failure increments `errors` without aborting the
+ * batch.
+ */
+export async function cleanupDeactivatedAccounts(opts: {
+  days: number;
+}): Promise<DeactivatedAccountsCleanupSummary> {
+  const { days } = opts;
+  const summary: DeactivatedAccountsCleanupSummary = { purgedAccounts: 0, errors: 0 };
+  const log = getLogger();
+  const cutoff = new Date(Date.now() - days * ONE_DAY_MS);
+
+  const accounts = await prisma.user.findMany({
+    where: {
+      isActive: false,
+      deactivatedAt: { not: null, lt: cutoff },
+    },
+    select: { id: true, email: true, locale: true },
+  });
+
+  for (const account of accounts) {
+    try {
+      const counts = await purgeUserContent(account.id);
+      summary.purgedAccounts++;
+
+      const locale = account.locale ?? "en";
+      await emailService.send("files_auto_deleted", {
+        to: account.email,
+        locale,
+        userId: account.id,
+        data: {
+          fileNames: [],
+          reason: await resolveReason(locale, "accountDeactivated"),
+        },
+      });
+
+      await logAuditEvent({
+        userId: account.id,
+        action: "ACCOUNT_FILES_CLEANED",
+        ipAddress: SYSTEM_IP,
+        targetType: "user",
+        targetId: account.id,
+        metadata: {
+          files: counts.files,
+          shares: counts.shares,
+          reverseShares: counts.reverseShares,
+          folders: counts.folders,
+          s3Errors: counts.s3Errors,
+          reason: "account deactivated",
+        },
+      });
+    } catch (err) {
+      summary.errors++;
+      log.error({ err, userId: account.id }, "Failed to clean up deactivated account content");
     }
   }
 

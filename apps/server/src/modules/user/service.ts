@@ -6,6 +6,7 @@ import { getLogger } from "../../utils/logger.js";
 import { redactEmailFromAuditLogs } from "../audit/service.js";
 import { revokeAllUserTokens } from "../auth/refresh-token.service.js";
 import { incrementTokenVersion, invalidateTokenVersionCache } from "../auth/token-version.js";
+import { purgeUserContent } from "../cleanup/service.js";
 import { emailService } from "../email/service.js";
 import { getAppUrl } from "../email/url-builder.js";
 import { type RegisterUserInput, UserResponseSchema } from "./dto.js";
@@ -166,6 +167,14 @@ export class UserService {
   }
 
   async deleteUser(id: string) {
+    // Full cascade (A8): purge the user's shares, reverse shares, files/folders,
+    // and their S3 objects BEFORE removing the user row. This is required for
+    // correctness — `Share.creatorId` is `onDelete: SetNull`, so a bare
+    // `user.delete()` would orphan the user's shares (and leave every File's S3
+    // object dangling). Running the purge first guarantees nothing is left
+    // behind. This is an explicit admin action, so it is ungated.
+    const purge = await purgeUserContent(id);
+
     const deleted = await this.userRepository.deleteUser(id);
     // DB cascade deletes refresh tokens, but we must clear the in-memory
     // tokenVersion cache so validateTokenVersion rejects stale JWTs immediately.
@@ -183,7 +192,7 @@ export class UserService {
       getLogger().error({ err, userId: id }, "Failed to redact deleted user email from audit logs");
     }
 
-    return UserResponseSchema.parse(deleted);
+    return { user: UserResponseSchema.parse(deleted), purge };
   }
 
   async activateUser(id: string) {

@@ -131,7 +131,8 @@
   },
   "cleanupReason": {
     "expired": "expired",
-    "viewLimitReached": "view limit reached"
+    "viewLimitReached": "view limit reached",
+    "accountDeactivated": "account deactivated"
   },
   "sharePendingDeletion": {
     "subject": "{appName} - Your share will be permanently deleted soon",

@@ -5,6 +5,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock("../../../shared/prisma.js", () => ({
   prisma: {
     $transaction: vi.fn(),
+    user: {
+      findMany: vi.fn(),
+    },
+    file: {
+      findMany: vi.fn(),
+      deleteMany: vi.fn(),
+    },
+    folder: {
+      deleteMany: vi.fn(),
+    },
     share: {
       findMany: vi.fn(),
       update: vi.fn(),
@@ -62,11 +72,13 @@ import { prisma } from "../../../shared/prisma.js";
 import { logAuditEvent } from "../../audit/service.js";
 import { emailService } from "../../email/service.js";
 import {
+  cleanupDeactivatedAccounts,
   cleanupExpiredReverseShares,
   cleanupExpiredShares,
   cleanupMaxViewsShares,
   deleteReverseShareWithStorage,
   deleteShareLink,
+  purgeUserContent,
 } from "../service.js";
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
@@ -471,5 +483,169 @@ describe("cleanupExpiredReverseShares", () => {
       data: { notifiedForPendingDeletion: true },
     });
     expect(summary.warned).toBe(1);
+  });
+});
+
+// ── purgeUserContent (A7/A8 shared helper) ──────────────────────────────────────
+
+describe("purgeUserContent", () => {
+  beforeEach(() => {
+    // Default: user owns nothing.
+    vi.mocked(prisma.file.findMany).mockResolvedValue([] as never);
+    vi.mocked(prisma.file.deleteMany).mockResolvedValue({ count: 0 } as never);
+    vi.mocked(prisma.folder.deleteMany).mockResolvedValue({ count: 0 } as never);
+    vi.mocked(prisma.share.findMany).mockResolvedValue([] as never);
+    vi.mocked(prisma.reverseShare.findMany).mockResolvedValue([] as never);
+    vi.mocked(prisma.reverseShareFile.findMany).mockResolvedValue([] as never);
+    vi.mocked(prisma.reverseShare.delete).mockResolvedValue(undefined as never);
+  });
+
+  it("deletes the user's shares (link only), reverse shares (+S3), files & folders, then File S3 objects", async () => {
+    vi.mocked(prisma.file.findMany).mockResolvedValue([
+      { objectName: "u1/a.jpg" },
+      { objectName: "u1/b.png" },
+    ] as never);
+    vi.mocked(prisma.file.deleteMany).mockResolvedValue({ count: 2 } as never);
+    vi.mocked(prisma.folder.deleteMany).mockResolvedValue({ count: 1 } as never);
+    vi.mocked(prisma.share.findMany).mockResolvedValue([{ id: "s1" }, { id: "s2" }] as never);
+    vi.mocked(prisma.reverseShare.findMany).mockResolvedValue([{ id: "rs1" }] as never);
+    // The reverse share has one uploaded file with an S3 object.
+    vi.mocked(prisma.reverseShareFile.findMany).mockResolvedValue([
+      { objectName: "rs1/upload.bin" },
+    ] as never);
+
+    const tx = makeTxClient();
+    tx.share.delete.mockResolvedValue({ security: null });
+    installTxMock(tx);
+
+    const result = await purgeUserContent("u1");
+
+    // Shares removed via deleteShareLink (transactional, link-only).
+    expect(prisma.share.findMany).toHaveBeenCalledWith({
+      where: { creatorId: "u1" },
+      select: { id: true },
+    });
+    expect(prisma.$transaction).toHaveBeenCalledTimes(2);
+
+    // Reverse share + its S3 object removed.
+    expect(prisma.reverseShare.delete).toHaveBeenCalledWith({ where: { id: "rs1" } });
+    expect(mockDeleteObject).toHaveBeenCalledWith("rs1/upload.bin");
+
+    // File/folder rows removed, then each File S3 object deleted.
+    expect(prisma.file.deleteMany).toHaveBeenCalledWith({ where: { userId: "u1" } });
+    expect(prisma.folder.deleteMany).toHaveBeenCalledWith({ where: { userId: "u1" } });
+    expect(mockDeleteObject).toHaveBeenCalledWith("u1/a.jpg");
+    expect(mockDeleteObject).toHaveBeenCalledWith("u1/b.png");
+
+    expect(result).toEqual({
+      files: 2,
+      shares: 2,
+      reverseShares: 1,
+      folders: 1,
+      s3Errors: 0,
+    });
+  });
+
+  it("never touches the user row", async () => {
+    await purgeUserContent("u1");
+    // The mock prisma surface has no `user.delete` — assert the purge does not
+    // attempt any user deletion by confirming only the expected surfaces ran.
+    expect(prisma.file.deleteMany).toHaveBeenCalled();
+    expect(prisma.folder.deleteMany).toHaveBeenCalled();
+  });
+
+  it("counts a File S3 delete failure without aborting the rest", async () => {
+    vi.mocked(prisma.file.findMany).mockResolvedValue([
+      { objectName: "u1/a.jpg" },
+      { objectName: "u1/b.png" },
+    ] as never);
+    vi.mocked(prisma.file.deleteMany).mockResolvedValue({ count: 2 } as never);
+    mockDeleteObject.mockRejectedValueOnce(new Error("s3 down")).mockResolvedValue(undefined);
+
+    const result = await purgeUserContent("u1");
+
+    // Both objects attempted despite the first failing.
+    expect(mockDeleteObject).toHaveBeenCalledTimes(2);
+    expect(result.s3Errors).toBe(1);
+    expect(result.files).toBe(2);
+  });
+});
+
+// ── cleanupDeactivatedAccounts (A7) ─────────────────────────────────────────────
+
+describe("cleanupDeactivatedAccounts", () => {
+  beforeEach(() => {
+    vi.mocked(prisma.file.findMany).mockResolvedValue([] as never);
+    vi.mocked(prisma.file.deleteMany).mockResolvedValue({ count: 0 } as never);
+    vi.mocked(prisma.folder.deleteMany).mockResolvedValue({ count: 0 } as never);
+    vi.mocked(prisma.share.findMany).mockResolvedValue([] as never);
+    vi.mocked(prisma.reverseShare.findMany).mockResolvedValue([] as never);
+  });
+
+  it("selects only accounts deactivated longer than `days`, purges them, notifies, and audits", async () => {
+    vi.mocked(prisma.user.findMany).mockResolvedValue([
+      { id: "u1", email: "u1@example.com", locale: "en" },
+    ] as never);
+    vi.mocked(prisma.file.findMany).mockResolvedValue([{ objectName: "u1/a.jpg" }] as never);
+    vi.mocked(prisma.file.deleteMany).mockResolvedValue({ count: 1 } as never);
+
+    const summary = await cleanupDeactivatedAccounts({ days: 30 });
+
+    // Query selects deactivated, time-windowed accounts.
+    const where = vi.mocked(prisma.user.findMany).mock.calls[0][0]?.where as {
+      isActive: boolean;
+      deactivatedAt: { not: null; lt: Date };
+    };
+    expect(where.isActive).toBe(false);
+    expect(where.deactivatedAt.lt).toBeInstanceOf(Date);
+
+    // Content purged (File S3 object deleted).
+    expect(mockDeleteObject).toHaveBeenCalledWith("u1/a.jpg");
+
+    // User row is KEPT (no user.delete on the mock surface) and a notification + audit fire.
+    expect(emailService.send).toHaveBeenCalledWith(
+      "files_auto_deleted",
+      expect.objectContaining({
+        to: "u1@example.com",
+        userId: "u1",
+        data: expect.objectContaining({ reason: "cleanupReason.accountDeactivated" }),
+      }),
+    );
+    expect(logAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "ACCOUNT_FILES_CLEANED",
+        targetType: "user",
+        targetId: "u1",
+        ipAddress: "system",
+        metadata: expect.objectContaining({ files: 1 }),
+      }),
+    );
+
+    expect(summary).toEqual({ purgedAccounts: 1, errors: 0 });
+  });
+
+  it("isolates a per-account failure without aborting the batch", async () => {
+    vi.mocked(prisma.user.findMany).mockResolvedValue([
+      { id: "u1", email: "u1@example.com", locale: "en" },
+      { id: "u2", email: "u2@example.com", locale: "en" },
+    ] as never);
+    // First account's purge throws on its File query; second succeeds.
+    vi.mocked(prisma.file.findMany)
+      .mockRejectedValueOnce(new Error("db down"))
+      .mockResolvedValue([] as never);
+
+    const summary = await cleanupDeactivatedAccounts({ days: 30 });
+
+    expect(summary.purgedAccounts).toBe(1);
+    expect(summary.errors).toBe(1);
+  });
+
+  it("returns a zero summary when no accounts qualify", async () => {
+    vi.mocked(prisma.user.findMany).mockResolvedValue([] as never);
+
+    const summary = await cleanupDeactivatedAccounts({ days: 30 });
+
+    expect(summary).toEqual({ purgedAccounts: 0, errors: 0 });
+    expect(emailService.send).not.toHaveBeenCalled();
   });
 });
