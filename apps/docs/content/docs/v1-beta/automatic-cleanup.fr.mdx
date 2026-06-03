@@ -1,0 +1,100 @@
+---
+title: Nettoyage automatique
+icon: Trash2
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Le nettoyage automatique est le système de gestion du cycle de vie de Ouitransfer. Il supprime les contenus arrivés en fin de vie — liens de partage expirés, fichiers téléversés vers des partages inversés expirés, fichiers appartenant à des comptes désactivés et objets de stockage orphelins — et avertit les propriétaires avant toute suppression définitive.
+
+<Callout type="warn">
+  La suppression automatique est **désactivée par défaut** et conçue de manière conservatrice. Rien n'est jamais supprimé automatiquement tant qu'un administrateur ne l'active pas consciemment. La sécurité des données prime sur l'économie de stockage.
+</Callout>
+
+## Vue d'ensemble
+
+Tous les paramètres se trouvent dans le groupe **Nettoyage automatique** de la page **Admin → Paramètres**. Le système repose sur trois principes :
+
+- **Activation explicite.** Toute opération qui détruit un contenu que l'utilisateur pourrait encore vouloir est protégée par une bascule désactivée par défaut.
+- **Valeurs par défaut conservatrices.** Longues périodes de grâce, e-mail d'avertissement avant suppression, et une règle selon laquelle un contenu encore inclus dans un partage actif n'est jamais touché.
+- **Traçabilité.** Chaque suppression automatique écrit une entrée dans le [Journal d'activité](/docs/v1-beta/activity-log).
+
+Un planificateur d'arrière-plan s'exécute à un intervalle configurable. À chaque exécution — et uniquement lorsque la bascule concernée est activée — il effectue les tâches de nettoyage décrites ci-dessous. La configuration est relue à chaque exécution, de sorte que les modifications prennent effet sans redémarrage.
+
+## Ce qui est supprimé et ce qui ne l'est pas
+
+C'est la section la plus importante à comprendre avant d'activer le nettoyage. Le modèle de données de Ouitransfer est centré sur le **gestionnaire de fichiers**, et non sur le transfert : un fichier vit dans le gestionnaire de fichiers du propriétaire et peut être référencé par plusieurs partages à la fois.
+
+| Contenu | Ce que fait le nettoyage |
+|---------|--------------------------|
+| **Partage classique expiré** | Supprime **uniquement le lien de partage** (le partage, son mot de passe / sa sécurité, ses destinataires, ses enregistrements de visites et son alias). Les fichiers et dossiers sous-jacents du propriétaire ne sont **jamais** supprimés. |
+| **Partage classique à vues maximales** | Identique à ci-dessus — supprime **uniquement le lien de partage**, après un délai d'inactivité. |
+| **Partage inversé expiré** | Supprime le partage inversé **et les fichiers qui y ont été téléversés**, y compris leurs objets de stockage. Cela libère du stockage. |
+| **Compte désactivé** | La désactivation d'un compte **bloque** immédiatement les partages de l'utilisateur (réversible). La suppression des fichiers n'intervient que plus tard, et uniquement si elle est explicitement activée. |
+| **Compte supprimé** | Cascade complète — tous les fichiers, partages, partages inversés et objets de stockage de l'utilisateur sont supprimés. |
+| **Fichiers / objets orphelins** | Un balayage bidirectionnel réconcilie la base de données et le stockage lorsqu'il est explicitement activé. |
+
+<Callout type="info">
+  Supprimer un lien de partage expiré ne supprime **pas** les fichiers du propriétaire. Les fichiers vivent dans le gestionnaire de fichiers, peuvent appartenir à plusieurs partages et existent indépendamment de tout partage — les supprimer entraînerait une perte de données. Le stockage des partages classiques est récupéré via la suppression de compte, le nettoyage après désactivation et le balayage des orphelins.
+</Callout>
+
+## Clés de configuration
+
+Les neuf clés se trouvent dans le groupe de paramètres **Nettoyage automatique**. Les valeurs par défaut sont conservatrices et les trois fonctions destructrices sont désactivées par défaut.
+
+| Clé | Défaut | Signification |
+|-----|-------:|---------------|
+| **Activer le nettoyage automatique** | `désactivé` | Interrupteur principal du nettoyage planifié des liens de partage expirés, des fichiers de partage inversé expirés et des orphelins. Désactivé par défaut — rien n'est supprimé automatiquement tant que vous ne l'activez pas. |
+| **Intervalle de nettoyage (heures)** | `24` | Fréquence d'exécution de la tâche de nettoyage. Minimum 1 heure. |
+| **Période de grâce (jours)** | `7` | Jours supplémentaires conservés après l'expiration d'un partage ou d'un partage inversé avant sa suppression définitive. `0` signifie une suppression dès l'expiration. |
+| **Avertir avant suppression (jours)** | `3` | Envoie au propriétaire un e-mail d'avertissement « suppression définitive imminente » ce nombre de jours avant la suppression. `0` désactive l'avertissement. Doit être au plus égal à la période de grâce. |
+| **Délai de nettoyage des vues max (jours)** | `30` | Jours d'inactivité après qu'un partage a atteint sa limite de vues avant la suppression du lien de partage. Minimum 1. |
+| **Supprimer les fichiers des comptes désactivés** | `désactivé` | Lorsqu'activé, les fichiers d'un compte désactivé sont supprimés définitivement après le délai ci-dessous. Désactivé par défaut — la désactivation seule ne supprime jamais de fichiers. |
+| **Délai de nettoyage après désactivation (jours)** | `30` | Jours après la désactivation d'un compte avant la suppression de ses fichiers (uniquement si l'option ci-dessus est activée). Minimum 1. |
+| **Nettoyer les fichiers orphelins** | `désactivé` | Lorsqu'activé, exécute un balayage bidirectionnel qui supprime les enregistrements de base de données pointant vers des objets de stockage manquants et les objets de stockage sans enregistrement. Désactivé par défaut. |
+| **Âge minimum des orphelins (heures)** | `24` | Seuls les fichiers et objets plus anciens que cette durée sont pris en compte lors du balayage des orphelins, ce qui protège les téléversements en cours. Minimum 1. |
+
+## Partages expirés et à vues maximales
+
+Lorsque **Activer le nettoyage automatique** est activé, le planificateur supprime les liens de partage qui ont fait leur temps :
+
+- **Partages expirés** — une fois qu'un partage a dépassé sa date d'expiration *plus* la période de grâce, son lien est supprimé. Les fichiers du propriétaire restent dans le gestionnaire de fichiers.
+- **Partages à vues maximales** — lorsqu'un partage atteint sa limite de vues puis ne connaît plus aucune activité pendant le nombre de jours configuré, son lien est supprimé.
+
+Dans les deux cas, seul le **lien de partage** est supprimé. Le propriétaire conserve ses fichiers.
+
+## Partages inversés
+
+Les fichiers téléversés via un partage inversé n'ont pas d'existence indépendante — ils appartiennent uniquement à ce partage inversé. Lorsqu'un partage inversé expire (au-delà de l'expiration plus la période de grâce), le partage inversé et tous ses fichiers téléversés sont supprimés, y compris leurs objets de stockage. C'est le chemin qui récupère le stockage des transferts entrants.
+
+## Désactivation de compte
+
+La désactivation d'un compte a deux effets distincts :
+
+1. **Blocage immédiat et réversible.** Dès qu'un compte est désactivé, tous les liens de partage de cet utilisateur cessent de fonctionner. Cela est déduit au moment de la lecture à partir du statut du compte, de sorte que **la réactivation du compte rétablit l'accès** sans autre intervention. Aucun fichier n'est supprimé.
+2. **Suppression différée et optionnelle des fichiers.** Si **Supprimer les fichiers des comptes désactivés** est activé, les fichiers du compte désactivé sont supprimés définitivement après le délai configuré. Cette option doit être activée et est désactivée par défaut — la désactivation seule ne supprime jamais de fichiers.
+
+## Suppression de compte
+
+La suppression d'un utilisateur est une action explicite de l'administrateur et effectue toujours une **cascade complète** : les fichiers, partages, partages inversés et objets de stockage de l'utilisateur sont tous supprimés. Cela ne laisse aucun contenu orphelin. Comme il s'agit d'une action délibérée de l'administrateur et d'une garantie d'intégrité, elle n'est protégée par aucune bascule.
+
+## Balayage des orphelins
+
+Lorsque **Nettoyer les fichiers orphelins** est activé, le planificateur exécute une réconciliation bidirectionnelle entre la base de données et le stockage d'objets :
+
+- **Enregistrement de base de données sans objet de stockage** — l'enregistrement de base de données orphelin est supprimé.
+- **Objet de stockage sans enregistrement de base de données** — l'objet de stockage orphelin est supprimé.
+
+Seuls les éléments plus anciens que l'**Âge minimum des orphelins** sont pris en compte, ce qui protège les téléversements encore en cours. Un objet référencé par un enregistrement n'est jamais supprimé.
+
+## E-mails d'avertissement
+
+Avant qu'un partage ou un partage inversé expiré ne soit supprimé définitivement, Ouitransfer peut envoyer au propriétaire un e-mail d'avertissement « suppression définitive imminente ». Il est envoyé le nombre de jours configuré avant la suppression, et une seule fois par élément. Définissez **Avertir avant suppression** sur `0` pour désactiver ces avertissements. Lorsqu'un contenu est supprimé, le propriétaire reçoit également un avis « supprimé automatiquement ». Ces e-mails utilisent le [système de notifications](/docs/v1-beta/notification-preferences) standard, ils respectent donc les préférences de chaque utilisateur et nécessitent que le SMTP soit configuré.
+
+<Callout type="info">
+  L'avertissement n'est déclenché que si **Avertir avant suppression** est au plus égal à la **Période de grâce**. Si vous le définissez au-delà de la période de grâce, la suppression a lieu avant qu'un avertissement n'ait pu être envoyé.
+</Callout>
+
+## Journalisation d'audit
+
+Chaque suppression automatique écrit une entrée dans le [Journal d'activité](/docs/v1-beta/activity-log) : suppressions de liens de partage expirés et à vues maximales, suppressions de partages inversés, nettoyages de fichiers de comptes désactivés, cascade complète de suppression d'utilisateur, et les deux directions du balayage des orphelins. Cela donne aux administrateurs un enregistrement complet et consultable de ce que le système de nettoyage a supprimé, et quand.

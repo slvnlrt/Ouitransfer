@@ -1,0 +1,100 @@
+---
+title: Automatic Cleanup
+icon: Trash2
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Automatic Cleanup is Ouitransfer's lifecycle management system. It removes content that has reached the end of its useful life — expired share links, files uploaded to expired reverse shares, files belonging to deactivated accounts, and orphaned storage objects — and notifies owners before anything is permanently deleted.
+
+<Callout type="warn">
+  Automatic deletion is **off by default** and conservative by design. Nothing is ever deleted automatically until an administrator consciously turns it on. Data safety beats storage economy.
+</Callout>
+
+## Overview
+
+All settings live in the **Automatic Cleanup** group on the **Admin → Settings** page. The system is built on three principles:
+
+- **Opt-in.** Every operation that destroys content a user might still want is gated behind a toggle that defaults to **disabled**.
+- **Conservative defaults.** Long grace periods, a warning email before deletion, and a rule that content still inside an active share is never touched.
+- **Auditable.** Every automated deletion writes an entry to the [Activity Log](/docs/v1-beta/activity-log).
+
+A background scheduler runs at a configurable interval. On each run — and only when the relevant toggle is enabled — it performs the cleanup tasks described below. Configuration is re-read on every run, so changes take effect without a restart.
+
+## What is and isn't deleted
+
+This is the most important section to understand before enabling cleanup. Ouitransfer's data model is **file-manager-centric**, not transfer-centric: a file lives in the owner's file manager and can be referenced by several shares at once.
+
+| Content | What cleanup does |
+|---------|-------------------|
+| **Expired regular share** | Deletes the **share link only** (the share, its password/security, recipients, visit records, and alias). The owner's underlying files and folders are **never** deleted. |
+| **Max-views regular share** | Same as above — deletes the **share link only**, after a delay of inactivity. |
+| **Expired reverse share** | Deletes the reverse share **and the files uploaded to it**, including their storage objects. This reclaims storage. |
+| **Deactivated account** | Account deactivation immediately **blocks** the user's shares (reversible). File deletion happens only later, and only if explicitly enabled. |
+| **Deleted account** | Full cascade — all of the user's files, shares, reverse shares, and storage objects are removed. |
+| **Orphaned files/objects** | A two-way sweep reconciles the database and storage when explicitly enabled. |
+
+<Callout type="info">
+  Deleting an expired share link does **not** delete the owner's files. Files live in the file manager, can belong to multiple shares, and exist independently of any share — removing them would be data loss. Storage from regular shares is reclaimed instead through account deletion, account-deactivation cleanup, and the orphan sweep.
+</Callout>
+
+## Configuration keys
+
+All nine keys live in the **Automatic Cleanup** settings group. Defaults are conservative and the three destructive features are off by default.
+
+| Key | Default | Meaning |
+|-----|--------:|---------|
+| **Enable Automatic Cleanup** | `off` | Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on. |
+| **Cleanup Interval (hours)** | `24` | How often the cleanup task runs. Minimum 1 hour. |
+| **Grace Period (days)** | `7` | Extra days kept after a share or reverse share expires before it is permanently deleted. `0` means delete as soon as it expires. |
+| **Warn Before Deletion (days)** | `3` | Send the owner a "pending permanent deletion" warning email this many days before the content is deleted. `0` disables the warning. Should be at most the grace period. |
+| **Max-Views Cleanup Delay (days)** | `30` | Days of inactivity after a share reaches its view limit before the share link is removed. Minimum 1. |
+| **Delete Deactivated Accounts' Files** | `off` | When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files. |
+| **Deactivation Cleanup Delay (days)** | `30` | Days after an account is deactivated before its files are deleted (only when the option above is enabled). Minimum 1. |
+| **Sweep Orphaned Files** | `off` | When on, runs a two-way sweep that removes database records pointing to missing storage objects and storage objects with no database record. Off by default. |
+| **Orphan Minimum Age (hours)** | `24` | Only files and objects older than this are considered during the orphan sweep, protecting uploads still in progress. Minimum 1. |
+
+## Expired and max-views shares
+
+When **Enable Automatic Cleanup** is on, the scheduler removes share links that have outlived their usefulness:
+
+- **Expired shares** — once a share is past its expiration date *plus* the grace period, its link is deleted. The owner's files stay in the file manager.
+- **Max-views shares** — when a share reaches its view limit and then sees no further activity for the configured number of days, its link is deleted.
+
+In both cases only the **share link** is removed. The owner keeps their files.
+
+## Reverse shares
+
+Files uploaded through a reverse share have no independent existence — they belong solely to that reverse share. When a reverse share expires (past expiration plus the grace period), the reverse share and all of its uploaded files are deleted, including their storage objects. This is the path that reclaims storage from inbound transfers.
+
+## Account deactivation
+
+Deactivating an account has two distinct effects:
+
+1. **Immediate, reversible blocking.** As soon as an account is deactivated, all of that user's share links stop working. This is derived at read time from the account's status, so **reactivating the account restores access** with no further action. No files are deleted.
+2. **Optional, delayed file deletion.** If **Delete Deactivated Accounts' Files** is enabled, the deactivated account's files are permanently deleted after the configured delay. This is opt-in and off by default — deactivation alone never deletes files.
+
+## Account deletion
+
+Deleting a user is an explicit administrator action and always performs a **full cascade**: the user's files, shares, reverse shares, and their storage objects are all removed. This leaves no orphaned content behind. Because it is a deliberate admin action and a correctness guarantee, it is not gated behind any toggle.
+
+## Orphan sweep
+
+When **Sweep Orphaned Files** is enabled, the scheduler runs a bidirectional reconciliation between the database and object storage:
+
+- **Database record with no storage object** — the dangling database record is removed.
+- **Storage object with no database record** — the orphaned storage object is deleted.
+
+Only items older than the **Orphan Minimum Age** are considered, which protects uploads that are still in progress. An object referenced by any record is never deleted.
+
+## Warning emails
+
+Before an expired share or reverse share is permanently deleted, Ouitransfer can send the owner a "pending permanent deletion" warning email. It is sent the configured number of days ahead of the deletion, and is sent only once per item. Set **Warn Before Deletion** to `0` to disable these warnings. When content is deleted, the owner also receives an "auto-deleted" notice. These emails use the standard [notification system](/docs/v1-beta/notification-preferences), so they respect each user's preferences and require SMTP to be configured.
+
+<Callout type="info">
+  The warning only fires if **Warn Before Deletion** is at most the **Grace Period**. If you set it larger than the grace period, the deletion happens before a warning could ever be sent.
+</Callout>
+
+## Audit logging
+
+Every automated deletion writes an entry to the [Activity Log](/docs/v1-beta/activity-log): expired and max-views share-link removals, reverse-share deletions, deactivated-account file cleanups, the full user-deletion cascade, and both directions of the orphan sweep. This gives administrators a complete, searchable record of what the cleanup system removed and when.
