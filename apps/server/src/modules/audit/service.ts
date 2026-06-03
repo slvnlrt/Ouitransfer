@@ -98,6 +98,12 @@ const AUDIT_ACTIONS = [
   "BACKGROUND_IMAGE_DELETE",
   // System
   "AUDIT_RETENTION_CLEANUP",
+  // Lifecycle cleanup (5.2)
+  "SHARE_AUTO_DELETED",
+  "REVERSE_SHARE_AUTO_DELETED",
+  "ACCOUNT_FILES_CLEANED",
+  "ORPHAN_S3_DELETED",
+  "ORPHAN_DB_DELETED",
 ] as const;
 
 export const AuditActionSchema = z.enum(AUDIT_ACTIONS);

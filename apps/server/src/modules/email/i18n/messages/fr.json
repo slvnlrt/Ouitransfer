@@ -129,6 +129,10 @@
     "body": "Votre partage <strong>{shareName}</strong> a été supprimé automatiquement. Raison : {reason}.",
     "info": "Cette action a été effectuée automatiquement par la politique de nettoyage du système."
   },
+  "cleanupReason": {
+    "expired": "expiré",
+    "viewLimitReached": "limite de vues atteinte"
+  },
   "sharePendingDeletion": {
     "subject": "{appName} - Votre partage sera bientôt supprimé définitivement",
     "subtitle": "Partage programmé pour suppression",

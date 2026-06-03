@@ -129,6 +129,10 @@
     "body": "Your share <strong>{shareName}</strong> was automatically deleted. Reason: {reason}.",
     "info": "This action was performed automatically by the system cleanup policy."
   },
+  "cleanupReason": {
+    "expired": "expired",
+    "viewLimitReached": "view limit reached"
+  },
   "sharePendingDeletion": {
     "subject": "{appName} - Your share will be permanently deleted soon",
     "subtitle": "Share Scheduled for Deletion",
