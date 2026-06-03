@@ -5,6 +5,7 @@ import {
   DeleteObjectCommand,
   GetObjectCommand,
   HeadObjectCommand,
+  ListMultipartUploadsCommand,
   ListObjectsV2Command,
   ListPartsCommand,
   PutObjectCommand,
@@ -386,5 +387,66 @@ export class S3StorageProvider implements StorageProvider {
     } while (continuationToken !== undefined);
 
     return objects;
+  }
+
+  /**
+   * List every **incomplete** multipart upload in the bucket (optionally under
+   * `prefix`).
+   *
+   * These are uploads that were initiated (`CreateMultipartUpload`) but never
+   * completed or aborted — e.g. a large reverse-share upload where the browser
+   * was closed or the client crashed. Their parts linger in S3 consuming storage
+   * and are **invisible to `listObjects` / `ListObjectsV2`** (which only sees
+   * finalized objects), so the orphan sweep needs this separate enumeration to
+   * reclaim them.
+   *
+   * `ListMultipartUploads` is paginated: each page returns at most 1000 entries,
+   * and a truncated page carries `NextKeyMarker` / `NextUploadIdMarker` that must
+   * be fed back as `KeyMarker` / `UploadIdMarker` on the next call. We loop while
+   * `IsTruncated` is true, concatenating each page's `Uploads`.
+   *
+   * Each entry exposes the object key, the upload id (both required to abort it),
+   * and the initiation timestamp. Entries missing a key or upload id are skipped
+   * (they cannot be acted on); a missing `Initiated` defaults to the epoch so a
+   * malformed entry is treated as old rather than wrongly protected as "young" by
+   * the sweep's min-age guard.
+   */
+  async listMultipartUploads(
+    prefix?: string,
+  ): Promise<Array<{ key: string; uploadId: string; initiated: Date }>> {
+    const client = this.ensureClient();
+    const uploads: Array<{ key: string; uploadId: string; initiated: Date }> = [];
+    let keyMarker: string | undefined;
+    let uploadIdMarker: string | undefined;
+
+    do {
+      const command = new ListMultipartUploadsCommand({
+        Bucket: bucketName,
+        ...(prefix !== undefined && { Prefix: prefix }),
+        ...(keyMarker !== undefined && { KeyMarker: keyMarker }),
+        ...(uploadIdMarker !== undefined && { UploadIdMarker: uploadIdMarker }),
+      });
+
+      const response = await client.send(command);
+
+      for (const upload of response.Uploads ?? []) {
+        if (upload.Key == null || upload.UploadId == null) continue;
+        uploads.push({
+          key: upload.Key,
+          uploadId: upload.UploadId,
+          initiated: upload.Initiated ?? new Date(0),
+        });
+      }
+
+      if (response.IsTruncated) {
+        keyMarker = response.NextKeyMarker;
+        uploadIdMarker = response.NextUploadIdMarker;
+      } else {
+        keyMarker = undefined;
+        uploadIdMarker = undefined;
+      }
+    } while (keyMarker !== undefined || uploadIdMarker !== undefined);
+
+    return uploads;
   }
 }
