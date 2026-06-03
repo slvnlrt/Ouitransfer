@@ -240,9 +240,18 @@ Superseded by TD-36 (strings non traduites — scope élargi). TD-16 was a subse
 
 ---
 
-## TD-17 — S3 orphan risk: partial delete in background-image operation
+## ~~TD-17 — S3 orphan risk: partial delete in background-image operation~~ ✅ RESOLVED
 
-**Context:** The `DELETE /admin/background-images/:id` endpoint (handler at
+Resolved in 5.2 Phase A (Batch 5, juin 2026) via option 4 (idempotent best-effort delete +
+recoverable orphans) combined with option 2 (cleanup job). The background-image delete still
+logs partial-delete failures, but the abandoned S3 object is now reclaimable: the new
+bidirectional orphan sweep (`sweepOrphans` in `modules/cleanup/service.ts`, axis A9) lists the
+bucket and deletes any object older than the min-age guard whose key matches no `File` nor
+`ReverseShareFile` row. A background-image thumbnail left behind by a partial delete has no DB
+row referencing it, so it is swept on the next run. The sweep is opt-in
+(`autoCleanupOrphansEnabled`, off by default) and protected by `autoCleanupOrphanMinAgeHours`.
+
+**Context (archived):** The `DELETE /admin/background-images/:id` endpoint (handler at
 `apps/server/src/modules/background-image/routes.ts`) uses `Promise.allSettled` to delete
 two S3 objects (main image + thumbnail). If one `DeleteObjectCommand` fails and the other
 succeeds, the database row is deleted but one S3 object remains orphaned.
@@ -355,11 +364,23 @@ technique. Les namespaces affectés : voir TD-26 ci-dessous.
 
 ---
 
-## TD-25 — `apps/server/src/scripts/cleanup-orphan-files.ts`
+## ~~TD-25 — `apps/server/src/scripts/cleanup-orphan-files.ts`~~ ✅ RESOLVED
 
-### Sous-tâche B — `apps/server/src/scripts/cleanup-orphan-files.ts`
+Resolved in 5.2 Phase A (Batch 5, juin 2026). The one-shot DB→S3-only script has been replaced
+by the bidirectional orphan sweep (`sweepOrphans`, axis A9), which covers **both** directions —
+DB rows pointing at missing S3 objects *and* S3 objects with no DB row (the partial-delete case
+the old script could not see) — across both object-owning tables (`File` and `ReverseShareFile`).
+It no longer hard-codes credentials in an ad-hoc provider instance: it reuses the shared
+`S3StorageProvider` and runtime storage config like the rest of the app, and applies a min-age
+guard so in-flight uploads are protected.
 
-**Context:** Ce script date du commit initial (pré-refactor). Il nécessite une réécriture :
+`scripts/cleanup-orphan-files.ts` was rewritten as a thin CLI wrapper that calls `sweepOrphans`
+(dry-run by default, `--confirm` to act, optional `--min-age-hours=N`), preserving the
+`cleanup:orphan-files` / `cleanup:orphan-files:confirm` package.json scripts as a manual
+maintenance entry point. The stale `node dist/scripts/...` invocation hint (line 64 in the old
+file, flagged here) is gone — the wrapper documents the `pnpm --filter` invocation instead.
+
+**Context (archived):** Ce script date du commit initial (pré-refactor). Il nécessitait une réécriture :
 
 - **Ligne 14** : `new S3StorageProvider()` — instanciation directe qui hard-code les credentials
   S3 depuis les env vars sans passer par la configuration runtime de l'app. Fonctionnel en soi
