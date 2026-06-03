@@ -130,7 +130,10 @@ export async function runCleanup(): Promise<void> {
     }
 
     try {
-      summary.maxViewsShares = await cleanupMaxViewsShares({ inactiveDays: maxViewsDays });
+      summary.maxViewsShares = await cleanupMaxViewsShares({
+        inactiveDays: maxViewsDays,
+        notifyDaysBefore,
+      });
     } catch (error) {
       log.error({ err: error }, "Cleanup scheduler: cleanupMaxViewsShares failed");
     }

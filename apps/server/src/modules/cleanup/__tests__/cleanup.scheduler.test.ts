@@ -123,7 +123,10 @@ describe("Cleanup scheduler", () => {
       await vi.advanceTimersByTimeAsync(24 * ONE_HOUR_MS + 1);
 
       expect(cleanupExpiredShares).toHaveBeenCalledWith({ graceDays: 5, notifyDaysBefore: 2 });
-      expect(cleanupMaxViewsShares).toHaveBeenCalledWith({ inactiveDays: 14 });
+      expect(cleanupMaxViewsShares).toHaveBeenCalledWith({
+        inactiveDays: 14,
+        notifyDaysBefore: 2,
+      });
       expect(cleanupExpiredReverseShares).toHaveBeenCalledWith({
         graceDays: 5,
         notifyDaysBefore: 2,
