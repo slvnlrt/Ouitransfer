@@ -856,3 +856,36 @@ couverture de base de ces deux modules reste lacunaire.
 
 **Found during:** TD-31 / TD-41 (juin 2026)
 **Severity:** Low — pas de bug connu, mais une régression sur ces chemins passerait inaperçue.
+
+---
+
+## TD-50 — Le site Fumadocs n'est pas déployable via Docker
+
+Le stack Docker n'embarque que 3 services — `storage` (RustFS, 9000), `server`
+(Fastify, 3333), `web` (Next.js, 5487). Il n'y a **pas de service `docs`** ni de
+cible `docs-runner` dans le `Dockerfile` ; `apps/docs` n'est copié que pour la
+validation du workspace pnpm (server-builder) et tourne en autonome (dev port 3001),
+absent de `docker-compose.yaml`.
+
+**Fix :** décider comment livrer le site Fumadocs pour l'auto-hébergement — soit
+ajouter une cible `docs-runner` au Dockerfile + un service `docs` au compose (avec
+route Traefik / port dédié), soit documenter un export statique hébergé ailleurs.
+Choisir une option et la câbler.
+
+**Found during:** fix boot-seed B-27 (juin 2026)
+**Severity:** Low — la doc est dispo en ligne ; n'impacte que la doc auto-hébergée.
+
+---
+
+## TD-51 — Surfaces du thème clair en blanc pur (trop agressif)
+
+Dans `apps/web/src/app/globals.css`, le `:root` clair met `--card` et `--popover`
+en blanc pur `oklch(1 0 0)` alors que `--background` est `oklch(0.985 0.005 265)`.
+Les grandes surfaces de cartes/popovers en blanc pur « piquent » les yeux.
+
+**Fix :** adoucir les surfaces du thème clair vers un blanc cassé légèrement teinté,
+p.ex. `--background: oklch(0.975 0.007 265)`, `--card`/`--popover: oklch(0.99 0.004 265)`
+(thème sombre inchangé). Vérifier que le contraste (foreground / borders) reste conforme.
+
+**Found during:** session review B-27 (juin 2026)
+**Severity:** Low — cosmétique / ergonomie.
