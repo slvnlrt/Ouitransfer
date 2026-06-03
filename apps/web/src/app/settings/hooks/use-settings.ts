@@ -55,6 +55,55 @@ export const CLEANUP_INT_BOUNDS: Record<string, number> = {
 };
 
 /**
+ * Minimum bound for each integer quota-overage config key (5.2 Phase B), in the
+ * `storage` group. Mirrors the server-side `intMin` validators in
+ * `config-validation.ts`. Booleans and the CSV/bigint fields are validated
+ * separately (see below). `reverseShareMaxOverageFactor` is an integer ≥ 1 on
+ * the server (`intMin`), so it is bounded here too.
+ */
+export const QUOTA_INT_BOUNDS: Record<string, number> = {
+  quotaGracePeriodDays: 0,
+  quotaInactiveShareDays: 1,
+  reverseShareMaxOverageFactor: 1,
+};
+
+/**
+ * Validates `quotaWarningThresholds`, mirroring the server-side
+ * `quotaWarningThresholds` schema in config-validation.ts: a non-empty
+ * comma-separated list of whole percentages, each in the inclusive range 1–99.
+ * Order and duplicates are tolerated (the quota service sorts + dedupes).
+ */
+export function isValidQuotaThresholds(raw: string): boolean {
+  const value = raw.trim();
+  if (value === "") return false;
+  const parts = value.split(",");
+  for (const part of parts) {
+    const trimmed = part.trim();
+    if (trimmed === "" || !/^\d+$/.test(trimmed)) return false;
+    const n = Number(trimmed);
+    if (n < 1 || n > 99) return false;
+  }
+  return true;
+}
+
+/**
+ * Validates a non-negative integer byte count for `reverseShareAbsoluteMaxBytes`,
+ * mirroring the server-side `bigintMin(..., 0n)` validator. Uses BigInt rather
+ * than Number so values above 2^53 (e.g. multi-petabyte caps) are checked
+ * exactly. "0" means "no absolute cap".
+ */
+export function isValidNonNegativeBigint(raw: string): boolean {
+  const value = raw.trim();
+  if (value === "") return false;
+  if (!/^\d+$/.test(value)) return false;
+  try {
+    return BigInt(value) >= BigInt(0);
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Builds the settings form schema. Exported so component/unit tests can exercise
  * the exact validation the page uses (audit retention + the 5.2 cleanup bounds).
  */
@@ -82,6 +131,40 @@ export const createSettingsSchema = (t: TranslateFn) =>
             message: t("settings.errors.cleanupValueInvalid", { min }),
           });
         }
+      }
+
+      // Quota-overage integer bounds (5.2 Phase B, storage group). Same generic
+      // "whole number of at least {min}" message as the cleanup ints.
+      for (const [key, min] of Object.entries(QUOTA_INT_BOUNDS)) {
+        const value = data.configs[key];
+        if (value !== undefined && !isValidIntMin(value, min)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["configs", key],
+            message: t("settings.errors.cleanupValueInvalid", { min }),
+          });
+        }
+      }
+
+      // quotaWarningThresholds: CSV of whole percentages 1–99 (non-empty).
+      const thresholds = data.configs.quotaWarningThresholds;
+      if (thresholds !== undefined && !isValidQuotaThresholds(thresholds)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["configs", "quotaWarningThresholds"],
+          message: t("settings.errors.quotaThresholdsInvalid"),
+        });
+      }
+
+      // reverseShareAbsoluteMaxBytes: non-negative integer byte count (0 = no
+      // cap). BigInt-safe so multi-petabyte caps validate exactly.
+      const absoluteMaxBytes = data.configs.reverseShareAbsoluteMaxBytes;
+      if (absoluteMaxBytes !== undefined && !isValidNonNegativeBigint(absoluteMaxBytes)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["configs", "reverseShareAbsoluteMaxBytes"],
+          message: t("settings.errors.cleanupValueInvalid", { min: 0 }),
+        });
       }
 
       // Cross-field rule: the warning lead time must be <= the grace period,
@@ -205,6 +288,33 @@ export function useSettings() {
             if (b.key === "authProvidersEnabled") return 1;
           }
 
+          if (group === "storage") {
+            // Storage limits first, then the 5.2 Phase B quota-overage policy
+            // keys in a logical order: threshold warnings → grace → smart-
+            // deletion toggle → inactive-share days → reverse soft-enforcement
+            // toggle → overage factor → absolute cap.
+            const storageOrder = [
+              "maxFileSize",
+              "maxTotalStoragePerUser",
+              "quotaWarningThresholds",
+              "quotaGracePeriodDays",
+              "quotaSmartDeletionEnabled",
+              "quotaInactiveShareDays",
+              "reverseShareQuotaSoftEnforcement",
+              "reverseShareMaxOverageFactor",
+              "reverseShareAbsoluteMaxBytes",
+            ];
+
+            const aIndex = storageOrder.indexOf(a.key);
+            const bIndex = storageOrder.indexOf(b.key);
+
+            if (aIndex !== -1 && bIndex !== -1) {
+              return aIndex - bIndex;
+            }
+            if (aIndex !== -1) return -1;
+            if (bIndex !== -1) return 1;
+          }
+
           if (group === "cleanup") {
             // Logical order: master toggle → its thresholds → account-cleanup
             // toggle + delay → orphan toggle + min-age.
@@ -318,6 +428,26 @@ export function useSettings() {
             min: CLEANUP_INT_BOUNDS[apiError.details.key as string],
           }),
         );
+      } else if (
+        apiError.code === ErrorCodes.VALIDATION_ERROR &&
+        typeof apiError.details?.key === "string" &&
+        apiError.details.key in QUOTA_INT_BOUNDS
+      ) {
+        toast.error(
+          t("settings.errors.cleanupValueInvalid", {
+            min: QUOTA_INT_BOUNDS[apiError.details.key as string],
+          }),
+        );
+      } else if (
+        apiError.code === ErrorCodes.VALIDATION_ERROR &&
+        apiError.details?.key === "quotaWarningThresholds"
+      ) {
+        toast.error(t("settings.errors.quotaThresholdsInvalid"));
+      } else if (
+        apiError.code === ErrorCodes.VALIDATION_ERROR &&
+        apiError.details?.key === "reverseShareAbsoluteMaxBytes"
+      ) {
+        toast.error(t("settings.errors.cleanupValueInvalid", { min: 0 }));
       } else if (
         apiError.code === ErrorCodes.VALIDATION_ERROR &&
         (apiError.message.includes("password authentication") ||

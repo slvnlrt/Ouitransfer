@@ -79,6 +79,17 @@ export const createFieldDescriptions = (t: ReturnType<typeof createTranslator>) 
   maxFileSize: t("settings.fields.maxFileSize.description"),
   maxTotalStoragePerUser: t("settings.fields.maxTotalStoragePerUser.description"),
 
+  // Quota overage policy (5.2 Phase B) — lives in the storage group
+  quotaWarningThresholds: t("settings.fields.quotaWarningThresholds.description"),
+  quotaGracePeriodDays: t("settings.fields.quotaGracePeriodDays.description"),
+  quotaSmartDeletionEnabled: t("settings.fields.quotaSmartDeletionEnabled.description"),
+  quotaInactiveShareDays: t("settings.fields.quotaInactiveShareDays.description"),
+  reverseShareQuotaSoftEnforcement: t(
+    "settings.fields.reverseShareQuotaSoftEnforcement.description",
+  ),
+  reverseShareMaxOverageFactor: t("settings.fields.reverseShareMaxOverageFactor.description"),
+  reverseShareAbsoluteMaxBytes: t("settings.fields.reverseShareAbsoluteMaxBytes.description"),
+
   // Cleanup / lifecycle settings (5.2)
   autoCleanupEnabled: t("settings.fields.autoCleanupEnabled.description"),
   autoCleanupIntervalHours: t("settings.fields.autoCleanupIntervalHours.description"),
