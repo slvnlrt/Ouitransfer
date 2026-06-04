@@ -287,7 +287,7 @@ Ouitransfer uses an **asynchronous email queue** backed by the database. When a 
 2. **Process**: A background worker picks up pending jobs and sends them via SMTP. Successfully sent emails are marked as `sent`.
 3. **Retry**: If sending fails (SMTP timeout, temporary server error), the job is retried up to **3 times** with increasing delays. After all retries are exhausted, the job is marked as `failed`.
 
-This architecture ensures that email delivery does not block request processing — the API responds immediately while emails are sent asynchronously.
+This architecture ensures that email delivery does not block request processing; the API responds immediately while emails are sent asynchronously.
 
 ### Cooldown periods
 
@@ -305,7 +305,7 @@ Administrators can monitor the email queue from **Admin > Email Queue**. The das
 | **Sent** | Successfully delivered emails |
 | **Failed** | Emails that failed after all retry attempts |
 
-This provides a quick health check on email delivery. A growing "Pending" count may indicate SMTP connectivity issues. A non-zero "Failed" count warrants investigation — check the server logs for detailed error messages.
+This provides a quick health check on email delivery. A growing "Pending" count may indicate SMTP connectivity issues. A non-zero "Failed" count warrants investigation. Check the server logs for detailed error messages.
 
 ### Sending a test email
 
@@ -316,7 +316,7 @@ The email queue dashboard includes a **Send Test Email** button. This sends a te
 - Emails are arriving in the inbox (not the spam folder)
 
 <Callout type="info">
-  The **Send Test Email** button sends a real email through the queue — it is different from the **Test Connection** button in the SMTP settings, which only verifies the SMTP connection without sending any email.
+  The **Send Test Email** button sends a real email through the queue; it is different from the **Test Connection** button in the SMTP settings, which only verifies the SMTP connection without sending any email.
 </Callout>
 
 ### API endpoints

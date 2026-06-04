@@ -90,7 +90,7 @@ Both provide endpoint exploration, request builders, and response visualization 
 | GET | `/auth/me` | Public | Get current authenticated user (returns `null` if not logged in) |
 | POST | `/auth/forgot-password` | Public | Request password reset email |
 | POST | `/auth/reset-password` | Public | Reset password using token from email |
-| POST | `/auth/refresh` | Public | Refresh access token using refresh token cookie (token rotation — old refresh token is invalidated) |
+| POST | `/auth/refresh` | Public | Refresh access token using refresh token cookie (token rotation; old refresh token is invalidated) |
 | GET | `/auth/config` | Public | Get auth configuration (whether password auth is enabled) |
 | GET | `/auth/trusted-devices` | User | List trusted 2FA devices |
 | DELETE | `/auth/trusted-devices/:id` | User | Remove a specific trusted device |
@@ -103,7 +103,7 @@ Both provide endpoint exploration, request builders, and response visualization 
 
 **Rate limits:** Login: 5 attempts per minute per IP. Forgot password: 3 per minute per IP. Reset password: 3 per minute per IP. Token refresh: 10 per minute per IP.
 
-**Account lockout:** After 10 consecutive failed login attempts within 15 minutes, the account is temporarily locked and returns an `ACCOUNT_LOCKED` error code with `403 Forbidden`. The lockout expires automatically after 15 minutes from the oldest failed attempt — no administrator intervention is required. A successful login resets the failure counter.
+**Account lockout:** After 10 consecutive failed login attempts within 15 minutes, the account is temporarily locked and returns an `ACCOUNT_LOCKED` error code with `403 Forbidden`. The lockout expires automatically after 15 minutes from the oldest failed attempt; no administrator intervention is required. A successful login resets the failure counter.
 
 ---
 
@@ -149,7 +149,7 @@ Both provide endpoint exploration, request builders, and response visualization 
 | POST | `/shares/alias/:alias/identify` | Public | Submit visitor identification form (name/email) |
 | GET | `/shares/:shareId/visits` | User | List share visits (paginated, filterable by action and identification status) |
 
-**Share access:** For password-protected shares, the password must be sent in the request body via the `/access` endpoints — never as a query parameter. Non-password-protected shares are accessible without authentication.
+**Share access:** For password-protected shares, the password must be sent in the request body via the `/access` endpoints; never as a query parameter. Non-password-protected shares are accessible without authentication.
 
 **Tracking tokens:** Share access endpoints accept an optional `?t=<token>` query parameter. When present, the visitor is automatically identified as the recipient who owns that tracking token. See [Shares: Visitor identification](/docs/v1-beta/shares#visitor-identification).
 
@@ -224,7 +224,7 @@ Reverse shares allow authenticated users to create upload links that anyone (eve
 | PUT | `/reverse-shares/files/:fileId` | User | Update file name/description |
 | POST | `/reverse-shares/files/:fileId/copy` | User | Copy file to user's personal files |
 
-**Public endpoints** (upload to reverse shares — no auth required):
+**Public endpoints** (upload to reverse shares, no auth required):
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
@@ -369,7 +369,7 @@ The preferences endpoint returns all 22 notification types with their current fr
 | GET | `/admin/email/stats` | Admin | Get email queue counters (pending, sent, failed) |
 | POST | `/admin/email/test` | Admin | Send a test email to the current admin's email address |
 
-For details on the email delivery system, see [Configuring SMTP — Email delivery system](/docs/v1-beta/configuring-smtp#email-delivery-system).
+For details on the email delivery system, see [Configuring SMTP: Email delivery system](/docs/v1-beta/configuring-smtp#email-delivery-system).
 
 ---
 
@@ -440,14 +440,14 @@ These endpoints provide direct S3 object operations. Most clients should use the
 | 200 | OK: request succeeded |
 | 201 | Created: resource created successfully |
 | 302 | Redirect: OAuth/OIDC flow redirects |
-| 400 | Bad Request — validation failure (Zod schema) |
+| 400 | Bad Request: validation failure (Zod schema) |
 | 401 | Unauthorized: not authenticated, invalid token, or CSRF mismatch |
 | 403 | Forbidden: authenticated but insufficient permissions |
 | 404 | Not Found: resource does not exist |
 | 409 | Conflict: duplicate resource or file-in-shares conflict |
 | 410 | Gone: share or reverse share has expired |
-| 413 | Payload Too Large — request body exceeds the 50 MB body size limit |
-| 429 | Too Many Requests — rate limit exceeded |
+| 413 | Payload Too Large: request body exceeds the 50 MB body size limit |
+| 429 | Too Many Requests: rate limit exceeded |
 | 500 | Internal Server Error |
 
 All error responses follow a consistent JSON shape:
@@ -486,7 +486,7 @@ Global rate limit: **100 requests per minute per IP**. Individual endpoints may 
 When rate-limited, the server returns `429 Too Many Requests` with a `retryAfter` field indicating seconds until the limit resets.
 
 <Callout type="info">
-  Rate limit error responses have a different shape from standard API errors — they don't include the `code` or `timestamp` fields. A rate limit response looks like:
+  Rate limit error responses have a different shape from standard API errors; they don't include the `code` or `timestamp` fields. A rate limit response looks like:
 
   ```json
   { "error": "Too many requests", "message": "Rate limit exceeded. Try again in 15 seconds.", "retryAfter": 15 }
@@ -495,4 +495,4 @@ When rate-limited, the server returns `429 Too Many Requests` with a `retryAfter
 
 ### Request size limits
 
-The API enforces a **50 MB** body size limit on non-multipart requests. File uploads bypass this limit by using S3 presigned URLs — the file content goes directly to S3, not through the API server.
+The API enforces a **50 MB** body size limit on non-multipart requests. File uploads bypass this limit by using S3 presigned URLs; the file content goes directly to S3, not through the API server.

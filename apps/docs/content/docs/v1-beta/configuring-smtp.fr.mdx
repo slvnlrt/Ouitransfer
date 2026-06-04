@@ -287,7 +287,7 @@ Ouitransfer utilise une **file d'attente d'e-mails asynchrone** adossée à la b
 2. **Traitement** : Un worker en arrière-plan récupère les tâches en attente et les envoie via SMTP. Les e-mails envoyés avec succès sont marqués comme `sent`.
 3. **Nouvelle tentative** : En cas d'échec d'envoi (délai d'attente SMTP, erreur temporaire du serveur), la tâche est relancée jusqu'à **3 fois** avec des délais croissants. Après épuisement de toutes les tentatives, la tâche est marquée comme `failed`.
 
-Cette architecture garantit que la livraison des e-mails ne bloque pas le traitement des requêtes — l'API répond immédiatement tandis que les e-mails sont envoyés de manière asynchrone.
+Cette architecture garantit que la livraison des e-mails ne bloque pas le traitement des requêtes ; l'API répond immédiatement tandis que les e-mails sont envoyés de manière asynchrone.
 
 ### Périodes de temporisation
 
@@ -305,7 +305,7 @@ Les administrateurs peuvent surveiller la file d'attente des e-mails depuis **Ad
 | **Envoyés** | E-mails délivrés avec succès |
 | **Échoués** | E-mails ayant échoué après toutes les tentatives |
 
-Cela fournit un contrôle rapide de l'état de la livraison des e-mails. Un nombre croissant d'e-mails « En attente » peut indiquer des problèmes de connectivité SMTP. Un nombre non nul d'e-mails « Échoués » mérite investigation — consultez les journaux du serveur pour obtenir des messages d'erreur détaillés.
+Cela fournit un contrôle rapide de l'état de la livraison des e-mails. Un nombre croissant d'e-mails « En attente » peut indiquer des problèmes de connectivité SMTP. Un nombre non nul d'e-mails « Échoués » mérite investigation. Consultez les journaux du serveur pour obtenir des messages d'erreur détaillés.
 
 ### Envoyer un e-mail de test
 
@@ -316,7 +316,7 @@ Le tableau de bord de la file d'attente des e-mails inclut un bouton **Envoyer u
 - Les e-mails arrivent dans la boîte de réception (et non dans les spams)
 
 <Callout type="info">
-  Le bouton **Envoyer un e-mail de test** envoie un vrai e-mail via la file d'attente — il est différent du bouton **Tester la connexion** dans les paramètres SMTP, qui ne fait que vérifier la connexion SMTP sans envoyer d'e-mail.
+  Le bouton **Envoyer un e-mail de test** envoie un vrai e-mail via la file d'attente ; il est différent du bouton **Tester la connexion** dans les paramètres SMTP, qui ne fait que vérifier la connexion SMTP sans envoyer d'e-mail.
 </Callout>
 
 ### Points de terminaison API

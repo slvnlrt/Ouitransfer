@@ -90,7 +90,7 @@ Les deux offrent l'exploration des points de terminaison, des constructeurs de r
 | GET | `/auth/me` | Public | Obtenir l'utilisateur authentifié courant (retourne `null` si non connecté) |
 | POST | `/auth/forgot-password` | Public | Demander un email de réinitialisation de mot de passe |
 | POST | `/auth/reset-password` | Public | Réinitialiser le mot de passe avec le jeton reçu par email |
-| POST | `/auth/refresh` | Public | Rafraîchir le jeton d'accès via le cookie de jeton de rafraîchissement (rotation — l'ancien jeton de rafraîchissement est invalidé) |
+| POST | `/auth/refresh` | Public | Rafraîchir le jeton d'accès via le cookie de jeton de rafraîchissement (rotation ; l'ancien jeton de rafraîchissement est invalidé) |
 | GET | `/auth/config` | Public | Obtenir la configuration d'authentification (si l'auth par mot de passe est activée) |
 | GET | `/auth/trusted-devices` | User | Lister les appareils 2FA de confiance |
 | DELETE | `/auth/trusted-devices/:id` | User | Supprimer un appareil de confiance spécifique |
@@ -103,7 +103,7 @@ Les deux offrent l'exploration des points de terminaison, des constructeurs de r
 
 **Limites de débit :** Connexion : 5 tentatives par minute par IP. Mot de passe oublié : 3 par minute par IP. Réinitialisation du mot de passe : 3 par minute par IP. Rafraîchissement du jeton : 10 par minute par IP.
 
-**Verrouillage de compte :** Après 10 échecs de connexion consécutifs en 15 minutes, le compte est temporairement verrouillé et retourne un code d'erreur `ACCOUNT_LOCKED` avec `403 Forbidden`. Le verrouillage expire automatiquement 15 minutes après la plus ancienne tentative échouée — aucune intervention d'un administrateur n'est requise. Une connexion réussie remet à zéro le compteur d'échecs.
+**Verrouillage de compte :** Après 10 échecs de connexion consécutifs en 15 minutes, le compte est temporairement verrouillé et retourne un code d'erreur `ACCOUNT_LOCKED` avec `403 Forbidden`. Le verrouillage expire automatiquement 15 minutes après la plus ancienne tentative échouée ; aucune intervention d'un administrateur n'est requise. Une connexion réussie remet à zéro le compteur d'échecs.
 
 ---
 
@@ -149,7 +149,7 @@ Les deux offrent l'exploration des points de terminaison, des constructeurs de r
 | POST | `/shares/alias/:alias/identify` | Public | Soumettre le formulaire d'identification du visiteur (nom/email) |
 | GET | `/shares/:shareId/visits` | User | Lister les visites d'un partage (paginé, filtrable par action et statut d'identification) |
 
-**Accès aux partages :** Pour les partages protégés par mot de passe, le mot de passe doit être envoyé dans le corps de la requête via les points de terminaison `/access` — jamais en paramètre de requête. Les partages sans mot de passe sont accessibles sans authentification.
+**Accès aux partages :** Pour les partages protégés par mot de passe, le mot de passe doit être envoyé dans le corps de la requête via les points de terminaison `/access` ; jamais en paramètre de requête. Les partages sans mot de passe sont accessibles sans authentification.
 
 **Jetons de suivi :** Les points de terminaison d'accès aux partages acceptent un paramètre de requête optionnel `?t=<token>`. Lorsqu'il est présent, le visiteur est automatiquement identifié comme le destinataire propriétaire de ce jeton de suivi. Voir [Partages : Identification des visiteurs](/docs/v1-beta/shares#visitor-identification).
 
@@ -224,7 +224,7 @@ Les partages inversés permettent aux utilisateurs authentifiés de créer des l
 | PUT | `/reverse-shares/files/:fileId` | User | Mettre à jour le nom/la description d'un fichier |
 | POST | `/reverse-shares/files/:fileId/copy` | User | Copier un fichier vers les fichiers personnels de l'utilisateur |
 
-**Points de terminaison publics** (téléversement vers des partages inversés — aucune authentification requise) :
+**Points de terminaison publics** (téléversement vers des partages inversés, aucune authentification requise) :
 
 | Méthode | Chemin | Auth | Description |
 |---------|--------|------|-------------|
@@ -369,7 +369,7 @@ Le point de terminaison des préférences retourne les 22 types de notification 
 | GET | `/admin/email/stats` | Admin | Obtenir les compteurs de la file d'attente email (en attente, envoyés, en échec) |
 | POST | `/admin/email/test` | Admin | Envoyer un email de test à l'adresse email de l'admin courant |
 
-Pour les détails sur le système de distribution des emails, consultez [Configuration SMTP — Système de distribution des emails](/docs/v1-beta/configuring-smtp#email-delivery-system).
+Pour les détails sur le système de distribution des emails, consultez [Configuration SMTP : Système de distribution des emails](/docs/v1-beta/configuring-smtp#email-delivery-system).
 
 ---
 
@@ -437,17 +437,17 @@ Ces points de terminaison permettent des opérations S3 directes sur les objets.
 
 | Code | Signification |
 |------|---------------|
-| 200 | OK — requête réussie |
-| 201 | Created — ressource créée avec succès |
-| 302 | Redirect — redirections du flux OAuth/OIDC |
-| 400 | Bad Request — échec de validation (schéma Zod) |
-| 401 | Unauthorized — non authentifié, jeton invalide ou non-concordance CSRF |
-| 403 | Forbidden — authentifié mais permissions insuffisantes |
-| 404 | Not Found — la ressource n'existe pas |
-| 409 | Conflict — ressource en double ou conflit fichier-dans-partages |
-| 410 | Gone — partage ou partage inversé expiré |
-| 413 | Payload Too Large — le corps de la requête dépasse la limite de taille de 50 Mo |
-| 429 | Too Many Requests — limite de débit dépassée |
+| 200 | OK : requête réussie |
+| 201 | Created : ressource créée avec succès |
+| 302 | Redirect : redirections du flux OAuth/OIDC |
+| 400 | Bad Request : échec de validation (schéma Zod) |
+| 401 | Unauthorized : non authentifié, jeton invalide ou non-concordance CSRF |
+| 403 | Forbidden : authentifié mais permissions insuffisantes |
+| 404 | Not Found : la ressource n'existe pas |
+| 409 | Conflict : ressource en double ou conflit fichier-dans-partages |
+| 410 | Gone : partage ou partage inversé expiré |
+| 413 | Payload Too Large : le corps de la requête dépasse la limite de taille de 50 Mo |
+| 429 | Too Many Requests : limite de débit dépassée |
 | 500 | Internal Server Error |
 
 Toutes les réponses d'erreur suivent une structure JSON cohérente :
@@ -486,7 +486,7 @@ Limite de débit globale : **100 requêtes par minute par IP**. Certains points 
 En cas de dépassement de la limite, le serveur retourne `429 Too Many Requests` avec un champ `retryAfter` indiquant le nombre de secondes avant la réinitialisation de la limite.
 
 <Callout type="info">
-  Les réponses d'erreur de limite de débit ont une structure différente des erreurs API standard — elles n'incluent pas les champs `code` ni `timestamp`. Une réponse de limite de débit ressemble à :
+  Les réponses d'erreur de limite de débit ont une structure différente des erreurs API standard ; elles n'incluent pas les champs `code` ni `timestamp`. Une réponse de limite de débit ressemble à :
 
   ```json
   { "error": "Too many requests", "message": "Rate limit exceeded. Try again in 15 seconds.", "retryAfter": 15 }
@@ -495,4 +495,4 @@ En cas de dépassement de la limite, le serveur retourne `429 Too Many Requests`
 
 ### Limites de taille des requêtes
 
-L'API impose une limite de taille de corps de **50 Mo** sur les requêtes non-multipart. Les téléversements de fichiers contournent cette limite en utilisant des URLs présignées S3 — le contenu du fichier va directement vers S3, pas via le serveur API.
+L'API impose une limite de taille de corps de **50 Mo** sur les requêtes non-multipart. Les téléversements de fichiers contournent cette limite en utilisant des URLs présignées S3 ; le contenu du fichier va directement vers S3, pas via le serveur API.

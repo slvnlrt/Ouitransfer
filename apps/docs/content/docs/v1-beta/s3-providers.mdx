@@ -367,7 +367,7 @@ After configuring your S3 provider, test the connection by:
 
 To switch from the built-in RustFS storage to an external S3 provider (or between S3 providers):
 
-1. **Backup existing files** before switching — files are not automatically migrated
+1. **Backup existing files** before switching; files are not automatically migrated
 2. **Update environment variables** with the new provider settings (set `ENABLE_S3=true` for external S3)
 3. **Restart the OUITRANSFER container** to apply changes
 4. **Test file operations** to ensure everything works correctly
