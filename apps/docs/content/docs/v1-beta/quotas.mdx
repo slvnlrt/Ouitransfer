@@ -12,8 +12,8 @@ Storage quotas control how much data each user can store and the maximum size of
 Ouitransfer uses a two-level quota system:
 
 - **Global defaults**: configured on the Settings page. These apply to all regular users who have no personal or group override.
-- **Per-user overrides** — set per user in User Management. These take priority over global defaults for that specific user.
-- **Group-level inheritance** — a user can belong to a Group that carries its own quota overrides, which sit between per-user overrides and global defaults. See the [Groups](/docs/v1-beta/groups) page for details.
+- **Per-user overrides**: set per user in User Management. These take priority over global defaults for that specific user.
+- **Group-level inheritance**: a user can belong to a Group that carries its own quota overrides, which sit between per-user overrides and global defaults. See the [Groups](/docs/v1-beta/groups) page for details.
 
 Admins are exempt from global defaults by design. Unless you explicitly set an override on an admin account, admins have unlimited storage and file size.
 
@@ -35,8 +35,8 @@ Admin accounts default to **unlimited** (no cap) when neither a per-user overrid
 
 | Value | Meaning |
 |-------|---------|
-| `null` | No override — inherit from the next level in the chain |
-| `0` | Unlimited — no limit enforced |
+| `null` | No override: inherit from the next level in the chain |
+| `0` | Unlimited: no limit enforced |
 | `> 0` | Explicit limit in bytes |
 
 BigInt byte values are serialized as strings in API responses.
@@ -82,9 +82,9 @@ Total = SUM(File.size for files owned by user)
 
 Key points:
 
-- Only finalized files recorded in the database are counted. In-progress multipart upload fragments stored on the S3 side are excluded — those are an S3 lifecycle concern, not a quota concern.
+- Only finalized files recorded in the database are counted. In-progress multipart upload fragments stored on the S3 side are excluded (those are an S3 lifecycle concern, not a quota concern).
 - **Shares** are views over existing files and do not count separately. Creating a share does not consume additional storage.
-- Files received through a **reverse share** owned by the user *do* count — they are stored under the user's account once accepted.
+- Files received through a **reverse share** owned by the user *do* count; they are stored under the user's account once accepted.
 
 <Callout type="info">
   To automatically clean up incomplete multipart upload fragments, configure an `AbortIncompleteMultipartUpload` lifecycle policy on your S3-compatible bucket. This is not handled by the application.
@@ -94,21 +94,21 @@ Key points:
 
 | Action | User over quota? | Outcome |
 |--------|-----------------|---------|
-| Upload a file | Yes | **Blocked** — 400 error with a clear message |
+| Upload a file | Yes | **Blocked**: 400 error with a clear message |
 | Upload a file | No | Checked against both max file size and max total storage |
-| Create a share | Yes | **Allowed** — shares don't consume new storage |
+| Create a share | Yes | **Allowed**: shares don't consume new storage |
 | Create a reverse share | Yes | **Allowed** (with an in-app warning) |
-| Third party uploads to a reverse share | Yes | **Allowed** — external uploaders are never blocked |
+| Third party uploads to a reverse share | Yes | **Allowed**: external uploaders are never blocked |
 
 The rationale for not blocking third-party uploads to a reverse share: the creator may be over quota, but blocking external clients would break the service contract. The creator's own next direct upload will be blocked, giving them an incentive to free space.
 
 <Callout type="info">
-  Quota checks are optimistic. Two simultaneous uploads may each pass the check individually but together exceed the limit. The slight overage is acceptable — the next upload will be blocked. File sizes are typically megabytes while quotas are gigabytes, so overruns are negligible.
+  Quota checks are optimistic. Two simultaneous uploads may each pass the check individually but together exceed the limit. The slight overage is acceptable; the next upload will be blocked. File sizes are typically megabytes while quotas are gigabytes, so overruns are negligible.
 </Callout>
 
 ## Quota indicator
 
-Every authenticated user sees a **storage usage indicator** in the System Status Bar — the collapsible panel that appears below the navigation bar on the dashboard. Expand it to view the quota details.
+Every authenticated user sees a **storage usage indicator** in the System Status Bar, the collapsible panel that appears below the navigation bar on the dashboard. Expand it to view the quota details.
 
 The indicator shows:
 
@@ -135,7 +135,7 @@ All quota management endpoints require an authenticated admin session. Non-admin
 | `GET` | `/users/:id/quota` | Returns the user's effective limits, current storage usage, warning level, and override values. BigInt fields are returned as strings. |
 | `PATCH` | `/users/:id/quota` | Sets per-user quota overrides. Accepts `null` (clear override/inherit), `"0"` (unlimited), or a positive byte value as a number or numeric string. Both fields are optional; omit a field to leave it unchanged. |
 
-### `GET /users/:id/quota` — Response
+### `GET /users/:id/quota`: Response
 
 ```json
 {
@@ -166,7 +166,7 @@ All quota management endpoints require an authenticated admin session. Non-admin
 | `"global"` | Falling back to the global default |
 | `"admin-default"` | Admin account with no override (unlimited) |
 
-### `PATCH /users/:id/quota` — Request body
+### `PATCH /users/:id/quota`: Request body
 
 ```json
 {
