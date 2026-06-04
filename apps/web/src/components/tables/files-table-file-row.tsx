@@ -187,8 +187,7 @@ export function FileRow({
                 editValue={editValue}
                 isShareMode={isShareMode}
                 inputRef={inputRef}
-                displayClassName="truncate font-medium"
-                maxWidth="200px"
+                displayClassName="truncate font-medium max-w-[200px] lg:max-w-[300px] xl:max-w-[380px]"
                 onStartEdit={() => onStartEdit(file.id, "name", displayName)}
                 onSaveEdit={onSaveEdit}
                 onCancelEdit={onCancelEdit}
@@ -213,8 +212,7 @@ export function FileRow({
             placeholder={t("fileActions.addDescriptionPlaceholder")}
             isShareMode={isShareMode}
             inputRef={inputRef}
-            displayClassName="text-muted-foreground truncate"
-            maxWidth="150px"
+            displayClassName="text-muted-foreground truncate max-w-[150px] lg:max-w-[240px] xl:max-w-[300px]"
             onStartEdit={() => onStartEdit(file.id, "description", displayDescription || "")}
             onSaveEdit={onSaveEdit}
             onCancelEdit={onCancelEdit}
@@ -224,9 +222,13 @@ export function FileRow({
         </div>
       </TableCell>
       <TableCell className="h-12 px-4">{formatFileSize(file.size)}</TableCell>
-      <TableCell className="h-12 px-4">{formatDateTime(file.createdAt)}</TableCell>
       <TableCell className="h-12 px-4">
-        {formatDateTime(file.updatedAt || file.createdAt)}
+        <div className="flex flex-col gap-0.5 min-w-0">
+          <span className="text-sm truncate">{formatDateTime(file.createdAt)}</span>
+          <span className="text-xs text-muted-foreground truncate">
+            {formatDateTime(file.updatedAt || file.createdAt)}
+          </span>
+        </div>
       </TableCell>
       <TableCell className="h-12 px-4 text-end">
         <ItemDropdownMenu

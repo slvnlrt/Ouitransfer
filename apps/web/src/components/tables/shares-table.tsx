@@ -271,7 +271,7 @@ export function SharesTable({
                       ) : (
                         <div className="flex items-center gap-1 flex-1 min-w-0">
                           <span
-                            className="truncate max-w-[120px] font-medium"
+                            className="truncate max-w-[140px] lg:max-w-[220px] xl:max-w-[300px] font-medium"
                             title={displayName ?? undefined}
                           >
                             {displayName}
@@ -340,7 +340,7 @@ export function SharesTable({
                       ) : (
                         <div className="flex items-center gap-1 flex-1 min-w-0">
                           <span
-                            className="text-muted-foreground truncate max-w-[100px]"
+                            className="text-muted-foreground truncate max-w-[120px] lg:max-w-[200px] xl:max-w-[260px]"
                             title={displayDescription || "-"}
                           >
                             {displayDescription || "-"}

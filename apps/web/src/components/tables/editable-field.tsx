@@ -19,10 +19,12 @@ interface EditableFieldProps {
   isShareMode: boolean;
   /** Ref to the input element for auto-focus */
   inputRef: React.RefObject<HTMLInputElement | null>;
-  /** CSS class for the display span (e.g., "truncate font-medium" for names) */
+  /**
+   * CSS class for the display span. Include the truncation max-width here
+   * (e.g. "truncate font-medium max-w-[200px] lg:max-w-[280px]") so it can be
+   * made responsive per breakpoint.
+   */
   displayClassName?: string;
-  /** Max width for the display span truncation */
-  maxWidth?: string;
   /** Called when the user clicks the edit pencil */
   onStartEdit: () => void;
   /** Called when the user confirms the edit (check button) */
@@ -43,8 +45,7 @@ export function EditableField({
   placeholder,
   isShareMode,
   inputRef,
-  displayClassName = "truncate font-medium",
-  maxWidth = "200px",
+  displayClassName = "truncate font-medium max-w-[200px]",
   onStartEdit,
   onSaveEdit,
   onCancelEdit,
@@ -91,7 +92,7 @@ export function EditableField({
 
   return (
     <div className="flex items-center gap-1 flex-1 min-w-0">
-      <span className={displayClassName} style={{ maxWidth }} title={displayValue || "-"}>
+      <span className={displayClassName} title={displayValue || "-"}>
         {displayValue || "-"}
       </span>
       <div className="w-6 flex justify-center flex-shrink-0">

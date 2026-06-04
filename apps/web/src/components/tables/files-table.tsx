@@ -162,11 +162,8 @@ export function FilesTable({
               <TableHead className="h-10 text-xs font-bold text-muted-foreground bg-muted/50 px-4">
                 {t("filesTable.columns.size")}
               </TableHead>
-              <TableHead className="h-10 text-xs font-bold text-muted-foreground bg-muted/50 px-4">
-                {t("filesTable.columns.createdAt")}
-              </TableHead>
-              <TableHead className="h-10 text-xs font-bold text-muted-foreground bg-muted/50 px-4">
-                {t("filesTable.columns.updatedAt")}
+              <TableHead className="h-10 text-xs font-bold text-muted-foreground bg-muted/50 px-4 whitespace-normal leading-tight">
+                {t("filesTable.columns.createdAt")} / {t("filesTable.columns.updatedAt")}
               </TableHead>
               <TableHead className="h-10 w-[70px] text-xs font-bold text-muted-foreground bg-muted/50 px-4 rounded-tr-lg">
                 {t("filesTable.columns.actions")}

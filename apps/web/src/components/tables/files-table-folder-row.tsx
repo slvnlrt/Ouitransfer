@@ -162,8 +162,7 @@ export function FolderRow({
                 editValue={editValue}
                 isShareMode={isShareMode}
                 inputRef={inputRef}
-                displayClassName="font-medium text-sm text-foreground/90 truncate"
-                maxWidth="150px"
+                displayClassName="font-medium text-sm text-foreground/90 truncate max-w-[150px] lg:max-w-[280px] xl:max-w-[360px]"
                 onStartEdit={() => onStartEditFolder(folder.id, "name", folder.name)}
                 onSaveEdit={onSaveEditFolder}
                 onCancelEdit={onCancelEditFolder}
@@ -187,8 +186,7 @@ export function FolderRow({
             editValue={editValue}
             isShareMode={isShareMode}
             inputRef={inputRef}
-            displayClassName="text-muted-foreground truncate"
-            maxWidth="150px"
+            displayClassName="text-muted-foreground truncate max-w-[150px] lg:max-w-[240px] xl:max-w-[300px]"
             onStartEdit={() =>
               onStartEditFolder(folder.id, "description", folder.description || "")
             }
@@ -202,8 +200,14 @@ export function FolderRow({
       <TableCell className="h-12 px-4">
         {folder.totalSize ? formatFileSize(Number(folder.totalSize)) : "—"}
       </TableCell>
-      <TableCell className="h-12 px-4">{formatDateTime(folder.createdAt)}</TableCell>
-      <TableCell className="h-12 px-4">{formatDateTime(folder.updatedAt)}</TableCell>
+      <TableCell className="h-12 px-4">
+        <div className="flex flex-col gap-0.5 min-w-0">
+          <span className="text-sm truncate">{formatDateTime(folder.createdAt)}</span>
+          <span className="text-xs text-muted-foreground truncate">
+            {formatDateTime(folder.updatedAt)}
+          </span>
+        </div>
+      </TableCell>
       <TableCell className="h-12 px-4 text-end">
         <ItemDropdownMenu
           actions={actions}
