@@ -1,12 +1,18 @@
 import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import { env } from "../../env.js";
 import { prisma } from "../../shared/prisma.js";
-import { AppError, ConflictError, ForbiddenError, NotFoundError, ValidationError } from "../../utils/app-error.js";
+import {
+  AppError,
+  ConflictError,
+  ForbiddenError,
+  NotFoundError,
+  ValidationError,
+} from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
-import { FileService } from "../file/service.js";
 import { emailService } from "../email/service.js";
 import { buildReverseShareUploadLink } from "../email/url-builder.js";
+import { FileService } from "../file/service.js";
 import { assertOwnerActive } from "./assert-owner-active.js";
 import {
   type CreateReverseShareInput,
@@ -616,9 +622,7 @@ export class ReverseShareService {
     // Build upload link server-side
     const reverseShareAlias = reverseShare.alias?.alias;
     if (!reverseShareAlias) {
-      throw new ValidationError(
-        "Reverse share must have an alias before sending notifications",
-      );
+      throw new ValidationError("Reverse share must have an alias before sending notifications");
     }
     const reverseShareLink = await buildReverseShareUploadLink(reverseShareAlias);
 
