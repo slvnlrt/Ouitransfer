@@ -27,7 +27,7 @@ Avant de commencer, assurez-vous de disposer de :
   déployé sur n'importe quelle plateforme prenant en charge Docker: Linux, macOS, Windows, périphériques NAS
   et machines virtuelles cloud. Pour ceux qui ne connaissent pas Docker : il regroupe l'ensemble de
   l'application et ses dépendances dans des conteneurs isolés, rendant le système d'exploitation hôte très
-  peu important. Cela dit, **un serveur Linux est recommandé pour la production** — il offre de
+  peu important. Cela dit, **un serveur Linux est recommandé pour la production**, offrant de
   meilleures performances d'E/S, une surcharge moindre et un comportement plus prévisible pour les
   charges de travail de conteneurs longue durée.
 </Callout>
@@ -106,7 +106,7 @@ COOKIE_SECRET=<third openssl output>
 </Callout>
 
 <Callout type="info">
-  **Pourquoi deux variables d'URL ?** OUITRANSFER génère des URLs présignées — des URLs signées de courte durée
+  **Pourquoi deux variables d'URL ?** OUITRANSFER génère des URLs présignées, des URLs signées de courte durée
   que les navigateurs utilisent pour téléverser et télécharger des fichiers **directement** depuis le service de
   stockage, en contournant le serveur API. Les deux variables doivent être des adresses accessibles depuis le
   **navigateur de l'utilisateur**, et non des noms d'hôtes Docker internes comme `server:3333` ou `storage:9000`.
@@ -203,7 +203,7 @@ volumes:
   server_data:
 ```
 
-Cette configuration utilise des **volumes nommés gérés par Docker** pour le stockage et les données du serveur — l'approche recommandée pour la plupart des déploiements. Docker gère automatiquement les permissions et les performances d'E/S sont optimales.
+Cette configuration utilise des **volumes nommés gérés par Docker** pour le stockage et les données du serveur, l'approche recommandée pour la plupart des déploiements. Docker gère automatiquement les permissions et les performances d'E/S sont optimales.
 
 <Callout type="info">
   **Besoin d'un accès direct aux fichiers sur votre système hôte ?** (par ex. NAS, sauvegardes manuelles,
@@ -224,7 +224,7 @@ Docker télécharge les images au premier démarrage (quelques centaines de Mo, 
 docker compose logs -f
 ```
 
-Attendez que les journaux du serveur affichent `Fastify server listening`. Le premier démarrage exécute également les migrations de base de données et initialise la configuration de l'application automatiquement — aucune étape manuelle n'est nécessaire.
+Attendez que les journaux du serveur affichent `Fastify server listening`. Le premier démarrage exécute également les migrations de base de données et initialise la configuration de l'application automatiquement. Aucune étape manuelle n'est nécessaire.
 
 ---
 
@@ -240,7 +240,7 @@ Remplacez `YOUR_IP` par la valeur que vous avez utilisée dans `FRONTEND_ORIGIN`
 
 **Création de votre compte administrateur :**
 
-Sur une installation fraîche, vous verrez la page de connexion. Cliquez sur **S'inscrire** pour créer le premier compte — le premier utilisateur inscrit obtient automatiquement les **privilèges d'administrateur**.
+Sur une installation fraîche, vous verrez la page de connexion. Cliquez sur **S'inscrire** pour créer le premier compte. Le premier utilisateur inscrit obtient automatiquement les **privilèges d'administrateur**.
 
 <Callout type="warn">
   **Inscrivez-vous immédiatement.** Si votre instance est accessible depuis un réseau local ou internet,
@@ -252,7 +252,7 @@ Une fois connecté, explorez le panneau **Paramètres** (accessible depuis le me
 
 ---
 
-## Après la première connexion — Configuration recommandée
+## Après la première connexion : Configuration recommandée
 
 ### Personnalisez votre instance
 
@@ -261,8 +261,8 @@ Accédez à **Paramètres → Général** pour définir le nom de votre applicat
 ### Configurez l'email (fortement recommandé)
 
 Accédez à **Paramètres → Email** pour configurer un serveur SMTP. Cela active :
-- **Réinitialisation du mot de passe** — les utilisateurs qui ont oublié leur mot de passe peuvent récupérer leur compte par email.
-- **Notifications de partage** — les destinataires reçoivent un email lorsqu'un fichier est partagé avec eux.
+- **Réinitialisation du mot de passe** : les utilisateurs qui ont oublié leur mot de passe peuvent récupérer leur compte par email.
+- **Notifications de partage** : les destinataires reçoivent un email lorsqu'un fichier est partagé avec eux.
 
 Sans SMTP, les utilisateurs qui perdent l'accès à leur compte ne peuvent le récupérer sans intervention de l'administrateur.
 
@@ -311,7 +311,7 @@ volumes:
 
 ## Référence de configuration
 
-### `.env` — Variables obligatoires
+### `.env` : Variables obligatoires
 
 | Variable | Description |
 |----------|-------------|
@@ -319,11 +319,11 @@ volumes:
 | `STORAGE_PUBLIC_URL` | URL où les navigateurs accèdent au service de stockage (ex. `http://192.168.1.100:9000`). Utilisée pour générer les URLs présignées et configurer la politique de sécurité du contenu. |
 | `S3_ACCESS_KEY` | Clé d'accès S3 partagée entre RustFS et le serveur API. |
 | `S3_SECRET_KEY` | Clé secrète S3 partagée entre RustFS et le serveur API. |
-| `JWT_SECRET` | Clé de signature JWT — au moins 32 caractères. Générez avec `openssl rand -hex 32`. |
-| `CSRF_SECRET` | Clé HMAC CSRF — au moins 32 caractères, doit différer de `JWT_SECRET`. |
-| `COOKIE_SECRET` | Clé de signature des cookies — au moins 32 caractères, doit différer des deux autres. |
+| `JWT_SECRET` | Clé de signature JWT : au moins 32 caractères. Générez avec `openssl rand -hex 32`. |
+| `CSRF_SECRET` | Clé HMAC CSRF : au moins 32 caractères, doit différer de `JWT_SECRET`. |
+| `COOKIE_SECRET` | Clé de signature des cookies : au moins 32 caractères, doit différer des deux autres. |
 
-### `.env` — Variables optionnelles
+### `.env` : Variables optionnelles
 
 | Variable | Défaut | Description |
 |----------|--------|-------------|
@@ -344,11 +344,11 @@ Ces variables sont définies directement dans `docker-compose.yml` et ne nécess
 
 | Variable | Valeur | Description |
 |----------|--------|-------------|
-| `S3_ENDPOINT` | `storage` | Nom du service Docker pour le stockage interne — ne pas modifier. |
+| `S3_ENDPOINT` | `storage` | Nom du service Docker pour le stockage interne (ne pas modifier). |
 | `S3_PORT` | `9000` | Port de stockage interne. |
 | `S3_USE_SSL` | `false` | Pas de TLS sur le réseau Docker interne. |
 | `S3_BUCKET_NAME` | `ouitransfer-files` | Nom du bucket créé au démarrage. |
-| `API_BASE_URL` | `http://server:3333` | URL API interne — utilise le nom du service Docker, ne pas modifier. |
+| `API_BASE_URL` | `http://server:3333` | URL API interne, utilise le nom du service Docker (ne pas modifier). |
 
 ---
 
@@ -382,22 +382,22 @@ curl http://localhost:3333/health
 
 ### Déploiement
 
-- **[Configuration du proxy inverse](/docs/v1-beta/reverse-proxy-configuration)** — HTTPS avec Traefik, Nginx ou Caddy ; `SECURE_SITE=true`
-- **[Configuration UID/GID](/docs/v1-beta/uid-gid-configuration)** — Permissions de fichiers pour les NAS et les montages bind
-- **[Fournisseurs de stockage S3](/docs/v1-beta/s3-providers)** — Utiliser un S3 externe (AWS, Backblaze B2, DigitalOcean Spaces, etc.) au lieu de RustFS intégré
-- **[Installation manuelle](/docs/v1-beta/manual-installation)** — Exécuter sans Docker, directement depuis le code source
+- **[Configuration du proxy inverse](/docs/v1-beta/reverse-proxy-configuration)** : HTTPS avec Traefik, Nginx ou Caddy ; `SECURE_SITE=true`
+- **[Configuration UID/GID](/docs/v1-beta/uid-gid-configuration)** : Permissions de fichiers pour les NAS et les montages bind
+- **[Fournisseurs de stockage S3](/docs/v1-beta/s3-providers)** : Utiliser un S3 externe (AWS, Backblaze B2, DigitalOcean Spaces, etc.) au lieu de RustFS intégré
+- **[Installation manuelle](/docs/v1-beta/manual-installation)** : Exécuter sans Docker, directement depuis le code source
 
 ### Fonctionnalités
 
-- **[Quotas de stockage](/docs/v1-beta/quotas)** — Limites de stockage par utilisateur et par groupe
-- **[Groupes](/docs/v1-beta/groups)** — Organisez les utilisateurs avec des politiques de quota par groupe
-- **[LDAP / Active Directory](/docs/v1-beta/ldap-configuration)** — Synchronisez utilisateurs et groupes depuis Active Directory
-- **[OIDC / SSO](/docs/v1-beta/oidc-authentication)** — Authentification unique avec Google, GitHub, et plus
+- **[Quotas de stockage](/docs/v1-beta/quotas)** : Limites de stockage par utilisateur et par groupe
+- **[Groupes](/docs/v1-beta/groups)** : Organisez les utilisateurs avec des politiques de quota par groupe
+- **[LDAP / Active Directory](/docs/v1-beta/ldap-configuration)** : Synchronisez utilisateurs et groupes depuis Active Directory
+- **[OIDC / SSO](/docs/v1-beta/oidc-authentication)** : Authentification unique avec Google, GitHub, et plus
 
 ### Intégration et développement
 
-- **[Référence API](/docs/v1-beta/api)** — Intégrez OUITRANSFER à vos applications
-- **[Architecture](/docs/v1-beta/architecture)** — Comment les composants s'articulent
+- **[Référence API](/docs/v1-beta/api)** : Intégrez OUITRANSFER à vos applications
+- **[Architecture](/docs/v1-beta/architecture)** : Comment les composants s'articulent
 
 ---
 
