@@ -2768,7 +2768,8 @@
       },
       "recipients": {
         "label": "受信者",
-        "placeholder": "メールアドレスを追加"
+        "placeholder": "メールアドレスを追加",
+        "hint": "Enter キーで追加"
       },
       "share": "共有",
       "sharing": "共有中...",

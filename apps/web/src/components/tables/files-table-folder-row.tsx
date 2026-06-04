@@ -1,12 +1,12 @@
-import { Download, Folder, Move, Pencil, Share, Trash2 } from "lucide-react";
+import { Folder } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { formatFileSize } from "@/utils/format-file-size";
 import { EditableField } from "./editable-field";
+import { buildFolderActions } from "./files-table-actions";
 import type { FolderItem } from "./files-table-types";
-import type { ActionItem } from "./item-actions";
 import { ItemDropdownMenu } from "./item-actions";
 
 interface FolderRowProps {
@@ -74,52 +74,11 @@ export function FolderRow({
 }: FolderRowProps) {
   const t = useTranslations();
 
-  const actions: ActionItem[] = [
-    ...(onRenameFolder
-      ? [
-          {
-            key: "edit",
-            icon: Pencil,
-            label: t("filesTable.actions.edit"),
-            onClick: () => onRenameFolder(folder),
-          },
-        ]
-      : []),
-    ...(onMoveFolder
-      ? [{ key: "move", icon: Move, label: t("common.move"), onClick: () => onMoveFolder(folder) }]
-      : []),
-    ...(onDownloadFolder
-      ? [
-          {
-            key: "download",
-            icon: Download,
-            label: t("filesTable.actions.download"),
-            onClick: () => onDownloadFolder(folder.id, folder.name),
-          },
-        ]
-      : []),
-    ...(onShareFolder
-      ? [
-          {
-            key: "share",
-            icon: Share,
-            label: t("filesTable.actions.share"),
-            onClick: () => onShareFolder(folder),
-          },
-        ]
-      : []),
-    ...(onDeleteFolder
-      ? [
-          {
-            key: "delete",
-            icon: Trash2,
-            label: t("filesTable.actions.delete"),
-            onClick: () => onDeleteFolder(folder),
-            variant: "destructive" as const,
-          },
-        ]
-      : []),
-  ];
+  const actions = buildFolderActions(
+    folder,
+    { onRenameFolder, onMoveFolder, onDownloadFolder, onShareFolder, onDeleteFolder },
+    t,
+  );
 
   return (
     <TableRow className="group hover:bg-muted/50 transition-colors border-0">
@@ -162,8 +121,7 @@ export function FolderRow({
                 editValue={editValue}
                 isShareMode={isShareMode}
                 inputRef={inputRef}
-                displayClassName="font-medium text-sm text-foreground/90 truncate"
-                maxWidth="150px"
+                displayClassName="font-medium text-sm text-foreground/90 truncate max-w-[150px] lg:max-w-[280px] xl:max-w-[360px]"
                 onStartEdit={() => onStartEditFolder(folder.id, "name", folder.name)}
                 onSaveEdit={onSaveEditFolder}
                 onCancelEdit={onCancelEditFolder}
@@ -187,8 +145,7 @@ export function FolderRow({
             editValue={editValue}
             isShareMode={isShareMode}
             inputRef={inputRef}
-            displayClassName="text-muted-foreground truncate"
-            maxWidth="150px"
+            displayClassName="text-muted-foreground truncate max-w-[150px] lg:max-w-[240px] xl:max-w-[300px]"
             onStartEdit={() =>
               onStartEditFolder(folder.id, "description", folder.description || "")
             }
@@ -202,8 +159,14 @@ export function FolderRow({
       <TableCell className="h-12 px-4">
         {folder.totalSize ? formatFileSize(Number(folder.totalSize)) : "—"}
       </TableCell>
-      <TableCell className="h-12 px-4">{formatDateTime(folder.createdAt)}</TableCell>
-      <TableCell className="h-12 px-4">{formatDateTime(folder.updatedAt)}</TableCell>
+      <TableCell className="h-12 px-4">
+        <div className="flex flex-col gap-0.5 min-w-0">
+          <span className="text-sm truncate">{formatDateTime(folder.createdAt)}</span>
+          <span className="text-xs text-muted-foreground truncate">
+            {formatDateTime(folder.updatedAt)}
+          </span>
+        </div>
+      </TableCell>
       <TableCell className="h-12 px-4 text-end">
         <ItemDropdownMenu
           actions={actions}

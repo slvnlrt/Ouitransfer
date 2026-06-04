@@ -2768,7 +2768,8 @@
       },
       "recipients": {
         "label": "Destinatários",
-        "placeholder": "Adicionar endereços de email"
+        "placeholder": "Adicionar endereços de email",
+        "hint": "Pressione Enter para adicionar"
       },
       "share": "Compartilhar",
       "sharing": "Compartilhando...",

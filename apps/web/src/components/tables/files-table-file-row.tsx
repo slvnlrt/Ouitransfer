@@ -1,4 +1,3 @@
-import { Download, Eye, Move, Pencil, Share, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -6,8 +5,8 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { getFileIcon } from "@/utils/file-icons";
 import { formatFileSize } from "@/utils/format-file-size";
 import { EditableField } from "./editable-field";
+import { buildFileActions } from "./files-table-actions";
 import type { FileItem } from "./files-table-types";
-import type { ActionItem } from "./item-actions";
 import { ItemDropdownMenu } from "./item-actions";
 
 interface FileRowProps {
@@ -70,65 +69,11 @@ export function FileRow({
   const t = useTranslations();
   const { icon: FileIcon, color } = getFileIcon(file.name);
 
-  const actions: ActionItem[] = [
-    ...(onPreview
-      ? [
-          {
-            key: "preview",
-            icon: Eye,
-            label: t("filesTable.actions.preview"),
-            onClick: () => onPreview(file),
-          },
-        ]
-      : []),
-    ...(onRename
-      ? [
-          {
-            key: "edit",
-            icon: Pencil,
-            label: t("filesTable.actions.edit"),
-            onClick: () => onRename(file),
-          },
-        ]
-      : []),
-    ...(onMoveFile
-      ? [
-          {
-            key: "move",
-            icon: Move,
-            label: t("common.move"),
-            onClick: () => onMoveFile(file),
-          },
-        ]
-      : []),
-    {
-      key: "download",
-      icon: Download,
-      label: t("filesTable.actions.download"),
-      onClick: () => onDownload(file.objectName, file.name),
-    },
-    ...(onShare
-      ? [
-          {
-            key: "share",
-            icon: Share,
-            label: t("filesTable.actions.share"),
-            onClick: () => onShare(file),
-          },
-        ]
-      : []),
-    ...(onDelete
-      ? [
-          {
-            key: "delete",
-            icon: Trash2,
-            label: t("filesTable.actions.delete"),
-            onClick: () => onDelete(file),
-            variant: "destructive" as const,
-          },
-        ]
-      : []),
-  ];
+  const actions = buildFileActions(
+    file,
+    { onPreview, onRename, onMoveFile, onDownload, onShare, onDelete },
+    t,
+  );
 
   return (
     <TableRow
@@ -187,8 +132,7 @@ export function FileRow({
                 editValue={editValue}
                 isShareMode={isShareMode}
                 inputRef={inputRef}
-                displayClassName="truncate font-medium"
-                maxWidth="200px"
+                displayClassName="truncate font-medium max-w-[200px] lg:max-w-[300px] xl:max-w-[380px]"
                 onStartEdit={() => onStartEdit(file.id, "name", displayName)}
                 onSaveEdit={onSaveEdit}
                 onCancelEdit={onCancelEdit}
@@ -213,8 +157,7 @@ export function FileRow({
             placeholder={t("fileActions.addDescriptionPlaceholder")}
             isShareMode={isShareMode}
             inputRef={inputRef}
-            displayClassName="text-muted-foreground truncate"
-            maxWidth="150px"
+            displayClassName="text-muted-foreground truncate max-w-[150px] lg:max-w-[240px] xl:max-w-[300px]"
             onStartEdit={() => onStartEdit(file.id, "description", displayDescription || "")}
             onSaveEdit={onSaveEdit}
             onCancelEdit={onCancelEdit}
@@ -224,9 +167,13 @@ export function FileRow({
         </div>
       </TableCell>
       <TableCell className="h-12 px-4">{formatFileSize(file.size)}</TableCell>
-      <TableCell className="h-12 px-4">{formatDateTime(file.createdAt)}</TableCell>
       <TableCell className="h-12 px-4">
-        {formatDateTime(file.updatedAt || file.createdAt)}
+        <div className="flex flex-col gap-0.5 min-w-0">
+          <span className="text-sm truncate">{formatDateTime(file.createdAt)}</span>
+          <span className="text-xs text-muted-foreground truncate">
+            {formatDateTime(file.updatedAt || file.createdAt)}
+          </span>
+        </div>
       </TableCell>
       <TableCell className="h-12 px-4 text-end">
         <ItemDropdownMenu

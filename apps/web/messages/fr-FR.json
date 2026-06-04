@@ -2197,7 +2197,8 @@
       },
       "recipients": {
         "label": "Destinataires",
-        "placeholder": "Ajouter des adresses email"
+        "placeholder": "Ajouter des adresses email",
+        "hint": "Appuyez sur Entrée pour ajouter"
       },
       "share": "Partager",
       "sharing": "Partage en cours...",

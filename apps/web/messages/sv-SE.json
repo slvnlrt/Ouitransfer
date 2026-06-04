@@ -2768,7 +2768,8 @@
       },
       "recipients": {
         "label": "Mottagare",
-        "placeholder": "Lägg till e-postadresser"
+        "placeholder": "Lägg till e-postadresser",
+        "hint": "Tryck på Enter för att lägga till"
       },
       "share": "Dela",
       "sharing": "Delar...",

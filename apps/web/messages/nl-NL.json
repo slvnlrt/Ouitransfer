@@ -2768,7 +2768,8 @@
       },
       "recipients": {
         "label": "Ontvangers",
-        "placeholder": "E-mailadressen toevoegen"
+        "placeholder": "E-mailadressen toevoegen",
+        "hint": "Druk op Enter om toe te voegen"
       },
       "share": "Delen",
       "sharing": "Delen...",

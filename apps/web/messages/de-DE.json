@@ -2768,7 +2768,8 @@
       },
       "recipients": {
         "label": "Empfänger",
-        "placeholder": "E-Mail-Adressen hinzufügen"
+        "placeholder": "E-Mail-Adressen hinzufügen",
+        "hint": "Zum Hinzufügen Enter drücken"
       },
       "share": "Teilen",
       "sharing": "Wird geteilt...",

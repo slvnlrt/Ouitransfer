@@ -2768,7 +2768,8 @@
       },
       "recipients": {
         "label": "收件人",
-        "placeholder": "添加电子邮件地址"
+        "placeholder": "添加电子邮件地址",
+        "hint": "按回车键添加"
       },
       "share": "分享",
       "sharing": "分享中...",

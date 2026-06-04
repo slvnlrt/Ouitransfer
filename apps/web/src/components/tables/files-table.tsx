@@ -6,6 +6,7 @@ import { formatDateTime } from "@/lib/format-date-time";
 import { FilesTableBulkActions } from "./files-table-bulk-actions";
 import { FileRow } from "./files-table-file-row";
 import { FolderRow } from "./files-table-folder-row";
+import { FileCard, FolderCard } from "./files-table-mobile-card";
 import type { FileItem, FolderItem } from "./files-table-types";
 import { useEditableItem } from "./use-editable-item";
 import { useSelectionManager } from "./use-selection-manager";
@@ -140,7 +141,8 @@ export function FilesTable({
         />
       )}
 
-      <div className="rounded-lg shadow-sm overflow-hidden border">
+      {/* Desktop / tablet: full table */}
+      <div className="hidden md:block rounded-lg shadow-sm overflow-hidden border">
         <Table>
           <TableHeader>
             <TableRow className="border-b-0">
@@ -162,11 +164,8 @@ export function FilesTable({
               <TableHead className="h-10 text-xs font-bold text-muted-foreground bg-muted/50 px-4">
                 {t("filesTable.columns.size")}
               </TableHead>
-              <TableHead className="h-10 text-xs font-bold text-muted-foreground bg-muted/50 px-4">
-                {t("filesTable.columns.createdAt")}
-              </TableHead>
-              <TableHead className="h-10 text-xs font-bold text-muted-foreground bg-muted/50 px-4">
-                {t("filesTable.columns.updatedAt")}
+              <TableHead className="h-10 text-xs font-bold text-muted-foreground bg-muted/50 px-4 whitespace-normal leading-tight">
+                {t("filesTable.columns.createdAt")} / {t("filesTable.columns.updatedAt")}
               </TableHead>
               <TableHead className="h-10 w-[70px] text-xs font-bold text-muted-foreground bg-muted/50 px-4 rounded-tr-lg">
                 {t("filesTable.columns.actions")}
@@ -280,6 +279,44 @@ export function FilesTable({
             })}
           </TableBody>
         </Table>
+      </div>
+
+      {/* Mobile: stacked cards (the table never fits on a narrow viewport) */}
+      <div className="md:hidden space-y-3">
+        {folders.map((folder) => (
+          <FolderCard
+            key={folder.id}
+            folder={folder}
+            isSelected={selection.selectedFolders.has(folder.id)}
+            showBulkActions={showBulkActions}
+            isShareMode={isShareMode}
+            onSelectFolder={selection.selectFolder}
+            onNavigateToFolder={onNavigateToFolder}
+            onRenameFolder={onRenameFolder}
+            onMoveFolder={onMoveFolder}
+            onDownloadFolder={onDownloadFolder}
+            onShareFolder={onShareFolder}
+            onDeleteFolder={onDeleteFolder}
+            formatDateTime={(d) => formatDateTime(d, "table", locale)}
+          />
+        ))}
+        {files.map((file) => (
+          <FileCard
+            key={file.id}
+            file={file}
+            isSelected={selection.selectedFiles.has(file.id)}
+            showBulkActions={showBulkActions}
+            isShareMode={isShareMode}
+            onSelectFile={selection.selectFile}
+            onPreview={onPreview}
+            onRename={onRename}
+            onMoveFile={onMoveFile}
+            onDownload={onDownload}
+            onShare={onShare}
+            onDelete={onDelete}
+            formatDateTime={(d) => formatDateTime(d, "table", locale)}
+          />
+        ))}
       </div>
     </div>
   );
