@@ -255,7 +255,9 @@ describe("ReverseShareService.notifyRecipients()", () => {
     mockFindById.mockResolvedValue(null);
     const service = new ReverseShareService();
 
-    await expect(service.notifyRecipients("rs-1", "user-1")).rejects.toThrow("Reverse share not found");
+    await expect(service.notifyRecipients("rs-1", "user-1")).rejects.toThrow(
+      "Reverse share not found",
+    );
   });
 
   it("throws when user is not the creator", async () => {
@@ -289,9 +291,7 @@ describe("ReverseShareService.notifyRecipients()", () => {
   });
 
   it("includes hasPassword: true when reverse share has a password", async () => {
-    mockFindById.mockResolvedValue(
-      makeReverseShare({ password: "$2b$10$hashedpassword" }),
-    );
+    mockFindById.mockResolvedValue(makeReverseShare({ password: "$2b$10$hashedpassword" }));
     const service = new ReverseShareService();
 
     await service.notifyRecipients("rs-1", "user-1");

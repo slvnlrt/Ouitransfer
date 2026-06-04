@@ -19,8 +19,8 @@ import {
   ReverseShareResponseSchema,
   UpdateReverseShareFileSchema,
   UpdateReverseSharePasswordSchema,
-  UpdateReverseShareSchema,
   UpdateReverseShareRecipientsSchema,
+  UpdateReverseShareSchema,
   UploadToReverseShareSchema,
 } from "./dto.js";
 import { ReverseShareMultipartService } from "./multipart.service.js";
