@@ -43,7 +43,7 @@ Toutes les **requêtes mutantes** (POST, PUT, PATCH, DELETE) nécessitent un jet
 - Les requêtes GET, HEAD et OPTIONS ne nécessitent pas l'en-tête CSRF.
 
 <Callout type="warn">
-  Le jeton CSRF est requis pour **toutes les requêtes POST, PUT, PATCH et DELETE**, même les points de terminaison marqués `Auth : —` (publics). Les mutations publiques comme les téléchargements de fichiers (`POST /files/download-url`) nécessitent toujours un en-tête `X-CSRF-Token` valide, sauf s'ils sont explicitement listés comme exempts CSRF. Voir la liste des exemptions ci-dessous.
+  Le jeton CSRF est requis pour **toutes les requêtes POST, PUT, PATCH et DELETE**, même les points de terminaison marqués `Auth: —` (publics). Les mutations publiques comme les téléchargements de fichiers (`POST /files/download-url`) nécessitent toujours un en-tête `X-CSRF-Token` valide, sauf s'ils sont explicitement listés comme exempts CSRF. Voir la liste des exemptions ci-dessous.
 </Callout>
 
 **Points de terminaison exempts CSRF** (mutations publiques ou non authentifiées) : `/auth/login`, `/auth/refresh`, `/auth/forgot-password`, `/auth/reset-password`, `/auth/2fa/login`, `/register-with-invite`, les points de terminaison d'accès par mot de passe aux partages et partages inversés, et tous les points de terminaison publics de téléversement vers les partages inversés.

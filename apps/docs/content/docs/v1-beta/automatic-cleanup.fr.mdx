@@ -5,7 +5,7 @@ icon: Trash2
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-Le nettoyage automatique est le système de gestion du cycle de vie de Ouitransfer. Il supprime les contenus arrivés en fin de vie — liens de partage expirés, fichiers téléversés vers des partages inversés expirés, fichiers appartenant à des comptes désactivés et objets de stockage orphelins — et avertit les propriétaires avant toute suppression définitive.
+Le nettoyage automatique est le système de gestion du cycle de vie de Ouitransfer. Il supprime les contenus arrivés en fin de vie: liens de partage expirés, fichiers téléversés vers des partages inversés expirés, fichiers appartenant à des comptes désactivés et objets de stockage orphelins. Il avertit les propriétaires avant toute suppression définitive.
 
 <Callout type="warn">
   La suppression automatique est **désactivée par défaut** et conçue de manière conservatrice. Rien n'est jamais supprimé automatiquement tant qu'un administrateur ne l'active pas consciemment. La sécurité des données prime sur l'économie de stockage.
@@ -19,7 +19,7 @@ Tous les paramètres se trouvent dans le groupe **Nettoyage automatique** de la 
 - **Valeurs par défaut conservatrices.** Longues périodes de grâce, e-mail d'avertissement avant suppression, et une règle selon laquelle un contenu encore inclus dans un partage actif n'est jamais touché.
 - **Traçabilité.** Chaque suppression automatique écrit une entrée dans le [Journal d'activité](/docs/v1-beta/activity-log).
 
-Un planificateur d'arrière-plan s'exécute à un intervalle configurable. À chaque exécution — et uniquement lorsque la bascule concernée est activée — il effectue les tâches de nettoyage décrites ci-dessous. La configuration est relue à chaque exécution, de sorte que les modifications prennent effet sans redémarrage.
+Un planificateur d'arrière-plan s'exécute à un intervalle configurable. À chaque exécution, si et uniquement si la bascule concernée est activée, il effectue les tâches de nettoyage décrites ci-dessous. La configuration est relue à chaque exécution, de sorte que les modifications prennent effet sans redémarrage.
 
 ## Le cycle de vie en deux phases des partages
 
@@ -28,19 +28,19 @@ Les partages et les partages inversés suivent un cycle de vie explicite et pers
 ```
 actif ──(expire │ limite de vues atteinte │ mis en pause)──▶ désactivé ──(période de grâce)──▶ supprimé
    ▲                                                              │
-   └──────────── repris / renouvelé / prolongé ───────────────────┘
+   └──────────── repris, renouvelé ou prolongé ──────────────────┘
 ```
 
 1. **Désactivé** (réversible). Lorsque la date d'expiration d'un partage est dépassée, qu'il atteint sa limite de vues ou que son propriétaire le met manuellement en pause, le partage est marqué **désactivé** : il cesse d'être accessible aux visiteurs, une raison est enregistrée (`expiré`, `limite de vues` ou `en pause`) et l'instant de désactivation est horodaté. Le propriétaire voit l'état et la raison sur le partage, et peut le reprendre ou le renouveler. Aucun contenu n'est supprimé dans cette phase.
-2. **Supprimé** (définitif). Après une **période de grâce** unique et uniforme mesurée à partir de l'instant de désactivation, le contenu désactivé est supprimé définitivement — mais **uniquement** s'il a été désactivé automatiquement (expiré ou limite de vues). La portée de la suppression reste la même : un partage classique expiré / à vues maximales perd uniquement son lien de partage ; un partage inversé expiré perd ses fichiers téléversés et leurs objets de stockage.
+2. **Supprimé** (définitif). Après une **période de grâce** unique et uniforme mesurée à partir de l'instant de désactivation, le contenu désactivé est supprimé définitivement. Cependant, cela **s'applique uniquement** lorsque le contenu a été désactivé automatiquement (expiré ou limite de vues). La portée de la suppression reste la même: un partage classique expiré / à vues maximales perd uniquement son lien de partage; un partage inversé expiré perd ses fichiers téléversés et leurs objets de stockage.
 
 <Callout type="warn">
-  **Le contenu mis en pause manuellement n'est jamais supprimé automatiquement.** Un partage que vous mettez en pause à la main reste désactivé indéfiniment jusqu'à ce que vous le repreniez — la phase de suppression ne s'applique qu'au contenu désactivé automatiquement. Si un partage mis en pause manuellement expire ensuite, sa raison est promue en `expiré` et le compte à rebours de la grâce démarre à ce moment-là.
+  **Le contenu mis en pause manuellement n'est jamais supprimé automatiquement.** Un partage que vous mettez en pause à la main reste désactivé indéfiniment jusqu'à ce que vous le repreniez. La phase de suppression ne s'applique qu'au contenu désactivé automatiquement. Si un partage mis en pause manuellement expire ensuite, sa raison est promue en `expiré` et le compte à rebours de la grâce démarre à ce moment-là.
 </Callout>
 
 ### Mettre en pause, reprendre et renouveler
 
-Les propriétaires (et les administrateurs) peuvent **mettre en pause** un partage ou un partage inversé à tout moment, ce qui le désactive immédiatement avec la raison `en pause`. La **reprise** le réactive et efface l'état de désactivation. Un contenu désactivé parce qu'il a **expiré** ou atteint sa **limite de vues** ne peut pas être simplement repris — il doit être **renouvelé** en prolongeant sa date d'expiration ou en augmentant sa limite de vues, ce qui le réactive et relance son cycle de vie. Chaque réactivation est enregistrée dans le [Journal d'activité](/docs/v1-beta/activity-log).
+Les propriétaires (et les administrateurs) peuvent **mettre en pause** un partage ou un partage inversé à tout moment, ce qui le désactive immédiatement avec la raison `en pause`. La **reprise** le réactive et efface l'état de désactivation. Un contenu désactivé parce qu'il a **expiré** ou atteint sa **limite de vues** ne peut pas être simplement repris. Il doit être **renouvelé** en prolongeant sa date d'expiration ou en augmentant sa limite de vues, ce qui le réactive et relance son cycle de vie. Chaque réactivation est enregistrée dans le [Journal d'activité](/docs/v1-beta/activity-log).
 
 ## Ce qui est supprimé et ce qui ne l'est pas
 
@@ -49,14 +49,14 @@ C'est la section la plus importante à comprendre avant d'activer le nettoyage. 
 | Contenu | Ce que fait le nettoyage |
 |---------|--------------------------|
 | **Partage classique expiré** | Supprime **uniquement le lien de partage** (le partage, son mot de passe / sa sécurité, ses destinataires, ses enregistrements de visites et son alias). Les fichiers et dossiers sous-jacents du propriétaire ne sont **jamais** supprimés. |
-| **Partage classique à vues maximales** | Identique à ci-dessus — supprime **uniquement le lien de partage**, après la période de grâce qui suit la désactivation. |
+| **Partage classique à vues maximales** | Identique à ci-dessus; supprime **uniquement le lien de partage**, après la période de grâce qui suit la désactivation. |
 | **Partage inversé expiré** | Supprime le partage inversé **et les fichiers qui y ont été téléversés**, y compris leurs objets de stockage. Cela libère du stockage. |
 | **Compte désactivé** | La désactivation d'un compte **bloque** immédiatement les partages de l'utilisateur (réversible). La suppression des fichiers n'intervient que plus tard, et uniquement si elle est explicitement activée. |
-| **Compte supprimé** | Cascade complète — tous les fichiers, partages, partages inversés et objets de stockage de l'utilisateur sont supprimés. |
+| **Compte supprimé** | Cascade complète: tous les fichiers, partages, partages inversés et objets de stockage de l'utilisateur sont supprimés. |
 | **Fichiers / objets orphelins** | Un balayage bidirectionnel réconcilie la base de données et le stockage lorsqu'il est explicitement activé. |
 
 <Callout type="info">
-  Supprimer un lien de partage expiré ne supprime **pas** les fichiers du propriétaire. Les fichiers vivent dans le gestionnaire de fichiers, peuvent appartenir à plusieurs partages et existent indépendamment de tout partage — les supprimer entraînerait une perte de données. Le stockage des partages classiques est récupéré via la suppression de compte, le nettoyage après désactivation et le balayage des orphelins.
+  Supprimer un lien de partage expiré ne supprime **pas** les fichiers du propriétaire. Les fichiers vivent dans le gestionnaire de fichiers, peuvent appartenir à plusieurs partages et existent indépendamment de tout partage. Les supprimer entraînerait une perte de données. Le stockage des partages classiques est récupéré via la suppression de compte, le nettoyage après désactivation et le balayage des orphelins.
 </Callout>
 
 ## Clés de configuration
@@ -65,34 +65,34 @@ Les huit clés se trouvent dans le groupe de paramètres **Nettoyage automatique
 
 | Clé | Défaut | Signification |
 |-----|-------:|---------------|
-| **Activer le nettoyage automatique** | `désactivé` | Interrupteur principal du nettoyage planifié des liens de partage désactivés, des fichiers de partage inversé expirés et des orphelins. Désactivé par défaut — rien n'est supprimé automatiquement tant que vous ne l'activez pas. |
+| **Activer le nettoyage automatique** | `désactivé` | Interrupteur principal du nettoyage planifié des liens de partage désactivés, des fichiers de partage inversé expirés et des orphelins. Désactivé par défaut; rien n'est supprimé automatiquement tant que vous ne l'activez pas. |
 | **Intervalle de nettoyage (heures)** | `24` | Fréquence d'exécution de la tâche de nettoyage. Minimum 1 heure. |
 | **Période de grâce (jours)** | `7` | Jours pendant lesquels un partage ou un partage inversé est conservé après sa **désactivation** (parce qu'il a expiré ou atteint sa limite de vues) avant sa suppression définitive. `0` signifie une suppression dès l'écoulement de la période de grâce. La même grâce uniforme s'applique à toutes les raisons de désactivation automatique. Le contenu mis en pause manuellement n'est jamais supprimé. |
 | **Avertir avant suppression (jours)** | `3` | Envoie au propriétaire un e-mail d'avertissement « suppression définitive imminente » ce nombre de jours avant la suppression. `0` désactive l'avertissement. Doit être au plus égal à la période de grâce. |
-| **Supprimer les fichiers des comptes désactivés** | `désactivé` | Lorsqu'activé, les fichiers d'un compte désactivé sont supprimés définitivement après le délai ci-dessous. Désactivé par défaut — la désactivation seule ne supprime jamais de fichiers. |
+| **Supprimer les fichiers des comptes désactivés** | `désactivé` | Lorsqu'activé, les fichiers d'un compte désactivé sont supprimés définitivement après le délai ci-dessous. Désactivé par défaut; la désactivation seule ne supprime jamais de fichiers. |
 | **Délai de nettoyage après désactivation (jours)** | `30` | Jours après la désactivation d'un compte avant la suppression de ses fichiers (uniquement si l'option ci-dessus est activée). Minimum 1. |
 | **Nettoyer les fichiers orphelins** | `désactivé` | Lorsqu'activé, exécute un balayage bidirectionnel qui supprime les enregistrements de base de données pointant vers des objets de stockage manquants et les objets de stockage sans enregistrement. Désactivé par défaut. |
 | **Âge minimum des orphelins (heures)** | `24` | Seuls les fichiers et objets plus anciens que cette durée sont pris en compte lors du balayage des orphelins, ce qui protège les téléversements en cours. Minimum 1. |
 
 ## Partages expirés et à vues maximales
 
-Lorsque **Activer le nettoyage automatique** est activé, le planificateur supprime les liens de partage qui ont fait leur temps, toujours via le cycle de vie en deux phases : le partage est d'abord **désactivé** (avec la raison `expiré` ou `limite de vues`), puis supprimé une fois écoulée la période de grâce mesurée depuis la désactivation.
+Lorsque **Activer le nettoyage automatique** est activé, le planificateur supprime les liens de partage qui ont fait leur temps. Il procède toujours via le cycle de vie en deux phases: le partage est d'abord **désactivé** (avec la raison `expiré` ou `limite de vues`), puis supprimé une fois écoulée la période de grâce mesurée depuis la désactivation.
 
-- **Partages expirés** — lorsqu'un partage dépasse sa date d'expiration, il est désactivé. Son lien est supprimé une fois écoulée la période de grâce depuis la désactivation. Les fichiers du propriétaire restent dans le gestionnaire de fichiers.
-- **Partages à vues maximales** — lorsqu'un partage atteint sa limite de vues, il est désactivé. Son lien est supprimé une fois écoulée la période de grâce depuis la désactivation.
+- **Partages expirés**: lorsqu'un partage dépasse sa date d'expiration, il est désactivé. Son lien est supprimé une fois écoulée la période de grâce depuis la désactivation. Les fichiers du propriétaire restent dans le gestionnaire de fichiers.
+- **Partages à vues maximales**: lorsqu'un partage atteint sa limite de vues, il est désactivé. Son lien est supprimé une fois écoulée la période de grâce depuis la désactivation.
 
 Dans les deux cas, seul le **lien de partage** est supprimé. Le propriétaire conserve ses fichiers. La même période de grâce unique s'applique aux deux raisons.
 
 ## Partages inversés
 
-Les fichiers téléversés via un partage inversé n'ont pas d'existence indépendante — ils appartiennent uniquement à ce partage inversé. Un partage inversé suit le même cycle de vie en deux phases : lorsqu'il expire, il est **désactivé** (raison `expiré`), et une fois écoulée la période de grâce mesurée depuis la désactivation, le partage inversé et tous ses fichiers téléversés sont supprimés, y compris leurs objets de stockage. C'est le chemin qui récupère le stockage des transferts entrants. Un partage inversé mis en pause manuellement n'est jamais supprimé automatiquement.
+Les fichiers téléversés via un partage inversé n'ont pas d'existence indépendante. Ils appartiennent uniquement à ce partage inversé. Un partage inversé suit le même cycle de vie en deux phases: lorsqu'il expire, il est **désactivé** (raison `expiré`), et une fois écoulée la période de grâce mesurée depuis la désactivation, le partage inversé et tous ses fichiers téléversés sont supprimés, y compris leurs objets de stockage. C'est le chemin qui récupère le stockage des transferts entrants. Un partage inversé mis en pause manuellement n'est jamais supprimé automatiquement.
 
 ## Désactivation de compte
 
 La désactivation d'un compte a deux effets distincts :
 
 1. **Blocage immédiat et réversible.** Dès qu'un compte est désactivé, tous les liens de partage de cet utilisateur cessent de fonctionner. Cela est déduit au moment de la lecture à partir du statut du compte, de sorte que **la réactivation du compte rétablit l'accès** sans autre intervention. Aucun fichier n'est supprimé.
-2. **Suppression différée et optionnelle des fichiers.** Si **Supprimer les fichiers des comptes désactivés** est activé, les fichiers du compte désactivé sont supprimés définitivement après le délai configuré. Cette option doit être activée et est désactivée par défaut — la désactivation seule ne supprime jamais de fichiers.
+2. **Suppression différée et optionnelle des fichiers.** Si **Supprimer les fichiers des comptes désactivés** est activé, les fichiers du compte désactivé sont supprimés définitivement après le délai configuré. Cette option doit être activée et est désactivée par défaut; la désactivation seule ne supprime jamais de fichiers.
 
 ## Suppression de compte
 
@@ -102,9 +102,9 @@ La suppression d'un utilisateur est une action explicite de l'administrateur et 
 
 Lorsque **Nettoyer les fichiers orphelins** est activé, le planificateur exécute une réconciliation bidirectionnelle entre la base de données et le stockage d'objets :
 
-- **Enregistrement de base de données sans objet de stockage** — l'enregistrement de base de données orphelin est supprimé.
-- **Objet de stockage sans enregistrement de base de données** — l'objet de stockage orphelin est supprimé.
-- **Téléversement multipart incomplet (abandonné)** — lorsqu'un fichier volumineux est téléversé en plusieurs parties et que le téléversement n'est jamais finalisé ni abandonné (par exemple, le navigateur a été fermé en cours de transfert ou le client a planté), ses parties subsistent dans le stockage et consomment de l'espace, tout en restant invisibles au listage habituel des objets. Le balayage énumère désormais aussi ces téléversements multipart incomplets et **abandonne** ceux qui ont été initiés avant l'âge minimum, en supprimant leurs parties.
+- **Enregistrement de base de données sans objet de stockage** : l'enregistrement de base de données orphelin est supprimé.
+- **Objet de stockage sans enregistrement de base de données** : l'objet de stockage orphelin est supprimé.
+- **Téléversement multipart incomplet (abandonné)** : lorsqu'un fichier volumineux est téléversé en plusieurs parties et que le téléversement n'est jamais finalisé ni abandonné (par exemple, le navigateur a été fermé en cours de transfert ou le client a planté), ses parties subsistent dans le stockage et consomment de l'espace, tout en restant invisibles au listage habituel des objets. Le balayage énumère désormais aussi ces téléversements multipart incomplets et **abandonne** ceux qui ont été initiés avant l'âge minimum, en supprimant leurs parties.
 
 Seuls les éléments plus anciens que l'**Âge minimum des orphelins** sont pris en compte, ce qui protège les téléversements encore en cours. Un objet référencé par un enregistrement n'est jamais supprimé.
 
@@ -113,7 +113,7 @@ Seuls les éléments plus anciens que l'**Âge minimum des orphelins** sont pris
 Indépendamment du balayage, le stockage interne bénéficie d'un **filet de sécurité toujours actif** : au démarrage, Ouitransfer applique une règle de cycle de vie `AbortIncompleteMultipartUpload` à son bucket afin que le backend de stockage abandonne automatiquement tout téléversement multipart incomplet **7 jours** après son initiation. Cela s'exécute que **Nettoyer les fichiers orphelins** soit activé ou non, et est appliqué au mieux (si le backend ne prend pas en charge les règles de cycle de vie, le démarrage se poursuit sans).
 
 <Callout type="info">
-  Ce filet de sécurité de cycle de vie n'est appliqué qu'au stockage interne propre à Ouitransfer — il n'est jamais appliqué à un bucket S3 externe que vous fournissez. Si vous utilisez un S3 externe, configurez une règle de cycle de vie `AbortIncompleteMultipartUpload` équivalente sur votre propre bucket. Le balayage des orphelins au niveau de l'application décrit ci-dessus abandonne tout de même les téléversements multipart abandonnés sur le stockage externe lorsqu'il est activé.
+  Ce filet de sécurité de cycle de vie n'est appliqué qu'au stockage interne propre à Ouitransfer. Il n'est jamais appliqué à un bucket S3 externe que vous fournissez. Si vous utilisez un S3 externe, configurez une règle de cycle de vie `AbortIncompleteMultipartUpload` équivalente sur votre propre bucket. Le balayage des orphelins au niveau de l'application décrit ci-dessus abandonne tout de même les téléversements multipart abandonnés sur le stockage externe lorsqu'il est activé.
 </Callout>
 
 ## Politique de quota de stockage
@@ -132,27 +132,27 @@ Au-delà du nettoyage fondé sur l'expiration, Ouitransfer applique des quotas d
 - Lorsque l'utilisation franchit un seuil pour la première fois (par exemple en dépassant 80 %), le propriétaire reçoit un e-mail d'**avertissement de quota**. À 100 % ou plus, il reçoit plutôt un e-mail de **quota dépassé**.
 - Les avertissements sont **dédupliqués** : le système mémorise le seuil le plus élevé déjà signalé et ne renvoie pas d'avertissement pour le même niveau à chaque téléversement. Si l'utilisation redescend ensuite sous le seuil le plus bas, les avertissements se **réarment**, de sorte que le propriétaire est averti à nouveau la prochaine fois que l'utilisation augmente.
 
-Ces e-mails sont déclenchés par événement — ils partent lors de la finalisation d'un téléversement, aussi bien pour les fichiers propres du propriétaire que pour les fichiers reçus via un partage inversé. Ils utilisent le [système de notifications](/docs/v1-beta/notification-preferences) standard et nécessitent que le SMTP soit configuré.
+Ces e-mails sont déclenchés par événement : ils partent lors de la finalisation d'un téléversement, aussi bien pour les fichiers propres du propriétaire que pour les fichiers reçus via un partage inversé. Ils utilisent le [système de notifications](/docs/v1-beta/notification-preferences) standard et nécessitent que le SMTP soit configuré.
 
 ### Période de grâce et suppression intelligente (optionnelle)
 
 Lorsque **Activer la suppression intelligente de quota** est activé, un utilisateur qui reste au-dessus de 100 % de son quota plus longtemps que la **Période de grâce de quota** peut voir des fichiers supprimés automatiquement pour repasser sous la limite. C'est la seule fonction de quota qui détruit du contenu, et elle est **désactivée par défaut**.
 
 <Callout type="warn">
-  La suppression intelligente est **désactivée par défaut**. Tant qu'un administrateur ne l'active pas, dépasser un quota ne produit que des e-mails d'avertissement et bloque les nouveaux téléversements directs — aucun fichier n'est jamais supprimé pour cause de dépassement.
+  La suppression intelligente est **désactivée par défaut**. Tant qu'un administrateur ne l'active pas, dépasser un quota ne produit que des e-mails d'avertissement et bloque les nouveaux téléversements directs. Aucun fichier n'est jamais supprimé pour cause de dépassement.
 </Callout>
 
 Lorsqu'elle s'exécute, le planificateur libère de l'espace dans un **ordre sécurisé** strict, du plus ancien au plus récent, en ne supprimant que ce qui est nécessaire pour repasser sous la limite :
 
 1. **D'abord les téléversements orphelins.** Les fichiers que l'utilisateur a téléversés mais qui ne font partie d'aucun partage sont supprimés en premier, du plus ancien au plus récent.
 2. **Puis les fichiers des partages inactifs.** Les fichiers dont les partages n'ont vu aucune activité depuis au moins la fenêtre **Jours d'inactivité de partage pour quota** deviennent ensuite éligibles, du plus ancien au plus récent.
-3. **Sinon, blocage — ne jamais toucher aux partages actifs.** Si libérer de l'espace nécessitait de supprimer des fichiers encore présents dans un partage actif et récemment utilisé, la suppression intelligente **ne supprime rien**. L'utilisateur reste simplement bloqué pour les nouveaux téléversements directs jusqu'à ce qu'il libère lui-même de l'espace.
+3. **Sinon, blocage: ne jamais toucher aux partages actifs.** Si libérer de l'espace nécessitait de supprimer des fichiers encore présents dans un partage actif et récemment utilisé, la suppression intelligente **ne supprime rien**. L'utilisateur reste simplement bloqué pour les nouveaux téléversements directs jusqu'à ce qu'il libère lui-même de l'espace.
 
 <Callout type="warn">
-  **Les fichiers présents dans un partage actif ne sont jamais supprimés automatiquement pour dépassement de quota.** Lorsque tout ce que possède un utilisateur se trouve dans un partage actif, le système préfère le maintenir bloqué plutôt que de supprimer un contenu que quelqu'un est peut-être encore en train de télécharger. La sécurité des données prime sur l'économie de stockage.
+  **Les fichiers présents dans un partage actif ne sont jamais supprimés automatiquement pour dépassement de quota.** Lorsque tout ce que possède un utilisateur se trouve dans un partage actif, le système préfère le maintenir bloqué plutôt que de supprimer un contenu que quelqu'un est peut-être encore en train de télécharger. La sécurité des données prend priorité sur l'économie de stockage.
 </Callout>
 
-Lorsque des fichiers sont supprimés de cette façon, le propriétaire reçoit un avis « supprimé automatiquement » et l'action est inscrite au [Journal d'activité](/docs/v1-beta/activity-log) sous `QUOTA_FILES_DELETED`. Un partage qu'une suppression laisse vide n'est **pas** supprimé — il est simplement laissé vide.
+Lorsque des fichiers sont supprimés de cette façon, le propriétaire reçoit un avis « supprimé automatiquement » et l'action est inscrite au [Journal d'activité](/docs/v1-beta/activity-log) sous `QUOTA_FILES_DELETED`. Un partage qu'une suppression laisse vide n'est **pas** supprimé : il est simplement laissé vide.
 
 ### Application souple pour les partages inversés
 

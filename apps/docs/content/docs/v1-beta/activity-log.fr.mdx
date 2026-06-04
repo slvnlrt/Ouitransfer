@@ -5,7 +5,7 @@ icon: ScrollText
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-Le journal d'activité est une piste d'audit réservée aux administrateurs qui enregistre un ensemble défini d'actions effectuées dans Ouitransfer — notamment les actions authentifiées, l'accès aux partages publics, les téléversements et téléchargements de fichiers, les modifications de configuration et les événements système. Il offre un historique consultable, filtrable et exportable de ce qui s'est passé, par qui et quand.
+Le journal d'activité est une piste d'audit réservée aux administrateurs qui enregistre un ensemble défini d'actions effectuées dans Ouitransfer: notamment les actions authentifiées, l'accès aux partages publics, les téléversements et téléchargements de fichiers, les modifications de configuration et les événements système. Il offre un historique consultable, filtrable et exportable de ce qui s'est passé, par qui et quand.
 
 ## Vue d'ensemble
 
@@ -15,12 +15,12 @@ Dans l'API et le code source, cette fonctionnalité est désignée sous le nom d
 
 Chaque entrée du journal enregistre :
 
-- **Horodatage** — date et heure de l'événement (UTC)
-- **Acteur** — l'utilisateur authentifié ayant effectué l'action, ou « Système » pour les tâches planifiées, ou « Anonyme » pour les accès publics ou non authentifiés
-- **Action** — un code d'action typé (ex. `SHARE_CREATE`, `FILE_DOWNLOAD`, `LOGIN_FAILURE`)
-- **Cible** — l'entité sur laquelle l'action a été effectuée (ex. un partage, un fichier ou un utilisateur spécifique), avec son type et son identifiant
-- **Adresse IP** — l'adresse IP d'origine (compatible avec les proxys)
-- **Métadonnées** — contexte spécifique à l'action (ex. nom de fichier, ancien et nouveau rôle, adresse e-mail du destinataire)
+- **Horodatage**: date et heure de l'événement (UTC)
+- **Acteur**: l'utilisateur authentifié ayant effectué l'action, ou « Système » pour les tâches planifiées, ou « Anonyme » pour les accès publics ou non authentifiés
+- **Action**: un code d'action typé (ex. `SHARE_CREATE`, `FILE_DOWNLOAD`, `LOGIN_FAILURE`)
+- **Cible**: l'entité sur laquelle l'action a été effectuée (ex. un partage, un fichier ou un utilisateur spécifique), avec son type et son identifiant
+- **Adresse IP**: l'adresse IP d'origine (compatible avec les proxys)
+- **Métadonnées**: contexte spécifique à l'action (ex. nom de fichier, ancien et nouveau rôle, adresse e-mail du destinataire)
 
 <Callout type="info">
   Les mots de passe, tokens et autres secrets ne sont **jamais stockés** dans les métadonnées du journal. Une liste de blocage appliquée à l'exécution supprime les clés sensibles (`password`, `token`, `secret`, `bindPassword`, `clientSecret`, etc.) avant toute persistance d'événement.

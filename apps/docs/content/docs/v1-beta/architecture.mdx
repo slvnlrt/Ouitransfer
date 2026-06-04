@@ -42,7 +42,7 @@ Startup order is managed automatically via healthcheck-based `depends_on`: `stor
 
 ## Technologies used
 
-Each component in the OUITRANSFER architecture plays a vital role in ensuring reliability, performance, and scalability. The stack is built with simplicity, performance, and flexibility in mind - everything is self-hosted, developer-friendly, and designed to scale without adding unnecessary complexity.
+Each component in the OUITRANSFER architecture plays a vital role in ensuring reliability, performance, and scalability. The stack is built with simplicity, performance, and flexibility in mind. Everything is self-hosted, developer-friendly, and designed to scale without adding unnecessary complexity.
 
 ### SQLite + Prisma ORM
 
@@ -65,7 +65,7 @@ The frontend of OUITRANSFER is built using **Next.js 16**, along with **React 19
 
 ### S3-Compatible Object Storage
 
-OUITRANSFER uses **S3-compatible object storage** for all file operations. By default, a **RustFS** instance is bundled as the `storage` container — no external service required. For users who prefer cloud storage or need additional scalability, any S3-compatible provider (AWS S3, Backblaze B2, Cloudflare R2, etc.) can be used instead by setting `ENABLE_S3=true`.
+OUITRANSFER uses **S3-compatible object storage** for all file operations. By default, a **RustFS** instance is bundled as the `storage` container; no external service required. For users who prefer cloud storage or need additional scalability, any S3-compatible provider (AWS S3, Backblaze B2, Cloudflare R2, etc.) can be used instead by setting `ENABLE_S3=true`.
 
 - S3-compatible API for all file operations
 - **RustFS** built-in: zero additional infrastructure required for self-hosted deployments
@@ -102,11 +102,11 @@ Startup order is managed automatically: `storage` starts first, then `server` (o
 
 The OUITRANSFER architecture follows a clean separation of concerns, making it easy to understand and maintain:
 
-1. **Frontend** — React 19 + TypeScript + Next.js 16 handle the user interface and user interactions
-2. **Backend** — Fastify + Zod + TypeScript process requests with full type safety and validation
-3. **Database** — SQLite + Prisma ORM store and manage data with type-safe operations
-4. **File Storage** — S3-compatible object storage (RustFS built-in or external S3) handles all file operations
-5. **User Management** — Groups, per-user quotas, LDAP/AD synchronization, and role-based access control
+1. **Frontend**: React 19 + TypeScript + Next.js 16 handle the user interface and user interactions
+2. **Backend**: Fastify + Zod + TypeScript process requests with full type safety and validation
+3. **Database**: SQLite + Prisma ORM store and manage data with type-safe operations
+4. **File Storage**: S3-compatible object storage (RustFS built-in or external S3) handles all file operations
+5. **User Management**: Groups, per-user quotas, LDAP/AD synchronization, and role-based access control
 
 ## API
 
@@ -138,10 +138,10 @@ Three mandatory secrets must be configured on the `server` container before depl
 
 | Variable | Requirement |
 |----------|-------------|
-| `JWT_SECRET` | Min 32 chars — signs JWT access tokens |
-| `CSRF_SECRET` | Min 32 chars, distinct from `JWT_SECRET` — HMAC key for CSRF double-submit cookies |
-| `COOKIE_SECRET` | Min 32 chars, distinct from both above — signs session cookies |
-| `ENCRYPTION_SECRET` | Optional (min 32 chars) — AES-256-GCM key for encrypting sensitive data (LDAP bind password). Required if LDAP is enabled |
+| `JWT_SECRET` | Min 32 chars; signs JWT access tokens |
+| `CSRF_SECRET` | Min 32 chars, distinct from `JWT_SECRET`; HMAC key for CSRF double-submit cookies |
+| `COOKIE_SECRET` | Min 32 chars, distinct from both above; signs session cookies |
+| `ENCRYPTION_SECRET` | Optional (min 32 chars); AES-256-GCM key for encrypting sensitive data (LDAP bind password). Required if LDAP is enabled |
 
 Generate each secret with:
 

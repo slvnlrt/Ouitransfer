@@ -5,7 +5,7 @@ icon: ScrollText
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-The Activity Log is an admin-only audit trail that records a defined set of actions performed in Ouitransfer — including authenticated actions, public share access, file uploads and downloads, configuration changes, and system events. It provides a searchable, filterable, and exportable history of what happened, who did it, and when.
+The Activity Log is an admin-only audit trail that records a defined set of actions performed in Ouitransfer: including authenticated actions, public share access, file uploads and downloads, configuration changes, and system events. It provides a searchable, filterable, and exportable history of what happened, who did it, and when.
 
 ## Overview
 
@@ -15,12 +15,12 @@ In the API and code, the feature is referred to as the **audit log** — the UI 
 
 Each log entry records:
 
-- **Timestamp** — when the event occurred (UTC)
-- **Actor** — the authenticated user who performed the action, or "System" for scheduled tasks, or "Anonymous" for public/unauthenticated access
-- **Action** — a typed action code (e.g., `SHARE_CREATE`, `FILE_DOWNLOAD`, `LOGIN_FAILURE`)
-- **Target** — the entity the action was performed on (e.g., a specific share, file, or user), with its type and ID
-- **IP address** — the originating IP address (proxy-aware)
-- **Metadata** — action-specific context (e.g., file name, old and new role, recipient email)
+- **Timestamp**: when the event occurred (UTC)
+- **Actor**: the authenticated user who performed the action, or "System" for scheduled tasks, or "Anonymous" for public/unauthenticated access
+- **Action**: a typed action code (e.g., `SHARE_CREATE`, `FILE_DOWNLOAD`, `LOGIN_FAILURE`)
+- **Target**: the entity the action was performed on (e.g., a specific share, file, or user), with its type and ID
+- **IP address**: the originating IP address (proxy-aware)
+- **Metadata**: action-specific context (e.g., file name, old and new role, recipient email)
 
 <Callout type="info">
   Passwords, tokens, and other secrets are **never stored** in log metadata. A runtime denylist strips sensitive keys (`password`, `token`, `secret`, `bindPassword`, `clientSecret`, and others) before any event is persisted.
