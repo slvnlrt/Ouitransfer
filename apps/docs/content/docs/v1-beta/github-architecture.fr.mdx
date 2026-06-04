@@ -59,10 +59,10 @@ OUITRANSFER est un **monorepo pnpm** géré avec Turborepo. Cette page couvre la
   </Folder>
   <Folder name="packages" defaultOpen>
     <Folder name="shared">
-      <File name="@ouitransfer/shared — MIME utils" />
+      <File name="@ouitransfer/shared: MIME utils" />
     </Folder>
     <Folder name="config">
-      <File name="@ouitransfer/config — tsconfig presets" />
+      <File name="@ouitransfer/config: tsconfig presets" />
     </Folder>
   </Folder>
   <Folder name=".github">
@@ -101,12 +101,12 @@ Modules actuels : `admin`, `app`, `audit`, `auth`, `auth-providers`, `background
 |-------|------|
 | **pnpm 10.6.0** | Gestionnaire de paquets + gestion du workspace |
 | **pnpm catalogs** | Versions de dépendances partagées entre les paquets (définies dans `pnpm-workspace.yaml`) |
-| **Turborepo** | Orchestration du pipeline de build — exécute `lint`, `type-check`, `test`, `build` en parallèle sur tous les paquets |
+| **Turborepo** | Orchestration du pipeline de build : exécute `lint`, `type-check`, `test`, `build` en parallèle sur tous les paquets |
 | **Biome** | Linter + formateur unifié (remplace ESLint + Prettier). `noExplicitAny` imposé. |
-| **Lefthook** | Hooks git — exécute des vérifications avant chaque commit et valide les messages de commit |
+| **Lefthook** | Hooks git : exécute des vérifications avant chaque commit et valide les messages de commit |
 | **commitlint** | Impose les [Conventional Commits](https://www.conventionalcommits.org/) sur tous les messages de commit |
 | **Knip** | Détection du code mort et des exports inutilisés |
-| **`just`** | Gestionnaire de tâches — exécutez `just --list` pour toutes les recettes disponibles |
+| **`just`** | Gestionnaire de tâches : exécutez `just --list` pour toutes les recettes disponibles |
 
 Recettes `just` courantes pour les contributeurs :
 
@@ -124,14 +124,14 @@ just db-migrate-dev  # Apply pending migrations
 
 Lefthook installe deux hooks automatiquement lorsque vous exécutez `just setup-dev` (ou `pnpm exec lefthook install`) :
 
-**`pre-commit`** — s'exécute en parallèle à chaque `git commit` :
+**`pre-commit`** : s'exécute en parallèle à chaque `git commit` :
 
 | Vérification | Ce qu'elle fait |
 |--------------|-----------------|
-| **Biome** | Lint et auto-formatage des **fichiers stagés uniquement** (`--staged`). Les fichiers corrigés sont automatiquement re-stagés — pas besoin de refaire `git add`. |
+| **Biome** | Lint et auto-formatage des **fichiers stagés uniquement** (`--staged`). Les fichiers corrigés sont automatiquement re-stagés, pas besoin de refaire `git add`. |
 | **Knip** | Recherche les exports inutilisés, le code mort et les imports non résolus dans le monorepo. Bloque le commit si des problèmes sont trouvés. |
 
-**`commit-msg`** — valide le format du message de commit via commitlint.
+**`commit-msg`** : valide le format du message de commit via commitlint.
 
 ### Format des messages de commit
 
@@ -149,7 +149,7 @@ Les messages doivent suivre la spécification [Conventional Commits](https://www
 
 `server` `web` `docs` `infra` `deps` `ci` `monorepo`
 
-Le type et le scope sont tous deux validés au moment du commit — le commit est rejeté si l'un ou l'autre est absent ou ne figure pas dans la liste autorisée. Le sujet ne doit pas commencer par une majuscule.
+Le type et le scope sont tous deux validés au moment du commit : le commit est rejeté si l'un ou l'autre est absent ou ne figure pas dans la liste autorisée. Le sujet ne doit pas commencer par une majuscule.
 
 **Exemples :**
 
@@ -165,7 +165,7 @@ ci(ci): add Lighthouse step to release workflow
 
 ## Pipelines CI/CD
 
-### CI (`ci.yml`) — porte de pull request
+### CI (`ci.yml`) : porte de pull request
 
 Se déclenche sur les **push vers `main`** et les **pull requests ciblant `main`**. Les exécutions concurrentes sur la même référence sont annulées automatiquement.
 
@@ -192,14 +192,14 @@ Se déclenche sur les **push vers `main`** et les **pull requests ciblant `main`
 
 **Étapes :**
 
-1. **Installation** — `pnpm install --frozen-lockfile` (aucune dérive du fichier de verrouillage autorisée)
-2. **Audit de sécurité** — `pnpm audit --audit-level=high`. Non bloquant (les vulnérabilités transitives provenant de dépendances amont ne bloquent pas le build, mais remontent en avertissements).
-3. **Lint + Vérification des types + Tests** — `turbo lint type-check test --continue`. Turbo exécute les trois types de tâches en parallèle sur tous les paquets. `--continue` garantit que toutes les tâches s'exécutent même si l'une échoue, afin d'avoir une vision complète en une seule passe.
-4. **Build** — `pnpm build` avec un `JWT_SECRET` minimal pour satisfaire la validation des variables d'environnement.
+1. **Installation** : `pnpm install --frozen-lockfile` (aucune dérive du fichier de verrouillage autorisée)
+2. **Audit de sécurité** : `pnpm audit --audit-level=high`. Non bloquant (les vulnérabilités transitives provenant de dépendances amont ne bloquent pas le build, mais remontent en avertissements).
+3. **Lint + Vérification des types + Tests** : `turbo lint type-check test --continue`. Turbo exécute les trois types de tâches en parallèle sur tous les paquets. `--continue` garantit que toutes les tâches s'exécutent même si l'une échoue, afin d'avoir une vision complète en une seule passe.
+4. **Build** : `pnpm build` avec un `JWT_SECRET` minimal pour satisfaire la validation des variables d'environnement.
 
 Ce pipeline doit passer avant qu'une pull request puisse être fusionnée.
 
-### Validation de release (`e2e.yml`) — porte de tag + publication Docker
+### Validation de release (`e2e.yml`) : porte de tag + publication Docker
 
 Se déclenche sur les **tags `v*`** (releases) et le **déclenchement manuel** (`workflow_dispatch`). Les exécutions de release concurrentes sont annulées.
 
@@ -239,17 +239,17 @@ Se déclenche sur les **tags `v*`** (releases) et le **déclenchement manuel** (
 
 **Étapes :**
 
-1. **Build des images Docker** — `docker compose build` avec les remplacements `docker-compose.ci.yml`. Le nom du tag git devient `NEXT_PUBLIC_APP_VERSION` (ex. `v1.2.3` → `1.2.3`), injecté au moment du build dans le bundle Next.js.
-2. **Démarrage de la stack** — stack complète à 3 conteneurs (storage + server + web) avec les remplacements CI.
-3. **Attente de la santé** — interroge `GET /health` (serveur) et le port web jusqu'à ce que les deux répondent, avec un délai de 120 secondes.
-4. **Lighthouse CI** — audit de performance. Non bloquant.
-5. **Tests E2E** — suite Playwright complète contre la stack Docker en live. Bloquant.
-6. **Upload du rapport Playwright** — stocké comme artifact GitHub Actions (rétention 14 jours).
-7. **Arrêt de la stack** — s'exécute toujours, même en cas d'échec.
-8. **Publication sur GHCR** — uniquement lors des push de tags (ignoré sur `workflow_dispatch`). Pousse les images `server` et `web` sur `ghcr.io/slvnlrt/ouitransfer-{server,web}` avec trois tags : `latest`, `1.2.3` (semver) et `1.2` (mineur).
+1. **Build des images Docker** : `docker compose build` avec les remplacements `docker-compose.ci.yml`. Le nom du tag git devient `NEXT_PUBLIC_APP_VERSION` (ex. `v1.2.3` → `1.2.3`), injecté au moment du build dans le bundle Next.js.
+2. **Démarrage de la stack** : stack complète à 3 conteneurs (storage + server + web) avec les remplacements CI.
+3. **Attente de la santé** : interroge `GET /health` (serveur) et le port web jusqu'à ce que les deux répondent, avec un délai de 120 secondes.
+4. **Lighthouse CI** : audit de performance. Non bloquant.
+5. **Tests E2E** : suite Playwright complète contre la stack Docker en live. Bloquant.
+6. **Upload du rapport Playwright** : stocké comme artifact GitHub Actions (rétention 14 jours).
+7. **Arrêt de la stack** : s'exécute toujours, même en cas d'échec.
+8. **Publication sur GHCR** : uniquement lors des push de tags (ignoré sur `workflow_dispatch`). Pousse les images `server` et `web` sur `ghcr.io/slvnlrt/ouitransfer-{server,web}` avec trois tags : `latest`, `1.2.3` (semver) et `1.2` (mineur).
 
 <Callout type="info">
 **Pourquoi deux workflows distincts ?**
 
-La CI s'exécute sur chaque pull request et doit être rapide — sans build Docker ni E2E. Le workflow de release est plus lourd (build Docker + E2E complet) et ne s'exécute que lors de la création d'une release ou d'un déclenchement manuel. Cela maintient des boucles de retour courtes pour les pull requests.
+La CI s'exécute sur chaque pull request et doit être rapide : sans build Docker ni E2E. Le workflow de release est plus lourd (build Docker + E2E complet) et ne s'exécute que lors de la création d'une release ou d'un déclenchement manuel. Cela maintient des boucles de retour courtes pour les pull requests.
 </Callout>
