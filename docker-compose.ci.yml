@@ -50,3 +50,10 @@ services:
     environment:
       JWT_SECRET: ci-e2e-jwt-secret-minimum-32-characters-long-ok
       CSP_STORAGE_ORIGINS: "http://localhost:9000"
+
+  docs:
+    build:
+      context: .
+      target: docs-runner
+      args:
+        NEXT_PUBLIC_DOCS_BASE_PATH: ${NEXT_PUBLIC_DOCS_BASE_PATH:-/docs}

@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Toast } from "@/components/ui/toast";
+import { withBasePath } from "@/lib/base-path";
 
 export function KeyGenerator() {
   const [key, setKey] = useState("");
@@ -12,7 +13,7 @@ export function KeyGenerator() {
 
   const generateKey = async () => {
     try {
-      const response = await fetch("/api/generate-key");
+      const response = await fetch(withBasePath("/api/generate-key"));
       const data = await response.json();
       setKey(data.key);
     } catch (error) {

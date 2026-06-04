@@ -193,24 +193,6 @@ préférences. Ajouter les clés i18n correspondantes dans les 23 locales.
 
 ---
 
-## TD-50 — Le site Fumadocs n'est pas déployable via Docker
-
-Le stack Docker n'embarque que 3 services — `storage` (RustFS, 9000), `server`
-(Fastify, 3333), `web` (Next.js, 5487). Il n'y a **pas de service `docs`** ni de
-cible `docs-runner` dans le `Dockerfile` ; `apps/docs` n'est copié que pour la
-validation du workspace pnpm (server-builder) et tourne en autonome (dev port 3001),
-absent de `docker-compose.yaml`.
-
-**Fix :** décider comment livrer le site Fumadocs pour l'auto-hébergement — soit
-ajouter une cible `docs-runner` au Dockerfile + un service `docs` au compose (avec
-route Traefik / port dédié), soit documenter un export statique hébergé ailleurs.
-Choisir une option et la câbler.
-
-**Found during:** fix boot-seed B-27 (juin 2026)
-**Severity:** Low — la doc est dispo en ligne ; n'impacte que la doc auto-hébergée.
-
----
-
 ## TD-36 — Strings non traduites dans 21 locales (scope élargi)
 
 **Context:** Audit de mai 2026 (TD-25A). Anciennement TD-16 (4 clés settings) et TD-21

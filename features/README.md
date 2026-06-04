@@ -120,5 +120,5 @@ All resolved: B-1 through B-25, TD-1 through TD-4, TD-6 through TD-19, TD-21, TD
 **Test counts:** 91 server test files (1453 tests) + 33 web test files (321 tests) + 2 shared (14 tests) = **1788 total**.
 
 **Open bugs:** _none_ (B-26 resolved)
-**Open tech debt:** TD-5, TD-10, TD-20, TD-27, TD-28, TD-30, TD-32, TD-33, TD-36, TD-40, TD-42, TD-43 — see `TECHNICAL-DEBT.md` (TD-38, TD-51 resolved)
+**Open tech debt:** TD-5, TD-10, TD-20, TD-27, TD-28, TD-32, TD-33, TD-36, TD-40, TD-42, TD-43 — see `TECHNICAL-DEBT.md` (TD-30, TD-38, TD-50, TD-51 resolved)
 **Next features:** 8.3 Download Tracking (depends on 8.1+8.2 ✓) — unblocked

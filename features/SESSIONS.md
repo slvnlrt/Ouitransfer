@@ -1,5 +1,34 @@
 # Session Log
 
+## 2026-06-04 (TD-50 — Fumadocs site deployable via Docker)
+
+**Made the Fumadocs documentation site self-hostable as a Docker service, mounted under `/docs`.**
+
+- **Decisions (with user):** path-prefix `/docs` on the main domain; routed by the user's
+  Traefik via `PathPrefix(/docs)` **without StripPrefix**; marketing landing kept as-is (the
+  doc therefore lives at `/docs/docs/v1-beta` — accepted). Mechanism: Next.js `basePath` baked
+  at build time. Spec: `features/specs/td-50-docs-docker.md`.
+- **Docs app:** `next.config.mjs` → `output: "standalone"`, `outputFileTracingRoot` (monorepo
+  root), `basePath` from `NEXT_PUBLIC_DOCS_BASE_PATH`. New `src/lib/base-path.ts` (`withBasePath`)
+  to fix client `fetch` calls that don't inherit `basePath`: fumadocs search
+  (`RootProvider search.options.api`) and `KeyGenerator` (`/api/generate-key`).
+- **Infra:** `Dockerfile` gains `docs-deps`/`docs-builder`/`docs-runner` (port 5488, build arg
+  `NEXT_PUBLIC_DOCS_BASE_PATH=/docs`). `docker-compose.yaml` gains a `docs` service (+ Traefik
+  example in comments); `docker-compose.ci.yml` adds the build override. `e2e.yml` builds,
+  health-checks (`:5488/docs`), and publishes `ghcr.io/slvnlrt/ouitransfer-docs` (loop
+  `server web docs`); `Justfile docker-push` mirrors it. `.env.docker.example` documents the service.
+- **Middleware matcher fix (`proxy.ts`):** Next.js prefixes middleware `matcher` patterns with
+  `basePath`, so the catch-all `/((?!…).*)` becomes `/docs/(…)+` and never matches the bare
+  `/docs` root → the default-locale landing 404s while every sub-page works. Fixed by adding
+  `"/"` to the matcher. Upstream `createI18nMiddleware` otherwise unchanged; harmless without basePath.
+- **Validation:** docs type-check + lint clean; production build (with and without `basePath=/docs`,
+  83 pages, `/docs/_next` + `/docs/api/search` baked); merged `docker compose config` valid.
+  Faithful runtime test via `next start` — **all routes 200** in both modes: basePath `/docs`
+  (landing, `/docs/docs/v1-beta`, `/docs/en` 307→200, `fr` pages, search, generate-key, assets)
+  and no-basePath (`/`, `/docs/v1-beta`, `/en`, `fr`, search). A first (wrong) diagnosis of a
+  "default-locale loop" was an artifact of a hand-assembled standalone test, not real.
+- **Tracking:** TD-50 moved to resolved archive; README open-debt list updated.
+
 ## 2026-06-04 (TD-30 — Reverse share invitation feature)
 
 **Implemented the reverse share invitation feature (VERSION LIGHT).**

@@ -11,6 +11,7 @@ import { localizedPath } from "@/app/layout.config";
 import { BannerModalTrigger } from "@/components/BannerModalTrigger";
 import { V1BetaModal } from "@/components/V1BetaModal";
 import { LATEST_VERSION } from "@/config/constants";
+import { withBasePath } from "@/lib/base-path";
 import { getSiteContent } from "@/lib/content-i18n";
 import { i18n, translations } from "@/lib/i18n";
 
@@ -45,7 +46,10 @@ export default async function Layout({
             OUITRANSFER {LATEST_VERSION} {content.banner.text}
           </BannerModalTrigger>
         </Banner>
-        <RootProvider i18n={i18nProvider(translations, lang)}>
+        <RootProvider
+          i18n={i18nProvider(translations, lang)}
+          search={{ options: { api: withBasePath("/api/search") } }}
+        >
           {children}
           <V1BetaModal
             content={content.modal}

@@ -5,6 +5,24 @@
 
 ---
 
+## ~~TD-50 — Le site Fumadocs n'est pas déployable via Docker~~ ✅ RESOLVED
+
+Resolved (juin 2026). Spec: [`specs/td-50-docs-docker.md`](../specs/td-50-docs-docker.md).
+Added `docs-deps`/`docs-builder`/`docs-runner` stages to the `Dockerfile` (standalone Next.js,
+port 5488) and a `docs` service to `docker-compose.yaml` + the CI overlay. The site is mounted
+under a base path (`basePath`, baked at build via the `NEXT_PUBLIC_DOCS_BASE_PATH` arg, default
+`/docs`) so a reverse proxy routes `/docs` with a plain `PathPrefix` — **no StripPrefix** (assets,
+i18n, and the search route all keep the prefix). Client `fetch` calls that don't inherit `basePath`
+(fumadocs search via `RootProvider search.options.api`, and `KeyGenerator`) were routed through a
+new `withBasePath` helper. The i18n middleware `matcher` gained a `"/"` entry so it runs for the
+base-path root (Next prefixes matchers with `basePath`, so the catch-all otherwise skips `/docs`
+and 404s the landing). The release workflow (`e2e.yml`) builds, health-checks, and publishes
+`ghcr.io/slvnlrt/ouitransfer-docs`; `just docker-push` mirrors it. Validated: docs type-check, a
+`basePath=/docs` production build (`/docs/_next` + `/docs/api/search` baked), and merged
+`docker compose config`.
+
+---
+
 ## ~~TD-1 — API endpoint return types are type-unsafe (I-7 from 7.1 review)~~ ✅ RESOLVED
 
 Resolved in B-7/TD session. Commits `fe94cef`, `1e1f508`, `7ea7cfa`, `ae0b451`.

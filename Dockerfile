@@ -162,3 +162,70 @@ HEALTHCHECK --interval=15s --timeout=5s --start-period=20s --retries=3 \
   CMD curl -f http://localhost:5487 || exit 1
 
 CMD ["node", "apps/web/server.js"]
+
+
+# === DOCS DEPENDENCY STAGE ===
+FROM base AS docs-deps
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
+COPY apps/docs/package.json apps/docs/
+COPY packages/shared/package.json packages/shared/
+COPY packages/config/package.json packages/config/
+# --ignore-scripts: skip root 'prepare' hook (lefthook) and the docs 'postinstall'
+# (fumadocs-mdx); the latter is run explicitly in the build stage where sources exist.
+RUN pnpm install --frozen-lockfile --ignore-scripts --filter ouitransfer-docs
+
+
+# === DOCS BUILD STAGE ===
+FROM base AS docs-builder
+# Workspace context (pnpm needs pnpm-workspace.yaml to resolve catalog: specifiers)
+COPY --from=docs-deps /app/pnpm-workspace.yaml /app/package.json /app/pnpm-lock.yaml ./
+COPY --from=docs-deps /app/node_modules ./node_modules
+COPY --from=docs-deps /app/apps/docs/node_modules ./apps/docs/node_modules
+# packages/ provides the @ouitransfer/config tsconfig preset extended by apps/docs.
+COPY --from=shared-builder /app/packages ./packages/
+COPY apps/docs/ ./apps/docs/
+WORKDIR /app/apps/docs
+# Base path baked into the build. Default "/docs" (path-prefix deployment behind a
+# reverse proxy). Pass an empty string to build for a sub-domain (no prefix).
+ARG NEXT_PUBLIC_DOCS_BASE_PATH=/docs
+ENV NEXT_PUBLIC_DOCS_BASE_PATH=$NEXT_PUBLIC_DOCS_BASE_PATH
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+# Generate the fumadocs `.source` module (normally the postinstall hook, skipped above)
+RUN pnpm exec fumadocs-mdx
+RUN pnpm run build
+
+
+# === DOCS PRODUCTION IMAGE ===
+FROM node:24.16.0-alpine AS docs-runner
+
+RUN apk add --no-cache curl
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=5488
+ENV HOSTNAME=0.0.0.0
+# Mirrors the build-time base path so the healthcheck targets the right route.
+ARG NEXT_PUBLIC_DOCS_BASE_PATH=/docs
+ENV NEXT_PUBLIC_DOCS_BASE_PATH=$NEXT_PUBLIC_DOCS_BASE_PATH
+
+RUN addgroup --system --gid 1001 nodejs \
+ && adduser --system --uid 1001 --ingroup nodejs nextjs
+
+WORKDIR /app
+
+# Copy Next.js standalone output (outputFileTracingRoot = monorepo root,
+# so standalone/ mirrors the full monorepo structure with real files)
+COPY --from=docs-builder --chown=nextjs:nodejs /app/apps/docs/.next/standalone ./
+COPY --from=docs-builder --chown=nextjs:nodejs /app/apps/docs/.next/static ./apps/docs/.next/static
+COPY --from=docs-builder --chown=nextjs:nodejs /app/apps/docs/public ./apps/docs/public
+
+USER nextjs
+
+EXPOSE 5488
+
+# basePath means the app does not serve "/", so probe the base path root.
+HEALTHCHECK --interval=15s --timeout=5s --start-period=20s --retries=3 \
+  CMD curl -f "http://localhost:5488${NEXT_PUBLIC_DOCS_BASE_PATH}" || exit 1
+
+CMD ["node", "apps/docs/server.js"]
