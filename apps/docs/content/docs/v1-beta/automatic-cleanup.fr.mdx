@@ -160,7 +160,7 @@ Les contributeurs externes qui téléversent vers un [partage inversé](/docs/v1
 
 - Un téléversement externe vers un partage inversé est autorisé **même lorsque le propriétaire dépasse son quota**, jusqu'à ce que l'utilisation projetée dépasse `min(limite × facteur, plafond absolu)`, où le facteur est le **Facteur de dépassement maximal pour partages inversés** (défaut `3`) et le plafond est **Octets maximaux absolus pour partages inversés** (`0` signifie aucun plafond absolu). Au-delà de ce plafond, le téléversement est bloqué.
 - Tant que le propriétaire se trouve dans cette zone de dépassement, il est alerté pour régulariser son stockage.
-- Les **téléversements directs propres** au propriétaire conservent l'application stricte — ils restent bloqués à 100 % du quota, exactement comme auparavant. La règle souple ne s'applique qu'aux téléversements entrants des partages inversés.
+- Les **téléversements directs propres** au propriétaire conservent l'application stricte: ils restent bloqués à 100 % du quota, exactement comme auparavant. La règle souple ne s'applique qu'aux téléversements entrants des partages inversés.
 - Lorsque **Application souple pour les partages inversés** est désactivée, les téléversements de partages inversés reviennent au même blocage strict que les téléversements directs.
 
 ### Clés de configuration de la politique de quota
