@@ -280,7 +280,7 @@ const fr: SiteContent = {
     footer: {},
   },
   modal: {
-    title: "Bienvenue dans la v1-beta",
+    title: "Bienvenue sur la v1-beta",
     note: "OUITRANSFER est actuellement en bêta. Les fonctionnalités peuvent évoluer et quelques imperfections peuvent subsister. Vos retours nous aident à nous améliorer.",
     intro:
       "Il s'agit de la première version publique d'OUITRANSFER — une plateforme de transfert de fichiers auto-hébergée et open source, conçue pour la rapidité, la confidentialité et la simplicité.",

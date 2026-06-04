@@ -1,105 +1,85 @@
-# Ouitransfer
+<div align="center">
 
-**Ouitransfer** est une solution de transfert de fichiers auto-hébergée, alternative à WeTransfer, SendGB et Files.fm.
+<img src="assets/banner.svg" alt="Ouitransfer" width="100%" />
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/slvnlrt)
+<br/>
+<br/>
 
-> Distribué sous licence Apache-2.0. Voir [LICENSE](LICENSE) pour le texte complet.
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/slvnlrt/ouitransfer/ci.yml?branch=main&label=CI&style=flat-square&logo=github)](https://github.com/slvnlrt/ouitransfer/actions)
+[![GitHub Stars](https://img.shields.io/github/stars/slvnlrt/ouitransfer?style=flat-square&color=f59e0b&logo=github)](https://github.com/slvnlrt/ouitransfer/stargazers)
+[![Ko-fi](https://img.shields.io/badge/support-ko--fi-FF5E5B?style=flat-square&logo=ko-fi&logoColor=white)](https://ko-fi.com/slvnlrt)
 
-## Fonctionnalités
+[**Documentation**](apps/docs/) · [**Quick Start**](#quick-start) · [**Contributing**](CONTRIBUTING.md)
 
-- **Auto-hébergé** — Déployé sur vos propres serveurs, aucune dépendance tierce.
-- **Contrôle total** — Confidentialité et sécurité garanties, données chez vous.
-- **Organisation en dossiers** — Créez des dossiers pour organiser vos fichiers.
-- **Stockage S3-compatible** — RustFS intégré (zéro configuration) ou S3 externe (AWS, Backblaze…).
-- **Authentification sécurisée** — JWT httpOnly, 2FA TOTP, protection CSRF.
-- **Interface multilingue** — 23 langues supportées (dont RTL).
+</div>
 
-## Stack technique
+---
 
-### Backend
-- **Fastify 5** — API haute performance, validation Zod, ESM natif
-- **Prisma + SQLite** — Base de données légère, zéro configuration
-- **RustFS** — Stockage objet S3-compatible intégré (ou S3 externe)
+Ouitransfer is a **self-hosted, open-source** file transfer platform. Upload files, share them via a link with optional passwords and expiration dates, and let others send files back to you — all on your own infrastructure, with no third-party dependencies and zero tracking.
 
-### Frontend
-- **Next.js 15 + React 19** — App Router, rendu serveur
-- **Tailwind CSS 4 + shadcn/ui** — Interface moderne
-- **TanStack Query v5** — Gestion du cache et des requêtes
+## Screenshots
 
-### Infrastructure
-- **Docker Compose** — 3 services séparés : stockage, API, web
-- **pnpm 10 + Turborepo** — Monorepo workspace
+<div align="center">
+  <img src="apps/docs/public/assets/v1/screenshots/dashboard.png" alt="Dashboard" width="49%" />
+  <img src="apps/docs/public/assets/v1/screenshots/shares.png" alt="My Shares" width="49%" />
+  <br/>
+  <img src="apps/docs/public/assets/v1/screenshots/files-list.png" alt="My Files" width="49%" />
+  <img src="apps/docs/public/assets/v1/screenshots/receive-files.png" alt="Receive Files" width="49%" />
+</div>
 
-## Architecture
+## Features
 
-```
-apps/
-├── docs/       # Documentation (Next.js + Fumadocs)
-├── server/     # API Backend (Fastify + TypeScript)
-└── web/        # Frontend (Next.js 15)
-packages/
-├── shared/     # Utilitaires partagés (@ouitransfer/shared)
-└── config/     # Configs TypeScript partagées (@ouitransfer/config)
-infra/          # Scripts de déploiement
-```
+- **Self-hosted** — deploy on any VPS, dedicated server, or cloud platform; no external services required
+- **S3-compatible storage** — includes built-in RustFS (zero config, no dependencies) or connect any S3 provider (AWS, Backblaze, Cloudflare R2...)
+- **Secure sharing** — password protection, expiration dates, view limits, per-share download notifications
+- **Reverse shares** — create upload links so others can send files directly to you
+- **User management** — multi-user, admin roles, storage quotas, and user groups with per-group quota policies
+- **LDAP / Active Directory** — sync users and groups from your directory server
+- **OIDC / SSO** — sign in with your identity provider (Zitadel, Google, Keycloak...)
+- **2FA** — TOTP two-factor authentication (RFC 6238)
+- **Email notifications** — configurable per event type, with cooldown periods and one-click unsubscribe
+- **23 languages** — full internationalization including RTL support
 
-## Démarrage rapide (Docker)
+## Quick Start
 
 ```bash
-# 1. Copier et configurer l'environnement
+# 1. Copy and fill in the required secrets
 cp .env.example .env
-# Renseigner les secrets obligatoires dans .env
 
-# 2. Lancer les 3 services
+# 2. Start all 3 services
 docker compose up -d
 ```
 
-Les services exposés :
-- `http://localhost:3333` — API (Fastify)
-- `http://localhost:5487` — Interface web (Next.js)
-- `http://localhost:9000` — Stockage S3 (RustFS)
+| Service       | Default URL                 |
+|---------------|-----------------------------|
+| Web interface | http://localhost:5487        |
+| API           | http://localhost:3333        |
+| S3 storage    | http://localhost:9000        |
 
-## Développement
+The first account registered becomes the administrator. See the [documentation](apps/docs/) for reverse proxy setup, LDAP, OIDC, SMTP, and production hardening.
 
-### Prérequis
-- Node.js 24+
-- pnpm 10.6+
-- [`just`](https://github.com/casey/just) (task runner)
+## Tech Stack
 
-### Installation
+| Layer          | Technology                                           |
+|----------------|------------------------------------------------------|
+| Backend        | Fastify 5 · Prisma · SQLite                         |
+| Frontend       | Next.js 15 · React 19 · Tailwind CSS 4 · shadcn/ui  |
+| Storage        | RustFS (built-in) or any S3-compatible provider      |
+| Infrastructure | Docker Compose — 3 containers (storage, API, web)    |
+| Monorepo       | pnpm workspaces · Turborepo                          |
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full developer setup, commit conventions, and PR guidelines. The short version:
 
 ```bash
-pnpm install
-just setup         # Configure la base de données et les variables d'env
-just dev           # Lance tous les services en mode développement
+git clone https://github.com/slvnlrt/ouitransfer
+cd ouitransfer
+just setup-dev   # install deps, generate Prisma client, create local SQLite DB
+just dev         # start all apps in watch mode (API · Web · Docs)
 ```
 
-### Commandes utiles
+## License
 
-```bash
-just              # Lister toutes les commandes disponibles
-just dev          # Dev (server + web + docs en parallèle)
-just test         # Tests unitaires (Vitest)
-just lint         # Lint + format (Biome)
-just validate     # Type-check + lint + tests
-just db-studio    # Ouvrir Prisma Studio
-just db-seed      # Alimenter la base avec des données de test
-just docker-start # Lancer la stack Docker
-```
-
-## Outillage
-
-| Outil | Usage |
-|-------|-------|
-| [Biome](https://biomejs.dev) | Lint + formatage (remplace ESLint + Prettier) |
-| [Vitest](https://vitest.dev) | Tests unitaires |
-| [Playwright](https://playwright.dev) | Tests E2E |
-| [Lefthook](https://github.com/evilmartians/lefthook) | Hooks Git (pre-commit, commit-msg) |
-| [commitlint](https://commitlint.js.org) | Validation des messages de commit |
-| [Renovate](https://docs.renovatebot.com) | Mise à jour automatique des dépendances |
-| [Knip](https://knip.dev) | Détection du code mort |
-
-## Licence
-
-Apache-2.0 — voir [LICENSE](LICENSE).
+Apache 2.0 — see [LICENSE](LICENSE).
