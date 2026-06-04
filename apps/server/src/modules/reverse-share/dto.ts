@@ -88,6 +88,14 @@ export const ReverseShareFileSchema = z.object({
   updatedAt: z.string().describe("The file update date"),
 });
 
+export const ReverseShareRecipientSchema = z.object({
+  id: z.string().describe("The recipient ID"),
+  email: z.string().email().describe("The recipient email"),
+  name: z.string().nullable().describe("The recipient display name"),
+  notifiedAt: z.string().nullable().describe("When the invitation was last sent"),
+  createdAt: z.string().describe("When the recipient was added"),
+});
+
 export const ReverseShareResponseSchema = z.object({
   id: z.string().describe("The reverse share ID"),
   name: z.string().nullable().describe("The reverse share name"),
@@ -121,6 +129,10 @@ export const ReverseShareResponseSchema = z.object({
     .nullable()
     .optional()
     .describe("The reverse share alias"),
+  recipients: z
+    .array(ReverseShareRecipientSchema)
+    .optional()
+    .describe("The reverse share recipients"),
 });
 
 export const ReverseSharePublicSchema = z.object({
@@ -172,6 +184,43 @@ export const UpdateReverseShareFileSchema = z.object({
     .nullable()
     .optional()
     .describe("New file description (can be null to remove)"),
+});
+
+export const UpdateReverseShareRecipientsSchema = z.object({
+  recipients: z
+    .array(
+      z.object({
+        email: z
+          .string()
+          .email()
+          .transform((s) => s.trim().toLowerCase()),
+        name: z.string().optional(),
+      }),
+    )
+    .min(1, "At least one recipient is required"),
+});
+
+export const RemoveReverseShareRecipientsSchema = z.object({
+  emails: z
+    .array(
+      z
+        .string()
+        .email()
+        .transform((s) => s.trim().toLowerCase()),
+    )
+    .min(1, "At least one email is required"),
+});
+
+export const NotifyReverseShareRecipientsSchema = z.object({
+  emails: z
+    .array(
+      z
+        .string()
+        .email()
+        .transform((s) => s.trim().toLowerCase()),
+    )
+    .optional()
+    .describe("Optional list of recipient emails to notify (notifies all if omitted)"),
 });
 
 export type CreateReverseShareInput = z.infer<typeof CreateReverseShareSchema>;

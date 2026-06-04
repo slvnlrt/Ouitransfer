@@ -24,6 +24,14 @@ export interface ReverseShareAlias {
   updatedAt: string;
 }
 
+export interface ReverseShareRecipient {
+  id: string;
+  email: string;
+  name: string | null;
+  notifiedAt: string | null;
+  createdAt: string;
+}
+
 export interface BaseReverseShare {
   id: string;
   name: string | null;
@@ -44,6 +52,7 @@ export interface BaseReverseShare {
   updatedAt: string;
   creatorId: string;
   files: ReverseShareFile[];
+  recipients?: ReverseShareRecipient[];
 }
 
 export interface ReverseShareWithAlias extends BaseReverseShare {
@@ -178,6 +187,26 @@ export type UpdateReverseSharePasswordResult = AxiosResponse<UpdateReverseShareP
 export type GetPresignedUrlResult = AxiosResponse<GetPresignedUrl200>;
 export type RegisterFileUploadResult = AxiosResponse<RegisterFileUpload201>;
 export type UpdateReverseShareFileResult = AxiosResponse<UpdateReverseShareFile200>;
+
+export interface AddReverseShareRecipientsBody {
+  recipients: Array<{ email: string; name?: string }>;
+}
+
+export interface RemoveReverseShareRecipientsBody {
+  emails: string[];
+}
+
+export interface NotifyReverseShareRecipientsBody {
+  emails?: string[];
+}
+
+export interface NotifyReverseShareRecipients200 {
+  notifiedRecipients: string[];
+}
+
+export type AddReverseShareRecipientsResult = AxiosResponse<UpdateReverseShare200>;
+export type RemoveReverseShareRecipientsResult = AxiosResponse<UpdateReverseShare200>;
+export type NotifyReverseShareRecipientsResult = AxiosResponse<NotifyReverseShareRecipients200>;
 
 export interface CopyReverseShareFile200 {
   file: {

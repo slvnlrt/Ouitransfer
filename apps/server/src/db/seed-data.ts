@@ -1,13 +1,3 @@
-// Side-effect-free seed data + logic.
-//
-// Imported by:
-//   - prisma/seed.js — the CLI runner (container boot + `pnpm db:seed`)
-//   - seed.integration.test.ts — to assert data integrity and idempotency
-//
-// Kept free of side effects (no DB connection, no dotenv, no process.exit) so it
-// can be imported by Vitest without booting anything; the client + env loading
-// live in prisma/seed.js.
-import crypto from "node:crypto";
 import type { PrismaClient } from "../generated/prisma/client.js";
 
 export const defaultConfigs = [
@@ -80,16 +70,6 @@ export const defaultConfigs = [
     group: "storage",
   },
   // Security Configurations
-  {
-    key: "embedSecret",
-    // Computed at module load (so a fresh value is generated on every boot-time
-    // reseed) but only persisted on first seed — "protected mode" skips the row
-    // when it already exists, so the regenerated value is intentionally discarded
-    // and the originally-seeded secret stays stable across restarts.
-    value: crypto.randomBytes(32).toString("hex"),
-    type: "string",
-    group: "security",
-  },
   {
     key: "maxLoginAttempts",
     value: "5",

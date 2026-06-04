@@ -38,6 +38,7 @@ import { FileSizeInput } from "./file-size-input";
 import { FileTypesTagsInput } from "./file-types-tags-input";
 import { GenerateAliasModal } from "./generate-alias-modal";
 import { ReceivedFilesSection } from "./received-files-section";
+import { ReverseShareRecipientSelector } from "./reverse-share-recipient-selector";
 import { ReverseShareStats } from "./reverse-share-stats";
 
 interface ReverseShareDetailsModalProps {
@@ -588,6 +589,14 @@ export function ReverseShareDetailsModal({
                 />
               </div>
             </div>
+
+            {/* Recipients */}
+            <ReverseShareRecipientSelector
+              reverseShareId={reverseShare.id}
+              selectedRecipients={reverseShare.recipients ?? []}
+              reverseShareAlias={reverseShare.alias?.alias}
+              onSuccess={() => onSuccess?.()}
+            />
 
             {/* Datas */}
             <div className="space-y-3">

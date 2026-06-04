@@ -849,7 +849,6 @@
       "FILE_DELETE": "File deleted",
       "FILE_MOVE": "File moved",
       "FILE_UPDATE": "File updated",
-      "FILE_EMBED_ACCESS": "File embed accessed",
       "FOLDER_CREATE": "Folder created",
       "FOLDER_UPDATE": "Folder updated",
       "FOLDER_MOVE": "Folder moved",
@@ -1890,10 +1889,6 @@
         "title": "Max Email Retries",
         "description": "Maximum number of retry attempts for failed emails"
       },
-      "embedSecret": {
-        "title": "Embed Secret",
-        "description": "Secret used to sign embed tokens for secure file embedding"
-      },
       "auditRetentionDays": {
         "title": "Audit Retention",
         "description": "Number of days to keep audit logs (0 = forever, minimum 7)"
@@ -2768,18 +2763,6 @@
       }
     }
   },
-  "embedCode": {
-    "title": "Embed Media",
-    "description": "Use these codes to embed this media in forums, websites, or other platforms",
-    "tabs": {
-      "directLink": "Direct Link",
-      "html": "HTML",
-      "bbcode": "BBCode"
-    },
-    "directLinkDescription": "Direct URL to the media file",
-    "htmlDescription": "Use this code to embed the media in HTML pages",
-    "bbcodeDescription": "Use this code to embed the media in forums that support BBCode"
-  },
   "validation": {
     "firstNameRequired": "First name is required",
     "lastNameRequired": "Last name is required",
@@ -2839,12 +2822,15 @@
       "share_downloaded": "File downloaded from share",
       "share_expiring": "Share expiring soon",
       "share_expired": "Share expired",
+      "share_pending_deletion": "Share pending deletion",
       "share_max_views_reached": "Share max views reached",
       "share_no_activity": "No activity on share",
       "reverse_share_invitation": "Reverse share invitation",
       "reverse_share_uploaded": "Files uploaded to reverse share",
       "reverse_share_expiring": "Reverse share expiring",
       "reverse_share_expired": "Reverse share expired",
+      "reverse_share_pending_deletion": "Reverse share pending deletion",
+      "reverse_share_auto_deleted": "Reverse share auto-deleted",
       "quota_warning": "Quota warning",
       "quota_exceeded": "Quota exceeded",
       "files_auto_deleted": "Files auto-deleted",

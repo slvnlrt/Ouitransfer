@@ -752,7 +752,6 @@
       "FILE_DELETE": "파일 삭제됨",
       "FILE_MOVE": "파일 이동됨",
       "FILE_UPDATE": "파일 업데이트됨",
-      "FILE_EMBED_ACCESS": "파일 임베드 액세스됨",
       "FOLDER_CREATE": "폴더 생성됨",
       "FOLDER_UPDATE": "폴더 업데이트됨",
       "FOLDER_MOVE": "폴더 이동됨",
@@ -1750,10 +1749,6 @@
         "title": "Max Email Retries",
         "description": "Maximum number of retry attempts for failed emails"
       },
-      "embedSecret": {
-        "title": "임베드 시크릿",
-        "description": "안전한 파일 임베딩을 위한 임베드 토큰 서명에 사용되는 시크릿 키"
-      },
       "auditRetentionDays": {
         "title": "Audit Retention",
         "description": "감사 로그를 보관할 일 수 (0 = 영구, 최소 7)"
@@ -2591,18 +2586,6 @@
     "nameRequired": "이름은 필수입니다",
     "required": "이 필드는 필수입니다"
   },
-  "embedCode": {
-    "title": "미디어 삽입",
-    "description": "이 코드를 사용하여 포럼, 웹사이트 또는 기타 플랫폼에 이 미디어를 삽입하세요",
-    "tabs": {
-      "directLink": "직접 링크",
-      "html": "HTML",
-      "bbcode": "BBCode"
-    },
-    "directLinkDescription": "미디어 파일에 대한 직접 URL",
-    "htmlDescription": "이 코드를 사용하여 HTML 페이지에 미디어를 삽입하세요",
-    "bbcodeDescription": "BBCode를 지원하는 포럼에 미디어를 삽입하려면 이 코드를 사용하세요"
-  },
   "contextMenu": {
     "newFolder": "새 폴더",
     "uploadFile": "파일 업로드"
@@ -2847,7 +2830,10 @@
       "share_auto_deleted": "Share auto-deleted",
       "admin_user_registered": "New user registered (admin)",
       "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email"
+      "test_email": "Test email",
+      "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
+      "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
+      "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
     },
     "categories": {
       "account": "Account",

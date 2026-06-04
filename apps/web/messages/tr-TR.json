@@ -752,7 +752,6 @@
       "FILE_DELETE": "Dosya silindi",
       "FILE_MOVE": "Dosya taşındı",
       "FILE_UPDATE": "Dosya güncellendi",
-      "FILE_EMBED_ACCESS": "Dosya gömüsüne erişildi",
       "FOLDER_CREATE": "Klasör oluşturuldu",
       "FOLDER_UPDATE": "Klasör güncellendi",
       "FOLDER_MOVE": "Klasör taşındı",
@@ -1750,10 +1749,6 @@
         "title": "Max Email Retries",
         "description": "Maximum number of retry attempts for failed emails"
       },
-      "embedSecret": {
-        "title": "Gömme Anahtarı",
-        "description": "Güvenli dosya gömme için gömme tokenlarını imzalamak üzere kullanılan gizli anahtar"
-      },
       "auditRetentionDays": {
         "title": "Denetim Saklama",
         "description": "Denetim günlüklerini tutma gün sayısı (0 = sonsuza kadar, minimum 7)"
@@ -2591,18 +2586,6 @@
     "nameRequired": "İsim gereklidir",
     "required": "Bu alan zorunludur"
   },
-  "embedCode": {
-    "title": "Medyayı Yerleştir",
-    "description": "Bu medyayı forumlara, web sitelerine veya diğer platformlara yerleştirmek için bu kodları kullanın",
-    "tabs": {
-      "directLink": "Doğrudan Bağlantı",
-      "html": "HTML",
-      "bbcode": "BBCode"
-    },
-    "directLinkDescription": "Medya dosyasının doğrudan URL'si",
-    "htmlDescription": "Medyayı HTML sayfalarına yerleştirmek için bu kodu kullanın",
-    "bbcodeDescription": "BBCode destekleyen forumlara medyayı yerleştirmek için bu kodu kullanın"
-  },
   "contextMenu": {
     "newFolder": "Yeni klasör",
     "uploadFile": "Dosya yükle"
@@ -2847,7 +2830,10 @@
       "share_auto_deleted": "Share auto-deleted",
       "admin_user_registered": "New user registered (admin)",
       "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email"
+      "test_email": "Test email",
+      "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
+      "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
+      "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
     },
     "categories": {
       "account": "Account",

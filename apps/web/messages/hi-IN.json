@@ -752,7 +752,6 @@
       "FILE_DELETE": "फाइल हटाई गई",
       "FILE_MOVE": "फाइल स्थानांतरित की गई",
       "FILE_UPDATE": "फाइल अपडेट की गई",
-      "FILE_EMBED_ACCESS": "फाइल एम्बेड एक्सेस किया गया",
       "FOLDER_CREATE": "फ़ोल्डर बनाया गया",
       "FOLDER_UPDATE": "फ़ोल्डर अपडेट किया गया",
       "FOLDER_MOVE": "फ़ोल्डर स्थानांतरित किया गया",
@@ -1750,10 +1749,6 @@
         "title": "Max Email Retries",
         "description": "Maximum number of retry attempts for failed emails"
       },
-      "embedSecret": {
-        "title": "एम्बेड सीक्रेट",
-        "description": "सुरक्षित फ़ाइल एम्बेडिंग के लिए एम्बेड टोकन पर हस्ताक्षर करने के लिए उपयोग की जाने वाली गुप्त कुंजी"
-      },
       "auditRetentionDays": {
         "title": "ऑडिट प्रतिधारण",
         "description": "ऑडिट लॉग रखने के दिनों की संख्या (0 = हमेशा, न्यूनतम 7)"
@@ -2591,18 +2586,6 @@
     "nameRequired": "नाम आवश्यक है",
     "required": "यह फ़ील्ड आवश्यक है"
   },
-  "embedCode": {
-    "title": "मीडिया एम्बेड करें",
-    "description": "इस मीडिया को मंचों, वेबसाइटों या अन्य प्लेटफार्मों में एम्बेड करने के लिए इन कोड का उपयोग करें",
-    "tabs": {
-      "directLink": "सीधा लिंक",
-      "html": "HTML",
-      "bbcode": "BBCode"
-    },
-    "directLinkDescription": "मीडिया फ़ाइल का सीधा URL",
-    "htmlDescription": "HTML पेजों में मीडिया एम्बेड करने के लिए इस कोड का उपयोग करें",
-    "bbcodeDescription": "BBCode का समर्थन करने वाले मंचों में मीडिया एम्बेड करने के लिए इस कोड का उपयोग करें"
-  },
   "contextMenu": {
     "newFolder": "नया फ़ोल्डर",
     "uploadFile": "फ़ाइल अपलोड करें"
@@ -2847,7 +2830,10 @@
       "share_auto_deleted": "Share auto-deleted",
       "admin_user_registered": "New user registered (admin)",
       "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email"
+      "test_email": "Test email",
+      "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
+      "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
+      "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
     },
     "categories": {
       "account": "Account",

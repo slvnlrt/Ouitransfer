@@ -359,6 +359,7 @@ model ReverseShare {
 
   files ReverseShareFile[]
   alias ReverseShareAlias?
+  recipients ReverseShareRecipient[]
 
   @@map("reverse_shares")
 }
@@ -390,6 +391,21 @@ model ReverseShareAlias {
   updatedAt      DateTime     @updatedAt
 
   @@map("reverse_share_aliases")
+}
+
+model ReverseShareRecipient {
+  id             String    @id @default(cuid())
+  email          String
+  name           String?
+  notifiedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  reverseShareId String
+  reverseShare   ReverseShare @relation(fields: [reverseShareId], references: [id], onDelete: Cascade)
+
+  @@unique([reverseShareId, email])
+  @@map("reverse_share_recipients")
 }
 
 model BackgroundImage {

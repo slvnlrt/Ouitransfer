@@ -44,6 +44,18 @@ export async function buildShareManageUrl(shareId: string, appUrl?: string): Pro
 }
 
 /**
+ * Build a public reverse-share upload link for a recipient.
+ * Format: `{appUrl}/r/{alias}`.
+ *
+ * Unlike share links, reverse-share upload links are not personalized
+ * (no tracking token) — all recipients receive the same URL.
+ */
+export async function buildReverseShareUploadLink(alias: string): Promise<string> {
+  const base = await getAppUrl();
+  return `${base}/r/${alias}`;
+}
+
+/**
  * Build the reverse-share management URL (owner dashboard).
  * Format: `{appUrl}/reverse-shares` — lands the owner on their reverse-share
  * management list. Unlike {@link buildShareManageUrl}, no `?open=` deep-link is

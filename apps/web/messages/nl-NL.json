@@ -752,7 +752,6 @@
       "FILE_DELETE": "Bestand verwijderd",
       "FILE_MOVE": "Bestand verplaatst",
       "FILE_UPDATE": "Bestand bijgewerkt",
-      "FILE_EMBED_ACCESS": "Bestandinsluiting geopend",
       "FOLDER_CREATE": "Map aangemaakt",
       "FOLDER_UPDATE": "Map bijgewerkt",
       "FOLDER_MOVE": "Map verplaatst",
@@ -1750,10 +1749,6 @@
         "title": "Max Email Retries",
         "description": "Maximum number of retry attempts for failed emails"
       },
-      "embedSecret": {
-        "title": "Insluitsleutel",
-        "description": "Geheime sleutel voor het ondertekenen van insluittokens voor veilige bestandsinsluiting"
-      },
       "auditRetentionDays": {
         "title": "Audit-behoud",
         "description": "Aantal dagen voor het behouden van auditlogboeken (0 = voor altijd, minimaal 7)"
@@ -2591,18 +2586,6 @@
     "nameRequired": "Naam is verplicht",
     "required": "Dit veld is verplicht"
   },
-  "embedCode": {
-    "title": "Media insluiten",
-    "description": "Gebruik deze codes om deze media in te sluiten in forums, websites of andere platforms",
-    "tabs": {
-      "directLink": "Directe link",
-      "html": "HTML",
-      "bbcode": "BBCode"
-    },
-    "directLinkDescription": "Directe URL naar het mediabestand",
-    "htmlDescription": "Gebruik deze code om de media in te sluiten in HTML-pagina's",
-    "bbcodeDescription": "Gebruik deze code om de media in te sluiten in forums die BBCode ondersteunen"
-  },
   "contextMenu": {
     "newFolder": "Nieuwe map",
     "uploadFile": "Bestand uploaden"
@@ -2847,7 +2830,10 @@
       "share_auto_deleted": "Share auto-deleted",
       "admin_user_registered": "New user registered (admin)",
       "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email"
+      "test_email": "Test email",
+      "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
+      "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
+      "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
     },
     "categories": {
       "account": "Account",

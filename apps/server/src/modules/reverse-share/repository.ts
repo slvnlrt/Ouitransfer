@@ -41,6 +41,7 @@ export class ReverseShareRepository {
         },
         files: true,
         alias: true,
+        recipients: true,
       },
     });
   }
@@ -60,6 +61,7 @@ export class ReverseShareRepository {
         },
         files: true,
         alias: true,
+        recipients: true,
       },
     });
   }
@@ -81,6 +83,7 @@ export class ReverseShareRepository {
             },
             files: true,
             alias: true,
+            recipients: true,
           },
         },
       },
@@ -103,6 +106,7 @@ export class ReverseShareRepository {
         },
         files: true,
         alias: true,
+        recipients: true,
       },
       orderBy: { createdAt: "desc" },
     });
@@ -143,6 +147,7 @@ export class ReverseShareRepository {
         },
         files: true,
         alias: true,
+        recipients: true,
       },
     });
   }
@@ -181,6 +186,40 @@ export class ReverseShareRepository {
         },
         files: true,
         alias: true,
+        recipients: true,
+      },
+    });
+  }
+
+  async addRecipients(
+    reverseShareId: string,
+    recipients: Array<{ email: string; name?: string | null }>,
+  ): Promise<void> {
+    await prisma.reverseShare.update({
+      where: { id: reverseShareId },
+      data: {
+        recipients: {
+          create: recipients.map((r) => ({
+            email: r.email.trim().toLowerCase(),
+            name: r.name || null,
+          })),
+        },
+      },
+    });
+  }
+
+  async removeRecipients(reverseShareId: string, emails: string[]): Promise<void> {
+    const normalizedEmails = emails.map((e) => e.trim().toLowerCase());
+    await prisma.reverseShare.update({
+      where: { id: reverseShareId },
+      data: {
+        recipients: {
+          deleteMany: {
+            email: {
+              in: normalizedEmails,
+            },
+          },
+        },
       },
     });
   }

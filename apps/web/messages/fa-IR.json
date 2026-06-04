@@ -756,7 +756,6 @@
       "FILE_DELETE": "فایل حذف شد",
       "FILE_MOVE": "فایل منتقل شد",
       "FILE_UPDATE": "فایل به‌روز شد",
-      "FILE_EMBED_ACCESS": "فایل جاسازی‌شده دسترسی پیدا کرد",
       "FOLDER_CREATE": "پوشه ایجاد شد",
       "FOLDER_UPDATE": "پوشه به‌روز شد",
       "FOLDER_MOVE": "پوشه منتقل شد",
@@ -1754,10 +1753,6 @@
         "title": "Max Email Retries",
         "description": "Maximum number of retry attempts for failed emails"
       },
-      "embedSecret": {
-        "title": "کلید جاسازی",
-        "description": "کلید محرمانه‌ای که برای امضای توکن‌های جاسازی برای نمایش امن فایل‌ها استفاده می‌شود"
-      },
       "auditRetentionDays": {
         "title": "نگهداری حسابرسی",
         "description": "تعداد روزهای نگهداری گزارش‌های حسابرسی (۰ = برای همیشه، حداقل ۷)"
@@ -2580,18 +2575,6 @@
       }
     }
   },
-  "embedCode": {
-    "title": "جاسازی رسانه",
-    "description": "از این کدها برای جاسازی این رسانه در انجمن‌ها، وب‌سایت‌ها یا پلتفرم‌های دیگر استفاده کنید",
-    "tabs": {
-      "directLink": "لینک مستقیم",
-      "html": "HTML",
-      "bbcode": "BBCode"
-    },
-    "directLinkDescription": "URL مستقیم به فایل رسانه",
-    "htmlDescription": "از این کد برای جاسازی رسانه در صفحات HTML استفاده کنید",
-    "bbcodeDescription": "از این کد برای جاسازی رسانه در انجمن‌هایی که از BBCode پشتیبانی می‌کنند استفاده کنید"
-  },
   "validation": {
     "firstNameRequired": "نام الزامی است",
     "lastNameRequired": "نام خانوادگی الزامی است",
@@ -2847,7 +2830,10 @@
       "share_auto_deleted": "Share auto-deleted",
       "admin_user_registered": "New user registered (admin)",
       "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email"
+      "test_email": "Test email",
+      "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
+      "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
+      "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
     },
     "categories": {
       "account": "Account",

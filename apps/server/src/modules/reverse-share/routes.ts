@@ -11,12 +11,15 @@ import {
   CreateReverseShareSchema,
   FieldRequirementSchema,
   GetPresignedUrlSchema,
+  NotifyReverseShareRecipientsSchema,
+  RemoveReverseShareRecipientsSchema,
   ReverseShareFileSchema,
   ReverseSharePasswordSchema,
   ReverseSharePublicSchema,
   ReverseShareResponseSchema,
   UpdateReverseShareFileSchema,
   UpdateReverseSharePasswordSchema,
+  UpdateReverseShareRecipientsSchema,
   UpdateReverseShareSchema,
   UploadToReverseShareSchema,
 } from "./dto.js";
@@ -1253,6 +1256,162 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
       const { uploadId, objectName, password } = request.body;
       const parts = await multipartService.listPartsByAlias(alias, uploadId, objectName, password);
       return reply.status(200).send({ parts });
+    },
+  });
+
+  // ── Recipient management ────────────────────────────────────────────────────
+
+  app.route({
+    method: "POST",
+    url: "/reverse-shares/:id/recipients",
+    preValidation,
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "addReverseShareRecipients",
+      summary: "Add recipients to a reverse share",
+      description:
+        "Add one or more recipients to a reverse share. Recipients can later be notified " +
+        "via POST /reverse-shares/:id/notify. Only the creator can manage recipients.",
+      params: z.object({
+        id: z.string().describe("Unique identifier of the reverse share"),
+      }),
+      body: UpdateReverseShareRecipientsSchema,
+      response: {
+        200: z.object({
+          reverseShare: ReverseShareResponseSchema,
+        }),
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
+      }
+      const reverseShare = await reverseShareService.addRecipients(
+        request.params.id,
+        userId,
+        request.body.recipients,
+      );
+      const emailList = request.body.recipients.map((r) => r.email);
+      logAuditEvent({
+        action: "REVERSE_SHARE_RECIPIENT_ADD",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "reverse_share",
+        targetId: request.params.id,
+        metadata: { count: emailList.length, emails: emailList },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+      return reply.send({ reverseShare });
+    },
+  });
+
+  app.route({
+    method: "DELETE",
+    url: "/reverse-shares/:id/recipients",
+    preValidation,
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "removeReverseShareRecipients",
+      summary: "Remove recipients from a reverse share",
+      description:
+        "Remove one or more recipients from a reverse share by email. Only the creator can manage recipients.",
+      params: z.object({
+        id: z.string().describe("Unique identifier of the reverse share"),
+      }),
+      body: RemoveReverseShareRecipientsSchema,
+      response: {
+        200: z.object({
+          reverseShare: ReverseShareResponseSchema,
+        }),
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
+      }
+      const reverseShare = await reverseShareService.removeRecipients(
+        request.params.id,
+        userId,
+        request.body.emails,
+      );
+      logAuditEvent({
+        action: "REVERSE_SHARE_RECIPIENT_REMOVE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "reverse_share",
+        targetId: request.params.id,
+        metadata: { count: request.body.emails.length, emails: request.body.emails },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+      return reply.send({ reverseShare });
+    },
+  });
+
+  app.route({
+    method: "POST",
+    url: "/reverse-shares/:id/notify",
+    preValidation,
+    config: {
+      rateLimit: { max: 5, timeWindow: "10 minutes" },
+    },
+    schema: {
+      tags: ["Reverse Share"],
+      operationId: "notifyReverseShareRecipients",
+      summary: "Send email invitation to reverse share recipients",
+      description:
+        "Sends reverse-share-invitation emails to recipients that already exist on the reverse share. " +
+        "Recipients are created via POST /reverse-shares/:id/recipients. " +
+        "Pass `emails` to notify a subset, or omit to notify all recipients.",
+      params: z.object({
+        id: z.string().describe("Unique identifier of the reverse share"),
+      }),
+      body: NotifyReverseShareRecipientsSchema,
+      response: {
+        200: z.object({
+          notifiedRecipients: z.array(z.string()).describe("List of notified email addresses"),
+        }),
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
+      }
+      const result = await reverseShareService.notifyRecipients(
+        request.params.id,
+        userId,
+        request.body.emails,
+      );
+      logAuditEvent({
+        action: "REVERSE_SHARE_RECIPIENT_NOTIFY",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId,
+        targetType: "reverse_share",
+        targetId: request.params.id,
+        metadata: {
+          recipientCount: result.notifiedRecipients.length,
+          emails: result.notifiedRecipients,
+        },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+      return reply.send(result);
     },
   });
 

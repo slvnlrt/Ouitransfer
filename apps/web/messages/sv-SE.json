@@ -756,7 +756,6 @@
       "FILE_DELETE": "Fil borttagen",
       "FILE_MOVE": "Fil flyttad",
       "FILE_UPDATE": "Fil uppdaterad",
-      "FILE_EMBED_ACCESS": "Inbäddad fil använd",
       "FOLDER_CREATE": "Mapp skapad",
       "FOLDER_UPDATE": "Mapp uppdaterad",
       "FOLDER_MOVE": "Mapp flyttad",
@@ -1754,10 +1753,6 @@
         "title": "Max Email Retries",
         "description": "Maximum number of retry attempts for failed emails"
       },
-      "embedSecret": {
-        "title": "Inbäddningsnyckel",
-        "description": "Hemlig nyckel som används för att signera inbäddningstoken för säker filinbäddning"
-      },
       "auditRetentionDays": {
         "title": "Lagringsperiod för granskningslogg",
         "description": "Antal dagar att behålla granskningsloggar (0 = för alltid, minimum 7)"
@@ -2580,18 +2575,6 @@
       }
     }
   },
-  "embedCode": {
-    "title": "Bädda in media",
-    "description": "Använd dessa koder för att bädda in detta media i forum, webbplatser eller andra plattformar",
-    "tabs": {
-      "directLink": "Direktlänk",
-      "html": "HTML",
-      "bbcode": "BBCode"
-    },
-    "directLinkDescription": "Direkt URL till mediafilen",
-    "htmlDescription": "Använd den här koden för att bädda in media i HTML-sidor",
-    "bbcodeDescription": "Använd den här koden för att bädda in media i forum som stöder BBCode"
-  },
   "validation": {
     "firstNameRequired": "Förnamn krävs",
     "lastNameRequired": "Efternamn krävs",
@@ -2847,7 +2830,10 @@
       "share_auto_deleted": "Share auto-deleted",
       "admin_user_registered": "New user registered (admin)",
       "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email"
+      "test_email": "Test email",
+      "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
+      "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
+      "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
     },
     "categories": {
       "account": "Account",

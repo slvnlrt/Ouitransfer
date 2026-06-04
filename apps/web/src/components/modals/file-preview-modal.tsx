@@ -3,8 +3,6 @@
 import { Download } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { EmbedCodeDisplay } from "@/components/files/embed-code-display";
-import { MediaEmbedLink } from "@/components/files/media-embed-link";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,7 +14,6 @@ import {
 } from "@/components/ui/dialog";
 import { useFilePreview } from "@/hooks/use-file-preview";
 import { getFileIcon } from "@/utils/file-icons";
-import { getFileType } from "@/utils/file-types";
 import { FilePreviewRenderer } from "./previews";
 
 interface FilePreviewModalProps {
@@ -31,7 +28,6 @@ interface FilePreviewModalProps {
   };
   isReverseShare?: boolean;
   sharePassword?: string;
-  shareId?: string;
 }
 
 export function FilePreviewModal({
@@ -40,14 +36,9 @@ export function FilePreviewModal({
   file,
   isReverseShare = false,
   sharePassword,
-  shareId,
 }: FilePreviewModalProps) {
   const t = useTranslations();
   const previewState = useFilePreview({ file, isOpen, isReverseShare, sharePassword });
-  const fileType = getFileType(file.name);
-  const isImage = fileType === "image";
-  const isVideo = fileType === "video";
-  const isAudio = fileType === "audio";
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -76,25 +67,6 @@ export function FilePreviewModal({
             description={file.description}
             onDownload={previewState.handleDownload}
           />
-          {!isReverseShare &&
-            isImage &&
-            previewState.previewUrl &&
-            !previewState.isLoading &&
-            file.id && (
-              <div className="mt-4 mb-2">
-                <EmbedCodeDisplay
-                  imageUrl={previewState.previewUrl}
-                  fileName={file.name}
-                  fileId={file.id}
-                  shareId={shareId}
-                />
-              </div>
-            )}
-          {!isReverseShare && (isVideo || isAudio) && !previewState.isLoading && file.id && (
-            <div className="mt-4 mb-2">
-              <MediaEmbedLink fileId={file.id} shareId={shareId} />
-            </div>
-          )}
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>

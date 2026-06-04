@@ -756,7 +756,6 @@
       "FILE_DELETE": "Arquivo deletado",
       "FILE_MOVE": "Arquivo movido",
       "FILE_UPDATE": "Arquivo atualizado",
-      "FILE_EMBED_ACCESS": "Acesso incorporado de arquivo",
       "FOLDER_CREATE": "Pasta criada",
       "FOLDER_UPDATE": "Pasta atualizada",
       "FOLDER_MOVE": "Pasta movida",
@@ -1762,10 +1761,6 @@
         "title": "Max Email Retries",
         "description": "Maximum number of retry attempts for failed emails"
       },
-      "embedSecret": {
-        "title": "Chave de incorporação",
-        "description": "Chave secreta usada para assinar tokens de incorporação para a exibição segura de arquivos"
-      },
       "auditRetentionDays": {
         "title": "Retenção de Auditoria",
         "description": "Número de dias para manter logs de auditoria (0 = infinito, mínimo 7)"
@@ -2638,18 +2633,6 @@
     "usernameLength": "O nome de usuário deve ter pelo menos 3 caracteres",
     "usernameSpaces": "O nome de usuário não pode conter espaços"
   },
-  "embedCode": {
-    "title": "Incorporar mídia",
-    "description": "Use estes códigos para incorporar esta mídia em fóruns, sites ou outras plataformas",
-    "tabs": {
-      "directLink": "Link direto",
-      "html": "HTML",
-      "bbcode": "BBCode"
-    },
-    "directLinkDescription": "URL direto para o arquivo de mídia",
-    "htmlDescription": "Use este código para incorporar a mídia em páginas HTML",
-    "bbcodeDescription": "Use este código para incorporar a mídia em fóruns que suportam BBCode"
-  },
   "filesTree": {
     "noItems": "Nenhum item para exibir"
   },
@@ -2847,7 +2830,10 @@
       "share_auto_deleted": "Share auto-deleted",
       "admin_user_registered": "New user registered (admin)",
       "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email"
+      "test_email": "Test email",
+      "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
+      "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
+      "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
     },
     "categories": {
       "account": "Account",

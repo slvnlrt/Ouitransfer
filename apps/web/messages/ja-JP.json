@@ -752,7 +752,6 @@
       "FILE_DELETE": "ファイル削除",
       "FILE_MOVE": "ファイル移動",
       "FILE_UPDATE": "ファイル更新",
-      "FILE_EMBED_ACCESS": "ファイル埋め込みアクセス",
       "FOLDER_CREATE": "フォルダ作成",
       "FOLDER_UPDATE": "フォルダ更新",
       "FOLDER_MOVE": "フォルダ移動",
@@ -1750,10 +1749,6 @@
         "title": "Max Email Retries",
         "description": "Maximum number of retry attempts for failed emails"
       },
-      "embedSecret": {
-        "title": "埋め込みシークレット",
-        "description": "安全なファイル埋め込みのための埋め込みトークンの署名に使用されるシークレットキー"
-      },
       "auditRetentionDays": {
         "title": "監査ログ保持期間",
         "description": "監査ログを保持する日数（0 = 永遠、最小 7）"
@@ -2591,18 +2586,6 @@
     "nameRequired": "名前は必須です",
     "required": "このフィールドは必須です"
   },
-  "embedCode": {
-    "title": "メディアを埋め込む",
-    "description": "これらのコードを使用して、このメディアをフォーラム、ウェブサイト、またはその他のプラットフォームに埋め込みます",
-    "tabs": {
-      "directLink": "直接リンク",
-      "html": "HTML",
-      "bbcode": "BBCode"
-    },
-    "directLinkDescription": "メディアファイルへの直接URL",
-    "htmlDescription": "このコードを使用してHTMLページにメディアを埋め込みます",
-    "bbcodeDescription": "BBCodeをサポートするフォーラムにメディアを埋め込むには、このコードを使用します"
-  },
   "contextMenu": {
     "newFolder": "新規フォルダ",
     "uploadFile": "ファイルをアップロード"
@@ -2847,7 +2830,10 @@
       "share_auto_deleted": "Share auto-deleted",
       "admin_user_registered": "New user registered (admin)",
       "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email"
+      "test_email": "Test email",
+      "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
+      "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
+      "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
     },
     "categories": {
       "account": "Account",

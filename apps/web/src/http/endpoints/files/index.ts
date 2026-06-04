@@ -11,8 +11,6 @@ import type {
   CreateMultipartUploadBody,
   CreateMultipartUploadResult,
   DeleteFileResult,
-  GenerateEmbedTokenBody,
-  GenerateEmbedTokenResult,
   GetDownloadUrlResult,
   GetMultipartPartUrlParams,
   GetMultipartPartUrlResult,
@@ -203,15 +201,4 @@ export const listMultipartParts = (
     ...options,
     params: { ...params, ...options?.params },
   });
-};
-
-/**
- * Generates a signed embed token for a file in a share
- * @summary Generate Embed Token
- */
-export const generateEmbedToken = (
-  generateEmbedTokenBody: GenerateEmbedTokenBody,
-  options?: AxiosRequestConfig,
-): Promise<GenerateEmbedTokenResult> => {
-  return apiInstance.post(`/api/files/embed-token`, generateEmbedTokenBody, options);
 };
