@@ -1,23 +1,27 @@
 # ==============================================================================
-# Ouitransfer — Docker Compose (3-container architecture)
+# Ouitransfer — Docker Compose
 #
 # Services:
-#   storage  — RustFS (S3-compatible object storage)
-#   server   — Fastify API
-#   web      — Next.js frontend
+#   storage  — RustFS (S3-compatible object storage)   :9000
+#   server   — Fastify API                              :3333
+#   web      — Next.js frontend                         :5487
+#   docs     — Fumadocs documentation site (path /docs) :5488
 #
-# Quick start (local dev):
-#   docker compose up -d        ← works out of the box with localhost defaults
+# ── Deployment mode A: direct ports (this file, out of the box) ──
+# Each service is published on a host port. Good for local use or a simple
+# self-host without a reverse proxy.
+#   docker compose up -d              ← works with localhost defaults
+#   # production: copy .env.docker.example to .env, set real secrets/origins, then
+#   docker compose up -d
+#   # open http://YOUR_SERVER_IP:5487   (docs at http://YOUR_SERVER_IP:5488/docs)
 #
-# Production:
-#   1. Copy .env.docker.example to .env
-#   2. Edit .env — set real secrets, IPs, and origins
-#   3. Run: docker compose up -d
-#   4. Open http://YOUR_SERVER_IP:5487
+# ── Deployment mode B: behind a reverse proxy (Traefik) ──
+# Recommended for internet-facing / HTTPS deployments: one hostname, TLS
+# termination, no host ports. See the fully commented example at the bottom of
+# this file ("PRODUCTION EXAMPLE — reverse proxy").
 #
-# All user-configurable values use ${VAR:-default} syntax.
-# Defaults are localhost values suitable for local development.
-# For production, create a .env file to override them.
+# All user-configurable values use ${VAR:-default} syntax. Defaults are localhost
+# values suitable for local development; override them via a .env file.
 #
 # Startup order: storage → server → web (via healthcheck dependencies)
 # ==============================================================================
@@ -127,14 +131,9 @@ services:
   # ─── Fumadocs Documentation Site ───────────────────────────────────────────
   # Self-contained Next.js site, mounted under /docs (basePath baked into the
   # image at build time, default "/docs"). Reachable directly at
-  # http://YOUR_SERVER_IP:5488/docs without a reverse proxy.
-  #
-  # Behind a reverse proxy (production), route /docs to this service WITHOUT
-  # stripping the prefix — basePath already keeps it. Example Traefik labels:
-  #   - "traefik.enable=true"
-  #   - "traefik.http.routers.ouitransfer-docs.rule=Host(`files.example.com`) && PathPrefix(`/docs`)"
-  #   - "traefik.http.routers.ouitransfer-docs.priority=20"   # > web catch-all
-  #   - "traefik.http.services.ouitransfer-docs-svc.loadbalancer.server.port=5488"
+  # http://YOUR_SERVER_IP:5488/docs. Behind a reverse proxy, route /docs to this
+  # service WITHOUT stripping the prefix (basePath already keeps it) — see the
+  # "PRODUCTION EXAMPLE" section at the bottom of this file.
   docs:
     image: ghcr.io/slvnlrt/ouitransfer-docs:latest
     # Uncomment to build locally instead of pulling:
@@ -155,3 +154,166 @@ services:
 volumes:
   storage_data:
   server_data:
+
+# ==============================================================================
+# PRODUCTION EXAMPLE — reverse proxy (Traefik)
+# ==============================================================================
+# A complete, internet-facing setup behind Traefik on a single hostname
+# (https://files.example.com). Differences from the direct-port config above:
+#
+#   • No published host ports — all traffic enters through Traefik.
+#   • Services join an existing external Traefik network.
+#   • Routing by Traefik labels (no StripPrefix anywhere):
+#       /                  → web   (:5487)   ← catch-all
+#       /docs              → docs  (:5488)   ← higher priority than the catch-all
+#       /ouitransfer-files → storage (:9000) ← S3 bucket path, browsers upload here
+#     The API (/api/*) is NOT routed by Traefik: the web container proxies it to
+#     the server internally, so the server stays private (no labels, no ports).
+#   • Persistent data on host bind-mounts instead of named volumes.
+#   • Memory limits via deploy.resources.
+#   • HTTPS, so SECURE_SITE=true and all origins use https://.
+#
+# Suggested .env for this example:
+#   APP_HOST=files.example.com
+#   FRONTEND_ORIGIN=https://files.example.com
+#   STORAGE_PUBLIC_URL=https://files.example.com/ouitransfer-files
+#   S3_ACCESS_KEY=...           S3_SECRET_KEY=...            # openssl rand -hex 32
+#   JWT_SECRET=...   CSRF_SECRET=...   COOKIE_SECRET=...     # 3 distinct secrets
+#   STORAGE_DATA_PATH=/srv/ouitransfer/storage
+#   SERVER_DATA_PATH=/srv/ouitransfer/server
+#
+# Copy this into your own compose file and adapt. Save it as docker-compose.yml
+# (it is self-contained — it replaces, not overlays, the services above).
+# ------------------------------------------------------------------------------
+# services:
+#   storage:
+#     image: rustfs/rustfs:latest
+#     container_name: ouitransfer-storage
+#     restart: unless-stopped
+#     # Start as root only to fix bind-mount ownership, then drop to the rustfs
+#     # user (UID 10001). Not needed with named volumes.
+#     user: "0:0"
+#     entrypoint:
+#       - /bin/sh
+#       - -c
+#       - "chown -R 10001:10001 /data && exec su -s /bin/sh rustfs -c '/entrypoint.sh rustfs /data'"
+#     environment:
+#       RUSTFS_VOLUMES: /data
+#       RUSTFS_ACCESS_KEY: "${S3_ACCESS_KEY}"
+#       RUSTFS_SECRET_KEY: "${S3_SECRET_KEY}"
+#       RUSTFS_CONSOLE_ENABLE: "false"            # disable the admin console in prod
+#       RUSTFS_CORS_ALLOWED_ORIGINS: "${FRONTEND_ORIGIN}"
+#     volumes:
+#       - "${STORAGE_DATA_PATH}:/data"
+#     deploy:
+#       resources:
+#         limits: { memory: 512M }
+#         reservations: { memory: 256M }
+#     healthcheck:
+#       test: ["CMD-SHELL", "curl -fs http://localhost:9000/health || exit 1"]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 5
+#       start_period: 10s
+#     security_opt:
+#       - "no-new-privileges:true"
+#     networks: [traefik-net]
+#     labels:
+#       - "traefik.enable=true"
+#       - "traefik.http.routers.ouitransfer-storage.rule=Host(`${APP_HOST}`) && PathPrefix(`/ouitransfer-files`)"
+#       - "traefik.http.routers.ouitransfer-storage.entrypoints=websecure"
+#       - "traefik.http.routers.ouitransfer-storage.tls=true"
+#       - "traefik.http.routers.ouitransfer-storage.priority=20"
+#       - "traefik.http.routers.ouitransfer-storage.service=ouitransfer-storage-svc"
+#       - "traefik.http.services.ouitransfer-storage-svc.loadbalancer.server.port=9000"
+#
+#   server:
+#     image: ghcr.io/slvnlrt/ouitransfer-server:latest
+#     container_name: ouitransfer-server
+#     restart: unless-stopped
+#     environment:
+#       S3_ENDPOINT: storage
+#       S3_PORT: "9000"
+#       S3_USE_SSL: "false"
+#       S3_ACCESS_KEY: "${S3_ACCESS_KEY}"
+#       S3_SECRET_KEY: "${S3_SECRET_KEY}"
+#       S3_BUCKET_NAME: ouitransfer-files
+#       S3_REGION: auto
+#       S3_FORCE_PATH_STYLE: "true"
+#       STORAGE_URL: "${STORAGE_PUBLIC_URL}"
+#       JWT_SECRET: "${JWT_SECRET}"
+#       CSRF_SECRET: "${CSRF_SECRET}"
+#       COOKIE_SECRET: "${COOKIE_SECRET}"
+#       CORS_ORIGINS: "${FRONTEND_ORIGIN}"
+#       SECURE_SITE: "true"                       # cookies Secure=true behind HTTPS
+#     volumes:
+#       - "${SERVER_DATA_PATH}:/app/server"
+#     deploy:
+#       resources:
+#         limits: { memory: 1G }
+#         reservations: { memory: 512M }
+#     depends_on:
+#       storage:
+#         condition: service_healthy
+#     healthcheck:
+#       test: ["CMD", "curl", "-f", "http://localhost:3333/health"]
+#       interval: 15s
+#       timeout: 5s
+#       retries: 3
+#       start_period: 30s
+#     networks: [traefik-net]                     # internal only — no Traefik labels
+#
+#   web:
+#     image: ghcr.io/slvnlrt/ouitransfer-web:latest
+#     container_name: ouitransfer-web
+#     restart: unless-stopped
+#     environment:
+#       API_BASE_URL: "http://server:3333"        # internal: web proxies /api here
+#       JWT_SECRET: "${JWT_SECRET}"
+#       CSP_STORAGE_ORIGINS: "${STORAGE_PUBLIC_URL}"
+#     deploy:
+#       resources:
+#         limits: { memory: 1G }
+#         reservations: { memory: 512M }
+#     depends_on:
+#       server:
+#         condition: service_healthy
+#     networks: [traefik-net]
+#     labels:
+#       - "traefik.enable=true"
+#       - "traefik.http.routers.ouitransfer-web.rule=Host(`${APP_HOST}`)"
+#       - "traefik.http.routers.ouitransfer-web.entrypoints=websecure"
+#       - "traefik.http.routers.ouitransfer-web.tls=true"
+#       - "traefik.http.routers.ouitransfer-web.priority=10"     # lowest — catch-all
+#       - "traefik.http.routers.ouitransfer-web.service=ouitransfer-web-svc"
+#       - "traefik.http.services.ouitransfer-web-svc.loadbalancer.server.port=5487"
+#
+#   docs:
+#     image: ghcr.io/slvnlrt/ouitransfer-docs:latest
+#     container_name: ouitransfer-docs
+#     restart: unless-stopped
+#     deploy:
+#       resources:
+#         limits: { memory: 512M }
+#         reservations: { memory: 128M }
+#     healthcheck:
+#       test: ["CMD", "curl", "-f", "http://localhost:5488/docs"]
+#       interval: 15s
+#       timeout: 5s
+#       retries: 3
+#       start_period: 20s
+#     networks: [traefik-net]
+#     labels:
+#       - "traefik.enable=true"
+#       # No StripPrefix: the image bakes basePath=/docs, so /docs/* maps 1:1.
+#       - "traefik.http.routers.ouitransfer-docs.rule=Host(`${APP_HOST}`) && PathPrefix(`/docs`)"
+#       - "traefik.http.routers.ouitransfer-docs.entrypoints=websecure"
+#       - "traefik.http.routers.ouitransfer-docs.tls=true"
+#       - "traefik.http.routers.ouitransfer-docs.priority=20"    # > web catch-all
+#       - "traefik.http.routers.ouitransfer-docs.service=ouitransfer-docs-svc"
+#       - "traefik.http.services.ouitransfer-docs-svc.loadbalancer.server.port=5488"
+#
+# networks:
+#   traefik-net:
+#     external: true       # created beforehand: docker network create traefik-net
+# ==============================================================================
