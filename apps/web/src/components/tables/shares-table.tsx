@@ -81,10 +81,11 @@ export function SharesTable({
     },
   });
 
-  // Additional hover state for non-editable fields (security, expiration, files, recipients)
+  // Additional hover state for non-editable fields (security, expiration, and the
+  // merged files/recipients cell)
   const [hoveredAction, setHoveredAction] = useState<{
     shareId: string;
-    field: "security" | "expiration" | "files" | "recipients";
+    field: "security" | "expiration" | "files";
   } | null>(null);
 
   const [selectedShares, setSelectedShares] = useState<Set<string>>(new Set());
@@ -166,11 +167,8 @@ export function SharesTable({
               <TableHead className="h-10 text-xs font-bold text-muted-foreground bg-muted/50 px-4">
                 {t("sharesTable.columns.description")}
               </TableHead>
-              <TableHead className="h-10 text-xs font-bold text-muted-foreground bg-muted/50 px-4">
-                {t("sharesTable.columns.createdAt")}
-              </TableHead>
-              <TableHead className="h-10 text-xs font-bold text-muted-foreground bg-muted/50 px-4">
-                {t("sharesTable.columns.expiresAt")}
+              <TableHead className="h-10 text-xs font-bold text-muted-foreground bg-muted/50 px-4 whitespace-normal leading-tight">
+                {t("sharesTable.columns.createdAt")} / {t("sharesTable.columns.expiresAt")}
               </TableHead>
               <TableHead className="h-10 text-xs font-bold text-muted-foreground bg-muted/50 px-4">
                 {t("sharesTable.columns.status")}
@@ -178,11 +176,8 @@ export function SharesTable({
               <TableHead className="h-10 text-xs font-bold text-muted-foreground bg-muted/50 px-4">
                 {t("sharesTable.columns.security")}
               </TableHead>
-              <TableHead className="h-10 text-xs font-bold text-muted-foreground bg-muted/50 px-4">
-                {t("sharesTable.columns.files")}
-              </TableHead>
-              <TableHead className="h-10 text-xs font-bold text-muted-foreground bg-muted/50 px-4">
-                {t("sharesTable.columns.recipients")}
+              <TableHead className="h-10 text-xs font-bold text-muted-foreground bg-muted/50 px-4 whitespace-normal leading-tight">
+                {t("sharesTable.columns.files")} / {t("sharesTable.columns.recipients")}
               </TableHead>
               <TableHead className="h-10 w-[70px] text-xs font-bold text-muted-foreground bg-muted/50 px-4 rounded-tr-lg">
                 {t("sharesTable.columns.actions")}
@@ -199,10 +194,10 @@ export function SharesTable({
                 hoveredAction?.shareId === share.id && hoveredAction?.field === "security";
               const isHoveringExpiration =
                 hoveredAction?.shareId === share.id && hoveredAction?.field === "expiration";
-              const isHoveringFiles =
+              // Files and recipients share one merged cell; hovering anywhere in it
+              // reveals both edit affordances.
+              const isHoveringFilesCell =
                 hoveredAction?.shareId === share.id && hoveredAction?.field === "files";
-              const isHoveringRecipients =
-                hoveredAction?.shareId === share.id && hoveredAction?.field === "recipients";
               const isSelected = selectedShares.has(share.id);
               const lifecycle = getShareLifecycleState(share);
               const isDeactivated = lifecycle.kind === "deactivated";
@@ -374,9 +369,6 @@ export function SharesTable({
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="h-12 px-4">
-                    {formatDateTime(share.createdAt, "table", locale)}
-                  </TableCell>
                   <TableCell
                     className="h-12 px-4"
                     onMouseEnter={() =>
@@ -384,26 +376,34 @@ export function SharesTable({
                     }
                     onMouseLeave={() => setHoveredAction(null)}
                   >
-                    <div className="flex items-center gap-1 min-w-0">
-                      <span className="text-sm">
-                        {share.expiration
-                          ? formatDateTime(share.expiration, "table", locale)
-                          : t("sharesTable.never")}
+                    <div className="flex flex-col gap-0.5 min-w-0">
+                      <span
+                        className="text-sm truncate"
+                        title={formatDateTime(share.createdAt, "table", locale)}
+                      >
+                        {formatDateTime(share.createdAt, "table", locale)}
                       </span>
-                      <div className="w-6 flex justify-center flex-shrink-0">
-                        {isHoveringExpiration && onUpdateExpiration && (
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-6 w-6 text-muted-foreground hover:text-foreground hidden sm:block"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onUpdateExpiration(share);
-                            }}
-                          >
-                            <Pencil className="h-3 w-3" />
-                          </Button>
-                        )}
+                      <div className="flex items-center gap-1 min-w-0">
+                        <span className="text-xs text-muted-foreground truncate">
+                          {share.expiration
+                            ? formatDateTime(share.expiration, "table", locale)
+                            : t("sharesTable.never")}
+                        </span>
+                        <div className="w-6 flex justify-center flex-shrink-0">
+                          {isHoveringExpiration && onUpdateExpiration && (
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-6 w-6 text-muted-foreground hover:text-foreground hidden sm:block"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onUpdateExpiration(share);
+                              }}
+                            >
+                              <Pencil className="h-3 w-3" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </TableCell>
@@ -479,53 +479,47 @@ export function SharesTable({
                     onMouseEnter={() => setHoveredAction({ shareId: share.id, field: "files" })}
                     onMouseLeave={() => setHoveredAction(null)}
                   >
-                    <div className="flex items-center gap-1 min-w-0">
-                      <span className="text-sm">
-                        {share.files?.length || 0} {t("sharesTable.filesCount")} •{" "}
-                        {share.folders?.length || 0} {t("sharesTable.folderCount")}
-                      </span>
-                      <div className="w-6 flex justify-center flex-shrink-0">
-                        {isHoveringFiles && onManageFiles && (
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-6 w-6 text-muted-foreground hover:text-foreground hidden sm:block"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onManageFiles(share);
-                            }}
-                          >
-                            <Pencil className="h-3 w-3" />
-                          </Button>
-                        )}
+                    <div className="flex flex-col gap-0.5 min-w-0">
+                      <div className="flex items-center gap-1 min-w-0">
+                        <span className="text-sm truncate">
+                          {share.files?.length || 0} {t("sharesTable.filesCount")} •{" "}
+                          {share.folders?.length || 0} {t("sharesTable.folderCount")}
+                        </span>
+                        <div className="w-6 flex justify-center flex-shrink-0">
+                          {isHoveringFilesCell && onManageFiles && (
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-6 w-6 text-muted-foreground hover:text-foreground hidden sm:block"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onManageFiles(share);
+                              }}
+                            >
+                              <Pencil className="h-3 w-3" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell
-                    className="h-12 px-4"
-                    onMouseEnter={() =>
-                      setHoveredAction({ shareId: share.id, field: "recipients" })
-                    }
-                    onMouseLeave={() => setHoveredAction(null)}
-                  >
-                    <div className="flex items-center gap-1 min-w-0">
-                      <span className="text-sm">
-                        {share.recipients?.length || 0} {t("sharesTable.recipientsCount")}
-                      </span>
-                      <div className="w-6 flex justify-center flex-shrink-0">
-                        {isHoveringRecipients && onManageRecipients && (
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-6 w-6 text-muted-foreground hover:text-foreground hidden sm:block"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onManageRecipients(share);
-                            }}
-                          >
-                            <Pencil className="h-3 w-3" />
-                          </Button>
-                        )}
+                      <div className="flex items-center gap-1 min-w-0">
+                        <span className="text-xs text-muted-foreground truncate">
+                          {share.recipients?.length || 0} {t("sharesTable.recipientsCount")}
+                        </span>
+                        <div className="w-6 flex justify-center flex-shrink-0">
+                          {isHoveringFilesCell && onManageRecipients && (
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-6 w-6 text-muted-foreground hover:text-foreground hidden sm:block"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onManageRecipients(share);
+                              }}
+                            >
+                              <Pencil className="h-3 w-3" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </TableCell>
