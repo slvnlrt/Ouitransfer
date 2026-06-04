@@ -756,7 +756,6 @@
       "FILE_DELETE": "Файл видалено",
       "FILE_MOVE": "Файл переміщено",
       "FILE_UPDATE": "Файл оновлено",
-      "FILE_EMBED_ACCESS": "Вбудовування файлу відкрито",
       "FOLDER_CREATE": "Папку створено",
       "FOLDER_UPDATE": "Папку оновлено",
       "FOLDER_MOVE": "Папку переміщено",
@@ -1754,10 +1753,6 @@
         "title": "Max Email Retries",
         "description": "Maximum number of retry attempts for failed emails"
       },
-      "embedSecret": {
-        "title": "Ключ вбудовування",
-        "description": "Секретний ключ для підпису токенів вбудовування для безпечного відображення файлів"
-      },
       "auditRetentionDays": {
         "title": "Зберігання аудиту",
         "description": "Кількість днів для зберігання журналів аудиту (0 = назавжди, мінімум 7)"
@@ -2579,18 +2574,6 @@
         "copyFailed": "Не вдалося скопіювати посилання"
       }
     }
-  },
-  "embedCode": {
-    "title": "Вбудувати медіа",
-    "description": "Використовуйте ці коди для вбудовування цього медіа на форумах, веб-сайтах або інших платформах",
-    "tabs": {
-      "directLink": "Пряме посилання",
-      "html": "HTML",
-      "bbcode": "BBCode"
-    },
-    "directLinkDescription": "Прямий URL до медіа файлу",
-    "htmlDescription": "Використовуйте цей код для вбудовування медіа в HTML сторінки",
-    "bbcodeDescription": "Використовуйте цей код для вбудовування медіа на форумах, які підтримують BBCode"
   },
   "validation": {
     "firstNameRequired": "Ім'я обов'язкове",

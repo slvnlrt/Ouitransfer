@@ -756,7 +756,6 @@
       "FILE_DELETE": "File dihapus",
       "FILE_MOVE": "File dipindahkan",
       "FILE_UPDATE": "File diperbarui",
-      "FILE_EMBED_ACCESS": "Akses file embed",
       "FOLDER_CREATE": "Folder dibuat",
       "FOLDER_UPDATE": "Folder diperbarui",
       "FOLDER_MOVE": "Folder dipindahkan",
@@ -1754,10 +1753,6 @@
         "title": "Max Email Retries",
         "description": "Maximum number of retry attempts for failed emails"
       },
-      "embedSecret": {
-        "title": "Kunci Embed",
-        "description": "Kunci rahasia yang digunakan untuk menandatangani token embed untuk penyematan file yang aman"
-      },
       "auditRetentionDays": {
         "title": "Retensi Audit",
         "description": "Jumlah hari untuk menyimpan log audit (0 = selamanya, minimal 7)"
@@ -2579,18 +2574,6 @@
         "copyFailed": "Gagal menyalin tautan"
       }
     }
-  },
-  "embedCode": {
-    "title": "Sematkan Media",
-    "description": "Gunakan kode-kode ini untuk menyematkan media ini di forum, situs web, atau platform lainnya",
-    "tabs": {
-      "directLink": "Tautan Langsung",
-      "html": "HTML",
-      "bbcode": "BBCode"
-    },
-    "directLinkDescription": "URL langsung ke file media",
-    "htmlDescription": "Gunakan kode ini untuk menyematkan media di halaman HTML",
-    "bbcodeDescription": "Gunakan kode ini untuk menyematkan media di forum yang mendukung BBCode"
   },
   "validation": {
     "firstNameRequired": "Nama depan wajib diisi",

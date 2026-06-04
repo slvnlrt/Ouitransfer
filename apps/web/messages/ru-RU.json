@@ -752,7 +752,6 @@
       "FILE_DELETE": "Файл удален",
       "FILE_MOVE": "Файл перемещен",
       "FILE_UPDATE": "Файл обновлен",
-      "FILE_EMBED_ACCESS": "Встроенный файл доступен",
       "FOLDER_CREATE": "Папка создана",
       "FOLDER_UPDATE": "Папка обновлена",
       "FOLDER_MOVE": "Папка перемещена",
@@ -1750,10 +1749,6 @@
         "title": "Max Email Retries",
         "description": "Maximum number of retry attempts for failed emails"
       },
-      "embedSecret": {
-        "title": "Ключ встраивания",
-        "description": "Секретный ключ для подписи токенов встраивания при безопасном отображении файлов"
-      },
       "auditRetentionDays": {
         "title": "Сохранение аудита",
         "description": "Количество дней для сохранения журналов аудита (0 = бесконечно, минимум 7)"
@@ -2590,18 +2585,6 @@
     "passwordRequired": "Требуется пароль",
     "nameRequired": "Требуется имя",
     "required": "Это поле обязательно"
-  },
-  "embedCode": {
-    "title": "Встроить медиа",
-    "description": "Используйте эти коды для встраивания этого медиа на форумах, веб-сайтах или других платформах",
-    "tabs": {
-      "directLink": "Прямая ссылка",
-      "html": "HTML",
-      "bbcode": "BBCode"
-    },
-    "directLinkDescription": "Прямой URL-адрес медиафайла",
-    "htmlDescription": "Используйте этот код для встраивания медиа в HTML-страницы",
-    "bbcodeDescription": "Используйте этот код для встраивания медиа на форумах, поддерживающих BBCode"
   },
   "contextMenu": {
     "newFolder": "Новая папка",

@@ -756,7 +756,6 @@
       "FILE_DELETE": "Archivo eliminado",
       "FILE_MOVE": "Archivo movido",
       "FILE_UPDATE": "Archivo actualizado",
-      "FILE_EMBED_ACCESS": "Acceso a incrustación de archivo",
       "FOLDER_CREATE": "Carpeta creada",
       "FOLDER_UPDATE": "Carpeta actualizada",
       "FOLDER_MOVE": "Carpeta movida",
@@ -1754,10 +1753,6 @@
         "title": "Max Email Retries",
         "description": "Maximum number of retry attempts for failed emails"
       },
-      "embedSecret": {
-        "title": "Clave de incrustación",
-        "description": "Clave secreta utilizada para firmar tokens de incrustación para la inserción segura de archivos"
-      },
       "auditRetentionDays": {
         "title": "Retención de Auditoría",
         "description": "Número de días para mantener registros de auditoría (0 = siempre, mínimo 7)"
@@ -2594,18 +2589,6 @@
     "passwordRequired": "Se requiere la contraseña",
     "nameRequired": "El nombre es obligatorio",
     "required": "Este campo es obligatorio"
-  },
-  "embedCode": {
-    "title": "Insertar multimedia",
-    "description": "Utiliza estos códigos para insertar este contenido multimedia en foros, sitios web u otras plataformas",
-    "tabs": {
-      "directLink": "Enlace directo",
-      "html": "HTML",
-      "bbcode": "BBCode"
-    },
-    "directLinkDescription": "URL directa al archivo multimedia",
-    "htmlDescription": "Utiliza este código para insertar el contenido multimedia en páginas HTML",
-    "bbcodeDescription": "Utiliza este código para insertar el contenido multimedia en foros que admiten BBCode"
   },
   "registerWithInvite": {
     "title": "Crea Tu Cuenta",

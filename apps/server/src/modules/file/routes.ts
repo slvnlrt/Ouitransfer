@@ -12,7 +12,6 @@ import { prisma } from "../../shared/prisma.js";
 import {
   AppError,
   ForbiddenError,
-  GoneError,
   NotFoundError,
   UnauthorizedError,
   ValidationError,
@@ -38,7 +37,6 @@ import {
   RegisterFileSchema,
   UpdateFileSchema,
 } from "./dto.js";
-import { createEmbedToken, verifyEmbedToken } from "./embed-token.js";
 import { getAncestorFolderIds } from "./folder-ancestors.js";
 import { FileService } from "./service.js";
 
@@ -1195,166 +1193,6 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
       reply.header("Content-Length", fileRecord.size.toString());
 
       return reply.send(stream);
-    },
-  });
-
-  // ── Embed routes ────────────────────────────────────────────
-
-  // GET /embed/:token — embed file (token-based access)
-  app.route({
-    method: "GET",
-    url: "/embed/:token",
-    schema: {
-      tags: ["File"],
-      operationId: "embedFile",
-      summary: "Embed File (Token-Based Access)",
-      description:
-        "Returns a media file using a signed embed token. Tokens are generated via POST /files/embed-token.",
-      params: z.object({
-        token: z.string().min(1, "Embed token is required").describe("Signed embed token"),
-      }),
-      // No response schema — success returns a binary stream; only errors are JSON.
-    },
-    handler: async (request, reply) => {
-      const { token } = request.params;
-
-      // Verify the signed embed token
-      let fileId: string, shareId: string;
-      try {
-        ({ fileId, shareId } = await verifyEmbedToken(token));
-      } catch {
-        throw new UnauthorizedError("Invalid or expired embed token.");
-      }
-
-      // Verify the share still exists and contains this file
-      const share = await prisma.share.findUnique({
-        where: { id: shareId },
-        include: {
-          files: { where: { id: fileId }, select: { id: true } },
-          security: true,
-        },
-      });
-
-      if (!share || share.files.length === 0) {
-        throw new NotFoundError("File not found or share revoked.");
-      }
-
-      // Check share expiration
-      if (share.expiration && new Date(share.expiration) < new Date()) {
-        throw new GoneError("Share has expired.");
-      }
-
-      // Block embed access if the share requires a password
-      if (share.security?.password) {
-        throw new ForbiddenError("This share requires password access.");
-      }
-
-      // Block embed access if the share has reached its view limit
-      if (share.maxViews !== null && share.maxViews !== undefined) {
-        const result = await prisma.share.updateMany({
-          where: { id: share.id, views: { lt: share.maxViews } },
-          data: { views: { increment: 1 } },
-        });
-        if (result.count === 0) {
-          throw new GoneError("Share view limit reached.");
-        }
-      }
-
-      // Load the file record
-      const fileRecord = await prisma.file.findUnique({ where: { id: fileId } });
-      if (!fileRecord) {
-        throw new NotFoundError("File not found.");
-      }
-
-      // Media type check
-      const extension = fileRecord.extension.toLowerCase();
-      const imageExts = ["jpg", "jpeg", "png", "gif", "webp", "svg", "bmp", "ico", "avif"];
-      const videoExts = ["mp4", "webm", "ogg", "mov", "avi", "mkv", "flv", "wmv"];
-      const audioExts = ["mp3", "wav", "ogg", "m4a", "flac", "aac", "wma"];
-      const isMedia =
-        imageExts.includes(extension) ||
-        videoExts.includes(extension) ||
-        audioExts.includes(extension);
-
-      if (!isMedia) {
-        throw new ForbiddenError("Embed is only allowed for media files.");
-      }
-
-      logAuditEvent({
-        action: "FILE_EMBED_ACCESS",
-        ipAddress: request.ip,
-        userAgent: request.headers["user-agent"],
-        targetType: "file",
-        targetId: fileId,
-        metadata: { shareId },
-      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
-
-      // Stream from S3 storage
-      const stream = await fileService.getObjectStream(fileRecord.objectName);
-      const contentType = getContentType(fileRecord.name);
-
-      reply.header("Content-Type", contentType);
-      reply.header(
-        "Content-Disposition",
-        `inline; filename="${encodeURIComponent(fileRecord.name)}"`,
-      );
-      reply.header("Content-Length", fileRecord.size.toString());
-      reply.header("Cache-Control", "public, max-age=86400");
-
-      return reply.send(stream);
-    },
-  });
-
-  // POST /files/embed-token — generate embed token
-  app.route({
-    method: "POST",
-    url: "/files/embed-token",
-    preValidation,
-    schema: {
-      tags: ["File"],
-      operationId: "generateEmbedToken",
-      summary: "Generate Embed Token",
-      description:
-        "Creates a signed embed token for a file in a share. Only the share owner can generate tokens. Token expires in 24h.",
-      body: z.object({
-        fileId: z.string().min(1, "File ID is required").describe("The file ID"),
-        shareId: z
-          .string()
-          .min(1, "Share ID is required")
-          .describe("The share ID containing the file"),
-      }),
-      response: {
-        200: z.object({
-          token: z.string().describe("Signed embed token"),
-          embedUrl: z.string().describe("Embed URL path"),
-        }),
-        401: ErrorResponseSchema,
-        403: ErrorResponseSchema,
-      },
-    },
-    handler: async (request, reply) => {
-      const userId = request.user?.userId;
-      if (!userId) {
-        throw new UnauthorizedError();
-      }
-
-      const { fileId, shareId } = request.body;
-
-      // Verify the share exists, belongs to user, and contains this file
-      const share = await prisma.share.findFirst({
-        where: {
-          id: shareId,
-          creatorId: userId,
-          files: { some: { id: fileId } },
-        },
-      });
-
-      if (!share) {
-        throw new ForbiddenError("Access denied: share not found or file not in share.");
-      }
-
-      const token = await createEmbedToken(fileId, shareId);
-      return reply.send({ token, embedUrl: `/embed/${token}` });
     },
   });
 

@@ -122,16 +122,6 @@ export interface GetPresignedUrlParams {
   extension: string;
 }
 
-export interface GenerateEmbedTokenBody {
-  fileId: string;
-  shareId: string;
-}
-
-export interface GenerateEmbedToken200 {
-  token: string;
-  embedUrl: string;
-}
-
 export interface DeleteFile409 {
   error: string;
   shareCount: number;
@@ -164,4 +154,3 @@ export type GetMultipartPartUrlResult = AxiosResponse<GetMultipartPartUrl200>;
 export type CompleteMultipartUploadResult = AxiosResponse<CompleteMultipartUpload200>;
 export type AbortMultipartUploadResult = AxiosResponse<AbortMultipartUpload200>;
 export type ListMultipartPartsResult = AxiosResponse<ListMultipartParts200>;
-export type GenerateEmbedTokenResult = AxiosResponse<GenerateEmbedToken200>;

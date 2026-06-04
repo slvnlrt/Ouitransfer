@@ -752,7 +752,6 @@
       "FILE_DELETE": "تم حذف الملف",
       "FILE_MOVE": "تم نقل الملف",
       "FILE_UPDATE": "تم تحديث الملف",
-      "FILE_EMBED_ACCESS": "تم الوصول إلى الملف المدمج",
       "FOLDER_CREATE": "تم إنشاء مجلد",
       "FOLDER_UPDATE": "تم تحديث المجلد",
       "FOLDER_MOVE": "تم نقل المجلد",
@@ -1750,10 +1749,6 @@
         "title": "Max Email Retries",
         "description": "Maximum number of retry attempts for failed emails"
       },
-      "embedSecret": {
-        "title": "مفتاح التضمين",
-        "description": "مفتاح سري يُستخدم لتوقيع رموز التضمين لتضمين الملفات بشكل آمن"
-      },
       "auditRetentionDays": {
         "title": "احتفاظ التدقيق",
         "description": "عدد الأيام للاحتفاظ بسجلات التدقيق (0 = أبداً، الحد الأدنى 7)"
@@ -2590,18 +2585,6 @@
     "passwordRequired": "كلمة المرور مطلوبة",
     "nameRequired": "الاسم مطلوب",
     "required": "هذا الحقل مطلوب"
-  },
-  "embedCode": {
-    "title": "تضمين الوسائط",
-    "description": "استخدم هذه الأكواد لتضمين هذه الوسائط في المنتديات أو المواقع الإلكترونية أو المنصات الأخرى",
-    "tabs": {
-      "directLink": "رابط مباشر",
-      "html": "HTML",
-      "bbcode": "BBCode"
-    },
-    "directLinkDescription": "عنوان URL مباشر لملف الوسائط",
-    "htmlDescription": "استخدم هذا الكود لتضمين الوسائط في صفحات HTML",
-    "bbcodeDescription": "استخدم هذا الكود لتضمين الوسائط في المنتديات التي تدعم BBCode"
   },
   "contextMenu": {
     "newFolder": "مجلد جديد",

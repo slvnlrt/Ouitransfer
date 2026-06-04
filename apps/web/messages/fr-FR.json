@@ -752,7 +752,6 @@
       "FILE_DELETE": "Fichier supprimé",
       "FILE_MOVE": "Fichier déplacé",
       "FILE_UPDATE": "Fichier modifié",
-      "FILE_EMBED_ACCESS": "Fichier intégré consulté",
       "FOLDER_CREATE": "Dossier créé",
       "FOLDER_UPDATE": "Dossier modifié",
       "FOLDER_MOVE": "Dossier déplacé",
@@ -1753,10 +1752,6 @@
         "title": "Nombre Maximum de Tentatives Email",
         "description": "Nombre maximum de tentatives de renvoi pour les emails échoués"
       },
-      "embedSecret": {
-        "title": "Clé d'intégration",
-        "description": "Clé secrète utilisée pour signer les jetons d'intégration pour l'affichage sécurisé des fichiers"
-      },
       "auditRetentionDays": {
         "title": "Rétention des audits",
         "description": "Nombre de jours de conservation des journaux d'audit (0 = indéfiniment, minimum 7)"
@@ -2641,18 +2636,6 @@
     "passwordRequired": "Le mot de passe est requis",
     "nameRequired": "Le nom est requis",
     "required": "Ce champ est requis"
-  },
-  "embedCode": {
-    "title": "Intégrer le média",
-    "description": "Utilisez ces codes pour intégrer ce média dans des forums, sites web ou autres plateformes",
-    "tabs": {
-      "directLink": "Lien direct",
-      "html": "HTML",
-      "bbcode": "BBCode"
-    },
-    "directLinkDescription": "URL directe vers le fichier média",
-    "htmlDescription": "Utilisez ce code pour intégrer le média dans des pages HTML",
-    "bbcodeDescription": "Utilisez ce code pour intégrer le média dans des forums prenant en charge BBCode"
   },
   "contextMenu": {
     "newFolder": "Nouveau dossier",

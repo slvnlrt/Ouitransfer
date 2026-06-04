@@ -1,8 +1,7 @@
 /**
  * Tests for query-keys.ts
  *
- * Verifies the shape and uniqueness of all query key factories,
- * including the new embedToken key added as part of Phase 4 TanStack Query migration.
+ * Verifies the shape and uniqueness of all query key factories.
  */
 
 import { describe, expect, it } from "vitest";
@@ -16,28 +15,6 @@ describe("queryKeys.files", () => {
   it("list key is stable", () => {
     const key = queryKeys.files.list();
     expect(key).toEqual(["files", "list"]);
-  });
-
-  it("embedToken key includes fileId and shareId", () => {
-    const key = queryKeys.files.embedToken("file-1", "share-1");
-    expect(key).toEqual(["files", "embedToken", "file-1", "share-1"]);
-  });
-
-  it("embedToken key starts with files.all prefix for broad invalidation", () => {
-    const key = queryKeys.files.embedToken("file-1", "share-1");
-    expect(key[0]).toBe("files");
-  });
-
-  it("embedToken keys for different files are distinct", () => {
-    const key1 = queryKeys.files.embedToken("file-1", "share-1");
-    const key2 = queryKeys.files.embedToken("file-2", "share-1");
-    expect(key1).not.toEqual(key2);
-  });
-
-  it("embedToken keys for different shares are distinct", () => {
-    const key1 = queryKeys.files.embedToken("file-1", "share-1");
-    const key2 = queryKeys.files.embedToken("file-1", "share-2");
-    expect(key1).not.toEqual(key2);
   });
 });
 

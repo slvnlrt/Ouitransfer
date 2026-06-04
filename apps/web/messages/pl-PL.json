@@ -752,7 +752,6 @@
       "FILE_DELETE": "Plik usunięty",
       "FILE_MOVE": "Plik przeniesiony",
       "FILE_UPDATE": "Plik zaktualizowany",
-      "FILE_EMBED_ACCESS": "Osadzenie pliku otwarte",
       "FOLDER_CREATE": "Folder utworzony",
       "FOLDER_UPDATE": "Folder zaktualizowany",
       "FOLDER_MOVE": "Folder przeniesiony",
@@ -1750,10 +1749,6 @@
         "title": "Max Email Retries",
         "description": "Maximum number of retry attempts for failed emails"
       },
-      "embedSecret": {
-        "title": "Klucz osadzania",
-        "description": "Tajny klucz używany do podpisywania tokenów osadzania w celu bezpiecznego osadzania plików"
-      },
       "auditRetentionDays": {
         "title": "Przechowywanie audytu",
         "description": "Liczba dni przechowywania dzienników audytu (0 = zawsze, minimum 7)"
@@ -2590,18 +2585,6 @@
     "passwordMinLength": "Hasło musi mieć co najmniej 6 znaków",
     "nameRequired": "Nazwa jest wymagana",
     "required": "To pole jest wymagane"
-  },
-  "embedCode": {
-    "title": "Osadź multimedia",
-    "description": "Użyj tych kodów, aby osadzić te multimedia na forach, stronach internetowych lub innych platformach",
-    "tabs": {
-      "directLink": "Link bezpośredni",
-      "html": "HTML",
-      "bbcode": "BBCode"
-    },
-    "directLinkDescription": "Bezpośredni adres URL pliku multimedialnego",
-    "htmlDescription": "Użyj tego kodu, aby osadzić multimedia na stronach HTML",
-    "bbcodeDescription": "Użyj tego kodu, aby osadzić multimedia na forach obsługujących BBCode"
   },
   "contextMenu": {
     "newFolder": "Nowy folder",

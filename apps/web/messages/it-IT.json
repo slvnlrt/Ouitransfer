@@ -752,7 +752,6 @@
       "FILE_DELETE": "File eliminato",
       "FILE_MOVE": "File spostato",
       "FILE_UPDATE": "File aggiornato",
-      "FILE_EMBED_ACCESS": "Accesso incorporamento file",
       "FOLDER_CREATE": "Cartella creata",
       "FOLDER_UPDATE": "Cartella aggiornata",
       "FOLDER_MOVE": "Cartella spostata",
@@ -1750,10 +1749,6 @@
         "title": "Max Email Retries",
         "description": "Maximum number of retry attempts for failed emails"
       },
-      "embedSecret": {
-        "title": "Chiave di incorporamento",
-        "description": "Chiave segreta utilizzata per firmare i token di incorporamento per l'inserimento sicuro dei file"
-      },
       "auditRetentionDays": {
         "title": "Conservazione Audit",
         "description": "Numero di giorni per conservare i log di audit (0 = per sempre, minimo 7)"
@@ -2590,18 +2585,6 @@
     "passwordMinLength": "La password deve contenere almeno 6 caratteri",
     "nameRequired": "Il nome è obbligatorio",
     "required": "Questo campo è obbligatorio"
-  },
-  "embedCode": {
-    "title": "Incorpora contenuto multimediale",
-    "description": "Usa questi codici per incorporare questo contenuto multimediale in forum, siti web o altre piattaforme",
-    "tabs": {
-      "directLink": "Link diretto",
-      "html": "HTML",
-      "bbcode": "BBCode"
-    },
-    "directLinkDescription": "URL diretto al file multimediale",
-    "htmlDescription": "Usa questo codice per incorporare il contenuto multimediale nelle pagine HTML",
-    "bbcodeDescription": "Usa questo codice per incorporare il contenuto multimediale nei forum che supportano BBCode"
   },
   "contextMenu": {
     "newFolder": "Nuova cartella",

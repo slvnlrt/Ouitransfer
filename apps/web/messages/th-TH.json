@@ -756,7 +756,6 @@
       "FILE_DELETE": "ลบไฟล์",
       "FILE_MOVE": "ย้ายไฟล์",
       "FILE_UPDATE": "อัปเดตไฟล์",
-      "FILE_EMBED_ACCESS": "เข้าถึงไฟล์ฝังตัว",
       "FOLDER_CREATE": "สร้างโฟลเดอร์",
       "FOLDER_UPDATE": "อัปเดตโฟลเดอร์",
       "FOLDER_MOVE": "ย้ายโฟลเดอร์",
@@ -1754,10 +1753,6 @@
         "title": "Max Email Retries",
         "description": "Maximum number of retry attempts for failed emails"
       },
-      "embedSecret": {
-        "title": "คีย์ฝังตัว",
-        "description": "คีย์ลับที่ใช้สำหรับลงนามโทเค็นฝังตัวเพื่อการฝังไฟล์อย่างปลอดภัย"
-      },
       "auditRetentionDays": {
         "title": "การเก็บรักษาการตรวจสอบ",
         "description": "จำนวนวันที่จะเก็บบันทึกการตรวจสอบ (0 = ตลอดไป ขั้นต่ำ 7)"
@@ -2579,18 +2574,6 @@
         "copyFailed": "คัดลอกลิงก์ไม่สำเร็จ"
       }
     }
-  },
-  "embedCode": {
-    "title": "ฝังสื่อ",
-    "description": "ใช้รหัสเหล่านี้เพื่อฝังสื่อนี้ในฟอรัม เว็บไซต์ หรือแพลตฟอร์มอื่น ๆ",
-    "tabs": {
-      "directLink": "ลิงก์โดยตรง",
-      "html": "HTML",
-      "bbcode": "BBCode"
-    },
-    "directLinkDescription": "URL โดยตรงไปยังไฟล์สื่อ",
-    "htmlDescription": "ใช้รหัสนี้เพื่อฝังสื่อในหน้า HTML",
-    "bbcodeDescription": "ใช้รหัสนี้เพื่อฝังสื่อในฟอรัมที่รองรับ BBCode"
   },
   "validation": {
     "firstNameRequired": "จำเป็นต้องมีชื่อ",

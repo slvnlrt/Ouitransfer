@@ -849,7 +849,6 @@
       "FILE_DELETE": "File deleted",
       "FILE_MOVE": "File moved",
       "FILE_UPDATE": "File updated",
-      "FILE_EMBED_ACCESS": "File embed accessed",
       "FOLDER_CREATE": "Folder created",
       "FOLDER_UPDATE": "Folder updated",
       "FOLDER_MOVE": "Folder moved",
@@ -1890,10 +1889,6 @@
         "title": "Max Email Retries",
         "description": "Maximum number of retry attempts for failed emails"
       },
-      "embedSecret": {
-        "title": "Embed Secret",
-        "description": "Secret used to sign embed tokens for secure file embedding"
-      },
       "auditRetentionDays": {
         "title": "Audit Retention",
         "description": "Number of days to keep audit logs (0 = forever, minimum 7)"
@@ -2766,18 +2761,6 @@
         "copyFailed": "Failed to copy link"
       }
     }
-  },
-  "embedCode": {
-    "title": "Embed Media",
-    "description": "Use these codes to embed this media in forums, websites, or other platforms",
-    "tabs": {
-      "directLink": "Direct Link",
-      "html": "HTML",
-      "bbcode": "BBCode"
-    },
-    "directLinkDescription": "Direct URL to the media file",
-    "htmlDescription": "Use this code to embed the media in HTML pages",
-    "bbcodeDescription": "Use this code to embed the media in forums that support BBCode"
   },
   "validation": {
     "firstNameRequired": "First name is required",

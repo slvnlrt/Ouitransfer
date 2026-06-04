@@ -756,7 +756,6 @@
       "FILE_DELETE": "Tệp đã bị xóa",
       "FILE_MOVE": "Tệp đã được di chuyển",
       "FILE_UPDATE": "Tệp đã được cập nhật",
-      "FILE_EMBED_ACCESS": "Nhúng tệp đã được truy cập",
       "FOLDER_CREATE": "Thư mục đã được tạo",
       "FOLDER_UPDATE": "Thư mục đã được cập nhật",
       "FOLDER_MOVE": "Thư mục đã được di chuyển",
@@ -1754,10 +1753,6 @@
         "title": "Max Email Retries",
         "description": "Maximum number of retry attempts for failed emails"
       },
-      "embedSecret": {
-        "title": "Khóa nhúng",
-        "description": "Khóa bí mật dùng để ký mã thông báo nhúng cho việc nhúng tệp an toàn"
-      },
       "auditRetentionDays": {
         "title": "Lưu giữ kiểm tra",
         "description": "Số ngày để giữ nhật ký kiểm tra (0 = mãi mãi, tối thiểu 7)"
@@ -2579,18 +2574,6 @@
         "copyFailed": "Sao chép liên kết thất bại"
       }
     }
-  },
-  "embedCode": {
-    "title": "Nhúng phương tiện",
-    "description": "Sử dụng các mã này để nhúng phương tiện này vào diễn đàn, trang web hoặc các nền tảng khác",
-    "tabs": {
-      "directLink": "Liên kết trực tiếp",
-      "html": "HTML",
-      "bbcode": "BBCode"
-    },
-    "directLinkDescription": "URL trực tiếp đến tệp phương tiện",
-    "htmlDescription": "Sử dụng mã này để nhúng phương tiện vào các trang HTML",
-    "bbcodeDescription": "Sử dụng mã này để nhúng phương tiện vào các diễn đàn hỗ trợ BBCode"
   },
   "validation": {
     "firstNameRequired": "Tên là bắt buộc",

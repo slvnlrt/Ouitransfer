@@ -752,7 +752,6 @@
       "FILE_DELETE": "文件已删除",
       "FILE_MOVE": "文件已移动",
       "FILE_UPDATE": "文件已更新",
-      "FILE_EMBED_ACCESS": "文件嵌入已访问",
       "FOLDER_CREATE": "文件夹已创建",
       "FOLDER_UPDATE": "文件夹已更新",
       "FOLDER_MOVE": "文件夹已移动",
@@ -1750,10 +1749,6 @@
         "title": "Max Email Retries",
         "description": "Maximum number of retry attempts for failed emails"
       },
-      "embedSecret": {
-        "title": "嵌入密钥",
-        "description": "用于签署嵌入令牌以实现安全文件嵌入的密钥"
-      },
       "auditRetentionDays": {
         "title": "审计日志保留期",
         "description": "保留审计日志的天数（0 = 永久，最少 7）"
@@ -2590,18 +2585,6 @@
     "passwordRequired": "密码为必填项",
     "nameRequired": "名称为必填项",
     "required": "此字段为必填项"
-  },
-  "embedCode": {
-    "title": "嵌入媒体",
-    "description": "使用这些代码将此媒体嵌入到论坛、网站或其他平台中",
-    "tabs": {
-      "directLink": "直接链接",
-      "html": "HTML",
-      "bbcode": "BBCode"
-    },
-    "directLinkDescription": "媒体文件的直接URL",
-    "htmlDescription": "使用此代码将媒体嵌入HTML页面",
-    "bbcodeDescription": "使用此代码将媒体嵌入支持BBCode的论坛"
   },
   "contextMenu": {
     "newFolder": "新建文件夹",
