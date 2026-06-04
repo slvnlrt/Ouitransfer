@@ -61,7 +61,7 @@ These notifications are only relevant for administrator accounts.
 | **User Quota Alert** | Immediate | A user's storage quota has reached a warning or critical threshold |
 
 <Callout type="info">
-  **Share Access** and **Share Download** notifications default to **Disabled** because they can generate a high volume of emails on popular shares. Enable them selectively if you need to track access on specific shares — or use the per-share notification overrides described below.
+  **Share Access** and **Share Download** notifications default to **Disabled** because they can generate a high volume of emails on popular shares. Enable them selectively if you need to track access on specific shares, or use the per-share notification overrides described below.
 </Callout>
 
 ---
@@ -106,7 +106,7 @@ To prevent excessive emails on busy shares, certain notification types enforce a
 | Share Download Notifications | 15 minutes per share |
 | Reverse Share Upload Notifications | 5 minutes per reverse share |
 
-During the cooldown window, additional events of the same type on the same share are silently skipped — they are not queued or batched for later delivery.
+During the cooldown window, additional events of the same type on the same share are silently skipped; they are not queued or batched for later delivery.
 
 ---
 
@@ -124,9 +124,9 @@ This is equivalent to setting the notification to **Disabled** on your preferenc
 |---|---|---|---|
 | `GET` | `/notifications/preferences` | User | Get all notification preferences (merged with catalog defaults) |
 | `PUT` | `/notifications/preferences` | User | Update notification preferences (batch) |
-| `GET` | `/notifications/unsubscribe?token=...` | — | Validate unsubscribe token and return notification type |
-| `POST` | `/notifications/unsubscribe` | — | Confirm unsubscribe (sets frequency to `disabled`) |
+| `GET` | `/notifications/unsubscribe?token=...` | Public | Validate unsubscribe token and return notification type |
+| `POST` | `/notifications/unsubscribe` | Public | Confirm unsubscribe (sets frequency to `disabled`) |
 
-The `GET /notifications/preferences` endpoint returns all 22 notification types with their current frequency, whether they are configurable, and whether they are critical. The `PUT` endpoint accepts an array of `{ type, frequency }` objects — only configurable, non-critical types can be updated.
+The `GET /notifications/preferences` endpoint returns all 22 notification types with their current frequency, whether they are configurable, and whether they are critical. The `PUT` endpoint accepts an array of `{ type, frequency }` objects; only configurable, non-critical types can be updated.
 
 For the full API reference, see the [API documentation](/docs/v1-beta/api).
