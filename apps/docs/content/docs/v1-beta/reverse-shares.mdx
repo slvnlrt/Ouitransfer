@@ -5,7 +5,7 @@ icon: Upload
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-Reverse shares let you create upload links that anyone — even unauthenticated visitors — can use to send files directly to your account. Think of them as "upload portals": you create the link, share it, and files uploaded through it land in your file manager.
+Reverse shares let you create upload links that anyone (even unauthenticated visitors) can use to send files directly to your account. Think of them as "upload portals": you create the link, share it, and files uploaded through it land in your file manager.
 
 This is the opposite of a regular [share](/docs/v1-beta/shares), where you send your own files to others.
 
@@ -19,10 +19,10 @@ Navigate to **Reverse Shares** in the sidebar and click **Create**. The creation
 
 | Option | Required | Default | Description |
 |---|---|---|---|
-| **Name** | Yes | — | A label for the reverse share, visible to you and to uploaders |
-| **Description** | No | — | Optional description displayed on the upload page |
+| **Name** | Yes | None | A label for the reverse share, visible to you and to uploaders |
+| **Description** | No | None | Optional description displayed on the upload page |
 | **Page layout** | No | Default | Choose between **Default** (standard layout) or **WeTransfer** (branded layout with background image) |
-| **Background image** | No | — | Only shown when the WeTransfer layout is selected. Pick from uploaded background images. |
+| **Background image** | No | None | Only shown when the WeTransfer layout is selected. Pick from uploaded background images. |
 
 ### Expiration
 
@@ -57,9 +57,9 @@ Configure whether uploaders must identify themselves before uploading:
 
 The setting controls the behavior of each field:
 
-- **Hidden** — the field is not shown to the uploader
-- **Optional** — the field is shown but can be left empty
-- **Required** — the field must be filled before uploading
+- **Hidden:** the field is not shown to the uploader
+- **Optional:** the field is shown but can be left empty
+- **Required:** the field must be filled before uploading
 
 When at least one field is visible, uploaders see an identification section on the upload page. The provided name and email are attached to each uploaded file and appear in the reverse share details alongside the files.
 
@@ -136,8 +136,8 @@ Open a reverse share to see all files that have been uploaded to it. For each fi
 
 Reverse shares can expire based on:
 
-- **Expiration date** — the upload link becomes inactive after the configured date
-- **File limits** — once the maximum file count is reached, no more files can be uploaded
+- **Expiration date:** the upload link becomes inactive after the configured date
+- **File limits:** once the maximum file count is reached, no more files can be uploaded
 
 When a reverse share is about to expire (or has expired), the owner receives a notification if enabled in their [notification preferences](/docs/v1-beta/notification-preferences).
 

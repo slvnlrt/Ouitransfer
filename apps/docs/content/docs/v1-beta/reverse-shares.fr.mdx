@@ -5,7 +5,7 @@ icon: Upload
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-Les partages inversés vous permettent de créer des liens de téléversement que n'importe qui — même des visiteurs non authentifiés — peut utiliser pour envoyer des fichiers directement vers votre compte. Considérez-les comme des « portails de téléversement » : vous créez le lien, le partagez, et les fichiers téléversés via ce lien arrivent dans votre gestionnaire de fichiers.
+Les partages inversés vous permettent de créer des liens de téléversement que n'importe qui (même des visiteurs non authentifiés) peut utiliser pour envoyer des fichiers directement vers votre compte. Considérez-les comme des « portails de téléversement » : vous créez le lien, le partagez, et les fichiers téléversés via ce lien arrivent dans votre gestionnaire de fichiers.
 
 C'est l'inverse d'un [partage](/docs/v1-beta/shares) classique, où vous envoyez vos propres fichiers à d'autres personnes.
 
@@ -19,10 +19,10 @@ Accédez aux **Partages inversés** dans la barre latérale et cliquez sur **Cr�
 
 | Option | Obligatoire | Défaut | Description |
 |---|---|---|---|
-| **Nom** | Oui | — | Un libellé pour le partage inversé, visible par vous et par les personnes qui téléversent |
-| **Description** | Non | — | Description optionnelle affichée sur la page de téléversement |
+| **Nom** | Oui | Aucun | Un libellé pour le partage inversé, visible par vous et par les personnes qui téléversent |
+| **Description** | Non | Aucun | Description optionnelle affichée sur la page de téléversement |
 | **Mise en page** | Non | Défaut | Choisissez entre **Défaut** (mise en page standard) ou **WeTransfer** (mise en page personnalisée avec image d'arrière-plan) |
-| **Image d'arrière-plan** | Non | — | Affiché uniquement lorsque la mise en page WeTransfer est sélectionnée. Choisissez parmi les images d'arrière-plan téléversées. |
+| **Image d'arrière-plan** | Non | Aucun | Affiché uniquement lorsque la mise en page WeTransfer est sélectionnée. Choisissez parmi les images d'arrière-plan téléversées. |
 
 ### Expiration
 
@@ -57,9 +57,9 @@ Configurez si les personnes qui téléversent doivent s'identifier avant de pouv
 
 Le paramètre contrôle le comportement de chaque champ :
 
-- **Masqué** — le champ n'est pas affiché
-- **Optionnel** — le champ est affiché mais peut être laissé vide
-- **Obligatoire** — le champ doit être renseigné avant le téléversement
+- **Masqué:** le champ n'est pas affiché
+- **Optionnel:** le champ est affiché mais peut être laissé vide
+- **Obligatoire:** le champ doit être renseigné avant le téléversement
 
 Lorsqu'au moins un champ est visible, les personnes qui téléversent voient une section d'identification sur la page de téléversement. Le nom et l'adresse e-mail fournis sont associés à chaque fichier téléversé et apparaissent dans les détails du partage inversé aux côtés des fichiers.
 
