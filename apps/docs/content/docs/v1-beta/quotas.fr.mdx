@@ -11,7 +11,7 @@ Les quotas de stockage contrôlent la quantité de données que chaque utilisate
 
 Ouitransfer utilise un système de quotas à deux niveaux :
 
-- **Valeurs par défaut globales** — configurées sur la page Paramètres. Elles s'appliquent à tous les utilisateurs ordinaires qui ne bénéficient d'aucune dérogation personnelle ou de groupe.
+- **Valeurs par défaut globales** : configurées sur la page Paramètres. Elles s'appliquent à tous les utilisateurs ordinaires qui ne bénéficient d'aucune dérogation personnelle ou de groupe.
 - **Dérogations par utilisateur** — définies par utilisateur dans la Gestion des utilisateurs. Elles ont la priorité sur les valeurs par défaut globales pour l'utilisateur concerné.
 - **Héritage au niveau du groupe** — un utilisateur peut appartenir à un groupe qui possède ses propres dérogations de quota, situées entre les dérogations par utilisateur et les valeurs par défaut globales. Consultez la page [Groupes](/docs/v1-beta/groups) pour plus de détails.
 
@@ -60,8 +60,8 @@ Ces paramètres s'appliquent à tout utilisateur ordinaire ne disposant ni de d�
 
 Accédez à **Admin → Gestion des utilisateurs**, puis ouvrez le dialogue **Modifier** d'un utilisateur. La section **Quota** en bas du formulaire vous permet de configurer les dérogations de cet utilisateur :
 
-- **Taille maximale de fichier** — choisissez **Hériter** (utiliser le niveau suivant dans la chaîne), **Illimité**, ou **Personnalisé** (saisir une valeur en octets).
-- **Stockage total maximal** — mêmes trois options.
+- **Taille maximale de fichier** : choisissez **Hériter** (utiliser le niveau suivant dans la chaîne), **Illimité**, ou **Personnalisé** (saisir une valeur en octets).
+- **Stockage total maximal** : mêmes trois options.
 
 Le formulaire affiche également un résumé en lecture seule des limites effectives actuelles de l'utilisateur (résolues à travers la chaîne complète), son utilisation actuelle du stockage, et la source de chaque valeur effective (dérogation utilisateur, nom du groupe, valeur par défaut globale ou valeur par défaut administrateur).
 

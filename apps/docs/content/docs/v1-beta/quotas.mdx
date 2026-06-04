@@ -11,7 +11,7 @@ Storage quotas control how much data each user can store and the maximum size of
 
 Ouitransfer uses a two-level quota system:
 
-- **Global defaults** — configured on the Settings page. These apply to all regular users who have no personal or group override.
+- **Global defaults**: configured on the Settings page. These apply to all regular users who have no personal or group override.
 - **Per-user overrides** — set per user in User Management. These take priority over global defaults for that specific user.
 - **Group-level inheritance** — a user can belong to a Group that carries its own quota overrides, which sit between per-user overrides and global defaults. See the [Groups](/docs/v1-beta/groups) page for details.
 
@@ -60,8 +60,8 @@ These settings apply to every regular user who does not have a per-user override
 
 Navigate to **Admin → User Management**, then open a user's **Edit** dialog. The **Quota** section at the bottom of the form lets you configure that user's overrides:
 
-- **Max File Size** — choose **Inherit** (use next level in chain), **Unlimited**, or **Custom** (enter a byte value).
-- **Max Total Storage** — same three options.
+- **Max File Size**: choose **Inherit** (use next level in chain), **Unlimited**, or **Custom** (enter a byte value).
+- **Max Total Storage**: same three options.
 
 The form also displays a read-only summary of the user's current effective limits (resolved through the full chain), their current storage usage, and the source of each effective value (user override, group name, global default, or admin default).
 
