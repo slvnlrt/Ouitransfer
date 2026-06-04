@@ -12,7 +12,14 @@ interface ZoomableImageProps {
   className?: string;
 }
 
+const BASE_PATH = (process.env.NEXT_PUBLIC_DOCS_BASE_PATH ?? "").replace(/\/$/, "");
+function resolveImageSrc(src: string): string {
+  if (src.startsWith("http://") || src.startsWith("https://") || src.startsWith("//")) return src;
+  return `${BASE_PATH}${src}`;
+}
+
 export const ZoomableImage: React.FC<ZoomableImageProps> = ({ src, alt, legend, className }) => {
+  const resolvedSrc = resolveImageSrc(src);
   const [isZoomed, setIsZoomed] = useState(false);
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -104,7 +111,7 @@ export const ZoomableImage: React.FC<ZoomableImageProps> = ({ src, alt, legend, 
       {/* Thumbnail Image */}
       <div className="relative group cursor-pointer" onClick={handleImageClick}>
         <img
-          src={src}
+          src={resolvedSrc}
           alt={alt}
           className={cn(
             "w-full h-auto rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm transition-all duration-300 hover:shadow-md hover:border-gray-300 dark:hover:border-gray-600",
@@ -164,7 +171,7 @@ export const ZoomableImage: React.FC<ZoomableImageProps> = ({ src, alt, legend, 
           <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
             <img
               ref={imageRef}
-              src={src}
+              src={resolvedSrc}
               alt={alt}
               className={cn(
                 "max-w-[90vw] max-h-[90vh] w-auto h-auto object-contain rounded-lg border border-gray-300 dark:border-gray-600 shadow-2xl transition-transform duration-200",

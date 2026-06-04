@@ -89,7 +89,7 @@ const en: SiteContent = {
       title: "Send files,",
       titleAccent: "keep control.",
       description:
-        "OUITRANSFER is a fast, self-hosted file transfer platform. Drop a file, share a secure link — on your own server, with zero tracking and no third parties.",
+        "OUITRANSFER is a fast, self-hosted file transfer platform. Drop a file, share a secure link, on your own server, with zero tracking and no third parties.",
       primaryCta: "Read the docs",
       secondaryCta: "Star on GitHub",
       note: "No account required · No tracking · Your server, your rules",
@@ -114,7 +114,7 @@ const en: SiteContent = {
     },
     features: {
       eyebrow: "Why OUITRANSFER",
-      heading: "Everything teams need to share files — under your control.",
+      heading: "Everything teams need to share files, under your control.",
       subtitle:
         "Single sign-on, directory sync, quotas and audit trails: the controls organizations need, in a platform you fully own and self-host.",
       shares: {
@@ -141,12 +141,12 @@ const en: SiteContent = {
       audit: {
         title: "Compliance-ready audit trail",
         description:
-          "Every access, download and admin action is logged with visitor IP — filterable, exportable, with retention policies.",
+          "Every access, download and admin action is logged with visitor IP, filterable, exportable, with retention policies.",
       },
       reverseShare: {
         title: "Request files from anyone",
         description:
-          "Publish a reverse-share upload form to collect files from external people — no account required on their side.",
+          "Publish a reverse-share upload form to collect files from external people, no account required on their side.",
       },
       notifications: {
         title: "Email notifications",
@@ -156,7 +156,7 @@ const en: SiteContent = {
       selfHosted: {
         title: "Self-hosted, with no limits",
         description:
-          "One Docker Compose command brings up storage, API and web. Bundled storage or any S3-compatible backend, and no artificial file-size caps — the only limit is your own disk.",
+          "One Docker Compose command brings up storage, API and web. Bundled storage or any S3-compatible backend, and no artificial file-size caps; the only limit is your own disk.",
       },
     },
     stack: {
@@ -165,7 +165,7 @@ const en: SiteContent = {
     cta: {
       title: "Deploy your own transfer platform today.",
       description:
-        "Free, open source and self-hosted. Be up and running in under five minutes — no account, no limits, no strings attached.",
+        "Free, open source and self-hosted. Be up and running in under five minutes, no account, no limits, no strings attached.",
       primaryCta: "Get started",
       secondaryCta: "View on GitHub",
     },
@@ -175,7 +175,7 @@ const en: SiteContent = {
     title: "Welcome to v1-beta",
     note: "OUITRANSFER is currently in beta. Features may evolve and some rough edges may remain. Your feedback helps us improve.",
     intro:
-      "This is the first public release of OUITRANSFER — a self-hosted, open-source file transfer platform built for speed, privacy, and simplicity.",
+      "This is the first public release of OUITRANSFER, a self-hosted, open-source file transfer platform built for speed, privacy, and simplicity.",
     feedback: "Found a bug or have a suggestion? Open an issue on",
     gotIt: "Got it",
     getStarted: "Get Started",
@@ -197,7 +197,7 @@ const fr: SiteContent = {
       title: "Partagez vos fichiers,",
       titleAccent: "gardez le contrôle.",
       description:
-        "OUITRANSFER est une plateforme de transfert de fichiers rapide et auto-hébergée. Déposez un fichier, partagez un lien sécurisé — sur votre propre serveur, sans tracking ni tiers.",
+        "OUITRANSFER est une plateforme de transfert de fichiers rapide et auto-hébergée. Déposez un fichier, partagez un lien sécurisé, sur votre propre serveur, sans tracking ni tiers.",
       primaryCta: "Lire la documentation",
       secondaryCta: "Star sur GitHub",
       note: "Aucun compte requis · Aucun tracking · Votre serveur, vos règles",
@@ -222,7 +222,7 @@ const fr: SiteContent = {
     },
     features: {
       eyebrow: "Pourquoi OUITRANSFER",
-      heading: "Tout ce qu'il faut aux équipes pour partager — sous votre contrôle.",
+      heading: "Tout ce qu'il faut aux équipes pour partager, sous votre contrôle.",
       subtitle:
         "Authentification unique, synchro d'annuaire, quotas et journal d'audit : les contrôles dont les organisations ont besoin, dans une plateforme que vous possédez et hébergez.",
       shares: {
@@ -249,12 +249,12 @@ const fr: SiteContent = {
       audit: {
         title: "Journal d'audit pour la conformité",
         description:
-          "Chaque accès, téléchargement et action admin est journalisé avec l'IP du visiteur — filtrable, exportable, avec rétention configurable.",
+          "Chaque accès, téléchargement et action admin est journalisé avec l'IP du visiteur, filtrable, exportable, avec rétention configurable.",
       },
       reverseShare: {
         title: "Recevez des fichiers de n'importe qui",
         description:
-          "Publiez un formulaire de reverse-share pour collecter des fichiers auprès de personnes externes — sans compte de leur côté.",
+          "Publiez un formulaire de reverse-share pour collecter des fichiers auprès de personnes externes, sans compte de leur côté.",
       },
       notifications: {
         title: "Notifications email",
@@ -264,7 +264,7 @@ const fr: SiteContent = {
       selfHosted: {
         title: "Auto-hébergé, sans limites",
         description:
-          "Une seule commande Docker Compose lance le stockage, l'API et le web. Stockage intégré ou tout backend compatible S3, et aucune limite artificielle de taille — la seule limite, c'est votre disque.",
+          "Une seule commande Docker Compose lance le stockage, l'API et le web. Stockage intégré ou tout backend compatible S3, et aucune limite artificielle de taille ; la seule limite, c'est votre disque.",
       },
     },
     stack: {
@@ -273,7 +273,7 @@ const fr: SiteContent = {
     cta: {
       title: "Déployez votre plateforme de transfert dès aujourd'hui.",
       description:
-        "Gratuit, open source et auto-hébergé. Opérationnel en moins de cinq minutes — sans compte, sans limites, sans contrepartie.",
+        "Gratuit, open source et auto-hébergé. Opérationnel en moins de cinq minutes, sans compte, sans limites, sans contrepartie.",
       primaryCta: "Commencer",
       secondaryCta: "Voir sur GitHub",
     },
@@ -283,7 +283,7 @@ const fr: SiteContent = {
     title: "Bienvenue sur la v1-beta",
     note: "OUITRANSFER est actuellement en bêta. Les fonctionnalités peuvent évoluer et quelques imperfections peuvent subsister. Vos retours nous aident à nous améliorer.",
     intro:
-      "Il s'agit de la première version publique d'OUITRANSFER — une plateforme de transfert de fichiers auto-hébergée et open source, conçue pour la rapidité, la confidentialité et la simplicité.",
+      "Il s'agit de la première version publique d'OUITRANSFER, une plateforme de transfert de fichiers auto-hébergée et open source, conçue pour la rapidité, la confidentialité et la simplicité.",
     feedback: "Vous avez trouvé un bug ou une suggestion ? Ouvrez une issue sur",
     gotIt: "Compris",
     getStarted: "Commencer",
