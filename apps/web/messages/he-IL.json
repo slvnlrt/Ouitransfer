@@ -2785,7 +2785,8 @@
       },
       "recipients": {
         "label": "נמענים",
-        "placeholder": "הוסף כתובות דוא\"ל"
+        "placeholder": "הוסף כתובות דוא\"ל",
+        "hint": "הקש Enter כדי להוסיף"
       },
       "share": "שתף",
       "sharing": "משתף...",

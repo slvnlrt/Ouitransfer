@@ -2785,7 +2785,8 @@
       },
       "recipients": {
         "label": "Odbiorcy",
-        "placeholder": "Dodaj adresy e-mail"
+        "placeholder": "Dodaj adresy e-mail",
+        "hint": "Naciśnij Enter, aby dodać"
       },
       "share": "Udostępnij",
       "sharing": "Udostępnianie...",

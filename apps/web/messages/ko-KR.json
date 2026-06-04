@@ -2785,7 +2785,8 @@
       },
       "recipients": {
         "label": "Recipients",
-        "placeholder": "이메일 주소 추가"
+        "placeholder": "이메일 주소 추가",
+        "hint": "Enter 키를 눌러 추가"
       },
       "share": "Share",
       "sharing": "Sharing...",

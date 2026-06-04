@@ -2785,7 +2785,8 @@
       },
       "recipients": {
         "label": "ผู้รับ",
-        "placeholder": "เพิ่มที่อยู่อีเมล"
+        "placeholder": "เพิ่มที่อยู่อีเมล",
+        "hint": "กด Enter เพื่อเพิ่ม"
       },
       "share": "แชร์",
       "sharing": "กำลังแชร์...",

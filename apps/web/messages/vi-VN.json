@@ -2785,7 +2785,8 @@
       },
       "recipients": {
         "label": "Người nhận",
-        "placeholder": "Thêm địa chỉ email"
+        "placeholder": "Thêm địa chỉ email",
+        "hint": "Nhấn Enter để thêm"
       },
       "share": "Chia sẻ",
       "sharing": "Đang chia sẻ...",

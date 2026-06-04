@@ -2785,7 +2785,8 @@
       },
       "recipients": {
         "label": "Penerima",
-        "placeholder": "Tambahkan alamat email"
+        "placeholder": "Tambahkan alamat email",
+        "hint": "Tekan Enter untuk menambahkan"
       },
       "share": "Bagikan",
       "sharing": "Membagikan...",

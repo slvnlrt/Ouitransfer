@@ -1,6 +1,6 @@
 "use client";
 
-import { CloudUpload, Loader2, Plus, RotateCcw, Send, X } from "lucide-react";
+import { CloudUpload, CornerDownLeft, Loader2, Plus, RotateCcw, Send, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -288,6 +288,10 @@ export function QuickShareUpload({
                     }
                   }}
                 />
+                <p className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <CornerDownLeft className="size-3" />
+                  {t("recipients.hint")}
+                </p>
                 {settings.recipients.length > 0 && (
                   <div className="flex flex-wrap gap-1.5">
                     {settings.recipients.map((email) => (

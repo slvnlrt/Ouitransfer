@@ -2785,7 +2785,8 @@
       },
       "recipients": {
         "label": "Alıcılar",
-        "placeholder": "E-posta adreslerini ekle"
+        "placeholder": "E-posta adreslerini ekle",
+        "hint": "Eklemek için Enter'a basın"
       },
       "share": "Paylaş",
       "sharing": "Paylaşılıyor...",

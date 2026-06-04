@@ -2342,7 +2342,8 @@
       },
       "recipients": {
         "label": "Recipients",
-        "placeholder": "Add email addresses"
+        "placeholder": "Add email addresses",
+        "hint": "Press Enter to add"
       },
       "share": "Share",
       "sharing": "Sharing...",

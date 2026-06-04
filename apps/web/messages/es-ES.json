@@ -2785,7 +2785,8 @@
       },
       "recipients": {
         "label": "Destinatarios",
-        "placeholder": "Añadir direcciones de correo"
+        "placeholder": "Añadir direcciones de correo",
+        "hint": "Pulsa Intro para añadir"
       },
       "share": "Compartir",
       "sharing": "Compartiendo...",

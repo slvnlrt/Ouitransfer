@@ -2785,7 +2785,8 @@
       },
       "recipients": {
         "label": "Destinatari",
-        "placeholder": "Aggiungi indirizzi email"
+        "placeholder": "Aggiungi indirizzi email",
+        "hint": "Premi Invio per aggiungere"
       },
       "share": "Condividi",
       "sharing": "Condivisione in corso...",
