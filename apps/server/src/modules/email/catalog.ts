@@ -327,8 +327,7 @@ export const notificationCatalog = {
     displayName: "Share Invitations",
   },
 
-  // DEFERRED: Reverse shares do not have a recipient model. Trigger will be added
-  // when reverse share invitations are implemented. See features/specs/8.2-email-notifications.md.
+  // Reverse share invitation — sends the upload link to specified recipients.
   reverse_share_invitation: {
     render: asRender(renderReverseShareInvitation),
     payloadSchema: reverseShareInvitationSchema,
