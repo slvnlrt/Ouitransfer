@@ -24,7 +24,7 @@ Avant de commencer, assurez-vous de disposer de :
 
 <Callout>
   **Support des plateformes** : Grâce à l'architecture conteneurisée de Docker, OUITRANSFER peut être
-  déployé sur n'importe quelle plateforme prenant en charge Docker — Linux, macOS, Windows, périphériques NAS
+  déployé sur n'importe quelle plateforme prenant en charge Docker: Linux, macOS, Windows, périphériques NAS
   et machines virtuelles cloud. Pour ceux qui ne connaissent pas Docker : il regroupe l'ensemble de
   l'application et ses dépendances dans des conteneurs isolés, rendant le système d'exploitation hôte très
   peu important. Cela dit, **un serveur Linux est recommandé pour la production** — il offre de
@@ -218,7 +218,7 @@ Cette configuration utilise des **volumes nommés gérés par Docker** pour le s
 docker compose up -d
 ```
 
-Docker télécharge les images au premier démarrage (quelques centaines de Mo — cela peut prendre une minute selon votre connexion). Pour surveiller les journaux de démarrage en temps réel :
+Docker télécharge les images au premier démarrage (quelques centaines de Mo, ce qui peut prendre une minute selon votre connexion). Pour surveiller les journaux de démarrage en temps réel :
 
 ```bash
 docker compose logs -f

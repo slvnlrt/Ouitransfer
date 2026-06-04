@@ -24,7 +24,7 @@ Before you begin, make sure you have:
 
 <Callout>
   **Platform Support**: Thanks to Docker's containerized architecture, OUITRANSFER can be deployed on
-  any platform that supports Docker — Linux, macOS, Windows, NAS devices, and cloud VMs alike. For
+  any platform that supports Docker: Linux, macOS, Windows, NAS devices, and cloud VMs alike. For
   those unfamiliar with Docker: it packages the entire application and its dependencies into isolated
   containers, so the host operating system matters very little. That said, **a Linux server is
   recommended for production** deployments — it offers better I/O performance, lower overhead, and
@@ -216,7 +216,7 @@ This configuration uses **Docker-managed named volumes** for storage and server 
 docker compose up -d
 ```
 
-Docker pulls the images on first run (a few hundred MB — this may take a minute depending on your connection). To watch the startup logs in real time:
+Docker pulls the images on first run (a few hundred MB, which may take a minute depending on your connection). To watch the startup logs in real time:
 
 ```bash
 docker compose logs -f
