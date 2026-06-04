@@ -630,3 +630,20 @@ the toggle means "enable/disable per-reverse-share upload notifications" (not co
 bypass). `overridden: false` ensures the 300s cooldown always applies.
 
 ---
+
+## ~~TD-30 — `reverse_share_invitation` notification type: catalog + template exist but no trigger~~ ✅ RESOLVED
+
+**Status:** DONE (2026-06-04)
+**Changes:** Implemented the "VERSION LIGHT" reverse share invitation feature. Created
+`ReverseShareRecipient` Prisma model (email, name?, notifiedAt) with cascade delete and
+unique `[reverseShareId, email]` constraint. Added `buildReverseShareUploadLink(alias)` to
+URL builder. Wired the existing `reverse_share_invitation` email template via 3 new API
+endpoints: `POST /reverse-shares/:id/recipients`, `DELETE /reverse-shares/:id/recipients`,
+`POST /reverse-shares/:id/notify` (rate-limited 5/10min). Service methods handle P2002
+duplicate conflicts, ownership checks, alias validation, per-recipient email send with
+`notifiedAt` tracking, and partial failure resilience. Frontend: added types, endpoint
+functions, `ReverseShareRecipientSelector` component (SMTP-gated, alias-gated notify),
+integrated into details modal. 11 unit tests for `notifyRecipients`. Fumadocs documentation
+added (en + fr). Server: 266 tests pass. Web: 318 tests pass. Both type-checks clean.
+
+---

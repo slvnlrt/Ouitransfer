@@ -1,5 +1,19 @@
 # Session Log
 
+## 2026-06-04 (TD-30 — Reverse share invitation feature)
+
+**Implemented the reverse share invitation feature (VERSION LIGHT).**
+
+- **Prisma schema:** Added `ReverseShareRecipient` model (email, name?, notifiedAt, cascade delete, unique `[reverseShareId, email]`). Hand-authored migration `20260604095354_reverse_share_recipients`.
+- **Email infrastructure:** Added `buildReverseShareUploadLink(alias)` to URL builder. Removed DEFERRED comment from catalog entry. Existing template + i18n keys now fully wired.
+- **Server module:** Extended `reverse-share/repository.ts` with `addRecipients`/`removeRecipients` (email normalization, P2002 handling). Added 4 Zod schemas to `dto.ts`. Added 3 service methods: `addRecipients` (with ConflictError on duplicate), `removeRecipients`, `notifyRecipients` (ownership check, alias guard, per-recipient email send, notifiedAt tracking, partial failure tolerance). 3 new routes + 3 audit actions.
+- **Tests:** 11 unit tests for `notifyRecipients` (all pass). Server total: 266 tests. Web total: 318 tests. Both type-checks clean.
+- **Frontend:** Types + 3 endpoint functions in `reverse-shares/`. New `ReverseShareRecipientSelector` component (SMTP-gated + alias-gated notify, per-recipient and bulk operations). Integrated into `reverse-share-details-modal.tsx`. Reuses existing `recipientSelector.*` i18n keys — no new keys needed.
+- **Documentation:** Added "Email invitations" section to Fumadocs reverse-shares docs (en + fr).
+- **Tracking:** TD-30 moved to resolved archive.
+
+**State:** server 266 tests pass, web 318 tests pass, both type-checks clean, knip clean.
+
 ## 2026-06-03 (Autonomous debt sweep — B-26, TD-51, TD-38)
 
 **Three bounded, fully-tested fixes picked from open bugs/tech-debt.**

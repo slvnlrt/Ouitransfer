@@ -100,29 +100,6 @@ Planifier la migration complète en s'appuyant sur l'assessment détaillé dispo
 
 ---
 
-## TD-30 — `reverse_share_invitation` notification type: catalog + template exist but no trigger
-
-**Context:** During 8.2 email notifications implementation, 22 notification types were defined
-in the catalog (`apps/server/src/modules/email/catalog.ts`). Review pass 4 flagged that 5 types
-had no trigger code (C-3). Four of the five were wired (account_deactivated, account_reactivated,
-share_max_views_reached, admin_user_registered). The fifth — `reverse_share_invitation` (type 6) —
-was explicitly deferred because reverse shares do not have a recipient model. There is no
-`ShareRecipient` equivalent on reverse shares, so there is no one to "invite."
-
-**Current state:**
-- Catalog entry exists with `configurable: false, hasUnsubscribe: false`
-- Template file exists: `apps/server/src/modules/email/templates/reverse-share-invitation.ts`
-- i18n keys exist in `apps/server/src/modules/email/i18n/messages/en.json` (and fr.json)
-- Comment in catalog: `// DEFERRED: Reverse shares do not have a recipient model.`
-- Spec `features/specs/8.2-email-notifications.md` updated to note the deferral
-
-**Fix:** Implement when reverse shares gain a recipient/invitation model (if ever). Options:
-1. Add a `ReverseShareRecipient` model and a `POST /reverse-shares/:id/notify` endpoint
-2. Or remove the catalog entry, template, and i18n keys entirely if the feature is dropped
-
-**Found during:** 8.2 review pass 4 remediation (mai 2026)
-**Severity:** Low — dead code with no runtime impact; explicitly documented as deferred
-
 ---
 
 ## TD-32 — Sender locale used for external recipient invitation emails
