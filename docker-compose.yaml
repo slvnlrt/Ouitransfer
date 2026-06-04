@@ -163,12 +163,20 @@ volumes:
 #
 #   • No published host ports — all traffic enters through Traefik.
 #   • Services join an existing external Traefik network.
-#   • Routing by Traefik labels (no StripPrefix anywhere):
-#       /                  → web   (:5487)   ← catch-all
-#       /docs              → docs  (:5488)   ← higher priority than the catch-all
+#   • Routing by Traefik labels (more specific prefixes win via higher priority):
+#       /api               → server  (:3333) ← StripPrefix(/api), see note below
+#       /docs              → docs    (:5488) ← basePath kept, no strip
 #       /ouitransfer-files → storage (:9000) ← S3 bucket path, browsers upload here
-#     The API (/api/*) is NOT routed by Traefik: the web container proxies it to
-#     the server internally, so the server stays private (no labels, no ports).
+#       /  (catch-all)     → web     (:5487)
+#     Traefik intercepts /api directly so API traffic (incl. large uploads) never
+#     transits the Next.js container. The web container's built-in /api rewrite is
+#     only a fallback for the direct-port / no-proxy mode.
+#   • StripPrefix(/api): Fastify currently registers routes at the root (e.g.
+#     POST /shares), so /api is stripped before reaching it. Once TD-27 lands
+#     (Fastify owns the /api prefix natively) this middleware can be dropped and a
+#     plain PathPrefix(`/api`) is enough.
+#   • TRUST_PROXY=true on the server so it reads the real client IP and the
+#     forwarded host/proto (rate limiting, OAuth redirects) from Traefik.
 #   • Persistent data on host bind-mounts instead of named volumes.
 #   • Memory limits via deploy.resources.
 #   • HTTPS, so SECURE_SITE=true and all origins use https://.
@@ -246,6 +254,7 @@ volumes:
 #       COOKIE_SECRET: "${COOKIE_SECRET}"
 #       CORS_ORIGINS: "${FRONTEND_ORIGIN}"
 #       SECURE_SITE: "true"                       # cookies Secure=true behind HTTPS
+#       TRUST_PROXY: "true"                       # read real client IP / fwd host from Traefik
 #     volumes:
 #       - "${SERVER_DATA_PATH}:/app/server"
 #     deploy:
@@ -261,14 +270,25 @@ volumes:
 #       timeout: 5s
 #       retries: 3
 #       start_period: 30s
-#     networks: [traefik-net]                     # internal only — no Traefik labels
+#     networks: [traefik-net]
+#     labels:
+#       - "traefik.enable=true"
+#       - "traefik.http.routers.ouitransfer-api.rule=Host(`${APP_HOST}`) && PathPrefix(`/api`)"
+#       - "traefik.http.routers.ouitransfer-api.entrypoints=websecure"
+#       - "traefik.http.routers.ouitransfer-api.tls=true"
+#       - "traefik.http.routers.ouitransfer-api.priority=20"     # > web catch-all
+#       # StripPrefix(/api) — drop once TD-27 lands (Fastify owns the /api prefix)
+#       - "traefik.http.middlewares.ouitransfer-api-strip.stripprefix.prefixes=/api"
+#       - "traefik.http.routers.ouitransfer-api.middlewares=ouitransfer-api-strip"
+#       - "traefik.http.routers.ouitransfer-api.service=ouitransfer-api-svc"
+#       - "traefik.http.services.ouitransfer-api-svc.loadbalancer.server.port=3333"
 #
 #   web:
 #     image: ghcr.io/slvnlrt/ouitransfer-web:latest
 #     container_name: ouitransfer-web
 #     restart: unless-stopped
 #     environment:
-#       API_BASE_URL: "http://server:3333"        # internal: web proxies /api here
+#       API_BASE_URL: "http://server:3333"        # server-side (SSR) calls + dev fallback
 #       JWT_SECRET: "${JWT_SECRET}"
 #       CSP_STORAGE_ORIGINS: "${STORAGE_PUBLIC_URL}"
 #     deploy:
