@@ -7,7 +7,7 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 
 Pocket ID is one of OUITRANSFER's officially supported OIDC providers, offering a robust and flexible identity management solution. This integration allows users to sign in to OUITRANSFER using Pocket ID's authentication system, making it perfect for organizations that need a self-hosted identity provider with OIDC support.
 
-<ZoomableImage src="/assets/v3/oidc/pocket-id/sign-in-with-pocket-id.png" alt="Sign in with Pocket ID" />
+<ZoomableImage src="/assets/v1/oidc/pocket-id/sign-in-with-pocket-id.png" alt="Sign in with Pocket ID" />
 
 ## Why use Pocket ID authentication?
 
@@ -43,15 +43,15 @@ To get started with Pocket ID authentication, you'll need to create an applicati
 
 1. **Navigate to Pocket ID Admin**: Go to your Pocket ID instance URL (e.g., `https://your-pocket-id.domain.com`)
 
-<ZoomableImage src="/assets/v3/oidc/pocket-id/pocket-id-console.png" alt="Pocket ID Console" />
+<ZoomableImage src="/assets/v1/oidc/pocket-id/pocket-id-console.png" alt="Pocket ID Console" />
 
 2. **Navigate to OIDC Clients**: Click **"OIDC Clients"** in the applications in the left sidebar, you will be redirected to the OIDC Clients page
 
-<ZoomableImage src="/assets/v3/oidc/pocket-id/oidc-clients.png" alt="OIDC Clients" />
+<ZoomableImage src="/assets/v1/oidc/pocket-id/oidc-clients.png" alt="OIDC Clients" />
 
 3. **Create a new OIDC Client**: Click **"Add OIDC Client"** button in the OIDC Clients page
 
-<ZoomableImage src="/assets/v3/oidc/pocket-id/create-oidc-client-button.png" alt="Create OIDC Client Button" />
+<ZoomableImage src="/assets/v1/oidc/pocket-id/create-oidc-client-button.png" alt="Create OIDC Client Button" />
 
 Configure the following settings:
 
@@ -60,7 +60,7 @@ Configure the following settings:
 - **PKCE**: "Disabled"
 - **Logo**: "Upload a logo image"
 
-<ZoomableImage src="/assets/v3/oidc/pocket-id/create-oidc-client.png" alt="Create OIDC Client" />
+<ZoomableImage src="/assets/v1/oidc/pocket-id/create-oidc-client.png" alt="Create OIDC Client" />
 
 ### Configuring application URLs
 
@@ -85,14 +85,14 @@ You'll need to configure several URLs in your Pocket ID application settings. He
 > **Note:** Replace `yourdomain.com` with your actual domain name in all production and custom port URLs.
 > **Note:** You can add multiple redirect URIs for different environments (development, staging, production).
 
-<ZoomableImage src="/assets/v3/oidc/pocket-id/config-urls.png" alt="Pocket ID Application URLs Configuration" />
+<ZoomableImage src="/assets/v1/oidc/pocket-id/config-urls.png" alt="Pocket ID Application URLs Configuration" />
 
 ### Getting OAuth credentials
 
 After creating your application, you'll receive your OAuth credentials:
 
 <ZoomableImage
-  src="/assets/v3/oidc/pocket-id/credentials.png"
+  src="/assets/v1/oidc/pocket-id/credentials.png"
   alt="Pocket ID OAuth Credentials"
   legend="The client ID and client secret shown in the image are examples only (fake credentials). You must use your own credentials from Pocket ID."
 />
@@ -115,14 +115,14 @@ To configure Pocket ID authentication in OUITRANSFER:
 2. **Access settings**: Click your profile picture in the header and select **Settings**
 3. **Navigate to authentication**: Find and click on the **Authentication Providers** section
 
-<ZoomableImage src="/assets/v3/oidc/auth-providers.png" alt="OUITRANSFER Authentication Providers" />
+<ZoomableImage src="/assets/v1/oidc/auth-providers.png" alt="OUITRANSFER Authentication Providers" />
 
 ### Enabling Pocket ID provider
 
 1. **Locate Pocket ID**: Find Pocket ID in the list of available providers
 2. **Enable the provider**: Toggle the status to **Enabled**
 
-<ZoomableImage src="/assets/v3/oidc/pocket-id/enabled-pocket-id.png" alt="OUITRANSFER Pocket ID Provider Enabled" />
+<ZoomableImage src="/assets/v1/oidc/pocket-id/enabled-pocket-id.png" alt="OUITRANSFER Pocket ID Provider Enabled" />
 
 3. **Configure credentials**:
    - **Provider URL**: Your Pocket ID server URL (e.g., `https://auth.yourdomain.com`)
@@ -130,7 +130,7 @@ To configure Pocket ID authentication in OUITRANSFER:
    - **Client Secret**: Paste the Client Secret from your Pocket ID application
 
 <ZoomableImage
-  src="/assets/v3/oidc/pocket-id/edit-pocket-id.png"
+  src="/assets/v1/oidc/pocket-id/edit-pocket-id.png"
   alt="Edit Pocket ID Provider"
   legend="This is a fake application, you have to use your own credentials."
 />
@@ -145,7 +145,7 @@ Configure additional settings to customize the authentication behavior:
 
 **Icon**: Choose a custom icon for the Pocket ID login button (default is `Key`).
 
-<ZoomableImage src="/assets/v3/oidc/pocket-id/pocket-id-icon.png" alt="Pocket ID Icon" />
+<ZoomableImage src="/assets/v1/oidc/pocket-id/pocket-id-icon.png" alt="Pocket ID Icon" />
 
 ---
 

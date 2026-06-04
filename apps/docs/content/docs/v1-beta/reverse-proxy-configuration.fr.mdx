@@ -192,29 +192,29 @@ Le point de terminaison de santé retourne `{ status, timestamp, uptime, checks:
 
 ## Configuration des URL
 
-OUITRANSFER utilise deux variables d'URL publiques — `FRONTEND_ORIGIN` et `STORAGE_PUBLIC_URL` — qui contrôlent la manière dont les navigateurs accèdent à l'application et à son stockage. Il est essentiel de les configurer correctement : des valeurs incorrectes provoquent des échecs silencieux lors des téléversements et téléchargements de fichiers.
+OUITRANSFER utilise deux variables d'URL publiques, `FRONTEND_ORIGIN` et `STORAGE_PUBLIC_URL`, qui contrôlent la manière dont les navigateurs accèdent à l'application et à son stockage. Il est essentiel de les configurer correctement : des valeurs incorrectes provoquent des échecs silencieux lors des téléversements et téléchargements de fichiers.
 
 ### Ce que chaque variable contrôle
 
-**`FRONTEND_ORIGIN`** — L'URL à laquelle les utilisateurs ouvrent l'interface web dans leur navigateur (par ex. `http://192.168.1.100:5487` ou `https://files.example.com`).
+**`FRONTEND_ORIGIN`** : L'URL à laquelle les utilisateurs ouvrent l'interface web dans leur navigateur (par ex. `http://192.168.1.100:5487` ou `https://files.example.com`).
 
 Le fichier Docker Compose la propage vers :
-- `CORS_ORIGINS` sur le **server** — permet à l'API d'accepter les requêtes provenant du frontend
-- `RUSTFS_CORS_ALLOWED_ORIGINS` sur le **storage** — permet au service de stockage d'accepter les requêtes de téléversement/téléchargement directes depuis le frontend
+- `CORS_ORIGINS` sur le **server** : permet à l'API d'accepter les requêtes provenant du frontend
+- `RUSTFS_CORS_ALLOWED_ORIGINS` sur le **storage** : permet au service de stockage d'accepter les requêtes de téléversement/téléchargement directes depuis le frontend
 
-**`STORAGE_PUBLIC_URL`** — L'URL à partir de laquelle les navigateurs téléversent et téléchargent des fichiers directement depuis le service de stockage (par ex. `http://192.168.1.100:9000` ou `https://storage.example.com`).
+**`STORAGE_PUBLIC_URL`** : L'URL à partir de laquelle les navigateurs téléversent et téléchargent des fichiers directement depuis le service de stockage (par ex. `http://192.168.1.100:9000` ou `https://storage.example.com`).
 
 Le fichier Docker Compose la propage vers :
-- `STORAGE_URL` sur le **server** — l'URL de base intégrée dans les URLs présignées envoyées aux navigateurs
-- `CSP_STORAGE_ORIGINS` sur le conteneur **web** — l'origine de la Politique de sécurité du contenu (CSP) vers laquelle les navigateurs sont autorisés à se connecter
+- `STORAGE_URL` sur le **server** : l'URL de base intégrée dans les URLs présignées envoyées aux navigateurs
+- `CSP_STORAGE_ORIGINS` sur le conteneur **web** : l'origine de la Politique de sécurité du contenu (CSP) vers laquelle les navigateurs sont autorisés à se connecter
 
 ### Fonctionnement des transferts de fichiers (le flux d'URL présignées)
 
 OUITRANSFER ne fait pas transiter les données de fichiers par le serveur API. À la place :
 
-1. Le navigateur demande au serveur API une URL présignée — une URL signée de courte durée (téléversements : 1 heure, téléchargements : 15 min par défaut)
+1. Le navigateur demande au serveur API une URL présignée, une URL signée de courte durée (téléversements : 1 heure, téléchargements : 15 min par défaut)
 2. Le navigateur utilise cette URL pour téléverser ou télécharger **directement** depuis le service de stockage
-3. L'URL présignée contient la base issue de `STORAGE_PUBLIC_URL` — le navigateur doit donc pouvoir atteindre cette adresse
+3. L'URL présignée contient la base issue de `STORAGE_PUBLIC_URL` ; le navigateur doit donc pouvoir atteindre cette adresse
 
 C'est pourquoi `STORAGE_PUBLIC_URL` doit être une adresse accessible par le **navigateur de l'utilisateur**, et non un nom d'hôte Docker interne comme `storage:9000`.
 
@@ -222,14 +222,14 @@ C'est pourquoi `STORAGE_PUBLIC_URL` doit être une adresse accessible par le **n
 
 | Erreur | Symptôme |
 |---------|---------|
-| Utiliser `localhost` alors que les navigateurs s'exécutent sur une autre machine | Les téléversements échouent silencieusement — le navigateur tente de se connecter à sa propre machine |
+| Utiliser `localhost` alors que les navigateurs s'exécutent sur une autre machine | Les téléversements échouent silencieusement : le navigateur tente de se connecter à sa propre machine |
 | `STORAGE_PUBLIC_URL` en HTTP avec une interface web en HTTPS | Le navigateur bloque la requête en raison du contenu mixte |
 | Omission du port (par ex. `:9000` manquant) sans être derrière un reverse proxy | Connexion refusée lors du téléversement/téléchargement |
 | Utilisation du nom d'hôte Docker interne (`storage:9000`) | La résolution DNS échoue dans le navigateur |
 
 ### Avec un reverse proxy
 
-Lorsque vous utilisez un reverse proxy, le service de stockage peut être exposé sur un domaine ou un chemin personnalisé — le port 9000 n'a donc pas besoin d'être ouvert publiquement. Mettez à jour votre `.env` avec les adresses publiques :
+Lorsque vous utilisez un reverse proxy, le service de stockage peut être exposé sur un domaine ou un chemin personnalisé, le port 9000 n'a donc pas besoin d'être ouvert publiquement. Mettez à jour votre `.env` avec les adresses publiques :
 
 ```bash
 FRONTEND_ORIGIN=https://files.example.com

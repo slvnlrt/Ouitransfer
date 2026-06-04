@@ -89,7 +89,7 @@ Lorsque vous ajoutez du nouveau texte à l'application :
 <Callout>Exécutez toujours `pnpm run translations:check` avant les releases pour vérifier la complétude.</Callout>
 
 <Callout type="warn">
-  **Une "complétude à 100%" ne signifie pas que tout est traduit.** Le script de vérification ne détecte que les chaînes marquées `[TO_TRANSLATE]`. Si une chaîne a été ajoutée à tous les fichiers de locale avec sa valeur anglaise (sans le marqueur), elle sera comptée comme complète même si elle n'a jamais été traduite. Consultez toujours la colonne **"SUSPECTED EN"** — les chaînes identiques à l'anglais (>15 caractères) qui pourraient nécessiter une traduction humaine. Remarque : certaines sont des faux positifs (cognats orthographiés de manière identique dans plusieurs langues, ex. "Position").
+  **Une "complétude à 100%" ne signifie pas que tout est traduit.** Le script de vérification ne détecte que les chaînes marquées `[TO_TRANSLATE]`. Si une chaîne a été ajoutée à tous les fichiers de locale avec sa valeur anglaise (sans le marqueur), elle sera comptée comme complète même si elle n'a jamais été traduite. Consultez toujours la colonne **"SUSPECTED EN"**: les chaînes identiques à l'anglais (>15 caractères) qui pourraient nécessiter une traduction humaine. Remarque : certaines sont des faux positifs (cognats orthographiés de manière identique dans plusieurs langues, ex. "Position").
 </Callout>
 
 ```bash
@@ -131,9 +131,9 @@ apps/web/
 
 ## Prérequis
 
-- **Python 3.6 ou supérieur** — requis pour exécuter les scripts de traduction
-- **Aucune dépendance externe** — les scripts n'utilisent que les bibliothèques standard Python
-- **Support UTF-8** — assurez-vous que votre terminal supporte UTF-8 pour un affichage correct des traductions
+- **Python 3.6 ou supérieur**: requis pour exécuter les scripts de traduction
+- **Aucune dépendance externe**: les scripts n'utilisent que les bibliothèques standard Python
+- **Support UTF-8**: assurez-vous que votre terminal supporte UTF-8 pour un affichage correct des traductions
 
 ## Détails des scripts
 
@@ -143,10 +143,10 @@ Le script principal fournit une interface unifiée pour toutes les opérations d
 
 #### Commandes disponibles
 
-- `check` — Vérifier le statut des traductions et générer des rapports
-- `sync` — Synchroniser les clés manquantes depuis la langue de référence
-- `all` — Exécuter le workflow complet (sync + check)
-- `help` — Afficher l'aide détaillée avec des exemples
+- `check`: Vérifier le statut des traductions et générer des rapports
+- `sync`: Synchroniser les clés manquantes depuis la langue de référence
+- `all`: Exécuter le workflow complet (sync + check)
+- `help`: Afficher l'aide détaillée avec des exemples
 
 #### Fonctionnement
 
@@ -194,7 +194,7 @@ Fournit une analyse complète des traductions :
 
 ### Script de nettoyage (`prune_translations.py`)
 
-Supprime les clés de traduction obsolètes — c'est-à-dire les clés qui existent encore dans un fichier de langue mais ont été supprimées de la référence anglaise (`en-US.json`). Exécutez-le après avoir supprimé des clés de l'application pour garder les fichiers de langue propres.
+Supprime les clés de traduction obsolètes: c'est-à-dire les clés qui existent encore dans un fichier de langue mais ont été supprimées de la référence anglaise (`en-US.json`). Exécutez-le après avoir supprimé des clés de l'application pour garder les fichiers de langue propres.
 
 ```bash
 # Preview what would be removed (recommended first)
@@ -378,7 +378,7 @@ Après traduction manuelle :
 
 ### Pour les développeurs
 
-1. **Utilisez toujours l'anglais comme référence** : Ajoutez les nouvelles clés dans `en-US.json` en premier — ne les ajoutez jamais directement dans d'autres langues
+1. **Utilisez toujours l'anglais comme référence**: Ajoutez les nouvelles clés dans `en-US.json` en premier; ne les ajoutez jamais directement dans d'autres langues
 2. **Utilisez des noms de clés sémantiques** : `dashboard.welcome` plutôt que `text1`
 3. **Testez la synchronisation des clés** : Exécutez `pnpm run translations:dry-run` avant de committer
 4. **Coordonnez avec les traducteurs** : Assurez-vous que l'équipe de traduction est informée des nouvelles clés
@@ -445,7 +445,7 @@ LANGUAGE        COMPLETENESS STRINGS         [TO_TRANSLATE]   SUSPECTED EN
 ```
 
 <Callout type="info">
-  **Différence de comptage des clés** : `check` rapporte 1958 *chaînes feuilles* (valeurs réellement traduisibles). `sync` rapporte 2285 *chemins de clés total* (y compris les nœuds d'objet intermédiaires dans la hiérarchie JSON). Les deux sont corrects — ils mesurent des choses différentes. Utilisez `check` comme comptage de référence des chaînes nécessitant une traduction humaine.
+  **Différence de comptage des clés**: `check` rapporte 1958 *chaînes feuilles* (valeurs réellement traduisibles). `sync` rapporte 2285 *chemins de clés total* (y compris les nœuds d'objet intermédiaires dans la hiérarchie JSON). Les deux sont corrects; ils mesurent des choses différentes. Utilisez `check` comme comptage de référence des chaînes nécessitant une traduction humaine.
 </Callout>
 
 ## Contribution

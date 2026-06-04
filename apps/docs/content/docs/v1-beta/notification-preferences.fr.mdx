@@ -5,7 +5,7 @@ icon: BellRing
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-Ouitransfer peut envoyer des notifications par e-mail pour différents événements — accès à un partage, téléchargements de fichiers, alertes de quota, et bien d'autres. La page des préférences de notification vous permet de contrôler les notifications que vous recevez.
+Ouitransfer peut envoyer des notifications par e-mail pour différents événements: accès à un partage, téléchargements de fichiers, alertes de quota, et bien d'autres. La page des préférences de notification vous permet de contrôler les notifications que vous recevez.
 
 <Callout type="info">
   Les notifications par e-mail nécessitent que [SMTP soit configuré](/docs/v1-beta/configuring-smtp) par un administrateur. Si SMTP n'est pas activé, aucune notification n'est envoyée, quelles que soient vos préférences.
@@ -61,7 +61,7 @@ Ces notifications ne concernent que les comptes administrateurs.
 | **Alerte de quota utilisateur** | Immédiat | Le quota de stockage d'un utilisateur a atteint un seuil d'avertissement ou critique |
 
 <Callout type="info">
-  Les notifications d'**accès au partage** et de **téléchargement de partage** sont désactivées par défaut car elles peuvent générer un volume élevé d'e-mails sur les partages populaires. Activez-les de manière sélective si vous avez besoin de suivre les accès sur des partages spécifiques — ou utilisez les remplacements de notifications par partage décrits ci-dessous.
+  Les notifications d'**accès au partage** et de **téléchargement de partage** sont désactivées par défaut car elles peuvent générer un volume élevé d'e-mails sur les partages populaires. Activez-les de manière sélective si vous avez besoin de suivre les accès sur des partages spécifiques, ou utilisez les remplacements de notifications par partage décrits ci-dessous.
 </Callout>
 
 ---
@@ -106,7 +106,7 @@ Pour éviter un volume excessif d'e-mails sur les partages actifs, certains type
 | Notifications de téléchargement de partage | 15 minutes par partage |
 | Notifications de téléversement sur partage inversé | 5 minutes par partage inversé |
 
-Pendant la fenêtre de limitation, les événements supplémentaires du même type sur le même partage sont ignorés silencieusement — ils ne sont ni mis en file d'attente ni regroupés pour une livraison ultérieure.
+Pendant la fenêtre de limitation, les événements supplémentaires du même type sur le même partage sont ignorés silencieusement ; ils ne sont ni mis en file d'attente ni regroupés pour une livraison ultérieure.
 
 ---
 
@@ -124,9 +124,9 @@ Cela équivaut à définir la notification sur **Désactivé** dans votre page d
 |---|---|---|---|
 | `GET` | `/notifications/preferences` | Utilisateur | Récupérer toutes les préférences de notification (fusionnées avec les valeurs par défaut du catalogue) |
 | `PUT` | `/notifications/preferences` | Utilisateur | Mettre à jour les préférences de notification (par lot) |
-| `GET` | `/notifications/unsubscribe?token=...` | — | Valider le jeton de désabonnement et retourner le type de notification |
-| `POST` | `/notifications/unsubscribe` | — | Confirmer le désabonnement (définit la fréquence sur `disabled`) |
+| `GET` | `/notifications/unsubscribe?token=...` | Public | Valider le jeton de désabonnement et retourner le type de notification |
+| `POST` | `/notifications/unsubscribe` | Public | Confirmer le désabonnement (définit la fréquence sur `disabled`) |
 
-Le point de terminaison `GET /notifications/preferences` retourne les 22 types de notifications avec leur fréquence actuelle, en indiquant s'ils sont configurables et s'ils sont critiques. Le point de terminaison `PUT` accepte un tableau d'objets `{ type, frequency }` — seuls les types configurables et non critiques peuvent être mis à jour.
+Le point de terminaison `GET /notifications/preferences` retourne les 22 types de notifications avec leur fréquence actuelle, en indiquant s'ils sont configurables et s'ils sont critiques. Le point de terminaison `PUT` accepte un tableau d'objets `{ type, frequency }` ; seuls les types configurables et non critiques peuvent être mis à jour.
 
 Pour la référence API complète, consultez la [documentation API](/docs/v1-beta/api).

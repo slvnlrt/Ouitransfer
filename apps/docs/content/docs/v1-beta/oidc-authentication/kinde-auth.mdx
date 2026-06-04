@@ -7,7 +7,7 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 
 Kinde Auth is one of OUITRANSFER's officially supported OIDC providers, offering modern authentication through Kinde's developer-friendly identity platform. This integration allows users to sign in to OUITRANSFER using Kinde's comprehensive authentication system, making it perfect for developers, startups, and organizations that need a modern, scalable authentication solution with excellent developer experience.
 
-<ZoomableImage src="/assets/v3/oidc/kinde/sign-in-with-kinde.png" alt="Sign in with Kinde" />
+<ZoomableImage src="/assets/v1/oidc/kinde/sign-in-with-kinde.png" alt="Sign in with Kinde" />
 
 ## Why use Kinde Auth authentication?
 
@@ -41,7 +41,7 @@ To get started with Kinde Auth authentication, you'll need to create an applicat
 
 1. **Navigate to Kinde Dashboard**: Go to [your-tenant.kinde.com/admin](https://your-tenant.kinde.com/admin)
 
-<ZoomableImage src="/assets/v3/oidc/kinde/kinde-dashboard.png" alt="Kinde Dashboard" />
+<ZoomableImage src="/assets/v1/oidc/kinde/kinde-dashboard.png" alt="Kinde Dashboard" />
 
 2. **Create new application**: Click **"Add application"** button in the center of the page.
 
@@ -50,7 +50,7 @@ To get started with Kinde Auth authentication, you'll need to create an applicat
 4. **Enter application details**:
    - **Name**: Enter a descriptive name like "OUITRANSFER File Sharing"
 
-<ZoomableImage src="/assets/v3/oidc/kinde/application-type.png" alt="Kinde Application Type Selection" />
+<ZoomableImage src="/assets/v1/oidc/kinde/application-type.png" alt="Kinde Application Type Selection" />
 
 5. **Create application**: Click **"Save"** to generate your Kinde application
 
@@ -58,12 +58,12 @@ To get started with Kinde Auth authentication, you'll need to create an applicat
 
 After creating your application, you'll be redirected to the application page.
 
-<ZoomableImage src="/assets/v3/oidc/kinde/application-page.png" alt="Kinde Application Page" />
+<ZoomableImage src="/assets/v1/oidc/kinde/application-page.png" alt="Kinde Application Page" />
 
 Click on the **"Details"** tab on the sidebar to configure the application settings and get the OAuth credentials.
 
 <ZoomableImage
-  src="/assets/v3/oidc/kinde/application-details.png"
+  src="/assets/v1/oidc/kinde/application-details.png"
   alt="Kinde Application Details"
   legend="This is a fake application, you have to use your own."
 />
@@ -79,7 +79,7 @@ Now you'll get the credentials that OUITRANSFER will use to authenticate with Ki
 3. **Copy Client Secret**: The Client Secret is displayed in the **"Client secret"** field
 
 <ZoomableImage
-  src="/assets/v3/oidc/kinde/oauth-credentials.png"
+  src="/assets/v1/oidc/kinde/oauth-credentials.png"
   alt="Kinde OAuth Credentials"
   legend="The client ID and client secret shown in the image are examples only (fake credentials). You must use your own credentials from Kinde."
 />
@@ -128,7 +128,7 @@ You'll need to configure several URLs in your Kinde application settings. Here's
 > **Note:** You can add multiple redirect URIs for different environments (development, staging, production).
 
 <ZoomableImage
-  src="/assets/v3/oidc/kinde/config-urls.png"
+  src="/assets/v1/oidc/kinde/config-urls.png"
   alt="Kinde Application URLs Configuration"
   legend="This is a fake application, you have to use your own."
 />
@@ -149,7 +149,7 @@ To configure Kinde Auth authentication in OUITRANSFER, you need administrator ac
 
 3. **Navigate to authentication**: Find and click on the **Authentication Providers** configuration section
 
-<ZoomableImage src="/assets/v3/oidc/auth-providers.png" alt="OUITRANSFER Authentication Providers" />
+<ZoomableImage src="/assets/v1/oidc/auth-providers.png" alt="OUITRANSFER Authentication Providers" />
 
 ### Enabling Kinde Auth provider
 
@@ -159,7 +159,7 @@ Kinde Auth comes pre-configured as an official provider, so the setup process is
 
 2. **Enable the provider**: Toggle the status to **Enabled**
 
-<ZoomableImage src="/assets/v3/oidc/kinde/enabled-kinde.png" alt="OUITRANSFER Kinde Auth Provider Enabled" />
+<ZoomableImage src="/assets/v1/oidc/kinde/enabled-kinde.png" alt="OUITRANSFER Kinde Auth Provider Enabled" />
 
 After enabling the provider, click on the pen icon to configure the provider.
 
@@ -170,7 +170,7 @@ After enabling the provider, click on the pen icon to configure the provider.
    - **Scopes**: Add the scopes you want to use. The default scopes are `openid`, `profile`, and `email`. You don't need change this if you are not sure.
 
 <ZoomableImage
-  src="/assets/v3/oidc/kinde/edit-kinde.png"
+  src="/assets/v1/oidc/kinde/edit-kinde.png"
   alt="Edit Kinde Auth Provider"
   legend="This is a fake application, you have to use your own."
 />
@@ -185,7 +185,7 @@ Configure additional settings to customize the authentication behavior:
 
 **Icon**: you can choose the icon you want to use for the Kinde Auth login button (default is `FaKey`).
 
-<ZoomableImage src="/assets/v3/oidc/kinde/kinde-icon.png" alt="Kinde Auth Icon" />
+<ZoomableImage src="/assets/v1/oidc/kinde/kinde-icon.png" alt="Kinde Auth Icon" />
 
 > **Developer tip:** Kinde Auth authentication works great for modern applications requiring excellent developer experience and scalable authentication infrastructure.
 

@@ -42,7 +42,7 @@ L'ordre de démarrage est géré automatiquement via des `depends_on` basés sur
 
 ## Technologies utilisées
 
-Chaque composant de l'architecture OUITRANSFER joue un rôle essentiel pour garantir fiabilité, performance et évolutivité. La pile technologique a été conçue avec la simplicité, la performance et la flexibilité en tête — tout est auto-hébergé, accessible aux développeurs et conçu pour évoluer sans complexité superflue.
+Chaque composant de l'architecture OUITRANSFER joue un rôle essentiel pour garantir fiabilité, performance et évolutivité. La pile technologique a été conçue avec la simplicité, la performance et la flexibilité en tête. Tout est auto-hébergé, accessible aux développeurs et conçu pour évoluer sans complexité superflue.
 
 ### SQLite + Prisma ORM
 
@@ -57,7 +57,7 @@ OUITRANSFER utilise **SQLite** comme solution de base de données principale, co
 
 ### Next.js 16 + React 19 + TypeScript
 
-Le frontend d'OUITRANSFER est construit avec **Next.js 16**, **React 19** et **TypeScript**, formant une pile moderne facile à maintenir et très rapide pour les utilisateurs finaux. Next.js 16 apporte les composants serveur, les actions serveur et un nouveau système de routeur applicatif qui rend le rendu de contenu dynamique extrêmement efficace. Cela permet de ne charger que ce qui est nécessaire, au moment où c'est nécessaire — ce qui donne une impression de réactivité même sous charge. React 19 offre une architecture basée sur les composants qui facilite la décomposition de l'interface en éléments réutilisables, et TypeScript contribue à prévenir les bugs avant même qu'ils ne surviennent, grâce au typage statique et à une meilleure navigation dans le code.
+Le frontend d'OUITRANSFER est construit avec **Next.js 16**, **React 19** et **TypeScript**, formant une pile moderne facile à maintenir et très rapide pour les utilisateurs finaux. Next.js 16 apporte les composants serveur, les actions serveur et un nouveau système de routeur applicatif qui rend le rendu de contenu dynamique extrêmement efficace. Cela permet de ne charger que ce qui est nécessaire, au moment où c'est nécessaire, ce qui donne une impression de réactivité même sous charge. React 19 offre une architecture basée sur les composants qui facilite la décomposition de l'interface en éléments réutilisables, et TypeScript contribue à prévenir les bugs avant même qu'ils ne surviennent, grâce au typage statique et à une meilleure navigation dans le code.
 
 - **React 19** permet de créer une interface utilisateur dynamique et réactive grâce à une architecture par composants
 - **TypeScript** ajoute le typage statique, améliorant la qualité du code et réduisant les erreurs à l'exécution
@@ -65,7 +65,7 @@ Le frontend d'OUITRANSFER est construit avec **Next.js 16**, **React 19** et **T
 
 ### Stockage objet compatible S3
 
-OUITRANSFER utilise un **stockage objet compatible S3** pour toutes les opérations sur les fichiers. Par défaut, une instance **RustFS** est fournie en tant que conteneur `storage` — aucun service externe n'est requis. Pour les utilisateurs qui préfèrent le stockage cloud ou ont besoin d'une évolutivité accrue, n'importe quel fournisseur compatible S3 (AWS S3, Backblaze B2, Cloudflare R2, etc.) peut être utilisé à la place en définissant `ENABLE_S3=true`.
+OUITRANSFER utilise un **stockage objet compatible S3** pour toutes les opérations sur les fichiers. Par défaut, une instance **RustFS** est fournie en tant que conteneur `storage`; aucun service externe n'est requis. Pour les utilisateurs qui préfèrent le stockage cloud ou ont besoin d'une évolutivité accrue, n'importe quel fournisseur compatible S3 (AWS S3, Backblaze B2, Cloudflare R2, etc.) peut être utilisé à la place en définissant `ENABLE_S3=true`.
 
 - API compatible S3 pour toutes les opérations sur les fichiers
 - **RustFS** intégré : aucune infrastructure supplémentaire requise pour les déploiements auto-hébergés
@@ -102,11 +102,11 @@ L'ordre de démarrage est géré automatiquement : `storage` démarre en premier
 
 L'architecture OUITRANSFER suit une séparation claire des responsabilités, facilitant la compréhension et la maintenance :
 
-1. **Frontend** — React 19 + TypeScript + Next.js 16 gèrent l'interface utilisateur et les interactions
-2. **Backend** — Fastify + Zod + TypeScript traitent les requêtes avec une sécurité de type complète et une validation
-3. **Base de données** — SQLite + Prisma ORM stockent et gèrent les données avec des opérations typées
-4. **Stockage de fichiers** — Le stockage objet compatible S3 (RustFS intégré ou S3 externe) gère toutes les opérations sur les fichiers
-5. **Gestion des utilisateurs** — Groupes, quotas par utilisateur, synchronisation LDAP/AD et contrôle d'accès basé sur les rôles
+1. **Frontend**: React 19 + TypeScript + Next.js 16 gèrent l'interface utilisateur et les interactions
+2. **Backend**: Fastify + Zod + TypeScript traitent les requêtes avec une sécurité de type complète et une validation
+3. **Base de données**: SQLite + Prisma ORM stockent et gèrent les données avec des opérations typées
+4. **Stockage de fichiers**: Le stockage objet compatible S3 (RustFS intégré ou S3 externe) gère toutes les opérations sur les fichiers
+5. **Gestion des utilisateurs**: Groupes, quotas par utilisateur, synchronisation LDAP/AD et contrôle d'accès basé sur les rôles
 
 ## API
 
@@ -138,10 +138,10 @@ Trois secrets obligatoires doivent être configurés sur le conteneur `server` a
 
 | Variable | Exigence |
 |----------|----------|
-| `JWT_SECRET` | Min 32 caractères — signe les jetons d'accès JWT |
-| `CSRF_SECRET` | Min 32 caractères, distinct de `JWT_SECRET` — clé HMAC pour les cookies CSRF double-submit |
-| `COOKIE_SECRET` | Min 32 caractères, distinct des deux précédents — signe les cookies de session |
-| `ENCRYPTION_SECRET` | Facultatif (min 32 caractères) — clé AES-256-GCM pour le chiffrement des données sensibles (mot de passe de liaison LDAP). Requis si LDAP est activé |
+| `JWT_SECRET` | Min 32 caractères; signe les jetons d'accès JWT |
+| `CSRF_SECRET` | Min 32 caractères, distinct de `JWT_SECRET`; clé HMAC pour les cookies CSRF double-submit |
+| `COOKIE_SECRET` | Min 32 caractères, distinct des deux précédents; signe les cookies de session |
+| `ENCRYPTION_SECRET` | Facultatif (min 32 caractères); clé AES-256-GCM pour le chiffrement des données sensibles (mot de passe de liaison LDAP). Requis si LDAP est activé |
 
 Générez chaque secret avec :
 

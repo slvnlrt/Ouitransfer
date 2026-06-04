@@ -42,11 +42,11 @@ Pour accéder aux **Paramètres**, un utilisateur **ADMIN** doit cliquer sur sa 
 
 Une fois dans le panneau **Paramètres**, cliquez sur la carte **E-mail** pour déplier les options de configuration SMTP.
 
-![Carte Paramètres fermée](/assets/v3/smtp/closed-card.png)
+![Carte Paramètres fermée](/assets/v1/smtp/closed-card.png)
 
 Après avoir déplié la carte, les champs de configuration SMTP suivants apparaissent :
 
-![Carte Paramètres ouverte](/assets/v3/smtp/opened-card.png)
+![Carte Paramètres ouverte](/assets/v1/smtp/opened-card.png)
 
 ---
 
@@ -58,7 +58,7 @@ La configuration SMTP consiste à activer le service puis à renseigner les info
 
 La première étape consiste à **activer SMTP** en sélectionnant « Oui » dans le champ **SMTP activé**.
 
-![SMTP activé](/assets/v3/smtp/smtp-enabled.png)
+![SMTP activé](/assets/v1/smtp/smtp-enabled.png)
 
 ### Champs de configuration
 
@@ -279,15 +279,15 @@ Avec SMTP correctement configuré, les utilisateurs peuvent tirer pleinement par
 
 ## Système de livraison des e-mails
 
-Ouitransfer utilise une **file d'attente d'e-mails asynchrone** adossée à la base de données. Lorsqu'une notification est déclenchée, l'e-mail n'est pas envoyé immédiatement — il est ajouté à une file d'attente et traité en arrière-plan.
+Ouitransfer utilise une **file d'attente d'e-mails asynchrone** adossée à la base de données. Lorsqu'une notification est déclenchée, l'e-mail n'est pas envoyé immédiatement. Il est plutôt ajouté à une file d'attente et traité en arrière-plan.
 
 ### Fonctionnement de la file d'attente
 
-1. **Mise en file** — lorsqu'un événement déclenche une notification (par exemple, un fichier est téléchargé), le système vérifie les [préférences de notification](/docs/v1-beta/notification-preferences) de l'utilisateur et les éventuelles substitutions par partage. Si la notification est activée, une tâche d'e-mail est ajoutée à la file avec le statut `pending`.
-2. **Traitement** — un worker en arrière-plan récupère les tâches en attente et les envoie via SMTP. Les e-mails envoyés avec succès sont marqués comme `sent`.
-3. **Nouvelle tentative** — en cas d'échec d'envoi (délai d'attente SMTP, erreur temporaire du serveur), la tâche est relancée jusqu'à **3 fois** avec des délais croissants. Après épuisement de toutes les tentatives, la tâche est marquée comme `failed`.
+1. **Mise en file** : Lorsqu'un événement déclenche une notification (par exemple, un fichier est téléchargé), le système vérifie les [préférences de notification](/docs/v1-beta/notification-preferences) de l'utilisateur et les éventuelles substitutions par partage. Si la notification est activée, une tâche d'e-mail est ajoutée à la file avec le statut `pending`.
+2. **Traitement** : Un worker en arrière-plan récupère les tâches en attente et les envoie via SMTP. Les e-mails envoyés avec succès sont marqués comme `sent`.
+3. **Nouvelle tentative** : En cas d'échec d'envoi (délai d'attente SMTP, erreur temporaire du serveur), la tâche est relancée jusqu'à **3 fois** avec des délais croissants. Après épuisement de toutes les tentatives, la tâche est marquée comme `failed`.
 
-Cette architecture garantit que la livraison des e-mails ne bloque pas le traitement des requêtes — l'API répond immédiatement tandis que les e-mails sont envoyés de manière asynchrone.
+Cette architecture garantit que la livraison des e-mails ne bloque pas le traitement des requêtes ; l'API répond immédiatement tandis que les e-mails sont envoyés de manière asynchrone.
 
 ### Périodes de temporisation
 
@@ -305,7 +305,7 @@ Les administrateurs peuvent surveiller la file d'attente des e-mails depuis **Ad
 | **Envoyés** | E-mails délivrés avec succès |
 | **Échoués** | E-mails ayant échoué après toutes les tentatives |
 
-Cela fournit un contrôle rapide de l'état de la livraison des e-mails. Un nombre croissant d'e-mails « En attente » peut indiquer des problèmes de connectivité SMTP. Un nombre non nul d'e-mails « Échoués » mérite investigation — consultez les journaux du serveur pour obtenir des messages d'erreur détaillés.
+Cela fournit un contrôle rapide de l'état de la livraison des e-mails. Un nombre croissant d'e-mails « En attente » peut indiquer des problèmes de connectivité SMTP. Un nombre non nul d'e-mails « Échoués » mérite investigation. Consultez les journaux du serveur pour obtenir des messages d'erreur détaillés.
 
 ### Envoyer un e-mail de test
 
@@ -316,7 +316,7 @@ Le tableau de bord de la file d'attente des e-mails inclut un bouton **Envoyer u
 - Les e-mails arrivent dans la boîte de réception (et non dans les spams)
 
 <Callout type="info">
-  Le bouton **Envoyer un e-mail de test** envoie un vrai e-mail via la file d'attente — il est différent du bouton **Tester la connexion** dans les paramètres SMTP, qui ne fait que vérifier la connexion SMTP sans envoyer d'e-mail.
+  Le bouton **Envoyer un e-mail de test** envoie un vrai e-mail via la file d'attente ; il est différent du bouton **Tester la connexion** dans les paramètres SMTP, qui ne fait que vérifier la connexion SMTP sans envoyer d'e-mail.
 </Callout>
 
 ### Points de terminaison API

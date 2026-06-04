@@ -13,21 +13,21 @@ This guide takes you from zero to a running OUITRANSFER instance in about 5 minu
 
 Before you begin, make sure you have:
 
-- **Docker** — Container runtime ([installation guide](https://docs.docker.com/get-docker/))
-- **Docker Compose** — Multi-container orchestration ([installation guide](https://docs.docker.com/compose/install/))
+- **Docker**: Container runtime ([installation guide](https://docs.docker.com/get-docker/))
+- **Docker Compose**: Multi-container orchestration ([installation guide](https://docs.docker.com/compose/install/))
 - **2 GB+ available disk space** for the application and your files
 
 **Ports you'll need available:**
-- **5487** — Web interface (required)
-- **9000** — Storage service. Browsers upload and download files directly to this port when using the built-in storage. Not needed if you use an external S3 provider or a reverse proxy that exposes storage on a domain.
-- **3333** — API server, internal only. Only expose it if you want direct access to the API or its documentation.
+- **5487**: Web interface (required)
+- **9000**: Storage service. Browsers upload and download files directly to this port when using the built-in storage. Not needed if you use an external S3 provider or a reverse proxy that exposes storage on a domain.
+- **3333**: API server, internal only. Only expose it if you want direct access to the API or its documentation.
 
 <Callout>
   **Platform Support**: Thanks to Docker's containerized architecture, OUITRANSFER can be deployed on
-  any platform that supports Docker — Linux, macOS, Windows, NAS devices, and cloud VMs alike. For
+  any platform that supports Docker: Linux, macOS, Windows, NAS devices, and cloud VMs alike. For
   those unfamiliar with Docker: it packages the entire application and its dependencies into isolated
   containers, so the host operating system matters very little. That said, **a Linux server is
-  recommended for production** deployments — it offers better I/O performance, lower overhead, and
+  recommended for production** deployments, offering better I/O performance, lower overhead, and
   more predictable behavior for long-running container workloads.
 </Callout>
 
@@ -45,7 +45,7 @@ Docker Compose manages the startup order automatically: storage starts first, th
 
 ---
 
-## Step 1 — Generate Your Secrets
+## Step 1: Generate Your Secrets
 
 OUITRANSFER requires three independent cryptographic secrets. Run this command three separate times and save each output:
 
@@ -61,7 +61,7 @@ You'll use the three values as `JWT_SECRET`, `CSRF_SECRET`, and `COOKIE_SECRET` 
 
 ---
 
-## Step 2 — Configure Your Environment
+## Step 2: Configure Your Environment
 
 Create a `.env` file from the provided example:
 
@@ -105,7 +105,7 @@ COOKIE_SECRET=<third openssl output>
 </Callout>
 
 <Callout type="info">
-  **Why two URL variables?** OUITRANSFER generates presigned URLs — short-lived signed URLs that
+  **Why two URL variables?** OUITRANSFER generates presigned URLs, short-lived signed URLs that
   browsers use to upload and download files **directly** from the storage service, bypassing the API
   server. Both variables must be addresses the **user's browser can reach**, not internal Docker
   hostnames like `server:3333` or `storage:9000`.
@@ -120,7 +120,7 @@ COOKIE_SECRET=<third openssl output>
 
 ---
 
-## Step 3 — Create Your docker-compose.yml
+## Step 3: Create Your docker-compose.yml
 
 Create a `docker-compose.yml` file in the same directory as your `.env`:
 
@@ -201,7 +201,7 @@ volumes:
   server_data:
 ```
 
-This configuration uses **Docker-managed named volumes** for storage and server data — the recommended approach for most deployments. Docker handles permissions automatically and I/O performance is optimal.
+This configuration uses **Docker-managed named volumes** for storage and server data, the recommended approach for most deployments. Docker handles permissions automatically and I/O performance is optimal.
 
 <Callout type="info">
   **Need direct access to data files on your host filesystem?** (e.g. NAS, manual backups, bind
@@ -210,23 +210,23 @@ This configuration uses **Docker-managed named volumes** for storage and server 
 
 ---
 
-## Step 4 — Start OUITRANSFER
+## Step 4: Start OUITRANSFER
 
 ```bash
 docker compose up -d
 ```
 
-Docker pulls the images on first run (a few hundred MB — this may take a minute depending on your connection). To watch the startup logs in real time:
+Docker pulls the images on first run (a few hundred MB, which may take a minute depending on your connection). To watch the startup logs in real time:
 
 ```bash
 docker compose logs -f
 ```
 
-Wait until the server logs show `Fastify server listening`. The first startup also runs database migrations and seeds the initial app configuration automatically — no manual steps needed.
+Wait until the server logs show `Fastify server listening`. The first startup also runs database migrations and seeds the initial app configuration automatically. No manual steps needed.
 
 ---
 
-## Step 5 — Access and First Setup
+## Step 5: Access and First Setup
 
 Open your browser and go to:
 
@@ -238,7 +238,7 @@ Replace `YOUR_IP` with the value you used in `FRONTEND_ORIGIN` (or `localhost` i
 
 **Creating your admin account:**
 
-On a fresh install you'll see the login page. Click **Register** to create the first account — the first registered user is automatically granted **administrator privileges**.
+On a fresh install you'll see the login page. Click **Register** to create the first account. The first registered user is automatically granted **administrator privileges**.
 
 <Callout type="warn">
   **Register right away.** If your instance is reachable from a local network or the internet,
@@ -250,7 +250,7 @@ Once logged in, explore the **Settings** panel (accessible from the profile menu
 
 ---
 
-## After First Login — Recommended Setup
+## After First Login: Recommended Setup
 
 ### Personalize your instance
 
@@ -259,8 +259,8 @@ Go to **Settings → General** to set your application name, logo, and descripti
 ### Configure email (strongly recommended)
 
 Go to **Settings → Email** to configure an SMTP server. This enables:
-- **Password reset** — users who forget their password can recover their account by email.
-- **Share notifications** — recipients get an email when a file is shared with them.
+- **Password reset**: users who forget their password can recover their account by email.
+- **Share notifications**: recipients get an email when a file is shared with them.
 
 Without SMTP, users who lose access to their account cannot recover it without admin intervention.
 
@@ -309,7 +309,7 @@ volumes:
 
 ## Configuration Reference
 
-### `.env` — Required Variables
+### `.env`: Required Variables
 
 | Variable | Description |
 |----------|-------------|
@@ -317,11 +317,11 @@ volumes:
 | `STORAGE_PUBLIC_URL` | URL where browsers reach the storage service (e.g. `http://192.168.1.100:9000`). Used to generate presigned URLs and configure the Content Security Policy. |
 | `S3_ACCESS_KEY` | S3 access key shared between RustFS and the API server. |
 | `S3_SECRET_KEY` | S3 secret key shared between RustFS and the API server. |
-| `JWT_SECRET` | JWT signing key — at least 32 characters. Generate with `openssl rand -hex 32`. |
-| `CSRF_SECRET` | CSRF HMAC key — at least 32 characters, must differ from `JWT_SECRET`. |
-| `COOKIE_SECRET` | Cookie signing key — at least 32 characters, must differ from the other two. |
+| `JWT_SECRET` | JWT signing key: at least 32 characters. Generate with `openssl rand -hex 32`. |
+| `CSRF_SECRET` | CSRF HMAC key: at least 32 characters, must differ from `JWT_SECRET`. |
+| `COOKIE_SECRET` | Cookie signing key: at least 32 characters, must differ from the other two. |
 
-### `.env` — Optional Variables
+### `.env`: Optional Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
@@ -329,11 +329,11 @@ volumes:
 | `OUITRANSFER_UID` | `1001` | User ID for server container processes. Useful for NAS or bind-mount setups. |
 | `OUITRANSFER_GID` | `1001` | Group ID for server container processes. |
 | `DEFAULT_LANGUAGE` | `en-US` | Default UI language. See [available languages](/docs/v1-beta/available-languages). |
-| `ENCRYPTION_SECRET` | — | AES-256-GCM key for encrypting sensitive data at rest. Required for LDAP. Generate with `openssl rand -hex 32`. |
+| `ENCRYPTION_SECRET` | None | AES-256-GCM key for encrypting sensitive data at rest. Required for LDAP. Generate with `openssl rand -hex 32`. |
 | `PRESIGNED_URL_EXPIRATION` | `3600` | Upload presigned URL expiry in seconds (default: 1 hour). |
 | `PRESIGNED_GET_URL_EXPIRATION` | `900` | Download presigned URL expiry in seconds (default: 15 min). |
 | `TRUST_PROXY` | `loopback` | Fastify trusted proxy setting. Use `loopback` for direct deployments; set your proxy IP when behind a reverse proxy. |
-| `OAUTH_ALLOWED_REDIRECT_HOSTS` | — | Comma-separated additional redirect hosts for custom OIDC providers. |
+| `OAUTH_ALLOWED_REDIRECT_HOSTS` | None | Comma-separated additional redirect hosts for custom OIDC providers. |
 | `ENABLE_API_DOCS` | `false` | Expose API documentation at `/docs` and `/swagger` in production. |
 
 ### Fixed Variables (set in docker-compose.yml)
@@ -342,11 +342,11 @@ These are set directly in `docker-compose.yml` and do not normally need to chang
 
 | Variable | Value | Description |
 |----------|-------|-------------|
-| `S3_ENDPOINT` | `storage` | Docker service name for internal storage — do not change. |
+| `S3_ENDPOINT` | `storage` | Docker service name for internal storage (do not change). |
 | `S3_PORT` | `9000` | Internal storage port. |
 | `S3_USE_SSL` | `false` | No TLS on the internal Docker network. |
 | `S3_BUCKET_NAME` | `ouitransfer-files` | Bucket name created at startup. |
-| `API_BASE_URL` | `http://server:3333` | Internal API URL — uses Docker service name, do not change. |
+| `API_BASE_URL` | `http://server:3333` | Internal API URL, uses Docker service name (do not change). |
 
 ---
 
@@ -380,22 +380,22 @@ curl http://localhost:3333/health
 
 ### Deployment
 
-- **[Reverse Proxy Configuration](/docs/v1-beta/reverse-proxy-configuration)** — HTTPS with Traefik, Nginx, or Caddy; `SECURE_SITE=true`
-- **[UID/GID Configuration](/docs/v1-beta/uid-gid-configuration)** — File permissions for NAS systems and bind-mount setups
-- **[S3 Storage Providers](/docs/v1-beta/s3-providers)** — Use external S3 (AWS, Backblaze B2, DigitalOcean Spaces, etc.) instead of built-in RustFS
-- **[Manual Installation](/docs/v1-beta/manual-installation)** — Run without Docker, directly from source
+- **[Reverse Proxy Configuration](/docs/v1-beta/reverse-proxy-configuration):** HTTPS with Traefik, Nginx, or Caddy; `SECURE_SITE=true`
+- **[UID/GID Configuration](/docs/v1-beta/uid-gid-configuration):** File permissions for NAS systems and bind-mount setups
+- **[S3 Storage Providers](/docs/v1-beta/s3-providers):** Use external S3 (AWS, Backblaze B2, DigitalOcean Spaces, etc.) instead of built-in RustFS
+- **[Manual Installation](/docs/v1-beta/manual-installation):** Run without Docker, directly from source
 
 ### Features
 
-- **[Storage Quotas](/docs/v1-beta/quotas)** — Per-user and per-group storage limits
-- **[Groups](/docs/v1-beta/groups)** — Organize users with group-level quota policies
-- **[LDAP / Active Directory](/docs/v1-beta/ldap-configuration)** — Sync users and groups from Active Directory
-- **[OIDC / SSO](/docs/v1-beta/oidc-authentication)** — Single sign-on with Google, GitHub, and more
+- **[Storage Quotas](/docs/v1-beta/quotas):** Per-user and per-group storage limits
+- **[Groups](/docs/v1-beta/groups):** Organize users with group-level quota policies
+- **[LDAP / Active Directory](/docs/v1-beta/ldap-configuration):** Sync users and groups from Active Directory
+- **[OIDC / SSO](/docs/v1-beta/oidc-authentication):** Single sign-on with Google, GitHub, and more
 
 ### Integration & Development
 
-- **[API Reference](/docs/v1-beta/api)** — Integrate OUITRANSFER with your applications
-- **[Architecture](/docs/v1-beta/architecture)** — How the pieces fit together
+- **[API Reference](/docs/v1-beta/api):** Integrate OUITRANSFER with your applications
+- **[Architecture](/docs/v1-beta/architecture):** How the pieces fit together
 
 ---
 

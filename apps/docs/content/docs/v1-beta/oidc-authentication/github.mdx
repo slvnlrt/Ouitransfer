@@ -7,7 +7,7 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 
 GitHub is one of OUITRANSFER's officially supported OIDC providers, offering secure authentication through GitHub OAuth 2.0. This integration allows users to sign in to OUITRANSFER using their existing GitHub accounts, making it perfect for developer teams, open-source projects, and organizations already using GitHub for version control and collaboration.
 
-<ZoomableImage src="/assets/v3/oidc/github/sign-in-with-github.png" alt="Sign in with GitHub" />
+<ZoomableImage src="/assets/v1/oidc/github/sign-in-with-github.png" alt="Sign in with GitHub" />
 
 ## Why use GitHub authentication?
 
@@ -42,7 +42,7 @@ To get started with GitHub authentication, you'll need to create an OAuth App in
 
 2. **Create new OAuth App**: Click **"New OAuth App"** button
 
-<ZoomableImage src="/assets/v3/oidc/github/developer-settings.png" alt="GitHub Developer Settings" />
+<ZoomableImage src="/assets/v1/oidc/github/developer-settings.png" alt="GitHub Developer Settings" />
 
 3. **Enter application details**:
    - **Application name**: Enter a descriptive name like "OUITRANSFER File Sharing"
@@ -51,7 +51,7 @@ To get started with GitHub authentication, you'll need to create an OAuth App in
    - **Authorization callback URL**: Enter your callback URL (see below)
 
 <ZoomableImage
-  src="/assets/v3/oidc/github/oauth-app-details.png"
+  src="/assets/v1/oidc/github/oauth-app-details.png"
   alt="GitHub OAuth App Details"
   legend="This is a fake application, you have to use your own."
 />
@@ -82,7 +82,7 @@ Now you'll get the credentials that OUITRANSFER will use to authenticate with Gi
 2. **Generate Client Secret**: Click **"Generate a new client secret"** to create a new secret
 
 <ZoomableImage
-  src="/assets/v3/oidc/github/oauth-credentials.png"
+  src="/assets/v1/oidc/github/oauth-credentials.png"
   alt="GitHub OAuth Credentials"
   legend="The client ID and client secret shown in the image are examples only (fake credentials). You must use your own credentials from GitHub."
 />
@@ -105,7 +105,7 @@ To configure GitHub authentication in OUITRANSFER, you need administrator access
 
 3. **Navigate to authentication**: Find and click on the **Authentication Providers** configuration section
 
-<ZoomableImage src="/assets/v3/oidc/auth-providers.png" alt="OUITRANSFER Authentication Providers" />
+<ZoomableImage src="/assets/v1/oidc/auth-providers.png" alt="OUITRANSFER Authentication Providers" />
 
 ### Enabling GitHub provider
 
@@ -115,7 +115,7 @@ GitHub comes pre-configured as an official provider, so the setup process is str
 
 2. **Enable the provider**: Toggle the status to **Enabled**
 
-<ZoomableImage src="/assets/v3/oidc/github/enabled-github.png" alt="OUITRANSFER GitHub Provider Enabled" />
+<ZoomableImage src="/assets/v1/oidc/github/enabled-github.png" alt="OUITRANSFER GitHub Provider Enabled" />
 
 After enabling the provider, click on the pen icon to configure the provider.
 
@@ -125,7 +125,7 @@ After enabling the provider, click on the pen icon to configure the provider.
    - **Scopes**: Add the scopes you want to use. The default scopes are `user:email`.
 
 <ZoomableImage
-  src="/assets/v3/oidc/github/edit-github.png"
+  src="/assets/v1/oidc/github/edit-github.png"
   alt="Edit GitHub Provider"
   legend="This is a fake application, you have to use your own."
 />
@@ -142,7 +142,7 @@ Configure additional settings to customize the authentication behavior:
 
 **Icon**: you can choose the icon you want to use for the GitHub login button (default is `SiGithub`).
 
-<ZoomableImage src="/assets/v3/oidc/github/github-icon.png" alt="GitHub Icon" />
+<ZoomableImage src="/assets/v1/oidc/github/github-icon.png" alt="GitHub Icon" />
 
 > **Developer tip:** GitHub authentication works great for development teams and open-source projects.
 

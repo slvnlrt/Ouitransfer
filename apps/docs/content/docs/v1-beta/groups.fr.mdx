@@ -26,9 +26,9 @@ Accédez à **Groupes** (visible dans le menu de navigation pour les comptes adm
 
 Les champs de quota acceptent trois modes :
 
-- **Hériter** (`null`) — le groupe ne définit pas de limite ; chaque membre hérite du niveau suivant (valeur par défaut globale).
-- **Illimité** (`0`) — les membres de ce groupe n'ont aucune limite appliquée pour ce quota, quels que soient les paramètres globaux.
-- **Personnalisé** (une valeur positive en octets) — les membres de ce groupe sont plafonnés à cette valeur.
+- **Hériter** (`null`) : le groupe ne définit pas de limite ; chaque membre hérite du niveau suivant (valeur par défaut globale).
+- **Illimité** (`0`) : les membres de ce groupe n'ont aucune limite appliquée pour ce quota, quels que soient les paramètres globaux.
+- **Personnalisé** (une valeur positive en octets) : les membres de ce groupe sont plafonnés à cette valeur.
 
 <Callout type="warn">
   Définir un quota de groupe sur **Illimité** ne signifie pas « utiliser la valeur par défaut globale ». Cela signifie que la limite est activement supprimée pour ces membres. Utilisez **Hériter** si vous souhaitez que la valeur par défaut globale s'applique.
@@ -49,7 +49,7 @@ Pour retirer un membre, cliquez sur le bouton de suppression sur sa ligne. L'uti
 Vous pouvez également assigner un groupe lors de la modification d'un utilisateur individuel. Accédez à **Admin → Gestion des utilisateurs**, modifiez l'utilisateur et sélectionnez un groupe dans la liste déroulante **Groupe**. Choisissez **Aucun** pour retirer l'utilisateur de tout groupe.
 
 <Callout type="info">
-  Un utilisateur ne peut appartenir qu'à un seul groupe à la fois. L'affectation d'un utilisateur à un nouveau groupe le retire automatiquement de son groupe précédent — il n'est pas nécessaire de le désassigner au préalable.
+  Un utilisateur ne peut appartenir qu'à un seul groupe à la fois. L'affectation d'un utilisateur à un nouveau groupe le retire automatiquement de son groupe précédent. Il n'est pas nécessaire de le désassigner au préalable.
 </Callout>
 
 ## Héritage des quotas
@@ -62,7 +62,7 @@ Dérogation utilisateur  →  Dérogation de groupe  →  Valeur par défaut glo
 
 Plus précisément :
 
-1. Si l'utilisateur a une dérogation personnelle définie, elle prime — indépendamment de tout paramètre de groupe.
+1. Si l'utilisateur a une dérogation personnelle définie, elle prime, indépendamment de tout paramètre de groupe.
 2. Si l'utilisateur n'a pas de dérogation personnelle mais appartient à un groupe qui en possède une, la valeur du groupe est utilisée.
 3. Si ni l'utilisateur ni son groupe ne disposent d'une dérogation, la valeur par défaut globale définie dans les Paramètres s'applique.
 4. Les administrateurs bénéficient toujours de quotas illimités, indépendamment des paramètres de groupe ou globaux.
@@ -75,7 +75,7 @@ Plus précisément :
 | Hériter | 10 Go | 2 Go | **10 Go** (le groupe prime) |
 | Hériter | Hériter | 2 Go | **2 Go** (valeur par défaut globale) |
 | Hériter | Illimité | 2 Go | **Illimité** (le groupe supprime activement la limite) |
-| Hériter | — (aucun groupe) | 2 Go | **2 Go** (valeur par défaut globale) |
+| Hériter | (aucun groupe) | 2 Go | **2 Go** (valeur par défaut globale) |
 
 Le quota effectif de chaque utilisateur est affiché dans le formulaire d'édition de la Gestion des utilisateurs, accompagné d'un libellé indiquant la source de la résolution (**Dérogation utilisateur**, **Groupe : \{nom\}**, ou **Valeur par défaut globale**).
 
@@ -102,7 +102,7 @@ La valeur `ldapDn` est également retournée dans les réponses API (`GET /group
 Pour les instructions de configuration, consultez la documentation [Configuration LDAP](/docs/v1-beta/ldap-configuration).
 
 <Callout type="info">
-  La synchronisation LDAP respecte la contrainte d'un groupe par utilisateur. Si un utilisateur correspond à plusieurs correspondances de groupes AD, l'un d'eux est assigné mais le choix n'est pas déterministe — évitez les appartenances qui se chevauchent pour des résultats prévisibles.
+  La synchronisation LDAP respecte la contrainte d'un groupe par utilisateur. Si un utilisateur correspond à plusieurs correspondances de groupes AD, l'un d'eux est assigné mais le choix n'est pas déterministe. Évitez les appartenances qui se chevauchent pour des résultats prévisibles.
 </Callout>
 
 ## Référence API (administrateur)
@@ -133,7 +133,7 @@ Tous les points de terminaison nécessitent une session administrateur valide. L
 }
 ```
 
-**Mettre à jour un groupe** (`PUT /groups/:id`) — tous les champs sont optionnels :
+**Mettre à jour un groupe** (`PUT /groups/:id`) : tous les champs sont optionnels :
 
 ```json
 {
@@ -172,7 +172,7 @@ Tous les points de terminaison nécessitent une session administrateur valide. L
 }
 ```
 
-**Détail d'un groupe** (`GET /groups/:id`) — mêmes champs plus un tableau `members` :
+**Détail d'un groupe** (`GET /groups/:id`) : mêmes champs plus un tableau `members` :
 
 ```json
 {

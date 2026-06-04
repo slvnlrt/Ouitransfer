@@ -7,7 +7,7 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 
 Discord est l'un des fournisseurs OIDC officiellement pris en charge par OUITRANSFER. Il offre une authentification sécurisée via Discord OAuth 2.0. Cette intégration permet aux utilisateurs de se connecter à OUITRANSFER avec leur compte Discord existant, ce qui en fait une solution idéale pour les communautés de jeux, les équipes de développement et les organisations utilisant déjà Discord.
 
-<ZoomableImage src="/assets/v3/oidc/discord/sign-in-with-discord.png" alt="Se connecter avec Discord" />
+<ZoomableImage src="/assets/v1/oidc/discord/sign-in-with-discord.png" alt="Se connecter avec Discord" />
 
 ## Pourquoi utiliser l'authentification Discord ?
 
@@ -41,14 +41,14 @@ Pour démarrer avec l'authentification Discord, vous devez créer une applicatio
 
 1. **Accéder au Discord Developer Portal** : Rendez-vous sur [discord.com/developers/applications](https://discord.com/developers/applications)
 
-<ZoomableImage src="/assets/v3/oidc/discord/developer-portal-home.png" alt="Accueil du Discord Developer Portal" />
+<ZoomableImage src="/assets/v1/oidc/discord/developer-portal-home.png" alt="Accueil du Discord Developer Portal" />
 
 2. **Créer une nouvelle application** : Cliquez sur le bouton **"New Application"**
 3. **Saisir les informations de l'application** :
    - **Name** : Saisissez un nom descriptif comme « OUITRANSFER File Sharing »
    - **Accept Terms of Service and Developer Policy** : Cochez la case
 
-<ZoomableImage src="/assets/v3/oidc/discord/create-application-modal.png" alt="Fenêtre de création d'application Discord" />
+<ZoomableImage src="/assets/v1/oidc/discord/create-application-modal.png" alt="Fenêtre de création d'application Discord" />
 
 4. **Créer l'application** : Cliquez sur **"Create"** pour générer votre application
 
@@ -62,7 +62,7 @@ Après avoir créé votre application, vous devez configurer les paramètres de 
    - **Cover Image** : Image de bannière optionnelle pour améliorer l'identité visuelle
 
 <ZoomableImage
-  src="/assets/v3/oidc/discord/application-settings.png"
+  src="/assets/v1/oidc/discord/application-settings.png"
   alt="Paramètres de l'application Discord"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -78,7 +78,7 @@ Vous allez maintenant configurer les paramètres OAuth2 que OUITRANSFER utiliser
 
 1. **Accéder à OAuth2** : Dans la barre latérale gauche, cliquez sur **"OAuth2"**
 
-<ZoomableImage src="/assets/v3/oidc/discord/oauth2-general.png" alt="Paramètres généraux OAuth2 de Discord" />
+<ZoomableImage src="/assets/v1/oidc/discord/oauth2-general.png" alt="Paramètres généraux OAuth2 de Discord" />
 
 2. **Configurer les paramètres OAuth2** :
    - **Client Secret** : Cliquez sur **"Reset Secret"** pour générer un nouveau secret client
@@ -106,7 +106,7 @@ Vous devez configurer plusieurs URL dans les paramètres de votre application Di
 5. **Enregistrer les modifications** : Cliquez sur **"Save Changes"** pour appliquer votre configuration
 
 <ZoomableImage
-  src="/assets/v3/oidc/discord/required-scopes.png"
+  src="/assets/v1/oidc/discord/required-scopes.png"
   alt="Scopes requis Discord"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -125,7 +125,7 @@ Pour configurer l'authentification Discord dans OUITRANSFER, vous devez disposer
 
 3. **Accéder à l'authentification** : Trouvez et cliquez sur la section de configuration **Authentication Providers**
 
-<ZoomableImage src="/assets/v3/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
+<ZoomableImage src="/assets/v1/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
 
 ### Activer le fournisseur Discord
 
@@ -135,7 +135,7 @@ Discord est préconfiguré en tant que fournisseur officiel, ce qui simplifie le
 
 2. **Activer le fournisseur** : Basculez le statut sur **Enabled**
 
-<ZoomableImage src="/assets/v3/oidc/discord/OUITRANSFER-enabled-discord.png" alt="Fournisseur Discord OUITRANSFER activé" />
+<ZoomableImage src="/assets/v1/oidc/discord/OUITRANSFER-enabled-discord.png" alt="Fournisseur Discord OUITRANSFER activé" />
 
 Après avoir activé le fournisseur, cliquez sur l'icône de crayon pour le configurer.
 
@@ -145,7 +145,7 @@ Après avoir activé le fournisseur, cliquez sur l'icône de crayon pour le conf
    - **Scopes** : Ajoutez les scopes que vous souhaitez utiliser. Les scopes par défaut sont `identify` et `email`.
 
 <ZoomableImage
-  src="/assets/v3/oidc/discord/edit-discord.png"
+  src="/assets/v1/oidc/discord/edit-discord.png"
   alt="Modifier le fournisseur Discord"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -162,7 +162,7 @@ Configurez des paramètres supplémentaires pour personnaliser le comportement d
 
 **Icon** : vous pouvez choisir l'icône à utiliser pour le bouton de connexion Discord (par défaut : `FaDiscord`).
 
-<ZoomableImage src="/assets/v3/oidc/discord/discord-icon.png" alt="Icône Discord" />
+<ZoomableImage src="/assets/v1/oidc/discord/discord-icon.png" alt="Icône Discord" />
 
 > **Conseil communautaire :** L'authentification Discord convient parfaitement aux communautés de jeux et aux équipes de développement. Envisagez d'activer l'inscription automatique pour les communautés Discord de confiance.
 

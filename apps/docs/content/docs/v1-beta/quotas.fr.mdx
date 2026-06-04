@@ -11,9 +11,9 @@ Les quotas de stockage contrôlent la quantité de données que chaque utilisate
 
 Ouitransfer utilise un système de quotas à deux niveaux :
 
-- **Valeurs par défaut globales** — configurées sur la page Paramètres. Elles s'appliquent à tous les utilisateurs ordinaires qui ne bénéficient d'aucune dérogation personnelle ou de groupe.
-- **Dérogations par utilisateur** — définies par utilisateur dans la Gestion des utilisateurs. Elles ont la priorité sur les valeurs par défaut globales pour l'utilisateur concerné.
-- **Héritage au niveau du groupe** — un utilisateur peut appartenir à un groupe qui possède ses propres dérogations de quota, situées entre les dérogations par utilisateur et les valeurs par défaut globales. Consultez la page [Groupes](/docs/v1-beta/groups) pour plus de détails.
+- **Valeurs par défaut globales** : configurées sur la page Paramètres. Elles s'appliquent à tous les utilisateurs ordinaires qui ne bénéficient d'aucune dérogation personnelle ou de groupe.
+- **Dérogations par utilisateur** : définies par utilisateur dans la Gestion des utilisateurs. Elles ont la priorité sur les valeurs par défaut globales pour l'utilisateur concerné.
+- **Héritage au niveau du groupe** : un utilisateur peut appartenir à un groupe qui possède ses propres dérogations de quota, situées entre les dérogations par utilisateur et les valeurs par défaut globales. Consultez la page [Groupes](/docs/v1-beta/groups) pour plus de détails.
 
 Les administrateurs sont exemptés des valeurs par défaut globales par conception. Sauf si vous définissez explicitement une dérogation sur un compte administrateur, les administrateurs disposent d'un stockage et d'une taille de fichier illimités.
 
@@ -35,8 +35,8 @@ Les comptes administrateur ont une limite **illimitée** (aucun plafond) par dé
 
 | Valeur | Signification |
 |--------|---------------|
-| `null` | Aucune dérogation — hérite du niveau suivant dans la chaîne |
-| `0` | Illimité — aucune limite appliquée |
+| `null` | Aucune dérogation : hérite du niveau suivant dans la chaîne |
+| `0` | Illimité : aucune limite appliquée |
 | `> 0` | Limite explicite en octets |
 
 Les valeurs BigInt en octets sont sérialisées sous forme de chaînes dans les réponses API.
@@ -60,8 +60,8 @@ Ces paramètres s'appliquent à tout utilisateur ordinaire ne disposant ni de d�
 
 Accédez à **Admin → Gestion des utilisateurs**, puis ouvrez le dialogue **Modifier** d'un utilisateur. La section **Quota** en bas du formulaire vous permet de configurer les dérogations de cet utilisateur :
 
-- **Taille maximale de fichier** — choisissez **Hériter** (utiliser le niveau suivant dans la chaîne), **Illimité**, ou **Personnalisé** (saisir une valeur en octets).
-- **Stockage total maximal** — mêmes trois options.
+- **Taille maximale de fichier** : choisissez **Hériter** (utiliser le niveau suivant dans la chaîne), **Illimité**, ou **Personnalisé** (saisir une valeur en octets).
+- **Stockage total maximal** : mêmes trois options.
 
 Le formulaire affiche également un résumé en lecture seule des limites effectives actuelles de l'utilisateur (résolues à travers la chaîne complète), son utilisation actuelle du stockage, et la source de chaque valeur effective (dérogation utilisateur, nom du groupe, valeur par défaut globale ou valeur par défaut administrateur).
 
@@ -82,9 +82,9 @@ Total = SUM(File.size pour les fichiers appartenant à l'utilisateur)
 
 Points importants :
 
-- Seuls les fichiers finalisés enregistrés en base de données sont comptabilisés. Les fragments de téléversement multipart en cours, stockés côté S3, sont exclus — il s'agit d'une préoccupation du cycle de vie S3, pas d'une préoccupation de quota.
+- Seuls les fichiers finalisés enregistrés en base de données sont comptabilisés. Les fragments de téléversement multipart en cours, stockés côté S3, sont exclus (il s'agit d'une préoccupation du cycle de vie S3, pas d'une préoccupation de quota).
 - Les **partages** sont des vues sur des fichiers existants et ne sont pas comptabilisés séparément. La création d'un partage ne consomme pas de stockage supplémentaire.
-- Les fichiers reçus via un **partage inversé** appartenant à l'utilisateur *sont* comptabilisés — ils sont stockés sous son compte une fois acceptés.
+- Les fichiers reçus via un **partage inversé** appartenant à l'utilisateur *sont* comptabilisés ; ils sont stockés sous son compte une fois acceptés.
 
 <Callout type="info">
   Pour nettoyer automatiquement les fragments de téléversement multipart incomplets, configurez une politique de cycle de vie `AbortIncompleteMultipartUpload` sur votre compartiment S3-compatible. Cela n'est pas géré par l'application.
@@ -94,21 +94,21 @@ Points importants :
 
 | Action | Utilisateur en dépassement de quota ? | Résultat |
 |--------|---------------------------------------|----------|
-| Téléverser un fichier | Oui | **Bloqué** — erreur 400 avec un message explicite |
+| Téléverser un fichier | Oui | **Bloqué** : erreur 400 avec un message explicite |
 | Téléverser un fichier | Non | Vérifié par rapport à la taille maximale de fichier et au stockage total maximal |
-| Créer un partage | Oui | **Autorisé** — les partages ne consomment pas de nouveau stockage |
+| Créer un partage | Oui | **Autorisé** : les partages ne consomment pas de nouveau stockage |
 | Créer un partage inversé | Oui | **Autorisé** (avec un avertissement dans l'application) |
-| Téléversements tiers vers un partage inversé | Oui | **Autorisé** — les téléverseurs externes ne sont jamais bloqués |
+| Téléversements tiers vers un partage inversé | Oui | **Autorisé** : les téléverseurs externes ne sont jamais bloqués |
 
 La raison pour laquelle les téléversements tiers vers un partage inversé ne sont pas bloqués : le créateur peut être en dépassement de quota, mais bloquer les clients externes romprait le contrat de service. Le prochain téléversement direct du créateur sera bloqué, l'incitant à libérer de l'espace.
 
 <Callout type="info">
-  Les vérifications de quota sont optimistes. Deux téléversements simultanés peuvent chacun passer la vérification individuellement tout en dépassant ensemble la limite. Le léger dépassement est acceptable — le téléversement suivant sera bloqué. Les fichiers font généralement quelques mégaoctets tandis que les quotas sont en gigaoctets, les dépassements sont donc négligeables.
+  Les vérifications de quota sont optimistes. Deux téléversements simultanés peuvent chacun passer la vérification individuellement tout en dépassant ensemble la limite. Le léger dépassement est acceptable ; le téléversement suivant sera bloqué. Les fichiers font généralement quelques mégaoctets tandis que les quotas sont en gigaoctets, les dépassements sont donc négligeables.
 </Callout>
 
 ## Indicateur de quota
 
-Chaque utilisateur authentifié voit un **indicateur d'utilisation du stockage** dans la Barre de statut système — le panneau rétractable qui apparaît sous la barre de navigation sur le tableau de bord. Développez-le pour consulter les détails du quota.
+Chaque utilisateur authentifié voit un **indicateur d'utilisation du stockage** dans la Barre de statut système, le panneau rétractable qui apparaît sous la barre de navigation sur le tableau de bord. Développez-le pour consulter les détails du quota.
 
 L'indicateur affiche :
 
@@ -135,7 +135,7 @@ Tous les points de terminaison de gestion des quotas nécessitent une session ad
 | `GET` | `/users/:id/quota` | Retourne les limites effectives de l'utilisateur, son utilisation actuelle du stockage, le niveau d'alerte et les valeurs de dérogation. Les champs BigInt sont retournés sous forme de chaînes. |
 | `PATCH` | `/users/:id/quota` | Définit les dérogations de quota par utilisateur. Accepte `null` (supprimer la dérogation / hériter), `"0"` (illimité) ou une valeur positive en octets sous forme de nombre ou de chaîne numérique. Les deux champs sont optionnels ; omettez un champ pour le laisser inchangé. |
 
-### `GET /users/:id/quota` — Réponse
+### `GET /users/:id/quota` : Réponse
 
 ```json
 {
@@ -166,7 +166,7 @@ Les champs **`sources`** décrivent l'origine de chaque limite effective :
 | `"global"` | Retour à la valeur par défaut globale |
 | `"admin-default"` | Compte administrateur sans dérogation (illimité) |
 
-### `PATCH /users/:id/quota` — Corps de la requête
+### `PATCH /users/:id/quota` : Corps de la requête
 
 ```json
 {

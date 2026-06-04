@@ -39,7 +39,7 @@ Services en cours d'exécution :
 - **Web** (Next.js) : http://localhost:3000
 - **Docs** (Fumadocs) : http://localhost:3001
 
-**Aucune configuration S3 requise.** Le serveur démarre sans stockage — l'authentification, la configuration et l'interface fonctionnent tous. Les opérations sur les fichiers ne sont pas disponibles tant que vous ne connectez pas S3 (voir `apps/server/.env.development` pour la configuration RustFS locale). Les secrets de développement (`JWT_SECRET` etc.) sont commités dans les fichiers `.env.development` — aucune configuration manuelle n'est nécessaire.
+**Aucune configuration S3 requise.** Le serveur démarre sans stockage. L'authentification, la configuration et l'interface fonctionnent tous. Les opérations sur les fichiers ne sont pas disponibles tant que vous ne connectez pas S3 (voir `apps/server/.env.development` pour la configuration RustFS locale). Les secrets de développement (`JWT_SECRET` etc.) sont commités dans les fichiers `.env.development`, donc aucune configuration manuelle n'est nécessaire.
 
 ---
 
@@ -47,7 +47,7 @@ Services en cours d'exécution :
 
 ### Lint et formatage
 
-[**Biome**](https://biomejs.dev/) gère à la fois le lint et le formatage (remplace ESLint + Prettier). [**Lefthook**](https://github.com/evilmartians/lefthook) exécute Biome automatiquement sur les fichiers stagés avant chaque commit — aucun formatage manuel n'est nécessaire.
+[**Biome**](https://biomejs.dev/) gère à la fois le lint et le formatage (remplace ESLint + Prettier). [**Lefthook**](https://github.com/evilmartians/lefthook) exécute Biome automatiquement sur les fichiers stagés avant chaque commit ; aucun formatage manuel n'est nécessaire.
 
 ```bash
 just lint                      # Check all files
@@ -56,8 +56,8 @@ pnpm biome check --write .     # Auto-fix
 
 ### Tests
 
-- **Unitaires / intégration** : [Vitest](https://vitest.dev/) — `just test`
-- **E2E** : [Playwright](https://playwright.dev/) — `pnpm e2e` (nécessite un serveur de développement en cours d'exécution)
+- **Unitaires / intégration** : [Vitest](https://vitest.dev/) : `just test`
+- **E2E** : [Playwright](https://playwright.dev/) : `pnpm e2e` (nécessite un serveur de développement en cours d'exécution)
 
 ### Recettes `just`
 
@@ -89,7 +89,7 @@ Les commits sont imposés par **commitlint** (via Lefthook) en utilisant la spé
 <type>(<scope>): <description>
 ```
 
-Le **type** et le **scope** sont tous deux obligatoires et doivent figurer dans les listes autorisées — le commit est rejeté dans le cas contraire. Consultez [Structure du dépôt → Format des messages de commit](/docs/v1-beta/github-architecture#commit-message-format) pour la référence complète.
+Le **type** et le **scope** sont tous deux obligatoires et doivent figurer dans les listes autorisées ; le commit est rejeté dans le cas contraire. Consultez [Structure du dépôt → Format des messages de commit](/docs/v1-beta/github-architecture#commit-message-format) pour la référence complète.
 
 Exemples :
 ```
@@ -105,11 +105,11 @@ chore(deps): update Fastify to v5.3
 
 1. Créez une branche depuis `main` : `git checkout -b fix/your-branch-name upstream/main`
 2. Effectuez des commits atomiques et conventionnels
-3. Exécutez `just validate` — doit passer avant d'ouvrir une pull request
+3. Exécutez `just validate` : doit passer avant d'ouvrir une pull request
 4. Ouvrez une pull request contre la branche `main` de `slvnlrt/ouitransfer`
 5. Remplissez le modèle de pull request en indiquant ce qui a changé et pourquoi
 
-Gardez les pull requests ciblées — un seul sujet par pull request facilite la révision. Consultez [la documentation GitHub sur les pull requests](https://docs.github.com/en/pull-requests) pour les mécanismes de fork et d'ouverture de pull requests.
+Gardez les pull requests ciblées : un seul sujet par pull request facilite la révision. Consultez [la documentation GitHub sur les pull requests](https://docs.github.com/en/pull-requests) pour les mécanismes de fork et d'ouverture de pull requests.
 
 ---
 
@@ -117,15 +117,15 @@ Gardez les pull requests ciblées — un seul sujet par pull request facilite la
 
 Utilisez des noms descriptifs suivant ce pattern :
 
-- `feature/user-authentication` — nouvelles fonctionnalités
-- `fix/login-bug` — corrections de bugs
-- `docs/api-documentation` — mises à jour de documentation
-- `refactor/database-queries` — améliorations du code
+- `feature/user-authentication` : nouvelles fonctionnalités
+- `fix/login-bug` : corrections de bugs
+- `docs/api-documentation` : mises à jour de documentation
+- `refactor/database-queries` : améliorations du code
 
 ---
 
 ## Lectures complémentaires
 
-- [**CONTRIBUTING.md**](https://github.com/slvnlrt/ouitransfer/blob/main/CONTRIBUTING.md) — guide complet incluant les notes d'architecture, la structure du projet et les patterns de test
+- [**CONTRIBUTING.md**](https://github.com/slvnlrt/ouitransfer/blob/main/CONTRIBUTING.md) : guide complet incluant les notes d'architecture, la structure du projet et les patterns de test
 - [Spécification Conventional Commits](https://www.conventionalcommits.org/)
 - [GitHub : Travailler avec des forks](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks)

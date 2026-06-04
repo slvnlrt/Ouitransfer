@@ -39,7 +39,7 @@ Running services:
 - **Web** (Next.js): http://localhost:3000
 - **Docs** (Fumadocs): http://localhost:3001
 
-**No S3 setup required.** The server starts without storage — auth, config, and the UI all work. File operations are unavailable until you connect S3 (see `apps/server/.env.development` for the local RustFS config). Dev secrets (`JWT_SECRET` etc.) are committed in `.env.development` files — no manual configuration needed.
+**No S3 setup required.** The server starts without storage. Auth, config, and the UI all work. File operations are unavailable until you connect S3 (see `apps/server/.env.development` for the local RustFS config). Dev secrets (`JWT_SECRET` etc.) are committed in `.env.development` files, so no manual configuration is needed.
 
 ---
 
@@ -47,7 +47,7 @@ Running services:
 
 ### Linting & Formatting
 
-[**Biome**](https://biomejs.dev/) handles both linting and formatting (replaces ESLint + Prettier). [**Lefthook**](https://github.com/evilmartians/lefthook) runs Biome automatically on staged files before every commit — no manual formatting needed.
+[**Biome**](https://biomejs.dev/) handles both linting and formatting (replaces ESLint + Prettier). [**Lefthook**](https://github.com/evilmartians/lefthook) runs Biome automatically on staged files before every commit; no manual formatting needed.
 
 ```bash
 just lint                      # Check all files
@@ -56,8 +56,8 @@ pnpm biome check --write .     # Auto-fix
 
 ### Testing
 
-- **Unit / integration**: [Vitest](https://vitest.dev/) — `just test`
-- **E2E**: [Playwright](https://playwright.dev/) — `pnpm e2e` (requires running dev server)
+- **Unit / integration**: [Vitest](https://vitest.dev/): `just test`
+- **E2E**: [Playwright](https://playwright.dev/): `pnpm e2e` (requires running dev server)
 
 ### `just` Recipes
 
@@ -89,7 +89,7 @@ Commits are enforced by **commitlint** (via Lefthook) using the [Conventional Co
 <type>(<scope>): <description>
 ```
 
-Both **type** and **scope** are required and must be from the allowed lists — the commit is rejected otherwise. See [Repository Structure → Commit message format](/docs/v1-beta/github-architecture#commit-message-format) for the full reference.
+Both **type** and **scope** are required and must be from the allowed lists; the commit is rejected otherwise. See [Repository Structure → Commit message format](/docs/v1-beta/github-architecture#commit-message-format) for the full reference.
 
 Examples:
 ```
@@ -105,11 +105,11 @@ chore(deps): update Fastify to v5.3
 
 1. Create a branch from `main`: `git checkout -b fix/your-branch-name upstream/main`
 2. Make atomic, conventional commits
-3. Run `just validate` — must pass before opening a PR
+3. Run `just validate`: must pass before opening a PR
 4. Open a PR against the `main` branch of `slvnlrt/ouitransfer`
 5. Fill in the PR template with what changed and why
 
-Keep PRs focused — one concern per PR makes review faster. See [GitHub's pull request docs](https://docs.github.com/en/pull-requests) for the mechanics of forking and opening PRs.
+Keep PRs focused: one concern per PR makes review faster. See [GitHub's pull request docs](https://docs.github.com/en/pull-requests) for the mechanics of forking and opening PRs.
 
 ---
 
@@ -117,15 +117,15 @@ Keep PRs focused — one concern per PR makes review faster. See [GitHub's pull 
 
 Use descriptive names following this pattern:
 
-- `feature/user-authentication` — new features
-- `fix/login-bug` — bug fixes
-- `docs/api-documentation` — documentation updates
-- `refactor/database-queries` — code improvements
+- `feature/user-authentication`: new features
+- `fix/login-bug`: bug fixes
+- `docs/api-documentation`: documentation updates
+- `refactor/database-queries`: code improvements
 
 ---
 
 ## Further Reading
 
-- [**CONTRIBUTING.md**](https://github.com/slvnlrt/ouitransfer/blob/main/CONTRIBUTING.md) — full guide including architecture notes, project structure, and testing patterns
+- [**CONTRIBUTING.md**](https://github.com/slvnlrt/ouitransfer/blob/main/CONTRIBUTING.md): full guide including architecture notes, project structure, and testing patterns
 - [Conventional Commits spec](https://www.conventionalcommits.org/)
 - [GitHub: Working with forks](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks)

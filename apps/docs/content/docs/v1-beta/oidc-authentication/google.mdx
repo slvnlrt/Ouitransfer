@@ -7,7 +7,7 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 
 Google is one of OUITRANSFER's officially supported OIDC providers, offering secure and reliable authentication through Google OAuth 2.0. This integration allows users to sign in to OUITRANSFER using their existing Google accounts, providing a seamless single sign-on experience.
 
-<ZoomableImage src="/assets/v3/oidc/google/sign-in-with-google.png" alt="Sign in with Google" />
+<ZoomableImage src="/assets/v1/oidc/google/sign-in-with-google.png" alt="Sign in with Google" />
 
 ## Why use Google authentication?
 
@@ -41,11 +41,11 @@ To get started with Google authentication, you'll need to set up a project in Go
 
 1. **Navigate to Google Cloud Console**: Go to [console.cloud.google.com](https://console.cloud.google.com/)
 
-<ZoomableImage src="/assets/v3/oidc/google/cloud-console-home.png" alt="Google Cloud Console Home" />
+<ZoomableImage src="/assets/v1/oidc/google/cloud-console-home.png" alt="Google Cloud Console Home" />
 
 2. **Create or select a project**: Choose an existing project or create a new one for your OUITRANSFER installation
 
-<ZoomableImage src="/assets/v3/oidc/google/select-project-modal.png" alt="Google Cloud Console Select Project Modal" />
+<ZoomableImage src="/assets/v1/oidc/google/select-project-modal.png" alt="Google Cloud Console Select Project Modal" />
 
 3. **Enable the project**: Ensure the project is active and selected
 
@@ -56,7 +56,7 @@ The OAuth consent screen is what users see when they authenticate with Google.
 1. **Access OAuth consent screen**: Navigate to **APIs & Services** > **OAuth consent screen**
 
 <ZoomableImage
-  src="/assets/v3/oidc/google/oauth-consent-dropdown.png"
+  src="/assets/v1/oidc/google/oauth-consent-dropdown.png"
   alt="Google Cloud Console OAuth Consent Dropdown"
 />
 
@@ -64,7 +64,7 @@ The OAuth consent screen is what users see when they authenticate with Google.
    - **Internal** - For Google Workspace organizations (users within your domain only)
    - **External** - For public use (any Google user can authenticate)
 
-<ZoomableImage src="/assets/v3/oidc/google/user-type-select.png" alt="Google Cloud Console User Type Select" />
+<ZoomableImage src="/assets/v1/oidc/google/user-type-select.png" alt="Google Cloud Console User Type Select" />
 
 3. **Fill required information**:
    - **Application name**: Enter a descriptive name like "OUITRANSFER File Sharing"
@@ -79,18 +79,18 @@ Now you'll create the actual credentials that OUITRANSFER will use to authentica
 
 1. **Navigate to Credentials**: Go to **APIs & Services** > **Credentials**
 
-<ZoomableImage src="/assets/v3/oidc/google/credentials-select.png" alt="Google Cloud Console Credentials select" />
+<ZoomableImage src="/assets/v1/oidc/google/credentials-select.png" alt="Google Cloud Console Credentials select" />
 
 2. **Create OAuth client**: Click **+ CREATE CREDENTIALS** > **OAuth client ID**
 
 <ZoomableImage
-  src="/assets/v3/oidc/google/create-oauth-client-id.png"
+  src="/assets/v1/oidc/google/create-oauth-client-id.png"
   alt="Google Cloud Console Create OAuth Client ID"
 />
 
 3. **Select application type**: Choose **Web application**
 
-<ZoomableImage src="/assets/v3/oidc/google/web-app-select.png" alt="Google Cloud Console Web App Select" />
+<ZoomableImage src="/assets/v1/oidc/google/web-app-select.png" alt="Google Cloud Console Web App Select" />
 
 4. **Configure authorized URIs and authorized redirect URIs**:
 
@@ -115,12 +115,12 @@ You'll need to configure several URLs in your Google Cloud Console credentials. 
 > **Note:** Replace `yourdomain.com` with your actual domain name in all production and custom port URLs.
 > **Note:** You can add multiple redirect URIs for different environments (development, staging, production).
 
-<ZoomableImage src="/assets/v3/oidc/google/allowed-urls.png" alt="Google Cloud Console Allowed URLs" />
+<ZoomableImage src="/assets/v1/oidc/google/allowed-urls.png" alt="Google Cloud Console Allowed URLs" />
 
 5. **Create and save credentials**: Click **Create** and copy both the **Client ID** and **Client Secret**
 
 <ZoomableImage
-  src="/assets/v3/oidc/google/oauth-client-created.png"
+  src="/assets/v1/oidc/google/oauth-client-created.png"
   alt="Google Cloud Console Client ID and Client Secret"
   legend="The client ID and client secret shown in the image are examples only (fake credentials). You must use your own credentials from Google Cloud Console."
 />
@@ -141,7 +141,7 @@ To configure Google authentication in OUITRANSFER, you need administrator access
 
 3. **Navigate to authentication**: Find and click on the **Authentication Providers** configuration section
 
-<ZoomableImage src="/assets/v3/oidc/auth-providers.png" alt="OUITRANSFER Authentication Providers" />
+<ZoomableImage src="/assets/v1/oidc/auth-providers.png" alt="OUITRANSFER Authentication Providers" />
 
 ### Enabling Google provider
 
@@ -151,7 +151,7 @@ Google comes pre-configured as an official provider, so the setup process is str
 
 2. **Enable the provider**: Toggle the status to **Enabled**
 
-<ZoomableImage src="/assets/v3/oidc/google/OUITRANSFER-enabled-google.png" alt="OUITRANSFER Authentication Providers" />
+<ZoomableImage src="/assets/v1/oidc/google/OUITRANSFER-enabled-google.png" alt="OUITRANSFER Authentication Providers" />
 
 After enabling the provider, click on the pen icon to configure the provider.
 
@@ -160,7 +160,7 @@ After enabling the provider, click on the pen icon to configure the provider.
    - **Client Secret**: Paste the Client Secret from Google Cloud Console
    - **Scopes**: Add the scopes you want to use. The default scopes are `openid`, `profile`, and `email`.
 
-<ZoomableImage src="/assets/v3/oidc/google/edit-google.png" alt="Edit Google Provider" />
+<ZoomableImage src="/assets/v1/oidc/google/edit-google.png" alt="Edit Google Provider" />
 
 ### Advanced configuration options
 
@@ -174,7 +174,7 @@ Configure additional settings to customize the authentication behavior:
 
 **Icon**: you can choose the icon you want to use for the Google login button (default is `FcGoogle`).
 
-<ZoomableImage src="/assets/v3/oidc/google/google-icon.png" alt="Google Icon" />
+<ZoomableImage src="/assets/v1/oidc/google/google-icon.png" alt="Google Icon" />
 
 > **Security consideration:** Be cautious with auto-registration and admin domains. Only enable these if you trust the user base or have domain restrictions in place.
 

@@ -34,50 +34,50 @@ OUITRANSFER is a **pnpm monorepo** managed with Turborepo. This page covers the 
         <Folder name="modules">
           <File name="auth/, file/, share/, user/, ..." />
         </Folder>
-        <File name="app.ts — Fastify app factory" />
-        <File name="server.ts — entrypoint" />
-        <File name="env.ts — Zod-validated env" />
+        <File name="app.ts: Fastify app factory" />
+        <File name="server.ts: entrypoint" />
+        <File name="env.ts: Zod-validated env" />
       </Folder>
       <File name="prisma/schema.prisma" />
     </Folder>
     <Folder name="web" defaultOpen>
       <Folder name="src">
         <Folder name="app">
-          <File name="[locale]/ — locale-aware routes" />
+          <File name="[locale]/: locale-aware routes" />
         </Folder>
-        <File name="components/ — shared UI" />
-        <File name="hooks/ — custom React hooks" />
-        <File name="http/ — API client (TanStack Query)" />
-        <File name="proxy.ts — dev Edge middleware" />
+        <File name="components/: shared UI" />
+        <File name="hooks/: custom React hooks" />
+        <File name="http/: API client (TanStack Query)" />
+        <File name="proxy.ts: dev Edge middleware" />
       </Folder>
-      <File name="messages/ — i18n JSON (23 languages)" />
+      <File name="messages/: i18n JSON (23 languages)" />
     </Folder>
     <Folder name="docs">
-      <File name="content/docs/ — MDX pages" />
-      <File name="src/components/ — custom MDX components" />
+      <File name="content/docs/: MDX pages" />
+      <File name="src/components/: custom MDX components" />
     </Folder>
   </Folder>
   <Folder name="packages" defaultOpen>
     <Folder name="shared">
-      <File name="@ouitransfer/shared — MIME utils" />
+      <File name="@ouitransfer/shared: MIME utils" />
     </Folder>
     <Folder name="config">
-      <File name="@ouitransfer/config — tsconfig presets" />
+      <File name="@ouitransfer/config: tsconfig presets" />
     </Folder>
   </Folder>
   <Folder name=".github">
     <Folder name="workflows">
-      <File name="ci.yml — lint, type-check, test, build" />
-      <File name="e2e.yml — E2E, Lighthouse, Docker publish" />
+      <File name="ci.yml: lint, type-check, test, build" />
+      <File name="e2e.yml: E2E, Lighthouse, Docker publish" />
     </Folder>
   </Folder>
-  <File name="docker-compose.yaml — production stack" />
-  <File name="docker-compose.ci.yml — CI overrides" />
-  <File name="Justfile — task runner recipes" />
-  <File name="pnpm-workspace.yaml — workspace + catalogs" />
-  <File name="turbo.json — build pipeline" />
-  <File name="biome.json — lint + format config" />
-  <File name="lefthook.yml — git hooks" />
+  <File name="docker-compose.yaml: production stack" />
+  <File name="docker-compose.ci.yml: CI overrides" />
+  <File name="Justfile: task runner recipes" />
+  <File name="pnpm-workspace.yaml: workspace + catalogs" />
+  <File name="turbo.json: build pipeline" />
+  <File name="biome.json: lint + format config" />
+  <File name="lefthook.yml: git hooks" />
 </Files>
 
 ### Server module structure
@@ -101,12 +101,12 @@ Current modules: `admin`, `app`, `audit`, `auth`, `auth-providers`, `background-
 |------|------|
 | **pnpm 10.6.0** | Package manager + workspace management |
 | **pnpm catalogs** | Shared dependency versions across packages (defined in `pnpm-workspace.yaml`) |
-| **Turborepo** | Build pipeline orchestration — runs `lint`, `type-check`, `test`, `build` in parallel across packages |
+| **Turborepo** | Build pipeline orchestration: runs `lint`, `type-check`, `test`, `build` in parallel across packages |
 | **Biome** | Unified linter + formatter (replaces ESLint + Prettier). `noExplicitAny` enforced. |
-| **Lefthook** | Git hooks — runs checks before every commit and validates commit messages |
+| **Lefthook** | Git hooks: runs checks before every commit and validates commit messages |
 | **commitlint** | Enforces [Conventional Commits](https://www.conventionalcommits.org/) on all commit messages |
 | **Knip** | Dead code and unused export detection |
-| **`just`** | Task runner — run `just --list` for all available recipes |
+| **`just`** | Task runner: run `just --list` for all available recipes |
 
 Common `just` recipes for contributors:
 
@@ -124,14 +124,14 @@ just db-migrate-dev  # Apply pending migrations
 
 Lefthook installs two hooks automatically when you run `just setup-dev` (or `pnpm exec lefthook install`):
 
-**`pre-commit`** — runs in parallel on every `git commit`:
+**`pre-commit`**: runs in parallel on every `git commit`:
 
 | Check | What it does |
 |-------|-------------|
-| **Biome** | Lints and auto-formats **staged files only** (`--staged`). Fixed files are automatically re-staged — you don't need to `git add` again. |
+| **Biome** | Lints and auto-formats **staged files only** (`--staged`). Fixed files are automatically re-staged, so you don't need to `git add` again. |
 | **Knip** | Scans for unused exports, dead code, and unresolved imports across the monorepo. Fails the commit if issues are found. |
 
-**`commit-msg`** — validates the commit message format using commitlint.
+**`commit-msg`**: validates the commit message format using commitlint.
 
 ### Commit message format
 
@@ -149,7 +149,7 @@ Messages must follow the [Conventional Commits](https://www.conventionalcommits.
 
 `server` `web` `docs` `infra` `deps` `ci` `monorepo`
 
-Both type and scope are validated at commit time — the commit is rejected if either is missing or not in the allowed list. Subject must not start with an uppercase letter.
+Both type and scope are validated at commit time: the commit is rejected if either is missing or not in the allowed list. Subject must not start with an uppercase letter.
 
 **Examples:**
 
@@ -165,7 +165,7 @@ ci(ci): add Lighthouse step to release workflow
 
 ## CI/CD pipelines
 
-### CI (`ci.yml`) — pull request gate
+### CI (`ci.yml`): pull request gate
 
 Triggers on **push to `main`** and **pull requests targeting `main`**. Concurrent runs on the same ref are cancelled automatically.
 
@@ -192,14 +192,14 @@ Triggers on **push to `main`** and **pull requests targeting `main`**. Concurren
 
 **Steps:**
 
-1. **Install** — `pnpm install --frozen-lockfile` (no lock file drift allowed)
-2. **Security audit** — `pnpm audit --audit-level=high`. Non-blocking (transitive vulnerabilities from upstream don't gate the build, but surface as warnings).
-3. **Lint + Type-check + Test** — `turbo lint type-check test --continue`. Turbo runs all three task types in parallel across all packages. `--continue` ensures all tasks run even if one fails, so you get the full picture in one pass.
-4. **Build** — `pnpm build` with a minimal `JWT_SECRET` to satisfy env validation.
+1. **Install**: `pnpm install --frozen-lockfile` (no lock file drift allowed)
+2. **Security audit**: `pnpm audit --audit-level=high`. Non-blocking (transitive vulnerabilities from upstream don't gate the build, but surface as warnings).
+3. **Lint + Type-check + Test**: `turbo lint type-check test --continue`. Turbo runs all three task types in parallel across all packages. `--continue` ensures all tasks run even if one fails, so you get the full picture in one pass.
+4. **Build**: `pnpm build` with a minimal `JWT_SECRET` to satisfy env validation.
 
 This pipeline must pass before any PR can be merged.
 
-### Release Validation (`e2e.yml`) — tag gate + Docker publish
+### Release Validation (`e2e.yml`): tag gate + Docker publish
 
 Triggers on **`v*` tags** (releases) and **manual dispatch** (`workflow_dispatch`). Concurrent release runs are cancelled.
 
@@ -239,17 +239,17 @@ Triggers on **`v*` tags** (releases) and **manual dispatch** (`workflow_dispatch
 
 **Steps:**
 
-1. **Build Docker images** — `docker compose build` using `docker-compose.ci.yml` overrides. The git tag name becomes `NEXT_PUBLIC_APP_VERSION` (e.g. `v1.2.3` → `1.2.3`), which is injected at build time into the Next.js bundle.
-2. **Start stack** — full 3-container stack (storage + server + web) with CI overrides.
-3. **Wait for health** — polls `GET /health` (server) and the web port until both respond, with a 120-second timeout.
-4. **Lighthouse CI** — performance audit. Non-blocking.
-5. **E2E tests** — full Playwright suite against the live Docker stack. Blocking.
-6. **Upload Playwright report** — stored as a GitHub Actions artifact (14-day retention).
-7. **Stop stack** — always runs, even on failure.
-8. **Publish to GHCR** — only on tag pushes (skipped on `workflow_dispatch`). Pushes `server` and `web` images to `ghcr.io/slvnlrt/ouitransfer-{server,web}` with three tags: `latest`, `1.2.3` (semver), and `1.2` (minor).
+1. **Build Docker images**: `docker compose build` using `docker-compose.ci.yml` overrides. The git tag name becomes `NEXT_PUBLIC_APP_VERSION` (e.g. `v1.2.3` → `1.2.3`), which is injected at build time into the Next.js bundle.
+2. **Start stack**: full 3-container stack (storage + server + web) with CI overrides.
+3. **Wait for health**: polls `GET /health` (server) and the web port until both respond, with a 120-second timeout.
+4. **Lighthouse CI**: performance audit. Non-blocking.
+5. **E2E tests**: full Playwright suite against the live Docker stack. Blocking.
+6. **Upload Playwright report**: stored as a GitHub Actions artifact (14-day retention).
+7. **Stop stack**: always runs, even on failure.
+8. **Publish to GHCR**: only on tag pushes (skipped on `workflow_dispatch`). Pushes `server` and `web` images to `ghcr.io/slvnlrt/ouitransfer-{server,web}` with three tags: `latest`, `1.2.3` (semver), and `1.2` (minor).
 
 <Callout type="info">
 **Why two separate workflows?**
 
-CI runs on every PR and must be fast — no Docker builds, no E2E. The release workflow is heavier (Docker build + full E2E) and only runs when cutting a release or triggering manually. This keeps PR feedback loops short.
+CI runs on every PR and must be fast: no Docker builds, no E2E. The release workflow is heavier (Docker build + full E2E) and only runs when cutting a release or triggering manually. This keeps PR feedback loops short.
 </Callout>

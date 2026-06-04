@@ -42,11 +42,11 @@ To access **Settings**, an **ADMIN** user must click on the profile picture in t
 
 Once inside the **Settings** panel, click on the **Email** card to expand the SMTP configuration options.
 
-![Closed Settings Card](/assets/v3/smtp/closed-card.png)
+![Closed Settings Card](/assets/v1/smtp/closed-card.png)
 
 After expanding the card, the following SMTP configuration fields will appear:
 
-![Opened Settings Card](/assets/v3/smtp/opened-card.png)
+![Opened Settings Card](/assets/v1/smtp/opened-card.png)
 
 ---
 
@@ -58,7 +58,7 @@ The SMTP configuration process involves enabling the service and configuring the
 
 The first step is to **enable SMTP** by selecting "Yes" in the **SMTP Enabled** field.
 
-![SMTP Enabled](/assets/v3/smtp/smtp-enabled.png)
+![SMTP Enabled](/assets/v1/smtp/smtp-enabled.png)
 
 ### Configuration fields
 
@@ -279,15 +279,15 @@ With SMTP properly configured, users can take full advantage of OUITRANSFER's em
 
 ## Email delivery system
 
-Ouitransfer uses an **asynchronous email queue** backed by the database. When a notification is triggered, the email is not sent immediately — it is added to a queue and processed in the background.
+Ouitransfer uses an **asynchronous email queue** backed by the database. When a notification is triggered, the email is not sent immediately. Instead, it is added to a queue and processed in the background.
 
 ### How the queue works
 
-1. **Enqueue** — when an event triggers a notification (e.g., a file is downloaded), the system checks the user's [notification preferences](/docs/v1-beta/notification-preferences) and any per-share overrides. If the notification is enabled, an email job is added to the queue with status `pending`.
-2. **Process** — a background worker picks up pending jobs and sends them via SMTP. Successfully sent emails are marked as `sent`.
-3. **Retry** — if sending fails (SMTP timeout, temporary server error), the job is retried up to **3 times** with increasing delays. After all retries are exhausted, the job is marked as `failed`.
+1. **Enqueue**: When an event triggers a notification (e.g., a file is downloaded), the system checks the user's [notification preferences](/docs/v1-beta/notification-preferences) and any per-share overrides. If the notification is enabled, an email job is added to the queue with status `pending`.
+2. **Process**: A background worker picks up pending jobs and sends them via SMTP. Successfully sent emails are marked as `sent`.
+3. **Retry**: If sending fails (SMTP timeout, temporary server error), the job is retried up to **3 times** with increasing delays. After all retries are exhausted, the job is marked as `failed`.
 
-This architecture ensures that email delivery does not block request processing — the API responds immediately while emails are sent asynchronously.
+This architecture ensures that email delivery does not block request processing; the API responds immediately while emails are sent asynchronously.
 
 ### Cooldown periods
 
@@ -305,7 +305,7 @@ Administrators can monitor the email queue from **Admin > Email Queue**. The das
 | **Sent** | Successfully delivered emails |
 | **Failed** | Emails that failed after all retry attempts |
 
-This provides a quick health check on email delivery. A growing "Pending" count may indicate SMTP connectivity issues. A non-zero "Failed" count warrants investigation — check the server logs for detailed error messages.
+This provides a quick health check on email delivery. A growing "Pending" count may indicate SMTP connectivity issues. A non-zero "Failed" count warrants investigation. Check the server logs for detailed error messages.
 
 ### Sending a test email
 
@@ -316,7 +316,7 @@ The email queue dashboard includes a **Send Test Email** button. This sends a te
 - Emails are arriving in the inbox (not the spam folder)
 
 <Callout type="info">
-  The **Send Test Email** button sends a real email through the queue — it is different from the **Test Connection** button in the SMTP settings, which only verifies the SMTP connection without sending any email.
+  The **Send Test Email** button sends a real email through the queue; it is different from the **Test Connection** button in the SMTP settings, which only verifies the SMTP connection without sending any email.
 </Callout>
 
 ### API endpoints

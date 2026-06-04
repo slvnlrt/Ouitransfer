@@ -7,7 +7,7 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 
 OUITRANSFER prend en charge les fournisseurs OIDC (OpenID Connect) et OAuth 2.0 personnalisés, ce qui vous permet de vous intégrer à n'importe quel fournisseur d'identité conforme à ces standards. Cette flexibilité permet aux organisations d'utiliser leur infrastructure d'identité existante, qu'il s'agisse d'un système d'authentification personnalisé, d'une solution SSO d'entreprise ou de tout autre fournisseur compatible OIDC.
 
-<ZoomableImage src="/assets/v3/oidc/custom/custom-provider-login.png" alt="Fournisseurs OIDC personnalisés" />
+<ZoomableImage src="/assets/v1/oidc/custom/custom-provider-login.png" alt="Fournisseurs OIDC personnalisés" />
 
 ## Pourquoi utiliser des fournisseurs OIDC personnalisés ?
 
@@ -86,13 +86,13 @@ Pour configurer un fournisseur OIDC personnalisé dans OUITRANSFER, vous devez d
 
 3. **Accéder à l'authentification** : Recherchez et cliquez sur la section de configuration **Authentication Providers**
 
-<ZoomableImage src="/assets/v3/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
+<ZoomableImage src="/assets/v1/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
 
 ### Ajout d'un fournisseur personnalisé
 
 1. **Ajouter un nouveau fournisseur** : Cliquez sur le bouton **"Add Provider"** dans la section Authentication Providers
 
-<ZoomableImage src="/assets/v3/oidc/custom/add-provider.png" alt="Ajouter un fournisseur" />
+<ZoomableImage src="/assets/v1/oidc/custom/add-provider.png" alt="Ajouter un fournisseur" />
 
 2. **Configurer les informations de base** :
    - **Provider Name** : Saisissez un identifiant unique (ex. : `custom-provider`)
@@ -100,7 +100,7 @@ Pour configurer un fournisseur OIDC personnalisé dans OUITRANSFER, vous devez d
    - **Type** : Sélectionnez `OIDC` pour OpenID Connect ou `OAuth2` pour OAuth 2.0
    - **Icon** : Choisissez une icône appropriée pour le bouton de connexion
 
-<ZoomableImage src="/assets/v3/oidc/custom/provider-basic-info.png" alt="Informations de base du fournisseur" />
+<ZoomableImage src="/assets/v1/oidc/custom/provider-basic-info.png" alt="Informations de base du fournisseur" />
 
 ### Sélection de la méthode de configuration
 
@@ -127,7 +127,7 @@ Choisissez entre la découverte automatique et la configuration manuelle des poi
    - **Token Endpoint** : Le point de terminaison de jeton OAuth
    - **User Info Endpoint** : Le point de terminaison d'informations utilisateur
 
-<ZoomableImage src="/assets/v3/oidc/custom/manual-endpoints.png" alt="Points de terminaison manuels" />
+<ZoomableImage src="/assets/v1/oidc/custom/manual-endpoints.png" alt="Points de terminaison manuels" />
 
 > **Remarque :** Le `User info endpoint` peut être une URL complète ou un chemin relatif. (ex. : `/userinfo` ou `https://other-any-url.com/userinfo`)
 > **Remarque :** Le `Token endpoint` et l'`Authorization endpoint` doivent être uniquement le chemin. (ex. : `/oauth/token` ou `/oauth/authorize`). OUITRANSFER ajoutera automatiquement l'URL de base aux points de terminaison en fonction de la `Provider URL` que vous avez fournie.
@@ -189,7 +189,7 @@ https://yourdomain.com/api/auth/providers/{provider-name}/callback
 
 Après avoir configuré votre fournisseur personnalisé, il sera disponible dans la section `Authentication Providers`.
 
-<ZoomableImage src="/assets/v3/oidc/custom/enabled-provider.png" alt="Fournisseur activé" />
+<ZoomableImage src="/assets/v1/oidc/custom/enabled-provider.png" alt="Fournisseur activé" />
 
 ---
 

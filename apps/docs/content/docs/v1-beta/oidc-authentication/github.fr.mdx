@@ -7,7 +7,7 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 
 GitHub est l'un des fournisseurs OIDC officiellement pris en charge par OUITRANSFER, offrant une authentification sécurisée via GitHub OAuth 2.0. Cette intégration permet aux utilisateurs de se connecter à OUITRANSFER avec leur compte GitHub existant, ce qui en fait une solution idéale pour les équipes de développeurs, les projets open source et les organisations qui utilisent déjà GitHub pour le contrôle de version et la collaboration.
 
-<ZoomableImage src="/assets/v3/oidc/github/sign-in-with-github.png" alt="Connexion avec GitHub" />
+<ZoomableImage src="/assets/v1/oidc/github/sign-in-with-github.png" alt="Connexion avec GitHub" />
 
 ## Pourquoi utiliser l'authentification GitHub ?
 
@@ -42,7 +42,7 @@ Pour commencer avec l'authentification GitHub, vous devez créer une OAuth App d
 
 2. **Créer une nouvelle OAuth App** : Cliquez sur le bouton **"New OAuth App"**
 
-<ZoomableImage src="/assets/v3/oidc/github/developer-settings.png" alt="Paramètres développeur GitHub" />
+<ZoomableImage src="/assets/v1/oidc/github/developer-settings.png" alt="Paramètres développeur GitHub" />
 
 3. **Renseigner les détails de l'application** :
    - **Application name** : Saisissez un nom explicite, par exemple "OUITRANSFER File Sharing"
@@ -51,7 +51,7 @@ Pour commencer avec l'authentification GitHub, vous devez créer une OAuth App d
    - **Authorization callback URL** : Saisissez votre URL de rappel (voir ci-dessous)
 
 <ZoomableImage
-  src="/assets/v3/oidc/github/oauth-app-details.png"
+  src="/assets/v1/oidc/github/oauth-app-details.png"
   alt="Détails de l'OAuth App GitHub"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -82,7 +82,7 @@ Vous allez maintenant récupérer les identifiants qu'OUITRANSFER utilisera pour
 2. **Générer le Client Secret** : Cliquez sur **"Generate a new client secret"** pour créer un nouveau secret
 
 <ZoomableImage
-  src="/assets/v3/oidc/github/oauth-credentials.png"
+  src="/assets/v1/oidc/github/oauth-credentials.png"
   alt="Identifiants OAuth GitHub"
   legend="Le Client ID et le Client Secret affichés dans l'image sont des exemples uniquement (identifiants fictifs). Vous devez utiliser vos propres identifiants provenant de GitHub."
 />
@@ -105,7 +105,7 @@ Pour configurer l'authentification GitHub dans OUITRANSFER, vous devez disposer 
 
 3. **Naviguer vers l'authentification** : Trouvez et cliquez sur la section de configuration **Authentication Providers**
 
-<ZoomableImage src="/assets/v3/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
+<ZoomableImage src="/assets/v1/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
 
 ### Activer le fournisseur GitHub
 
@@ -115,7 +115,7 @@ GitHub est préconfiguré en tant que fournisseur officiel, ce qui simplifie le 
 
 2. **Activer le fournisseur** : Basculez le statut sur **Enabled**
 
-<ZoomableImage src="/assets/v3/oidc/github/enabled-github.png" alt="Fournisseur GitHub OUITRANSFER activé" />
+<ZoomableImage src="/assets/v1/oidc/github/enabled-github.png" alt="Fournisseur GitHub OUITRANSFER activé" />
 
 Après avoir activé le fournisseur, cliquez sur l'icône en forme de crayon pour le configurer.
 
@@ -125,7 +125,7 @@ Après avoir activé le fournisseur, cliquez sur l'icône en forme de crayon pou
    - **Scopes** : Ajoutez les scopes que vous souhaitez utiliser. Les scopes par défaut sont `user:email`.
 
 <ZoomableImage
-  src="/assets/v3/oidc/github/edit-github.png"
+  src="/assets/v1/oidc/github/edit-github.png"
   alt="Modifier le fournisseur GitHub"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -142,7 +142,7 @@ Configurez des paramètres supplémentaires pour personnaliser le comportement d
 
 **Icon** : Vous pouvez choisir l'icône à utiliser pour le bouton de connexion GitHub (la valeur par défaut est `SiGithub`).
 
-<ZoomableImage src="/assets/v3/oidc/github/github-icon.png" alt="Icône GitHub" />
+<ZoomableImage src="/assets/v1/oidc/github/github-icon.png" alt="Icône GitHub" />
 
 > **Conseil pour les développeurs :** L'authentification GitHub fonctionne parfaitement pour les équipes de développement et les projets open source.
 

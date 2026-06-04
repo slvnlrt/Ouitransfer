@@ -5,7 +5,7 @@ icon: Code
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-L'API Ouitransfer est une API REST construite avec Fastify 5, Zod et TypeScript. Elle alimente l'ensemble des opérations de la plateforme — le frontend web communique directement avec elle via les routes `/api/*`, mais vous pouvez également l'appeler directement pour l'automatisation, les intégrations ou des clients personnalisés.
+L'API Ouitransfer est une API REST construite avec Fastify 5, Zod et TypeScript. Elle alimente l'ensemble des opérations de la plateforme : le frontend web communique directement avec elle via les routes `/api/*`, mais vous pouvez également l'appeler directement pour l'automatisation, les intégrations ou des clients personnalisés.
 
 ## URL de base
 
@@ -25,13 +25,13 @@ Pour exposer le port de l'API dans Docker Compose, ajoutez `ports: ["3333:3333"]
 
 ## Authentification
 
-L'API utilise des **cookies httpOnly signés** pour l'authentification — il n'existe pas de système de clé API. Authentifiez-vous en appelant le point de terminaison de connexion, puis incluez les cookies retournés dans les requêtes suivantes.
+L'API utilise des **cookies httpOnly signés** pour l'authentification : il n'existe pas de système de clé API. Authentifiez-vous en appelant le point de terminaison de connexion, puis incluez les cookies retournés dans les requêtes suivantes.
 
 ### Flux de connexion
 
-1. **Obtenir un jeton CSRF** — `GET /csrf-token` retourne une valeur `token` et pose un cookie `_csrf`.
-2. **Connexion** — `POST /auth/login` avec les identifiants. En cas de succès, le serveur pose les cookies `token` (jeton d'accès JWT) et `refreshToken`.
-3. **Effectuer des requêtes** — incluez les cookies dans toutes les requêtes suivantes. Le JWT est de courte durée (15 minutes) ; utilisez `POST /auth/refresh` pour en obtenir un nouveau. Le point de terminaison de rafraîchissement ne retourne aucun jeton dans le corps de la réponse — le nouveau jeton d'accès et le jeton de rafraîchissement rotatif sont tous deux posés comme cookies httpOnly.
+1. **Obtenir un jeton CSRF** : `GET /csrf-token` retourne une valeur `token` et pose un cookie `_csrf`.
+2. **Connexion** : `POST /auth/login` avec les identifiants. En cas de succès, le serveur pose les cookies `token` (jeton d'accès JWT) et `refreshToken`.
+3. **Effectuer des requêtes** : incluez les cookies dans toutes les requêtes suivantes. Le JWT est de courte durée (15 minutes) ; utilisez `POST /auth/refresh` pour en obtenir un nouveau. Le point de terminaison de rafraîchissement ne retourne aucun jeton dans le corps de la réponse : le nouveau jeton d'accès et le jeton de rafraîchissement rotatif sont tous deux posés comme cookies httpOnly.
 
 ### Protection CSRF
 
@@ -43,7 +43,7 @@ Toutes les **requêtes mutantes** (POST, PUT, PATCH, DELETE) nécessitent un jet
 - Les requêtes GET, HEAD et OPTIONS ne nécessitent pas l'en-tête CSRF.
 
 <Callout type="warn">
-  Le jeton CSRF est requis pour **toutes les requêtes POST, PUT, PATCH et DELETE**, même les points de terminaison marqués `Auth : —` (publics). Les mutations publiques comme les téléchargements de fichiers (`POST /files/download-url`) nécessitent toujours un en-tête `X-CSRF-Token` valide, sauf s'ils sont explicitement listés comme exempts CSRF. Voir la liste des exemptions ci-dessous.
+  Le jeton CSRF est requis pour **toutes les requêtes POST, PUT, PATCH et DELETE**, même les points de terminaison marqués `Auth: Public` (publics). Les mutations publiques comme les téléchargements de fichiers (`POST /files/download-url`) nécessitent toujours un en-tête `X-CSRF-Token` valide, sauf s'ils sont explicitement listés comme exempts CSRF. Voir la liste des exemptions ci-dessous.
 </Callout>
 
 **Points de terminaison exempts CSRF** (mutations publiques ou non authentifiées) : `/auth/login`, `/auth/refresh`, `/auth/forgot-password`, `/auth/reset-password`, `/auth/2fa/login`, `/register-with-invite`, les points de terminaison d'accès par mot de passe aux partages et partages inversés, et tous les points de terminaison publics de téléversement vers les partages inversés.
@@ -71,8 +71,8 @@ curl -s -b cookies.txt http://localhost:3333/files
 
 Lorsque la documentation API est activée (toujours en développement, optionnelle en production via `ENABLE_API_DOCS=true`), deux interfaces de documentation interactive sont disponibles :
 
-- **Scalar** — `http://localhost:3333/docs`
-- **Swagger UI** — `http://localhost:3333/swagger`
+- **Scalar** : `http://localhost:3333/docs`
+- **Swagger UI** : `http://localhost:3333/swagger`
 
 Les deux offrent l'exploration des points de terminaison, des constructeurs de requêtes et une visualisation des réponses générée à partir des schémas Zod.
 
@@ -84,26 +84,26 @@ Les deux offrent l'exploration des points de terminaison, des constructeurs de r
 
 | Méthode | Chemin | Auth | Description |
 |---------|--------|------|-------------|
-| POST | `/auth/login` | — | Connexion avec email/nom d'utilisateur et mot de passe |
-| POST | `/auth/2fa/login` | — | Finaliser la connexion avec un code de vérification 2FA |
-| POST | `/auth/logout` | — | Déconnexion et suppression des cookies de session |
-| GET | `/auth/me` | — | Obtenir l'utilisateur authentifié courant (retourne `null` si non connecté) |
-| POST | `/auth/forgot-password` | — | Demander un email de réinitialisation de mot de passe |
-| POST | `/auth/reset-password` | — | Réinitialiser le mot de passe avec le jeton reçu par email |
-| POST | `/auth/refresh` | — | Rafraîchir le jeton d'accès via le cookie de jeton de rafraîchissement (rotation — l'ancien jeton de rafraîchissement est invalidé) |
-| GET | `/auth/config` | — | Obtenir la configuration d'authentification (si l'auth par mot de passe est activée) |
+| POST | `/auth/login` | Public | Connexion avec email/nom d'utilisateur et mot de passe |
+| POST | `/auth/2fa/login` | Public | Finaliser la connexion avec un code de vérification 2FA |
+| POST | `/auth/logout` | Public | Déconnexion et suppression des cookies de session |
+| GET | `/auth/me` | Public | Obtenir l'utilisateur authentifié courant (retourne `null` si non connecté) |
+| POST | `/auth/forgot-password` | Public | Demander un email de réinitialisation de mot de passe |
+| POST | `/auth/reset-password` | Public | Réinitialiser le mot de passe avec le jeton reçu par email |
+| POST | `/auth/refresh` | Public | Rafraîchir le jeton d'accès via le cookie de jeton de rafraîchissement (rotation ; l'ancien jeton de rafraîchissement est invalidé) |
+| GET | `/auth/config` | Public | Obtenir la configuration d'authentification (si l'auth par mot de passe est activée) |
 | GET | `/auth/trusted-devices` | User | Lister les appareils 2FA de confiance |
 | DELETE | `/auth/trusted-devices/:id` | User | Supprimer un appareil de confiance spécifique |
 | DELETE | `/auth/trusted-devices` | User | Supprimer tous les appareils de confiance |
-| GET | `/csrf-token` | — | Obtenir un jeton CSRF (pose le cookie `_csrf`) |
+| GET | `/csrf-token` | Public | Obtenir un jeton CSRF (pose le cookie `_csrf`) |
 
-**Remarque sur les points de terminaison à authentification optionnelle :** `/auth/me` retourne l'utilisateur courant si une session valide existe, `null` sinon — aucune authentification n'est requise pour l'appeler. `/auth/logout` efface les cookies de session même sans session valide. Aucun des deux ne retourne de `401` quand il est appelé sans identifiants. Notez que `/auth/logout` nécessite quand même un jeton CSRF (comme tous les points de terminaison POST) même s'il ne requiert pas de session JWT.
+**Remarque sur les points de terminaison à authentification optionnelle :** `/auth/me` retourne l'utilisateur courant si une session valide existe, `null` sinon : aucune authentification n'est requise pour l'appeler. `/auth/logout` efface les cookies de session même sans session valide. Aucun des deux ne retourne de `401` quand il est appelé sans identifiants. Notez que `/auth/logout` nécessite quand même un jeton CSRF (comme tous les points de terminaison POST) même s'il ne requiert pas de session JWT.
 
-**Connexion** retourne l'objet utilisateur en cas de succès. Si le compte a la 2FA activée, il retourne `{ requiresTwoFactor: true, challengeToken: "..." }` — transmettez le jeton de défi et le code TOTP à `/auth/2fa/login` pour compléter l'authentification.
+**Connexion** retourne l'objet utilisateur en cas de succès. Si le compte a la 2FA activée, il retourne `{ requiresTwoFactor: true, challengeToken: "..." }` : transmettez le jeton de défi et le code TOTP à `/auth/2fa/login` pour compléter l'authentification.
 
 **Limites de débit :** Connexion : 5 tentatives par minute par IP. Mot de passe oublié : 3 par minute par IP. Réinitialisation du mot de passe : 3 par minute par IP. Rafraîchissement du jeton : 10 par minute par IP.
 
-**Verrouillage de compte :** Après 10 échecs de connexion consécutifs en 15 minutes, le compte est temporairement verrouillé et retourne un code d'erreur `ACCOUNT_LOCKED` avec `403 Forbidden`. Le verrouillage expire automatiquement 15 minutes après la plus ancienne tentative échouée — aucune intervention d'un administrateur n'est requise. Une connexion réussie remet à zéro le compteur d'échecs.
+**Verrouillage de compte :** Après 10 échecs de connexion consécutifs en 15 minutes, le compte est temporairement verrouillé et retourne un code d'erreur `ACCOUNT_LOCKED` avec `403 Forbidden`. Le verrouillage expire automatiquement 15 minutes après la plus ancienne tentative échouée ; aucune intervention d'un administrateur n'est requise. Une connexion réussie remet à zéro le compteur d'échecs.
 
 ---
 
@@ -132,8 +132,8 @@ Les deux offrent l'exploration des points de terminaison, des constructeurs de r
 |---------|--------|------|-------------|
 | POST | `/shares` | User | Créer un nouveau partage |
 | GET | `/shares/me` | User | Lister les partages créés par l'utilisateur courant |
-| GET | `/shares/:shareId` | — | Obtenir un partage par son ID (public pour les partages sans mot de passe) |
-| POST | `/shares/:shareId/access` | — | Accéder à un partage protégé par mot de passe |
+| GET | `/shares/:shareId` | Public | Obtenir un partage par son ID (public pour les partages sans mot de passe) |
+| POST | `/shares/:shareId/access` | Public | Accéder à un partage protégé par mot de passe |
 | PUT | `/shares` | User | Mettre à jour un partage (le corps inclut `id`) |
 | DELETE | `/shares/:id` | User | Supprimer un partage (propriétaire uniquement) |
 | PATCH | `/shares/:shareId/password` | User | Mettre à jour ou supprimer le mot de passe d'un partage |
@@ -143,15 +143,15 @@ Les deux offrent l'exploration des points de terminaison, des constructeurs de r
 | DELETE | `/shares/:shareId/recipients` | User | Supprimer des destinataires email d'un partage |
 | POST | `/shares/:shareId/notify` | User | Envoyer une notification email aux destinataires |
 | POST | `/shares/:shareId/alias` | User | Créer ou mettre à jour l'alias d'un partage |
-| GET | `/shares/alias/:alias` | — | Obtenir un partage par alias (public) |
-| POST | `/shares/alias/:alias/access` | — | Accéder à un partage protégé par mot de passe via alias |
-| GET | `/shares/alias/:alias/metadata` | — | Obtenir les métadonnées d'un partage pour les aperçus Open Graph |
-| POST | `/shares/alias/:alias/identify` | — | Soumettre le formulaire d'identification du visiteur (nom/email) |
+| GET | `/shares/alias/:alias` | Public | Obtenir un partage par alias (public) |
+| POST | `/shares/alias/:alias/access` | Public | Accéder à un partage protégé par mot de passe via alias |
+| GET | `/shares/alias/:alias/metadata` | Public | Obtenir les métadonnées d'un partage pour les aperçus Open Graph |
+| POST | `/shares/alias/:alias/identify` | Public | Soumettre le formulaire d'identification du visiteur (nom/email) |
 | GET | `/shares/:shareId/visits` | User | Lister les visites d'un partage (paginé, filtrable par action et statut d'identification) |
 
-**Accès aux partages :** Pour les partages protégés par mot de passe, le mot de passe doit être envoyé dans le corps de la requête via les points de terminaison `/access` — jamais en paramètre de requête. Les partages sans mot de passe sont accessibles sans authentification.
+**Accès aux partages :** Pour les partages protégés par mot de passe, le mot de passe doit être envoyé dans le corps de la requête via les points de terminaison `/access` ; jamais en paramètre de requête. Les partages sans mot de passe sont accessibles sans authentification.
 
-**Jetons de suivi :** Les points de terminaison d'accès aux partages acceptent un paramètre de requête optionnel `?t=<token>`. Lorsqu'il est présent, le visiteur est automatiquement identifié comme le destinataire propriétaire de ce jeton de suivi. Voir [Partages — Identification des visiteurs](/docs/v1-beta/shares#visitor-identification).
+**Jetons de suivi :** Les points de terminaison d'accès aux partages acceptent un paramètre de requête optionnel `?t=<token>`. Lorsqu'il est présent, le visiteur est automatiquement identifié comme le destinataire propriétaire de ce jeton de suivi. Voir [Partages : Identification des visiteurs](/docs/v1-beta/shares#visitor-identification).
 
 **Visites de partage :** Le point de terminaison `GET /shares/:shareId/visits` retourne des enregistrements de visites paginés. Paramètres de requête : `page` (défaut 1), `limit` (défaut 10), `action` (`access` ou `download`), `identified` (`true` ou `false`). Seul le propriétaire du partage peut accéder à ce point de terminaison.
 
@@ -168,9 +168,9 @@ Les deux offrent l'exploration des points de terminaison, des constructeurs de r
 | PATCH | `/files/:id` | User | Mettre à jour les métadonnées d'un fichier (nom, description) |
 | PUT | `/files/:id/move` | User | Déplacer un fichier vers un autre dossier |
 | DELETE | `/files/:id` | User | Supprimer un fichier (`?force=true` si le fichier est dans des partages) |
-| POST | `/files/download-url` | — | Obtenir une URL présignée de téléchargement (mot de passe du partage dans le corps) |
-| POST | `/files/download` | — | Télécharger le contenu d'un fichier (streaming, mot de passe du partage dans le corps) |
-| GET | `/embed/:token` | — | Intégrer un fichier média via un jeton signé |
+| POST | `/files/download-url` | Public | Obtenir une URL présignée de téléchargement (mot de passe du partage dans le corps) |
+| POST | `/files/download` | Public | Télécharger le contenu d'un fichier (streaming, mot de passe du partage dans le corps) |
+| GET | `/embed/:token` | Public | Intégrer un fichier média via un jeton signé |
 | POST | `/files/embed-token` | User | Générer un jeton d'intégration signé pour un fichier dans un partage (expiration 24 heures) |
 
 **Téléversement multipart** (pour les fichiers volumineux ≥100 Mo) :
@@ -224,30 +224,30 @@ Les partages inversés permettent aux utilisateurs authentifiés de créer des l
 | PUT | `/reverse-shares/files/:fileId` | User | Mettre à jour le nom/la description d'un fichier |
 | POST | `/reverse-shares/files/:fileId/copy` | User | Copier un fichier vers les fichiers personnels de l'utilisateur |
 
-**Points de terminaison publics** (téléversement vers des partages inversés — aucune authentification requise) :
+**Points de terminaison publics** (téléversement vers des partages inversés, aucune authentification requise) :
 
 | Méthode | Chemin | Auth | Description |
 |---------|--------|------|-------------|
-| GET | `/reverse-shares/:id/upload` | — | Obtenir les informations du partage inversé pour le téléversement |
-| POST | `/reverse-shares/:id/upload/access` | — | Accéder à un partage inversé protégé par mot de passe |
-| GET | `/reverse-shares/alias/:alias/upload` | — | Obtenir les informations du partage inversé par alias |
-| POST | `/reverse-shares/alias/:alias/upload/access` | — | Accéder à un partage inversé protégé par mot de passe via alias |
-| POST | `/reverse-shares/:id/presigned-url` | — | Obtenir une URL présignée de téléversement |
-| POST | `/reverse-shares/alias/:alias/presigned-url` | — | Obtenir une URL présignée de téléversement via alias |
-| POST | `/reverse-shares/:id/register-file` | — | Enregistrer un fichier téléversé |
-| POST | `/reverse-shares/alias/:alias/register-file` | — | Enregistrer un fichier téléversé via alias |
-| POST | `/reverse-shares/:id/check-password` | — | Vérifier le mot de passe d'un partage inversé |
-| GET | `/reverse-shares/alias/:alias/metadata` | — | Obtenir les métadonnées pour les aperçus Open Graph |
+| GET | `/reverse-shares/:id/upload` | Public | Obtenir les informations du partage inversé pour le téléversement |
+| POST | `/reverse-shares/:id/upload/access` | Public | Accéder à un partage inversé protégé par mot de passe |
+| GET | `/reverse-shares/alias/:alias/upload` | Public | Obtenir les informations du partage inversé par alias |
+| POST | `/reverse-shares/alias/:alias/upload/access` | Public | Accéder à un partage inversé protégé par mot de passe via alias |
+| POST | `/reverse-shares/:id/presigned-url` | Public | Obtenir une URL présignée de téléversement |
+| POST | `/reverse-shares/alias/:alias/presigned-url` | Public | Obtenir une URL présignée de téléversement via alias |
+| POST | `/reverse-shares/:id/register-file` | Public | Enregistrer un fichier téléversé |
+| POST | `/reverse-shares/alias/:alias/register-file` | Public | Enregistrer un fichier téléversé via alias |
+| POST | `/reverse-shares/:id/check-password` | Public | Vérifier le mot de passe d'un partage inversé |
+| GET | `/reverse-shares/alias/:alias/metadata` | Public | Obtenir les métadonnées pour les aperçus Open Graph |
 
 **Téléversement multipart** (public, pour les gros fichiers vers des partages inversés) :
 
 | Méthode | Chemin | Auth | Description |
 |---------|--------|------|-------------|
-| POST | `/reverse-shares/alias/:alias/multipart/create` | — | Initialiser un téléversement multipart |
-| POST | `/reverse-shares/alias/:alias/multipart/part-url` | — | Obtenir une URL présignée pour une partie |
-| POST | `/reverse-shares/alias/:alias/multipart/complete` | — | Finaliser le téléversement multipart |
-| POST | `/reverse-shares/alias/:alias/multipart/abort` | — | Annuler le téléversement multipart |
-| POST | `/reverse-shares/alias/:alias/multipart/list-parts` | — | Lister les parties téléversées |
+| POST | `/reverse-shares/alias/:alias/multipart/create` | Public | Initialiser un téléversement multipart |
+| POST | `/reverse-shares/alias/:alias/multipart/part-url` | Public | Obtenir une URL présignée pour une partie |
+| POST | `/reverse-shares/alias/:alias/multipart/complete` | Public | Finaliser le téléversement multipart |
+| POST | `/reverse-shares/alias/:alias/multipart/abort` | Public | Annuler le téléversement multipart |
+| POST | `/reverse-shares/alias/:alias/multipart/list-parts` | Public | Lister les parties téléversées |
 
 ---
 
@@ -298,8 +298,8 @@ Tous les points de terminaison de gestion 2FA nécessitent une authentification 
 | Méthode | Chemin | Auth | Description |
 |---------|--------|------|-------------|
 | POST | `/invite-tokens` | Admin | Générer un jeton d'invitation à usage unique |
-| GET | `/invite-tokens/:token` | — | Valider un jeton d'invitation |
-| POST | `/register-with-invite` | — | Enregistrer un nouvel utilisateur avec un jeton d'invitation |
+| GET | `/invite-tokens/:token` | Public | Valider un jeton d'invitation |
+| POST | `/register-with-invite` | Public | Enregistrer un nouvel utilisateur avec un jeton d'invitation |
 
 ---
 
@@ -309,14 +309,14 @@ Les routes de fournisseurs d'authentification sont enregistrées sous le préfix
 
 | Méthode | Chemin | Auth | Description |
 |---------|--------|------|-------------|
-| GET | `/auth/providers` | — | Lister les fournisseurs d'authentification activés (public, pour la page de connexion) |
+| GET | `/auth/providers` | Public | Lister les fournisseurs d'authentification activés (public, pour la page de connexion) |
 | GET | `/auth/providers/all` | Admin | Lister tous les fournisseurs d'authentification (y compris les désactivés) |
 | POST | `/auth/providers` | Admin | Créer un nouveau fournisseur d'authentification |
 | PUT | `/auth/providers/:id` | Admin | Mettre à jour un fournisseur d'authentification |
 | DELETE | `/auth/providers/:id` | Admin | Supprimer un fournisseur d'authentification personnalisé |
 | PUT | `/auth/providers/order` | Admin | Mettre à jour l'ordre d'affichage des fournisseurs |
-| GET | `/auth/providers/:provider/authorize` | — | Initier le flux de connexion OAuth/OIDC (redirige vers le fournisseur) |
-| GET | `/auth/providers/:provider/callback` | — | Gérer le callback OAuth/OIDC (redirige vers l'application) |
+| GET | `/auth/providers/:provider/authorize` | Public | Initier le flux de connexion OAuth/OIDC (redirige vers le fournisseur) |
+| GET | `/auth/providers/:provider/callback` | Public | Gérer le callback OAuth/OIDC (redirige vers l'application) |
 
 ---
 
@@ -355,8 +355,8 @@ Pour la documentation détaillée des paramètres de requête, consultez la page
 |---------|--------|------|-------------|
 | GET | `/notifications/preferences` | User | Obtenir toutes les préférences de notification (fusionnées avec les valeurs par défaut du catalogue) |
 | PUT | `/notifications/preferences` | User | Mettre à jour les préférences de notification (tableau de `{ type, frequency }`) |
-| GET | `/notifications/unsubscribe?token=...` | — | Valider le jeton de désabonnement et retourner le type de notification |
-| POST | `/notifications/unsubscribe` | — | Confirmer le désabonnement (définit la fréquence à `disabled`) |
+| GET | `/notifications/unsubscribe?token=...` | Public | Valider le jeton de désabonnement et retourner le type de notification |
+| POST | `/notifications/unsubscribe` | Public | Confirmer le désabonnement (définit la fréquence à `disabled`) |
 
 Le point de terminaison des préférences retourne les 22 types de notification avec leur fréquence actuelle, si elles sont configurables et si elles sont critiques. Seuls les types configurables et non critiques peuvent être mis à jour. Pour les détails, consultez [Préférences de notification](/docs/v1-beta/notification-preferences).
 
@@ -369,7 +369,7 @@ Le point de terminaison des préférences retourne les 22 types de notification 
 | GET | `/admin/email/stats` | Admin | Obtenir les compteurs de la file d'attente email (en attente, envoyés, en échec) |
 | POST | `/admin/email/test` | Admin | Envoyer un email de test à l'adresse email de l'admin courant |
 
-Pour les détails sur le système de distribution des emails, consultez [Configuration SMTP — Système de distribution des emails](/docs/v1-beta/configuring-smtp#email-delivery-system).
+Pour les détails sur le système de distribution des emails, consultez [Configuration SMTP : Système de distribution des emails](/docs/v1-beta/configuring-smtp#email-delivery-system).
 
 ---
 
@@ -378,9 +378,9 @@ Pour les détails sur le système de distribution des emails, consultez [Configu
 | Méthode | Chemin | Auth | Description |
 |---------|--------|------|-------------|
 | GET | `/admin/stats` | Admin | Obtenir les statistiques globales de la plateforme (utilisateurs, fichiers, partages) |
-| GET | `/app/info` | — | Obtenir le nom, la description, le logo et le statut de premier utilisateur de l'application |
-| GET | `/app/system-info` | — | Obtenir les informations système (type de fournisseur de stockage) |
-| GET | `/app/configs/public` | — | Lister les valeurs de configuration publiques |
+| GET | `/app/info` | Public | Obtenir le nom, la description, le logo et le statut de premier utilisateur de l'application |
+| GET | `/app/system-info` | Public | Obtenir les informations système (type de fournisseur de stockage) |
+| GET | `/app/configs/public` | Public | Lister les valeurs de configuration publiques |
 | GET | `/app/configs` | Admin | Lister toutes les valeurs de configuration (y compris les sensibles) |
 | PATCH | `/app/configs/:key` | Admin | Mettre à jour une seule valeur de configuration |
 | PATCH | `/app/configs` | Admin | Mettre à jour plusieurs valeurs de configuration en lot |
@@ -394,7 +394,7 @@ Pour les détails sur le système de distribution des emails, consultez [Configu
 
 | Méthode | Chemin | Auth | Description |
 |---------|--------|------|-------------|
-| GET | `/background-images` | — | Lister toutes les images d'arrière-plan (public) |
+| GET | `/background-images` | Public | Lister toutes les images d'arrière-plan (public) |
 | POST | `/background-images` | Admin | Téléverser une image d'arrière-plan (multipart/form-data) |
 | PATCH | `/background-images/order` | Admin | Réordonner les images d'arrière-plan |
 | PATCH | `/background-images/:id` | Admin | Mettre à jour le nom d'une image d'arrière-plan |
@@ -428,8 +428,8 @@ Ces points de terminaison permettent des opérations S3 directes sur les objets.
 
 | Méthode | Chemin | Auth | Description |
 |---------|--------|------|-------------|
-| GET | `/health` | — | Vérification complète de l'état de santé (statut de la base de données + du stockage) |
-| GET | `/health/status` | — | Statut de santé simplifié (`healthy`, `degraded`, `unhealthy`) |
+| GET | `/health` | Public | Vérification complète de l'état de santé (statut de la base de données + du stockage) |
+| GET | `/health/status` | Public | Statut de santé simplifié (`healthy`, `degraded`, `unhealthy`) |
 
 ---
 
@@ -437,17 +437,17 @@ Ces points de terminaison permettent des opérations S3 directes sur les objets.
 
 | Code | Signification |
 |------|---------------|
-| 200 | OK — requête réussie |
-| 201 | Created — ressource créée avec succès |
-| 302 | Redirect — redirections du flux OAuth/OIDC |
-| 400 | Bad Request — échec de validation (schéma Zod) |
-| 401 | Unauthorized — non authentifié, jeton invalide ou non-concordance CSRF |
-| 403 | Forbidden — authentifié mais permissions insuffisantes |
-| 404 | Not Found — la ressource n'existe pas |
-| 409 | Conflict — ressource en double ou conflit fichier-dans-partages |
-| 410 | Gone — partage ou partage inversé expiré |
-| 413 | Payload Too Large — le corps de la requête dépasse la limite de taille de 50 Mo |
-| 429 | Too Many Requests — limite de débit dépassée |
+| 200 | OK : requête réussie |
+| 201 | Created : ressource créée avec succès |
+| 302 | Redirect : redirections du flux OAuth/OIDC |
+| 400 | Bad Request : échec de validation (schéma Zod) |
+| 401 | Unauthorized : non authentifié, jeton invalide ou non-concordance CSRF |
+| 403 | Forbidden : authentifié mais permissions insuffisantes |
+| 404 | Not Found : la ressource n'existe pas |
+| 409 | Conflict : ressource en double ou conflit fichier-dans-partages |
+| 410 | Gone : partage ou partage inversé expiré |
+| 413 | Payload Too Large : le corps de la requête dépasse la limite de taille de 50 Mo |
+| 429 | Too Many Requests : limite de débit dépassée |
 | 500 | Internal Server Error |
 
 Toutes les réponses d'erreur suivent une structure JSON cohérente :
@@ -486,7 +486,7 @@ Limite de débit globale : **100 requêtes par minute par IP**. Certains points 
 En cas de dépassement de la limite, le serveur retourne `429 Too Many Requests` avec un champ `retryAfter` indiquant le nombre de secondes avant la réinitialisation de la limite.
 
 <Callout type="info">
-  Les réponses d'erreur de limite de débit ont une structure différente des erreurs API standard — elles n'incluent pas les champs `code` ni `timestamp`. Une réponse de limite de débit ressemble à :
+  Les réponses d'erreur de limite de débit ont une structure différente des erreurs API standard ; elles n'incluent pas les champs `code` ni `timestamp`. Une réponse de limite de débit ressemble à :
 
   ```json
   { "error": "Too many requests", "message": "Rate limit exceeded. Try again in 15 seconds.", "retryAfter": 15 }
@@ -495,4 +495,4 @@ En cas de dépassement de la limite, le serveur retourne `429 Too Many Requests`
 
 ### Limites de taille des requêtes
 
-L'API impose une limite de taille de corps de **50 Mo** sur les requêtes non-multipart. Les téléversements de fichiers contournent cette limite en utilisant des URLs présignées S3 — le contenu du fichier va directement vers S3, pas via le serveur API.
+L'API impose une limite de taille de corps de **50 Mo** sur les requêtes non-multipart. Les téléversements de fichiers contournent cette limite en utilisant des URLs présignées S3 ; le contenu du fichier va directement vers S3, pas via le serveur API.

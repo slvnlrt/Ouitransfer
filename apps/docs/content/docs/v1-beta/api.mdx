@@ -5,7 +5,7 @@ icon: Code
 
 import { Callout } from "fumadocs-ui/components/callout";
 
-The Ouitransfer API is a REST API built with Fastify 5, Zod, and TypeScript. It powers all operations in the platform — the web frontend communicates with it directly via `/api/*` routes, but you can also call it directly for automation, integrations, or custom clients.
+The Ouitransfer API is a REST API built with Fastify 5, Zod, and TypeScript. It powers all operations in the platform: the web frontend communicates with it directly via `/api/*` routes, but you can also call it directly for automation, integrations, or custom clients.
 
 ## Base URL
 
@@ -25,13 +25,13 @@ To expose the API port in Docker Compose, add `ports: ["3333:3333"]` to the `ser
 
 ## Authentication
 
-The API uses **httpOnly signed cookies** for authentication — there is no API key system. Authenticate by calling the login endpoint, then include the returned cookies in subsequent requests.
+The API uses **httpOnly signed cookies** for authentication: there is no API key system. Authenticate by calling the login endpoint, then include the returned cookies in subsequent requests.
 
 ### Login flow
 
-1. **Get a CSRF token** — `GET /csrf-token` returns a `token` value and sets a `_csrf` cookie.
-2. **Login** — `POST /auth/login` with credentials. On success, the server sets `token` (JWT access token) and `refreshToken` cookies.
-3. **Make requests** — include cookies on all subsequent requests. The JWT is short-lived (15 minutes); use `POST /auth/refresh` to obtain a new one. The refresh endpoint returns no token in the response body — both the new access token and the rotated refresh token are set as httpOnly cookies.
+1. **Get a CSRF token**: `GET /csrf-token` returns a `token` value and sets a `_csrf` cookie.
+2. **Login**: `POST /auth/login` with credentials. On success, the server sets `token` (JWT access token) and `refreshToken` cookies.
+3. **Make requests**: include cookies on all subsequent requests. The JWT is short-lived (15 minutes); use `POST /auth/refresh` to obtain a new one. The refresh endpoint returns no token in the response body: both the new access token and the rotated refresh token are set as httpOnly cookies.
 
 ### CSRF protection
 
@@ -43,7 +43,7 @@ All **mutating requests** (POST, PUT, PATCH, DELETE) require a CSRF token, unles
 - GET, HEAD, and OPTIONS requests do not require the CSRF header.
 
 <Callout type="warn">
-  CSRF token is required for **all POST, PUT, PATCH, and DELETE requests**, even endpoints marked `Auth: —` (public). Public mutations like file downloads (`POST /files/download-url`) still require a valid `X-CSRF-Token` header unless explicitly listed as CSRF-exempt. See the exempt list below.
+  CSRF token is required for **all POST, PUT, PATCH, and DELETE requests**, even endpoints marked `Auth: Public` (public). Public mutations like file downloads (`POST /files/download-url`) still require a valid `X-CSRF-Token` header unless explicitly listed as CSRF-exempt. See the exempt list below.
 </Callout>
 
 **CSRF-exempt endpoints** (public or unauthenticated mutations): `/auth/login`, `/auth/refresh`, `/auth/forgot-password`, `/auth/reset-password`, `/auth/2fa/login`, `/register-with-invite`, share and reverse share password-access endpoints, and all reverse share public upload endpoints.
@@ -71,8 +71,8 @@ curl -s -b cookies.txt http://localhost:3333/files
 
 When API docs are enabled (always in development, opt-in in production via `ENABLE_API_DOCS=true`), two interactive documentation UIs are available:
 
-- **Scalar** — `http://localhost:3333/docs`
-- **Swagger UI** — `http://localhost:3333/swagger`
+- **Scalar**: `http://localhost:3333/docs`
+- **Swagger UI**: `http://localhost:3333/swagger`
 
 Both provide endpoint exploration, request builders, and response visualization generated from the Zod schemas.
 
@@ -84,26 +84,26 @@ Both provide endpoint exploration, request builders, and response visualization 
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| POST | `/auth/login` | — | Login with email/username and password |
-| POST | `/auth/2fa/login` | — | Complete login with 2FA verification code |
-| POST | `/auth/logout` | — | Logout and clear session cookies |
-| GET | `/auth/me` | — | Get current authenticated user (returns `null` if not logged in) |
-| POST | `/auth/forgot-password` | — | Request password reset email |
-| POST | `/auth/reset-password` | — | Reset password using token from email |
-| POST | `/auth/refresh` | — | Refresh access token using refresh token cookie (token rotation — old refresh token is invalidated) |
-| GET | `/auth/config` | — | Get auth configuration (whether password auth is enabled) |
+| POST | `/auth/login` | Public | Login with email/username and password |
+| POST | `/auth/2fa/login` | Public | Complete login with 2FA verification code |
+| POST | `/auth/logout` | Public | Logout and clear session cookies |
+| GET | `/auth/me` | Public | Get current authenticated user (returns `null` if not logged in) |
+| POST | `/auth/forgot-password` | Public | Request password reset email |
+| POST | `/auth/reset-password` | Public | Reset password using token from email |
+| POST | `/auth/refresh` | Public | Refresh access token using refresh token cookie (token rotation; old refresh token is invalidated) |
+| GET | `/auth/config` | Public | Get auth configuration (whether password auth is enabled) |
 | GET | `/auth/trusted-devices` | User | List trusted 2FA devices |
 | DELETE | `/auth/trusted-devices/:id` | User | Remove a specific trusted device |
 | DELETE | `/auth/trusted-devices` | User | Remove all trusted devices |
-| GET | `/csrf-token` | — | Get a CSRF token (sets `_csrf` cookie) |
+| GET | `/csrf-token` | Public | Get a CSRF token (sets `_csrf` cookie) |
 
-**Note on optional-auth endpoints:** `/auth/me` returns the current user if a valid session exists, `null` otherwise — it doesn't require authentication to call. `/auth/logout` clears session cookies even without a valid session. Neither returns a `401` when called without credentials. Note that `/auth/logout` still requires a CSRF token (like all POST endpoints) even though it doesn't require a JWT session.
+**Note on optional-auth endpoints:** `/auth/me` returns the current user if a valid session exists, `null` otherwise: it doesn't require authentication to call. `/auth/logout` clears session cookies even without a valid session. Neither returns a `401` when called without credentials. Note that `/auth/logout` still requires a CSRF token (like all POST endpoints) even though it doesn't require a JWT session.
 
-**Login** returns the user object on success. If the account has 2FA enabled, it returns `{ requiresTwoFactor: true, challengeToken: "..." }` — pass the challenge token and TOTP code to `/auth/2fa/login` to complete authentication.
+**Login** returns the user object on success. If the account has 2FA enabled, it returns `{ requiresTwoFactor: true, challengeToken: "..." }`: pass the challenge token and TOTP code to `/auth/2fa/login` to complete authentication.
 
 **Rate limits:** Login: 5 attempts per minute per IP. Forgot password: 3 per minute per IP. Reset password: 3 per minute per IP. Token refresh: 10 per minute per IP.
 
-**Account lockout:** After 10 consecutive failed login attempts within 15 minutes, the account is temporarily locked and returns an `ACCOUNT_LOCKED` error code with `403 Forbidden`. The lockout expires automatically after 15 minutes from the oldest failed attempt — no administrator intervention is required. A successful login resets the failure counter.
+**Account lockout:** After 10 consecutive failed login attempts within 15 minutes, the account is temporarily locked and returns an `ACCOUNT_LOCKED` error code with `403 Forbidden`. The lockout expires automatically after 15 minutes from the oldest failed attempt; no administrator intervention is required. A successful login resets the failure counter.
 
 ---
 
@@ -132,8 +132,8 @@ Both provide endpoint exploration, request builders, and response visualization 
 |--------|------|------|-------------|
 | POST | `/shares` | User | Create a new share |
 | GET | `/shares/me` | User | List shares created by the current user |
-| GET | `/shares/:shareId` | — | Get a share by ID (public for non-password-protected shares) |
-| POST | `/shares/:shareId/access` | — | Access a password-protected share |
+| GET | `/shares/:shareId` | Public | Get a share by ID (public for non-password-protected shares) |
+| POST | `/shares/:shareId/access` | Public | Access a password-protected share |
 | PUT | `/shares` | User | Update a share (body includes `id`) |
 | DELETE | `/shares/:id` | User | Delete a share (owner only) |
 | PATCH | `/shares/:shareId/password` | User | Update or remove share password |
@@ -143,15 +143,15 @@ Both provide endpoint exploration, request builders, and response visualization 
 | DELETE | `/shares/:shareId/recipients` | User | Remove email recipients from a share |
 | POST | `/shares/:shareId/notify` | User | Send email notification to recipients |
 | POST | `/shares/:shareId/alias` | User | Create or update share alias |
-| GET | `/shares/alias/:alias` | — | Get share by alias (public) |
-| POST | `/shares/alias/:alias/access` | — | Access password-protected share by alias |
-| GET | `/shares/alias/:alias/metadata` | — | Get share metadata for Open Graph previews |
-| POST | `/shares/alias/:alias/identify` | — | Submit visitor identification form (name/email) |
+| GET | `/shares/alias/:alias` | Public | Get share by alias (public) |
+| POST | `/shares/alias/:alias/access` | Public | Access password-protected share by alias |
+| GET | `/shares/alias/:alias/metadata` | Public | Get share metadata for Open Graph previews |
+| POST | `/shares/alias/:alias/identify` | Public | Submit visitor identification form (name/email) |
 | GET | `/shares/:shareId/visits` | User | List share visits (paginated, filterable by action and identification status) |
 
-**Share access:** For password-protected shares, the password must be sent in the request body via the `/access` endpoints — never as a query parameter. Non-password-protected shares are accessible without authentication.
+**Share access:** For password-protected shares, the password must be sent in the request body via the `/access` endpoints; never as a query parameter. Non-password-protected shares are accessible without authentication.
 
-**Tracking tokens:** Share access endpoints accept an optional `?t=<token>` query parameter. When present, the visitor is automatically identified as the recipient who owns that tracking token. See [Shares — Visitor identification](/docs/v1-beta/shares#visitor-identification).
+**Tracking tokens:** Share access endpoints accept an optional `?t=<token>` query parameter. When present, the visitor is automatically identified as the recipient who owns that tracking token. See [Shares: Visitor identification](/docs/v1-beta/shares#visitor-identification).
 
 **Share visits:** The `GET /shares/:shareId/visits` endpoint returns paginated visit records. Query parameters: `page` (default 1), `limit` (default 10), `action` (`access` or `download`), `identified` (`true` or `false`). Only the share owner can access this endpoint.
 
@@ -168,9 +168,9 @@ Both provide endpoint exploration, request builders, and response visualization 
 | PATCH | `/files/:id` | User | Update file metadata (name, description) |
 | PUT | `/files/:id/move` | User | Move file to a different folder |
 | DELETE | `/files/:id` | User | Delete a file (`?force=true` if file is in shares) |
-| POST | `/files/download-url` | — | Get presigned download URL (share password in body) |
-| POST | `/files/download` | — | Download file content (streaming, share password in body) |
-| GET | `/embed/:token` | — | Embed media file via signed token |
+| POST | `/files/download-url` | Public | Get presigned download URL (share password in body) |
+| POST | `/files/download` | Public | Download file content (streaming, share password in body) |
+| GET | `/embed/:token` | Public | Embed media file via signed token |
 | POST | `/files/embed-token` | User | Generate signed embed token for a file in a share (24-hour expiry) |
 
 **Multipart upload** (for large files ≥100 MB):
@@ -224,30 +224,30 @@ Reverse shares allow authenticated users to create upload links that anyone (eve
 | PUT | `/reverse-shares/files/:fileId` | User | Update file name/description |
 | POST | `/reverse-shares/files/:fileId/copy` | User | Copy file to user's personal files |
 
-**Public endpoints** (upload to reverse shares — no auth required):
+**Public endpoints** (upload to reverse shares, no auth required):
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| GET | `/reverse-shares/:id/upload` | — | Get reverse share info for upload |
-| POST | `/reverse-shares/:id/upload/access` | — | Access password-protected reverse share |
-| GET | `/reverse-shares/alias/:alias/upload` | — | Get reverse share info by alias |
-| POST | `/reverse-shares/alias/:alias/upload/access` | — | Access password-protected reverse share by alias |
-| POST | `/reverse-shares/:id/presigned-url` | — | Get presigned upload URL |
-| POST | `/reverse-shares/alias/:alias/presigned-url` | — | Get presigned upload URL by alias |
-| POST | `/reverse-shares/:id/register-file` | — | Register uploaded file |
-| POST | `/reverse-shares/alias/:alias/register-file` | — | Register uploaded file by alias |
-| POST | `/reverse-shares/:id/check-password` | — | Verify reverse share password |
-| GET | `/reverse-shares/alias/:alias/metadata` | — | Get metadata for Open Graph previews |
+| GET | `/reverse-shares/:id/upload` | Public | Get reverse share info for upload |
+| POST | `/reverse-shares/:id/upload/access` | Public | Access password-protected reverse share |
+| GET | `/reverse-shares/alias/:alias/upload` | Public | Get reverse share info by alias |
+| POST | `/reverse-shares/alias/:alias/upload/access` | Public | Access password-protected reverse share by alias |
+| POST | `/reverse-shares/:id/presigned-url` | Public | Get presigned upload URL |
+| POST | `/reverse-shares/alias/:alias/presigned-url` | Public | Get presigned upload URL by alias |
+| POST | `/reverse-shares/:id/register-file` | Public | Register uploaded file |
+| POST | `/reverse-shares/alias/:alias/register-file` | Public | Register uploaded file by alias |
+| POST | `/reverse-shares/:id/check-password` | Public | Verify reverse share password |
+| GET | `/reverse-shares/alias/:alias/metadata` | Public | Get metadata for Open Graph previews |
 
 **Multipart upload** (public, for large file uploads to reverse shares):
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| POST | `/reverse-shares/alias/:alias/multipart/create` | — | Initialize multipart upload |
-| POST | `/reverse-shares/alias/:alias/multipart/part-url` | — | Get presigned URL for part |
-| POST | `/reverse-shares/alias/:alias/multipart/complete` | — | Complete multipart upload |
-| POST | `/reverse-shares/alias/:alias/multipart/abort` | — | Abort multipart upload |
-| POST | `/reverse-shares/alias/:alias/multipart/list-parts` | — | List uploaded parts |
+| POST | `/reverse-shares/alias/:alias/multipart/create` | Public | Initialize multipart upload |
+| POST | `/reverse-shares/alias/:alias/multipart/part-url` | Public | Get presigned URL for part |
+| POST | `/reverse-shares/alias/:alias/multipart/complete` | Public | Complete multipart upload |
+| POST | `/reverse-shares/alias/:alias/multipart/abort` | Public | Abort multipart upload |
+| POST | `/reverse-shares/alias/:alias/multipart/list-parts` | Public | List uploaded parts |
 
 ---
 
@@ -298,8 +298,8 @@ All 2FA management endpoints require **user** authentication (JWT). The 2FA rout
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
 | POST | `/invite-tokens` | Admin | Generate a one-time invite token |
-| GET | `/invite-tokens/:token` | — | Validate an invite token |
-| POST | `/register-with-invite` | — | Register a new user with an invite token |
+| GET | `/invite-tokens/:token` | Public | Validate an invite token |
+| POST | `/register-with-invite` | Public | Register a new user with an invite token |
 
 ---
 
@@ -309,14 +309,14 @@ Auth provider routes are registered under the `/auth` prefix.
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| GET | `/auth/providers` | — | List enabled auth providers (public, for login page) |
+| GET | `/auth/providers` | Public | List enabled auth providers (public, for login page) |
 | GET | `/auth/providers/all` | Admin | List all auth providers (including disabled) |
 | POST | `/auth/providers` | Admin | Create a new auth provider |
 | PUT | `/auth/providers/:id` | Admin | Update an auth provider |
 | DELETE | `/auth/providers/:id` | Admin | Delete a custom auth provider |
 | PUT | `/auth/providers/order` | Admin | Update display order of providers |
-| GET | `/auth/providers/:provider/authorize` | — | Initiate OAuth/OIDC login flow (redirects to provider) |
-| GET | `/auth/providers/:provider/callback` | — | Handle OAuth/OIDC callback (redirects to app) |
+| GET | `/auth/providers/:provider/authorize` | Public | Initiate OAuth/OIDC login flow (redirects to provider) |
+| GET | `/auth/providers/:provider/callback` | Public | Handle OAuth/OIDC callback (redirects to app) |
 
 ---
 
@@ -355,8 +355,8 @@ For detailed query parameter documentation, see the [Activity Log](/docs/v1-beta
 |--------|------|------|-------------|
 | GET | `/notifications/preferences` | User | Get all notification preferences (merged with catalog defaults) |
 | PUT | `/notifications/preferences` | User | Update notification preferences (array of `{ type, frequency }`) |
-| GET | `/notifications/unsubscribe?token=...` | — | Validate unsubscribe token and return notification type |
-| POST | `/notifications/unsubscribe` | — | Confirm unsubscribe (sets frequency to `disabled`) |
+| GET | `/notifications/unsubscribe?token=...` | Public | Validate unsubscribe token and return notification type |
+| POST | `/notifications/unsubscribe` | Public | Confirm unsubscribe (sets frequency to `disabled`) |
 
 The preferences endpoint returns all 22 notification types with their current frequency, whether they are configurable, and whether they are critical. Only configurable, non-critical types can be updated. For details, see [Notification Preferences](/docs/v1-beta/notification-preferences).
 
@@ -369,7 +369,7 @@ The preferences endpoint returns all 22 notification types with their current fr
 | GET | `/admin/email/stats` | Admin | Get email queue counters (pending, sent, failed) |
 | POST | `/admin/email/test` | Admin | Send a test email to the current admin's email address |
 
-For details on the email delivery system, see [Configuring SMTP — Email delivery system](/docs/v1-beta/configuring-smtp#email-delivery-system).
+For details on the email delivery system, see [Configuring SMTP: Email delivery system](/docs/v1-beta/configuring-smtp#email-delivery-system).
 
 ---
 
@@ -378,9 +378,9 @@ For details on the email delivery system, see [Configuring SMTP — Email delive
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
 | GET | `/admin/stats` | Admin | Get platform-wide statistics (users, files, shares) |
-| GET | `/app/info` | — | Get application name, description, logo, first-user status |
-| GET | `/app/system-info` | — | Get system info (storage provider type) |
-| GET | `/app/configs/public` | — | List public configuration values |
+| GET | `/app/info` | Public | Get application name, description, logo, first-user status |
+| GET | `/app/system-info` | Public | Get system info (storage provider type) |
+| GET | `/app/configs/public` | Public | List public configuration values |
 | GET | `/app/configs` | Admin | List all configuration values (including sensitive) |
 | PATCH | `/app/configs/:key` | Admin | Update a single configuration value |
 | PATCH | `/app/configs` | Admin | Bulk update configuration values |
@@ -394,7 +394,7 @@ For details on the email delivery system, see [Configuring SMTP — Email delive
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| GET | `/background-images` | — | List all background images (public) |
+| GET | `/background-images` | Public | List all background images (public) |
 | POST | `/background-images` | Admin | Upload a background image (multipart/form-data) |
 | PATCH | `/background-images/order` | Admin | Reorder background images |
 | PATCH | `/background-images/:id` | Admin | Update background image name |
@@ -428,8 +428,8 @@ These endpoints provide direct S3 object operations. Most clients should use the
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| GET | `/health` | — | Full health check (database + storage status) |
-| GET | `/health/status` | — | Simplified health status (`healthy`, `degraded`, `unhealthy`) |
+| GET | `/health` | Public | Full health check (database + storage status) |
+| GET | `/health/status` | Public | Simplified health status (`healthy`, `degraded`, `unhealthy`) |
 
 ---
 
@@ -437,17 +437,17 @@ These endpoints provide direct S3 object operations. Most clients should use the
 
 | Code | Meaning |
 |------|---------|
-| 200 | OK — request succeeded |
-| 201 | Created — resource created successfully |
-| 302 | Redirect — OAuth/OIDC flow redirects |
-| 400 | Bad Request — validation failure (Zod schema) |
-| 401 | Unauthorized — not authenticated, invalid token, or CSRF mismatch |
-| 403 | Forbidden — authenticated but insufficient permissions |
-| 404 | Not Found — resource does not exist |
-| 409 | Conflict — duplicate resource or file-in-shares conflict |
-| 410 | Gone — share or reverse share has expired |
-| 413 | Payload Too Large — request body exceeds the 50 MB body size limit |
-| 429 | Too Many Requests — rate limit exceeded |
+| 200 | OK: request succeeded |
+| 201 | Created: resource created successfully |
+| 302 | Redirect: OAuth/OIDC flow redirects |
+| 400 | Bad Request: validation failure (Zod schema) |
+| 401 | Unauthorized: not authenticated, invalid token, or CSRF mismatch |
+| 403 | Forbidden: authenticated but insufficient permissions |
+| 404 | Not Found: resource does not exist |
+| 409 | Conflict: duplicate resource or file-in-shares conflict |
+| 410 | Gone: share or reverse share has expired |
+| 413 | Payload Too Large: request body exceeds the 50 MB body size limit |
+| 429 | Too Many Requests: rate limit exceeded |
 | 500 | Internal Server Error |
 
 All error responses follow a consistent JSON shape:
@@ -486,7 +486,7 @@ Global rate limit: **100 requests per minute per IP**. Individual endpoints may 
 When rate-limited, the server returns `429 Too Many Requests` with a `retryAfter` field indicating seconds until the limit resets.
 
 <Callout type="info">
-  Rate limit error responses have a different shape from standard API errors — they don't include the `code` or `timestamp` fields. A rate limit response looks like:
+  Rate limit error responses have a different shape from standard API errors; they don't include the `code` or `timestamp` fields. A rate limit response looks like:
 
   ```json
   { "error": "Too many requests", "message": "Rate limit exceeded. Try again in 15 seconds.", "retryAfter": 15 }
@@ -495,4 +495,4 @@ When rate-limited, the server returns `429 Too Many Requests` with a `retryAfter
 
 ### Request size limits
 
-The API enforces a **50 MB** body size limit on non-multipart requests. File uploads bypass this limit by using S3 presigned URLs — the file content goes directly to S3, not through the API server.
+The API enforces a **50 MB** body size limit on non-multipart requests. File uploads bypass this limit by using S3 presigned URLs; the file content goes directly to S3, not through the API server.

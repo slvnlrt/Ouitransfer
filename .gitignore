@@ -45,6 +45,9 @@ data/
 .next/
 node_modules/
 screenshots/
+# Exception: doc assets are tracked
+!apps/docs/public/assets/**/screenshots/
+!apps/docs/public/assets/**/screenshots/**
 *.tsbuildinfo
 
 # Turbo

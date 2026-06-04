@@ -636,7 +636,7 @@
     "cropInstructions": "Glisser pour répositionner, redimensionner les coins pour ajuster la zone de découpe"
   },
   "login": {
-    "welcome": "Bienvenue à",
+    "welcome": "Bienvenue sur",
     "signInToContinue": "Connectez-vous pour continuer",
     "emailOrUsernameLabel": "Email ou Nom d'utilisateur",
     "emailOrUsernamePlaceholder": "Entrez votre email ou nom d'utilisateur",
