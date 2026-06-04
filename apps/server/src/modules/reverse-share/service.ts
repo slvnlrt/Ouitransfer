@@ -1,10 +1,12 @@
 import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import { env } from "../../env.js";
 import { prisma } from "../../shared/prisma.js";
-import { AppError, ConflictError, ForbiddenError, NotFoundError } from "../../utils/app-error.js";
+import { AppError, ConflictError, ForbiddenError, NotFoundError, ValidationError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
 import { FileService } from "../file/service.js";
+import { emailService } from "../email/service.js";
+import { buildReverseShareUploadLink } from "../email/url-builder.js";
 import { assertOwnerActive } from "./assert-owner-active.js";
 import {
   type CreateReverseShareInput,
@@ -52,6 +54,14 @@ interface ReverseShareData {
     createdAt: Date;
     updatedAt: Date;
   } | null;
+  recipients?: Array<{
+    id: string;
+    email: string;
+    name: string | null;
+    notifiedAt: Date | null;
+    createdAt: Date;
+    updatedAt: Date;
+  }>;
 }
 
 export class ReverseShareService {
@@ -521,6 +531,139 @@ export class ReverseShareService {
     };
   }
 
+  async addRecipients(
+    reverseShareId: string,
+    userId: string,
+    recipients: Array<{ email: string; name?: string }>,
+  ) {
+    const reverseShare = await this.reverseShareRepository.findById(reverseShareId);
+    if (!reverseShare) {
+      throw new NotFoundError("Reverse share not found");
+    }
+    if (reverseShare.creatorId !== userId) {
+      throw new ForbiddenError("Unauthorized to update this reverse share");
+    }
+
+    try {
+      await this.reverseShareRepository.addRecipients(reverseShareId, recipients);
+    } catch (error: unknown) {
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        (error as { code: string }).code === "P2002"
+      ) {
+        throw new ConflictError("One or more recipients already exist on this reverse share");
+      }
+      throw error;
+    }
+    const updated = await this.reverseShareRepository.findById(reverseShareId);
+    return ReverseShareResponseSchema.parse(this.formatReverseShareResponse(updated!));
+  }
+
+  async removeRecipients(reverseShareId: string, userId: string, emails: string[]) {
+    const reverseShare = await this.reverseShareRepository.findById(reverseShareId);
+    if (!reverseShare) {
+      throw new NotFoundError("Reverse share not found");
+    }
+    if (reverseShare.creatorId !== userId) {
+      throw new ForbiddenError("Unauthorized to update this reverse share");
+    }
+
+    await this.reverseShareRepository.removeRecipients(reverseShareId, emails);
+    const updated = await this.reverseShareRepository.findById(reverseShareId);
+    return ReverseShareResponseSchema.parse(this.formatReverseShareResponse(updated!));
+  }
+
+  async notifyRecipients(
+    reverseShareId: string,
+    userId: string,
+    selectedEmails?: string[],
+  ): Promise<{ notifiedRecipients: string[] }> {
+    const reverseShare = await this.reverseShareRepository.findById(reverseShareId);
+
+    if (!reverseShare) {
+      throw new NotFoundError("Reverse share not found");
+    }
+
+    if (reverseShare.creatorId !== userId) {
+      throw new ForbiddenError("Unauthorized to access this reverse share");
+    }
+
+    if (!reverseShare.recipients || reverseShare.recipients.length === 0) {
+      throw new ValidationError("No recipients found for this reverse share");
+    }
+
+    if (selectedEmails && selectedEmails.length === 0) {
+      throw new ValidationError("selectedEmails must not be empty when provided");
+    }
+
+    // Filter to selected emails if provided
+    let recipientsToNotify = reverseShare.recipients;
+    if (selectedEmails?.length) {
+      const emailSet = new Set(selectedEmails.map((e) => e.trim().toLowerCase()));
+      recipientsToNotify = reverseShare.recipients.filter((r) =>
+        emailSet.has(r.email.toLowerCase()),
+      );
+
+      if (recipientsToNotify.length === 0) {
+        throw new ValidationError(
+          "None of the selected emails match this reverse share's recipients",
+        );
+      }
+    }
+
+    // Build upload link server-side
+    const reverseShareAlias = reverseShare.alias?.alias;
+    if (!reverseShareAlias) {
+      throw new ValidationError(
+        "Reverse share must have an alias before sending notifications",
+      );
+    }
+    const reverseShareLink = await buildReverseShareUploadLink(reverseShareAlias);
+
+    // Get sender info
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    const senderName = user?.firstName
+      ? `${user.firstName} ${user.lastName ?? ""}`.trim()
+      : (user?.username ?? "Someone");
+
+    const notifiedRecipients: string[] = [];
+
+    for (const recipient of recipientsToNotify) {
+      try {
+        const result = await emailService.send("reverse_share_invitation", {
+          to: recipient.email,
+          locale: user?.locale ?? "en",
+          relatedId: reverseShare.id,
+          data: {
+            senderName,
+            reverseShareName: reverseShare.name ?? "File upload request",
+            reverseShareLink,
+            hasPassword: !!reverseShare.password,
+            expiresAt: reverseShare.expiration?.toISOString(),
+          },
+        });
+
+        if (result.enqueued) {
+          await prisma.reverseShareRecipient.update({
+            where: { id: recipient.id },
+            data: { notifiedAt: new Date() },
+          });
+
+          notifiedRecipients.push(recipient.email);
+        }
+      } catch (error) {
+        getLogger().error(
+          { err: error, email: recipient.email },
+          "Failed to queue reverse share invitation",
+        );
+      }
+    }
+
+    return { notifiedRecipients };
+  }
+
   private formatReverseShareResponse(reverseShare: ReverseShareData) {
     const result = {
       id: reverseShare.id,
@@ -559,6 +702,13 @@ export class ReverseShareService {
             updatedAt: reverseShare.alias.updatedAt.toISOString(),
           }
         : null,
+      recipients: (reverseShare.recipients || []).map((r) => ({
+        id: r.id,
+        email: r.email,
+        name: r.name,
+        notifiedAt: r.notifiedAt?.toISOString() || null,
+        createdAt: r.createdAt.toISOString(),
+      })),
       nameFieldRequired: reverseShare.nameFieldRequired,
       emailFieldRequired: reverseShare.emailFieldRequired,
       notifyOnUpload: reverseShare.notifyOnUpload,
