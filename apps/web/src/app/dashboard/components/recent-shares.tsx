@@ -1,4 +1,4 @@
-import { Plus, Share } from "lucide-react";
+import { ArrowRight, Plus, Share } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -34,7 +34,7 @@ export function RecentShares({
                 size="default"
                 onClick={() => router.push("/shares")}
               >
-                <Share className="h-4 w-4" />
+                <ArrowRight className="h-4 w-4" />
                 {t("recentShares.viewAll")}
               </Button>
 
