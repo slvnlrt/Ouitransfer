@@ -152,177 +152,181 @@ export function QuickShareUpload({
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-6">
-        {/* File list */}
-        <div className="space-y-2 max-h-48 overflow-y-auto">
-          {fileUploads.map((upload) => (
-            <div key={upload.id} className="flex items-center gap-3 p-2 rounded-md bg-muted/30">
-              <FileTypeIcon fileName={upload.file.name} />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium truncate">{upload.file.name}</p>
-                  <StatusIcon status={upload.status} sizeClass="size-3.5" />
+      <CardContent>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
+          {/* File list */}
+          <div className="space-y-2 max-h-48 overflow-y-auto lg:max-h-[24rem]">
+            {fileUploads.map((upload) => (
+              <div key={upload.id} className="flex items-center gap-3 p-2 rounded-md bg-muted/30">
+                <FileTypeIcon fileName={upload.file.name} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium truncate">{upload.file.name}</p>
+                    <StatusIcon status={upload.status} sizeClass="size-3.5" />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {formatFileSize(upload.file.size)}
+                  </p>
+                  {upload.status === "uploading" && (
+                    <Progress value={upload.progress} className="h-1 mt-1" />
+                  )}
+                  {upload.status === "error" && upload.error && (
+                    <p className="text-xs text-destructive mt-0.5">{upload.error}</p>
+                  )}
                 </div>
-                <p className="text-xs text-muted-foreground">{formatFileSize(upload.file.size)}</p>
-                {upload.status === "uploading" && (
-                  <Progress value={upload.progress} className="h-1 mt-1" />
-                )}
-                {upload.status === "error" && upload.error && (
-                  <p className="text-xs text-destructive mt-0.5">{upload.error}</p>
-                )}
-              </div>
-              <div className="flex gap-1 flex-shrink-0">
-                {upload.status === "error" && (
+                <div className="flex gap-1 flex-shrink-0">
+                  {upload.status === "error" && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onRetryUpload(upload.id)}
+                      className="h-6 w-6 p-0"
+                      disabled={isSubmitting}
+                    >
+                      <RotateCcw className="size-3" />
+                    </Button>
+                  )}
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => onRetryUpload(upload.id)}
+                    onClick={() => onRemoveFile(upload.id)}
                     className="h-6 w-6 p-0"
                     disabled={isSubmitting}
                   >
-                    <RotateCcw className="size-3" />
+                    <X className="size-3" />
                   </Button>
-                )}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onRemoveFile(upload.id)}
-                  className="h-6 w-6 p-0"
-                  disabled={isSubmitting}
-                >
-                  <X className="size-3" />
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Separator */}
-        <div className="border-t" />
-
-        {/* Options */}
-        <div className="space-y-4">
-          {/* Name */}
-          <div className="space-y-1.5">
-            <Input
-              value={settings.name}
-              onChange={(e) => onUpdateSettings({ name: e.target.value })}
-              placeholder={t("namePlaceholder")}
-            />
-          </div>
-
-          {/* Expiration */}
-          <div className="flex items-center gap-3">
-            <Label className="text-sm text-muted-foreground whitespace-nowrap">
-              {t("expiration.label")}
-            </Label>
-            <Select
-              value={settings.expiration}
-              onValueChange={(v) => onUpdateSettings({ expiration: v as ExpirationOption })}
-            >
-              <SelectTrigger className="flex-1">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {EXPIRATION_OPTIONS.map((opt) => (
-                  <SelectItem key={opt} value={opt}>
-                    {t(`expiration.${opt}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Password */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="quickshare-password-toggle" className="text-sm text-muted-foreground">
-                {t("password.label")}
-              </Label>
-              <Switch
-                id="quickshare-password-toggle"
-                checked={settings.isPasswordProtected}
-                onCheckedChange={(checked) =>
-                  onUpdateSettings({
-                    isPasswordProtected: checked,
-                    password: checked ? settings.password : "",
-                  })
-                }
-              />
-            </div>
-            {settings.isPasswordProtected && (
-              <Input
-                type="password"
-                value={settings.password}
-                onChange={(e) => onUpdateSettings({ password: e.target.value })}
-                placeholder={t("password.placeholder")}
-              />
-            )}
-          </div>
-
-          {/* Recipients — only shown when SMTP is configured */}
-          {smtpEnabled !== "false" && (
-            <div className="space-y-2">
-              <Label className="text-sm text-muted-foreground">{t("recipients.label")}</Label>
-              <Input
-                type="email"
-                placeholder={t("recipients.placeholder")}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    const value = e.currentTarget.value.trim();
-                    if (!value) return;
-                    if (!isValidEmail(value)) {
-                      toast.error(t("invalidEmail"));
-                      return;
-                    }
-                    if (!settings.recipients.includes(value)) {
-                      onUpdateSettings({
-                        recipients: [...settings.recipients, value],
-                      });
-                      e.currentTarget.value = "";
-                    }
-                  }
-                }}
-              />
-              {settings.recipients.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {settings.recipients.map((email) => (
-                    <span
-                      key={email}
-                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs"
-                    >
-                      {email}
-                      <button
-                        type="button"
-                        onClick={() =>
-                          onUpdateSettings({
-                            recipients: settings.recipients.filter((r) => r !== email),
-                          })
-                        }
-                        className="hover:text-destructive"
-                      >
-                        <X className="size-3" />
-                      </button>
-                    </span>
-                  ))}
                 </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Options + share action */}
+          <div className="space-y-4 border-t pt-6 lg:border-t-0 lg:pt-0 lg:border-s lg:ps-8">
+            {/* Name */}
+            <div className="space-y-1.5">
+              <Input
+                value={settings.name}
+                onChange={(e) => onUpdateSettings({ name: e.target.value })}
+                placeholder={t("namePlaceholder")}
+              />
+            </div>
+
+            {/* Expiration */}
+            <div className="flex items-center gap-3">
+              <Label className="text-sm text-muted-foreground whitespace-nowrap">
+                {t("expiration.label")}
+              </Label>
+              <Select
+                value={settings.expiration}
+                onValueChange={(v) => onUpdateSettings({ expiration: v as ExpirationOption })}
+              >
+                <SelectTrigger className="flex-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {EXPIRATION_OPTIONS.map((opt) => (
+                    <SelectItem key={opt} value={opt}>
+                      {t(`expiration.${opt}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Password */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label
+                  htmlFor="quickshare-password-toggle"
+                  className="text-sm text-muted-foreground"
+                >
+                  {t("password.label")}
+                </Label>
+                <Switch
+                  id="quickshare-password-toggle"
+                  checked={settings.isPasswordProtected}
+                  onCheckedChange={(checked) =>
+                    onUpdateSettings({
+                      isPasswordProtected: checked,
+                      password: checked ? settings.password : "",
+                    })
+                  }
+                />
+              </div>
+              {settings.isPasswordProtected && (
+                <Input
+                  type="password"
+                  value={settings.password}
+                  onChange={(e) => onUpdateSettings({ password: e.target.value })}
+                  placeholder={t("password.placeholder")}
+                />
               )}
             </div>
-          )}
-        </div>
 
-        {/* Share button */}
-        <Button
-          onClick={onShare}
-          disabled={isSubmitting || fileUploads.length === 0 || (hasErrors && allDone)}
-          className="w-full"
-          size="lg"
-        >
-          {(isSubmitting || pendingShare) && <Loader2 className="size-4 mr-2 animate-spin" />}
-          {!isSubmitting && !pendingShare && <Send className="size-4 mr-2" />}
-          {getButtonLabel()}
-        </Button>
+            {/* Recipients — only shown when SMTP is configured */}
+            {smtpEnabled !== "false" && (
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">{t("recipients.label")}</Label>
+                <Input
+                  type="email"
+                  placeholder={t("recipients.placeholder")}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      const value = e.currentTarget.value.trim();
+                      if (!value) return;
+                      if (!isValidEmail(value)) {
+                        toast.error(t("invalidEmail"));
+                        return;
+                      }
+                      if (!settings.recipients.includes(value)) {
+                        onUpdateSettings({
+                          recipients: [...settings.recipients, value],
+                        });
+                        e.currentTarget.value = "";
+                      }
+                    }
+                  }}
+                />
+                {settings.recipients.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {settings.recipients.map((email) => (
+                      <span
+                        key={email}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs"
+                      >
+                        {email}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            onUpdateSettings({
+                              recipients: settings.recipients.filter((r) => r !== email),
+                            })
+                          }
+                          className="hover:text-destructive"
+                        >
+                          <X className="size-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Share button */}
+            <Button
+              onClick={onShare}
+              disabled={isSubmitting || fileUploads.length === 0 || (hasErrors && allDone)}
+              className="w-full"
+              size="lg"
+            >
+              {(isSubmitting || pendingShare) && <Loader2 className="size-4 mr-2 animate-spin" />}
+              {!isSubmitting && !pendingShare && <Send className="size-4 mr-2" />}
+              {getButtonLabel()}
+            </Button>
+          </div>
+        </div>
       </CardContent>
 
       <input
