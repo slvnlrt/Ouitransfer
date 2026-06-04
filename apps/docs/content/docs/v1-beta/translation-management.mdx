@@ -93,7 +93,7 @@ When you add new text to the application:
   **"100% completeness" does not mean fully translated.** The check script only detects strings
   marked with `[TO_TRANSLATE]`. If a string was added to all locale files with its English value
   (without the marker), it will be counted as complete even if it was never translated. Always
-  review the **"SUSPECTED EN"** column — strings identical to English (>15 chars) that may need human
+  review the **"SUSPECTED EN"** column: strings identical to English (>15 chars) that may need human
   translation. Note: some are false positives (cognates spelled identically in multiple languages, e.g. "Position").
 </Callout>
 
@@ -199,7 +199,7 @@ Provides comprehensive translation analysis:
 
 ### Prune Script (`prune_translations.py`)
 
-Removes stale translation keys — keys that still exist in a language file but were deleted from the English reference (`en-US.json`). Run this after removing keys from the application to keep language files clean.
+Removes stale translation keys: keys that still exist in a language file but were deleted from the English reference (`en-US.json`). Run this after removing keys from the application to keep language files clean.
 
 ```bash
 # Preview what would be removed (recommended first)
@@ -453,7 +453,7 @@ LANGUAGE        COMPLETENESS STRINGS         [TO_TRANSLATE]   SUSPECTED EN
 
 <Callout type="info">
   **Key count difference**: `check` reports 1958 *leaf strings* (actual translatable values). `sync` reports
-  2285 *total key paths* (including intermediate object nodes in the JSON hierarchy). Both are correct — they
+  2285 *total key paths* (including intermediate object nodes in the JSON hierarchy). Both are correct; they
   measure different things. Use `check` as the authoritative count of strings that need human translation.
 </Callout>
 
