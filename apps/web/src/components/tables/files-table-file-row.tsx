@@ -1,4 +1,3 @@
-import { Download, Eye, Move, Pencil, Share, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -6,8 +5,8 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { getFileIcon } from "@/utils/file-icons";
 import { formatFileSize } from "@/utils/format-file-size";
 import { EditableField } from "./editable-field";
+import { buildFileActions } from "./files-table-actions";
 import type { FileItem } from "./files-table-types";
-import type { ActionItem } from "./item-actions";
 import { ItemDropdownMenu } from "./item-actions";
 
 interface FileRowProps {
@@ -70,65 +69,11 @@ export function FileRow({
   const t = useTranslations();
   const { icon: FileIcon, color } = getFileIcon(file.name);
 
-  const actions: ActionItem[] = [
-    ...(onPreview
-      ? [
-          {
-            key: "preview",
-            icon: Eye,
-            label: t("filesTable.actions.preview"),
-            onClick: () => onPreview(file),
-          },
-        ]
-      : []),
-    ...(onRename
-      ? [
-          {
-            key: "edit",
-            icon: Pencil,
-            label: t("filesTable.actions.edit"),
-            onClick: () => onRename(file),
-          },
-        ]
-      : []),
-    ...(onMoveFile
-      ? [
-          {
-            key: "move",
-            icon: Move,
-            label: t("common.move"),
-            onClick: () => onMoveFile(file),
-          },
-        ]
-      : []),
-    {
-      key: "download",
-      icon: Download,
-      label: t("filesTable.actions.download"),
-      onClick: () => onDownload(file.objectName, file.name),
-    },
-    ...(onShare
-      ? [
-          {
-            key: "share",
-            icon: Share,
-            label: t("filesTable.actions.share"),
-            onClick: () => onShare(file),
-          },
-        ]
-      : []),
-    ...(onDelete
-      ? [
-          {
-            key: "delete",
-            icon: Trash2,
-            label: t("filesTable.actions.delete"),
-            onClick: () => onDelete(file),
-            variant: "destructive" as const,
-          },
-        ]
-      : []),
-  ];
+  const actions = buildFileActions(
+    file,
+    { onPreview, onRename, onMoveFile, onDownload, onShare, onDelete },
+    t,
+  );
 
   return (
     <TableRow
