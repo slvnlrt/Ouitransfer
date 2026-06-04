@@ -279,13 +279,13 @@ With SMTP properly configured, users can take full advantage of OUITRANSFER's em
 
 ## Email delivery system
 
-Ouitransfer uses an **asynchronous email queue** backed by the database. When a notification is triggered, the email is not sent immediately — it is added to a queue and processed in the background.
+Ouitransfer uses an **asynchronous email queue** backed by the database. When a notification is triggered, the email is not sent immediately. Instead, it is added to a queue and processed in the background.
 
 ### How the queue works
 
-1. **Enqueue** — when an event triggers a notification (e.g., a file is downloaded), the system checks the user's [notification preferences](/docs/v1-beta/notification-preferences) and any per-share overrides. If the notification is enabled, an email job is added to the queue with status `pending`.
-2. **Process** — a background worker picks up pending jobs and sends them via SMTP. Successfully sent emails are marked as `sent`.
-3. **Retry** — if sending fails (SMTP timeout, temporary server error), the job is retried up to **3 times** with increasing delays. After all retries are exhausted, the job is marked as `failed`.
+1. **Enqueue**: When an event triggers a notification (e.g., a file is downloaded), the system checks the user's [notification preferences](/docs/v1-beta/notification-preferences) and any per-share overrides. If the notification is enabled, an email job is added to the queue with status `pending`.
+2. **Process**: A background worker picks up pending jobs and sends them via SMTP. Successfully sent emails are marked as `sent`.
+3. **Retry**: If sending fails (SMTP timeout, temporary server error), the job is retried up to **3 times** with increasing delays. After all retries are exhausted, the job is marked as `failed`.
 
 This architecture ensures that email delivery does not block request processing — the API responds immediately while emails are sent asynchronously.
 

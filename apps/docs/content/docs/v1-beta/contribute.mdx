@@ -39,7 +39,7 @@ Running services:
 - **Web** (Next.js): http://localhost:3000
 - **Docs** (Fumadocs): http://localhost:3001
 
-**No S3 setup required.** The server starts without storage — auth, config, and the UI all work. File operations are unavailable until you connect S3 (see `apps/server/.env.development` for the local RustFS config). Dev secrets (`JWT_SECRET` etc.) are committed in `.env.development` files — no manual configuration needed.
+**No S3 setup required.** The server starts without storage. Auth, config, and the UI all work. File operations are unavailable until you connect S3 (see `apps/server/.env.development` for the local RustFS config). Dev secrets (`JWT_SECRET` etc.) are committed in `.env.development` files, so no manual configuration is needed.
 
 ---
 

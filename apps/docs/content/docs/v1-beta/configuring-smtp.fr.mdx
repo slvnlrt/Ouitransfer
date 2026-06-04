@@ -279,13 +279,13 @@ Avec SMTP correctement configuré, les utilisateurs peuvent tirer pleinement par
 
 ## Système de livraison des e-mails
 
-Ouitransfer utilise une **file d'attente d'e-mails asynchrone** adossée à la base de données. Lorsqu'une notification est déclenchée, l'e-mail n'est pas envoyé immédiatement — il est ajouté à une file d'attente et traité en arrière-plan.
+Ouitransfer utilise une **file d'attente d'e-mails asynchrone** adossée à la base de données. Lorsqu'une notification est déclenchée, l'e-mail n'est pas envoyé immédiatement. Il est plutôt ajouté à une file d'attente et traité en arrière-plan.
 
 ### Fonctionnement de la file d'attente
 
-1. **Mise en file** — lorsqu'un événement déclenche une notification (par exemple, un fichier est téléchargé), le système vérifie les [préférences de notification](/docs/v1-beta/notification-preferences) de l'utilisateur et les éventuelles substitutions par partage. Si la notification est activée, une tâche d'e-mail est ajoutée à la file avec le statut `pending`.
-2. **Traitement** — un worker en arrière-plan récupère les tâches en attente et les envoie via SMTP. Les e-mails envoyés avec succès sont marqués comme `sent`.
-3. **Nouvelle tentative** — en cas d'échec d'envoi (délai d'attente SMTP, erreur temporaire du serveur), la tâche est relancée jusqu'à **3 fois** avec des délais croissants. Après épuisement de toutes les tentatives, la tâche est marquée comme `failed`.
+1. **Mise en file** : Lorsqu'un événement déclenche une notification (par exemple, un fichier est téléchargé), le système vérifie les [préférences de notification](/docs/v1-beta/notification-preferences) de l'utilisateur et les éventuelles substitutions par partage. Si la notification est activée, une tâche d'e-mail est ajoutée à la file avec le statut `pending`.
+2. **Traitement** : Un worker en arrière-plan récupère les tâches en attente et les envoie via SMTP. Les e-mails envoyés avec succès sont marqués comme `sent`.
+3. **Nouvelle tentative** : En cas d'échec d'envoi (délai d'attente SMTP, erreur temporaire du serveur), la tâche est relancée jusqu'à **3 fois** avec des délais croissants. Après épuisement de toutes les tentatives, la tâche est marquée comme `failed`.
 
 Cette architecture garantit que la livraison des e-mails ne bloque pas le traitement des requêtes — l'API répond immédiatement tandis que les e-mails sont envoyés de manière asynchrone.
 
