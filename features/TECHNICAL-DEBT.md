@@ -890,15 +890,9 @@ Choisir une option et la câbler.
 
 ---
 
-## TD-51 — Surfaces du thème clair en blanc pur (trop agressif)
+## ~~TD-51 — Surfaces du thème clair en blanc pur (trop agressif)~~ ✅ RESOLVED
 
-Dans `apps/web/src/app/globals.css`, le `:root` clair met `--card` et `--popover`
-en blanc pur `oklch(1 0 0)` alors que `--background` est `oklch(0.985 0.005 265)`.
-Les grandes surfaces de cartes/popovers en blanc pur « piquent » les yeux.
+Resolved (juin 2026). `--card` et `--popover` adoucis de `oklch(1 0 0)` (blanc pur) vers
+`oklch(0.99 0.004 265)` ; `--background` vers `oklch(0.975 0.007 265)`. Thème sombre inchangé.
 
-**Fix :** adoucir les surfaces du thème clair vers un blanc cassé légèrement teinté,
-p.ex. `--background: oklch(0.975 0.007 265)`, `--card`/`--popover: oklch(0.99 0.004 265)`
-(thème sombre inchangé). Vérifier que le contraste (foreground / borders) reste conforme.
-
-**Found during:** session review B-27 (juin 2026)
-**Severity:** Low — cosmétique / ergonomie.
+Commit: `e2cbd46 fix(web): TD-51 — soften harsh pure-white light-theme surfaces`
