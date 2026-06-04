@@ -39,7 +39,7 @@ Avant de configurer l'authentification Frontegg, assurez-vous de disposer des é
 
 Pour démarrer avec l'authentification Frontegg, vous devez créer une application dans votre portail d'administration Frontegg.
 
-1. **Accédez au portail d'administration Frontegg** : Rendez-vous sur [https://portal.frontegg.com/development/applications](https://portal.frontegg.com/development/applications) par exemple (environnement de développement). Pour l'environnement de production, allez sur [https://portal.frontegg.com/production/applications](https://portal.frontegg.com/production/applications) — cela peut varier selon votre environnement.
+1. **Accédez au portail d'administration Frontegg** : Rendez-vous sur [https://portal.frontegg.com/development/applications](https://portal.frontegg.com/development/applications) par exemple (environnement de développement). Pour l'environnement de production, allez sur [https://portal.frontegg.com/production/applications](https://portal.frontegg.com/production/applications). Cela peut varier selon votre environnement.
 
 <ZoomableImage src="/assets/v1/oidc/frontegg/frontegg-admin.png" alt="Portail d'administration Frontegg" />
 
@@ -50,7 +50,7 @@ Pour démarrer avec l'authentification Frontegg, vous devez créer une applicati
    - **Description** : Ajoutez une description claire de votre instance OUITRANSFER
    - **Type** : Choisissez **"Web"** pour les instances OUITRANSFER basées sur le Web
    - **Frontend stack** : Choisissez **"React"** pour les instances OUITRANSFER basées sur le Web
-   - **App URL** : Ajoutez l'URL de votre instance OUITRANSFER — consultez le tableau ci-dessous pour un exemple d'URL.
+   - **App URL** : Ajoutez l'URL de votre instance OUITRANSFER. Consultez le tableau ci-dessous pour un exemple d'URL.
 
    | Environnement   | URL                                                                |
    | --------------- | ------------------------------------------------------------------ |
@@ -82,7 +82,7 @@ Après avoir créé votre application, vous devrez récupérer les paramètres q
 
 Vous allez maintenant obtenir les identifiants qu'OUITRANSFER utilisera pour s'authentifier auprès de Frontegg.
 
-1. **Copier le domaine** : Notez votre domaine Frontegg (ex. : `your-tenant.frontegg.com`) — vous le trouverez sur la page de l'application dans le champ **"Login URL"**. Copiez uniquement le domaine, sans le chemin.
+1. **Copier le domaine** : Notez votre domaine Frontegg (ex. : `your-tenant.frontegg.com`). Vous le trouverez sur la page de l'application dans le champ **"Login URL"**. Copiez uniquement le domaine, sans le chemin.
 
 2. **Copier le Client ID** : Vous le trouverez sur la page de l'application dans le champ **"ID"**.
 
@@ -119,9 +119,9 @@ Frontegg est préconfiguré comme fournisseur officiel, ce qui simplifie le proc
 Après avoir activé le fournisseur, cliquez sur l'icône de crayon pour le configurer.
 
 3. **Configurer les identifiants** :
-   - **Provider URL** : Collez votre domaine Frontegg (ex. : `https://your-tenant.frontegg.com`) — il s'agit du même **"Login URL"** copié à l'étape précédente.
-   - **Client ID** : Collez le Client ID de l'application Frontegg — il s'agit du même **"ID"** copié à l'étape précédente.
-   - **Client Secret** : Collez le Client Secret de l'application Frontegg — il s'agit de la même **"API key"** copiée à l'étape précédente.
+   - **Provider URL** : Collez votre domaine Frontegg (ex. : `https://your-tenant.frontegg.com`). Il s'agit du même **"Login URL"** copié à l'étape précédente.
+   - **Client ID** : Collez le Client ID de l'application Frontegg. Il s'agit du même **"ID"** copié à l'étape précédente.
+   - **Client Secret** : Collez le Client Secret de l'application Frontegg. Il s'agit de la même **"API key"** copiée à l'étape précédente.
    - **Scopes** : Ajoutez les scopes que vous souhaitez utiliser. Les scopes par défaut sont `openid`, `profile` et `email`. Vous n'avez pas besoin de les modifier, mais vous pouvez le faire si vous le souhaitez.
 
 <ZoomableImage
