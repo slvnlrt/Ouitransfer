@@ -1,8 +1,7 @@
-import { Check, Lock, LockOpen, Pencil, X } from "lucide-react";
+import { Check, Pencil, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -18,6 +17,7 @@ import { useSecureConfigValue } from "@/hooks/use-secure-configs";
 import type { Share } from "@/http/endpoints/shares/types";
 import { formatDateTime } from "@/lib/format-date-time";
 import { getShareLifecycleState } from "@/lib/share-lifecycle";
+import { ShareSecurityBadge, ShareStatusBadge } from "./shares-table-badges";
 import { SharesTableBulkActions } from "./shares-table-bulk-actions";
 import { ShareRowActions } from "./shares-table-row-actions";
 import { useEditableItem } from "./use-editable-item";
@@ -150,7 +150,8 @@ export function SharesTable({
         />
       )}
 
-      <div className="rounded-lg shadow-sm overflow-hidden border">
+      {/* Desktop / tablet: full table */}
+      <div className="hidden md:block rounded-lg shadow-sm overflow-hidden border">
         <Table>
           <TableHeader>
             <TableRow className="border-b-0">
@@ -408,31 +409,7 @@ export function SharesTable({
                     </div>
                   </TableCell>
                   <TableCell className="h-12 px-4">
-                    {lifecycle.kind === "active" ? (
-                      <Badge
-                        variant="secondary"
-                        className="bg-green-500/20 hover:bg-green-500/30 text-green-600 dark:text-green-400"
-                      >
-                        {share.expiration
-                          ? t("sharesTable.status.active")
-                          : t("sharesTable.status.neverExpires")}
-                      </Badge>
-                    ) : (
-                      <Badge
-                        variant="secondary"
-                        className={
-                          lifecycle.reason === "manual"
-                            ? "bg-amber-500/20 hover:bg-amber-500/30 text-amber-600 dark:text-amber-400"
-                            : "bg-red-500/20 hover:bg-red-500/30 text-red-600 dark:text-red-400"
-                        }
-                      >
-                        {lifecycle.reason === "manual"
-                          ? t("sharesTable.status.paused")
-                          : lifecycle.reason === "max_views"
-                            ? t("sharesTable.status.maxViewsReached")
-                            : t("sharesTable.status.expired")}
-                      </Badge>
-                    )}
+                    <ShareStatusBadge share={share} lifecycle={lifecycle} />
                   </TableCell>
                   <TableCell
                     className="h-12 px-4"
@@ -440,23 +417,7 @@ export function SharesTable({
                     onMouseLeave={() => setHoveredAction(null)}
                   >
                     <div className="flex items-center gap-1 min-w-0">
-                      <Badge
-                        variant="secondary"
-                        className={`flex items-center gap-1 ${
-                          share.security.hasPassword
-                            ? "bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-600 dark:text-yellow-400"
-                            : "bg-green-500/20 hover:bg-green-500/30 text-green-600 dark:text-green-400"
-                        }`}
-                      >
-                        {share.security.hasPassword ? (
-                          <Lock className="h-4 w-4" />
-                        ) : (
-                          <LockOpen className="h-4 w-4" />
-                        )}
-                        {share.security.hasPassword
-                          ? t("sharesTable.security.protected")
-                          : t("sharesTable.security.public")}
-                      </Badge>
+                      <ShareSecurityBadge share={share} />
                       <div className="w-6 flex justify-center flex-shrink-0">
                         {isHoveringSecurity && onUpdateSecurity && (
                           <Button
@@ -548,6 +509,100 @@ export function SharesTable({
             })}
           </TableBody>
         </Table>
+      </div>
+
+      {/* Mobile: stacked cards (the table never fits on a narrow viewport) */}
+      <div className="md:hidden space-y-3">
+        {shares.map((share) => {
+          const lifecycle = getShareLifecycleState(share);
+          const isDeactivated = lifecycle.kind === "deactivated";
+          const isSelected = selectedShares.has(share.id);
+
+          return (
+            <div
+              key={share.id}
+              className={`rounded-lg border shadow-sm p-4 flex flex-col gap-3 ${
+                isDeactivated ? "bg-muted/30" : "bg-card"
+              }`}
+              data-deactivated={isDeactivated || undefined}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-start gap-3 min-w-0">
+                  <Checkbox
+                    checked={isSelected}
+                    onCheckedChange={(checked: boolean) => handleSelectShare(share.id, checked)}
+                    aria-label={t("sharesTable.selectShare", { shareName: share.name ?? "" })}
+                    className="mt-1 shrink-0"
+                  />
+                  <div className="min-w-0">
+                    <p className="font-medium truncate" title={share.name ?? undefined}>
+                      {share.name || "-"}
+                    </p>
+                    {share.description && (
+                      <p
+                        className="text-sm text-muted-foreground truncate"
+                        title={share.description}
+                      >
+                        {share.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <ShareRowActions
+                  share={share}
+                  lifecycle={lifecycle}
+                  smtpEnabled={smtpEnabled}
+                  onDelete={onDelete}
+                  onEdit={onEdit}
+                  onPauseShare={onPauseShare}
+                  onResumeShare={onResumeShare}
+                  onRenewShare={onRenewShare}
+                  onManageFiles={onManageFiles}
+                  onManageRecipients={onManageRecipients}
+                  onViewDetails={onViewDetails}
+                  onGenerateLink={onGenerateLink}
+                  onCopyLink={onCopyLink}
+                  onNotifyRecipients={onNotifyRecipients}
+                  onViewQrCode={onViewQrCode}
+                  onDownloadShareFiles={onDownloadShareFiles}
+                />
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <ShareStatusBadge share={share} lifecycle={lifecycle} />
+                <ShareSecurityBadge share={share} />
+              </div>
+
+              <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+                <div className="flex flex-col gap-0.5 min-w-0">
+                  <dt className="text-muted-foreground">{t("sharesTable.columns.createdAt")}</dt>
+                  <dd className="truncate">{formatDateTime(share.createdAt, "table", locale)}</dd>
+                </div>
+                <div className="flex flex-col gap-0.5 min-w-0">
+                  <dt className="text-muted-foreground">{t("sharesTable.columns.expiresAt")}</dt>
+                  <dd className="truncate">
+                    {share.expiration
+                      ? formatDateTime(share.expiration, "table", locale)
+                      : t("sharesTable.never")}
+                  </dd>
+                </div>
+                <div className="flex flex-col gap-0.5 min-w-0">
+                  <dt className="text-muted-foreground">{t("sharesTable.columns.files")}</dt>
+                  <dd className="truncate">
+                    {share.files?.length || 0} {t("sharesTable.filesCount")} •{" "}
+                    {share.folders?.length || 0} {t("sharesTable.folderCount")}
+                  </dd>
+                </div>
+                <div className="flex flex-col gap-0.5 min-w-0">
+                  <dt className="text-muted-foreground">{t("sharesTable.columns.recipients")}</dt>
+                  <dd className="truncate">
+                    {share.recipients?.length || 0} {t("sharesTable.recipientsCount")}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
