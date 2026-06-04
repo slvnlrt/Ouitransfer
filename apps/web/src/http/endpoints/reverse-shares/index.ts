@@ -3,6 +3,8 @@ import type { AxiosRequestConfig } from "axios";
 import apiInstance from "@/config/api";
 import type {
   AbortMultipartUploadByAliasResult,
+  AddReverseShareRecipientsBody,
+  AddReverseShareRecipientsResult,
   CompleteMultipartUploadByAliasResult,
   CopyReverseShareFileResult,
   CreateMultipartUploadByAliasResult,
@@ -18,9 +20,13 @@ import type {
   GetReverseShareForUploadResult,
   ListMultipartPartsByAliasResult,
   ListUserReverseSharesResult,
+  NotifyReverseShareRecipientsBody,
+  NotifyReverseShareRecipientsResult,
   RegisterFileUploadBody,
   RegisterFileUploadParams,
   RegisterFileUploadResult,
+  RemoveReverseShareRecipientsBody,
+  RemoveReverseShareRecipientsResult,
   UpdateReverseShareBody,
   UpdateReverseShareFileBody,
   UpdateReverseShareFileResult,
@@ -174,6 +180,45 @@ export const createReverseShareAlias = (
   options?: AxiosRequestConfig,
 ): Promise<CreateReverseShareAliasResult> => {
   return apiInstance.post(`/api/reverse-shares/${reverseShareId}/alias`, createAliasBody, options);
+};
+
+/**
+ * Add recipients to a reverse share
+ * @summary Add Reverse Share Recipients
+ */
+export const addReverseShareRecipients = (
+  reverseShareId: string,
+  body: AddReverseShareRecipientsBody,
+  options?: AxiosRequestConfig,
+): Promise<AddReverseShareRecipientsResult> => {
+  return apiInstance.post(`/api/reverse-shares/${reverseShareId}/recipients`, body, options);
+};
+
+/**
+ * Remove recipients from a reverse share
+ * @summary Remove Reverse Share Recipients
+ */
+export const removeReverseShareRecipients = (
+  reverseShareId: string,
+  body: RemoveReverseShareRecipientsBody,
+  options?: AxiosRequestConfig,
+): Promise<RemoveReverseShareRecipientsResult> => {
+  return apiInstance.delete(`/api/reverse-shares/${reverseShareId}/recipients`, {
+    ...options,
+    data: body,
+  });
+};
+
+/**
+ * Send invitation emails to reverse share recipients
+ * @summary Notify Reverse Share Recipients
+ */
+export const notifyReverseShareRecipients = (
+  reverseShareId: string,
+  body: NotifyReverseShareRecipientsBody,
+  options?: AxiosRequestConfig,
+): Promise<NotifyReverseShareRecipientsResult> => {
+  return apiInstance.post(`/api/reverse-shares/${reverseShareId}/notify`, body, options);
 };
 
 /**
