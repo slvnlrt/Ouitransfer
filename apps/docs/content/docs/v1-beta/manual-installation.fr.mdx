@@ -3,7 +3,7 @@ title: Installation manuelle
 icon: Cog
 ---
 
-Vous souhaitez exécuter **Ouitransfer** à votre façon, avec un contrôle total sur chaque composant de la pile ? Ce guide d'installation manuelle est fait pour vous. Pas de Docker, pas de conteneurs préconstruits — juste le code source brut à modifier, personnaliser et déployer comme vous l'entendez.
+Vous souhaitez exécuter **Ouitransfer** à votre façon, avec un contrôle total sur chaque composant de la pile ? Ce guide d'installation manuelle est fait pour vous. Pas de Docker, pas de conteneurs préconstruits: juste le code source brut à modifier, personnaliser et déployer comme vous l'entendez.
 
 > **Vous préférez une installation plus rapide ?** Si cette approche vous semble trop fastidieuse, consultez notre guide [**Démarrage rapide (Docker)**](/docs/v1-beta/quick-start) pour un déploiement rapide et conteneurisé. Ce chemin manuel est destiné aux développeurs qui souhaitent approfondir, modifier le code source ou intégrer des services personnalisés.
 
@@ -25,17 +25,17 @@ Voici ce que vous allez faire en résumé :
 
 | Outil | Version | Notes |
 |-------|---------|-------|
-| Node.js | **24** | Requis — les versions antérieures ne sont pas prises en charge |
+| Node.js | **24** | Requis; les versions antérieures ne sont pas prises en charge |
 | pnpm | **11.5.0** | `npm install -g pnpm@11.5.0` |
 | Git | toute version récente | Pour cloner le dépôt |
 
-⚠️ **Gestionnaire de paquets** : Ouitransfer est construit et testé avec `pnpm`. N'utilisez pas `npm`, `yarn` ou `bun` — le fichier de verrouillage et la configuration des workspaces sont spécifiques à pnpm.
+⚠️ **Gestionnaire de paquets** : Ouitransfer est construit et testé avec `pnpm`. N'utilisez pas `npm`, `yarn` ou `bun`. Le fichier de verrouillage et la configuration des workspaces sont spécifiques à pnpm.
 
 ### Configuration système requise
 
 - **OS** : macOS ou Linux (recommandé). Windows fonctionne mais n'est pas rigoureusement testé.
 - **Mémoire** : 4 Go de RAM minimum.
-- **Stockage compatible S3** : Requis pour la production. Optionnel pour le développement local — si S3 n'est pas configuré ou inaccessible, le serveur démarre en mode dégradé (l'authentification et la configuration fonctionnent ; les opérations sur les fichiers sont indisponibles).
+- **Stockage compatible S3** : Requis pour la production. Optionnel pour le développement local. Si S3 n'est pas configuré ou inaccessible, le serveur démarre en mode dégradé (l'authentification et la configuration fonctionnent ; les opérations sur les fichiers sont indisponibles).
 
 ---
 
@@ -48,9 +48,9 @@ cd Ouitransfer
 
 Le dépôt est un **monorepo pnpm**. Exécutez toujours les commandes depuis la **racine du dépôt** sauf indication contraire. Les répertoires clés sont :
 
-- `apps/server` — Backend API Fastify
-- `apps/web` — Frontend Next.js
-- `packages/shared` + `packages/config` — Packages internes (construits automatiquement par Turborepo lors de `pnpm build`)
+- `apps/server`: Backend API Fastify
+- `apps/web`: Frontend Next.js
+- `packages/shared` + `packages/config`: Packages internes (construits automatiquement par Turborepo lors de `pnpm build`)
 
 ---
 
@@ -82,7 +82,7 @@ COOKIE_SECRET=<output of openssl rand -hex 32>
 
 ### Configuration du stockage
 
-**Option 1 — RustFS local (pour le développement)**
+**Option 1: RustFS local (pour le développement)**
 
 Démarrez RustFS en premier :
 
@@ -108,7 +108,7 @@ STORAGE_URL=http://localhost:9000
 
 `STORAGE_URL` est l'URL publique que les navigateurs utilisent pour accéder au service de stockage. Pour RustFS local, c'est `http://localhost:9000`.
 
-**Option 2 — Service S3 externe (AWS S3, DigitalOcean Spaces, Backblaze B2, etc.)**
+**Option 2: Service S3 externe (AWS S3, DigitalOcean Spaces, Backblaze B2, etc.)**
 
 ```bash
 ENABLE_S3=true
@@ -244,7 +244,7 @@ pnpm install
 # Générer les secrets (exécuter 3 fois pour JWT_SECRET, CSRF_SECRET, COOKIE_SECRET)
 openssl rand -hex 32
 
-# Configuration de la base de données (doit être exécuté depuis apps/server — prisma.config.ts est lu depuis le CWD)
+# Configuration de la base de données (doit être exécuté depuis apps/server: prisma.config.ts est lu depuis le CWD)
 cd apps/server
 pnpm exec prisma generate
 pnpm exec prisma migrate deploy
