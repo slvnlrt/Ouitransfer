@@ -149,6 +149,13 @@ docker-push tag="latest":
         -t ouitransfer/web:{{tag}} \
         --push \
         .
+    docker buildx build \
+        --platform linux/amd64,linux/arm64 \
+        --target docs-runner \
+        -t ouitransfer/docs:latest \
+        -t ouitransfer/docs:{{tag}} \
+        --push \
+        .
 
 # Start all services (build locally + docker compose up -d)
 docker-start:

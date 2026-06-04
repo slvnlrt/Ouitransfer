@@ -1,5 +1,36 @@
 # Session Log
 
+## 2026-06-04 (TD-50 — Fumadocs site deployable via Docker)
+
+**Made the Fumadocs documentation site self-hostable as a Docker service, mounted under `/docs`.**
+
+- **Decisions (with user):** path-prefix `/docs` on the main domain; routed by the user's
+  Traefik via `PathPrefix(/docs)` **without StripPrefix**; marketing landing kept as-is (the
+  doc therefore lives at `/docs/docs/v1-beta` — accepted). Mechanism: Next.js `basePath` baked
+  at build time. Spec: `features/specs/td-50-docs-docker.md`.
+- **Docs app:** `next.config.mjs` → `output: "standalone"`, `outputFileTracingRoot` (monorepo
+  root), `basePath` from `NEXT_PUBLIC_DOCS_BASE_PATH`. New `src/lib/base-path.ts` (`withBasePath`)
+  to fix client `fetch` calls that don't inherit `basePath`: fumadocs search
+  (`RootProvider search.options.api`) and `KeyGenerator` (`/api/generate-key`).
+- **Infra:** `Dockerfile` gains `docs-deps`/`docs-builder`/`docs-runner` (port 5488, build arg
+  `NEXT_PUBLIC_DOCS_BASE_PATH=/docs`). `docker-compose.yaml` gains a `docs` service (+ Traefik
+  example in comments); `docker-compose.ci.yml` adds the build override. `e2e.yml` builds,
+  health-checks (`:5488/docs`), and publishes `ghcr.io/slvnlrt/ouitransfer-docs` (loop
+  `server web docs`); `Justfile docker-push` mirrors it. `.env.docker.example` documents the service.
+- **Validation:** docs type-check clean, lint clean, production build with `basePath=/docs`
+  succeeds (83 pages; `/docs/_next` and `/docs/api/search` baked), merged `docker compose config`
+  valid. Standalone smoke-test (Docker layout reproduced): `fr` locale pages, `/docs/_next`
+  assets, `/docs/api/search`, `/docs/api/generate-key` all 200.
+- **Validation caveat (default `en` locale):** sandbox runs Node 22, project/image require Node 24.
+  On Node 22 the Fumadocs default-locale middleware **loops at baseline** (original code, NO
+  basePath: `/` → 308, `/docs/v1-beta` → 307; `fr` works) — pre-existing and independent of
+  TD-50, a Node-version artifact. So `en` routing **under basePath** couldn't be verified here;
+  the public site (same config, Node 24, no basePath) works in prod and Fumadocs' `DefaultFormatter`
+  handles `url.basePath`. To confirm on the Node 24 image. Fallback if needed: sub-domain
+  deployment (`NEXT_PUBLIC_DOCS_BASE_PATH=""`). No app middleware changes were made (`proxy.ts`
+  left as the upstream Fumadocs middleware).
+- **Tracking:** TD-50 moved to resolved archive; README open-debt list updated.
+
 ## 2026-06-04 (TD-30 — Reverse share invitation feature)
 
 **Implemented the reverse share invitation feature (VERSION LIGHT).**

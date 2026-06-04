@@ -72,6 +72,17 @@ jobs:
               sleep 3
             done
           '
+          echo "Web healthy!"
+          echo "Waiting for docs (up to 120s)..."
+          timeout 120 bash -c '
+            while true; do
+              status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5488/docs 2>/dev/null || echo "000")
+              if [ "$status" = "200" ]; then break; fi
+              state=$(docker inspect --format="{{.State.Status}}" ouitransfer-docs 2>/dev/null || echo "unknown")
+              echo "  docs: container=$state, http=$status"
+              sleep 3
+            done
+          '
           echo "All services healthy!"
 
       - name: Dump Docker logs on failure
@@ -80,7 +91,7 @@ jobs:
           echo "::group::docker compose ps"
           docker compose -f docker-compose.yaml -f docker-compose.ci.yml ps -a
           echo "::endgroup::"
-          for svc in storage server web; do
+          for svc in storage server web docs; do
             echo "::group::logs — $svc"
             docker compose -f docker-compose.yaml -f docker-compose.ci.yml logs --tail=200 "$svc" 2>&1 || true
             echo "::endgroup::"
@@ -122,7 +133,7 @@ jobs:
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
 
-          for IMAGE in server web; do
+          for IMAGE in server web docs; do
             FULL="ghcr.io/${{ github.repository_owner }}/ouitransfer-${IMAGE}"
 
             # Semver tags (1.2.3 and 1.2)

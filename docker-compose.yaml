@@ -124,6 +124,34 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  # ─── Fumadocs Documentation Site ───────────────────────────────────────────
+  # Self-contained Next.js site, mounted under /docs (basePath baked into the
+  # image at build time, default "/docs"). Reachable directly at
+  # http://YOUR_SERVER_IP:5488/docs without a reverse proxy.
+  #
+  # Behind a reverse proxy (production), route /docs to this service WITHOUT
+  # stripping the prefix — basePath already keeps it. Example Traefik labels:
+  #   - "traefik.enable=true"
+  #   - "traefik.http.routers.ouitransfer-docs.rule=Host(`files.example.com`) && PathPrefix(`/docs`)"
+  #   - "traefik.http.routers.ouitransfer-docs.priority=20"   # > web catch-all
+  #   - "traefik.http.services.ouitransfer-docs-svc.loadbalancer.server.port=5488"
+  docs:
+    image: ghcr.io/slvnlrt/ouitransfer-docs:latest
+    # Uncomment to build locally instead of pulling:
+    # build:
+    #   context: .
+    #   target: docs-runner
+    container_name: ouitransfer-docs
+    ports:
+      - "5488:5488"    # Documentation site (path: /docs)
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5488/docs"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    restart: unless-stopped
+
 volumes:
   storage_data:
   server_data:
