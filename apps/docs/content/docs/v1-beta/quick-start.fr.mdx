@@ -13,14 +13,14 @@ Ce guide vous permet de passer de zéro à une instance OUITRANSFER opérationne
 
 Avant de commencer, assurez-vous de disposer de :
 
-- **Docker** — Environnement d'exécution de conteneurs ([guide d'installation](https://docs.docker.com/get-docker/))
-- **Docker Compose** — Orchestration multi-conteneurs ([guide d'installation](https://docs.docker.com/compose/install/))
+- **Docker**: Environnement d'exécution de conteneurs ([guide d'installation](https://docs.docker.com/get-docker/))
+- **Docker Compose**: Orchestration multi-conteneurs ([guide d'installation](https://docs.docker.com/compose/install/))
 - **2 Go+ d'espace disque disponible** pour l'application et vos fichiers
 
 **Ports à rendre disponibles :**
-- **5487** — Interface web (requis)
-- **9000** — Service de stockage. Les navigateurs téléversent et téléchargent les fichiers directement sur ce port lors de l'utilisation du stockage intégré. Non requis si vous utilisez un fournisseur S3 externe ou un proxy inverse qui expose le stockage sur un domaine.
-- **3333** — Serveur API, usage interne uniquement. Ne l'exposez que si vous souhaitez un accès direct à l'API ou à sa documentation.
+- **5487**: Interface web (requis)
+- **9000**: Service de stockage. Les navigateurs téléversent et téléchargent les fichiers directement sur ce port lors de l'utilisation du stockage intégré. Non requis si vous utilisez un fournisseur S3 externe ou un proxy inverse qui expose le stockage sur un domaine.
+- **3333**: Serveur API, usage interne uniquement. Ne l'exposez que si vous souhaitez un accès direct à l'API ou à sa documentation.
 
 <Callout>
   **Support des plateformes** : Grâce à l'architecture conteneurisée de Docker, OUITRANSFER peut être
@@ -46,7 +46,7 @@ Docker Compose gère automatiquement l'ordre de démarrage : le stockage démarr
 
 ---
 
-## Étape 1 — Générez vos secrets
+## Étape 1 : Générez vos secrets
 
 OUITRANSFER requiert trois secrets cryptographiques indépendants. Exécutez cette commande trois fois séparément et sauvegardez chaque résultat :
 
@@ -62,7 +62,7 @@ Vous utiliserez les trois valeurs comme `JWT_SECRET`, `CSRF_SECRET` et `COOKIE_S
 
 ---
 
-## Étape 2 — Configurez votre environnement
+## Étape 2 : Configurez votre environnement
 
 Créez un fichier `.env` à partir de l'exemple fourni :
 
@@ -122,7 +122,7 @@ COOKIE_SECRET=<third openssl output>
 
 ---
 
-## Étape 3 — Créez votre docker-compose.yml
+## Étape 3 : Créez votre docker-compose.yml
 
 Créez un fichier `docker-compose.yml` dans le même répertoire que votre `.env` :
 
@@ -212,7 +212,7 @@ Cette configuration utilise des **volumes nommés gérés par Docker** pour le s
 
 ---
 
-## Étape 4 — Démarrez OUITRANSFER
+## Étape 4 : Démarrez OUITRANSFER
 
 ```bash
 docker compose up -d
@@ -228,7 +228,7 @@ Attendez que les journaux du serveur affichent `Fastify server listening`. Le pr
 
 ---
 
-## Étape 5 — Accès et première configuration
+## Étape 5 : Accès et première configuration
 
 Ouvrez votre navigateur et accédez à :
 
@@ -331,11 +331,11 @@ volumes:
 | `OUITRANSFER_UID` | `1001` | ID utilisateur pour les processus du conteneur serveur. Utile pour les NAS ou les montages bind. |
 | `OUITRANSFER_GID` | `1001` | ID de groupe pour les processus du conteneur serveur. |
 | `DEFAULT_LANGUAGE` | `en-US` | Langue d'interface par défaut. Voir [langues disponibles](/docs/v1-beta/available-languages). |
-| `ENCRYPTION_SECRET` | — | Clé AES-256-GCM pour chiffrer les données sensibles au repos. Requis pour LDAP. Générez avec `openssl rand -hex 32`. |
+| `ENCRYPTION_SECRET` | Aucun | Clé AES-256-GCM pour chiffrer les données sensibles au repos. Requis pour LDAP. Générez avec `openssl rand -hex 32`. |
 | `PRESIGNED_URL_EXPIRATION` | `3600` | Durée d'expiration des URLs présignées de téléversement en secondes (défaut : 1 heure). |
 | `PRESIGNED_GET_URL_EXPIRATION` | `900` | Durée d'expiration des URLs présignées de téléchargement en secondes (défaut : 15 min). |
 | `TRUST_PROXY` | `loopback` | Paramètre de proxy de confiance Fastify. Utilisez `loopback` pour les déploiements directs ; définissez l'IP de votre proxy derrière un proxy inverse. |
-| `OAUTH_ALLOWED_REDIRECT_HOSTS` | — | Hôtes de redirection supplémentaires séparés par des virgules pour les fournisseurs OIDC personnalisés. |
+| `OAUTH_ALLOWED_REDIRECT_HOSTS` | Aucun | Hôtes de redirection supplémentaires séparés par des virgules pour les fournisseurs OIDC personnalisés. |
 | `ENABLE_API_DOCS` | `false` | Expose la documentation API sur `/docs` et `/swagger` en production. |
 
 ### Variables fixes (définies dans docker-compose.yml)

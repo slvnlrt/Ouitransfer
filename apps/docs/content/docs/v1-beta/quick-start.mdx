@@ -13,14 +13,14 @@ This guide takes you from zero to a running OUITRANSFER instance in about 5 minu
 
 Before you begin, make sure you have:
 
-- **Docker** — Container runtime ([installation guide](https://docs.docker.com/get-docker/))
-- **Docker Compose** — Multi-container orchestration ([installation guide](https://docs.docker.com/compose/install/))
+- **Docker**: Container runtime ([installation guide](https://docs.docker.com/get-docker/))
+- **Docker Compose**: Multi-container orchestration ([installation guide](https://docs.docker.com/compose/install/))
 - **2 GB+ available disk space** for the application and your files
 
 **Ports you'll need available:**
-- **5487** — Web interface (required)
-- **9000** — Storage service. Browsers upload and download files directly to this port when using the built-in storage. Not needed if you use an external S3 provider or a reverse proxy that exposes storage on a domain.
-- **3333** — API server, internal only. Only expose it if you want direct access to the API or its documentation.
+- **5487**: Web interface (required)
+- **9000**: Storage service. Browsers upload and download files directly to this port when using the built-in storage. Not needed if you use an external S3 provider or a reverse proxy that exposes storage on a domain.
+- **3333**: API server, internal only. Only expose it if you want direct access to the API or its documentation.
 
 <Callout>
   **Platform Support**: Thanks to Docker's containerized architecture, OUITRANSFER can be deployed on
@@ -45,7 +45,7 @@ Docker Compose manages the startup order automatically: storage starts first, th
 
 ---
 
-## Step 1 — Generate Your Secrets
+## Step 1: Generate Your Secrets
 
 OUITRANSFER requires three independent cryptographic secrets. Run this command three separate times and save each output:
 
@@ -61,7 +61,7 @@ You'll use the three values as `JWT_SECRET`, `CSRF_SECRET`, and `COOKIE_SECRET` 
 
 ---
 
-## Step 2 — Configure Your Environment
+## Step 2: Configure Your Environment
 
 Create a `.env` file from the provided example:
 
@@ -120,7 +120,7 @@ COOKIE_SECRET=<third openssl output>
 
 ---
 
-## Step 3 — Create Your docker-compose.yml
+## Step 3: Create Your docker-compose.yml
 
 Create a `docker-compose.yml` file in the same directory as your `.env`:
 
@@ -210,7 +210,7 @@ This configuration uses **Docker-managed named volumes** for storage and server 
 
 ---
 
-## Step 4 — Start OUITRANSFER
+## Step 4: Start OUITRANSFER
 
 ```bash
 docker compose up -d
@@ -226,7 +226,7 @@ Wait until the server logs show `Fastify server listening`. The first startup al
 
 ---
 
-## Step 5 — Access and First Setup
+## Step 5: Access and First Setup
 
 Open your browser and go to:
 
@@ -329,11 +329,11 @@ volumes:
 | `OUITRANSFER_UID` | `1001` | User ID for server container processes. Useful for NAS or bind-mount setups. |
 | `OUITRANSFER_GID` | `1001` | Group ID for server container processes. |
 | `DEFAULT_LANGUAGE` | `en-US` | Default UI language. See [available languages](/docs/v1-beta/available-languages). |
-| `ENCRYPTION_SECRET` | — | AES-256-GCM key for encrypting sensitive data at rest. Required for LDAP. Generate with `openssl rand -hex 32`. |
+| `ENCRYPTION_SECRET` | None | AES-256-GCM key for encrypting sensitive data at rest. Required for LDAP. Generate with `openssl rand -hex 32`. |
 | `PRESIGNED_URL_EXPIRATION` | `3600` | Upload presigned URL expiry in seconds (default: 1 hour). |
 | `PRESIGNED_GET_URL_EXPIRATION` | `900` | Download presigned URL expiry in seconds (default: 15 min). |
 | `TRUST_PROXY` | `loopback` | Fastify trusted proxy setting. Use `loopback` for direct deployments; set your proxy IP when behind a reverse proxy. |
-| `OAUTH_ALLOWED_REDIRECT_HOSTS` | — | Comma-separated additional redirect hosts for custom OIDC providers. |
+| `OAUTH_ALLOWED_REDIRECT_HOSTS` | None | Comma-separated additional redirect hosts for custom OIDC providers. |
 | `ENABLE_API_DOCS` | `false` | Expose API documentation at `/docs` and `/swagger` in production. |
 
 ### Fixed Variables (set in docker-compose.yml)

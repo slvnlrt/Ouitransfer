@@ -6,7 +6,7 @@ icon: Share2
 import { Callout } from "fumadocs-ui/components/callout";
 import { Step, Steps } from "fumadocs-ui/components/steps";
 
-Quick Share is the fastest way to share files from the dashboard. Drop files, set options, and get a shareable link — without navigating away from the main page.
+Quick Share is the fastest way to share files from the dashboard. Drop files, set options, and get a shareable link without navigating away from the main page.
 
 For the full set of share options (visitor identification, per-share notifications, activity tracking), see the [Shares](/docs/v1-beta/shares) page. Quick Share creates a regular share with a simplified interface.
 
@@ -33,7 +33,7 @@ While files upload, configure the share options:
 | **Name** | Filename (1 file) or "N files" | Free text label for the share |
 | **Expires in** | 7 days | 1 day, 7 days, 30 days, or Never |
 | **Password protection** | Off | Require a password to access the share |
-| **Recipients** | — | Email addresses to notify when the share is ready (requires SMTP) |
+| **Recipients** | None | Email addresses to notify when the share is ready (requires SMTP) |
 
 The name is auto-filled and updates if you add more files, as long as you have not edited it manually.
 
@@ -61,7 +61,7 @@ You can add more files after the initial drop, either by clicking **Add more fil
 
 The **Recipients** field is only shown when [SMTP is configured](/docs/v1-beta/configuring-smtp). Add email addresses by typing an address and pressing **Enter**. Remove an address by clicking the × on its tag.
 
-When the share is created, Ouitransfer sends an invitation email to each recipient with a personalized link. This happens automatically — there is no separate "send" step. Each recipient's link contains a tracking token so you can see who accessed the share. See [Shares — Recipients and invitations](/docs/v1-beta/shares#recipients-and-invitations) for details.
+When the share is created, Ouitransfer sends an invitation email to each recipient with a personalized link. This happens automatically: there is no separate "send" step. Each recipient's link contains a tracking token so you can see who accessed the share. See [Shares: Recipients and invitations](/docs/v1-beta/shares#recipients-and-invitations) for details.
 
 
 
