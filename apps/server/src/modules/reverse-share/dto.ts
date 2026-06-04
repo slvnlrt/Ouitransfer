@@ -190,7 +190,10 @@ export const UpdateReverseShareRecipientsSchema = z.object({
   recipients: z
     .array(
       z.object({
-        email: z.string().email().transform((s) => s.trim().toLowerCase()),
+        email: z
+          .string()
+          .email()
+          .transform((s) => s.trim().toLowerCase()),
         name: z.string().optional(),
       }),
     )
@@ -223,4 +226,3 @@ export const NotifyReverseShareRecipientsSchema = z.object({
 export type CreateReverseShareInput = z.infer<typeof CreateReverseShareSchema>;
 export type UpdateReverseShareInput = z.infer<typeof UpdateReverseShareSchema>;
 export type UploadToReverseShareInput = z.infer<typeof UploadToReverseShareSchema>;
-export type ReverseShareRecipient = z.infer<typeof ReverseShareRecipientSchema>;

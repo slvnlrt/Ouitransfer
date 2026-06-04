@@ -75,6 +75,28 @@ Lorsqu'au moins un champ est visible, les personnes qui téléversent voient une
 
 Ce paramètre remplace votre préférence globale [Notifications de téléversement sur partage inversé](/docs/v1-beta/notification-preferences) pour ce partage inversé spécifique.
 
+### Invitations par email
+
+Vous pouvez inviter des personnes spécifiques à envoyer des fichiers en ajoutant des destinataires à un reverse share :
+
+1. Ouvrez la modale de détails du reverse share
+2. Dans la section **Destinataires**, entrez l'email du destinataire et éventuellement son nom
+3. Cliquez sur **Ajouter** pour enregistrer le destinataire
+4. Cliquez sur **Notifier tous** (ou notifiez individuellement) pour leur envoyer un email d'invitation avec le lien d'upload
+
+Les destinataires reçoivent un email contenant :
+- Qui demande des fichiers (votre nom d'affichage)
+- Le nom du reverse share
+- Un lien direct vers la page d'upload
+- Si le lien est protégé par un mot de passe
+- Quand le lien expire (si configuré)
+
+<Callout type="info">
+  Les invitations par email nécessitent la [configuration SMTP](/docs/v1-beta/configuring-smtp). Le lien d'upload dans l'invitation est le même pour tous les destinataires — il n'y a pas de suivi par destinataire.
+</Callout>
+
+Vous pouvez ajouter et supprimer des destinataires à tout moment. Re-notifier un destinataire envoie un nouvel email. Un badge vert « Notifié » apparaît à côté des destinataires qui ont reçu une invitation.
+
 ---
 
 ## Gérer un partage inversé

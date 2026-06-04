@@ -75,6 +75,28 @@ When at least one field is visible, uploaders see an identification section on t
 
 This setting overrides your global [Reverse Share Upload Notifications](/docs/v1-beta/notification-preferences) preference for this specific reverse share.
 
+### Email invitations
+
+You can invite specific people to upload files by adding recipients to a reverse share:
+
+1. Open the reverse share details modal
+2. In the **Recipients** section, enter the recipient's email and optionally their name
+3. Click **Add** to save the recipient
+4. Click **Notify All** (or notify individually) to send them an invitation email with the upload link
+
+Recipients receive an email containing:
+- Who is requesting files (your display name)
+- The reverse share name
+- A direct link to the upload page
+- Whether the link is password-protected
+- When the link expires (if configured)
+
+<Callout type="info">
+  Email invitations require [SMTP to be configured](/docs/v1-beta/configuring-smtp). The upload link in the invitation is the same for all recipients — there is no per-recipient tracking.
+</Callout>
+
+You can add and remove recipients at any time. Re-notifying a recipient sends a new email. A green "Notified" badge appears next to recipients who have been sent an invitation.
+
 ---
 
 ## Managing a reverse share
