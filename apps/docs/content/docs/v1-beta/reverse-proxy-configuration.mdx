@@ -192,29 +192,29 @@ The health endpoint returns `{ status, timestamp, uptime, checks: { database, st
 
 ## URL Configuration
 
-OUITRANSFER uses two public URL variables — `FRONTEND_ORIGIN` and `STORAGE_PUBLIC_URL` — that control how browsers reach the application and its storage. Getting these right is critical: incorrect values cause silent failures in file uploads and downloads.
+OUITRANSFER uses two public URL variables, `FRONTEND_ORIGIN` and `STORAGE_PUBLIC_URL`, that control how browsers reach the application and its storage. Getting these right is critical: incorrect values cause silent failures in file uploads and downloads.
 
 ### What each variable controls
 
-**`FRONTEND_ORIGIN`** — The URL where users open the web interface in their browser (e.g. `http://192.168.1.100:5487` or `https://files.example.com`).
+**`FRONTEND_ORIGIN`**: The URL where users open the web interface in their browser (e.g. `http://192.168.1.100:5487` or `https://files.example.com`).
 
 The Docker Compose file propagates it to:
-- `CORS_ORIGINS` on the **server** — allows the API to accept requests from the frontend
-- `RUSTFS_CORS_ALLOWED_ORIGINS` on the **storage** — allows the storage service to accept direct upload/download requests from the frontend
+- `CORS_ORIGINS` on the **server**: allows the API to accept requests from the frontend
+- `RUSTFS_CORS_ALLOWED_ORIGINS` on the **storage**: allows the storage service to accept direct upload/download requests from the frontend
 
-**`STORAGE_PUBLIC_URL`** — The URL where browsers upload and download files directly from the storage service (e.g. `http://192.168.1.100:9000` or `https://storage.example.com`).
+**`STORAGE_PUBLIC_URL`**: The URL where browsers upload and download files directly from the storage service (e.g. `http://192.168.1.100:9000` or `https://storage.example.com`).
 
 The Docker Compose file propagates it to:
-- `STORAGE_URL` on the **server** — the base URL embedded in presigned URLs sent to browsers
-- `CSP_STORAGE_ORIGINS` on the **web** container — the Content Security Policy origin browsers are allowed to connect to
+- `STORAGE_URL` on the **server**: the base URL embedded in presigned URLs sent to browsers
+- `CSP_STORAGE_ORIGINS` on the **web** container: the Content Security Policy origin browsers are allowed to connect to
 
 ### How file transfers work (the presigned URL flow)
 
 OUITRANSFER does not proxy file data through the API server. Instead:
 
-1. The browser asks the API server for a presigned URL — a short-lived signed URL (uploads: 1 hour, downloads: 15 min by default)
+1. The browser asks the API server for a presigned URL, a short-lived signed URL (uploads: 1 hour, downloads: 15 min by default)
 2. The browser uses that URL to upload or download **directly** from the storage service
-3. The presigned URL contains the base from `STORAGE_PUBLIC_URL` — so the browser must be able to reach that address
+3. The presigned URL contains the base from `STORAGE_PUBLIC_URL`; the browser must be able to reach that address
 
 This is why `STORAGE_PUBLIC_URL` must be an address reachable by the **user's browser**, not an internal Docker hostname like `storage:9000`.
 
@@ -222,14 +222,14 @@ This is why `STORAGE_PUBLIC_URL` must be an address reachable by the **user's br
 
 | Mistake | Symptom |
 |---------|---------|
-| Using `localhost` when browsers run on a different machine | Uploads fail silently — browser tries to connect to its own machine |
+| Using `localhost` when browsers run on a different machine | Uploads fail silently: browser tries to connect to its own machine |
 | HTTP `STORAGE_PUBLIC_URL` with an HTTPS web interface | Browser blocks the mixed-content request |
 | Omitting the port (e.g. missing `:9000`) when not behind a reverse proxy | Connection refused on upload/download |
 | Using the internal Docker hostname (`storage:9000`) | DNS resolution fails in the browser |
 
 ### With a reverse proxy
 
-When using a reverse proxy, the storage service can be exposed on a custom domain or path — so port 9000 does not need to be publicly open. Update your `.env` to use the public addresses:
+When using a reverse proxy, the storage service can be exposed on a custom domain or path, so port 9000 does not need to be publicly open. Update your `.env` to use the public addresses:
 
 ```bash
 FRONTEND_ORIGIN=https://files.example.com
