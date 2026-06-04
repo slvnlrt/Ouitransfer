@@ -7,7 +7,7 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 
 Auth0 est l'un des fournisseurs OIDC officiellement pris en charge par OUITRANSFER, offrant une authentification de niveau entreprise via la plateforme d'identité Auth0. Cette intégration permet aux utilisateurs de se connecter à OUITRANSFER grâce au système d'authentification complet d'Auth0, ce qui en fait une solution idéale pour les organisations d'entreprise, les applications nécessitant des fonctionnalités de sécurité avancées, et les équipes ayant besoin d'une gestion centralisée des identités.
 
-<ZoomableImage src="/assets/v3/oidc/auth0/sign-in-with-auth0.png" alt="Connexion avec Auth0" />
+<ZoomableImage src="/assets/v1/oidc/auth0/sign-in-with-auth0.png" alt="Connexion avec Auth0" />
 
 ## Pourquoi utiliser l'authentification Auth0 ?
 
@@ -41,16 +41,16 @@ Pour commencer avec l'authentification Auth0, vous devez créer une application 
 
 1. **Accéder au tableau de bord Auth0** : Rendez-vous sur [manage.auth0.com](https://manage.auth0.com)
 
-<ZoomableImage src="/assets/v3/oidc/auth0/auth0-dashboard.png" alt="Tableau de bord Auth0" />
+<ZoomableImage src="/assets/v1/oidc/auth0/auth0-dashboard.png" alt="Tableau de bord Auth0" />
 
 2. **Créer une nouvelle application** : Cliquez sur **"Applications"** dans la barre latérale gauche, puis sur **"+ Create Application"**
 
-<ZoomableImage src="/assets/v3/oidc/auth0/create-application.png" alt="Créer une application Auth0" />
+<ZoomableImage src="/assets/v1/oidc/auth0/create-application.png" alt="Créer une application Auth0" />
 
 3. **Sélectionner le type d'application** : Choisissez **"Single Page Application"** pour les instances OUITRANSFER basées sur le web
 
 <ZoomableImage
-  src="/assets/v3/oidc/auth0/application-type.png"
+  src="/assets/v1/oidc/auth0/application-type.png"
   alt="Sélection du type d'application Auth0"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -65,7 +65,7 @@ Pour commencer avec l'authentification Auth0, vous devez créer une application 
 Après la création de votre application, vous devez configurer les paramètres qu'OUITRANSFER utilisera. Accédez à la page de l'application et cliquez sur l'onglet **"Settings"**.
 
 <ZoomableImage
-  src="/assets/v3/oidc/auth0/application-settings.png"
+  src="/assets/v1/oidc/auth0/application-settings.png"
   alt="Paramètres de l'application Auth0"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -109,7 +109,7 @@ Vous devez configurer plusieurs URL dans les paramètres de votre application Au
 > **Remarque :** Remplacez `yourdomain.com` par votre nom de domaine réel dans toutes les URL de production et à port personnalisé.
 
 <ZoomableImage
-  src="/assets/v3/oidc/auth0/config-urls.png"
+  src="/assets/v1/oidc/auth0/config-urls.png"
   alt="Configuration des URL de l'application Auth0"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -127,7 +127,7 @@ Vous allez maintenant récupérer les identifiants qu'OUITRANSFER utilisera pour
 3. **Générer le Client Secret** : Cliquez sur **"Show"** à côté du Client Secret pour le révéler
 
 <ZoomableImage
-  src="/assets/v3/oidc/auth0/oauth-credentials.png"
+  src="/assets/v1/oidc/auth0/oauth-credentials.png"
   alt="Identifiants OAuth Auth0"
   legend="Le Client ID et le Client Secret affichés dans l'image sont des exemples uniquement (identifiants fictifs). Vous devez utiliser vos propres identifiants provenant d'Auth0."
 />
@@ -150,7 +150,7 @@ Pour configurer l'authentification Auth0 dans OUITRANSFER, vous devez disposer d
 
 3. **Naviguer vers l'authentification** : Trouvez et cliquez sur la section de configuration **Authentication Providers**
 
-<ZoomableImage src="/assets/v3/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
+<ZoomableImage src="/assets/v1/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
 
 ### Activer le fournisseur Auth0
 
@@ -160,7 +160,7 @@ Auth0 est préconfiguré en tant que fournisseur officiel, ce qui simplifie le p
 
 2. **Activer le fournisseur** : Basculez le statut sur **Enabled**
 
-<ZoomableImage src="/assets/v3/oidc/auth0/enabled-auth0.png" alt="Fournisseur Auth0 OUITRANSFER activé" />
+<ZoomableImage src="/assets/v1/oidc/auth0/enabled-auth0.png" alt="Fournisseur Auth0 OUITRANSFER activé" />
 
 Après avoir activé le fournisseur, cliquez sur l'icône en forme de crayon pour le configurer.
 
@@ -171,7 +171,7 @@ Après avoir activé le fournisseur, cliquez sur l'icône en forme de crayon pou
    - **Scopes** : Ajoutez les scopes que vous souhaitez utiliser. Les scopes par défaut sont `openid`, `profile` et `email`.
 
 <ZoomableImage
-  src="/assets/v3/oidc/auth0/edit-auth0.png"
+  src="/assets/v1/oidc/auth0/edit-auth0.png"
   alt="Modifier le fournisseur Auth0"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -186,7 +186,7 @@ Configurez des paramètres supplémentaires pour personnaliser le comportement d
 
 **Icon** : Vous pouvez choisir l'icône à utiliser pour le bouton de connexion Auth0 (la valeur par défaut est `SiAuth0`).
 
-<ZoomableImage src="/assets/v3/oidc/auth0/auth0-icon.png" alt="Icône Auth0" />
+<ZoomableImage src="/assets/v1/oidc/auth0/auth0-icon.png" alt="Icône Auth0" />
 
 > **Conseil entreprise :** L'authentification Auth0 convient parfaitement aux organisations d'entreprise nécessitant des fonctionnalités de sécurité avancées et une gestion centralisée des identités.
 

@@ -7,7 +7,7 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 
 Authentik is one of OUITRANSFER's officially supported OIDC providers, offering enterprise-grade authentication through Authentik's identity platform. This integration allows users to sign in to OUITRANSFER using Authentik's comprehensive authentication system, making it perfect for enterprise organizations, applications requiring advanced security features, and teams that need centralized identity management with complete control over their authentication infrastructure.
 
-<ZoomableImage src="/assets/v3/oidc/authentik/sign-in-with-authentik.png" alt="Sign in with Authentik" />
+<ZoomableImage src="/assets/v1/oidc/authentik/sign-in-with-authentik.png" alt="Sign in with Authentik" />
 
 ## Why use Authentik authentication?
 
@@ -41,16 +41,16 @@ To get started with Authentik authentication, you'll need to create an OAuth2/Op
 
 1. **Navigate to Authentik Admin Interface**: Go to your Authentik instance URL (e.g., `https://your-authentik-domain.com`)
 
-<ZoomableImage src="/assets/v3/oidc/authentik/authentik-admin.png" alt="Authentik Admin Interface" />
+<ZoomableImage src="/assets/v1/oidc/authentik/authentik-admin.png" alt="Authentik Admin Interface" />
 
 2. **Create new OAuth2/OpenID Provider**: Click **"Applications"** in the left sidebar, then click **"Providers"** and click **"+ Create"**
 
-<ZoomableImage src="/assets/v3/oidc/authentik/create-provider.png" alt="Authentik Create Provider" />
+<ZoomableImage src="/assets/v1/oidc/authentik/create-provider.png" alt="Authentik Create Provider" />
 
 3. **Select provider type**: Choose **"OAuth2/OpenID Provider"** for OIDC authentication and click on **"Next"** button.
 
 <ZoomableImage
-  src="/assets/v3/oidc/authentik/provider-type.png"
+  src="/assets/v1/oidc/authentik/provider-type.png"
   alt="Authentik Provider Type Selection"
   legend="This is a fake application, you have to use your own."
 />
@@ -67,13 +67,13 @@ To get started with Authentik authentication, you'll need to create an OAuth2/Op
    - **Protocol Settings (Signing key)**: select **"authentik Self-signed Certificate"**
 
 <ZoomableImage
-  src="/assets/v3/oidc/authentik/provider-settings-1.png"
+  src="/assets/v1/oidc/authentik/provider-settings-1.png"
   alt="Authentik Provider Settings"
   legend="This is a fake application, you have to use your own."
 />
 
 <ZoomableImage
-  src="/assets/v3/oidc/authentik/provider-settings-2.png"
+  src="/assets/v1/oidc/authentik/provider-settings-2.png"
   alt="Authentik Provider Settings"
   legend="This is a fake application, you have to use your own."
 />
@@ -100,7 +100,7 @@ You'll need to configure several URLs in your Authentik provider settings. Here'
 After clicking on **"Finish"** you will see your provider listed in the provider list, but with an warning message like this: ' Warning: Provider not assigned to any application.'.
 
 <ZoomableImage
-  src="/assets/v3/oidc/authentik/warning-message.png"
+  src="/assets/v1/oidc/authentik/warning-message.png"
   alt="Authentik Provider Warning Message"
   legend="This is a fake application, you have to use your own."
 />
@@ -110,7 +110,7 @@ After clicking on **"Finish"** you will see your provider listed in the provider
 After creating your provider, you need to create an application with the created provider. To do this, you need to click on the **"Applications"** in the left sidebar, then click on **"+ Create"**.
 
 <ZoomableImage
-  src="/assets/v3/oidc/authentik/applications-page.png"
+  src="/assets/v1/oidc/authentik/applications-page.png"
   alt="Authentik Applications Page"
   legend="This is a fake application, you have to use your own."
 />
@@ -122,7 +122,7 @@ After creating your provider, you need to create an application with the created
 - **Provider**: Select the provider you just created from the list of providers.
 
 <ZoomableImage
-  src="/assets/v3/oidc/authentik/application-modal.png"
+  src="/assets/v1/oidc/authentik/application-modal.png"
   alt="Authentik Application Modal"
   legend="This is a fake application, you have to use your own."
 />
@@ -132,7 +132,7 @@ The other fields are not important for now, you can leave them as they are. But 
 2. **Save application**: Click on **"Create"** to save the application.
 
 <ZoomableImage
-  src="/assets/v3/oidc/authentik/application-modal.png"
+  src="/assets/v1/oidc/authentik/application-modal.png"
   alt="Authentik Application Modal"
   legend="This is a fake application, you have to use your own."
 />
@@ -142,7 +142,7 @@ The other fields are not important for now, you can leave them as they are. But 
 The last step in Authentik is grab your instance URL. You can find it clicking on the **"providers"** in the side menu on tab **"overview"**.
 
 <ZoomableImage
-  src="/assets/v3/oidc/authentik/provider-overview.png"
+  src="/assets/v1/oidc/authentik/provider-overview.png"
   alt="Authentik Instance URL"
   legend="This is a fake application, you have to use your own."
 />
@@ -166,7 +166,7 @@ To configure Authentik authentication in OUITRANSFER, you need administrator acc
 
 3. **Navigate to authentication**: Find and click on the **Authentication Providers** configuration section
 
-<ZoomableImage src="/assets/v3/oidc/auth-providers.png" alt="OUITRANSFER Authentication Providers" />
+<ZoomableImage src="/assets/v1/oidc/auth-providers.png" alt="OUITRANSFER Authentication Providers" />
 
 ### Enabling Authentik provider
 
@@ -176,7 +176,7 @@ Authentik comes pre-configured as an official provider, so the setup process is 
 
 2. **Enable the provider**: Toggle the status to **Enabled**
 
-<ZoomableImage src="/assets/v3/oidc/authentik/enabled-authentik.png" alt="OUITRANSFER Authentik Provider Enabled" />
+<ZoomableImage src="/assets/v1/oidc/authentik/enabled-authentik.png" alt="OUITRANSFER Authentik Provider Enabled" />
 
 After enabling the provider, click on the pen icon to configure the provider.
 
@@ -187,7 +187,7 @@ After enabling the provider, click on the pen icon to configure the provider.
    - **Scopes**: Add the scopes you want to use. The default scopes are `openid`, `profile`, and `email`. You don't need change this if you are not sure.
 
 <ZoomableImage
-  src="/assets/v3/oidc/authentik/edit-authentik.png"
+  src="/assets/v1/oidc/authentik/edit-authentik.png"
   alt="Edit Authentik Provider"
   legend="This is a fake application, you have to use your own."
 />
@@ -202,7 +202,7 @@ Configure additional settings to customize the authentication behavior:
 
 **Icon**: you can choose the icon you want to use for the Authentik login button (default is `FaShieldAlt`).
 
-<ZoomableImage src="/assets/v3/oidc/authentik/authentik-icon.png" alt="Authentik Icon" />
+<ZoomableImage src="/assets/v1/oidc/authentik/authentik-icon.png" alt="Authentik Icon" />
 
 ---
 

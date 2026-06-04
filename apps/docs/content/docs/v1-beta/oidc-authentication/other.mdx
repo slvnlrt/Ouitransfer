@@ -7,7 +7,7 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 
 OUITRANSFER supports custom OIDC (OpenID Connect) and OAuth 2.0 providers, allowing you to integrate with any identity provider that follows these standards. This flexibility enables organizations to use their existing identity infrastructure, whether it's a custom authentication system, enterprise SSO solution, or any other OIDC-compliant provider.
 
-<ZoomableImage src="/assets/v3/oidc/custom/custom-provider-login.png" alt="Custom OIDC Providers" />
+<ZoomableImage src="/assets/v1/oidc/custom/custom-provider-login.png" alt="Custom OIDC Providers" />
 
 ## Why use custom OIDC providers?
 
@@ -86,13 +86,13 @@ To configure a custom OIDC provider in OUITRANSFER, you need administrator acces
 
 3. **Navigate to authentication**: Find and click on the **Authentication Providers** configuration section
 
-<ZoomableImage src="/assets/v3/oidc/auth-providers.png" alt="OUITRANSFER Authentication Providers" />
+<ZoomableImage src="/assets/v1/oidc/auth-providers.png" alt="OUITRANSFER Authentication Providers" />
 
 ### Adding a Custom Provider
 
 1. **Add new provider**: Click the **"Add Provider"** button in the Authentication Providers section
 
-<ZoomableImage src="/assets/v3/oidc/custom/add-provider.png" alt="Add Provider" />
+<ZoomableImage src="/assets/v1/oidc/custom/add-provider.png" alt="Add Provider" />
 
 2. **Configure basic information**:
    - **Provider Name**: Enter a unique identifier (e.g., `custom-provider`)
@@ -100,7 +100,7 @@ To configure a custom OIDC provider in OUITRANSFER, you need administrator acces
    - **Type**: Select `OIDC` for OpenID Connect or `OAuth2` for OAuth 2.0
    - **Icon**: Choose an appropriate icon for the login button
 
-<ZoomableImage src="/assets/v3/oidc/custom/provider-basic-info.png" alt="Provider Basic Info" />
+<ZoomableImage src="/assets/v1/oidc/custom/provider-basic-info.png" alt="Provider Basic Info" />
 
 ### Configuration Method Selection
 
@@ -127,7 +127,7 @@ Choose between auto discovery and manual endpoint configuration:
    - **Token Endpoint**: The OAuth token endpoint
    - **User Info Endpoint**: The user information endpoint
 
-<ZoomableImage src="/assets/v3/oidc/custom/manual-endpoints.png" alt="Manual Endpoints" />
+<ZoomableImage src="/assets/v1/oidc/custom/manual-endpoints.png" alt="Manual Endpoints" />
 
 > **Note:** `User info endpoint` can be a full URL or a relative path. (e.g. `/userinfo` or `https://other-any-url.com/userinfo`)
 > **Note:** `Token endpoint` and `Authorization endpoint` must be just the path. (e.g. `/oauth/token` or `/oauth/authorize`), OUITRANSFER will automatically add the base URL to the endpoints based on the `Provider URL` you provided.
@@ -189,7 +189,7 @@ https://yourdomain.com/api/auth/providers/{provider-name}/callback
 
 After configuring your custom provider, it will be available in the `Authentication Providers` section.
 
-<ZoomableImage src="/assets/v3/oidc/custom/enabled-provider.png" alt="Enabled Provider" />
+<ZoomableImage src="/assets/v1/oidc/custom/enabled-provider.png" alt="Enabled Provider" />
 
 ---
 

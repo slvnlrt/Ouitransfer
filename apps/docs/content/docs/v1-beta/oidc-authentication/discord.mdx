@@ -7,7 +7,7 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 
 Discord is one of OUITRANSFER's officially supported OIDC providers, offering secure authentication through Discord OAuth 2.0. This integration allows users to sign in to OUITRANSFER using their existing Discord accounts, making it perfect for gaming communities, developer teams, and organizations already using Discord.
 
-<ZoomableImage src="/assets/v3/oidc/discord/sign-in-with-discord.png" alt="Sign in with Discord" />
+<ZoomableImage src="/assets/v1/oidc/discord/sign-in-with-discord.png" alt="Sign in with Discord" />
 
 ## Why use Discord authentication?
 
@@ -41,14 +41,14 @@ To get started with Discord authentication, you'll need to create an application
 
 1. **Navigate to Discord Developer Portal**: Go to [discord.com/developers/applications](https://discord.com/developers/applications)
 
-<ZoomableImage src="/assets/v3/oidc/discord/developer-portal-home.png" alt="Discord Developer Portal Home" />
+<ZoomableImage src="/assets/v1/oidc/discord/developer-portal-home.png" alt="Discord Developer Portal Home" />
 
 2. **Create new application**: Click **"New Application"** button
 3. **Enter application details**:
    - **Name**: Enter a descriptive name like "OUITRANSFER File Sharing"
    - **Accept Terms of Service and Developer Policy**: Check the box
 
-<ZoomableImage src="/assets/v3/oidc/discord/create-application-modal.png" alt="Discord Create Application Modal" />
+<ZoomableImage src="/assets/v1/oidc/discord/create-application-modal.png" alt="Discord Create Application Modal" />
 
 4. **Create application**: Click **"Create"** to generate your application
 
@@ -62,7 +62,7 @@ After creating your application, you'll need to configure basic settings and bra
    - **Cover Image**: Optional banner image for better branding
 
 <ZoomableImage
-  src="/assets/v3/oidc/discord/application-settings.png"
+  src="/assets/v1/oidc/discord/application-settings.png"
   alt="Discord Application Settings"
   legend="This is a fake application, you have to use your own."
 />
@@ -78,7 +78,7 @@ Now you'll configure the OAuth2 settings that OUITRANSFER will use to authentica
 
 1. **Navigate to OAuth2**: In the left sidebar, click **"OAuth2"**
 
-<ZoomableImage src="/assets/v3/oidc/discord/oauth2-general.png" alt="Discord OAuth2 General Settings" />
+<ZoomableImage src="/assets/v1/oidc/discord/oauth2-general.png" alt="Discord OAuth2 General Settings" />
 
 2. **Configure OAuth2 settings**:
    - **Client Secret**: Click **"Reset Secret"** to generate a new client secret
@@ -106,7 +106,7 @@ You'll need to configure several URLs in your Discord application settings. Here
 5. **Save changes**: Click **"Save Changes"** to apply your configuration
 
 <ZoomableImage
-  src="/assets/v3/oidc/discord/required-scopes.png"
+  src="/assets/v1/oidc/discord/required-scopes.png"
   alt="Discord Required Scopes"
   legend="This is a fake application, you have to use your own."
 />
@@ -125,7 +125,7 @@ To configure Discord authentication in OUITRANSFER, you need administrator acces
 
 3. **Navigate to authentication**: Find and click on the **Authentication Providers** configuration section
 
-<ZoomableImage src="/assets/v3/oidc/auth-providers.png" alt="OUITRANSFER Authentication Providers" />
+<ZoomableImage src="/assets/v1/oidc/auth-providers.png" alt="OUITRANSFER Authentication Providers" />
 
 ### Enabling Discord provider
 
@@ -135,7 +135,7 @@ Discord comes pre-configured as an official provider, so the setup process is st
 
 2. **Enable the provider**: Toggle the status to **Enabled**
 
-<ZoomableImage src="/assets/v3/oidc/discord/OUITRANSFER-enabled-discord.png" alt="OUITRANSFER Discord Provider Enabled" />
+<ZoomableImage src="/assets/v1/oidc/discord/OUITRANSFER-enabled-discord.png" alt="OUITRANSFER Discord Provider Enabled" />
 
 After enabling the provider, click on the pen icon to configure the provider.
 
@@ -145,7 +145,7 @@ After enabling the provider, click on the pen icon to configure the provider.
    - **Scopes**: Add the scopes you want to use. The default scopes are `identify` and `email`.
 
 <ZoomableImage
-  src="/assets/v3/oidc/discord/edit-discord.png"
+  src="/assets/v1/oidc/discord/edit-discord.png"
   alt="Edit Discord Provider"
   legend="This is a fake application, you have to use your own."
 />
@@ -162,7 +162,7 @@ Configure additional settings to customize the authentication behavior:
 
 **Icon**: you can choose the icon you want to use for the Discord login button (default is `FaDiscord`).
 
-<ZoomableImage src="/assets/v3/oidc/discord/discord-icon.png" alt="Discord Icon" />
+<ZoomableImage src="/assets/v1/oidc/discord/discord-icon.png" alt="Discord Icon" />
 
 > **Community tip:** Discord authentication works great for gaming communities and development teams. Consider enabling auto-registration for trusted Discord communities.
 

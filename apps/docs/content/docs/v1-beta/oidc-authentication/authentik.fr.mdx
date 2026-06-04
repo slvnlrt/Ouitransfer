@@ -7,7 +7,7 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 
 Authentik est l'un des fournisseurs OIDC officiellement pris en charge par OUITRANSFER, offrant une authentification de niveau entreprise via la plateforme d'identité Authentik. Cette intégration permet aux utilisateurs de se connecter à OUITRANSFER grâce au système d'authentification complet d'Authentik, ce qui en fait une solution idéale pour les organisations d'entreprise, les applications nécessitant des fonctionnalités de sécurité avancées, et les équipes souhaitant un contrôle total sur leur infrastructure d'authentification.
 
-<ZoomableImage src="/assets/v3/oidc/authentik/sign-in-with-authentik.png" alt="Connexion avec Authentik" />
+<ZoomableImage src="/assets/v1/oidc/authentik/sign-in-with-authentik.png" alt="Connexion avec Authentik" />
 
 ## Pourquoi utiliser l'authentification Authentik ?
 
@@ -41,16 +41,16 @@ Pour commencer avec l'authentification Authentik, vous devez créer un fournisse
 
 1. **Accéder à l'interface d'administration Authentik** : Rendez-vous sur l'URL de votre instance Authentik (ex. : `https://your-authentik-domain.com`)
 
-<ZoomableImage src="/assets/v3/oidc/authentik/authentik-admin.png" alt="Interface d'administration Authentik" />
+<ZoomableImage src="/assets/v1/oidc/authentik/authentik-admin.png" alt="Interface d'administration Authentik" />
 
 2. **Créer un nouveau fournisseur OAuth2/OpenID** : Cliquez sur **"Applications"** dans la barre latérale gauche, puis sur **"Providers"** et enfin sur **"+ Create"**
 
-<ZoomableImage src="/assets/v3/oidc/authentik/create-provider.png" alt="Créer un fournisseur Authentik" />
+<ZoomableImage src="/assets/v1/oidc/authentik/create-provider.png" alt="Créer un fournisseur Authentik" />
 
 3. **Sélectionner le type de fournisseur** : Choisissez **"OAuth2/OpenID Provider"** pour l'authentification OIDC et cliquez sur le bouton **"Next"**.
 
 <ZoomableImage
-  src="/assets/v3/oidc/authentik/provider-type.png"
+  src="/assets/v1/oidc/authentik/provider-type.png"
   alt="Sélection du type de fournisseur Authentik"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -67,13 +67,13 @@ Pour commencer avec l'authentification Authentik, vous devez créer un fournisse
    - **Protocol Settings (Signing key)** : sélectionnez **"authentik Self-signed Certificate"**
 
 <ZoomableImage
-  src="/assets/v3/oidc/authentik/provider-settings-1.png"
+  src="/assets/v1/oidc/authentik/provider-settings-1.png"
   alt="Paramètres du fournisseur Authentik"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
 
 <ZoomableImage
-  src="/assets/v3/oidc/authentik/provider-settings-2.png"
+  src="/assets/v1/oidc/authentik/provider-settings-2.png"
   alt="Paramètres du fournisseur Authentik"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -100,7 +100,7 @@ Vous devez configurer plusieurs URL dans les paramètres de votre fournisseur Au
 Après avoir cliqué sur **"Finish"**, votre fournisseur apparaîtra dans la liste des fournisseurs avec un message d'avertissement du type : « Warning: Provider not assigned to any application. ».
 
 <ZoomableImage
-  src="/assets/v3/oidc/authentik/warning-message.png"
+  src="/assets/v1/oidc/authentik/warning-message.png"
   alt="Message d'avertissement du fournisseur Authentik"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -110,7 +110,7 @@ Après avoir cliqué sur **"Finish"**, votre fournisseur apparaîtra dans la lis
 Après la création de votre fournisseur, vous devez créer une application qui l'utilise. Pour ce faire, cliquez sur **"Applications"** dans la barre latérale gauche, puis sur **"+ Create"**.
 
 <ZoomableImage
-  src="/assets/v3/oidc/authentik/applications-page.png"
+  src="/assets/v1/oidc/authentik/applications-page.png"
   alt="Page des applications Authentik"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -122,7 +122,7 @@ Après la création de votre fournisseur, vous devez créer une application qui 
 - **Provider** : Sélectionnez le fournisseur que vous venez de créer dans la liste des fournisseurs.
 
 <ZoomableImage
-  src="/assets/v3/oidc/authentik/application-modal.png"
+  src="/assets/v1/oidc/authentik/application-modal.png"
   alt="Fenêtre de création d'application Authentik"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -132,7 +132,7 @@ Les autres champs ne sont pas importants pour l'instant, vous pouvez les laisser
 2. **Sauvegarder l'application** : Cliquez sur **"Create"** pour enregistrer l'application.
 
 <ZoomableImage
-  src="/assets/v3/oidc/authentik/application-modal.png"
+  src="/assets/v1/oidc/authentik/application-modal.png"
   alt="Fenêtre de création d'application Authentik"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -142,7 +142,7 @@ Les autres champs ne sont pas importants pour l'instant, vous pouvez les laisser
 La dernière étape dans Authentik consiste à récupérer l'URL de votre instance. Vous la trouverez en cliquant sur **"providers"** dans le menu latéral, onglet **"overview"**.
 
 <ZoomableImage
-  src="/assets/v3/oidc/authentik/provider-overview.png"
+  src="/assets/v1/oidc/authentik/provider-overview.png"
   alt="URL de l'instance Authentik"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -166,7 +166,7 @@ Pour configurer l'authentification Authentik dans OUITRANSFER, vous devez dispos
 
 3. **Naviguer vers l'authentification** : Trouvez et cliquez sur la section de configuration **Authentication Providers**
 
-<ZoomableImage src="/assets/v3/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
+<ZoomableImage src="/assets/v1/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
 
 ### Activer le fournisseur Authentik
 
@@ -176,7 +176,7 @@ Authentik est préconfiguré en tant que fournisseur officiel, ce qui simplifie 
 
 2. **Activer le fournisseur** : Basculez le statut sur **Enabled**
 
-<ZoomableImage src="/assets/v3/oidc/authentik/enabled-authentik.png" alt="Fournisseur Authentik OUITRANSFER activé" />
+<ZoomableImage src="/assets/v1/oidc/authentik/enabled-authentik.png" alt="Fournisseur Authentik OUITRANSFER activé" />
 
 Après avoir activé le fournisseur, cliquez sur l'icône en forme de crayon pour le configurer.
 
@@ -187,7 +187,7 @@ Après avoir activé le fournisseur, cliquez sur l'icône en forme de crayon pou
    - **Scopes** : Ajoutez les scopes que vous souhaitez utiliser. Les scopes par défaut sont `openid`, `profile` et `email`. Il n'est pas nécessaire de les modifier si vous n'êtes pas sûr.
 
 <ZoomableImage
-  src="/assets/v3/oidc/authentik/edit-authentik.png"
+  src="/assets/v1/oidc/authentik/edit-authentik.png"
   alt="Modifier le fournisseur Authentik"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -202,7 +202,7 @@ Configurez des paramètres supplémentaires pour personnaliser le comportement d
 
 **Icon** : Vous pouvez choisir l'icône à utiliser pour le bouton de connexion Authentik (la valeur par défaut est `FaShieldAlt`).
 
-<ZoomableImage src="/assets/v3/oidc/authentik/authentik-icon.png" alt="Icône Authentik" />
+<ZoomableImage src="/assets/v1/oidc/authentik/authentik-icon.png" alt="Icône Authentik" />
 
 ---
 

@@ -7,7 +7,7 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 
 Auth0 is one of OUITRANSFER's officially supported OIDC providers, offering enterprise-grade authentication through Auth0's identity platform. This integration allows users to sign in to OUITRANSFER using Auth0's comprehensive authentication system, making it perfect for enterprise organizations, applications requiring advanced security features, and teams that need centralized identity management.
 
-<ZoomableImage src="/assets/v3/oidc/auth0/sign-in-with-auth0.png" alt="Sign in with Auth0" />
+<ZoomableImage src="/assets/v1/oidc/auth0/sign-in-with-auth0.png" alt="Sign in with Auth0" />
 
 ## Why use Auth0 authentication?
 
@@ -41,16 +41,16 @@ To get started with Auth0 authentication, you'll need to create an application i
 
 1. **Navigate to Auth0 Dashboard**: Go to [manage.auth0.com](https://manage.auth0.com)
 
-<ZoomableImage src="/assets/v3/oidc/auth0/auth0-dashboard.png" alt="Auth0 Dashboard" />
+<ZoomableImage src="/assets/v1/oidc/auth0/auth0-dashboard.png" alt="Auth0 Dashboard" />
 
 2. **Create new application**: Click **"Applications"** in the left sidebar, then click **"+ Create Application"**
 
-<ZoomableImage src="/assets/v3/oidc/auth0/create-application.png" alt="Auth0 Create Application" />
+<ZoomableImage src="/assets/v1/oidc/auth0/create-application.png" alt="Auth0 Create Application" />
 
 3. **Select application type**: Choose **"Single Page Application"** for web-based OUITRANSFER instances
 
 <ZoomableImage
-  src="/assets/v3/oidc/auth0/application-type.png"
+  src="/assets/v1/oidc/auth0/application-type.png"
   alt="Auth0 Application Type Selection"
   legend="This is a fake application, you have to use your own."
 />
@@ -65,7 +65,7 @@ To get started with Auth0 authentication, you'll need to create an application i
 After creating your application, you'll need to configure the settings that OUITRANSFER will use. Navigate to the application page and click on the **"Settings"** tab.
 
 <ZoomableImage
-  src="/assets/v3/oidc/auth0/application-settings.png"
+  src="/assets/v1/oidc/auth0/application-settings.png"
   alt="Auth0 Application Settings"
   legend="This is a fake application, you have to use your own."
 />
@@ -109,7 +109,7 @@ You'll need to configure several URLs in your Auth0 application settings. Here's
 > **Note:** Replace `yourdomain.com` with your actual domain name in all production and custom port URLs.
 
 <ZoomableImage
-  src="/assets/v3/oidc/auth0/config-urls.png"
+  src="/assets/v1/oidc/auth0/config-urls.png"
   alt="Auth0 Application URLs Configuration"
   legend="This is a fake application, you have to use your own."
 />
@@ -127,7 +127,7 @@ Now you'll get the credentials that OUITRANSFER will use to authenticate with Au
 3. **Generate Client Secret**: Click **"Show"** next to Client Secret to reveal it
 
 <ZoomableImage
-  src="/assets/v3/oidc/auth0/oauth-credentials.png"
+  src="/assets/v1/oidc/auth0/oauth-credentials.png"
   alt="Auth0 OAuth Credentials"
   legend="The client ID and client secret shown in the image are examples only (fake credentials). You must use your own credentials from Auth0."
 />
@@ -150,7 +150,7 @@ To configure Auth0 authentication in OUITRANSFER, you need administrator access 
 
 3. **Navigate to authentication**: Find and click on the **Authentication Providers** configuration section
 
-<ZoomableImage src="/assets/v3/oidc/auth-providers.png" alt="OUITRANSFER Authentication Providers" />
+<ZoomableImage src="/assets/v1/oidc/auth-providers.png" alt="OUITRANSFER Authentication Providers" />
 
 ### Enabling Auth0 provider
 
@@ -160,7 +160,7 @@ Auth0 comes pre-configured as an official provider, so the setup process is stre
 
 2. **Enable the provider**: Toggle the status to **Enabled**
 
-<ZoomableImage src="/assets/v3/oidc/auth0/enabled-auth0.png" alt="OUITRANSFER Auth0 Provider Enabled" />
+<ZoomableImage src="/assets/v1/oidc/auth0/enabled-auth0.png" alt="OUITRANSFER Auth0 Provider Enabled" />
 
 After enabling the provider, click on the pen icon to configure the provider.
 
@@ -171,7 +171,7 @@ After enabling the provider, click on the pen icon to configure the provider.
    - **Scopes**: Add the scopes you want to use. The default scopes are `openid`, `profile`, and `email`.
 
 <ZoomableImage
-  src="/assets/v3/oidc/auth0/edit-auth0.png"
+  src="/assets/v1/oidc/auth0/edit-auth0.png"
   alt="Edit Auth0 Provider"
   legend="This is a fake application, you have to use your own."
 />
@@ -186,7 +186,7 @@ Configure additional settings to customize the authentication behavior:
 
 **Icon**: you can choose the icon you want to use for the Auth0 login button (default is `SiAuth0`).
 
-<ZoomableImage src="/assets/v3/oidc/auth0/auth0-icon.png" alt="Auth0 Icon" />
+<ZoomableImage src="/assets/v1/oidc/auth0/auth0-icon.png" alt="Auth0 Icon" />
 
 > **Enterprise tip:** Auth0 authentication works great for enterprise organizations requiring advanced security features and centralized identity management.
 

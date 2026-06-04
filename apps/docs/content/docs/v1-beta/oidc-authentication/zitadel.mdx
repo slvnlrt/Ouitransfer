@@ -7,7 +7,7 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 
 Zitadel is one of OUITRANSFER's officially supported OIDC providers, offering enterprise-grade authentication through Zitadel's identity platform. This integration allows users to sign in to OUITRANSFER using Zitadel's comprehensive authentication system, making it perfect for enterprise organizations, applications requiring advanced security features, and teams that need centralized identity management with both cloud and self-hosted deployment options.
 
-<ZoomableImage src="/assets/v3/oidc/zitadel/sign-in-with-zitadel.png" alt="Sign in with Zitadel" />
+<ZoomableImage src="/assets/v1/oidc/zitadel/sign-in-with-zitadel.png" alt="Sign in with Zitadel" />
 
 ## Why use Zitadel authentication?
 
@@ -41,7 +41,7 @@ To get started with Zitadel authentication, you'll need to create an application
 
 1. **Navigate to Zitadel Console**: Go to your Zitadel instance URL (e.g., `your-instance.zitadel.cloud` for cloud or `your self-hosted URL`)
 
-<ZoomableImage src="/assets/v3/oidc/zitadel/zitadel-console.png" alt="Zitadel Console" />
+<ZoomableImage src="/assets/v1/oidc/zitadel/zitadel-console.png" alt="Zitadel Console" />
 
 2. **Create new application**: Click **"Create Application"** button in the home screen.
 3. **Enter application details**:
@@ -49,7 +49,7 @@ To get started with Zitadel authentication, you'll need to create an application
 - Enter a descriptive name like "OUITRANSFER File Sharing" for your project, ou select an existing project.
 - Select Framework: Select "`Other (OIDC, SAML, API)`"
 
-<ZoomableImage src="/assets/v3/oidc/zitadel/create-application.png" alt="Zitadel Create Application" />
+<ZoomableImage src="/assets/v1/oidc/zitadel/create-application.png" alt="Zitadel Create Application" />
 
 4. **Create application**: Click **"Create"** to generate your Zitadel application
 
@@ -63,7 +63,7 @@ After creating your application, you'll be redirected to the application configu
 - Add a descriptive name for your application (e.g. "OUITRANSFER File Sharing")
 
 <ZoomableImage
-  src="/assets/v3/oidc/zitadel/step-1.png"
+  src="/assets/v1/oidc/zitadel/step-1.png"
   alt="Zitadel Application Type Selection"
   legend="This is a fake application, you have to use your own."
 />
@@ -75,7 +75,7 @@ click on **"Continue"** to advance to the next step.
 - Choose **"CODE"** for authentication method and click on **"Continue"** to advance to the next step.
 
 <ZoomableImage
-  src="/assets/v3/oidc/zitadel/step-2.png"
+  src="/assets/v1/oidc/zitadel/step-2.png"
   alt="Zitadel Application Authentication Method Selection"
   legend="This is a fake application, you have to use your own."
 />
@@ -105,7 +105,7 @@ You'll need to configure several URLs in your Zitadel application settings. Here
 > **Note:** You can add multiple redirect URIs for different environments (development, staging, production).
 
 <ZoomableImage
-  src="/assets/v3/oidc/zitadel/config-urls.png"
+  src="/assets/v1/oidc/zitadel/config-urls.png"
   alt="Zitadel Application URLs Configuration"
   legend="This is a fake application, you have to use your own."
 />
@@ -115,7 +115,7 @@ Click on **"Continue"** to advance to the last step. That is just a summary of t
 8. **Save changes**: Click **"Save"** to apply your configuration
 
 <ZoomableImage
-  src="/assets/v3/oidc/zitadel/config-overview.png"
+  src="/assets/v1/oidc/zitadel/config-overview.png"
   alt="Zitadel Application Summary"
   legend="This is a fake application, you have to use your own."
 />
@@ -127,7 +127,7 @@ You can click on **"Create"** to create your application.
 After creating your application, a modal will appear with the credentials that OUITRANSFER will use to authenticate with Zitadel.
 
 <ZoomableImage
-  src="/assets/v3/oidc/zitadel/credentials-modal.png"
+  src="/assets/v1/oidc/zitadel/credentials-modal.png"
   alt="Zitadel OAuth Credentials"
   legend="The client ID and client secret shown in the image are examples only (fake credentials). You must use your own credentials from Zitadel."
 />
@@ -141,7 +141,7 @@ you can copy the credentials and save them in a safe place for later use.
 After closing the modal, you'll be redirected to the Zitadel application page.
 
 <ZoomableImage
-  src="/assets/v3/oidc/zitadel/application-page.png"
+  src="/assets/v1/oidc/zitadel/application-page.png"
   alt="Zitadel Application Page"
   legend="This is a fake application, you have to use your own."
 />
@@ -163,7 +163,7 @@ Select the **"Token Settings"** section in the side menu, you can configure the 
 The default Auth Token Type is **"Bearer"** and you can change it to **"JWT"** and click on **"Save"** to save the token settings.
 
 <ZoomableImage
-  src="/assets/v3/oidc/zitadel/token-settings.png"
+  src="/assets/v1/oidc/zitadel/token-settings.png"
   alt="Zitadel Auth Token Settings"
   legend="This is a fake application, you have to use your own."
 />
@@ -171,7 +171,7 @@ The default Auth Token Type is **"Bearer"** and you can change it to **"JWT"** a
 Click on **Redirect Settings** section in the side menu, you can configure the redirect settings for your application. Just confirm the previous URLs you have configured in the previous step. If you want to add more redirect URLs, you can add them by clicking on **"+"** button. If you need to edit the redirect URLs, you can edit them by clicking on the pen icon.
 
 <ZoomableImage
-  src="/assets/v3/oidc/zitadel/redirect-settings-page.png"
+  src="/assets/v1/oidc/zitadel/redirect-settings-page.png"
   alt="Zitadel Redirect Settings"
   legend="This is a fake application, you have to use your own."
 />
@@ -179,7 +179,7 @@ Click on **Redirect Settings** section in the side menu, you can configure the r
 The last step in Zitadel is grab your instance URL. You can find it clicking on the **"URLs"** in the side menu.
 
 <ZoomableImage
-  src="/assets/v3/oidc/zitadel/urls-page.png"
+  src="/assets/v1/oidc/zitadel/urls-page.png"
   alt="Zitadel Instance URL"
   legend="This is a fake application, you have to use your own."
 />
@@ -203,7 +203,7 @@ To configure Zitadel authentication in OUITRANSFER, you need administrator acces
 
 3. **Navigate to authentication**: Find and click on the **Authentication Providers** configuration section
 
-<ZoomableImage src="/assets/v3/oidc/auth-providers.png" alt="OUITRANSFER Authentication Providers" />
+<ZoomableImage src="/assets/v1/oidc/auth-providers.png" alt="OUITRANSFER Authentication Providers" />
 
 ### Enabling Zitadel provider
 
@@ -213,7 +213,7 @@ Zitadel comes pre-configured as an official provider, so the setup process is st
 
 2. **Enable the provider**: Toggle the status to **Enabled**
 
-<ZoomableImage src="/assets/v3/oidc/zitadel/enabled-zitadel.png" alt="OUITRANSFER Zitadel Provider Enabled" />
+<ZoomableImage src="/assets/v1/oidc/zitadel/enabled-zitadel.png" alt="OUITRANSFER Zitadel Provider Enabled" />
 
 After enabling the provider, click on the pen icon to configure the provider.
 
@@ -224,7 +224,7 @@ After enabling the provider, click on the pen icon to configure the provider.
    - **Scopes**: Add the scopes you want to use. The default scopes are `openid`, `profile`, and `email`. You don't need change this if you are not sure.
 
 <ZoomableImage
-  src="/assets/v3/oidc/zitadel/edit-zitadel.png"
+  src="/assets/v1/oidc/zitadel/edit-zitadel.png"
   alt="Edit Zitadel Provider"
   legend="This is a fake application, you have to use your own."
 />
@@ -239,7 +239,7 @@ Configure additional settings to customize the authentication behavior:
 
 **Icon**: you can choose the icon you want to use for the Zitadel login button (default is `FaShieldAlt`).
 
-<ZoomableImage src="/assets/v3/oidc/zitadel/zitadel-icon.png" alt="Zitadel Icon" />
+<ZoomableImage src="/assets/v1/oidc/zitadel/zitadel-icon.png" alt="Zitadel Icon" />
 
 > **Enterprise tip:** Zitadel authentication works great for enterprise organizations requiring advanced security features and centralized identity management with deployment flexibility.
 

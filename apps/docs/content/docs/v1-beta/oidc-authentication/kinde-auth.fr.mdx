@@ -7,7 +7,7 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 
 Kinde Auth est l'un des fournisseurs OIDC officiellement pris en charge par OUITRANSFER, offrant une authentification moderne via la plateforme d'identité Kinde, orientée développeurs. Cette intégration permet aux utilisateurs de se connecter à OUITRANSFER grâce au système d'authentification complet de Kinde, ce qui en fait une solution idéale pour les développeurs, les startups et les organisations ayant besoin d'une solution d'authentification moderne et évolutive avec une excellente expérience développeur.
 
-<ZoomableImage src="/assets/v3/oidc/kinde/sign-in-with-kinde.png" alt="Connexion avec Kinde" />
+<ZoomableImage src="/assets/v1/oidc/kinde/sign-in-with-kinde.png" alt="Connexion avec Kinde" />
 
 ## Pourquoi utiliser l'authentification Kinde Auth ?
 
@@ -41,7 +41,7 @@ Pour démarrer avec l'authentification Kinde Auth, vous devez créer une applica
 
 1. **Accédez au tableau de bord Kinde** : Rendez-vous sur [your-tenant.kinde.com/admin](https://your-tenant.kinde.com/admin)
 
-<ZoomableImage src="/assets/v3/oidc/kinde/kinde-dashboard.png" alt="Tableau de bord Kinde" />
+<ZoomableImage src="/assets/v1/oidc/kinde/kinde-dashboard.png" alt="Tableau de bord Kinde" />
 
 2. **Créer une nouvelle application** : Cliquez sur le bouton **"Add application"** au centre de la page.
 
@@ -50,7 +50,7 @@ Pour démarrer avec l'authentification Kinde Auth, vous devez créer une applica
 4. **Saisir les détails de l'application** :
    - **Name** : Saisissez un nom descriptif tel que "OUITRANSFER File Sharing"
 
-<ZoomableImage src="/assets/v3/oidc/kinde/application-type.png" alt="Sélection du type d'application Kinde" />
+<ZoomableImage src="/assets/v1/oidc/kinde/application-type.png" alt="Sélection du type d'application Kinde" />
 
 5. **Créer l'application** : Cliquez sur **"Save"** pour générer votre application Kinde
 
@@ -58,12 +58,12 @@ Pour démarrer avec l'authentification Kinde Auth, vous devez créer une applica
 
 Après avoir créé votre application, vous serez redirigé vers la page de l'application.
 
-<ZoomableImage src="/assets/v3/oidc/kinde/application-page.png" alt="Page de l'application Kinde" />
+<ZoomableImage src="/assets/v1/oidc/kinde/application-page.png" alt="Page de l'application Kinde" />
 
 Cliquez sur l'onglet **"Details"** dans la barre latérale pour configurer les paramètres de l'application et récupérer les identifiants OAuth.
 
 <ZoomableImage
-  src="/assets/v3/oidc/kinde/application-details.png"
+  src="/assets/v1/oidc/kinde/application-details.png"
   alt="Détails de l'application Kinde"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -79,7 +79,7 @@ Vous allez maintenant obtenir les identifiants qu'OUITRANSFER utilisera pour s'a
 3. **Copier le Client Secret** : Le Client Secret est affiché dans le champ **"Client secret"**
 
 <ZoomableImage
-  src="/assets/v3/oidc/kinde/oauth-credentials.png"
+  src="/assets/v1/oidc/kinde/oauth-credentials.png"
   alt="Identifiants OAuth Kinde"
   legend="Le Client ID et le Client Secret affichés dans l'image sont donnés à titre d'exemple uniquement (identifiants fictifs). Vous devez utiliser vos propres identifiants Kinde."
 />
@@ -128,7 +128,7 @@ Vous devez configurer plusieurs URLs dans les paramètres de votre application K
 > **Remarque :** Vous pouvez ajouter plusieurs URI de redirection pour différents environnements (développement, recette, production).
 
 <ZoomableImage
-  src="/assets/v3/oidc/kinde/config-urls.png"
+  src="/assets/v1/oidc/kinde/config-urls.png"
   alt="Configuration des URLs de l'application Kinde"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -149,7 +149,7 @@ Pour configurer l'authentification Kinde Auth dans OUITRANSFER, vous devez dispo
 
 3. **Accéder à l'authentification** : Recherchez et cliquez sur la section de configuration **Authentication Providers**
 
-<ZoomableImage src="/assets/v3/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
+<ZoomableImage src="/assets/v1/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
 
 ### Activation du fournisseur Kinde Auth
 
@@ -159,7 +159,7 @@ Kinde Auth est préconfiguré comme fournisseur officiel, ce qui simplifie le pr
 
 2. **Activer le fournisseur** : Basculez le statut sur **Enabled**
 
-<ZoomableImage src="/assets/v3/oidc/kinde/enabled-kinde.png" alt="Fournisseur Kinde Auth activé dans OUITRANSFER" />
+<ZoomableImage src="/assets/v1/oidc/kinde/enabled-kinde.png" alt="Fournisseur Kinde Auth activé dans OUITRANSFER" />
 
 Après avoir activé le fournisseur, cliquez sur l'icône de crayon pour le configurer.
 
@@ -170,7 +170,7 @@ Après avoir activé le fournisseur, cliquez sur l'icône de crayon pour le conf
    - **Scopes** : Ajoutez les scopes que vous souhaitez utiliser. Les scopes par défaut sont `openid`, `profile` et `email`. Vous n'avez pas besoin de les modifier si vous n'êtes pas certain de ce que vous faites.
 
 <ZoomableImage
-  src="/assets/v3/oidc/kinde/edit-kinde.png"
+  src="/assets/v1/oidc/kinde/edit-kinde.png"
   alt="Modifier le fournisseur Kinde Auth"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -185,7 +185,7 @@ Configurez des paramètres supplémentaires pour personnaliser le comportement d
 
 **Icon** : vous pouvez choisir l'icône à utiliser pour le bouton de connexion Kinde Auth (par défaut : `FaKey`).
 
-<ZoomableImage src="/assets/v3/oidc/kinde/kinde-icon.png" alt="Icône Kinde Auth" />
+<ZoomableImage src="/assets/v1/oidc/kinde/kinde-icon.png" alt="Icône Kinde Auth" />
 
 > **Conseil développeur :** L'authentification Kinde Auth convient parfaitement aux applications modernes nécessitant une excellente expérience développeur et une infrastructure d'authentification évolutive.
 

@@ -7,7 +7,7 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 
 Frontegg est l'un des fournisseurs OIDC officiellement pris en charge par OUITRANSFER, offrant une authentification de niveau entreprise via la plateforme d'identité Frontegg. Cette intégration permet aux utilisateurs de se connecter à OUITRANSFER grâce au système d'authentification complet de Frontegg, ce qui en fait une solution idéale pour les organisations de type entreprise, les applications nécessitant des fonctionnalités de sécurité avancées et les équipes ayant besoin d'une gestion centralisée des identités avec une expérience développeur moderne.
 
-<ZoomableImage src="/assets/v3/oidc/frontegg/sign-in-with-frontegg.png" alt="Connexion avec Frontegg" />
+<ZoomableImage src="/assets/v1/oidc/frontegg/sign-in-with-frontegg.png" alt="Connexion avec Frontegg" />
 
 ## Pourquoi utiliser l'authentification Frontegg ?
 
@@ -41,7 +41,7 @@ Pour démarrer avec l'authentification Frontegg, vous devez créer une applicati
 
 1. **Accédez au portail d'administration Frontegg** : Rendez-vous sur [https://portal.frontegg.com/development/applications](https://portal.frontegg.com/development/applications) par exemple (environnement de développement). Pour l'environnement de production, allez sur [https://portal.frontegg.com/production/applications](https://portal.frontegg.com/production/applications) — cela peut varier selon votre environnement.
 
-<ZoomableImage src="/assets/v3/oidc/frontegg/frontegg-admin.png" alt="Portail d'administration Frontegg" />
+<ZoomableImage src="/assets/v1/oidc/frontegg/frontegg-admin.png" alt="Portail d'administration Frontegg" />
 
 2. **Créer une nouvelle application** : Cliquez sur **"Create new"**
 
@@ -61,7 +61,7 @@ Pour démarrer avec l'authentification Frontegg, vous devez créer une applicati
    > **Remarque :** Remplacez `yourdomain.com` par votre nom de domaine réel dans toutes les URLs de production et de port personnalisé.
 
 <ZoomableImage
-  src="/assets/v3/oidc/frontegg/application-details.png"
+  src="/assets/v1/oidc/frontegg/application-details.png"
   alt="Détails de l'application Frontegg"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -73,7 +73,7 @@ Pour démarrer avec l'authentification Frontegg, vous devez créer une applicati
 Après avoir créé votre application, vous devrez récupérer les paramètres qu'OUITRANSFER utilisera. Vous serez redirigé vers la page de l'application, où vous pourrez consulter les détails de celle-ci.
 
 <ZoomableImage
-  src="/assets/v3/oidc/frontegg/application-page.png"
+  src="/assets/v1/oidc/frontegg/application-page.png"
   alt="Page de l'application Frontegg"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -104,7 +104,7 @@ Pour configurer l'authentification Frontegg dans OUITRANSFER, vous devez dispose
 
 3. **Accéder à l'authentification** : Recherchez et cliquez sur la section de configuration **Authentication Providers**
 
-<ZoomableImage src="/assets/v3/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
+<ZoomableImage src="/assets/v1/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
 
 ### Activation du fournisseur Frontegg
 
@@ -114,7 +114,7 @@ Frontegg est préconfiguré comme fournisseur officiel, ce qui simplifie le proc
 
 2. **Activer le fournisseur** : Basculez le statut sur **Enabled**
 
-<ZoomableImage src="/assets/v3/oidc/frontegg/enabled-frontegg.png" alt="Fournisseur Frontegg activé dans OUITRANSFER" />
+<ZoomableImage src="/assets/v1/oidc/frontegg/enabled-frontegg.png" alt="Fournisseur Frontegg activé dans OUITRANSFER" />
 
 Après avoir activé le fournisseur, cliquez sur l'icône de crayon pour le configurer.
 
@@ -125,7 +125,7 @@ Après avoir activé le fournisseur, cliquez sur l'icône de crayon pour le conf
    - **Scopes** : Ajoutez les scopes que vous souhaitez utiliser. Les scopes par défaut sont `openid`, `profile` et `email`. Vous n'avez pas besoin de les modifier, mais vous pouvez le faire si vous le souhaitez.
 
 <ZoomableImage
-  src="/assets/v3/oidc/frontegg/edit-frontegg.png"
+  src="/assets/v1/oidc/frontegg/edit-frontegg.png"
   alt="Modifier le fournisseur Frontegg"
   legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
 />
@@ -140,7 +140,7 @@ Configurez des paramètres supplémentaires pour personnaliser le comportement d
 
 **Icon** : vous pouvez choisir l'icône à utiliser pour le bouton de connexion Frontegg (par défaut : `TbEggs`).
 
-<ZoomableImage src="/assets/v3/oidc/frontegg/frontegg-icon.png" alt="Icône Frontegg" />
+<ZoomableImage src="/assets/v1/oidc/frontegg/frontegg-icon.png" alt="Icône Frontegg" />
 
 > **Conseil développeur :** L'authentification Frontegg convient parfaitement aux organisations qui ont besoin d'une expérience développeur moderne et de fonctionnalités de sécurité de niveau entreprise.
 
