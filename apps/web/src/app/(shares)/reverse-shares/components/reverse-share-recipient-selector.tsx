@@ -35,9 +35,7 @@ export function ReverseShareRecipientSelector({
 }: ReverseShareRecipientSelectorProps) {
   const t = useTranslations();
   const { value: smtpEnabled, isLoading: isSmtpLoading } = useSecureConfigValue("smtpEnabled");
-  const [recipients, setRecipients] = useState<ReverseShareRecipient[]>(
-    selectedRecipients ?? [],
-  );
+  const [recipients, setRecipients] = useState<ReverseShareRecipient[]>(selectedRecipients ?? []);
   const [newRecipient, setNewRecipient] = useState("");
   const [newRecipientName, setNewRecipientName] = useState("");
   const [selectedForAction, setSelectedForAction] = useState<Set<string>>(new Set());
@@ -108,12 +106,15 @@ export function ReverseShareRecipientSelector({
         emails: emails ?? undefined,
       });
       const count = response.data.notifiedRecipients.length;
-      if (count > 0) {
+      const total = emails?.length ?? recipients.length;
+      if (count === total) {
         toast.success(
           emails?.length === 1
             ? t("recipientSelector.singleNotifySuccess", { email: emails[0] })
             : t("recipientSelector.bulkNotifySuccess", { count }),
         );
+      } else {
+        toast.warning(t("recipientSelector.notifyPartial", { sent: count, total }));
       }
       onSuccess();
     } catch (error) {
@@ -216,9 +217,7 @@ export function ReverseShareRecipientSelector({
 
       {/* Recipient list */}
       {recipients.length === 0 ? (
-        <p className="text-sm text-muted-foreground py-2">
-          {t("recipientSelector.noRecipients")}
-        </p>
+        <p className="text-sm text-muted-foreground py-2">{t("recipientSelector.noRecipients")}</p>
       ) : (
         <>
           {/* Bulk actions */}
