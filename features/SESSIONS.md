@@ -17,18 +17,16 @@
   example in comments); `docker-compose.ci.yml` adds the build override. `e2e.yml` builds,
   health-checks (`:5488/docs`), and publishes `ghcr.io/slvnlrt/ouitransfer-docs` (loop
   `server web docs`); `Justfile docker-push` mirrors it. `.env.docker.example` documents the service.
-- **Validation:** docs type-check clean, lint clean, production build with `basePath=/docs`
-  succeeds (83 pages; `/docs/_next` and `/docs/api/search` baked), merged `docker compose config`
-  valid. Standalone smoke-test (Docker layout reproduced): `fr` locale pages, `/docs/_next`
-  assets, `/docs/api/search`, `/docs/api/generate-key` all 200.
-- **Validation caveat (default `en` locale):** sandbox runs Node 22, project/image require Node 24.
-  On Node 22 the Fumadocs default-locale middleware **loops at baseline** (original code, NO
-  basePath: `/` → 308, `/docs/v1-beta` → 307; `fr` works) — pre-existing and independent of
-  TD-50, a Node-version artifact. So `en` routing **under basePath** couldn't be verified here;
-  the public site (same config, Node 24, no basePath) works in prod and Fumadocs' `DefaultFormatter`
-  handles `url.basePath`. To confirm on the Node 24 image. Fallback if needed: sub-domain
-  deployment (`NEXT_PUBLIC_DOCS_BASE_PATH=""`). No app middleware changes were made (`proxy.ts`
-  left as the upstream Fumadocs middleware).
+- **Middleware matcher fix (`proxy.ts`):** Next.js prefixes middleware `matcher` patterns with
+  `basePath`, so the catch-all `/((?!…).*)` becomes `/docs/(…)+` and never matches the bare
+  `/docs` root → the default-locale landing 404s while every sub-page works. Fixed by adding
+  `"/"` to the matcher. Upstream `createI18nMiddleware` otherwise unchanged; harmless without basePath.
+- **Validation:** docs type-check + lint clean; production build (with and without `basePath=/docs`,
+  83 pages, `/docs/_next` + `/docs/api/search` baked); merged `docker compose config` valid.
+  Faithful runtime test via `next start` — **all routes 200** in both modes: basePath `/docs`
+  (landing, `/docs/docs/v1-beta`, `/docs/en` 307→200, `fr` pages, search, generate-key, assets)
+  and no-basePath (`/`, `/docs/v1-beta`, `/en`, `fr`, search). A first (wrong) diagnosis of a
+  "default-locale loop" was an artifact of a hand-assembled standalone test, not real.
 - **Tracking:** TD-50 moved to resolved archive; README open-debt list updated.
 
 ## 2026-06-04 (TD-30 — Reverse share invitation feature)

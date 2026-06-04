@@ -43,6 +43,16 @@ Next.js applique `basePath` à `next/link`, `next/image` et au routing serveur, 
 
 En dev (env non défini) `withBasePath` est un no-op ⇒ comportement identique à aujourd'hui.
 
+### Piège traité : le matcher du middleware i18n et la racine du basePath
+
+Next.js **préfixe les patterns du `matcher` du middleware avec le `basePath`**. Le pattern
+catch-all `"/((?!…).*)"` devient donc `"/docs/(…)+"`, qui **ne matche pas la racine nue
+`/docs`**. Sans correctif, la landing (locale par défaut `en`, servie par réécriture interne
+vers `/en`) n'est jamais réécrite et renvoie **404** — alors que toutes les sous-pages
+(`/docs/docs/v1-beta`, `/docs/fr…`) fonctionnent. **Fix :** ajouter `"/"` au `matcher` de
+`apps/docs/src/proxy.ts`. Inoffensif sans basePath (la racine matchait déjà via `.*`). Le
+middleware Fumadocs upstream (`createI18nMiddleware`) est par ailleurs inchangé.
+
 ## Périmètre des modifications
 
 **App docs**
@@ -94,25 +104,20 @@ catch-all `web`. Pas de `StripPrefix`. Pas de DNS/cert supplémentaire (même h�
 
 - `pnpm --filter ouitransfer-docs type-check` ✓ — clean
 - `pnpm --filter ouitransfer-docs lint` ✓ — clean
-- `pnpm --filter ouitransfer-docs build` avec `NEXT_PUBLIC_DOCS_BASE_PATH=/docs` ✓ — 83 pages,
-  `/docs/_next` et `/docs/api/search` correctement bakés dans le HTML.
-- Smoke-test du serveur standalone (layout Docker reproduit) ✓ pour tout ce qui est testable
-  dans le sandbox : pages locale `fr` (`/docs/fr`, `/docs/fr/docs/v1-beta` → 200), assets
-  `/docs/_next/...` → 200, recherche `/docs/api/search` → 200, `/docs/api/generate-key` → 200.
+- `pnpm --filter ouitransfer-docs build` (avec et sans `NEXT_PUBLIC_DOCS_BASE_PATH=/docs`) ✓ —
+  83 pages, `/docs/_next` et `/docs/api/search` correctement bakés dans le HTML.
 - `docker compose -f docker-compose.yaml -f docker-compose.ci.yml config` ✓ — valide.
+- **Test runtime fidèle (`next start`)** des deux configs :
 
-### Réserve de validation — routing de la locale par défaut (en)
+  | Route (basePath=/docs) | Résultat | | Route (sans basePath) | Résultat |
+  |---|---|---|---|---|
+  | `/docs` (landing) | 200 ✅ | | `/` | 200 ✅ |
+  | `/docs/docs/v1-beta` | 200 ✅ | | `/docs/v1-beta` | 200 ✅ |
+  | `/docs/en` | 307→200 ✅ | | `/en` | 307→200 ✅ |
+  | `/docs/fr`, `/docs/fr/docs/v1-beta` | 200 ✅ | | `/fr`, `/fr/docs/v1-beta` | 200 ✅ |
+  | `/docs/api/search`, `/docs/api/generate-key` | 200 ✅ | | `/api/search` | 200 ✅ |
 
-Le sandbox tourne en **Node 22** ; le projet et l'image Docker exigent **Node 24** (`.node-version`).
-Sur Node 22, le middleware i18n Fumadocs (`hideLocale: "default-locale"`) **boucle déjà sur la
-locale par défaut au baseline** — code d'origine, **sans** `basePath` : `/` → 308 en boucle,
-`/docs/v1-beta` → 307 non résolu, alors que la locale `fr` (préfixée) répond 200. Ce
-comportement est donc **antérieur et indépendant** de TD-50 (reproductible sans aucune
-modification et sans `basePath`) — un artefact de version de Node, pas un bug introduit ici.
-
-Conséquence : le routing de la locale `en` **sous `basePath`** n'a pas pu être vérifié dans le
-sandbox. Le site public (même config Fumadocs, sans `basePath`, sous Node 24) fonctionne en
-production, et `DefaultFormatter` de Fumadocs gère explicitement `url.basePath`. À **confirmer
-sur l'image Node 24** (ou l'instance auto-hébergée). Repli si jamais la combinaison
-`basePath` + `default-locale` posait problème en prod : déployer la doc sur un sous-domaine
-(`NEXT_PUBLIC_DOCS_BASE_PATH=""`, pas de préfixe).
+> Note méthodo : un premier diagnostic erroné (« la locale par défaut boucle ») venait d'un
+> test sur un serveur standalone **assemblé à la main** (copie incorrecte de `static`/`public`),
+> non d'un vrai problème. Le test fidèle via `next start` a révélé le seul bug réel — le
+> `matcher` ne couvrant pas la racine du basePath — corrigé en une ligne (cf. ci-dessus).
