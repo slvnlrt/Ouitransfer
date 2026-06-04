@@ -26,9 +26,9 @@ Navigate to **Groups** (visible in the navigation menu for admin accounts) and c
 
 The quota fields accept three modes:
 
-- **Inherit** (`null`) — the group does not set a limit; each member inherits from the next level (global default).
-- **Unlimited** (`0`) — members in this group have no enforced limit for this quota, regardless of global settings.
-- **Custom** (a positive byte value) — members in this group are capped at this value.
+- **Inherit** (`null`): the group does not set a limit; each member inherits from the next level (global default).
+- **Unlimited** (`0`): members in this group have no enforced limit for this quota, regardless of global settings.
+- **Custom** (a positive byte value): members in this group are capped at this value.
 
 <Callout type="warn">
   Setting a group quota to **Unlimited** does not mean "use the global default." It means the limit is actively removed for those members. Use **Inherit** if you want the global default to apply.
@@ -49,7 +49,7 @@ To remove a member, click the remove button on their row. The user is unassigned
 You can also assign a group when editing an individual user. Open **Admin → User Management**, edit the user, and select a group from the **Group** dropdown. Choose **None** to remove the user from any group.
 
 <Callout type="info">
-  A user can belong to at most one group at a time. Assigning a user to a new group automatically removes them from their previous group — there is no need to unassign first.
+  A user can belong to at most one group at a time. Assigning a user to a new group automatically removes them from their previous group. There is no need to unassign first.
 </Callout>
 
 ## Quota inheritance
@@ -62,7 +62,7 @@ User override  →  Group override  →  Global default
 
 More specifically:
 
-1. If the user has a personal override set, it wins — regardless of any group setting.
+1. If the user has a personal override set, it wins, regardless of any group setting.
 2. If the user has no personal override but belongs to a group that has an override set, the group value is used.
 3. If neither the user nor their group has an override, the global default from Settings applies.
 4. Administrators always get unlimited quotas, regardless of group or global settings.
@@ -75,7 +75,7 @@ More specifically:
 | Inherit | 10 GB | 2 GB | **10 GB** (group wins) |
 | Inherit | Inherit | 2 GB | **2 GB** (global default) |
 | Inherit | Unlimited | 2 GB | **Unlimited** (group explicitly removes limit) |
-| Inherit | — (no group) | 2 GB | **2 GB** (global default) |
+| Inherit | (no group) | 2 GB | **2 GB** (global default) |
 
 The effective quota for each user is displayed in the User Management edit form, along with a label indicating the resolution source (**User override**, **Group: \{name\}**, or **Global default**).
 
@@ -102,7 +102,7 @@ The `ldapDn` value is also returned in API responses (`GET /groups`, `GET /group
 For setup instructions, see the [LDAP Configuration](/docs/v1-beta/ldap-configuration) documentation.
 
 <Callout type="info">
-  LDAP sync respects the one-group-per-user constraint. If a user matches multiple AD group mappings, one of them is assigned but the choice is not deterministic — avoid overlapping memberships for predictable results.
+  LDAP sync respects the one-group-per-user constraint. If a user matches multiple AD group mappings, one of them is assigned but the choice is not deterministic. Avoid overlapping memberships for predictable results.
 </Callout>
 
 ## API reference (admin)
@@ -133,7 +133,7 @@ All endpoints require a valid admin session. Non-admin requests receive `403 For
 }
 ```
 
-**Update group** (`PUT /groups/:id`) — all fields optional:
+**Update group** (`PUT /groups/:id`): all fields optional:
 
 ```json
 {
@@ -172,7 +172,7 @@ All endpoints require a valid admin session. Non-admin requests receive `403 For
 }
 ```
 
-**Group detail** (`GET /groups/:id`) — same fields plus a `members` array:
+**Group detail** (`GET /groups/:id`): same fields plus a `members` array:
 
 ```json
 {
