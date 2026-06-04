@@ -161,18 +161,6 @@ and queue flush. In practice, the queue processes quickly and `appName` changes 
 
 ---
 
-## TD-34 — ~~No `notifyOnUpload` per-reverse-share override (asymmetry with shares)~~ DONE
-
-**Status:** DONE (2026-05-31)
-**Commits:** `17ac636`, `592d8cb`, `248c733`, `8f6c8fb`, `0c3f36d`, `c015c9a`
-**Changes:** Added `notifyOnUpload` boolean to ReverseShare model + DTOs + service.
-Added Step 3b in `resolveFrequency` for `reverse_share_uploaded` (TDD, 6 tests).
-Added Switch toggle in create modal + details modal. i18n keys in all 23 locales.
-Changed `reverse_share_uploaded` catalog default from `"immediate"` to `"disabled"` so
-the toggle means "enable/disable per-reverse-share upload notifications" (not cooldown
-bypass). `overridden: false` ensures the 300s cooldown always applies.
-
----
 
 ## TD-40 — Global error boundary hardcoded in English — no i18n possible
 
