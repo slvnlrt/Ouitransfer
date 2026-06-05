@@ -26,7 +26,7 @@ export const uploadBackgroundImage = (
   }
   formData.append("file", file);
 
-  return apiInstance.post("/api/background-images/upload", formData, {
+  return apiInstance.post("/api/background-images", formData, {
     ...options,
     headers: {
       ...options?.headers,
