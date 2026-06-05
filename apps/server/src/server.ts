@@ -32,7 +32,6 @@ import {
 import { notificationRoutes } from "./modules/notification/routes.js";
 import { quotaRoutes } from "./modules/quota/routes.js";
 import { reverseShareRoutes } from "./modules/reverse-share/routes.js";
-import { s3StorageRoutes } from "./modules/s3-storage/routes.js";
 import { shareRoutes } from "./modules/share/routes.js";
 import { storageRoutes } from "./modules/storage/routes.js";
 import { twoFactorRoutes } from "./modules/two-factor/routes.js";
@@ -102,7 +101,6 @@ async function startServer() {
   app.register(auditRoutes);
   app.register(adminRoutes);
   app.register(healthRoutes);
-  app.register(s3StorageRoutes);
   app.register(quotaRoutes);
   app.register(groupRoutes);
   app.register(ldapRoutes);

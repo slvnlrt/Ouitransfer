@@ -277,7 +277,7 @@ export function SharesTable({
                           >
                             {displayName}
                           </span>
-                          <div className="w-6 flex justify-center flex-shrink-0">
+                          <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
                             {isHoveringName && (
                               <Button
                                 size="icon"
@@ -346,7 +346,7 @@ export function SharesTable({
                           >
                             {displayDescription || "-"}
                           </span>
-                          <div className="w-6 flex justify-center flex-shrink-0">
+                          <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
                             {isHoveringDescription && (
                               <Button
                                 size="icon"
@@ -390,7 +390,7 @@ export function SharesTable({
                             ? formatDateTime(share.expiration, "table", locale)
                             : t("sharesTable.never")}
                         </span>
-                        <div className="w-6 flex justify-center flex-shrink-0">
+                        <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
                           {isHoveringExpiration && onUpdateExpiration && (
                             <Button
                               size="icon"
@@ -418,7 +418,7 @@ export function SharesTable({
                   >
                     <div className="flex items-center gap-1 min-w-0">
                       <ShareSecurityBadge share={share} />
-                      <div className="w-6 flex justify-center flex-shrink-0">
+                      <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
                         {isHoveringSecurity && onUpdateSecurity && (
                           <Button
                             size="icon"
@@ -446,7 +446,7 @@ export function SharesTable({
                           {share.files?.length || 0} {t("sharesTable.filesCount")} •{" "}
                           {share.folders?.length || 0} {t("sharesTable.folderCount")}
                         </span>
-                        <div className="w-6 flex justify-center flex-shrink-0">
+                        <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
                           {isHoveringFilesCell && onManageFiles && (
                             <Button
                               size="icon"
@@ -466,7 +466,7 @@ export function SharesTable({
                         <span className="text-xs text-muted-foreground truncate">
                           {share.recipients?.length || 0} {t("sharesTable.recipientsCount")}
                         </span>
-                        <div className="w-6 flex justify-center flex-shrink-0">
+                        <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
                           {isHoveringFilesCell && onManageRecipients && (
                             <Button
                               size="icon"

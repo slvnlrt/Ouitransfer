@@ -155,7 +155,6 @@ async function buildFullApp(): Promise<FastifyInstance> {
   const { appRoutes } = await import("../modules/app/routes.js");
   const { auditRoutes } = await import("../modules/audit/routes.js");
   const { healthRoutes } = await import("../modules/health/routes.js");
-  const { s3StorageRoutes } = await import("../modules/s3-storage/routes.js");
 
   app.register(authRoutes);
   app.register(authProvidersRoutes, { prefix: "/auth" });
@@ -170,7 +169,6 @@ async function buildFullApp(): Promise<FastifyInstance> {
   app.register(appRoutes);
   app.register(auditRoutes);
   app.register(healthRoutes);
-  app.register(s3StorageRoutes);
 
   return app;
 }
