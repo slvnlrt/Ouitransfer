@@ -411,19 +411,6 @@ Pour les détails sur le système de distribution des emails, consultez [Configu
 
 ---
 
-### Stockage S3 (bas niveau)
-
-Ces points de terminaison permettent des opérations S3 directes sur les objets. La plupart des clients devraient utiliser les points de terminaison `/files` de plus haut niveau à la place.
-
-| Méthode | Chemin | Auth | Description |
-|---------|--------|------|-------------|
-| POST | `/s3/upload-url` | User | Obtenir une URL présignée de téléversement |
-| GET | `/s3/download-url` | User | Obtenir une URL présignée de téléchargement |
-| DELETE | `/s3/object/:objectName` | User | Supprimer un objet S3 |
-| GET | `/s3/exists` | User | Vérifier si un objet S3 existe |
-
----
-
 ### Santé
 
 | Méthode | Chemin | Auth | Description |
@@ -480,7 +467,6 @@ Limite de débit globale : **100 requêtes par minute par IP**. Certains points 
 | `GET /files/presigned-url` | 30 / minute |
 | `POST /files/download-url` | 20 / minute |
 | `POST /files/download` | 20 / minute |
-| `POST /s3/upload-url` | 30 / minute |
 | `GET /csrf-token` | 30 / minute |
 
 En cas de dépassement de la limite, le serveur retourne `429 Too Many Requests` avec un champ `retryAfter` indiquant le nombre de secondes avant la réinitialisation de la limite.

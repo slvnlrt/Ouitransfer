@@ -411,19 +411,6 @@ For details on the email delivery system, see [Configuring SMTP: Email delivery 
 
 ---
 
-### S3 storage (low-level)
-
-These endpoints provide direct S3 object operations. Most clients should use the higher-level `/files` endpoints instead.
-
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| POST | `/s3/upload-url` | User | Get presigned upload URL |
-| GET | `/s3/download-url` | User | Get presigned download URL |
-| DELETE | `/s3/object/:objectName` | User | Delete S3 object |
-| GET | `/s3/exists` | User | Check if S3 object exists |
-
----
-
 ### Health
 
 | Method | Path | Auth | Description |
@@ -480,7 +467,6 @@ Global rate limit: **100 requests per minute per IP**. Individual endpoints may 
 | `GET /files/presigned-url` | 30 / minute |
 | `POST /files/download-url` | 20 / minute |
 | `POST /files/download` | 20 / minute |
-| `POST /s3/upload-url` | 30 / minute |
 | `GET /csrf-token` | 30 / minute |
 
 When rate-limited, the server returns `429 Too Many Requests` with a `retryAfter` field indicating seconds until the limit resets.
