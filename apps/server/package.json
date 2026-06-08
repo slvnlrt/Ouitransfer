@@ -14,7 +14,7 @@
     "typescript"
   ],
   "license": "Apache-2.0",
-  "packageManager": "pnpm@11.5.0",
+  "packageManager": "pnpm@11.5.1",
   "files": [
     "dist",
     "prisma",
@@ -46,8 +46,8 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1057.0",
-    "@aws-sdk/s3-request-presigner": "^3.1057.0",
+    "@aws-sdk/client-s3": "^3.1062.0",
+    "@aws-sdk/s3-request-presigner": "^3.1062.0",
     "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^11.2.0",
     "@fastify/csrf-protection": "^7.1.0",
@@ -61,8 +61,8 @@
     "@ouitransfer/shared": "workspace:*",
     "@prisma/adapter-better-sqlite3": "^7.8.0",
     "@prisma/client": "^7.8.0",
-    "@scalar/fastify-api-reference": "^1.57.5",
-    "@smithy/node-http-handler": "^4.7.5",
+    "@scalar/fastify-api-reference": "^1.58.0",
+    "@smithy/node-http-handler": "^4.7.7",
     "bcryptjs": "^2.4.3",
     "better-sqlite3": "^12.10.0",
     "dotenv": "^17.4.2",
