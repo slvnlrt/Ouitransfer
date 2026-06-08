@@ -12,7 +12,7 @@
     "typescript"
   ],
   "license": "Apache-2.0",
-  "packageManager": "pnpm@11.5.0",
+  "packageManager": "pnpm@11.5.1",
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
@@ -54,11 +54,11 @@
     "@radix-ui/react-slot": "^1.2.4",
     "@radix-ui/react-switch": "^1.2.6",
     "@radix-ui/react-tabs": "^1.1.13",
-    "@tanstack/react-query": "^5.100.14",
-    "@tanstack/react-query-devtools": "^5.100.14",
+    "@tanstack/react-query": "^5.101.0",
+    "@tanstack/react-query-devtools": "^5.101.0",
     "@uppy/aws-s3": "^4.3.2",
     "@uppy/core": "^4.5.3",
-    "axios": "^1.16.1",
+    "axios": "^1.17.0",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",
     "input-otp": "^1.4.2",
@@ -84,7 +84,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^16.2.6",
+    "@next/bundle-analyzer": "^16.2.7",
     "@tailwindcss/postcss": "catalog:",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
