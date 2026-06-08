@@ -28,6 +28,8 @@ export function pruneBackups(dbPath: string, retain = DEFAULT_RETAIN): string[] 
   const prefix = `${basename(dbPath)}${BACKUP_SUFFIX}`;
   const backups = readdirSync(dir)
     .filter((f) => f.startsWith(prefix) && f.endsWith(BACKUP_EXT))
+    // SAST false positive: `f` is a real directory entry (no traversal), `dir`
+    // derives from an operator-supplied CLI arg / DATABASE_URL, not request input.
     .map((f) => join(dir, f))
     .sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs);
   const stale = backups.slice(retain);
