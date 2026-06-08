@@ -20,7 +20,10 @@ const ldapDn = z
 export const LdapConfigSchema = z.object({
   enabled: z.boolean(),
   serverUrl: z.string().min(1, "Server URL is required"),
-  bindDn: ldapDn,
+  // Not constrained to DN form: AD accepts UPN (user@domain) and down-level
+  // (DOMAIN\user) bind names. The bind value is never used in a filter, so it
+  // is not an injection sink.
+  bindDn: z.string().min(1, "Bind DN is required"),
   bindPassword: z.string(), // Empty string = keep existing
   searchBase: ldapDn,
   syncGroupDn: ldapDn,
@@ -40,7 +43,8 @@ export const LdapConfigSchema = z.object({
 
 export const LdapTestSchema = z.object({
   serverUrl: z.string().min(1),
-  bindDn: ldapDn,
+  // See LdapConfigSchema.bindDn — not constrained to DN form (UPN / down-level allowed).
+  bindDn: z.string().min(1),
   bindPassword: z.string().min(1, "Bind password is required for testing"),
   searchBase: ldapDn,
   syncGroupDn: ldapDn,
