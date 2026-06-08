@@ -45,7 +45,7 @@ This directory tracks all feature development for Ouitransfer (post-refactor pha
 |---|---------|--------|------------|
 | 8.1 | [Audit Trail / Activity Log](specs/8.1-auditing.md) | Done | — |
 | 8.2 | [Email Notifications](specs/8.2-email-notifications.md) | Done | — |
-| 8.3 | [Download Tracking](specs/8.3-download-tracking.md) | Not started | 8.1, 8.2 |
+| 8.3 | [Download Tracking](specs/8.3-download-tracking.md) | Spec — scope reduced after audit (lots A/B/C/D/F; E dropped) | 8.1, 8.2 |
 
 ### Status Legend
 
@@ -121,4 +121,4 @@ All resolved: B-1 through B-25, TD-1 through TD-4, TD-6 through TD-19, TD-21, TD
 
 **Open bugs:** _none_ (B-26 resolved)
 **Open tech debt:** TD-5, TD-10, TD-20, TD-27, TD-28, TD-32, TD-33, TD-36, TD-40, TD-42, TD-43 — see `TECHNICAL-DEBT.md` (TD-30, TD-38, TD-50, TD-51 resolved)
-**Next features:** 8.3 Download Tracking (depends on 8.1+8.2 ✓) — unblocked
+**Next features:** 8.3 Download Tracking (depends on 8.1+8.2 ✓) — spec finalisé, audit fait. Reste 5 lots : A (badge Téléchargé/En attente), B (relance manuelle non-téléchargeurs), C (auto-lien cookie→recipient), D (reverse share upload tracking par destinataire), F (audit log downloads + mention RGPD). Lot E (password par invité) hors scope.
