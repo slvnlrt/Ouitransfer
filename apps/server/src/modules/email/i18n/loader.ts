@@ -13,6 +13,15 @@ export type TranslationFn = (dotPath: string, params?: Record<string, string>) =
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const messagesDir = path.join(__dirname, "messages");
 
+/**
+ * Strict BCP-47-ish locale shape (e.g. `en`, `fr`, `pt-BR`, `zh-CN`).
+ * The locale code is interpolated into a file path, so it must be validated to
+ * prevent path traversal. Disallowing `.`, `/`, `\` and NUL makes `../` and
+ * absolute-path escapes impossible. An invalid code is treated as a missing
+ * locale (caller falls back to "en").
+ */
+const LOCALE_PATTERN = /^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$/;
+
 /** In-memory cache: locale → resolved parsed JSON object. Populated on first load. */
 const cache = new Map<string, Record<string, unknown>>();
 
@@ -217,6 +226,12 @@ function resolveAndInterpolateSyncCached(
  * (e.g. de-DE → de). Only exact locale files are loaded.
  */
 async function loadLocale(locale: string): Promise<Record<string, unknown> | null> {
+  // Reject anything that isn't a well-formed locale code before it reaches a
+  // filesystem path (path-traversal guard). Treated as a missing locale.
+  if (!LOCALE_PATTERN.test(locale)) {
+    return null;
+  }
+
   // Already in cache — return immediately
   if (cache.has(locale)) {
     return cache.get(locale) as Record<string, unknown>;
