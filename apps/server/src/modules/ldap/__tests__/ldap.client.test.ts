@@ -1,13 +1,15 @@
 /**
- * LDAP filter injection regression tests (PF-S-M-8)
+ * LDAP injection regression tests (PF-S-M-8)
  *
- * The LdapClient uses structured filter classes (EqualityFilter, AndFilter) from
- * ldapts which perform RFC 4515 escaping internally. These tests verify that
- * special characters in LDAP filter values are properly escaped to prevent
- * LDAP injection attacks.
+ * Covers two layers of LDAP injection defence:
+ *  1. Filter value escaping — EqualityFilter/AndFilter perform RFC 4515 escaping.
+ *  2. Attribute name validation — assertSafeAttributeName rejects names that
+ *     don't conform to RFC 4512 (letters/digits/hyphens, start with letter),
+ *     preventing attribute enumeration via injected attribute names.
  */
 import { AndFilter, EqualityFilter } from "ldapts";
 import { describe, expect, it } from "vitest";
+import { assertSafeAttributeName } from "../ldap.client.js";
 
 describe("LDAP filter injection regression (RFC 4515 escaping)", () => {
   /**
@@ -83,5 +85,46 @@ describe("LDAP filter injection regression (RFC 4515 escaping)", () => {
     // The objectClass value has no special chars and should be literal
     // Note: EqualityFilter preserves attribute case when constructed directly
     expect(rendered).toContain("(objectClass=user)");
+  });
+});
+
+describe("assertSafeAttributeName (RFC 4512 attribute name validation)", () => {
+  it("accepts standard AD attribute names", () => {
+    expect(() => assertSafeAttributeName("sAMAccountName")).not.toThrow();
+    expect(() => assertSafeAttributeName("mail")).not.toThrow();
+    expect(() => assertSafeAttributeName("displayName")).not.toThrow();
+    expect(() => assertSafeAttributeName("distinguishedName")).not.toThrow();
+    expect(() => assertSafeAttributeName("memberOf")).not.toThrow();
+  });
+
+  it("accepts attribute names with hyphens", () => {
+    expect(() => assertSafeAttributeName("some-attr")).not.toThrow();
+    expect(() => assertSafeAttributeName("uid-number")).not.toThrow();
+  });
+
+  it("rejects names starting with a digit", () => {
+    expect(() => assertSafeAttributeName("1abc")).toThrow("Invalid LDAP attribute name");
+  });
+
+  it("rejects names containing spaces", () => {
+    expect(() => assertSafeAttributeName("user name")).toThrow("Invalid LDAP attribute name");
+  });
+
+  it("rejects names containing parentheses (filter injection attempt)", () => {
+    expect(() => assertSafeAttributeName("attr)(cn=*")).toThrow("Invalid LDAP attribute name");
+  });
+
+  it("rejects names containing asterisk", () => {
+    expect(() => assertSafeAttributeName("*")).toThrow("Invalid LDAP attribute name");
+    expect(() => assertSafeAttributeName("attr*")).toThrow("Invalid LDAP attribute name");
+  });
+
+  it("rejects empty string", () => {
+    expect(() => assertSafeAttributeName("")).toThrow("Invalid LDAP attribute name");
+  });
+
+  it("rejects names containing semicolons or equals signs", () => {
+    expect(() => assertSafeAttributeName("attr;binary")).toThrow("Invalid LDAP attribute name");
+    expect(() => assertSafeAttributeName("attr=value")).toThrow("Invalid LDAP attribute name");
   });
 });
