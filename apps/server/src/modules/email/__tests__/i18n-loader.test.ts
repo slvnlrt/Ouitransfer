@@ -266,6 +266,8 @@ describe("i18n loader", () => {
     "/etc/passwd",
     "en ",
     "a".repeat(50),
+    "en\u0000",
+    "en\\..\\..",
   ])("rejects malformed locale %j without touching the filesystem (falls back to en)", async (loc) => {
     setupFsMocks({ en: EN_MESSAGES });
 

@@ -1,5 +1,6 @@
 import { AndFilter, Client, EqualityFilter } from "ldapts";
 import { AppError } from "../../utils/app-error.js";
+import { getLogger } from "../../utils/logger.js";
 
 // RFC 4512 §2.5: attributeType = ALPHA *( ALPHA / DIGIT / "-" )
 const LDAP_ATTR_RE = /^[A-Za-z][A-Za-z0-9-]*$/;
@@ -10,7 +11,8 @@ const LDAP_ATTR_RE = /^[A-Za-z][A-Za-z0-9-]*$/;
  */
 export function assertSafeAttributeName(name: string): void {
   if (!LDAP_ATTR_RE.test(name)) {
-    throw new AppError(400, `Invalid LDAP attribute name: ${name}`, "LDAP_INVALID_ATTRIBUTE_NAME");
+    getLogger().warn({ attributeName: name }, "Rejected invalid LDAP attribute name");
+    throw new AppError(400, "Invalid LDAP attribute name", "LDAP_INVALID_ATTRIBUTE_NAME");
   }
 }
 
@@ -75,7 +77,8 @@ export class LdapClient {
     assertSafeAttributeName(config.emailAttribute);
     assertSafeAttributeName(config.displayNameAttribute);
 
-    // SAST: filter values are escaped by ldapts (RFC 4515); attribute names validated above.
+    // Filter values are escaped by ldapts (RFC 4515). searchBase is a base DN,
+    // not a filter value — it isn't escaped, but also isn't injectable into a filter.
     const filter = new AndFilter({
       filters: [
         new EqualityFilter({ attribute: "objectClass", value: "user" }),

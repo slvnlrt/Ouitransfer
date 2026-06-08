@@ -1,9 +1,10 @@
 import { z } from "zod";
 
-// RFC 4512 §2.5: attributeType = ALPHA *( ALPHA / DIGIT / "-" )
+// RFC 4512 §2.5: attributeType = ALPHA *( ALPHA / DIGIT / "-" ); max 64 chars (practical cap).
 const ldapAttributeName = z
   .string()
   .min(1)
+  .max(64)
   .regex(
     /^[A-Za-z][A-Za-z0-9-]*$/,
     "Must be a valid LDAP attribute name (letters, digits, hyphens; must start with a letter)",

@@ -8,8 +8,12 @@
  *     preventing attribute enumeration via injected attribute names.
  */
 import { AndFilter, EqualityFilter } from "ldapts";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { assertSafeAttributeName } from "../ldap.client.js";
+
+vi.mock("../../../utils/logger.js", () => ({
+  getLogger: vi.fn(() => ({ warn: vi.fn(), error: vi.fn(), info: vi.fn(), debug: vi.fn() })),
+}));
 
 describe("LDAP filter injection regression (RFC 4515 escaping)", () => {
   /**
