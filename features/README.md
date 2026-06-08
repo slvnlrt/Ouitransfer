@@ -45,7 +45,7 @@ This directory tracks all feature development for Ouitransfer (post-refactor pha
 |---|---------|--------|------------|
 | 8.1 | [Audit Trail / Activity Log](specs/8.1-auditing.md) | Done | — |
 | 8.2 | [Email Notifications](specs/8.2-email-notifications.md) | Done | — |
-| 8.3 | [Download Tracking](specs/8.3-download-tracking.md) | Spec — scope reduced after audit (lots A/B/C/D/F; E dropped) | 8.1, 8.2 |
+| 8.3 | [Download Tracking](specs/8.3-download-tracking.md) | Planning — [plan](plans/8.3-download-tracking.md) written (5 batches; lots A/B/C/D/F, E dropped) | 8.1, 8.2 |
 
 ### Status Legend
 
