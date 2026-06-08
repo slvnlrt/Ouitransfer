@@ -480,6 +480,50 @@ describe("LDAP integration tests", () => {
       expect(res.statusCode).toBe(400);
     });
 
+    it("returns 400 when usernameAttribute fails RFC 4512 validation (injection guard)", async () => {
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const res = await app.inject({
+        method: "PUT",
+        url: "/admin/ldap/config",
+        headers: adminHeaders(csrfToken, csrfCookie),
+        payload: JSON.stringify({ ...validPayload, usernameAttribute: "sAMAccountName*" }),
+      });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it("returns 400 when emailAttribute contains LDAP metacharacters", async () => {
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const res = await app.inject({
+        method: "PUT",
+        url: "/admin/ldap/config",
+        headers: adminHeaders(csrfToken, csrfCookie),
+        payload: JSON.stringify({ ...validPayload, emailAttribute: "mail)(cn=*" }),
+      });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it("returns 400 when searchBase is not a valid DN", async () => {
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const res = await app.inject({
+        method: "PUT",
+        url: "/admin/ldap/config",
+        headers: adminHeaders(csrfToken, csrfCookie),
+        payload: JSON.stringify({ ...validPayload, searchBase: "not-a-dn" }),
+      });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it("returns 400 when syncGroupDn is not a valid DN", async () => {
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const res = await app.inject({
+        method: "PUT",
+        url: "/admin/ldap/config",
+        headers: adminHeaders(csrfToken, csrfCookie),
+        payload: JSON.stringify({ ...validPayload, syncGroupDn: "../etc/passwd" }),
+      });
+      expect(res.statusCode).toBe(400);
+    });
+
     it("stops scheduler when config is disabled", async () => {
       vi.mocked(prisma.ldapConfig.findUnique).mockResolvedValue(defaultConfig as never);
       vi.mocked(prisma.ldapConfig.upsert).mockResolvedValue(
@@ -555,6 +599,17 @@ describe("LDAP integration tests", () => {
         payload: JSON.stringify(withoutServerUrl),
       });
 
+      expect(res.statusCode).toBe(400);
+    });
+
+    it("returns 400 when displayNameAttribute fails RFC 4512 validation", async () => {
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const res = await app.inject({
+        method: "POST",
+        url: "/admin/ldap/test",
+        headers: adminHeaders(csrfToken, csrfCookie),
+        payload: JSON.stringify({ ...validTestPayload, displayNameAttribute: "1invalid" }),
+      });
       expect(res.statusCode).toBe(400);
     });
 

@@ -14,16 +14,27 @@ import { queryKeys } from "@/lib/query-keys";
 import { parseApiError } from "@/utils/api-error";
 import type { GroupMappingItem, LdapConfigFormData } from "../types";
 
+// Mirror the server validators (apps/server/.../ldap/dto.ts) for inline UX.
+const ldapDn = z
+  .string()
+  .min(1)
+  .regex(/^[A-Za-z][A-Za-z0-9-]*\s*=/, "Must be a valid DN (e.g. CN=…,DC=…)");
+const ldapAttr = z
+  .string()
+  .min(1)
+  .regex(/^[A-Za-z][A-Za-z0-9-]*$/, "Letters, digits, hyphens; must start with a letter");
+
 const ldapConfigBaseSchema = z.object({
   enabled: z.boolean(),
   serverUrl: z.string().min(1, "Server URL is required"),
+  // bindDn accepts DN / UPN / down-level — not constrained to DN form.
   bindDn: z.string().min(1, "Bind DN is required"),
   bindPassword: z.string(), // empty = keep existing password on save
-  searchBase: z.string().min(1, "Search base is required"),
-  syncGroupDn: z.string().min(1, "Sync group DN is required"),
-  usernameAttribute: z.string().min(1, "Username attribute is required"),
-  emailAttribute: z.string().min(1, "Email attribute is required"),
-  displayNameAttribute: z.string().min(1, "Display name attribute is required"),
+  searchBase: ldapDn,
+  syncGroupDn: ldapDn,
+  usernameAttribute: ldapAttr,
+  emailAttribute: ldapAttr,
+  displayNameAttribute: ldapAttr,
   syncIntervalMinutes: z.number().int().min(15, "Minimum 15 minutes").max(10080, "Maximum 7 days"),
   useTls: z.boolean(),
   tlsSkipVerify: z.boolean(),

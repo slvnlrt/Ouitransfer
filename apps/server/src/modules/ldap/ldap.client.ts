@@ -1,5 +1,20 @@
 import { AndFilter, Client, EqualityFilter } from "ldapts";
 import { AppError } from "../../utils/app-error.js";
+import { getLogger } from "../../utils/logger.js";
+
+// RFC 4512 §2.5: attributeType = ALPHA *( ALPHA / DIGIT / "-" )
+const LDAP_ATTR_RE = /^[A-Za-z][A-Za-z0-9-]*$/;
+
+/**
+ * Defense-in-depth guard against attribute enumeration via injected attribute names.
+ * Zod schemas enforce this at the API boundary; this catches any bypass path (e.g. DB corruption).
+ */
+export function assertSafeAttributeName(name: string): void {
+  if (!LDAP_ATTR_RE.test(name)) {
+    getLogger().warn({ attributeName: name }, "Rejected invalid LDAP attribute name");
+    throw new AppError(400, "Invalid LDAP attribute name", "LDAP_INVALID_ATTRIBUTE_NAME");
+  }
+}
 
 export interface LdapUserEntry {
   dn: string;
@@ -47,6 +62,7 @@ export class LdapClient {
       url: config.serverUrl,
       tlsOptions: config.useTls ? { rejectUnauthorized: !config.tlsSkipVerify } : undefined,
     });
+    // SAST false positive: bind args are credentials, not a filter — not an injection sink.
     await this.client.bind(config.bindDn, config.bindPassword);
   }
 
@@ -55,7 +71,14 @@ export class LdapClient {
       throw new AppError(500, "LDAP client not connected", "LDAP_CLIENT_NOT_CONNECTED");
     }
 
-    // Use structured filter classes to prevent LDAP injection (RFC 4515 escaping)
+    // Reject attribute names that don't conform to RFC 4512 (defense-in-depth;
+    // the API boundary already enforces this via Zod).
+    assertSafeAttributeName(config.usernameAttribute);
+    assertSafeAttributeName(config.emailAttribute);
+    assertSafeAttributeName(config.displayNameAttribute);
+
+    // Filter values are escaped by ldapts (RFC 4515). searchBase is a base DN,
+    // not a filter value — it isn't escaped, but also isn't injectable into a filter.
     const filter = new AndFilter({
       filters: [
         new EqualityFilter({ attribute: "objectClass", value: "user" }),

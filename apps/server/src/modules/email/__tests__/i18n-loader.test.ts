@@ -256,6 +256,45 @@ describe("i18n loader", () => {
     );
   });
 
+  // ── Path-traversal guard ─────────────────────────────────────────────────────
+
+  it.each([
+    "../../../../etc/passwd",
+    "../en",
+    "en/../../secret",
+    "..",
+    "/etc/passwd",
+    "en ",
+    "a".repeat(50),
+    "en\u0000",
+    "en\\..\\..",
+  ])("rejects malformed locale %j without touching the filesystem (falls back to en)", async (loc) => {
+    setupFsMocks({ en: EN_MESSAGES });
+
+    // Falls back to en rather than attempting to read the traversal path
+    const result = await t(loc, "common.footer", { appName: "Acme" });
+    expect(result).toBe("This email was sent by <strong>Acme</strong>");
+
+    // The malformed locale must never reach fs.access / fs.readFile.
+    // Only en.json is ever touched.
+    const accessMock = vi.mocked(mockedFs.promises.access);
+    const readFileMock = vi.mocked(mockedFs.promises.readFile);
+    for (const call of accessMock.mock.calls) {
+      expect(path.basename(call[0] as string, ".json")).toBe("en");
+    }
+    for (const call of readFileMock.mock.calls) {
+      expect(path.basename(call[0] as string, ".json")).toBe("en");
+    }
+  });
+
+  it("accepts well-formed BCP-47 locale codes (e.g. pt-BR)", async () => {
+    setupFsMocks({ en: EN_MESSAGES, "pt-BR": FR_MESSAGES });
+
+    const result = await t("pt-BR", "common.footer", { appName: "Acme" });
+    // pt-BR mock reuses FR_MESSAGES content
+    expect(result).toBe("Cet e-mail a été envoyé par <strong>Acme</strong>");
+  });
+
   // ── Caching ─────────────────────────────────────────────────────────────────
 
   it("caches loaded locale files (second call doesn't re-read)", async () => {

@@ -1,15 +1,36 @@
 import { z } from "zod";
 
+// RFC 4512 §2.5: attributeType = ALPHA *( ALPHA / DIGIT / "-" ); max 64 chars (practical cap).
+const ldapAttributeName = z
+  .string()
+  .min(1)
+  .max(64)
+  .regex(
+    /^[A-Za-z][A-Za-z0-9-]*$/,
+    "Must be a valid LDAP attribute name (letters, digits, hyphens; must start with a letter)",
+  );
+
+// A valid DN must start with an RDN of the form "attribute=…"
+const ldapDn = z
+  .string()
+  .min(1)
+  .refine((val) => /^[A-Za-z][A-Za-z0-9-]*\s*=/.test(val), {
+    message: "Must be a valid LDAP Distinguished Name (e.g. CN=…,DC=…)",
+  });
+
 export const LdapConfigSchema = z.object({
   enabled: z.boolean(),
   serverUrl: z.string().min(1, "Server URL is required"),
+  // Not constrained to DN form: AD accepts UPN (user@domain) and down-level
+  // (DOMAIN\user) bind names. The bind value is never used in a filter, so it
+  // is not an injection sink.
   bindDn: z.string().min(1, "Bind DN is required"),
   bindPassword: z.string(), // Empty string = keep existing
-  searchBase: z.string().min(1, "Search base is required"),
-  syncGroupDn: z.string().min(1, "Sync group DN is required"),
-  usernameAttribute: z.string().min(1).default("sAMAccountName"),
-  emailAttribute: z.string().min(1).default("mail"),
-  displayNameAttribute: z.string().min(1).default("displayName"),
+  searchBase: ldapDn,
+  syncGroupDn: ldapDn,
+  usernameAttribute: ldapAttributeName.default("sAMAccountName"),
+  emailAttribute: ldapAttributeName.default("mail"),
+  displayNameAttribute: ldapAttributeName.default("displayName"),
   syncIntervalMinutes: z.number().int().min(15).max(10080), // 15 min to 7 days
   useTls: z.boolean().default(true),
   tlsSkipVerify: z.boolean().default(false),
@@ -23,13 +44,14 @@ export const LdapConfigSchema = z.object({
 
 export const LdapTestSchema = z.object({
   serverUrl: z.string().min(1),
+  // See LdapConfigSchema.bindDn — not constrained to DN form (UPN / down-level allowed).
   bindDn: z.string().min(1),
   bindPassword: z.string().min(1, "Bind password is required for testing"),
-  searchBase: z.string().min(1),
-  syncGroupDn: z.string().min(1),
-  usernameAttribute: z.string().min(1).default("sAMAccountName"),
-  emailAttribute: z.string().min(1).default("mail"),
-  displayNameAttribute: z.string().min(1).default("displayName"),
+  searchBase: ldapDn,
+  syncGroupDn: ldapDn,
+  usernameAttribute: ldapAttributeName.default("sAMAccountName"),
+  emailAttribute: ldapAttributeName.default("mail"),
+  displayNameAttribute: ldapAttributeName.default("displayName"),
   useTls: z.boolean().default(true),
   tlsSkipVerify: z.boolean().default(false),
 });
