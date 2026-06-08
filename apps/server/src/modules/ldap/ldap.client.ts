@@ -60,6 +60,7 @@ export class LdapClient {
       url: config.serverUrl,
       tlsOptions: config.useTls ? { rejectUnauthorized: !config.tlsSkipVerify } : undefined,
     });
+    // SAST false positive: bind args are credentials, not a filter — not an injection sink.
     await this.client.bind(config.bindDn, config.bindPassword);
   }
 
@@ -74,7 +75,7 @@ export class LdapClient {
     assertSafeAttributeName(config.emailAttribute);
     assertSafeAttributeName(config.displayNameAttribute);
 
-    // Use structured filter classes to prevent LDAP injection (RFC 4515 escaping)
+    // SAST: filter values are escaped by ldapts (RFC 4515); attribute names validated above.
     const filter = new AndFilter({
       filters: [
         new EqualityFilter({ attribute: "objectClass", value: "user" }),
