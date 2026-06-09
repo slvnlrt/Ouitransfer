@@ -915,6 +915,84 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
     },
   });
 
+  app.route({
+    method: "POST",
+    url: "/shares/:shareId/remind",
+    preValidation,
+    config: {
+      rateLimit: { max: 5, timeWindow: "10 minutes" },
+    },
+    schema: {
+      tags: ["Share"],
+      operationId: "remindNonDownloaders",
+      summary: "Remind share recipients who have not downloaded yet",
+      description:
+        "Sends a download-reminder email to recipients of this share that have not yet " +
+        "downloaded any file (lastDownloadedAt is null). " +
+        "Pass `emails` to remind a subset — it is always intersected with the non-downloader " +
+        "set, so a recipient who already downloaded is never reminded. " +
+        "When no recipient is pending the call is a no-op and returns an empty list.",
+      params: z.object({
+        shareId: z.string().describe("The share ID"),
+      }),
+      body: z.object({
+        emails: z
+          .array(
+            z
+              .string()
+              .email()
+              .transform((s) => s.trim().toLowerCase()),
+          )
+          .optional()
+          .describe(
+            "Optional list of recipient emails to remind (reminds all non-downloaders if omitted)",
+          ),
+      }),
+      response: {
+        200: z.object({
+          remindedRecipients: z
+            .array(z.string())
+            .describe("List of reminded email addresses (non-downloaders only)"),
+        }),
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
+      }
+      const result = await shareService.remindNonDownloaders(
+        request.params.shareId,
+        userId,
+        request.body.emails,
+      );
+      // Only emit the audit event when at least one reminder was actually sent — a no-op
+      // (nobody pending, or SMTP off) should not pollute the audit trail.
+      if (result.remindedRecipients.length > 0) {
+        // NOTE: Recipient emails are stored in the audit log for forensics. PII retention follows
+        // auditRetentionDays (default 365). If privacy requirements change, hash or redact emails here.
+        logAuditEvent({
+          action: "SHARE_RECIPIENT_REMIND",
+          ipAddress: request.ip,
+          userAgent: request.headers["user-agent"],
+          userId,
+          targetType: "share",
+          targetId: request.params.shareId,
+          metadata: {
+            recipientCount: result.remindedRecipients.length,
+            emails: result.remindedRecipients,
+          },
+        }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+      }
+      return reply.send(result);
+    },
+  });
+
   // Design note: nameFieldRequired / emailFieldRequired are intentionally included in this
   // public metadata endpoint. The frontend identification form reads them BEFORE attempting
   // access, so it can show (or skip) the name/email fields without triggering the 403

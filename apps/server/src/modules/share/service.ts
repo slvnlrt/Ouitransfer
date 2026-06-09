@@ -1045,6 +1045,114 @@ export class ShareService {
     return { notifiedRecipients };
   }
 
+  /**
+   * Sends a manual download reminder (feature 8.3, lot B) to recipients who have NOT
+   * downloaded yet (`lastDownloadedAt == null`). There is no scheduler — this is triggered
+   * by the share creator on demand.
+   *
+   * The pending set is always `recipients.filter(lastDownloadedAt == null)`. An optional
+   * `selectedEmails` filter narrows the set further, but is always intersected with the
+   * non-downloaders — a recipient who already downloaded is never reminded, even if passed
+   * explicitly. If no recipient is pending the call is a no-op (`{ remindedRecipients: [] }`),
+   * not an error, so the UI can disable the button without special-casing the response.
+   *
+   * Reuses the same personalized `?t=trackingToken` link building as {@link notifyRecipients}
+   * and updates `notifiedAt` on successfully reminded recipients. The `share_download_reminder`
+   * email type is sent WITHOUT `userId` (external recipients have no account/preference row).
+   * SMTP gating happens inside `emailService.send`: when SMTP is off, nothing is enqueued and
+   * the returned list is empty.
+   */
+  async remindNonDownloaders(
+    shareId: string,
+    userId: string,
+    selectedEmails?: string[],
+  ): Promise<{ remindedRecipients: string[] }> {
+    const share = await this.shareRepository.findShareById(shareId);
+
+    if (!share) {
+      throw new NotFoundError("Share not found");
+    }
+
+    if (share.creatorId !== userId) {
+      throw new ForbiddenError("Unauthorized to access this share");
+    }
+
+    if (!share.recipients || share.recipients.length === 0) {
+      throw new ValidationError("No recipients found for this share");
+    }
+
+    if (selectedEmails && selectedEmails.length === 0) {
+      throw new ValidationError("selectedEmails must not be empty when provided");
+    }
+
+    // Pending = recipients who have not downloaded yet (mirrors the "Pending" badge: I2/R-6).
+    let pendingRecipients = share.recipients.filter((r) => r.lastDownloadedAt == null);
+
+    // Intersect with the optional subset filter; a downloaded recipient is never reminded.
+    if (selectedEmails?.length) {
+      const emailSet = new Set(selectedEmails.map((e) => e.trim().toLowerCase()));
+      pendingRecipients = pendingRecipients.filter((r) => emailSet.has(r.email.toLowerCase()));
+    }
+
+    // No-op (not an error) when nobody is pending — the UI disables the button in this case.
+    if (pendingRecipients.length === 0) {
+      return { remindedRecipients: [] };
+    }
+
+    const shareAlias = share.alias?.alias;
+    if (!shareAlias) {
+      throw new ValidationError("Share must have an alias before sending reminders");
+    }
+    const baseShareLink = await buildShareLink(shareAlias);
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    const senderName = user?.firstName
+      ? `${user.firstName} ${user.lastName ?? ""}`.trim()
+      : (user?.username ?? "Someone");
+
+    const remindedRecipients: string[] = [];
+
+    // Sequential per-recipient to avoid SQLite contention (same rationale as notifyRecipients).
+    for (const recipient of pendingRecipients) {
+      const { trackingToken } = recipient;
+      const personalizedLink = trackingToken
+        ? `${baseShareLink}?t=${trackingToken}`
+        : baseShareLink;
+      try {
+        // userId intentionally omitted — external recipients have no account/preference row,
+        // and share_download_reminder is non-configurable (cf. notifyRecipients rationale).
+        const result = await emailService.send("share_download_reminder", {
+          to: recipient.email,
+          locale: user?.locale ?? "en",
+          relatedId: share.id,
+          data: {
+            senderName,
+            shareName: share.name ?? "Shared files",
+            shareLink: personalizedLink,
+            hasPassword: !!share.security?.password,
+            expiresAt: share.expiration?.toISOString(),
+          },
+        });
+
+        if (result.enqueued) {
+          await prisma.shareRecipient.update({
+            where: { id: recipient.id },
+            data: { notifiedAt: new Date() },
+          });
+
+          remindedRecipients.push(recipient.email);
+        }
+      } catch (error) {
+        getLogger().error(
+          { err: error, email: recipient.email },
+          "Failed to queue share download reminder",
+        );
+      }
+    }
+
+    return { remindedRecipients };
+  }
+
   async getShareMetadataByAlias(alias: string) {
     const share = await this.shareRepository.findShareByAlias(alias);
     if (!share) {
