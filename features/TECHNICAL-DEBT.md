@@ -111,36 +111,28 @@ Cela permettrait :
 
 ---
 
-## TD-32 — Sender locale used for external recipient invitation emails
+## TD-32 — Sender locale used for external recipient invitation emails ✅ CLOSED (accepted)
 
-**Context:** External share recipients (people without an account) receive invitation emails
-in the *sender's* locale, not their own (see `apps/server/src/modules/share/service.ts:781-785`).
-A French user sharing files with a German colleague sends a French email. This is the best
-available heuristic today since external recipients have no account and thus no locale preference.
+**Resolved:** 2026-06-10
 
-**Fix:** Add an optional `locale` field to the `ShareRecipient` Prisma model. Options:
-1. Let the sender pick per-recipient locale in the UI (adds complexity)
-2. Default to sender locale but allow override
-3. Accept current behavior with documentation (least effort)
+**Decision:** Accepted as current behavior (option 3). Sender locale is the best available
+heuristic — external recipients have no account and thus no locale preference. Same-organization
+sharing typically shares a common language. If per-recipient locale override is needed in the
+future, add an optional `locale` field to `ShareRecipient` at that time.
 
 **Found during:** 8.2 review pass 5 (mai 2026)
 **Severity:** Low — sender locale is a reasonable heuristic for same-organization sharing
 
 ---
 
-## TD-33 — Email subject frozen at enqueue time — admin `appName` changes invisible on queued jobs
+## TD-33 — Email subject frozen at enqueue time — admin `appName` changes invisible on queued jobs ✅ CLOSED (accepted)
 
-**Context:** The email system resolves the subject line (including `appName` from config) at
-enqueue time. If an admin changes `appName` in settings while there are pending email jobs in
-the queue, those jobs will be sent with the old app name.
+**Resolved:** 2026-06-10
 
-**Impact:** Extremely minor. Only affects the short window between an `appName` config change
-and queue flush. In practice, the queue processes quickly and `appName` changes are rare events.
-
-**Fix options:**
-1. Resolve subject at send time instead of enqueue time (defers `appName` lookup)
-2. Show a warning in admin email settings UI when there are pending jobs
-3. Accept as inherent design trade-off (recommended)
+**Decision:** Accepted as inherent design trade-off (option 3). The queue processes quickly
+and `appName` changes are rare admin events. The window where stale subjects could be sent
+is negligible. Deferring `appName` lookup to send time would add complexity with no practical
+benefit.
 
 **Found during:** 8.2 review pass 5 (mai 2026)
 **Severity:** Very low — cosmetic edge case with negligible real-world impact
@@ -244,38 +236,20 @@ l'expérience pour les utilisateurs non-EN/FR.
 
 ---
 
-## TD-52 — 8.3 reverse-share upload tracking : items mineurs reportés
+## TD-52 — 8.3 reverse-share upload tracking : items mineurs reportés ✅ CLOSED (accepted)
 
-**Context:** Deux items mineurs identifiés pendant l'implémentation de 8.3 lot D (reverse share
-upload tracking par destinataire) ont été délibérément reportés plutôt que livrés :
+**Resolved:** 2026-06-10
 
-1. **`uploadCount` exposé en API mais non affiché.** Le champ `ReverseShareRecipient.uploadCount`
-   est sérialisé dans le DTO et les types web (`reverse-shares/types.ts`), mais l'UI ne montre
-   que le badge « A uploadé / En attente » dérivé de `uploadedAt` (booléen). Le compteur n'est
-   visible que via l'API. Symétrique au `downloadCount` côté share (également non affiché). À
-   surfacer si un besoin d'UI émerge (info-bulle « N fichiers uploadés »).
-2. **Pas de test live-DB pour la liaison upload→destinataire.** La couverture actuelle est en
-   `app.inject()` (matched / absent / second-upload / spoofed). Le reviewer du plan a noté qu'un
-   test contre une vraie base (et non le mock Prisma) renforcerait la confiance sur l'incrément
-   atomique `{ increment: 1 }` et le `updateMany({ where: { uploadedAt: null } })` conditionnel.
-   Nice-to-have, non bloquant.
-3. **Double résolution du destinataire sur le chemin de download (micro-efficience).** Identifié
-   par la revue globale Opus (lot C/F). Dans `apps/server/src/modules/file/routes.ts`, les sites
-   d'émission de l'audit `FILE_DOWNLOAD` (`:1080-1082`, `:1205-1207`) appellent
-   `resolveDownloadRecipientFromRequest` pour enrichir les métadonnées, puis `trackShareDownload`
-   (`:200-216`) re-parse le cookie et rappelle `resolveDownloadRecipient` — deux allers-retours
-   résolveur indépendants (alias lookup + recipient lookup) pour le même download. Fonctionnellement
-   correct, best-effort des deux côtés. Si un jour consolidé : résoudre une seule fois dans le
-   handler et passer le résultat à `trackShareDownload`. Aucun changement requis (perf négligeable
-   sur un chemin déjà best-effort + fire-and-forget).
-
-**Fix:** (1) ajouter l'affichage du compteur dans `reverse-share-recipient-selector.tsx` si
-demandé ; (2) ajouter un test d'intégration live-DB si l'on en met en place un harnais pour
-d'autres flux ; (3) consolider la résolution du destinataire en un seul appel par requête de
-download si le hot path devient un point chaud.
+**Decision:** All three items accepted as current behavior — all are very low severity
+optimizations/polish with no bugs:
+1. `uploadCount` visible via API but not in UI — symmetric with `downloadCount`. Surface in UI
+   only if a user need emerges.
+2. No live-DB test for upload→recipient linking — covered by `app.inject()` integration tests.
+   Add live-DB test only if a test harness is set up for other flows.
+3. Double recipient resolution on download path — functionally correct, negligible perf impact
+   on a best-effort fire-and-forget path.
 
 **Found during:** 8.3 Batch 4 / Batch 5 + revue globale Opus (juin 2026)
-**Severity:** Very low — best-effort feature, comportement couvert par les tests `app.inject()`,
-aucun bug connu ; les items sont des optimisations/polish, pas des défauts.
+**Severity:** Very low — all items are optimizations/polish, not defects
 
 ---
