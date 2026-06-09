@@ -6,7 +6,7 @@ import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
 import { prisma } from "../../shared/prisma.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { escapeHtml } from "../../utils/escape-html.js";
-import { type NotificationKey, notificationCatalog } from "../email/catalog.js";
+import { isNotificationKey, notificationCatalog } from "../email/catalog.js";
 import { createTranslationFn, type TranslationFn } from "../email/i18n/loader.js";
 import { UNSUBSCRIBE_I18N } from "../email/i18n/unsubscribe-keys.js";
 import { emailService } from "../email/service.js";
@@ -54,8 +54,8 @@ const HTML_STYLES = `
  * Falls back to the raw type key if the type is not in the catalog.
  */
 function getTypeDisplayName(type: string): string {
-  const entry = notificationCatalog[type as NotificationKey];
-  return entry?.displayName ?? type;
+  if (!isNotificationKey(type)) return type;
+  return notificationCatalog[type].displayName;
 }
 
 /**
@@ -290,8 +290,8 @@ export const notificationRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (request, reply) => {
       // Accept token from form body or query string (RFC 8058 one-click)
-      const body = request.body as { token?: string } | undefined;
-      const query = request.query as { token?: string };
+      const body = request.body;
+      const query = request.query;
       const token = body?.token ?? query.token;
 
       if (!token) {

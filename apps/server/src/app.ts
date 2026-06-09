@@ -190,7 +190,10 @@ export async function buildApp() {
       path: "/",
       signed: false,
     },
-    getToken: (req) => req.headers["x-csrf-token"] as string,
+    getToken: (req) => {
+      const h = req.headers["x-csrf-token"];
+      return Array.isArray(h) ? h[0] : (h ?? "");
+    },
     csrfOpts: {
       hmacKey: env.CSRF_SECRET,
     },

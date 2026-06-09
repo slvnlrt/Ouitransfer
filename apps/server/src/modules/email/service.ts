@@ -3,6 +3,7 @@ import { getLogger } from "../../utils/logger.js";
 import { getConfigValue } from "../config/service.js";
 import {
   type EmailPayloads,
+  isNotificationKey,
   type NotificationKey,
   type NotificationTypeConfig,
   notificationCatalog,
@@ -372,7 +373,7 @@ class EmailService {
     });
 
     const explicitFrequency = pref?.frequency;
-    const catalogEntry = notificationCatalog[type as NotificationKey];
+    const catalogEntry = isNotificationKey(type) ? notificationCatalog[type] : undefined;
     const defaultFrequency = catalogEntry?.defaultFrequency ?? "immediate";
 
     // Step 2: Explicit user "disabled" always wins — no override can change it

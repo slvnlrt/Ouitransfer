@@ -738,6 +738,11 @@ export const notificationCatalog = {
 /** Union of all notification type keys. */
 export type NotificationKey = keyof typeof notificationCatalog;
 
+/** Type guard: checks if a string is a valid notification catalog key. */
+export function isNotificationKey(type: string): type is NotificationKey {
+  return type in notificationCatalog;
+}
+
 /**
  * Mapped type: for each notification key, the inferred TypeScript type
  * of its Zod payload schema. Used to type-check `send()` calls.

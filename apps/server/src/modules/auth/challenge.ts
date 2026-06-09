@@ -30,5 +30,8 @@ export async function verifyChallengeToken(token: string): Promise<string> {
   if (payload.purpose !== "2fa-challenge") {
     throw new UnauthorizedError("Invalid challenge token");
   }
-  return payload.userId as string;
+  if (typeof payload.userId !== "string") {
+    throw new UnauthorizedError("Invalid challenge token");
+  }
+  return payload.userId;
 }

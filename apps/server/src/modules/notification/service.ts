@@ -1,6 +1,6 @@
 import { prisma } from "../../shared/prisma.js";
 import { ValidationError } from "../../utils/app-error.js";
-import { type NotificationKey, notificationCatalog } from "../email/catalog.js";
+import { isNotificationKey, notificationCatalog } from "../email/catalog.js";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -68,11 +68,11 @@ export async function updateUserPreferences(
 ): Promise<void> {
   for (const pref of preferences) {
     // Validate type exists in catalog
-    if (!(pref.type in notificationCatalog)) {
+    if (!isNotificationKey(pref.type)) {
       throw new ValidationError(`Unknown notification type: ${pref.type}`);
     }
 
-    const catalogEntry = notificationCatalog[pref.type as keyof typeof notificationCatalog];
+    const catalogEntry = notificationCatalog[pref.type];
 
     // Validate type is configurable
     if (!catalogEntry.configurable) {
@@ -111,11 +111,11 @@ export { verifyUnsubscribeToken } from "../email/unsubscribe-token.js";
  */
 export async function unsubscribeUser(userId: string, type: string): Promise<void> {
   // Validate the type exists in the catalog
-  if (!(type in notificationCatalog)) {
+  if (!isNotificationKey(type)) {
     return; // Silent no-op — don't leak catalog info
   }
 
-  const entry = notificationCatalog[type as NotificationKey];
+  const entry = notificationCatalog[type];
 
   // Critical types cannot be unsubscribed (e.g. password_reset, welcome)
   if (entry.isCritical) {

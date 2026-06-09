@@ -76,6 +76,15 @@ export function clearAuthCookies(reply: FastifyReply): void {
 }
 
 /**
+ * Safely extracts a single string value from a header that may be a string,
+ * an array of strings (when the same header appears multiple times), or absent.
+ * Returns the first element for arrays, or `undefined` when the header is absent.
+ */
+function headerString(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+/**
  * Extract client IP address and user-agent from a Fastify request.
  *
  * Respects `x-real-ip` and `x-user-agent` proxy headers (set by Nginx /
@@ -86,10 +95,10 @@ export function getClientInfo(request: FastifyRequest): {
   ipAddress: string;
   userAgent: string;
 } {
-  const realIP = request.headers["x-real-ip"] as string | undefined;
-  const realUserAgent = request.headers["x-user-agent"] as string | undefined;
+  const realIP = headerString(request.headers["x-real-ip"]);
+  const realUserAgent = headerString(request.headers["x-user-agent"]);
 
-  const userAgent = realUserAgent || (request.headers["user-agent"] as string | undefined) || "";
+  const userAgent = realUserAgent || headerString(request.headers["user-agent"]) || "";
   const ipAddress = realIP || request.ip || request.socket.remoteAddress || "";
 
   return { userAgent, ipAddress };
