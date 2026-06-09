@@ -1,7 +1,19 @@
 "use client";
 
-import { Bell, Check, Mail, Plus, Trash2, User, Users, X } from "lucide-react";
-import { useTranslations } from "next-intl";
+import {
+  Bell,
+  BellRing,
+  Check,
+  Clock,
+  Download,
+  Mail,
+  Plus,
+  Trash2,
+  User,
+  Users,
+  X,
+} from "lucide-react";
+import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -12,7 +24,12 @@ import { Loader } from "@/components/ui/loader";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { useSecureConfigValue } from "@/hooks/use-secure-configs";
-import { addRecipients, notifyRecipients, removeRecipients } from "@/http/endpoints";
+import {
+  addRecipients,
+  notifyRecipients,
+  remindNonDownloaders,
+  removeRecipients,
+} from "@/http/endpoints";
 import type { ShareRecipient } from "@/http/endpoints/shares/types";
 
 interface RecipientSelectorProps {
@@ -29,6 +46,7 @@ export function RecipientSelector({
   onSuccess,
 }: RecipientSelectorProps) {
   const t = useTranslations();
+  const format = useFormatter();
   const { value: smtpEnabled, isLoading: isSmtpLoading } = useSecureConfigValue("smtpEnabled");
   const [recipients, setRecipients] = useState<ShareRecipient[]>(selectedRecipients ?? []);
   const [newRecipient, setNewRecipient] = useState("");
@@ -36,6 +54,7 @@ export function RecipientSelector({
   const [selectedForAction, setSelectedForAction] = useState<Set<string>>(new Set());
   const [isAddingRecipient, setIsAddingRecipient] = useState(false);
   const [notifyingEmails, setNotifyingEmails] = useState<Set<string>>(new Set());
+  const [isReminding, setIsReminding] = useState(false);
 
   useEffect(() => {
     setRecipients(selectedRecipients ?? []);
@@ -176,6 +195,33 @@ export function RecipientSelector({
     await notify(undefined);
   };
 
+  /**
+   * Sends a download reminder to recipients who were notified but have not downloaded yet.
+   * Pending semantics match the per-row "Pending" badge: notified (notifiedAt != null) AND
+   * not yet downloaded (lastDownloadedAt == null). The server re-derives and enforces the
+   * non-downloader filter; this count only gates the button.
+   */
+  const handleRemindNonDownloaders = async () => {
+    setIsReminding(true);
+    const loadingToast = toast.loading(t("recipientSelector.sendingReminders"));
+    try {
+      const response = await remindNonDownloaders(shareId, {});
+      const reminded = response.data.remindedRecipients;
+      toast.dismiss(loadingToast);
+      if (reminded.length > 0) {
+        toast.success(t("recipientSelector.remindSuccess", { count: reminded.length }));
+      } else {
+        toast.info(t("recipientSelector.remindNoneSent"));
+      }
+      onSuccess();
+    } catch {
+      toast.dismiss(loadingToast);
+      toast.error(t("recipientSelector.remindError"));
+    } finally {
+      setIsReminding(false);
+    }
+  };
+
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
       setSelectedForAction(new Set(recipients.map((r) => r.email)));
@@ -197,6 +243,11 @@ export function RecipientSelector({
   const isAllSelected = recipients.length > 0 && selectedForAction.size === recipients.length;
   const hasSelection = selectedForAction.size > 0;
   const isNotifying = notifyingEmails.size > 0;
+  // Pending = notified but not yet downloaded — same signal as the per-row "Pending" badge.
+  // This is the set the reminder targets.
+  const pendingCount = recipients.filter(
+    (r) => r.notifiedAt != null && r.lastDownloadedAt == null,
+  ).length;
   // SMTP controls: show as disabled while loading, show normally when enabled, hide when disabled
   const smtpReady = smtpEnabled === "true";
   const showSmtpControls = isSmtpLoading || smtpReady;
@@ -263,16 +314,29 @@ export function RecipientSelector({
           </div>
 
           {recipients.length > 0 && shareAlias && showSmtpControls && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleNotifyAll}
-              disabled={!smtpReady || isNotifying}
-              className="sm:w-auto w-full"
-            >
-              {isNotifying ? <Loader size="sm" /> : <Bell className="h-4 w-4" />}
-              {t("recipientSelector.notifyAll")}
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-2 sm:w-auto w-full">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRemindNonDownloaders}
+                disabled={!smtpReady || isReminding || pendingCount === 0}
+                className="sm:w-auto w-full"
+                title={t("recipientSelector.remindNonDownloadersHint", { count: pendingCount })}
+              >
+                {isReminding ? <Loader size="sm" /> : <BellRing className="h-4 w-4" />}
+                {t("recipientSelector.remindNonDownloaders", { count: pendingCount })}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleNotifyAll}
+                disabled={!smtpReady || isNotifying}
+                className="sm:w-auto w-full"
+              >
+                {isNotifying ? <Loader size="sm" /> : <Bell className="h-4 w-4" />}
+                {t("recipientSelector.notifyAll")}
+              </Button>
+            </div>
           )}
         </div>
 
@@ -345,8 +409,14 @@ export function RecipientSelector({
 
               <div className="divide-y max-h-80 overflow-y-auto">
                 {recipients.map((recipient) => {
-                  const { email, name, notifiedAt, accessCount } = recipient;
+                  const { email, name, notifiedAt, accessCount, lastDownloadedAt } = recipient;
                   const isSelected = selectedForAction.has(email);
+                  // Download-status badge keys off lastDownloadedAt (R-6): a non-null
+                  // timestamp means at least one file was fetched. "Pending" is only shown
+                  // once the recipient has been notified — an un-notified recipient has no
+                  // expectation to download yet.
+                  const hasDownloaded = lastDownloadedAt != null;
+                  const isPending = !hasDownloaded && notifiedAt != null;
                   return (
                     <div
                       key={recipient.id}
@@ -373,7 +443,28 @@ export function RecipientSelector({
                           >
                             {email}
                           </span>
-                          <div className="flex items-center gap-2 mt-0.5">
+                          <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                            {/* Primary download-status badge (R-6): keyed off lastDownloadedAt */}
+                            {hasDownloaded ? (
+                              <span
+                                className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
+                                title={t("recipientSelector.downloadedAt", {
+                                  date: format.dateTime(new Date(lastDownloadedAt), {
+                                    dateStyle: "medium",
+                                    timeStyle: "short",
+                                  }),
+                                })}
+                              >
+                                <Download className="h-3 w-3" aria-hidden="true" />
+                                {t("recipientSelector.downloaded")}
+                              </span>
+                            ) : isPending ? (
+                              <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium bg-muted text-muted-foreground">
+                                <Clock className="h-3 w-3" aria-hidden="true" />
+                                {t("recipientSelector.pending")}
+                              </span>
+                            ) : null}
+                            {/* Secondary signals — access ≠ download, kept distinct */}
                             {notifiedAt && (
                               <span className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
                                 <Check className="h-3 w-3" aria-hidden="true" />

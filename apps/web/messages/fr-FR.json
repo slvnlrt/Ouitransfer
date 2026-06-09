@@ -745,6 +745,7 @@
       "SHARE_RECIPIENT_ADD": "Destinataires ajoutés au partage",
       "SHARE_RECIPIENT_REMOVE": "Destinataires retirés du partage",
       "SHARE_RECIPIENT_NOTIFY": "Destinataires du partage notifiés",
+      "SHARE_RECIPIENT_REMIND": "Relance des destinataires non-téléchargeurs",
       "SHARE_ITEMS_ADD": "Éléments ajoutés au partage",
       "SHARE_ITEMS_REMOVE": "Éléments retirés du partage",
       "FILE_UPLOAD": "Fichier téléversé",
@@ -1041,7 +1042,19 @@
     "views": "{count, plural, one {# vue} other {# vues}}",
     "notifyPartial": "Seulement {sent} des {total} destinataires ont été notifiés",
     "neverAccessed": "Jamais consulté",
-    "namePlaceholder": "Nom (optionnel)"
+    "namePlaceholder": "Nom (optionnel)",
+    "downloaded": "Téléchargé",
+    "pending": "En attente",
+    "downloadedAt": "Téléchargé le {date}",
+    "uploaded": "A uploadé",
+    "uploadedAt": "Uploadé le {date}",
+    "uploadApproximateHint": "Approximatif : les expéditeurs peuvent envoyer des fichiers sans fournir d''email lorsqu''il n''est pas requis",
+    "remindNonDownloaders": "Relancer ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {Aucun destinataire en attente — tout le monde a téléchargé} one {Relancer # destinataire n''ayant pas encore téléchargé} other {Relancer # destinataires n''ayant pas encore téléchargé}}",
+    "sendingReminders": "Envoi des relances...",
+    "remindSuccess": "{count, plural, one {Relance envoyée à # destinataire} other {Relances envoyées à # destinataires}}",
+    "remindNoneSent": "Aucune relance envoyée",
+    "remindError": "Échec de l''envoi des relances"
   },
   "register": {
     "validation": {
@@ -1495,7 +1508,8 @@
         "uploadButton": "Envoyer {count} fichier(s)",
         "uploading": "Envoi en cours...",
         "emailLabelOptional": "E-mail (facultatif)",
-        "nameLabelOptional": "Nom (facultatif)"
+        "nameLabelOptional": "Nom (facultatif)",
+        "privacyNotice": "Votre nom, votre email et vos envois peuvent être visibles par le propriétaire de ce lien de réception."
       },
       "success": {
         "title": "Fichiers envoyés avec succès ! 🎉",
@@ -1863,7 +1877,8 @@
       "emailRequired": "L'e-mail est requis",
       "emailInvalid": "Veuillez entrer une adresse e-mail valide",
       "metadataError": "Failed to load share information. Please try again.",
-      "rateLimited": "Too many attempts. Please try again later."
+      "rateLimited": "Too many attempts. Please try again later.",
+      "privacyNotice": "Vos accès et téléchargements peuvent être visibles par l'expéditeur de ce partage."
     },
     "details": {
       "untitled": "Partage sans titre",
@@ -1974,7 +1989,8 @@
       "filterAnonymous": "Anonymes",
       "source": {
         "tracking_token": "Via lien destinataire",
-        "cookie": "Auto-identifié"
+        "cookie": "Auto-identifié",
+        "selfDeclaredHint": "Identité auto-déclarée, non vérifiée"
       }
     }
   },

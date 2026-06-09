@@ -1,4 +1,4 @@
-import type { FastifyRequest } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { env } from "../../env.js";
@@ -26,7 +26,11 @@ import {
   UpdateShareSchema,
 } from "./dto.js";
 import { type ShareAccessContext, ShareService } from "./service.js";
-import { parseVisitorCookie } from "./visitor-cookie.js";
+import {
+  buildVisitorCookiePayload,
+  parseVisitorCookie,
+  type VisitorIdentity,
+} from "./visitor-cookie.js";
 
 const ShareAccessQuery = z.object({
   t: z
@@ -41,6 +45,49 @@ const ShareAccessQuery = z.object({
 const shareService = new ShareService();
 
 const preValidation = createJwtPreValidation();
+
+/**
+ * Signed visitor identification cookie options. Kept in one place so the identification form
+ * (`/identify`) and the access-time recipientId refresh stay byte-for-byte consistent.
+ * Path is "/api" per spec (Section 8): the browser always sees /api/* URLs (dev proxy +
+ * production Traefik), and the cookie path is matched against the browser-sent URL.
+ */
+function visitorCookieOptions() {
+  return {
+    path: "/api",
+    httpOnly: true,
+    sameSite: "strict",
+    secure: env.SECURE_SITE === "true",
+    signed: true,
+    maxAge: 86400, // 24h
+  } as const;
+}
+
+/**
+ * After a share access resolved a token-verified recipient, refresh the signed visitor cookie so
+ * the verified `recipientId` is carried to later downloads (which never see the ?t= token).
+ * No-op when nothing was resolved. Preserves any existing self-declared name/email in the cookie.
+ */
+function refreshVisitorCookieWithRecipient(
+  reply: FastifyReply,
+  alias: string,
+  recipientIdForCookie: string | undefined,
+  existingCookie: VisitorIdentity | undefined,
+): void {
+  if (!recipientIdForCookie) return;
+  // Already present with the same id — nothing to rewrite.
+  if (existingCookie?.recipientId === recipientIdForCookie) return;
+  reply.setCookie(
+    `sv_${alias}`,
+    buildVisitorCookiePayload({
+      alias,
+      name: existingCookie?.name ?? null,
+      email: existingCookie?.email ?? null,
+      recipientId: recipientIdForCookie,
+    }),
+    visitorCookieOptions(),
+  );
+}
 
 export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
@@ -161,8 +208,17 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         visitorCookie,
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
+        out: {},
       };
       const share = await shareService.getShare(request.params.shareId, undefined, userId, context);
+      if (shareAlias) {
+        refreshVisitorCookieWithRecipient(
+          reply,
+          shareAlias.alias,
+          context.out?.recipientIdForCookie,
+          visitorCookie,
+        );
+      }
       return reply.send({ share });
     },
   });
@@ -213,6 +269,7 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         visitorCookie,
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
+        out: {},
       };
       const share = await shareService.getShare(
         request.params.shareId,
@@ -220,6 +277,14 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         userId,
         context,
       );
+      if (shareAlias) {
+        refreshVisitorCookieWithRecipient(
+          reply,
+          shareAlias.alias,
+          context.out?.recipientIdForCookie,
+          visitorCookie,
+        );
+      }
       return reply.send({ share });
     },
   });
@@ -705,12 +770,19 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         visitorCookie,
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
+        out: {},
       };
       const share = await shareService.getShareByAlias(
         request.params.alias,
         undefined,
         userId,
         context,
+      );
+      refreshVisitorCookieWithRecipient(
+        reply,
+        request.params.alias,
+        context.out?.recipientIdForCookie,
+        visitorCookie,
       );
       return reply.send({ share });
     },
@@ -756,12 +828,19 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         visitorCookie,
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
+        out: {},
       };
       const share = await shareService.getShareByAlias(
         request.params.alias,
         request.body.password,
         userId,
         context,
+      );
+      refreshVisitorCookieWithRecipient(
+        reply,
+        request.params.alias,
+        context.out?.recipientIdForCookie,
+        visitorCookie,
       );
       return reply.send({ share });
     },
@@ -832,6 +911,84 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
           emails: result.notifiedRecipients,
         },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+      return reply.send(result);
+    },
+  });
+
+  app.route({
+    method: "POST",
+    url: "/shares/:shareId/remind",
+    preValidation,
+    config: {
+      rateLimit: { max: 5, timeWindow: "10 minutes" },
+    },
+    schema: {
+      tags: ["Share"],
+      operationId: "remindNonDownloaders",
+      summary: "Remind share recipients who have not downloaded yet",
+      description:
+        "Sends a download-reminder email to recipients of this share that have not yet " +
+        "downloaded any file (lastDownloadedAt is null). " +
+        "Pass `emails` to remind a subset — it is always intersected with the non-downloader " +
+        "set, so a recipient who already downloaded is never reminded. " +
+        "When no recipient is pending the call is a no-op and returns an empty list.",
+      params: z.object({
+        shareId: z.string().describe("The share ID"),
+      }),
+      body: z.object({
+        emails: z
+          .array(
+            z
+              .string()
+              .email()
+              .transform((s) => s.trim().toLowerCase()),
+          )
+          .optional()
+          .describe(
+            "Optional list of recipient emails to remind (reminds all non-downloaders if omitted)",
+          ),
+      }),
+      response: {
+        200: z.object({
+          remindedRecipients: z
+            .array(z.string())
+            .describe("List of reminded email addresses (non-downloaders only)"),
+        }),
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError(
+          "Unauthorized: a valid token is required to access this resource.",
+        );
+      }
+      const result = await shareService.remindNonDownloaders(
+        request.params.shareId,
+        userId,
+        request.body.emails,
+      );
+      // Only emit the audit event when at least one reminder was actually sent — a no-op
+      // (nobody pending, or SMTP off) should not pollute the audit trail.
+      if (result.remindedRecipients.length > 0) {
+        // NOTE: Recipient emails are stored in the audit log for forensics. PII retention follows
+        // auditRetentionDays (default 365). If privacy requirements change, hash or redact emails here.
+        logAuditEvent({
+          action: "SHARE_RECIPIENT_REMIND",
+          ipAddress: request.ip,
+          userAgent: request.headers["user-agent"],
+          userId,
+          targetType: "share",
+          targetId: request.params.shareId,
+          metadata: {
+            recipientCount: result.remindedRecipients.length,
+            emails: result.remindedRecipients,
+          },
+        }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+      }
       return reply.send(result);
     },
   });
@@ -926,25 +1083,16 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         throw new ValidationError("Email is required");
       }
 
-      const payload = JSON.stringify({
+      // The identification form never sets recipientId — that is written only server-side after
+      // a tracking token is verified at access time (see refreshVisitorCookieWithRecipient). Form
+      // input is always self-declared and therefore never carries a verified-recipient claim.
+      const payload = buildVisitorCookiePayload({
         alias,
         name: request.body.name ?? null,
         email: request.body.email ?? null,
       });
 
-      // Cookie path is "/api" per spec (Section 8). The browser sees /api/* URLs regardless
-      // of whether the dev proxy rewrites them — the cookie domain and path are matched
-      // against the URL the browser sends, not the URL the server receives. Both dev
-      // (Next.js proxy: browser sends /api/*) and production (Traefik: browser sends /api/*)
-      // use /api/* paths from the browser's perspective.
-      reply.setCookie(`sv_${alias}`, payload, {
-        path: "/api",
-        httpOnly: true,
-        sameSite: "strict",
-        secure: env.SECURE_SITE === "true",
-        signed: true,
-        maxAge: 86400, // 24h
-      });
+      reply.setCookie(`sv_${alias}`, payload, visitorCookieOptions());
 
       return reply.send({ success: true });
     },
@@ -1058,20 +1206,28 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         prisma.shareVisit.count({ where }),
       ]);
 
-      // Derive identificationSource for each visit:
-      // - "tracking_token": recipientId is set (visitor arrived via a personalized link)
-      // - "cookie": no recipientId, but visitorEmail or visitorName is set (identification form)
-      // - "anonymous": no identification at all
+      // Derive the response identificationSource for each visit. Prefer the source recorded
+      // at write time (8.3): since lot C now sets `recipientId` for self-declared email matches
+      // too, `recipientId != null` alone no longer implies a token-verified arrival. The stored
+      // column keeps the distinction honest:
+      // - stored "token"        → "tracking_token" (verified personalized link)
+      // - stored "self_declared"→ "cookie"         (self-identified via the form, unverified)
+      // - stored null (pre-8.3 rows) → derive from the available identity for backward compat.
       // Strip ipAddress and userAgent from response — these are stored for
       // admin audit purposes only and must not be exposed to regular users.
       const enrichedVisits = visits.map(({ ipAddress: _ip, userAgent: _ua, ...visit }) => ({
         ...visit,
         createdAt: visit.createdAt.toISOString(),
-        identificationSource: visit.recipientId
-          ? ("tracking_token" as const)
-          : visit.visitorEmail || visit.visitorName
-            ? ("cookie" as const)
-            : ("anonymous" as const),
+        identificationSource:
+          visit.identificationSource === "token"
+            ? ("tracking_token" as const)
+            : visit.identificationSource === "self_declared"
+              ? ("cookie" as const)
+              : visit.recipientId
+                ? ("tracking_token" as const)
+                : visit.visitorEmail || visit.visitorName
+                  ? ("cookie" as const)
+                  : ("anonymous" as const),
       }));
 
       return reply.send({ visits: enrichedVisits, total, page, limit });

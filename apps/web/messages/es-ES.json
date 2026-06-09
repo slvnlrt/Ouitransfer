@@ -749,6 +749,7 @@
       "SHARE_RECIPIENT_ADD": "Destinatarios de compartición agregados",
       "SHARE_RECIPIENT_REMOVE": "Destinatarios de compartición eliminados",
       "SHARE_RECIPIENT_NOTIFY": "Destinatarios de compartición notificados",
+      "SHARE_RECIPIENT_REMIND": "Share non-downloaders reminded",
       "SHARE_ITEMS_ADD": "Elementos de compartición agregados",
       "SHARE_ITEMS_REMOVE": "Elementos de compartición eliminados",
       "FILE_UPLOAD": "Archivo subido",
@@ -1045,7 +1046,19 @@
     "views": "{count, plural, one {# view} other {# views}}",
     "notifyPartial": "Only {sent} of {total} recipients were notified",
     "neverAccessed": "Never accessed",
-    "namePlaceholder": "Name (optional)"
+    "namePlaceholder": "Name (optional)",
+    "downloaded": "Downloaded",
+    "pending": "Pending",
+    "downloadedAt": "Downloaded on {date}",
+    "uploaded": "Uploaded",
+    "uploadedAt": "Uploaded on {date}",
+    "uploadApproximateHint": "Approximate: uploaders can submit files without providing an email when it is not required",
+    "remindNonDownloaders": "Remind ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
+    "sendingReminders": "Sending reminders...",
+    "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
+    "remindNoneSent": "No reminders were sent",
+    "remindError": "Failed to send reminders"
   },
   "register": {
     "validation": {
@@ -1499,7 +1512,8 @@
         "uploadButton": "Enviar {count} archivo(s)",
         "uploading": "Enviando...",
         "emailLabelOptional": "Correo electrónico (opcional)",
-        "nameLabelOptional": "Nombre (opcional)"
+        "nameLabelOptional": "Nombre (opcional)",
+        "privacyNotice": "Your name, email and uploads may be visible to the owner of this receive link."
       },
       "success": {
         "title": "¡Archivos enviados con éxito! 🎉",
@@ -1882,7 +1896,8 @@
       "emailRequired": "Email is required",
       "emailInvalid": "Please enter a valid email address",
       "metadataError": "Failed to load share information. Please try again.",
-      "rateLimited": "Too many attempts. Please try again later."
+      "rateLimited": "Too many attempts. Please try again later.",
+      "privacyNotice": "Your accesses and downloads may be visible to the sender of this share."
     }
   },
   "shareActions": {
@@ -1965,7 +1980,8 @@
       "filterAnonymous": "Anonymous",
       "source": {
         "tracking_token": "Via recipient link",
-        "cookie": "Self-identified"
+        "cookie": "Self-identified",
+        "selfDeclaredHint": "Self-declared identity, not verified"
       }
     },
     "lastDownloaded": "Last Downloaded",

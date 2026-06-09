@@ -98,6 +98,29 @@ This means you can see in the [activity tab](#activity-tracking) exactly which r
 
 Once recipients are added, click **Notify** to send the invitation email. The email contains the share name, a download button with the personalized link, and the sender's name. Recipients are notified in a single batch.
 
+### Download status per recipient
+
+Each recipient in the list shows an explicit status badge:
+
+- **Downloaded** (green): the recipient has downloaded at least one file from the share. A tooltip shows the date of the last download.
+- **Pending** (muted): the recipient was notified but has not downloaded anything yet.
+
+This status is distinct from the **views** count (the number of times the share page was opened). A recipient can open the share several times without downloading any file, so "views" and "Downloaded" track different things.
+
+<Callout type="info">
+  The download status is a **comfort feature, not a security control**. When a recipient arrives through their personalized email link, their identity is **verified** (it comes from a unique tracking token). When a visitor instead types a name or email into the identification form that happens to match a recipient, the attribution is **self-declared** and unverified — a subtle hint is shown in the activity view in that case. A self-declared identity could be spoofed, so do not treat "Downloaded" as proof of who downloaded.
+</Callout>
+
+### Reminding non-downloaders
+
+When some recipients have not downloaded yet, you can send them a reminder. A **Remind (N)** button (where N is the number of pending recipients) sends a fresh reminder email — using each recipient's personalized link — only to recipients who were notified but have **not** downloaded anything. Recipients who already downloaded are skipped.
+
+Reminders are **manual and creator-triggered**. There is no automatic scheduler: Ouitransfer never sends reminders on its own. The button is disabled when there are no pending recipients.
+
+<Callout type="info">
+  Sending reminders requires SMTP to be configured. The reminder uses a dedicated, non-configurable email type and is recorded in the [activity log](/docs/v1-beta/activity-log).
+</Callout>
+
 ---
 
 ## Visitor identification
@@ -118,6 +141,8 @@ Shares can require visitors to identify themselves before accessing the content.
 | **Email** | Hidden / Optional / Required | Whether the visitor's email is collected |
 
 When at least one field is set to **Optional** or **Required**, visitors see an identification dialog before accessing the share. Required fields must be filled to proceed; optional fields can be skipped.
+
+The dialog also displays a short **privacy notice** informing visitors that their accesses and downloads may be visible to the sender of the share, so they are aware their activity is tracked before they identify themselves.
 
 <Callout type="info">
   If a visitor has already been identified via a tracking token (from a recipient invitation link), the identification form is not shown; the token takes priority.
@@ -149,9 +174,13 @@ Each visit records:
 |---|---|
 | **Action** | `Access` (share page loaded) or `Download` (file downloaded) |
 | **Visitor identity** | Name and/or email of the visitor, or "Anonymous" |
-| **Identification source** | How the visitor was identified: `tracking_token`, `cookie`, or `anonymous` |
-| **Recipient** | If the visitor arrived via a recipient's tracking link, the linked recipient email is shown |
+| **Identification source** | How the visitor was identified: `tracking_token` (verified, arrived via a personalized link), `cookie` (self-declared from the identification form), or `anonymous` |
+| **Recipient** | If the visitor was linked to a recipient, the recipient email is shown — alongside the source so you can tell a verified attribution from a self-declared one |
 | **Timestamp** | When the event occurred |
+
+<Callout type="info">
+  Only a `tracking_token` source is verified. A `cookie` source means the visitor typed an identity into the form (or matched a recipient by self-declared email); it is convenient but unverified and should not be relied on as proof of identity.
+</Callout>
 
 ### Filters
 

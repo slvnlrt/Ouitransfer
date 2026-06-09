@@ -745,6 +745,7 @@
       "SHARE_RECIPIENT_ADD": "공유 수신자 추가됨",
       "SHARE_RECIPIENT_REMOVE": "공유 수신자 제거됨",
       "SHARE_RECIPIENT_NOTIFY": "공유 수신자 알림됨",
+      "SHARE_RECIPIENT_REMIND": "Share non-downloaders reminded",
       "SHARE_ITEMS_ADD": "공유 항목 추가됨",
       "SHARE_ITEMS_REMOVE": "공유 항목 제거됨",
       "FILE_UPLOAD": "파일 업로드됨",
@@ -1041,7 +1042,19 @@
     "views": "{count, plural, one {# view} other {# views}}",
     "notifyPartial": "Only {sent} of {total} recipients were notified",
     "neverAccessed": "Never accessed",
-    "namePlaceholder": "Name (optional)"
+    "namePlaceholder": "Name (optional)",
+    "downloaded": "Downloaded",
+    "pending": "Pending",
+    "downloadedAt": "Downloaded on {date}",
+    "uploaded": "Uploaded",
+    "uploadedAt": "Uploaded on {date}",
+    "uploadApproximateHint": "Approximate: uploaders can submit files without providing an email when it is not required",
+    "remindNonDownloaders": "Remind ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
+    "sendingReminders": "Sending reminders...",
+    "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
+    "remindNoneSent": "No reminders were sent",
+    "remindError": "Failed to send reminders"
   },
   "register": {
     "validation": {
@@ -1495,7 +1508,8 @@
         "uploadButton": "{count}개 파일 보내기",
         "uploading": "보내는 중...",
         "emailLabelOptional": "이메일 (선택 사항)",
-        "nameLabelOptional": "이름 (선택 사항)"
+        "nameLabelOptional": "이름 (선택 사항)",
+        "privacyNotice": "Your name, email and uploads may be visible to the owner of this receive link."
       },
       "success": {
         "title": "파일이 성공적으로 보내졌습니다! 🎉",
@@ -1878,7 +1892,8 @@
       "emailRequired": "Email is required",
       "emailInvalid": "Please enter a valid email address",
       "metadataError": "Failed to load share information. Please try again.",
-      "rateLimited": "Too many attempts. Please try again later."
+      "rateLimited": "Too many attempts. Please try again later.",
+      "privacyNotice": "Your accesses and downloads may be visible to the sender of this share."
     }
   },
   "shareActions": {
@@ -1961,7 +1976,8 @@
       "filterAnonymous": "Anonymous",
       "source": {
         "tracking_token": "Via recipient link",
-        "cookie": "Self-identified"
+        "cookie": "Self-identified",
+        "selfDeclaredHint": "Self-declared identity, not verified"
       }
     },
     "lastDownloaded": "Last Downloaded",

@@ -1,6 +1,6 @@
 "use client";
 
-import { UserCircle } from "lucide-react";
+import { Info, UserCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
@@ -183,6 +183,10 @@ export function IdentificationForm({
                 </div>
               )}
             </div>
+            <p className="flex items-start gap-2 text-muted-foreground text-xs">
+              <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
+              <span>{t("share.identification.privacyNotice")}</span>
+            </p>
             <DialogFooter>
               <Button
                 type="submit"

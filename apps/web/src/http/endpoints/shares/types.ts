@@ -45,6 +45,10 @@ export interface ShareRecipient {
   notifiedAt: string | null;
   lastAccessedAt: string | null;
   accessCount: number;
+  /** Number of files this recipient has downloaded (counts files, not sessions). */
+  downloadCount: number;
+  /** When this recipient last downloaded a file, or null if never. Drives the download-status badge. */
+  lastDownloadedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -165,6 +169,10 @@ export interface NotifyRecipients200 {
   notifiedRecipients: string[];
 }
 
+export interface RemindNonDownloaders200 {
+  remindedRecipients: string[];
+}
+
 export interface AddFolders200 {
   share: Share;
 }
@@ -233,6 +241,10 @@ export interface CreateShareAliasBody {
 }
 
 export interface NotifyRecipientsBody {
+  emails?: string[];
+}
+
+export interface RemindNonDownloadersBody {
   emails?: string[];
 }
 
@@ -305,6 +317,7 @@ export type RemoveRecipientsResult = AxiosResponse<RemoveRecipients200>;
 export type CreateShareAliasResult = AxiosResponse<CreateShareAlias200>;
 export type GetShareByAliasResult = AxiosResponse<GetShareByAlias200>;
 export type NotifyRecipientsResult = AxiosResponse<NotifyRecipients200>;
+export type RemindNonDownloadersResult = AxiosResponse<RemindNonDownloaders200>;
 export type AddFoldersResult = AxiosResponse<AddFolders200>;
 export type RemoveFoldersResult = AxiosResponse<RemoveFolders200>;
 export type GetShareVisitsResult = AxiosResponse<GetShareVisits200>;

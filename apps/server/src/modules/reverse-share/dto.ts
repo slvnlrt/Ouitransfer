@@ -93,6 +93,17 @@ export const ReverseShareRecipientSchema = z.object({
   email: z.string().email().describe("The recipient email"),
   name: z.string().nullable().describe("The recipient display name"),
   notifiedAt: z.string().nullable().describe("When the invitation was last sent"),
+  uploadCount: z
+    .number()
+    .describe(
+      "Number of files uploaded by this recipient (best-effort: counts files, " +
+        "only when a matching self-declared uploaderEmail is supplied)",
+    ),
+  uploadedAt: z
+    .string()
+    .datetime()
+    .nullable()
+    .describe("When the recipient first uploaded a matched file; null if none yet"),
   createdAt: z.string().describe("When the recipient was added"),
 });
 

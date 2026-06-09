@@ -1,5 +1,51 @@
 # Session Log
 
+## 2026-06-09 (8.3 — Download Tracking, full feature)
+
+**Implemented 8.3 Download Tracking end-to-end: spec → plan → plan-review → 5 batches (each
+with implementer + reviews), lots A/B/C/D/F. Lot E (per-invitee password) explicitly dropped.**
+
+- **Premise (recorded in spec):** a June-2026 codebase audit found 8.2 had already delivered most
+  of the original 8.3 scope (tracking tokens, personalized links, `ShareVisit` download rows,
+  `share_downloaded` notif, visitor identification, activity view, per-recipient access stats).
+  Only 5 lots remained. This is a **comfort feature, not a security control** — a self-declared
+  identity is spoofable and that is accepted; we **label the source** rather than harden it.
+- **Batch 1 (schema + identity bridge + lot F enrich):** added `ShareRecipient.downloadCount` /
+  `lastDownloadedAt`, `ReverseShareRecipient.uploadCount` / `uploadedAt`,
+  `ShareVisit.identificationSource` (migration `download_tracking`). The tracking token never
+  reaches the download request, so the verified `recipientId` is carried via the **signed visitor
+  cookie** (written server-side only after a token is verified); self-declared email match is the
+  fallback. The two existing `FILE_DOWNLOAD` audit emits were **enriched** with
+  `recipientId` + `identificationSource` (no second emit — double-log guarded by test). `/visits`
+  maps stored source `token`→`tracking_token`, `self_declared`→`cookie`.
+- **Batch 2 (recipient badge):** Downloaded/Pending badge keyed off `lastDownloadedAt != null`,
+  plus a self-declared source hint in the activity view. DTO/types round-trip asserted via
+  `app.inject()`.
+- **Batch 3 (manual reminders):** `POST /shares/:id/remind` targeting non-downloaders only
+  (`notifiedAt != null && lastDownloadedAt == null`); new non-configurable `share_download_reminder`
+  email type (no `userId`), `SHARE_RECIPIENT_REMIND` audit action, "Remind (N)" button. **No
+  scheduler** (manual only).
+- **Batch 4 (reverse upload tracking, best-effort):** match optional self-declared `uploaderEmail`
+  against `ReverseShareRecipient`; atomic `uploadCount { increment: 1 }` + conditional
+  `updateMany({ where: { uploadedAt: null } })` first-upload timestamp. Uploaded/Pending badge with
+  an "approximate when email not required" caveat.
+- **Batch 5 (this session — GDPR + docs + tracking):**
+  - **GDPR notice:** wired the pre-existing `share.identification.privacyNotice` and
+    `reverseShares.upload.form.privacyNotice` i18n keys (already authored en/fr + EN replicas in
+    21 locales) into the visitor identification dialog and the reverse-share upload form. Added a
+    parallel notice on the reverse-share form because an uploader's self-declared identity is shown
+    to the owner — symmetric and consistent. Shown only when an identification field is visible.
+  - **Docs:** extended Shares + Reverse Shares Fumadocs pages (EN + FR) — per-recipient
+    Downloaded/Pending status, the verified-vs-self-declared distinction (comfort feature, not
+    security), manual reminders (no scheduler), reverse best-effort upload tracking, and the privacy
+    note. Corrected the now-stale "no per-recipient tracking" reverse-share callout.
+  - **Tracking:** README 8.3 → Done, test counts refreshed, spec status → Done. TD-36 namespace
+    table updated (+2 privacyNotice keys). New **TD-52** records two deferred minor items
+    (`uploadCount` API-only / not displayed; no live-DB test for reverse upload linkage).
+- **Final state:** server 99 files / **1596 tests**, web 34 files / **334 tests**, shared 2 / 14 =
+  **1944 total**, all green. Web + server type-checks clean. Docs build OK (83 pages). Locale-parity
+  test green. **Final review pass on 8.3 is handled separately** (`features/reviews/8.3-…`).
+
 ## 2026-06-04 (TD-50 — Fumadocs site deployable via Docker)
 
 **Made the Fumadocs documentation site self-hostable as a Docker service, mounted under `/docs`.**

@@ -595,6 +595,7 @@ export function ReverseShareDetailsModal({
               reverseShareId={reverseShare.id}
               selectedRecipients={reverseShare.recipients ?? []}
               reverseShareAlias={reverseShare.alias?.alias}
+              emailFieldRequired={reverseShare.emailFieldRequired}
               onSuccess={() => onSuccess?.()}
             />
 

@@ -68,8 +68,8 @@ const adminKeys: NotificationKey[] = ["admin_user_registered", "admin_quota_aler
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 describe("notificationCatalog", () => {
-  it("has exactly 25 entries", () => {
-    expect(allKeys).toHaveLength(25);
+  it("has exactly 26 entries", () => {
+    expect(allKeys).toHaveLength(26);
   });
 
   it("all entries have required fields", () => {
@@ -149,8 +149,12 @@ describe("notificationCatalog", () => {
     }
   });
 
-  it("invitation types (5-6) are non-configurable without unsubscribe", () => {
-    const invitationKeys: NotificationKey[] = ["share_invitation", "reverse_share_invitation"];
+  it("invitation/reminder types are non-configurable without unsubscribe", () => {
+    const invitationKeys: NotificationKey[] = [
+      "share_invitation",
+      "share_download_reminder",
+      "reverse_share_invitation",
+    ];
     for (const [key, entry] of getEntries(invitationKeys)) {
       expect(entry.configurable, `${key} should not be configurable`).toBe(false);
       expect(entry.hasUnsubscribe, `${key} should not have unsubscribe`).toBe(false);
@@ -176,6 +180,12 @@ describe("notificationCatalog", () => {
       account_deactivated: { firstName: "Bob" },
       account_reactivated: { firstName: "Carol", loginUrl: "https://example.com/login" },
       share_invitation: {
+        senderName: "Alice",
+        shareName: "Files",
+        shareLink: "https://example.com/s/abc",
+        hasPassword: false,
+      },
+      share_download_reminder: {
         senderName: "Alice",
         shareName: "Files",
         shareLink: "https://example.com/s/abc",
@@ -363,6 +373,12 @@ describe("i18n key smoke tests — real en.json", () => {
       account_deactivated: { firstName: "Bob" },
       account_reactivated: { firstName: "Carol", loginUrl: "https://example.com/login" },
       share_invitation: {
+        senderName: "Alice",
+        shareName: "Files",
+        shareLink: "https://example.com/s/abc",
+        hasPassword: false,
+      },
+      share_download_reminder: {
         senderName: "Alice",
         shareName: "Files",
         shareLink: "https://example.com/s/abc",

@@ -28,6 +28,7 @@ import { renderReverseSharePendingDeletion } from "./templates/reverse-share-pen
 import { renderReverseShareUploaded } from "./templates/reverse-share-uploaded.js";
 import { renderShareAccessed } from "./templates/share-accessed.js";
 import { renderShareAutoDeleted } from "./templates/share-auto-deleted.js";
+import { renderShareDownloadReminder } from "./templates/share-download-reminder.js";
 import { renderShareDownloaded } from "./templates/share-downloaded.js";
 import { renderShareExpired } from "./templates/share-expired.js";
 import { renderShareExpiring } from "./templates/share-expiring.js";
@@ -103,6 +104,14 @@ const accountReactivatedSchema = z.object({
 });
 
 const shareInvitationSchema = z.object({
+  senderName: z.string(),
+  shareName: z.string(),
+  shareLink: z.string(),
+  hasPassword: z.boolean(),
+  expiresAt: isoDateString.optional(),
+});
+
+const shareDownloadReminderSchema = z.object({
   senderName: z.string(),
   shareName: z.string(),
   shareLink: z.string(),
@@ -325,6 +334,30 @@ export const notificationCatalog = {
       "shareInvitation.infoPasswordExpires",
     ],
     displayName: "Share Invitations",
+  },
+
+  // Manual reminder for recipients who haven't downloaded yet (feature 8.3, lot B).
+  // Modeled on share_invitation: external recipients, no account/preference, one-shot.
+  // Triggered by the share creator via POST /shares/:shareId/remind. No scheduler.
+  share_download_reminder: {
+    render: asRender(renderShareDownloadReminder),
+    payloadSchema: shareDownloadReminderSchema,
+    priority: 0,
+    isCritical: false,
+    defaultFrequency: "immediate",
+    configurable: false,
+    hasUnsubscribe: false,
+    requiredI18nKeys: [
+      "shareDownloadReminder.subject",
+      "shareDownloadReminder.subtitle",
+      "shareDownloadReminder.body",
+      "shareDownloadReminder.cta",
+      "shareDownloadReminder.info",
+      "shareDownloadReminder.infoPassword",
+      "shareDownloadReminder.infoExpires",
+      "shareDownloadReminder.infoPasswordExpires",
+    ],
+    displayName: "Share Download Reminders",
   },
 
   // Reverse share invitation — sends the upload link to specified recipients.

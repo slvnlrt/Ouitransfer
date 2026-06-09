@@ -29,6 +29,13 @@ export interface ReverseShareRecipient {
   email: string;
   name: string | null;
   notifiedAt: string | null;
+  /**
+   * Number of files this recipient uploaded (best-effort: counts files, only
+   * when a matching self-declared uploaderEmail is supplied — 8.3 lot D).
+   */
+  uploadCount: number;
+  /** When the recipient first uploaded a matched file; null if none yet. */
+  uploadedAt: string | null;
   createdAt: string;
 }
 

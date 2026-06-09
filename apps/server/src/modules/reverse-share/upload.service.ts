@@ -240,6 +240,11 @@ export class ReverseShareUploadService {
       size: uploadSize,
     });
 
+    // 8.3 lot D: best-effort per-recipient upload tracking. Fire-and-forget —
+    // a self-declared uploaderEmail matching a known recipient bumps that
+    // recipient's stats. Never blocks or breaks the upload.
+    this.trackRecipientUpload(reverseShareId, fileData.uploaderEmail);
+
     // B1 threshold warnings: evaluate the owner's usage transition after the
     // file exists. Fire-and-forget — never blocks the upload, never throws.
     // When the upload lands the owner in the overage zone (allowed but over the
@@ -351,6 +356,11 @@ export class ReverseShareUploadService {
       ...fileData,
       size: uploadSize,
     });
+
+    // 8.3 lot D: best-effort per-recipient upload tracking. Fire-and-forget —
+    // a self-declared uploaderEmail matching a known recipient bumps that
+    // recipient's stats. Never blocks or breaks the upload.
+    this.trackRecipientUpload(reverseShare.id, fileData.uploaderEmail);
 
     // B1 threshold warnings: evaluate the owner's usage transition after the
     // file exists. Fire-and-forget — never blocks the upload, never throws.
@@ -558,6 +568,28 @@ export class ReverseShareUploadService {
       createdAt: newFileRecord.createdAt.toISOString(),
       updatedAt: newFileRecord.updatedAt.toISOString(),
     };
+  }
+
+  /**
+   * Best-effort per-recipient upload tracking (8.3 lot D).
+   *
+   * If the upload self-declares an `uploaderEmail` that matches a known recipient
+   * of this reverse share, bump that recipient's `uploadCount` and stamp
+   * `uploadedAt` on the first match (see {@link ReverseShareRepository.trackRecipientUpload}).
+   *
+   * Fire-and-forget and failure-tolerant: this MUST NOT block or break the upload.
+   * `uploaderEmail` is optional (`emailFieldRequired` defaults to OPTIONAL), so for
+   * most uploads this is a no-op. When present, the email is normalized (trim +
+   * lowercase) to match how recipients are stored. The attribution is self-declared
+   * and unverified (spoofable) — that is accepted; the UI labels it as approximate.
+   */
+  private trackRecipientUpload(reverseShareId: string, uploaderEmail?: string): void {
+    if (!uploaderEmail) return;
+    const normalizedEmail = uploaderEmail.trim().toLowerCase();
+    if (!normalizedEmail) return;
+    void this.reverseShareRepository
+      .trackRecipientUpload(reverseShareId, normalizedEmail)
+      .catch((err) => getLogger().error({ err }, "Failed to track reverse-share recipient upload"));
   }
 
   private generateSessionKey(reverseShareId: string, uploaderIdentifier: string): string {

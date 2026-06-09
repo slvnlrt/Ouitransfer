@@ -164,6 +164,10 @@ model ShareRecipient {
   notifiedAt     DateTime?
   lastAccessedAt DateTime?
   accessCount    Int       @default(0)
+  // downloadCount = number of files fetched (trackShareDownload runs once per file),
+  // NOT the number of download sessions. A "download all" of N files adds N.
+  downloadCount    Int       @default(0)
+  lastDownloadedAt DateTime?
 
   visits         ShareVisit[]
 
@@ -233,6 +237,10 @@ model ShareVisit {
   userAgent    String?
   action       String
   fileId       String?
+  // How the recipient on this visit was attributed: "token" (verified — arrived via a
+  // personalized ?t= link) | "self_declared" (matched the identification-form email,
+  // spoofable comfort signal) | null (anonymous / no recipient linked).
+  identificationSource String?
   createdAt    DateTime        @default(now())
 
   @@index([shareId, createdAt])
@@ -398,6 +406,10 @@ model ReverseShareRecipient {
   email          String
   name           String?
   notifiedAt     DateTime?
+  // uploadCount = number of files uploaded by this recipient (best-effort: only counts
+  // when an optional uploaderEmail matches). uploadedAt = first matched upload timestamp.
+  uploadCount    Int       @default(0)
+  uploadedAt     DateTime?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 

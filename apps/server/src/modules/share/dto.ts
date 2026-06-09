@@ -183,6 +183,14 @@ export const ShareResponseSchema = z.object({
       notifiedAt: z.string().datetime().nullable().describe("When the recipient was notified"),
       lastAccessedAt: z.string().datetime().nullable().describe("When the recipient last accessed"),
       accessCount: z.number().describe("Number of times the recipient has accessed the share"),
+      downloadCount: z
+        .number()
+        .describe("Number of files the recipient has downloaded (counts files, not sessions)"),
+      lastDownloadedAt: z
+        .string()
+        .datetime()
+        .nullable()
+        .describe("When the recipient last downloaded a file"),
       createdAt: z.string().describe("The recipient creation date"),
       updatedAt: z.string().describe("The recipient update date"),
     }),

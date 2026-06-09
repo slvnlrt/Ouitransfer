@@ -166,8 +166,8 @@ describe("i18n placeholder consistency", () => {
     expect(locales).toContain("fr");
   });
 
-  it("covers all 25 notification types", () => {
-    expect(notificationTypes).toHaveLength(25);
+  it("covers all 26 notification types", () => {
+    expect(notificationTypes).toHaveLength(26);
   });
 
   for (const locale of locales) {

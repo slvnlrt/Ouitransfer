@@ -142,6 +142,8 @@ function makeRecipient(overrides: Record<string, unknown> = {}) {
     notifiedAt: null,
     lastAccessedAt: null,
     accessCount: 0,
+    downloadCount: 0,
+    lastDownloadedAt: null,
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,
@@ -493,6 +495,8 @@ describe("Email migration — ShareService.updateShare() recipient upsert", () =
       notifiedAt: new Date("2025-01-01"),
       lastAccessedAt: null,
       accessCount: 0,
+      downloadCount: 0,
+      lastDownloadedAt: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -536,6 +540,8 @@ describe("Email migration — ShareService.updateShare() recipient upsert", () =
       notifiedAt: null,
       lastAccessedAt: null,
       accessCount: 0,
+      downloadCount: 0,
+      lastDownloadedAt: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -548,6 +554,8 @@ describe("Email migration — ShareService.updateShare() recipient upsert", () =
       notifiedAt: null,
       lastAccessedAt: null,
       accessCount: 0,
+      downloadCount: 0,
+      lastDownloadedAt: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     };

@@ -24,6 +24,8 @@ import type {
   NotifyRecipientsBody,
   NotifyRecipientsResult,
   PauseShareResult,
+  RemindNonDownloadersBody,
+  RemindNonDownloadersResult,
   RemoveFilesBody,
   RemoveFilesResult,
   RemoveFoldersResult,
@@ -233,6 +235,20 @@ export const notifyRecipients = (
   options?: AxiosRequestConfig,
 ): Promise<NotifyRecipientsResult> => {
   return apiInstance.post(`/api/shares/${shareId}/notify`, notifyRecipientsBody, options);
+};
+
+/**
+ * Send a download-reminder email to recipients who have not downloaded yet
+ * (lastDownloadedAt is null). Pass `emails` to remind a subset — always intersected
+ * with the non-downloader set.
+ * @summary Remind share recipients who have not downloaded yet
+ */
+export const remindNonDownloaders = (
+  shareId: string,
+  remindNonDownloadersBody: RemindNonDownloadersBody,
+  options?: AxiosRequestConfig,
+): Promise<RemindNonDownloadersResult> => {
+  return apiInstance.post(`/api/shares/${shareId}/remind`, remindNonDownloadersBody, options);
 };
 
 /**

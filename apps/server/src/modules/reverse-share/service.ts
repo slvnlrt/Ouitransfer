@@ -65,6 +65,8 @@ interface ReverseShareData {
     email: string;
     name: string | null;
     notifiedAt: Date | null;
+    uploadCount: number;
+    uploadedAt: Date | null;
     createdAt: Date;
     updatedAt: Date;
   }>;
@@ -711,6 +713,8 @@ export class ReverseShareService {
         email: r.email,
         name: r.name,
         notifiedAt: r.notifiedAt?.toISOString() || null,
+        uploadCount: r.uploadCount,
+        uploadedAt: r.uploadedAt?.toISOString() ?? null,
         createdAt: r.createdAt.toISOString(),
       })),
       nameFieldRequired: reverseShare.nameFieldRequired,

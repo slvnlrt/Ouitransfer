@@ -45,7 +45,7 @@ This directory tracks all feature development for Ouitransfer (post-refactor pha
 |---|---------|--------|------------|
 | 8.1 | [Audit Trail / Activity Log](specs/8.1-auditing.md) | Done | — |
 | 8.2 | [Email Notifications](specs/8.2-email-notifications.md) | Done | — |
-| 8.3 | [Download Tracking](specs/8.3-download-tracking.md) | Not started | 8.1, 8.2 |
+| 8.3 | [Download Tracking](specs/8.3-download-tracking.md) | Done — lots A (download badge), B (manual reminders), C (cookie→recipient linkage), D (reverse upload tracking), F (audit enrich + RGPD notice) shipped; E dropped | 8.1, 8.2 |
 
 ### Status Legend
 
@@ -114,11 +114,11 @@ features/
 
 ## Current Focus
 
-**Completed:** 5.1 Quotas, 5.2 Auto-cleanup (Phase A + A.1 + B), 5.4 Groups, 5.3 LDAP, 6.1-6.3 UI Overhaul, 7.1 Error Handling, 9.1 Quickshare, 10.1 System Status Bar, 8.1 Audit Trail, 8.2 Email Notifications.
+**Completed:** 5.1 Quotas, 5.2 Auto-cleanup (Phase A + A.1 + B), 5.4 Groups, 5.3 LDAP, 6.1-6.3 UI Overhaul, 7.1 Error Handling, 9.1 Quickshare, 10.1 System Status Bar, 8.1 Audit Trail, 8.2 Email Notifications, 8.3 Download Tracking.
 All resolved: B-1 through B-25, TD-1 through TD-4, TD-6 through TD-19, TD-21, TD-24, TD-25, TD-29, TD-31, TD-35, TD-37, TD-41, TD-45, TD-46, TD-48, TD-49.
 
-**Test counts:** 91 server test files (1453 tests) + 33 web test files (321 tests) + 2 shared (14 tests) = **1788 total**.
+**Test counts:** 99 server test files (1596 tests) + 34 web test files (334 tests) + 2 shared (14 tests) = **1944 total**.
 
 **Open bugs:** _none_ (B-26 resolved)
-**Open tech debt:** TD-5, TD-10, TD-20, TD-27, TD-28, TD-32, TD-33, TD-36, TD-40, TD-42, TD-43 — see `TECHNICAL-DEBT.md` (TD-30, TD-38, TD-50, TD-51 resolved)
-**Next features:** 8.3 Download Tracking (depends on 8.1+8.2 ✓) — unblocked
+**Open tech debt:** TD-5, TD-10, TD-20, TD-27, TD-28, TD-32, TD-33, TD-36, TD-40, TD-42, TD-43, TD-52 — see `TECHNICAL-DEBT.md` (TD-30, TD-38, TD-50, TD-51 resolved)
+**Next features:** _none queued_ — 8.3 Download Tracking shipped (lots A/B/C/D/F; lot E hors scope). Final holistic review (Opus) clean: 0 Critical / 0 Important / 3 Minor, all tracked in TD-52 (`features/reviews/8.3-download-tracking.md`).

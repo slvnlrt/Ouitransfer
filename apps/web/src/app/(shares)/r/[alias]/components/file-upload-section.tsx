@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, File, Mail, Upload, User, X } from "lucide-react";
+import { Check, File, Info, Mail, Upload, User, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -425,6 +425,13 @@ export function FileUploadSection({
             </div>
           )}
         </div>
+        {(reverseShare.nameFieldRequired !== "HIDDEN" ||
+          reverseShare.emailFieldRequired !== "HIDDEN") && (
+          <p className="flex items-start gap-2 text-muted-foreground text-xs">
+            <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
+            <span>{t("reverseShares.upload.form.privacyNotice")}</span>
+          </p>
+        )}
         <div className="space-y-2">
           <Label htmlFor="description">{t("reverseShares.upload.form.descriptionLabel")}</Label>
           <Textarea

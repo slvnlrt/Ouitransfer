@@ -22,9 +22,17 @@ import { type IShareRepository, PrismaShareRepository } from "./repository.js";
 
 export interface ShareAccessContext {
   trackingToken?: string;
-  visitorCookie?: { name?: string; email?: string; alias?: string };
+  visitorCookie?: { name?: string; email?: string; recipientId?: string; alias?: string };
   ipAddress?: string;
   userAgent?: string;
+  /**
+   * Output channel populated by {@link ShareService.getShare}: when access resolves a recipient
+   * (via token, or by matching a self-declared cookie email), this carries the recipient id so the
+   * route handler can refresh the signed visitor cookie with `recipientId` — letting later
+   * downloads inherit the verified identity. Only set when source is `"token"` (a self-declared
+   * match is not promoted into the cookie, which would mislabel later downloads as verified).
+   */
+  out?: { recipientIdForCookie?: string };
 }
 
 type ShareWithRelations = Prisma.ShareGetPayload<{
@@ -113,6 +121,7 @@ export class ShareService {
             ...recipient,
             notifiedAt: recipient.notifiedAt?.toISOString() ?? null,
             lastAccessedAt: recipient.lastAccessedAt?.toISOString() ?? null,
+            lastDownloadedAt: recipient.lastDownloadedAt?.toISOString() ?? null,
             createdAt: recipient.createdAt.toISOString(),
             updatedAt: recipient.updatedAt.toISOString(),
           })) || []
@@ -392,11 +401,21 @@ export class ShareService {
     let recipientId: string | undefined;
     let visitorName: string | undefined;
     let visitorEmail: string | undefined;
+    // How the recipient was attributed on this access visit (mirrored on the download path):
+    // "token" = verified via personalized ?t= link; "self_declared" = matched the identification
+    // cookie email; null = anonymous / unmatched.
+    let identificationSource: "token" | "self_declared" | undefined;
 
     if (resolvedRecipient) {
       recipientId = resolvedRecipient.id;
       visitorEmail = resolvedRecipient.email;
       visitorName = resolvedRecipient.name ?? undefined;
+      identificationSource = "token";
+      // Promote the verified recipient into the signed cookie so later downloads (which never
+      // see the ?t= token) inherit this token-verified identity.
+      if (context?.out) {
+        context.out.recipientIdForCookie = resolvedRecipient.id;
+      }
       // Update recipient access stats
       await prisma.shareRecipient.update({
         where: { id: resolvedRecipient.id },
@@ -408,6 +427,25 @@ export class ShareService {
     if (!recipientId && context?.visitorCookie) {
       visitorName = context.visitorCookie.name;
       visitorEmail = context.visitorCookie.email;
+
+      // Lot C — close the NULL gap: a self-identified visitor whose declared email matches a
+      // recipient of THIS share is linked too (best-effort, spoofable → always "self_declared",
+      // never promoted into the cookie as a verified identity). Guard on email: the cookie can be
+      // name-only.
+      const declaredEmail = context.visitorCookie.email?.trim().toLowerCase();
+      if (declaredEmail) {
+        const selfDeclared = await prisma.shareRecipient.findUnique({
+          where: { shareId_email: { shareId: share.id, email: declaredEmail } },
+        });
+        if (selfDeclared) {
+          recipientId = selfDeclared.id;
+          identificationSource = "self_declared";
+          await prisma.shareRecipient.update({
+            where: { id: selfDeclared.id },
+            data: { lastAccessedAt: new Date(), accessCount: { increment: 1 } },
+          });
+        }
+      }
     }
 
     // Fire and forget — don't block the response.
@@ -424,6 +462,7 @@ export class ShareService {
             ipAddress: context?.ipAddress,
             userAgent: context?.userAgent,
             action: "access",
+            identificationSource,
           },
         });
       } catch (err) {
@@ -1004,6 +1043,122 @@ export class ShareService {
     }
 
     return { notifiedRecipients };
+  }
+
+  /**
+   * Sends a manual download reminder (feature 8.3, lot B) to recipients who were already
+   * notified but have NOT downloaded yet (`notifiedAt != null && lastDownloadedAt == null`).
+   * A reminder is a follow-up to a prior invitation — a recipient who has never been notified
+   * is not "reminded" (use the initial notify flow for those). There is no scheduler — this is
+   * triggered by the share creator on demand.
+   *
+   * The pending set always mirrors the "Pending" badge (Batch 2 / I2 / R-6):
+   * `recipients.filter(notifiedAt != null && lastDownloadedAt == null)`. An optional
+   * `selectedEmails` filter narrows the set further, but is always intersected with the
+   * pending set — a recipient who already downloaded (or was never notified) is never reminded,
+   * even if passed explicitly. If no recipient is pending the call is a no-op
+   * (`{ remindedRecipients: [] }`), not an error, so the UI can disable the button without
+   * special-casing the response.
+   *
+   * Reuses the same personalized `?t=trackingToken` link building as {@link notifyRecipients}
+   * and updates `notifiedAt` on successfully reminded recipients. The `share_download_reminder`
+   * email type is sent WITHOUT `userId` (external recipients have no account/preference row).
+   * SMTP gating happens inside `emailService.send`: when SMTP is off, nothing is enqueued and
+   * the returned list is empty.
+   */
+  async remindNonDownloaders(
+    shareId: string,
+    userId: string,
+    selectedEmails?: string[],
+  ): Promise<{ remindedRecipients: string[] }> {
+    const share = await this.shareRepository.findShareById(shareId);
+
+    if (!share) {
+      throw new NotFoundError("Share not found");
+    }
+
+    if (share.creatorId !== userId) {
+      throw new ForbiddenError("Unauthorized to access this share");
+    }
+
+    if (!share.recipients || share.recipients.length === 0) {
+      throw new ValidationError("No recipients found for this share");
+    }
+
+    if (selectedEmails && selectedEmails.length === 0) {
+      throw new ValidationError("selectedEmails must not be empty when provided");
+    }
+
+    // Pending = recipients already notified who have not downloaded yet — mirrors the "Pending"
+    // badge and the web "Remind (N)" count (Batch 2 / I2 / R-6). A reminder is a follow-up, so a
+    // never-notified recipient is excluded here (the creator notifies them first instead).
+    let pendingRecipients = share.recipients.filter(
+      (r) => r.notifiedAt != null && r.lastDownloadedAt == null,
+    );
+
+    // Intersect with the optional subset filter; a downloaded recipient is never reminded.
+    if (selectedEmails?.length) {
+      const emailSet = new Set(selectedEmails.map((e) => e.trim().toLowerCase()));
+      pendingRecipients = pendingRecipients.filter((r) => emailSet.has(r.email.toLowerCase()));
+    }
+
+    // No-op (not an error) when nobody is pending — the UI disables the button in this case.
+    if (pendingRecipients.length === 0) {
+      return { remindedRecipients: [] };
+    }
+
+    const shareAlias = share.alias?.alias;
+    if (!shareAlias) {
+      throw new ValidationError("Share must have an alias before sending reminders");
+    }
+    const baseShareLink = await buildShareLink(shareAlias);
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    const senderName = user?.firstName
+      ? `${user.firstName} ${user.lastName ?? ""}`.trim()
+      : (user?.username ?? "Someone");
+
+    const remindedRecipients: string[] = [];
+
+    // Sequential per-recipient to avoid SQLite contention (same rationale as notifyRecipients).
+    for (const recipient of pendingRecipients) {
+      const { trackingToken } = recipient;
+      const personalizedLink = trackingToken
+        ? `${baseShareLink}?t=${trackingToken}`
+        : baseShareLink;
+      try {
+        // userId intentionally omitted — external recipients have no account/preference row,
+        // and share_download_reminder is non-configurable (cf. notifyRecipients rationale).
+        const result = await emailService.send("share_download_reminder", {
+          to: recipient.email,
+          locale: user?.locale ?? "en",
+          relatedId: share.id,
+          data: {
+            senderName,
+            shareName: share.name ?? "Shared files",
+            shareLink: personalizedLink,
+            hasPassword: !!share.security?.password,
+            expiresAt: share.expiration?.toISOString(),
+          },
+        });
+
+        if (result.enqueued) {
+          await prisma.shareRecipient.update({
+            where: { id: recipient.id },
+            data: { notifiedAt: new Date() },
+          });
+
+          remindedRecipients.push(recipient.email);
+        }
+      } catch (error) {
+        getLogger().error(
+          { err: error, email: recipient.email },
+          "Failed to queue share download reminder",
+        );
+      }
+    }
+
+    return { remindedRecipients };
   }
 
   async getShareMetadataByAlias(alias: string) {

@@ -63,6 +63,8 @@ The setting controls the behavior of each field:
 
 When at least one field is visible, uploaders see an identification section on the upload page. The provided name and email are attached to each uploaded file and appear in the reverse share details alongside the files.
 
+A short **privacy notice** is shown next to these fields, informing uploaders that their name, email, and uploads may be visible to the owner of the receive link.
+
 ### Upload notifications
 
 | Option | Default | Description |
@@ -92,10 +94,23 @@ Recipients receive an email containing:
 - When the link expires (if configured)
 
 <Callout type="info">
-  Email invitations require [SMTP to be configured](/docs/v1-beta/configuring-smtp). The upload link in the invitation is the same for all recipients; there is no per-recipient tracking.
+  Email invitations require [SMTP to be configured](/docs/v1-beta/configuring-smtp). The upload link in the invitation is the same for all recipients.
 </Callout>
 
 You can add and remove recipients at any time. Re-notifying a recipient sends a new email. A green "Notified" badge appears next to recipients who have been sent an invitation.
+
+### Upload status per recipient
+
+Each recipient also shows an upload-status badge:
+
+- **Uploaded**: at least one upload has been linked to this recipient.
+- **Pending**: no upload has been linked to this recipient yet.
+
+This linkage is **best-effort**. An upload is attributed to a recipient only when the uploader provides an email that matches the recipient's email. Because the email field on the upload page is **optional by default**, many uploads cannot be linked, and a provided email is self-declared (not verified). The badge therefore carries a tooltip noting that the status is **approximate when the email is not required** — a "Pending" badge does not guarantee the recipient hasn't uploaded.
+
+<Callout type="warn">
+  To make per-recipient upload tracking reliable, set the **Email** identification field to **Required**, so every uploader must provide an email that can be matched to a recipient.
+</Callout>
 
 ---
 
