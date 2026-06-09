@@ -1,4 +1,4 @@
-import type { FastifyRequest } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { env } from "../../env.js";
@@ -26,7 +26,11 @@ import {
   UpdateShareSchema,
 } from "./dto.js";
 import { type ShareAccessContext, ShareService } from "./service.js";
-import { parseVisitorCookie } from "./visitor-cookie.js";
+import {
+  buildVisitorCookiePayload,
+  parseVisitorCookie,
+  type VisitorIdentity,
+} from "./visitor-cookie.js";
 
 const ShareAccessQuery = z.object({
   t: z
@@ -41,6 +45,49 @@ const ShareAccessQuery = z.object({
 const shareService = new ShareService();
 
 const preValidation = createJwtPreValidation();
+
+/**
+ * Signed visitor identification cookie options. Kept in one place so the identification form
+ * (`/identify`) and the access-time recipientId refresh stay byte-for-byte consistent.
+ * Path is "/api" per spec (Section 8): the browser always sees /api/* URLs (dev proxy +
+ * production Traefik), and the cookie path is matched against the browser-sent URL.
+ */
+function visitorCookieOptions() {
+  return {
+    path: "/api",
+    httpOnly: true,
+    sameSite: "strict",
+    secure: env.SECURE_SITE === "true",
+    signed: true,
+    maxAge: 86400, // 24h
+  } as const;
+}
+
+/**
+ * After a share access resolved a token-verified recipient, refresh the signed visitor cookie so
+ * the verified `recipientId` is carried to later downloads (which never see the ?t= token).
+ * No-op when nothing was resolved. Preserves any existing self-declared name/email in the cookie.
+ */
+function refreshVisitorCookieWithRecipient(
+  reply: FastifyReply,
+  alias: string,
+  recipientIdForCookie: string | undefined,
+  existingCookie: VisitorIdentity | undefined,
+): void {
+  if (!recipientIdForCookie) return;
+  // Already present with the same id — nothing to rewrite.
+  if (existingCookie?.recipientId === recipientIdForCookie) return;
+  reply.setCookie(
+    `sv_${alias}`,
+    buildVisitorCookiePayload({
+      alias,
+      name: existingCookie?.name ?? null,
+      email: existingCookie?.email ?? null,
+      recipientId: recipientIdForCookie,
+    }),
+    visitorCookieOptions(),
+  );
+}
 
 export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
@@ -161,8 +208,17 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         visitorCookie,
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
+        out: {},
       };
       const share = await shareService.getShare(request.params.shareId, undefined, userId, context);
+      if (shareAlias) {
+        refreshVisitorCookieWithRecipient(
+          reply,
+          shareAlias.alias,
+          context.out?.recipientIdForCookie,
+          visitorCookie,
+        );
+      }
       return reply.send({ share });
     },
   });
@@ -213,6 +269,7 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         visitorCookie,
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
+        out: {},
       };
       const share = await shareService.getShare(
         request.params.shareId,
@@ -220,6 +277,14 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         userId,
         context,
       );
+      if (shareAlias) {
+        refreshVisitorCookieWithRecipient(
+          reply,
+          shareAlias.alias,
+          context.out?.recipientIdForCookie,
+          visitorCookie,
+        );
+      }
       return reply.send({ share });
     },
   });
@@ -705,12 +770,19 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         visitorCookie,
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
+        out: {},
       };
       const share = await shareService.getShareByAlias(
         request.params.alias,
         undefined,
         userId,
         context,
+      );
+      refreshVisitorCookieWithRecipient(
+        reply,
+        request.params.alias,
+        context.out?.recipientIdForCookie,
+        visitorCookie,
       );
       return reply.send({ share });
     },
@@ -756,12 +828,19 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         visitorCookie,
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
+        out: {},
       };
       const share = await shareService.getShareByAlias(
         request.params.alias,
         request.body.password,
         userId,
         context,
+      );
+      refreshVisitorCookieWithRecipient(
+        reply,
+        request.params.alias,
+        context.out?.recipientIdForCookie,
+        visitorCookie,
       );
       return reply.send({ share });
     },
@@ -926,25 +1005,16 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         throw new ValidationError("Email is required");
       }
 
-      const payload = JSON.stringify({
+      // The identification form never sets recipientId — that is written only server-side after
+      // a tracking token is verified at access time (see refreshVisitorCookieWithRecipient). Form
+      // input is always self-declared and therefore never carries a verified-recipient claim.
+      const payload = buildVisitorCookiePayload({
         alias,
         name: request.body.name ?? null,
         email: request.body.email ?? null,
       });
 
-      // Cookie path is "/api" per spec (Section 8). The browser sees /api/* URLs regardless
-      // of whether the dev proxy rewrites them — the cookie domain and path are matched
-      // against the URL the browser sends, not the URL the server receives. Both dev
-      // (Next.js proxy: browser sends /api/*) and production (Traefik: browser sends /api/*)
-      // use /api/* paths from the browser's perspective.
-      reply.setCookie(`sv_${alias}`, payload, {
-        path: "/api",
-        httpOnly: true,
-        sameSite: "strict",
-        secure: env.SECURE_SITE === "true",
-        signed: true,
-        maxAge: 86400, // 24h
-      });
+      reply.setCookie(`sv_${alias}`, payload, visitorCookieOptions());
 
       return reply.send({ success: true });
     },

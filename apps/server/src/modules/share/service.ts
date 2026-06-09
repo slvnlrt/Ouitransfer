@@ -22,9 +22,17 @@ import { type IShareRepository, PrismaShareRepository } from "./repository.js";
 
 export interface ShareAccessContext {
   trackingToken?: string;
-  visitorCookie?: { name?: string; email?: string; alias?: string };
+  visitorCookie?: { name?: string; email?: string; recipientId?: string; alias?: string };
   ipAddress?: string;
   userAgent?: string;
+  /**
+   * Output channel populated by {@link ShareService.getShare}: when access resolves a recipient
+   * (via token, or by matching a self-declared cookie email), this carries the recipient id so the
+   * route handler can refresh the signed visitor cookie with `recipientId` — letting later
+   * downloads inherit the verified identity. Only set when source is `"token"` (a self-declared
+   * match is not promoted into the cookie, which would mislabel later downloads as verified).
+   */
+  out?: { recipientIdForCookie?: string };
 }
 
 type ShareWithRelations = Prisma.ShareGetPayload<{
@@ -392,11 +400,21 @@ export class ShareService {
     let recipientId: string | undefined;
     let visitorName: string | undefined;
     let visitorEmail: string | undefined;
+    // How the recipient was attributed on this access visit (mirrored on the download path):
+    // "token" = verified via personalized ?t= link; "self_declared" = matched the identification
+    // cookie email; null = anonymous / unmatched.
+    let identificationSource: "token" | "self_declared" | undefined;
 
     if (resolvedRecipient) {
       recipientId = resolvedRecipient.id;
       visitorEmail = resolvedRecipient.email;
       visitorName = resolvedRecipient.name ?? undefined;
+      identificationSource = "token";
+      // Promote the verified recipient into the signed cookie so later downloads (which never
+      // see the ?t= token) inherit this token-verified identity.
+      if (context?.out) {
+        context.out.recipientIdForCookie = resolvedRecipient.id;
+      }
       // Update recipient access stats
       await prisma.shareRecipient.update({
         where: { id: resolvedRecipient.id },
@@ -408,6 +426,25 @@ export class ShareService {
     if (!recipientId && context?.visitorCookie) {
       visitorName = context.visitorCookie.name;
       visitorEmail = context.visitorCookie.email;
+
+      // Lot C — close the NULL gap: a self-identified visitor whose declared email matches a
+      // recipient of THIS share is linked too (best-effort, spoofable → always "self_declared",
+      // never promoted into the cookie as a verified identity). Guard on email: the cookie can be
+      // name-only.
+      const declaredEmail = context.visitorCookie.email?.trim().toLowerCase();
+      if (declaredEmail) {
+        const selfDeclared = await prisma.shareRecipient.findUnique({
+          where: { shareId_email: { shareId: share.id, email: declaredEmail } },
+        });
+        if (selfDeclared) {
+          recipientId = selfDeclared.id;
+          identificationSource = "self_declared";
+          await prisma.shareRecipient.update({
+            where: { id: selfDeclared.id },
+            data: { lastAccessedAt: new Date(), accessCount: { increment: 1 } },
+          });
+        }
+      }
     }
 
     // Fire and forget — don't block the response.
@@ -424,6 +461,7 @@ export class ShareService {
             ipAddress: context?.ipAddress,
             userAgent: context?.userAgent,
             action: "access",
+            identificationSource,
           },
         });
       } catch (err) {
