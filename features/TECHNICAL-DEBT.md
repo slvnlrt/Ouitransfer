@@ -211,7 +211,8 @@ large : plusieurs namespaces ajoutés pendant le refactor n'ont jamais été tra
 | `backgroundImages.*` | 9             | 10.1 Background Images |
 | `errors.*`       | 8                  | divers            |
 | `fileActions.*`, `folderActions.*`, etc. | ~15 | divers |
-| **Total**        | **~147 / 1958**    | ~7.5% du total    |
+| `share.identification.privacyNotice`, `reverseShares.upload.form.privacyNotice` | 2 | 8.3 Download Tracking (RGPD) |
+| **Total**        | **~149 / 1960**    | ~7.5% du total    |
 
 fr-FR est nettement mieux loti (~50 strings identiques, dont beaucoup de termes techniques
 légitimement en anglais), probablement car c'est la seule langue traduite manuellement.
@@ -231,5 +232,31 @@ marqués SUPERSEDED et consolidés dans ce TD-36.
 **Found during:** Audit scripts traduction (mai 2026)
 **Severity:** Low — app pas en production ; les valeurs anglaises sont fonctionnelles mais dégradent
 l'expérience pour les utilisateurs non-EN/FR.
+
+---
+
+## TD-52 — 8.3 reverse-share upload tracking : items mineurs reportés
+
+**Context:** Deux items mineurs identifiés pendant l'implémentation de 8.3 lot D (reverse share
+upload tracking par destinataire) ont été délibérément reportés plutôt que livrés :
+
+1. **`uploadCount` exposé en API mais non affiché.** Le champ `ReverseShareRecipient.uploadCount`
+   est sérialisé dans le DTO et les types web (`reverse-shares/types.ts`), mais l'UI ne montre
+   que le badge « A uploadé / En attente » dérivé de `uploadedAt` (booléen). Le compteur n'est
+   visible que via l'API. Symétrique au `downloadCount` côté share (également non affiché). À
+   surfacer si un besoin d'UI émerge (info-bulle « N fichiers uploadés »).
+2. **Pas de test live-DB pour la liaison upload→destinataire.** La couverture actuelle est en
+   `app.inject()` (matched / absent / second-upload / spoofed). Le reviewer du plan a noté qu'un
+   test contre une vraie base (et non le mock Prisma) renforcerait la confiance sur l'incrément
+   atomique `{ increment: 1 }` et le `updateMany({ where: { uploadedAt: null } })` conditionnel.
+   Nice-to-have, non bloquant.
+
+**Fix:** (1) ajouter l'affichage du compteur dans `reverse-share-recipient-selector.tsx` si
+demandé ; (2) ajouter un test d'intégration live-DB si l'on en met en place un harnais pour
+d'autres flux.
+
+**Found during:** 8.3 Batch 4 / Batch 5 (juin 2026)
+**Severity:** Very low — best-effort feature, comportement couvert par les tests `app.inject()`,
+aucun bug connu.
 
 ---
