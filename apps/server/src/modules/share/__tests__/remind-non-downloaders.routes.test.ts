@@ -400,4 +400,63 @@ describe("POST /shares/:shareId/remind — integration", () => {
 
     expect(res.statusCode).toBe(400);
   });
+
+  it("returns 401 when unauthenticated (valid CSRF but no auth token)", async () => {
+    mockShareFindUnique.mockResolvedValue(makeShare());
+    ipCounter += 1;
+    const { csrfToken, csrfCookie } = await getCsrf();
+
+    const res = await app.inject({
+      method: "POST",
+      url: `/shares/${SHARE_ID}/remind`,
+      remoteAddress: `10.0.1.${ipCounter}`,
+      headers: {
+        // No `token=` cookie — only the CSRF double-submit pair.
+        cookie: `_csrf=${csrfCookie}`,
+        "x-csrf-token": csrfToken,
+      },
+      payload: {},
+    });
+
+    expect(res.statusCode).toBe(401);
+    expect(mockEmailSend).not.toHaveBeenCalled();
+  });
+
+  it("reminds only the selected non-downloaders when emails are provided", async () => {
+    mockShareFindUnique.mockResolvedValue(
+      makeShare({
+        recipients: [
+          makeRecipient({ id: "r-alice", email: "alice@example.com", lastDownloadedAt: null }),
+          makeRecipient({ id: "r-bob", email: "bob@example.com", lastDownloadedAt: null }),
+        ],
+      }),
+    );
+
+    const res = await remind(CREATOR_ID, { emails: ["alice@example.com"] });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json().remindedRecipients).toEqual(["alice@example.com"]);
+    expect(mockEmailSend).toHaveBeenCalledOnce();
+    expect(mockEmailSend).toHaveBeenCalledWith(
+      "share_download_reminder",
+      expect.objectContaining({ to: "alice@example.com" }),
+    );
+  });
+
+  it("does not remind a recipient who was never notified (notifiedAt == null)", async () => {
+    // A reminder is a follow-up to a prior invitation — an un-notified recipient is excluded,
+    // mirroring the "Pending" badge / "Remind (N)" count (I2 / R-6).
+    mockShareFindUnique.mockResolvedValue(
+      makeShare({
+        recipients: [makeRecipient({ id: "r-new", email: "new@example.com", notifiedAt: null })],
+      }),
+    );
+
+    const res = await remind(CREATOR_ID);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json().remindedRecipients).toEqual([]);
+    expect(mockEmailSend).not.toHaveBeenCalled();
+    expect(logAuditEvent).not.toHaveBeenCalled();
+  });
 });

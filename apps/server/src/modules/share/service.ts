@@ -1046,15 +1046,19 @@ export class ShareService {
   }
 
   /**
-   * Sends a manual download reminder (feature 8.3, lot B) to recipients who have NOT
-   * downloaded yet (`lastDownloadedAt == null`). There is no scheduler — this is triggered
-   * by the share creator on demand.
+   * Sends a manual download reminder (feature 8.3, lot B) to recipients who were already
+   * notified but have NOT downloaded yet (`notifiedAt != null && lastDownloadedAt == null`).
+   * A reminder is a follow-up to a prior invitation — a recipient who has never been notified
+   * is not "reminded" (use the initial notify flow for those). There is no scheduler — this is
+   * triggered by the share creator on demand.
    *
-   * The pending set is always `recipients.filter(lastDownloadedAt == null)`. An optional
+   * The pending set always mirrors the "Pending" badge (Batch 2 / I2 / R-6):
+   * `recipients.filter(notifiedAt != null && lastDownloadedAt == null)`. An optional
    * `selectedEmails` filter narrows the set further, but is always intersected with the
-   * non-downloaders — a recipient who already downloaded is never reminded, even if passed
-   * explicitly. If no recipient is pending the call is a no-op (`{ remindedRecipients: [] }`),
-   * not an error, so the UI can disable the button without special-casing the response.
+   * pending set — a recipient who already downloaded (or was never notified) is never reminded,
+   * even if passed explicitly. If no recipient is pending the call is a no-op
+   * (`{ remindedRecipients: [] }`), not an error, so the UI can disable the button without
+   * special-casing the response.
    *
    * Reuses the same personalized `?t=trackingToken` link building as {@link notifyRecipients}
    * and updates `notifiedAt` on successfully reminded recipients. The `share_download_reminder`
@@ -1085,8 +1089,12 @@ export class ShareService {
       throw new ValidationError("selectedEmails must not be empty when provided");
     }
 
-    // Pending = recipients who have not downloaded yet (mirrors the "Pending" badge: I2/R-6).
-    let pendingRecipients = share.recipients.filter((r) => r.lastDownloadedAt == null);
+    // Pending = recipients already notified who have not downloaded yet — mirrors the "Pending"
+    // badge and the web "Remind (N)" count (Batch 2 / I2 / R-6). A reminder is a follow-up, so a
+    // never-notified recipient is excluded here (the creator notifies them first instead).
+    let pendingRecipients = share.recipients.filter(
+      (r) => r.notifiedAt != null && r.lastDownloadedAt == null,
+    );
 
     // Intersect with the optional subset filter; a downloaded recipient is never reminded.
     if (selectedEmails?.length) {
