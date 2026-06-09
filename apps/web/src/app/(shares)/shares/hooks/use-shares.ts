@@ -14,7 +14,6 @@ export function useShares() {
   const t = useTranslations();
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
-  const [shareToGenerateLink, setShareToGenerateLink] = useState<Share | null>(null);
 
   const { value: smtpEnabled } = useSecureConfigValue("smtpEnabled");
 
@@ -72,11 +71,9 @@ export function useShares() {
     shares,
     isLoading: sharesQuery.isLoading,
     searchQuery,
-    shareToGenerateLink,
     filteredShares,
     smtpEnabled: smtpEnabled || "false",
     setSearchQuery,
-    setShareToGenerateLink,
     handleCopyLink,
     handleNotifyRecipients,
     loadShares,
