@@ -745,6 +745,7 @@
       "SHARE_RECIPIENT_ADD": "Destinataires ajoutés au partage",
       "SHARE_RECIPIENT_REMOVE": "Destinataires retirés du partage",
       "SHARE_RECIPIENT_NOTIFY": "Destinataires du partage notifiés",
+      "SHARE_RECIPIENT_REMIND": "Relance des destinataires non-téléchargeurs",
       "SHARE_ITEMS_ADD": "Éléments ajoutés au partage",
       "SHARE_ITEMS_REMOVE": "Éléments retirés du partage",
       "FILE_UPLOAD": "Fichier téléversé",
@@ -1044,7 +1045,13 @@
     "namePlaceholder": "Nom (optionnel)",
     "downloaded": "Téléchargé",
     "pending": "En attente",
-    "downloadedAt": "Téléchargé le {date}"
+    "downloadedAt": "Téléchargé le {date}",
+    "remindNonDownloaders": "Relancer ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {Aucun destinataire en attente — tout le monde a téléchargé} one {Relancer # destinataire n''ayant pas encore téléchargé} other {Relancer # destinataires n''ayant pas encore téléchargé}}",
+    "sendingReminders": "Envoi des relances...",
+    "remindSuccess": "{count, plural, one {Relance envoyée à # destinataire} other {Relances envoyées à # destinataires}}",
+    "remindNoneSent": "Aucune relance envoyée",
+    "remindError": "Échec de l''envoi des relances"
   },
   "register": {
     "validation": {

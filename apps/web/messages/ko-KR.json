@@ -745,6 +745,7 @@
       "SHARE_RECIPIENT_ADD": "공유 수신자 추가됨",
       "SHARE_RECIPIENT_REMOVE": "공유 수신자 제거됨",
       "SHARE_RECIPIENT_NOTIFY": "공유 수신자 알림됨",
+      "SHARE_RECIPIENT_REMIND": "Share non-downloaders reminded",
       "SHARE_ITEMS_ADD": "공유 항목 추가됨",
       "SHARE_ITEMS_REMOVE": "공유 항목 제거됨",
       "FILE_UPLOAD": "파일 업로드됨",
@@ -1044,7 +1045,13 @@
     "namePlaceholder": "Name (optional)",
     "downloaded": "Downloaded",
     "pending": "Pending",
-    "downloadedAt": "Downloaded on {date}"
+    "downloadedAt": "Downloaded on {date}",
+    "remindNonDownloaders": "Remind ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
+    "sendingReminders": "Sending reminders...",
+    "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
+    "remindNoneSent": "No reminders were sent",
+    "remindError": "Failed to send reminders"
   },
   "register": {
     "validation": {

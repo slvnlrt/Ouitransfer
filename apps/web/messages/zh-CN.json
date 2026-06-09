@@ -745,6 +745,7 @@
       "SHARE_RECIPIENT_ADD": "已添加共享收件人",
       "SHARE_RECIPIENT_REMOVE": "已移除共享收件人",
       "SHARE_RECIPIENT_NOTIFY": "已通知共享收件人",
+      "SHARE_RECIPIENT_REMIND": "Share non-downloaders reminded",
       "SHARE_ITEMS_ADD": "已添加共享项目",
       "SHARE_ITEMS_REMOVE": "已移除共享项目",
       "FILE_UPLOAD": "文件已上传",
@@ -1044,7 +1045,13 @@
     "namePlaceholder": "Name (optional)",
     "downloaded": "Downloaded",
     "pending": "Pending",
-    "downloadedAt": "Downloaded on {date}"
+    "downloadedAt": "Downloaded on {date}",
+    "remindNonDownloaders": "Remind ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
+    "sendingReminders": "Sending reminders...",
+    "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
+    "remindNoneSent": "No reminders were sent",
+    "remindError": "Failed to send reminders"
   },
   "register": {
     "validation": {

@@ -749,6 +749,7 @@
       "SHARE_RECIPIENT_ADD": "Người nhận chia sẻ đã được thêm",
       "SHARE_RECIPIENT_REMOVE": "Người nhận chia sẻ đã bị xóa",
       "SHARE_RECIPIENT_NOTIFY": "Người nhận chia sẻ đã được thông báo",
+      "SHARE_RECIPIENT_REMIND": "Share non-downloaders reminded",
       "SHARE_ITEMS_ADD": "Mục chia sẻ đã được thêm",
       "SHARE_ITEMS_REMOVE": "Mục chia sẻ đã bị xóa",
       "FILE_UPLOAD": "Tệp đã được tải lên",
@@ -1048,7 +1049,13 @@
     "namePlaceholder": "Name (optional)",
     "downloaded": "Downloaded",
     "pending": "Pending",
-    "downloadedAt": "Downloaded on {date}"
+    "downloadedAt": "Downloaded on {date}",
+    "remindNonDownloaders": "Remind ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
+    "sendingReminders": "Sending reminders...",
+    "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
+    "remindNoneSent": "No reminders were sent",
+    "remindError": "Failed to send reminders"
   },
   "register": {
     "validation": {

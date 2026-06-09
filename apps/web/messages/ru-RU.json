@@ -745,6 +745,7 @@
       "SHARE_RECIPIENT_ADD": "Получатели общего доступа добавлены",
       "SHARE_RECIPIENT_REMOVE": "Получатели общего доступа удалены",
       "SHARE_RECIPIENT_NOTIFY": "Получатели общего доступа уведомлены",
+      "SHARE_RECIPIENT_REMIND": "Share non-downloaders reminded",
       "SHARE_ITEMS_ADD": "Элементы общего доступа добавлены",
       "SHARE_ITEMS_REMOVE": "Элементы общего доступа удалены",
       "FILE_UPLOAD": "Файл загружен",
@@ -1044,7 +1045,13 @@
     "namePlaceholder": "Name (optional)",
     "downloaded": "Downloaded",
     "pending": "Pending",
-    "downloadedAt": "Downloaded on {date}"
+    "downloadedAt": "Downloaded on {date}",
+    "remindNonDownloaders": "Remind ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
+    "sendingReminders": "Sending reminders...",
+    "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
+    "remindNoneSent": "No reminders were sent",
+    "remindError": "Failed to send reminders"
   },
   "register": {
     "validation": {

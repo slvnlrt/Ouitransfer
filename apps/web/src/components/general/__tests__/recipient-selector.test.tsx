@@ -8,8 +8,9 @@
  *   - the access-count "views" line stays a SEPARATE signal from download status
  */
 
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // next-intl: return the key for plain strings, and interpolate {placeholders}
 // so we can assert the date made it into the tooltip.
@@ -32,14 +33,29 @@ vi.mock("next-intl", () => ({
   }),
 }));
 
+// Mutable SMTP flag so individual tests can enable/disable SMTP-gated controls.
+let mockSmtpValue = "false";
 vi.mock("@/hooks/use-secure-configs", () => ({
-  useSecureConfigValue: () => ({ value: "false", isLoading: false }),
+  useSecureConfigValue: () => ({ value: mockSmtpValue, isLoading: false }),
 }));
 
+const mockRemindNonDownloaders = vi.fn();
 vi.mock("@/http/endpoints", () => ({
   addRecipients: vi.fn(),
   notifyRecipients: vi.fn(),
   removeRecipients: vi.fn(),
+  remindNonDownloaders: (...args: unknown[]) => mockRemindNonDownloaders(...args),
+}));
+
+vi.mock("sonner", () => ({
+  toast: {
+    loading: vi.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
+    info: vi.fn(),
+    warning: vi.fn(),
+    dismiss: vi.fn(),
+  },
 }));
 
 import { RecipientSelector } from "@/components/general/recipient-selector";
@@ -64,9 +80,23 @@ function makeRecipient(overrides: Partial<ShareRecipient> = {}): ShareRecipient 
 
 function renderSelector(recipients: ShareRecipient[]) {
   return render(
-    <RecipientSelector shareId="share-1" selectedRecipients={recipients} onSuccess={vi.fn()} />,
+    <RecipientSelector
+      shareId="share-1"
+      selectedRecipients={recipients}
+      shareAlias="my-alias"
+      onSuccess={vi.fn()}
+    />,
   );
 }
+
+beforeEach(() => {
+  mockSmtpValue = "false";
+  mockRemindNonDownloaders.mockReset();
+});
+
+afterEach(() => {
+  vi.clearAllMocks();
+});
 
 describe("RecipientSelector download-status badge", () => {
   it("shows the Downloaded badge with the date in the tooltip when lastDownloadedAt is set", () => {
@@ -114,5 +144,63 @@ describe("RecipientSelector download-status badge", () => {
     expect(screen.getByText(/recipientSelector\.views/)).toBeInTheDocument();
     expect(screen.getByText("recipientSelector.pending")).toBeInTheDocument();
     expect(screen.queryByText("recipientSelector.downloaded")).not.toBeInTheDocument();
+  });
+});
+
+describe("RecipientSelector — remind non-downloaders button", () => {
+  function getRemindButton() {
+    // The button label key is "recipientSelector.remindNonDownloaders <count>"
+    // (the mock appends interpolation values). Match the prefix.
+    return screen.getByRole("button", { name: /recipientSelector\.remindNonDownloaders/ });
+  }
+
+  it("is hidden when SMTP is disabled", () => {
+    mockSmtpValue = "false";
+    renderSelector([makeRecipient({ notifiedAt: "2024-05-01T10:00:00Z", lastDownloadedAt: null })]);
+
+    expect(
+      screen.queryByRole("button", { name: /recipientSelector\.remindNonDownloaders/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("is enabled when there is at least one pending (notified, not downloaded) recipient", () => {
+    mockSmtpValue = "true";
+    renderSelector([makeRecipient({ notifiedAt: "2024-05-01T10:00:00Z", lastDownloadedAt: null })]);
+
+    expect(getRemindButton()).toBeEnabled();
+  });
+
+  it("is disabled when every notified recipient has already downloaded", () => {
+    mockSmtpValue = "true";
+    renderSelector([
+      makeRecipient({
+        notifiedAt: "2024-05-01T10:00:00Z",
+        lastDownloadedAt: "2024-06-01T10:00:00Z",
+      }),
+    ]);
+
+    expect(getRemindButton()).toBeDisabled();
+  });
+
+  it("is disabled when there are recipients but none have been notified", () => {
+    mockSmtpValue = "true";
+    renderSelector([makeRecipient({ notifiedAt: null, lastDownloadedAt: null })]);
+
+    expect(getRemindButton()).toBeDisabled();
+  });
+
+  it("calls remindNonDownloaders with no email filter when clicked", async () => {
+    mockSmtpValue = "true";
+    mockRemindNonDownloaders.mockResolvedValue({
+      data: { remindedRecipients: ["bob@example.com"] },
+    });
+    const user = userEvent.setup();
+    renderSelector([makeRecipient({ notifiedAt: "2024-05-01T10:00:00Z", lastDownloadedAt: null })]);
+
+    await user.click(getRemindButton());
+
+    await waitFor(() => {
+      expect(mockRemindNonDownloaders).toHaveBeenCalledWith("share-1", {});
+    });
   });
 });
