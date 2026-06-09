@@ -2855,6 +2855,26 @@
       "reverse_share_pending_deletion": "Partage inversé en attente de suppression",
       "share_pending_deletion": "Partage en attente de suppression"
     },
+    "descriptions": {
+      "share_accessed": "Quand quelqu'un ouvre un lien vers vos fichiers partagés",
+      "share_downloaded": "Quand quelqu'un télécharge des fichiers depuis votre partage",
+      "share_expiring": "Un rappel avant l'expiration de votre lien de partage",
+      "share_expired": "Quand votre lien de partage a expiré et n'est plus accessible",
+      "share_pending_deletion": "Quand votre partage expiré est programmé pour suppression définitive",
+      "share_max_views_reached": "Quand votre partage atteint le nombre maximum de consultations autorisées",
+      "share_no_activity": "Quand votre partage n'a eu aucun téléchargement depuis un moment",
+      "reverse_share_uploaded": "Quand quelqu'un dépose des fichiers sur votre lien de partage inversé",
+      "reverse_share_expiring": "Un rappel avant l'expiration de votre lien de partage inversé",
+      "reverse_share_expired": "Quand votre lien de partage inversé a expiré",
+      "reverse_share_pending_deletion": "Quand votre partage inversé expiré est programmé pour suppression",
+      "reverse_share_auto_deleted": "Quand votre partage inversé a été automatiquement supprimé après expiration",
+      "quota_warning": "Quand votre utilisation du stockage approche de la limite de votre quota",
+      "quota_exceeded": "Quand votre utilisation du stockage a dépassé la limite de votre quota",
+      "files_auto_deleted": "Quand des fichiers ont été automatiquement supprimés pour libérer de l'espace",
+      "share_auto_deleted": "Quand un partage a été automatiquement supprimé par le système de nettoyage",
+      "admin_user_registered": "Quand un nouvel utilisateur s'inscrit sur la plateforme (admin uniquement)",
+      "admin_quota_alert": "Quand l'utilisation du stockage d'un utilisateur dépasse son quota (admin uniquement)"
+    },
     "categories": {
       "account": "Compte",
       "shares": "Partages",

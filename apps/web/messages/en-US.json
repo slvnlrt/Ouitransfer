@@ -2855,6 +2855,26 @@
       "admin_quota_alert": "User quota alert (admin)",
       "test_email": "Test email"
     },
+    "descriptions": {
+      "share_accessed": "When someone opens a link to your shared files",
+      "share_downloaded": "When someone downloads files from your share",
+      "share_expiring": "A reminder before your share link expires",
+      "share_expired": "When your share link has expired and is no longer accessible",
+      "share_pending_deletion": "When your expired share is scheduled to be permanently deleted",
+      "share_max_views_reached": "When your share reaches the maximum number of allowed views",
+      "share_no_activity": "When your share has had no downloads for a while",
+      "reverse_share_uploaded": "When someone uploads files to your reverse share link",
+      "reverse_share_expiring": "A reminder before your reverse share link expires",
+      "reverse_share_expired": "When your reverse share link has expired",
+      "reverse_share_pending_deletion": "When your expired reverse share is scheduled for deletion",
+      "reverse_share_auto_deleted": "When your reverse share has been automatically deleted after expiration",
+      "quota_warning": "When your storage usage is approaching your quota limit",
+      "quota_exceeded": "When your storage usage has exceeded your quota limit",
+      "files_auto_deleted": "When files have been automatically deleted to free up quota space",
+      "share_auto_deleted": "When a share has been automatically deleted by the cleanup system",
+      "admin_user_registered": "When a new user registers on the platform (admin only)",
+      "admin_quota_alert": "When a user's storage usage exceeds their quota (admin only)"
+    },
     "categories": {
       "account": "Account",
       "shares": "Shares",

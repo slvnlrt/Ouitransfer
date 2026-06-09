@@ -263,8 +263,13 @@ export function NotificationPreferencesTable() {
                           const isChanged = localChanges[pref.type] !== undefined;
                           return (
                             <TableRow key={pref.type} className={isChanged ? "bg-accent/30" : ""}>
-                              <TableCell className="font-medium">
-                                {t(`types.${pref.type}` as Parameters<typeof t>[0])}
+                              <TableCell>
+                                <div className="font-medium">
+                                  {t(`types.${pref.type}` as Parameters<typeof t>[0])}
+                                </div>
+                                <p className="text-muted-foreground text-sm font-normal">
+                                  {t(`descriptions.${pref.type}` as Parameters<typeof t>[0])}
+                                </p>
                               </TableCell>
                               <TableCell>
                                 <Select
