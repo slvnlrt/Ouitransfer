@@ -1228,6 +1228,8 @@ describe("Visitor Tracking — integration", () => {
             notifiedAt: now,
             lastAccessedAt: now,
             accessCount: 3,
+            downloadCount: 2,
+            lastDownloadedAt: now,
             createdAt: new Date("2024-01-01"),
             updatedAt: new Date("2024-06-01"),
           },
@@ -1252,6 +1254,44 @@ describe("Visitor Tracking — integration", () => {
       expect(recipient).toHaveProperty("accessCount", 3);
       expect(recipient).toHaveProperty("notifiedAt");
       expect(recipient).toHaveProperty("lastAccessedAt");
+      // Batch 2: download-tracking fields must round-trip into the HTTP response body
+      expect(recipient).toHaveProperty("downloadCount", 2);
+      expect(recipient).toHaveProperty("lastDownloadedAt");
+      expect(recipient.lastDownloadedAt).toMatch(/2024-06-01/);
+    });
+
+    it("serializes recipients with no downloads as downloadCount 0 / lastDownloadedAt null", async () => {
+      const share = makeShare({
+        recipients: [
+          {
+            id: "recipient-2",
+            email: "carol@example.com",
+            name: "Carol",
+            trackingToken: "tok-def456",
+            notifiedAt: new Date("2024-06-01T10:00:00Z"),
+            lastAccessedAt: null,
+            accessCount: 0,
+            downloadCount: 0,
+            lastDownloadedAt: null,
+            createdAt: new Date("2024-01-01"),
+            updatedAt: new Date("2024-06-01"),
+          },
+        ],
+      });
+      mockShareFindUnique.mockResolvedValue(share);
+
+      const token = signToken(CREATOR_ID);
+      const res = await app.inject({
+        method: "GET",
+        url: `/shares/${SHARE_ID}`,
+        headers: { cookie: `token=${token}` },
+      });
+
+      expect(res.statusCode).toBe(200);
+      const { share: responseShare } = res.json();
+      const recipient = responseShare.recipients[0];
+      expect(recipient).toHaveProperty("downloadCount", 0);
+      expect(recipient).toHaveProperty("lastDownloadedAt", null);
     });
   });
 

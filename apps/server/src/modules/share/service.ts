@@ -121,6 +121,7 @@ export class ShareService {
             ...recipient,
             notifiedAt: recipient.notifiedAt?.toISOString() ?? null,
             lastAccessedAt: recipient.lastAccessedAt?.toISOString() ?? null,
+            lastDownloadedAt: recipient.lastDownloadedAt?.toISOString() ?? null,
             createdAt: recipient.createdAt.toISOString(),
             updatedAt: recipient.updatedAt.toISOString(),
           })) || []
