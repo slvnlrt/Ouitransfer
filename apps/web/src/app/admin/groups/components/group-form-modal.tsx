@@ -2,7 +2,7 @@ import { Layers, Save } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
-import { FileSizeInput } from "@/app/settings/components/file-size-input";
+import { FileSizeInput } from "@/app/admin/settings/components/file-size-input";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

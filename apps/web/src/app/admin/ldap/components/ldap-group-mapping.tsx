@@ -30,7 +30,7 @@ export function LdapGroupMapping({ groups, isLoading }: LdapGroupMappingProps) {
             </div>
           </div>
           <Button variant="outline" size="sm" asChild>
-            <Link href="/groups-management">
+            <Link href="/admin/groups">
               {t("ldap.groupMapping.manageGroups")}
               <ExternalLink className="ml-2 h-3 w-3" />
             </Link>

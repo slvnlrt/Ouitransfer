@@ -129,25 +129,22 @@ export function Navbar() {
                 {isAdmin && (
                   <>
                     <DropdownMenuItem asChild>
-                      <Link href="/settings" className="flex items-center gap-2 cursor-pointer">
+                      <Link
+                        href="/admin/settings"
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
                         <Settings className="h-4 w-4" />
                         {t("navbar.settings")}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link
-                        href="/users-management"
-                        className="flex items-center gap-2 cursor-pointer"
-                      >
+                      <Link href="/admin/users" className="flex items-center gap-2 cursor-pointer">
                         <Users className="h-4 w-4" />
                         {t("navbar.usersManagement")}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link
-                        href="/groups-management"
-                        className="flex items-center gap-2 cursor-pointer"
-                      >
+                      <Link href="/admin/groups" className="flex items-center gap-2 cursor-pointer">
                         <Layers className="h-4 w-4" />
                         {t("navbar.groupsManagement")}
                       </Link>

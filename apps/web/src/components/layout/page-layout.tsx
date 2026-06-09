@@ -14,7 +14,7 @@ interface PageLayoutProps {
  * Shared layout for authenticated pages that don't use the FileManagerLayout sidebar.
  * Provides consistent Navbar + content area + footer structure.
  *
- * Used by: profile, settings, users-management, shares, reverse-shares.
+ * Used by: profile, admin/settings, admin/users, admin/groups, shares, reverse-shares.
  * Pages with sidebar (dashboard, files, customization) use FileManagerLayout instead.
  */
 export function PageLayout({ children }: PageLayoutProps) {

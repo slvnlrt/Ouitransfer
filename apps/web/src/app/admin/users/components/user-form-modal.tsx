@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { FileSizeInput } from "@/app/settings/components/file-size-input";
+import { FileSizeInput } from "@/app/admin/settings/components/file-size-input";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

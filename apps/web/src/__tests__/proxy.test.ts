@@ -226,7 +226,7 @@ describe("proxy", () => {
   // -----------------------------------------------------------------------
   it("redirects non-admin users from admin paths to /dashboard", async () => {
     const token = await signToken({ userId: "user-1", isAdmin: false });
-    const req = createRequest("/settings", token);
+    const req = createRequest("/admin/settings", token);
     await proxy(req);
 
     expect(mockRedirect).toHaveBeenCalledTimes(1);
@@ -234,9 +234,9 @@ describe("proxy", () => {
     expect(url.pathname).toBe("/dashboard");
   });
 
-  it("redirects non-admin users from /users-management to /dashboard", async () => {
+  it("redirects non-admin users from /admin/users to /dashboard", async () => {
     const token = await signToken({ userId: "user-1", isAdmin: false });
-    const req = createRequest("/users-management", token);
+    const req = createRequest("/admin/users", token);
     await proxy(req);
 
     expect(mockRedirect).toHaveBeenCalledTimes(1);
@@ -249,16 +249,16 @@ describe("proxy", () => {
   // -----------------------------------------------------------------------
   it("allows admin users to access admin paths", async () => {
     const token = await signToken({ userId: "admin-1", isAdmin: true });
-    const req = createRequest("/settings", token);
+    const req = createRequest("/admin/settings", token);
     await proxy(req);
 
     expect(mockNext).toHaveBeenCalledTimes(1);
     expect(mockRedirect).not.toHaveBeenCalled();
   });
 
-  it("allows admin users to access /users-management", async () => {
+  it("allows admin users to access /admin/users", async () => {
     const token = await signToken({ userId: "admin-1", isAdmin: true });
-    const req = createRequest("/users-management", token);
+    const req = createRequest("/admin/users", token);
     await proxy(req);
 
     expect(mockNext).toHaveBeenCalledTimes(1);
@@ -317,9 +317,9 @@ describe("proxy", () => {
     expect(mockRedirect).not.toHaveBeenCalled();
   });
 
-  it("treats /settings/subpath as admin path", async () => {
+  it("treats /admin/settings/subpath as admin path", async () => {
     const token = await signToken({ userId: "user-1", isAdmin: false });
-    const req = createRequest("/settings/subpath", token);
+    const req = createRequest("/admin/settings/subpath", token);
     await proxy(req);
 
     expect(mockRedirect).toHaveBeenCalledTimes(1);
@@ -327,9 +327,9 @@ describe("proxy", () => {
     expect(url.pathname).toBe("/dashboard");
   });
 
-  it("treats /settingspage as a regular protected path (not admin)", async () => {
+  it("treats /administrator as a regular protected path (not admin)", async () => {
     const token = await signToken({ userId: "user-1", isAdmin: false });
-    const req = createRequest("/settingspage", token);
+    const req = createRequest("/administrator", token);
     await proxy(req);
 
     // Non-admin user on a non-admin path → should be allowed
