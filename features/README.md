@@ -121,4 +121,4 @@ All resolved: B-1 through B-25, TD-1 through TD-4, TD-6 through TD-19, TD-21, TD
 
 **Open bugs:** _none_ (B-26 resolved)
 **Open tech debt:** TD-5, TD-10, TD-20, TD-27, TD-28, TD-32, TD-33, TD-36, TD-40, TD-42, TD-43, TD-52 — see `TECHNICAL-DEBT.md` (TD-30, TD-38, TD-50, TD-51 resolved)
-**Next features:** _none queued_ — 8.3 Download Tracking shipped (lots A/B/C/D/F; lot E hors scope). Final review pass on 8.3 pending (`features/reviews/8.3-download-tracking.md`).
+**Next features:** _none queued_ — 8.3 Download Tracking shipped (lots A/B/C/D/F; lot E hors scope). Final holistic review (Opus) clean: 0 Critical / 0 Important / 3 Minor, all tracked in TD-52 (`features/reviews/8.3-download-tracking.md`).

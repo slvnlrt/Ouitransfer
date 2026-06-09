@@ -250,13 +250,23 @@ upload tracking par destinataire) ont été délibérément reportés plutôt qu
    test contre une vraie base (et non le mock Prisma) renforcerait la confiance sur l'incrément
    atomique `{ increment: 1 }` et le `updateMany({ where: { uploadedAt: null } })` conditionnel.
    Nice-to-have, non bloquant.
+3. **Double résolution du destinataire sur le chemin de download (micro-efficience).** Identifié
+   par la revue globale Opus (lot C/F). Dans `apps/server/src/modules/file/routes.ts`, les sites
+   d'émission de l'audit `FILE_DOWNLOAD` (`:1080-1082`, `:1205-1207`) appellent
+   `resolveDownloadRecipientFromRequest` pour enrichir les métadonnées, puis `trackShareDownload`
+   (`:200-216`) re-parse le cookie et rappelle `resolveDownloadRecipient` — deux allers-retours
+   résolveur indépendants (alias lookup + recipient lookup) pour le même download. Fonctionnellement
+   correct, best-effort des deux côtés. Si un jour consolidé : résoudre une seule fois dans le
+   handler et passer le résultat à `trackShareDownload`. Aucun changement requis (perf négligeable
+   sur un chemin déjà best-effort + fire-and-forget).
 
 **Fix:** (1) ajouter l'affichage du compteur dans `reverse-share-recipient-selector.tsx` si
 demandé ; (2) ajouter un test d'intégration live-DB si l'on en met en place un harnais pour
-d'autres flux.
+d'autres flux ; (3) consolider la résolution du destinataire en un seul appel par requête de
+download si le hot path devient un point chaud.
 
-**Found during:** 8.3 Batch 4 / Batch 5 (juin 2026)
+**Found during:** 8.3 Batch 4 / Batch 5 + revue globale Opus (juin 2026)
 **Severity:** Very low — best-effort feature, comportement couvert par les tests `app.inject()`,
-aucun bug connu.
+aucun bug connu ; les items sont des optimisations/polish, pas des défauts.
 
 ---
