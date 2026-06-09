@@ -984,6 +984,62 @@ describe("Visitor Tracking — integration", () => {
       expect(body.visits[0]).not.toHaveProperty("userAgent");
     });
 
+    it("maps the response identificationSource from the stored column (8.3 Batch 1, lot C)", async () => {
+      // Since lot C sets recipientId for self-declared email matches too, recipientId alone
+      // no longer implies a token-verified arrival. The endpoint must honor the stored column:
+      // self_declared → "cookie" (NOT "tracking_token"); token → "tracking_token"; null → legacy derive.
+      mockShareFindUnique.mockResolvedValue(makeShare());
+      mockShareVisitFindMany.mockResolvedValue([
+        // Verified personalized-link recipient.
+        {
+          ...visitRecord,
+          id: "v-token",
+          recipientId: "rcpt-1",
+          identificationSource: "token",
+          recipient: { email: "a@example.com", name: "A" },
+        },
+        // Self-identified via the form — recipientId is set but the identity is unverified.
+        {
+          ...visitRecord,
+          id: "v-self",
+          recipientId: "rcpt-2",
+          visitorEmail: "b@example.com",
+          identificationSource: "self_declared",
+          recipient: { email: "b@example.com", name: "B" },
+        },
+        // Legacy row (pre-8.3): stored source is null, recipientId set → derive "tracking_token".
+        {
+          ...visitRecord,
+          id: "v-legacy",
+          recipientId: "rcpt-3",
+          identificationSource: null,
+          recipient: { email: "c@example.com", name: "C" },
+        },
+      ]);
+      mockShareVisitCount.mockResolvedValue(3);
+
+      const token = signToken(CREATOR_ID);
+      const res = await app.inject({
+        method: "GET",
+        url: `/shares/${SHARE_ID}/visits`,
+        headers: { cookie: `token=${token}` },
+      });
+
+      expect(res.statusCode).toBe(200);
+      const byId = Object.fromEntries(
+        res
+          .json()
+          .visits.map((v: { id: string; identificationSource: string }) => [
+            v.id,
+            v.identificationSource,
+          ]),
+      );
+      expect(byId["v-token"]).toBe("tracking_token");
+      // The critical assertion: a self-declared match is NOT shown as a verified token arrival.
+      expect(byId["v-self"]).toBe("cookie");
+      expect(byId["v-legacy"]).toBe("tracking_token");
+    });
+
     it("filters by action when provided", async () => {
       mockShareFindUnique.mockResolvedValue(makeShare());
       mockShareVisitFindMany.mockResolvedValue([

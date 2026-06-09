@@ -1128,20 +1128,28 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         prisma.shareVisit.count({ where }),
       ]);
 
-      // Derive identificationSource for each visit:
-      // - "tracking_token": recipientId is set (visitor arrived via a personalized link)
-      // - "cookie": no recipientId, but visitorEmail or visitorName is set (identification form)
-      // - "anonymous": no identification at all
+      // Derive the response identificationSource for each visit. Prefer the source recorded
+      // at write time (8.3): since lot C now sets `recipientId` for self-declared email matches
+      // too, `recipientId != null` alone no longer implies a token-verified arrival. The stored
+      // column keeps the distinction honest:
+      // - stored "token"        → "tracking_token" (verified personalized link)
+      // - stored "self_declared"→ "cookie"         (self-identified via the form, unverified)
+      // - stored null (pre-8.3 rows) → derive from the available identity for backward compat.
       // Strip ipAddress and userAgent from response — these are stored for
       // admin audit purposes only and must not be exposed to regular users.
       const enrichedVisits = visits.map(({ ipAddress: _ip, userAgent: _ua, ...visit }) => ({
         ...visit,
         createdAt: visit.createdAt.toISOString(),
-        identificationSource: visit.recipientId
-          ? ("tracking_token" as const)
-          : visit.visitorEmail || visit.visitorName
-            ? ("cookie" as const)
-            : ("anonymous" as const),
+        identificationSource:
+          visit.identificationSource === "token"
+            ? ("tracking_token" as const)
+            : visit.identificationSource === "self_declared"
+              ? ("cookie" as const)
+              : visit.recipientId
+                ? ("tracking_token" as const)
+                : visit.visitorEmail || visit.visitorName
+                  ? ("cookie" as const)
+                  : ("anonymous" as const),
       }));
 
       return reply.send({ visits: enrichedVisits, total, page, limit });

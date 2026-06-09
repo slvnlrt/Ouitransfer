@@ -26,8 +26,8 @@ export interface ResolvedDownloadRecipient {
  * Trust ladder:
  *  1. `cookie.recipientId` (token-verified, written server-side) → verify it belongs to `shareId`
  *     → source `"token"`.
- *  2. else `cookie.email` (self-declared form input) → match `shareId_email` (normalized
- *     lower/trim, exactly like recipient creation) → source `"self_declared"`.
+ *  2. else `cookie.email` (self-declared form input) → match `shareId_email` (normalized via
+ *     `.trim().toLowerCase()`, exactly like recipient creation) → source `"self_declared"`.
  *  3. else → `null` (anonymous).
  *
  * This is a comfort feature, not a security control: a self-declared email is spoofable and that
