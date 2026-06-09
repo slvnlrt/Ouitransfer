@@ -206,12 +206,10 @@
       "selectFiles": "Wybierz pliki"
     },
     "errors": {
-      "nameRequired": "Nazwa udostępnienia jest wymagana",
-      "selectItems": "Wybierz co najmniej jeden plik lub folder"
+      "nameRequired": "Nazwa udostępnienia jest wymagana"
     },
     "itemsSelected": "Wybrano {count} elementów",
     "passwordPlaceholder": "Wprowadź hasło",
-    "selectItemsPrompt": "Wybierz pliki i foldery do udostępnienia",
     "privacySection": "Privacy & Notifications",
     "nameFieldRequired": "Require visitor name",
     "emailFieldRequired": "Require visitor email",

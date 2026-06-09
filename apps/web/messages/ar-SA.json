@@ -206,12 +206,10 @@
       "selectFiles": "اختيار الملفات"
     },
     "errors": {
-      "nameRequired": "اسم المشاركة مطلوب",
-      "selectItems": "يرجى اختيار ملف أو مجلد واحد على الأقل"
+      "nameRequired": "اسم المشاركة مطلوب"
     },
     "itemsSelected": "{count} عنصر محدد",
     "passwordPlaceholder": "أدخل كلمة المرور",
-    "selectItemsPrompt": "اختر الملفات والمجلدات للمشاركة",
     "privacySection": "Privacy & Notifications",
     "nameFieldRequired": "Require visitor name",
     "emailFieldRequired": "Require visitor email",

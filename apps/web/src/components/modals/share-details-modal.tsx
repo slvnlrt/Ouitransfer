@@ -267,7 +267,7 @@ export function ShareDetailsModal({
                 {/* Link + QR side by side when a link exists; the link section spans full
                     width otherwise (it then shows the "generate link" affordance). */}
                 {shareLink ? (
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <ShareDetailsLinksSection
                       shareLink={shareLink}
                       onEditLink={
@@ -289,7 +289,7 @@ export function ShareDetailsModal({
                   />
                 )}
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <ShareDetailsDatesSection
                     share={share}
                     onEditExpiration={

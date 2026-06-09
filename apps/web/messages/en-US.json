@@ -205,11 +205,9 @@
     "success": "Share created successfully",
     "error": "Failed to create share",
     "errors": {
-      "nameRequired": "Share name is required",
-      "selectItems": "Please select at least one file or folder"
+      "nameRequired": "Share name is required"
     },
     "itemsSelected": "{count} items selected",
-    "selectItemsPrompt": "Select files and folders to share",
     "tabs": {
       "shareDetails": "Share Details",
       "selectFiles": "Select Files"

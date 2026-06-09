@@ -206,12 +206,10 @@
       "selectFiles": "फ़ाइलें चुनें"
     },
     "errors": {
-      "nameRequired": "शेयर का नाम आवश्यक है",
-      "selectItems": "कृपया कम से कम एक फ़ाइल या फ़ोल्डर चुनें"
+      "nameRequired": "शेयर का नाम आवश्यक है"
     },
     "itemsSelected": "{count, plural, =0 {कोई आइटम चयनित नहीं} =1 {1 आइटम चयनित} other {# आइटम चयनित}}",
     "passwordPlaceholder": "पासवर्ड दर्ज करें",
-    "selectItemsPrompt": "साझा करने के लिए फ़ाइलें और फ़ोल्डर चुनें",
     "privacySection": "Privacy & Notifications",
     "nameFieldRequired": "Require visitor name",
     "emailFieldRequired": "Require visitor email",

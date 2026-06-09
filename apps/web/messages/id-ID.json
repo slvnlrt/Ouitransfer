@@ -205,11 +205,9 @@
     "success": "Berbagi berhasil dibuat",
     "error": "Gagal membuat berbagi",
     "errors": {
-      "nameRequired": "Nama berbagi wajib diisi",
-      "selectItems": "Silakan pilih minimal satu file atau folder"
+      "nameRequired": "Nama berbagi wajib diisi"
     },
     "itemsSelected": "{count} item dipilih",
-    "selectItemsPrompt": "Pilih file dan folder untuk dibagikan",
     "tabs": {
       "shareDetails": "Detail Berbagi",
       "selectFiles": "Pilih File"

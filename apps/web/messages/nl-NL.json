@@ -206,12 +206,10 @@
       "selectFiles": "Bestanden selecteren"
     },
     "errors": {
-      "nameRequired": "Deelnaam is verplicht",
-      "selectItems": "Selecteer ten minste één bestand of map"
+      "nameRequired": "Deelnaam is verplicht"
     },
     "itemsSelected": "{count} items geselecteerd",
     "passwordPlaceholder": "Voer wachtwoord in",
-    "selectItemsPrompt": "Selecteer bestanden en mappen om te delen",
     "privacySection": "Privacy & Notifications",
     "nameFieldRequired": "Require visitor name",
     "emailFieldRequired": "Require visitor email",

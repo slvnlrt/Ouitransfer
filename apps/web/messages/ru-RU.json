@@ -206,12 +206,10 @@
       "selectFiles": "Выбрать файлы"
     },
     "errors": {
-      "nameRequired": "Требуется имя общего ресурса",
-      "selectItems": "Выберите хотя бы один файл или папку"
+      "nameRequired": "Требуется имя общего ресурса"
     },
     "itemsSelected": "Выбрано элементов: {count}",
     "passwordPlaceholder": "Введите пароль",
-    "selectItemsPrompt": "Выберите файлы и папки для общего доступа",
     "privacySection": "Privacy & Notifications",
     "nameFieldRequired": "Require visitor name",
     "emailFieldRequired": "Require visitor email",

@@ -205,11 +205,9 @@
     "success": "Delningen har skapats",
     "error": "Det gick inte att skapa delning",
     "errors": {
-      "nameRequired": "Delningsnamn krävs",
-      "selectItems": "Välj minst en fil eller mapp"
+      "nameRequired": "Delningsnamn krävs"
     },
     "itemsSelected": "{count} objekt valda",
-    "selectItemsPrompt": "Välj filer och mappar att dela",
     "tabs": {
       "shareDetails": "Delningsdetaljer",
       "selectFiles": "Välj Filer"

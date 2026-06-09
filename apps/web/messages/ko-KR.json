@@ -206,12 +206,10 @@
       "selectFiles": "파일 선택"
     },
     "errors": {
-      "nameRequired": "공유 이름은 필수입니다",
-      "selectItems": "최소 하나의 파일 또는 폴더를 선택해주세요"
+      "nameRequired": "공유 이름은 필수입니다"
     },
     "itemsSelected": "{count, plural, =0 {선택된 항목 없음} =1 {1개 항목 선택됨} other {#개 항목 선택됨}}",
     "passwordPlaceholder": "비밀번호를 입력하세요",
-    "selectItemsPrompt": "공유할 파일과 폴더를 선택하세요",
     "privacySection": "Privacy & Notifications",
     "nameFieldRequired": "Require visitor name",
     "emailFieldRequired": "Require visitor email",

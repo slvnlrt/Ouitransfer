@@ -206,12 +206,10 @@
       "selectFiles": "Sélectionner les fichiers"
     },
     "errors": {
-      "nameRequired": "Le nom du partage est requis",
-      "selectItems": "Veuillez sélectionner au moins un fichier ou dossier"
+      "nameRequired": "Le nom du partage est requis"
     },
     "itemsSelected": "{count, plural, =0 {Aucun élément sélectionné} =1 {1 élément sélectionné} other {# éléments sélectionnés}}",
     "passwordPlaceholder": "Entrez le mot de passe",
-    "selectItemsPrompt": "Sélectionnez les fichiers et dossiers à partager",
     "privacySection": "Confidentialité et notifications",
     "nameFieldRequired": "Exiger le nom du visiteur",
     "emailFieldRequired": "Exiger l'email du visiteur",

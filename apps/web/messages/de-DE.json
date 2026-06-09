@@ -206,12 +206,10 @@
       "selectFiles": "Dateien auswählen"
     },
     "errors": {
-      "nameRequired": "Freigabename ist erforderlich",
-      "selectItems": "Bitte wählen Sie mindestens eine Datei oder einen Ordner aus"
+      "nameRequired": "Freigabename ist erforderlich"
     },
     "itemsSelected": "{count} Elemente ausgewählt",
     "passwordPlaceholder": "Passwort eingeben",
-    "selectItemsPrompt": "Wählen Sie Dateien und Ordner zum Teilen aus",
     "privacySection": "Privacy & Notifications",
     "nameFieldRequired": "Require visitor name",
     "emailFieldRequired": "Require visitor email",

@@ -206,12 +206,10 @@
       "selectFiles": "选择文件"
     },
     "errors": {
-      "nameRequired": "分享名称为必填项",
-      "selectItems": "请至少选择一个文件或文件夹"
+      "nameRequired": "分享名称为必填项"
     },
     "itemsSelected": "已选择 {count} 项",
     "passwordPlaceholder": "输入密码",
-    "selectItemsPrompt": "选择要分享的文件和文件夹",
     "privacySection": "Privacy & Notifications",
     "nameFieldRequired": "Require visitor name",
     "emailFieldRequired": "Require visitor email",

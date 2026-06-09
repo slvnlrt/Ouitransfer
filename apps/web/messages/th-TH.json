@@ -205,11 +205,9 @@
     "success": "สร้างแชร์เรียบร้อยแล้ว",
     "error": "ไม่สามารถสร้างแชร์",
     "errors": {
-      "nameRequired": "ต้องระบุชื่อแชร์",
-      "selectItems": "โปรดเลือกไฟล์หรือโฟลเดอร์อย่างน้อยหนึ่งรายการ"
+      "nameRequired": "ต้องระบุชื่อแชร์"
     },
     "itemsSelected": "{count} รายการที่เลือก",
-    "selectItemsPrompt": "เลือกไฟล์และโฟลเดอร์เพื่อแชร์",
     "tabs": {
       "shareDetails": "รายละเอียดแชร์",
       "selectFiles": "เลือกไฟล์"

@@ -210,12 +210,10 @@
       "selectFiles": "Selecionar arquivos"
     },
     "errors": {
-      "nameRequired": "O nome do compartilhamento é obrigatório",
-      "selectItems": "Por favor, selecione pelo menos um arquivo ou pasta"
+      "nameRequired": "O nome do compartilhamento é obrigatório"
     },
     "itemsSelected": "{count} itens selecionados",
     "passwordPlaceholder": "Digite a senha",
-    "selectItemsPrompt": "Selecione arquivos e pastas para compartilhar",
     "privacySection": "Privacy & Notifications",
     "nameFieldRequired": "Require visitor name",
     "emailFieldRequired": "Require visitor email",

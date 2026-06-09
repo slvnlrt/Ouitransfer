@@ -205,11 +205,9 @@
     "success": "השיתוף נוצר בהצלחה",
     "error": "נכשל ביצירת שיתוף",
     "errors": {
-      "nameRequired": "שם השיתוף נדרש",
-      "selectItems": "אנא בחר לפחות קובץ או תיקייה אחד"
+      "nameRequired": "שם השיתוף נדרש"
     },
     "itemsSelected": "{count} פריטים נבחרו",
-    "selectItemsPrompt": "בחר קבצים ותיקיות לשיתוף",
     "tabs": {
       "shareDetails": "פרטי שיתוף",
       "selectFiles": "בחר קבצים"

@@ -206,12 +206,10 @@
       "selectFiles": "Dosyaları Seç"
     },
     "errors": {
-      "nameRequired": "Paylaşım adı gerekli",
-      "selectItems": "Lütfen en az bir dosya veya klasör seçin"
+      "nameRequired": "Paylaşım adı gerekli"
     },
     "itemsSelected": "{count} öğe seçildi",
     "passwordPlaceholder": "Şifre girin",
-    "selectItemsPrompt": "Paylaşmak için dosya ve klasörleri seçin",
     "privacySection": "Privacy & Notifications",
     "nameFieldRequired": "Require visitor name",
     "emailFieldRequired": "Require visitor email",
