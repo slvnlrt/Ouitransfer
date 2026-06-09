@@ -14,27 +14,27 @@ export const quotaOverrideField = z
     const str = String(val);
     if (!/^\d+$/.test(str)) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         message: "Quota value must be a non-negative integer in bytes",
       });
-      return z.NEVER;
+      return undefined as never;
     }
     try {
       const n = BigInt(str);
       const ONE_PB = 1125899906842624n; // 2^50 bytes = 1 PB
       if (n > ONE_PB) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "Quota value must not exceed 1 PB",
         });
-        return z.NEVER;
+        return undefined as never;
       }
       return n;
     } catch {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         message: "Quota value must be a valid integer",
       });
-      return z.NEVER;
+      return undefined as never;
     }
   });

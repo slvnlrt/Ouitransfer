@@ -53,8 +53,9 @@ function intMin(label: string, min: number): z.ZodType {
     .string()
     .trim()
     .min(1, wholeNumberMessage)
+    .transform(Number)
     .pipe(
-      z.coerce
+      z
         .number({ message: wholeNumberMessage })
         .int(wholeNumberMessage)
         .min(min, `${label} must be at least ${min}.`),
@@ -78,12 +79,12 @@ function bigintMin(label: string, min: bigint): z.ZodType {
       try {
         parsed = BigInt(value);
       } catch {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, message: wholeNumberMessage });
+        ctx.addIssue({ code: "custom", message: wholeNumberMessage });
         return;
       }
       if (parsed < min) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: `${label} must be at least ${min}.`,
         });
       }
@@ -104,7 +105,7 @@ function quotaWarningThresholds(label: string): z.ZodType {
     .min(1, message)
     .superRefine((value, ctx) => {
       const parts = value.split(",");
-      const fail = () => ctx.addIssue({ code: z.ZodIssueCode.custom, message });
+      const fail = () => ctx.addIssue({ code: "custom", message });
       for (const part of parts) {
         const trimmed = part.trim();
         if (trimmed === "" || !/^\d+$/.test(trimmed)) {

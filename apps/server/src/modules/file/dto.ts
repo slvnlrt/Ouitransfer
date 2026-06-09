@@ -6,8 +6,8 @@ export const RegisterFileSchema = z.object({
   extension: z.string().min(1, "File extension is required"),
   mimeType: z.string().optional().describe("MIME type declared by the client"),
   size: z.number({
-    required_error: "File size is required",
-    invalid_type_error: "File size must be a number",
+    error: (issue) =>
+      issue.input === undefined ? "File size is required" : "File size must be a number",
   }),
   objectName: z.string().min(1, "Object name is required"),
   folderId: z.string().optional(),
@@ -18,8 +18,8 @@ export const CheckFileSchema = z.object({
   description: z.string().optional(),
   extension: z.string().min(1, "File extension is required"),
   size: z.number({
-    required_error: "File size is required",
-    invalid_type_error: "File size must be a number",
+    error: (issue) =>
+      issue.input === undefined ? "File size is required" : "File size must be a number",
   }),
   objectName: z.string().min(1, "Object name is required"),
   folderId: z.string().optional(),

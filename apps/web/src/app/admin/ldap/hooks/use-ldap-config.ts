@@ -75,7 +75,7 @@ export function useLdapConfig() {
         // M-3: appUrl is required when LDAP is enabled (needed for welcome emails)
         if (data.enabled && !data.appUrl) {
           ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: "custom",
             message: t("ldap.config.appUrlRequired"),
             path: ["appUrl"],
           });
@@ -83,7 +83,7 @@ export function useLdapConfig() {
         // M-4: bindPassword required when creating a new LDAP config
         if (isNewConfig && !data.bindPassword) {
           ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: "custom",
             message: t("ldap.config.bindPasswordRequired"),
             path: ["bindPassword"],
           });

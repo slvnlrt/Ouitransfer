@@ -110,13 +110,13 @@ export function isValidNonNegativeBigint(raw: string): boolean {
 export const createSettingsSchema = (t: TranslateFn) =>
   z
     .object({
-      configs: z.record(z.string()),
+      configs: z.record(z.string(), z.string()),
     })
     .superRefine((data, ctx) => {
       const auditRetention = data.configs.auditRetentionDays;
       if (auditRetention !== undefined && !isValidAuditRetention(auditRetention)) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           path: ["configs", "auditRetentionDays"],
           message: t("settings.errors.auditRetentionInvalid"),
         });
@@ -126,7 +126,7 @@ export const createSettingsSchema = (t: TranslateFn) =>
         const value = data.configs[key];
         if (value !== undefined && !isValidIntMin(value, min)) {
           ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: "custom",
             path: ["configs", key],
             message: t("settings.errors.cleanupValueInvalid", { min }),
           });
@@ -139,7 +139,7 @@ export const createSettingsSchema = (t: TranslateFn) =>
         const value = data.configs[key];
         if (value !== undefined && !isValidIntMin(value, min)) {
           ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: "custom",
             path: ["configs", key],
             message: t("settings.errors.cleanupValueInvalid", { min }),
           });
@@ -150,7 +150,7 @@ export const createSettingsSchema = (t: TranslateFn) =>
       const thresholds = data.configs.quotaWarningThresholds;
       if (thresholds !== undefined && !isValidQuotaThresholds(thresholds)) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           path: ["configs", "quotaWarningThresholds"],
           message: t("settings.errors.quotaThresholdsInvalid"),
         });
@@ -161,7 +161,7 @@ export const createSettingsSchema = (t: TranslateFn) =>
       const absoluteMaxBytes = data.configs.reverseShareAbsoluteMaxBytes;
       if (absoluteMaxBytes !== undefined && !isValidNonNegativeBigint(absoluteMaxBytes)) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           path: ["configs", "reverseShareAbsoluteMaxBytes"],
           message: t("settings.errors.cleanupValueInvalid", { min: 0 }),
         });
@@ -183,7 +183,7 @@ export const createSettingsSchema = (t: TranslateFn) =>
         Number(notifyRaw) > Number(graceRaw)
       ) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           path: ["configs", "autoCleanupNotifyDaysBefore"],
           message: t("settings.errors.notifyDaysExceedsGrace"),
         });
