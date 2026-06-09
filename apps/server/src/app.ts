@@ -7,12 +7,12 @@ import helmet from "@fastify/helmet";
 import fastifyJwt from "@fastify/jwt";
 import rateLimit from "@fastify/rate-limit";
 import { fastifySwaggerUi } from "@fastify/swagger-ui";
-import { fastify } from "fastify";
 import {
   serializerCompiler,
   validatorCompiler,
   type ZodTypeProvider,
-} from "fastify-type-provider-zod";
+} from "@fastify/type-provider-zod";
+import { fastify } from "fastify";
 import { CSRF_EXEMPT_ROUTES } from "./config/csrf.config.js";
 import { registerSwagger } from "./config/swagger.config.js";
 import { envTimeoutOverrides, timeoutConfig } from "./config/timeout.config.js";

@@ -1,5 +1,5 @@
+import type { FastifyPluginAsyncZod } from "@fastify/type-provider-zod";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { env } from "../../env.js";
 import { FieldRequirement } from "../../generated/prisma/client.js";

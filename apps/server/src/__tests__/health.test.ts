@@ -1,5 +1,5 @@
+import { serializerCompiler, validatorCompiler } from "@fastify/type-provider-zod";
 import { fastify } from "fastify";
-import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 // Mock prisma to avoid a real DB connection in unit tests

@@ -1,4 +1,4 @@
-import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
+import type { FastifyPluginAsyncZod } from "@fastify/type-provider-zod";
 import { z } from "zod";
 
 import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";

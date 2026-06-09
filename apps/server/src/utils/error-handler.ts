@@ -1,9 +1,9 @@
-import { ErrorCodes } from "@ouitransfer/shared/error-codes";
-import type { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 import {
   hasZodFastifySchemaValidationErrors,
   isResponseSerializationError,
-} from "fastify-type-provider-zod";
+} from "@fastify/type-provider-zod";
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
+import type { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 import { AppError } from "./app-error.js";
 
 /**

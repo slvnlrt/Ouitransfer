@@ -1,5 +1,5 @@
+import type { FastifyPluginAsyncZod } from "@fastify/type-provider-zod";
 import { ErrorCodes } from "@ouitransfer/shared/error-codes";
-import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 
 import { REFRESH_TOKEN_COOKIE_NAME } from "../../config/auth.config.js";

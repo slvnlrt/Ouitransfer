@@ -1,5 +1,5 @@
 import { HeadBucketCommand } from "@aws-sdk/client-s3";
-import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
+import type { FastifyPluginAsyncZod } from "@fastify/type-provider-zod";
 import { z } from "zod";
 
 import { bucketName, s3Client } from "../../config/storage.config.js";

@@ -21,8 +21,8 @@
 
 import { execSync } from "node:child_process";
 import { resolve } from "node:path";
+import { serializerCompiler, validatorCompiler } from "@fastify/type-provider-zod";
 import { type FastifyInstance, fastify } from "fastify";
-import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { DEFAULT_DATABASE_URL } from "../shared/prisma-constants.js";
 import { createPrismaClient } from "../shared/prisma-factory.js";

@@ -6,7 +6,6 @@ overrides:
   fast-uri: ">=3.1.2"
   fast-xml-builder: ">=1.2.0"
   fast-xml-parser: ">=5.8.0"
-  "zod@^4.0.0": "4.4.3"
 
 allowBuilds:
   "@parcel/watcher": true
@@ -32,7 +31,7 @@ catalog:
   next: "16.2.7"
   react: "19.2.7"
   react-dom: "19.2.7"
-  zod: "^3.25.76"
+  zod: "^4.4.3"
   lucide-react: "^0.577.0"
   tailwind-merge: "^3.6.0"
   class-variance-authority: "^0.7.1"

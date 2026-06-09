@@ -1,9 +1,9 @@
 import crypto from "node:crypto";
+import type { FastifyPluginAsyncZod } from "@fastify/type-provider-zod";
 import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import { getContentType } from "@ouitransfer/shared/mime-types";
 import bcrypt from "bcryptjs";
 import type { FastifyRequest } from "fastify";
-import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { env } from "../../env.js";
 import type { Prisma } from "../../generated/prisma/client.js";

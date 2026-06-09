@@ -67,7 +67,7 @@
     "better-sqlite3": "^12.10.0",
     "dotenv": "^17.4.2",
     "fastify": "^5.8.5",
-    "fastify-type-provider-zod": "^4.0.2",
+    "@fastify/type-provider-zod": "^1.0.0",
     "file-type": "^22.0.1",
     "jose": "catalog:",
     "ldapts": "^8.1.8",

@@ -8,9 +8,9 @@
  */
 
 import fastifyJwt from "@fastify/jwt";
+import { serializerCompiler, validatorCompiler } from "@fastify/type-provider-zod";
 import type { FastifyInstance } from "fastify";
 import { fastify } from "fastify";
-import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 // ── Mock env (avoid mandatory JWT_SECRET/CSRF_SECRET/COOKIE_SECRET) ─────────
