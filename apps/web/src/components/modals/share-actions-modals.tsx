@@ -54,10 +54,6 @@ export interface ShareActionsModalsProps {
   onCloseManageRecipients: () => void;
   onDelete: (shareId: string) => Promise<void>;
   onEdit: (shareId: string, data: UpdateShareData) => Promise<void>;
-  onManageFiles: (shareId: string, files: string[], folders: string[]) => Promise<void>;
-  onManageRecipients: (shareId: string, recipients: string[]) => Promise<void>;
-  onEditFile?: (fileId: string, newName: string, description?: string) => Promise<void>;
-  onEditFolder?: (folderId: string, newName: string, description?: string) => Promise<void>;
   onSuccess: () => void;
 }
 

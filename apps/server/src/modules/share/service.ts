@@ -210,9 +210,8 @@ export class ShareService {
       }
     }
 
-    if ((!files || files.length === 0) && (!folders || folders.length === 0)) {
-      throw new ValidationError("At least one file or folder must be selected to create a share");
-    }
+    // Empty shares are intentionally allowed — a share can be created up front and have
+    // files/folders added later via "manage files".
 
     const security = await prisma.shareSecurity.create({
       data: {

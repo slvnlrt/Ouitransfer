@@ -205,11 +205,9 @@
     "success": "Спільний доступ створено успішно",
     "error": "Не вдалося створити спільний доступ",
     "errors": {
-      "nameRequired": "Назва спільного доступу обов'язкова",
-      "selectItems": "Будь ласка, виберіть принаймні один файл або папку"
+      "nameRequired": "Назва спільного доступу обов'язкова"
     },
     "itemsSelected": "{count} елементів вибрано",
-    "selectItemsPrompt": "Виберіть файли та папки для спільного доступу",
     "tabs": {
       "shareDetails": "Деталі спільного доступу",
       "selectFiles": "Вибрати файли"
@@ -225,7 +223,8 @@
     "inactivityAlertPlaceholder": "Leave empty to disable",
     "fieldHidden": "Hidden",
     "fieldOptional": "Optional",
-    "fieldRequired": "Required"
+    "fieldRequired": "Required",
+    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
   },
   "customization": {
     "breadcrumb": "Налаштування",
@@ -606,7 +605,8 @@
     "tabs": {
       "link": "Посилання",
       "qrcode": "QR-код"
-    }
+    },
+    "later": "Later"
   },
   "home": {
     "pageTitle": "Головна",

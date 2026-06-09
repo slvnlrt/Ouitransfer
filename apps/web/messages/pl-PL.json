@@ -206,12 +206,10 @@
       "selectFiles": "Wybierz pliki"
     },
     "errors": {
-      "nameRequired": "Nazwa udostępnienia jest wymagana",
-      "selectItems": "Wybierz co najmniej jeden plik lub folder"
+      "nameRequired": "Nazwa udostępnienia jest wymagana"
     },
     "itemsSelected": "Wybrano {count} elementów",
     "passwordPlaceholder": "Wprowadź hasło",
-    "selectItemsPrompt": "Wybierz pliki i foldery do udostępnienia",
     "privacySection": "Privacy & Notifications",
     "nameFieldRequired": "Require visitor name",
     "emailFieldRequired": "Require visitor email",
@@ -221,7 +219,8 @@
     "inactivityAlertPlaceholder": "Leave empty to disable",
     "fieldHidden": "Hidden",
     "fieldOptional": "Optional",
-    "fieldRequired": "Required"
+    "fieldRequired": "Required",
+    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
   },
   "customization": {
     "breadcrumb": "Personalizacja",
@@ -602,7 +601,8 @@
     "tabs": {
       "link": "Link",
       "qrcode": "QR Code"
-    }
+    },
+    "later": "Later"
   },
   "home": {
     "pageTitle": "Strona główna",

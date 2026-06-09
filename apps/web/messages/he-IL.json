@@ -205,11 +205,9 @@
     "success": "השיתוף נוצר בהצלחה",
     "error": "נכשל ביצירת שיתוף",
     "errors": {
-      "nameRequired": "שם השיתוף נדרש",
-      "selectItems": "אנא בחר לפחות קובץ או תיקייה אחד"
+      "nameRequired": "שם השיתוף נדרש"
     },
     "itemsSelected": "{count} פריטים נבחרו",
-    "selectItemsPrompt": "בחר קבצים ותיקיות לשיתוף",
     "tabs": {
       "shareDetails": "פרטי שיתוף",
       "selectFiles": "בחר קבצים"
@@ -225,7 +223,8 @@
     "inactivityAlertPlaceholder": "Leave empty to disable",
     "fieldHidden": "Hidden",
     "fieldOptional": "Optional",
-    "fieldRequired": "Required"
+    "fieldRequired": "Required",
+    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
   },
   "customization": {
     "breadcrumb": "התאמה אישית",
@@ -606,7 +605,8 @@
     "tabs": {
       "link": "קישור",
       "qrcode": "קוד QR"
-    }
+    },
+    "later": "Later"
   },
   "home": {
     "pageTitle": "בית",

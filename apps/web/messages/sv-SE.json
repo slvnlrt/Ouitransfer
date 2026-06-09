@@ -205,11 +205,9 @@
     "success": "Delningen har skapats",
     "error": "Det gick inte att skapa delning",
     "errors": {
-      "nameRequired": "Delningsnamn krävs",
-      "selectItems": "Välj minst en fil eller mapp"
+      "nameRequired": "Delningsnamn krävs"
     },
     "itemsSelected": "{count} objekt valda",
-    "selectItemsPrompt": "Välj filer och mappar att dela",
     "tabs": {
       "shareDetails": "Delningsdetaljer",
       "selectFiles": "Välj Filer"
@@ -225,7 +223,8 @@
     "inactivityAlertPlaceholder": "Leave empty to disable",
     "fieldHidden": "Hidden",
     "fieldOptional": "Optional",
-    "fieldRequired": "Required"
+    "fieldRequired": "Required",
+    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
   },
   "customization": {
     "breadcrumb": "Anpassning",
@@ -606,7 +605,8 @@
     "tabs": {
       "link": "Länk",
       "qrcode": "QR-kod"
-    }
+    },
+    "later": "Later"
   },
   "home": {
     "pageTitle": "Hem",

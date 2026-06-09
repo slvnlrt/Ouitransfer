@@ -205,11 +205,9 @@
     "success": "Đã tạo chia sẻ thành công",
     "error": "Không thể tạo chia sẻ",
     "errors": {
-      "nameRequired": "Tên chia sẻ là bắt buộc",
-      "selectItems": "Vui lòng chọn ít nhất một tệp hoặc thư mục"
+      "nameRequired": "Tên chia sẻ là bắt buộc"
     },
     "itemsSelected": "{count} mục đã chọn",
-    "selectItemsPrompt": "Chọn tệp và thư mục để chia sẻ",
     "tabs": {
       "shareDetails": "Chi tiết chia sẻ",
       "selectFiles": "Chọn tệp"
@@ -225,7 +223,8 @@
     "inactivityAlertPlaceholder": "Leave empty to disable",
     "fieldHidden": "Hidden",
     "fieldOptional": "Optional",
-    "fieldRequired": "Required"
+    "fieldRequired": "Required",
+    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
   },
   "customization": {
     "breadcrumb": "Tùy chỉnh",
@@ -606,7 +605,8 @@
     "tabs": {
       "link": "Liên kết",
       "qrcode": "Mã QR"
-    }
+    },
+    "later": "Later"
   },
   "home": {
     "pageTitle": "Trang chủ",

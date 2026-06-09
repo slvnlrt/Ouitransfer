@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { createShare } from "@/http/endpoints";
 import type { FileItem } from "@/http/endpoints/files/types";
 import type { FolderItem } from "@/http/endpoints/folders/types";
+import type { Share as ShareType } from "@/http/endpoints/shares/types";
 import { logger } from "@/lib/logger";
 
 interface CreateShareModalProps {
@@ -22,6 +23,8 @@ interface CreateShareModalProps {
   onClose: () => void;
   onSuccess: () => void;
   getAllFilesAndFolders: () => Promise<{ files: FileItem[]; folders: FolderItem[] }>;
+  /** Called with the freshly created share so the caller can offer the (optional) link step. */
+  onShareCreated?: (share: ShareType) => void;
 }
 
 export function CreateShareModal({
@@ -29,6 +32,7 @@ export function CreateShareModal({
   onClose,
   onSuccess,
   getAllFilesAndFolders,
+  onShareCreated,
 }: CreateShareModalProps) {
   const t = useTranslations();
   const [currentTab, setCurrentTab] = useState("details");
@@ -104,20 +108,17 @@ export function CreateShareModal({
       return;
     }
 
-    if (selectedItems.length === 0) {
-      toast.error(t("createShare.errors.selectItems"));
-      return;
-    }
-
     try {
       setIsLoading(true);
 
+      // File/folder selection is optional — an empty share can be created up front
+      // and have content added later.
       const selectedFiles = selectedItems.filter((id) => files.some((file) => file.id === id));
       const selectedFolders = selectedItems.filter((id) =>
         folders.some((folder) => folder.id === id),
       );
 
-      await createShare({
+      const response = await createShare({
         name: formData.name,
         description: formData.description || undefined,
         password: formData.isPasswordProtected ? formData.password : undefined,
@@ -138,6 +139,8 @@ export function CreateShareModal({
       toast.success(t("createShare.success"));
       onSuccess();
       onClose();
+      // Offer the optional link-generation step for the freshly created share.
+      onShareCreated?.(response.data.share);
     } catch (error) {
       logger.error("Error creating share:", {
         err: error instanceof Error ? error.message : String(error),
@@ -160,7 +163,8 @@ export function CreateShareModal({
 
   const selectedCount = selectedItems.length;
   const canProceedToFiles = formData.name.trim().length > 0;
-  const canSubmit = formData.name.trim().length > 0 && selectedCount > 0;
+  // File selection is optional — only the name is required to create a share.
+  const canSubmit = formData.name.trim().length > 0;
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -262,9 +266,16 @@ export function CreateShareModal({
                 />
               </div>
 
-              <div className="flex justify-end">
-                <Button onClick={() => setCurrentTab("files")} disabled={!canProceedToFiles}>
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentTab("files")}
+                  disabled={!canProceedToFiles}
+                >
                   {t("createShare.nextSelectFiles")}
+                </Button>
+                <Button onClick={handleSubmit} disabled={!canSubmit || isLoading}>
+                  {isLoading ? t("common.creating") : t("createShare.create")}
                 </Button>
               </div>
             </TabsContent>
@@ -286,7 +297,7 @@ export function CreateShareModal({
                 {selectedCount > 0 ? (
                   <span>{t("createShare.itemsSelected", { count: selectedCount })}</span>
                 ) : (
-                  <span>{t("createShare.selectItemsPrompt")}</span>
+                  <span>{t("createShare.filesOptionalHint")}</span>
                 )}
               </div>
 

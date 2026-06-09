@@ -205,11 +205,9 @@
     "success": "Berbagi berhasil dibuat",
     "error": "Gagal membuat berbagi",
     "errors": {
-      "nameRequired": "Nama berbagi wajib diisi",
-      "selectItems": "Silakan pilih minimal satu file atau folder"
+      "nameRequired": "Nama berbagi wajib diisi"
     },
     "itemsSelected": "{count} item dipilih",
-    "selectItemsPrompt": "Pilih file dan folder untuk dibagikan",
     "tabs": {
       "shareDetails": "Detail Berbagi",
       "selectFiles": "Pilih File"
@@ -225,7 +223,8 @@
     "inactivityAlertPlaceholder": "Leave empty to disable",
     "fieldHidden": "Hidden",
     "fieldOptional": "Optional",
-    "fieldRequired": "Required"
+    "fieldRequired": "Required",
+    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
   },
   "customization": {
     "breadcrumb": "Kustomisasi",
@@ -606,7 +605,8 @@
     "tabs": {
       "link": "Tautan",
       "qrcode": "Kode QR"
-    }
+    },
+    "later": "Later"
   },
   "home": {
     "pageTitle": "Beranda",

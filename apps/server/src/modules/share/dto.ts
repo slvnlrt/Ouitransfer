@@ -14,56 +14,47 @@ const RecipientInputSchema = z.union([
   }),
 ]);
 
-export const CreateShareSchema = z
-  .object({
-    name: z.string().optional().describe("The share name"),
-    description: z.string().optional().describe("The share description"),
-    expiration: z
-      .string()
-      .datetime({
-        message: "Expiration date must be in ISO 8601 format (e.g. 2025-02-06T13:20:49Z)",
-      })
-      .optional(),
-    files: z.array(z.string()).optional().describe("The file IDs"),
-    folders: z.array(z.string()).optional().describe("The folder IDs"),
-    password: z.string().optional().describe("The share password"),
-    maxViews: z.number().optional().nullable().describe("The maximum number of views"),
-    recipients: z
-      .array(RecipientInputSchema)
-      .optional()
-      .describe("The recipient emails (string or {email, name?})"),
-    nameFieldRequired: z
-      .nativeEnum(FieldRequirement)
-      .optional()
-      .describe("Name field requirement for visitor identification"),
-    emailFieldRequired: z
-      .nativeEnum(FieldRequirement)
-      .optional()
-      .describe("Email field requirement for visitor identification"),
-    notifyOnDownload: z
-      .boolean()
-      .optional()
-      .describe(
-        "Notify owner on each file download (overrides global share_downloaded preference for this share)",
-      ),
-    inactivityAlertDays: z
-      .number()
-      .int()
-      .positive()
-      .nullable()
-      .optional()
-      .describe("Days of inactivity before alert"),
-  })
-  .refine(
-    (data) => {
-      const hasFiles = data.files && data.files.length > 0;
-      const hasFolders = data.folders && data.folders.length > 0;
-      return hasFiles || hasFolders;
-    },
-    {
-      message: "At least one file or folder must be selected to create a share",
-    },
-  );
+export const CreateShareSchema = z.object({
+  name: z.string().optional().describe("The share name"),
+  description: z.string().optional().describe("The share description"),
+  expiration: z
+    .string()
+    .datetime({
+      message: "Expiration date must be in ISO 8601 format (e.g. 2025-02-06T13:20:49Z)",
+    })
+    .optional(),
+  files: z.array(z.string()).optional().describe("The file IDs"),
+  folders: z.array(z.string()).optional().describe("The folder IDs"),
+  password: z.string().optional().describe("The share password"),
+  maxViews: z.number().optional().nullable().describe("The maximum number of views"),
+  recipients: z
+    .array(RecipientInputSchema)
+    .optional()
+    .describe("The recipient emails (string or {email, name?})"),
+  nameFieldRequired: z
+    .nativeEnum(FieldRequirement)
+    .optional()
+    .describe("Name field requirement for visitor identification"),
+  emailFieldRequired: z
+    .nativeEnum(FieldRequirement)
+    .optional()
+    .describe("Email field requirement for visitor identification"),
+  notifyOnDownload: z
+    .boolean()
+    .optional()
+    .describe(
+      "Notify owner on each file download (overrides global share_downloaded preference for this share)",
+    ),
+  inactivityAlertDays: z
+    .number()
+    .int()
+    .positive()
+    .nullable()
+    .optional()
+    .describe("Days of inactivity before alert"),
+});
+// Empty shares are allowed: a share can be created up front (e.g. to reserve a link)
+// and have files/folders added later via "manage files".
 
 export const UpdateShareSchema = z.object({
   id: z.string(),

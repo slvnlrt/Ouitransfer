@@ -165,6 +165,7 @@ export function DashboardModals({
           modals.onCloseCreateModal();
           onSuccess();
         }}
+        onShareCreated={(share) => shareManager.setShareToGenerateLink(share)}
         getAllFilesAndFolders={async () => {
           const [filesResponse, foldersResponse] = await Promise.all([listFiles(), listFolders()]);
           return {
@@ -185,10 +186,6 @@ export function DashboardModals({
         onCloseManageRecipients={() => shareManager.setShareToManageRecipients(null)}
         onDelete={shareManager.handleDelete}
         onEdit={shareManager.handleEdit}
-        onManageFiles={shareManager.handleManageFiles}
-        onManageRecipients={shareManager.handleManageRecipients}
-        onEditFile={fileManager.handleRename}
-        onEditFolder={shareManager.handleEditFolder}
         onSuccess={handleShareSuccess}
       />
 
