@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, Eye, Mail } from "lucide-react";
+import { Check, Clock, Download, Eye, Mail } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -211,6 +211,8 @@ export function ShareDetailsModal({
   const isEditingDescription = editingField?.field === "description";
   const displayName = getDisplayValue("name");
   const displayDescription = getDisplayValue("description");
+  const hasFiles = !!(share?.files && share.files.length > 0);
+  const hasRecipients = !!(share?.recipients && share.recipients.length > 0);
 
   return (
     <>
@@ -305,64 +307,104 @@ export function ShareDetailsModal({
                   />
                 </div>
 
-                {share.files && share.files.length > 0 && (
-                  <ShareDetailsFilesList
-                    files={share.files}
-                    onManageFiles={isOwner ? onManageFiles : undefined}
-                    share={share}
-                  />
-                )}
+                {/* Files and recipients sit side by side when both are present (each list
+                    scrolls internally so uneven lengths don't desync the columns); a single
+                    present list spans full width. */}
+                {(hasFiles || hasRecipients) && (
+                  <div
+                    className={
+                      hasFiles && hasRecipients
+                        ? "grid grid-cols-1 lg:grid-cols-2 gap-4 items-start"
+                        : undefined
+                    }
+                  >
+                    {hasFiles && (
+                      <ShareDetailsFilesList
+                        files={share.files}
+                        onManageFiles={isOwner ? onManageFiles : undefined}
+                        share={share}
+                      />
+                    )}
 
-                {share.recipients && share.recipients.length > 0 && (
-                  <div className="space-y-3">
-                    <h3 className="text-base font-medium text-foreground border-b pb-2">
-                      {t("shareDetails.recipients")}
-                    </h3>
-                    <div className="space-y-2">
-                      {share.recipients.map((recipient: ShareRecipient) => (
-                        <div
-                          key={recipient.id}
-                          className="flex items-center gap-3 p-2 rounded-md border bg-muted/20"
-                        >
-                          <div className="w-7 h-7 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                            <Mail className="h-3.5 w-3.5 text-primary" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            {recipient.name && (
-                              <p className="text-sm font-medium truncate">{recipient.name}</p>
-                            )}
-                            <p
-                              className={`text-sm truncate ${recipient.name ? "text-muted-foreground text-xs" : "font-medium"}`}
-                            >
-                              {recipient.email}
-                            </p>
-                            <div className="flex items-center gap-2 mt-0.5">
-                              {recipient.notifiedAt && (
-                                <span className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
-                                  <Check className="h-3 w-3" aria-hidden="true" />
-                                  {t("shareDetails.recipientNotified")}
-                                </span>
-                              )}
-                              {recipient.accessCount > 0 && (
-                                <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                  <Eye className="h-3 w-3" />
-                                  {recipient.lastAccessedAt
-                                    ? t("shareDetails.recipientAccessWithLast", {
-                                        count: recipient.accessCount,
-                                        lastAccess: format.relativeTime(
-                                          new Date(recipient.lastAccessedAt),
-                                        ),
-                                      })
-                                    : t("shareDetails.recipientAccess", {
-                                        count: recipient.accessCount,
-                                      })}
-                                </span>
-                              )}
-                            </div>
-                          </div>
+                    {hasRecipients && (
+                      <div className="space-y-3">
+                        <h3 className="text-base font-medium text-foreground border-b pb-2">
+                          {t("shareDetails.recipients")}
+                        </h3>
+                        <div className="space-y-2 max-h-72 overflow-y-auto">
+                          {share.recipients.map((recipient: ShareRecipient) => {
+                            const { lastDownloadedAt, notifiedAt, accessCount, lastAccessedAt } =
+                              recipient;
+                            const hasDownloaded = lastDownloadedAt != null;
+                            const isPending = !hasDownloaded && notifiedAt != null;
+                            return (
+                              <div
+                                key={recipient.id}
+                                className="flex items-center gap-3 p-2 rounded-md border bg-muted/20"
+                              >
+                                <div className="w-7 h-7 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                                  <Mail className="h-3.5 w-3.5 text-primary" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  {recipient.name && (
+                                    <p className="text-sm font-medium truncate">{recipient.name}</p>
+                                  )}
+                                  <p
+                                    className={`text-sm truncate ${recipient.name ? "text-muted-foreground text-xs" : "font-medium"}`}
+                                  >
+                                    {recipient.email}
+                                  </p>
+                                  <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                                    {/* Download-status badge — consistent with the recipient
+                                        selector (8.3, R-6): keyed off lastDownloadedAt. */}
+                                    {hasDownloaded ? (
+                                      <span
+                                        className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
+                                        title={t("recipientSelector.downloadedAt", {
+                                          date: format.dateTime(new Date(lastDownloadedAt), {
+                                            dateStyle: "medium",
+                                            timeStyle: "short",
+                                          }),
+                                        })}
+                                      >
+                                        <Download className="h-3 w-3" aria-hidden="true" />
+                                        {t("recipientSelector.downloaded")}
+                                      </span>
+                                    ) : isPending ? (
+                                      <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium bg-muted text-muted-foreground">
+                                        <Clock className="h-3 w-3" aria-hidden="true" />
+                                        {t("recipientSelector.pending")}
+                                      </span>
+                                    ) : null}
+                                    {notifiedAt && (
+                                      <span className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+                                        <Check className="h-3 w-3" aria-hidden="true" />
+                                        {t("shareDetails.recipientNotified")}
+                                      </span>
+                                    )}
+                                    {accessCount > 0 && (
+                                      <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                        <Eye className="h-3 w-3" />
+                                        {lastAccessedAt
+                                          ? t("shareDetails.recipientAccessWithLast", {
+                                              count: accessCount,
+                                              lastAccess: format.relativeTime(
+                                                new Date(lastAccessedAt),
+                                              ),
+                                            })
+                                          : t("shareDetails.recipientAccess", {
+                                              count: accessCount,
+                                            })}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
