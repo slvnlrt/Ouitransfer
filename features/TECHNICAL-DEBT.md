@@ -179,15 +179,16 @@ d'un coup d'œil si le SMTP est configuré/fonctionnel et combien de messages so
 
 ---
 
-## TD-43 — Descriptions manquantes pour les types de notifications activables
+## TD-43 — Descriptions manquantes pour les types de notifications activables ✅ DONE
 
-**Context:** Dans les préférences de notifications utilisateur, les différents types de
-notifications (share_downloaded, reverse_share_uploaded, etc.) sont listés avec juste un
-label court. Il n'y a pas de description expliquant quand chaque notification est déclenchée,
-ce qui rend le choix peu intuitif pour l'utilisateur.
+**Resolved:** 2026-06-10
 
-**Fix:** Ajouter un texte descriptif sous chaque type de notification dans la modale de
-préférences. Ajouter les clés i18n correspondantes dans les 23 locales.
+**Changes:**
+- Added `descriptions` sub-namespace under `notificationPreferences` in all 23 locale files
+- Each of the 18 configurable notification types now has a description explaining when it triggers
+- `en-US.json`: English descriptions, `fr-FR.json`: French translations, 21 other locales: English placeholders
+- Updated `notification-preferences-table.tsx` to render descriptions as muted secondary text below each type label
+- All 334 web tests passing, type-check + lint clean
 
 **Found during:** Revue utilisateur (mai 2026)
 **Severity:** Low — UX improvement, fonctionnellement correct

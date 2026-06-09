@@ -1,5 +1,17 @@
 # Session Log
 
+## 2026-06-10 (overnight batch — TD-28, TD-10, TD-5, TD-32/33/52, TD-43)
+
+### TD-43 — Notification type descriptions
+- Added `descriptions` sub-namespace under `notificationPreferences` in all 23 locale files (18 configurable notification types)
+- Updated `notification-preferences-table.tsx` to render description as muted text below each type label
+- `en-US.json`: English descriptions, `fr-FR.json`: French translations, 21 others: English placeholders
+
+### TD-32, TD-33, TD-52 — Closed as accepted design trade-offs
+- TD-32 (sender locale for external recipients): accepted — sender locale is best available heuristic
+- TD-33 (email subject frozen at enqueue): accepted — negligible real-world impact
+- TD-52 (reverse-share upload tracking minor items): accepted — all very low severity polish items
+
 ## 2026-06-10 (TD-28, TD-10, TD-5 — Zod v4 Migration + Admin Routes + Type Safety Audit)
 
 **Completed full Zod v3→v4 migration across the entire monorepo.**
