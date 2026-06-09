@@ -82,21 +82,22 @@ Cela permettrait :
 
 ---
 
-## TD-28 — Migration globale Zod v3 → v4
+## TD-28 — Migration globale Zod v3 → v4 ✅ DONE
 
-**Context:**
-L'application utilise actuellement `zod@3.25.76` dans tout son code source (46 fichiers). Zod v4 est uniquement présent de manière transitive via le module de documentation `fumadocs`. Aikido SAST/SCA a levé deux alertes de sécurité moyennes (Prototype Pollution et validation manquante) sur cette version transitive v4. Bien que l'application ne soit pas vulnérable directement, cela crée un flag de sécurité et une asymétrie de versions.
+**Resolved:** 2026-06-10
 
-**Migration & Blockers :**
-Une évaluation complète et exhaustive a été rédigée dans [zod-v4-migration.md](file:///d:/Code/Ouitransfer/features/zod-v4-migration.md). La migration est estimée d'effort moyen-élevé avec les principaux chantiers suivants :
-1. **Critical Blockers :** Upgrade de `fastify-type-provider-zod` vers la v5+ (compatible Zod v4), renommage de tous les imports `"zod"` vers `"zod/v4"` (requis par le type provider), correction de la signature `z.record(z.string())` (requiert 2 arguments en v4), adaptation du handler d'erreur Zod dans `error-handler.ts`.
-2. **Semantic Changes :** Le comportement des `.default()` dans les champs optionnels change (les valeurs par défaut seront appliquées, contrairement à la v3), et le type d'entrée de `z.coerce` devient `unknown`.
+**Migration completed:**
+- Upgraded `zod` from `3.25.76` to `4.4.3` (unified across all apps — removed the `zod@^4.0.0` override)
+- Switched from `fastify-type-provider-zod@4.0.2` to `@fastify/type-provider-zod@1.0.0` (official Fastify org package)
+- Updated all 26 import sites (22 source + 4 test files) from `"fastify-type-provider-zod"` to `"@fastify/type-provider-zod"`
+- Fixed Zod v4 breaking changes: `z.NEVER` → `undefined as never`, `z.ZodIssueCode.custom` → `"custom"` (14 uses), `z.record(z.string())` → `z.record(z.string(), z.string())`, `required_error`/`invalid_type_error` → `error` function, `z.coerce.number()` pipe → `.transform(Number).pipe(z.number())`
+- Updated error handler (`error-handler.ts`) for new FTPZ v1 validation shape (instancePath-based paths, flat message)
+- Fixed test that relied on Zod v3's lenient `min(NaN)` behavior (`auth-lockout.integration.test.ts`)
+- All 1947 tests passing (1599 server + 334 web + 14 shared), lint clean, type-check clean
+- `.describe()` (620 uses) left as-is — deprecated but functional in v4, not a breaking change
 
-**Fix:**
-Planifier la migration complète en s'appuyant sur l'assessment détaillé disponible dans `features/zod-v4-migration.md`.
-
-**Found during:** Analyse de sécurité Aikido (S-6, mai 2026)
-**Severity:** Low — Aucun exploit direct de sécurité n'est possible via l'application, mais l'asymétrie v3/v4 et le flag de sécurité incitent à cette mise à niveau à moyen terme.
+**Commits:** `b983e8d`, `3b5983b`, `a91bc90`
+**Plan:** `features/plans/td-28-zod-v4-migration.md`
 
 ---
 

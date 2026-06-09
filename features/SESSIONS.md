@@ -1,5 +1,19 @@
 # Session Log
 
+## 2026-06-10 (TD-28 — Zod v3 → v4 Migration)
+
+**Completed full Zod v3→v4 migration across the entire monorepo.**
+
+- **Phase 1 (packages):** Upgraded catalog `zod` from `^3.25.76` to `^4.4.3`, removed `zod@^4.0.0` override (was for fumadocs), switched `fastify-type-provider-zod@4.0.2` → `@fastify/type-provider-zod@1.0.0` (official Fastify org package).
+- **Phase 2 (imports):** Updated all 26 files importing from `"fastify-type-provider-zod"` → `"@fastify/type-provider-zod"` (22 source + 4 test files). API names unchanged.
+- **Phase 3 (breaking changes):** Fixed `z.NEVER` → `undefined as never` (3 uses in quota-schema), `z.ZodIssueCode.custom` → `"custom"` (14 uses across 4 files), `z.record(z.string())` → `z.record(z.string(), z.string())` (1 use), `required_error`/`invalid_type_error` → `error` function (2 uses), `.pipe(z.coerce.number())` → `.transform(Number).pipe(z.number())` (1 use in config-validation).
+- **Phase 4 (error handler):** Updated `handleZodValidationError` for new FTPZ v1 validation shape — `params.issue.path/message` → `instancePath` + top-level `message`. Fixed test helper to match. Fixed `auth-lockout.integration.test.ts` mock (Zod v3 silently accepted `min(NaN)`, v4 rejects it).
+- **`.describe()` (620 uses):** Left as-is — deprecated but functional, no warnings. Deferred to future TD.
+- **Result:** 1947 tests passing (1599 server + 334 web + 14 shared), lint clean, type-check clean.
+- Marked TD-28 as resolved.
+
+---
+
 ## 2026-06-09 (8.3 — Download Tracking, full feature)
 
 **Implemented 8.3 Download Tracking end-to-end: spec → plan → plan-review → 5 batches (each
