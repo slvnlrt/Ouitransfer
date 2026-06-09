@@ -244,6 +244,38 @@ export class ReverseShareRepository {
     });
   }
 
+  /**
+   * Best-effort per-recipient upload tracking (8.3 lot D).
+   *
+   * When an uploader self-declares an email that matches a known recipient of
+   * this reverse share, bump that recipient's upload stats:
+   * - `uploadedAt` is set ONCE, on the first matched upload, via a conditional
+   *   `updateMany({ where: { uploadedAt: null } })` so it is TOCTOU-safe (a read
+   *   then write could double-set under concurrency).
+   * - `uploadCount` is incremented atomically on every matched upload.
+   *
+   * The two writes are independent on purpose: the count must increment every
+   * time, while the timestamp must only stamp the first time. Returns nothing —
+   * callers treat this as fire-and-forget (failures must not break the upload).
+   *
+   * Email matching uses the `@@unique([reverseShareId, email])` key; the caller
+   * is responsible for normalizing the email (trim + lowercase) to match how
+   * recipients are stored (`addRecipients`).
+   */
+  async trackRecipientUpload(reverseShareId: string, normalizedEmail: string): Promise<void> {
+    const now = new Date();
+    // Conditional first-upload timestamp (only sets when still null).
+    await prisma.reverseShareRecipient.updateMany({
+      where: { reverseShareId, email: normalizedEmail, uploadedAt: null },
+      data: { uploadedAt: now },
+    });
+    // Atomic count increment on every matched upload.
+    await prisma.reverseShareRecipient.updateMany({
+      where: { reverseShareId, email: normalizedEmail },
+      data: { uploadCount: { increment: 1 } },
+    });
+  }
+
   async findFileById(id: string) {
     return prisma.reverseShareFile.findUnique({
       where: { id },
