@@ -99,13 +99,13 @@ function handleZodValidationError(
       keyword: string;
       instancePath: string;
       message: string;
-      params: { issue: { path: (string | number)[]; message: string } };
+      params: Record<string, unknown>;
     }>;
   },
 ): ErrorResponse {
   const issues = error.validation.map((v) => ({
-    path: v.params.issue.path.join("."),
-    message: v.params.issue.message,
+    path: v.instancePath.replace(/^\//, "").replaceAll("/", ".") || "unknown",
+    message: v.message,
   }));
 
   return {

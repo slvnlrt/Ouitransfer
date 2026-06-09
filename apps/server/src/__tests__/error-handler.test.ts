@@ -80,7 +80,7 @@ const ZodFastifySchemaValidationErrorSymbol = Symbol.for("ZodFastifySchemaValida
 
 /**
  * Builds a Zod validation error that passes `hasZodFastifySchemaValidationErrors`.
- * Shape is taken directly from fastify-type-provider-zod's `createValidationError`.
+ * Shape mirrors @fastify/type-provider-zod v1.x `createValidationError` output.
  */
 function makeZodValidationError(issues: Array<{ path: (string | number)[]; message: string }>) {
   return {
@@ -88,8 +88,8 @@ function makeZodValidationError(issues: Array<{ path: (string | number)[]; messa
       [ZodFastifySchemaValidationErrorSymbol]: true,
       keyword: "invalid_type",
       instancePath: `/${issue.path.join("/")}`,
-      schemaPath: `#/${issue.path.join("/")}`,
-      params: { issue },
+      schemaPath: `#/${issue.path.join("/")}/invalid_type`,
+      params: {},
       message: issue.message,
     })),
   };

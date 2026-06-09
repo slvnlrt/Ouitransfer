@@ -35,7 +35,10 @@ vi.mock("../shared/prisma.js", () => ({
 
 // Mock config used during route registration
 vi.mock("../modules/config/service.js", () => ({
-  getConfigValue: vi.fn().mockResolvedValue("true"),
+  getConfigValue: vi.fn().mockImplementation((key: string) => {
+    if (key === "passwordMinLength") return Promise.resolve("8");
+    return Promise.resolve("true");
+  }),
   validatePasswordAuthDisable: vi.fn().mockResolvedValue(true),
   validateAllProvidersDisable: vi.fn().mockResolvedValue(true),
 }));
@@ -146,7 +149,7 @@ describe("POST /api/auth/login — account lockout integration", () => {
       url: "/auth/login",
       payload: {
         emailOrUsername: "user@test.com",
-        password: "wrong",
+        password: "wrong-password",
       },
     });
 
