@@ -164,6 +164,7 @@ vi.mock("../../file/service.js", () => ({
 // ─── Static imports (after vi.mock hoisting) ─────────────────────────────────
 
 import { prisma } from "../../../shared/prisma.js";
+import { logAuditEvent } from "../../audit/service.js";
 
 // ─── Test data helpers ────────────────────────────────────────────────────────
 
@@ -591,6 +592,315 @@ describe("Visitor Tracking — integration", () => {
       await new Promise((r) => setTimeout(r, 10));
 
       expect(mockShareVisitCreate).not.toHaveBeenCalled();
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Download → recipient linkage + identificationSource (8.3 Batch 1, lot C)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  describe("POST /files/download-url — recipient linkage", () => {
+    const RECIPIENT_ID = "recipient-dl-1";
+    const RECIPIENT_EMAIL = "bob@example.com";
+
+    const fileRecord = {
+      id: FILE_ID,
+      name: "test.txt",
+      description: null,
+      extension: "txt",
+      size: BigInt(100),
+      objectName: OBJECT_NAME,
+      userId: CREATOR_ID,
+      folderId: null,
+      createdAt: new Date("2024-01-01"),
+      updatedAt: new Date("2024-01-01"),
+    };
+
+    // Includes alias so trackShareDownload + audit enrichment can resolve the cookie.
+    const shareWithFileAndAlias = {
+      id: SHARE_ID,
+      name: "Test Share",
+      creatorId: CREATOR_ID,
+      notifyOnDownload: false,
+      creator: { email: "creator@example.com", locale: "en", isActive: true },
+      alias: { alias: ALIAS },
+    };
+
+    /** Build a signed sv_{alias} cookie value as the browser would receive it. */
+    function signVisitorCookie(payload: Record<string, unknown>): string {
+      return app.signCookie(JSON.stringify({ alias: ALIAS, ...payload }));
+    }
+
+    beforeEach(() => {
+      mockFileFirst.mockResolvedValue(fileRecord);
+      vi.mocked(prisma.share.findMany).mockResolvedValue([
+        { id: SHARE_ID, security: { password: null } } as never,
+      ]);
+      mockShareFindFirst.mockResolvedValue(shareWithFileAndAlias);
+      mockShareAliasFindUnique.mockResolvedValue({ alias: ALIAS });
+    });
+
+    it("links a token-cookie download: recipientId set, source 'token', counter bumped", async () => {
+      // cookie.recipientId → resolver looks up by id and checks shareId
+      mockShareRecipientFindUnique.mockResolvedValue({
+        id: RECIPIENT_ID,
+        shareId: SHARE_ID,
+      });
+
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const svCookie = signVisitorCookie({
+        name: "Bob",
+        email: RECIPIENT_EMAIL,
+        recipientId: RECIPIENT_ID,
+      });
+
+      const res = await app.inject({
+        method: "POST",
+        url: "/files/download-url",
+        headers: {
+          "content-type": "application/json",
+          cookie: `_csrf=${csrfCookie}; sv_${ALIAS}=${svCookie}`,
+          "x-csrf-token": csrfToken,
+        },
+        payload: { objectName: OBJECT_NAME, shareId: SHARE_ID },
+      });
+
+      expect(res.statusCode).toBe(200);
+      await new Promise((r) => setTimeout(r, 10));
+
+      expect(mockShareVisitCreate).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          shareId: SHARE_ID,
+          fileId: FILE_ID,
+          action: "download",
+          recipientId: RECIPIENT_ID,
+          identificationSource: "token",
+        }),
+      });
+
+      expect(mockShareRecipientUpdate).toHaveBeenCalledWith({
+        where: { id: RECIPIENT_ID },
+        data: { downloadCount: { increment: 1 }, lastDownloadedAt: expect.any(Date) },
+      });
+    });
+
+    it("links a self-declared email download: recipientId set, source 'self_declared'", async () => {
+      // No recipientId in cookie → resolver matches by shareId_email
+      mockShareRecipientFindUnique.mockImplementation(async ({ where }) => {
+        if (where?.shareId_email) {
+          return { id: RECIPIENT_ID };
+        }
+        return null;
+      });
+
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const svCookie = signVisitorCookie({ name: "Bob", email: RECIPIENT_EMAIL });
+
+      const res = await app.inject({
+        method: "POST",
+        url: "/files/download-url",
+        headers: {
+          "content-type": "application/json",
+          cookie: `_csrf=${csrfCookie}; sv_${ALIAS}=${svCookie}`,
+          "x-csrf-token": csrfToken,
+        },
+        payload: { objectName: OBJECT_NAME, shareId: SHARE_ID },
+      });
+
+      expect(res.statusCode).toBe(200);
+      await new Promise((r) => setTimeout(r, 10));
+
+      expect(mockShareVisitCreate).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          action: "download",
+          recipientId: RECIPIENT_ID,
+          identificationSource: "self_declared",
+        }),
+      });
+      expect(mockShareRecipientUpdate).toHaveBeenCalledWith({
+        where: { id: RECIPIENT_ID },
+        data: { downloadCount: { increment: 1 }, lastDownloadedAt: expect.any(Date) },
+      });
+    });
+
+    it("spoof-labeling: anonymous visitor typing a known recipient's email is 'self_declared', never 'token'", async () => {
+      // The visitor never arrived via ?t= (no recipientId in cookie), but typed a real
+      // recipient's email. Linkage happens but is explicitly labeled self_declared.
+      mockShareRecipientFindUnique.mockImplementation(async ({ where }) => {
+        if (where?.shareId_email) return { id: RECIPIENT_ID };
+        return null;
+      });
+
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const svCookie = signVisitorCookie({ email: RECIPIENT_EMAIL });
+
+      const res = await app.inject({
+        method: "POST",
+        url: "/files/download-url",
+        headers: {
+          "content-type": "application/json",
+          cookie: `_csrf=${csrfCookie}; sv_${ALIAS}=${svCookie}`,
+          "x-csrf-token": csrfToken,
+        },
+        payload: { objectName: OBJECT_NAME, shareId: SHARE_ID },
+      });
+
+      expect(res.statusCode).toBe(200);
+      await new Promise((r) => setTimeout(r, 10));
+
+      const visitCall = mockShareVisitCreate.mock.calls.find(
+        (c) => c[0]?.data?.action === "download",
+      );
+      expect(visitCall?.[0].data.identificationSource).toBe("self_declared");
+      expect(visitCall?.[0].data.identificationSource).not.toBe("token");
+    });
+
+    it("anonymous download (no cookie): recipientId undefined, no recipient counter change", async () => {
+      mockShareRecipientFindUnique.mockResolvedValue(null);
+
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const res = await app.inject({
+        method: "POST",
+        url: "/files/download-url",
+        headers: {
+          "content-type": "application/json",
+          cookie: `_csrf=${csrfCookie}`,
+          "x-csrf-token": csrfToken,
+        },
+        payload: { objectName: OBJECT_NAME, shareId: SHARE_ID },
+      });
+
+      expect(res.statusCode).toBe(200);
+      await new Promise((r) => setTimeout(r, 10));
+
+      const visitCall = mockShareVisitCreate.mock.calls.find(
+        (c) => c[0]?.data?.action === "download",
+      );
+      expect(visitCall?.[0].data.recipientId).toBeUndefined();
+      expect(visitCall?.[0].data.identificationSource).toBeUndefined();
+      // No per-recipient counter bump for an anonymous download
+      expect(mockShareRecipientUpdate).not.toHaveBeenCalled();
+
+      // Regression guard: FILE_DOWNLOAD is emitted exactly once (lot F enriches, never doubles).
+      const fileDownloadCalls = vi
+        .mocked(logAuditEvent)
+        .mock.calls.filter((c) => c[0]?.action === "FILE_DOWNLOAD");
+      expect(fileDownloadCalls).toHaveLength(1);
+    });
+
+    it("enriches the FILE_DOWNLOAD audit with recipientId + source + shareId (token)", async () => {
+      mockShareRecipientFindUnique.mockResolvedValue({ id: RECIPIENT_ID, shareId: SHARE_ID });
+
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const svCookie = signVisitorCookie({ recipientId: RECIPIENT_ID, email: RECIPIENT_EMAIL });
+
+      const res = await app.inject({
+        method: "POST",
+        url: "/files/download-url",
+        headers: {
+          "content-type": "application/json",
+          cookie: `_csrf=${csrfCookie}; sv_${ALIAS}=${svCookie}`,
+          "x-csrf-token": csrfToken,
+        },
+        payload: { objectName: OBJECT_NAME, shareId: SHARE_ID },
+      });
+
+      expect(res.statusCode).toBe(200);
+      await new Promise((r) => setTimeout(r, 10));
+
+      const fileDownloadCalls = vi
+        .mocked(logAuditEvent)
+        .mock.calls.filter((c) => c[0]?.action === "FILE_DOWNLOAD");
+      expect(fileDownloadCalls).toHaveLength(1);
+      expect(fileDownloadCalls[0][0].metadata).toEqual(
+        expect.objectContaining({
+          method: "presigned-url",
+          shareId: SHARE_ID,
+          recipientId: RECIPIENT_ID,
+          identificationSource: "token",
+        }),
+      );
+    });
+
+    it("owner download (private file, no share match): trackShareDownload skips the owner", async () => {
+      // To exercise the owner-skip branch we must reach checkFileAccess's JWT fallback, which
+      // only runs when no passwordless share grants access. Use a password-protected share so the
+      // owner is authorized via JWT ownership (request.user populated) rather than the share.
+      vi.mocked(prisma.share.findMany).mockResolvedValue([
+        { id: SHARE_ID, security: { password: "hashed" } } as never,
+      ]);
+      // trackShareDownload re-reads the share with the file; owner === creator.
+      mockShareFindFirst.mockResolvedValue(shareWithFileAndAlias);
+      mockShareRecipientFindUnique.mockResolvedValue(null);
+
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const token = signToken(CREATOR_ID);
+
+      const res = await app.inject({
+        method: "POST",
+        url: "/files/download-url",
+        headers: {
+          "content-type": "application/json",
+          cookie: `_csrf=${csrfCookie}; token=${token}`,
+          "x-csrf-token": csrfToken,
+        },
+        payload: { objectName: OBJECT_NAME, shareId: SHARE_ID },
+      });
+
+      expect(res.statusCode).toBe(200);
+      await new Promise((r) => setTimeout(r, 10));
+
+      // trackShareDownload returns early for the owner — no visit, no counter, no notification.
+      expect(mockShareVisitCreate).not.toHaveBeenCalled();
+      expect(mockShareRecipientUpdate).not.toHaveBeenCalled();
+      expect(mockEmailSend).not.toHaveBeenCalledWith("share_downloaded", expect.anything());
+
+      // FILE_DOWNLOAD audit is still emitted exactly once.
+      const fileDownloadCalls = vi
+        .mocked(logAuditEvent)
+        .mock.calls.filter((c) => c[0]?.action === "FILE_DOWNLOAD");
+      expect(fileDownloadCalls).toHaveLength(1);
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Access via ?t=TOKEN promotes recipientId into the signed cookie (lot C bridge)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  describe("GET /shares/alias/:alias?t= — cookie gains recipientId", () => {
+    it("refreshes the sv_ cookie with the token-verified recipientId", async () => {
+      const trackingToken = "valid-tracking-token-aaaaaaaaaa";
+      const recipientId = "recipient-token-1";
+      mockShareAliasFindUnique.mockResolvedValue({ shareId: SHARE_ID });
+      // Reset any queued mockResolvedValueOnce from prior tests before pinning the share.
+      mockShareFindUnique.mockReset();
+      mockShareFindUnique.mockResolvedValue(makeShare());
+      mockShareUpdateMany.mockResolvedValue({ count: 1 });
+      mockShareRecipientFindUnique.mockResolvedValue({
+        id: recipientId,
+        shareId: SHARE_ID,
+        email: "visitor@example.com",
+        name: "Visitor",
+        trackingToken,
+        accessCount: 0,
+        lastAccessedAt: null,
+      });
+
+      const res = await app.inject({
+        method: "GET",
+        url: `/shares/alias/${ALIAS}?t=${trackingToken}`,
+      });
+
+      expect(res.statusCode).toBe(200);
+
+      // The signed sv_ cookie should now carry the verified recipientId.
+      const svCookie = res.cookies.find((c: { name: string }) => c.name === `sv_${ALIAS}`);
+      expect(svCookie).toBeDefined();
+      const unsigned = app.unsignCookie(svCookie!.value);
+      expect(unsigned.valid).toBe(true);
+      const payload = JSON.parse(unsigned.value!);
+      expect(payload.recipientId).toBe(recipientId);
+      expect(payload.alias).toBe(ALIAS);
     });
   });
 
