@@ -1,7 +1,7 @@
 "use client";
 
-import { Bell, Check, Mail, Plus, Trash2, Users, X } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { Bell, Check, Clock, Mail, Plus, Trash2, Upload, Users, X } from "lucide-react";
+import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -24,6 +24,12 @@ interface ReverseShareRecipientSelectorProps {
   reverseShareId: string;
   selectedRecipients: ReverseShareRecipient[];
   reverseShareAlias?: string;
+  /**
+   * The reverse share's email-field requirement. When it is not "REQUIRED",
+   * per-recipient upload tracking is best-effort (uploaders may upload without
+   * declaring an email), so "Pending" is shown with an "approximate" hint.
+   */
+  emailFieldRequired?: string;
   onSuccess: () => void;
 }
 
@@ -31,9 +37,13 @@ export function ReverseShareRecipientSelector({
   reverseShareId,
   selectedRecipients,
   reverseShareAlias,
+  emailFieldRequired,
   onSuccess,
 }: ReverseShareRecipientSelectorProps) {
   const t = useTranslations();
+  const format = useFormatter();
+  // R-5: upload attribution is best-effort unless an uploader email is required.
+  const isUploadApproximate = emailFieldRequired !== "REQUIRED";
   const { value: smtpEnabled, isLoading: isSmtpLoading } = useSecureConfigValue("smtpEnabled");
   const [recipients, setRecipients] = useState<ReverseShareRecipient[]>(selectedRecipients ?? []);
   const [newRecipient, setNewRecipient] = useState("");
@@ -273,13 +283,58 @@ export function ReverseShareRecipientSelector({
                 />
                 <Mail className="h-3 w-3 text-muted-foreground shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="text-sm truncate">{recipient.email}</span>
                     {recipient.name && (
                       <span className="text-xs text-muted-foreground truncate">
                         ({recipient.name})
                       </span>
                     )}
+                    {/* Primary upload-status badge (8.3 lot D, best-effort):
+                        keyed off uploadedAt. "Pending" is only shown once the
+                        recipient is notified — they have no expectation to
+                        upload before being invited. */}
+                    {(() => {
+                      const hasUploaded = recipient.uploadedAt != null;
+                      const isPending = !hasUploaded && recipient.notifiedAt != null;
+                      const approximateHint = isUploadApproximate
+                        ? ` — ${t("recipientSelector.uploadApproximateHint")}`
+                        : "";
+                      if (hasUploaded) {
+                        return (
+                          <span
+                            className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
+                            title={
+                              t("recipientSelector.uploadedAt", {
+                                date: format.dateTime(new Date(recipient.uploadedAt as string), {
+                                  dateStyle: "medium",
+                                  timeStyle: "short",
+                                }),
+                              }) + approximateHint
+                            }
+                          >
+                            <Upload className="h-2.5 w-2.5" aria-hidden="true" />
+                            {t("recipientSelector.uploaded")}
+                          </span>
+                        );
+                      }
+                      if (isPending) {
+                        return (
+                          <span
+                            className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium bg-muted text-muted-foreground"
+                            title={
+                              isUploadApproximate
+                                ? t("recipientSelector.uploadApproximateHint")
+                                : undefined
+                            }
+                          >
+                            <Clock className="h-2.5 w-2.5" aria-hidden="true" />
+                            {t("recipientSelector.pending")}
+                          </span>
+                        );
+                      }
+                      return null;
+                    })()}
                     {recipient.notifiedAt && (
                       <span className="text-xs text-green-600 dark:text-green-400 flex items-center gap-0.5">
                         <Check className="h-2.5 w-2.5" />
