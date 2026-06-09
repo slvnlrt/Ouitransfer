@@ -63,6 +63,8 @@ Le paramètre contrôle le comportement de chaque champ :
 
 Lorsqu'au moins un champ est visible, les personnes qui téléversent voient une section d'identification sur la page de téléversement. Le nom et l'adresse e-mail fournis sont associés à chaque fichier téléversé et apparaissent dans les détails du partage inversé aux côtés des fichiers.
 
+Une courte **mention de confidentialité** est affichée à côté de ces champs, informant les personnes qui téléversent que leur nom, leur e-mail et leurs envois peuvent être visibles par le propriétaire du lien de réception.
+
 ### Notifications de téléversement
 
 | Option | Défaut | Description |
@@ -92,10 +94,23 @@ Les destinataires reçoivent un email contenant :
 - Quand le lien expire (si configuré)
 
 <Callout type="info">
-  Les invitations par email nécessitent la [configuration SMTP](/docs/v1-beta/configuring-smtp). Le lien d'upload dans l'invitation est le même pour tous les destinataires ; il n'y a pas de suivi par destinataire.
+  Les invitations par email nécessitent la [configuration SMTP](/docs/v1-beta/configuring-smtp). Le lien d'upload dans l'invitation est le même pour tous les destinataires.
 </Callout>
 
 Vous pouvez ajouter et supprimer des destinataires à tout moment. Re-notifier un destinataire envoie un nouvel email. Un badge vert « Notifié » apparaît à côté des destinataires qui ont reçu une invitation.
+
+### Statut de téléversement par destinataire
+
+Chaque destinataire affiche également un badge de statut de téléversement :
+
+- **A uploadé**: au moins un téléversement a été associé à ce destinataire.
+- **En attente**: aucun téléversement n'a encore été associé à ce destinataire.
+
+Cette association est **best-effort** (au mieux). Un téléversement n'est attribué à un destinataire que si la personne fournit un e-mail correspondant à celui du destinataire. Comme le champ e-mail de la page de téléversement est **optionnel par défaut**, de nombreux téléversements ne peuvent pas être associés, et un e-mail fourni est auto-déclaré (non vérifié). Le badge porte donc une info-bulle indiquant que le statut est **approximatif lorsque l'e-mail n'est pas requis** — un badge « En attente » ne garantit pas que le destinataire n'a rien téléversé.
+
+<Callout type="warn">
+  Pour rendre le suivi de téléversement par destinataire fiable, définissez le champ d'identification **E-mail** sur **Obligatoire**, afin que chaque personne qui téléverse doive fournir un e-mail pouvant être associé à un destinataire.
+</Callout>
 
 ---
 
