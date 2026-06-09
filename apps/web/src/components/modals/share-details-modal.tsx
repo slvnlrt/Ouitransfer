@@ -215,7 +215,7 @@ export function ShareDetailsModal({
   return (
     <>
       <Dialog open={!!shareId} onOpenChange={() => onClose()}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{t("shareDetails.title")}</DialogTitle>
             <DialogDescription>{t("shareDetails.subtitle")}</DialogDescription>
@@ -248,36 +248,46 @@ export function ShareDetailsModal({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <ShareDetailsInfoSection
-                    displayName={displayName ?? ""}
-                    displayDescription={displayDescription ?? ""}
-                    isEditingName={isEditingName}
-                    isEditingDescription={isEditingDescription}
-                    editValue={editValue}
-                    inputRef={inputRef}
-                    onUpdateName={isOwner ? onUpdateName : undefined}
-                    onUpdateDescription={isOwner ? onUpdateDescription : undefined}
-                    onStartEdit={startEdit}
-                    onSaveEdit={saveEdit}
-                    onCancelEdit={cancelEdit}
-                    onEditValueChange={setEditValue}
-                    onKeyDown={handleKeyDown}
-                  />
+                <ShareDetailsInfoSection
+                  displayName={displayName ?? ""}
+                  displayDescription={displayDescription ?? ""}
+                  isEditingName={isEditingName}
+                  isEditingDescription={isEditingDescription}
+                  editValue={editValue}
+                  inputRef={inputRef}
+                  onUpdateName={isOwner ? onUpdateName : undefined}
+                  onUpdateDescription={isOwner ? onUpdateDescription : undefined}
+                  onStartEdit={startEdit}
+                  onSaveEdit={saveEdit}
+                  onCancelEdit={cancelEdit}
+                  onEditValueChange={setEditValue}
+                  onKeyDown={handleKeyDown}
+                />
 
-                  {shareLink && (
+                {/* Link + QR side by side when a link exists; the link section spans full
+                    width otherwise (it then shows the "generate link" affordance). */}
+                {shareLink ? (
+                  <div className="grid grid-cols-2 gap-4">
+                    <ShareDetailsLinksSection
+                      shareLink={shareLink}
+                      onEditLink={
+                        isOwner && onGenerateLink ? () => setShowLinkModal(true) : undefined
+                      }
+                    />
                     <ShareDetailsQrSection
                       shareLink={shareLink}
                       shareName={share.name ?? undefined}
                       onShowQrCode={() => setShowQrCodeModal(true)}
                     />
-                  )}
-                </div>
-
-                <ShareDetailsLinksSection
-                  shareLink={shareLink}
-                  onEditLink={isOwner && onGenerateLink ? () => setShowLinkModal(true) : undefined}
-                />
+                  </div>
+                ) : (
+                  <ShareDetailsLinksSection
+                    shareLink={shareLink}
+                    onEditLink={
+                      isOwner && onGenerateLink ? () => setShowLinkModal(true) : undefined
+                    }
+                  />
+                )}
 
                 <div className="grid grid-cols-2 gap-4">
                   <ShareDetailsDatesSection
