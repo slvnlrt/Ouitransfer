@@ -140,25 +140,19 @@ benefit.
 ---
 
 
-## TD-40 — Global error boundary hardcoded in English — no i18n possible
+## TD-40 — Global error boundary hardcoded in English — no i18n possible — Done
 
-**Context:** `apps/web/src/app/global-error.tsx:12` catches root layout crashes where all
-providers (i18n, theme, auth) are unavailable, so `useTranslations()` cannot be called.
-The component renders hardcoded English strings ("Something went wrong", "An unexpected
-error occurred", "Try again", "Go to home page").
+**Status:** Done (juin 2026)
 
-This is a known, correct trade-off — root layout crashes are rare, and loading provider
-infrastructure into the error boundary would introduce its own failure modes. The fix is
-non-trivial (would require inlining pre-translated strings for each locale via some other
-mechanism, e.g., a static translation map similar to the unsubscribe page pattern in TD-38).
+Added a static inline translation map to `apps/web/src/app/global-error.tsx` covering all
+23 supported locales (4 strings each: title, description, tryAgain, goHome). Locale is
+detected from the `NEXT_LOCALE` cookie or `navigator.language`, with English fallback.
+RTL `dir` attribute set for ar/fa/he.
 
-**Fix:** Optionally, inline a small static translation map covering the handful of strings
-in the most common supported locales. Best done alongside TD-38 if the same inline-map
-pattern is adopted.
+No runtime i18n provider dependency — the translations are fully inlined.
 
 **Found during:** Deferred work audit (mai 2026, AR-5)
-**Severity:** Very Low — the error boundary exists precisely for catastrophic failures
-where UX perfection is secondary to recovery
+**Severity:** Very Low — resolved
 
 ---
 

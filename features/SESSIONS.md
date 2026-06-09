@@ -1,6 +1,12 @@
 # Session Log
 
-## 2026-06-10 (overnight batch — TD-28, TD-10, TD-5, TD-32/33/52, TD-43)
+## 2026-06-10 (overnight batch — TD-28, TD-10, TD-5, TD-32/33/52, TD-43, TD-40)
+
+### TD-40 — Global error boundary i18n
+- Added inline static translation map to `global-error.tsx` covering all 23 locales (4 strings each)
+- Locale detection from `NEXT_LOCALE` cookie or `navigator.language`, English fallback
+- RTL `dir` attribute for ar/fa/he locales
+- Removed TODO comment about hardcoded English
 
 ### TD-43 — Notification type descriptions
 - Added `descriptions` sub-namespace under `notificationPreferences` in all 23 locale files (18 configurable notification types)
