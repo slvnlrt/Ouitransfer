@@ -115,10 +115,10 @@ features/
 ## Current Focus
 
 **Completed:** 5.1 Quotas, 5.2 Auto-cleanup (Phase A + A.1 + B), 5.4 Groups, 5.3 LDAP, 6.1-6.3 UI Overhaul, 7.1 Error Handling, 9.1 Quickshare, 10.1 System Status Bar, 8.1 Audit Trail, 8.2 Email Notifications, 8.3 Download Tracking.
-All resolved: B-1 through B-25, TD-1 through TD-4, TD-6 through TD-19, TD-21, TD-24, TD-25, TD-28, TD-29, TD-31, TD-35, TD-37, TD-41, TD-45, TD-46, TD-48, TD-49.
+All resolved: B-1 through B-25, TD-1 through TD-4, TD-6 through TD-19, TD-21, TD-24, TD-25, TD-28, TD-29, TD-31, TD-35, TD-37, TD-41, TD-45, TD-46, TD-48, TD-49. TD-10 also resolved.
 
 **Test counts:** 100 server test files (1599 tests) + 34 web test files (334 tests) + 2 shared (14 tests) = **1947 total**.
 
 **Open bugs:** _none_ (B-26 resolved)
-**Open tech debt:** TD-5, TD-10, TD-20, TD-27, TD-32, TD-33, TD-36, TD-40, TD-42, TD-43, TD-52 — see `TECHNICAL-DEBT.md` (TD-28, TD-30, TD-38, TD-50, TD-51 resolved)
+**Open tech debt:** TD-5, TD-20, TD-27, TD-32, TD-33, TD-36, TD-40, TD-42, TD-43, TD-52 — see `TECHNICAL-DEBT.md` (TD-10, TD-28, TD-30, TD-38, TD-50, TD-51 resolved)
 **Next features:** _none queued_ — 8.3 Download Tracking shipped (lots A/B/C/D/F; lot E hors scope). Final holistic review (Opus) clean: 0 Critical / 0 Important / 3 Minor, all tracked in TD-52 (`features/reviews/8.3-download-tracking.md`).

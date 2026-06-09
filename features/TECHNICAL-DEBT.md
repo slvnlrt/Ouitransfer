@@ -28,20 +28,16 @@ value of TypeScript strict mode
 
 ---
 
-## TD-10 — Routes admin inconsistantes (/users-management vs /admin/ldap)
+## TD-10 — Routes admin inconsistantes (/users-management vs /admin/ldap) ✅ DONE
 
-**Context:** Les anciennes pages admin (`/users-management`, `/groups-management`, `/settings`)
-sont au top-level, tandis que les nouvelles (`/admin/ldap`) sont sous `/admin/`. Tous les chemins
-sont protégés par les mêmes mécanismes (middleware `adminPaths` + `<ProtectedRoute requireAdmin>`),
-donc pas de risque de sécurité. C'est purement cosmétique/organisationnel.
+**Resolved:** 2026-06-10
 
-**Fix:**
-1. Migrer toutes les pages admin sous `/admin/` : `/admin/users`, `/admin/groups`, `/admin/settings`, `/admin/ldap`
-2. Mettre à jour `admin-paths.ts`, la navbar, et tous les liens internes
-3. Optionnel : ajouter un wildcard `/admin/*` dans le middleware au lieu de lister chaque chemin
-
-**Found during:** Revue manuelle (session audit UI, mai 2026)
-**Severity:** Very low — cosmétique, aucun impact fonctionnel ou sécurité
+**Changes:**
+- Moved `users-management/` → `admin/users/`, `groups-management/` → `admin/groups/`, `settings/` → `admin/settings/`
+- Simplified `adminPaths` to single `/admin` wildcard entry (prefix matching covers all sub-routes)
+- Fixed missing `/admin/audit` in admin path list (was relying solely on client-side `<ProtectedRoute>`)
+- Updated navbar hrefs, LDAP group mapping link, cross-directory imports, proxy tests
+- All 334 web tests passing, type-check + lint clean
 
 ---
 

@@ -1,6 +1,6 @@
 # Session Log
 
-## 2026-06-10 (TD-28 — Zod v3 → v4 Migration)
+## 2026-06-10 (TD-28, TD-10 — Zod v4 Migration + Admin Route Consolidation)
 
 **Completed full Zod v3→v4 migration across the entire monorepo.**
 
@@ -11,6 +11,14 @@
 - **`.describe()` (620 uses):** Left as-is — deprecated but functional, no warnings. Deferred to future TD.
 - **Result:** 1947 tests passing (1599 server + 334 web + 14 shared), lint clean, type-check clean.
 - Marked TD-28 as resolved.
+
+**TD-10 — Consolidated admin routes under `/admin/`:**
+- Moved 3 top-level admin pages: `users-management/` → `admin/users/`, `groups-management/` → `admin/groups/`, `settings/` → `admin/settings/`
+- Simplified `adminPaths` config from 4 explicit entries to single `/admin` wildcard (prefix matching)
+- Fixed pre-existing bug: `/admin/audit` was missing from `adminPaths` (only protected by client-side guard)
+- Updated all hrefs (navbar, LDAP group mapping link), cross-directory imports (FileSizeInput), proxy tests
+- All 334 web tests passing, type-check + lint clean
+- Marked TD-10 as resolved.
 
 ---
 
