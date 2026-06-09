@@ -1513,7 +1513,8 @@
         "descriptionLabel": "Περιγραφή (προαιρετική)",
         "descriptionPlaceholder": "Προσθέστε περιγραφή για τα αρχεία...",
         "uploadButton": "Αποστολή {count} αρχείου(ων)",
-        "uploading": "Γίνεται αποστολή..."
+        "uploading": "Γίνεται αποστολή...",
+        "privacyNotice": "Your name, email and uploads may be visible to the owner of this receive link."
       },
       "success": {
         "title": "Τα αρχεία στάλθηκαν με επιτυχία! 🎉",
@@ -1895,7 +1896,8 @@
       "emailRequired": "Email is required",
       "emailInvalid": "Please enter a valid email address",
       "metadataError": "Failed to load share information. Please try again.",
-      "rateLimited": "Too many attempts. Please try again later."
+      "rateLimited": "Too many attempts. Please try again later.",
+      "privacyNotice": "Your accesses and downloads may be visible to the sender of this share."
     }
   },
   "shareActions": {

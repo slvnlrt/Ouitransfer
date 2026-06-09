@@ -1508,7 +1508,8 @@
         "uploadButton": "Invia {count} file",
         "uploading": "Invio in corso...",
         "emailLabelOptional": "Email (opzionale)",
-        "nameLabelOptional": "Nome (opzionale)"
+        "nameLabelOptional": "Nome (opzionale)",
+        "privacyNotice": "Your name, email and uploads may be visible to the owner of this receive link."
       },
       "success": {
         "title": "File inviati con successo! 🎉",
@@ -1891,7 +1892,8 @@
       "emailRequired": "Email is required",
       "emailInvalid": "Please enter a valid email address",
       "metadataError": "Failed to load share information. Please try again.",
-      "rateLimited": "Too many attempts. Please try again later."
+      "rateLimited": "Too many attempts. Please try again later.",
+      "privacyNotice": "Your accesses and downloads may be visible to the sender of this share."
     }
   },
   "shareActions": {

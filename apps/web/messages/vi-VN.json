@@ -1513,7 +1513,8 @@
         "descriptionLabel": "Mô tả (tùy chọn)",
         "descriptionPlaceholder": "Thêm mô tả cho các tệp...",
         "uploadButton": "Gửi {count} tệp",
-        "uploading": "Đang gửi..."
+        "uploading": "Đang gửi...",
+        "privacyNotice": "Your name, email and uploads may be visible to the owner of this receive link."
       },
       "success": {
         "title": "Đã gửi tệp thành công! 🎉",
@@ -1895,7 +1896,8 @@
       "emailRequired": "Email is required",
       "emailInvalid": "Please enter a valid email address",
       "metadataError": "Failed to load share information. Please try again.",
-      "rateLimited": "Too many attempts. Please try again later."
+      "rateLimited": "Too many attempts. Please try again later.",
+      "privacyNotice": "Your accesses and downloads may be visible to the sender of this share."
     }
   },
   "shareActions": {

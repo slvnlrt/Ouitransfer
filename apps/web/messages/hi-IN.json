@@ -1508,7 +1508,8 @@
         "uploadButton": "{count} फ़ाइल(ें) भेजें",
         "uploading": "भेजा जा रहा है...",
         "emailLabelOptional": "ईमेल वैकल्पिक)",
-        "nameLabelOptional": "नाम: (वैकल्पिक)"
+        "nameLabelOptional": "नाम: (वैकल्पिक)",
+        "privacyNotice": "Your name, email and uploads may be visible to the owner of this receive link."
       },
       "success": {
         "title": "फ़ाइलें सफलतापूर्वक भेजी गईं! 🎉",
@@ -1891,7 +1892,8 @@
       "emailRequired": "Email is required",
       "emailInvalid": "Please enter a valid email address",
       "metadataError": "Failed to load share information. Please try again.",
-      "rateLimited": "Too many attempts. Please try again later."
+      "rateLimited": "Too many attempts. Please try again later.",
+      "privacyNotice": "Your accesses and downloads may be visible to the sender of this share."
     }
   },
   "shareActions": {
