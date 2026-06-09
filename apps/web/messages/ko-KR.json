@@ -221,7 +221,8 @@
     "inactivityAlertPlaceholder": "Leave empty to disable",
     "fieldHidden": "Hidden",
     "fieldOptional": "Optional",
-    "fieldRequired": "Required"
+    "fieldRequired": "Required",
+    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
   },
   "customization": {
     "breadcrumb": "커스터마이징",
@@ -602,7 +603,8 @@
     "tabs": {
       "link": "링크",
       "qrcode": "QR 코드"
-    }
+    },
+    "later": "Later"
   },
   "home": {
     "pageTitle": "홈",

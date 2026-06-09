@@ -161,7 +161,10 @@ export function GenerateShareLinkModal({
           </div>
         )}
         {!generatedLink && (
-          <DialogFooter>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => onClose()} disabled={isLoading}>
+              {isEdit ? t("common.cancel") : t("generateShareLink.later")}
+            </Button>
             <Button disabled={!alias || isLoading || aliasError !== null} onClick={handleGenerate}>
               {isEdit ? t("generateShareLink.updateButton") : t("generateShareLink.generateButton")}
             </Button>

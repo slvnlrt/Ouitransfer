@@ -221,7 +221,8 @@
     "inactivityAlertPlaceholder": "Laisser vide pour désactiver",
     "fieldHidden": "Masqué",
     "fieldOptional": "Optionnel",
-    "fieldRequired": "Requis"
+    "fieldRequired": "Requis",
+    "filesOptionalHint": "L’ajout de fichiers est optionnel — vous pouvez créer un partage vide maintenant et ajouter des fichiers plus tard."
   },
   "customization": {
     "breadcrumb": "Personnalisation",
@@ -602,7 +603,8 @@
     "tabs": {
       "link": "Lien",
       "qrcode": "QR Code"
-    }
+    },
+    "later": "Plus tard"
   },
   "home": {
     "pageTitle": "Accueil",

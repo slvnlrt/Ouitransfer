@@ -45,6 +45,7 @@ export function SharesModals({
         isOpen={isCreateModalOpen}
         onClose={onCloseCreateModal}
         onSuccess={onSuccess}
+        onShareCreated={(share) => shareManager.setShareToGenerateLink(share)}
         getAllFilesAndFolders={async () => {
           const [filesResponse, foldersResponse] = await Promise.all([listFiles(), listFolders()]);
           return {
@@ -65,11 +66,7 @@ export function SharesModals({
         onCloseManageRecipients={() => shareManager.setShareToManageRecipients(null)}
         onDelete={shareManager.handleDelete}
         onEdit={shareManager.handleEdit}
-        onManageFiles={shareManager.handleManageFiles}
-        onManageRecipients={shareManager.handleManageRecipients}
         onSuccess={handleShareSuccess}
-        onEditFile={fileManager.handleRename}
-        onEditFolder={shareManager.handleEditFolder}
       />
 
       <QrCodeModal

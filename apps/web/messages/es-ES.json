@@ -225,7 +225,8 @@
     "inactivityAlertPlaceholder": "Leave empty to disable",
     "fieldHidden": "Hidden",
     "fieldOptional": "Optional",
-    "fieldRequired": "Required"
+    "fieldRequired": "Required",
+    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
   },
   "customization": {
     "breadcrumb": "Personalización",
@@ -606,7 +607,8 @@
     "tabs": {
       "link": "Enlace",
       "qrcode": "Código QR"
-    }
+    },
+    "later": "Later"
   },
   "home": {
     "pageTitle": "Inicio",
