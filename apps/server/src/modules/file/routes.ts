@@ -29,7 +29,11 @@ import { validateObjectName } from "../../utils/validate-object-name.js";
 import { logAuditEvent } from "../audit/service.js";
 import { emailService } from "../email/service.js";
 import { quotaService } from "../quota/service.js";
-import { parseVisitorCookie } from "../share/visitor-cookie.js";
+import {
+  resolveDownloadRecipient,
+  resolveDownloadRecipientFromRequest,
+} from "../share/recipient-resolution.js";
+import { parseVisitorCookie, type VisitorIdentity } from "../share/visitor-cookie.js";
 import {
   CheckFileSchema,
   ListFilesSchema,
@@ -197,14 +201,19 @@ async function trackShareDownload(
   // The cookie is set during share access when the visitor identifies themselves.
   let visitorName: string | undefined;
   let visitorEmail: string | undefined;
+  let visitorCookie: VisitorIdentity | undefined;
 
   if (shareWithFile.alias) {
-    const visitor = parseVisitorCookie(request, shareWithFile.alias.alias);
-    if (visitor) {
-      visitorName = visitor.name;
-      visitorEmail = visitor.email;
+    visitorCookie = parseVisitorCookie(request, shareWithFile.alias.alias);
+    if (visitorCookie) {
+      visitorName = visitorCookie.name;
+      visitorEmail = visitorCookie.email;
     }
   }
+
+  // Link this download to a ShareRecipient using the same resolver as the access flow:
+  // cookie.recipientId (token-verified) → "token"; else cookie.email match → "self_declared".
+  const resolvedRecipient = await resolveDownloadRecipient({ shareId, cookie: visitorCookie });
 
   // Fire and forget — don't block the response.
   // Await visit insert before notification: if the visit record fails,
@@ -215,16 +224,29 @@ async function trackShareDownload(
         data: {
           shareId,
           fileId: fileRecord.id,
+          recipientId: resolvedRecipient?.recipientId,
           visitorName,
           visitorEmail,
           ipAddress: request.ip,
           userAgent: request.headers["user-agent"],
           action: "download",
+          identificationSource: resolvedRecipient?.identificationSource,
         },
       });
     } catch (err) {
       getLogger().error({ err }, "Failed to create ShareVisit for download");
       return; // Don't notify — the visit was never recorded
+    }
+
+    // Bump per-recipient download stats atomically when a recipient is linked.
+    // downloadCount counts files fetched (this runs once per file), not sessions.
+    if (resolvedRecipient) {
+      prisma.shareRecipient
+        .update({
+          where: { id: resolvedRecipient.recipientId },
+          data: { downloadCount: { increment: 1 }, lastDownloadedAt: new Date() },
+        })
+        .catch((err) => getLogger().error({ err }, "Failed to update recipient download stats"));
     }
 
     // Update lastDownloadedAt and reset inactivityAlertSent so a future
@@ -1053,6 +1075,12 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
 
       const url = await fileService.getPresignedGetUrl(objectName, expires, fileName);
 
+      // Enrich the (already-emitted) FILE_DOWNLOAD audit with the resolved recipient + source
+      // when this is a share download. Best-effort, share-scoped; never a second emit.
+      const auditRecipient = shareId
+        ? await resolveDownloadRecipientFromRequest(request, shareId)
+        : null;
+
       logAuditEvent({
         action: "FILE_DOWNLOAD",
         ipAddress: request.ip,
@@ -1060,7 +1088,16 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         userId: request.user?.userId,
         targetType: "file",
         targetId: fileRecord.id,
-        metadata: { method: "presigned-url" },
+        metadata: {
+          method: "presigned-url",
+          ...(shareId ? { shareId } : {}),
+          ...(auditRecipient
+            ? {
+                recipientId: auditRecipient.recipientId,
+                identificationSource: auditRecipient.identificationSource,
+              }
+            : {}),
+        },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
 
       // Track download if shareId provided (fire-and-forget)
@@ -1163,6 +1200,12 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         throw new UnauthorizedError("Unauthorized access to file.");
       }
 
+      // Enrich the (already-emitted) FILE_DOWNLOAD audit with the resolved recipient + source
+      // when this is a share download. Best-effort, share-scoped; never a second emit.
+      const auditRecipient = shareId
+        ? await resolveDownloadRecipientFromRequest(request, shareId)
+        : null;
+
       logAuditEvent({
         action: "FILE_DOWNLOAD",
         ipAddress: request.ip,
@@ -1170,7 +1213,16 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         userId: request.user?.userId,
         targetType: "file",
         targetId: fileRecord.id,
-        metadata: { method: "stream" },
+        metadata: {
+          method: "stream",
+          ...(shareId ? { shareId } : {}),
+          ...(auditRecipient
+            ? {
+                recipientId: auditRecipient.recipientId,
+                identificationSource: auditRecipient.identificationSource,
+              }
+            : {}),
+        },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
 
       // Track download if shareId provided (fire-and-forget)
