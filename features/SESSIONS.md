@@ -1,6 +1,6 @@
 # Session Log
 
-## 2026-06-10 (TD-28, TD-10 — Zod v4 Migration + Admin Route Consolidation)
+## 2026-06-10 (TD-28, TD-10, TD-5 — Zod v4 Migration + Admin Routes + Type Safety Audit)
 
 **Completed full Zod v3→v4 migration across the entire monorepo.**
 
@@ -19,6 +19,16 @@
 - Updated all hrefs (navbar, LDAP group mapping link), cross-directory imports (FileSizeInput), proxy tests
 - All 334 web tests passing, type-check + lint clean
 - Marked TD-10 as resolved.
+
+**TD-5 — Type safety audit of `apps/server/src/`:**
+- Audited all 61 `as` casts in production code — classified as 35 safe, 18 suspicious, 2 dangerous.
+- Confirmed no Zod schema duplication (routes import from `dto.ts` consistently).
+- Confirmed Fastify lifecycle hooks properly typed (no issues).
+- Found 1 Prisma type gap (`deactivationReason` String? → union cast) — deferred to separate TD (needs Prisma enum migration).
+- **Fixed 7 issues:** CSRF getToken header array handling, challenge token userId type guard, auth-cookies headerString utility, `isNotificationKey()` type guard (eliminates 4 cast sites), removed redundant body/query casts in notification routes.
+- Documented 4 remaining items for future work (email catalog generic erasure, error handler double-escape, S3 stream type, Prisma enum).
+- All 1947 tests passing, type-check + lint clean.
+- Marked TD-5 as resolved.
 
 ---
 

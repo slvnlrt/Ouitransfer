@@ -8,23 +8,35 @@ but must be addressed. Each item includes context and the fix needed.
 
 ---
 
-## TD-5 — Audit needed: other "infrastructure set up but not used" patterns
+## TD-5 — Audit needed: other "infrastructure set up but not used" patterns ✅ DONE
 
-**Context:** TD-4 revealed that a core piece of infrastructure (Zod type provider) was
-configured but never actually leveraged across any route. This pattern — where refactoring
-sets up the right tool but existing code isn't migrated to use it — may exist elsewhere.
+**Resolved:** 2026-06-10
 
-**Items to audit:**
-- [ ] Are there other TypeScript type-safety gaps where `as` casts mask schema drift?
-- [ ] Are Fastify lifecycle hooks (onRequest, preHandler, etc.) properly typed?
-- [ ] Is the Prisma client used with full type inference or are there `as unknown as X` casts?
-- [ ] Are Zod schemas shared between route definitions and service layer, or duplicated?
-- [ ] Are there middleware/plugins that lose type information at boundaries?
-- [ ] Review all `as` casts in `apps/server/src/` — each one is a potential type-safety hole
+**Audit completed — all 6 checklist items reviewed:**
+- [x] TypeScript type-safety gaps where `as` casts mask schema drift — **61 casts found**, 2 dangerous + 18 suspicious. Fixed 7 highest-priority ones.
+- [x] Fastify lifecycle hooks properly typed — **No issues found**. All hooks use correct `FastifyRequest`/`FastifyReply` types.
+- [x] Prisma client type inference — **1 issue**: `share.deactivationReason as DeactivationReason` (String? → union cast). Deferred to separate TD — requires Prisma enum migration.
+- [x] Zod schemas shared vs duplicated — **No duplication found**. Routes consistently import from `dto.ts`.
+- [x] Middleware/plugins losing type information — **1 issue**: CSRF `getToken` dropped `string[]` possibility. Fixed.
+- [x] Review all `as` casts — **Full audit** of 61 casts across production code.
+
+**Fixes applied (commit `0f37724`):**
+1. CSRF `getToken` — handle `string | string[]` header properly (`app.ts`)
+2. Challenge token `userId` — add runtime type guard instead of `as string` (`auth/challenge.ts`)
+3. Header string casts — `headerString()` utility handles `string[]` (`auth-cookies.ts`)
+4. Created `isNotificationKey()` type guard — eliminates 4 `as NotificationKey` casts (`email/catalog.ts`)
+5. Used `isNotificationKey()` in `notification/service.ts` (2 sites) and `notification/routes.ts` (1 site)
+6. Used `isNotificationKey()` in `email/service.ts` (1 site)
+7. Removed redundant body/query casts in `notification/routes.ts` (Zod type provider already types them)
+
+**Remaining items (deferred, documented):**
+- `share.deactivationReason as DeactivationReason` — needs Prisma enum migration (separate TD)
+- `email/catalog.ts` `payloadSchema: z.ZodType` erases generic type → cascade of 3 casts in email service — structural refactor needed
+- `error-handler.ts:172` double-escape `as unknown as` — coupled to FTPZ type boundary
+- `s3-storage.provider.ts:190` `response.Body as NodeJS.ReadableStream` — AWS SDK streaming type gap
 
 **Found during:** 5.3 LDAP post-fix review remediation
-**Severity:** Low-Medium — architectural hygiene, no runtime bugs, but undermines the
-value of TypeScript strict mode
+**Severity:** Low-Medium — architectural hygiene, no runtime bugs
 
 ---
 
