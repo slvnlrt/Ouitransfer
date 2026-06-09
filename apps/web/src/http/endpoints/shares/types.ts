@@ -45,6 +45,10 @@ export interface ShareRecipient {
   notifiedAt: string | null;
   lastAccessedAt: string | null;
   accessCount: number;
+  /** Number of files this recipient has downloaded (counts files, not sessions). */
+  downloadCount: number;
+  /** When this recipient last downloaded a file, or null if never. Drives the download-status badge. */
+  lastDownloadedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }

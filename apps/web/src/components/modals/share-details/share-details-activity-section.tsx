@@ -63,7 +63,17 @@ function VisitEntry({ visit }: VisitEntryProps) {
         )}
         {visit.identificationSource !== "anonymous" &&
           visit.identificationSource in SOURCE_LABEL_KEY && (
-            <span className="inline-block mt-0.5 px-1.5 py-0.5 text-[10px] rounded bg-muted text-muted-foreground">
+            <span
+              className="inline-block mt-0.5 px-1.5 py-0.5 text-[10px] rounded bg-muted text-muted-foreground"
+              // Comfort-feature honesty (R-2): a "cookie" (self-declared) attribution is
+              // unverified and spoofable. Surface a subtle hint so the owner doesn't read it
+              // as a verified identity. The verified "tracking_token" source gets no caveat.
+              title={
+                visit.identificationSource === "cookie"
+                  ? t("shareDetails.activity.source.selfDeclaredHint")
+                  : undefined
+              }
+            >
               {t(SOURCE_LABEL_KEY[visit.identificationSource as keyof typeof SOURCE_LABEL_KEY])}
             </span>
           )}

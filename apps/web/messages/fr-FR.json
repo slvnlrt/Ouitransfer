@@ -1041,7 +1041,10 @@
     "views": "{count, plural, one {# vue} other {# vues}}",
     "notifyPartial": "Seulement {sent} des {total} destinataires ont été notifiés",
     "neverAccessed": "Jamais consulté",
-    "namePlaceholder": "Nom (optionnel)"
+    "namePlaceholder": "Nom (optionnel)",
+    "downloaded": "Téléchargé",
+    "pending": "En attente",
+    "downloadedAt": "Téléchargé le {date}"
   },
   "register": {
     "validation": {
@@ -1974,7 +1977,8 @@
       "filterAnonymous": "Anonymes",
       "source": {
         "tracking_token": "Via lien destinataire",
-        "cookie": "Auto-identifié"
+        "cookie": "Auto-identifié",
+        "selfDeclaredHint": "Identité auto-déclarée, non vérifiée"
       }
     }
   },

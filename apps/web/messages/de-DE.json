@@ -1041,7 +1041,10 @@
     "views": "{count, plural, one {# view} other {# views}}",
     "notifyPartial": "Only {sent} of {total} recipients were notified",
     "neverAccessed": "Never accessed",
-    "namePlaceholder": "Name (optional)"
+    "namePlaceholder": "Name (optional)",
+    "downloaded": "Downloaded",
+    "pending": "Pending",
+    "downloadedAt": "Downloaded on {date}"
   },
   "register": {
     "validation": {
@@ -1961,7 +1964,8 @@
       "filterAnonymous": "Anonymous",
       "source": {
         "tracking_token": "Via recipient link",
-        "cookie": "Self-identified"
+        "cookie": "Self-identified",
+        "selfDeclaredHint": "Self-declared identity, not verified"
       }
     },
     "lastDownloaded": "Last Downloaded",
