@@ -127,11 +127,11 @@ export function IdentificationForm({
                   <Label htmlFor="visitor-name">
                     {t("share.identification.nameLabel")}
                     {nameRequired ? (
-                      <span className="text-destructive ml-1" aria-hidden="true">
+                      <span className="text-destructive ms-1" aria-hidden="true">
                         *
                       </span>
                     ) : (
-                      <span className="ml-1 text-muted-foreground text-xs">
+                      <span className="ms-1 text-muted-foreground text-xs">
                         ({t("share.identification.optional")})
                       </span>
                     )}
@@ -158,11 +158,11 @@ export function IdentificationForm({
                   <Label htmlFor="visitor-email">
                     {t("share.identification.emailLabel")}
                     {emailRequired ? (
-                      <span className="text-destructive ml-1" aria-hidden="true">
+                      <span className="text-destructive ms-1" aria-hidden="true">
                         *
                       </span>
                     ) : (
-                      <span className="ml-1 text-muted-foreground text-xs">
+                      <span className="ms-1 text-muted-foreground text-xs">
                         ({t("share.identification.optional")})
                       </span>
                     )}
