@@ -73,7 +73,7 @@
       "providerUrl": "URL del Proveedor",
       "providerUrlPlaceholder": "https://auth.ejemplo.com",
       "providerUrlAutoPlaceholder": "https://tu-proveedor.com (los endpoints se descubrirán automáticamente)",
-      "providerUrlManualPlaceholder": "https://tu-proveedor.com",
+      "providerUrlManualPlaceholder": "https://su-proveedor.com",
       "autoDiscoveryHelp": "El sistema descubrirá automáticamente los endpoints de autorización, token y userinfo",
       "manualConfigurationHelp": "URL base de tu proveedor (los endpoints serán relativos a esta)",
       "authorizationEndpoint": "Endpoint de Autorización",
@@ -179,7 +179,7 @@
     "copied": "Copiado",
     "copy": "Copiar",
     "retry": "Retry",
-    "unavailable": "unavailable",
+    "unavailable": "no disponible",
     "days": "días",
     "aliasValidation": {
       "required": "[TO_TRANSLATE] Alias is required",
@@ -214,17 +214,17 @@
     },
     "itemsSelected": "{count} elementos seleccionados",
     "passwordPlaceholder": "Ingrese contraseña",
-    "privacySection": "Privacy & Notifications",
-    "nameFieldRequired": "Require visitor name",
-    "emailFieldRequired": "Require visitor email",
-    "notifyOnDownload": "Notify me on each download",
-    "notifyOnDownloadHelp": "When enabled, you'll receive email notifications when files are downloaded from this share, regardless of your global notification preferences.",
-    "inactivityAlertDays": "Alert if no downloads after",
-    "inactivityAlertPlaceholder": "Leave empty to disable",
-    "fieldHidden": "Hidden",
-    "fieldOptional": "Optional",
-    "fieldRequired": "Required",
-    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
+    "privacySection": "Privacidad y notificaciones",
+    "nameFieldRequired": "Requerir nombre del visitante",
+    "emailFieldRequired": "Requerir correo del visitante",
+    "notifyOnDownload": "Notificarme en cada descarga",
+    "notifyOnDownloadHelp": "Cuando esté activado, recibirá notificaciones por correo electrónico cuando se descarguen archivos de este compartido, independientemente de sus preferencias de notificación globales.",
+    "inactivityAlertDays": "Alertar si no hay descargas después de",
+    "inactivityAlertPlaceholder": "Dejar vacío para deshabilitar",
+    "fieldHidden": "Oculto",
+    "fieldOptional": "Opcional",
+    "fieldRequired": "Obligatorio",
+    "filesOptionalHint": "Agregar archivos es opcional — puede crear un compartido vacío ahora y agregar archivos más adelante."
   },
   "customization": {
     "breadcrumb": "Personalización",
@@ -606,7 +606,7 @@
       "link": "Enlace",
       "qrcode": "Código QR"
     },
-    "later": "Later"
+    "later": "Más tarde"
   },
   "home": {
     "pageTitle": "Inicio",
@@ -749,7 +749,7 @@
       "SHARE_RECIPIENT_ADD": "Destinatarios de compartición agregados",
       "SHARE_RECIPIENT_REMOVE": "Destinatarios de compartición eliminados",
       "SHARE_RECIPIENT_NOTIFY": "Destinatarios de compartición notificados",
-      "SHARE_RECIPIENT_REMIND": "Share non-downloaders reminded",
+      "SHARE_RECIPIENT_REMIND": "Destinatarios sin descarga recordados",
       "SHARE_ITEMS_ADD": "Elementos de compartición agregados",
       "SHARE_ITEMS_REMOVE": "Elementos de compartición eliminados",
       "FILE_UPLOAD": "Archivo subido",
@@ -793,17 +793,17 @@
       "BACKGROUND_IMAGE_UPLOAD": "Imagen de fondo subida",
       "BACKGROUND_IMAGE_DELETE": "Imagen de fondo eliminada",
       "AUDIT_RETENTION_CLEANUP": "Limpieza de registro de auditoría",
-      "SHARE_DEACTIVATED": "Share deactivated",
-      "SHARE_REACTIVATED": "Share reactivated",
-      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
-      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated",
-      "SHARE_AUTO_DELETED": "Share auto-deleted",
-      "REVERSE_SHARE_AUTO_DELETED": "Reverse share auto-deleted",
-      "ACCOUNT_FILES_CLEANED": "Account files cleaned",
-      "ORPHAN_S3_DELETED": "Orphan storage object deleted",
-      "ORPHAN_DB_DELETED": "Orphan database record deleted",
-      "ORPHAN_MULTIPART_ABORTED": "Incomplete multipart upload aborted",
-      "QUOTA_FILES_DELETED": "Over-quota files deleted"
+      "SHARE_DEACTIVATED": "Compartido desactivado",
+      "SHARE_REACTIVATED": "Compartido reactivado",
+      "REVERSE_SHARE_DEACTIVATED": "Enlace de recepción desactivado",
+      "REVERSE_SHARE_REACTIVATED": "Enlace de recepción reactivado",
+      "SHARE_AUTO_DELETED": "Compartido eliminado automáticamente",
+      "REVERSE_SHARE_AUTO_DELETED": "Enlace de recepción eliminado automáticamente",
+      "ACCOUNT_FILES_CLEANED": "Archivos de cuenta limpiados",
+      "ORPHAN_S3_DELETED": "Objeto de almacenamiento huérfano eliminado",
+      "ORPHAN_DB_DELETED": "Registro de base de datos huérfano eliminado",
+      "ORPHAN_MULTIPART_ABORTED": "Carga multiparte incompleta cancelada",
+      "QUOTA_FILES_DELETED": "Archivos que exceden la cuota eliminados"
     },
     "targetTypes": {
       "user": "Usuario",
@@ -1042,23 +1042,23 @@
     "selectedCount": "{count} seleccionados",
     "addRecipient": "Agregar Destinatario",
     "bulkNotifyError": "Error al notificar destinatarios seleccionados",
-    "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}",
-    "notifyPartial": "Only {sent} of {total} recipients were notified",
-    "neverAccessed": "Never accessed",
-    "namePlaceholder": "Name (optional)",
-    "downloaded": "Downloaded",
-    "pending": "Pending",
-    "downloadedAt": "Downloaded on {date}",
-    "uploaded": "Uploaded",
-    "uploadedAt": "Uploaded on {date}",
-    "uploadApproximateHint": "Approximate: uploaders can submit files without providing an email when it is not required",
-    "remindNonDownloaders": "Remind ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
-    "sendingReminders": "Sending reminders...",
-    "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
-    "remindNoneSent": "No reminders were sent",
-    "remindError": "Failed to send reminders"
+    "notified": "Notificado",
+    "views": "{count, plural, one {# visualización} other {# visualizaciones}}",
+    "notifyPartial": "Solo {sent} de {total} destinatarios fueron notificados",
+    "neverAccessed": "Nunca accedido",
+    "namePlaceholder": "Nombre (opcional)",
+    "downloaded": "Descargado",
+    "pending": "Pendiente",
+    "downloadedAt": "Descargado el {date}",
+    "uploaded": "Subido",
+    "uploadedAt": "Subido el {date}",
+    "uploadApproximateHint": "Aproximado: los remitentes pueden enviar archivos sin proporcionar un correo electrónico cuando no es obligatorio",
+    "remindNonDownloaders": "Recordar ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {No hay destinatarios pendientes — todos han descargado} one {Recordar a # destinatario que aún no ha descargado} other {Recordar a # destinatarios que aún no han descargado}}",
+    "sendingReminders": "Enviando recordatorios...",
+    "remindSuccess": "{count, plural, one {Recordatorio enviado a # destinatario} other {Recordatorios enviados a # destinatarios}}",
+    "remindNoneSent": "No se enviaron recordatorios",
+    "remindError": "Error al enviar recordatorios"
   },
   "register": {
     "validation": {
@@ -1417,8 +1417,8 @@
         "label": "Requisito de campo de nombre",
         "description": "Configurar si se debe mostrar el campo Nombre del cargador y si es necesario"
       },
-      "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "notifyOnUpload": "Notificarme en cada subida",
+      "notifyOnUploadHelp": "Cuando esté activado, recibirá notificaciones por correo electrónico cuando se suban archivos a este enlace de recepción, independientemente de sus preferencias de notificación globales.",
       "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
       "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
@@ -1506,14 +1506,14 @@
         "nameLabel": "Nombre",
         "namePlaceholder": "Tu nombre",
         "emailLabel": "Correo electrónico",
-        "emailPlaceholder": "tu@email.com",
+        "emailPlaceholder": "tu@correo.com",
         "descriptionLabel": "Descripción (opcional)",
         "descriptionPlaceholder": "Añade una descripción a los archivos...",
         "uploadButton": "Enviar {count} archivo(s)",
         "uploading": "Enviando...",
         "emailLabelOptional": "Correo electrónico (opcional)",
         "nameLabelOptional": "Nombre (opcional)",
-        "privacyNotice": "Your name, email and uploads may be visible to the owner of this receive link."
+        "privacyNotice": "Su nombre, correo electrónico y archivos subidos pueden ser visibles para el propietario de este enlace de recepción."
       },
       "success": {
         "title": "¡Archivos enviados con éxito! 🎉",
@@ -1595,8 +1595,8 @@
         "description": "Gestiona imágenes de fondo para páginas de carga estilo WeTransfer"
       },
       "cleanup": {
-        "title": "Automatic Cleanup",
-        "description": "Lifecycle management for expired content, deactivated accounts, and orphaned files. Auto-deletion is off by default."
+        "title": "Limpieza automática",
+        "description": "Gestión del ciclo de vida para contenido caducado, cuentas desactivadas y archivos huérfanos. La eliminación automática está desactivada de forma predeterminada."
       }
     },
     "fields": {
@@ -1610,8 +1610,8 @@
         "description": "Nombre de la aplicación mostrado a los usuarios"
       },
       "appUrl": {
-        "title": "Application URL",
-        "description": "Public URL of the application, used in email links"
+        "title": "URL de la aplicación",
+        "description": "URL pública de la aplicación, utilizada en los enlaces de correo electrónico"
       },
       "appDescription": {
         "title": "Descripción de la aplicación",
@@ -1674,32 +1674,32 @@
         "description": "Límite de almacenamiento total por usuario. Puede anularse por usuario o por grupo."
       },
       "quotaWarningThresholds": {
-        "title": "Quota Warning Thresholds (%)",
-        "description": "Comma-separated percentages, e.g. \"80,90\", at which a user is emailed a quota warning. Each value must be a whole number between 1 and 99. A separate alert is sent when storage reaches 100%."
+        "title": "Umbrales de advertencia de cuota (%)",
+        "description": "Porcentajes separados por comas, p. ej. \"80,90\", en los que se envía un aviso de cuota al usuario por correo electrónico. Cada valor debe ser un número entero entre 1 y 99. Se envía una alerta independiente cuando el almacenamiento alcanza el 100 %."
       },
       "quotaGracePeriodDays": {
-        "title": "Quota Grace Period (days)",
-        "description": "How many days a user may stay over their quota before smart deletion may act (only when smart deletion is enabled below). Minimum 0."
+        "title": "Período de gracia de cuota (días)",
+        "description": "Cuántos días puede un usuario permanecer por encima de su cuota antes de que la eliminación inteligente actúe (solo cuando la eliminación inteligente está habilitada abajo). Mínimo 0."
       },
       "quotaSmartDeletionEnabled": {
-        "title": "Smart Deletion of Over-Quota Files",
-        "description": "Off by default. When enabled, after the grace period the oldest unsafe files of an over-quota user are deleted in a safe order: first unshared uploads, then files in shares inactive for the period below. Files in active shares are never deleted — if nothing is safe to remove, new uploads are simply blocked instead."
+        "title": "Eliminación inteligente de archivos con cuota excedida",
+        "description": "Desactivada de forma predeterminada. Cuando está habilitada, tras el período de gracia, los archivos más antiguos no seguros de un usuario con cuota excedida se eliminan en un orden seguro: primero las subidas no compartidas, luego los archivos en compartidos inactivos durante el período indicado abajo. Los archivos en compartidos activos nunca se eliminan; si nada es seguro de eliminar, simplemente se bloquean nuevas subidas."
       },
       "quotaInactiveShareDays": {
-        "title": "Inactive Share Threshold (days)",
-        "description": "A share's files are eligible for smart deletion once the share has had no activity for this many days. Minimum 1."
+        "title": "Umbral de compartido inactivo (días)",
+        "description": "Los archivos de un compartido son elegibles para eliminación inteligente una vez que el compartido no ha tenido actividad durante este número de días. Mínimo 1."
       },
       "reverseShareQuotaSoftEnforcement": {
-        "title": "Reverse Share Soft Enforcement",
-        "description": "On by default. Lets external guests keep uploading to a reverse share even if the owner is slightly over quota, so collections are not interrupted. Uploads are still blocked once the owner exceeds the tolerance set below, and the owner is alerted to free up space."
+        "title": "Aplicación flexible de enlace de recepción",
+        "description": "Activada de forma predeterminada. Permite que los invitados externos sigan subiendo a un enlace de recepción aunque el propietario supere ligeramente su cuota, para no interrumpir las colecciones. Las subidas se bloquean cuando el propietario supera la tolerancia establecida abajo, y se alerta al propietario para que libere espacio."
       },
       "reverseShareMaxOverageFactor": {
-        "title": "Reverse Share Overage Factor",
-        "description": "Soft enforcement allows reverse-share uploads until usage reaches this multiple of the owner's quota (e.g. 3 = up to three times the limit). Minimum 1."
+        "title": "Factor de exceso para enlace de recepción",
+        "description": "La aplicación flexible permite subidas al enlace de recepción hasta que el uso alcanza este múltiplo de la cuota del propietario (p. ej. 3 = hasta tres veces el límite). Mínimo 1."
       },
       "reverseShareAbsoluteMaxBytes": {
-        "title": "Reverse Share Absolute Cap",
-        "description": "Hard ceiling for reverse-share soft enforcement regardless of the factor above. Set to 0 for no absolute cap."
+        "title": "Límite absoluto para enlace de recepción",
+        "description": "Límite máximo estricto para la aplicación flexible del enlace de recepción, independientemente del factor anterior. Establezca 0 para no tener límite absoluto."
       },
       "firstUserAccess": {
         "description": "Configuraciones para el primer acceso de nuevos usuarios",
@@ -1752,56 +1752,56 @@
         "description": "URL del enlace para el texto del pie de página"
       },
       "emailDigestHour": {
-        "title": "Digest Email Hour",
-        "description": "Hour of the day (0-23) when digest emails are sent"
+        "title": "Hora de envío del resumen",
+        "description": "Hora del día (0-23) en que se envían los correos de resumen"
       },
       "emailJobRetentionDays": {
-        "title": "Email Job Retention",
-        "description": "Number of days to keep completed email jobs before cleanup"
+        "title": "Retención de tareas de correo",
+        "description": "Número de días para conservar las tareas de correo completadas antes de la limpieza"
       },
       "emailQueueIntervalSeconds": {
-        "title": "Queue Processing Interval",
-        "description": "Seconds between email queue processing cycles"
+        "title": "Intervalo de procesamiento de cola",
+        "description": "Segundos entre ciclos de procesamiento de la cola de correo"
       },
       "emailQueueMaxRetries": {
-        "title": "Max Email Retries",
-        "description": "Maximum number of retry attempts for failed emails"
+        "title": "Máximo de reintentos de correo",
+        "description": "Número máximo de reintentos para correos fallidos"
       },
       "auditRetentionDays": {
         "title": "Retención de Auditoría",
         "description": "Número de días para mantener registros de auditoría (0 = siempre, mínimo 7)"
       },
       "autoCleanupEnabled": {
-        "title": "Enable Automatic Cleanup",
-        "description": "Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on."
+        "title": "Activar limpieza automática",
+        "description": "Interruptor principal para la limpieza programada de enlaces de compartido caducados, archivos de enlace de recepción caducados y huérfanos. Desactivado de forma predeterminada — nada se elimina automáticamente hasta que lo active."
       },
       "autoCleanupIntervalHours": {
-        "title": "Cleanup Interval (hours)",
-        "description": "How often the cleanup task runs. Minimum 1 hour."
+        "title": "Intervalo de limpieza (horas)",
+        "description": "Con qué frecuencia se ejecuta la tarea de limpieza. Mínimo 1 hora."
       },
       "autoCleanupGracePeriodDays": {
-        "title": "Grace Period (days)",
+        "title": "Período de gracia (días)",
         "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
       },
       "autoCleanupNotifyDaysBefore": {
-        "title": "Warn Before Deletion (days)",
-        "description": "Send the owner a \"pending permanent deletion\" warning email this many days before the content is deleted. 0 disables the warning. Should be at most the grace period."
+        "title": "Avisar antes de la eliminación (días)",
+        "description": "Envía al propietario un correo de advertencia de \"eliminación permanente pendiente\" este número de días antes de que se elimine el contenido. 0 desactiva el aviso. Debe ser como máximo el período de gracia."
       },
       "accountDeactivationCleanupEnabled": {
-        "title": "Delete Deactivated Accounts' Files",
-        "description": "When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files."
+        "title": "Eliminar archivos de cuentas desactivadas",
+        "description": "Cuando está activo, los archivos pertenecientes a una cuenta desactivada se eliminan permanentemente tras el retraso indicado abajo. Desactivado de forma predeterminada — la desactivación por sí sola nunca elimina archivos."
       },
       "accountDeactivationCleanupDays": {
-        "title": "Deactivation Cleanup Delay (days)",
-        "description": "Days after an account is deactivated before its files are deleted (only when the option above is enabled). Minimum 1."
+        "title": "Retraso de limpieza tras desactivación (días)",
+        "description": "Días después de que una cuenta se desactiva antes de que se eliminen sus archivos (solo cuando la opción anterior está habilitada). Mínimo 1."
       },
       "autoCleanupOrphansEnabled": {
-        "title": "Sweep Orphaned Files",
-        "description": "When on, runs a two-way sweep that removes database records pointing to missing storage objects and storage objects with no database record. Off by default."
+        "title": "Limpiar archivos huérfanos",
+        "description": "Cuando está activo, ejecuta un barrido bidireccional que elimina registros de base de datos que apuntan a objetos de almacenamiento faltantes y objetos de almacenamiento sin registro en la base de datos. Desactivado de forma predeterminada."
       },
       "autoCleanupOrphanMinAgeHours": {
-        "title": "Orphan Minimum Age (hours)",
-        "description": "Only files and objects older than this are considered during the orphan sweep, protecting uploads still in progress. Minimum 1."
+        "title": "Edad mínima de huérfanos (horas)",
+        "description": "Solo los archivos y objetos más antiguos que esto se consideran durante el barrido de huérfanos, protegiendo las subidas aún en curso. Mínimo 1."
       }
     },
     "buttons": {
@@ -1814,9 +1814,9 @@
       "updateFailed": "Error al actualizar la configuración",
       "passwordAuthRequiresProvider": "No se puede deshabilitar la autenticación por contraseña sin tener al menos un proveedor de autenticación activo",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
-      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent",
-      "quotaThresholdsInvalid": "Enter comma-separated percentages between 1 and 99, for example \"80,90\""
+      "cleanupValueInvalid": "El valor debe ser un número entero de al menos {min}",
+      "notifyDaysExceedsGrace": "El tiempo de anticipación del aviso no debe superar el período de gracia; de lo contrario, no se enviará ningún aviso",
+      "quotaThresholdsInvalid": "Introduzca porcentajes separados por comas entre 1 y 99, por ejemplo \"80,90\""
     },
     "messages": {
       "noChanges": "No hay cambios para guardar",
@@ -1836,20 +1836,20 @@
       "defaultPlaceholder": "Ingrese y presione Enter"
     },
     "redirectUri": {
-      "placeholder": "https://misitio.com",
+      "placeholder": "https://misitioweb.com",
       "previewLabel": "URL completa que se guardará:"
     },
     "emailAdmin": {
-      "queueStatus": "Email Queue Status",
-      "pending": "Pending",
-      "sentLast24h": "Sent (24h)",
-      "failed": "Failed",
+      "queueStatus": "Estado de la cola de correo",
+      "pending": "Pendiente",
+      "sentLast24h": "Enviados (24h)",
+      "failed": "Fallidos",
       "digestQueue": "Cola de resumen",
-      "sendTest": "Send Test Email",
-      "testPlaceholder": "recipient@example.com",
-      "testSending": "Sending...",
-      "testSuccess": "Test email queued successfully",
-      "testError": "Failed to send test email"
+      "sendTest": "Enviar correo de prueba",
+      "testPlaceholder": "destinatario@ejemplo.com",
+      "testSending": "Enviando...",
+      "testSuccess": "Correo de prueba añadido a la cola correctamente",
+      "testError": "Error al enviar el correo de prueba"
     }
   },
   "share": {
@@ -1885,19 +1885,19 @@
       "filesShared": "{count, plural, =1 {1 archivo compartido} other {# archivos compartidos}}"
     },
     "identification": {
-      "title": "Visitor Identification",
-      "subtitle": "Please provide your information to access this share",
-      "nameLabel": "Name",
-      "emailLabel": "Email",
-      "submit": "Continue",
-      "error": "Failed to submit identification. Please try again.",
-      "optional": "Optional",
-      "nameRequired": "Name is required",
-      "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email address",
+      "title": "Identificación del visitante",
+      "subtitle": "Por favor, proporcione sus datos para acceder a este compartido",
+      "nameLabel": "Nombre",
+      "emailLabel": "Correo electrónico",
+      "submit": "Continuar",
+      "error": "Error al enviar la identificación. Por favor, inténtelo de nuevo.",
+      "optional": "Opcional",
+      "nameRequired": "El nombre es obligatorio",
+      "emailRequired": "El correo electrónico es obligatorio",
+      "emailInvalid": "Por favor, introduzca una dirección de correo electrónico válida",
       "metadataError": "Failed to load share information. Please try again.",
       "rateLimited": "Too many attempts. Please try again later.",
-      "privacyNotice": "Your accesses and downloads may be visible to the sender of this share."
+      "privacyNotice": "Sus accesos y descargas pueden ser visibles para el remitente de este compartido."
     }
   },
   "shareActions": {
@@ -1927,8 +1927,8 @@
     "linkTitle": "Generar enlace",
     "itemsSelected": "{count} elementos seleccionados",
     "manageFilesDescription": "Selecciona archivos y carpetas para incluir en este compartido",
-    "keepCurrentPasswordHint": "Leave empty to keep current password",
-    "passwordRequired": "Password is required for new password protection"
+    "keepCurrentPasswordHint": "Dejar vacío para mantener la contraseña actual",
+    "passwordRequired": "Se requiere contraseña para la nueva protección por contraseña"
   },
   "shareDetails": {
     "title": "Detalles del Compartir",
@@ -1964,27 +1964,27 @@
     "downloadQrCode": "Descargar Código QR",
     "qrCode": "Código QR",
     "activity": {
-      "title": "Activity",
-      "noActivity": "No activity recorded yet.",
-      "access": "Viewed",
-      "download": "Downloaded",
-      "anonymous": "Anonymous",
-      "loadMore": "Load more",
-      "showingCount": "Showing {shown} of {total}",
-      "loadError": "Failed to load activity data.",
-      "filterAll": "All actions",
-      "filterAccess": "Views only",
-      "filterDownload": "Downloads only",
-      "filterAllVisitors": "All visitors",
-      "filterIdentified": "Identified",
-      "filterAnonymous": "Anonymous",
+      "title": "Actividad",
+      "noActivity": "Aún no se ha registrado actividad.",
+      "access": "Visualizado",
+      "download": "Descargado",
+      "anonymous": "Anónimo",
+      "loadMore": "Cargar más",
+      "showingCount": "Mostrando {shown} de {total}",
+      "loadError": "Error al cargar los datos de actividad.",
+      "filterAll": "Todas las acciones",
+      "filterAccess": "Solo visualizaciones",
+      "filterDownload": "Solo descargas",
+      "filterAllVisitors": "Todos los visitantes",
+      "filterIdentified": "Identificados",
+      "filterAnonymous": "Anónimos",
       "source": {
-        "tracking_token": "Via recipient link",
-        "cookie": "Self-identified",
-        "selfDeclaredHint": "Self-declared identity, not verified"
+        "tracking_token": "Vía enlace de destinatario",
+        "cookie": "Auto-identificado",
+        "selfDeclaredHint": "Identidad auto-declarada, no verificada"
       }
     },
-    "lastDownloaded": "Last Downloaded",
+    "lastDownloaded": "Última descarga",
     "privacySummary": "Privacidad",
     "privacyNameField": "Nombre del visitante:",
     "privacyEmailField": "Email del visitante:",
@@ -1994,9 +1994,9 @@
       "OPTIONAL": "Opcional",
       "REQUIRED": "Obligatorio"
     },
-    "recipientNotified": "Notified",
-    "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
-    "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"
+    "recipientNotified": "Notificado",
+    "recipientAccess": "{count, plural, one {# acceso} other {# accesos}}",
+    "recipientAccessWithLast": "{count, plural, one {# acceso} other {# accesos}} · último {lastAccess}"
   },
   "shareExpiration": {
     "neverExpires": "Nunca Expira",
@@ -2058,10 +2058,10 @@
     "errors": {
       "multipleDownloadNotSupported": "Descarga múltiple de compartidos aún no soportada - por favor descarga los compartidos individualmente"
     },
-    "pauseSuccess": "Share paused",
-    "pauseError": "Failed to pause share",
-    "resumeSuccess": "Share resumed",
-    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
+    "pauseSuccess": "Compartido pausado",
+    "pauseError": "Error al pausar el compartido",
+    "resumeSuccess": "Compartido reanudado",
+    "resumeError": "Error al reanudar el compartido. Si ha caducado o ha alcanzado su límite de visualizaciones, amplíelo en su lugar."
   },
   "shareMultipleFiles": {
     "title": "Compartir Múltiples Archivos",
@@ -2156,8 +2156,8 @@
       "neverExpires": "Nunca Expira",
       "active": "Activo",
       "expired": "Expirado",
-      "paused": "Paused",
-      "maxViewsReached": "View Limit Reached"
+      "paused": "Pausado",
+      "maxViewsReached": "Límite de visualizaciones alcanzado"
     },
     "security": {
       "protected": "Protegido",
@@ -2179,9 +2179,9 @@
       "delete": "Eliminar",
       "downloadShareFiles": "Descargar todos los archivos",
       "viewQrCode": "Ver Código QR",
-      "pause": "Pause",
-      "resume": "Resume",
-      "renew": "Renew"
+      "pause": "Pausar",
+      "resume": "Reanudar",
+      "renew": "Renovar"
     },
     "bulkActions": {
       "delete": "Eliminar",
@@ -2812,41 +2812,41 @@
     }
   },
   "notificationPreferences": {
-    "pageTitle": "Notification Preferences",
-    "description": "Choose which email notifications you receive",
-    "type": "Notification Type",
-    "category": "Category",
-    "frequency": "Frequency",
-    "immediate": "Immediate",
-    "disabled": "Disabled",
-    "alwaysEnabled": "Always enabled",
-    "save": "Save Preferences",
-    "saveSuccess": "Notification preferences saved",
-    "saveError": "Failed to save preferences",
-    "noChanges": "No changes to save",
+    "pageTitle": "Preferencias de notificaciones",
+    "description": "Elija qué notificaciones por correo electrónico recibe",
+    "type": "Tipo de notificación",
+    "category": "Categoría",
+    "frequency": "Frecuencia",
+    "immediate": "Inmediato",
+    "disabled": "Desactivado",
+    "alwaysEnabled": "Siempre activado",
+    "save": "Guardar preferencias",
+    "saveSuccess": "Preferencias de notificaciones guardadas",
+    "saveError": "Error al guardar las preferencias",
+    "noChanges": "No hay cambios que guardar",
     "types": {
-      "password_reset": "Password reset",
-      "welcome": "Welcome email",
-      "account_deactivated": "Account deactivated",
-      "account_reactivated": "Account reactivated",
-      "share_invitation": "Share invitation",
-      "share_accessed": "Share accessed",
-      "share_downloaded": "File downloaded from share",
-      "share_expiring": "Share expiring soon",
-      "share_expired": "Share expired",
-      "share_max_views_reached": "Share max views reached",
-      "share_no_activity": "No activity on share",
-      "reverse_share_invitation": "Reverse share invitation",
-      "reverse_share_uploaded": "Files uploaded to reverse share",
-      "reverse_share_expiring": "Reverse share expiring",
-      "reverse_share_expired": "Reverse share expired",
-      "quota_warning": "Quota warning",
-      "quota_exceeded": "Quota exceeded",
-      "files_auto_deleted": "Files auto-deleted",
-      "share_auto_deleted": "Share auto-deleted",
-      "admin_user_registered": "New user registered (admin)",
-      "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email",
+      "password_reset": "Restablecimiento de contraseña",
+      "welcome": "Correo de bienvenida",
+      "account_deactivated": "Cuenta desactivada",
+      "account_reactivated": "Cuenta reactivada",
+      "share_invitation": "Invitación de compartido",
+      "share_accessed": "Compartido accedido",
+      "share_downloaded": "Archivo descargado del compartido",
+      "share_expiring": "Compartido próximo a expirar",
+      "share_expired": "Compartido expirado",
+      "share_max_views_reached": "Vistas máximas del compartido alcanzadas",
+      "share_no_activity": "Sin actividad en el compartido",
+      "reverse_share_invitation": "Invitación de enlace de recepción",
+      "reverse_share_uploaded": "Archivos subidos al enlace de recepción",
+      "reverse_share_expiring": "Enlace de recepción próximo a expirar",
+      "reverse_share_expired": "Enlace de recepción expirado",
+      "quota_warning": "Advertencia de cuota",
+      "quota_exceeded": "Cuota excedida",
+      "files_auto_deleted": "Archivos eliminados automáticamente",
+      "share_auto_deleted": "Compartido eliminado automáticamente",
+      "admin_user_registered": "Nuevo usuario registrado (administrador)",
+      "admin_quota_alert": "Alerta de cuota de usuario (administrador)",
+      "test_email": "Correo de prueba",
       "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
       "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
       "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
@@ -2872,16 +2872,16 @@
       "admin_quota_alert": "Cuando el uso de almacenamiento de un usuario supera su cuota (solo administradores)"
     },
     "categories": {
-      "account": "Account",
-      "shares": "Shares",
-      "reverseShares": "Reverse Shares",
+      "account": "Cuenta",
+      "shares": "Compartidos",
+      "reverseShares": "Enlaces de recepción",
       "quota": "Quotas",
       "admin": "Administration",
       "test": "Test"
     },
-    "saving": "Saving...",
-    "loadError": "Failed to load notification preferences",
-    "retry": "Retry",
-    "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}"
+    "saving": "Guardando...",
+    "loadError": "Error al cargar las preferencias de notificaciones",
+    "retry": "Reintentar",
+    "unsavedChanges": "{count, plural, one {# cambio sin guardar} other {# cambios sin guardar}}"
   }
 }

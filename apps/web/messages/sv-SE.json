@@ -71,17 +71,17 @@
       "scopesHelpOidc": "Omfattningar automatiskt föreslagna baserat på leverantörens URL. Vanliga OIDC-omfång: openid, profil, e-post, grupper",
       "scopesHelpOauth2": "Omfattningar automatiskt föreslagna baserat på leverantörens URL. Vanliga OAuth2-omfång beror på leverantören",
       "providerUrl": "Leverantörs URL",
-      "providerUrlPlaceholder": "https://auth.example.com",
+      "providerUrlPlaceholder": "https://auth.exempel.com",
       "providerUrlAutoPlaceholder": "https://din-leverantör.com (slutpunkter kommer att upptäckas automatiskt)",
-      "providerUrlManualPlaceholder": "https://din-leverantör.com",
+      "providerUrlManualPlaceholder": "https://din-leverantor.com",
       "autoDiscoveryHelp": "Systemet kommer automatiskt att upptäcka auktoriserings-, token- och användarinfoslutpunkter",
       "manualConfigurationHelp": "Bas-URL för din leverantör (slutpunkter kommer att vara relativa till detta)",
       "authorizationEndpoint": "Auktoriseringsslutpunkt",
-      "authorizationEndpointPlaceholder": "https://auth.example.com/auth",
+      "authorizationEndpointPlaceholder": "https://auth.exempel.com/auth",
       "tokenEndpoint": "Token Endpoint",
-      "tokenEndpointPlaceholder": "https://auth.example.com/token",
+      "tokenEndpointPlaceholder": "https://auth.exempel.com/token",
       "userInfoEndpoint": "Användarinfo Endpoint",
-      "userInfoEndpointPlaceholder": "https://auth.example.com/userinfo",
+      "userInfoEndpointPlaceholder": "https://auth.exempel.com/userinfo",
       "configurationMethod": "Konfigurationsmetod",
       "autoDiscovery": "Automatisk upptäckt",
       "autoDiscoveryDescription": "Upptäck automatiskt slutpunkter från leverantörens URL",
@@ -179,7 +179,7 @@
     "copy": "Kopiera",
     "copied": "Kopierade",
     "retry": "Retry",
-    "unavailable": "unavailable",
+    "unavailable": "ej tillgänglig",
     "days": "dagar",
     "aliasValidation": {
       "required": "[TO_TRANSLATE] Alias is required",
@@ -195,7 +195,7 @@
     "descriptionLabel": "Beskrivning",
     "descriptionPlaceholder": "Ange en beskrivning (valfritt)",
     "expirationLabel": "Utgångsdatum",
-    "expirationPlaceholder": "MM/DD/ÅÅÅÅ TT:MM",
+    "expirationPlaceholder": "ÅÅÅÅ-MM-DD TT:MM",
     "maxViewsLabel": "Max visningar",
     "maxViewsPlaceholder": "Lämna tomt för obegränsat",
     "passwordProtection": "Lösenordsskyddad",
@@ -214,17 +214,17 @@
     },
     "nextSelectFiles": "Nästa: Välj Filer",
     "searchLabel": "Söka",
-    "privacySection": "Privacy & Notifications",
-    "nameFieldRequired": "Require visitor name",
-    "emailFieldRequired": "Require visitor email",
-    "notifyOnDownload": "Notify me on each download",
-    "notifyOnDownloadHelp": "When enabled, you'll receive email notifications when files are downloaded from this share, regardless of your global notification preferences.",
-    "inactivityAlertDays": "Alert if no downloads after",
-    "inactivityAlertPlaceholder": "Leave empty to disable",
-    "fieldHidden": "Hidden",
-    "fieldOptional": "Optional",
-    "fieldRequired": "Required",
-    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
+    "privacySection": "Integritet och aviseringar",
+    "nameFieldRequired": "Kräv besökarens namn",
+    "emailFieldRequired": "Kräv besökarens e-post",
+    "notifyOnDownload": "Meddela mig vid varje nedladdning",
+    "notifyOnDownloadHelp": "När aktiverat får du e-postaviseringar när filer laddas ned från denna delning, oavsett dina globala aviseringsinställningar.",
+    "inactivityAlertDays": "Varna om inga nedladdningar efter",
+    "inactivityAlertPlaceholder": "Lämna tomt för att inaktivera",
+    "fieldHidden": "Dold",
+    "fieldOptional": "Valfritt",
+    "fieldRequired": "Obligatoriskt",
+    "filesOptionalHint": "Att lägga till filer är valfritt — du kan skapa en tom delning nu och lägga till filer senare."
   },
   "customization": {
     "breadcrumb": "Anpassning",
@@ -606,7 +606,7 @@
       "link": "Länk",
       "qrcode": "QR-kod"
     },
-    "later": "Later"
+    "later": "Senare"
   },
   "home": {
     "pageTitle": "Hem",
@@ -749,7 +749,7 @@
       "SHARE_RECIPIENT_ADD": "Mottagare tillagda i delning",
       "SHARE_RECIPIENT_REMOVE": "Mottagare borttagna från delning",
       "SHARE_RECIPIENT_NOTIFY": "Mottagare notifierade",
-      "SHARE_RECIPIENT_REMIND": "Share non-downloaders reminded",
+      "SHARE_RECIPIENT_REMIND": "Mottagare utan nedladdning påminda",
       "SHARE_ITEMS_ADD": "Objekt tillagda i delning",
       "SHARE_ITEMS_REMOVE": "Objekt borttagna från delning",
       "FILE_UPLOAD": "Fil uppladdad",
@@ -793,17 +793,17 @@
       "BACKGROUND_IMAGE_UPLOAD": "Bakgrundsbild uppladdad",
       "BACKGROUND_IMAGE_DELETE": "Bakgrundsbild borttagen",
       "AUDIT_RETENTION_CLEANUP": "Rengöring av granskningslogg",
-      "SHARE_DEACTIVATED": "Share deactivated",
-      "SHARE_REACTIVATED": "Share reactivated",
-      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
-      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated",
-      "SHARE_AUTO_DELETED": "Share auto-deleted",
-      "REVERSE_SHARE_AUTO_DELETED": "Reverse share auto-deleted",
-      "ACCOUNT_FILES_CLEANED": "Account files cleaned",
-      "ORPHAN_S3_DELETED": "Orphan storage object deleted",
-      "ORPHAN_DB_DELETED": "Orphan database record deleted",
-      "ORPHAN_MULTIPART_ABORTED": "Incomplete multipart upload aborted",
-      "QUOTA_FILES_DELETED": "Over-quota files deleted"
+      "SHARE_DEACTIVATED": "Delning inaktiverad",
+      "SHARE_REACTIVATED": "Delning återaktiverad",
+      "REVERSE_SHARE_DEACTIVATED": "Mottagningslänk inaktiverad",
+      "REVERSE_SHARE_REACTIVATED": "Mottagningslänk återaktiverad",
+      "SHARE_AUTO_DELETED": "Delning automatiskt borttagen",
+      "REVERSE_SHARE_AUTO_DELETED": "Mottagningslänk automatiskt borttagen",
+      "ACCOUNT_FILES_CLEANED": "Kontofiler rensade",
+      "ORPHAN_S3_DELETED": "Föräldralöst lagringsobjekt borttaget",
+      "ORPHAN_DB_DELETED": "Föräldralöst databaspost borttagen",
+      "ORPHAN_MULTIPART_ABORTED": "Ofullständig multipart-uppladdning avbruten",
+      "QUOTA_FILES_DELETED": "Filer över kvot borttagna"
     },
     "targetTypes": {
       "user": "Användare",
@@ -1042,23 +1042,23 @@
     "invalidEmail": "Vänligen ange en giltig e-postadress",
     "duplicateEmail": "Den här mottagaren har redan lagts till",
     "noRecipientsDescription": "Lägg till mottagare för att dela detta innehåll via e-post",
-    "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}",
-    "notifyPartial": "Only {sent} of {total} recipients were notified",
-    "neverAccessed": "Never accessed",
-    "namePlaceholder": "Name (optional)",
-    "downloaded": "Downloaded",
-    "pending": "Pending",
-    "downloadedAt": "Downloaded on {date}",
-    "uploaded": "Uploaded",
-    "uploadedAt": "Uploaded on {date}",
-    "uploadApproximateHint": "Approximate: uploaders can submit files without providing an email when it is not required",
-    "remindNonDownloaders": "Remind ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
-    "sendingReminders": "Sending reminders...",
-    "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
-    "remindNoneSent": "No reminders were sent",
-    "remindError": "Failed to send reminders"
+    "notified": "Meddelad",
+    "views": "{count, plural, one {# visning} other {# visningar}}",
+    "notifyPartial": "Endast {sent} av {total} mottagare meddelades",
+    "neverAccessed": "Aldrig öppnad",
+    "namePlaceholder": "Namn (valfritt)",
+    "downloaded": "Nedladdat",
+    "pending": "Väntar",
+    "downloadedAt": "Nedladdat den {date}",
+    "uploaded": "Uppladdat",
+    "uploadedAt": "Uppladdat den {date}",
+    "uploadApproximateHint": "Ungefärligt: avsändare kan skicka filer utan att ange e-post när det inte är obligatoriskt",
+    "remindNonDownloaders": "Påminn ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {Inga väntande mottagare — alla har laddat ned} one {Påminn # mottagare som inte har laddat ned än} other {Påminn # mottagare som inte har laddat ned än}}",
+    "sendingReminders": "Skickar påminnelser...",
+    "remindSuccess": "{count, plural, one {Påminnelse skickad till # mottagare} other {Påminnelser skickade till # mottagare}}",
+    "remindNoneSent": "Inga påminnelser skickades",
+    "remindError": "Det gick inte att skicka påminnelser"
   },
   "register": {
     "validation": {
@@ -1258,7 +1258,7 @@
         "editDescription": "Uppdatera aliaset för denna mottagningslänk",
         "createDescription": "Skapa ett anpassat alias för denna mottagningslänk",
         "aliasLabel": "Länkalias",
-        "aliasPlaceholder": "min-anpassade-länk",
+        "aliasPlaceholder": "min-egen-lank",
         "preview": "Förhandsvisning:",
         "currentLink": "Aktuell länk:",
         "copyCurrentLink": "Kopiera aktuell länk",
@@ -1416,8 +1416,8 @@
         "optionalDescription": "Valfritt: Fältet visas men är inte obligatoriskt",
         "requiredDescription": "Obligatoriskt: Fältet måste fyllas i före uppladdning"
       },
-      "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "notifyOnUpload": "Meddela mig vid varje uppladdning",
+      "notifyOnUploadHelp": "När aktiverat får du e-postmeddelanden när filer laddas upp till denna mottagningslänk, oavsett dina globala aviseringsinställningar.",
       "submit": "Skapa mottagningslänk",
       "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
       "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
@@ -1509,12 +1509,12 @@
         "namePlaceholder": "Ditt namn",
         "emailLabel": "E-post",
         "emailLabelOptional": "E-post (valfritt)",
-        "emailPlaceholder": "your@email.com",
+        "emailPlaceholder": "din@epost.se",
         "descriptionLabel": "Beskrivning (valfritt)",
         "descriptionPlaceholder": "Lägg till en beskrivning till filerna...",
         "uploadButton": "Skicka {count} fil(er)",
         "uploading": "Sändning...",
-        "privacyNotice": "Your name, email and uploads may be visible to the owner of this receive link."
+        "privacyNotice": "Ditt namn, din e-post och dina uppladdningar kan vara synliga för ägaren av denna mottagningslänk."
       },
       "success": {
         "title": "Filer har skickats! 🎉",
@@ -1595,8 +1595,8 @@
         "description": "Hantera bakgrundsbilder för WeTransfer-stilade uppladdningssidor"
       },
       "cleanup": {
-        "title": "Automatic Cleanup",
-        "description": "Lifecycle management for expired content, deactivated accounts, and orphaned files. Auto-deletion is off by default."
+        "title": "Automatisk rensning",
+        "description": "Livscykelhantering för utgånget innehåll, inaktiverade konton och föräldralösa filer. Automatisk radering är avstängd som standard."
       }
     },
     "fields": {
@@ -1610,8 +1610,8 @@
         "description": "Applikationsnamnet visas för användarna"
       },
       "appUrl": {
-        "title": "Application URL",
-        "description": "Public URL of the application, used in email links"
+        "title": "Applikations-URL",
+        "description": "Applikationens offentliga URL, används i e-postlänkar"
       },
       "appDescription": {
         "title": "Applikationsbeskrivning",
@@ -1712,32 +1712,32 @@
         "description": "Total lagringsgräns per användare. Kan åsidosättas per användare eller grupp."
       },
       "quotaWarningThresholds": {
-        "title": "Quota Warning Thresholds (%)",
-        "description": "Comma-separated percentages, e.g. \"80,90\", at which a user is emailed a quota warning. Each value must be a whole number between 1 and 99. A separate alert is sent when storage reaches 100%."
+        "title": "Tröskelvärden för kvotvarningar (%)",
+        "description": "Kommaseparerade procenttal, t.ex. \"80,90\", vid vilka en kvotvarning skickas till användaren per e-post. Varje värde måste vara ett heltal mellan 1 och 99. En separat avisering skickas när lagringen når 100 %."
       },
       "quotaGracePeriodDays": {
-        "title": "Quota Grace Period (days)",
-        "description": "How many days a user may stay over their quota before smart deletion may act (only when smart deletion is enabled below). Minimum 0."
+        "title": "Kvotens respitperiod (dagar)",
+        "description": "Hur många dagar en användare får överstiga sin kvot innan smart radering kan agera (endast när smart radering är aktiverat nedan). Minimum 0."
       },
       "quotaSmartDeletionEnabled": {
-        "title": "Smart Deletion of Over-Quota Files",
-        "description": "Off by default. When enabled, after the grace period the oldest unsafe files of an over-quota user are deleted in a safe order: first unshared uploads, then files in shares inactive for the period below. Files in active shares are never deleted — if nothing is safe to remove, new uploads are simply blocked instead."
+        "title": "Smart radering av filer över kvot",
+        "description": "Avstängd som standard. När aktiverad raderas de äldsta osäkra filerna hos en användare som överskridit kvoten i säker ordning efter respitperioden: först icke-delade uppladdningar, sedan filer i delningar som varit inaktiva under perioden nedan. Filer i aktiva delningar raderas aldrig — om inget är säkert att ta bort blockeras nya uppladdningar istället."
       },
       "quotaInactiveShareDays": {
-        "title": "Inactive Share Threshold (days)",
-        "description": "A share's files are eligible for smart deletion once the share has had no activity for this many days. Minimum 1."
+        "title": "Tröskel för inaktiv delning (dagar)",
+        "description": "En delnings filer är berättigade till smart radering när delningen inte haft någon aktivitet under detta antal dagar. Minimum 1."
       },
       "reverseShareQuotaSoftEnforcement": {
-        "title": "Reverse Share Soft Enforcement",
-        "description": "On by default. Lets external guests keep uploading to a reverse share even if the owner is slightly over quota, so collections are not interrupted. Uploads are still blocked once the owner exceeds the tolerance set below, and the owner is alerted to free up space."
+        "title": "Mjuk tillämpning för mottagningslänk",
+        "description": "Aktiverad som standard. Låter externa gäster fortsätta ladda upp till en mottagningslänk även om ägaren är något över kvoten, så att samlingar inte avbryts. Uppladdningar blockeras ändå när ägaren överstiger toleransen som anges nedan, och ägaren aviseras om att frigöra utrymme."
       },
       "reverseShareMaxOverageFactor": {
-        "title": "Reverse Share Overage Factor",
-        "description": "Soft enforcement allows reverse-share uploads until usage reaches this multiple of the owner's quota (e.g. 3 = up to three times the limit). Minimum 1."
+        "title": "Överskridningsfaktor för mottagningslänk",
+        "description": "Mjuk tillämpning tillåter uppladdningar till mottagningslänk tills användningen når denna multipel av ägarens kvot (t.ex. 3 = upp till tre gånger gränsen). Minimum 1."
       },
       "reverseShareAbsoluteMaxBytes": {
-        "title": "Reverse Share Absolute Cap",
-        "description": "Hard ceiling for reverse-share soft enforcement regardless of the factor above. Set to 0 for no absolute cap."
+        "title": "Absolut maxgräns för mottagningslänk",
+        "description": "Fast övre gräns för mjuk tillämpning av mottagningslänk, oavsett faktorn ovan. Ange 0 för ingen absolut gräns."
       },
       "firstUserAccess": {
         "title": "Första användaråtkomst",
@@ -1752,56 +1752,56 @@
         "description": "Aktivera eller inaktivera lösenordsbaserad autentisering"
       },
       "emailDigestHour": {
-        "title": "Digest Email Hour",
-        "description": "Hour of the day (0-23) when digest emails are sent"
+        "title": "Timme för sammanfattningsutskick",
+        "description": "Timme på dagen (0-23) då sammanfattningsmejl skickas"
       },
       "emailJobRetentionDays": {
-        "title": "Email Job Retention",
-        "description": "Number of days to keep completed email jobs before cleanup"
+        "title": "Bevarandetid för e-postjobb",
+        "description": "Antal dagar som slutförda e-postjobb sparas innan rensning"
       },
       "emailQueueIntervalSeconds": {
-        "title": "Queue Processing Interval",
-        "description": "Seconds between email queue processing cycles"
+        "title": "Köbearbetningsintervall",
+        "description": "Sekunder mellan bearbetningscykler för e-postkön"
       },
       "emailQueueMaxRetries": {
-        "title": "Max Email Retries",
-        "description": "Maximum number of retry attempts for failed emails"
+        "title": "Maximalt antal e-postförsök",
+        "description": "Maximalt antal återförsök för misslyckade e-postmeddelanden"
       },
       "auditRetentionDays": {
         "title": "Lagringsperiod för granskningslogg",
         "description": "Antal dagar att behålla granskningsloggar (0 = för alltid, minimum 7)"
       },
       "autoCleanupEnabled": {
-        "title": "Enable Automatic Cleanup",
-        "description": "Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on."
+        "title": "Aktivera automatisk rensning",
+        "description": "Huvudbrytare för schemalagd rensning av utgångna delningslänkar, utgångna mottagningslänkfiler och föräldralösa filer. Avstängd som standard — inget raderas automatiskt förrän du aktiverar detta."
       },
       "autoCleanupIntervalHours": {
-        "title": "Cleanup Interval (hours)",
-        "description": "How often the cleanup task runs. Minimum 1 hour."
+        "title": "Rensningsintervall (timmar)",
+        "description": "Hur ofta rensningsuppgiften körs. Minimum 1 timme."
       },
       "autoCleanupGracePeriodDays": {
-        "title": "Grace Period (days)",
+        "title": "Respitperiod (dagar)",
         "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
       },
       "autoCleanupNotifyDaysBefore": {
-        "title": "Warn Before Deletion (days)",
-        "description": "Send the owner a \"pending permanent deletion\" warning email this many days before the content is deleted. 0 disables the warning. Should be at most the grace period."
+        "title": "Varna före radering (dagar)",
+        "description": "Skickar ägaren ett varningsmail om \"väntande permanent radering\" detta antal dagar innan innehållet raderas. 0 inaktiverar varningen. Bör vara högst lika med respitperioden."
       },
       "accountDeactivationCleanupEnabled": {
-        "title": "Delete Deactivated Accounts' Files",
-        "description": "When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files."
+        "title": "Radera inaktiverade kontons filer",
+        "description": "När aktiverat raderas filer tillhörande ett inaktiverat konto permanent efter fördröjningen nedan. Avstängd som standard — inaktivering ensam raderar aldrig filer."
       },
       "accountDeactivationCleanupDays": {
-        "title": "Deactivation Cleanup Delay (days)",
-        "description": "Days after an account is deactivated before its files are deleted (only when the option above is enabled). Minimum 1."
+        "title": "Rensningsfördröjning efter inaktivering (dagar)",
+        "description": "Dagar efter att ett konto inaktiverats innan dess filer raderas (endast när alternativet ovan är aktiverat). Minimum 1."
       },
       "autoCleanupOrphansEnabled": {
-        "title": "Sweep Orphaned Files",
-        "description": "When on, runs a two-way sweep that removes database records pointing to missing storage objects and storage objects with no database record. Off by default."
+        "title": "Rensa föräldralösa filer",
+        "description": "När aktiverat körs en dubbelriktad genomsökning som tar bort databasposter som pekar på saknade lagringsobjekt och lagringsobjekt utan databaspost. Avstängd som standard."
       },
       "autoCleanupOrphanMinAgeHours": {
-        "title": "Orphan Minimum Age (hours)",
-        "description": "Only files and objects older than this are considered during the orphan sweep, protecting uploads still in progress. Minimum 1."
+        "title": "Minsta ålder för föräldralösa filer (timmar)",
+        "description": "Endast filer och objekt äldre än detta beaktas under genomsökningen av föräldralösa filer, vilket skyddar pågående uppladdningar. Minimum 1."
       }
     },
     "buttons": {
@@ -1814,9 +1814,9 @@
       "updateFailed": "Det gick inte att uppdatera inställningarna",
       "passwordAuthRequiresProvider": "Det går inte att inaktivera lösenordsautentisering utan att ha minst en aktiv autentiseringsleverantör",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
-      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent",
-      "quotaThresholdsInvalid": "Enter comma-separated percentages between 1 and 99, for example \"80,90\""
+      "cleanupValueInvalid": "Värdet måste vara ett heltal på minst {min}",
+      "notifyDaysExceedsGrace": "Varningens ledtid bör inte överstiga respitperioden, annars skickas ingen varning",
+      "quotaThresholdsInvalid": "Ange kommaseparerade procenttal mellan 1 och 99, till exempel \"80,90\""
     },
     "messages": {
       "noChanges": "Inga ändringar att spara",
@@ -1836,20 +1836,20 @@
       "defaultPlaceholder": "Ange och tryck på Enter"
     },
     "redirectUri": {
-      "placeholder": "https://mysite.com",
+      "placeholder": "https://minwebbplats.com",
       "previewLabel": "Komplett URL som kommer att sparas:"
     },
     "emailAdmin": {
-      "queueStatus": "Email Queue Status",
-      "pending": "Pending",
-      "sentLast24h": "Sent (24h)",
-      "failed": "Failed",
+      "queueStatus": "Status för e-postkö",
+      "pending": "Väntande",
+      "sentLast24h": "Skickade (24h)",
+      "failed": "Misslyckade",
       "digestQueue": "Sammanfattningskö",
-      "sendTest": "Send Test Email",
-      "testPlaceholder": "recipient@example.com",
-      "testSending": "Sending...",
-      "testSuccess": "Test email queued successfully",
-      "testError": "Failed to send test email"
+      "sendTest": "Skicka testmejl",
+      "testPlaceholder": "mottagare@exempel.se",
+      "testSending": "Skickar...",
+      "testSuccess": "Testmejl köades framgångsrikt",
+      "testError": "Det gick inte att skicka testmejlet"
     }
   },
   "share": {
@@ -1885,19 +1885,19 @@
       "filesShared": "{count, plural, =1 {1 fil delad} other {# filer delade}}"
     },
     "identification": {
-      "title": "Visitor Identification",
-      "subtitle": "Please provide your information to access this share",
-      "nameLabel": "Name",
-      "emailLabel": "Email",
-      "submit": "Continue",
-      "error": "Failed to submit identification. Please try again.",
-      "optional": "Optional",
-      "nameRequired": "Name is required",
-      "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email address",
+      "title": "Besökaridentifiering",
+      "subtitle": "Ange dina uppgifter för att komma åt denna delning",
+      "nameLabel": "Namn",
+      "emailLabel": "E-post",
+      "submit": "Fortsätt",
+      "error": "Det gick inte att skicka identifieringen. Försök igen.",
+      "optional": "Valfritt",
+      "nameRequired": "Namn är obligatoriskt",
+      "emailRequired": "E-post är obligatorisk",
+      "emailInvalid": "Ange en giltig e-postadress",
       "metadataError": "Failed to load share information. Please try again.",
       "rateLimited": "Too many attempts. Please try again later.",
-      "privacyNotice": "Your accesses and downloads may be visible to the sender of this share."
+      "privacyNotice": "Dina åtkomster och nedladdningar kan vara synliga för avsändaren av denna delning."
     }
   },
   "shareActions": {
@@ -1927,8 +1927,8 @@
     "editErrorPassword": "Kunde inte uppdatera delningslösenord",
     "bulkDeleteConfirmation": "Är du säker på att du vill ta bort {count, plural, =1 {1 delning} other {# delningar}}? Denna åtgärd kan inte ångras.",
     "bulkDeleteTitle": "Ta bort valda andelar",
-    "keepCurrentPasswordHint": "Leave empty to keep current password",
-    "passwordRequired": "Password is required for new password protection"
+    "keepCurrentPasswordHint": "Lämna tomt för att behålla nuvarande lösenord",
+    "passwordRequired": "Lösenord krävs för det nya lösenordsskyddet"
   },
   "shareDetails": {
     "title": "Dela detaljer",
@@ -1964,27 +1964,27 @@
     "clickToEnlargeQrCode": "Klicka för att förstora QR-koden",
     "loadError": "Det gick inte att läsa in delningsinformation",
     "activity": {
-      "title": "Activity",
-      "noActivity": "No activity recorded yet.",
-      "access": "Viewed",
-      "download": "Downloaded",
-      "anonymous": "Anonymous",
-      "loadMore": "Load more",
-      "showingCount": "Showing {shown} of {total}",
-      "loadError": "Failed to load activity data.",
-      "filterAll": "All actions",
-      "filterAccess": "Views only",
-      "filterDownload": "Downloads only",
-      "filterAllVisitors": "All visitors",
-      "filterIdentified": "Identified",
-      "filterAnonymous": "Anonymous",
+      "title": "Aktivitet",
+      "noActivity": "Ingen aktivitet registrerad ännu.",
+      "access": "Visad",
+      "download": "Nedladdat",
+      "anonymous": "Anonym",
+      "loadMore": "Ladda mer",
+      "showingCount": "Visar {shown} av {total}",
+      "loadError": "Det gick inte att ladda aktivitetsdata.",
+      "filterAll": "Alla åtgärder",
+      "filterAccess": "Endast visningar",
+      "filterDownload": "Endast nedladdningar",
+      "filterAllVisitors": "Alla besökare",
+      "filterIdentified": "Identifierade",
+      "filterAnonymous": "Anonyma",
       "source": {
-        "tracking_token": "Via recipient link",
-        "cookie": "Self-identified",
-        "selfDeclaredHint": "Self-declared identity, not verified"
+        "tracking_token": "Via mottagarlänk",
+        "cookie": "Självidentifierad",
+        "selfDeclaredHint": "Självdeklarerad identitet, ej verifierad"
       }
     },
-    "lastDownloaded": "Last Downloaded",
+    "lastDownloaded": "Senast nedladdat",
     "privacySummary": "Integritet",
     "privacyNameField": "Besökarnamn:",
     "privacyEmailField": "Besökar-e-post:",
@@ -1994,9 +1994,9 @@
       "OPTIONAL": "Valfritt",
       "REQUIRED": "Obligatoriskt"
     },
-    "recipientNotified": "Notified",
-    "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
-    "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"
+    "recipientNotified": "Meddelad",
+    "recipientAccess": "{count, plural, one {# åtkomst} other {# åtkomster}}",
+    "recipientAccessWithLast": "{count, plural, one {# åtkomst} other {# åtkomster}} · senast {lastAccess}"
   },
   "shareExpiration": {
     "title": "Dela utgångsinställningar",
@@ -2058,10 +2058,10 @@
     "singleShareZipName": "{shareName}_files.zip",
     "multipleSharesZipName": "{count}_shares_files.zip",
     "defaultShareName": "Dela",
-    "pauseSuccess": "Share paused",
-    "pauseError": "Failed to pause share",
-    "resumeSuccess": "Share resumed",
-    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
+    "pauseSuccess": "Delning pausad",
+    "pauseError": "Det gick inte att pausa delningen",
+    "resumeSuccess": "Delning återupptagen",
+    "resumeError": "Det gick inte att återuppta delningen. Om den har gått ut eller nått visningsgränsen, förläng den istället."
   },
   "shareMultipleFiles": {
     "title": "Dela flera filer",
@@ -2156,8 +2156,8 @@
       "neverExpires": "Går aldrig ut",
       "active": "Aktiv",
       "expired": "Utgått",
-      "paused": "Paused",
-      "maxViewsReached": "View Limit Reached"
+      "paused": "Pausad",
+      "maxViewsReached": "Visningsgräns nådd"
     },
     "security": {
       "protected": "Skyddad",
@@ -2179,9 +2179,9 @@
       "notifyRecipients": "Meddela mottagare",
       "downloadShareFiles": "Ladda ner alla filer",
       "delete": "Radera",
-      "pause": "Pause",
-      "resume": "Resume",
-      "renew": "Renew"
+      "pause": "Pausa",
+      "resume": "Återuppta",
+      "renew": "Förnya"
     },
     "bulkActions": {
       "actions": "Åtgärder",
@@ -2346,11 +2346,11 @@
         "edge": "Kant"
       },
       "platforms": {
-        "windows": "på Windows",
-        "macos": "på macOS",
-        "linux": "på Linux",
-        "iphone": "på iPhone",
-        "android": "på Android"
+        "windows": " på Windows",
+        "macos": " på macOS",
+        "linux": " på Linux",
+        "iphone": " på iPhone",
+        "android": " på Android"
       }
     }
   },
@@ -2812,41 +2812,41 @@
     }
   },
   "notificationPreferences": {
-    "pageTitle": "Notification Preferences",
-    "description": "Choose which email notifications you receive",
-    "type": "Notification Type",
-    "category": "Category",
-    "frequency": "Frequency",
-    "immediate": "Immediate",
-    "disabled": "Disabled",
-    "alwaysEnabled": "Always enabled",
-    "save": "Save Preferences",
-    "saveSuccess": "Notification preferences saved",
-    "saveError": "Failed to save preferences",
-    "noChanges": "No changes to save",
+    "pageTitle": "Aviseringsinställningar",
+    "description": "Välj vilka e-postaviseringar du vill ta emot",
+    "type": "Aviseringstyp",
+    "category": "Kategori",
+    "frequency": "Frekvens",
+    "immediate": "Omedelbar",
+    "disabled": "Inaktiverad",
+    "alwaysEnabled": "Alltid aktiverad",
+    "save": "Spara inställningar",
+    "saveSuccess": "Aviseringsinställningar sparade",
+    "saveError": "Det gick inte att spara inställningarna",
+    "noChanges": "Inga ändringar att spara",
     "types": {
-      "password_reset": "Password reset",
-      "welcome": "Welcome email",
-      "account_deactivated": "Account deactivated",
-      "account_reactivated": "Account reactivated",
-      "share_invitation": "Share invitation",
-      "share_accessed": "Share accessed",
-      "share_downloaded": "File downloaded from share",
-      "share_expiring": "Share expiring soon",
-      "share_expired": "Share expired",
-      "share_max_views_reached": "Share max views reached",
-      "share_no_activity": "No activity on share",
-      "reverse_share_invitation": "Reverse share invitation",
-      "reverse_share_uploaded": "Files uploaded to reverse share",
-      "reverse_share_expiring": "Reverse share expiring",
-      "reverse_share_expired": "Reverse share expired",
-      "quota_warning": "Quota warning",
-      "quota_exceeded": "Quota exceeded",
-      "files_auto_deleted": "Files auto-deleted",
-      "share_auto_deleted": "Share auto-deleted",
-      "admin_user_registered": "New user registered (admin)",
-      "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email",
+      "password_reset": "Återställning av lösenord",
+      "welcome": "Välkomstmeddelande",
+      "account_deactivated": "Konto inaktiverat",
+      "account_reactivated": "Konto återaktiverat",
+      "share_invitation": "Inbjudan till delning",
+      "share_accessed": "Delning öppnad",
+      "share_downloaded": "Fil nedladdad från delning",
+      "share_expiring": "Delning går snart ut",
+      "share_expired": "Delning har gått ut",
+      "share_max_views_reached": "Maximalt antal visningar nått",
+      "share_no_activity": "Ingen aktivitet på delning",
+      "reverse_share_invitation": "Inbjudan till mottagningslänk",
+      "reverse_share_uploaded": "Filer uppladdade till mottagningslänk",
+      "reverse_share_expiring": "Mottagningslänk går snart ut",
+      "reverse_share_expired": "Mottagningslänk har gått ut",
+      "quota_warning": "Kvotvarning",
+      "quota_exceeded": "Kvot överskriden",
+      "files_auto_deleted": "Filer automatiskt borttagna",
+      "share_auto_deleted": "Delning automatiskt borttagen",
+      "admin_user_registered": "Ny användare registrerad (administratör)",
+      "admin_quota_alert": "Kvotvarning för användare (administratör)",
+      "test_email": "Test-e-post",
       "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
       "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
       "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
@@ -2872,16 +2872,16 @@
       "admin_quota_alert": "När en användares lagringsanvändning överskrider deras kvot (endast administratörer)"
     },
     "categories": {
-      "account": "Account",
-      "shares": "Shares",
-      "reverseShares": "Reverse Shares",
+      "account": "Konto",
+      "shares": "Delningar",
+      "reverseShares": "Mottagningslänkar",
       "quota": "Quotas",
       "admin": "Administration",
       "test": "Test"
     },
-    "saving": "Saving...",
-    "loadError": "Failed to load notification preferences",
-    "retry": "Retry",
-    "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}"
+    "saving": "Sparar...",
+    "loadError": "Det gick inte att läsa in aviseringsinställningarna",
+    "retry": "Försök igen",
+    "unsavedChanges": "{count, plural, one {# osparad ändring} other {# osparade ändringar}}"
   }
 }
