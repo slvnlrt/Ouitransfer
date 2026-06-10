@@ -49,7 +49,7 @@ const UserResponseFields = {
   firstName: z.string().describe("User first name"),
   lastName: z.string().describe("User last name"),
   username: z.string().describe("User username"),
-  email: z.string().email().describe("User email"),
+  email: z.email().describe("User email"),
   image: z.string().nullable().describe("User profile image URL"),
   isAdmin: z.boolean().describe("User is admin"),
   isActive: z.boolean().describe("User is active"),
@@ -82,7 +82,7 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
       firstName: z.string().min(1).describe("User first name"),
       lastName: z.string().min(1).describe("User last name"),
       username: z.string().min(3).describe("User username"),
-      email: z.string().email().describe("User email"),
+      email: z.email().describe("User email"),
       image: z.string().optional().describe("User profile image URL"),
       password: passwordSchema.describe("User password"),
       isAdmin: z.boolean().optional().default(false).describe("Whether the user is an admin"),
@@ -405,7 +405,7 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
       description: "Update user profile image (admin only)",
       params: z.object({ id: z.string().describe("User ID") }),
       body: z.object({
-        image: z.string().url().describe("User profile image URL"),
+        image: z.url().describe("User profile image URL"),
       }),
       response: {
         200: UserResponseSchema,

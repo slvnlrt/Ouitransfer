@@ -7,9 +7,9 @@ import { FieldRequirement } from "../../generated/prisma/client.js";
  * `{ email: string; name?: string }`.
  */
 const RecipientInputSchema = z.union([
-  z.string().email(),
+  z.email(),
   z.object({
-    email: z.string().email(),
+    email: z.email(),
     name: z.string().optional(),
   }),
 ]);
@@ -168,7 +168,7 @@ export const ShareResponseSchema = z.object({
   recipients: z.array(
     z.object({
       id: z.string().describe("The recipient ID"),
-      email: z.string().email().describe("The recipient email"),
+      email: z.email().describe("The recipient email"),
       name: z.string().nullable().describe("The recipient name"),
       trackingToken: z.string().nullable().describe("The recipient tracking token"),
       notifiedAt: z.string().datetime().nullable().describe("When the recipient was notified"),
@@ -213,7 +213,6 @@ export const UpdateShareItemsSchema = z
 
 export const RecipientWithNameSchema = z.object({
   email: z
-    .string()
     .email("Invalid email format")
     .transform((s) => s.trim().toLowerCase())
     .describe("The recipient email"),
@@ -230,7 +229,6 @@ export const UpdateShareRecipientsSchema = z
     emails: z
       .array(
         z
-          .string()
           .email("Invalid email format")
           .transform((s) => s.trim().toLowerCase())
           .describe("The recipient emails"),

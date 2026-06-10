@@ -90,7 +90,7 @@ export const ReverseShareFileSchema = z.object({
 
 export const ReverseShareRecipientSchema = z.object({
   id: z.string().describe("The recipient ID"),
-  email: z.string().email().describe("The recipient email"),
+  email: z.email().describe("The recipient email"),
   name: z.string().nullable().describe("The recipient display name"),
   notifiedAt: z.string().nullable().describe("When the invitation was last sent"),
   uploadCount: z
@@ -168,7 +168,7 @@ export const UploadToReverseShareSchema = z.object({
   mimeType: z.string().optional().describe("MIME type declared by the client"),
   size: z.number().int().positive().describe("The file size in bytes"),
   objectName: z.string().describe("The file object name"),
-  uploaderEmail: z.string().email().optional().describe("The uploader email"),
+  uploaderEmail: z.email().optional().describe("The uploader email"),
   uploaderName: z.string().optional().describe("The uploader name"),
 });
 
@@ -201,10 +201,7 @@ export const UpdateReverseShareRecipientsSchema = z.object({
   recipients: z
     .array(
       z.object({
-        email: z
-          .string()
-          .email()
-          .transform((s) => s.trim().toLowerCase()),
+        email: z.email().transform((s) => s.trim().toLowerCase()),
         name: z.string().optional(),
       }),
     )
@@ -213,23 +210,13 @@ export const UpdateReverseShareRecipientsSchema = z.object({
 
 export const RemoveReverseShareRecipientsSchema = z.object({
   emails: z
-    .array(
-      z
-        .string()
-        .email()
-        .transform((s) => s.trim().toLowerCase()),
-    )
+    .array(z.email().transform((s) => s.trim().toLowerCase()))
     .min(1, "At least one email is required"),
 });
 
 export const NotifyReverseShareRecipientsSchema = z.object({
   emails: z
-    .array(
-      z
-        .string()
-        .email()
-        .transform((s) => s.trim().toLowerCase()),
-    )
+    .array(z.email().transform((s) => s.trim().toLowerCase()))
     .optional()
     .describe("Optional list of recipient emails to notify (notifies all if omitted)"),
 });

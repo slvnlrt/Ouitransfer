@@ -4,7 +4,7 @@ export const BaseRegisterUserSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
   username: z.string().min(3),
-  email: z.string().email(),
+  email: z.email(),
   image: z.string().optional(),
   isAdmin: z.boolean().optional().default(false),
 });
@@ -21,7 +21,7 @@ export const UpdateUserSchema = z.object({
   firstName: z.string().min(1).optional(),
   lastName: z.string().min(1).optional(),
   username: z.string().min(3).optional(),
-  email: z.string().email().optional(),
+  email: z.email().optional(),
   image: z.string().optional(),
   password: z.string().optional(),
   isAdmin: z.boolean().optional(),

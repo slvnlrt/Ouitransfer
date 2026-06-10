@@ -937,12 +937,7 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       }),
       body: z.object({
         emails: z
-          .array(
-            z
-              .string()
-              .email()
-              .transform((s) => s.trim().toLowerCase()),
-          )
+          .array(z.email().transform((s) => s.trim().toLowerCase()))
           .optional()
           .describe(
             "Optional list of recipient emails to remind (reminds all non-downloaders if omitted)",
@@ -1056,7 +1051,7 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       body: z
         .object({
           name: z.string().max(100).optional().describe("Visitor name"),
-          email: z.string().email().max(254).optional().describe("Visitor email"),
+          email: z.email().max(254).optional().describe("Visitor email"),
         })
         .refine((data) => !!(data.name?.trim() || data.email?.trim()), {
           message: "At least one of name or email must be provided",

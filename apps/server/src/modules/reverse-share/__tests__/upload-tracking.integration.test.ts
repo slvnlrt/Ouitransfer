@@ -296,7 +296,7 @@ describe("Reverse-share per-recipient upload tracking (8.3 lot D) — integratio
   });
 
   it("normalizes the uploaderEmail (lowercase) before matching", async () => {
-    // The route's Zod `.email()` rejects surrounding whitespace (400 before the
+    // The route's Zod z.email() rejects surrounding whitespace (400 before the
     // service), but a valid mixed-case address passes and must be lowercased to
     // match the stored recipient email.
     const res = await registerById({ uploaderEmail: "ALICE@Example.com" });

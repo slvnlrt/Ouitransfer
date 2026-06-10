@@ -90,7 +90,7 @@ const passwordResetSchema = z.object({
 
 const accountDeactivatedSchema = z.object({
   firstName: z.string(),
-  adminContactEmail: z.string().email().optional(),
+  adminContactEmail: z.email().optional(),
 });
 
 const accountReactivatedSchema = z.object({

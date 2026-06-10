@@ -368,7 +368,7 @@ export const notificationRoutes: FastifyPluginAsyncZod = async (app) => {
       operationId: "sendTestEmail",
       summary: "Send a test email (admin only)",
       body: z.object({
-        to: z.string().email(),
+        to: z.email(),
       }),
       response: {
         200: z.object({

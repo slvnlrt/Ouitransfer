@@ -14,7 +14,7 @@ export const BaseAuthProviderSchema = z.object({
 });
 
 export const CreateAuthProviderSchema = BaseAuthProviderSchema.extend({
-  issuerUrl: z.string().url("Invalid issuer URL").optional(),
+  issuerUrl: z.url("Invalid issuer URL").optional(),
   authorizationEndpoint: z.string().optional(),
   tokenEndpoint: z.string().optional(),
   userInfoEndpoint: z.string().optional(),
@@ -58,7 +58,7 @@ export const UpdateAuthProviderSchema = z
     adminEmailDomains: z.string().optional(),
     clientId: z.string().min(1).optional(),
     clientSecret: z.string().min(1).optional(),
-    issuerUrl: z.string().url().optional(),
+    issuerUrl: z.url().optional(),
     authorizationEndpoint: z.string().optional(),
     tokenEndpoint: z.string().optional(),
     userInfoEndpoint: z.string().optional(),
@@ -94,7 +94,7 @@ export const UpdateAuthProviderSchema = z
   );
 
 export const UpdateOfficialProviderSchema = z.object({
-  issuerUrl: z.string().url().optional(),
+  issuerUrl: z.url().optional(),
   clientId: z.string().min(1).optional(),
   clientSecret: z.string().min(1).optional(),
   enabled: z.boolean().optional(),
