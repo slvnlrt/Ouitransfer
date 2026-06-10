@@ -39,3 +39,18 @@ OUITRANSFER_WEB_TAG=latest
 1. Investiguer le mécanisme de mapping des variables `OUITRANSFER_*` avant de proposer un fix
 2. Confirmer la valeur de `CORS_ORIGINS` dans le container en cours
 3. Fixer B-30 (retourner 403 au lieu de 500 sur rejet CORS) indépendamment du problème de config
+
+---
+
+## Destinataires non éditables dans la modal détails d'un share
+
+### Symptôme
+Dans `share-details-modal.tsx`, les destinataires (`recipients`) sont affichés en lecture seule : on voit la liste mais on ne peut ni ajouter ni supprimer de destinataire. Or toutes les autres sections de la modal (nom, description, sécurité, expiration, etc.) sont éditables in-place.
+
+### Contexte
+- Le composant `RecipientSelector` (ou équivalent) existe déjà dans la codebase — il est utilisé dans la modal de création du share (`create-share-modal.tsx`)
+- Les endpoints API existent : `POST /shares/:id/recipients` et `DELETE /shares/:id/recipients`
+- La modal affiche déjà la liste des destinataires avec leur statut (downloaded/pending)
+
+### Action
+Brancher l'ajout/suppression de destinataires dans `share-details-modal.tsx`, en s'inspirant du composant utilisé à la création. Vérifier si le `RecipientSelector` peut être réutilisé tel quel ou s'il faut un sous-composant dédié pour l'édition in-place.
