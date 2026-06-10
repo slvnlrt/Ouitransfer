@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useState } from "react";
 
 import "./globals.css";
 
 import { reportError } from "@/lib/report-error";
+import { RTL_BASE_LANGUAGES } from "@/lib/rtl-languages";
 
 // Global error boundary — catches root layout crashes.
 // Providers (theme, i18n, auth) are unavailable since root layout failed.
@@ -193,23 +194,28 @@ const translations: Record<string, ErrorStrings> = {
   },
 };
 
+/** Base-code of the configured default locale, or "en" if not set. */
+const defaultLang = (process.env.NEXT_PUBLIC_DEFAULT_LANGUAGE ?? "en-US")
+  .split("-")[0]
+  .toLowerCase();
+
 /** Detect the user's locale from the NEXT_LOCALE cookie or navigator.language. */
 function detectLocale(): string {
   try {
     // Try NEXT_LOCALE cookie first (set by the app's locale selection)
     const match = document.cookie.match(/(?:^|;\s*)NEXT_LOCALE=([^;]+)/);
     if (match?.[1]) {
-      return match[1].split("-")[0].toLowerCase();
+      return decodeURIComponent(match[1]).split("-")[0].toLowerCase();
     }
     // Fall back to browser language
     return navigator.language.split("-")[0].toLowerCase();
   } catch {
-    return "en";
+    return defaultLang;
   }
 }
 
 function getStrings(lang: string): ErrorStrings {
-  return translations[lang] ?? translations.en;
+  return translations[lang] ?? translations[defaultLang] ?? translations.en;
 }
 
 export default function GlobalError({
@@ -223,10 +229,12 @@ export default function GlobalError({
     reportError(error, { source: "global-error" });
   }, [error]);
 
-  const lang = useMemo(() => detectLocale(), []);
-  const t = useMemo(() => getStrings(lang), [lang]);
-  // RTL languages
-  const dir = ["ar", "fa", "he"].includes(lang) ? "rtl" : "ltr";
+  const [lang, setLang] = useState(defaultLang);
+  useEffect(() => {
+    setLang(detectLocale());
+  }, []);
+  const t = getStrings(lang);
+  const dir = RTL_BASE_LANGUAGES.includes(lang) ? "rtl" : "ltr";
 
   return (
     <html lang={lang} dir={dir}>
