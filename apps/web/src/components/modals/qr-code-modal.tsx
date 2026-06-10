@@ -1,4 +1,4 @@
-import { Download } from "lucide-react";
+import { Download, QrCode } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,10 @@ export function QrCodeModal({ isOpen, onClose, shareLink, shareName }: QrCodeMod
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{t("qrCodeModal.title")}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <QrCode className="h-5 w-5" />
+            {t("qrCodeModal.title")}
+          </DialogTitle>
           <DialogDescription>{t("qrCodeModal.description")}</DialogDescription>
         </DialogHeader>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, Download } from "lucide-react";
+import { Copy, Download, Link } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -96,7 +96,8 @@ export function GenerateShareLinkModal({
     <Dialog open={!!shareId} onOpenChange={() => onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <Link className="h-5 w-5" />
             {isEdit ? t("generateShareLink.updateTitle") : t("generateShareLink.generateTitle")}
           </DialogTitle>
         </DialogHeader>

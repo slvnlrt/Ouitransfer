@@ -1,4 +1,4 @@
-import { Trash2, TriangleAlert } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -38,17 +38,11 @@ export function DeleteReverseShareModal({
     <Dialog open={!!reverseShare} onOpenChange={() => !isDeleting && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
-              <TriangleAlert className="h-5 w-5 text-destructive" />
-            </div>
-            <div>
-              <DialogTitle className="text-start">{t("reverseShares.delete.title")}</DialogTitle>
-            </div>
-          </div>
-          <DialogDescription className="text-start pt-2">
-            {t("reverseShares.delete.description")}
-          </DialogDescription>
+          <DialogTitle className="flex items-center gap-2">
+            <Trash2 className="h-5 w-5" />
+            {t("reverseShares.delete.title")}
+          </DialogTitle>
+          <DialogDescription>{t("reverseShares.delete.description")}</DialogDescription>
         </DialogHeader>
 
         {/* Details of the reverse share to be deleted */}

@@ -242,7 +242,10 @@ export function UploadFileModal({
           onEscapeKeyDown={(e) => e.preventDefault()}
         >
           <DialogHeader>
-            <DialogTitle>{t("uploadFile.multipleTitle")}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <CloudUpload className="h-5 w-5" />
+              {t("uploadFile.multipleTitle")}
+            </DialogTitle>
           </DialogHeader>
 
           <div className="flex-1 overflow-hidden flex flex-col gap-4">

@@ -1,5 +1,6 @@
 "use client";
 
+import { Files, Pencil, Trash2, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -308,7 +309,10 @@ export function ShareActionsModals({
       <Dialog open={!!shareToDelete} onOpenChange={() => onCloseDelete()}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{t("shareActions.deleteTitle")}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Trash2 className="h-5 w-5" />
+              {t("shareActions.deleteTitle")}
+            </DialogTitle>
             <DialogDescription>{t("shareActions.deleteConfirmation")}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -325,7 +329,10 @@ export function ShareActionsModals({
       <Dialog open={!!shareToEdit} onOpenChange={() => onCloseEdit()}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>{t("shareActions.editTitle")}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Pencil className="h-5 w-5" />
+              {t("shareActions.editTitle")}
+            </DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4">
             <div className="grid w-full items-center gap-1.5">
@@ -434,7 +441,10 @@ export function ShareActionsModals({
       <Dialog open={!!shareToManageFiles} onOpenChange={handleManageFilesClose}>
         <DialogContent className="sm:max-w-3xl max-h-[80vh] w-full">
           <DialogHeader>
-            <DialogTitle>{t("shareActions.manageFilesTitle")}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Files className="h-5 w-5" />
+              {t("shareActions.manageFilesTitle")}
+            </DialogTitle>
             <DialogDescription>{t("shareActions.manageFilesDescription")}</DialogDescription>
           </DialogHeader>
 
@@ -523,7 +533,8 @@ export function ShareActionsModals({
       <Dialog open={!!shareToManageRecipients} onOpenChange={() => onCloseManageRecipients()}>
         <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-hidden">
           <DialogHeader className="space-y-3">
-            <DialogTitle className="text-xl font-semibold">
+            <DialogTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
               {t("shareActions.manageRecipientsTitle")}
             </DialogTitle>
             <DialogDescription className="text-muted-foreground">

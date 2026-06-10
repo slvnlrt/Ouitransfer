@@ -128,7 +128,10 @@ export function ShareExpirationModal({
     <Dialog open={!!shareId} onOpenChange={() => onClose()}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{t("shareExpiration.title")}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            {t("shareExpiration.title")}
+          </DialogTitle>
           <DialogDescription>{t("shareExpiration.subtitle")}</DialogDescription>
         </DialogHeader>
 

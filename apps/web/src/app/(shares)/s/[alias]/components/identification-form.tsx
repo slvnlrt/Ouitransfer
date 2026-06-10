@@ -95,7 +95,10 @@ export function IdentificationForm({
     >
       <DialogContent className="sm:max-w-lg">
         <DialogHeader className="flex flex-col gap-1">
-          <DialogTitle>{t("share.identification.title")}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <UserCircle className="h-5 w-5" />
+            {t("share.identification.title")}
+          </DialogTitle>
           <div className="flex items-center gap-2 text-muted-foreground text-sm">
             <UserCircle className="size-4" />
             <p>{t("share.identification.subtitle")}</p>

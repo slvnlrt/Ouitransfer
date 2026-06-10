@@ -25,7 +25,10 @@ export function PasswordModal({
     <Dialog open={isOpen} onOpenChange={() => {}} modal>
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="flex flex-col gap-1">
-          <DialogTitle>{t("share.password.title")}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <Lock className="h-5 w-5" />
+            {t("share.password.title")}
+          </DialogTitle>
           <div className="flex items-center gap-2 text-warning text-sm">
             <Lock className="size-4" />
             <p>{t("share.password.protected")}</p>

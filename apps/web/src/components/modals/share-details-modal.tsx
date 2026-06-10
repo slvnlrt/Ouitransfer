@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, Clock, Download, Eye, Mail } from "lucide-react";
+import { Check, Clock, Download, Eye, Info, Mail } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -219,7 +219,10 @@ export function ShareDetailsModal({
       <Dialog open={!!shareId} onOpenChange={() => onClose()}>
         <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{t("shareDetails.title")}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Info className="h-5 w-5" />
+              {t("shareDetails.title")}
+            </DialogTitle>
             <DialogDescription>{t("shareDetails.subtitle")}</DialogDescription>
           </DialogHeader>
           <div className="py-4">

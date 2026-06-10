@@ -8,10 +8,13 @@ import {
   Eye,
   EyeClosed,
   Key,
+  KeyRound,
   Monitor,
   MonitorSmartphone,
+  QrCode,
   Shield,
   ShieldCheck,
+  ShieldOff,
   Smartphone,
   Trash2,
   TriangleAlert,
@@ -347,7 +350,10 @@ export function TwoFactorForm() {
       <Dialog open={isSetupModalOpen} onOpenChange={setIsSetupModalOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{t("twoFactor.setup.title")}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <QrCode className="h-5 w-5" />
+              {t("twoFactor.setup.title")}
+            </DialogTitle>
             <DialogDescription>{t("twoFactor.setup.description")}</DialogDescription>
           </DialogHeader>
 
@@ -426,7 +432,10 @@ export function TwoFactorForm() {
       <Dialog open={isDisableModalOpen} onOpenChange={setIsDisableModalOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{t("twoFactor.disable.title")}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <ShieldOff className="h-5 w-5" />
+              {t("twoFactor.disable.title")}
+            </DialogTitle>
             <DialogDescription>{t("twoFactor.disable.description")}</DialogDescription>
           </DialogHeader>
 
@@ -496,7 +505,10 @@ export function TwoFactorForm() {
       <Dialog open={isBackupCodesModalOpen} onOpenChange={setIsBackupCodesModalOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{t("twoFactor.backupCodes.title")}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <KeyRound className="h-5 w-5" />
+              {t("twoFactor.backupCodes.title")}
+            </DialogTitle>
             <DialogDescription>{t("twoFactor.backupCodes.description")}</DialogDescription>
           </DialogHeader>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, RotateCw, X, ZoomIn, ZoomOut } from "lucide-react";
+import { Check, Crop as CropIcon, RotateCw, X, ZoomIn, ZoomOut } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { type Crop, centerCrop, makeAspectCrop, type PixelCrop } from "react-image-crop";
@@ -185,7 +185,10 @@ export function ImageEditModal({ isOpen, onClose, onSave, imageFile }: ImageEdit
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-3xl h-fit overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle>{t("imageEdit.title")}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <CropIcon className="h-5 w-5" />
+            {t("imageEdit.title")}
+          </DialogTitle>
         </DialogHeader>
 
         <div className="flex-1 overflow-auto">

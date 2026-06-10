@@ -1,5 +1,6 @@
 "use client";
 
+import { RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -42,7 +43,10 @@ export function LdapSyncDetailModal({ log, isOpen, onClose }: LdapSyncDetailModa
         {log && (
           <>
             <DialogHeader>
-              <DialogTitle>{t("ldap.syncDetail.title")}</DialogTitle>
+              <DialogTitle className="flex items-center gap-2">
+                <RefreshCw className="h-5 w-5" />
+                {t("ldap.syncDetail.title")}
+              </DialogTitle>
               {/* M-6: Show timestamps and duration */}
               <div className="flex items-center gap-4 text-xs text-muted-foreground">
                 <span>
