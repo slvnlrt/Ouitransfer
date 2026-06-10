@@ -182,7 +182,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "이동 중…"
   },
   "createShare": {
     "title": "공유 생성",
@@ -638,7 +639,8 @@
     "title": "이미지 편집",
     "rotate": "회전",
     "zoom": "확대/축소",
-    "cropInstructions": "위치를 변경하려면 드래그하고, 자르기 영역을 조정하려면 모서리를 확대/축소하세요"
+    "cropInstructions": "위치를 변경하려면 드래그하고, 자르기 영역을 조정하려면 모서리를 확대/축소하세요",
+    "cropAlt": "자를 이미지"
   },
   "login": {
     "welcome": "에 오신 것을 환영합니다",
@@ -1335,6 +1337,9 @@
         },
         "invalidDate": "잘못된 날짜",
         "downloading": "다운로드 중..."
+      },
+      "delete": {
+        "linkLabel": "링크: /r/{alias}"
       }
     },
     "form": {
@@ -2215,7 +2220,8 @@
       "verificationCodePlaceholder": "6자리 코드 입력",
       "verificationCodeDescription": "인증 앱에서 6자리 코드를 입력하세요",
       "verifyAndEnable": "확인 및 활성화",
-      "cancel": "취소"
+      "cancel": "취소",
+      "qrCodeAlt": "2FA QR 코드"
     },
     "disable": {
       "title": "2단계 인증 비활성화",
@@ -2225,7 +2231,8 @@
       "totpLabel": "인증 코드",
       "totpHint": "6자리 인증 앱 코드 또는 백업 코드를 입력하세요",
       "confirm": "비활성화 확인",
-      "cancel": "취소"
+      "cancel": "취소",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "백업 코드",
@@ -2724,7 +2731,13 @@
       "deactivated": "비활성화됨",
       "reactivated": "재활성화됨",
       "skipped": "건너뜀",
-      "status": "상태"
+      "status": "상태",
+      "statusLabel": {
+        "success": "성공",
+        "error": "오류",
+        "partial": "부분 성공",
+        "running": "실행 중"
+      }
     },
     "syncDetail": {
       "title": "동기화 상세정보",
@@ -2732,7 +2745,11 @@
       "type": "유형",
       "username": "사용자 이름",
       "email": "이메일",
-      "message": "메시지"
+      "message": "메시지",
+      "detailType": {
+        "skip": "건너뜀",
+        "error": "오류"
+      }
     },
     "banner": {
       "active": "LDAP/AD 동기화 활성",

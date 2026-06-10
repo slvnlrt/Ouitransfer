@@ -182,7 +182,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "Przenoszenie…"
   },
   "createShare": {
     "title": "Utwórz Udostępnienie",
@@ -638,7 +639,8 @@
     "title": "Edytuj obraz",
     "rotate": "Obróć",
     "zoom": "Powiększ",
-    "cropInstructions": "Przeciągnij, aby przesunąć, zmień rozmiar rogów, aby dostosować obszar przycięcia"
+    "cropInstructions": "Przeciągnij, aby przesunąć, zmień rozmiar rogów, aby dostosować obszar przycięcia",
+    "cropAlt": "Obraz do przycięcia"
   },
   "login": {
     "welcome": "Witaj w",
@@ -1335,6 +1337,9 @@
         },
         "invalidDate": "Nieprawidłowa data",
         "downloading": "Pobieranie..."
+      },
+      "delete": {
+        "linkLabel": "Link: /r/{alias}"
       }
     },
     "form": {
@@ -2215,7 +2220,8 @@
       "verificationCodePlaceholder": "Wprowadź 6-cyfrowy kod",
       "verificationCodeDescription": "Wprowadź 6-cyfrowy kod z aplikacji uwierzytelniającej",
       "verifyAndEnable": "Zweryfikuj i włącz",
-      "cancel": "Anuluj"
+      "cancel": "Anuluj",
+      "qrCodeAlt": "Kod QR 2FA"
     },
     "disable": {
       "title": "Wyłącz uwierzytelnianie dwuskładnikowe",
@@ -2225,7 +2231,8 @@
       "totpLabel": "Kod weryfikacyjny",
       "totpHint": "Wprowadź 6-cyfrowy kod uwierzytelniającego lub kod zapasowy",
       "confirm": "Potwierdź wyłączenie",
-      "cancel": "Anuluj"
+      "cancel": "Anuluj",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "Kody zapasowe",
@@ -2724,7 +2731,13 @@
       "deactivated": "Zdezaktywowano",
       "reactivated": "Ponownie aktywowano",
       "skipped": "Pominięto",
-      "status": "Status"
+      "status": "Status",
+      "statusLabel": {
+        "success": "Sukces",
+        "error": "Błąd",
+        "partial": "Częściowy",
+        "running": "W toku"
+      }
     },
     "syncDetail": {
       "title": "Szczegóły synchronizacji",
@@ -2732,7 +2745,11 @@
       "type": "Typ",
       "username": "Nazwa użytkownika",
       "email": "E-mail",
-      "message": "Wiadomość"
+      "message": "Wiadomość",
+      "detailType": {
+        "skip": "Pominięto",
+        "error": "Błąd"
+      }
     },
     "banner": {
       "active": "Synchronizacja LDAP/AD aktywna",

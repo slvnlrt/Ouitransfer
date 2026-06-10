@@ -447,7 +447,7 @@ export function ShareDetailsModal({
           isOpen={showQrCodeModal}
           onClose={() => setShowQrCodeModal(false)}
           shareLink={shareLink}
-          shareName={share?.name || "Share"}
+          shareName={share?.name || t("shareDetails.untitled")}
         />
       )}
     </>

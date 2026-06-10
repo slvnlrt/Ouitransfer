@@ -186,7 +186,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "กำลังย้าย…"
   },
   "createShare": {
     "title": "สร้างแชร์",
@@ -642,7 +643,8 @@
     "title": "แก้ไขรูปภาพ",
     "rotate": "หมุน",
     "zoom": "ซูม",
-    "cropInstructions": "ลากเพื่อเปลี่ยนตำแหน่ง ปรับขนาดมุมเพื่อปรับพื้นที่ครอป"
+    "cropInstructions": "ลากเพื่อเปลี่ยนตำแหน่ง ปรับขนาดมุมเพื่อปรับพื้นที่ครอป",
+    "cropAlt": "รูปภาพที่จะครอบ"
   },
   "login": {
     "welcome": "ยินดีต้อนรับสู่",
@@ -1339,6 +1341,9 @@
           "aborted": "การคัดลอกถูกยกเลิกเนื่องจากหมดเวลา"
         },
         "downloading": "กำลังดาวน์โหลด..."
+      },
+      "delete": {
+        "linkLabel": "ลิงก์: /r/{alias}"
       }
     },
     "form": {
@@ -2228,7 +2233,8 @@
       "verificationCodePlaceholder": "ป้อนรหัส 6 หลัก",
       "verificationCodeDescription": "ป้อนรหัส 6 หลักจากแอปผู้ยืนยันตัวตนของคุณ",
       "verifyAndEnable": "ยืนยันตัวตนและเปิดใช้งาน",
-      "cancel": "ยกเลิก"
+      "cancel": "ยกเลิก",
+      "qrCodeAlt": "รหัส QR สำหรับ 2FA"
     },
     "disable": {
       "title": "ปิดใช้งานการยืนยันตัวตนแบบสองปัจจัย",
@@ -2238,7 +2244,8 @@
       "totpLabel": "รหัสการยืนยันตัวตน",
       "totpHint": "ป้อนรหัส TOTP 6 หลักของคุณหรือรหัสสำรอง",
       "confirm": "ยืนยันการปิดใช้งาน",
-      "cancel": "ยกเลิก"
+      "cancel": "ยกเลิก",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "รหัสสำรอง",
@@ -2724,7 +2731,13 @@
       "deactivated": "ปิดใช้งาน",
       "reactivated": "เปิดใช้งานอีกครั้ง",
       "skipped": "ข้าม",
-      "status": "สถานะ"
+      "status": "สถานะ",
+      "statusLabel": {
+        "success": "สำเร็จ",
+        "error": "ข้อผิดพลาด",
+        "partial": "บางส่วน",
+        "running": "กำลังดำเนินการ"
+      }
     },
     "syncDetail": {
       "title": "รายละเอียดการซิงค์",
@@ -2732,7 +2745,11 @@
       "type": "ประเภท",
       "username": "ชื่อผู้ใช้",
       "email": "อีเมล",
-      "message": "ข้อความ"
+      "message": "ข้อความ",
+      "detailType": {
+        "skip": "ข้าม",
+        "error": "ข้อผิดพลาด"
+      }
     },
     "banner": {
       "active": "การซิงค์ LDAP/AD ทำงานอยู่",

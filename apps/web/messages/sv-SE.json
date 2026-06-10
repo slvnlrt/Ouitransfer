@@ -186,7 +186,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "Flyttar…"
   },
   "createShare": {
     "title": "Skapa Share",
@@ -642,7 +643,8 @@
     "title": "Redigera bild",
     "rotate": "Rotera",
     "zoom": "Zoom",
-    "cropInstructions": "Dra för att flytta om, ändra storlek på hörn för att justera beskärningsområdet"
+    "cropInstructions": "Dra för att flytta om, ändra storlek på hörn för att justera beskärningsområdet",
+    "cropAlt": "Bild att beskära"
   },
   "login": {
     "welcome": "Välkommen till",
@@ -1339,6 +1341,9 @@
           "aborted": "Kopieringsåtgärden avbröts på grund av timeout."
         },
         "downloading": "Laddar ner..."
+      },
+      "delete": {
+        "linkLabel": "Länk: /r/{alias}"
       }
     },
     "form": {
@@ -2228,7 +2233,8 @@
       "verificationCodePlaceholder": "Ange 6-siffrig kod",
       "verificationCodeDescription": "Ange den sexsiffriga koden från din autentiseringsapp",
       "verifyAndEnable": "Verifiera och aktivera",
-      "cancel": "Avboka"
+      "cancel": "Avboka",
+      "qrCodeAlt": "2FA QR-kod"
     },
     "disable": {
       "title": "Inaktivera tvåfaktorsautentisering",
@@ -2238,7 +2244,8 @@
       "totpLabel": "Verifieringskod",
       "totpHint": "Ange din 6-siffriga autentiseringskod eller en reservkod",
       "confirm": "Bekräfta inaktivera",
-      "cancel": "Avboka"
+      "cancel": "Avboka",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "Säkerhetskopieringskoder",
@@ -2724,7 +2731,13 @@
       "deactivated": "Avaktiverad",
       "reactivated": "Återaktiverad",
       "skipped": "Hoppades över",
-      "status": "Status"
+      "status": "Status",
+      "statusLabel": {
+        "success": "Lyckades",
+        "error": "Fel",
+        "partial": "Partiell",
+        "running": "Körs"
+      }
     },
     "syncDetail": {
       "title": "Synkroniseringsinformation",
@@ -2732,7 +2745,11 @@
       "type": "Typ",
       "username": "Användarnamn",
       "email": "E-post",
-      "message": "Meddelande"
+      "message": "Meddelande",
+      "detailType": {
+        "skip": "Hoppade över",
+        "error": "Fel"
+      }
     },
     "banner": {
       "active": "LDAP/AD-synkronisering aktiv",

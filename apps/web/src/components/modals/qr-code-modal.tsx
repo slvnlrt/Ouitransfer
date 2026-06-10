@@ -30,12 +30,8 @@ export function QrCodeModal({ isOpen, onClose, shareLink, shareName }: QrCodeMod
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{t("qrCodeModal.title", { defaultValue: "Share QR Code" })}</DialogTitle>
-          <DialogDescription>
-            {t("qrCodeModal.description", {
-              defaultValue: "Scan this QR code to access the shared files.",
-            })}
-          </DialogDescription>
+          <DialogTitle>{t("qrCodeModal.title")}</DialogTitle>
+          <DialogDescription>{t("qrCodeModal.description")}</DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col items-center justify-center">
@@ -63,7 +59,7 @@ export function QrCodeModal({ isOpen, onClose, shareLink, shareName }: QrCodeMod
             disabled={isDownloading}
           >
             <Download className="h-4 w-4" />
-            {t("qrCodeModal.download", { defaultValue: "Download QR Code" })}
+            {t("qrCodeModal.download")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -182,7 +182,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "Verplaatsen…"
   },
   "createShare": {
     "title": "Delen Maken",
@@ -638,7 +639,8 @@
     "title": "Afbeelding bewerken",
     "rotate": "Draai",
     "zoom": "Vergroot",
-    "cropInstructions": "Sleep om te herpositioneren, verander de grootte van de hoeken om de uitsnijdgebied aan te passen"
+    "cropInstructions": "Sleep om te herpositioneren, verander de grootte van de hoeken om de uitsnijdgebied aan te passen",
+    "cropAlt": "Afbeelding bijsnijden"
   },
   "login": {
     "welcome": "Welkom bij",
@@ -1335,6 +1337,9 @@
         },
         "invalidDate": "Ongeldige datum",
         "downloading": "Downloaden..."
+      },
+      "delete": {
+        "linkLabel": "Link: /r/{alias}"
       }
     },
     "form": {
@@ -2215,7 +2220,8 @@
       "verificationCodePlaceholder": "Voer 6-cijferige code in",
       "verificationCodeDescription": "Voer de 6-cijferige code van uw authenticator-app in",
       "verifyAndEnable": "Verifiëren & Inschakelen",
-      "cancel": "Annuleren"
+      "cancel": "Annuleren",
+      "qrCodeAlt": "2FA QR-code"
     },
     "disable": {
       "title": "Twee-Factor Authenticatie Uitschakelen",
@@ -2225,7 +2231,8 @@
       "totpLabel": "Verificatiecode",
       "totpHint": "Voer uw 6-cijferige authenticatorcode of een back-upcode in",
       "confirm": "Bevestig Uitschakelen",
-      "cancel": "Annuleren"
+      "cancel": "Annuleren",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "Back-upcodes",
@@ -2724,7 +2731,13 @@
       "deactivated": "Gedeactiveerd",
       "reactivated": "Opnieuw geactiveerd",
       "skipped": "Overgeslagen",
-      "status": "Status"
+      "status": "Status",
+      "statusLabel": {
+        "success": "Geslaagd",
+        "error": "Fout",
+        "partial": "Gedeeltelijk",
+        "running": "Actief"
+      }
     },
     "syncDetail": {
       "title": "Synchronisatiedetails",
@@ -2732,7 +2745,11 @@
       "type": "Type",
       "username": "Gebruikersnaam",
       "email": "E-mail",
-      "message": "Bericht"
+      "message": "Bericht",
+      "detailType": {
+        "skip": "Overgeslagen",
+        "error": "Fout"
+      }
     },
     "banner": {
       "active": "LDAP/AD-synchronisatie actief",

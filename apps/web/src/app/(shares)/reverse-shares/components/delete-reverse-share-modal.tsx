@@ -61,7 +61,11 @@ export function DeleteReverseShareModal({
               <span>
                 {reverseShare.files?.length || 0} {t("reverseShares.labels.filesReceived")}
               </span>
-              {reverseShare.alias?.alias && <span>Link: /r/{reverseShare.alias.alias}</span>}
+              {reverseShare.alias?.alias && (
+                <span>
+                  {t("reverseShares.modals.delete.linkLabel", { alias: reverseShare.alias.alias })}
+                </span>
+              )}
             </div>
           </div>
         </div>

@@ -254,7 +254,7 @@ export function MoveItemsModal({
             {t("common.cancel")}
           </Button>
           <Button onClick={handleMove} disabled={isLoading || isMoving}>
-            {isMoving ? `${t("common.move")}...` : t("common.move")}
+            {isMoving ? t("common.moving") : t("common.move")}
           </Button>
         </DialogFooter>
       </DialogContent>

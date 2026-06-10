@@ -182,7 +182,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "Taşınıyor…"
   },
   "createShare": {
     "title": "Paylaşım Oluştur",
@@ -638,7 +639,8 @@
     "title": "Resmi Düzenle",
     "rotate": "Döndür",
     "zoom": "Yakınlaştır",
-    "cropInstructions": "Yerleştirmek için sürükleyin, kırpma alanını ayarlamak için köşeleri yeniden boyutlandırın"
+    "cropInstructions": "Yerleştirmek için sürükleyin, kırpma alanını ayarlamak için köşeleri yeniden boyutlandırın",
+    "cropAlt": "Kırpılacak görsel"
   },
   "login": {
     "welcome": "Hoş geldiniz'e",
@@ -1335,6 +1337,9 @@
         },
         "invalidDate": "Geçersiz tarih",
         "downloading": "İndiriliyor..."
+      },
+      "delete": {
+        "linkLabel": "Bağlantı: /r/{alias}"
       }
     },
     "form": {
@@ -2215,7 +2220,8 @@
       "verificationCodePlaceholder": "6 haneli kodu girin",
       "verificationCodeDescription": "Kimlik doğrulayıcı uygulamanızdan 6 haneli kodu girin",
       "verifyAndEnable": "Doğrula ve Etkinleştir",
-      "cancel": "İptal"
+      "cancel": "İptal",
+      "qrCodeAlt": "2FA QR Kodu"
     },
     "disable": {
       "title": "İki Faktörlü Kimlik Doğrulamayı Devre Dışı Bırak",
@@ -2225,7 +2231,8 @@
       "totpLabel": "Doğrulama kodu",
       "totpHint": "6 haneli kimlik doğrulayıcı kodunuzu veya bir yedek kodu girin",
       "confirm": "Devre Dışı Bırakmayı Onayla",
-      "cancel": "İptal"
+      "cancel": "İptal",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "Yedek Kodlar",
@@ -2724,7 +2731,13 @@
       "deactivated": "Devre dışı bırakıldı",
       "reactivated": "Yeniden etkinleştirildi",
       "skipped": "Atlandı",
-      "status": "Durum"
+      "status": "Durum",
+      "statusLabel": {
+        "success": "Başarılı",
+        "error": "Hata",
+        "partial": "Kısmi",
+        "running": "Çalışıyor"
+      }
     },
     "syncDetail": {
       "title": "Senkronizasyon Detayları",
@@ -2732,7 +2745,11 @@
       "type": "Tür",
       "username": "Kullanıcı Adı",
       "email": "E-posta",
-      "message": "İleti"
+      "message": "İleti",
+      "detailType": {
+        "skip": "Atlandı",
+        "error": "Hata"
+      }
     },
     "banner": {
       "active": "LDAP/AD senkronizasyonu etkin",

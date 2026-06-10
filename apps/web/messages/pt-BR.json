@@ -186,7 +186,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "Movendo…"
   },
   "createShare": {
     "title": "Criar compartilhamento",
@@ -642,7 +643,8 @@
     "title": "Editar imagem",
     "rotate": "Girar",
     "zoom": "Ampliar",
-    "cropInstructions": "Arraste para reposicionar, redimensione os cantos para ajustar a área de recorte"
+    "cropInstructions": "Arraste para reposicionar, redimensione os cantos para ajustar a área de recorte",
+    "cropAlt": "Imagem para recortar"
   },
   "login": {
     "welcome": "Bem-vindo ao",
@@ -1339,6 +1341,9 @@
         },
         "invalidDate": "Data inválida",
         "downloading": "Baixando..."
+      },
+      "delete": {
+        "linkLabel": "Link: /r/{alias}"
       }
     },
     "form": {
@@ -2219,7 +2224,8 @@
       "verificationCodePlaceholder": "Digite o código de 6 dígitos",
       "verificationCodeDescription": "Digite o código de 6 dígitos do seu aplicativo autenticador",
       "verifyAndEnable": "Verificar e ativar",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "qrCodeAlt": "QR Code de 2FA"
     },
     "disable": {
       "title": "Desativar autenticação de dois fatores",
@@ -2229,7 +2235,8 @@
       "totpLabel": "Código de Verificação",
       "totpHint": "Digite seu código de autenticador de 6 dígitos ou um código de backup",
       "confirm": "Confirmar Desativação",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "Códigos de backup",
@@ -2724,7 +2731,13 @@
       "deactivated": "Desativado",
       "reactivated": "Reativado",
       "skipped": "Ignorado",
-      "status": "Status"
+      "status": "Status",
+      "statusLabel": {
+        "success": "Concluído",
+        "error": "Erro",
+        "partial": "Parcial",
+        "running": "Em execução"
+      }
     },
     "syncDetail": {
       "title": "Detalhes de Sincronização",
@@ -2732,7 +2745,11 @@
       "type": "Tipo",
       "username": "Nome de Usuário",
       "email": "Email",
-      "message": "Mensagem"
+      "message": "Mensagem",
+      "detailType": {
+        "skip": "Ignorado",
+        "error": "Erro"
+      }
     },
     "banner": {
       "active": "Sincronização LDAP/AD ativa",

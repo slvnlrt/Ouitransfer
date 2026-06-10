@@ -89,7 +89,7 @@ export function LdapSyncDetailModal({ log, isOpen, onClose }: LdapSyncDetailModa
                         : "secondary"
                   }
                 >
-                  {log.status}
+                  {t(`ldap.sync.statusLabel.${log.status}` as never)}
                 </Badge>
               </div>
             </div>
@@ -113,7 +113,7 @@ export function LdapSyncDetailModal({ log, isOpen, onClose }: LdapSyncDetailModa
                       <TableRow key={`${detail.type}-${detail.username}-${i}`}>
                         <TableCell>
                           <Badge variant={detail.type === "error" ? "destructive" : "secondary"}>
-                            {detail.type}
+                            {t(`ldap.syncDetail.detailType.${detail.type}` as never)}
                           </Badge>
                         </TableCell>
                         <TableCell className="font-mono text-xs">

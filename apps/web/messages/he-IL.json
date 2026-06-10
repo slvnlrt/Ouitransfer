@@ -186,7 +186,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "מעביר…"
   },
   "createShare": {
     "title": "צור שיתוף",
@@ -642,7 +643,8 @@
     "title": "ערוך תמונה",
     "rotate": "סובב",
     "zoom": "זום",
-    "cropInstructions": "גרור כדי למקם מחדש, שנה גודל פינות כדי להתאים אזור חיתוך"
+    "cropInstructions": "גרור כדי למקם מחדש, שנה גודל פינות כדי להתאים אזור חיתוך",
+    "cropAlt": "תמונה לחיתוך"
   },
   "login": {
     "welcome": "ברוכים הבאים ל",
@@ -1339,6 +1341,9 @@
           "aborted": "פעולת העתקה בוטלה עקב פג זמן."
         },
         "downloading": "מוריד..."
+      },
+      "delete": {
+        "linkLabel": "קישור: /r/{alias}"
       }
     },
     "form": {
@@ -2228,7 +2233,8 @@
       "verificationCodePlaceholder": "הזן קוד בן 6 ספרות",
       "verificationCodeDescription": "הזן את קוד האימות בן 6 הספרות מאפליקציית האימות שלך",
       "verifyAndEnable": "אמת והפעל",
-      "cancel": "ביטול"
+      "cancel": "ביטול",
+      "qrCodeAlt": "קוד QR לאימות דו-שלבי"
     },
     "disable": {
       "title": "השבת אימות דו-שלבי",
@@ -2238,7 +2244,8 @@
       "totpLabel": "קוד אימות",
       "totpHint": "הזן קוד אימות בן 6 ספרות או קוד גיבוי",
       "confirm": "אשר השבתה",
-      "cancel": "ביטול"
+      "cancel": "ביטול",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "קודי גיבוי",
@@ -2724,7 +2731,13 @@
       "deactivated": "הושבת",
       "reactivated": "הופעל מחדש",
       "skipped": "דולג",
-      "status": "סטטוס"
+      "status": "סטטוס",
+      "statusLabel": {
+        "success": "הצליח",
+        "error": "שגיאה",
+        "partial": "חלקי",
+        "running": "פועל"
+      }
     },
     "syncDetail": {
       "title": "פרטי סנכרון",
@@ -2732,7 +2745,11 @@
       "type": "סוג",
       "username": "שם משתמש",
       "email": "דוא\"ל",
-      "message": "הודעה"
+      "message": "הודעה",
+      "detailType": {
+        "skip": "דולג",
+        "error": "שגיאה"
+      }
     },
     "banner": {
       "active": "סנכרון LDAP/AD פעיל",

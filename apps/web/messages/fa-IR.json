@@ -186,7 +186,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "در حال انتقال…"
   },
   "createShare": {
     "title": "ایجاد اشتراک",
@@ -642,7 +643,8 @@
     "title": "ویرایش تصویر",
     "rotate": "چرخش",
     "zoom": "زوم",
-    "cropInstructions": "برای تغییر موقعیت بکشید، گوشه‌ها را برای تنظیم ناحیه برش تغییر اندازه دهید"
+    "cropInstructions": "برای تغییر موقعیت بکشید، گوشه‌ها را برای تنظیم ناحیه برش تغییر اندازه دهید",
+    "cropAlt": "تصویر برای برش"
   },
   "login": {
     "welcome": "خوش آمدید به",
@@ -1339,6 +1341,9 @@
           "aborted": "عملیات کپی به دلیل اتمام مهلت زمانی لغو شد."
         },
         "downloading": "در حال دانلود..."
+      },
+      "delete": {
+        "linkLabel": "لینک: /r/{alias}"
       }
     },
     "form": {
@@ -2228,7 +2233,8 @@
       "verificationCodePlaceholder": "کد ۶ رقمی را وارد کنید",
       "verificationCodeDescription": "کد ۶ رقمی را از برنامه احراز هویت خود وارد کنید",
       "verifyAndEnable": "تأیید و فعال‌سازی",
-      "cancel": "انصراف"
+      "cancel": "انصراف",
+      "qrCodeAlt": "کد QR احراز هویت دو مرحله‌ای"
     },
     "disable": {
       "title": "غیرفعال‌سازی احراز هویت دو مرحله‌ای",
@@ -2238,7 +2244,8 @@
       "totpLabel": "کد تأیید",
       "totpHint": "کد احراز هویت ۶ رقمی یا کد پشتیبان خود را وارد کنید",
       "confirm": "تأیید غیرفعال‌سازی",
-      "cancel": "انصراف"
+      "cancel": "انصراف",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "کدهای پشتیبان",
@@ -2724,7 +2731,13 @@
       "deactivated": "غیرفعال شده",
       "reactivated": "دوباره فعال شده",
       "skipped": "نادیده گرفته شده",
-      "status": "وضعیت"
+      "status": "وضعیت",
+      "statusLabel": {
+        "success": "موفق",
+        "error": "خطا",
+        "partial": "جزئی",
+        "running": "در حال اجرا"
+      }
     },
     "syncDetail": {
       "title": "جزئیات هماهنگ‌سازی",
@@ -2732,7 +2745,11 @@
       "type": "نوع",
       "username": "نام کاربری",
       "email": "ایمیل",
-      "message": "پیام"
+      "message": "پیام",
+      "detailType": {
+        "skip": "رد شده",
+        "error": "خطا"
+      }
     },
     "banner": {
       "active": "هماهنگ‌سازی LDAP/AD فعال است",

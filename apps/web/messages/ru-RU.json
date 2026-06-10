@@ -182,7 +182,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "Перемещение…"
   },
   "createShare": {
     "title": "Создать общий доступ",
@@ -638,7 +639,8 @@
     "title": "Редактировать изображение",
     "rotate": "Повернуть",
     "zoom": "Увеличить",
-    "cropInstructions": "Перетащите, чтобы переместить, измените размер углов, чтобы отрегулировать область обрезки"
+    "cropInstructions": "Перетащите, чтобы переместить, измените размер углов, чтобы отрегулировать область обрезки",
+    "cropAlt": "Изображение для обрезки"
   },
   "login": {
     "welcome": "Добро пожаловать в",
@@ -1335,6 +1337,9 @@
         },
         "invalidDate": "Неверная дата",
         "downloading": "Загрузка..."
+      },
+      "delete": {
+        "linkLabel": "Ссылка: /r/{alias}"
       }
     },
     "form": {
@@ -2215,7 +2220,8 @@
       "verificationCodePlaceholder": "Введите 6-значный код",
       "verificationCodeDescription": "Введите 6-значный код из вашего приложения-аутентификатора",
       "verifyAndEnable": "Проверить и включить",
-      "cancel": "Отмена"
+      "cancel": "Отмена",
+      "qrCodeAlt": "QR-код двухфакторной аутентификации"
     },
     "disable": {
       "title": "Отключить двухфакторную аутентификацию",
@@ -2225,7 +2231,8 @@
       "totpLabel": "Код подтверждения",
       "totpHint": "Введите 6-значный код аутентификатора или резервный код",
       "confirm": "Подтвердить отключение",
-      "cancel": "Отмена"
+      "cancel": "Отмена",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "Резервные коды",
@@ -2724,7 +2731,13 @@
       "deactivated": "Деактивировано",
       "reactivated": "Реактивировано",
       "skipped": "Пропущено",
-      "status": "Статус"
+      "status": "Статус",
+      "statusLabel": {
+        "success": "Успешно",
+        "error": "Ошибка",
+        "partial": "Частичный",
+        "running": "Выполняется"
+      }
     },
     "syncDetail": {
       "title": "Детали синхронизации",
@@ -2732,7 +2745,11 @@
       "type": "Тип",
       "username": "Имя пользователя",
       "email": "Email",
-      "message": "Сообщение"
+      "message": "Сообщение",
+      "detailType": {
+        "skip": "Пропущено",
+        "error": "Ошибка"
+      }
     },
     "banner": {
       "active": "Синхронизация LDAP/AD активна",

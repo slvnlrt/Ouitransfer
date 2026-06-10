@@ -186,7 +186,8 @@
     "copied": "Copied",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "days"
+    "days": "days",
+    "moving": "Moving…"
   },
   "createShare": {
     "title": "Create Share",
@@ -649,7 +650,13 @@
       "deactivated": "Deactivated",
       "reactivated": "Reactivated",
       "skipped": "Skipped",
-      "status": "Status"
+      "status": "Status",
+      "statusLabel": {
+        "success": "Success",
+        "error": "Error",
+        "partial": "Partial",
+        "running": "Running"
+      }
     },
     "syncDetail": {
       "title": "Sync Details",
@@ -657,7 +664,11 @@
       "type": "Type",
       "username": "Username",
       "email": "Email",
-      "message": "Message"
+      "message": "Message",
+      "detailType": {
+        "skip": "Skip",
+        "error": "Error"
+      }
     },
     "banner": {
       "active": "LDAP/AD sync active",
@@ -735,7 +746,8 @@
     "title": "Edit Image",
     "rotate": "Rotate",
     "zoom": "Zoom",
-    "cropInstructions": "Drag to reposition, resize corners to adjust crop area"
+    "cropInstructions": "Drag to reposition, resize corners to adjust crop area",
+    "cropAlt": "Image to crop"
   },
   "login": {
     "welcome": "Welcome to",
@@ -1475,6 +1487,9 @@
           "failed": "Copy operation failed. Please try again.",
           "aborted": "Copy operation was cancelled due to timeout."
         }
+      },
+      "delete": {
+        "linkLabel": "Link: /r/{alias}"
       }
     },
     "form": {
@@ -2416,7 +2431,8 @@
       "verificationCodePlaceholder": "Enter 6-digit code",
       "verificationCodeDescription": "Enter the 6-digit code from your authenticator app",
       "verifyAndEnable": "Verify & Enable",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "qrCodeAlt": "2FA QR Code"
     },
     "disable": {
       "title": "Disable Two-Factor Authentication",
@@ -2426,7 +2442,8 @@
       "totpLabel": "Verification code",
       "totpHint": "Enter your 6-digit authenticator code or a backup code",
       "confirm": "Confirm Disable",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "Backup Codes",

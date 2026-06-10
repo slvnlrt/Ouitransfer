@@ -186,7 +186,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "Memindahkan…"
   },
   "createShare": {
     "title": "Buat Berbagi",
@@ -642,7 +643,8 @@
     "title": "Edit Gambar",
     "rotate": "Putar",
     "zoom": "Perbesar",
-    "cropInstructions": "Seret untuk memposisikan ulang, ubah ukuran sudut untuk menyesuaikan area potong"
+    "cropInstructions": "Seret untuk memposisikan ulang, ubah ukuran sudut untuk menyesuaikan area potong",
+    "cropAlt": "Gambar untuk dipotong"
   },
   "login": {
     "welcome": "Selamat datang di",
@@ -1339,6 +1341,9 @@
           "aborted": "Operasi penyalinan dibatalkan karena habis waktu."
         },
         "downloading": "Mengunduh..."
+      },
+      "delete": {
+        "linkLabel": "Tautan: /r/{alias}"
       }
     },
     "form": {
@@ -2228,7 +2233,8 @@
       "verificationCodePlaceholder": "Masukkan kode 6 digit",
       "verificationCodeDescription": "Masukkan kode 6 digit dari aplikasi autentikator Anda",
       "verifyAndEnable": "Verifikasi & Aktifkan",
-      "cancel": "Batal"
+      "cancel": "Batal",
+      "qrCodeAlt": "Kode QR 2FA"
     },
     "disable": {
       "title": "Nonaktifkan Otentikasi Dua Faktor",
@@ -2238,7 +2244,8 @@
       "totpLabel": "Kode Verifikasi",
       "totpHint": "Masukkan kode autentikator 6 digit atau kode cadangan Anda",
       "confirm": "Konfirmasi Nonaktifkan",
-      "cancel": "Batal"
+      "cancel": "Batal",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "Kode Cadangan",
@@ -2724,7 +2731,13 @@
       "deactivated": "Dinonaktifkan",
       "reactivated": "Diaktifkan kembali",
       "skipped": "Dilewati",
-      "status": "Status"
+      "status": "Status",
+      "statusLabel": {
+        "success": "Berhasil",
+        "error": "Kesalahan",
+        "partial": "Sebagian",
+        "running": "Sedang berjalan"
+      }
     },
     "syncDetail": {
       "title": "Detail Sinkronisasi",
@@ -2732,7 +2745,11 @@
       "type": "Tipe",
       "username": "Nama Pengguna",
       "email": "Email",
-      "message": "Pesan"
+      "message": "Pesan",
+      "detailType": {
+        "skip": "Dilewati",
+        "error": "Kesalahan"
+      }
     },
     "banner": {
       "active": "Sinkronisasi LDAP/AD aktif",

@@ -342,7 +342,7 @@ export function TwoFactorForm() {
               <div className="flex justify-center">
                 <Image
                   src={setupData.qrCode}
-                  alt="2FA QR Code"
+                  alt={t("twoFactor.setup.qrCodeAlt")}
                   width={192}
                   height={192}
                   className="border rounded-lg"
@@ -450,7 +450,7 @@ export function TwoFactorForm() {
                 type="text"
                 inputMode="numeric"
                 pattern="[0-9 -]*"
-                placeholder="000 000"
+                placeholder={t("twoFactor.disable.totpPlaceholder")}
                 value={disableTotpCode}
                 onChange={(e) => setDisableTotpCode(e.target.value)}
               />

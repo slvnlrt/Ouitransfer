@@ -186,7 +186,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "Μετακίνηση…"
   },
   "createShare": {
     "title": "Δημιουργία κοινής χρήσης",
@@ -642,7 +643,8 @@
     "title": "Επεξεργασία εικόνας",
     "rotate": "Περιστροφή",
     "zoom": "Ζουμ",
-    "cropInstructions": "Σύρετε για επανατοποθέτηση, αλλάξτε μέγεθος από τις γωνίες για προσαρμογή περικοπής"
+    "cropInstructions": "Σύρετε για επανατοποθέτηση, αλλάξτε μέγεθος από τις γωνίες για προσαρμογή περικοπής",
+    "cropAlt": "Εικόνα για περικοπή"
   },
   "login": {
     "welcome": "Καλώς ήρθατε στο",
@@ -1339,6 +1341,9 @@
           "aborted": "Η αντιγραφή ακυρώθηκε λόγω λήξης χρονικού ορίου."
         },
         "downloading": "Λήψη..."
+      },
+      "delete": {
+        "linkLabel": "Σύνδεσμος: /r/{alias}"
       }
     },
     "form": {
@@ -2228,7 +2233,8 @@
       "verificationCodePlaceholder": "Εισαγάγετε 6-ψήφιο κωδικό",
       "verificationCodeDescription": "Εισαγάγετε τον 6-ψήφιο κωδικό από την εφαρμογή αυθεντικοποίησης",
       "verifyAndEnable": "Επαλήθευση & Ενεργοποίηση",
-      "cancel": "Ακύρωση"
+      "cancel": "Ακύρωση",
+      "qrCodeAlt": "QR κωδικός 2FA"
     },
     "disable": {
       "title": "Απενεργοποίηση ελέγχου δύο παραγόντων",
@@ -2238,7 +2244,8 @@
       "totpLabel": "Κωδικός επαλήθευσης",
       "totpHint": "Εισαγάγετε τον 6-ψήφιο κωδικό αυθεντικοποιητή σας ή έναν εφεδρικό κωδικό",
       "confirm": "Επιβεβαίωση απενεργοποίησης",
-      "cancel": "Ακύρωση"
+      "cancel": "Ακύρωση",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "Εφεδρικοί κωδικοί",
@@ -2724,7 +2731,13 @@
       "deactivated": "Απενεργοποιήθηκε",
       "reactivated": "Ενεργοποιήθηκε ξανά",
       "skipped": "Παραλείφθηκε",
-      "status": "Κατάσταση"
+      "status": "Κατάσταση",
+      "statusLabel": {
+        "success": "Επιτυχία",
+        "error": "Σφάλμα",
+        "partial": "Μερικός",
+        "running": "Εκτελείται"
+      }
     },
     "syncDetail": {
       "title": "Λεπτομέρειες συγχρονισμού",
@@ -2732,7 +2745,11 @@
       "type": "Τύπος",
       "username": "Όνομα χρήστη",
       "email": "Email",
-      "message": "Μήνυμα"
+      "message": "Μήνυμα",
+      "detailType": {
+        "skip": "Παράλειψη",
+        "error": "Σφάλμα"
+      }
     },
     "banner": {
       "active": "Ενεργός συγχρονισμός LDAP/AD",

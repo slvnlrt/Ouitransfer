@@ -186,7 +186,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "Переміщення…"
   },
   "createShare": {
     "title": "Створити спільний доступ",
@@ -642,7 +643,8 @@
     "title": "Редагувати зображення",
     "rotate": "Повернути",
     "zoom": "Масштабувати",
-    "cropInstructions": "Перетягніть для переміщення, змініть розмір кутів для регулювання області обрізання"
+    "cropInstructions": "Перетягніть для переміщення, змініть розмір кутів для регулювання області обрізання",
+    "cropAlt": "Зображення для обрізки"
   },
   "login": {
     "welcome": "Ласкаво просимо до",
@@ -1339,6 +1341,9 @@
           "aborted": "Операція копіювання була скасована через перевищення часу очікування."
         },
         "downloading": "Завантаження..."
+      },
+      "delete": {
+        "linkLabel": "Посилання: /r/{alias}"
       }
     },
     "form": {
@@ -2228,7 +2233,8 @@
       "verificationCodePlaceholder": "Введіть 6-значний код",
       "verificationCodeDescription": "Введіть 6-значний код з вашого додатку автентифікатора",
       "verifyAndEnable": "Підтвердити та увімкнути",
-      "cancel": "Скасувати"
+      "cancel": "Скасувати",
+      "qrCodeAlt": "QR-код двофакторної автентифікації"
     },
     "disable": {
       "title": "Вимкнути двофакторну автентифікацію",
@@ -2238,7 +2244,8 @@
       "totpLabel": "Код підтвердження",
       "totpHint": "Введіть 6-значний код автентифікатора або резервний код",
       "confirm": "Підтвердити вимкнення",
-      "cancel": "Скасувати"
+      "cancel": "Скасувати",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "Резервні коди",
@@ -2724,7 +2731,13 @@
       "deactivated": "Деактивовано",
       "reactivated": "Реактивовано",
       "skipped": "Пропущено",
-      "status": "Статус"
+      "status": "Статус",
+      "statusLabel": {
+        "success": "Успішно",
+        "error": "Помилка",
+        "partial": "Частково",
+        "running": "Виконується"
+      }
     },
     "syncDetail": {
       "title": "Деталі синхронізації",
@@ -2732,7 +2745,11 @@
       "type": "Тип",
       "username": "Ім'я користувача",
       "email": "Email",
-      "message": "Повідомлення"
+      "message": "Повідомлення",
+      "detailType": {
+        "skip": "Пропущено",
+        "error": "Помилка"
+      }
     },
     "banner": {
       "active": "Синхронізація LDAP/AD активна",

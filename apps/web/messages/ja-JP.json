@@ -182,7 +182,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "移動中…"
   },
   "createShare": {
     "title": "共有を作成",
@@ -638,7 +639,8 @@
     "title": "画像を編集",
     "rotate": "回転",
     "zoom": "ズーム",
-    "cropInstructions": "位置を変更するにはドラッグし、カット領域を調整するには角をリサイズしてください"
+    "cropInstructions": "位置を変更するにはドラッグし、カット領域を調整するには角をリサイズしてください",
+    "cropAlt": "トリミングする画像"
   },
   "login": {
     "welcome": "ようこそへ",
@@ -1335,6 +1337,9 @@
         },
         "invalidDate": "無効な日付",
         "downloading": "ダウンロード中..."
+      },
+      "delete": {
+        "linkLabel": "リンク: /r/{alias}"
       }
     },
     "form": {
@@ -2215,7 +2220,8 @@
       "verificationCodePlaceholder": "6桁のコードを入力",
       "verificationCodeDescription": "認証アプリから6桁のコードを入力してください",
       "verifyAndEnable": "確認して有効化",
-      "cancel": "キャンセル"
+      "cancel": "キャンセル",
+      "qrCodeAlt": "2FA QRコード"
     },
     "disable": {
       "title": "二要素認証を無効にする",
@@ -2225,7 +2231,8 @@
       "totpLabel": "確認コード",
       "totpHint": "6桁の認証器コードまたはバックアップコードを入力してください",
       "confirm": "無効化を確認",
-      "cancel": "キャンセル"
+      "cancel": "キャンセル",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "バックアップコード",
@@ -2724,7 +2731,13 @@
       "deactivated": "無効化",
       "reactivated": "再有効化",
       "skipped": "スキップ",
-      "status": "ステータス"
+      "status": "ステータス",
+      "statusLabel": {
+        "success": "成功",
+        "error": "エラー",
+        "partial": "部分的",
+        "running": "実行中"
+      }
     },
     "syncDetail": {
       "title": "同期詳細",
@@ -2732,7 +2745,11 @@
       "type": "タイプ",
       "username": "ユーザー名",
       "email": "メール",
-      "message": "メッセージ"
+      "message": "メッセージ",
+      "detailType": {
+        "skip": "スキップ",
+        "error": "エラー"
+      }
     },
     "banner": {
       "active": "LDAP/AD同期は有効",

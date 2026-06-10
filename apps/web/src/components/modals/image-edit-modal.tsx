@@ -264,7 +264,7 @@ export function ImageEditModal({ isOpen, onClose, onSave, imageFile }: ImageEdit
                 >
                   <img
                     ref={imgRef}
-                    alt="Crop me"
+                    alt={t("imageEdit.cropAlt")}
                     src={imageSrc}
                     style={{
                       transform: `scale(${scale}) rotate(${rotate}deg)`,
