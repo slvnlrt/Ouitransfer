@@ -71,17 +71,17 @@
       "scopesHelpOidc": "Phạm vi được đề xuất tự động dựa trên URL của nhà cung cấp. Các phạm vi OIDC phổ biến: openid, profile, email, groups",
       "scopesHelpOauth2": "Phạm vi được đề xuất tự động dựa trên URL của nhà cung cấp. Các phạm vi OAuth2 phổ biến phụ thuộc vào nhà cung cấp",
       "providerUrl": "URL nhà cung cấp",
-      "providerUrlPlaceholder": "https://auth.example.com",
+      "providerUrlPlaceholder": "https://auth.example.vn",
       "providerUrlAutoPlaceholder": "https://your-provider.com (các điểm cuối sẽ được tự động phát hiện)",
-      "providerUrlManualPlaceholder": "https://your-provider.com",
+      "providerUrlManualPlaceholder": "https://your-provider.vn",
       "autoDiscoveryHelp": "Hệ thống sẽ tự động phát hiện các điểm cuối ủy quyền, mã thông báo và thông tin người dùng",
       "manualConfigurationHelp": "URL cơ sở của nhà cung cấp của bạn (các điểm cuối sẽ tương đối với URL này)",
       "authorizationEndpoint": "Điểm cuối ủy quyền",
-      "authorizationEndpointPlaceholder": "https://auth.example.com/auth",
+      "authorizationEndpointPlaceholder": "https://auth.example.vn/auth",
       "tokenEndpoint": "Điểm cuối mã thông báo",
-      "tokenEndpointPlaceholder": "https://auth.example.com/token",
+      "tokenEndpointPlaceholder": "https://auth.example.vn/token",
       "userInfoEndpoint": "Điểm cuối thông tin người dùng",
-      "userInfoEndpointPlaceholder": "https://auth.example.com/userinfo",
+      "userInfoEndpointPlaceholder": "https://auth.example.vn/userinfo",
       "configurationMethod": "Phương pháp cấu hình",
       "autoDiscovery": "Tự động phát hiện",
       "autoDiscoveryDescription": "Tự động phát hiện các điểm cuối từ URL của nhà cung cấp",
@@ -179,7 +179,7 @@
     "copy": "Sao chép",
     "copied": "Đã sao chép",
     "retry": "Retry",
-    "unavailable": "unavailable",
+    "unavailable": "không khả dụng",
     "days": "ngày",
     "aliasValidation": {
       "required": "[TO_TRANSLATE] Alias is required",
@@ -195,7 +195,7 @@
     "descriptionLabel": "Mô tả",
     "descriptionPlaceholder": "Nhập mô tả (tùy chọn)",
     "expirationLabel": "Ngày hết hạn",
-    "expirationPlaceholder": "MM/DD/YYYY HH:MM",
+    "expirationPlaceholder": "DD/MM/YYYY HH:MM",
     "maxViewsLabel": "Lượt xem tối đa",
     "maxViewsPlaceholder": "Để trống để không giới hạn",
     "passwordProtection": "Được bảo vệ bằng mật khẩu",
@@ -214,17 +214,17 @@
     },
     "nextSelectFiles": "Tiếp theo: Chọn tệp",
     "searchLabel": "Tìm kiếm",
-    "privacySection": "Privacy & Notifications",
-    "nameFieldRequired": "Require visitor name",
-    "emailFieldRequired": "Require visitor email",
-    "notifyOnDownload": "Notify me on each download",
-    "notifyOnDownloadHelp": "When enabled, you'll receive email notifications when files are downloaded from this share, regardless of your global notification preferences.",
-    "inactivityAlertDays": "Alert if no downloads after",
-    "inactivityAlertPlaceholder": "Leave empty to disable",
-    "fieldHidden": "Hidden",
-    "fieldOptional": "Optional",
-    "fieldRequired": "Required",
-    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
+    "privacySection": "Quyền riêng tư và thông báo",
+    "nameFieldRequired": "Yêu cầu tên khách truy cập",
+    "emailFieldRequired": "Yêu cầu email khách truy cập",
+    "notifyOnDownload": "Thông báo cho tôi mỗi khi có tải xuống",
+    "notifyOnDownloadHelp": "Khi bật, bạn sẽ nhận được thông báo qua email khi tải xuống tập tin từ chia sẻ này, bất kể cài đặt thông báo chung của bạn.",
+    "inactivityAlertDays": "Cảnh báo nếu không có tải xuống sau",
+    "inactivityAlertPlaceholder": "Để trống để vô hiệu hóa",
+    "fieldHidden": "Ẩn",
+    "fieldOptional": "Tùy chọn",
+    "fieldRequired": "Bắt buộc",
+    "filesOptionalHint": "Thêm tập tin là tùy chọn — bạn có thể tạo chia sẻ trống ngay bây giờ và thêm tập tin sau."
   },
   "customization": {
     "breadcrumb": "Tùy chỉnh",
@@ -606,7 +606,7 @@
       "link": "Liên kết",
       "qrcode": "Mã QR"
     },
-    "later": "Later"
+    "later": "Sau"
   },
   "home": {
     "pageTitle": "Trang chủ",
@@ -749,7 +749,7 @@
       "SHARE_RECIPIENT_ADD": "Người nhận chia sẻ đã được thêm",
       "SHARE_RECIPIENT_REMOVE": "Người nhận chia sẻ đã bị xóa",
       "SHARE_RECIPIENT_NOTIFY": "Người nhận chia sẻ đã được thông báo",
-      "SHARE_RECIPIENT_REMIND": "Share non-downloaders reminded",
+      "SHARE_RECIPIENT_REMIND": "Những người nhận không tải xuống được nhắc nhở",
       "SHARE_ITEMS_ADD": "Mục chia sẻ đã được thêm",
       "SHARE_ITEMS_REMOVE": "Mục chia sẻ đã bị xóa",
       "FILE_UPLOAD": "Tệp đã được tải lên",
@@ -793,17 +793,17 @@
       "BACKGROUND_IMAGE_UPLOAD": "Hình ảnh nền đã được tải lên",
       "BACKGROUND_IMAGE_DELETE": "Hình ảnh nền đã bị xóa",
       "AUDIT_RETENTION_CLEANUP": "Dọn dẹp nhật ký kiểm tra",
-      "SHARE_DEACTIVATED": "Share deactivated",
-      "SHARE_REACTIVATED": "Share reactivated",
-      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
-      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated",
-      "SHARE_AUTO_DELETED": "Share auto-deleted",
-      "REVERSE_SHARE_AUTO_DELETED": "Reverse share auto-deleted",
-      "ACCOUNT_FILES_CLEANED": "Account files cleaned",
-      "ORPHAN_S3_DELETED": "Orphan storage object deleted",
-      "ORPHAN_DB_DELETED": "Orphan database record deleted",
-      "ORPHAN_MULTIPART_ABORTED": "Incomplete multipart upload aborted",
-      "QUOTA_FILES_DELETED": "Over-quota files deleted"
+      "SHARE_DEACTIVATED": "Vô hiệu hóa chia sẻ",
+      "SHARE_REACTIVATED": "Kích hoạt lại chia sẻ",
+      "REVERSE_SHARE_DEACTIVATED": "Vô hiệu hóa liên kết nhận file",
+      "REVERSE_SHARE_REACTIVATED": "Kích hoạt lại liên kết nhận file",
+      "SHARE_AUTO_DELETED": "Xóa chia sẻ tự động",
+      "REVERSE_SHARE_AUTO_DELETED": "Xóa liên kết nhận file tự động",
+      "ACCOUNT_FILES_CLEANED": "Đã dọn dẹp tập tin tài khoản",
+      "ORPHAN_S3_DELETED": "Đã xóa đối tượng lưu trữ không chủ",
+      "ORPHAN_DB_DELETED": "Đã xóa bản ghi cơ sở dữ liệu không chủ",
+      "ORPHAN_MULTIPART_ABORTED": "Đã hủy bỏ tải lên nhiều phần không hoàn tất",
+      "QUOTA_FILES_DELETED": "Đã xóa tập tin vượt quá hạn mức"
     },
     "targetTypes": {
       "user": "Người dùng",
@@ -1042,23 +1042,23 @@
     "invalidEmail": "Vui lòng nhập một địa chỉ email hợp lệ",
     "duplicateEmail": "Người nhận này đã được thêm",
     "noRecipientsDescription": "Thêm người nhận để chia sẻ nội dung này qua email",
-    "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}",
-    "notifyPartial": "Only {sent} of {total} recipients were notified",
-    "neverAccessed": "Never accessed",
-    "namePlaceholder": "Name (optional)",
-    "downloaded": "Downloaded",
-    "pending": "Pending",
-    "downloadedAt": "Downloaded on {date}",
-    "uploaded": "Uploaded",
-    "uploadedAt": "Uploaded on {date}",
-    "uploadApproximateHint": "Approximate: uploaders can submit files without providing an email when it is not required",
-    "remindNonDownloaders": "Remind ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
-    "sendingReminders": "Sending reminders...",
-    "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
-    "remindNoneSent": "No reminders were sent",
-    "remindError": "Failed to send reminders"
+    "notified": "Đã thông báo",
+    "views": "{count, plural, other {# lượt xem}}",
+    "notifyPartial": "Chỉ {sent} trong {total} người nhận được thông báo",
+    "neverAccessed": "Chưa bao giờ được truy cập",
+    "namePlaceholder": "Tên (tùy chọn)",
+    "downloaded": "Đã tải xuống",
+    "pending": "Đang chờ",
+    "downloadedAt": "Tải xuống lúc {date}",
+    "uploaded": "Đã tải lên",
+    "uploadedAt": "Tải lên lúc {date}",
+    "uploadApproximateHint": "Xấp xỉ: những người tải lên có thể gửi tệp mà không cung cấp email khi không bắt buộc",
+    "remindNonDownloaders": "Nhắc nhở ({count})",
+    "remindNonDownloadersHint": "{count, plural, other {Nhắc nhở # người nhận chưa tải xuống}}",
+    "sendingReminders": "Đang gửi nhắc nhở...",
+    "remindSuccess": "{count, plural, other {Đã gửi nhắc nhở cho # người nhận}}",
+    "remindNoneSent": "Không có nhắc nhở nào được gửi",
+    "remindError": "Không thể gửi nhắc nhở"
   },
   "register": {
     "validation": {
@@ -1258,7 +1258,7 @@
         "editDescription": "Cập nhật bí danh cho liên kết nhận này",
         "createDescription": "Tạo một bí danh tùy chỉnh cho liên kết nhận này",
         "aliasLabel": "Bí danh liên kết",
-        "aliasPlaceholder": "my-custom-link",
+        "aliasPlaceholder": "lien-ket-cua-toi",
         "preview": "Xem trước:",
         "currentLink": "Liên kết hiện tại:",
         "copyCurrentLink": "Sao chép liên kết hiện tại",
@@ -1416,8 +1416,8 @@
         "optionalDescription": "Tùy chọn: Trường sẽ hiển thị nhưng không bắt buộc",
         "requiredDescription": "Bắt buộc: Trường phải được điền trước khi tải lên"
       },
-      "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "notifyOnUpload": "Thông báo cho tôi với mỗi lần tải lên",
+      "notifyOnUploadHelp": "Khi bật, bạn sẽ nhận được thông báo qua email khi tệp được tải lên liên kết nhận file này, bất kể cài đặt thông báo toàn cầu của bạn.",
       "submit": "Tạo liên kết nhận",
       "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
       "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
@@ -1509,12 +1509,12 @@
         "namePlaceholder": "Tên của bạn",
         "emailLabel": "Email",
         "emailLabelOptional": "Email (tùy chọn)",
-        "emailPlaceholder": "your@email.com",
+        "emailPlaceholder": "ban@email.vn",
         "descriptionLabel": "Mô tả (tùy chọn)",
         "descriptionPlaceholder": "Thêm mô tả cho các tệp...",
         "uploadButton": "Gửi {count} tệp",
         "uploading": "Đang gửi...",
-        "privacyNotice": "Your name, email and uploads may be visible to the owner of this receive link."
+        "privacyNotice": "Tên, email và tệp tải lên của bạn có thể được nhìn thấy bởi chủ sở hữu liên kết nhận file này."
       },
       "success": {
         "title": "Đã gửi tệp thành công! 🎉",
@@ -1595,8 +1595,8 @@
         "description": "Quản lý hình ảnh nền cho các trang tải lên kiểu WeTransfer"
       },
       "cleanup": {
-        "title": "Automatic Cleanup",
-        "description": "Lifecycle management for expired content, deactivated accounts, and orphaned files. Auto-deletion is off by default."
+        "title": "Dọn dẹp tự động",
+        "description": "Quản lý vòng đời nội dung hết hạn, tài khoản bị vô hiệu hóa và tệp mồ côi. Xóa tự động bị tắt theo mặc định."
       }
     },
     "fields": {
@@ -1610,8 +1610,8 @@
         "description": "Tên ứng dụng được hiển thị cho người dùng"
       },
       "appUrl": {
-        "title": "Application URL",
-        "description": "Public URL of the application, used in email links"
+        "title": "URL ứng dụng",
+        "description": "URL công khai của ứng dụng, được sử dụng trong các liên kết email"
       },
       "appDescription": {
         "title": "Mô tả ứng dụng",
@@ -1712,32 +1712,32 @@
         "description": "Giới hạn lưu trữ tổng cộng cho mỗi người dùng. Có thể ghi đè cho mỗi người dùng hoặc mỗi nhóm."
       },
       "quotaWarningThresholds": {
-        "title": "Quota Warning Thresholds (%)",
-        "description": "Comma-separated percentages, e.g. \"80,90\", at which a user is emailed a quota warning. Each value must be a whole number between 1 and 99. A separate alert is sent when storage reaches 100%."
+        "title": "Ngưỡng cảnh báo hạn ngạch (%)",
+        "description": "Các phần trăm được phân tách bằng dấu phẩy, ví dụ như \"80,90\", tại đó gửi cảnh báo hạn ngạch cho người dùng. Mỗi giá trị phải là số nguyên từ 1 đến 99. Một cảnh báo riêng biệt được gửi khi bộ nhớ đạt 100%."
       },
       "quotaGracePeriodDays": {
-        "title": "Quota Grace Period (days)",
-        "description": "How many days a user may stay over their quota before smart deletion may act (only when smart deletion is enabled below). Minimum 0."
+        "title": "Khoảng thời gian ân hạn hạn ngạch (ngày)",
+        "description": "Số ngày mà người dùng có thể vượt quá hạn ngạch của họ trước khi xóa thông minh có thể hoạt động (chỉ khi xóa thông minh được bật dưới đây). Tối thiểu là 0."
       },
       "quotaSmartDeletionEnabled": {
-        "title": "Smart Deletion of Over-Quota Files",
-        "description": "Off by default. When enabled, after the grace period the oldest unsafe files of an over-quota user are deleted in a safe order: first unshared uploads, then files in shares inactive for the period below. Files in active shares are never deleted — if nothing is safe to remove, new uploads are simply blocked instead."
+        "title": "Xóa thông minh các tệp vượt quá hạn ngạch",
+        "description": "Bị tắt theo mặc định. Khi bật, sau khoảng thời gian ân hạn, các tệp không an toàn lâu nhất của người dùng vượt quá hạn ngạch sẽ bị xóa theo thứ tự an toàn: trước tiên là tải lên không được chia sẻ, sau đó là tệp trong chia sẻ không hoạt động trong khoảng thời gian dưới đây. Các tệp trong chia sẻ hoạt động không bao giờ bị xóa. Nếu không có gì an toàn để xóa, các tải lên mới đơn giản là bị chặn."
       },
       "quotaInactiveShareDays": {
-        "title": "Inactive Share Threshold (days)",
-        "description": "A share's files are eligible for smart deletion once the share has had no activity for this many days. Minimum 1."
+        "title": "Ngưỡng chia sẻ không hoạt động (ngày)",
+        "description": "Các tệp chia sẻ đủ điều kiện để xóa thông minh sau khi chia sẻ không có hoạt động trong số ngày này. Tối thiểu là 1."
       },
       "reverseShareQuotaSoftEnforcement": {
-        "title": "Reverse Share Soft Enforcement",
-        "description": "On by default. Lets external guests keep uploading to a reverse share even if the owner is slightly over quota, so collections are not interrupted. Uploads are still blocked once the owner exceeds the tolerance set below, and the owner is alerted to free up space."
+        "title": "Thực thi mềm liên kết nhận file",
+        "description": "Được bật theo mặc định. Cho phép khách bên ngoài tiếp tục tải lên liên kết nhận file ngay cả khi chủ sở hữu vượt quá hạn ngạch một chút, để không gián đoạn các bộ sưu tập. Tải lên vẫn bị chặn sau khi chủ sở hữu vượt quá dung sai được đặt dưới đây, và chủ sở hữu sẽ nhận được cảnh báo để giải phóng bộ nhớ."
       },
       "reverseShareMaxOverageFactor": {
-        "title": "Reverse Share Overage Factor",
-        "description": "Soft enforcement allows reverse-share uploads until usage reaches this multiple of the owner's quota (e.g. 3 = up to three times the limit). Minimum 1."
+        "title": "Hệ số vượt quá liên kết nhận file",
+        "description": "Thực thi mềm cho phép tải lên liên kết nhận file cho đến khi sử dụng đạt bội số này của hạn ngạch của chủ sở hữu (ví dụ: 3 = lên đến ba lần giới hạn). Tối thiểu là 1."
       },
       "reverseShareAbsoluteMaxBytes": {
-        "title": "Reverse Share Absolute Cap",
-        "description": "Hard ceiling for reverse-share soft enforcement regardless of the factor above. Set to 0 for no absolute cap."
+        "title": "Giới hạn tuyệt đối liên kết nhận file",
+        "description": "Giới hạn cứng cho thực thi mềm liên kết nhận file bất kể hệ số ở trên. Đặt thành 0 để không có giới hạn tuyệt đối."
       },
       "firstUserAccess": {
         "title": "Quyền truy cập của người dùng đầu tiên",
@@ -1752,56 +1752,56 @@
         "description": "Bật hoặc tắt xác thực dựa trên mật khẩu"
       },
       "emailDigestHour": {
-        "title": "Digest Email Hour",
-        "description": "Hour of the day (0-23) when digest emails are sent"
+        "title": "Giờ email tóm tắt",
+        "description": "Giờ trong ngày (0-23) khi gửi email tóm tắt"
       },
       "emailJobRetentionDays": {
-        "title": "Email Job Retention",
-        "description": "Number of days to keep completed email jobs before cleanup"
+        "title": "Lưu giữ công việc email",
+        "description": "Số ngày để giữ các công việc email đã hoàn thành trước khi dọn dẹp"
       },
       "emailQueueIntervalSeconds": {
-        "title": "Queue Processing Interval",
-        "description": "Seconds between email queue processing cycles"
+        "title": "Khoảng thời gian xử lý hàng đợi",
+        "description": "Giây giữa các chu kỳ xử lý hàng đợi email"
       },
       "emailQueueMaxRetries": {
-        "title": "Max Email Retries",
-        "description": "Maximum number of retry attempts for failed emails"
+        "title": "Số lần thử lại email tối đa",
+        "description": "Số lần thử lại tối đa cho các email không thành công"
       },
       "auditRetentionDays": {
         "title": "Lưu giữ kiểm tra",
         "description": "Số ngày để giữ nhật ký kiểm tra (0 = mãi mãi, tối thiểu 7)"
       },
       "autoCleanupEnabled": {
-        "title": "Enable Automatic Cleanup",
-        "description": "Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on."
+        "title": "Bật dọn dẹp tự động",
+        "description": "Công tắc chính cho việc dọn dẹp theo lịch trình các liên kết chia sẻ hết hạn, tệp liên kết nhận file hết hạn và tệp mồ côi. Bị tắt theo mặc định. Không có gì bị xóa tự động cho đến khi bạn bật nó."
       },
       "autoCleanupIntervalHours": {
-        "title": "Cleanup Interval (hours)",
-        "description": "How often the cleanup task runs. Minimum 1 hour."
+        "title": "Khoảng thời gian dọn dẹp (giờ)",
+        "description": "Tần suất chạy tác vụ dọn dẹp. Tối thiểu là 1 giờ."
       },
       "autoCleanupGracePeriodDays": {
-        "title": "Grace Period (days)",
+        "title": "Khoảng thời gian ân hạn (ngày)",
         "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
       },
       "autoCleanupNotifyDaysBefore": {
-        "title": "Warn Before Deletion (days)",
-        "description": "Send the owner a \"pending permanent deletion\" warning email this many days before the content is deleted. 0 disables the warning. Should be at most the grace period."
+        "title": "Cảnh báo trước khi xóa (ngày)",
+        "description": "Gửi cho chủ sở hữu email cảnh báo \"xóa vĩnh viễn đang chờ\" sau số ngày này trước khi nội dung bị xóa. 0 tắt cảnh báo. Phải bằng khoảng thời gian ân hạn tối đa."
       },
       "accountDeactivationCleanupEnabled": {
-        "title": "Delete Deactivated Accounts' Files",
-        "description": "When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files."
+        "title": "Xóa tệp tài khoản bị vô hiệu hóa",
+        "description": "Khi bật, các tệp thuộc về tài khoản bị vô hiệu hóa sẽ bị xóa vĩnh viễn sau độ trễ dưới đây. Bị tắt theo mặc định. Vô hiệu hóa một mình không bao giờ xóa tệp."
       },
       "accountDeactivationCleanupDays": {
-        "title": "Deactivation Cleanup Delay (days)",
-        "description": "Days after an account is deactivated before its files are deleted (only when the option above is enabled). Minimum 1."
+        "title": "Độ trễ dọn dẹp vô hiệu hóa tài khoản (ngày)",
+        "description": "Số ngày sau khi tài khoản bị vô hiệu hóa trước khi tệp của nó bị xóa (chỉ khi tùy chọn trên được bật). Tối thiểu là 1."
       },
       "autoCleanupOrphansEnabled": {
-        "title": "Sweep Orphaned Files",
-        "description": "When on, runs a two-way sweep that removes database records pointing to missing storage objects and storage objects with no database record. Off by default."
+        "title": "Dọn dẹp tệp mồ côi",
+        "description": "Khi bật, chạy quét hai chiều để xóa các bản ghi cơ sở dữ liệu chỉ đến các đối tượng bộ nhớ bị mất và các đối tượng bộ nhớ mà không có bản ghi cơ sở dữ liệu. Bị tắt theo mặc định."
       },
       "autoCleanupOrphanMinAgeHours": {
-        "title": "Orphan Minimum Age (hours)",
-        "description": "Only files and objects older than this are considered during the orphan sweep, protecting uploads still in progress. Minimum 1."
+        "title": "Tuổi tối thiểu tệp mồ côi (giờ)",
+        "description": "Chỉ các tệp và đối tượng lâu hơn giá trị này mới được xem xét trong quét tệp mồ côi, bảo vệ tải lên vẫn đang tiến hành. Tối thiểu là 1."
       }
     },
     "buttons": {
@@ -1814,9 +1814,9 @@
       "updateFailed": "Không thể cập nhật cài đặt",
       "passwordAuthRequiresProvider": "Không thể tắt xác thực bằng mật khẩu mà không có ít nhất một nhà cung cấp xác thực đang hoạt động",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
-      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent",
-      "quotaThresholdsInvalid": "Enter comma-separated percentages between 1 and 99, for example \"80,90\""
+      "cleanupValueInvalid": "Giá trị phải là số nguyên ít nhất {min}",
+      "notifyDaysExceedsGrace": "Thời gian dẫn cảnh báo không nên vượt quá khoảng thời gian ân hạn, nếu không không có cảnh báo nào được gửi",
+      "quotaThresholdsInvalid": "Nhập các phần trăm được phân tách bằng dấu phẩy từ 1 đến 99, ví dụ \"80,90\""
     },
     "messages": {
       "noChanges": "Không có thay đổi nào để lưu",
@@ -1836,20 +1836,20 @@
       "defaultPlaceholder": "Nhập và nhấn Enter"
     },
     "redirectUri": {
-      "placeholder": "https://mysite.com",
+      "placeholder": "https://mysite.vn",
       "previewLabel": "URL hoàn chỉnh sẽ được lưu:"
     },
     "emailAdmin": {
-      "queueStatus": "Email Queue Status",
-      "pending": "Pending",
-      "sentLast24h": "Sent (24h)",
-      "failed": "Failed",
+      "queueStatus": "Trạng thái hàng đợi email",
+      "pending": "Đang chờ",
+      "sentLast24h": "Đã gửi (24h)",
+      "failed": "Thất bại",
       "digestQueue": "Hàng đợi tóm tắt",
-      "sendTest": "Send Test Email",
-      "testPlaceholder": "recipient@example.com",
-      "testSending": "Sending...",
-      "testSuccess": "Test email queued successfully",
-      "testError": "Failed to send test email"
+      "sendTest": "Gửi email thử nghiệm",
+      "testPlaceholder": "email@example.vn",
+      "testSending": "Đang gửi...",
+      "testSuccess": "Email thử nghiệm được xếp hàng thành công",
+      "testError": "Gửi email thử nghiệm không thành công"
     }
   },
   "share": {
@@ -1885,19 +1885,19 @@
       "filesShared": "{count, plural, =1 {1 tệp đã được chia sẻ} other {# tệp đã được chia sẻ}}"
     },
     "identification": {
-      "title": "Visitor Identification",
-      "subtitle": "Please provide your information to access this share",
-      "nameLabel": "Name",
+      "title": "Xác định Khách",
+      "subtitle": "Vui lòng cung cấp thông tin của bạn để truy cập chia sẻ này",
+      "nameLabel": "Tên",
       "emailLabel": "Email",
-      "submit": "Continue",
-      "error": "Failed to submit identification. Please try again.",
-      "optional": "Optional",
-      "nameRequired": "Name is required",
-      "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email address",
+      "submit": "Tiếp tục",
+      "error": "Không thể gửi xác định. Vui lòng thử lại.",
+      "optional": "Tùy chọn",
+      "nameRequired": "Tên là bắt buộc",
+      "emailRequired": "Email là bắt buộc",
+      "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ",
       "metadataError": "Failed to load share information. Please try again.",
       "rateLimited": "Too many attempts. Please try again later.",
-      "privacyNotice": "Your accesses and downloads may be visible to the sender of this share."
+      "privacyNotice": "Lượt truy cập và tải xuống của bạn có thể được nhìn thấy bởi người gửi chia sẻ này."
     }
   },
   "shareActions": {
@@ -1927,8 +1927,8 @@
     "editErrorPassword": "Không thể cập nhật mật khẩu chia sẻ",
     "bulkDeleteConfirmation": "Bạn có chắc chắn muốn xóa {count, plural, =1 {1 chia sẻ} other {# chia sẻ}} không? Hành động này không thể hoàn tác.",
     "bulkDeleteTitle": "Xóa các chia sẻ đã chọn",
-    "keepCurrentPasswordHint": "Leave empty to keep current password",
-    "passwordRequired": "Password is required for new password protection"
+    "keepCurrentPasswordHint": "Để trống để giữ mật khẩu hiện tại",
+    "passwordRequired": "Cần mật khẩu để bảo vệ mật khẩu mới"
   },
   "shareDetails": {
     "title": "Chi tiết chia sẻ",
@@ -1964,27 +1964,27 @@
     "clickToEnlargeQrCode": "Nhấp để phóng to mã QR",
     "loadError": "Không thể tải chi tiết chia sẻ",
     "activity": {
-      "title": "Activity",
-      "noActivity": "No activity recorded yet.",
-      "access": "Viewed",
-      "download": "Downloaded",
-      "anonymous": "Anonymous",
-      "loadMore": "Load more",
-      "showingCount": "Showing {shown} of {total}",
-      "loadError": "Failed to load activity data.",
-      "filterAll": "All actions",
-      "filterAccess": "Views only",
-      "filterDownload": "Downloads only",
-      "filterAllVisitors": "All visitors",
-      "filterIdentified": "Identified",
-      "filterAnonymous": "Anonymous",
+      "title": "Hoạt động",
+      "noActivity": "Chưa có hoạt động nào được ghi lại.",
+      "access": "Đã xem",
+      "download": "Tải xuống",
+      "anonymous": "Ẩn danh",
+      "loadMore": "Tải thêm",
+      "showingCount": "Hiển thị {shown} trong {total}",
+      "loadError": "Không thể tải dữ liệu hoạt động.",
+      "filterAll": "Tất cả hành động",
+      "filterAccess": "Chỉ xem",
+      "filterDownload": "Chỉ tải xuống",
+      "filterAllVisitors": "Tất cả khách",
+      "filterIdentified": "Được xác định",
+      "filterAnonymous": "Ẩn danh",
       "source": {
-        "tracking_token": "Via recipient link",
-        "cookie": "Self-identified",
-        "selfDeclaredHint": "Self-declared identity, not verified"
+        "tracking_token": "Thông qua liên kết nhận file",
+        "cookie": "Tự xác định",
+        "selfDeclaredHint": "Danh tính tự khai báo, chưa được xác minh"
       }
     },
-    "lastDownloaded": "Last Downloaded",
+    "lastDownloaded": "Tải xuống lần cuối",
     "privacySummary": "Quyền riêng tư",
     "privacyNameField": "Tên khách:",
     "privacyEmailField": "Email khách:",
@@ -1994,9 +1994,9 @@
       "OPTIONAL": "Tùy chọn",
       "REQUIRED": "Bắt buộc"
     },
-    "recipientNotified": "Notified",
-    "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
-    "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"
+    "recipientNotified": "Đã thông báo",
+    "recipientAccess": "{count, plural, other {# lần truy cập}}",
+    "recipientAccessWithLast": "{count, plural, other {# lần truy cập}} · lần cuối {lastAccess}"
   },
   "shareExpiration": {
     "title": "Cài đặt hết hạn chia sẻ",
@@ -2058,10 +2058,10 @@
     "singleShareZipName": "{shareName}_files.zip",
     "multipleSharesZipName": "{count}_shares_files.zip",
     "defaultShareName": "Chia sẻ",
-    "pauseSuccess": "Share paused",
-    "pauseError": "Failed to pause share",
-    "resumeSuccess": "Share resumed",
-    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
+    "pauseSuccess": "Chia sẻ đã tạm dừng",
+    "pauseError": "Không thể tạm dừng chia sẻ",
+    "resumeSuccess": "Chia sẻ đã tiếp tục",
+    "resumeError": "Không thể tiếp tục chia sẻ. Nếu nó đã hết hạn hoặc đạt đến giới hạn xem, hãy gia hạn."
   },
   "shareMultipleFiles": {
     "title": "Chia sẻ nhiều tệp",
@@ -2156,8 +2156,8 @@
       "neverExpires": "Không bao giờ hết hạn",
       "active": "Đang hoạt động",
       "expired": "Đã hết hạn",
-      "paused": "Paused",
-      "maxViewsReached": "View Limit Reached"
+      "paused": "Tạm dừng",
+      "maxViewsReached": "Đạt đến giới hạn xem"
     },
     "security": {
       "protected": "Được bảo vệ",
@@ -2179,9 +2179,9 @@
       "notifyRecipients": "Thông báo cho người nhận",
       "downloadShareFiles": "Tải xuống tất cả các tệp",
       "delete": "Xóa",
-      "pause": "Pause",
-      "resume": "Resume",
-      "renew": "Renew"
+      "pause": "Tạm dừng",
+      "resume": "Tiếp tục",
+      "renew": "Gia hạn"
     },
     "bulkActions": {
       "actions": "Hành động",
@@ -2812,41 +2812,41 @@
     }
   },
   "notificationPreferences": {
-    "pageTitle": "Notification Preferences",
-    "description": "Choose which email notifications you receive",
-    "type": "Notification Type",
-    "category": "Category",
-    "frequency": "Frequency",
-    "immediate": "Immediate",
-    "disabled": "Disabled",
-    "alwaysEnabled": "Always enabled",
-    "save": "Save Preferences",
-    "saveSuccess": "Notification preferences saved",
-    "saveError": "Failed to save preferences",
-    "noChanges": "No changes to save",
+    "pageTitle": "Cài đặt thông báo",
+    "description": "Chọn thông báo email mà bạn muốn nhận",
+    "type": "Loại thông báo",
+    "category": "Danh mục",
+    "frequency": "Tần suất",
+    "immediate": "Ngay lập tức",
+    "disabled": "Vô hiệu hóa",
+    "alwaysEnabled": "Luôn bật",
+    "save": "Lưu cài đặt",
+    "saveSuccess": "Cài đặt thông báo đã được lưu",
+    "saveError": "Không thể lưu cài đặt",
+    "noChanges": "Không có thay đổi để lưu",
     "types": {
-      "password_reset": "Password reset",
-      "welcome": "Welcome email",
-      "account_deactivated": "Account deactivated",
-      "account_reactivated": "Account reactivated",
-      "share_invitation": "Share invitation",
-      "share_accessed": "Share accessed",
-      "share_downloaded": "File downloaded from share",
-      "share_expiring": "Share expiring soon",
-      "share_expired": "Share expired",
-      "share_max_views_reached": "Share max views reached",
-      "share_no_activity": "No activity on share",
-      "reverse_share_invitation": "Reverse share invitation",
-      "reverse_share_uploaded": "Files uploaded to reverse share",
-      "reverse_share_expiring": "Reverse share expiring",
-      "reverse_share_expired": "Reverse share expired",
-      "quota_warning": "Quota warning",
-      "quota_exceeded": "Quota exceeded",
-      "files_auto_deleted": "Files auto-deleted",
-      "share_auto_deleted": "Share auto-deleted",
-      "admin_user_registered": "New user registered (admin)",
-      "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email",
+      "password_reset": "Đặt lại mật khẩu",
+      "welcome": "Email chào mừng",
+      "account_deactivated": "Tài khoản bị vô hiệu hóa",
+      "account_reactivated": "Tài khoản được kích hoạt lại",
+      "share_invitation": "Lời mời chia sẻ",
+      "share_accessed": "Chia sẻ được truy cập",
+      "share_downloaded": "Tập tin được tải xuống từ chia sẻ",
+      "share_expiring": "Chia sẻ sắp hết hạn",
+      "share_expired": "Chia sẻ đã hết hạn",
+      "share_max_views_reached": "Đã đạt giới hạn lượt xem chia sẻ",
+      "share_no_activity": "Không có hoạt động trên chia sẻ",
+      "reverse_share_invitation": "Lời mời liên kết nhận file",
+      "reverse_share_uploaded": "Tập tin được tải lên liên kết nhận file",
+      "reverse_share_expiring": "Liên kết nhận file sắp hết hạn",
+      "reverse_share_expired": "Liên kết nhận file đã hết hạn",
+      "quota_warning": "Cảnh báo hạn mức",
+      "quota_exceeded": "Vượt quá hạn mức",
+      "files_auto_deleted": "Tập tin được xóa tự động",
+      "share_auto_deleted": "Chia sẻ được xóa tự động",
+      "admin_user_registered": "Người dùng mới đã đăng ký (chỉ dành cho quản trị viên)",
+      "admin_quota_alert": "Cảnh báo hạn mức người dùng (chỉ dành cho quản trị viên)",
+      "test_email": "Email kiểm tra",
       "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
       "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
       "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
@@ -2872,16 +2872,16 @@
       "admin_quota_alert": "Khi mức sử dụng bộ nhớ của người dùng vượt quá hạn ngạch của họ (chỉ dành cho quản trị viên)"
     },
     "categories": {
-      "account": "Account",
-      "shares": "Shares",
-      "reverseShares": "Reverse Shares",
+      "account": "Tài khoản",
+      "shares": "Chia sẻ",
+      "reverseShares": "Liên kết nhận file",
       "quota": "Quotas",
       "admin": "Administration",
       "test": "Test"
     },
-    "saving": "Saving...",
-    "loadError": "Failed to load notification preferences",
-    "retry": "Retry",
-    "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}"
+    "saving": "Đang lưu...",
+    "loadError": "Không thể tải cài đặt thông báo",
+    "retry": "Thử lại",
+    "unsavedChanges": "{count, plural, one {# thay đổi chưa được lưu} other {# thay đổi chưa được lưu}}"
   }
 }

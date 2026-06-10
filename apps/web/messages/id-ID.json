@@ -71,17 +71,17 @@
       "scopesHelpOidc": "Scopes disarankan otomatis berdasarkan URL Penyedia. OIDC umum: openid, profile, email, groups",
       "scopesHelpOauth2": "Scopes disarankan otomatis berdasarkan URL Penyedia. Scopes OAuth2 umum bergantung pada penyedia",
       "providerUrl": "URL Penyedia",
-      "providerUrlPlaceholder": "https://auth.example.com",
+      "providerUrlPlaceholder": "https://auth.contoh.com",
       "providerUrlAutoPlaceholder": "https://your-provider.com (endpoint akan dideteksi otomatis)",
-      "providerUrlManualPlaceholder": "https://your-provider.com",
+      "providerUrlManualPlaceholder": "https://penyedia-anda.com",
       "autoDiscoveryHelp": "Sistem akan secara otomatis mendeteksi endpoint otorisasi, token, dan userinfo",
       "manualConfigurationHelp": "Base URL penyedia Anda (endpoint relatif terhadap ini)",
       "authorizationEndpoint": "Endpoint Otorisasi",
-      "authorizationEndpointPlaceholder": "https://auth.example.com/auth",
+      "authorizationEndpointPlaceholder": "https://auth.contoh.com/auth",
       "tokenEndpoint": "Endpoint Token",
-      "tokenEndpointPlaceholder": "https://auth.example.com/token",
+      "tokenEndpointPlaceholder": "https://auth.contoh.com/token",
       "userInfoEndpoint": "Endpoint Info Pengguna",
-      "userInfoEndpointPlaceholder": "https://auth.example.com/userinfo",
+      "userInfoEndpointPlaceholder": "https://auth.contoh.com/userinfo",
       "configurationMethod": "Metode Konfigurasi",
       "autoDiscovery": "Deteksi Otomatis",
       "autoDiscoveryDescription": "Otomatis mendeteksi endpoint dari URL Penyedia",
@@ -179,7 +179,7 @@
     "copy": "Salin",
     "copied": "Disalin",
     "retry": "Retry",
-    "unavailable": "unavailable",
+    "unavailable": "tidak tersedia",
     "days": "hari",
     "aliasValidation": {
       "required": "[TO_TRANSLATE] Alias is required",
@@ -195,7 +195,7 @@
     "descriptionLabel": "Deskripsi",
     "descriptionPlaceholder": "Masukkan deskripsi (opsional)",
     "expirationLabel": "Tanggal Kedaluwarsa",
-    "expirationPlaceholder": "MM/DD/YYYY HH:MM",
+    "expirationPlaceholder": "DD/MM/YYYY HH:MM",
     "maxViewsLabel": "Tampilan Maksimum",
     "maxViewsPlaceholder": "Biarkan kosong untuk tak terbatas",
     "passwordProtection": "Dilindungi Kata Sandi",
@@ -214,17 +214,17 @@
     },
     "nextSelectFiles": "Berikutnya: Pilih File",
     "searchLabel": "Cari",
-    "privacySection": "Privacy & Notifications",
-    "nameFieldRequired": "Require visitor name",
-    "emailFieldRequired": "Require visitor email",
-    "notifyOnDownload": "Notify me on each download",
-    "notifyOnDownloadHelp": "When enabled, you'll receive email notifications when files are downloaded from this share, regardless of your global notification preferences.",
-    "inactivityAlertDays": "Alert if no downloads after",
-    "inactivityAlertPlaceholder": "Leave empty to disable",
-    "fieldHidden": "Hidden",
-    "fieldOptional": "Optional",
-    "fieldRequired": "Required",
-    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
+    "privacySection": "Privasi & Notifikasi",
+    "nameFieldRequired": "Butuh nama pengunjung",
+    "emailFieldRequired": "Butuh email pengunjung",
+    "notifyOnDownload": "Beritahu saya setiap kali file diunduh",
+    "notifyOnDownloadHelp": "Ketika diaktifkan, Anda akan menerima notifikasi email ketika file diunduh dari berbagi ini, terlepas dari preferensi notifikasi global Anda.",
+    "inactivityAlertDays": "Beri peringatan jika tidak ada unduhan setelah",
+    "inactivityAlertPlaceholder": "Kosongkan untuk menonaktifkan",
+    "fieldHidden": "Tersembunyi",
+    "fieldOptional": "Opsional",
+    "fieldRequired": "Wajib",
+    "filesOptionalHint": "Menambahkan file bersifat opsional — Anda dapat membuat berbagi kosong sekarang dan menambahkan file nanti."
   },
   "customization": {
     "breadcrumb": "Kustomisasi",
@@ -606,7 +606,7 @@
       "link": "Tautan",
       "qrcode": "Kode QR"
     },
-    "later": "Later"
+    "later": "Nanti"
   },
   "home": {
     "pageTitle": "Beranda",
@@ -749,7 +749,7 @@
       "SHARE_RECIPIENT_ADD": "Penerima berbagi ditambahkan",
       "SHARE_RECIPIENT_REMOVE": "Penerima berbagi dihapus",
       "SHARE_RECIPIENT_NOTIFY": "Penerima berbagi diberitahu",
-      "SHARE_RECIPIENT_REMIND": "Share non-downloaders reminded",
+      "SHARE_RECIPIENT_REMIND": "Penerima berbagi yang belum mengunduh diingatkan",
       "SHARE_ITEMS_ADD": "Item berbagi ditambahkan",
       "SHARE_ITEMS_REMOVE": "Item berbagi dihapus",
       "FILE_UPLOAD": "File diunggah",
@@ -793,17 +793,17 @@
       "BACKGROUND_IMAGE_UPLOAD": "Gambar latar diunggah",
       "BACKGROUND_IMAGE_DELETE": "Gambar latar dihapus",
       "AUDIT_RETENTION_CLEANUP": "Pembersihan log audit",
-      "SHARE_DEACTIVATED": "Share deactivated",
-      "SHARE_REACTIVATED": "Share reactivated",
-      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
-      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated",
-      "SHARE_AUTO_DELETED": "Share auto-deleted",
-      "REVERSE_SHARE_AUTO_DELETED": "Reverse share auto-deleted",
-      "ACCOUNT_FILES_CLEANED": "Account files cleaned",
-      "ORPHAN_S3_DELETED": "Orphan storage object deleted",
-      "ORPHAN_DB_DELETED": "Orphan database record deleted",
-      "ORPHAN_MULTIPART_ABORTED": "Incomplete multipart upload aborted",
-      "QUOTA_FILES_DELETED": "Over-quota files deleted"
+      "SHARE_DEACTIVATED": "Berbagi dinonaktifkan",
+      "SHARE_REACTIVATED": "Berbagi diaktifkan kembali",
+      "REVERSE_SHARE_DEACTIVATED": "Tautan penerimaan dinonaktifkan",
+      "REVERSE_SHARE_REACTIVATED": "Tautan penerimaan diaktifkan kembali",
+      "SHARE_AUTO_DELETED": "Berbagi dihapus otomatis",
+      "REVERSE_SHARE_AUTO_DELETED": "Tautan penerimaan dihapus otomatis",
+      "ACCOUNT_FILES_CLEANED": "File akun dibersihkan",
+      "ORPHAN_S3_DELETED": "Objek penyimpanan yatim piatu dihapus",
+      "ORPHAN_DB_DELETED": "Rekam basis data yatim piatu dihapus",
+      "ORPHAN_MULTIPART_ABORTED": "Unggahan multipart tidak lengkap dibatalkan",
+      "QUOTA_FILES_DELETED": "File melampaui kuota dihapus"
     },
     "targetTypes": {
       "user": "Pengguna",
@@ -1042,23 +1042,23 @@
     "invalidEmail": "Mohon masukkan alamat email yang valid",
     "duplicateEmail": "Penerima ini sudah ditambahkan",
     "noRecipientsDescription": "Tambahkan penerima untuk membagikan konten ini melalui email",
-    "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}",
-    "notifyPartial": "Only {sent} of {total} recipients were notified",
-    "neverAccessed": "Never accessed",
-    "namePlaceholder": "Name (optional)",
-    "downloaded": "Downloaded",
-    "pending": "Pending",
-    "downloadedAt": "Downloaded on {date}",
-    "uploaded": "Uploaded",
-    "uploadedAt": "Uploaded on {date}",
-    "uploadApproximateHint": "Approximate: uploaders can submit files without providing an email when it is not required",
-    "remindNonDownloaders": "Remind ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
-    "sendingReminders": "Sending reminders...",
-    "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
-    "remindNoneSent": "No reminders were sent",
-    "remindError": "Failed to send reminders"
+    "notified": "Pemberitahuan dikirim",
+    "views": "{count, plural, one {# tampilan} other {# tampilan}}",
+    "notifyPartial": "Hanya {sent} dari {total} penerima yang diberitahu",
+    "neverAccessed": "Tidak pernah diakses",
+    "namePlaceholder": "Nama (opsional)",
+    "downloaded": "Sudah diunduh",
+    "pending": "Menunggu",
+    "downloadedAt": "Diunduh pada {date}",
+    "uploaded": "Sudah mengunggah",
+    "uploadedAt": "Diunggah pada {date}",
+    "uploadApproximateHint": "Perkiraan: pengunggah dapat mengirimkan file tanpa memberikan email ketika tidak diperlukan",
+    "remindNonDownloaders": "Ingatkan ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {Tidak ada penerima yang menunggu — semua orang sudah mendownload} one {Ingatkan # penerima yang belum mendownload} other {Ingatkan # penerima yang belum mendownload}}",
+    "sendingReminders": "Mengirim pengingat...",
+    "remindSuccess": "{count, plural, one {Pengingat dikirim ke # penerima} other {Pengingat dikirim ke # penerima}}",
+    "remindNoneSent": "Tidak ada pengingat yang dikirim",
+    "remindError": "Gagal mengirim pengingat"
   },
   "register": {
     "validation": {
@@ -1258,7 +1258,7 @@
         "editDescription": "Perbarui alias untuk tautan terima ini",
         "createDescription": "Buat alias khusus untuk tautan terima ini",
         "aliasLabel": "Alias Tautan",
-        "aliasPlaceholder": "tautan-kustom-saya",
+        "aliasPlaceholder": "link-saya",
         "preview": "Pratinjau:",
         "currentLink": "Tautan Saat Ini:",
         "copyCurrentLink": "Salin tautan saat ini",
@@ -1416,8 +1416,8 @@
         "optionalDescription": "Opsional: Bidang akan muncul tetapi tidak wajib",
         "requiredDescription": "Wajib: Bidang harus diisi sebelum mengunggah"
       },
-      "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "notifyOnUpload": "Beri tahu saya pada setiap unggahan",
+      "notifyOnUploadHelp": "Ketika diaktifkan, Anda akan menerima notifikasi email ketika file diunggah ke tautan penerimaan ini, terlepas dari preferensi notifikasi global Anda.",
       "submit": "Buat Tautan Terima",
       "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
       "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
@@ -1509,12 +1509,12 @@
         "namePlaceholder": "Nama Anda",
         "emailLabel": "Email",
         "emailLabelOptional": "Email (opsional)",
-        "emailPlaceholder": "email@anda.com",
+        "emailPlaceholder": "anda@email.com",
         "descriptionLabel": "Deskripsi (opsional)",
         "descriptionPlaceholder": "Tambahkan deskripsi ke file...",
         "uploadButton": "Kirim {count} file",
         "uploading": "Mengirim...",
-        "privacyNotice": "Your name, email and uploads may be visible to the owner of this receive link."
+        "privacyNotice": "Nama, email, dan unggahan Anda dapat dilihat oleh pemilik tautan penerimaan ini."
       },
       "success": {
         "title": "File berhasil dikirim! 🎉",
@@ -1595,8 +1595,8 @@
         "description": "Kelola gambar latar untuk halaman unggah gaya WeTransfer"
       },
       "cleanup": {
-        "title": "Automatic Cleanup",
-        "description": "Lifecycle management for expired content, deactivated accounts, and orphaned files. Auto-deletion is off by default."
+        "title": "Pembersihan Otomatis",
+        "description": "Manajemen siklus hidup konten kadaluarsa, akun yang dinonaktifkan, dan file yatim piatu. Penghapusan otomatis dimatikan secara default."
       }
     },
     "fields": {
@@ -1610,8 +1610,8 @@
         "description": "Nama aplikasi yang ditampilkan kepada pengguna"
       },
       "appUrl": {
-        "title": "Application URL",
-        "description": "Public URL of the application, used in email links"
+        "title": "URL Aplikasi",
+        "description": "URL publik aplikasi, digunakan dalam tautan email"
       },
       "appDescription": {
         "title": "Deskripsi Aplikasi",
@@ -1712,32 +1712,32 @@
         "description": "Batas penyimpanan total per pengguna. Dapat ditimpa per pengguna atau per grup."
       },
       "quotaWarningThresholds": {
-        "title": "Quota Warning Thresholds (%)",
-        "description": "Comma-separated percentages, e.g. \"80,90\", at which a user is emailed a quota warning. Each value must be a whole number between 1 and 99. A separate alert is sent when storage reaches 100%."
+        "title": "Ambang Batas Peringatan Kuota (%)",
+        "description": "Persentase yang dipisahkan koma, mis. \"80,90\", di mana pengguna mengirim peringatan kuota. Setiap nilai harus berupa angka bulat antara 1 dan 99. Peringatan terpisah dikirim saat penyimpanan mencapai 100%."
       },
       "quotaGracePeriodDays": {
-        "title": "Quota Grace Period (days)",
-        "description": "How many days a user may stay over their quota before smart deletion may act (only when smart deletion is enabled below). Minimum 0."
+        "title": "Periode Tenggang Kuota (hari)",
+        "description": "Berapa banyak hari pengguna dapat melampaui kuota mereka sebelum penghapusan cerdas dapat bertindak (hanya saat penghapusan cerdas diaktifkan di bawah). Minimum 0."
       },
       "quotaSmartDeletionEnabled": {
-        "title": "Smart Deletion of Over-Quota Files",
-        "description": "Off by default. When enabled, after the grace period the oldest unsafe files of an over-quota user are deleted in a safe order: first unshared uploads, then files in shares inactive for the period below. Files in active shares are never deleted — if nothing is safe to remove, new uploads are simply blocked instead."
+        "title": "Penghapusan Cerdas File Melebihi Kuota",
+        "description": "Dimatikan secara default. Saat diaktifkan, setelah periode tenggang file tertua yang tidak aman dari pengguna melebihi kuota dihapus dalam urutan aman: pertama upload yang tidak dibagikan, kemudian file dalam berbagi yang tidak aktif untuk periode di bawah. File dalam berbagi aktif tidak pernah dihapus — jika tidak ada yang aman untuk dihapus, upload baru cukup diblokir."
       },
       "quotaInactiveShareDays": {
-        "title": "Inactive Share Threshold (days)",
-        "description": "A share's files are eligible for smart deletion once the share has had no activity for this many days. Minimum 1."
+        "title": "Ambang Batas Berbagi Tidak Aktif (hari)",
+        "description": "File berbagi memenuhi syarat untuk penghapusan cerdas setelah berbagi tidak memiliki aktivitas selama beberapa hari. Minimum 1."
       },
       "reverseShareQuotaSoftEnforcement": {
-        "title": "Reverse Share Soft Enforcement",
-        "description": "On by default. Lets external guests keep uploading to a reverse share even if the owner is slightly over quota, so collections are not interrupted. Uploads are still blocked once the owner exceeds the tolerance set below, and the owner is alerted to free up space."
+        "title": "Penerapan Lembut Berbagi Terbalik",
+        "description": "Diaktifkan secara default. Memungkinkan tamu eksternal terus mengunggah ke berbagi terbalik bahkan jika pemilik sedikit melampaui kuota, sehingga koleksi tidak terganggu. Unggahan masih diblokir setelah pemilik melampaui toleransi yang ditetapkan di bawah, dan pemilik diperingatkan untuk membebaskan ruang."
       },
       "reverseShareMaxOverageFactor": {
-        "title": "Reverse Share Overage Factor",
-        "description": "Soft enforcement allows reverse-share uploads until usage reaches this multiple of the owner's quota (e.g. 3 = up to three times the limit). Minimum 1."
+        "title": "Faktor Kelebihan Berbagi Terbalik",
+        "description": "Penerapan lembut memungkinkan unggahan berbagi terbalik hingga penggunaan mencapai kelipatan kuota pemilik ini (mis. 3 = hingga tiga kali batasnya). Minimum 1."
       },
       "reverseShareAbsoluteMaxBytes": {
-        "title": "Reverse Share Absolute Cap",
-        "description": "Hard ceiling for reverse-share soft enforcement regardless of the factor above. Set to 0 for no absolute cap."
+        "title": "Batas Absolut Berbagi Terbalik",
+        "description": "Batas keras untuk penerapan lembut berbagi terbalik terlepas dari faktor di atas. Atur ke 0 untuk tidak ada batas absolut."
       },
       "firstUserAccess": {
         "title": "Akses Pengguna Pertama",
@@ -1752,56 +1752,56 @@
         "description": "Aktifkan atau nonaktifkan autentikasi berbasis kata sandi"
       },
       "emailDigestHour": {
-        "title": "Digest Email Hour",
-        "description": "Hour of the day (0-23) when digest emails are sent"
+        "title": "Jam Email Ringkasan",
+        "description": "Jam dalam sehari (0-23) saat email ringkasan dikirim"
       },
       "emailJobRetentionDays": {
-        "title": "Email Job Retention",
-        "description": "Number of days to keep completed email jobs before cleanup"
+        "title": "Retensi Pekerjaan Email",
+        "description": "Jumlah hari untuk menyimpan pekerjaan email yang selesai sebelum pembersihan"
       },
       "emailQueueIntervalSeconds": {
-        "title": "Queue Processing Interval",
-        "description": "Seconds between email queue processing cycles"
+        "title": "Interval Pemrosesan Antrean",
+        "description": "Detik antara siklus pemrosesan antrean email"
       },
       "emailQueueMaxRetries": {
-        "title": "Max Email Retries",
-        "description": "Maximum number of retry attempts for failed emails"
+        "title": "Percobaan Ulang Email Maksimal",
+        "description": "Jumlah maksimal percobaan ulang untuk email yang gagal"
       },
       "auditRetentionDays": {
         "title": "Retensi Audit",
         "description": "Jumlah hari untuk menyimpan log audit (0 = selamanya, minimal 7)"
       },
       "autoCleanupEnabled": {
-        "title": "Enable Automatic Cleanup",
-        "description": "Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on."
+        "title": "Aktifkan Pembersihan Otomatis",
+        "description": "Saklar utama untuk pembersihan terjadwal tautan berbagi kadaluarsa, file berbagi terbalik kadaluarsa, dan yatim piatu. Dimatikan secara default — tidak ada yang dihapus secara otomatis hingga Anda menyalakannya."
       },
       "autoCleanupIntervalHours": {
-        "title": "Cleanup Interval (hours)",
-        "description": "How often the cleanup task runs. Minimum 1 hour."
+        "title": "Interval Pembersihan (jam)",
+        "description": "Seberapa sering tugas pembersihan berjalan. Minimum 1 jam."
       },
       "autoCleanupGracePeriodDays": {
-        "title": "Grace Period (days)",
+        "title": "Periode Tenggang (hari)",
         "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
       },
       "autoCleanupNotifyDaysBefore": {
-        "title": "Warn Before Deletion (days)",
-        "description": "Send the owner a \"pending permanent deletion\" warning email this many days before the content is deleted. 0 disables the warning. Should be at most the grace period."
+        "title": "Peringatan Sebelum Penghapusan (hari)",
+        "description": "Kirim pemilik email peringatan \"penghapusan permanen tertunda\" sejumlah hari sebelum konten dihapus. 0 menonaktifkan peringatan. Harus paling banyak periode tenggang."
       },
       "accountDeactivationCleanupEnabled": {
-        "title": "Delete Deactivated Accounts' Files",
-        "description": "When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files."
+        "title": "Hapus File Akun yang Dinonaktifkan",
+        "description": "Saat aktif, file milik akun yang dinonaktifkan dihapus secara permanen setelah penundaan di bawah. Dimatikan secara default — deaktivasi saja tidak pernah menghapus file."
       },
       "accountDeactivationCleanupDays": {
-        "title": "Deactivation Cleanup Delay (days)",
-        "description": "Days after an account is deactivated before its files are deleted (only when the option above is enabled). Minimum 1."
+        "title": "Penundaan Pembersihan Deaktivasi (hari)",
+        "description": "Hari setelah akun dinonaktifkan sebelum file-filenya dihapus (hanya saat opsi di atas diaktifkan). Minimum 1."
       },
       "autoCleanupOrphansEnabled": {
-        "title": "Sweep Orphaned Files",
-        "description": "When on, runs a two-way sweep that removes database records pointing to missing storage objects and storage objects with no database record. Off by default."
+        "title": "Bersihkan File Yatim Piatu",
+        "description": "Saat aktif, menjalankan pembersihan dua arah yang menghapus catatan basis data yang menunjuk ke objek penyimpanan yang hilang dan objek penyimpanan tanpa catatan basis data. Dimatikan secara default."
       },
       "autoCleanupOrphanMinAgeHours": {
-        "title": "Orphan Minimum Age (hours)",
-        "description": "Only files and objects older than this are considered during the orphan sweep, protecting uploads still in progress. Minimum 1."
+        "title": "Usia Minimum Yatim Piatu (jam)",
+        "description": "Hanya file dan objek yang lebih lama dari ini yang dipertimbangkan selama pembersihan yatim piatu, melindungi unggahan yang masih berlangsung. Minimum 1."
       }
     },
     "buttons": {
@@ -1814,9 +1814,9 @@
       "updateFailed": "Gagal memperbarui pengaturan",
       "passwordAuthRequiresProvider": "Tidak dapat menonaktifkan autentikasi kata sandi tanpa memiliki setidaknya satu penyedia autentikasi aktif",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
-      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent",
-      "quotaThresholdsInvalid": "Enter comma-separated percentages between 1 and 99, for example \"80,90\""
+      "cleanupValueInvalid": "Nilai harus berupa angka bulat minimal {min}",
+      "notifyDaysExceedsGrace": "Waktu peringatan tidak boleh melebihi periode tenggang, jika tidak tidak ada peringatan yang dikirim",
+      "quotaThresholdsInvalid": "Masukkan persentase yang dipisahkan koma antara 1 dan 99, misalnya \"80,90\""
     },
     "messages": {
       "noChanges": "Tidak ada perubahan untuk disimpan",
@@ -1836,20 +1836,20 @@
       "defaultPlaceholder": "Masukkan dan tekan Enter"
     },
     "redirectUri": {
-      "placeholder": "https://mysite.com",
+      "placeholder": "https://situsaya.com",
       "previewLabel": "URL lengkap yang akan disimpan:"
     },
     "emailAdmin": {
-      "queueStatus": "Email Queue Status",
-      "pending": "Pending",
-      "sentLast24h": "Sent (24h)",
-      "failed": "Failed",
+      "queueStatus": "Status Antrean Email",
+      "pending": "Tertunda",
+      "sentLast24h": "Dikirim (24j)",
+      "failed": "Gagal",
       "digestQueue": "Antrean ringkasan",
-      "sendTest": "Send Test Email",
-      "testPlaceholder": "recipient@example.com",
-      "testSending": "Sending...",
-      "testSuccess": "Test email queued successfully",
-      "testError": "Failed to send test email"
+      "sendTest": "Kirim Email Uji",
+      "testPlaceholder": "penerima@email.id",
+      "testSending": "Mengirim...",
+      "testSuccess": "Email uji antri dengan berhasil",
+      "testError": "Gagal mengirim email uji"
     }
   },
   "share": {
@@ -1885,19 +1885,19 @@
       "filesShared": "{count, plural, =1 {1 file dibagikan} other {# file dibagikan}}"
     },
     "identification": {
-      "title": "Visitor Identification",
-      "subtitle": "Please provide your information to access this share",
-      "nameLabel": "Name",
+      "title": "Identifikasi Pengunjung",
+      "subtitle": "Silakan berikan informasi Anda untuk mengakses berbagi ini",
+      "nameLabel": "Nama",
       "emailLabel": "Email",
-      "submit": "Continue",
-      "error": "Failed to submit identification. Please try again.",
-      "optional": "Optional",
-      "nameRequired": "Name is required",
-      "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email address",
+      "submit": "Lanjutkan",
+      "error": "Gagal mengirim identifikasi. Silakan coba lagi.",
+      "optional": "Opsional",
+      "nameRequired": "Nama diperlukan",
+      "emailRequired": "Email diperlukan",
+      "emailInvalid": "Silakan masukkan alamat email yang valid",
       "metadataError": "Failed to load share information. Please try again.",
       "rateLimited": "Too many attempts. Please try again later.",
-      "privacyNotice": "Your accesses and downloads may be visible to the sender of this share."
+      "privacyNotice": "Akses dan unduhan Anda dapat dilihat oleh pengirim berbagi ini."
     }
   },
   "shareActions": {
@@ -1927,8 +1927,8 @@
     "editErrorPassword": "Gagal memperbarui kata sandi berbagi",
     "bulkDeleteConfirmation": "Apakah Anda yakin ingin menghapus {count, plural, =1 {1 berbagi} other {# berbagi}}? Tindakan ini tidak dapat dibatalkan.",
     "bulkDeleteTitle": "Hapus Berbagi Terpilih",
-    "keepCurrentPasswordHint": "Leave empty to keep current password",
-    "passwordRequired": "Password is required for new password protection"
+    "keepCurrentPasswordHint": "Biarkan kosong untuk menyimpan kata sandi saat ini",
+    "passwordRequired": "Kata sandi diperlukan untuk perlindungan kata sandi baru"
   },
   "shareDetails": {
     "title": "Detail Berbagi",
@@ -1964,27 +1964,27 @@
     "clickToEnlargeQrCode": "Klik untuk memperbesar Kode QR",
     "loadError": "Gagal memuat detail berbagi",
     "activity": {
-      "title": "Activity",
-      "noActivity": "No activity recorded yet.",
-      "access": "Viewed",
-      "download": "Downloaded",
-      "anonymous": "Anonymous",
-      "loadMore": "Load more",
-      "showingCount": "Showing {shown} of {total}",
-      "loadError": "Failed to load activity data.",
-      "filterAll": "All actions",
-      "filterAccess": "Views only",
-      "filterDownload": "Downloads only",
-      "filterAllVisitors": "All visitors",
-      "filterIdentified": "Identified",
-      "filterAnonymous": "Anonymous",
+      "title": "Aktivitas",
+      "noActivity": "Belum ada aktivitas yang dicatat.",
+      "access": "Dilihat",
+      "download": "Diunduh",
+      "anonymous": "Anonim",
+      "loadMore": "Muat lebih banyak",
+      "showingCount": "Menampilkan {shown} dari {total}",
+      "loadError": "Gagal memuat data aktivitas.",
+      "filterAll": "Semua tindakan",
+      "filterAccess": "Hanya tampilan",
+      "filterDownload": "Hanya unduhan",
+      "filterAllVisitors": "Semua pengunjung",
+      "filterIdentified": "Teridentifikasi",
+      "filterAnonymous": "Anonim",
       "source": {
-        "tracking_token": "Via recipient link",
-        "cookie": "Self-identified",
-        "selfDeclaredHint": "Self-declared identity, not verified"
+        "tracking_token": "Melalui tautan penerima",
+        "cookie": "Mengidentifikasi diri sendiri",
+        "selfDeclaredHint": "Identitas yang dinyatakan sendiri, tidak diverifikasi"
       }
     },
-    "lastDownloaded": "Last Downloaded",
+    "lastDownloaded": "Terakhir Diunduh",
     "privacySummary": "Privasi",
     "privacyNameField": "Nama pengunjung:",
     "privacyEmailField": "Email pengunjung:",
@@ -1994,9 +1994,9 @@
       "OPTIONAL": "Opsional",
       "REQUIRED": "Wajib"
     },
-    "recipientNotified": "Notified",
-    "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
-    "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"
+    "recipientNotified": "Pemberitahuan dikirim",
+    "recipientAccess": "{count, plural, one {# akses} other {# akses}}",
+    "recipientAccessWithLast": "{count, plural, one {# akses} other {# akses}} · terakhir {lastAccess}"
   },
   "shareExpiration": {
     "title": "Pengaturan Kedaluwarsa Berbagi",
@@ -2058,10 +2058,10 @@
     "singleShareZipName": "{shareName}_files.zip",
     "multipleSharesZipName": "{count}_shares_files.zip",
     "defaultShareName": "Berbagi",
-    "pauseSuccess": "Share paused",
-    "pauseError": "Failed to pause share",
-    "resumeSuccess": "Share resumed",
-    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
+    "pauseSuccess": "Berbagi dijeda",
+    "pauseError": "Gagal menjeda berbagi",
+    "resumeSuccess": "Berbagi dilanjutkan",
+    "resumeError": "Gagal melanjutkan berbagi. Jika sudah kadaluarsa atau telah mencapai batas tampilan, perpanjang sebagai gantinya."
   },
   "shareMultipleFiles": {
     "title": "Bagikan Beberapa File",
@@ -2156,8 +2156,8 @@
       "neverExpires": "Tidak pernah kedaluwarsa",
       "active": "Aktif",
       "expired": "Kedaluwarsa",
-      "paused": "Paused",
-      "maxViewsReached": "View Limit Reached"
+      "paused": "Dijeda",
+      "maxViewsReached": "Batas Tampilan Tercapai"
     },
     "security": {
       "protected": "Terlindungi",
@@ -2179,9 +2179,9 @@
       "notifyRecipients": "Beritahu Penerima",
       "downloadShareFiles": "Unduh Semua File",
       "delete": "Hapus",
-      "pause": "Pause",
-      "resume": "Resume",
-      "renew": "Renew"
+      "pause": "Jeda",
+      "resume": "Lanjutkan",
+      "renew": "Perbarui"
     },
     "bulkActions": {
       "actions": "Tindakan",
@@ -2812,41 +2812,41 @@
     }
   },
   "notificationPreferences": {
-    "pageTitle": "Notification Preferences",
-    "description": "Choose which email notifications you receive",
-    "type": "Notification Type",
-    "category": "Category",
-    "frequency": "Frequency",
-    "immediate": "Immediate",
-    "disabled": "Disabled",
-    "alwaysEnabled": "Always enabled",
-    "save": "Save Preferences",
-    "saveSuccess": "Notification preferences saved",
-    "saveError": "Failed to save preferences",
-    "noChanges": "No changes to save",
+    "pageTitle": "Preferensi Notifikasi",
+    "description": "Pilih notifikasi email mana yang Anda terima",
+    "type": "Jenis Notifikasi",
+    "category": "Kategori",
+    "frequency": "Frekuensi",
+    "immediate": "Segera",
+    "disabled": "Dinonaktifkan",
+    "alwaysEnabled": "Selalu diaktifkan",
+    "save": "Simpan Preferensi",
+    "saveSuccess": "Preferensi notifikasi disimpan",
+    "saveError": "Gagal menyimpan preferensi",
+    "noChanges": "Tidak ada perubahan untuk disimpan",
     "types": {
-      "password_reset": "Password reset",
-      "welcome": "Welcome email",
-      "account_deactivated": "Account deactivated",
-      "account_reactivated": "Account reactivated",
-      "share_invitation": "Share invitation",
-      "share_accessed": "Share accessed",
-      "share_downloaded": "File downloaded from share",
-      "share_expiring": "Share expiring soon",
-      "share_expired": "Share expired",
-      "share_max_views_reached": "Share max views reached",
-      "share_no_activity": "No activity on share",
-      "reverse_share_invitation": "Reverse share invitation",
-      "reverse_share_uploaded": "Files uploaded to reverse share",
-      "reverse_share_expiring": "Reverse share expiring",
-      "reverse_share_expired": "Reverse share expired",
-      "quota_warning": "Quota warning",
-      "quota_exceeded": "Quota exceeded",
-      "files_auto_deleted": "Files auto-deleted",
-      "share_auto_deleted": "Share auto-deleted",
-      "admin_user_registered": "New user registered (admin)",
-      "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email",
+      "password_reset": "Pengaturan ulang kata sandi",
+      "welcome": "Email sambutan",
+      "account_deactivated": "Akun dinonaktifkan",
+      "account_reactivated": "Akun diaktifkan kembali",
+      "share_invitation": "Undangan berbagi",
+      "share_accessed": "Berbagi diakses",
+      "share_downloaded": "File diunduh dari berbagi",
+      "share_expiring": "Berbagi akan segera kadaluarsa",
+      "share_expired": "Berbagi telah kadaluarsa",
+      "share_max_views_reached": "Batas tampilan berbagi tercapai",
+      "share_no_activity": "Tidak ada aktivitas pada berbagi",
+      "reverse_share_invitation": "Undangan tautan penerimaan",
+      "reverse_share_uploaded": "File diunggah ke tautan penerimaan",
+      "reverse_share_expiring": "Tautan penerimaan akan segera kadaluarsa",
+      "reverse_share_expired": "Tautan penerimaan telah kadaluarsa",
+      "quota_warning": "Peringatan kuota",
+      "quota_exceeded": "Kuota terlampaui",
+      "files_auto_deleted": "File dihapus otomatis",
+      "share_auto_deleted": "Berbagi dihapus otomatis",
+      "admin_user_registered": "Pengguna baru terdaftar (khusus admin)",
+      "admin_quota_alert": "Peringatan kuota pengguna (khusus admin)",
+      "test_email": "Email uji",
       "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
       "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
       "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
@@ -2872,16 +2872,16 @@
       "admin_quota_alert": "Ketika penggunaan penyimpanan pengguna melebihi kuota mereka (khusus admin)"
     },
     "categories": {
-      "account": "Account",
-      "shares": "Shares",
-      "reverseShares": "Reverse Shares",
+      "account": "Akun",
+      "shares": "Berbagi",
+      "reverseShares": "Tautan Penerimaan",
       "quota": "Quotas",
       "admin": "Administration",
       "test": "Test"
     },
-    "saving": "Saving...",
-    "loadError": "Failed to load notification preferences",
-    "retry": "Retry",
-    "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}"
+    "saving": "Menyimpan...",
+    "loadError": "Gagal memuat preferensi notifikasi",
+    "retry": "Coba Lagi",
+    "unsavedChanges": "{count, plural, one {# perubahan belum disimpan} other {# perubahan belum disimpan}}"
   }
 }

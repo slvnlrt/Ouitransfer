@@ -67,17 +67,17 @@
       "scopesHelpOidc": "Области автоматически предлагаются на основе URL провайдера. Общие области OIDC: openid, profile, email, groups",
       "scopesHelpOauth2": "Области автоматически предлагаются на основе URL провайдера. Общие области OAuth2 зависят от провайдера",
       "providerUrl": "URL провайдера",
-      "providerUrlPlaceholder": "https://auth.example.com",
+      "providerUrlPlaceholder": "https://auth.example.ru",
       "providerUrlAutoPlaceholder": "https://your-provider.com (конечные точки будут обнаружены автоматически)",
-      "providerUrlManualPlaceholder": "https://your-provider.com",
+      "providerUrlManualPlaceholder": "https://your-provider.ru",
       "autoDiscoveryHelp": "Система автоматически обнаружит конечные точки авторизации, токена и информации о пользователе",
       "manualConfigurationHelp": "Базовый URL вашего провайдера (конечные точки будут относительно этого URL)",
       "authorizationEndpoint": "Конечная точка авторизации",
-      "authorizationEndpointPlaceholder": "https://auth.example.com/auth",
+      "authorizationEndpointPlaceholder": "https://auth.example.ru/auth",
       "tokenEndpoint": "Конечная точка токена",
-      "tokenEndpointPlaceholder": "https://auth.example.com/token",
+      "tokenEndpointPlaceholder": "https://auth.example.ru/token",
       "userInfoEndpoint": "Конечная точка информации о пользователе",
-      "userInfoEndpointPlaceholder": "https://auth.example.com/userinfo",
+      "userInfoEndpointPlaceholder": "https://auth.example.ru/userinfo",
       "configurationMethod": "Метод конфигурации",
       "autoDiscovery": "Автоматическое обнаружение",
       "autoDiscoveryDescription": "Автоматически обнаруживать конечные точки из URL провайдера",
@@ -175,7 +175,7 @@
     "copied": "Скопировано",
     "copy": "Копировать",
     "retry": "Retry",
-    "unavailable": "unavailable",
+    "unavailable": "недоступно",
     "days": "дней",
     "aliasValidation": {
       "required": "[TO_TRANSLATE] Alias is required",
@@ -188,7 +188,7 @@
     "title": "Создать общий доступ",
     "nameLabel": "Название общего доступа",
     "expirationLabel": "Дата истечения",
-    "expirationPlaceholder": "MM/DD/YYYY ЧЧ:ММ",
+    "expirationPlaceholder": "ДД.ММ.ГГГГ ЧЧ:ММ",
     "maxViewsLabel": "Максимальное количество просмотров",
     "maxViewsPlaceholder": "Оставьте пустым для неограниченного доступа",
     "passwordProtection": "Защита паролем",
@@ -210,17 +210,17 @@
     },
     "itemsSelected": "Выбрано элементов: {count}",
     "passwordPlaceholder": "Введите пароль",
-    "privacySection": "Privacy & Notifications",
-    "nameFieldRequired": "Require visitor name",
-    "emailFieldRequired": "Require visitor email",
-    "notifyOnDownload": "Notify me on each download",
-    "notifyOnDownloadHelp": "When enabled, you'll receive email notifications when files are downloaded from this share, regardless of your global notification preferences.",
-    "inactivityAlertDays": "Alert if no downloads after",
-    "inactivityAlertPlaceholder": "Leave empty to disable",
-    "fieldHidden": "Hidden",
-    "fieldOptional": "Optional",
-    "fieldRequired": "Required",
-    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
+    "privacySection": "Конфиденциальность и уведомления",
+    "nameFieldRequired": "Требовать имя посетителя",
+    "emailFieldRequired": "Требовать электронную почту посетителя",
+    "notifyOnDownload": "Уведомлять меня при каждой загрузке",
+    "notifyOnDownloadHelp": "После включения вы будете получать уведомления по электронной почте при загрузке файлов из этого общего доступа, независимо от глобальных настроек уведомлений.",
+    "inactivityAlertDays": "Предупредить, если загрузок нет после",
+    "inactivityAlertPlaceholder": "Оставьте пусто для отключения",
+    "fieldHidden": "Скрыто",
+    "fieldOptional": "Опционально",
+    "fieldRequired": "Обязательно",
+    "filesOptionalHint": "Добавление файлов опционально — вы можете создать пустой общий доступ сейчас и добавить файлы позже."
   },
   "customization": {
     "breadcrumb": "Настройка",
@@ -602,7 +602,7 @@
       "link": "Ссылка",
       "qrcode": "QR-код"
     },
-    "later": "Later"
+    "later": "Позже"
   },
   "home": {
     "pageTitle": "Главная",
@@ -745,7 +745,7 @@
       "SHARE_RECIPIENT_ADD": "Получатели общего доступа добавлены",
       "SHARE_RECIPIENT_REMOVE": "Получатели общего доступа удалены",
       "SHARE_RECIPIENT_NOTIFY": "Получатели общего доступа уведомлены",
-      "SHARE_RECIPIENT_REMIND": "Share non-downloaders reminded",
+      "SHARE_RECIPIENT_REMIND": "Получатели, не загрузившие файлы, напомнены",
       "SHARE_ITEMS_ADD": "Элементы общего доступа добавлены",
       "SHARE_ITEMS_REMOVE": "Элементы общего доступа удалены",
       "FILE_UPLOAD": "Файл загружен",
@@ -789,17 +789,17 @@
       "BACKGROUND_IMAGE_UPLOAD": "Фоновое изображение загружено",
       "BACKGROUND_IMAGE_DELETE": "Фоновое изображение удалено",
       "AUDIT_RETENTION_CLEANUP": "Очистка журнала аудита",
-      "SHARE_DEACTIVATED": "Share deactivated",
-      "SHARE_REACTIVATED": "Share reactivated",
-      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
-      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated",
-      "SHARE_AUTO_DELETED": "Share auto-deleted",
-      "REVERSE_SHARE_AUTO_DELETED": "Reverse share auto-deleted",
-      "ACCOUNT_FILES_CLEANED": "Account files cleaned",
-      "ORPHAN_S3_DELETED": "Orphan storage object deleted",
-      "ORPHAN_DB_DELETED": "Orphan database record deleted",
-      "ORPHAN_MULTIPART_ABORTED": "Incomplete multipart upload aborted",
-      "QUOTA_FILES_DELETED": "Over-quota files deleted"
+      "SHARE_DEACTIVATED": "Общий доступ отключен",
+      "SHARE_REACTIVATED": "Общий доступ включен повторно",
+      "REVERSE_SHARE_DEACTIVATED": "Ссылка для получения отключена",
+      "REVERSE_SHARE_REACTIVATED": "Ссылка для получения включена повторно",
+      "SHARE_AUTO_DELETED": "Общий доступ удален автоматически",
+      "REVERSE_SHARE_AUTO_DELETED": "Ссылка для получения удалена автоматически",
+      "ACCOUNT_FILES_CLEANED": "Файлы учетной записи очищены",
+      "ORPHAN_S3_DELETED": "Сиротский объект хранилища удален",
+      "ORPHAN_DB_DELETED": "Сиротская запись базы данных удалена",
+      "ORPHAN_MULTIPART_ABORTED": "Незавершенная многочастная загрузка прервана",
+      "QUOTA_FILES_DELETED": "Файлы, превышающие квоту, удалены"
     },
     "targetTypes": {
       "user": "Пользователь",
@@ -1038,23 +1038,23 @@
     "selectedCount": "{count} выбрано",
     "addRecipient": "Добавить получателя",
     "bulkNotifyError": "Не удалось уведомить выбранных получателей",
-    "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}",
-    "notifyPartial": "Only {sent} of {total} recipients were notified",
-    "neverAccessed": "Never accessed",
-    "namePlaceholder": "Name (optional)",
-    "downloaded": "Downloaded",
-    "pending": "Pending",
-    "downloadedAt": "Downloaded on {date}",
-    "uploaded": "Uploaded",
-    "uploadedAt": "Uploaded on {date}",
-    "uploadApproximateHint": "Approximate: uploaders can submit files without providing an email when it is not required",
-    "remindNonDownloaders": "Remind ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
-    "sendingReminders": "Sending reminders...",
-    "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
-    "remindNoneSent": "No reminders were sent",
-    "remindError": "Failed to send reminders"
+    "notified": "Уведомлено",
+    "views": "{count, plural, one {# просмотр} few {# просмотра} many {# просмотров} other {# просмотров}}",
+    "notifyPartial": "Уведомлены только {sent} из {total} получателей",
+    "neverAccessed": "Никогда не открывалось",
+    "namePlaceholder": "Имя (необязательно)",
+    "downloaded": "Загружено",
+    "pending": "Ожидание",
+    "downloadedAt": "Загружено {date}",
+    "uploaded": "Загружено",
+    "uploadedAt": "Загружено {date}",
+    "uploadApproximateHint": "Приблизительно: загружающие могут отправлять файлы без адреса электронной почты, когда он не требуется",
+    "remindNonDownloaders": "Напомнить ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {Нет ожидающих получателей — все загрузили} one {Напомнить # получателю, который еще не загрузил} few {Напомнить # получателям, которые еще не загрузили} many {Напомнить # получателям, которые еще не загрузили} other {Напомнить # получателям, которые еще не загрузили}}",
+    "sendingReminders": "Отправка напоминаний...",
+    "remindSuccess": "{count, plural, one {Напоминание отправлено # получателю} few {Напоминания отправлены # получателям} many {Напоминания отправлены # получателям} other {Напоминания отправлены # получателям}}",
+    "remindNoneSent": "Напоминания не отправлены",
+    "remindError": "Ошибка отправки напоминаний"
   },
   "register": {
     "validation": {
@@ -1254,7 +1254,7 @@
         "editDescription": "Обновите псевдоним для этой ссылки получения",
         "createDescription": "Создайте персонализированный псевдоним для этой ссылки получения",
         "aliasLabel": "Псевдоним ссылки",
-        "aliasPlaceholder": "моя-персональная-ссылка",
+        "aliasPlaceholder": "моя-ссылка",
         "preview": "Предпросмотр:",
         "currentLink": "Текущая ссылка:",
         "copyCurrentLink": "Копировать текущую ссылку",
@@ -1413,8 +1413,8 @@
         "label": "Требование поля имени",
         "description": "Настройка, если должно быть показано поле имени загрузчика и если оно требуется"
       },
-      "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "notifyOnUpload": "Уведомлять при каждой загрузке",
+      "notifyOnUploadHelp": "При включении вы будете получать уведомления по электронной почте при загрузке файлов на эту ссылку получения, независимо от ваших глобальных предпочтений уведомлений.",
       "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
       "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
@@ -1502,14 +1502,14 @@
         "nameLabel": "Имя",
         "namePlaceholder": "Ваше имя",
         "emailLabel": "Email",
-        "emailPlaceholder": "ваш@email.com",
+        "emailPlaceholder": "вы@email.ru",
         "descriptionLabel": "Описание (необязательно)",
         "descriptionPlaceholder": "Добавьте описание к файлам...",
         "uploadButton": "Отправить {count} файл(ов)",
         "uploading": "Отправка...",
         "emailLabelOptional": "Электронная почта (необязательно)",
         "nameLabelOptional": "Имя (необязательно)",
-        "privacyNotice": "Your name, email and uploads may be visible to the owner of this receive link."
+        "privacyNotice": "Ваше имя, адрес электронной почты и загрузки могут быть видны владельцу этой ссылки получения."
       },
       "success": {
         "title": "Файлы успешно отправлены! 🎉",
@@ -1591,8 +1591,8 @@
         "description": "Управление фоновыми изображениями для страниц загрузки в стиле WeTransfer"
       },
       "cleanup": {
-        "title": "Automatic Cleanup",
-        "description": "Lifecycle management for expired content, deactivated accounts, and orphaned files. Auto-deletion is off by default."
+        "title": "Автоматическая очистка",
+        "description": "Управление жизненным циклом истекшего контента, деактивированных учётных записей и потерянных файлов. По умолчанию автоматическое удаление отключено."
       }
     },
     "fields": {
@@ -1606,8 +1606,8 @@
         "description": "Название приложения, отображаемое пользователям"
       },
       "appUrl": {
-        "title": "Application URL",
-        "description": "Public URL of the application, used in email links"
+        "title": "URL приложения",
+        "description": "Общедоступный URL приложения, используемый в ссылках электронной почты"
       },
       "appDescription": {
         "title": "Описание приложения",
@@ -1670,32 +1670,32 @@
         "description": "Общий лимит хранилища на пользователя. Может быть переопределен для каждого пользователя или группы."
       },
       "quotaWarningThresholds": {
-        "title": "Quota Warning Thresholds (%)",
-        "description": "Comma-separated percentages, e.g. \"80,90\", at which a user is emailed a quota warning. Each value must be a whole number between 1 and 99. A separate alert is sent when storage reaches 100%."
+        "title": "Пороги предупреждений квоты (%)",
+        "description": "Процентные значения, разделённые запятыми, например «80,90», при достижении которых пользователю отправляется предупреждение о квоте. Каждое значение должно быть целым числом от 1 до 99. Отдельное оповещение отправляется при достижении хранилищем 100%."
       },
       "quotaGracePeriodDays": {
-        "title": "Quota Grace Period (days)",
-        "description": "How many days a user may stay over their quota before smart deletion may act (only when smart deletion is enabled below). Minimum 0."
+        "title": "Период льготы квоты (дни)",
+        "description": "Количество дней, в течение которых пользователь может превысить свою квоту до вступления в силу умного удаления (только если умное удаление включено ниже). Минимум 0."
       },
       "quotaSmartDeletionEnabled": {
-        "title": "Smart Deletion of Over-Quota Files",
-        "description": "Off by default. When enabled, after the grace period the oldest unsafe files of an over-quota user are deleted in a safe order: first unshared uploads, then files in shares inactive for the period below. Files in active shares are never deleted — if nothing is safe to remove, new uploads are simply blocked instead."
+        "title": "Умное удаление файлов сверх квоты",
+        "description": "По умолчанию отключено. При включении после периода льготы самые старые небезопасные файлы пользователя, превысившего квоту, удаляются в безопасном порядке: сначала неопубликованные загрузки, затем файлы в общих ресурсах, неактивных в течение периода ниже. Файлы в активных общих ресурсах никогда не удаляются. Если нечего удалять безопасно, новые загрузки просто блокируются."
       },
       "quotaInactiveShareDays": {
-        "title": "Inactive Share Threshold (days)",
-        "description": "A share's files are eligible for smart deletion once the share has had no activity for this many days. Minimum 1."
+        "title": "Порог неактивной общей папки (дни)",
+        "description": "Файлы общей папки становятся кандидатами на умное удаление после отсутствия активности в течение этого количества дней. Минимум 1."
       },
       "reverseShareQuotaSoftEnforcement": {
-        "title": "Reverse Share Soft Enforcement",
-        "description": "On by default. Lets external guests keep uploading to a reverse share even if the owner is slightly over quota, so collections are not interrupted. Uploads are still blocked once the owner exceeds the tolerance set below, and the owner is alerted to free up space."
+        "title": "Гибкое применение ссылки для получения",
+        "description": "По умолчанию включено. Позволяет внешним гостям продолжать загружать на ссылку для получения, даже если владелец немного превысил квоту, чтобы сбор не был прерван. Загрузки всё ещё блокируются, когда владелец превышает допуск, установленный ниже, и владельцу предлагается освободить место."
       },
       "reverseShareMaxOverageFactor": {
-        "title": "Reverse Share Overage Factor",
-        "description": "Soft enforcement allows reverse-share uploads until usage reaches this multiple of the owner's quota (e.g. 3 = up to three times the limit). Minimum 1."
+        "title": "Множитель превышения ссылки для получения",
+        "description": "Гибкое применение допускает загрузку на ссылку для получения до тех пор, пока использование не достигнет этого кратного значения квоты владельца (например, 3 = до трёх раз превышение лимита). Минимум 1."
       },
       "reverseShareAbsoluteMaxBytes": {
-        "title": "Reverse Share Absolute Cap",
-        "description": "Hard ceiling for reverse-share soft enforcement regardless of the factor above. Set to 0 for no absolute cap."
+        "title": "Абсолютный предел ссылки для получения",
+        "description": "Жёсткий предел для гибкого применения ссылки для получения независимо от указанного выше множителя. Установите 0 для отсутствия абсолютного предела."
       },
       "firstUserAccess": {
         "title": "Первый доступ пользователя",
@@ -1748,56 +1748,56 @@
         "description": "URL ссылки для текста подвала"
       },
       "emailDigestHour": {
-        "title": "Digest Email Hour",
-        "description": "Hour of the day (0-23) when digest emails are sent"
+        "title": "Час дайджеста электронной почты",
+        "description": "Час дня (0-23), в который отправляются дайджесты электронной почты"
       },
       "emailJobRetentionDays": {
-        "title": "Email Job Retention",
-        "description": "Number of days to keep completed email jobs before cleanup"
+        "title": "Срок хранения задач электронной почты",
+        "description": "Количество дней для сохранения завершённых задач электронной почты перед очисткой"
       },
       "emailQueueIntervalSeconds": {
-        "title": "Queue Processing Interval",
-        "description": "Seconds between email queue processing cycles"
+        "title": "Интервал обработки очереди",
+        "description": "Секунды между циклами обработки очереди электронной почты"
       },
       "emailQueueMaxRetries": {
-        "title": "Max Email Retries",
-        "description": "Maximum number of retry attempts for failed emails"
+        "title": "Максимум повторных попыток электронной почты",
+        "description": "Максимальное количество попыток повторной отправки для неудачных писем"
       },
       "auditRetentionDays": {
         "title": "Сохранение аудита",
         "description": "Количество дней для сохранения журналов аудита (0 = бесконечно, минимум 7)"
       },
       "autoCleanupEnabled": {
-        "title": "Enable Automatic Cleanup",
-        "description": "Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on."
+        "title": "Включить автоматическую очистку",
+        "description": "Главный переключатель для запланированной очистки истекших ссылок для общего доступа, истекших файлов ссылок для получения и потерянных файлов. По умолчанию отключено. Ничто не удаляется автоматически, пока вы это не включите."
       },
       "autoCleanupIntervalHours": {
-        "title": "Cleanup Interval (hours)",
-        "description": "How often the cleanup task runs. Minimum 1 hour."
+        "title": "Интервал очистки (часы)",
+        "description": "Как часто запускается задача очистки. Минимум 1 час."
       },
       "autoCleanupGracePeriodDays": {
-        "title": "Grace Period (days)",
+        "title": "Период льготы (дни)",
         "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
       },
       "autoCleanupNotifyDaysBefore": {
-        "title": "Warn Before Deletion (days)",
-        "description": "Send the owner a \"pending permanent deletion\" warning email this many days before the content is deleted. 0 disables the warning. Should be at most the grace period."
+        "title": "Предупреждение перед удалением (дни)",
+        "description": "Отправить владельцу предупреждение об ожидающемся постоянном удалении за несколько дней до удаления контента. 0 отключает предупреждение. Должно быть не более периода льготы."
       },
       "accountDeactivationCleanupEnabled": {
-        "title": "Delete Deactivated Accounts' Files",
-        "description": "When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files."
+        "title": "Удалить файлы деактивированных учётных записей",
+        "description": "Если включено, файлы, принадлежащие деактивированной учётной записи, окончательно удаляются после задержки ниже. По умолчанию отключено. Деактивирование само по себе никогда не удаляет файлы."
       },
       "accountDeactivationCleanupDays": {
-        "title": "Deactivation Cleanup Delay (days)",
-        "description": "Days after an account is deactivated before its files are deleted (only when the option above is enabled). Minimum 1."
+        "title": "Задержка очистки при деактивировании (дни)",
+        "description": "Количество дней после деактивирования учётной записи, прежде чем её файлы будут удалены (только если параметр выше включен). Минимум 1."
       },
       "autoCleanupOrphansEnabled": {
-        "title": "Sweep Orphaned Files",
-        "description": "When on, runs a two-way sweep that removes database records pointing to missing storage objects and storage objects with no database record. Off by default."
+        "title": "Очистить потерянные файлы",
+        "description": "Если включено, выполняет двустороннюю очистку, которая удаляет записи базы данных, указывающие на отсутствующие объекты хранилища, и объекты хранилища без записей базы данных. По умолчанию отключено."
       },
       "autoCleanupOrphanMinAgeHours": {
-        "title": "Orphan Minimum Age (hours)",
-        "description": "Only files and objects older than this are considered during the orphan sweep, protecting uploads still in progress. Minimum 1."
+        "title": "Минимальный возраст потерянного файла (часы)",
+        "description": "При очистке потерянных файлов учитываются только файлы и объекты, более старые, чем это значение, что защищает загрузки, всё ещё находящиеся в процессе. Минимум 1."
       }
     },
     "buttons": {
@@ -1810,9 +1810,9 @@
       "updateFailed": "Ошибка обновления настроек",
       "passwordAuthRequiresProvider": "Парольную аутентификацию нельзя отключить, если нет хотя бы одного активного поставщика аутентификации",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
-      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent",
-      "quotaThresholdsInvalid": "Enter comma-separated percentages between 1 and 99, for example \"80,90\""
+      "cleanupValueInvalid": "Значение должно быть целым числом не менее {min}",
+      "notifyDaysExceedsGrace": "Время предупреждения не должно превышать период льготы, иначе предупреждение не будет отправлено",
+      "quotaThresholdsInvalid": "Введите процентные значения, разделённые запятыми, от 1 до 99, например «80,90»"
     },
     "messages": {
       "noChanges": "Изменений для сохранения нет",
@@ -1832,20 +1832,20 @@
       "defaultPlaceholder": "Введите и нажмите Enter"
     },
     "redirectUri": {
-      "placeholder": "https://meusite.com",
+      "placeholder": "https://mysite.ru",
       "previewLabel": "URL completa que será salva:"
     },
     "emailAdmin": {
-      "queueStatus": "Email Queue Status",
-      "pending": "Pending",
-      "sentLast24h": "Sent (24h)",
-      "failed": "Failed",
+      "queueStatus": "Статус очереди электронной почты",
+      "pending": "В ожидании",
+      "sentLast24h": "Отправлено (24ч)",
+      "failed": "Ошибка",
       "digestQueue": "Очередь дайджестов",
-      "sendTest": "Send Test Email",
-      "testPlaceholder": "recipient@example.com",
-      "testSending": "Sending...",
-      "testSuccess": "Test email queued successfully",
-      "testError": "Failed to send test email"
+      "sendTest": "Отправить тестовое письмо",
+      "testPlaceholder": "ваш@email.ru",
+      "testSending": "Отправка...",
+      "testSuccess": "Тестовое письмо успешно добавлено в очередь",
+      "testError": "Ошибка отправки тестового письма"
     }
   },
   "share": {
@@ -1881,19 +1881,19 @@
       "filesShared": "{count, plural, =1 {1 файл отправлен} other {# файлов отправлено}}"
     },
     "identification": {
-      "title": "Visitor Identification",
-      "subtitle": "Please provide your information to access this share",
-      "nameLabel": "Name",
-      "emailLabel": "Email",
-      "submit": "Continue",
-      "error": "Failed to submit identification. Please try again.",
-      "optional": "Optional",
-      "nameRequired": "Name is required",
-      "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email address",
+      "title": "Идентификация посетителя",
+      "subtitle": "Пожалуйста, предоставьте вашу информацию для доступа к этому совместному доступу",
+      "nameLabel": "Имя",
+      "emailLabel": "Электронная почта",
+      "submit": "Продолжить",
+      "error": "Ошибка отправки идентификации. Пожалуйста, попробуйте еще раз.",
+      "optional": "Необязательно",
+      "nameRequired": "Имя требуется",
+      "emailRequired": "Электронная почта требуется",
+      "emailInvalid": "Пожалуйста, введите действительный адрес электронной почты",
       "metadataError": "Failed to load share information. Please try again.",
       "rateLimited": "Too many attempts. Please try again later.",
-      "privacyNotice": "Your accesses and downloads may be visible to the sender of this share."
+      "privacyNotice": "Ваш доступ и загрузки могут быть видны отправителю этого совместного доступа."
     }
   },
   "shareActions": {
@@ -1923,8 +1923,8 @@
     "linkTitle": "Создать ссылку",
     "itemsSelected": "Выбрано элементов: {count}",
     "manageFilesDescription": "Выберите файлы и папки для включения в этот общий доступ",
-    "keepCurrentPasswordHint": "Leave empty to keep current password",
-    "passwordRequired": "Password is required for new password protection"
+    "keepCurrentPasswordHint": "Оставьте пустым, чтобы сохранить текущий пароль",
+    "passwordRequired": "Пароль требуется для нового пароля защиты"
   },
   "shareDetails": {
     "title": "Детали Общего Доступа",
@@ -1960,27 +1960,27 @@
     "downloadQrCode": "Скачать QR-код",
     "qrCode": "QR-код",
     "activity": {
-      "title": "Activity",
-      "noActivity": "No activity recorded yet.",
-      "access": "Viewed",
-      "download": "Downloaded",
-      "anonymous": "Anonymous",
-      "loadMore": "Load more",
-      "showingCount": "Showing {shown} of {total}",
-      "loadError": "Failed to load activity data.",
-      "filterAll": "All actions",
-      "filterAccess": "Views only",
-      "filterDownload": "Downloads only",
-      "filterAllVisitors": "All visitors",
-      "filterIdentified": "Identified",
-      "filterAnonymous": "Anonymous",
+      "title": "Активность",
+      "noActivity": "Активность еще не записана.",
+      "access": "Просмотрено",
+      "download": "Загружено",
+      "anonymous": "Анонимно",
+      "loadMore": "Загрузить еще",
+      "showingCount": "Показано {shown} из {total}",
+      "loadError": "Ошибка загрузки данных активности.",
+      "filterAll": "Все действия",
+      "filterAccess": "Только просмотры",
+      "filterDownload": "Только загрузки",
+      "filterAllVisitors": "Все посетители",
+      "filterIdentified": "Идентифицировано",
+      "filterAnonymous": "Анонимно",
       "source": {
-        "tracking_token": "Via recipient link",
-        "cookie": "Self-identified",
-        "selfDeclaredHint": "Self-declared identity, not verified"
+        "tracking_token": "Через ссылку получения",
+        "cookie": "Самоопределяемый",
+        "selfDeclaredHint": "Самозаявленная идентичность, не проверена"
       }
     },
-    "lastDownloaded": "Last Downloaded",
+    "lastDownloaded": "Последняя загрузка",
     "privacySummary": "Конфиденциальность",
     "privacyNameField": "Имя посетителя:",
     "privacyEmailField": "Email посетителя:",
@@ -1990,9 +1990,9 @@
       "OPTIONAL": "Необязательно",
       "REQUIRED": "Обязательно"
     },
-    "recipientNotified": "Notified",
-    "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
-    "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"
+    "recipientNotified": "Уведомлено",
+    "recipientAccess": "{count, plural, one {# доступ} few {# доступа} many {# доступов} other {# доступов}}",
+    "recipientAccessWithLast": "{count, plural, one {# доступ} few {# доступа} many {# доступов} other {# доступов}} · последний {lastAccess}"
   },
   "shareExpiration": {
     "neverExpires": "Никогда не истекает",
@@ -2054,10 +2054,10 @@
     "errors": {
       "multipleDownloadNotSupported": "Множественная загрузка общих ресурсов пока не поддерживается - загружайте общие ресурсы по отдельности"
     },
-    "pauseSuccess": "Share paused",
-    "pauseError": "Failed to pause share",
-    "resumeSuccess": "Share resumed",
-    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
+    "pauseSuccess": "Совместный доступ приостановлен",
+    "pauseError": "Ошибка приостановки совместного доступа",
+    "resumeSuccess": "Совместный доступ возобновлен",
+    "resumeError": "Ошибка возобновления совместного доступа. Если он истек или достигнут предел просмотров, продлите его."
   },
   "shareMultipleFiles": {
     "title": "Поделиться Несколькими Файлами",
@@ -2152,8 +2152,8 @@
       "neverExpires": "Никогда Не Истекает",
       "active": "Активный",
       "expired": "Истекший",
-      "paused": "Paused",
-      "maxViewsReached": "View Limit Reached"
+      "paused": "Приостановлено",
+      "maxViewsReached": "Достигнут предел просмотров"
     },
     "security": {
       "protected": "Защищен",
@@ -2174,9 +2174,9 @@
       "delete": "Удалить",
       "downloadShareFiles": "Загрузите все файлы",
       "viewQrCode": "Просмотр QR-кода",
-      "pause": "Pause",
-      "resume": "Resume",
-      "renew": "Renew"
+      "pause": "Приостановить",
+      "resume": "Возобновить",
+      "renew": "Обновить"
     },
     "bulkActions": {
       "delete": "Удалить",
@@ -2812,41 +2812,41 @@
     }
   },
   "notificationPreferences": {
-    "pageTitle": "Notification Preferences",
-    "description": "Choose which email notifications you receive",
-    "type": "Notification Type",
-    "category": "Category",
-    "frequency": "Frequency",
-    "immediate": "Immediate",
-    "disabled": "Disabled",
-    "alwaysEnabled": "Always enabled",
-    "save": "Save Preferences",
-    "saveSuccess": "Notification preferences saved",
-    "saveError": "Failed to save preferences",
-    "noChanges": "No changes to save",
+    "pageTitle": "Параметры уведомлений",
+    "description": "Выберите уведомления по электронной почте, которые вы хотите получать",
+    "type": "Тип уведомления",
+    "category": "Категория",
+    "frequency": "Частота",
+    "immediate": "Немедленно",
+    "disabled": "Отключено",
+    "alwaysEnabled": "Всегда включено",
+    "save": "Сохранить параметры",
+    "saveSuccess": "Параметры уведомлений сохранены",
+    "saveError": "Ошибка сохранения параметров",
+    "noChanges": "Нет изменений для сохранения",
     "types": {
-      "password_reset": "Password reset",
-      "welcome": "Welcome email",
-      "account_deactivated": "Account deactivated",
-      "account_reactivated": "Account reactivated",
-      "share_invitation": "Share invitation",
-      "share_accessed": "Share accessed",
-      "share_downloaded": "File downloaded from share",
-      "share_expiring": "Share expiring soon",
-      "share_expired": "Share expired",
-      "share_max_views_reached": "Share max views reached",
-      "share_no_activity": "No activity on share",
-      "reverse_share_invitation": "Reverse share invitation",
-      "reverse_share_uploaded": "Files uploaded to reverse share",
-      "reverse_share_expiring": "Reverse share expiring",
-      "reverse_share_expired": "Reverse share expired",
-      "quota_warning": "Quota warning",
-      "quota_exceeded": "Quota exceeded",
-      "files_auto_deleted": "Files auto-deleted",
-      "share_auto_deleted": "Share auto-deleted",
-      "admin_user_registered": "New user registered (admin)",
-      "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email",
+      "password_reset": "Сброс пароля",
+      "welcome": "Приветственное письмо",
+      "account_deactivated": "Учетная запись отключена",
+      "account_reactivated": "Учетная запись включена повторно",
+      "share_invitation": "Приглашение в общий доступ",
+      "share_accessed": "Общий доступ использован",
+      "share_downloaded": "Файл загружен из общего доступа",
+      "share_expiring": "Общий доступ скоро истечет",
+      "share_expired": "Общий доступ истек",
+      "share_max_views_reached": "Достигнут максимум просмотров общего доступа",
+      "share_no_activity": "Нет активности в общем доступе",
+      "reverse_share_invitation": "Приглашение на ссылку для получения",
+      "reverse_share_uploaded": "Файлы загружены на ссылку для получения",
+      "reverse_share_expiring": "Ссылка для получения скоро истечет",
+      "reverse_share_expired": "Ссылка для получения истекла",
+      "quota_warning": "Предупреждение о квоте",
+      "quota_exceeded": "Квота превышена",
+      "files_auto_deleted": "Файлы удалены автоматически",
+      "share_auto_deleted": "Общий доступ удален автоматически",
+      "admin_user_registered": "Новый пользователь зарегистрирован (только для администраторов)",
+      "admin_quota_alert": "Предупреждение квоты пользователя (только для администраторов)",
+      "test_email": "Тестовое письмо",
       "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
       "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
       "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
@@ -2872,16 +2872,16 @@
       "admin_quota_alert": "Когда использование хранилища пользователя превышает его квоту (только для администраторов)"
     },
     "categories": {
-      "account": "Account",
-      "shares": "Shares",
-      "reverseShares": "Reverse Shares",
+      "account": "Учетная запись",
+      "shares": "Общий доступ",
+      "reverseShares": "Ссылки для получения",
       "quota": "Quotas",
       "admin": "Administration",
       "test": "Test"
     },
-    "saving": "Saving...",
-    "loadError": "Failed to load notification preferences",
-    "retry": "Retry",
-    "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}"
+    "saving": "Сохранение...",
+    "loadError": "Ошибка загрузки параметров уведомлений",
+    "retry": "Повторить",
+    "unsavedChanges": "{count, plural, one {# несохраненное изменение} few {# несохраненных изменения} many {# несохраненных изменений} other {# несохраненных изменений}}"
   }
 }

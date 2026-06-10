@@ -67,17 +67,17 @@
       "scopesHelpOidc": "根据提供商 URL 自动建议作用域。常见 OIDC 作用域：openid, profile, email, groups",
       "scopesHelpOauth2": "根据提供商 URL 自动建议作用域。常见 OAuth2 作用域取决于提供商",
       "providerUrl": "提供商 URL",
-      "providerUrlPlaceholder": "https://auth.example.com",
+      "providerUrlPlaceholder": "https://auth.example.cn",
       "providerUrlAutoPlaceholder": "https://your-provider.com（将自动发现端点）",
-      "providerUrlManualPlaceholder": "https://your-provider.com",
+      "providerUrlManualPlaceholder": "https://your-provider.cn",
       "autoDiscoveryHelp": "系统将自动发现授权、令牌和用户信息端点",
       "manualConfigurationHelp": "提供商的基础 URL（端点将相对于此 URL）",
       "authorizationEndpoint": "授权端点",
-      "authorizationEndpointPlaceholder": "https://auth.example.com/auth",
+      "authorizationEndpointPlaceholder": "https://auth.example.cn/auth",
       "tokenEndpoint": "令牌端点",
-      "tokenEndpointPlaceholder": "https://auth.example.com/token",
+      "tokenEndpointPlaceholder": "https://auth.example.cn/token",
       "userInfoEndpoint": "用户信息端点",
-      "userInfoEndpointPlaceholder": "https://auth.example.com/userinfo",
+      "userInfoEndpointPlaceholder": "https://auth.example.cn/userinfo",
       "configurationMethod": "配置方法",
       "autoDiscovery": "自动发现",
       "autoDiscoveryDescription": "从提供商 URL 自动发现端点",
@@ -175,7 +175,7 @@
     "copied": "已复制",
     "copy": "复制",
     "retry": "Retry",
-    "unavailable": "unavailable",
+    "unavailable": "不可用",
     "days": "天",
     "aliasValidation": {
       "required": "[TO_TRANSLATE] Alias is required",
@@ -190,7 +190,7 @@
     "descriptionLabel": "描述",
     "descriptionPlaceholder": "输入描述（可选）",
     "expirationLabel": "过期日期",
-    "expirationPlaceholder": "MM/DD/YYYY HH:MM",
+    "expirationPlaceholder": "YYYY年MM月DD日 HH:MM",
     "maxViewsLabel": "最大查看次数",
     "maxViewsPlaceholder": "留空为无限制",
     "passwordProtection": "密码保护",
@@ -210,17 +210,17 @@
     },
     "itemsSelected": "已选择 {count} 项",
     "passwordPlaceholder": "输入密码",
-    "privacySection": "Privacy & Notifications",
-    "nameFieldRequired": "Require visitor name",
-    "emailFieldRequired": "Require visitor email",
-    "notifyOnDownload": "Notify me on each download",
-    "notifyOnDownloadHelp": "When enabled, you'll receive email notifications when files are downloaded from this share, regardless of your global notification preferences.",
-    "inactivityAlertDays": "Alert if no downloads after",
-    "inactivityAlertPlaceholder": "Leave empty to disable",
-    "fieldHidden": "Hidden",
-    "fieldOptional": "Optional",
-    "fieldRequired": "Required",
-    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
+    "privacySection": "隐私和通知",
+    "nameFieldRequired": "需要访客名称",
+    "emailFieldRequired": "需要访客电子邮件",
+    "notifyOnDownload": "每次下载时通知我",
+    "notifyOnDownloadHelp": "启用后，当从此共享下载文件时，您将收到电子邮件通知，无论您的全局通知设置如何。",
+    "inactivityAlertDays": "没有下载后警告",
+    "inactivityAlertPlaceholder": "留空以禁用",
+    "fieldHidden": "隐藏",
+    "fieldOptional": "可选",
+    "fieldRequired": "必需",
+    "filesOptionalHint": "添加文件是可选的——您可以立即创建空共享，稍后添加文件。"
   },
   "customization": {
     "breadcrumb": "自定义",
@@ -602,7 +602,7 @@
       "link": "链接",
       "qrcode": "QR Code"
     },
-    "later": "Later"
+    "later": "稍后"
   },
   "home": {
     "pageTitle": "首页",
@@ -745,7 +745,7 @@
       "SHARE_RECIPIENT_ADD": "已添加共享收件人",
       "SHARE_RECIPIENT_REMOVE": "已移除共享收件人",
       "SHARE_RECIPIENT_NOTIFY": "已通知共享收件人",
-      "SHARE_RECIPIENT_REMIND": "Share non-downloaders reminded",
+      "SHARE_RECIPIENT_REMIND": "已提醒共享的未下载接收者",
       "SHARE_ITEMS_ADD": "已添加共享项目",
       "SHARE_ITEMS_REMOVE": "已移除共享项目",
       "FILE_UPLOAD": "文件已上传",
@@ -789,17 +789,17 @@
       "BACKGROUND_IMAGE_UPLOAD": "背景图片已上传",
       "BACKGROUND_IMAGE_DELETE": "背景图片已删除",
       "AUDIT_RETENTION_CLEANUP": "审计日志清理",
-      "SHARE_DEACTIVATED": "Share deactivated",
-      "SHARE_REACTIVATED": "Share reactivated",
-      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
-      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated",
-      "SHARE_AUTO_DELETED": "Share auto-deleted",
-      "REVERSE_SHARE_AUTO_DELETED": "Reverse share auto-deleted",
-      "ACCOUNT_FILES_CLEANED": "Account files cleaned",
-      "ORPHAN_S3_DELETED": "Orphan storage object deleted",
-      "ORPHAN_DB_DELETED": "Orphan database record deleted",
-      "ORPHAN_MULTIPART_ABORTED": "Incomplete multipart upload aborted",
-      "QUOTA_FILES_DELETED": "Over-quota files deleted"
+      "SHARE_DEACTIVATED": "共享已停用",
+      "SHARE_REACTIVATED": "共享已重新激活",
+      "REVERSE_SHARE_DEACTIVATED": "接收链接已停用",
+      "REVERSE_SHARE_REACTIVATED": "接收链接已重新激活",
+      "SHARE_AUTO_DELETED": "共享已自动删除",
+      "REVERSE_SHARE_AUTO_DELETED": "接收链接已自动删除",
+      "ACCOUNT_FILES_CLEANED": "已清理帐户文件",
+      "ORPHAN_S3_DELETED": "已删除孤立的存储对象",
+      "ORPHAN_DB_DELETED": "已删除孤立的数据库记录",
+      "ORPHAN_MULTIPART_ABORTED": "已中止不完整的分段上载",
+      "QUOTA_FILES_DELETED": "已删除超配额文件"
     },
     "targetTypes": {
       "user": "用户",
@@ -1038,23 +1038,23 @@
     "selectedCount": "已选择{count}个",
     "addRecipient": "添加收件人",
     "bulkNotifyError": "通知选中收件人失败",
-    "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}",
-    "notifyPartial": "Only {sent} of {total} recipients were notified",
-    "neverAccessed": "Never accessed",
-    "namePlaceholder": "Name (optional)",
-    "downloaded": "Downloaded",
-    "pending": "Pending",
-    "downloadedAt": "Downloaded on {date}",
-    "uploaded": "Uploaded",
-    "uploadedAt": "Uploaded on {date}",
-    "uploadApproximateHint": "Approximate: uploaders can submit files without providing an email when it is not required",
-    "remindNonDownloaders": "Remind ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
-    "sendingReminders": "Sending reminders...",
-    "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
-    "remindNoneSent": "No reminders were sent",
-    "remindError": "Failed to send reminders"
+    "notified": "已通知",
+    "views": "{count, plural, other {# 次浏览}}",
+    "notifyPartial": "只有 {sent} 个（共 {total} 个）收件人收到通知",
+    "neverAccessed": "从未访问",
+    "namePlaceholder": "名称（可选）",
+    "downloaded": "已下载",
+    "pending": "待处理",
+    "downloadedAt": "下载于 {date}",
+    "uploaded": "已上传",
+    "uploadedAt": "上传于 {date}",
+    "uploadApproximateHint": "近似值：在电子邮件非必需时，上传者可以不提供电子邮件而提交文件",
+    "remindNonDownloaders": "提醒 ({count})",
+    "remindNonDownloadersHint": "{count, plural, other {提醒 # 个尚未下载的收件人}}",
+    "sendingReminders": "正在发送提醒...",
+    "remindSuccess": "{count, plural, other {已向 # 个收件人发送提醒}}",
+    "remindNoneSent": "未发送任何提醒",
+    "remindError": "发送提醒失败"
   },
   "register": {
     "validation": {
@@ -1254,7 +1254,7 @@
         "editDescription": "更新此接收链接的别名",
         "createDescription": "为此接收链接创建自定义别名",
         "aliasLabel": "链接别名",
-        "aliasPlaceholder": "my-custom-link",
+        "aliasPlaceholder": "我的链接",
         "preview": "预览：",
         "currentLink": "当前链接：",
         "copyCurrentLink": "复制当前链接",
@@ -1413,8 +1413,8 @@
         "label": "名称字段要求",
         "description": "配置是否应显示上传器名称字段以及是否需要"
       },
-      "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "notifyOnUpload": "在每次上传时通知我",
+      "notifyOnUploadHelp": "启用后，当有文件上传到此接收链接时，您将收到电子邮件通知，无论您的全局通知首选项如何。",
       "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
       "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
@@ -1502,14 +1502,14 @@
         "nameLabel": "姓名",
         "namePlaceholder": "您的姓名",
         "emailLabel": "电子邮件",
-        "emailPlaceholder": "your@email.com",
+        "emailPlaceholder": "您@email.cn",
         "descriptionLabel": "描述（可选）",
         "descriptionPlaceholder": "为文件添加描述...",
         "uploadButton": "上传 {count} 个文件",
         "uploading": "上传中...",
         "emailLabelOptional": "电子邮件（可选）",
         "nameLabelOptional": "名称（可选）",
-        "privacyNotice": "Your name, email and uploads may be visible to the owner of this receive link."
+        "privacyNotice": "您的名称、电子邮件和上传的内容可能对此接收链接的所有者可见。"
       },
       "success": {
         "title": "文件上传成功！🎉",
@@ -1591,8 +1591,8 @@
         "description": "管理WeTransfer风格上传页面的背景图片"
       },
       "cleanup": {
-        "title": "Automatic Cleanup",
-        "description": "Lifecycle management for expired content, deactivated accounts, and orphaned files. Auto-deletion is off by default."
+        "title": "自动清理",
+        "description": "已过期内容、已停用账户和孤立文件的生命周期管理。默认情况下，自动删除是关闭的。"
       }
     },
     "fields": {
@@ -1606,8 +1606,8 @@
         "description": "显示给用户的应用名称"
       },
       "appUrl": {
-        "title": "Application URL",
-        "description": "Public URL of the application, used in email links"
+        "title": "应用程序URL",
+        "description": "应用程序的公开URL，在电子邮件链接中使用"
       },
       "appDescription": {
         "title": "应用描述",
@@ -1670,32 +1670,32 @@
         "description": "每个用户的总存储限制。可按用户或群组覆盖。"
       },
       "quotaWarningThresholds": {
-        "title": "Quota Warning Thresholds (%)",
-        "description": "Comma-separated percentages, e.g. \"80,90\", at which a user is emailed a quota warning. Each value must be a whole number between 1 and 99. A separate alert is sent when storage reaches 100%."
+        "title": "配额警告阈值(%)",
+        "description": "以逗号分隔的百分比，例如\"80,90\"，在该值向用户发送配额警告电子邮件。每个值必须是1到99之间的整数。当存储空间达到100%时，将发送单独的警报。"
       },
       "quotaGracePeriodDays": {
-        "title": "Quota Grace Period (days)",
-        "description": "How many days a user may stay over their quota before smart deletion may act (only when smart deletion is enabled below). Minimum 0."
+        "title": "配额宽限期(天)",
+        "description": "用户在智能删除可以操作之前可以超过其配额的天数(仅当下面启用了智能删除时)。最小值为0。"
       },
       "quotaSmartDeletionEnabled": {
-        "title": "Smart Deletion of Over-Quota Files",
-        "description": "Off by default. When enabled, after the grace period the oldest unsafe files of an over-quota user are deleted in a safe order: first unshared uploads, then files in shares inactive for the period below. Files in active shares are never deleted — if nothing is safe to remove, new uploads are simply blocked instead."
+        "title": "超配额文件的智能删除",
+        "description": "默认情况下关闭。启用后，在宽限期之后，超过配额的用户最旧的不安全文件将按安全顺序删除：首先是未共享的上传，然后是下面指定期间内无活动的共享中的文件。活动共享中的文件永远不会被删除——如果没有安全的删除内容，新的上传会被简单地阻止。"
       },
       "quotaInactiveShareDays": {
-        "title": "Inactive Share Threshold (days)",
-        "description": "A share's files are eligible for smart deletion once the share has had no activity for this many days. Minimum 1."
+        "title": "非活跃共享阈值(天)",
+        "description": "共享在这个天数内无活动后，其文件将符合智能删除的条件。最小值为1。"
       },
       "reverseShareQuotaSoftEnforcement": {
-        "title": "Reverse Share Soft Enforcement",
-        "description": "On by default. Lets external guests keep uploading to a reverse share even if the owner is slightly over quota, so collections are not interrupted. Uploads are still blocked once the owner exceeds the tolerance set below, and the owner is alerted to free up space."
+        "title": "接收链接软执行",
+        "description": "默认情况下启用。允许外部来宾继续上传到接收链接，即使所有者稍微超过配额，这样不会中断收集。一旦所有者超过下面设置的容限，上传仍然会被阻止，并且所有者会收到警告以释放空间。"
       },
       "reverseShareMaxOverageFactor": {
-        "title": "Reverse Share Overage Factor",
-        "description": "Soft enforcement allows reverse-share uploads until usage reaches this multiple of the owner's quota (e.g. 3 = up to three times the limit). Minimum 1."
+        "title": "接收链接超额系数",
+        "description": "软执行允许上传到接收链接，直到使用量达到所有者配额的这个倍数(例如：3 = 最多为限制的三倍)。最小值为1。"
       },
       "reverseShareAbsoluteMaxBytes": {
-        "title": "Reverse Share Absolute Cap",
-        "description": "Hard ceiling for reverse-share soft enforcement regardless of the factor above. Set to 0 for no absolute cap."
+        "title": "接收链接绝对限额",
+        "description": "接收链接软执行的硬上限，无论上面的系数如何。设置为0表示无绝对限额。"
       },
       "firstUserAccess": {
         "description": "新用户首次访问的设置",
@@ -1748,56 +1748,56 @@
         "description": "页脚文本的链接URL"
       },
       "emailDigestHour": {
-        "title": "Digest Email Hour",
-        "description": "Hour of the day (0-23) when digest emails are sent"
+        "title": "摘要电子邮件时间",
+        "description": "发送摘要电子邮件的一天中的小时数(0-23)"
       },
       "emailJobRetentionDays": {
-        "title": "Email Job Retention",
-        "description": "Number of days to keep completed email jobs before cleanup"
+        "title": "电子邮件任务保留",
+        "description": "清理前保留已完成电子邮件任务的天数"
       },
       "emailQueueIntervalSeconds": {
-        "title": "Queue Processing Interval",
-        "description": "Seconds between email queue processing cycles"
+        "title": "队列处理间隔",
+        "description": "电子邮件队列处理周期之间的秒数"
       },
       "emailQueueMaxRetries": {
-        "title": "Max Email Retries",
-        "description": "Maximum number of retry attempts for failed emails"
+        "title": "最大电子邮件重试",
+        "description": "失败电子邮件的最大重试次数"
       },
       "auditRetentionDays": {
         "title": "审计日志保留期",
         "description": "保留审计日志的天数（0 = 永久，最少 7）"
       },
       "autoCleanupEnabled": {
-        "title": "Enable Automatic Cleanup",
-        "description": "Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on."
+        "title": "启用自动清理",
+        "description": "用于定期清理已过期的共享链接、已过期的接收文件和孤立文件的主开关。默认情况下关闭——在您打开它之前，不会自动删除任何内容。"
       },
       "autoCleanupIntervalHours": {
-        "title": "Cleanup Interval (hours)",
-        "description": "How often the cleanup task runs. Minimum 1 hour."
+        "title": "清理间隔(小时)",
+        "description": "清理任务运行的频率。最小值为1小时。"
       },
       "autoCleanupGracePeriodDays": {
-        "title": "Grace Period (days)",
+        "title": "宽限期(天)",
         "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
       },
       "autoCleanupNotifyDaysBefore": {
-        "title": "Warn Before Deletion (days)",
-        "description": "Send the owner a \"pending permanent deletion\" warning email this many days before the content is deleted. 0 disables the warning. Should be at most the grace period."
+        "title": "删除前警告(天)",
+        "description": "在删除内容前这许多天向所有者发送\"待删除\"警告电子邮件。0表示禁用警告。应该不超过宽限期。"
       },
       "accountDeactivationCleanupEnabled": {
-        "title": "Delete Deactivated Accounts' Files",
-        "description": "When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files."
+        "title": "删除已停用账户的文件",
+        "description": "启用后，已停用账户的文件将在下面的延迟后永久删除。默认情况下关闭——仅停用不会删除文件。"
       },
       "accountDeactivationCleanupDays": {
-        "title": "Deactivation Cleanup Delay (days)",
-        "description": "Days after an account is deactivated before its files are deleted (only when the option above is enabled). Minimum 1."
+        "title": "账户停用清理延迟(天)",
+        "description": "账户停用后文件被删除前的天数(仅当上面的选项启用时)。最小值为1。"
       },
       "autoCleanupOrphansEnabled": {
-        "title": "Sweep Orphaned Files",
-        "description": "When on, runs a two-way sweep that removes database records pointing to missing storage objects and storage objects with no database record. Off by default."
+        "title": "清理孤立文件",
+        "description": "启用时，执行双向扫描，删除指向丢失存储对象的数据库记录和没有数据库记录的存储对象。默认情况下关闭。"
       },
       "autoCleanupOrphanMinAgeHours": {
-        "title": "Orphan Minimum Age (hours)",
-        "description": "Only files and objects older than this are considered during the orphan sweep, protecting uploads still in progress. Minimum 1."
+        "title": "孤立文件最小年龄(小时)",
+        "description": "在孤立文件扫描期间，只考虑比这个时间更旧的文件和对象，保护仍在进行的上传。最小值为1。"
       }
     },
     "buttons": {
@@ -1810,9 +1810,9 @@
       "updateFailed": "更新设置失败",
       "passwordAuthRequiresProvider": "没有至少一个活动认证提供者时，无法禁用密码认证",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
-      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent",
-      "quotaThresholdsInvalid": "Enter comma-separated percentages between 1 and 99, for example \"80,90\""
+      "cleanupValueInvalid": "值必须至少为{min}的整数",
+      "notifyDaysExceedsGrace": "警告提前期不应超过宽限期，否则不会发送警告",
+      "quotaThresholdsInvalid": "输入1到99之间的逗号分隔百分比，例如\"80,90\""
     },
     "messages": {
       "noChanges": "没有需要保存的更改",
@@ -1832,20 +1832,20 @@
       "defaultPlaceholder": "输入并按回车键"
     },
     "redirectUri": {
-      "placeholder": "https://mysite.com",
+      "placeholder": "https://mysite.cn",
       "previewLabel": "将保存的完整 URL："
     },
     "emailAdmin": {
-      "queueStatus": "Email Queue Status",
-      "pending": "Pending",
-      "sentLast24h": "Sent (24h)",
-      "failed": "Failed",
+      "queueStatus": "电子邮件队列状态",
+      "pending": "待处理",
+      "sentLast24h": "已发送(24小时)",
+      "failed": "失败",
       "digestQueue": "摘要队列",
-      "sendTest": "Send Test Email",
-      "testPlaceholder": "recipient@example.com",
-      "testSending": "Sending...",
-      "testSuccess": "Test email queued successfully",
-      "testError": "Failed to send test email"
+      "sendTest": "发送测试电子邮件",
+      "testPlaceholder": "您的@email.cn",
+      "testSending": "发送中...",
+      "testSuccess": "测试电子邮件已成功排队",
+      "testError": "发送测试电子邮件失败"
     }
   },
   "share": {
@@ -1881,19 +1881,19 @@
       "filesShared": "{count, plural, =1 {已共享 1 个文件} other {已共享 # 个文件}}"
     },
     "identification": {
-      "title": "Visitor Identification",
-      "subtitle": "Please provide your information to access this share",
-      "nameLabel": "Name",
-      "emailLabel": "Email",
-      "submit": "Continue",
-      "error": "Failed to submit identification. Please try again.",
-      "optional": "Optional",
-      "nameRequired": "Name is required",
-      "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email address",
+      "title": "访客识别",
+      "subtitle": "请提供您的信息以访问此共享",
+      "nameLabel": "名称",
+      "emailLabel": "电子邮件",
+      "submit": "继续",
+      "error": "提交识别失败。请重试。",
+      "optional": "可选",
+      "nameRequired": "名称为必需",
+      "emailRequired": "电子邮件为必需",
+      "emailInvalid": "请输入有效的电子邮件地址",
       "metadataError": "Failed to load share information. Please try again.",
       "rateLimited": "Too many attempts. Please try again later.",
-      "privacyNotice": "Your accesses and downloads may be visible to the sender of this share."
+      "privacyNotice": "您的访问和下载可能对此共享的发送者可见。"
     }
   },
   "shareActions": {
@@ -1923,8 +1923,8 @@
     "linkTitle": "生成链接",
     "itemsSelected": "已选择 {count} 项",
     "manageFilesDescription": "选择要包含在此分享中的文件和文件夹",
-    "keepCurrentPasswordHint": "Leave empty to keep current password",
-    "passwordRequired": "Password is required for new password protection"
+    "keepCurrentPasswordHint": "留空以保持当前密码",
+    "passwordRequired": "新的密码保护需要密码"
   },
   "shareDetails": {
     "title": "共享详情",
@@ -1960,27 +1960,27 @@
     "downloadQrCode": "下载QR Code",
     "qrCode": "QR Code",
     "activity": {
-      "title": "Activity",
-      "noActivity": "No activity recorded yet.",
-      "access": "Viewed",
-      "download": "Downloaded",
-      "anonymous": "Anonymous",
-      "loadMore": "Load more",
-      "showingCount": "Showing {shown} of {total}",
-      "loadError": "Failed to load activity data.",
-      "filterAll": "All actions",
-      "filterAccess": "Views only",
-      "filterDownload": "Downloads only",
-      "filterAllVisitors": "All visitors",
-      "filterIdentified": "Identified",
-      "filterAnonymous": "Anonymous",
+      "title": "活动",
+      "noActivity": "尚未记录任何活动。",
+      "access": "已查看",
+      "download": "已下载",
+      "anonymous": "匿名",
+      "loadMore": "加载更多",
+      "showingCount": "显示 {shown} 个（共 {total} 个）",
+      "loadError": "加载活动数据失败。",
+      "filterAll": "所有操作",
+      "filterAccess": "仅查看",
+      "filterDownload": "仅下载",
+      "filterAllVisitors": "所有访客",
+      "filterIdentified": "已识别",
+      "filterAnonymous": "匿名",
       "source": {
-        "tracking_token": "Via recipient link",
-        "cookie": "Self-identified",
-        "selfDeclaredHint": "Self-declared identity, not verified"
+        "tracking_token": "通过接收链接",
+        "cookie": "自我识别",
+        "selfDeclaredHint": "自声明身份，未验证"
       }
     },
-    "lastDownloaded": "Last Downloaded",
+    "lastDownloaded": "最后下载",
     "privacySummary": "隐私",
     "privacyNameField": "访客姓名：",
     "privacyEmailField": "访客邮箱：",
@@ -1990,9 +1990,9 @@
       "OPTIONAL": "可选",
       "REQUIRED": "必填"
     },
-    "recipientNotified": "Notified",
-    "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
-    "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"
+    "recipientNotified": "已通知",
+    "recipientAccess": "{count, plural, other {# 次访问}}",
+    "recipientAccessWithLast": "{count, plural, other {# 次访问}} · 最后 {lastAccess}"
   },
   "shareExpiration": {
     "neverExpires": "永不过期",
@@ -2054,10 +2054,10 @@
     "errors": {
       "multipleDownloadNotSupported": "暂不支持多个分享下载 - 请分别下载各个分享"
     },
-    "pauseSuccess": "Share paused",
-    "pauseError": "Failed to pause share",
-    "resumeSuccess": "Share resumed",
-    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
+    "pauseSuccess": "共享已暂停",
+    "pauseError": "共享暂停失败",
+    "resumeSuccess": "共享已恢复",
+    "resumeError": "无法恢复共享。如果已过期或已达到查看限制，请改为续期。"
   },
   "shareMultipleFiles": {
     "title": "分享多个文件",
@@ -2152,8 +2152,8 @@
       "neverExpires": "永不过期",
       "active": "活跃",
       "expired": "已过期",
-      "paused": "Paused",
-      "maxViewsReached": "View Limit Reached"
+      "paused": "已暂停",
+      "maxViewsReached": "已达到查看限制"
     },
     "security": {
       "protected": "受保护",
@@ -2174,9 +2174,9 @@
       "delete": "删除",
       "downloadShareFiles": "下载所有文件",
       "viewQrCode": "查看QR Code",
-      "pause": "Pause",
-      "resume": "Resume",
-      "renew": "Renew"
+      "pause": "暂停",
+      "resume": "恢复",
+      "renew": "续期"
     },
     "bulkActions": {
       "delete": "删除",
@@ -2812,41 +2812,41 @@
     }
   },
   "notificationPreferences": {
-    "pageTitle": "Notification Preferences",
-    "description": "Choose which email notifications you receive",
-    "type": "Notification Type",
-    "category": "Category",
-    "frequency": "Frequency",
-    "immediate": "Immediate",
-    "disabled": "Disabled",
-    "alwaysEnabled": "Always enabled",
-    "save": "Save Preferences",
-    "saveSuccess": "Notification preferences saved",
-    "saveError": "Failed to save preferences",
-    "noChanges": "No changes to save",
+    "pageTitle": "通知偏好设置",
+    "description": "选择您想要接收的电子邮件通知",
+    "type": "通知类型",
+    "category": "分类",
+    "frequency": "频率",
+    "immediate": "立即",
+    "disabled": "已禁用",
+    "alwaysEnabled": "始终启用",
+    "save": "保存偏好设置",
+    "saveSuccess": "已保存通知偏好设置",
+    "saveError": "无法保存偏好设置",
+    "noChanges": "没有要保存的更改",
     "types": {
-      "password_reset": "Password reset",
-      "welcome": "Welcome email",
-      "account_deactivated": "Account deactivated",
-      "account_reactivated": "Account reactivated",
-      "share_invitation": "Share invitation",
-      "share_accessed": "Share accessed",
-      "share_downloaded": "File downloaded from share",
-      "share_expiring": "Share expiring soon",
-      "share_expired": "Share expired",
-      "share_max_views_reached": "Share max views reached",
-      "share_no_activity": "No activity on share",
-      "reverse_share_invitation": "Reverse share invitation",
-      "reverse_share_uploaded": "Files uploaded to reverse share",
-      "reverse_share_expiring": "Reverse share expiring",
-      "reverse_share_expired": "Reverse share expired",
-      "quota_warning": "Quota warning",
-      "quota_exceeded": "Quota exceeded",
-      "files_auto_deleted": "Files auto-deleted",
-      "share_auto_deleted": "Share auto-deleted",
-      "admin_user_registered": "New user registered (admin)",
-      "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email",
+      "password_reset": "密码重置",
+      "welcome": "欢迎邮件",
+      "account_deactivated": "账户已停用",
+      "account_reactivated": "账户已重新激活",
+      "share_invitation": "共享邀请",
+      "share_accessed": "共享已访问",
+      "share_downloaded": "从共享下载了文件",
+      "share_expiring": "共享即将过期",
+      "share_expired": "共享已过期",
+      "share_max_views_reached": "共享最大查看次数已达到",
+      "share_no_activity": "共享上没有活动",
+      "reverse_share_invitation": "接收链接邀请",
+      "reverse_share_uploaded": "文件已上载到接收链接",
+      "reverse_share_expiring": "接收链接即将过期",
+      "reverse_share_expired": "接收链接已过期",
+      "quota_warning": "配额警告",
+      "quota_exceeded": "超出配额",
+      "files_auto_deleted": "文件已自动删除",
+      "share_auto_deleted": "共享已自动删除",
+      "admin_user_registered": "新用户已注册（仅限管理员）",
+      "admin_quota_alert": "用户配额警报（仅限管理员）",
+      "test_email": "测试电子邮件",
       "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
       "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
       "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
@@ -2872,16 +2872,16 @@
       "admin_quota_alert": "当用户的存储使用量超过其配额时（仅限管理员）"
     },
     "categories": {
-      "account": "Account",
-      "shares": "Shares",
-      "reverseShares": "Reverse Shares",
+      "account": "账户",
+      "shares": "共享",
+      "reverseShares": "接收链接",
       "quota": "Quotas",
       "admin": "Administration",
       "test": "Test"
     },
-    "saving": "Saving...",
-    "loadError": "Failed to load notification preferences",
-    "retry": "Retry",
-    "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}"
+    "saving": "正在保存...",
+    "loadError": "无法加载通知偏好设置",
+    "retry": "重试",
+    "unsavedChanges": "{count, plural, one {# 个未保存的更改} other {# 个未保存的更改}}"
   }
 }

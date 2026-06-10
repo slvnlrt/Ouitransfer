@@ -71,17 +71,17 @@
       "scopesHelpOidc": "Scopes จะแนะนำโดยอัตโนมัติตามURL ผู้ให้บริการ OIDC scopes ทั่วไป: openid, profile, email, groups",
       "scopesHelpOauth2": "Scopes จะแนะนำโดยอัตโนมัติตามURL ผู้ให้บริการ OAuth2 scopes ทั่วไปขึ้นอยู่กับผู้ให้บริการ",
       "providerUrl": "URL ผู้ให้บริการ",
-      "providerUrlPlaceholder": "https://auth.example.com",
+      "providerUrlPlaceholder": "https://auth.example.th",
       "providerUrlAutoPlaceholder": "https://your-provider.com (endpoints จะถูกค้นพบโดยอัตโนมัติ)",
-      "providerUrlManualPlaceholder": "https://your-provider.com",
+      "providerUrlManualPlaceholder": "https://your-provider.th",
       "autoDiscoveryHelp": "ระบบจะค้นพบ authorization, token และ userinfo endpoints โดยอัตโนมัติ",
       "manualConfigurationHelp": "URL ฐานของผู้ให้บริการของคุณ (endpoints จะเป็นแบบสัมพัทธ์กับสิ่งนี้)",
       "authorizationEndpoint": "Authorization Endpoint",
-      "authorizationEndpointPlaceholder": "https://auth.example.com/auth",
+      "authorizationEndpointPlaceholder": "https://auth.example.th/auth",
       "tokenEndpoint": "Token Endpoint",
-      "tokenEndpointPlaceholder": "https://auth.example.com/token",
+      "tokenEndpointPlaceholder": "https://auth.example.th/token",
       "userInfoEndpoint": "User Info Endpoint",
-      "userInfoEndpointPlaceholder": "https://auth.example.com/userinfo",
+      "userInfoEndpointPlaceholder": "https://auth.example.th/userinfo",
       "configurationMethod": "วิธีการกำหนดค่า",
       "autoDiscovery": "ค้นพบโดยอัตโนมัติ",
       "autoDiscoveryDescription": "ค้นพบ endpoints โดยอัตโนมัติจาก URL ผู้ให้บริการ",
@@ -179,7 +179,7 @@
     "copy": "คัดลอก",
     "copied": "คัดลอกแล้ว",
     "retry": "Retry",
-    "unavailable": "unavailable",
+    "unavailable": "ไม่พร้อมใช้งาน",
     "days": "วัน",
     "aliasValidation": {
       "required": "[TO_TRANSLATE] Alias is required",
@@ -195,7 +195,7 @@
     "descriptionLabel": "คำอธิบาย",
     "descriptionPlaceholder": "ป้อนคำอธิบาย (ไม่บังคับ)",
     "expirationLabel": "วันที่หมดอายุ",
-    "expirationPlaceholder": "MM/DD/YYYY HH:MM",
+    "expirationPlaceholder": "วว/ดด/ปปปป HH:MM",
     "maxViewsLabel": "มุมมองสูงสุด",
     "maxViewsPlaceholder": "ปล่อยว่างไว้เพื่ออนุญาตไม่จำกัด",
     "passwordProtection": "ป้องกันด้วยรหัสผ่าน",
@@ -214,17 +214,17 @@
     },
     "nextSelectFiles": "ถัดไป: เลือกไฟล์",
     "searchLabel": "ค้นหา",
-    "privacySection": "Privacy & Notifications",
-    "nameFieldRequired": "Require visitor name",
-    "emailFieldRequired": "Require visitor email",
-    "notifyOnDownload": "Notify me on each download",
-    "notifyOnDownloadHelp": "When enabled, you'll receive email notifications when files are downloaded from this share, regardless of your global notification preferences.",
-    "inactivityAlertDays": "Alert if no downloads after",
-    "inactivityAlertPlaceholder": "Leave empty to disable",
-    "fieldHidden": "Hidden",
-    "fieldOptional": "Optional",
-    "fieldRequired": "Required",
-    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
+    "privacySection": "ความเป็นส่วนตัวและการแจ้งเตือน",
+    "nameFieldRequired": "ต้องการชื่อผู้เข้าชม",
+    "emailFieldRequired": "ต้องการอีเมลของผู้เข้าชม",
+    "notifyOnDownload": "แจ้งเตือนฉันเมื่อมีการดาวน์โหลดแต่ละครั้ง",
+    "notifyOnDownloadHelp": "เมื่อเปิดใช้งาน คุณจะได้รับการแจ้งเตือนผ่านอีเมลเมื่อมีการดาวน์โหลดไฟล์จากการแชร์นี้ โดยไม่คำนึงถึงการตั้งค่าการแจ้งเตือนทั่วโลกของคุณ",
+    "inactivityAlertDays": "แจ้งเตือนหากไม่มีการดาวน์โหลดหลังจาก",
+    "inactivityAlertPlaceholder": "ปล่อยว่างเพื่อปิดใช้งาน",
+    "fieldHidden": "ซ่อน",
+    "fieldOptional": "ไม่บังคับ",
+    "fieldRequired": "บังคับ",
+    "filesOptionalHint": "การเพิ่มไฟล์เป็นทางเลือก — คุณสามารถสร้างแชร์ที่ว่างเปล่าตอนนี้และเพิ่มไฟล์ทีหลัง"
   },
   "customization": {
     "breadcrumb": "การปรับแต่ง",
@@ -606,7 +606,7 @@
       "link": "ลิงค์",
       "qrcode": "รหัส QR"
     },
-    "later": "Later"
+    "later": "ทีหลัง"
   },
   "home": {
     "pageTitle": "หน้าแรก",
@@ -749,7 +749,7 @@
       "SHARE_RECIPIENT_ADD": "เพิ่มผู้รับแชร์",
       "SHARE_RECIPIENT_REMOVE": "ลบผู้รับแชร์",
       "SHARE_RECIPIENT_NOTIFY": "แจ้งเตือนผู้รับแชร์",
-      "SHARE_RECIPIENT_REMIND": "Share non-downloaders reminded",
+      "SHARE_RECIPIENT_REMIND": "แจ้งเตือนผู้รับที่ยังไม่ได้ดาวน์โหลด",
       "SHARE_ITEMS_ADD": "เพิ่มรายการแชร์",
       "SHARE_ITEMS_REMOVE": "ลบรายการแชร์",
       "FILE_UPLOAD": "อัปโหลดไฟล์",
@@ -793,17 +793,17 @@
       "BACKGROUND_IMAGE_UPLOAD": "อัปโหลดรูปภาพพื้นหลัง",
       "BACKGROUND_IMAGE_DELETE": "ลบรูปภาพพื้นหลัง",
       "AUDIT_RETENTION_CLEANUP": "ล้างข้อมูลประวัติการตรวจสอบ",
-      "SHARE_DEACTIVATED": "Share deactivated",
-      "SHARE_REACTIVATED": "Share reactivated",
-      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
-      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated",
-      "SHARE_AUTO_DELETED": "Share auto-deleted",
-      "REVERSE_SHARE_AUTO_DELETED": "Reverse share auto-deleted",
-      "ACCOUNT_FILES_CLEANED": "Account files cleaned",
-      "ORPHAN_S3_DELETED": "Orphan storage object deleted",
-      "ORPHAN_DB_DELETED": "Orphan database record deleted",
-      "ORPHAN_MULTIPART_ABORTED": "Incomplete multipart upload aborted",
-      "QUOTA_FILES_DELETED": "Over-quota files deleted"
+      "SHARE_DEACTIVATED": "ปิดใช้งานการแชร์",
+      "SHARE_REACTIVATED": "เปิดใช้งานการแชร์อีกครั้ง",
+      "REVERSE_SHARE_DEACTIVATED": "ปิดใช้งานลิงก์รับไฟล์",
+      "REVERSE_SHARE_REACTIVATED": "เปิดใช้งานลิงก์รับไฟล์อีกครั้ง",
+      "SHARE_AUTO_DELETED": "ลบการแชร์โดยอัตโนมัติ",
+      "REVERSE_SHARE_AUTO_DELETED": "ลบลิงก์รับไฟล์โดยอัตโนมัติ",
+      "ACCOUNT_FILES_CLEANED": "ทำความสะอาดไฟล์บัญชี",
+      "ORPHAN_S3_DELETED": "ลบออบเจกต์พื้นที่เก็บข้อมูลที่ไม่มีเจ้าของ",
+      "ORPHAN_DB_DELETED": "ลบระเบียนฐานข้อมูลที่ไม่มีเจ้าของ",
+      "ORPHAN_MULTIPART_ABORTED": "ยกเลิกการอัปโหลดแบบมัลติพาร์ตที่ไม่สมบูรณ์",
+      "QUOTA_FILES_DELETED": "ลบไฟล์ที่เกินโควต้า"
     },
     "targetTypes": {
       "user": "ผู้ใช้",
@@ -1042,23 +1042,23 @@
     "invalidEmail": "กรุณากรอกที่อยู่อีเมลที่ถูกต้อง",
     "duplicateEmail": "ผู้รับนี้ได้รับการเพิ่มแล้ว",
     "noRecipientsDescription": "เพิ่มผู้รับเพื่อแชร์เนื้อหาผ่านทางอีเมล",
-    "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}",
-    "notifyPartial": "Only {sent} of {total} recipients were notified",
-    "neverAccessed": "Never accessed",
-    "namePlaceholder": "Name (optional)",
-    "downloaded": "Downloaded",
-    "pending": "Pending",
-    "downloadedAt": "Downloaded on {date}",
-    "uploaded": "Uploaded",
-    "uploadedAt": "Uploaded on {date}",
-    "uploadApproximateHint": "Approximate: uploaders can submit files without providing an email when it is not required",
-    "remindNonDownloaders": "Remind ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
-    "sendingReminders": "Sending reminders...",
-    "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
-    "remindNoneSent": "No reminders were sent",
-    "remindError": "Failed to send reminders"
+    "notified": "ได้รับการแจ้งเตือน",
+    "views": "{count, plural, other {# ครั้งที่ดู}}",
+    "notifyPartial": "เฉพาะ {sent} จาก {total} ผู้รับเท่านั้นที่ได้รับการแจ้งเตือน",
+    "neverAccessed": "ไม่เคยเข้าถึง",
+    "namePlaceholder": "ชื่อ (ไม่จำเป็น)",
+    "downloaded": "ดาวน์โหลดแล้ว",
+    "pending": "รอดำเนิน",
+    "downloadedAt": "ดาวน์โหลดเมื่อ {date}",
+    "uploaded": "อัปโหลดแล้ว",
+    "uploadedAt": "อัปโหลดเมื่อ {date}",
+    "uploadApproximateHint": "ประมาณ: ผู้อัปโหลดสามารถส่งไฟล์โดยไม่ต้องระบุอีเมล เมื่ออีเมลไม่จำเป็น",
+    "remindNonDownloaders": "เตือนความจำ ({count})",
+    "remindNonDownloadersHint": "{count, plural, other {เตือนความจำ # ผู้รับที่ยังไม่ได้ดาวน์โหลด}}",
+    "sendingReminders": "กำลังส่งการเตือนความจำ...",
+    "remindSuccess": "{count, plural, other {ส่งการเตือนความจำไปยัง # ผู้รับ}}",
+    "remindNoneSent": "ไม่มีการเตือนความจำถูกส่ง",
+    "remindError": "ล้มเหลวในการส่งการเตือนความจำ"
   },
   "register": {
     "validation": {
@@ -1258,7 +1258,7 @@
         "editDescription": "อัปเดตนามแฝงสำหรับลิงค์การรับนี้",
         "createDescription": "สร้างนามแฝงที่กำหนดเองสำหรับลิงค์การรับนี้",
         "aliasLabel": "นามแฝงลิงค์",
-        "aliasPlaceholder": "my-custom-link",
+        "aliasPlaceholder": "ลิงก์ของฉัน",
         "preview": "ตัวอย่าง:",
         "currentLink": "ลิงค์ปัจจุบัน:",
         "copyCurrentLink": "คัดลอกลิงค์ปัจจุบัน",
@@ -1416,8 +1416,8 @@
         "optionalDescription": "ทางเลือก: ฟิลด์จะปรากฏแต่ไม่บังคับ",
         "requiredDescription": "จำเป็น: ต้องกรอกฟิลด์ก่อนอัปโหลด"
       },
-      "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "notifyOnUpload": "แจ้งให้ฉันทราบเมื่อมีการอัปโหลด",
+      "notifyOnUploadHelp": "เมื่อเปิดใช้งาน คุณจะได้รับการแจ้งเตือนทางอีเมลเมื่อมีการอัปโหลดไฟล์ไปยังลิงก์รับไฟล์นี้ โดยไม่คำนึงถึงการตั้งค่าการแจ้งเตือนทั่วโลก",
       "submit": "สร้างลิงค์การรับ",
       "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
       "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
@@ -1509,12 +1509,12 @@
         "namePlaceholder": "ชื่อของคุณ",
         "emailLabel": "อีเมล",
         "emailLabelOptional": "อีเมล (ไม่บังคับ)",
-        "emailPlaceholder": "your@email.com",
+        "emailPlaceholder": "คุณ@email.th",
         "descriptionLabel": "คำอธิบาย (ไม่บังคับ)",
         "descriptionPlaceholder": "เพิ่มคำอธิบายสำหรับไฟล์...",
         "uploadButton": "ส่ง {count} ไฟล์",
         "uploading": "กำลังส่ง...",
-        "privacyNotice": "Your name, email and uploads may be visible to the owner of this receive link."
+        "privacyNotice": "ชื่อ อีเมล และการอัปโหลดของคุณอาจมองเห็นได้โดยเจ้าของลิงก์รับไฟล์นี้"
       },
       "success": {
         "title": "ส่งไฟล์เรียบร้อยแล้ว! 🎉",
@@ -1595,8 +1595,8 @@
         "description": "จัดการรูปภาพพื้นหลังสำหรับหน้าอัปโหลดสไตล์ WeTransfer"
       },
       "cleanup": {
-        "title": "Automatic Cleanup",
-        "description": "Lifecycle management for expired content, deactivated accounts, and orphaned files. Auto-deletion is off by default."
+        "title": "การล้างข้อมูลโดยอัตโนมัติ",
+        "description": "การจัดการวงจรชีวิตของเนื้อหาที่หมดอายุ บัญชีที่ถูกปิดใช้งาน และไฟล์ที่สูญหาย การลบโดยอัตโนมัติถูกปิดใช้งานโดยค่าเริ่มต้น"
       }
     },
     "fields": {
@@ -1610,8 +1610,8 @@
         "description": "ชื่อแอปพลิเคชันที่แสดงให้ผู้ใช้"
       },
       "appUrl": {
-        "title": "Application URL",
-        "description": "Public URL of the application, used in email links"
+        "title": "URL ของแอปพลิเคชัน",
+        "description": "URL สาธารณะของแอปพลิเคชัน ใช้ในลิงก์อีเมล"
       },
       "appDescription": {
         "title": "คำอธิบายแอปพลิเคชัน",
@@ -1712,32 +1712,32 @@
         "description": "ขีดจำกัดการจัดเก็บรวมต่อผู้ใช้ สามารถแทนที่ได้ต่อผู้ใช้หรือต่อกลุ่ม"
       },
       "quotaWarningThresholds": {
-        "title": "Quota Warning Thresholds (%)",
-        "description": "Comma-separated percentages, e.g. \"80,90\", at which a user is emailed a quota warning. Each value must be a whole number between 1 and 99. A separate alert is sent when storage reaches 100%."
+        "title": "ขีดจำกัดการเตือนโควตา (%)",
+        "description": "เปอร์เซ็นต์คั่นด้วยเครื่องหมายจุลภาค เช่น \"80,90\" ที่ส่งอีเมลการเตือนโควตาไปยังผู้ใช้ ค่าแต่ละค่าต้องเป็นจำนวนเต็มระหว่าง 1 ถึง 99 การแจ้งเตือนแยกต่างหากจะถูกส่งเมื่อพื้นที่เก็บข้อมูลถึง 100%"
       },
       "quotaGracePeriodDays": {
-        "title": "Quota Grace Period (days)",
-        "description": "How many days a user may stay over their quota before smart deletion may act (only when smart deletion is enabled below). Minimum 0."
+        "title": "ระยะเวลาผ่อนผันของโควตา (วัน)",
+        "description": "จำนวนวันที่ผู้ใช้สามารถเกินโควตาได้ก่อนที่การลบอย่างชาญฉลาดจะทำงาน (เฉพาะเมื่อการลบอย่างชาญฉลาดเปิดใช้งานด้านล่าง) ค่าต่ำสุดคือ 0"
       },
       "quotaSmartDeletionEnabled": {
-        "title": "Smart Deletion of Over-Quota Files",
-        "description": "Off by default. When enabled, after the grace period the oldest unsafe files of an over-quota user are deleted in a safe order: first unshared uploads, then files in shares inactive for the period below. Files in active shares are never deleted — if nothing is safe to remove, new uploads are simply blocked instead."
+        "title": "การลบไฟล์ที่เกินโควตาอย่างชาญฉลาด",
+        "description": "ปิดใช้งานโดยค่าเริ่มต้น เมื่อเปิดใช้งาน หลังจากระยะเวลาผ่อนผัน ไฟล์ที่ไม่ปลอดภัยที่เก่าที่สุดของผู้ใช้ที่เกินโควตาจะถูกลบในลำดับที่ปลอดภัย ประการแรก อัปโหลดที่ไม่แชร์ จากนั้นไฟล์ในแชร์ที่ไม่มีกิจกรรมสำหรับระยะเวลาด้านล่าง ไฟล์ในแชร์ที่ใช้งานจะไม่ถูกลบ หากไม่มีอะไรปลอดภัยที่จะลบ การอัปโหลดแบบใหม่จะถูกบล็อก"
       },
       "quotaInactiveShareDays": {
-        "title": "Inactive Share Threshold (days)",
-        "description": "A share's files are eligible for smart deletion once the share has had no activity for this many days. Minimum 1."
+        "title": "ขีดจำกัดการแชร์ที่ไม่ใช้งาน (วัน)",
+        "description": "ไฟล์การแชร์มีสิทธิ์ในการลบอย่างชาญฉลาด หลังจากที่การแชร์ไม่มีกิจกรรมจำนวนวันนี้ ค่าต่ำสุดคือ 1"
       },
       "reverseShareQuotaSoftEnforcement": {
-        "title": "Reverse Share Soft Enforcement",
-        "description": "On by default. Lets external guests keep uploading to a reverse share even if the owner is slightly over quota, so collections are not interrupted. Uploads are still blocked once the owner exceeds the tolerance set below, and the owner is alerted to free up space."
+        "title": "การบังคับใช้อย่างนุ่มนวลของลิงก์รับไฟล์",
+        "description": "เปิดใช้งานโดยค่าเริ่มต้น อนุญาตให้แขกภายนอกสามารถอัปโหลดไปยังลิงก์รับไฟล์ต่อไปได้ แม้ว่าเจ้าของจะเกินโควตาเล็กน้อย เพื่อไม่ให้การรวบรวมหยุดชั่งคั่ง การอัปโหลดยังคงถูกบล็อกหลังจากที่เจ้าของเกินการสนับสนุนด้านล่าง และเจ้าของจะได้รับการแจ้งเตือนให้เพิ่มพื้นที่"
       },
       "reverseShareMaxOverageFactor": {
-        "title": "Reverse Share Overage Factor",
-        "description": "Soft enforcement allows reverse-share uploads until usage reaches this multiple of the owner's quota (e.g. 3 = up to three times the limit). Minimum 1."
+        "title": "ปัจจัยการเกินของลิงก์รับไฟล์",
+        "description": "การบังคับใช้อย่างนุ่มนวลอนุญาตให้อัปโหลดไปยังลิงก์รับไฟล์จนกว่าการใช้จะถึงตัวคูณนี้ของโควตาของเจ้าของ (เช่น 3 = สูงสุดสามเท่าของข้อจำกัด) ค่าต่ำสุดคือ 1"
       },
       "reverseShareAbsoluteMaxBytes": {
-        "title": "Reverse Share Absolute Cap",
-        "description": "Hard ceiling for reverse-share soft enforcement regardless of the factor above. Set to 0 for no absolute cap."
+        "title": "ขีดจำกัดสูงสุดแบบสัมบูรณ์ของลิงก์รับไฟล์",
+        "description": "ขีดจำกัดเค้งสำหรับการบังคับใช้อย่างนุ่มนวลของลิงก์รับไฟล์โดยไม่คำนึงถึงปัจจัยข้างต้น ตั้งค่าเป็น 0 เพื่อไม่มีขีดจำกัดสัมบูรณ์"
       },
       "firstUserAccess": {
         "title": "การเข้าถึงผู้ใช้คนแรก",
@@ -1752,56 +1752,56 @@
         "description": "เปิดหรือปิดใช้งานการยืนยันตัวตนโดยใช้รหัสผ่าน"
       },
       "emailDigestHour": {
-        "title": "Digest Email Hour",
-        "description": "Hour of the day (0-23) when digest emails are sent"
+        "title": "ชั่วโมงอีเมลสรุป",
+        "description": "ชั่วโมงของวัน (0-23) เมื่อส่งอีเมลสรุป"
       },
       "emailJobRetentionDays": {
-        "title": "Email Job Retention",
-        "description": "Number of days to keep completed email jobs before cleanup"
+        "title": "การเก็บรักษางานอีเมล",
+        "description": "จำนวนวันในการเก็บรักษางานอีเมลที่เสร็จสิ้นแล้วก่อนการล้างข้อมูล"
       },
       "emailQueueIntervalSeconds": {
-        "title": "Queue Processing Interval",
-        "description": "Seconds between email queue processing cycles"
+        "title": "ช่วงเวลาการประมวลผลคิว",
+        "description": "วินาทีระหว่างรอบการประมวลผลคิวอีเมล"
       },
       "emailQueueMaxRetries": {
-        "title": "Max Email Retries",
-        "description": "Maximum number of retry attempts for failed emails"
+        "title": "ความพยายามใหม่ของอีเมลสูงสุด",
+        "description": "จำนวนความพยายามใหม่สูงสุดสำหรับอีเมลที่ล้มเหลว"
       },
       "auditRetentionDays": {
         "title": "การเก็บรักษาการตรวจสอบ",
         "description": "จำนวนวันที่จะเก็บบันทึกการตรวจสอบ (0 = ตลอดไป ขั้นต่ำ 7)"
       },
       "autoCleanupEnabled": {
-        "title": "Enable Automatic Cleanup",
-        "description": "Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on."
+        "title": "เปิดใช้งานการล้างข้อมูลโดยอัตโนมัติ",
+        "description": "สวิตช์หลักสำหรับการล้างข้อมูลตามกำหนดเวลาของลิงก์แชร์ที่หมดอายุ ไฟล์ลิงก์รับไฟล์ที่หมดอายุ และไฟล์สูญหาย ปิดใช้งานโดยค่าเริ่มต้น ไม่มีสิ่งใดถูกลบโดยอัตโนมัติจนกว่าคุณจะเปิดใช้งาน"
       },
       "autoCleanupIntervalHours": {
-        "title": "Cleanup Interval (hours)",
-        "description": "How often the cleanup task runs. Minimum 1 hour."
+        "title": "ช่วงเวลาการล้างข้อมูล (ชั่วโมง)",
+        "description": "ความถี่ที่งานการล้างข้อมูลทำงาน ค่าต่ำสุดคือ 1 ชั่วโมง"
       },
       "autoCleanupGracePeriodDays": {
-        "title": "Grace Period (days)",
+        "title": "ระยะเวลาผ่อนผัน (วัน)",
         "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
       },
       "autoCleanupNotifyDaysBefore": {
-        "title": "Warn Before Deletion (days)",
-        "description": "Send the owner a \"pending permanent deletion\" warning email this many days before the content is deleted. 0 disables the warning. Should be at most the grace period."
+        "title": "เตือนก่อนลบ (วัน)",
+        "description": "ส่งเจ้าของอีเมลการเตือน \"การลบแบบถาวรที่รอดำเนินการ\" จำนวนวันนี้ก่อนลบเนื้อหา 0 ปิดใช้งานการเตือน ควรมากที่สุดเท่าระยะเวลาผ่อนผัน"
       },
       "accountDeactivationCleanupEnabled": {
-        "title": "Delete Deactivated Accounts' Files",
-        "description": "When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files."
+        "title": "ลบไฟล์บัญชีที่ปิดใช้งาน",
+        "description": "เมื่อเปิดใช้งาน ไฟล์ที่เป็นของบัญชีที่ปิดใช้งานจะถูกลบแบบถาวรหลังจากการหน่วงเวลาด้านล่าง ปิดใช้งานโดยค่าเริ่มต้น การปิดใช้งานเพียงอย่างเดียวจะไม่ลบไฟล์"
       },
       "accountDeactivationCleanupDays": {
-        "title": "Deactivation Cleanup Delay (days)",
-        "description": "Days after an account is deactivated before its files are deleted (only when the option above is enabled). Minimum 1."
+        "title": "การหน่วงเวลาการล้างข้อมูลการปิดใช้งาน (วัน)",
+        "description": "วันหลังจากปิดใช้งานบัญชี ไฟล์จะถูกลบ (เฉพาะเมื่อตัวเลือกข้างต้นเปิดใช้งาน) ค่าต่ำสุดคือ 1"
       },
       "autoCleanupOrphansEnabled": {
-        "title": "Sweep Orphaned Files",
-        "description": "When on, runs a two-way sweep that removes database records pointing to missing storage objects and storage objects with no database record. Off by default."
+        "title": "ล้างข้อมูลไฟล์สูญหาย",
+        "description": "เมื่อเปิดใช้งาน จะรันการกวาดสองทางที่ลบบันทึกฐานข้อมูลที่ชี้ไปยังวัตถุพื้นที่เก็บข้อมูลที่หายไป และวัตถุพื้นที่เก็บข้อมูลที่ไม่มีบันทึกฐานข้อมูล ปิดใช้งานโดยค่าเริ่มต้น"
       },
       "autoCleanupOrphanMinAgeHours": {
-        "title": "Orphan Minimum Age (hours)",
-        "description": "Only files and objects older than this are considered during the orphan sweep, protecting uploads still in progress. Minimum 1."
+        "title": "อายุขั้นต่ำของไฟล์สูญหาย (ชั่วโมง)",
+        "description": "เฉพาะไฟล์และวัตถุที่เก่ากว่านี้เท่านั้นที่จะพิจารณาระหว่างการกวาดไฟล์สูญหาย ป้องกันการอัปโหลดที่ยังคงดำเนินอยู่ ค่าต่ำสุดคือ 1"
       }
     },
     "buttons": {
@@ -1814,9 +1814,9 @@
       "updateFailed": "ไม่สามารถอัปเดตการตั้งค่า",
       "passwordAuthRequiresProvider": "ไม่สามารถปิดใช้งานการยืนยันตัวตนด้วยรหัสผ่านโดยไม่มีผู้ให้บริการยืนยันตัวตนที่ใช้งานอยู่",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
-      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent",
-      "quotaThresholdsInvalid": "Enter comma-separated percentages between 1 and 99, for example \"80,90\""
+      "cleanupValueInvalid": "ค่าต้องเป็นจำนวนเต็มอย่างน้อย {min}",
+      "notifyDaysExceedsGrace": "เวลานำการเตือนไม่ควรเกินระยะเวลาผ่อนผัน หรือจะไม่มีการเตือน",
+      "quotaThresholdsInvalid": "ป้อนเปอร์เซ็นต์คั่นด้วยเครื่องหมายจุลภาค ตั้งแต่ 1 ถึง 99 เช่น \"80,90\""
     },
     "messages": {
       "noChanges": "ไม่มีการเปลี่ยนแปลง",
@@ -1836,20 +1836,20 @@
       "defaultPlaceholder": "ป้อนและกด Enter"
     },
     "redirectUri": {
-      "placeholder": "https://mysite.com",
+      "placeholder": "https://mysite.th",
       "previewLabel": "URL ที่สมบูรณ์ที่จะบันทึก:"
     },
     "emailAdmin": {
-      "queueStatus": "Email Queue Status",
-      "pending": "Pending",
-      "sentLast24h": "Sent (24h)",
-      "failed": "Failed",
+      "queueStatus": "สถานะคิวอีเมล",
+      "pending": "รอดำเนินการ",
+      "sentLast24h": "ส่งไป (24 ชั่วโมง)",
+      "failed": "ล้มเหลว",
       "digestQueue": "คิวสรุป",
-      "sendTest": "Send Test Email",
-      "testPlaceholder": "recipient@example.com",
-      "testSending": "Sending...",
-      "testSuccess": "Test email queued successfully",
-      "testError": "Failed to send test email"
+      "sendTest": "ส่งอีเมลทดสอบ",
+      "testPlaceholder": "อีเมล@example.th",
+      "testSending": "กำลังส่ง...",
+      "testSuccess": "อีเมลทดสอบเพิ่มเข้าคิวสำเร็จ",
+      "testError": "ล้มเหลวในการส่งอีเมลทดสอบ"
     }
   },
   "share": {
@@ -1885,19 +1885,19 @@
       "filesShared": "{count, plural, =1 {แชร์ 1 ไฟล์} other {แชร์ # ไฟล์}}"
     },
     "identification": {
-      "title": "Visitor Identification",
-      "subtitle": "Please provide your information to access this share",
-      "nameLabel": "Name",
-      "emailLabel": "Email",
-      "submit": "Continue",
-      "error": "Failed to submit identification. Please try again.",
-      "optional": "Optional",
-      "nameRequired": "Name is required",
-      "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email address",
+      "title": "การระบุตัวตนของผู้เยี่ยมชม",
+      "subtitle": "โปรดระบุข้อมูลของคุณเพื่อเข้าถึงแชร์นี้",
+      "nameLabel": "ชื่อ",
+      "emailLabel": "อีเมล",
+      "submit": "ดำเนินการต่อ",
+      "error": "ล้มเหลวในการส่งการระบุตัวตน โปรดลองอีกครั้ง",
+      "optional": "ไม่จำเป็น",
+      "nameRequired": "ชื่อเป็นสิ่งจำเป็น",
+      "emailRequired": "ต้องการอีเมล",
+      "emailInvalid": "โปรดใส่ที่อยู่อีเมลที่ถูกต้อง",
       "metadataError": "Failed to load share information. Please try again.",
       "rateLimited": "Too many attempts. Please try again later.",
-      "privacyNotice": "Your accesses and downloads may be visible to the sender of this share."
+      "privacyNotice": "การเข้าถึงและการดาวน์โหลดของคุณอาจมองเห็นได้โดยผู้ส่งแชร์นี้"
     }
   },
   "shareActions": {
@@ -1927,8 +1927,8 @@
     "editErrorPassword": "ไม่สามารถอัปเดตรหัสผ่านการแชร์ได้",
     "bulkDeleteConfirmation": "คุณแน่ใจว่าต้องการลบ {count, plural, =1 {1 แชร์} other {# แชร์}} หรือไม่? ไม่สามารถเลิกทำการกระทำนี้ได้",
     "bulkDeleteTitle": "ลบแชร์ที่เลือก",
-    "keepCurrentPasswordHint": "Leave empty to keep current password",
-    "passwordRequired": "Password is required for new password protection"
+    "keepCurrentPasswordHint": "ปล่อยว่างไว้เพื่อเก็บรักษารหัสผ่านปัจจุบัน",
+    "passwordRequired": "ต้องใช้รหัสผ่านสำหรับการป้องกันรหัสผ่านใหม่"
   },
   "shareDetails": {
     "title": "รายละเอียดแชร์",
@@ -1964,27 +1964,27 @@
     "clickToEnlargeQrCode": "คลิกเพื่อขยายรหัส QR",
     "loadError": "ไม่สามารถโหลดรายละเอียดแชร์",
     "activity": {
-      "title": "Activity",
-      "noActivity": "No activity recorded yet.",
-      "access": "Viewed",
-      "download": "Downloaded",
-      "anonymous": "Anonymous",
-      "loadMore": "Load more",
-      "showingCount": "Showing {shown} of {total}",
-      "loadError": "Failed to load activity data.",
-      "filterAll": "All actions",
-      "filterAccess": "Views only",
-      "filterDownload": "Downloads only",
-      "filterAllVisitors": "All visitors",
-      "filterIdentified": "Identified",
-      "filterAnonymous": "Anonymous",
+      "title": "กิจกรรม",
+      "noActivity": "ยังไม่มีกิจกรรมที่บันทึก",
+      "access": "ดูแล้ว",
+      "download": "ดาวน์โหลด",
+      "anonymous": "ไม่ระบุชื่อ",
+      "loadMore": "โหลดเพิ่มเติม",
+      "showingCount": "แสดง {shown} จาก {total}",
+      "loadError": "ล้มเหลวในการโหลดข้อมูลกิจกรรม",
+      "filterAll": "การกระทำทั้งหมด",
+      "filterAccess": "เฉพาะการดู",
+      "filterDownload": "เฉพาะการดาวน์โหลด",
+      "filterAllVisitors": "ผู้เยี่ยมชมทั้งหมด",
+      "filterIdentified": "ระบุตัวตนแล้ว",
+      "filterAnonymous": "ไม่ระบุชื่อ",
       "source": {
-        "tracking_token": "Via recipient link",
-        "cookie": "Self-identified",
-        "selfDeclaredHint": "Self-declared identity, not verified"
+        "tracking_token": "ผ่านลิงก์รับไฟล์",
+        "cookie": "ระบุตัวตนด้วยตนเอง",
+        "selfDeclaredHint": "ตัวตนที่ประกาศเอง ยังไม่ได้ตรวจสอบ"
       }
     },
-    "lastDownloaded": "Last Downloaded",
+    "lastDownloaded": "ดาวน์โหลดครั้งสุดท้าย",
     "privacySummary": "ความเป็นส่วนตัว",
     "privacyNameField": "ชื่อผู้เยี่ยมชม:",
     "privacyEmailField": "อีเมลผู้เยี่ยมชม:",
@@ -1994,9 +1994,9 @@
       "OPTIONAL": "ไม่บังคับ",
       "REQUIRED": "จำเป็น"
     },
-    "recipientNotified": "Notified",
-    "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
-    "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"
+    "recipientNotified": "ได้รับการแจ้งเตือน",
+    "recipientAccess": "{count, plural, other {# ครั้งเข้าถึง}}",
+    "recipientAccessWithLast": "{count, plural, other {# ครั้งเข้าถึง}} · ครั้งสุดท้าย {lastAccess}"
   },
   "shareExpiration": {
     "title": "การตั้งค่าการหมดอายุของแชร์",
@@ -2058,10 +2058,10 @@
     "singleShareZipName": "{shareName}_ไฟล์.zip",
     "multipleSharesZipName": "{count}_แชร์_ไฟล์.zip",
     "defaultShareName": "แชร์",
-    "pauseSuccess": "Share paused",
-    "pauseError": "Failed to pause share",
-    "resumeSuccess": "Share resumed",
-    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
+    "pauseSuccess": "แชร์ถูกหยุดชั่วคราว",
+    "pauseError": "ล้มเหลวในการหยุดชั่วคราวแชร์",
+    "resumeSuccess": "แชร์ถูก恢復ต่อ",
+    "resumeError": "ล้มเหลวในการเ恢复แชร์ หากหมดอายุหรือถึงขีดจำกัดการดู ให้ขยายแทน"
   },
   "shareMultipleFiles": {
     "title": "แชร์ไฟล์หลายรายการ",
@@ -2156,8 +2156,8 @@
       "neverExpires": "ไม่เคยหมดอายุ",
       "active": "ใช้งานอยู่",
       "expired": "หมดอายุแล้ว",
-      "paused": "Paused",
-      "maxViewsReached": "View Limit Reached"
+      "paused": "หยุดชั่วคราว",
+      "maxViewsReached": "ถึงขีดจำกัดการดู"
     },
     "security": {
       "protected": "ป้องกัน",
@@ -2179,9 +2179,9 @@
       "notifyRecipients": "แจ้งให้ผู้รับทราบ",
       "downloadShareFiles": "ดาวน์โหลดไฟล์ทั้งหมด",
       "delete": "ลบ",
-      "pause": "Pause",
-      "resume": "Resume",
-      "renew": "Renew"
+      "pause": "หยุดชั่วคราว",
+      "resume": "เรียกคืน",
+      "renew": "ต่ออายุ"
     },
     "bulkActions": {
       "actions": "การกระทำ",
@@ -2812,41 +2812,41 @@
     }
   },
   "notificationPreferences": {
-    "pageTitle": "Notification Preferences",
-    "description": "Choose which email notifications you receive",
-    "type": "Notification Type",
-    "category": "Category",
-    "frequency": "Frequency",
-    "immediate": "Immediate",
-    "disabled": "Disabled",
-    "alwaysEnabled": "Always enabled",
-    "save": "Save Preferences",
-    "saveSuccess": "Notification preferences saved",
-    "saveError": "Failed to save preferences",
-    "noChanges": "No changes to save",
+    "pageTitle": "การตั้งค่าการแจ้งเตือน",
+    "description": "เลือกการแจ้งเตือนทางอีเมลที่คุณต้องการรับ",
+    "type": "ประเภทการแจ้งเตือน",
+    "category": "หมวดหมู่",
+    "frequency": "ความถี่",
+    "immediate": "ทันที",
+    "disabled": "ปิดใช้งาน",
+    "alwaysEnabled": "เปิดใช้งานเสมอ",
+    "save": "บันทึกการตั้งค่า",
+    "saveSuccess": "บันทึกการตั้งค่าการแจ้งเตือนเรียบร้อยแล้ว",
+    "saveError": "ไม่สามารถบันทึกการตั้งค่า",
+    "noChanges": "ไม่มีการเปลี่ยนแปลงที่จะบันทึก",
     "types": {
-      "password_reset": "Password reset",
-      "welcome": "Welcome email",
-      "account_deactivated": "Account deactivated",
-      "account_reactivated": "Account reactivated",
-      "share_invitation": "Share invitation",
-      "share_accessed": "Share accessed",
-      "share_downloaded": "File downloaded from share",
-      "share_expiring": "Share expiring soon",
-      "share_expired": "Share expired",
-      "share_max_views_reached": "Share max views reached",
-      "share_no_activity": "No activity on share",
-      "reverse_share_invitation": "Reverse share invitation",
-      "reverse_share_uploaded": "Files uploaded to reverse share",
-      "reverse_share_expiring": "Reverse share expiring",
-      "reverse_share_expired": "Reverse share expired",
-      "quota_warning": "Quota warning",
-      "quota_exceeded": "Quota exceeded",
-      "files_auto_deleted": "Files auto-deleted",
-      "share_auto_deleted": "Share auto-deleted",
-      "admin_user_registered": "New user registered (admin)",
-      "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email",
+      "password_reset": "รีเซ็ตรหัสผ่าน",
+      "welcome": "อีเมลต้อนรับ",
+      "account_deactivated": "ปิดใช้งานบัญชี",
+      "account_reactivated": "เปิดใช้งานบัญชีอีกครั้ง",
+      "share_invitation": "คำเชิญให้แชร์",
+      "share_accessed": "เข้าถึงการแชร์",
+      "share_downloaded": "ดาวน์โหลดไฟล์จากการแชร์",
+      "share_expiring": "การแชร์จะหมดอายุเร็ว ๆ นี้",
+      "share_expired": "การแชร์หมดอายุแล้ว",
+      "share_max_views_reached": "ถึงจำนวนการดูสูงสุดของการแชร์",
+      "share_no_activity": "ไม่มีกิจกรรมในการแชร์",
+      "reverse_share_invitation": "คำเชิญไปยังลิงก์รับไฟล์",
+      "reverse_share_uploaded": "อัปโหลดไฟล์ไปยังลิงก์รับไฟล์",
+      "reverse_share_expiring": "ลิงก์รับไฟล์จะหมดอายุเร็ว ๆ นี้",
+      "reverse_share_expired": "ลิงก์รับไฟล์หมดอายุแล้ว",
+      "quota_warning": "การแจ้งเตือนโควต้า",
+      "quota_exceeded": "เกินโควต้า",
+      "files_auto_deleted": "ลบไฟล์โดยอัตโนมัติ",
+      "share_auto_deleted": "ลบการแชร์โดยอัตโนมัติ",
+      "admin_user_registered": "ผู้ใช้รายใหม่ลงทะเบียน (เฉพาะผู้ดูแลระบบ)",
+      "admin_quota_alert": "การแจ้งเตือนโควต้าของผู้ใช้ (เฉพาะผู้ดูแลระบบ)",
+      "test_email": "อีเมลทดสอบ",
       "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
       "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
       "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
@@ -2872,16 +2872,16 @@
       "admin_quota_alert": "เมื่อการใช้พื้นที่จัดเก็บของผู้ใช้เกินโควตา (เฉพาะผู้ดูแลระบบ)"
     },
     "categories": {
-      "account": "Account",
-      "shares": "Shares",
-      "reverseShares": "Reverse Shares",
+      "account": "บัญชี",
+      "shares": "การแชร์",
+      "reverseShares": "ลิงก์รับไฟล์",
       "quota": "Quotas",
       "admin": "Administration",
       "test": "Test"
     },
-    "saving": "Saving...",
-    "loadError": "Failed to load notification preferences",
-    "retry": "Retry",
-    "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}"
+    "saving": "บันทึกอยู่...",
+    "loadError": "ไม่สามารถโหลดการตั้งค่าการแจ้งเตือน",
+    "retry": "ลองอีกครั้ง",
+    "unsavedChanges": "{count, plural, one {มีการเปลี่ยนแปลง # รายการที่ยังไม่ได้บันทึก} other {มีการเปลี่ยนแปลง # รายการที่ยังไม่ได้บันทึก}}"
   }
 }

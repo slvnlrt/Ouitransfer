@@ -67,17 +67,17 @@
       "scopesHelpOidc": "제공자 URL을 기반으로 자동 제안된 스코프. 일반적인 OIDC 스코프: openid, profile, email, groups",
       "scopesHelpOauth2": "제공자 URL을 기반으로 자동 제안된 스코프. 일반적인 OAuth2 스코프는 제공자에 따라 다릅니다",
       "providerUrl": "제공자 URL",
-      "providerUrlPlaceholder": "https://auth.example.com",
+      "providerUrlPlaceholder": "https://auth.example.kr",
       "providerUrlAutoPlaceholder": "https://your-provider.com (엔드포인트가 자동으로 발견됩니다)",
-      "providerUrlManualPlaceholder": "https://your-provider.com",
+      "providerUrlManualPlaceholder": "https://your-provider.kr",
       "autoDiscoveryHelp": "시스템이 자동으로 인증, 토큰 및 사용자 정보 엔드포인트를 발견합니다",
       "manualConfigurationHelp": "제공자의 기본 URL (엔드포인트는 이것을 기준으로 상대적)",
       "authorizationEndpoint": "인증 엔드포인트",
-      "authorizationEndpointPlaceholder": "https://auth.example.com/auth",
+      "authorizationEndpointPlaceholder": "https://auth.example.kr/auth",
       "tokenEndpoint": "토큰 엔드포인트",
-      "tokenEndpointPlaceholder": "https://auth.example.com/token",
+      "tokenEndpointPlaceholder": "https://auth.example.kr/token",
       "userInfoEndpoint": "사용자 정보 엔드포인트",
-      "userInfoEndpointPlaceholder": "https://auth.example.com/userinfo",
+      "userInfoEndpointPlaceholder": "https://auth.example.kr/userinfo",
       "configurationMethod": "구성 방법",
       "autoDiscovery": "자동 발견",
       "autoDiscoveryDescription": "제공자 URL에서 엔드포인트 자동 발견",
@@ -175,7 +175,7 @@
     "copied": "복사됨",
     "copy": "복사",
     "retry": "Retry",
-    "unavailable": "unavailable",
+    "unavailable": "사용 불가",
     "days": "일",
     "aliasValidation": {
       "required": "[TO_TRANSLATE] Alias is required",
@@ -190,7 +190,7 @@
     "descriptionLabel": "설명",
     "descriptionPlaceholder": "설명을 입력하세요 (선택사항)",
     "expirationLabel": "만료 날짜",
-    "expirationPlaceholder": "MM/DD/YYYY HH:MM",
+    "expirationPlaceholder": "YYYY.MM.DD HH:MM",
     "maxViewsLabel": "최대 조회수",
     "maxViewsPlaceholder": "무제한은 비워두세요",
     "passwordProtection": "비밀번호 보호",
@@ -210,17 +210,17 @@
     },
     "itemsSelected": "{count, plural, =0 {선택된 항목 없음} =1 {1개 항목 선택됨} other {#개 항목 선택됨}}",
     "passwordPlaceholder": "비밀번호를 입력하세요",
-    "privacySection": "Privacy & Notifications",
-    "nameFieldRequired": "Require visitor name",
-    "emailFieldRequired": "Require visitor email",
-    "notifyOnDownload": "Notify me on each download",
-    "notifyOnDownloadHelp": "When enabled, you'll receive email notifications when files are downloaded from this share, regardless of your global notification preferences.",
-    "inactivityAlertDays": "Alert if no downloads after",
-    "inactivityAlertPlaceholder": "Leave empty to disable",
-    "fieldHidden": "Hidden",
-    "fieldOptional": "Optional",
-    "fieldRequired": "Required",
-    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
+    "privacySection": "개인정보 보호 및 알림",
+    "nameFieldRequired": "방문자 이름 필수",
+    "emailFieldRequired": "방문자 이메일 필수",
+    "notifyOnDownload": "파일이 다운로드될 때마다 알림 받기",
+    "notifyOnDownloadHelp": "활성화하면 전역 알림 설정과 관계없이 이 공유에서 파일이 다운로드될 때 이메일 알림을 받게 됩니다.",
+    "inactivityAlertDays": "다운로드가 없으면 경고하기",
+    "inactivityAlertPlaceholder": "비활성화하려면 비워두세요",
+    "fieldHidden": "숨김",
+    "fieldOptional": "선택사항",
+    "fieldRequired": "필수",
+    "filesOptionalHint": "파일 추가는 선택사항입니다 — 지금 빈 공유를 만들고 나중에 파일을 추가할 수 있습니다."
   },
   "customization": {
     "breadcrumb": "커스터마이징",
@@ -602,7 +602,7 @@
       "link": "링크",
       "qrcode": "QR 코드"
     },
-    "later": "Later"
+    "later": "나중에"
   },
   "home": {
     "pageTitle": "홈",
@@ -745,7 +745,7 @@
       "SHARE_RECIPIENT_ADD": "공유 수신자 추가됨",
       "SHARE_RECIPIENT_REMOVE": "공유 수신자 제거됨",
       "SHARE_RECIPIENT_NOTIFY": "공유 수신자 알림됨",
-      "SHARE_RECIPIENT_REMIND": "Share non-downloaders reminded",
+      "SHARE_RECIPIENT_REMIND": "공유의 다운로드하지 않은 수신자에게 알림",
       "SHARE_ITEMS_ADD": "공유 항목 추가됨",
       "SHARE_ITEMS_REMOVE": "공유 항목 제거됨",
       "FILE_UPLOAD": "파일 업로드됨",
@@ -789,17 +789,17 @@
       "BACKGROUND_IMAGE_UPLOAD": "배경 이미지 업로드됨",
       "BACKGROUND_IMAGE_DELETE": "배경 이미지 삭제됨",
       "AUDIT_RETENTION_CLEANUP": "감사 로그 정리됨",
-      "SHARE_DEACTIVATED": "Share deactivated",
-      "SHARE_REACTIVATED": "Share reactivated",
-      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
-      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated",
-      "SHARE_AUTO_DELETED": "Share auto-deleted",
-      "REVERSE_SHARE_AUTO_DELETED": "Reverse share auto-deleted",
-      "ACCOUNT_FILES_CLEANED": "Account files cleaned",
-      "ORPHAN_S3_DELETED": "Orphan storage object deleted",
-      "ORPHAN_DB_DELETED": "Orphan database record deleted",
-      "ORPHAN_MULTIPART_ABORTED": "Incomplete multipart upload aborted",
-      "QUOTA_FILES_DELETED": "Over-quota files deleted"
+      "SHARE_DEACTIVATED": "공유가 비활성화됨",
+      "SHARE_REACTIVATED": "공유가 다시 활성화됨",
+      "REVERSE_SHARE_DEACTIVATED": "수신 링크가 비활성화됨",
+      "REVERSE_SHARE_REACTIVATED": "수신 링크가 다시 활성화됨",
+      "SHARE_AUTO_DELETED": "공유가 자동 삭제됨",
+      "REVERSE_SHARE_AUTO_DELETED": "수신 링크가 자동 삭제됨",
+      "ACCOUNT_FILES_CLEANED": "계정 파일이 정리됨",
+      "ORPHAN_S3_DELETED": "고아 스토리지 객체가 삭제됨",
+      "ORPHAN_DB_DELETED": "고아 데이터베이스 레코드가 삭제됨",
+      "ORPHAN_MULTIPART_ABORTED": "불완전한 멀티파트 업로드가 중단됨",
+      "QUOTA_FILES_DELETED": "할당량 초과 파일이 삭제됨"
     },
     "targetTypes": {
       "user": "사용자",
@@ -1038,23 +1038,23 @@
     "selectedCount": "{count}개 선택됨",
     "addRecipient": "수신자 추가",
     "bulkNotifyError": "선택된 수신자들에게 알림 전송에 실패했습니다",
-    "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}",
-    "notifyPartial": "Only {sent} of {total} recipients were notified",
-    "neverAccessed": "Never accessed",
-    "namePlaceholder": "Name (optional)",
-    "downloaded": "Downloaded",
-    "pending": "Pending",
-    "downloadedAt": "Downloaded on {date}",
-    "uploaded": "Uploaded",
-    "uploadedAt": "Uploaded on {date}",
-    "uploadApproximateHint": "Approximate: uploaders can submit files without providing an email when it is not required",
-    "remindNonDownloaders": "Remind ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
-    "sendingReminders": "Sending reminders...",
-    "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
-    "remindNoneSent": "No reminders were sent",
-    "remindError": "Failed to send reminders"
+    "notified": "알림 됨",
+    "views": "{count, plural, other {# 회 조회}}",
+    "notifyPartial": "{total}명 중 {sent}명의 수신자만 알림을 받았습니다",
+    "neverAccessed": "접근 없음",
+    "namePlaceholder": "이름（선택 사항）",
+    "downloaded": "다운로드됨",
+    "pending": "대기 중",
+    "downloadedAt": "{date}에 다운로드함",
+    "uploaded": "업로드됨",
+    "uploadedAt": "{date}에 업로드함",
+    "uploadApproximateHint": "대략: 이메일이 필수가 아니면 업로더가 이메일을 제공하지 않고 파일을 제출할 수 있습니다",
+    "remindNonDownloaders": "알림 ({count})",
+    "remindNonDownloadersHint": "{count, plural, other {아직 다운로드하지 않은 # 명의 수신자에게 알림}}",
+    "sendingReminders": "알림을 보내는 중...",
+    "remindSuccess": "{count, plural, other {# 명의 수신자에게 알림을 보냈습니다}}",
+    "remindNoneSent": "보낸 알림 없음",
+    "remindError": "알림 전송 실패"
   },
   "register": {
     "validation": {
@@ -1254,7 +1254,7 @@
         "editDescription": "이 수신 링크의 별칭 업데이트",
         "createDescription": "이 수신 링크의 맞춤형 별칭 생성",
         "aliasLabel": "링크 별칭",
-        "aliasPlaceholder": "내-맞춤-링크",
+        "aliasPlaceholder": "내-링크",
         "preview": "미리보기:",
         "currentLink": "현재 링크:",
         "copyCurrentLink": "현재 링크 복사",
@@ -1413,8 +1413,8 @@
         "label": "이름 필드 요구 사항",
         "description": "업로더 이름 필드를 표시 해야하는지 확인하고 필요한 경우 구성하십시오."
       },
-      "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "notifyOnUpload": "각 업로드마다 알림받기",
+      "notifyOnUploadHelp": "활성화하면 전역 알림 설정과 관계없이 이 수신 링크로 파일이 업로드될 때마다 이메일 알림을 받습니다.",
       "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
       "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
@@ -1502,14 +1502,14 @@
         "nameLabel": "이름",
         "namePlaceholder": "귀하의 이름",
         "emailLabel": "이메일",
-        "emailPlaceholder": "your@email.com",
+        "emailPlaceholder": "당신@email.kr",
         "descriptionLabel": "설명 (선택사항)",
         "descriptionPlaceholder": "파일에 대한 설명 추가...",
         "uploadButton": "{count}개 파일 보내기",
         "uploading": "보내는 중...",
         "emailLabelOptional": "이메일 (선택 사항)",
         "nameLabelOptional": "이름 (선택 사항)",
-        "privacyNotice": "Your name, email and uploads may be visible to the owner of this receive link."
+        "privacyNotice": "귀하의 이름, 이메일 및 업로드는 이 수신 링크의 소유자에게 표시될 수 있습니다."
       },
       "success": {
         "title": "파일이 성공적으로 보내졌습니다! 🎉",
@@ -1591,8 +1591,8 @@
         "description": "WeTransfer 스타일 업로드 페이지의 배경 이미지 관리"
       },
       "cleanup": {
-        "title": "Automatic Cleanup",
-        "description": "Lifecycle management for expired content, deactivated accounts, and orphaned files. Auto-deletion is off by default."
+        "title": "자동 정리",
+        "description": "만료된 콘텐츠, 비활성화된 계정 및 고아 파일의 수명 주기 관리입니다. 자동 삭제는 기본적으로 비활성화되어 있습니다."
       }
     },
     "fields": {
@@ -1606,8 +1606,8 @@
         "description": "사용자에게 표시되는 애플리케이션 이름"
       },
       "appUrl": {
-        "title": "Application URL",
-        "description": "Public URL of the application, used in email links"
+        "title": "애플리케이션 URL",
+        "description": "애플리케이션의 공개 URL(이메일 링크에 사용)"
       },
       "appDescription": {
         "title": "애플리케이션 설명",
@@ -1670,32 +1670,32 @@
         "description": "사용자당 총 저장소 제한입니다. 사용자 또는 그룹별로 재정의할 수 있습니다."
       },
       "quotaWarningThresholds": {
-        "title": "Quota Warning Thresholds (%)",
-        "description": "Comma-separated percentages, e.g. \"80,90\", at which a user is emailed a quota warning. Each value must be a whole number between 1 and 99. A separate alert is sent when storage reaches 100%."
+        "title": "할당량 경고 임계값(%)",
+        "description": "쉼표로 구분된 백분율(예: \"80,90\")입니다. 사용자에게 할당량 경고 이메일을 보내는 지점입니다. 각 값은 1~99 사이의 정수여야 합니다. 저장소가 100%에 도달하면 별도의 알림이 전송됩니다."
       },
       "quotaGracePeriodDays": {
-        "title": "Quota Grace Period (days)",
-        "description": "How many days a user may stay over their quota before smart deletion may act (only when smart deletion is enabled below). Minimum 0."
+        "title": "할당량 유예 기간(일)",
+        "description": "스마트 삭제가 작동하기 전에 사용자가 할당량을 초과할 수 있는 일 수입니다(스마트 삭제가 활성화된 경우만). 최소값은 0입니다."
       },
       "quotaSmartDeletionEnabled": {
-        "title": "Smart Deletion of Over-Quota Files",
-        "description": "Off by default. When enabled, after the grace period the oldest unsafe files of an over-quota user are deleted in a safe order: first unshared uploads, then files in shares inactive for the period below. Files in active shares are never deleted — if nothing is safe to remove, new uploads are simply blocked instead."
+        "title": "할당량 초과 파일의 스마트 삭제",
+        "description": "기본적으로 비활성화되어 있습니다. 활성화되면 유예 기간 후 할당량을 초과한 사용자의 가장 오래된 안전하지 않은 파일이 안전한 순서로 삭제됩니다. 먼저 공유되지 않은 업로드, 다음 아래 기간 동안 비활성 공유의 파일입니다. 활성 공유의 파일은 절대 삭제되지 않습니다. 안전하게 제거할 수 있는 것이 없으면 새 업로드가 단순히 차단됩니다."
       },
       "quotaInactiveShareDays": {
-        "title": "Inactive Share Threshold (days)",
-        "description": "A share's files are eligible for smart deletion once the share has had no activity for this many days. Minimum 1."
+        "title": "비활성 공유 임계값(일)",
+        "description": "공유가 이 일 수 동안 활동이 없으면 공유의 파일이 스마트 삭제 대상이 됩니다. 최소값은 1입니다."
       },
       "reverseShareQuotaSoftEnforcement": {
-        "title": "Reverse Share Soft Enforcement",
-        "description": "On by default. Lets external guests keep uploading to a reverse share even if the owner is slightly over quota, so collections are not interrupted. Uploads are still blocked once the owner exceeds the tolerance set below, and the owner is alerted to free up space."
+        "title": "수신 링크 유연한 적용",
+        "description": "기본적으로 활성화되어 있습니다. 소유자가 할당량을 약간 초과한 경우에도 외부 게스트가 수신 링크에 계속 업로드할 수 있으므로 컬렉션이 중단되지 않습니다. 소유자가 아래 설정된 허용 범위를 초과하면 업로드가 여전히 차단되고 소유자에게 공간을 확보하라는 경고가 표시됩니다."
       },
       "reverseShareMaxOverageFactor": {
-        "title": "Reverse Share Overage Factor",
-        "description": "Soft enforcement allows reverse-share uploads until usage reaches this multiple of the owner's quota (e.g. 3 = up to three times the limit). Minimum 1."
+        "title": "수신 링크 초과 배수",
+        "description": "유연한 적용을 통해 사용량이 소유자의 할당량의 이 배수에 도달할 때까지 수신 링크에 업로드할 수 있습니다(예: 3 = 한도의 최대 3배). 최소값은 1입니다."
       },
       "reverseShareAbsoluteMaxBytes": {
-        "title": "Reverse Share Absolute Cap",
-        "description": "Hard ceiling for reverse-share soft enforcement regardless of the factor above. Set to 0 for no absolute cap."
+        "title": "수신 링크 절대 상한",
+        "description": "위 배수와 관계없이 수신 링크 유연한 적용을 위한 하드 상한입니다. 절대 상한 없음의 경우 0으로 설정합니다."
       },
       "firstUserAccess": {
         "description": "새 사용자의 첫 번째 액세스 설정",
@@ -1748,56 +1748,56 @@
         "description": "바닥글 텍스트의 링크 URL"
       },
       "emailDigestHour": {
-        "title": "Digest Email Hour",
-        "description": "Hour of the day (0-23) when digest emails are sent"
+        "title": "다이제스트 이메일 시간",
+        "description": "다이제스트 이메일이 전송되는 시간(0-23)"
       },
       "emailJobRetentionDays": {
-        "title": "Email Job Retention",
-        "description": "Number of days to keep completed email jobs before cleanup"
+        "title": "이메일 작업 보관",
+        "description": "정리 전에 완료된 이메일 작업을 보관할 일 수"
       },
       "emailQueueIntervalSeconds": {
-        "title": "Queue Processing Interval",
-        "description": "Seconds between email queue processing cycles"
+        "title": "큐 처리 간격",
+        "description": "이메일 큐 처리 주기 간의 초 단위 시간"
       },
       "emailQueueMaxRetries": {
-        "title": "Max Email Retries",
-        "description": "Maximum number of retry attempts for failed emails"
+        "title": "최대 이메일 재시도",
+        "description": "실패한 이메일의 최대 재시도 횟수"
       },
       "auditRetentionDays": {
         "title": "Audit Retention",
         "description": "감사 로그를 보관할 일 수 (0 = 영구, 최소 7)"
       },
       "autoCleanupEnabled": {
-        "title": "Enable Automatic Cleanup",
-        "description": "Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on."
+        "title": "자동 정리 활성화",
+        "description": "만료된 공유 링크, 만료된 수신 파일 및 고아의 예약된 정리를 위한 마스터 스위치입니다. 기본적으로 비활성화되어 있습니다. 활성화할 때까지 자동 삭제되는 항목이 없습니다."
       },
       "autoCleanupIntervalHours": {
-        "title": "Cleanup Interval (hours)",
-        "description": "How often the cleanup task runs. Minimum 1 hour."
+        "title": "정리 간격(시간)",
+        "description": "정리 작업이 실행되는 빈도입니다. 최소값은 1시간입니다."
       },
       "autoCleanupGracePeriodDays": {
-        "title": "Grace Period (days)",
+        "title": "유예 기간(일)",
         "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
       },
       "autoCleanupNotifyDaysBefore": {
-        "title": "Warn Before Deletion (days)",
-        "description": "Send the owner a \"pending permanent deletion\" warning email this many days before the content is deleted. 0 disables the warning. Should be at most the grace period."
+        "title": "삭제 전 경고(일)",
+        "description": "콘텐츠가 삭제되기 이 일 수 전에 소유자에게 \"영구 삭제 예정\" 경고 이메일을 보냅니다. 0으로 설정하면 경고가 비활성화됩니다. 유예 기간 이하여야 합니다."
       },
       "accountDeactivationCleanupEnabled": {
-        "title": "Delete Deactivated Accounts' Files",
-        "description": "When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files."
+        "title": "비활성화된 계정 파일 삭제",
+        "description": "활성화되면 비활성화된 계정에 속한 파일은 아래 지연 후 영구 삭제됩니다. 기본적으로 비활성화되어 있습니다. 비활성화만으로는 파일이 삭제되지 않습니다."
       },
       "accountDeactivationCleanupDays": {
-        "title": "Deactivation Cleanup Delay (days)",
-        "description": "Days after an account is deactivated before its files are deleted (only when the option above is enabled). Minimum 1."
+        "title": "계정 비활성화 정리 지연(일)",
+        "description": "계정이 비활성화된 후 파일이 삭제될 때까지의 일 수입니다(위 옵션이 활성화된 경우만). 최소값은 1입니다."
       },
       "autoCleanupOrphansEnabled": {
-        "title": "Sweep Orphaned Files",
-        "description": "When on, runs a two-way sweep that removes database records pointing to missing storage objects and storage objects with no database record. Off by default."
+        "title": "고아 파일 정소",
+        "description": "활성화되면 누락된 저장소 개체를 가리키는 데이터베이스 레코드 및 데이터베이스 레코드가 없는 저장소 개체를 제거하는 양방향 소프트를 실행합니다. 기본적으로 비활성화되어 있습니다."
       },
       "autoCleanupOrphanMinAgeHours": {
-        "title": "Orphan Minimum Age (hours)",
-        "description": "Only files and objects older than this are considered during the orphan sweep, protecting uploads still in progress. Minimum 1."
+        "title": "고아 최소 나이(시간)",
+        "description": "고아 정리 중에 고려되는 것은 이보다 오래된 파일 및 개체뿐입니다. 진행 중인 업로드를 보호합니다. 최소값은 1입니다."
       }
     },
     "buttons": {
@@ -1810,9 +1810,9 @@
       "updateFailed": "설정 업데이트에 실패했습니다",
       "passwordAuthRequiresProvider": "최소 하나의 활성 인증 제공자가 없으면 비밀번호 인증을 비활성화할 수 없습니다",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
-      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent",
-      "quotaThresholdsInvalid": "Enter comma-separated percentages between 1 and 99, for example \"80,90\""
+      "cleanupValueInvalid": "값은 최소한 {min} 이상의 정수여야 합니다",
+      "notifyDaysExceedsGrace": "경고 리드 타임이 유예 기간을 초과하면 안 됩니다. 그렇지 않으면 경고가 전송되지 않습니다",
+      "quotaThresholdsInvalid": "1~99 사이의 쉼표로 구분된 백분율을 입력하세요(예: \"80,90\")"
     },
     "messages": {
       "noChanges": "저장할 변경 사항이 없습니다",
@@ -1832,20 +1832,20 @@
       "defaultPlaceholder": "입력하고 Enter 키를 누르세요"
     },
     "redirectUri": {
-      "placeholder": "https://mysite.com",
+      "placeholder": "https://mysite.kr",
       "previewLabel": "저장될 전체 URL:"
     },
     "emailAdmin": {
-      "queueStatus": "Email Queue Status",
-      "pending": "Pending",
-      "sentLast24h": "Sent (24h)",
-      "failed": "Failed",
+      "queueStatus": "이메일 큐 상태",
+      "pending": "보류 중",
+      "sentLast24h": "전송됨(24시간)",
+      "failed": "실패",
       "digestQueue": "다이제스트 대기열",
-      "sendTest": "Send Test Email",
-      "testPlaceholder": "recipient@example.com",
-      "testSending": "Sending...",
-      "testSuccess": "Test email queued successfully",
-      "testError": "Failed to send test email"
+      "sendTest": "테스트 이메일 전송",
+      "testPlaceholder": "예시@email.kr",
+      "testSending": "전송 중...",
+      "testSuccess": "테스트 이메일이 성공적으로 큐에 들어갔습니다",
+      "testError": "테스트 이메일 전송에 실패했습니다"
     }
   },
   "share": {
@@ -1881,19 +1881,19 @@
       "filesShared": "{count, plural, =1 {1개 파일 공유됨} other {#개 파일 공유됨}}"
     },
     "identification": {
-      "title": "Visitor Identification",
-      "subtitle": "Please provide your information to access this share",
-      "nameLabel": "Name",
-      "emailLabel": "Email",
-      "submit": "Continue",
-      "error": "Failed to submit identification. Please try again.",
-      "optional": "Optional",
-      "nameRequired": "Name is required",
-      "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email address",
+      "title": "방문자 식별",
+      "subtitle": "이 공유에 액세스하려면 정보를 제공하십시오",
+      "nameLabel": "이름",
+      "emailLabel": "이메일",
+      "submit": "계속",
+      "error": "식별 제출에 실패했습니다. 다시 시도해주세요.",
+      "optional": "선택 사항",
+      "nameRequired": "이름은 필수입니다",
+      "emailRequired": "이메일은 필수입니다",
+      "emailInvalid": "유효한 이메일 주소를 입력하세요",
       "metadataError": "Failed to load share information. Please try again.",
       "rateLimited": "Too many attempts. Please try again later.",
-      "privacyNotice": "Your accesses and downloads may be visible to the sender of this share."
+      "privacyNotice": "귀하의 액세스 및 다운로드는 이 공유의 발신자에게 표시될 수 있습니다."
     }
   },
   "shareActions": {
@@ -1923,8 +1923,8 @@
     "linkTitle": "링크 생성",
     "itemsSelected": "{count}개 항목 선택됨",
     "manageFilesDescription": "이 공유에 포함할 파일 및 폴더 선택",
-    "keepCurrentPasswordHint": "Leave empty to keep current password",
-    "passwordRequired": "Password is required for new password protection"
+    "keepCurrentPasswordHint": "현재 비밀번호를 유지하려면 비워두세요",
+    "passwordRequired": "새 비밀번호 보호에는 비밀번호가 필요합니다"
   },
   "shareDetails": {
     "title": "공유 세부 정보",
@@ -1960,27 +1960,27 @@
     "downloadQrCode": "QR 코드 다운로드",
     "qrCode": "QR 코드",
     "activity": {
-      "title": "Activity",
-      "noActivity": "No activity recorded yet.",
-      "access": "Viewed",
-      "download": "Downloaded",
-      "anonymous": "Anonymous",
-      "loadMore": "Load more",
-      "showingCount": "Showing {shown} of {total}",
-      "loadError": "Failed to load activity data.",
-      "filterAll": "All actions",
-      "filterAccess": "Views only",
-      "filterDownload": "Downloads only",
-      "filterAllVisitors": "All visitors",
-      "filterIdentified": "Identified",
-      "filterAnonymous": "Anonymous",
+      "title": "활동",
+      "noActivity": "아직 기록된 활동이 없습니다.",
+      "access": "조회됨",
+      "download": "다운로드됨",
+      "anonymous": "익명",
+      "loadMore": "더 로드",
+      "showingCount": "{total}개 중 {shown}개 표시",
+      "loadError": "활동 데이터 로드 실패.",
+      "filterAll": "모든 작업",
+      "filterAccess": "조회만",
+      "filterDownload": "다운로드만",
+      "filterAllVisitors": "모든 방문자",
+      "filterIdentified": "식별됨",
+      "filterAnonymous": "익명",
       "source": {
-        "tracking_token": "Via recipient link",
-        "cookie": "Self-identified",
-        "selfDeclaredHint": "Self-declared identity, not verified"
+        "tracking_token": "수신 링크를 통해",
+        "cookie": "자체 식별",
+        "selfDeclaredHint": "자체 신고 신원, 미확인"
       }
     },
-    "lastDownloaded": "Last Downloaded",
+    "lastDownloaded": "마지막 다운로드",
     "privacySummary": "개인정보",
     "privacyNameField": "방문자 이름:",
     "privacyEmailField": "방문자 이메일:",
@@ -1990,9 +1990,9 @@
       "OPTIONAL": "선택사항",
       "REQUIRED": "필수"
     },
-    "recipientNotified": "Notified",
-    "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
-    "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"
+    "recipientNotified": "알림 됨",
+    "recipientAccess": "{count, plural, other {# 회 액세스}}",
+    "recipientAccessWithLast": "{count, plural, other {# 회 액세스}} · 마지막 {lastAccess}"
   },
   "shareExpiration": {
     "neverExpires": "만료되지 않음",
@@ -2054,10 +2054,10 @@
     "errors": {
       "multipleDownloadNotSupported": "여러 공유 다운로드는 아직 지원되지 않습니다 - 공유를 개별적으로 다운로드해주세요"
     },
-    "pauseSuccess": "Share paused",
-    "pauseError": "Failed to pause share",
-    "resumeSuccess": "Share resumed",
-    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
+    "pauseSuccess": "공유가 일시 중지됨",
+    "pauseError": "공유 일시 중지 실패",
+    "resumeSuccess": "공유가 재개됨",
+    "resumeError": "공유를 재개하지 못했습니다. 만료되었거나 조회 제한에 도달한 경우 대신 연장하세요."
   },
   "shareMultipleFiles": {
     "title": "여러 파일 공유",
@@ -2152,8 +2152,8 @@
       "neverExpires": "만료되지 않음",
       "active": "활성",
       "expired": "만료됨",
-      "paused": "Paused",
-      "maxViewsReached": "View Limit Reached"
+      "paused": "일시 중지됨",
+      "maxViewsReached": "조회 제한 도달"
     },
     "security": {
       "protected": "보호됨",
@@ -2174,9 +2174,9 @@
       "delete": "삭제",
       "downloadShareFiles": "모든 파일을 다운로드하십시오",
       "viewQrCode": "QR 코드 보기",
-      "pause": "Pause",
-      "resume": "Resume",
-      "renew": "Renew"
+      "pause": "일시 중지",
+      "resume": "재개",
+      "renew": "갱신"
     },
     "bulkActions": {
       "delete": "삭제",
@@ -2812,41 +2812,41 @@
     }
   },
   "notificationPreferences": {
-    "pageTitle": "Notification Preferences",
-    "description": "Choose which email notifications you receive",
-    "type": "Notification Type",
-    "category": "Category",
-    "frequency": "Frequency",
-    "immediate": "Immediate",
-    "disabled": "Disabled",
-    "alwaysEnabled": "Always enabled",
-    "save": "Save Preferences",
-    "saveSuccess": "Notification preferences saved",
-    "saveError": "Failed to save preferences",
-    "noChanges": "No changes to save",
+    "pageTitle": "알림 설정",
+    "description": "받을 이메일 알림을 선택하세요",
+    "type": "알림 유형",
+    "category": "카테고리",
+    "frequency": "빈도",
+    "immediate": "즉시",
+    "disabled": "비활성화됨",
+    "alwaysEnabled": "항상 활성화됨",
+    "save": "설정 저장",
+    "saveSuccess": "알림 설정이 저장되었습니다",
+    "saveError": "설정 저장에 실패했습니다",
+    "noChanges": "저장할 변경 사항이 없습니다",
     "types": {
-      "password_reset": "Password reset",
-      "welcome": "Welcome email",
-      "account_deactivated": "Account deactivated",
-      "account_reactivated": "Account reactivated",
-      "share_invitation": "Share invitation",
-      "share_accessed": "Share accessed",
-      "share_downloaded": "File downloaded from share",
-      "share_expiring": "Share expiring soon",
-      "share_expired": "Share expired",
-      "share_max_views_reached": "Share max views reached",
-      "share_no_activity": "No activity on share",
-      "reverse_share_invitation": "Reverse share invitation",
-      "reverse_share_uploaded": "Files uploaded to reverse share",
-      "reverse_share_expiring": "Reverse share expiring",
-      "reverse_share_expired": "Reverse share expired",
-      "quota_warning": "Quota warning",
-      "quota_exceeded": "Quota exceeded",
-      "files_auto_deleted": "Files auto-deleted",
-      "share_auto_deleted": "Share auto-deleted",
-      "admin_user_registered": "New user registered (admin)",
-      "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email",
+      "password_reset": "비밀번호 재설정",
+      "welcome": "환영 이메일",
+      "account_deactivated": "계정이 비활성화됨",
+      "account_reactivated": "계정이 다시 활성화됨",
+      "share_invitation": "공유 초대",
+      "share_accessed": "공유에 접근함",
+      "share_downloaded": "공유에서 파일 다운로드됨",
+      "share_expiring": "공유가 곧 만료됨",
+      "share_expired": "공유가 만료됨",
+      "share_max_views_reached": "공유의 최대 조회수 도달",
+      "share_no_activity": "공유에 활동이 없음",
+      "reverse_share_invitation": "수신 링크 초대",
+      "reverse_share_uploaded": "수신 링크에 파일 업로드됨",
+      "reverse_share_expiring": "수신 링크가 곧 만료됨",
+      "reverse_share_expired": "수신 링크가 만료됨",
+      "quota_warning": "할당량 경고",
+      "quota_exceeded": "할당량 초과됨",
+      "files_auto_deleted": "파일이 자동 삭제됨",
+      "share_auto_deleted": "공유가 자동 삭제됨",
+      "admin_user_registered": "새 사용자 등록(관리자 전용)",
+      "admin_quota_alert": "사용자 할당량 경고(관리자 전용)",
+      "test_email": "테스트 이메일",
       "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
       "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
       "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
@@ -2872,16 +2872,16 @@
       "admin_quota_alert": "사용자의 저장 공간 사용량이 할당량을 초과했을 때 (관리자 전용)"
     },
     "categories": {
-      "account": "Account",
-      "shares": "Shares",
-      "reverseShares": "Reverse Shares",
+      "account": "계정",
+      "shares": "공유",
+      "reverseShares": "수신 링크",
       "quota": "Quotas",
       "admin": "Administration",
       "test": "Test"
     },
-    "saving": "Saving...",
-    "loadError": "Failed to load notification preferences",
-    "retry": "Retry",
-    "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}"
+    "saving": "저장 중...",
+    "loadError": "알림 설정을 로드할 수 없습니다",
+    "retry": "다시 시도",
+    "unsavedChanges": "{count, plural, one {저장하지 않은 변경 사항 # 개} other {저장하지 않은 변경 사항 # 개}}"
   }
 }

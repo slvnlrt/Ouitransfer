@@ -67,17 +67,17 @@
       "scopesHelpOidc": "プロバイダーURLに基づいて自動提案されるスコープ。一般的なOIDCスコープ：openid, profile, email, groups",
       "scopesHelpOauth2": "プロバイダーURLに基づいて自動提案されるスコープ。一般的なOAuth2スコープはプロバイダーによって異なります",
       "providerUrl": "プロバイダーURL",
-      "providerUrlPlaceholder": "https://auth.example.com",
+      "providerUrlPlaceholder": "https://auth.example.jp",
       "providerUrlAutoPlaceholder": "https://your-provider.com（エンドポイントは自動的に検出されます）",
-      "providerUrlManualPlaceholder": "https://your-provider.com",
+      "providerUrlManualPlaceholder": "https://your-provider.jp",
       "autoDiscoveryHelp": "システムは認証、トークン、ユーザー情報のエンドポイントを自動的に検出します",
       "manualConfigurationHelp": "プロバイダーのベースURL（エンドポイントはこれを基準とします）",
       "authorizationEndpoint": "認証エンドポイント",
-      "authorizationEndpointPlaceholder": "https://auth.example.com/auth",
+      "authorizationEndpointPlaceholder": "https://auth.example.jp/auth",
       "tokenEndpoint": "トークンエンドポイント",
-      "tokenEndpointPlaceholder": "https://auth.example.com/token",
+      "tokenEndpointPlaceholder": "https://auth.example.jp/token",
       "userInfoEndpoint": "ユーザー情報エンドポイント",
-      "userInfoEndpointPlaceholder": "https://auth.example.com/userinfo",
+      "userInfoEndpointPlaceholder": "https://auth.example.jp/userinfo",
       "configurationMethod": "設定方法",
       "autoDiscovery": "自動検出",
       "autoDiscoveryDescription": "プロバイダーURLからエンドポイントを自動的に検出",
@@ -175,7 +175,7 @@
     "copied": "コピーしました",
     "copy": "コピー",
     "retry": "Retry",
-    "unavailable": "unavailable",
+    "unavailable": "利用不可",
     "days": "日",
     "aliasValidation": {
       "required": "[TO_TRANSLATE] Alias is required",
@@ -190,7 +190,7 @@
     "descriptionLabel": "説明",
     "descriptionPlaceholder": "説明を入力してください（任意）",
     "expirationLabel": "有効期限",
-    "expirationPlaceholder": "MM/DD/YYYY HH:MM",
+    "expirationPlaceholder": "YYYY/MM/DD HH:MM",
     "maxViewsLabel": "最大表示回数",
     "maxViewsPlaceholder": "無制限の場合は空のままにしてください",
     "passwordProtection": "パスワード保護",
@@ -210,17 +210,17 @@
     },
     "itemsSelected": "{count, plural, =0 {アイテムが選択されていません} =1 {1つのアイテムが選択されています} other {#つのアイテムが選択されています}}",
     "passwordPlaceholder": "パスワードを入力してください",
-    "privacySection": "Privacy & Notifications",
-    "nameFieldRequired": "Require visitor name",
-    "emailFieldRequired": "Require visitor email",
-    "notifyOnDownload": "Notify me on each download",
-    "notifyOnDownloadHelp": "When enabled, you'll receive email notifications when files are downloaded from this share, regardless of your global notification preferences.",
-    "inactivityAlertDays": "Alert if no downloads after",
-    "inactivityAlertPlaceholder": "Leave empty to disable",
-    "fieldHidden": "Hidden",
-    "fieldOptional": "Optional",
-    "fieldRequired": "Required",
-    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
+    "privacySection": "プライバシーと通知",
+    "nameFieldRequired": "訪問者の名前を要求する",
+    "emailFieldRequired": "訪問者のメールアドレスを要求する",
+    "notifyOnDownload": "ファイルがダウンロードされるたびに通知する",
+    "notifyOnDownloadHelp": "有効にすると、この共有からファイルがダウンロードされたときに、グローバル通知設定に関わらずメール通知を受け取ります。",
+    "inactivityAlertDays": "ダウンロードがない場合に警告する",
+    "inactivityAlertPlaceholder": "無効にするには空白のままにしてください",
+    "fieldHidden": "非表示",
+    "fieldOptional": "オプション",
+    "fieldRequired": "必須",
+    "filesOptionalHint": "ファイルの追加は任意です — 今は空の共有を作成して、後からファイルを追加できます。"
   },
   "customization": {
     "breadcrumb": "カスタマイズ",
@@ -602,7 +602,7 @@
       "link": "リンク",
       "qrcode": "QRコード"
     },
-    "later": "Later"
+    "later": "後で"
   },
   "home": {
     "pageTitle": "ホーム",
@@ -745,7 +745,7 @@
       "SHARE_RECIPIENT_ADD": "共有受信者追加",
       "SHARE_RECIPIENT_REMOVE": "共有受信者削除",
       "SHARE_RECIPIENT_NOTIFY": "共有受信者通知",
-      "SHARE_RECIPIENT_REMIND": "Share non-downloaders reminded",
+      "SHARE_RECIPIENT_REMIND": "共有の未ダウンロード受取人に通知しました",
       "SHARE_ITEMS_ADD": "共有アイテム追加",
       "SHARE_ITEMS_REMOVE": "共有アイテム削除",
       "FILE_UPLOAD": "ファイルアップロード",
@@ -789,17 +789,17 @@
       "BACKGROUND_IMAGE_UPLOAD": "背景画像アップロード",
       "BACKGROUND_IMAGE_DELETE": "背景画像削除",
       "AUDIT_RETENTION_CLEANUP": "監査ログクリーンアップ",
-      "SHARE_DEACTIVATED": "Share deactivated",
-      "SHARE_REACTIVATED": "Share reactivated",
-      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
-      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated",
-      "SHARE_AUTO_DELETED": "Share auto-deleted",
-      "REVERSE_SHARE_AUTO_DELETED": "Reverse share auto-deleted",
-      "ACCOUNT_FILES_CLEANED": "Account files cleaned",
-      "ORPHAN_S3_DELETED": "Orphan storage object deleted",
-      "ORPHAN_DB_DELETED": "Orphan database record deleted",
-      "ORPHAN_MULTIPART_ABORTED": "Incomplete multipart upload aborted",
-      "QUOTA_FILES_DELETED": "Over-quota files deleted"
+      "SHARE_DEACTIVATED": "共有が無効化されました",
+      "SHARE_REACTIVATED": "共有が再度有効化されました",
+      "REVERSE_SHARE_DEACTIVATED": "受信リンクが無効化されました",
+      "REVERSE_SHARE_REACTIVATED": "受信リンクが再度有効化されました",
+      "SHARE_AUTO_DELETED": "共有が自動削除されました",
+      "REVERSE_SHARE_AUTO_DELETED": "受信リンクが自動削除されました",
+      "ACCOUNT_FILES_CLEANED": "アカウントのファイルが削除されました",
+      "ORPHAN_S3_DELETED": "孤立したストレージオブジェクトが削除されました",
+      "ORPHAN_DB_DELETED": "孤立したデータベースレコードが削除されました",
+      "ORPHAN_MULTIPART_ABORTED": "不完全なマルチパートアップロードが中止されました",
+      "QUOTA_FILES_DELETED": "クォータ超過ファイルが削除されました"
     },
     "targetTypes": {
       "user": "ユーザー",
@@ -1038,23 +1038,23 @@
     "selectedCount": "{count}件選択済み",
     "addRecipient": "受信者を追加",
     "bulkNotifyError": "選択された受信者への通知に失敗しました",
-    "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}",
-    "notifyPartial": "Only {sent} of {total} recipients were notified",
-    "neverAccessed": "Never accessed",
-    "namePlaceholder": "Name (optional)",
-    "downloaded": "Downloaded",
-    "pending": "Pending",
-    "downloadedAt": "Downloaded on {date}",
-    "uploaded": "Uploaded",
-    "uploadedAt": "Uploaded on {date}",
-    "uploadApproximateHint": "Approximate: uploaders can submit files without providing an email when it is not required",
-    "remindNonDownloaders": "Remind ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
-    "sendingReminders": "Sending reminders...",
-    "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
-    "remindNoneSent": "No reminders were sent",
-    "remindError": "Failed to send reminders"
+    "notified": "通知済み",
+    "views": "{count, plural, other {# 回閲覧}}",
+    "notifyPartial": "{sent} の {total} 受取人のみに通知されました",
+    "neverAccessed": "アクセスなし",
+    "namePlaceholder": "名前（オプション）",
+    "downloaded": "ダウンロード済み",
+    "pending": "保留中",
+    "downloadedAt": "{date} にダウンロード",
+    "uploaded": "アップロード済み",
+    "uploadedAt": "{date} にアップロード",
+    "uploadApproximateHint": "概算：メールが必須でない場合、アップロード者はメールを提供せずにファイルを送信できます",
+    "remindNonDownloaders": "催促 ({count})",
+    "remindNonDownloadersHint": "{count, plural, other {ダウンロードしていない # 受取人に催促}}",
+    "sendingReminders": "催促を送信中...",
+    "remindSuccess": "{count, plural, other {# 受取人に催促を送信しました}}",
+    "remindNoneSent": "催促は送信されていません",
+    "remindError": "催促の送信に失敗しました"
   },
   "register": {
     "validation": {
@@ -1254,7 +1254,7 @@
         "editDescription": "この受信リンクのエイリアスを更新",
         "createDescription": "この受信リンクのカスタムエイリアスを作成",
         "aliasLabel": "リンクエイリアス",
-        "aliasPlaceholder": "my-custom-link",
+        "aliasPlaceholder": "カスタムリンク",
         "preview": "プレビュー:",
         "currentLink": "現在のリンク:",
         "copyCurrentLink": "現在のリンクをコピー",
@@ -1413,8 +1413,8 @@
         "label": "名前フィールドの要件",
         "description": "アップローダー名フィールドが表示されるかどうか、そしてそれが必要かどうかを構成します"
       },
-      "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "notifyOnUpload": "アップロードのたびに通知する",
+      "notifyOnUploadHelp": "有効にすると、グローバル通知設定に関係なく、このリンクにファイルがアップロードされるたびにメール通知を受け取ります。",
       "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
       "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
@@ -1502,14 +1502,14 @@
         "nameLabel": "名前",
         "namePlaceholder": "あなたの名前",
         "emailLabel": "メールアドレス",
-        "emailPlaceholder": "your@email.com",
+        "emailPlaceholder": "あなた@email.jp",
         "descriptionLabel": "説明（オプション）",
         "descriptionPlaceholder": "ファイルの説明を追加...",
         "uploadButton": "{count} ファイルを送信",
         "uploading": "送信中...",
         "emailLabelOptional": "メール（オプション）",
         "nameLabelOptional": "名前（オプション）",
-        "privacyNotice": "Your name, email and uploads may be visible to the owner of this receive link."
+        "privacyNotice": "あなたの名前、メール、アップロードはこのリンク所有者に表示される可能性があります。"
       },
       "success": {
         "title": "ファイルを送信しました！ 🎉",
@@ -1591,8 +1591,8 @@
         "description": "WeTransferスタイルのアップロードページの背景画像を管理"
       },
       "cleanup": {
-        "title": "Automatic Cleanup",
-        "description": "Lifecycle management for expired content, deactivated accounts, and orphaned files. Auto-deletion is off by default."
+        "title": "自動クリーンアップ",
+        "description": "期限切れコンテンツ、無効化されたアカウント、孤立ファイルのライフサイクル管理です。自動削除はデフォルトで無効です。"
       }
     },
     "fields": {
@@ -1606,8 +1606,8 @@
         "description": "ユーザーに表示されるアプリケーション名"
       },
       "appUrl": {
-        "title": "Application URL",
-        "description": "Public URL of the application, used in email links"
+        "title": "アプリケーションURL",
+        "description": "アプリケーションの公開URL（メール内のリンクに使用）"
       },
       "appDescription": {
         "title": "アプリケーションの説明",
@@ -1670,32 +1670,32 @@
         "description": "ユーザーごとの合計ストレージ制限。ユーザーごと、グループごとにオーバーライド可能。"
       },
       "quotaWarningThresholds": {
-        "title": "Quota Warning Thresholds (%)",
-        "description": "Comma-separated percentages, e.g. \"80,90\", at which a user is emailed a quota warning. Each value must be a whole number between 1 and 99. A separate alert is sent when storage reaches 100%."
+        "title": "クォータ警告閾値（%）",
+        "description": "カンマ区切りのパーセンテージ（例：「80,90」）。この値に達するとユーザーにクォータ警告がメール送信されます。各値は1～99の整数です。ストレージが100%に達すると別のアラートが送信されます。"
       },
       "quotaGracePeriodDays": {
-        "title": "Quota Grace Period (days)",
-        "description": "How many days a user may stay over their quota before smart deletion may act (only when smart deletion is enabled below). Minimum 0."
+        "title": "クォータ猶予期間（日数）",
+        "description": "スマート削除が機能する前にユーザーがクォータを超過できる日数です（スマート削除が有効な場合のみ）。最小値は0です。"
       },
       "quotaSmartDeletionEnabled": {
-        "title": "Smart Deletion of Over-Quota Files",
-        "description": "Off by default. When enabled, after the grace period the oldest unsafe files of an over-quota user are deleted in a safe order: first unshared uploads, then files in shares inactive for the period below. Files in active shares are never deleted — if nothing is safe to remove, new uploads are simply blocked instead."
+        "title": "クォータ超過ファイルのスマート削除",
+        "description": "デフォルトで無効です。有効にすると、猶予期間後、クォータを超過したユーザーの最も古い危険でないファイルが安全な順序で削除されます。まず未共有のアップロード、その後以下の期間中は活動がない共有内のファイル。アクティブな共有内のファイルは削除されません。削除しても安全なものがない場合は、新しいアップロードがブロックされます。"
       },
       "quotaInactiveShareDays": {
-        "title": "Inactive Share Threshold (days)",
-        "description": "A share's files are eligible for smart deletion once the share has had no activity for this many days. Minimum 1."
+        "title": "非アクティブ共有閾値（日数）",
+        "description": "共有がこの日数間活動がない場合、その共有のファイルはスマート削除の対象になります。最小値は1です。"
       },
       "reverseShareQuotaSoftEnforcement": {
-        "title": "Reverse Share Soft Enforcement",
-        "description": "On by default. Lets external guests keep uploading to a reverse share even if the owner is slightly over quota, so collections are not interrupted. Uploads are still blocked once the owner exceeds the tolerance set below, and the owner is alerted to free up space."
+        "title": "受信リンク柔軟な割り当て実装",
+        "description": "デフォルトで有効です。所有者がわずかにクォータを超過している場合でも、外部ゲストが受信リンクへのアップロードを継続できるため、コレクションが中断されません。所有者が以下で設定された許容値を超えるとアップロードはブロックされ、所有者にスペースを解放するよう警告されます。"
       },
       "reverseShareMaxOverageFactor": {
-        "title": "Reverse Share Overage Factor",
-        "description": "Soft enforcement allows reverse-share uploads until usage reaches this multiple of the owner's quota (e.g. 3 = up to three times the limit). Minimum 1."
+        "title": "受信リンク超過ファクター",
+        "description": "柔軟な実装では、使用量が所有者のクォータのこの倍数に達するまで受信リンクへのアップロードが許可されます（例：3 = 上限の最大3倍）。最小値は1です。"
       },
       "reverseShareAbsoluteMaxBytes": {
-        "title": "Reverse Share Absolute Cap",
-        "description": "Hard ceiling for reverse-share soft enforcement regardless of the factor above. Set to 0 for no absolute cap."
+        "title": "受信リンク絶対上限",
+        "description": "上記の要因に関係なく、受信リンク柔軟な実装のハードリミットです。絶対上限なしの場合は0に設定します。"
       },
       "firstUserAccess": {
         "description": "新規ユーザーの初回アクセス設定",
@@ -1748,56 +1748,56 @@
         "description": "フッターテキストのリンクURL"
       },
       "emailDigestHour": {
-        "title": "Digest Email Hour",
-        "description": "Hour of the day (0-23) when digest emails are sent"
+        "title": "ダイジェストメール時刻",
+        "description": "ダイジェストメールが送信される時刻（0-23）"
       },
       "emailJobRetentionDays": {
-        "title": "Email Job Retention",
-        "description": "Number of days to keep completed email jobs before cleanup"
+        "title": "メールジョブ保持期間",
+        "description": "クリーンアップ前に完了したメールジョブを保持する日数"
       },
       "emailQueueIntervalSeconds": {
-        "title": "Queue Processing Interval",
-        "description": "Seconds between email queue processing cycles"
+        "title": "キュー処理間隔",
+        "description": "メールキュー処理サイクル間の秒数"
       },
       "emailQueueMaxRetries": {
-        "title": "Max Email Retries",
-        "description": "Maximum number of retry attempts for failed emails"
+        "title": "メール最大リトライ数",
+        "description": "失敗したメールの最大リトライ回数"
       },
       "auditRetentionDays": {
         "title": "監査ログ保持期間",
         "description": "監査ログを保持する日数（0 = 永遠、最小 7）"
       },
       "autoCleanupEnabled": {
-        "title": "Enable Automatic Cleanup",
-        "description": "Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on."
+        "title": "自動クリーンアップを有効にする",
+        "description": "期限切れ共有リンク、期限切れ受信リンクファイル、孤立ファイルの定期クリーンアップのマスタースイッチです。デフォルトで無効です。有効にするまで何も自動削除されません。"
       },
       "autoCleanupIntervalHours": {
-        "title": "Cleanup Interval (hours)",
-        "description": "How often the cleanup task runs. Minimum 1 hour."
+        "title": "クリーンアップ間隔（時間）",
+        "description": "クリーンアップタスクが実行される頻度です。最小値は1時間です。"
       },
       "autoCleanupGracePeriodDays": {
-        "title": "Grace Period (days)",
+        "title": "猶予期間（日数）",
         "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
       },
       "autoCleanupNotifyDaysBefore": {
-        "title": "Warn Before Deletion (days)",
-        "description": "Send the owner a \"pending permanent deletion\" warning email this many days before the content is deleted. 0 disables the warning. Should be at most the grace period."
+        "title": "削除前に警告（日数）",
+        "description": "コンテンツが削除される前のこの日数で、所有者に「永久削除予定」という警告メールを送信します。0で警告を無効にします。猶予期間以下である必要があります。"
       },
       "accountDeactivationCleanupEnabled": {
-        "title": "Delete Deactivated Accounts' Files",
-        "description": "When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files."
+        "title": "無効化されたアカウントのファイルを削除する",
+        "description": "有効にすると、無効化されたアカウントに属するファイルは以下の遅延後に完全に削除されます。デフォルトで無効です。無効化だけではファイルが削除されません。"
       },
       "accountDeactivationCleanupDays": {
-        "title": "Deactivation Cleanup Delay (days)",
-        "description": "Days after an account is deactivated before its files are deleted (only when the option above is enabled). Minimum 1."
+        "title": "アカウント無効化後のクリーンアップ遅延（日数）",
+        "description": "アカウントが無効化された後、ファイルが削除されるまでの日数です（上記のオプションが有効な場合のみ）。最小値は1です。"
       },
       "autoCleanupOrphansEnabled": {
-        "title": "Sweep Orphaned Files",
-        "description": "When on, runs a two-way sweep that removes database records pointing to missing storage objects and storage objects with no database record. Off by default."
+        "title": "孤立ファイルをクリーンアップする",
+        "description": "有効にすると、不足しているストレージオブジェクトを指すデータベースレコードと、データベースレコードがないストレージオブジェクトを削除する双方向スイープを実行します。デフォルトで無効です。"
       },
       "autoCleanupOrphanMinAgeHours": {
-        "title": "Orphan Minimum Age (hours)",
-        "description": "Only files and objects older than this are considered during the orphan sweep, protecting uploads still in progress. Minimum 1."
+        "title": "孤立ファイル最小年齢（時間）",
+        "description": "孤立ファイルスイープ中に考慮されるのは、このより古いファイルとオブジェクトのみです。進行中のアップロードを保護します。最小値は1です。"
       }
     },
     "buttons": {
@@ -1810,9 +1810,9 @@
       "updateFailed": "設定の更新に失敗しました",
       "passwordAuthRequiresProvider": "少なくとも1つのアクティブな認証プロバイダーがない場合、パスワード認証を無効にできません",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
-      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent",
-      "quotaThresholdsInvalid": "Enter comma-separated percentages between 1 and 99, for example \"80,90\""
+      "cleanupValueInvalid": "値は最小でも{min}以上の整数である必要があります",
+      "notifyDaysExceedsGrace": "警告のリードタイムは猶予期間を超えてはいけません。そうでなければ警告は送信されません",
+      "quotaThresholdsInvalid": "1～99の間のカンマ区切りパーセンテージを入力します。例：「80,90」"
     },
     "messages": {
       "noChanges": "保存する変更はありません",
@@ -1832,20 +1832,20 @@
       "defaultPlaceholder": "入力してEnterキーを押してください"
     },
     "redirectUri": {
-      "placeholder": "https://mysite.com",
+      "placeholder": "https://mysite.jp",
       "previewLabel": "保存される完全なURL:"
     },
     "emailAdmin": {
-      "queueStatus": "Email Queue Status",
-      "pending": "Pending",
-      "sentLast24h": "Sent (24h)",
-      "failed": "Failed",
+      "queueStatus": "メールキューステータス",
+      "pending": "保留中",
+      "sentLast24h": "送信済み（24時間）",
+      "failed": "失敗",
       "digestQueue": "ダイジェストキュー",
-      "sendTest": "Send Test Email",
-      "testPlaceholder": "recipient@example.com",
-      "testSending": "Sending...",
-      "testSuccess": "Test email queued successfully",
-      "testError": "Failed to send test email"
+      "sendTest": "テストメールを送信する",
+      "testPlaceholder": "例@email.jp",
+      "testSending": "送信中...",
+      "testSuccess": "テストメールが正常にキューに入りました",
+      "testError": "テストメールの送信に失敗しました"
     }
   },
   "share": {
@@ -1881,19 +1881,19 @@
       "filesShared": "{count, plural, =1 {1 ファイルが共有されました} other {# ファイルが共有されました}}"
     },
     "identification": {
-      "title": "Visitor Identification",
-      "subtitle": "Please provide your information to access this share",
-      "nameLabel": "Name",
-      "emailLabel": "Email",
-      "submit": "Continue",
-      "error": "Failed to submit identification. Please try again.",
-      "optional": "Optional",
-      "nameRequired": "Name is required",
-      "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email address",
+      "title": "訪問者の識別",
+      "subtitle": "このファイル共有にアクセスするために、情報を入力してください",
+      "nameLabel": "名前",
+      "emailLabel": "メール",
+      "submit": "続行",
+      "error": "識別の送信に失敗しました。もう一度お試しください。",
+      "optional": "オプション",
+      "nameRequired": "名前は必須です",
+      "emailRequired": "メールは必須です",
+      "emailInvalid": "有効なメールアドレスを入力してください",
       "metadataError": "Failed to load share information. Please try again.",
       "rateLimited": "Too many attempts. Please try again later.",
-      "privacyNotice": "Your accesses and downloads may be visible to the sender of this share."
+      "privacyNotice": "あなたのアクセスとダウンロードはこのファイル共有の送信者に表示される可能性があります。"
     }
   },
   "shareActions": {
@@ -1923,8 +1923,8 @@
     "linkTitle": "リンクを生成",
     "itemsSelected": "{count, plural, =0 {アイテムが選択されていません} =1 {1つのアイテムが選択されています} other {#つのアイテムが選択されています}}",
     "manageFilesDescription": "この共有に含めるファイルとフォルダを選択してください",
-    "keepCurrentPasswordHint": "Leave empty to keep current password",
-    "passwordRequired": "Password is required for new password protection"
+    "keepCurrentPasswordHint": "現在のパスワードを保持するには空のままにしてください",
+    "passwordRequired": "新しいパスワード保護にはパスワードが必須です"
   },
   "shareDetails": {
     "title": "共有詳細",
@@ -1960,27 +1960,27 @@
     "downloadQrCode": "QRコードをダウンロード",
     "qrCode": "QRコード",
     "activity": {
-      "title": "Activity",
-      "noActivity": "No activity recorded yet.",
-      "access": "Viewed",
-      "download": "Downloaded",
-      "anonymous": "Anonymous",
-      "loadMore": "Load more",
-      "showingCount": "Showing {shown} of {total}",
-      "loadError": "Failed to load activity data.",
-      "filterAll": "All actions",
-      "filterAccess": "Views only",
-      "filterDownload": "Downloads only",
-      "filterAllVisitors": "All visitors",
-      "filterIdentified": "Identified",
-      "filterAnonymous": "Anonymous",
+      "title": "アクティビティ",
+      "noActivity": "まだアクティビティが記録されていません。",
+      "access": "表示",
+      "download": "ダウンロード",
+      "anonymous": "匿名",
+      "loadMore": "もっと読み込む",
+      "showingCount": "{total} 中 {shown} を表示",
+      "loadError": "アクティビティデータの読み込みに失敗しました。",
+      "filterAll": "すべてのアクション",
+      "filterAccess": "表示のみ",
+      "filterDownload": "ダウンロードのみ",
+      "filterAllVisitors": "すべての訪問者",
+      "filterIdentified": "識別済み",
+      "filterAnonymous": "匿名",
       "source": {
-        "tracking_token": "Via recipient link",
-        "cookie": "Self-identified",
-        "selfDeclaredHint": "Self-declared identity, not verified"
+        "tracking_token": "受信リンク経由",
+        "cookie": "自己識別",
+        "selfDeclaredHint": "自己申告身分、未検証"
       }
     },
-    "lastDownloaded": "Last Downloaded",
+    "lastDownloaded": "最後にダウンロード",
     "privacySummary": "プライバシー",
     "privacyNameField": "訪問者名:",
     "privacyEmailField": "訪問者メール:",
@@ -1990,9 +1990,9 @@
       "OPTIONAL": "任意",
       "REQUIRED": "必須"
     },
-    "recipientNotified": "Notified",
-    "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
-    "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"
+    "recipientNotified": "通知済み",
+    "recipientAccess": "{count, plural, other {# 回アクセス}}",
+    "recipientAccessWithLast": "{count, plural, other {# 回アクセス}} · 最後 {lastAccess}"
   },
   "shareExpiration": {
     "neverExpires": "期限なし",
@@ -2054,10 +2054,10 @@
     "errors": {
       "multipleDownloadNotSupported": "複数の共有のダウンロードはまだサポートされていません - 共有を個別にダウンロードしてください"
     },
-    "pauseSuccess": "Share paused",
-    "pauseError": "Failed to pause share",
-    "resumeSuccess": "Share resumed",
-    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
+    "pauseSuccess": "共有を一時停止しました",
+    "pauseError": "共有の一時停止に失敗しました",
+    "resumeSuccess": "共有を再開しました",
+    "resumeError": "共有の再開に失敗しました。期限切れまたは表示制限に達している場合は、代わりに延長してください。"
   },
   "shareMultipleFiles": {
     "title": "複数ファイルを共有",
@@ -2152,8 +2152,8 @@
       "neverExpires": "期限なし",
       "active": "アクティブ",
       "expired": "期限切れ",
-      "paused": "Paused",
-      "maxViewsReached": "View Limit Reached"
+      "paused": "一時停止中",
+      "maxViewsReached": "表示制限に達しました"
     },
     "security": {
       "protected": "保護済み",
@@ -2174,9 +2174,9 @@
       "delete": "削除",
       "downloadShareFiles": "すべてのファイルをダウンロードします",
       "viewQrCode": "QRコードを表示",
-      "pause": "Pause",
-      "resume": "Resume",
-      "renew": "Renew"
+      "pause": "一時停止",
+      "resume": "再開",
+      "renew": "更新"
     },
     "bulkActions": {
       "delete": "削除",
@@ -2289,11 +2289,11 @@
         "edge": "Edge"
       },
       "platforms": {
-        "windows": " on Windows",
-        "macos": " on macOS",
-        "linux": " on Linux",
-        "iphone": " on iPhone",
-        "android": " on Android"
+        "windows": " Windows上",
+        "macos": " macOS上",
+        "linux": " Linux上",
+        "iphone": " iPhone上",
+        "android": " Android上"
       }
     },
     "status": {
@@ -2812,41 +2812,41 @@
     }
   },
   "notificationPreferences": {
-    "pageTitle": "Notification Preferences",
-    "description": "Choose which email notifications you receive",
-    "type": "Notification Type",
-    "category": "Category",
-    "frequency": "Frequency",
-    "immediate": "Immediate",
-    "disabled": "Disabled",
-    "alwaysEnabled": "Always enabled",
-    "save": "Save Preferences",
-    "saveSuccess": "Notification preferences saved",
-    "saveError": "Failed to save preferences",
-    "noChanges": "No changes to save",
+    "pageTitle": "通知設定",
+    "description": "受け取るメール通知を選択します",
+    "type": "通知タイプ",
+    "category": "カテゴリ",
+    "frequency": "頻度",
+    "immediate": "即座",
+    "disabled": "無効",
+    "alwaysEnabled": "常に有効",
+    "save": "設定を保存",
+    "saveSuccess": "通知設定が保存されました",
+    "saveError": "設定の保存に失敗しました",
+    "noChanges": "保存する変更がありません",
     "types": {
-      "password_reset": "Password reset",
-      "welcome": "Welcome email",
-      "account_deactivated": "Account deactivated",
-      "account_reactivated": "Account reactivated",
-      "share_invitation": "Share invitation",
-      "share_accessed": "Share accessed",
-      "share_downloaded": "File downloaded from share",
-      "share_expiring": "Share expiring soon",
-      "share_expired": "Share expired",
-      "share_max_views_reached": "Share max views reached",
-      "share_no_activity": "No activity on share",
-      "reverse_share_invitation": "Reverse share invitation",
-      "reverse_share_uploaded": "Files uploaded to reverse share",
-      "reverse_share_expiring": "Reverse share expiring",
-      "reverse_share_expired": "Reverse share expired",
-      "quota_warning": "Quota warning",
-      "quota_exceeded": "Quota exceeded",
-      "files_auto_deleted": "Files auto-deleted",
-      "share_auto_deleted": "Share auto-deleted",
-      "admin_user_registered": "New user registered (admin)",
-      "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email",
+      "password_reset": "パスワードリセット",
+      "welcome": "ウェルカムメール",
+      "account_deactivated": "アカウントが無効化されました",
+      "account_reactivated": "アカウントが再度有効化されました",
+      "share_invitation": "共有への招待",
+      "share_accessed": "共有がアクセスされました",
+      "share_downloaded": "共有からファイルがダウンロードされました",
+      "share_expiring": "共有がまもなく期限切れになります",
+      "share_expired": "共有が期限切れになりました",
+      "share_max_views_reached": "共有の最大表示回数に達しました",
+      "share_no_activity": "共有にアクティビティがありません",
+      "reverse_share_invitation": "受信リンクへの招待",
+      "reverse_share_uploaded": "受信リンクにファイルがアップロードされました",
+      "reverse_share_expiring": "受信リンクがまもなく期限切れになります",
+      "reverse_share_expired": "受信リンクが期限切れになりました",
+      "quota_warning": "クォータ警告",
+      "quota_exceeded": "クォータを超過しました",
+      "files_auto_deleted": "ファイルが自動削除されました",
+      "share_auto_deleted": "共有が自動削除されました",
+      "admin_user_registered": "新しいユーザーが登録されました(管理者のみ)",
+      "admin_quota_alert": "ユーザークォータアラート(管理者のみ)",
+      "test_email": "テストメール",
       "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
       "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
       "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
@@ -2872,16 +2872,16 @@
       "admin_quota_alert": "ユーザーのストレージ使用量がクォータを超えたとき（管理者のみ）"
     },
     "categories": {
-      "account": "Account",
-      "shares": "Shares",
-      "reverseShares": "Reverse Shares",
+      "account": "アカウント",
+      "shares": "共有",
+      "reverseShares": "受信リンク",
       "quota": "Quotas",
       "admin": "Administration",
       "test": "Test"
     },
-    "saving": "Saving...",
-    "loadError": "Failed to load notification preferences",
-    "retry": "Retry",
-    "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}"
+    "saving": "保存中...",
+    "loadError": "通知設定の読み込みに失敗しました",
+    "retry": "再試行",
+    "unsavedChanges": "{count, plural, one {保存されていない変更が # 件あります} other {保存されていない変更が # 件あります}}"
   }
 }
