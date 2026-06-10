@@ -2153,7 +2153,9 @@
       "active": "Aktywne",
       "expired": "Wygasłe",
       "paused": "Wstrzymane",
-      "maxViewsReached": "Osiągnięto limit wyświetleń"
+      "maxViewsReached": "Osiągnięto limit wyświetleń",
+      "noLink": "Brak linku",
+      "noLinkTooltip": "To udostępnienie nie ma jeszcze linku i jest niedostępne. Wygeneruj link, aby je udostępnić."
     },
     "security": {
       "protected": "Chronione",

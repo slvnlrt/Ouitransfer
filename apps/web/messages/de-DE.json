@@ -2153,7 +2153,9 @@
       "active": "Aktiv",
       "expired": "Abgelaufen",
       "paused": "Pausiert",
-      "maxViewsReached": "Aufruf-Limit erreicht"
+      "maxViewsReached": "Aufruf-Limit erreicht",
+      "noLink": "Kein Link",
+      "noLinkTooltip": "Diese Freigabe hat noch keinen Link – sie ist nicht erreichbar. Erstellen Sie einen Link, um sie zu teilen."
     },
     "security": {
       "protected": "Geschützt",

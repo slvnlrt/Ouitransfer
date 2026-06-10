@@ -2153,7 +2153,9 @@
       "active": "アクティブ",
       "expired": "期限切れ",
       "paused": "一時停止中",
-      "maxViewsReached": "表示制限に達しました"
+      "maxViewsReached": "表示制限に達しました",
+      "noLink": "リンクなし",
+      "noLinkTooltip": "この共有にはまだリンクがなく、アクセスできません。共有するにはリンクを生成してください。"
     },
     "security": {
       "protected": "保護済み",

@@ -2153,7 +2153,9 @@
       "active": "Actief",
       "expired": "Verlopen",
       "paused": "Gepauzeerd",
-      "maxViewsReached": "Weergavelimiet bereikt"
+      "maxViewsReached": "Weergavelimiet bereikt",
+      "noLink": "Geen link",
+      "noLinkTooltip": "Deze share heeft nog geen link en is niet toegankelijk. Genereer een link om te delen."
     },
     "security": {
       "protected": "Beveiligd",

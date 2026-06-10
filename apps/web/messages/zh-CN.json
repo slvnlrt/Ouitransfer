@@ -2153,7 +2153,9 @@
       "active": "活跃",
       "expired": "已过期",
       "paused": "已暂停",
-      "maxViewsReached": "已达到查看限制"
+      "maxViewsReached": "已达到查看限制",
+      "noLink": "无链接",
+      "noLinkTooltip": "此共享尚无链接，无法访问。请生成链接以进行共享。"
     },
     "security": {
       "protected": "受保护",

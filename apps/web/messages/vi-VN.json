@@ -2157,7 +2157,9 @@
       "active": "Đang hoạt động",
       "expired": "Đã hết hạn",
       "paused": "Tạm dừng",
-      "maxViewsReached": "Đạt đến giới hạn xem"
+      "maxViewsReached": "Đạt đến giới hạn xem",
+      "noLink": "Không có liên kết",
+      "noLinkTooltip": "Mục chia sẻ này chưa có liên kết và không thể truy cập. Tạo liên kết để chia sẻ."
     },
     "security": {
       "protected": "Được bảo vệ",

@@ -2153,7 +2153,9 @@
       "active": "Aktif",
       "expired": "Süresi Dolmuş",
       "paused": "Duraklatıldı",
-      "maxViewsReached": "Görüntüleme Sınırına Ulaşıldı"
+      "maxViewsReached": "Görüntüleme Sınırına Ulaşıldı",
+      "noLink": "Bağlantı yok",
+      "noLinkTooltip": "Bu paylaşımın henüz bağlantısı yok ve erişilebilir değil. Paylaşmak için bir bağlantı oluşturun."
     },
     "security": {
       "protected": "Korumalı",

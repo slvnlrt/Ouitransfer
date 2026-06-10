@@ -2157,7 +2157,9 @@
       "active": "Aktiv",
       "expired": "Utgått",
       "paused": "Pausad",
-      "maxViewsReached": "Visningsgräns nådd"
+      "maxViewsReached": "Visningsgräns nådd",
+      "noLink": "Ingen länk",
+      "noLinkTooltip": "Den här delningen har ingen länk ännu och är inte tillgänglig. Skapa en länk för att dela den."
     },
     "security": {
       "protected": "Skyddad",

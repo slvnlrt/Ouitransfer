@@ -2153,7 +2153,9 @@
       "active": "Actif",
       "expired": "Expiré",
       "paused": "En pause",
-      "maxViewsReached": "Limite de vues atteinte"
+      "maxViewsReached": "Limite de vues atteinte",
+      "noLink": "Sans lien",
+      "noLinkTooltip": "Ce partage n'a pas encore de lien — il n'est pas accessible. Générez un lien pour le partager."
     },
     "security": {
       "protected": "Protégé",

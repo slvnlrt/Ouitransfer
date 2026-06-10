@@ -2293,7 +2293,9 @@
       "active": "Active",
       "expired": "Expired",
       "paused": "Paused",
-      "maxViewsReached": "View Limit Reached"
+      "maxViewsReached": "View Limit Reached",
+      "noLink": "No link",
+      "noLinkTooltip": "This share has no link yet — it isn't accessible. Generate a link to share it."
     },
     "security": {
       "protected": "Protected",

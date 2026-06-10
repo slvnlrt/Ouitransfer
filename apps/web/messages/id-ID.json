@@ -2157,7 +2157,9 @@
       "active": "Aktif",
       "expired": "Kedaluwarsa",
       "paused": "Dijeda",
-      "maxViewsReached": "Batas Tampilan Tercapai"
+      "maxViewsReached": "Batas Tampilan Tercapai",
+      "noLink": "Tanpa tautan",
+      "noLinkTooltip": "Berbagi ini belum memiliki tautan dan tidak dapat diakses. Buat tautan untuk membagikannya."
     },
     "security": {
       "protected": "Terlindungi",

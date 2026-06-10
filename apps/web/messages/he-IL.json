@@ -2157,7 +2157,9 @@
       "active": "פעיל",
       "expired": "פג תוקף",
       "paused": "הושהה",
-      "maxViewsReached": "גבול הצפיות הגיע"
+      "maxViewsReached": "גבול הצפיות הגיע",
+      "noLink": "ללא קישור",
+      "noLinkTooltip": "לשיתוף הזה אין עדיין קישור והוא אינו נגיש. צור קישור כדי לשתף אותו."
     },
     "security": {
       "protected": "מוגן",

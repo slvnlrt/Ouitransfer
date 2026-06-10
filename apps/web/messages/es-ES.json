@@ -2157,7 +2157,9 @@
       "active": "Activo",
       "expired": "Expirado",
       "paused": "Pausado",
-      "maxViewsReached": "Límite de visualizaciones alcanzado"
+      "maxViewsReached": "Límite de visualizaciones alcanzado",
+      "noLink": "Sin enlace",
+      "noLinkTooltip": "Este recurso compartido aún no tiene enlace y no es accesible. Genera un enlace para compartirlo."
     },
     "security": {
       "protected": "Protegido",
