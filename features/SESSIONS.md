@@ -1,5 +1,14 @@
 # Session Log
 
+## 2026-06-10 (morning — code reviews, TODO updates)
+
+- Launched 3 sequential code reviews for all overnight work (violating workflow to skip reviews was caught by user)
+- **Review 1 — TD-28 Zod v4:** 2 Important + 2 Minor. Key finding: `z.coerce.boolean()` on `?force` query param silently inverts `force=false` → `true` on destructive delete routes (`file/routes.ts:943`, `folder/routes.ts:609`). Fix required + integration test.
+- **Review 2 — TD-5 + TD-40:** 1 Important + 4 Minor. Key finding: hydration mismatch in `global-error.tsx` — `useMemo` runs during SSR (no `document` → `"en"`), client sees real locale → React warning + RTL layout flip. Fix: `useState`/`useEffect` pattern.
+- **Review 3 — TD-10 + TD-43:** 0 Important + 5 Minor only (security, correctness verified clean). `["/admin"]` wildcard proven sound, all description keys verified against `NotificationType` union.
+- Reports written to `features/reviews/` (3 files, each finding as checkbox per workflow).
+- Updated `features/TODO-DEFERRED-FIXES.md` with review table, links, and all 17 findings (3 Important, 14 Minor) — all marked as must-fix.
+
 ## 2026-06-10 (overnight batch — TD-28, TD-10, TD-5, TD-32/33/52, TD-43, TD-40)
 
 ### TD-40 — Global error boundary i18n
