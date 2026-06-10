@@ -1,5 +1,15 @@
 # Session Log
 
+## 2026-06-10 (evening — share-creation UX unification + share UX fixes)
+
+- **Scope:** Resolved the "share creation UX" section of `TODO.md` (divergent entry points) plus two user-raised UX issues.
+- **Lot 1 (quick fixes):**
+  - Manage-files modal: dropped the `selectedItems.length === 0` guard so an emptied share can still be saved (empty shares are server-supported).
+  - New `ShareNoLinkBadge` (dashed outline + tooltip) on the shares table & mobile cards, surfacing shares with no alias as "not accessible" — distinct from paused/expired. Corrected `Share.alias` type to `ShareAlias | null` (server returns it nullable). New i18n keys `sharesTable.status.noLink(+Tooltip)` × 23 locales.
+- **Lot 2 (unification):** New `ShareCreationModal` replaces `CreateShareModal`, `ShareItemModal`, `ShareMultipleItemsModal`. One three-step flow (Details → Files → Link), all options everywhere (privacy/notifications, password, expiration, max-views). **Deferred creation:** the share is persisted only on a terminal Link-step action ("Create link" / "Later"), so step navigation never leaves a half-created share. Calling contexts pass `preselected` items (folders expanded to descendants); name pre-filled. Width standardized to `sm:max-w-3xl`. Added helper text under the visitor name/email dropdowns. New i18n keys `createShare.{tabs.shareLink,nextGenerateLink,linkStepDescription,nameFieldRequiredHelp,emailFieldRequiredHelp}` × 23 locales. Rewired dashboard/files/shares modal hosts.
+- **Verification:** web type-check clean, biome clean, 339 web tests pass (incl. 4 new `ShareCreationModal` deferred-creation tests).
+- **Still open in `TODO.md`:** CORS/env pre-prod (B-30), recipients not editable in share-details modal.
+
 ## 2026-06-10 (afternoon — fix ALL review findings + deferred items + TD-36 translations)
 
 - **Scope:** Fixed all 17 review findings (3 Important + 14 Minor) from 3 review files, all 9 deferred items from `TODO-DEFERRED-FIXES.md`, and completed TD-36 (translations for 21 locales).
