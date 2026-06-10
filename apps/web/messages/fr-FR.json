@@ -203,7 +203,8 @@
     "searchLabel": "Rechercher",
     "tabs": {
       "shareDetails": "Détails du partage",
-      "selectFiles": "Sélectionner les fichiers"
+      "selectFiles": "Sélectionner les fichiers",
+      "shareLink": "Lien de partage"
     },
     "errors": {
       "nameRequired": "Le nom du partage est requis"
@@ -220,7 +221,11 @@
     "fieldHidden": "Masqué",
     "fieldOptional": "Optionnel",
     "fieldRequired": "Requis",
-    "filesOptionalHint": "L’ajout de fichiers est optionnel — vous pouvez créer un partage vide maintenant et ajouter des fichiers plus tard."
+    "filesOptionalHint": "L’ajout de fichiers est optionnel — vous pouvez créer un partage vide maintenant et ajouter des fichiers plus tard.",
+    "nextGenerateLink": "Suivant : Lien",
+    "linkStepDescription": "Générez un lien personnalisé pour rendre ce partage accessible — ou passez cette étape et ajoutez-le plus tard.",
+    "nameFieldRequiredHelp": "Indique si le nom du visiteur lui est demandé à l'ouverture du partage.",
+    "emailFieldRequiredHelp": "Indique si l'e-mail du visiteur lui est demandé à l'ouverture du partage."
   },
   "customization": {
     "breadcrumb": "Personnalisation",

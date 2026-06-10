@@ -210,7 +210,8 @@
     "itemsSelected": "{count} פריטים נבחרו",
     "tabs": {
       "shareDetails": "פרטי שיתוף",
-      "selectFiles": "בחר קבצים"
+      "selectFiles": "בחר קבצים",
+      "shareLink": "קישור שיתוף"
     },
     "nextSelectFiles": "הבא: בחר קבצים",
     "searchLabel": "חיפוש",
@@ -224,7 +225,11 @@
     "fieldHidden": "מוסתר",
     "fieldOptional": "אופציונלי",
     "fieldRequired": "נדרש",
-    "filesOptionalHint": "הוספת קבצים היא אופציונלית — אתה יכול ליצור שיתוף ריק עכשיו והוסף קבצים מאוחר יותר."
+    "filesOptionalHint": "הוספת קבצים היא אופציונלית — אתה יכול ליצור שיתוף ריק עכשיו והוסף קבצים מאוחר יותר.",
+    "nextGenerateLink": "הבא: קישור",
+    "linkStepDescription": "צור קישור מותאם אישית כדי שאחרים יוכלו לגשת לשיתוף הזה — או דלג ותוסיף אחד מאוחר יותר.",
+    "nameFieldRequiredHelp": "קובע אם המבקרים יתבקשו להזין את שמם בעת פתיחת השיתוף.",
+    "emailFieldRequiredHelp": "קובע אם המבקרים יתבקשו להזין את כתובת הדואל שלהם בעת פתיחת השיתוף."
   },
   "customization": {
     "breadcrumb": "התאמה אישית",

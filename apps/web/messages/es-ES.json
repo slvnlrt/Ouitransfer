@@ -207,7 +207,8 @@
     "searchLabel": "Buscar",
     "tabs": {
       "shareDetails": "Detalles del compartido",
-      "selectFiles": "Seleccionar archivos"
+      "selectFiles": "Seleccionar archivos",
+      "shareLink": "Enlace para compartir"
     },
     "errors": {
       "nameRequired": "El nombre del compartir es obligatorio"
@@ -224,7 +225,11 @@
     "fieldHidden": "Oculto",
     "fieldOptional": "Opcional",
     "fieldRequired": "Obligatorio",
-    "filesOptionalHint": "Agregar archivos es opcional — puede crear un compartido vacío ahora y agregar archivos más adelante."
+    "filesOptionalHint": "Agregar archivos es opcional — puede crear un compartido vacío ahora y agregar archivos más adelante.",
+    "nextGenerateLink": "Siguiente: enlace",
+    "linkStepDescription": "Genera un enlace personalizado para que otras personas puedan acceder a este recurso compartido, o omítelo y añádelo más tarde.",
+    "nameFieldRequiredHelp": "Indica si se pide el nombre a los visitantes al abrir el recurso compartido.",
+    "emailFieldRequiredHelp": "Indica si se pide el correo electrónico a los visitantes al abrir el recurso compartido."
   },
   "customization": {
     "breadcrumb": "Personalización",

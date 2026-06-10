@@ -62,6 +62,7 @@ export function SharePrivacySection({ value, onChange, switchIdSuffix }: SharePr
               <SelectItem value="REQUIRED">{t("createShare.fieldRequired")}</SelectItem>
             </SelectContent>
           </Select>
+          <p className="text-xs text-muted-foreground">{t("createShare.nameFieldRequiredHelp")}</p>
         </div>
 
         <div className="space-y-2">
@@ -81,6 +82,7 @@ export function SharePrivacySection({ value, onChange, switchIdSuffix }: SharePr
               <SelectItem value="REQUIRED">{t("createShare.fieldRequired")}</SelectItem>
             </SelectContent>
           </Select>
+          <p className="text-xs text-muted-foreground">{t("createShare.emailFieldRequiredHelp")}</p>
         </div>
 
         <div className="space-y-1">

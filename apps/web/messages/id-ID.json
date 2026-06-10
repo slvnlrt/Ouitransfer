@@ -210,7 +210,8 @@
     "itemsSelected": "{count} item dipilih",
     "tabs": {
       "shareDetails": "Detail Berbagi",
-      "selectFiles": "Pilih File"
+      "selectFiles": "Pilih File",
+      "shareLink": "Tautan berbagi"
     },
     "nextSelectFiles": "Berikutnya: Pilih File",
     "searchLabel": "Cari",
@@ -224,7 +225,11 @@
     "fieldHidden": "Tersembunyi",
     "fieldOptional": "Opsional",
     "fieldRequired": "Wajib",
-    "filesOptionalHint": "Menambahkan file bersifat opsional — Anda dapat membuat berbagi kosong sekarang dan menambahkan file nanti."
+    "filesOptionalHint": "Menambahkan file bersifat opsional — Anda dapat membuat berbagi kosong sekarang dan menambahkan file nanti.",
+    "nextGenerateLink": "Berikutnya: tautan",
+    "linkStepDescription": "Buat tautan khusus agar orang lain dapat mengakses berbagi ini — atau lewati dan tambahkan nanti.",
+    "nameFieldRequiredHelp": "Menentukan apakah pengunjung dimintai nama mereka saat membuka berbagi.",
+    "emailFieldRequiredHelp": "Menentukan apakah pengunjung dimintai email mereka saat membuka berbagi."
   },
   "customization": {
     "breadcrumb": "Kustomisasi",

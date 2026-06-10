@@ -203,7 +203,8 @@
     "searchLabel": "Cerca",
     "tabs": {
       "shareDetails": "Dettagli condivisione",
-      "selectFiles": "Seleziona file"
+      "selectFiles": "Seleziona file",
+      "shareLink": "Link di condivisione"
     },
     "errors": {
       "nameRequired": "Il nome della condivisione è obbligatorio"
@@ -220,7 +221,11 @@
     "fieldHidden": "Nascosto",
     "fieldOptional": "Facoltativo",
     "fieldRequired": "Obbligatorio",
-    "filesOptionalHint": "L'aggiunta di file è facoltativa — è possibile creare una condivisione vuota ora e aggiungere file in seguito."
+    "filesOptionalHint": "L'aggiunta di file è facoltativa — è possibile creare una condivisione vuota ora e aggiungere file in seguito.",
+    "nextGenerateLink": "Avanti: link",
+    "linkStepDescription": "Genera un link personalizzato per rendere accessibile questa condivisione, oppure salta questo passaggio e aggiungilo in seguito.",
+    "nameFieldRequiredHelp": "Indica se al visitatore viene chiesto il nome all'apertura della condivisione.",
+    "emailFieldRequiredHelp": "Indica se al visitatore viene chiesta l'email all'apertura della condivisione."
   },
   "customization": {
     "breadcrumb": "Personalizzazione",

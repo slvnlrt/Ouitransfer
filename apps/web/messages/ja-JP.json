@@ -203,7 +203,8 @@
     "searchLabel": "検索",
     "tabs": {
       "shareDetails": "共有の詳細",
-      "selectFiles": "ファイルを選択"
+      "selectFiles": "ファイルを選択",
+      "shareLink": "共有リンク"
     },
     "errors": {
       "nameRequired": "共有名は必須です"
@@ -220,7 +221,11 @@
     "fieldHidden": "非表示",
     "fieldOptional": "オプション",
     "fieldRequired": "必須",
-    "filesOptionalHint": "ファイルの追加は任意です — 今は空の共有を作成して、後からファイルを追加できます。"
+    "filesOptionalHint": "ファイルの追加は任意です — 今は空の共有を作成して、後からファイルを追加できます。",
+    "nextGenerateLink": "次へ: リンク",
+    "linkStepDescription": "他のユーザーがこの共有にアクセスできるようにカスタムリンクを生成します。後で追加することもできます。",
+    "nameFieldRequiredHelp": "共有を開く際に訪問者に名前の入力を求めるかどうかを指定します。",
+    "emailFieldRequiredHelp": "共有を開く際に訪問者にメールアドレスの入力を求めるかどうかを指定します。"
   },
   "customization": {
     "breadcrumb": "カスタマイズ",

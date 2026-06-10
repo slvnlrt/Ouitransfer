@@ -203,7 +203,8 @@
     "searchLabel": "Suchen",
     "tabs": {
       "shareDetails": "Freigabe-Details",
-      "selectFiles": "Dateien auswählen"
+      "selectFiles": "Dateien auswählen",
+      "shareLink": "Freigabelink"
     },
     "errors": {
       "nameRequired": "Freigabename ist erforderlich"
@@ -220,7 +221,11 @@
     "fieldHidden": "Verborgen",
     "fieldOptional": "Optional",
     "fieldRequired": "Erforderlich",
-    "filesOptionalHint": "Das Hinzufügen von Dateien ist optional — Sie können jetzt eine leere Freigabe erstellen und Dateien später hinzufügen."
+    "filesOptionalHint": "Das Hinzufügen von Dateien ist optional — Sie können jetzt eine leere Freigabe erstellen und Dateien später hinzufügen.",
+    "nextGenerateLink": "Weiter: Link",
+    "linkStepDescription": "Erstellen Sie einen benutzerdefinierten Link, damit andere auf diese Freigabe zugreifen können – oder überspringen Sie diesen Schritt und fügen Sie ihn später hinzu.",
+    "nameFieldRequiredHelp": "Legt fest, ob Besucher beim Öffnen der Freigabe nach ihrem Namen gefragt werden.",
+    "emailFieldRequiredHelp": "Legt fest, ob Besucher beim Öffnen der Freigabe nach ihrer E-Mail-Adresse gefragt werden."
   },
   "customization": {
     "breadcrumb": "Anpassung",

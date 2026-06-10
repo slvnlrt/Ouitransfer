@@ -210,7 +210,8 @@
     "itemsSelected": "{count} objekt valda",
     "tabs": {
       "shareDetails": "Delningsdetaljer",
-      "selectFiles": "Välj Filer"
+      "selectFiles": "Välj Filer",
+      "shareLink": "Delningslänk"
     },
     "nextSelectFiles": "Nästa: Välj Filer",
     "searchLabel": "Söka",
@@ -224,7 +225,11 @@
     "fieldHidden": "Dold",
     "fieldOptional": "Valfritt",
     "fieldRequired": "Obligatoriskt",
-    "filesOptionalHint": "Att lägga till filer är valfritt — du kan skapa en tom delning nu och lägga till filer senare."
+    "filesOptionalHint": "Att lägga till filer är valfritt — du kan skapa en tom delning nu och lägga till filer senare.",
+    "nextGenerateLink": "Nästa: länk",
+    "linkStepDescription": "Skapa en anpassad länk så att andra kan komma åt den här delningen – eller hoppa över och lägg till en senare.",
+    "nameFieldRequiredHelp": "Anger om besökare ombeds ange sitt namn när de öppnar delningen.",
+    "emailFieldRequiredHelp": "Anger om besökare ombeds ange sin e-postadress när de öppnar delningen."
   },
   "customization": {
     "breadcrumb": "Anpassning",

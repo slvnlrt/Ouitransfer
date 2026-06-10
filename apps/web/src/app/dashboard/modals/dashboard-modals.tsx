@@ -2,20 +2,17 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { BulkDownloadModal } from "@/components/modals/bulk-download-modal";
-import { CreateShareModal } from "@/components/modals/create-share-modal";
 import { DeleteConfirmationModal } from "@/components/modals/delete-confirmation-modal";
 import { FileActionsModals } from "@/components/modals/file-actions-modals";
 import { FilePreviewModal } from "@/components/modals/file-preview-modal";
 import { GenerateShareLinkModal } from "@/components/modals/generate-share-link-modal";
 import { QrCodeModal } from "@/components/modals/qr-code-modal";
 import { ShareActionsModals } from "@/components/modals/share-actions-modals";
+import { ShareCreationModal } from "@/components/modals/share-creation-modal";
 import { ShareDetailsModal } from "@/components/modals/share-details-modal";
 import { ShareExpirationModal } from "@/components/modals/share-expiration-modal";
-import { ShareItemModal } from "@/components/modals/share-item-modal";
-import { ShareMultipleItemsModal } from "@/components/modals/share-multiple-items-modal";
 import { ShareSecurityModal } from "@/components/modals/share-security-modal";
 import { UploadFileModal } from "@/components/modals/upload-file-modal";
-import { listFiles, listFolders } from "@/http/endpoints";
 import type { Share } from "@/http/endpoints/shares/types";
 import type { DashboardModalsProps } from "../types";
 
@@ -52,15 +49,21 @@ export function DashboardModals({
         onClose={() => fileManager.setPreviewFile(null)}
       />
 
-      <ShareItemModal
-        file={fileManager.fileToShare}
-        folder={fileManager.folderToShare}
+      <ShareCreationModal
         isOpen={!!(fileManager.fileToShare || fileManager.folderToShare)}
         onClose={() => {
           fileManager.setFileToShare(null);
           fileManager.setFolderToShare(null);
         }}
         onSuccess={onSuccess}
+        preselected={{
+          files: fileManager.fileToShare
+            ? [{ id: fileManager.fileToShare.id, name: fileManager.fileToShare.name }]
+            : [],
+          folders: fileManager.folderToShare
+            ? [{ id: fileManager.folderToShare.id, name: fileManager.folderToShare.name }]
+            : [],
+        }}
       />
 
       <FileActionsModals
@@ -144,9 +147,7 @@ export function DashboardModals({
         folders={fileManager.foldersInSharesWarning?.map((f) => f.name) || []}
       />
 
-      <ShareMultipleItemsModal
-        files={fileManager.filesToShare}
-        folders={fileManager.foldersToShare}
+      <ShareCreationModal
         isOpen={!!(fileManager.filesToShare || fileManager.foldersToShare)}
         onClose={() => {
           fileManager.setFilesToShare(null);
@@ -156,23 +157,16 @@ export function DashboardModals({
           fileManager.handleShareBulkSuccess();
           onSuccess();
         }}
+        preselected={{
+          files: (fileManager.filesToShare || []).map((f) => ({ id: f.id, name: f.name })),
+          folders: (fileManager.foldersToShare || []).map((f) => ({ id: f.id, name: f.name })),
+        }}
       />
 
-      <CreateShareModal
+      <ShareCreationModal
         isOpen={modals.isCreateModalOpen}
         onClose={modals.onCloseCreateModal}
-        onSuccess={() => {
-          modals.onCloseCreateModal();
-          onSuccess();
-        }}
-        onShareCreated={(share) => shareManager.setShareToGenerateLink(share)}
-        getAllFilesAndFolders={async () => {
-          const [filesResponse, foldersResponse] = await Promise.all([listFiles(), listFolders()]);
-          return {
-            files: filesResponse.data.files || [],
-            folders: foldersResponse.data.folders || [],
-          };
-        }}
+        onSuccess={onSuccess}
       />
 
       <ShareActionsModals

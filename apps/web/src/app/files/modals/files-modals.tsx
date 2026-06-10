@@ -5,8 +5,7 @@ import { BulkDownloadModal } from "@/components/modals/bulk-download-modal";
 import { DeleteConfirmationModal } from "@/components/modals/delete-confirmation-modal";
 import { FileActionsModals } from "@/components/modals/file-actions-modals";
 import { FilePreviewModal } from "@/components/modals/file-preview-modal";
-import { ShareItemModal } from "@/components/modals/share-item-modal";
-import { ShareMultipleItemsModal } from "@/components/modals/share-multiple-items-modal";
+import { ShareCreationModal } from "@/components/modals/share-creation-modal";
 import { UploadFileModal } from "@/components/modals/upload-file-modal";
 import type { FilesModalsProps } from "../types";
 
@@ -51,15 +50,21 @@ export function FilesModals({
         onClose={() => fileManager.setPreviewFile(null)}
       />
 
-      <ShareItemModal
-        file={fileManager.fileToShare}
-        folder={fileManager.folderToShare}
+      <ShareCreationModal
         isOpen={!!(fileManager.fileToShare || fileManager.folderToShare)}
         onClose={() => {
           fileManager.setFileToShare(null);
           fileManager.setFolderToShare(null);
         }}
         onSuccess={onSuccess}
+        preselected={{
+          files: fileManager.fileToShare
+            ? [{ id: fileManager.fileToShare.id, name: fileManager.fileToShare.name }]
+            : [],
+          folders: fileManager.folderToShare
+            ? [{ id: fileManager.folderToShare.id, name: fileManager.folderToShare.name }]
+            : [],
+        }}
       />
 
       <FileActionsModals
@@ -123,9 +128,7 @@ export function FilesModals({
         }
       />
 
-      <ShareMultipleItemsModal
-        files={fileManager.filesToShare}
-        folders={fileManager.foldersToShare}
+      <ShareCreationModal
         isOpen={!!(fileManager.filesToShare || fileManager.foldersToShare)}
         onClose={() => {
           fileManager.setFilesToShare(null);
@@ -134,6 +137,10 @@ export function FilesModals({
         onSuccess={() => {
           fileManager.handleShareBulkSuccess();
           onSuccess();
+        }}
+        preselected={{
+          files: (fileManager.filesToShare || []).map((f) => ({ id: f.id, name: f.name })),
+          folders: (fileManager.foldersToShare || []).map((f) => ({ id: f.id, name: f.name })),
         }}
       />
 

@@ -203,7 +203,8 @@
     "searchLabel": "Ara",
     "tabs": {
       "shareDetails": "Paylaşım Detayları",
-      "selectFiles": "Dosyaları Seç"
+      "selectFiles": "Dosyaları Seç",
+      "shareLink": "Paylaşım bağlantısı"
     },
     "errors": {
       "nameRequired": "Paylaşım adı gerekli"
@@ -220,7 +221,11 @@
     "fieldHidden": "Gizli",
     "fieldOptional": "İsteğe bağlı",
     "fieldRequired": "Gerekli",
-    "filesOptionalHint": "Dosya ekleme isteğe bağlıdır — şimdi boş bir paylaşım oluşturabilir ve daha sonra dosya ekleyebilirsiniz."
+    "filesOptionalHint": "Dosya ekleme isteğe bağlıdır — şimdi boş bir paylaşım oluşturabilir ve daha sonra dosya ekleyebilirsiniz.",
+    "nextGenerateLink": "İleri: bağlantı",
+    "linkStepDescription": "İnsanların bu paylaşıma erişebilmesi için özel bir bağlantı oluşturun veya bu adımı atlayıp sonra ekleyin.",
+    "nameFieldRequiredHelp": "Ziyaretçilerden paylaşımı açarken adlarının istenip istenmeyeceğini belirler.",
+    "emailFieldRequiredHelp": "Ziyaretçilerden paylaşımı açarken e-postalarının istenip istenmeyeceğini belirler."
   },
   "customization": {
     "breadcrumb": "Özelleştirme",

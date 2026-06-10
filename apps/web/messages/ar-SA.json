@@ -203,7 +203,8 @@
     "searchLabel": "بحث",
     "tabs": {
       "shareDetails": "تفاصيل المشاركة",
-      "selectFiles": "اختيار الملفات"
+      "selectFiles": "اختيار الملفات",
+      "shareLink": "رابط المشاركة"
     },
     "errors": {
       "nameRequired": "اسم المشاركة مطلوب"
@@ -220,7 +221,11 @@
     "fieldHidden": "مخفي",
     "fieldOptional": "اختياري",
     "fieldRequired": "مطلوب",
-    "filesOptionalHint": "إضافة الملفات اختيارية — يمكنك إنشاء مشاركة فارغة الآن وإضافة الملفات لاحقًا."
+    "filesOptionalHint": "إضافة الملفات اختيارية — يمكنك إنشاء مشاركة فارغة الآن وإضافة الملفات لاحقًا.",
+    "nextGenerateLink": "التالي: الرابط",
+    "linkStepDescription": "أنشئ رابطًا مخصصًا حتى يتمكن الآخرون من الوصول إلى هذه المشاركة، أو تخطَّ هذه الخطوة وأضِفه لاحقًا.",
+    "nameFieldRequiredHelp": "يحدد ما إذا كان يُطلب من الزوار اسمهم عند فتح المشاركة.",
+    "emailFieldRequiredHelp": "يحدد ما إذا كان يُطلب من الزوار بريدهم الإلكتروني عند فتح المشاركة."
   },
   "customization": {
     "breadcrumb": "التخصيص",

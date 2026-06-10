@@ -210,7 +210,8 @@
     "itemsSelected": "{count} items selected",
     "tabs": {
       "shareDetails": "Share Details",
-      "selectFiles": "Select Files"
+      "selectFiles": "Select Files",
+      "shareLink": "Share Link"
     },
     "nextSelectFiles": "Next: Select Files",
     "searchLabel": "Search",
@@ -224,7 +225,11 @@
     "fieldHidden": "Hidden",
     "fieldOptional": "Optional",
     "fieldRequired": "Required",
-    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
+    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later.",
+    "nextGenerateLink": "Next: Share Link",
+    "linkStepDescription": "Generate a custom link so people can access this share — or skip it and add one later.",
+    "nameFieldRequiredHelp": "Whether visitors are asked for their name when they open the share.",
+    "emailFieldRequiredHelp": "Whether visitors are asked for their email when they open the share."
   },
   "customization": {
     "breadcrumb": "Customization",

@@ -203,7 +203,8 @@
     "searchLabel": "Szukaj",
     "tabs": {
       "shareDetails": "Szczegóły udostępniania",
-      "selectFiles": "Wybierz pliki"
+      "selectFiles": "Wybierz pliki",
+      "shareLink": "Link do udostępniania"
     },
     "errors": {
       "nameRequired": "Nazwa udostępnienia jest wymagana"
@@ -220,7 +221,11 @@
     "fieldHidden": "Ukryte",
     "fieldOptional": "Opcjonalne",
     "fieldRequired": "Wymagane",
-    "filesOptionalHint": "Dodawanie plików jest opcjonalne — możesz teraz utworzyć puste udostępnienie i dodać pliki później."
+    "filesOptionalHint": "Dodawanie plików jest opcjonalne — możesz teraz utworzyć puste udostępnienie i dodać pliki później.",
+    "nextGenerateLink": "Dalej: link",
+    "linkStepDescription": "Wygeneruj niestandardowy link, aby inni mogli uzyskać dostęp do tego udostępnienia — albo pomiń ten krok i dodaj go później.",
+    "nameFieldRequiredHelp": "Określa, czy odwiedzający są proszeni o imię przy otwieraniu udostępnienia.",
+    "emailFieldRequiredHelp": "Określa, czy odwiedzający są proszeni o adres e-mail przy otwieraniu udostępnienia."
   },
   "customization": {
     "breadcrumb": "Personalizacja",

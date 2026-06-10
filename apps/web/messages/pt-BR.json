@@ -207,7 +207,8 @@
     "searchLabel": "Pesquisar",
     "tabs": {
       "shareDetails": "Detalhes do compartilhamento",
-      "selectFiles": "Selecionar arquivos"
+      "selectFiles": "Selecionar arquivos",
+      "shareLink": "Link de compartilhamento"
     },
     "errors": {
       "nameRequired": "O nome do compartilhamento é obrigatório"
@@ -224,7 +225,11 @@
     "fieldHidden": "Oculto",
     "fieldOptional": "Opcional",
     "fieldRequired": "Obrigatório",
-    "filesOptionalHint": "Adicionar arquivos é opcional — você pode criar um compartilhamento vazio agora e adicionar arquivos mais tarde."
+    "filesOptionalHint": "Adicionar arquivos é opcional — você pode criar um compartilhamento vazio agora e adicionar arquivos mais tarde.",
+    "nextGenerateLink": "Próximo: link",
+    "linkStepDescription": "Gere um link personalizado para que as pessoas possam acessar este compartilhamento — ou pule e adicione um depois.",
+    "nameFieldRequiredHelp": "Define se o nome é solicitado aos visitantes ao abrir o compartilhamento.",
+    "emailFieldRequiredHelp": "Define se o e-mail é solicitado aos visitantes ao abrir o compartilhamento."
   },
   "customization": {
     "breadcrumb": "Personalização",
