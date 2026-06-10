@@ -128,7 +128,9 @@ class EmailService {
       log.error({ type, issues: parsed.error.issues }, "Invalid email payload — refusing to send");
       return { enqueued: false, reason: "invalid_payload" as const };
     }
-    // Use validated/parsed data for the rest of the method
+    // Cast required: safeParse().data returns the union of all payload types
+    // because entry.payloadSchema is a union over all catalog entries; TypeScript
+    // cannot narrow it to exactly EmailPayloads[T] through generic indexed access.
     const validatedData = parsed.data as EmailPayloads[T];
 
     const effectiveRelatedId = options.relatedId;
@@ -187,7 +189,7 @@ class EmailService {
     //    value — the owner still learns "someone accessed your share" within the window.
     //    When the frequency was overridden by a per-share flag (e.g. notifyOnDownload),
     //    the cooldown is bypassed — the owner explicitly opted in to every notification.
-    const cooldown = (entry as NotificationTypeConfig).cooldownSeconds;
+    const cooldown = entry.cooldownSeconds;
     if (cooldown && cooldown > 0 && !skipCooldown) {
       const cutoff = new Date(Date.now() - cooldown * 1000);
       const recent = await prisma.emailJob.findFirst({
@@ -237,7 +239,12 @@ class EmailService {
     try {
       const tr = await createTranslationFn(options.locale, { appName });
       const formattedData = formatDataForRendering(validatedData, options.locale);
-      const slots = entry.render(formattedData as unknown, tr);
+      // Cast to any: TypeScript resolves entry.render as a union of all 26
+      // catalog render signatures and requires their parameter intersection (all
+      // fields of all payloads). This is a known contravariance issue with generic
+      // indexed access. The Zod parse above guarantees the correct shape at runtime.
+      // biome-ignore lint/suspicious/noExplicitAny: unavoidable union-to-intersection contravariance; Zod validates the payload before render() is called
+      const slots = (entry as NotificationTypeConfig<any>).render(formattedData, tr);
 
       // Add unsubscribe URL if applicable
       if (unsubscribeUrl) {

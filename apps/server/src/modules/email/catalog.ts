@@ -41,11 +41,11 @@ import { renderWelcome } from "./templates/welcome.js";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export interface NotificationTypeConfig {
+export interface NotificationTypeConfig<T = unknown> {
   /** Renders the email body slots from typed payload data + i18n function. */
-  render: (data: unknown, t: TranslationFn) => LayoutSlots;
+  render: (data: T, t: TranslationFn) => LayoutSlots;
   /** Zod schema that validates the payload for this notification type. */
-  payloadSchema: z.ZodType;
+  payloadSchema: z.ZodType<T>;
   /** 0 = normal (batched poll), 1 = high-priority (immediate wake). */
   priority: 0 | 1;
   /** Critical emails bypass user preference checks entirely. */
@@ -64,21 +64,16 @@ export interface NotificationTypeConfig {
   displayName: string;
 }
 
-// ─── Render adapter ───────────────────────────────────────────────────────────
+// ─── Builder ──────────────────────────────────────────────────────────────────
 
 /**
- * Casts a strongly-typed render function to the `(data: unknown) => LayoutSlots`
- * signature required by `NotificationTypeConfig.render`.
- *
- * This is safe at runtime: the catalog's Zod `payloadSchema` validates each
- * payload before `render()` is ever called, so the typed function always
- * receives a correctly-shaped object.
+ * Identity builder that infers `T` from the Zod `payloadSchema` and checks
+ * that `render` accepts the same payload type. This replaces the old
+ * `asRender()` cast adapter — no `as any` needed because TypeScript can unify
+ * the generic `T` across both fields.
  */
-function asRender<T>(
-  fn: (data: T, t: TranslationFn) => LayoutSlots,
-): (data: unknown, t: TranslationFn) => LayoutSlots {
-  // biome-ignore lint/suspicious/noExplicitAny: necessary to bridge strongly-typed render fns to the unknown-data interface contract; Zod validates the payload before render() is called
-  return fn as (data: any, t: TranslationFn) => LayoutSlots;
+function defineNotification<T>(config: NotificationTypeConfig<T>): NotificationTypeConfig<T> {
+  return config;
 }
 
 // ─── Payload schemas ──────────────────────────────────────────────────────────
@@ -248,8 +243,8 @@ const testEmailSchema = z.object({
 export const notificationCatalog = {
   // ── Account lifecycle (critical, non-configurable) ─────────────────────────
 
-  welcome: {
-    render: asRender(renderWelcome),
+  welcome: defineNotification({
+    render: renderWelcome,
     payloadSchema: welcomeSchema,
     priority: 1,
     isCritical: true,
@@ -258,10 +253,10 @@ export const notificationCatalog = {
     hasUnsubscribe: false,
     requiredI18nKeys: ["welcome.subject", "welcome.subtitle", "welcome.body", "welcome.cta"],
     displayName: "Welcome",
-  },
+  }),
 
-  password_reset: {
-    render: asRender(renderPasswordReset),
+  password_reset: defineNotification({
+    render: renderPasswordReset,
     payloadSchema: passwordResetSchema,
     priority: 1,
     isCritical: true,
@@ -276,10 +271,10 @@ export const notificationCatalog = {
       "passwordReset.info",
     ],
     displayName: "Password Reset",
-  },
+  }),
 
-  account_deactivated: {
-    render: asRender(renderAccountDeactivated),
+  account_deactivated: defineNotification({
+    render: renderAccountDeactivated,
     payloadSchema: accountDeactivatedSchema,
     priority: 1,
     isCritical: true,
@@ -294,10 +289,10 @@ export const notificationCatalog = {
       "accountDeactivated.infoContact",
     ],
     displayName: "Account Deactivated",
-  },
+  }),
 
-  account_reactivated: {
-    render: asRender(renderAccountReactivated),
+  account_reactivated: defineNotification({
+    render: renderAccountReactivated,
     payloadSchema: accountReactivatedSchema,
     priority: 1,
     isCritical: true,
@@ -311,12 +306,12 @@ export const notificationCatalog = {
       "accountReactivated.cta",
     ],
     displayName: "Account Reactivated",
-  },
+  }),
 
   // ── Share invitations (non-configurable, one-shot) ─────────────────────────
 
-  share_invitation: {
-    render: asRender(renderShareInvitation),
+  share_invitation: defineNotification({
+    render: renderShareInvitation,
     payloadSchema: shareInvitationSchema,
     priority: 0,
     isCritical: false,
@@ -334,13 +329,13 @@ export const notificationCatalog = {
       "shareInvitation.infoPasswordExpires",
     ],
     displayName: "Share Invitations",
-  },
+  }),
 
   // Manual reminder for recipients who haven't downloaded yet (feature 8.3, lot B).
   // Modeled on share_invitation: external recipients, no account/preference, one-shot.
   // Triggered by the share creator via POST /shares/:shareId/remind. No scheduler.
-  share_download_reminder: {
-    render: asRender(renderShareDownloadReminder),
+  share_download_reminder: defineNotification({
+    render: renderShareDownloadReminder,
     payloadSchema: shareDownloadReminderSchema,
     priority: 0,
     isCritical: false,
@@ -358,11 +353,11 @@ export const notificationCatalog = {
       "shareDownloadReminder.infoPasswordExpires",
     ],
     displayName: "Share Download Reminders",
-  },
+  }),
 
   // Reverse share invitation — sends the upload link to specified recipients.
-  reverse_share_invitation: {
-    render: asRender(renderReverseShareInvitation),
+  reverse_share_invitation: defineNotification({
+    render: renderReverseShareInvitation,
     payloadSchema: reverseShareInvitationSchema,
     priority: 0,
     isCritical: false,
@@ -380,12 +375,12 @@ export const notificationCatalog = {
       "reverseShareInvitation.infoPasswordExpires",
     ],
     displayName: "Reverse Share Invitations",
-  },
+  }),
 
   // ── Share activity (configurable, noisy) ───────────────────────────────────
 
-  share_accessed: {
-    render: asRender(renderShareAccessed),
+  share_accessed: defineNotification({
+    render: renderShareAccessed,
     payloadSchema: shareAccessedSchema,
     priority: 0,
     isCritical: false,
@@ -400,7 +395,7 @@ export const notificationCatalog = {
       "shareAccessed.bodyAnonymous",
     ],
     displayName: "Share Access Notifications",
-  },
+  }),
 
   /**
    * Cooldown is per-share (not per-file). A single notification is sent for the share
@@ -408,8 +403,8 @@ export const notificationCatalog = {
    *
    * Fired from file/routes.ts:trackShareDownload on non-owner file downloads.
    */
-  share_downloaded: {
-    render: asRender(renderShareDownloaded),
+  share_downloaded: defineNotification({
+    render: renderShareDownloaded,
     payloadSchema: shareDownloadedSchema,
     priority: 0,
     isCritical: false,
@@ -424,12 +419,12 @@ export const notificationCatalog = {
       "shareDownloaded.bodyAnonymous",
     ],
     displayName: "Share Download Notifications",
-  },
+  }),
 
   // ── Share lifecycle (configurable) ─────────────────────────────────────────
 
-  share_expiring: {
-    render: asRender(renderShareExpiring),
+  share_expiring: defineNotification({
+    render: renderShareExpiring,
     payloadSchema: shareExpiringSchema,
     priority: 0,
     isCritical: false,
@@ -443,10 +438,10 @@ export const notificationCatalog = {
       "shareExpiring.cta",
     ],
     displayName: "Share Expiring Soon",
-  },
+  }),
 
-  share_expired: {
-    render: asRender(renderShareExpired),
+  share_expired: defineNotification({
+    render: renderShareExpired,
     payloadSchema: shareExpiredSchema,
     priority: 0,
     isCritical: false,
@@ -460,10 +455,10 @@ export const notificationCatalog = {
       "shareExpired.cta",
     ],
     displayName: "Share Expired",
-  },
+  }),
 
-  share_pending_deletion: {
-    render: asRender(renderSharePendingDeletion),
+  share_pending_deletion: defineNotification({
+    render: renderSharePendingDeletion,
     payloadSchema: sharePendingDeletionSchema,
     priority: 0,
     isCritical: false,
@@ -478,10 +473,10 @@ export const notificationCatalog = {
       "sharePendingDeletion.info",
     ],
     displayName: "Share Pending Deletion",
-  },
+  }),
 
-  share_max_views_reached: {
-    render: asRender(renderShareMaxViewsReached),
+  share_max_views_reached: defineNotification({
+    render: renderShareMaxViewsReached,
     payloadSchema: shareMaxViewsReachedSchema,
     priority: 0,
     isCritical: false,
@@ -495,10 +490,10 @@ export const notificationCatalog = {
       "shareMaxViewsReached.cta",
     ],
     displayName: "Share Max Views Reached",
-  },
+  }),
 
-  share_no_activity: {
-    render: asRender(renderShareNoActivity),
+  share_no_activity: defineNotification({
+    render: renderShareNoActivity,
     payloadSchema: shareNoActivitySchema,
     priority: 0,
     isCritical: false,
@@ -512,12 +507,12 @@ export const notificationCatalog = {
       "shareNoActivity.cta",
     ],
     displayName: "Share No Activity Alert",
-  },
+  }),
 
   // ── Reverse share lifecycle (configurable) ─────────────────────────────────
 
-  reverse_share_uploaded: {
-    render: asRender(renderReverseShareUploaded),
+  reverse_share_uploaded: defineNotification({
+    render: renderReverseShareUploaded,
     payloadSchema: reverseShareUploadedSchema,
     priority: 0,
     isCritical: false,
@@ -536,10 +531,10 @@ export const notificationCatalog = {
       "reverseShareUploaded.bodyAnonymous",
     ],
     displayName: "Reverse Share Upload Notifications",
-  },
+  }),
 
-  reverse_share_expiring: {
-    render: asRender(renderReverseShareExpiring),
+  reverse_share_expiring: defineNotification({
+    render: renderReverseShareExpiring,
     payloadSchema: reverseShareExpiringSchema,
     priority: 0,
     isCritical: false,
@@ -552,10 +547,10 @@ export const notificationCatalog = {
       "reverseShareExpiring.body",
     ],
     displayName: "Reverse Share Expiring Soon",
-  },
+  }),
 
-  reverse_share_expired: {
-    render: asRender(renderReverseShareExpired),
+  reverse_share_expired: defineNotification({
+    render: renderReverseShareExpired,
     payloadSchema: reverseShareExpiredSchema,
     priority: 0,
     isCritical: false,
@@ -568,10 +563,10 @@ export const notificationCatalog = {
       "reverseShareExpired.body",
     ],
     displayName: "Reverse Share Expired",
-  },
+  }),
 
-  reverse_share_pending_deletion: {
-    render: asRender(renderReverseSharePendingDeletion),
+  reverse_share_pending_deletion: defineNotification({
+    render: renderReverseSharePendingDeletion,
     payloadSchema: reverseSharePendingDeletionSchema,
     priority: 0,
     isCritical: false,
@@ -586,10 +581,10 @@ export const notificationCatalog = {
       "reverseSharePendingDeletion.info",
     ],
     displayName: "Reverse Share Pending Deletion",
-  },
+  }),
 
-  reverse_share_auto_deleted: {
-    render: asRender(renderReverseShareAutoDeleted),
+  reverse_share_auto_deleted: defineNotification({
+    render: renderReverseShareAutoDeleted,
     payloadSchema: reverseShareAutoDeletedSchema,
     priority: 0,
     isCritical: false,
@@ -603,12 +598,12 @@ export const notificationCatalog = {
       "reverseShareAutoDeleted.info",
     ],
     displayName: "Reverse Share Auto-Deleted",
-  },
+  }),
 
   // ── Quota & cleanup (configurable) ─────────────────────────────────────────
 
-  quota_warning: {
-    render: asRender(renderQuotaWarning),
+  quota_warning: defineNotification({
+    render: renderQuotaWarning,
     payloadSchema: quotaWarningSchema,
     priority: 0,
     isCritical: false,
@@ -622,10 +617,10 @@ export const notificationCatalog = {
       "quotaWarning.info",
     ],
     displayName: "Storage Quota Warning",
-  },
+  }),
 
-  quota_exceeded: {
-    render: asRender(renderQuotaExceeded),
+  quota_exceeded: defineNotification({
+    render: renderQuotaExceeded,
     payloadSchema: quotaExceededSchema,
     priority: 0,
     isCritical: false,
@@ -640,10 +635,10 @@ export const notificationCatalog = {
       "quotaExceeded.info",
     ],
     displayName: "Storage Quota Exceeded",
-  },
+  }),
 
-  files_auto_deleted: {
-    render: asRender(renderFilesAutoDeleted),
+  files_auto_deleted: defineNotification({
+    render: renderFilesAutoDeleted,
     payloadSchema: filesAutoDeletedSchema,
     priority: 0,
     isCritical: false,
@@ -658,10 +653,10 @@ export const notificationCatalog = {
       "filesAutoDeleted.info",
     ],
     displayName: "Files Auto-Deleted",
-  },
+  }),
 
-  share_auto_deleted: {
-    render: asRender(renderShareAutoDeleted),
+  share_auto_deleted: defineNotification({
+    render: renderShareAutoDeleted,
     payloadSchema: shareAutoDeletedSchema,
     priority: 0,
     isCritical: false,
@@ -675,12 +670,12 @@ export const notificationCatalog = {
       "shareAutoDeleted.info",
     ],
     displayName: "Share Auto-Deleted",
-  },
+  }),
 
   // ── Admin notifications (configurable) ─────────────────────────────────────
 
-  admin_user_registered: {
-    render: asRender(renderAdminUserRegistered),
+  admin_user_registered: defineNotification({
+    render: renderAdminUserRegistered,
     payloadSchema: adminUserRegisteredSchema,
     priority: 0,
     isCritical: false,
@@ -693,10 +688,10 @@ export const notificationCatalog = {
       "adminUserRegistered.body",
     ],
     displayName: "New User Registration (Admin)",
-  },
+  }),
 
-  admin_quota_alert: {
-    render: asRender(renderAdminQuotaAlert),
+  admin_quota_alert: defineNotification({
+    render: renderAdminQuotaAlert,
     payloadSchema: adminQuotaAlertSchema,
     priority: 0,
     isCritical: false,
@@ -710,12 +705,12 @@ export const notificationCatalog = {
       "adminQuotaAlert.info",
     ],
     displayName: "User Quota Alert (Admin)",
-  },
+  }),
 
   // ── System / testing (critical) ────────────────────────────────────────────
 
-  test_email: {
-    render: asRender(renderTestEmail),
+  test_email: defineNotification({
+    render: renderTestEmail,
     payloadSchema: testEmailSchema,
     priority: 1,
     isCritical: true,
@@ -730,8 +725,9 @@ export const notificationCatalog = {
       "testEmail.info",
     ],
     displayName: "Test Email",
-  },
-} as const satisfies Record<string, NotificationTypeConfig>;
+  }),
+  // biome-ignore lint/suspicious/noExplicitAny: NotificationTypeConfig is generic per-entry; Record<string, NotificationTypeConfig<any>> is the only way to express "any valid config" for the satisfies constraint without erasing per-entry types
+} as const satisfies Record<string, NotificationTypeConfig<any>>;
 
 // ─── Derived types ────────────────────────────────────────────────────────────
 

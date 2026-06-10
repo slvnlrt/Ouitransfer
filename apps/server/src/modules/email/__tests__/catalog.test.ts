@@ -22,7 +22,8 @@ vi.mock("../../../utils/logger.js", () => ({
 
 const allKeys = Object.keys(notificationCatalog) as NotificationKey[];
 
-function getEntries(keys: NotificationKey[]): [NotificationKey, NotificationTypeConfig][] {
+// biome-ignore lint/suspicious/noExplicitAny: generic iteration over heterogeneous catalog entries requires existential type erasure
+function getEntries(keys: NotificationKey[]): [NotificationKey, NotificationTypeConfig<any>][] {
   return keys.map((k) => [k, notificationCatalog[k]]);
 }
 
@@ -464,7 +465,8 @@ describe("i18n key smoke tests — real en.json", () => {
 
     for (const [type, entry] of Object.entries(notificationCatalog) as [
       NotificationKey,
-      NotificationTypeConfig,
+      // biome-ignore lint/suspicious/noExplicitAny: generic iteration over heterogeneous catalog entries requires existential type erasure
+      NotificationTypeConfig<any>,
     ][]) {
       const payload = samplePayloads[type];
 
