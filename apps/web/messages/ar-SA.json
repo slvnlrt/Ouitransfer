@@ -67,17 +67,17 @@
       "scopesHelpOidc": "النطاقات مقترحة تلقائياً بناءً على رابط المزود. نطاقات OIDC الشائعة: openid, profile, email, groups",
       "scopesHelpOauth2": "النطاقات مقترحة تلقائياً بناءً على رابط المزود. نطاقات OAuth2 الشائعة تعتمد على المزود",
       "providerUrl": "رابط المزود",
-      "providerUrlPlaceholder": "https://auth.example.com",
+      "providerUrlPlaceholder": "https://auth.example.sa",
       "providerUrlAutoPlaceholder": "https://your-provider.com (سيتم اكتشاف نقاط النهاية تلقائياً)",
       "providerUrlManualPlaceholder": "https://your-provider.com",
       "autoDiscoveryHelp": "سيكتشف النظام تلقائياً نقاط نهاية التفويض والرمز ومعلومات المستخدم",
       "manualConfigurationHelp": "الرابط الأساسي للمزود الخاص بك (ستكون نقاط النهاية نسبية لهذا)",
       "authorizationEndpoint": "نقطة نهاية التفويض",
-      "authorizationEndpointPlaceholder": "https://auth.example.com/auth",
+      "authorizationEndpointPlaceholder": "https://auth.example.sa/auth",
       "tokenEndpoint": "نقطة نهاية الرمز",
-      "tokenEndpointPlaceholder": "https://auth.example.com/token",
+      "tokenEndpointPlaceholder": "https://auth.example.sa/token",
       "userInfoEndpoint": "نقطة نهاية معلومات المستخدم",
-      "userInfoEndpointPlaceholder": "https://auth.example.com/userinfo",
+      "userInfoEndpointPlaceholder": "https://auth.example.sa/userinfo",
       "configurationMethod": "طريقة التكوين",
       "autoDiscovery": "اكتشاف تلقائي (موصى به)",
       "autoDiscoveryDescription": "اكتشاف نقاط النهاية تلقائياً من رابط المزود",
@@ -175,7 +175,7 @@
     "copied": "تم النسخ",
     "copy": "نسخ",
     "retry": "Retry",
-    "unavailable": "unavailable",
+    "unavailable": "غير متاح",
     "days": "أيام",
     "aliasValidation": {
       "required": "[TO_TRANSLATE] Alias is required",
@@ -190,7 +190,7 @@
     "descriptionLabel": "الوصف",
     "descriptionPlaceholder": "أدخل وصفًا (اختياري)",
     "expirationLabel": "تاريخ الانتهاء",
-    "expirationPlaceholder": "شهر/يوم/سنة ساعة:دقيقة",
+    "expirationPlaceholder": "YYYY/MM/DD HH:MM",
     "maxViewsLabel": "الحد الأقصى للمشاهدات",
     "maxViewsPlaceholder": "اتركه فارغًا للحصول على عدد غير محدود",
     "passwordProtection": "محمي بكلمة مرور",
@@ -210,17 +210,17 @@
     },
     "itemsSelected": "{count} عنصر محدد",
     "passwordPlaceholder": "أدخل كلمة المرور",
-    "privacySection": "Privacy & Notifications",
-    "nameFieldRequired": "Require visitor name",
-    "emailFieldRequired": "Require visitor email",
-    "notifyOnDownload": "Notify me on each download",
-    "notifyOnDownloadHelp": "When enabled, you'll receive email notifications when files are downloaded from this share, regardless of your global notification preferences.",
-    "inactivityAlertDays": "Alert if no downloads after",
-    "inactivityAlertPlaceholder": "Leave empty to disable",
-    "fieldHidden": "Hidden",
-    "fieldOptional": "Optional",
-    "fieldRequired": "Required",
-    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
+    "privacySection": "الخصوصية والإشعارات",
+    "nameFieldRequired": "طلب اسم الزائر",
+    "emailFieldRequired": "طلب بريد الزائر الإلكتروني",
+    "notifyOnDownload": "إخطاري عند كل تنزيل",
+    "notifyOnDownloadHelp": "عند تفعيل هذا الخيار، ستتلقى إشعارات بريد إلكترونية عند تنزيل الملفات من هذه المشاركة، بغض النظر عن تفضيلات الإشعارات العامة لديك.",
+    "inactivityAlertDays": "تنبيه إذا لم يكن هناك تنزيلات بعد",
+    "inactivityAlertPlaceholder": "اترك فارغًا للتعطيل",
+    "fieldHidden": "مخفي",
+    "fieldOptional": "اختياري",
+    "fieldRequired": "مطلوب",
+    "filesOptionalHint": "إضافة الملفات اختيارية — يمكنك إنشاء مشاركة فارغة الآن وإضافة الملفات لاحقًا."
   },
   "customization": {
     "breadcrumb": "التخصيص",
@@ -602,7 +602,7 @@
       "link": "الرابط",
       "qrcode": "رمز QR"
     },
-    "later": "Later"
+    "later": "لاحقاً"
   },
   "home": {
     "pageTitle": "الرئيسية",
@@ -745,7 +745,7 @@
       "SHARE_RECIPIENT_ADD": "تم إضافة متلقي المشاركة",
       "SHARE_RECIPIENT_REMOVE": "تم إزالة متلقي المشاركة",
       "SHARE_RECIPIENT_NOTIFY": "تم إخطار متلقي المشاركة",
-      "SHARE_RECIPIENT_REMIND": "Share non-downloaders reminded",
+      "SHARE_RECIPIENT_REMIND": "تم تذكير المستقبلين بالمشاركة",
       "SHARE_ITEMS_ADD": "تم إضافة عناصر المشاركة",
       "SHARE_ITEMS_REMOVE": "تم إزالة عناصر المشاركة",
       "FILE_UPLOAD": "تم رفع الملف",
@@ -789,17 +789,17 @@
       "BACKGROUND_IMAGE_UPLOAD": "تم رفع صورة الخلفية",
       "BACKGROUND_IMAGE_DELETE": "تم حذف صورة الخلفية",
       "AUDIT_RETENTION_CLEANUP": "تنظيف سجل التدقيق",
-      "SHARE_DEACTIVATED": "Share deactivated",
-      "SHARE_REACTIVATED": "Share reactivated",
-      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
-      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated",
-      "SHARE_AUTO_DELETED": "Share auto-deleted",
-      "REVERSE_SHARE_AUTO_DELETED": "Reverse share auto-deleted",
-      "ACCOUNT_FILES_CLEANED": "Account files cleaned",
-      "ORPHAN_S3_DELETED": "Orphan storage object deleted",
-      "ORPHAN_DB_DELETED": "Orphan database record deleted",
-      "ORPHAN_MULTIPART_ABORTED": "Incomplete multipart upload aborted",
-      "QUOTA_FILES_DELETED": "Over-quota files deleted"
+      "SHARE_DEACTIVATED": "تم تعطيل المشاركة",
+      "SHARE_REACTIVATED": "تم إعادة تفعيل المشاركة",
+      "REVERSE_SHARE_DEACTIVATED": "تم تعطيل رابط الاستلام",
+      "REVERSE_SHARE_REACTIVATED": "تم إعادة تفعيل رابط الاستلام",
+      "SHARE_AUTO_DELETED": "تم حذف المشاركة تلقائيًا",
+      "REVERSE_SHARE_AUTO_DELETED": "تم حذف رابط الاستلام تلقائيًا",
+      "ACCOUNT_FILES_CLEANED": "تم تنظيف ملفات الحساب",
+      "ORPHAN_S3_DELETED": "تم حذف كائن التخزين اليتيم",
+      "ORPHAN_DB_DELETED": "تم حذف سجل قاعدة البيانات اليتيم",
+      "ORPHAN_MULTIPART_ABORTED": "تم إلغاء رفع الملفات المتعددة غير المكتمل",
+      "QUOTA_FILES_DELETED": "تم حذف الملفات التي تجاوزت الحصة"
     },
     "targetTypes": {
       "user": "المستخدم",
@@ -1038,23 +1038,23 @@
     "selectedCount": "{count} محدد",
     "addRecipient": "إضافة مستلم",
     "bulkNotifyError": "فشل في إشعار المستلمين المحددين",
-    "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}",
-    "notifyPartial": "Only {sent} of {total} recipients were notified",
-    "neverAccessed": "Never accessed",
-    "namePlaceholder": "Name (optional)",
-    "downloaded": "Downloaded",
-    "pending": "Pending",
-    "downloadedAt": "Downloaded on {date}",
-    "uploaded": "Uploaded",
-    "uploadedAt": "Uploaded on {date}",
-    "uploadApproximateHint": "Approximate: uploaders can submit files without providing an email when it is not required",
-    "remindNonDownloaders": "Remind ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
-    "sendingReminders": "Sending reminders...",
-    "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
-    "remindNoneSent": "No reminders were sent",
-    "remindError": "Failed to send reminders"
+    "notified": "تم الإخطار",
+    "views": "{count, plural, zero {لا توجد مشاهدات} one {# مشاهدة} two {# مشاهدتان} few {# مشاهدات} many {# مشاهدة} other {# مشاهدة}}",
+    "notifyPartial": "تم إخطار فقط {sent} من {total} مستقبل",
+    "neverAccessed": "لم يتم الوصول أبداً",
+    "namePlaceholder": "الاسم (اختياري)",
+    "downloaded": "تم التحميل",
+    "pending": "قيد الانتظار",
+    "downloadedAt": "تم التحميل في {date}",
+    "uploaded": "تم الرفع",
+    "uploadedAt": "تم الرفع في {date}",
+    "uploadApproximateHint": "تقريبي: يمكن للمرسلين إرسال الملفات دون تقديم بريد إلكتروني عندما لا يكون مطلوباً",
+    "remindNonDownloaders": "ذكّر ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {لا توجد مستقبلات قيد الانتظار — الجميع حمّل الملفات} one {ذكّر # مستقبل لم يحمّل بعد} other {ذكّر # مستقبلين لم يحمّلوا بعد}}",
+    "sendingReminders": "جاري إرسال التذكيرات...",
+    "remindSuccess": "{count, plural, one {تم إرسال تذكير لـ # مستقبل} other {تم إرسال تذكيرات لـ # مستقبلين}}",
+    "remindNoneSent": "لم يتم إرسال أي تذكيرات",
+    "remindError": "فشل إرسال التذكيرات"
   },
   "register": {
     "validation": {
@@ -1413,8 +1413,8 @@
         "label": "اسم حقل الاسم",
         "description": "تكوين إذا كان يجب عرض حقل اسم التحميل وإذا كان مطلوبًا"
       },
-      "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "notifyOnUpload": "أخطرني عند كل رفع",
+      "notifyOnUploadHelp": "عند التفعيل، ستتلقى إشعارات البريد الإلكتروني عند رفع الملفات إلى هذا الرابط، بغض النظر عن تفضيلات الإخطار العامة.",
       "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
       "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
@@ -1502,14 +1502,14 @@
         "nameLabel": "الاسم",
         "namePlaceholder": "اسمك",
         "emailLabel": "البريد الإلكتروني",
-        "emailPlaceholder": "بريدك@الإلكتروني.com",
+        "emailPlaceholder": "بريدك@example.sa",
         "descriptionLabel": "الوصف (اختياري)",
         "descriptionPlaceholder": "أضف وصفاً للملفات...",
         "uploadButton": "رفع {count} ملف/ملفات",
         "uploading": "جارٍ الرفع...",
         "emailLabelOptional": "البريد الإلكتروني (اختياري)",
         "nameLabelOptional": "الاسم (اختياري)",
-        "privacyNotice": "Your name, email and uploads may be visible to the owner of this receive link."
+        "privacyNotice": "قد يكون اسمك وبريدك الإلكتروني والملفات المرفوعة مرئية لمالك هذا الرابط."
       },
       "success": {
         "title": "تم رفع الملفات بنجاح! 🎉",
@@ -1591,8 +1591,8 @@
         "description": "إدارة صور الخلفية لصفحات الرفع بنمط WeTransfer"
       },
       "cleanup": {
-        "title": "Automatic Cleanup",
-        "description": "Lifecycle management for expired content, deactivated accounts, and orphaned files. Auto-deletion is off by default."
+        "title": "التنظيف التلقائي",
+        "description": "إدارة دورة حياة المحتوى المنتهي الصلاحية والحسابات المعطلة والملفات اليتيمة. يتم تعطيل الحذف التلقائي افتراضياً."
       }
     },
     "fields": {
@@ -1606,8 +1606,8 @@
         "description": "اسم التطبيق الذي يظهر للمستخدمين"
       },
       "appUrl": {
-        "title": "Application URL",
-        "description": "Public URL of the application, used in email links"
+        "title": "عنوان التطبيق",
+        "description": "عنوان URL العام للتطبيق، ويُستخدم في روابط البريد الإلكتروني"
       },
       "appDescription": {
         "title": "وصف التطبيق",
@@ -1670,32 +1670,32 @@
         "description": "حد إجمالي التخزين لكل مستخدم. يمكن تجاوزه لكل مستخدم أو مجموعة."
       },
       "quotaWarningThresholds": {
-        "title": "Quota Warning Thresholds (%)",
-        "description": "Comma-separated percentages, e.g. \"80,90\", at which a user is emailed a quota warning. Each value must be a whole number between 1 and 99. A separate alert is sent when storage reaches 100%."
+        "title": "حدود تحذير الحصة (%)",
+        "description": "نسب مئوية مفصولة بفواصل، مثل \"80,90\"، يتم إرسال رسالة تحذير حصة عند كل منها. يجب أن تكون كل قيمة رقماً صحيحاً بين 1 و 99. يتم إرسال تنبيه منفصل عند وصول التخزين إلى 100%."
       },
       "quotaGracePeriodDays": {
-        "title": "Quota Grace Period (days)",
-        "description": "How many days a user may stay over their quota before smart deletion may act (only when smart deletion is enabled below). Minimum 0."
+        "title": "فترة السماح للحصة (أيام)",
+        "description": "عدد الأيام التي يمكن لأحد المستخدمين البقاء فوق حصته قبل أن يمكن للحذف الذكي التدخل (فقط عند تفعيل الحذف الذكي أدناه). الحد الأدنى 0."
       },
       "quotaSmartDeletionEnabled": {
-        "title": "Smart Deletion of Over-Quota Files",
-        "description": "Off by default. When enabled, after the grace period the oldest unsafe files of an over-quota user are deleted in a safe order: first unshared uploads, then files in shares inactive for the period below. Files in active shares are never deleted — if nothing is safe to remove, new uploads are simply blocked instead."
+        "title": "الحذف الذكي للملفات التي تتجاوز الحصة",
+        "description": "معطل افتراضياً. عند التفعيل، بعد فترة السماح يتم حذف أقدم الملفات غير الآمنة للمستخدم الذي تجاوز حصته بترتيب آمن: أولاً الملفات المرفوعة غير المشاركة، ثم الملفات في الحصص غير النشطة للفترة المحددة أدناه. لا يتم حذف الملفات في الحصص النشطة أبداً — إذا لم تكن هناك ملفات آمنة للحذف، يتم ببساطة حظر التحميلات الجديدة بدلاً من ذلك."
       },
       "quotaInactiveShareDays": {
-        "title": "Inactive Share Threshold (days)",
-        "description": "A share's files are eligible for smart deletion once the share has had no activity for this many days. Minimum 1."
+        "title": "حد عدم النشاط للحصة (أيام)",
+        "description": "تصبح ملفات الحصة مؤهلة للحذف الذكي بعد عدم نشاط الحصة لهذا العدد من الأيام. الحد الأدنى 1."
       },
       "reverseShareQuotaSoftEnforcement": {
-        "title": "Reverse Share Soft Enforcement",
-        "description": "On by default. Lets external guests keep uploading to a reverse share even if the owner is slightly over quota, so collections are not interrupted. Uploads are still blocked once the owner exceeds the tolerance set below, and the owner is alerted to free up space."
+        "title": "تطبيق الحصة المرن للحصة المعكوسة",
+        "description": "مفعل افتراضياً. يسمح للضيوف الخارجيين بمواصلة التحميل إلى حصة معكوسة حتى لو تجاوز المالك حصته قليلاً، حتى لا تتعطل المجموعات. يتم حظر التحميلات عندما يتجاوز المالك التسامح المحدد أدناه، وينبه المالك لتحرير مساحة."
       },
       "reverseShareMaxOverageFactor": {
-        "title": "Reverse Share Overage Factor",
-        "description": "Soft enforcement allows reverse-share uploads until usage reaches this multiple of the owner's quota (e.g. 3 = up to three times the limit). Minimum 1."
+        "title": "معامل التجاوز للحصة المعكوسة",
+        "description": "يسمح التطبيق المرن بتحميلات الحصة المعكوسة حتى يصل الاستخدام إلى هذا المضاعف من حصة المالك (مثلاً 3 = ثلاثة أضعاف الحد). الحد الأدنى 1."
       },
       "reverseShareAbsoluteMaxBytes": {
-        "title": "Reverse Share Absolute Cap",
-        "description": "Hard ceiling for reverse-share soft enforcement regardless of the factor above. Set to 0 for no absolute cap."
+        "title": "الحد الأقصى المطلق للحصة المعكوسة",
+        "description": "حد أقصى صارم للتطبيق المرن للحصة المعكوسة بغض النظر عن المعامل أعلاه. اضبط على 0 لعدم وجود حد أقصى مطلق."
       },
       "firstUserAccess": {
         "description": "إعدادات الوصول الأول للمستخدمين الجدد",
@@ -1748,56 +1748,56 @@
         "description": "عنوان URL للربط في نص التذييل"
       },
       "emailDigestHour": {
-        "title": "Digest Email Hour",
-        "description": "Hour of the day (0-23) when digest emails are sent"
+        "title": "ساعة ملخص البريد الإلكتروني",
+        "description": "ساعة اليوم (0-23) عند إرسال رسائل البريد الإلكتروني للملخص"
       },
       "emailJobRetentionDays": {
-        "title": "Email Job Retention",
-        "description": "Number of days to keep completed email jobs before cleanup"
+        "title": "الاحتفاظ بمهام البريد الإلكتروني",
+        "description": "عدد الأيام للاحتفاظ بمهام البريد الإلكتروني المكتملة قبل التنظيف"
       },
       "emailQueueIntervalSeconds": {
-        "title": "Queue Processing Interval",
-        "description": "Seconds between email queue processing cycles"
+        "title": "فترة معالجة قائمة الانتظار",
+        "description": "الثواني بين دورات معالجة قائمة انتظار البريد الإلكتروني"
       },
       "emailQueueMaxRetries": {
-        "title": "Max Email Retries",
-        "description": "Maximum number of retry attempts for failed emails"
+        "title": "الحد الأقصى لمحاولات البريد الإلكتروني",
+        "description": "الحد الأقصى لعدد محاولات إعادة المحاولة للرسائل الفاشلة"
       },
       "auditRetentionDays": {
         "title": "احتفاظ التدقيق",
         "description": "عدد الأيام للاحتفاظ بسجلات التدقيق (0 = أبداً، الحد الأدنى 7)"
       },
       "autoCleanupEnabled": {
-        "title": "Enable Automatic Cleanup",
-        "description": "Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on."
+        "title": "تفعيل التنظيف التلقائي",
+        "description": "المفتاح الرئيسي للتنظيف المجدول للروابط المنتهية الصلاحية والملفات المعكوسة المنتهية الصلاحية والملفات اليتيمة. معطل افتراضياً — لا يتم حذف أي شيء تلقائياً حتى تقوم بتفعيله."
       },
       "autoCleanupIntervalHours": {
-        "title": "Cleanup Interval (hours)",
-        "description": "How often the cleanup task runs. Minimum 1 hour."
+        "title": "فترة التنظيف (ساعات)",
+        "description": "عدد مرات تشغيل مهمة التنظيف. الحد الأدنى ساعة واحدة."
       },
       "autoCleanupGracePeriodDays": {
-        "title": "Grace Period (days)",
+        "title": "فترة السماح (أيام)",
         "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
       },
       "autoCleanupNotifyDaysBefore": {
-        "title": "Warn Before Deletion (days)",
-        "description": "Send the owner a \"pending permanent deletion\" warning email this many days before the content is deleted. 0 disables the warning. Should be at most the grace period."
+        "title": "تحذير قبل الحذف (أيام)",
+        "description": "أرسل رسالة تحذير \"حذف دائم قادم\" للمالك قبل هذا العدد من الأيام من حذف المحتوى. 0 يعطل التحذير. يجب ألا يتجاوز فترة السماح."
       },
       "accountDeactivationCleanupEnabled": {
-        "title": "Delete Deactivated Accounts' Files",
-        "description": "When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files."
+        "title": "حذف ملفات الحسابات المعطلة",
+        "description": "عند التفعيل، يتم حذف الملفات التابعة لحساب معطل بشكل دائم بعد التأخير أدناه. معطل افتراضياً — التعطيل وحده لا يحذف الملفات أبداً."
       },
       "accountDeactivationCleanupDays": {
-        "title": "Deactivation Cleanup Delay (days)",
-        "description": "Days after an account is deactivated before its files are deleted (only when the option above is enabled). Minimum 1."
+        "title": "تأخير التنظيف بعد التعطيل (أيام)",
+        "description": "الأيام بعد تعطيل الحساب قبل حذف ملفاته (فقط عند تفعيل الخيار أعلاه). الحد الأدنى 1."
       },
       "autoCleanupOrphansEnabled": {
-        "title": "Sweep Orphaned Files",
-        "description": "When on, runs a two-way sweep that removes database records pointing to missing storage objects and storage objects with no database record. Off by default."
+        "title": "تنظيف الملفات اليتيمة",
+        "description": "عند التفعيل، يتم تشغيل مسح ثنائي الاتجاه يزيل سجلات قاعدة البيانات التي تشير إلى كائنات التخزين المفقودة وكائنات التخزين بدون سجل. معطل افتراضياً."
       },
       "autoCleanupOrphanMinAgeHours": {
-        "title": "Orphan Minimum Age (hours)",
-        "description": "Only files and objects older than this are considered during the orphan sweep, protecting uploads still in progress. Minimum 1."
+        "title": "الحد الأدنى لعمر الملف اليتيم (ساعات)",
+        "description": "يتم أخذ الملفات والكائنات الأقدم من هذه المدة فقط في الاعتبار أثناء مسح الملفات اليتيمة، مما يحمي التحميلات قيد التقدم. الحد الأدنى 1."
       }
     },
     "buttons": {
@@ -1810,9 +1810,9 @@
       "updateFailed": "فشل في تحديث الإعدادات",
       "passwordAuthRequiresProvider": "لا يمكن تعطيل المصادقة بالكلمة السرية دون وجود على الأقل موفرين مصادقة مفعلين",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
-      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent",
-      "quotaThresholdsInvalid": "Enter comma-separated percentages between 1 and 99, for example \"80,90\""
+      "cleanupValueInvalid": "يجب أن تكون القيمة رقماً صحيحاً لا يقل عن {min}",
+      "notifyDaysExceedsGrace": "يجب ألا يتجاوز وقت التحذير فترة السماح، وإلا لن يتم إرسال أي تحذير",
+      "quotaThresholdsInvalid": "أدخل نسب مئوية مفصولة بفواصل بين 1 و 99، على سبيل المثال \"80,90\""
     },
     "messages": {
       "noChanges": "لا توجد تغييرات للحفظ",
@@ -1832,20 +1832,20 @@
       "defaultPlaceholder": "أدخل واضغط Enter"
     },
     "redirectUri": {
-      "placeholder": "https://mysite.com",
+      "placeholder": "https://mysite.sa",
       "previewLabel": "الرابط الكامل الذي سيتم حفظه:"
     },
     "emailAdmin": {
-      "queueStatus": "Email Queue Status",
-      "pending": "Pending",
-      "sentLast24h": "Sent (24h)",
-      "failed": "Failed",
+      "queueStatus": "حالة قائمة انتظار البريد الإلكتروني",
+      "pending": "قيد الانتظار",
+      "sentLast24h": "مُرسل (24 ساعة)",
+      "failed": "فشل",
       "digestQueue": "قائمة الملخصات",
-      "sendTest": "Send Test Email",
-      "testPlaceholder": "recipient@example.com",
-      "testSending": "Sending...",
-      "testSuccess": "Test email queued successfully",
-      "testError": "Failed to send test email"
+      "sendTest": "إرسال بريد إلكتروني اختبار",
+      "testPlaceholder": "المستقبل@example.sa",
+      "testSending": "جاري الإرسال...",
+      "testSuccess": "تم وضع بريد الاختبار في قائمة الانتظار بنجاح",
+      "testError": "فشل إرسال بريد الاختبار"
     }
   },
   "share": {
@@ -1881,19 +1881,19 @@
       "filesShared": "{count, plural, =1 {ملف واحد تمت مشاركته} other {# ملفات تمت مشاركتها}}"
     },
     "identification": {
-      "title": "Visitor Identification",
-      "subtitle": "Please provide your information to access this share",
-      "nameLabel": "Name",
-      "emailLabel": "Email",
-      "submit": "Continue",
-      "error": "Failed to submit identification. Please try again.",
-      "optional": "Optional",
-      "nameRequired": "Name is required",
-      "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email address",
+      "title": "تحديد الزائر",
+      "subtitle": "يرجى تقديم معلوماتك للوصول إلى هذا المشاركة",
+      "nameLabel": "الاسم",
+      "emailLabel": "البريد الإلكتروني",
+      "submit": "متابعة",
+      "error": "فشل في تقديم التحديد. يرجى المحاولة مجدداً.",
+      "optional": "اختياري",
+      "nameRequired": "الاسم مطلوب",
+      "emailRequired": "البريد الإلكتروني مطلوب",
+      "emailInvalid": "يرجى إدخال عنوان بريد إلكتروني صحيح",
       "metadataError": "Failed to load share information. Please try again.",
       "rateLimited": "Too many attempts. Please try again later.",
-      "privacyNotice": "Your accesses and downloads may be visible to the sender of this share."
+      "privacyNotice": "قد تكون عمليات الوصول والتحميل مرئية لمرسل هذا المشاركة."
     }
   },
   "shareActions": {
@@ -1923,8 +1923,8 @@
     "linkTitle": "إنشاء رابط",
     "itemsSelected": "{count} عنصر محدد",
     "manageFilesDescription": "اختر الملفات والمجلدات لتضمينها في هذه المشاركة",
-    "keepCurrentPasswordHint": "Leave empty to keep current password",
-    "passwordRequired": "Password is required for new password protection"
+    "keepCurrentPasswordHint": "اترك فارغاً للحفاظ على كلمة المرور الحالية",
+    "passwordRequired": "كلمة مرور مطلوبة لحماية كلمة المرور الجديدة"
   },
   "shareDetails": {
     "title": "تفاصيل المشاركة",
@@ -1960,27 +1960,27 @@
     "downloadQrCode": "تحميل رمز QR",
     "qrCode": "رمز QR",
     "activity": {
-      "title": "Activity",
-      "noActivity": "No activity recorded yet.",
-      "access": "Viewed",
-      "download": "Downloaded",
-      "anonymous": "Anonymous",
-      "loadMore": "Load more",
-      "showingCount": "Showing {shown} of {total}",
-      "loadError": "Failed to load activity data.",
-      "filterAll": "All actions",
-      "filterAccess": "Views only",
-      "filterDownload": "Downloads only",
-      "filterAllVisitors": "All visitors",
-      "filterIdentified": "Identified",
-      "filterAnonymous": "Anonymous",
+      "title": "النشاط",
+      "noActivity": "لا توجد أنشطة مسجلة حتى الآن.",
+      "access": "تم العرض",
+      "download": "تم التحميل",
+      "anonymous": "مجهول",
+      "loadMore": "تحميل المزيد",
+      "showingCount": "عرض {shown} من {total}",
+      "loadError": "فشل في تحميل بيانات النشاط.",
+      "filterAll": "جميع الإجراءات",
+      "filterAccess": "العروض فقط",
+      "filterDownload": "التحميلات فقط",
+      "filterAllVisitors": "جميع الزائرين",
+      "filterIdentified": "محددة الهوية",
+      "filterAnonymous": "مجهول",
       "source": {
-        "tracking_token": "Via recipient link",
-        "cookie": "Self-identified",
-        "selfDeclaredHint": "Self-declared identity, not verified"
+        "tracking_token": "عبر رابط المستقبل",
+        "cookie": "محدد ذاتياً",
+        "selfDeclaredHint": "هوية معلنة ذاتياً، غير موثقة"
       }
     },
-    "lastDownloaded": "Last Downloaded",
+    "lastDownloaded": "آخر تحميل",
     "privacySummary": "الخصوصية",
     "privacyNameField": "اسم الزائر:",
     "privacyEmailField": "بريد الزائر:",
@@ -1990,9 +1990,9 @@
       "OPTIONAL": "اختياري",
       "REQUIRED": "مطلوب"
     },
-    "recipientNotified": "Notified",
-    "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
-    "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"
+    "recipientNotified": "تم الإخطار",
+    "recipientAccess": "{count, plural, one {# وصول} other {# وصولات}}",
+    "recipientAccessWithLast": "{count, plural, one {# وصول} other {# وصولات}} · آخر {lastAccess}"
   },
   "shareExpiration": {
     "neverExpires": "لا تنتهي صلاحيته أبداً",
@@ -2054,10 +2054,10 @@
     "errors": {
       "multipleDownloadNotSupported": "تنزيل مشاركات متعددة غير مدعوم حالياً - يرجى تنزيل المشاركات بشكل فردي"
     },
-    "pauseSuccess": "Share paused",
-    "pauseError": "Failed to pause share",
-    "resumeSuccess": "Share resumed",
-    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
+    "pauseSuccess": "تم إيقاف المشاركة مؤقتاً",
+    "pauseError": "فشل إيقاف المشاركة مؤقتاً",
+    "resumeSuccess": "تم استئناف المشاركة",
+    "resumeError": "فشل استئناف المشاركة. إذا كانت منتهية الصلاحية أو وصلت حد العروض، قم بتمديدها."
   },
   "shareMultipleFiles": {
     "title": "مشاركة ملفات متعددة",
@@ -2152,8 +2152,8 @@
       "neverExpires": "لا تنتهي صلاحيتها أبداً",
       "active": "نشط",
       "expired": "منتهي الصلاحية",
-      "paused": "Paused",
-      "maxViewsReached": "View Limit Reached"
+      "paused": "مُوقفة مؤقتاً",
+      "maxViewsReached": "تم الوصول إلى حد العروض"
     },
     "security": {
       "protected": "محمي",
@@ -2174,9 +2174,9 @@
       "delete": "حذف",
       "downloadShareFiles": "قم بتنزيل جميع الملفات",
       "viewQrCode": "عرض رمز QR",
-      "pause": "Pause",
-      "resume": "Resume",
-      "renew": "Renew"
+      "pause": "إيقاف مؤقت",
+      "resume": "استئناف",
+      "renew": "تجديد"
     },
     "bulkActions": {
       "delete": "حذف",
@@ -2289,11 +2289,11 @@
         "edge": "إيدج"
       },
       "platforms": {
-        "windows": " على ويندوز",
-        "macos": " على ماك",
-        "linux": " على لينكس",
-        "iphone": " على آيفون",
-        "android": " على أندرويد"
+        "windows": " على Windows",
+        "macos": " على macOS",
+        "linux": " على Linux",
+        "iphone": " على iPhone",
+        "android": " على Android"
       }
     },
     "status": {
@@ -2812,41 +2812,41 @@
     }
   },
   "notificationPreferences": {
-    "pageTitle": "Notification Preferences",
-    "description": "Choose which email notifications you receive",
-    "type": "Notification Type",
-    "category": "Category",
-    "frequency": "Frequency",
-    "immediate": "Immediate",
-    "disabled": "Disabled",
-    "alwaysEnabled": "Always enabled",
-    "save": "Save Preferences",
-    "saveSuccess": "Notification preferences saved",
-    "saveError": "Failed to save preferences",
-    "noChanges": "No changes to save",
+    "pageTitle": "تفضيلات الإشعارات",
+    "description": "اختر الإشعارات البريدية التي تريد استقبالها",
+    "type": "نوع الإشعار",
+    "category": "الفئة",
+    "frequency": "التكرار",
+    "immediate": "فوري",
+    "disabled": "معطّل",
+    "alwaysEnabled": "مفعّل دائمًا",
+    "save": "حفظ التفضيلات",
+    "saveSuccess": "تم حفظ تفضيلات الإشعارات",
+    "saveError": "فشل حفظ التفضيلات",
+    "noChanges": "لا توجد تغييرات للحفظ",
     "types": {
-      "password_reset": "Password reset",
-      "welcome": "Welcome email",
-      "account_deactivated": "Account deactivated",
-      "account_reactivated": "Account reactivated",
-      "share_invitation": "Share invitation",
-      "share_accessed": "Share accessed",
-      "share_downloaded": "File downloaded from share",
-      "share_expiring": "Share expiring soon",
-      "share_expired": "Share expired",
-      "share_max_views_reached": "Share max views reached",
-      "share_no_activity": "No activity on share",
-      "reverse_share_invitation": "Reverse share invitation",
-      "reverse_share_uploaded": "Files uploaded to reverse share",
-      "reverse_share_expiring": "Reverse share expiring",
-      "reverse_share_expired": "Reverse share expired",
-      "quota_warning": "Quota warning",
-      "quota_exceeded": "Quota exceeded",
-      "files_auto_deleted": "Files auto-deleted",
-      "share_auto_deleted": "Share auto-deleted",
-      "admin_user_registered": "New user registered (admin)",
-      "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email",
+      "password_reset": "إعادة تعيين كلمة المرور",
+      "welcome": "رسالة الترحيب",
+      "account_deactivated": "تم تعطيل الحساب",
+      "account_reactivated": "تم إعادة تفعيل الحساب",
+      "share_invitation": "دعوة المشاركة",
+      "share_accessed": "تم الوصول إلى المشاركة",
+      "share_downloaded": "تم تنزيل الملف من المشاركة",
+      "share_expiring": "المشاركة ستنتهي قريبًا",
+      "share_expired": "انتهت صلاحية المشاركة",
+      "share_max_views_reached": "تم الوصول إلى الحد الأقصى لمشاهدات المشاركة",
+      "share_no_activity": "لا توجد نشاطات على المشاركة",
+      "reverse_share_invitation": "دعوة رابط الاستلام",
+      "reverse_share_uploaded": "تم رفع ملفات إلى رابط الاستلام",
+      "reverse_share_expiring": "رابط الاستلام سينتهي قريبًا",
+      "reverse_share_expired": "انتهت صلاحية رابط الاستلام",
+      "quota_warning": "تحذير الحصة",
+      "quota_exceeded": "تم تجاوز الحصة",
+      "files_auto_deleted": "تم حذف الملفات تلقائيًا",
+      "share_auto_deleted": "تم حذف المشاركة تلقائيًا",
+      "admin_user_registered": "تسجيل مستخدم جديد (للمشرفين فقط)",
+      "admin_quota_alert": "تنبيه حصة المستخدم (للمشرفين فقط)",
+      "test_email": "رسالة بريد تجريبية",
       "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
       "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
       "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
@@ -2872,16 +2872,16 @@
       "admin_quota_alert": "عندما يتجاوز استخدام المستخدم للتخزين حصته المخصصة (للمشرفين فقط)"
     },
     "categories": {
-      "account": "Account",
-      "shares": "Shares",
-      "reverseShares": "Reverse Shares",
+      "account": "الحساب",
+      "shares": "المشاركات",
+      "reverseShares": "روابط الاستلام",
       "quota": "Quotas",
       "admin": "Administration",
       "test": "Test"
     },
-    "saving": "Saving...",
-    "loadError": "Failed to load notification preferences",
-    "retry": "Retry",
-    "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}"
+    "saving": "جاري الحفظ...",
+    "loadError": "فشل تحميل تفضيلات الإشعارات",
+    "retry": "إعادة المحاولة",
+    "unsavedChanges": "{count, plural, one {# تغيير غير محفوظ} other {# تغييرات غير محفوظة}}"
   }
 }

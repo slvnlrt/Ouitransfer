@@ -71,17 +71,17 @@
       "scopesHelpOidc": "Області автоматично пропонуються на основі URL постачальника. Загальні OIDC області: openid, profile, email, groups",
       "scopesHelpOauth2": "Області автоматично пропонуються на основі URL постачальника. Загальні OAuth2 області залежать від постачальника",
       "providerUrl": "URL постачальника",
-      "providerUrlPlaceholder": "https://auth.example.com",
+      "providerUrlPlaceholder": "https://auth.example.ua",
       "providerUrlAutoPlaceholder": "https://your-provider.com (кінцеві точки будуть виявлені автоматично)",
       "providerUrlManualPlaceholder": "https://your-provider.com",
       "autoDiscoveryHelp": "Система автоматично виявить кінцеві точки авторизації, токена та інформації користувача",
       "manualConfigurationHelp": "Базовий URL вашого постачальника (кінцеві точки будуть відносно цього)",
       "authorizationEndpoint": "Кінцева точка авторизації",
-      "authorizationEndpointPlaceholder": "https://auth.example.com/auth",
+      "authorizationEndpointPlaceholder": "https://auth.example.ua/auth",
       "tokenEndpoint": "Кінцева точка токена",
-      "tokenEndpointPlaceholder": "https://auth.example.com/token",
+      "tokenEndpointPlaceholder": "https://auth.example.ua/token",
       "userInfoEndpoint": "Кінцева точка інформації користувача",
-      "userInfoEndpointPlaceholder": "https://auth.example.com/userinfo",
+      "userInfoEndpointPlaceholder": "https://auth.example.ua/userinfo",
       "configurationMethod": "Метод конфігурації",
       "autoDiscovery": "Автовиявлення",
       "autoDiscoveryDescription": "Автоматично виявити кінцеві точки з URL постачальника",
@@ -179,7 +179,7 @@
     "copy": "Копіювати",
     "copied": "Скопійовано",
     "retry": "Retry",
-    "unavailable": "unavailable",
+    "unavailable": "недоступно",
     "days": "днів",
     "aliasValidation": {
       "required": "[TO_TRANSLATE] Alias is required",
@@ -195,7 +195,7 @@
     "descriptionLabel": "Опис",
     "descriptionPlaceholder": "Введіть опис (необов'язково)",
     "expirationLabel": "Дата закінчення терміну дії",
-    "expirationPlaceholder": "ММ/ДД/РРРР ГГ:ХХ",
+    "expirationPlaceholder": "ДД.ММ.РРРР ГГ:ХХ",
     "maxViewsLabel": "Максимальна кількість переглядів",
     "maxViewsPlaceholder": "Залишіть порожнім для необмеженої кількості",
     "passwordProtection": "Захищено паролем",
@@ -214,17 +214,17 @@
     },
     "nextSelectFiles": "Далі: Вибрати файли",
     "searchLabel": "Пошук",
-    "privacySection": "Privacy & Notifications",
-    "nameFieldRequired": "Require visitor name",
-    "emailFieldRequired": "Require visitor email",
-    "notifyOnDownload": "Notify me on each download",
-    "notifyOnDownloadHelp": "When enabled, you'll receive email notifications when files are downloaded from this share, regardless of your global notification preferences.",
-    "inactivityAlertDays": "Alert if no downloads after",
-    "inactivityAlertPlaceholder": "Leave empty to disable",
-    "fieldHidden": "Hidden",
-    "fieldOptional": "Optional",
-    "fieldRequired": "Required",
-    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
+    "privacySection": "Конфіденційність та сповіщення",
+    "nameFieldRequired": "Потрібне ім'я відвідувача",
+    "emailFieldRequired": "Потрібна електронна адреса відвідувача",
+    "notifyOnDownload": "Повідомте мене при кожному завантаженні",
+    "notifyOnDownloadHelp": "Якщо цей параметр увімкнено, ви отримуватимете сповіщення електронною поштою при завантаженні файлів із цього спільного доступу, незалежно від ваших глобальних параметрів сповіщення.",
+    "inactivityAlertDays": "Сповістити, якщо немає завантажень через",
+    "inactivityAlertPlaceholder": "Залиште порожнім, щоб вимкнути",
+    "fieldHidden": "Приховано",
+    "fieldOptional": "Опціонально",
+    "fieldRequired": "Обов'язково",
+    "filesOptionalHint": "Додавання файлів необов'язково — ви можете створити порожній спільний доступ зараз і додати файли пізніше."
   },
   "customization": {
     "breadcrumb": "Налаштування",
@@ -606,7 +606,7 @@
       "link": "Посилання",
       "qrcode": "QR-код"
     },
-    "later": "Later"
+    "later": "Пізніше"
   },
   "home": {
     "pageTitle": "Головна",
@@ -749,7 +749,7 @@
       "SHARE_RECIPIENT_ADD": "Одержувачів спільного доступу додано",
       "SHARE_RECIPIENT_REMOVE": "Одержувачів спільного доступу видалено",
       "SHARE_RECIPIENT_NOTIFY": "Одержувачів спільного доступу сповіщено",
-      "SHARE_RECIPIENT_REMIND": "Share non-downloaders reminded",
+      "SHARE_RECIPIENT_REMIND": "Одержувачів спільного доступу нагадано",
       "SHARE_ITEMS_ADD": "Елементи спільного доступу додано",
       "SHARE_ITEMS_REMOVE": "Елементи спільного доступу видалено",
       "FILE_UPLOAD": "Файл завантажено",
@@ -793,17 +793,17 @@
       "BACKGROUND_IMAGE_UPLOAD": "Фонове зображення завантажено",
       "BACKGROUND_IMAGE_DELETE": "Фонове зображення видалено",
       "AUDIT_RETENTION_CLEANUP": "Очищення журналу аудиту",
-      "SHARE_DEACTIVATED": "Share deactivated",
-      "SHARE_REACTIVATED": "Share reactivated",
-      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
-      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated",
-      "SHARE_AUTO_DELETED": "Share auto-deleted",
-      "REVERSE_SHARE_AUTO_DELETED": "Reverse share auto-deleted",
-      "ACCOUNT_FILES_CLEANED": "Account files cleaned",
-      "ORPHAN_S3_DELETED": "Orphan storage object deleted",
-      "ORPHAN_DB_DELETED": "Orphan database record deleted",
-      "ORPHAN_MULTIPART_ABORTED": "Incomplete multipart upload aborted",
-      "QUOTA_FILES_DELETED": "Over-quota files deleted"
+      "SHARE_DEACTIVATED": "Спільний доступ вимкнено",
+      "SHARE_REACTIVATED": "Спільний доступ повторно ввімкнено",
+      "REVERSE_SHARE_DEACTIVATED": "Посилання для отримання вимкнено",
+      "REVERSE_SHARE_REACTIVATED": "Посилання для отримання повторно ввімкнено",
+      "SHARE_AUTO_DELETED": "Спільний доступ автоматично видалено",
+      "REVERSE_SHARE_AUTO_DELETED": "Посилання для отримання автоматично видалено",
+      "ACCOUNT_FILES_CLEANED": "Файли облікового запису очищено",
+      "ORPHAN_S3_DELETED": "Сирітський об'єкт сховища видалено",
+      "ORPHAN_DB_DELETED": "Сирітський запис бази даних видалено",
+      "ORPHAN_MULTIPART_ABORTED": "Незавершене багатьохчастинне завантаження скасовано",
+      "QUOTA_FILES_DELETED": "Файли, що перевищують квоту, видалено"
     },
     "targetTypes": {
       "user": "Користувач",
@@ -1042,23 +1042,23 @@
     "invalidEmail": "Будь ласка, введіть дійсну адресу електронної пошти",
     "duplicateEmail": "Цього отримувача вже додано",
     "noRecipientsDescription": "Додайте отримувачів, щоб поділитися цим контентом через електронну пошту",
-    "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}",
-    "notifyPartial": "Only {sent} of {total} recipients were notified",
-    "neverAccessed": "Never accessed",
-    "namePlaceholder": "Name (optional)",
-    "downloaded": "Downloaded",
-    "pending": "Pending",
-    "downloadedAt": "Downloaded on {date}",
-    "uploaded": "Uploaded",
-    "uploadedAt": "Uploaded on {date}",
-    "uploadApproximateHint": "Approximate: uploaders can submit files without providing an email when it is not required",
-    "remindNonDownloaders": "Remind ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
-    "sendingReminders": "Sending reminders...",
-    "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
-    "remindNoneSent": "No reminders were sent",
-    "remindError": "Failed to send reminders"
+    "notified": "Сповіщено",
+    "views": "{count, plural, one {# перегляд} other {# переглядів}}",
+    "notifyPartial": "Сповіщено лише {sent} з {total} одержувачів",
+    "neverAccessed": "Ніколи не було доступу",
+    "namePlaceholder": "Ім'я (необов'язково)",
+    "downloaded": "Завантажено",
+    "pending": "Очікується",
+    "downloadedAt": "Завантажено {date}",
+    "uploaded": "Завантажено на сервер",
+    "uploadedAt": "Завантажено на сервер {date}",
+    "uploadApproximateHint": "Приблизно: завантажувачі можуть надсилати файли без надання електронної пошти, коли вона не потрібна",
+    "remindNonDownloaders": "Нагадати ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {Немає одержувачів, які чекають — всі завантажили} one {Нагадати # одержувачу, який ще не завантажив} other {Нагадати # одержувачам, які ще не завантажили}}",
+    "sendingReminders": "Надсилання нагадувань...",
+    "remindSuccess": "{count, plural, one {Нагадування надіслано # одержувачу} other {Нагадування надіслано # одержувачам}}",
+    "remindNoneSent": "Нагадування не надіслано",
+    "remindError": "Не вдалося надіслати нагадування"
   },
   "register": {
     "validation": {
@@ -1258,7 +1258,7 @@
         "editDescription": "Оновіть псевдонім для цього посилання отримання",
         "createDescription": "Створіть користувацький псевдонім для цього посилання отримання",
         "aliasLabel": "Псевдонім посилання",
-        "aliasPlaceholder": "my-custom-link",
+        "aliasPlaceholder": "моє-посилання",
         "preview": "Попередній перегляд:",
         "currentLink": "Поточне посилання:",
         "copyCurrentLink": "Копіювати поточне посилання",
@@ -1416,8 +1416,8 @@
         "optionalDescription": "Необов'язкове: Поле відображатиметься, але не є обов'язковим",
         "requiredDescription": "Обов'язкове: Поле потрібно заповнити перед завантаженням"
       },
-      "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "notifyOnUpload": "Сповіщати мене про кожне завантаження",
+      "notifyOnUploadHelp": "Коли ввімкнено, ви будете отримувати сповіщення електронної пошти при завантаженні файлів на це посилання для отримання, незалежно від ваших глобальних налаштувань сповіщень.",
       "submit": "Створити посилання для отримання",
       "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
       "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
@@ -1509,12 +1509,12 @@
         "namePlaceholder": "Ваше ім'я",
         "emailLabel": "Електронна пошта",
         "emailLabelOptional": "Електронна пошта (необов'язково)",
-        "emailPlaceholder": "your@email.com",
+        "emailPlaceholder": "ваш@email.ua",
         "descriptionLabel": "Опис (необов'язково)",
         "descriptionPlaceholder": "Додайте опис до файлів...",
         "uploadButton": "Надіслати {count} файл(ів)",
         "uploading": "Надсилання...",
-        "privacyNotice": "Your name, email and uploads may be visible to the owner of this receive link."
+        "privacyNotice": "Ваше ім'я, електронна пошта та завантаження можуть бути видимими власнику цього посилання для отримання."
       },
       "success": {
         "title": "Файли надіслано успішно! 🎉",
@@ -1595,8 +1595,8 @@
         "description": "Керуйте фоновими зображеннями для сторінок завантаження у стилі WeTransfer"
       },
       "cleanup": {
-        "title": "Automatic Cleanup",
-        "description": "Lifecycle management for expired content, deactivated accounts, and orphaned files. Auto-deletion is off by default."
+        "title": "Автоматичне очищення",
+        "description": "Управління життєвим циклом для контенту, що закінчився, дезактивованих облікових записів та сирітських файлів. Автоматичне видалення за замовчуванням вимкнено."
       }
     },
     "fields": {
@@ -1610,8 +1610,8 @@
         "description": "Назва програми, яка відображається користувачам"
       },
       "appUrl": {
-        "title": "Application URL",
-        "description": "Public URL of the application, used in email links"
+        "title": "URL додатку",
+        "description": "Публічна URL додатку, використовується в посиланнях електронної пошти"
       },
       "appDescription": {
         "title": "Опис програми",
@@ -1712,32 +1712,32 @@
         "description": "Загальне обмеження сховища на користувача. Можна перевизначити для кожного користувача або групи."
       },
       "quotaWarningThresholds": {
-        "title": "Quota Warning Thresholds (%)",
-        "description": "Comma-separated percentages, e.g. \"80,90\", at which a user is emailed a quota warning. Each value must be a whole number between 1 and 99. A separate alert is sent when storage reaches 100%."
+        "title": "Пороги попередження квоти (%)",
+        "description": "Розділені комами відсотки, наприклад \"80,90\", при яких користувачу надсилається попередження квоти. Кожне значення повинно бути цілим числом від 1 до 99. Окреме сповіщення надсилається, коли сховище досягає 100%."
       },
       "quotaGracePeriodDays": {
-        "title": "Quota Grace Period (days)",
-        "description": "How many days a user may stay over their quota before smart deletion may act (only when smart deletion is enabled below). Minimum 0."
+        "title": "Період льготи квоти (дні)",
+        "description": "Скільки днів користувач може залишатися над своєю квотою, перш ніж запрацює розумне видалення (тільки якщо розумне видалення включено нижче). Мінімум 0."
       },
       "quotaSmartDeletionEnabled": {
-        "title": "Smart Deletion of Over-Quota Files",
-        "description": "Off by default. When enabled, after the grace period the oldest unsafe files of an over-quota user are deleted in a safe order: first unshared uploads, then files in shares inactive for the period below. Files in active shares are never deleted — if nothing is safe to remove, new uploads are simply blocked instead."
+        "title": "Розумне видалення файлів, що перевищують квоту",
+        "description": "За замовчуванням вимкнено. Коли ввімкнено, після періоду льготи найстаріші небезпечні файли користувача, який перевищив квоту, видаляються в безпечному порядку: спочатку завантаження без поділу, потім файли у неактивних спільних доступах протягом указаного нижче періоду. Файли в активних спільних доступах ніколи не видаляються — якщо немає безпечних файлів для видалення, нові завантаження просто блокуються."
       },
       "quotaInactiveShareDays": {
-        "title": "Inactive Share Threshold (days)",
-        "description": "A share's files are eligible for smart deletion once the share has had no activity for this many days. Minimum 1."
+        "title": "Поріг неактивності спільного доступу (дні)",
+        "description": "Файли спільного доступу мають право на розумне видалення, коли спільний доступ не має активності протягом цієї кількості днів. Мінімум 1."
       },
       "reverseShareQuotaSoftEnforcement": {
-        "title": "Reverse Share Soft Enforcement",
-        "description": "On by default. Lets external guests keep uploading to a reverse share even if the owner is slightly over quota, so collections are not interrupted. Uploads are still blocked once the owner exceeds the tolerance set below, and the owner is alerted to free up space."
+        "title": "М'яке впровадження квоти зворотного спільного доступу",
+        "description": "За замовчуванням ввімкнено. Дозволяє зовнішнім гостям продовжувати завантаження у зворотний спільний доступ навіть якщо власник трохи перевищить свою квоту, щоб колекції не були перервані. Завантаження все ще блокуються, коли власник перевищує допуск, встановлений нижче, і власник попереджається про звільнення місця."
       },
       "reverseShareMaxOverageFactor": {
-        "title": "Reverse Share Overage Factor",
-        "description": "Soft enforcement allows reverse-share uploads until usage reaches this multiple of the owner's quota (e.g. 3 = up to three times the limit). Minimum 1."
+        "title": "Коефіцієнт перевищення зворотного спільного доступу",
+        "description": "М'яке впровадження дозволяє завантаження до зворотного спільного доступу, поки використання не досягне цього кратного від квоти власника (наприклад, 3 = до трьох разів ліміт). Мінімум 1."
       },
       "reverseShareAbsoluteMaxBytes": {
-        "title": "Reverse Share Absolute Cap",
-        "description": "Hard ceiling for reverse-share soft enforcement regardless of the factor above. Set to 0 for no absolute cap."
+        "title": "Абсолютний ліміт зворотного спільного доступу",
+        "description": "Жорсткий ліміт для м'якого впровадження зворотного спільного доступу незалежно від коефіцієнта вище. Встановіть 0 для відсутності абсолютного ліміту."
       },
       "firstUserAccess": {
         "title": "Доступ першого користувача",
@@ -1752,56 +1752,56 @@
         "description": "Увімкнути або вимкнути автентифікацію на основі пароля"
       },
       "emailDigestHour": {
-        "title": "Digest Email Hour",
-        "description": "Hour of the day (0-23) when digest emails are sent"
+        "title": "Година розсилки дайджесту",
+        "description": "Година дня (0-23), коли надсилаються листи дайджесту"
       },
       "emailJobRetentionDays": {
-        "title": "Email Job Retention",
-        "description": "Number of days to keep completed email jobs before cleanup"
+        "title": "Утримання завдань електронної пошти",
+        "description": "Кількість днів утримання завершених завдань електронної пошти перед очищенням"
       },
       "emailQueueIntervalSeconds": {
-        "title": "Queue Processing Interval",
-        "description": "Seconds between email queue processing cycles"
+        "title": "Інтервал обробки черги",
+        "description": "Секунди між циклами обробки черги електронної пошти"
       },
       "emailQueueMaxRetries": {
-        "title": "Max Email Retries",
-        "description": "Maximum number of retry attempts for failed emails"
+        "title": "Максимальна кількість повторних спроб електронної пошти",
+        "description": "Максимальна кількість спроб повторної відправки невдалих листів"
       },
       "auditRetentionDays": {
         "title": "Зберігання аудиту",
         "description": "Кількість днів для зберігання журналів аудиту (0 = назавжди, мінімум 7)"
       },
       "autoCleanupEnabled": {
-        "title": "Enable Automatic Cleanup",
-        "description": "Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on."
+        "title": "Ввімкнути автоматичне очищення",
+        "description": "Головний вимикач для заплановано очищення посилань спільного доступу, що закінчилися, файлів зворотного спільного доступу, що закінчилися, та сирітських. За замовчуванням вимкнено — нічого не видаляється автоматично, поки ви це не ввімкнете."
       },
       "autoCleanupIntervalHours": {
-        "title": "Cleanup Interval (hours)",
-        "description": "How often the cleanup task runs. Minimum 1 hour."
+        "title": "Інтервал очищення (години)",
+        "description": "Як часто запускається завдання очищення. Мінімум 1 година."
       },
       "autoCleanupGracePeriodDays": {
-        "title": "Grace Period (days)",
+        "title": "Період льготи (дні)",
         "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
       },
       "autoCleanupNotifyDaysBefore": {
-        "title": "Warn Before Deletion (days)",
-        "description": "Send the owner a \"pending permanent deletion\" warning email this many days before the content is deleted. 0 disables the warning. Should be at most the grace period."
+        "title": "Попередження перед видаленням (дні)",
+        "description": "Надішліть власнику електронний лист із попередженням про \"очікуване постійне видалення\" за цю кількість днів до видалення контенту. 0 вимикає попередження. Не повинна перевищувати період льготи."
       },
       "accountDeactivationCleanupEnabled": {
-        "title": "Delete Deactivated Accounts' Files",
-        "description": "When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files."
+        "title": "Видалити файли дезактивованих облікових записів",
+        "description": "Коли ввімкнено, файли дезактивованого облікового запису видаляються назавжди після встановленої нижче затримки. За замовчуванням вимкнено — дезактивація сама по собі ніколи не видаляє файли."
       },
       "accountDeactivationCleanupDays": {
-        "title": "Deactivation Cleanup Delay (days)",
-        "description": "Days after an account is deactivated before its files are deleted (only when the option above is enabled). Minimum 1."
+        "title": "Затримка очищення дезактивації (дні)",
+        "description": "Дні після дезактивації облікового запису до видалення його файлів (тільки якщо вище ввімкнена опція). Мінімум 1."
       },
       "autoCleanupOrphansEnabled": {
-        "title": "Sweep Orphaned Files",
-        "description": "When on, runs a two-way sweep that removes database records pointing to missing storage objects and storage objects with no database record. Off by default."
+        "title": "Очищення сирітських файлів",
+        "description": "Коли ввімкнено, виконує двостороннє очищення, яке видаляє записи бази даних, на які вказуються відсутні об'єкти сховища, та об'єкти сховища без запису. За замовчуванням вимкнено."
       },
       "autoCleanupOrphanMinAgeHours": {
-        "title": "Orphan Minimum Age (hours)",
-        "description": "Only files and objects older than this are considered during the orphan sweep, protecting uploads still in progress. Minimum 1."
+        "title": "Мінімальний вік сирітського файлу (години)",
+        "description": "Під час очищення сирітських файлів враховуються лише файли та об'єкти, старіші за цей період, захищаючи завантаження, що все ще виконуються. Мінімум 1."
       }
     },
     "buttons": {
@@ -1814,9 +1814,9 @@
       "updateFailed": "Не вдалося оновити налаштування",
       "passwordAuthRequiresProvider": "Неможливо вимкнути автентифікацію паролем без принаймні одного активного постачальника автентифікації",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
-      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent",
-      "quotaThresholdsInvalid": "Enter comma-separated percentages between 1 and 99, for example \"80,90\""
+      "cleanupValueInvalid": "Значення повинно бути цілим числом щонайменше {min}",
+      "notifyDaysExceedsGrace": "Час попередження не повинен перевищувати період льготи, інакше попередження не буде надіслано",
+      "quotaThresholdsInvalid": "Введіть розділені комами відсотки від 1 до 99, наприклад \"80,90\""
     },
     "messages": {
       "noChanges": "Немає змін для збереження",
@@ -1836,20 +1836,20 @@
       "defaultPlaceholder": "Введіть і натисніть Enter"
     },
     "redirectUri": {
-      "placeholder": "https://mysite.com",
+      "placeholder": "https://mysite.ua",
       "previewLabel": "Повний URL, який буде збережено:"
     },
     "emailAdmin": {
-      "queueStatus": "Email Queue Status",
-      "pending": "Pending",
-      "sentLast24h": "Sent (24h)",
-      "failed": "Failed",
+      "queueStatus": "Стан черги електронної пошти",
+      "pending": "Очікування",
+      "sentLast24h": "Надіслано (24г)",
+      "failed": "Помилка",
       "digestQueue": "Черга дайджестів",
-      "sendTest": "Send Test Email",
-      "testPlaceholder": "recipient@example.com",
-      "testSending": "Sending...",
-      "testSuccess": "Test email queued successfully",
-      "testError": "Failed to send test email"
+      "sendTest": "Надіслати тестовий лист",
+      "testPlaceholder": "ваш@email.ua",
+      "testSending": "Відправка...",
+      "testSuccess": "Тестовий лист успішно додано до черги",
+      "testError": "Не вдалося надіслати тестовий лист"
     }
   },
   "share": {
@@ -1885,19 +1885,19 @@
       "filesShared": "{count, plural, =1 {1 файл спільно використовується} few {# файли спільно використовуються} many {# файлів спільно використовується} other {# файлів спільно використовується}}"
     },
     "identification": {
-      "title": "Visitor Identification",
-      "subtitle": "Please provide your information to access this share",
-      "nameLabel": "Name",
-      "emailLabel": "Email",
-      "submit": "Continue",
-      "error": "Failed to submit identification. Please try again.",
-      "optional": "Optional",
-      "nameRequired": "Name is required",
-      "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email address",
+      "title": "Ідентифікація відвідувача",
+      "subtitle": "Будь ласка, надайте свою інформацію для доступу до цього спільного доступу",
+      "nameLabel": "Ім'я",
+      "emailLabel": "Електронна пошта",
+      "submit": "Продовжити",
+      "error": "Не вдалося надіслати ідентифікацію. Будь ласка, спробуйте ще раз.",
+      "optional": "Необов'язково",
+      "nameRequired": "Ім'я обов'язкове",
+      "emailRequired": "Електронна пошта обов'язкова",
+      "emailInvalid": "Будь ласка, введіть коректну адресу електронної пошти",
       "metadataError": "Failed to load share information. Please try again.",
       "rateLimited": "Too many attempts. Please try again later.",
-      "privacyNotice": "Your accesses and downloads may be visible to the sender of this share."
+      "privacyNotice": "Ваші доступи та завантаження можуть бути видимими відправнику цього спільного доступу."
     }
   },
   "shareActions": {
@@ -1927,8 +1927,8 @@
     "editErrorPassword": "Не вдалося оновити пароль спільного доступу",
     "bulkDeleteConfirmation": "Ви впевнені, що хочете видалити {count, plural, =1 {1 спільне використання} few {# спільних використання} many {# спільних використань} other {# спільних використань}}? Цю дію неможливо скасувати.",
     "bulkDeleteTitle": "Видалити вибрані спільні використання",
-    "keepCurrentPasswordHint": "Leave empty to keep current password",
-    "passwordRequired": "Password is required for new password protection"
+    "keepCurrentPasswordHint": "Залиште порожнім, щоб зберегти поточний пароль",
+    "passwordRequired": "Пароль необхідний для нової защити паролем"
   },
   "shareDetails": {
     "title": "Деталі спільного використання",
@@ -1964,27 +1964,27 @@
     "clickToEnlargeQrCode": "Клікніть, щоб збільшити QR код",
     "loadError": "Не вдалося завантажити деталі спільного використання",
     "activity": {
-      "title": "Activity",
-      "noActivity": "No activity recorded yet.",
-      "access": "Viewed",
-      "download": "Downloaded",
-      "anonymous": "Anonymous",
-      "loadMore": "Load more",
-      "showingCount": "Showing {shown} of {total}",
-      "loadError": "Failed to load activity data.",
-      "filterAll": "All actions",
-      "filterAccess": "Views only",
-      "filterDownload": "Downloads only",
-      "filterAllVisitors": "All visitors",
-      "filterIdentified": "Identified",
-      "filterAnonymous": "Anonymous",
+      "title": "Активність",
+      "noActivity": "Поки що немає записаної активності.",
+      "access": "Переглянуто",
+      "download": "Завантажено",
+      "anonymous": "Анонімно",
+      "loadMore": "Завантажити ще",
+      "showingCount": "Показано {shown} з {total}",
+      "loadError": "Не вдалося завантажити дані активності.",
+      "filterAll": "Усі дії",
+      "filterAccess": "Тільки перегляди",
+      "filterDownload": "Тільки завантаження",
+      "filterAllVisitors": "Усі відвідувачі",
+      "filterIdentified": "Ідентифіковано",
+      "filterAnonymous": "Анонімно",
       "source": {
-        "tracking_token": "Via recipient link",
-        "cookie": "Self-identified",
-        "selfDeclaredHint": "Self-declared identity, not verified"
+        "tracking_token": "Через посилання одержувача",
+        "cookie": "Самоідентифіковано",
+        "selfDeclaredHint": "Самозаявлена ідентичність, не перевірена"
       }
     },
-    "lastDownloaded": "Last Downloaded",
+    "lastDownloaded": "Останнє завантаження",
     "privacySummary": "Конфіденційність",
     "privacyNameField": "Ім''я відвідувача:",
     "privacyEmailField": "Email відвідувача:",
@@ -1994,9 +1994,9 @@
       "OPTIONAL": "Необов''язково",
       "REQUIRED": "Обов''язково"
     },
-    "recipientNotified": "Notified",
-    "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
-    "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"
+    "recipientNotified": "Сповіщено",
+    "recipientAccess": "{count, plural, one {# доступ} other {# доступів}}",
+    "recipientAccessWithLast": "{count, plural, one {# доступ} other {# доступів}} · останній {lastAccess}"
   },
   "shareExpiration": {
     "title": "Налаштування закінчення спільного доступу",
@@ -2058,10 +2058,10 @@
     "singleShareZipName": "{shareName}_files.zip",
     "multipleSharesZipName": "{count}_shares_files.zip",
     "defaultShareName": "Спільне використання",
-    "pauseSuccess": "Share paused",
-    "pauseError": "Failed to pause share",
-    "resumeSuccess": "Share resumed",
-    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
+    "pauseSuccess": "Спільний доступ призупинено",
+    "pauseError": "Не вдалося призупинити спільний доступ",
+    "resumeSuccess": "Спільний доступ відновлено",
+    "resumeError": "Не вдалося відновити спільний доступ. Якщо він закінчився дію або досяг ліміту переглядів, розширте його замість цього."
   },
   "shareMultipleFiles": {
     "title": "Поділитися кількома файлами",
@@ -2156,8 +2156,8 @@
       "neverExpires": "Ніколи не закінчується",
       "active": "Активне",
       "expired": "Закінчилося",
-      "paused": "Paused",
-      "maxViewsReached": "View Limit Reached"
+      "paused": "Призупинено",
+      "maxViewsReached": "Досягнут ліміт переглядів"
     },
     "security": {
       "protected": "Захищене",
@@ -2179,9 +2179,9 @@
       "notifyRecipients": "Сповістити одержувачів",
       "downloadShareFiles": "Завантажити всі файли",
       "delete": "Видалити",
-      "pause": "Pause",
-      "resume": "Resume",
-      "renew": "Renew"
+      "pause": "Призупинити",
+      "resume": "Відновити",
+      "renew": "Поновити"
     },
     "bulkActions": {
       "actions": "Дії",
@@ -2346,11 +2346,11 @@
         "edge": "Edge"
       },
       "platforms": {
-        "windows": " на Windows",
-        "macos": " на macOS",
-        "linux": " на Linux",
-        "iphone": " на iPhone",
-        "android": " на Android"
+        "windows": " у Windows",
+        "macos": " у macOS",
+        "linux": " у Linux",
+        "iphone": " у iPhone",
+        "android": " у Android"
       }
     }
   },
@@ -2812,41 +2812,41 @@
     }
   },
   "notificationPreferences": {
-    "pageTitle": "Notification Preferences",
-    "description": "Choose which email notifications you receive",
-    "type": "Notification Type",
-    "category": "Category",
-    "frequency": "Frequency",
-    "immediate": "Immediate",
-    "disabled": "Disabled",
-    "alwaysEnabled": "Always enabled",
-    "save": "Save Preferences",
-    "saveSuccess": "Notification preferences saved",
-    "saveError": "Failed to save preferences",
-    "noChanges": "No changes to save",
+    "pageTitle": "Параметри сповіщення",
+    "description": "Виберіть, які сповіщення електронною поштою ви отримуєте",
+    "type": "Тип сповіщення",
+    "category": "Категорія",
+    "frequency": "Частота",
+    "immediate": "Негайно",
+    "disabled": "Вимкнено",
+    "alwaysEnabled": "Завжди ввімкнено",
+    "save": "Зберегти параметри",
+    "saveSuccess": "Параметри сповіщення збережено",
+    "saveError": "Помилка збереження параметрів",
+    "noChanges": "Немає змін для збереження",
     "types": {
-      "password_reset": "Password reset",
-      "welcome": "Welcome email",
-      "account_deactivated": "Account deactivated",
-      "account_reactivated": "Account reactivated",
-      "share_invitation": "Share invitation",
-      "share_accessed": "Share accessed",
-      "share_downloaded": "File downloaded from share",
-      "share_expiring": "Share expiring soon",
-      "share_expired": "Share expired",
-      "share_max_views_reached": "Share max views reached",
-      "share_no_activity": "No activity on share",
-      "reverse_share_invitation": "Reverse share invitation",
-      "reverse_share_uploaded": "Files uploaded to reverse share",
-      "reverse_share_expiring": "Reverse share expiring",
-      "reverse_share_expired": "Reverse share expired",
-      "quota_warning": "Quota warning",
-      "quota_exceeded": "Quota exceeded",
-      "files_auto_deleted": "Files auto-deleted",
-      "share_auto_deleted": "Share auto-deleted",
-      "admin_user_registered": "New user registered (admin)",
-      "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email",
+      "password_reset": "Скидання пароля",
+      "welcome": "Привітальне повідомлення",
+      "account_deactivated": "Обліковий запис деактивовано",
+      "account_reactivated": "Обліковий запис повторно активовано",
+      "share_invitation": "Запрошення на спільний доступ",
+      "share_accessed": "Спільний доступ отримав доступ",
+      "share_downloaded": "Файл завантажено зі спільного доступу",
+      "share_expiring": "Спільний доступ скоро закінчиться",
+      "share_expired": "Спільний доступ закінчився",
+      "share_max_views_reached": "Досягнуто максимум переглядів спільного доступу",
+      "share_no_activity": "Немає діяльності на спільному доступі",
+      "reverse_share_invitation": "Запрошення на посилання для отримання",
+      "reverse_share_uploaded": "Файли завантажено на посилання для отримання",
+      "reverse_share_expiring": "Посилання для отримання скоро закінчиться",
+      "reverse_share_expired": "Посилання для отримання закінчилось",
+      "quota_warning": "Попередження про квоту",
+      "quota_exceeded": "Квота перевищена",
+      "files_auto_deleted": "Файли автоматично видалено",
+      "share_auto_deleted": "Спільний доступ автоматично видалено",
+      "admin_user_registered": "Зареєстровано нового користувача (лише для адміністраторів)",
+      "admin_quota_alert": "Сповіщення про квоту користувача (лише для адміністраторів)",
+      "test_email": "Тестове повідомлення",
       "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
       "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
       "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
@@ -2872,16 +2872,16 @@
       "admin_quota_alert": "Коли використання сховища користувача перевищує його квоту (лише для адміністраторів)"
     },
     "categories": {
-      "account": "Account",
-      "shares": "Shares",
-      "reverseShares": "Reverse Shares",
+      "account": "Обліковий запис",
+      "shares": "Спільні доступи",
+      "reverseShares": "Посилання для отримання",
       "quota": "Quotas",
       "admin": "Administration",
       "test": "Test"
     },
-    "saving": "Saving...",
-    "loadError": "Failed to load notification preferences",
-    "retry": "Retry",
-    "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}"
+    "saving": "Збереження...",
+    "loadError": "Помилка завантаження параметрів сповіщення",
+    "retry": "Повторити",
+    "unsavedChanges": "{count, plural, one {# незбережена зміна} other {# незбережені зміни}}"
   }
 }

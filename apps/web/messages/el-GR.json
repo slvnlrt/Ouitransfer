@@ -71,17 +71,17 @@
       "scopesHelpOidc": "Τα scopes προτείνονται αυτόματα βάσει του URL παρόχου. Συνήθη OIDC scopes: openid, profile, email, groups",
       "scopesHelpOauth2": "Τα scopes προτείνονται αυτόματα βάσει του URL παρόχου. Τα συνήθη OAuth2 scopes εξαρτώνται από τον πάροχο",
       "providerUrl": "URL παρόχου",
-      "providerUrlPlaceholder": "https://auth.example.com",
+      "providerUrlPlaceholder": "https://auth.example.gr",
       "providerUrlAutoPlaceholder": "https://your-provider.com (τα endpoints θα εντοπιστούν αυτόματα)",
       "providerUrlManualPlaceholder": "https://your-provider.com",
       "autoDiscoveryHelp": "Το σύστημα θα εντοπίσει αυτόματα τα endpoints authorization, token και userinfo",
       "manualConfigurationHelp": "Βασικό URL του παρόχου σας (τα endpoints θα είναι σχετικά με αυτό)",
       "authorizationEndpoint": "Endpoint εξουσιοδότησης",
-      "authorizationEndpointPlaceholder": "https://auth.example.com/auth",
+      "authorizationEndpointPlaceholder": "https://auth.example.gr/auth",
       "tokenEndpoint": "Endpoint token",
-      "tokenEndpointPlaceholder": "https://auth.example.com/token",
+      "tokenEndpointPlaceholder": "https://auth.example.gr/token",
       "userInfoEndpoint": "Endpoint user info",
-      "userInfoEndpointPlaceholder": "https://auth.example.com/userinfo",
+      "userInfoEndpointPlaceholder": "https://auth.example.gr/userinfo",
       "configurationMethod": "Μέθοδος ρύθμισης",
       "autoDiscovery": "Αυτόματος εντοπισμός",
       "autoDiscoveryDescription": "Αυτόματος εντοπισμός endpoints από το URL παρόχου",
@@ -179,7 +179,7 @@
     "copy": "Αντιγραφή",
     "copied": "Αντιγράφηκε",
     "retry": "Retry",
-    "unavailable": "unavailable",
+    "unavailable": "μη διαθέσιμο",
     "days": "ημέρες",
     "aliasValidation": {
       "required": "[TO_TRANSLATE] Alias is required",
@@ -195,7 +195,7 @@
     "descriptionLabel": "Περιγραφή",
     "descriptionPlaceholder": "Εισαγάγετε περιγραφή (προαιρετικό)",
     "expirationLabel": "Ημερομηνία λήξης",
-    "expirationPlaceholder": "MM/DD/YYYY HH:MM",
+    "expirationPlaceholder": "ΗΗ/ΜΜ/ΕΕΕΕ ΩΩ:ΛΛ",
     "maxViewsLabel": "Μέγιστες προβολές",
     "maxViewsPlaceholder": "Αφήστε κενό για απεριόριστες",
     "passwordProtection": "Προστασία με κωδικό",
@@ -214,17 +214,17 @@
     },
     "nextSelectFiles": "Επόμενο: Επιλογή αρχείων",
     "searchLabel": "Αναζήτηση",
-    "privacySection": "Privacy & Notifications",
-    "nameFieldRequired": "Require visitor name",
-    "emailFieldRequired": "Require visitor email",
-    "notifyOnDownload": "Notify me on each download",
-    "notifyOnDownloadHelp": "When enabled, you'll receive email notifications when files are downloaded from this share, regardless of your global notification preferences.",
-    "inactivityAlertDays": "Alert if no downloads after",
-    "inactivityAlertPlaceholder": "Leave empty to disable",
-    "fieldHidden": "Hidden",
-    "fieldOptional": "Optional",
-    "fieldRequired": "Required",
-    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
+    "privacySection": "Ιδιωτικότητα & Ειδοποιήσεις",
+    "nameFieldRequired": "Απαιτείται όνομα επισκέπτη",
+    "emailFieldRequired": "Απαιτείται email επισκέπτη",
+    "notifyOnDownload": "Να με ειδοποιείτε σε κάθε λήψη",
+    "notifyOnDownloadHelp": "Όταν ενεργοποιηθεί, θα λαμβάνετε ειδοποιήσεις email όταν γίνονται λήψεις αρχείων από αυτήν την κοινοποίηση, ανεξάρτητα από τις παγκόσμιες προτιμήσεις ειδοποιήσεών σας.",
+    "inactivityAlertDays": "Ειδοποίηση αν δεν υπάρχουν λήψεις μετά από",
+    "inactivityAlertPlaceholder": "Αφήστε κενό για απενεργοποίηση",
+    "fieldHidden": "Κρυμμένο",
+    "fieldOptional": "Προαιρετικό",
+    "fieldRequired": "Υποχρεωτικό",
+    "filesOptionalHint": "Η προσθήκη αρχείων είναι προαιρετική — μπορείτε να δημιουργήσετε μια άδεια κοινοποίηση τώρα και να προσθέσετε αρχεία αργότερα."
   },
   "customization": {
     "breadcrumb": "Προσαρμογή",
@@ -606,7 +606,7 @@
       "link": "Σύνδεσμος",
       "qrcode": "Κωδικός QR"
     },
-    "later": "Later"
+    "later": "Αργότερα"
   },
   "home": {
     "pageTitle": "Αρχική",
@@ -749,7 +749,7 @@
       "SHARE_RECIPIENT_ADD": "Παραλήπτες κοινής χρήσης προστέθηκαν",
       "SHARE_RECIPIENT_REMOVE": "Παραλήπτες κοινής χρήσης αφαιρέθηκαν",
       "SHARE_RECIPIENT_NOTIFY": "Παραλήπτες κοινής χρήσης ειδοποιήθηκαν",
-      "SHARE_RECIPIENT_REMIND": "Share non-downloaders reminded",
+      "SHARE_RECIPIENT_REMIND": "Παραλήπτες κοινοποίησης υπενθυμίστηκαν",
       "SHARE_ITEMS_ADD": "Στοιχεία κοινής χρήσης προστέθηκαν",
       "SHARE_ITEMS_REMOVE": "Στοιχεία κοινής χρήσης αφαιρέθηκαν",
       "FILE_UPLOAD": "Αρχείο μεταφορτώθηκε",
@@ -793,17 +793,17 @@
       "BACKGROUND_IMAGE_UPLOAD": "Εικόνα φόντου μεταφορτώθηκε",
       "BACKGROUND_IMAGE_DELETE": "Εικόνα φόντου διαγράφηκε",
       "AUDIT_RETENTION_CLEANUP": "Εκκαθάριση αρχείου ελέγχου",
-      "SHARE_DEACTIVATED": "Share deactivated",
-      "SHARE_REACTIVATED": "Share reactivated",
-      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
-      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated",
-      "SHARE_AUTO_DELETED": "Share auto-deleted",
-      "REVERSE_SHARE_AUTO_DELETED": "Reverse share auto-deleted",
-      "ACCOUNT_FILES_CLEANED": "Account files cleaned",
-      "ORPHAN_S3_DELETED": "Orphan storage object deleted",
-      "ORPHAN_DB_DELETED": "Orphan database record deleted",
-      "ORPHAN_MULTIPART_ABORTED": "Incomplete multipart upload aborted",
-      "QUOTA_FILES_DELETED": "Over-quota files deleted"
+      "SHARE_DEACTIVATED": "Κοινοποίηση απενεργοποιήθηκε",
+      "SHARE_REACTIVATED": "Κοινοποίηση επανενεργοποιήθηκε",
+      "REVERSE_SHARE_DEACTIVATED": "Σύνδεσμος λήψης απενεργοποιήθηκε",
+      "REVERSE_SHARE_REACTIVATED": "Σύνδεσμος λήψης επανενεργοποιήθηκε",
+      "SHARE_AUTO_DELETED": "Κοινοποίηση διαγράφηκε αυτόματα",
+      "REVERSE_SHARE_AUTO_DELETED": "Σύνδεσμος λήψης διαγράφηκε αυτόματα",
+      "ACCOUNT_FILES_CLEANED": "Αρχεία λογαριασμού καθαρίστηκαν",
+      "ORPHAN_S3_DELETED": "Αντικείμενο ορφανού χώρου αποθήκευσης διαγράφηκε",
+      "ORPHAN_DB_DELETED": "Ορφανό αρχείο βάσης δεδομένων διαγράφηκε",
+      "ORPHAN_MULTIPART_ABORTED": "Ημιτελής μεταφόρτωση πολλών μερών ακυρώθηκε",
+      "QUOTA_FILES_DELETED": "Αρχεία που υπέρβησαν το όριο διαγράφηκαν"
     },
     "targetTypes": {
       "user": "Χρήστης",
@@ -1042,23 +1042,23 @@
     "invalidEmail": "Παρακαλώ εισαγάγετε έγκυρη διεύθυνση email",
     "duplicateEmail": "Αυτός ο παραλήπτης έχει ήδη προστεθεί",
     "noRecipientsDescription": "Προσθέστε παραλήπτες για να κοινοποιήσετε αυτό το περιεχόμενο μέσω email",
-    "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}",
-    "notifyPartial": "Only {sent} of {total} recipients were notified",
-    "neverAccessed": "Never accessed",
-    "namePlaceholder": "Name (optional)",
-    "downloaded": "Downloaded",
-    "pending": "Pending",
-    "downloadedAt": "Downloaded on {date}",
-    "uploaded": "Uploaded",
-    "uploadedAt": "Uploaded on {date}",
-    "uploadApproximateHint": "Approximate: uploaders can submit files without providing an email when it is not required",
-    "remindNonDownloaders": "Remind ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
-    "sendingReminders": "Sending reminders...",
-    "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
-    "remindNoneSent": "No reminders were sent",
-    "remindError": "Failed to send reminders"
+    "notified": "Ενημερωμένος",
+    "views": "{count, plural, one {# προβολή} other {# προβολές}}",
+    "notifyPartial": "Ενημερώθησαν μόνο {sent} από {total} παραλήπτες",
+    "neverAccessed": "Ποτέ δεν έγινε πρόσβαση",
+    "namePlaceholder": "Όνομα (προαιρετικό)",
+    "downloaded": "Ληφθέν",
+    "pending": "Εκκρεμές",
+    "downloadedAt": "Ληφθέν στις {date}",
+    "uploaded": "Ανέφερε",
+    "uploadedAt": "Ανέφερε στις {date}",
+    "uploadApproximateHint": "Προσέγγιση: οι αποστολείς μπορούν να υποβάλουν αρχεία χωρίς να παρέχουν ηλεκτρονικό ταχυδρομείο όταν δεν απαιτείται",
+    "remindNonDownloaders": "Υπενθύμιση ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {Δεν υπάρχουν παραλήπτες που περιμένουν — όλοι έχουν λάβει τα αρχεία} one {Υπενθύμιση # παραλήπτη που δεν έχει ληφθεί ακόμα} other {Υπενθύμιση # παραληπτών που δεν έχουν ληφθεί ακόμα}}",
+    "sendingReminders": "Αποστολή υπενθυμίσεων...",
+    "remindSuccess": "{count, plural, one {Υπενθύμιση στάλθηκε σε # παραλήπτη} other {Υπενθυμίσεις στάλθησαν σε # παραλήπτες}}",
+    "remindNoneSent": "Δεν απεστάλησαν υπενθυμίσεις",
+    "remindError": "Αποτυχία αποστολής υπενθυμίσεων"
   },
   "register": {
     "validation": {
@@ -1258,7 +1258,7 @@
         "editDescription": "Ενημερώστε το ψευδώνυμο για αυτόν τον σύνδεσμο",
         "createDescription": "Δημιουργήστε προσαρμοσμένο ψευδώνυμο για αυτόν τον σύνδεσμο",
         "aliasLabel": "Ψευδώνυμο συνδέσμου",
-        "aliasPlaceholder": "my-custom-link",
+        "aliasPlaceholder": "ο-σύνδεσμός-μου",
         "preview": "Προεπισκόπηση:",
         "currentLink": "Τρέχων σύνδεσμος:",
         "copyCurrentLink": "Αντιγραφή τρέχοντος συνδέσμου",
@@ -1416,8 +1416,8 @@
         "optionalDescription": "Προαιρετικό: Το πεδίο θα εμφανιστεί αλλά δεν είναι υποχρεωτικό",
         "requiredDescription": "Υποχρεωτικό: Το πεδίο πρέπει να συμπληρωθεί πριν τη μεταφόρτωση"
       },
-      "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "notifyOnUpload": "Ενημέρωσέ με σε κάθε ανέβασμα",
+      "notifyOnUploadHelp": "Όταν ενεργοποιηθεί, θα λαμβάνετε ειδοποιήσεις ηλεκτρονικού ταχυδρομείου όταν ανεβαίνουν αρχεία σε αυτόν τον σύνδεσμο λήψης, ανεξάρτητα από τις καθολικές προτιμήσεις ειδοποίησης.",
       "submit": "Δημιουργία συνδέσμου λήψης",
       "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
       "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
@@ -1509,12 +1509,12 @@
         "namePlaceholder": "Το όνομά σας",
         "emailLabel": "Email",
         "emailLabelOptional": "Email (προαιρετικό)",
-        "emailPlaceholder": "your@email.com",
+        "emailPlaceholder": "δικοσας@email.gr",
         "descriptionLabel": "Περιγραφή (προαιρετική)",
         "descriptionPlaceholder": "Προσθέστε περιγραφή για τα αρχεία...",
         "uploadButton": "Αποστολή {count} αρχείου(ων)",
         "uploading": "Γίνεται αποστολή...",
-        "privacyNotice": "Your name, email and uploads may be visible to the owner of this receive link."
+        "privacyNotice": "Το όνομά σας, το ηλεκτρονικό ταχυδρομείό σας και τα ανεβάσματά σας ενδέχεται να είναι ορατά στον ιδιοκτήτη αυτού του συνδέσμου λήψης."
       },
       "success": {
         "title": "Τα αρχεία στάλθηκαν με επιτυχία! 🎉",
@@ -1595,8 +1595,8 @@
         "description": "Διαχείριση εικόνων φόντου για σελίδες μεταφόρτωσης στιλ WeTransfer"
       },
       "cleanup": {
-        "title": "Automatic Cleanup",
-        "description": "Lifecycle management for expired content, deactivated accounts, and orphaned files. Auto-deletion is off by default."
+        "title": "Αυτόματος Καθαρισμός",
+        "description": "Διαχείριση κύκλου ζωής για λήξη ισχύος περιεχομένου, απενεργοποιημένων λογαριασμών και ορφανών αρχείων. Ο αυτόματος διαγραφισμός είναι απενεργοποιημένος εξ' ορισμού."
       }
     },
     "fields": {
@@ -1610,8 +1610,8 @@
         "description": "Όνομα εφαρμογής που εμφανίζεται στους χρήστες"
       },
       "appUrl": {
-        "title": "Application URL",
-        "description": "Public URL of the application, used in email links"
+        "title": "Διεύθυνση URL της Εφαρμογής",
+        "description": "Δημόσια διεύθυνση URL της εφαρμογής, χρησιμοποιείται σε συνδέσμους ηλεκτρονικού ταχυδρομείου"
       },
       "appDescription": {
         "title": "Περιγραφή εφαρμογής",
@@ -1712,32 +1712,32 @@
         "description": "Συνολικό όριο αποθήκευσης ανά χρήστη. Μπορεί να παρακαμφθεί ανά χρήστη ή ανά ομάδα."
       },
       "quotaWarningThresholds": {
-        "title": "Quota Warning Thresholds (%)",
-        "description": "Comma-separated percentages, e.g. \"80,90\", at which a user is emailed a quota warning. Each value must be a whole number between 1 and 99. A separate alert is sent when storage reaches 100%."
+        "title": "Κατώφλια Προειδοποίησης Ορίου (%)",
+        "description": "Ποσοστά χωρισμένα με κόμμα, π.χ. \"80,90\", στα οποία αποστέλλεται προειδοποίηση ορίου στον χρήστη. Κάθε τιμή πρέπει να είναι ακέραιος αριθμός μεταξύ 1 και 99. Μία ξεχωριστή ειδοποίηση αποστέλλεται όταν ο αποθηκευτικός χώρος φτάσει 100%."
       },
       "quotaGracePeriodDays": {
-        "title": "Quota Grace Period (days)",
-        "description": "How many days a user may stay over their quota before smart deletion may act (only when smart deletion is enabled below). Minimum 0."
+        "title": "Περίοδος Χάριτος Ορίου (ημέρες)",
+        "description": "Πόσες ημέρες μπορεί ένας χρήστης να παραμείνει πάνω από το όριό του πριν ο έξυπνος διαγραφισμός ενεργοποιηθεί (μόνο όταν είναι ενεργοποιημένος παρακάτω). Ελάχιστο 0."
       },
       "quotaSmartDeletionEnabled": {
-        "title": "Smart Deletion of Over-Quota Files",
-        "description": "Off by default. When enabled, after the grace period the oldest unsafe files of an over-quota user are deleted in a safe order: first unshared uploads, then files in shares inactive for the period below. Files in active shares are never deleted — if nothing is safe to remove, new uploads are simply blocked instead."
+        "title": "Έξυπνος Διαγραφισμός Αρχείων Ξεπερασμένου Ορίου",
+        "description": "Απενεργοποιημένο εξ' ορισμού. Όταν ενεργοποιηθεί, μετά την περίοδο χάριτος, τα παλιότερα μη-ασφαλή αρχεία του χρήστη που ξεπέρασε το όριό του διαγράφονται με ασφαλή σειρά: πρώτα τα μη κοινοποιημένα αρχεία, ύστερα αρχεία σε κοινοποιήσεις αδρανείας για την περίοδο παρακάτω. Αρχεία σε ενεργές κοινοποιήσεις δεν διαγράφονται ποτέ — εάν δεν υπάρχουν ασφαλή αρχεία προς διαγραφή, τα νέα αρχεία απλώς αποκλείονται."
       },
       "quotaInactiveShareDays": {
-        "title": "Inactive Share Threshold (days)",
-        "description": "A share's files are eligible for smart deletion once the share has had no activity for this many days. Minimum 1."
+        "title": "Κατώφλι Αδράνειας Κοινοποίησης (ημέρες)",
+        "description": "Τα αρχεία μιας κοινοποίησης καθίστανται επιλέξιμα για έξυπνο διαγραφισμό μόλις η κοινοποίηση δεν έχει δραστηριότητα για αυτόν τον αριθμό ημερών. Ελάχιστο 1."
       },
       "reverseShareQuotaSoftEnforcement": {
-        "title": "Reverse Share Soft Enforcement",
-        "description": "On by default. Lets external guests keep uploading to a reverse share even if the owner is slightly over quota, so collections are not interrupted. Uploads are still blocked once the owner exceeds the tolerance set below, and the owner is alerted to free up space."
+        "title": "Μαλακή Εφαρμογή Ορίου Αντίστροφης Κοινοποίησης",
+        "description": "Ενεργοποιημένο εξ' ορισμού. Επιτρέπει σε εξωτερικούς επισκέπτες να συνεχίσουν να ανεβάζουν σε μια αντίστροφη κοινοποίηση ακόμα κι αν ο κάτοχος ξεπεράσει ελαφρώς το όριό του, ώστε οι συλλογές να μην διακοπούν. Τα αρχεία εξ' ολοκλήρου αποκλείονται μόλις ο κάτοχος υπερβεί την ανοχή που ορίστηκε παρακάτω, και ο κάτοχος ειδοποιείται για απελευθέρωση χώρου."
       },
       "reverseShareMaxOverageFactor": {
-        "title": "Reverse Share Overage Factor",
-        "description": "Soft enforcement allows reverse-share uploads until usage reaches this multiple of the owner's quota (e.g. 3 = up to three times the limit). Minimum 1."
+        "title": "Συντελεστής Υπέρβασης Αντίστροφης Κοινοποίησης",
+        "description": "Η μαλακή εφαρμογή επιτρέπει ανεβάσματα σε αντίστροφη κοινοποίηση έως ότου η χρήση φτάσει αυτό το πολλαπλάσιο του ορίου του κατόχου (π.χ. 3 = έως τρεις φορές το όριο). Ελάχιστο 1."
       },
       "reverseShareAbsoluteMaxBytes": {
-        "title": "Reverse Share Absolute Cap",
-        "description": "Hard ceiling for reverse-share soft enforcement regardless of the factor above. Set to 0 for no absolute cap."
+        "title": "Απόλυτο Ανώτατο Όριο Αντίστροφης Κοινοποίησης",
+        "description": "Σκληρό ανώτατο όριο για μαλακή εφαρμογή αντίστροφης κοινοποίησης, ανεξάρτητα από τον παραπάνω συντελεστή. Ορίστε σε 0 για κανένα απόλυτο όριο."
       },
       "firstUserAccess": {
         "title": "Πρώτη πρόσβαση χρήστη",
@@ -1752,56 +1752,56 @@
         "description": "Ενεργοποίηση ή απενεργοποίηση ελέγχου με κωδικό"
       },
       "emailDigestHour": {
-        "title": "Digest Email Hour",
-        "description": "Hour of the day (0-23) when digest emails are sent"
+        "title": "Ώρα Περίληψης Ηλεκτρονικού Ταχυδρομείου",
+        "description": "Ώρα της ημέρας (0-23) όταν αποστέλλονται τα περιληπτικά μηνύματα ηλεκτρονικού ταχυδρομείου"
       },
       "emailJobRetentionDays": {
-        "title": "Email Job Retention",
-        "description": "Number of days to keep completed email jobs before cleanup"
+        "title": "Διατήρηση Εργασιών Ηλεκτρονικού Ταχυδρομείου",
+        "description": "Αριθμός ημερών για διατήρηση ολοκληρωμένων εργασιών ηλεκτρονικού ταχυδρομείου πριν από τον καθαρισμό"
       },
       "emailQueueIntervalSeconds": {
-        "title": "Queue Processing Interval",
-        "description": "Seconds between email queue processing cycles"
+        "title": "Διάστημα Επεξεργασίας Ουράς",
+        "description": "Δευτερόλεπτα μεταξύ κύκλων επεξεργασίας της ουράς ηλεκτρονικού ταχυδρομείου"
       },
       "emailQueueMaxRetries": {
-        "title": "Max Email Retries",
-        "description": "Maximum number of retry attempts for failed emails"
+        "title": "Μέγιστες Επαναπροσπάθειες Ηλεκτρονικού Ταχυδρομείου",
+        "description": "Μέγιστος αριθμός προσπαθειών επανάληψης για αποτυχημένα ηλεκτρονικά μηνύματα"
       },
       "auditRetentionDays": {
         "title": "Διατήρηση ελέγχου",
         "description": "Αριθμός ημερών για διατήρηση αρχείων ελέγχου (0 = για πάντα, ελάχιστο 7)"
       },
       "autoCleanupEnabled": {
-        "title": "Enable Automatic Cleanup",
-        "description": "Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on."
+        "title": "Ενεργοποίηση Αυτόματου Καθαρισμού",
+        "description": "Κύριος διακόπτης για τον προγραμματισμένο καθαρισμό των ληξιάρχων συνδέσμων κοινοποίησης, ληξιάρχων αρχείων αντίστροφης κοινοποίησης και ορφανών. Απενεργοποιημένο εξ' ορισμού — τίποτα δεν διαγράφεται αυτόματα έως ότου το ενεργοποιήσετε."
       },
       "autoCleanupIntervalHours": {
-        "title": "Cleanup Interval (hours)",
-        "description": "How often the cleanup task runs. Minimum 1 hour."
+        "title": "Διάστημα Καθαρισμού (ώρες)",
+        "description": "Πόσο συχνά εκτελείται η εργασία καθαρισμού. Ελάχιστο 1 ώρα."
       },
       "autoCleanupGracePeriodDays": {
-        "title": "Grace Period (days)",
+        "title": "Περίοδος Χάριτος (ημέρες)",
         "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
       },
       "autoCleanupNotifyDaysBefore": {
-        "title": "Warn Before Deletion (days)",
-        "description": "Send the owner a \"pending permanent deletion\" warning email this many days before the content is deleted. 0 disables the warning. Should be at most the grace period."
+        "title": "Προειδοποίηση Πριν από τη Διαγραφή (ημέρες)",
+        "description": "Αποστείλατε στον κάτοχο μια ειδοποίηση ηλεκτρονικού ταχυδρομείου \"αναμενόμενη μόνιμη διαγραφή\" αυτό τον αριθμό ημερών πριν από τη διαγραφή του περιεχομένου. 0 απενεργοποιεί την προειδοποίηση. Δεν πρέπει να υπερβαίνει την περίοδο χάριτος."
       },
       "accountDeactivationCleanupEnabled": {
-        "title": "Delete Deactivated Accounts' Files",
-        "description": "When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files."
+        "title": "Διαγραφή Αρχείων Απενεργοποιημένων Λογαριασμών",
+        "description": "Όταν ενεργοποιηθεί, τα αρχεία ενός απενεργοποιημένου λογαριασμού διαγράφονται μόνιμα μετά την παρακάτω καθυστέρηση. Απενεργοποιημένο εξ' ορισμού — η απενεργοποίηση μόνη της δεν διαγράφει ποτέ αρχεία."
       },
       "accountDeactivationCleanupDays": {
-        "title": "Deactivation Cleanup Delay (days)",
-        "description": "Days after an account is deactivated before its files are deleted (only when the option above is enabled). Minimum 1."
+        "title": "Καθυστέρηση Καθαρισμού Απενεργοποίησης (ημέρες)",
+        "description": "Ημέρες μετά την απενεργοποίηση ενός λογαριασμού πριν από τη διαγραφή των αρχείων του (μόνο όταν είναι ενεργοποιημένη η παραπάνω επιλογή). Ελάχιστο 1."
       },
       "autoCleanupOrphansEnabled": {
-        "title": "Sweep Orphaned Files",
-        "description": "When on, runs a two-way sweep that removes database records pointing to missing storage objects and storage objects with no database record. Off by default."
+        "title": "Σάρωση Ορφανών Αρχείων",
+        "description": "Όταν ενεργοποιηθεί, εκτελεί μια διεύθυνση σάρωσης που αφαιρεί εγγραφές βάσης δεδομένων που δείχνουν σε αντικείμενα αποθήκευσης που λείπουν και αντικείμενα αποθήκευσης χωρίς εγγραφή. Απενεργοποιημένο εξ' ορισμού."
       },
       "autoCleanupOrphanMinAgeHours": {
-        "title": "Orphan Minimum Age (hours)",
-        "description": "Only files and objects older than this are considered during the orphan sweep, protecting uploads still in progress. Minimum 1."
+        "title": "Ελάχιστη Ηλικία Ορφανού (ώρες)",
+        "description": "Μόνο αρχεία και αντικείμενα παλιότερα από αυτό εξετάζονται κατά τη σάρωση ορφανών, προστατεύοντας τα ανεβάσματα που εξακολουθούν να είναι σε εξέλιξη. Ελάχιστο 1."
       }
     },
     "buttons": {
@@ -1814,9 +1814,9 @@
       "updateFailed": "Αποτυχία ενημέρωσης ρυθμίσεων",
       "passwordAuthRequiresProvider": "Δεν είναι δυνατή η απενεργοποίηση του ελέγχου με κωδικό χωρίς τουλάχιστον έναν ενεργό πάροχο ελέγχου ταυτότητας",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
-      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent",
-      "quotaThresholdsInvalid": "Enter comma-separated percentages between 1 and 99, for example \"80,90\""
+      "cleanupValueInvalid": "Η τιμή πρέπει να είναι ακέραιος αριθμός τουλάχιστον {min}",
+      "notifyDaysExceedsGrace": "Ο χρόνος προειδοποίησης δεν πρέπει να υπερβαίνει την περίοδο χάριτος, διαφορετικά δεν θα σταλεί προειδοποίηση",
+      "quotaThresholdsInvalid": "Εισαγάγετε ποσοστά χωρισμένα με κόμμα μεταξύ 1 και 99, για παράδειγμα \"80,90\""
     },
     "messages": {
       "noChanges": "Καμία αλλαγή για αποθήκευση",
@@ -1836,20 +1836,20 @@
       "defaultPlaceholder": "Πληκτρολογήστε και πατήστε Enter"
     },
     "redirectUri": {
-      "placeholder": "https://mysite.com",
+      "placeholder": "https://mysite.gr",
       "previewLabel": "Πλήρες URL που θα αποθηκευτεί:"
     },
     "emailAdmin": {
-      "queueStatus": "Email Queue Status",
-      "pending": "Pending",
-      "sentLast24h": "Sent (24h)",
-      "failed": "Failed",
+      "queueStatus": "Κατάσταση Ουράς Ηλεκτρονικού Ταχυδρομείου",
+      "pending": "Εκκρεμές",
+      "sentLast24h": "Αποστολή (24ω)",
+      "failed": "Αποτυχημένα",
       "digestQueue": "Ουρά σύνοψης",
-      "sendTest": "Send Test Email",
-      "testPlaceholder": "recipient@example.com",
-      "testSending": "Sending...",
-      "testSuccess": "Test email queued successfully",
-      "testError": "Failed to send test email"
+      "sendTest": "Αποστολή Δοκιμαστικού Ηλεκτρονικού Ταχυδρομείου",
+      "testPlaceholder": "παραλήπτης@example.gr",
+      "testSending": "Αποστολή σε εξέλιξη...",
+      "testSuccess": "Το δοκιμαστικό ηλεκτρονικό μήνυμα προστέθηκε στην ουρά με επιτυχία",
+      "testError": "Αποτυχία αποστολής δοκιμαστικού ηλεκτρονικού ταχυδρομείου"
     }
   },
   "share": {
@@ -1885,19 +1885,19 @@
       "filesShared": "{count, plural, =1 {1 αρχείο σε κοινή χρήση} other {# αρχεία σε κοινή χρήση}}"
     },
     "identification": {
-      "title": "Visitor Identification",
-      "subtitle": "Please provide your information to access this share",
-      "nameLabel": "Name",
-      "emailLabel": "Email",
-      "submit": "Continue",
-      "error": "Failed to submit identification. Please try again.",
-      "optional": "Optional",
-      "nameRequired": "Name is required",
-      "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email address",
+      "title": "Ταυτοποίηση Επισκέπτη",
+      "subtitle": "Παρακαλώ δώστε τις πληροφορίες σας για πρόσβαση σε αυτήν την κοινοποίηση",
+      "nameLabel": "Όνομα",
+      "emailLabel": "Ηλεκτρονικό ταχυδρομείο",
+      "submit": "Συνέχεια",
+      "error": "Αποτυχία υποβολής ταυτοποίησης. Παρακαλώ δοκιμάστε ξανά.",
+      "optional": "Προαιρετικό",
+      "nameRequired": "Το όνομα είναι υποχρεωτικό",
+      "emailRequired": "Το ηλεκτρονικό ταχυδρομείο είναι υποχρεωτικό",
+      "emailInvalid": "Παρακαλώ εισάγετε μια έγκυρη διεύθυνση ηλεκτρονικού ταχυδρομείου",
       "metadataError": "Failed to load share information. Please try again.",
       "rateLimited": "Too many attempts. Please try again later.",
-      "privacyNotice": "Your accesses and downloads may be visible to the sender of this share."
+      "privacyNotice": "Οι προσβάσεις και οι λήψεις σας ενδέχεται να είναι ορατές στον αποστολέα αυτής της κοινοποίησης."
     }
   },
   "shareActions": {
@@ -1927,8 +1927,8 @@
     "editErrorPassword": "Αποτυχία ενημέρωσης κωδικού κοινοποίησης",
     "bulkDeleteConfirmation": "Είστε βέβαιοι ότι θέλετε να διαγράψετε {count, plural, =1 {1 κοινή χρήση} other {# κοινές χρήσεις}}; Η ενέργεια δεν αναιρείται.",
     "bulkDeleteTitle": "Διαγραφή επιλεγμένων κοινών χρήσεων",
-    "keepCurrentPasswordHint": "Leave empty to keep current password",
-    "passwordRequired": "Password is required for new password protection"
+    "keepCurrentPasswordHint": "Αφήστε κενό για να διατηρήσετε τον τρέχοντα κωδικό πρόσβασης",
+    "passwordRequired": "Απαιτείται κωδικός πρόσβασης για νέα προστασία κωδικού πρόσβασης"
   },
   "shareDetails": {
     "title": "Λεπτομέρειες κοινής χρήσης",
@@ -1964,27 +1964,27 @@
     "clickToEnlargeQrCode": "Κάντε κλικ για μεγέθυνση του κωδικού QR",
     "loadError": "Αποτυχία φόρτωσης λεπτομερειών κοινής χρήσης",
     "activity": {
-      "title": "Activity",
-      "noActivity": "No activity recorded yet.",
-      "access": "Viewed",
-      "download": "Downloaded",
-      "anonymous": "Anonymous",
-      "loadMore": "Load more",
-      "showingCount": "Showing {shown} of {total}",
-      "loadError": "Failed to load activity data.",
-      "filterAll": "All actions",
-      "filterAccess": "Views only",
-      "filterDownload": "Downloads only",
-      "filterAllVisitors": "All visitors",
-      "filterIdentified": "Identified",
-      "filterAnonymous": "Anonymous",
+      "title": "Δραστηριότητα",
+      "noActivity": "Δεν υπάρχουν εγγεγραμμένες δραστηριότητες ακόμα.",
+      "access": "Εμφανίστηκε",
+      "download": "Ληφθέν",
+      "anonymous": "Ανώνυμος",
+      "loadMore": "Φόρτωση περισσότερων",
+      "showingCount": "Εμφάνιση {shown} από {total}",
+      "loadError": "Αποτυχία φόρτωσης δεδομένων δραστηριότητας.",
+      "filterAll": "Όλες οι ενέργειες",
+      "filterAccess": "Μόνο προβολές",
+      "filterDownload": "Μόνο λήψεις",
+      "filterAllVisitors": "Όλοι οι επισκέπτες",
+      "filterIdentified": "Ταυτοποιημένος",
+      "filterAnonymous": "Ανώνυμος",
       "source": {
-        "tracking_token": "Via recipient link",
-        "cookie": "Self-identified",
-        "selfDeclaredHint": "Self-declared identity, not verified"
+        "tracking_token": "Μέσω συνδέσμου παραλήπτη",
+        "cookie": "Αυτοταυτοποίηση",
+        "selfDeclaredHint": "Αυτοδήλωτη ταυτότητα, μη επαληθευμένη"
       }
     },
-    "lastDownloaded": "Last Downloaded",
+    "lastDownloaded": "Τελευταία Λήψη",
     "privacySummary": "Απόρρητο",
     "privacyNameField": "Όνομα επισκέπτη:",
     "privacyEmailField": "Email επισκέπτη:",
@@ -1994,9 +1994,9 @@
       "OPTIONAL": "Προαιρετικό",
       "REQUIRED": "Υποχρεωτικό"
     },
-    "recipientNotified": "Notified",
-    "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
-    "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"
+    "recipientNotified": "Ενημερωμένος",
+    "recipientAccess": "{count, plural, one {# πρόσβαση} other {# προσβάσεις}}",
+    "recipientAccessWithLast": "{count, plural, one {# πρόσβαση} other {# προσβάσεις}} · τελευταία {lastAccess}"
   },
   "shareExpiration": {
     "title": "Ρυθμίσεις λήξης κοινής χρήσης",
@@ -2058,10 +2058,10 @@
     "singleShareZipName": "{shareName}_αρχεία.zip",
     "multipleSharesZipName": "{count}_κοινές_χρήσεις_αρχεία.zip",
     "defaultShareName": "Κοινή χρήση",
-    "pauseSuccess": "Share paused",
-    "pauseError": "Failed to pause share",
-    "resumeSuccess": "Share resumed",
-    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
+    "pauseSuccess": "Κοινοποίηση σε παύση",
+    "pauseError": "Αποτυχία παύσης κοινοποίησης",
+    "resumeSuccess": "Κοινοποίηση συνεχίστηκε",
+    "resumeError": "Αποτυχία συνέχισης κοινοποίησης. Εάν λήξει ή έχει φτάσει το όριο προβολής, επεκτείνετέ το."
   },
   "shareMultipleFiles": {
     "title": "Κοινή χρήση πολλών αρχείων",
@@ -2156,8 +2156,8 @@
       "neverExpires": "Δεν λήγει ποτέ",
       "active": "Ενεργή",
       "expired": "Έχει λήξει",
-      "paused": "Paused",
-      "maxViewsReached": "View Limit Reached"
+      "paused": "Σε παύση",
+      "maxViewsReached": "Όριο προβολών επιτεύχθηκε"
     },
     "security": {
       "protected": "Προστατευμένη",
@@ -2179,9 +2179,9 @@
       "notifyRecipients": "Ειδοποίηση παραληπτών",
       "downloadShareFiles": "Λήψη όλων των αρχείων",
       "delete": "Διαγραφή",
-      "pause": "Pause",
-      "resume": "Resume",
-      "renew": "Renew"
+      "pause": "Παύση",
+      "resume": "Συνέχεια",
+      "renew": "Ανανέωση"
     },
     "bulkActions": {
       "actions": "Ενέργειες",
@@ -2346,11 +2346,11 @@
         "edge": "Edge"
       },
       "platforms": {
-        "windows": " σε Windows",
-        "macos": " σε macOS",
-        "linux": " σε Linux",
-        "iphone": " σε iPhone",
-        "android": " σε Android"
+        "windows": " στα Windows",
+        "macos": " στο macOS",
+        "linux": " στο Linux",
+        "iphone": " στο iPhone",
+        "android": " στο Android"
       }
     }
   },
@@ -2812,41 +2812,41 @@
     }
   },
   "notificationPreferences": {
-    "pageTitle": "Notification Preferences",
-    "description": "Choose which email notifications you receive",
-    "type": "Notification Type",
-    "category": "Category",
-    "frequency": "Frequency",
-    "immediate": "Immediate",
-    "disabled": "Disabled",
-    "alwaysEnabled": "Always enabled",
-    "save": "Save Preferences",
-    "saveSuccess": "Notification preferences saved",
-    "saveError": "Failed to save preferences",
-    "noChanges": "No changes to save",
+    "pageTitle": "Προτιμήσεις Ειδοποιήσεων",
+    "description": "Επιλέξτε ποιες ειδοποιήσεις email λαμβάνετε",
+    "type": "Τύπος Ειδοποίησης",
+    "category": "Κατηγορία",
+    "frequency": "Συχνότητα",
+    "immediate": "Άμεση",
+    "disabled": "Απενεργοποιημένη",
+    "alwaysEnabled": "Πάντα ενεργοποιημένη",
+    "save": "Αποθήκευση Προτιμήσεων",
+    "saveSuccess": "Οι προτιμήσεις ειδοποιήσεων αποθηκεύθηκαν",
+    "saveError": "Αποτυχία αποθήκευσης προτιμήσεων",
+    "noChanges": "Δεν υπάρχουν αλλαγές για αποθήκευση",
     "types": {
-      "password_reset": "Password reset",
-      "welcome": "Welcome email",
-      "account_deactivated": "Account deactivated",
-      "account_reactivated": "Account reactivated",
-      "share_invitation": "Share invitation",
-      "share_accessed": "Share accessed",
-      "share_downloaded": "File downloaded from share",
-      "share_expiring": "Share expiring soon",
-      "share_expired": "Share expired",
-      "share_max_views_reached": "Share max views reached",
-      "share_no_activity": "No activity on share",
-      "reverse_share_invitation": "Reverse share invitation",
-      "reverse_share_uploaded": "Files uploaded to reverse share",
-      "reverse_share_expiring": "Reverse share expiring",
-      "reverse_share_expired": "Reverse share expired",
-      "quota_warning": "Quota warning",
-      "quota_exceeded": "Quota exceeded",
-      "files_auto_deleted": "Files auto-deleted",
-      "share_auto_deleted": "Share auto-deleted",
-      "admin_user_registered": "New user registered (admin)",
-      "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email",
+      "password_reset": "Επαναφορά κωδικού πρόσβασης",
+      "welcome": "Ειδοποίηση καλωσορίσματος",
+      "account_deactivated": "Λογαριασμός απενεργοποιήθηκε",
+      "account_reactivated": "Λογαριασμός επανενεργοποιήθηκε",
+      "share_invitation": "Πρόσκληση κοινοποίησης",
+      "share_accessed": "Κοινοποίηση προσπελάστηκε",
+      "share_downloaded": "Αρχείο λήφθηκε από κοινοποίηση",
+      "share_expiring": "Κοινοποίηση λήγει σύντομα",
+      "share_expired": "Κοινοποίηση λήξης",
+      "share_max_views_reached": "Μέγιστες προβολές κοινοποίησης",
+      "share_no_activity": "Καμία δραστηριότητα σε κοινοποίηση",
+      "reverse_share_invitation": "Πρόσκληση συνδέσμου λήψης",
+      "reverse_share_uploaded": "Αρχεία μεταφορτώθηκαν σε σύνδεσμο λήψης",
+      "reverse_share_expiring": "Σύνδεσμος λήψης λήγει σύντομα",
+      "reverse_share_expired": "Σύνδεσμος λήψης λήξης",
+      "quota_warning": "Προειδοποίηση ορίου",
+      "quota_exceeded": "Το όριο ξεπεράστηκε",
+      "files_auto_deleted": "Αρχεία διαγράφηκαν αυτόματα",
+      "share_auto_deleted": "Κοινοποίηση διαγράφηκε αυτόματα",
+      "admin_user_registered": "Νέος χρήστης εγγεγραμμένος (μόνο για διαχειριστές)",
+      "admin_quota_alert": "Ειδοποίηση ορίου χρήστη (μόνο για διαχειριστές)",
+      "test_email": "Ειδοποίηση δοκιμής",
       "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
       "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
       "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
@@ -2872,16 +2872,16 @@
       "admin_quota_alert": "Όταν η χρήση αποθηκευτικού χώρου ενός χρήστη υπερβεί την ποσόστωσή του (μόνο για διαχειριστές)"
     },
     "categories": {
-      "account": "Account",
-      "shares": "Shares",
-      "reverseShares": "Reverse Shares",
+      "account": "Λογαριασμός",
+      "shares": "Κοινοποιήσεις",
+      "reverseShares": "Σύνδεσμοι Λήψης",
       "quota": "Quotas",
       "admin": "Administration",
       "test": "Test"
     },
-    "saving": "Saving...",
-    "loadError": "Failed to load notification preferences",
-    "retry": "Retry",
-    "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}"
+    "saving": "Αποθήκευση...",
+    "loadError": "Αποτυχία φόρτωσης προτιμήσεων ειδοποιήσεων",
+    "retry": "Επανάληψη",
+    "unsavedChanges": "{count, plural, one {# αποθήκευτη αλλαγή} other {# αποθήκευτες αλλαγές}}"
   }
 }

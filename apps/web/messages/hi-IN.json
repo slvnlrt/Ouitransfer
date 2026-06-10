@@ -67,17 +67,17 @@
       "scopesHelpOidc": "प्रदाता URL के आधार पर स्कोप्स स्वतः सुझाए गए। सामान्य OIDC स्कोप्स: openid, profile, email, groups",
       "scopesHelpOauth2": "प्रदाता URL के आधार पर स्कोप्स स्वतः सुझाए गए। सामान्य OAuth2 स्कोप्स प्रदाता पर निर्भर करते हैं",
       "providerUrl": "प्रदाता URL",
-      "providerUrlPlaceholder": "https://auth.example.com",
+      "providerUrlPlaceholder": "https://auth.example.in",
       "providerUrlAutoPlaceholder": "https://your-provider.com (एंडपॉइंट्स स्वचालित रूप से खोजे जाएंगे)",
       "providerUrlManualPlaceholder": "https://your-provider.com",
       "autoDiscoveryHelp": "सिस्टम स्वचालित रूप से प्राधिकरण, टोकन और यूजरइन्फो एंडपॉइंट्स की खोज करेगा",
       "manualConfigurationHelp": "आपके प्रदाता का बेस URL (एंडपॉइंट्स इससे सापेक्ष होंगे)",
       "authorizationEndpoint": "प्राधिकरण एंडपॉइंट",
-      "authorizationEndpointPlaceholder": "https://auth.example.com/auth",
+      "authorizationEndpointPlaceholder": "https://auth.example.in/auth",
       "tokenEndpoint": "टोकन एंडपॉइंट",
-      "tokenEndpointPlaceholder": "https://auth.example.com/token",
+      "tokenEndpointPlaceholder": "https://auth.example.in/token",
       "userInfoEndpoint": "यूजर इन्फो एंडपॉइंट",
-      "userInfoEndpointPlaceholder": "https://auth.example.com/userinfo",
+      "userInfoEndpointPlaceholder": "https://auth.example.in/userinfo",
       "configurationMethod": "कॉन्फ़िगरेशन विधि",
       "autoDiscovery": "स्वचालित खोज",
       "autoDiscoveryDescription": "प्रदाता URL से स्वचालित रूप से एंडपॉइंट्स खोजें",
@@ -175,7 +175,7 @@
     "copied": "कॉपी किया गया",
     "copy": "कॉपी करें",
     "retry": "Retry",
-    "unavailable": "unavailable",
+    "unavailable": "उपलब्ध नहीं",
     "days": "दिन",
     "aliasValidation": {
       "required": "[TO_TRANSLATE] Alias is required",
@@ -190,7 +190,7 @@
     "descriptionLabel": "विवरण",
     "descriptionPlaceholder": "विवरण दर्ज करें (वैकल्पिक)",
     "expirationLabel": "समाप्ति तिथि",
-    "expirationPlaceholder": "MM/DD/YYYY HH:MM",
+    "expirationPlaceholder": "DD/MM/YYYY HH:MM",
     "maxViewsLabel": "अधिकतम दृश्य",
     "maxViewsPlaceholder": "असीमित के लिए खाली छोड़ें",
     "passwordProtection": "पासवर्ड सुरक्षित",
@@ -210,17 +210,17 @@
     },
     "itemsSelected": "{count, plural, =0 {कोई आइटम चयनित नहीं} =1 {1 आइटम चयनित} other {# आइटम चयनित}}",
     "passwordPlaceholder": "पासवर्ड दर्ज करें",
-    "privacySection": "Privacy & Notifications",
-    "nameFieldRequired": "Require visitor name",
-    "emailFieldRequired": "Require visitor email",
-    "notifyOnDownload": "Notify me on each download",
-    "notifyOnDownloadHelp": "When enabled, you'll receive email notifications when files are downloaded from this share, regardless of your global notification preferences.",
-    "inactivityAlertDays": "Alert if no downloads after",
-    "inactivityAlertPlaceholder": "Leave empty to disable",
-    "fieldHidden": "Hidden",
-    "fieldOptional": "Optional",
-    "fieldRequired": "Required",
-    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
+    "privacySection": "गोपनीयता और सूचनाएँ",
+    "nameFieldRequired": "आगंतुक का नाम आवश्यक है",
+    "emailFieldRequired": "आगंतुक का ईमेल आवश्यक है",
+    "notifyOnDownload": "प्रत्येक डाउनलोड पर मुझे सूचित करें",
+    "notifyOnDownloadHelp": "सक्षम होने पर, आप ईमेल सूचनाएँ प्राप्त करेंगे जब इस शेयर से फ़ाइलें डाउनलोड की जाएँ, आपकी वैश्विक सूचना वरीयताओं की परवाह किए बिना।",
+    "inactivityAlertDays": "यदि कोई डाउनलोड नहीं है तो सतर्क करें",
+    "inactivityAlertPlaceholder": "अक्षम करने के लिए खाली छोड़ें",
+    "fieldHidden": "छिपा हुआ",
+    "fieldOptional": "वैकल्पिक",
+    "fieldRequired": "आवश्यक",
+    "filesOptionalHint": "फ़ाइलें जोड़ना वैकल्पिक है — आप अभी एक खाली शेयर बना सकते हैं और बाद में फ़ाइलें जोड़ सकते हैं।"
   },
   "customization": {
     "breadcrumb": "अनुकूलन",
@@ -602,7 +602,7 @@
       "link": "लिंक",
       "qrcode": "QR कोड"
     },
-    "later": "Later"
+    "later": "बाद में"
   },
   "home": {
     "pageTitle": "होम",
@@ -745,7 +745,7 @@
       "SHARE_RECIPIENT_ADD": "साझाकरण प्राप्तकर्ता जोड़े गए",
       "SHARE_RECIPIENT_REMOVE": "साझाकरण प्राप्तकर्ता हटाए गए",
       "SHARE_RECIPIENT_NOTIFY": "साझाकरण प्राप्तकर्ता को सूचित किया गया",
-      "SHARE_RECIPIENT_REMIND": "Share non-downloaders reminded",
+      "SHARE_RECIPIENT_REMIND": "शेयर प्राप्तकर्ताओं को याद दिलाया गया",
       "SHARE_ITEMS_ADD": "साझाकरण आइटम जोड़े गए",
       "SHARE_ITEMS_REMOVE": "साझाकरण आइटम हटाए गए",
       "FILE_UPLOAD": "फाइल अपलोड की गई",
@@ -789,17 +789,17 @@
       "BACKGROUND_IMAGE_UPLOAD": "पृष्ठभूमि छवि अपलोड की गई",
       "BACKGROUND_IMAGE_DELETE": "पृष्ठभूमि छवि हटाई गई",
       "AUDIT_RETENTION_CLEANUP": "ऑडिट लॉग सफाई",
-      "SHARE_DEACTIVATED": "Share deactivated",
-      "SHARE_REACTIVATED": "Share reactivated",
-      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
-      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated",
-      "SHARE_AUTO_DELETED": "Share auto-deleted",
-      "REVERSE_SHARE_AUTO_DELETED": "Reverse share auto-deleted",
-      "ACCOUNT_FILES_CLEANED": "Account files cleaned",
-      "ORPHAN_S3_DELETED": "Orphan storage object deleted",
-      "ORPHAN_DB_DELETED": "Orphan database record deleted",
-      "ORPHAN_MULTIPART_ABORTED": "Incomplete multipart upload aborted",
-      "QUOTA_FILES_DELETED": "Over-quota files deleted"
+      "SHARE_DEACTIVATED": "शेयर निष्क्रिय किया गया",
+      "SHARE_REACTIVATED": "शेयर पुन: सक्रिय किया गया",
+      "REVERSE_SHARE_DEACTIVATED": "प्राप्ति लिंक निष्क्रिय किया गया",
+      "REVERSE_SHARE_REACTIVATED": "प्राप्ति लिंक पुन: सक्रिय किया गया",
+      "SHARE_AUTO_DELETED": "शेयर स्वचालित रूप से हटाया गया",
+      "REVERSE_SHARE_AUTO_DELETED": "प्राप्ति लिंक स्वचालित रूप से हटाया गया",
+      "ACCOUNT_FILES_CLEANED": "खाता फ़ाइलें साफ़ की गईं",
+      "ORPHAN_S3_DELETED": "अनाथ स्टोरेज ऑब्जेक्ट हटाया गया",
+      "ORPHAN_DB_DELETED": "अनाथ डेटाबेस रिकॉर्ड हटाया गया",
+      "ORPHAN_MULTIPART_ABORTED": "अधूरा मल्टीपार्ट अपलोड रद्द किया गया",
+      "QUOTA_FILES_DELETED": "कोटा अतिक्रमण फ़ाइलें हटाई गईं"
     },
     "targetTypes": {
       "user": "उपयोगकर्ता",
@@ -1038,23 +1038,23 @@
     "selectedCount": "{count} चयनित",
     "addRecipient": "प्राप्तकर्ता जोड़ें",
     "bulkNotifyError": "चयनित प्राप्तकर्ताओं को सूचित करने में विफल",
-    "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}",
-    "notifyPartial": "Only {sent} of {total} recipients were notified",
-    "neverAccessed": "Never accessed",
-    "namePlaceholder": "Name (optional)",
-    "downloaded": "Downloaded",
-    "pending": "Pending",
-    "downloadedAt": "Downloaded on {date}",
-    "uploaded": "Uploaded",
-    "uploadedAt": "Uploaded on {date}",
-    "uploadApproximateHint": "Approximate: uploaders can submit files without providing an email when it is not required",
-    "remindNonDownloaders": "Remind ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
-    "sendingReminders": "Sending reminders...",
-    "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
-    "remindNoneSent": "No reminders were sent",
-    "remindError": "Failed to send reminders"
+    "notified": "सूचित किया गया",
+    "views": "{count, plural, one {# दृश्य} other {# दृश्य}}",
+    "notifyPartial": "केवल {sent} में से {total} प्राप्तकर्ताओं को सूचित किया गया",
+    "neverAccessed": "कभी भी अभिगमन नहीं किया गया",
+    "namePlaceholder": "नाम (वैकल्पिक)",
+    "downloaded": "डाउनलोड किया गया",
+    "pending": "लंबित",
+    "downloadedAt": "{date} पर डाउनलोड किया गया",
+    "uploaded": "अपलोड किया गया",
+    "uploadedAt": "{date} पर अपलोड किया गया",
+    "uploadApproximateHint": "अनुमानित: अपलोड करने वाले ईमेल प्रदान किए बिना फाइलें जमा कर सकते हैं जब यह आवश्यक न हो",
+    "remindNonDownloaders": "याद दिलाएँ ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {कोई प्राप्तकर्ता लंबित नहीं हैं — सभी ने डाउनलोड कर लिया है} one {# प्राप्तकर्ता को याद दिलाएँ जो अभी तक डाउनलोड नहीं किए गए हैं} other {# प्राप्तकर्ताओं को याद दिलाएँ जो अभी तक डाउनलोड नहीं किए गए हैं}}",
+    "sendingReminders": "अनुस्मारक भेज रहे हैं...",
+    "remindSuccess": "{count, plural, one {# प्राप्तकर्ता को अनुस्मारक भेजा गया} other {# प्राप्तकर्ताओं को अनुस्मारक भेजे गए}}",
+    "remindNoneSent": "कोई अनुस्मारक नहीं भेजे गए",
+    "remindError": "अनुस्मारक भेजने में विफल"
   },
   "register": {
     "validation": {
@@ -1254,7 +1254,7 @@
         "editDescription": "इस प्राप्ति लिंक का उपनाम अपडेट करें",
         "createDescription": "इस प्राप्ति लिंक के लिए एक कस्टम उपनाम बनाएं",
         "aliasLabel": "लिंक उपनाम",
-        "aliasPlaceholder": "मेरा-कस्टम-लिंक",
+        "aliasPlaceholder": "मेरा-लिंक",
         "preview": "पूर्वावलोकन:",
         "currentLink": "वर्तमान लिंक:",
         "copyCurrentLink": "वर्तमान लिंक कॉपी करें",
@@ -1413,8 +1413,8 @@
         "label": "नाम क्षेत्र की आवश्यकता",
         "description": "कॉन्फ़िगर करें कि क्या अपलोडर नाम फ़ील्ड दिखाया जाना चाहिए और यदि आवश्यक है"
       },
-      "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "notifyOnUpload": "प्रत्येक अपलोड पर मुझे सूचित करें",
+      "notifyOnUploadHelp": "जब सक्षम किया जाता है, आप इस प्राप्ति लिंक पर फाइलें अपलोड करने पर ईमेल सूचनाएं प्राप्त करेंगे, आपकी वैश्विक सूचना प्राथमिकताओं की परवाह किए बिना।",
       "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
       "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
@@ -1502,14 +1502,14 @@
         "nameLabel": "नाम",
         "namePlaceholder": "आपका नाम",
         "emailLabel": "ईमेल",
-        "emailPlaceholder": "आपका@ईमेल.कॉम",
+        "emailPlaceholder": "आपका@email.in",
         "descriptionLabel": "विवरण (वैकल्पिक)",
         "descriptionPlaceholder": "फ़ाइलों का विवरण जोड़ें...",
         "uploadButton": "{count} फ़ाइल(ें) भेजें",
         "uploading": "भेजा जा रहा है...",
         "emailLabelOptional": "ईमेल वैकल्पिक)",
         "nameLabelOptional": "नाम: (वैकल्पिक)",
-        "privacyNotice": "Your name, email and uploads may be visible to the owner of this receive link."
+        "privacyNotice": "आपका नाम, ईमेल और अपलोड इस प्राप्ति लिंक के मालिक को दृश्यमान हो सकते हैं।"
       },
       "success": {
         "title": "फ़ाइलें सफलतापूर्वक भेजी गईं! 🎉",
@@ -1591,8 +1591,8 @@
         "description": "वीट्रांसफर-शैली अपलोड पृष्ठों के लिए पृष्ठभूमि छवियों का प्रबंधन करें"
       },
       "cleanup": {
-        "title": "Automatic Cleanup",
-        "description": "Lifecycle management for expired content, deactivated accounts, and orphaned files. Auto-deletion is off by default."
+        "title": "स्वचालित सफाई",
+        "description": "समाप्त सामग्री, निष्क्रिय खातों और अनाथ फाइलों के लिए जीवन चक्र प्रबंधन। स्वचालित हटाना डिफ़ॉल्ट रूप से बंद है।"
       }
     },
     "fields": {
@@ -1606,8 +1606,8 @@
         "description": "उपयोगकर्ताओं को दिखाया जाने वाला एप्लिकेशन नाम"
       },
       "appUrl": {
-        "title": "Application URL",
-        "description": "Public URL of the application, used in email links"
+        "title": "आवेदन URL",
+        "description": "आवेदन का सार्वजनिक URL, ईमेल लिंक में उपयोग किया जाता है"
       },
       "appDescription": {
         "title": "एप्लिकेशन विवरण",
@@ -1670,32 +1670,32 @@
         "description": "प्रति उपयोगकर्ता कुल स्टोरेज सीमा। प्रति उपयोगकर्ता या प्रति समूह ओवरराइड किया जा सकता है।"
       },
       "quotaWarningThresholds": {
-        "title": "Quota Warning Thresholds (%)",
-        "description": "Comma-separated percentages, e.g. \"80,90\", at which a user is emailed a quota warning. Each value must be a whole number between 1 and 99. A separate alert is sent when storage reaches 100%."
+        "title": "कोटा चेतावनी थ्रेशोल्ड (%)",
+        "description": "अल्पविराम से अलग किए गए प्रतिशत, जैसे \"80,90\", जिनमें उपयोगकर्ता को कोटा चेतावनी भेजी जाती है। प्रत्येक मान 1 और 99 के बीच एक पूरी संख्या होनी चाहिए। जब भंडारण 100% तक पहुंचता है तो एक अलग सतर्कता भेजी जाती है।"
       },
       "quotaGracePeriodDays": {
-        "title": "Quota Grace Period (days)",
-        "description": "How many days a user may stay over their quota before smart deletion may act (only when smart deletion is enabled below). Minimum 0."
+        "title": "कोटा अनुग्रह अवधि (दिन)",
+        "description": "कितने दिनों तक एक उपयोगकर्ता अपने कोटा से ऊपर रह सकता है इससे पहले कि स्मार्ट हटाना कार्य करे (केवल जब स्मार्ट हटाना नीचे सक्षम हो)। न्यूनतम 0।"
       },
       "quotaSmartDeletionEnabled": {
-        "title": "Smart Deletion of Over-Quota Files",
-        "description": "Off by default. When enabled, after the grace period the oldest unsafe files of an over-quota user are deleted in a safe order: first unshared uploads, then files in shares inactive for the period below. Files in active shares are never deleted — if nothing is safe to remove, new uploads are simply blocked instead."
+        "title": "अतिरिक्त कोटा फाइलों का स्मार्ट हटाना",
+        "description": "डिफ़ॉल्ट रूप से बंद। जब सक्षम किया जाता है, अनुग्रह अवधि के बाद, अतिरिक्त कोटा वाले उपयोगकर्ता की सबसे पुरानी असुरक्षित फाइलें सुरक्षित क्रम में हटाई जाती हैं: पहले साझा न की गई अपलोड, फिर नीचे दिई गई अवधि के लिए निष्क्रिय शेयर में फाइलें। सक्रिय शेयर में फाइलें कभी नहीं हटाई जाती हैं — यदि हटाने के लिए कोई सुरक्षित फाइल नहीं है, तो नई अपलोड को सरलता से अवरुद्ध कर दिया जाता है।"
       },
       "quotaInactiveShareDays": {
-        "title": "Inactive Share Threshold (days)",
-        "description": "A share's files are eligible for smart deletion once the share has had no activity for this many days. Minimum 1."
+        "title": "निष्क्रिय शेयर थ्रेशोल्ड (दिन)",
+        "description": "शेयर की फाइलें स्मार्ट हटाने के लिए पात्र हो जाती हैं एक बार शेयर के पास इस कई दिनों के लिए कोई गतिविधि नहीं रही है। न्यूनतम 1।"
       },
       "reverseShareQuotaSoftEnforcement": {
-        "title": "Reverse Share Soft Enforcement",
-        "description": "On by default. Lets external guests keep uploading to a reverse share even if the owner is slightly over quota, so collections are not interrupted. Uploads are still blocked once the owner exceeds the tolerance set below, and the owner is alerted to free up space."
+        "title": "रिवर्स शेयर कोटा नरम प्रवर्तन",
+        "description": "डिफ़ॉल्ट रूप से चालू। बाहरी अतिथियों को रिवर्स शेयर में अपलोड जारी रखने देता है भले ही मालिक अपना कोटा थोड़ा अतिक्रमण करे, ताकि संग्रह बाधित न हों। अपलोड अवरुद्ध हो जाते हैं एक बार मालिक नीचे सेट की गई सहनशीलता अतिक्रमण करता है, और मालिक को जगह खाली करने के लिए सतर्क किया जाता है।"
       },
       "reverseShareMaxOverageFactor": {
-        "title": "Reverse Share Overage Factor",
-        "description": "Soft enforcement allows reverse-share uploads until usage reaches this multiple of the owner's quota (e.g. 3 = up to three times the limit). Minimum 1."
+        "title": "रिवर्स शेयर अधिक गुणांक",
+        "description": "नरम प्रवर्तन रिवर्स शेयर अपलोड की अनुमति देता है जब तक उपयोग मालिक के कोटा के इस गुणक तक न पहुंच जाए (जैसे 3 = सीमा तक तीन गुना)। न्यूनतम 1।"
       },
       "reverseShareAbsoluteMaxBytes": {
-        "title": "Reverse Share Absolute Cap",
-        "description": "Hard ceiling for reverse-share soft enforcement regardless of the factor above. Set to 0 for no absolute cap."
+        "title": "रिवर्स शेयर निरपेक्ष कैप",
+        "description": "रिवर्स शेयर नरम प्रवर्तन के लिए कठोर छत, ऊपर गुणांक की परवाह किए बिना। निरपेक्ष कैप के लिए 0 पर सेट करें।"
       },
       "firstUserAccess": {
         "description": "नए उपयोगकर्ताओं की पहली पहुंच के लिए सेटिंग्स",
@@ -1748,56 +1748,56 @@
         "description": "फुटर टेक्स्ट के लिए लिंक URL"
       },
       "emailDigestHour": {
-        "title": "Digest Email Hour",
-        "description": "Hour of the day (0-23) when digest emails are sent"
+        "title": "डाइजेस्ट ईमेल घंटा",
+        "description": "दिन का घंटा (0-23) जब डाइजेस्ट ईमेल भेजे जाते हैं"
       },
       "emailJobRetentionDays": {
-        "title": "Email Job Retention",
-        "description": "Number of days to keep completed email jobs before cleanup"
+        "title": "ईमेल जॉब प्रतिधारण",
+        "description": "सफाई से पहले पूर्ण ईमेल नौकरियों को रखने के दिनों की संख्या"
       },
       "emailQueueIntervalSeconds": {
-        "title": "Queue Processing Interval",
-        "description": "Seconds between email queue processing cycles"
+        "title": "कतार प्रसंस्करण अंतराल",
+        "description": "ईमेल कतार प्रसंस्करण चक्रों के बीच सेकंड"
       },
       "emailQueueMaxRetries": {
-        "title": "Max Email Retries",
-        "description": "Maximum number of retry attempts for failed emails"
+        "title": "अधिकतम ईमेल पुनः प्रयास",
+        "description": "विफल ईमेल के लिए पुनः प्रयास प्रयासों की अधिकतम संख्या"
       },
       "auditRetentionDays": {
         "title": "ऑडिट प्रतिधारण",
         "description": "ऑडिट लॉग रखने के दिनों की संख्या (0 = हमेशा, न्यूनतम 7)"
       },
       "autoCleanupEnabled": {
-        "title": "Enable Automatic Cleanup",
-        "description": "Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on."
+        "title": "स्वचालित सफाई सक्षम करें",
+        "description": "समाप्त शेयर लिंक, समाप्त रिवर्स शेयर फाइलों और अनाथों की निर्धारित सफाई के लिए मास्टर स्विच। डिफ़ॉल्ट रूप से बंद — जब तक आप इसे चालू न करें तब तक कुछ भी स्वचालित रूप से नहीं हटाया जाता।"
       },
       "autoCleanupIntervalHours": {
-        "title": "Cleanup Interval (hours)",
-        "description": "How often the cleanup task runs. Minimum 1 hour."
+        "title": "सफाई अंतराल (घंटे)",
+        "description": "सफाई कार्य कितनी बार चलता है। न्यूनतम 1 घंटा।"
       },
       "autoCleanupGracePeriodDays": {
-        "title": "Grace Period (days)",
+        "title": "अनुग्रह अवधि (दिन)",
         "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
       },
       "autoCleanupNotifyDaysBefore": {
-        "title": "Warn Before Deletion (days)",
-        "description": "Send the owner a \"pending permanent deletion\" warning email this many days before the content is deleted. 0 disables the warning. Should be at most the grace period."
+        "title": "हटाने से पहले चेतावनी (दिन)",
+        "description": "मालिक को \"लंबित स्थायी हटाना\" चेतावनी ईमेल सामग्री हटाने से इस कई दिन पहले भेजें। 0 चेतावनी को अक्षम करता है। अनुग्रह अवधि से अधिक नहीं होना चाहिए।"
       },
       "accountDeactivationCleanupEnabled": {
-        "title": "Delete Deactivated Accounts' Files",
-        "description": "When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files."
+        "title": "निष्क्रिय खातों की फाइलें हटाएं",
+        "description": "जब चालू होता है, तो निष्क्रिय खाते की फाइलें नीचे देरी के बाद स्थायी रूप से हटा दी जाती हैं। डिफ़ॉल्ट रूप से बंद — निष्क्रियता अकेले कभी फाइलें नहीं हटाती।"
       },
       "accountDeactivationCleanupDays": {
-        "title": "Deactivation Cleanup Delay (days)",
-        "description": "Days after an account is deactivated before its files are deleted (only when the option above is enabled). Minimum 1."
+        "title": "निष्क्रिय सफाई देरी (दिन)",
+        "description": "खाता निष्क्रिय किए जाने के बाद इसकी फाइलें हटाने से पहले दिन (केवल जब ऊपर का विकल्प सक्षम हो)। न्यूनतम 1।"
       },
       "autoCleanupOrphansEnabled": {
-        "title": "Sweep Orphaned Files",
-        "description": "When on, runs a two-way sweep that removes database records pointing to missing storage objects and storage objects with no database record. Off by default."
+        "title": "अनाथ फाइलों को साफ करें",
+        "description": "जब सक्षम किया जाता है, तो एक दो-तरफा स्वीप चलाता है जो डेटाबेस रिकॉर्ड को हटा देता है जो लापता भंडारण वस्तुओं की ओर इशारा करते हैं और भंडारण वस्तुएं बिना रिकॉर्ड के। डिफ़ॉल्ट रूप से बंद।"
       },
       "autoCleanupOrphanMinAgeHours": {
-        "title": "Orphan Minimum Age (hours)",
-        "description": "Only files and objects older than this are considered during the orphan sweep, protecting uploads still in progress. Minimum 1."
+        "title": "अनाथ न्यूनतम आयु (घंटे)",
+        "description": "अनाथ स्वीप के दौरान केवल इससे पुरानी फाइलें और वस्तुओं पर विचार किया जाता है, प्रगति में अपलोड की रक्षा करता है। न्यूनतम 1।"
       }
     },
     "buttons": {
@@ -1810,9 +1810,9 @@
       "updateFailed": "सेटिंग्स अपडेट करने में विफल",
       "passwordAuthRequiresProvider": "कम से कम एक सक्रिय प्रमाणीकरण प्रदाता के बिना पासवर्ड प्रमाणीकरण अक्षम नहीं किया जा सकता",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
-      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent",
-      "quotaThresholdsInvalid": "Enter comma-separated percentages between 1 and 99, for example \"80,90\""
+      "cleanupValueInvalid": "मान कम से कम {min} की एक पूरी संख्या होनी चाहिए",
+      "notifyDaysExceedsGrace": "चेतावनी का समय अनुग्रह अवधि से अधिक नहीं होना चाहिए, अन्यथा कोई चेतावनी नहीं भेजी जाएगी",
+      "quotaThresholdsInvalid": "1 और 99 के बीच अल्पविराम से अलग किए गए प्रतिशत दर्ज करें, उदाहरण के लिए \"80,90\""
     },
     "messages": {
       "noChanges": "सहेजने के लिए कोई परिवर्तन नहीं",
@@ -1832,20 +1832,20 @@
       "defaultPlaceholder": "दर्ज करें और Enter दबाएं"
     },
     "redirectUri": {
-      "placeholder": "https://mysite.com",
+      "placeholder": "https://mysite.in",
       "previewLabel": "पूर्ण URL जो सहेजा जाएगा:"
     },
     "emailAdmin": {
-      "queueStatus": "Email Queue Status",
-      "pending": "Pending",
-      "sentLast24h": "Sent (24h)",
-      "failed": "Failed",
+      "queueStatus": "ईमेल कतार स्थिति",
+      "pending": "विचाराधीन",
+      "sentLast24h": "भेजा गया (24h)",
+      "failed": "विफल",
       "digestQueue": "डाइजेस्ट कतार",
-      "sendTest": "Send Test Email",
-      "testPlaceholder": "recipient@example.com",
-      "testSending": "Sending...",
-      "testSuccess": "Test email queued successfully",
-      "testError": "Failed to send test email"
+      "sendTest": "परीक्षण ईमेल भेजें",
+      "testPlaceholder": "प्राप्तकर्ता@example.in",
+      "testSending": "भेज रहे हैं...",
+      "testSuccess": "परीक्षण ईमेल सफलतापूर्वक कतार में रखी गई",
+      "testError": "परीक्षण ईमेल भेजने में विफल"
     }
   },
   "share": {
@@ -1881,19 +1881,19 @@
       "filesShared": "{count, plural, =1 {1 फ़ाइल साझा की गई} other {# फ़ाइलें साझा की गईं}}"
     },
     "identification": {
-      "title": "Visitor Identification",
-      "subtitle": "Please provide your information to access this share",
-      "nameLabel": "Name",
-      "emailLabel": "Email",
-      "submit": "Continue",
-      "error": "Failed to submit identification. Please try again.",
-      "optional": "Optional",
-      "nameRequired": "Name is required",
-      "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email address",
+      "title": "आगंतुक पहचान",
+      "subtitle": "इस शेयर तक पहुंचने के लिए कृपया अपनी जानकारी प्रदान करें",
+      "nameLabel": "नाम",
+      "emailLabel": "ईमेल",
+      "submit": "जारी रखें",
+      "error": "पहचान जमा करने में विफल। कृपया पुनः प्रयास करें।",
+      "optional": "वैकल्पिक",
+      "nameRequired": "नाम आवश्यक है",
+      "emailRequired": "ईमेल आवश्यक है",
+      "emailInvalid": "कृपया एक वैध ईमेल पता दर्ज करें",
       "metadataError": "Failed to load share information. Please try again.",
       "rateLimited": "Too many attempts. Please try again later.",
-      "privacyNotice": "Your accesses and downloads may be visible to the sender of this share."
+      "privacyNotice": "आपके पहुंच और डाउनलोड इस शेयर के प्रेषक को दृश्यमान हो सकते हैं।"
     }
   },
   "shareActions": {
@@ -1923,8 +1923,8 @@
     "linkTitle": "लिंक जेनरेट करें",
     "itemsSelected": "{count, plural, =0 {कोई आइटम चयनित नहीं} =1 {1 आइटम चयनित} other {# आइटम चयनित}}",
     "manageFilesDescription": "इस साझाकरण में शामिल करने के लिए फ़ाइलें और फ़ोल्डर चुनें",
-    "keepCurrentPasswordHint": "Leave empty to keep current password",
-    "passwordRequired": "Password is required for new password protection"
+    "keepCurrentPasswordHint": "वर्तमान पासवर्ड रखने के लिए खाली छोड़ें",
+    "passwordRequired": "नए पासवर्ड सुरक्षा के लिए पासवर्ड आवश्यक है"
   },
   "shareDetails": {
     "title": "साझाकरण विवरण",
@@ -1960,27 +1960,27 @@
     "downloadQrCode": "QR कोड डाउनलोड करें",
     "qrCode": "QR कोड",
     "activity": {
-      "title": "Activity",
-      "noActivity": "No activity recorded yet.",
-      "access": "Viewed",
-      "download": "Downloaded",
-      "anonymous": "Anonymous",
-      "loadMore": "Load more",
-      "showingCount": "Showing {shown} of {total}",
-      "loadError": "Failed to load activity data.",
-      "filterAll": "All actions",
-      "filterAccess": "Views only",
-      "filterDownload": "Downloads only",
-      "filterAllVisitors": "All visitors",
-      "filterIdentified": "Identified",
-      "filterAnonymous": "Anonymous",
+      "title": "गतिविधि",
+      "noActivity": "अभी तक कोई गतिविधि दर्ज नहीं की गई।",
+      "access": "देखा गया",
+      "download": "डाउनलोड किया गया",
+      "anonymous": "अनाम",
+      "loadMore": "अधिक लोड करें",
+      "showingCount": "{total} में से {shown} दिखा रहे हैं",
+      "loadError": "गतिविधि डेटा लोड करने में विफल।",
+      "filterAll": "सभी कार्य",
+      "filterAccess": "केवल दृश्य",
+      "filterDownload": "केवल डाउनलोड",
+      "filterAllVisitors": "सभी आगंतुक",
+      "filterIdentified": "पहचानी गई",
+      "filterAnonymous": "अनाम",
       "source": {
-        "tracking_token": "Via recipient link",
-        "cookie": "Self-identified",
-        "selfDeclaredHint": "Self-declared identity, not verified"
+        "tracking_token": "प्राप्तकर्ता लिंक के माध्यम से",
+        "cookie": "स्व-पहचानी गई",
+        "selfDeclaredHint": "स्व-घोषित पहचान, सत्यापित नहीं"
       }
     },
-    "lastDownloaded": "Last Downloaded",
+    "lastDownloaded": "अंतिम डाउनलोड",
     "privacySummary": "गोपनीयता",
     "privacyNameField": "आगंतुक का नाम:",
     "privacyEmailField": "आगंतुक ईमेल:",
@@ -1990,9 +1990,9 @@
       "OPTIONAL": "वैकल्पिक",
       "REQUIRED": "आवश्यक"
     },
-    "recipientNotified": "Notified",
-    "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
-    "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"
+    "recipientNotified": "सूचित किया गया",
+    "recipientAccess": "{count, plural, one {# पहुंच} other {# पहुंच}}",
+    "recipientAccessWithLast": "{count, plural, one {# पहुंच} other {# पहुंच}} · अंतिम {lastAccess}"
   },
   "shareExpiration": {
     "neverExpires": "कभी समाप्त नहीं होता",
@@ -2054,10 +2054,10 @@
     "errors": {
       "multipleDownloadNotSupported": "कई साझाकरण डाउनलोड अभी तक समर्थित नहीं है - कृपया साझाकरण को अलग-अलग डाउनलोड करें"
     },
-    "pauseSuccess": "Share paused",
-    "pauseError": "Failed to pause share",
-    "resumeSuccess": "Share resumed",
-    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
+    "pauseSuccess": "शेयर को रोका गया",
+    "pauseError": "शेयर को रोकने में विफल",
+    "resumeSuccess": "शेयर को फिर से शुरू किया गया",
+    "resumeError": "शेयर को फिर से शुरू करने में विफल। यदि यह समाप्त हो गया है या अपनी दृश्य सीमा तक पहुंच गया है, तो इसे बढ़ाएं।"
   },
   "shareMultipleFiles": {
     "title": "कई फाइलें साझा करें",
@@ -2152,8 +2152,8 @@
       "neverExpires": "कभी समाप्त नहीं होता",
       "active": "सक्रिय",
       "expired": "समाप्त",
-      "paused": "Paused",
-      "maxViewsReached": "View Limit Reached"
+      "paused": "रोका गया",
+      "maxViewsReached": "दृश्य सीमा तक पहुंचा"
     },
     "security": {
       "protected": "संरक्षित",
@@ -2174,9 +2174,9 @@
       "delete": "हटाएं",
       "downloadShareFiles": "सभी फ़ाइलें डाउनलोड करें",
       "viewQrCode": "QR कोड देखें",
-      "pause": "Pause",
-      "resume": "Resume",
-      "renew": "Renew"
+      "pause": "रोकें",
+      "resume": "फिर से शुरू करें",
+      "renew": "नवीनीकरण"
     },
     "bulkActions": {
       "delete": "हटाएं",
@@ -2812,41 +2812,41 @@
     }
   },
   "notificationPreferences": {
-    "pageTitle": "Notification Preferences",
-    "description": "Choose which email notifications you receive",
-    "type": "Notification Type",
-    "category": "Category",
-    "frequency": "Frequency",
-    "immediate": "Immediate",
-    "disabled": "Disabled",
-    "alwaysEnabled": "Always enabled",
-    "save": "Save Preferences",
-    "saveSuccess": "Notification preferences saved",
-    "saveError": "Failed to save preferences",
-    "noChanges": "No changes to save",
+    "pageTitle": "सूचना वरीयताएँ",
+    "description": "चुनें कि आप कौन सी ईमेल सूचनाएँ प्राप्त करते हैं",
+    "type": "सूचना प्रकार",
+    "category": "श्रेणी",
+    "frequency": "आवृत्ति",
+    "immediate": "तुरंत",
+    "disabled": "अक्षम",
+    "alwaysEnabled": "हमेशा सक्षम",
+    "save": "वरीयताएँ सहेजें",
+    "saveSuccess": "सूचना वरीयताएँ सहेजी गईं",
+    "saveError": "वरीयताएँ सहेजने में विफल",
+    "noChanges": "सहेजने के लिए कोई परिवर्तन नहीं",
     "types": {
-      "password_reset": "Password reset",
-      "welcome": "Welcome email",
-      "account_deactivated": "Account deactivated",
-      "account_reactivated": "Account reactivated",
-      "share_invitation": "Share invitation",
-      "share_accessed": "Share accessed",
-      "share_downloaded": "File downloaded from share",
-      "share_expiring": "Share expiring soon",
-      "share_expired": "Share expired",
-      "share_max_views_reached": "Share max views reached",
-      "share_no_activity": "No activity on share",
-      "reverse_share_invitation": "Reverse share invitation",
-      "reverse_share_uploaded": "Files uploaded to reverse share",
-      "reverse_share_expiring": "Reverse share expiring",
-      "reverse_share_expired": "Reverse share expired",
-      "quota_warning": "Quota warning",
-      "quota_exceeded": "Quota exceeded",
-      "files_auto_deleted": "Files auto-deleted",
-      "share_auto_deleted": "Share auto-deleted",
-      "admin_user_registered": "New user registered (admin)",
-      "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email",
+      "password_reset": "पासवर्ड रीसेट",
+      "welcome": "स्वागत ईमेल",
+      "account_deactivated": "खाता निष्क्रिय किया गया",
+      "account_reactivated": "खाता पुन: सक्रिय किया गया",
+      "share_invitation": "शेयर निमंत्रण",
+      "share_accessed": "शेयर का एक्सेस हुआ",
+      "share_downloaded": "शेयर से फ़ाइल डाउनलोड की गई",
+      "share_expiring": "शेयर जल्द ही समाप्त होने वाला है",
+      "share_expired": "शेयर समाप्त हो गया",
+      "share_max_views_reached": "शेयर अधिकतम दृश्य पहुँच गया",
+      "share_no_activity": "शेयर पर कोई गतिविधि नहीं",
+      "reverse_share_invitation": "प्राप्ति लिंक निमंत्रण",
+      "reverse_share_uploaded": "प्राप्ति लिंक में फ़ाइलें अपलोड की गईं",
+      "reverse_share_expiring": "प्राप्ति लिंक जल्द ही समाप्त हो रहा है",
+      "reverse_share_expired": "प्राप्ति लिंक समाप्त हो गया",
+      "quota_warning": "कोटा चेतावनी",
+      "quota_exceeded": "कोटा अतिक्रम",
+      "files_auto_deleted": "फ़ाइलें स्वचालित रूप से हटाई गईं",
+      "share_auto_deleted": "शेयर स्वचालित रूप से हटाया गया",
+      "admin_user_registered": "नया उपयोगकर्ता पंजीकृत (केवल व्यवस्थापक)",
+      "admin_quota_alert": "उपयोगकर्ता कोटा सतर्कता (केवल व्यवस्थापक)",
+      "test_email": "परीक्षण ईमेल",
       "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
       "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
       "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
@@ -2872,16 +2872,16 @@
       "admin_quota_alert": "जब किसी उपयोगकर्ता का संग्रहण उपयोग उनकी कोटा से अधिक हो जाए (केवल व्यवस्थापक)"
     },
     "categories": {
-      "account": "Account",
-      "shares": "Shares",
-      "reverseShares": "Reverse Shares",
+      "account": "खाता",
+      "shares": "शेयर",
+      "reverseShares": "प्राप्ति लिंक",
       "quota": "Quotas",
       "admin": "Administration",
       "test": "Test"
     },
-    "saving": "Saving...",
-    "loadError": "Failed to load notification preferences",
-    "retry": "Retry",
-    "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}"
+    "saving": "सहेज रहे हैं...",
+    "loadError": "सूचना वरीयताएँ लोड करने में विफल",
+    "retry": "पुनः प्रयास करें",
+    "unsavedChanges": "{count, plural, one {# असहेजा परिवर्तन} other {# असहेजे परिवर्तन}}"
   }
 }

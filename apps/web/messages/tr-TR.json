@@ -67,17 +67,17 @@
       "scopesHelpOidc": "Sağlayıcı URL'sine göre otomatik önerilen kapsamlar. Yaygın OIDC kapsamları: openid, profile, email, groups",
       "scopesHelpOauth2": "Sağlayıcı URL'sine göre otomatik önerilen kapsamlar. Yaygın OAuth2 kapsamları sağlayıcıya bağlıdır",
       "providerUrl": "Sağlayıcı URL'si",
-      "providerUrlPlaceholder": "https://auth.example.com",
+      "providerUrlPlaceholder": "https://auth.example.com.tr",
       "providerUrlAutoPlaceholder": "https://your-provider.com (uç noktalar otomatik keşfedilecek)",
       "providerUrlManualPlaceholder": "https://your-provider.com",
       "autoDiscoveryHelp": "Sistem otomatik olarak yetkilendirme, token ve kullanıcı bilgisi uç noktalarını keşfedecek",
       "manualConfigurationHelp": "Sağlayıcınızın temel URL'si (uç noktalar buna göre belirlenecek)",
       "authorizationEndpoint": "Yetkilendirme Uç Noktası",
-      "authorizationEndpointPlaceholder": "https://auth.example.com/auth",
+      "authorizationEndpointPlaceholder": "https://auth.example.com.tr/auth",
       "tokenEndpoint": "Token Uç Noktası",
-      "tokenEndpointPlaceholder": "https://auth.example.com/token",
+      "tokenEndpointPlaceholder": "https://auth.example.com.tr/token",
       "userInfoEndpoint": "Kullanıcı Bilgisi Uç Noktası",
-      "userInfoEndpointPlaceholder": "https://auth.example.com/userinfo",
+      "userInfoEndpointPlaceholder": "https://auth.example.com.tr/userinfo",
       "configurationMethod": "Yapılandırma Yöntemi",
       "autoDiscovery": "Otomatik Keşif",
       "autoDiscoveryDescription": "Sağlayıcı URL'sinden uç noktaları otomatik keşfet",
@@ -175,7 +175,7 @@
     "copied": "Kopyalandı",
     "copy": "Kopyala",
     "retry": "Retry",
-    "unavailable": "unavailable",
+    "unavailable": "kullanılamıyor",
     "days": "gün",
     "aliasValidation": {
       "required": "[TO_TRANSLATE] Alias is required",
@@ -188,7 +188,7 @@
     "title": "Paylaşım Oluştur",
     "nameLabel": "Paylaşım Adı",
     "expirationLabel": "Son Kullanma Tarihi",
-    "expirationPlaceholder": "MM/GG/YYYY SS:DD",
+    "expirationPlaceholder": "GG.AA.YYYY SS:DD",
     "maxViewsLabel": "Maksimum Görüntüleme",
     "maxViewsPlaceholder": "Sınırsız için boş bırakın",
     "passwordProtection": "Şifre Koruması",
@@ -210,17 +210,17 @@
     },
     "itemsSelected": "{count} öğe seçildi",
     "passwordPlaceholder": "Şifre girin",
-    "privacySection": "Privacy & Notifications",
-    "nameFieldRequired": "Require visitor name",
-    "emailFieldRequired": "Require visitor email",
-    "notifyOnDownload": "Notify me on each download",
-    "notifyOnDownloadHelp": "When enabled, you'll receive email notifications when files are downloaded from this share, regardless of your global notification preferences.",
-    "inactivityAlertDays": "Alert if no downloads after",
-    "inactivityAlertPlaceholder": "Leave empty to disable",
-    "fieldHidden": "Hidden",
-    "fieldOptional": "Optional",
-    "fieldRequired": "Required",
-    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
+    "privacySection": "Gizlilik ve Bildirimler",
+    "nameFieldRequired": "Ziyaretçi adı gerekli",
+    "emailFieldRequired": "Ziyaretçi e-postası gerekli",
+    "notifyOnDownload": "Her indirmede bana bildir",
+    "notifyOnDownloadHelp": "Etkinleştirildiğinde, bu paylaşımdan dosya indirildiğinde, genel bildirim tercihlerinize bakılmaksızın e-posta bildirimleri alacaksınız.",
+    "inactivityAlertDays": "İndirilme olmazsa uyar",
+    "inactivityAlertPlaceholder": "Devre dışı bırakmak için boş bırakın",
+    "fieldHidden": "Gizli",
+    "fieldOptional": "İsteğe bağlı",
+    "fieldRequired": "Gerekli",
+    "filesOptionalHint": "Dosya ekleme isteğe bağlıdır — şimdi boş bir paylaşım oluşturabilir ve daha sonra dosya ekleyebilirsiniz."
   },
   "customization": {
     "breadcrumb": "Özelleştirme",
@@ -602,7 +602,7 @@
       "link": "Bağlantı",
       "qrcode": "QR Kodu"
     },
-    "later": "Later"
+    "later": "Daha sonra"
   },
   "home": {
     "pageTitle": "Ana Sayfa",
@@ -745,7 +745,7 @@
       "SHARE_RECIPIENT_ADD": "Paylaşım alıcıları eklendi",
       "SHARE_RECIPIENT_REMOVE": "Paylaşım alıcıları kaldırıldı",
       "SHARE_RECIPIENT_NOTIFY": "Paylaşım alıcıları bildirildi",
-      "SHARE_RECIPIENT_REMIND": "Share non-downloaders reminded",
+      "SHARE_RECIPIENT_REMIND": "Paylaşım alıcılarına hatırlatma gönderildi",
       "SHARE_ITEMS_ADD": "Paylaşım öğeleri eklendi",
       "SHARE_ITEMS_REMOVE": "Paylaşım öğeleri kaldırıldı",
       "FILE_UPLOAD": "Dosya yüklendi",
@@ -789,17 +789,17 @@
       "BACKGROUND_IMAGE_UPLOAD": "Arka plan görüntüsü yüklendi",
       "BACKGROUND_IMAGE_DELETE": "Arka plan görüntüsü silindi",
       "AUDIT_RETENTION_CLEANUP": "Denetim günlüğü temizliği",
-      "SHARE_DEACTIVATED": "Share deactivated",
-      "SHARE_REACTIVATED": "Share reactivated",
-      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
-      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated",
-      "SHARE_AUTO_DELETED": "Share auto-deleted",
-      "REVERSE_SHARE_AUTO_DELETED": "Reverse share auto-deleted",
-      "ACCOUNT_FILES_CLEANED": "Account files cleaned",
-      "ORPHAN_S3_DELETED": "Orphan storage object deleted",
-      "ORPHAN_DB_DELETED": "Orphan database record deleted",
-      "ORPHAN_MULTIPART_ABORTED": "Incomplete multipart upload aborted",
-      "QUOTA_FILES_DELETED": "Over-quota files deleted"
+      "SHARE_DEACTIVATED": "Paylaşım devre dışı bırakıldı",
+      "SHARE_REACTIVATED": "Paylaşım yeniden etkinleştirildi",
+      "REVERSE_SHARE_DEACTIVATED": "Dosya yükleme bağlantısı devre dışı bırakıldı",
+      "REVERSE_SHARE_REACTIVATED": "Dosya yükleme bağlantısı yeniden etkinleştirildi",
+      "SHARE_AUTO_DELETED": "Paylaşım otomatik olarak silindi",
+      "REVERSE_SHARE_AUTO_DELETED": "Dosya yükleme bağlantısı otomatik olarak silindi",
+      "ACCOUNT_FILES_CLEANED": "Hesap dosyaları temizlendi",
+      "ORPHAN_S3_DELETED": "Yetim depolama nesnesi silindi",
+      "ORPHAN_DB_DELETED": "Yetim veritabanı kaydı silindi",
+      "ORPHAN_MULTIPART_ABORTED": "Tamamlanmamış çok parçalı yükleme iptal edildi",
+      "QUOTA_FILES_DELETED": "Kotayı aşan dosyalar silindi"
     },
     "targetTypes": {
       "user": "Kullanıcı",
@@ -1038,23 +1038,23 @@
     "selectedCount": "{count} seçildi",
     "addRecipient": "Alıcı Ekle",
     "bulkNotifyError": "Seçilen alıcılara bildirim gönderme başarısız",
-    "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}",
-    "notifyPartial": "Only {sent} of {total} recipients were notified",
-    "neverAccessed": "Never accessed",
-    "namePlaceholder": "Name (optional)",
-    "downloaded": "Downloaded",
-    "pending": "Pending",
-    "downloadedAt": "Downloaded on {date}",
-    "uploaded": "Uploaded",
-    "uploadedAt": "Uploaded on {date}",
-    "uploadApproximateHint": "Approximate: uploaders can submit files without providing an email when it is not required",
-    "remindNonDownloaders": "Remind ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
-    "sendingReminders": "Sending reminders...",
-    "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
-    "remindNoneSent": "No reminders were sent",
-    "remindError": "Failed to send reminders"
+    "notified": "Bilgilendirildi",
+    "views": "{count, plural, one {# görüntüleme} other {# görüntüleme}}",
+    "notifyPartial": "Yalnızca {sent} / {total} alıcıya bildirim gönderildi",
+    "neverAccessed": "Hiç erişilmedi",
+    "namePlaceholder": "Ad (isteğe bağlı)",
+    "downloaded": "İndirildi",
+    "pending": "Beklemede",
+    "downloadedAt": "{date} tarihinde indirildi",
+    "uploaded": "Yüklendi",
+    "uploadedAt": "{date} tarihinde yüklendi",
+    "uploadApproximateHint": "Yaklaşık: yükleyenler gerekli olmadığında e-posta sağlamadan dosya gönderebilirler",
+    "remindNonDownloaders": "Hatırlat ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {Beklemede alıcı yok — herkes indir} one {# alıcıya henüz indirenmeyen hatırlatma gönder} other {# alıcıya henüz indirenmeyen hatırlatma gönder}}",
+    "sendingReminders": "Hatırlatmalar gönderiliyor...",
+    "remindSuccess": "{count, plural, one {# alıcıya hatırlatma gönderildi} other {# alıcıya hatırlatmalar gönderildi}}",
+    "remindNoneSent": "Hatırlatma gönderilmedi",
+    "remindError": "Hatırlatmalar gönderimi başarısız oldu"
   },
   "register": {
     "validation": {
@@ -1254,7 +1254,7 @@
         "editDescription": "Bu alma bağlantısının takma adını güncelleyin",
         "createDescription": "Bu alma bağlantısı için özel bir takma ad oluşturun",
         "aliasLabel": "Bağlantı Takma Adı",
-        "aliasPlaceholder": "ozel-baglanti-adim",
+        "aliasPlaceholder": "benim-ozel-linkım",
         "preview": "Önizleme:",
         "currentLink": "Mevcut Bağlantı:",
         "copyCurrentLink": "Mevcut bağlantıyı kopyala",
@@ -1413,8 +1413,8 @@
         "label": "İsim alanı gereksinimi",
         "description": "Yükleyici adı alanının gösterilmesi gerekip gerekmediğini ve gerekli olup olmadığını yapılandırın"
       },
-      "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "notifyOnUpload": "Her yükleme de beni bilgilendir",
+      "notifyOnUploadHelp": "Etkinleştirildiğinde, dosyalar bu alma bağlantısına yüklenmesinde e-posta bildirimleri alacaksınız; genel bildirim tercihlerinizden bağımsız olarak.",
       "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
       "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
     },
@@ -1502,14 +1502,14 @@
         "nameLabel": "Ad",
         "namePlaceholder": "Adınız",
         "emailLabel": "E-posta",
-        "emailPlaceholder": "ornek@email.com",
+        "emailPlaceholder": "ornek@email.com.tr",
         "descriptionLabel": "Açıklama (isteğe bağlı)",
         "descriptionPlaceholder": "Dosyalara açıklama ekleyin...",
         "uploadButton": "{count} dosya gönder",
         "uploading": "Gönderiliyor...",
         "emailLabelOptional": "E -posta (isteğe bağlı)",
         "nameLabelOptional": "İsim (isteğe bağlı)",
-        "privacyNotice": "Your name, email and uploads may be visible to the owner of this receive link."
+        "privacyNotice": "Adınız, e-postanız ve yüklemeleriniz bu alma bağlantısının sahibi tarafından görülebilir."
       },
       "success": {
         "title": "Dosyalar başarıyla gönderildi! 🎉",
@@ -1591,8 +1591,8 @@
         "description": "WeTransfer tarzı yükleme sayfaları için arka plan görüntülerini yönetin"
       },
       "cleanup": {
-        "title": "Automatic Cleanup",
-        "description": "Lifecycle management for expired content, deactivated accounts, and orphaned files. Auto-deletion is off by default."
+        "title": "Otomatik Temizleme",
+        "description": "Süresi dolmuş içerik, devre dışı bırakılan hesaplar ve yetim dosyalar için yaşam döngüsü yönetimi. Otomatik silme varsayılan olarak kapalıdır."
       }
     },
     "fields": {
@@ -1606,8 +1606,8 @@
         "description": "Kullanıcılara gösterilen uygulama adı"
       },
       "appUrl": {
-        "title": "Application URL",
-        "description": "Public URL of the application, used in email links"
+        "title": "Uygulama URL'si",
+        "description": "Uygulamanın genel URL'si, e-posta bağlantılarında kullanılır"
       },
       "appDescription": {
         "title": "Uygulama Açıklaması",
@@ -1670,32 +1670,32 @@
         "description": "Kullanıcı başına toplam depolama sınırı. Kullanıcı veya grup başına geçersiz kılınabilir."
       },
       "quotaWarningThresholds": {
-        "title": "Quota Warning Thresholds (%)",
-        "description": "Comma-separated percentages, e.g. \"80,90\", at which a user is emailed a quota warning. Each value must be a whole number between 1 and 99. A separate alert is sent when storage reaches 100%."
+        "title": "Kota Uyarı Eşikleri (%)",
+        "description": "Virgülle ayrılmış yüzdeler, örneğin \"80,90\", bunlarda kullanıcıya kota uyarısı gönderilir. Her değer 1 ile 99 arasında bir tam sayı olmalıdır. Depolama %100'e ulaştığında ayrı bir uyarı gönderilir."
       },
       "quotaGracePeriodDays": {
-        "title": "Quota Grace Period (days)",
-        "description": "How many days a user may stay over their quota before smart deletion may act (only when smart deletion is enabled below). Minimum 0."
+        "title": "Kota Ödeme Süresi (gün)",
+        "description": "Akıllı silmenin çalışmasından önce bir kullanıcının kotasının üstünde kalabileceği gün sayısı (yalnızca akıllı silme aşağıda etkinleştirildiğinde). Minimum 0."
       },
       "quotaSmartDeletionEnabled": {
-        "title": "Smart Deletion of Over-Quota Files",
-        "description": "Off by default. When enabled, after the grace period the oldest unsafe files of an over-quota user are deleted in a safe order: first unshared uploads, then files in shares inactive for the period below. Files in active shares are never deleted — if nothing is safe to remove, new uploads are simply blocked instead."
+        "title": "Kota Aşan Dosyaların Akıllı Silinmesi",
+        "description": "Varsayılan olarak kapalıdır. Etkinleştirildiğinde, ödeme süresi sonrasında, kotasını aşan bir kullanıcının en eski güvenli olmayan dosyaları güvenli sırada silinir: önce paylaşılmayan yüklemeler, ardından aşağıdaki süre için etkin olmayan paylaşımlardaki dosyalar. Etkin paylaşımlardaki dosyalar hiçbir zaman silinmez — silinecek güvenli dosya yoksa, yeni yüklemeler basitçe bloke edilir."
       },
       "quotaInactiveShareDays": {
-        "title": "Inactive Share Threshold (days)",
-        "description": "A share's files are eligible for smart deletion once the share has had no activity for this many days. Minimum 1."
+        "title": "Etkin Olmayan Paylaşım Eşiği (gün)",
+        "description": "Bir paylaşım bu kadar gün boyunca etkinlik yokken paylaşımın dosyaları akıllı silme için uygun hale gelir. Minimum 1."
       },
       "reverseShareQuotaSoftEnforcement": {
-        "title": "Reverse Share Soft Enforcement",
-        "description": "On by default. Lets external guests keep uploading to a reverse share even if the owner is slightly over quota, so collections are not interrupted. Uploads are still blocked once the owner exceeds the tolerance set below, and the owner is alerted to free up space."
+        "title": "Ters Paylaşım Yumuşak Kota Yaptırımı",
+        "description": "Varsayılan olarak açıktır. Sahip kotasını biraz aşsa bile harici konukların ters paylaşıma yüklemeye devam etmesine izin verir, böylece koleksiyonlar kesintiye uğramaz. Sahip aşağıda ayarlanan toleransı aştığında yüklemeler bloke edilir ve sahibi alan boşaltması için uyarılır."
       },
       "reverseShareMaxOverageFactor": {
-        "title": "Reverse Share Overage Factor",
-        "description": "Soft enforcement allows reverse-share uploads until usage reaches this multiple of the owner's quota (e.g. 3 = up to three times the limit). Minimum 1."
+        "title": "Ters Paylaşım Aşma Faktörü",
+        "description": "Yumuşak yaptırım, kullanım sahibin kotasının bu katına ulaşana kadar ters paylaşım yüklemelerine izin verir (örneğin 3 = sınırın üç katına kadar). Minimum 1."
       },
       "reverseShareAbsoluteMaxBytes": {
-        "title": "Reverse Share Absolute Cap",
-        "description": "Hard ceiling for reverse-share soft enforcement regardless of the factor above. Set to 0 for no absolute cap."
+        "title": "Ters Paylaşım Mutlak Sınırı",
+        "description": "Yukarıdaki faktörden bağımsız olarak ters paylaşım yumuşak yaptırımı için katı üst sınır. Mutlak sınır olmadığı için 0 olarak ayarlayın."
       },
       "firstUserAccess": {
         "title": "İlk Kullanıcı Erişimi",
@@ -1748,56 +1748,56 @@
         "description": "Alt bilgi metni için bağlantı URL'si"
       },
       "emailDigestHour": {
-        "title": "Digest Email Hour",
-        "description": "Hour of the day (0-23) when digest emails are sent"
+        "title": "Özet E-posta Saati",
+        "description": "Özet e-postaların gönderildiği günün saati (0-23)"
       },
       "emailJobRetentionDays": {
-        "title": "Email Job Retention",
-        "description": "Number of days to keep completed email jobs before cleanup"
+        "title": "E-posta İş Saklama",
+        "description": "Temizlemeden önce tamamlanan e-posta işlerinin tutulacağı gün sayısı"
       },
       "emailQueueIntervalSeconds": {
-        "title": "Queue Processing Interval",
-        "description": "Seconds between email queue processing cycles"
+        "title": "Kuyruk İşleme Aralığı",
+        "description": "E-posta kuyruğu işleme döngüleri arasında saniye"
       },
       "emailQueueMaxRetries": {
-        "title": "Max Email Retries",
-        "description": "Maximum number of retry attempts for failed emails"
+        "title": "Maksimum E-posta Yeniden Denemeleri",
+        "description": "Başarısız e-postalar için maksimum yeniden deneme denemesi sayısı"
       },
       "auditRetentionDays": {
         "title": "Denetim Saklama",
         "description": "Denetim günlüklerini tutma gün sayısı (0 = sonsuza kadar, minimum 7)"
       },
       "autoCleanupEnabled": {
-        "title": "Enable Automatic Cleanup",
-        "description": "Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on."
+        "title": "Otomatik Temizlemeyi Etkinleştir",
+        "description": "Süresi dolmuş paylaşım bağlantılarının, süresi dolmuş ters paylaşım dosyalarının ve yetiminin planlanmış temizliği için ana anahtar. Varsayılan olarak kapalıdır — etkinleştirene kadar hiçbir şey otomatik olarak silinmez."
       },
       "autoCleanupIntervalHours": {
-        "title": "Cleanup Interval (hours)",
-        "description": "How often the cleanup task runs. Minimum 1 hour."
+        "title": "Temizleme Aralığı (saat)",
+        "description": "Temizleme görevinin ne sıklıkta çalıştığı. Minimum 1 saat."
       },
       "autoCleanupGracePeriodDays": {
-        "title": "Grace Period (days)",
+        "title": "Ödeme Süresi (gün)",
         "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
       },
       "autoCleanupNotifyDaysBefore": {
-        "title": "Warn Before Deletion (days)",
-        "description": "Send the owner a \"pending permanent deletion\" warning email this many days before the content is deleted. 0 disables the warning. Should be at most the grace period."
+        "title": "Silmeden Önce Uyar (gün)",
+        "description": "İçerik silinmeden bu kadar gün önce sahibine \"bekleme halinde kalıcı silme\" uyarı e-postası gönderin. 0 uyarıyı devre dışı bırakır. Ödeme süresinden fazla olmamalıdır."
       },
       "accountDeactivationCleanupEnabled": {
-        "title": "Delete Deactivated Accounts' Files",
-        "description": "When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files."
+        "title": "Devre Dışı Bırakılan Hesapların Dosyalarını Sil",
+        "description": "Açık olduğunda, devre dışı bırakılan bir hesaba ait dosyalar aşağıdaki gecikmeden sonra kalıcı olarak silinir. Varsayılan olarak kapalıdır — devre dışı bırakma işlemi tek başına hiçbir zaman dosyaları silmez."
       },
       "accountDeactivationCleanupDays": {
-        "title": "Deactivation Cleanup Delay (days)",
-        "description": "Days after an account is deactivated before its files are deleted (only when the option above is enabled). Minimum 1."
+        "title": "Devre Dışı Bırakma Temizleme Gecikmesi (gün)",
+        "description": "Bir hesap devre dışı bırakıldıktan sonra dosyalarının silinmesine kadar olan gün sayısı (yalnızca yukarıdaki seçenek etkinleştirildiğinde). Minimum 1."
       },
       "autoCleanupOrphansEnabled": {
-        "title": "Sweep Orphaned Files",
-        "description": "When on, runs a two-way sweep that removes database records pointing to missing storage objects and storage objects with no database record. Off by default."
+        "title": "Yetim Dosyaları Temizle",
+        "description": "Açık olduğunda, eksik depolama nesnelerine işaret eden veritabanı kayıtlarını ve kayıt olmayan depolama nesnelerini kaldıran iki yönlü bir tarama çalıştırır. Varsayılan olarak kapalıdır."
       },
       "autoCleanupOrphanMinAgeHours": {
-        "title": "Orphan Minimum Age (hours)",
-        "description": "Only files and objects older than this are considered during the orphan sweep, protecting uploads still in progress. Minimum 1."
+        "title": "Yetim Minimum Yaş (saat)",
+        "description": "Yetim taraması sırasında yalnızca bundan daha eski dosyalar ve nesneler dikkate alınır, devam eden yüklemeleri koruya. Minimum 1."
       }
     },
     "buttons": {
@@ -1810,9 +1810,9 @@
       "updateFailed": "Ayarlar güncellenemedi",
       "passwordAuthRequiresProvider": "En az bir aktif kimlik doğrulama sağlayıcısı olmadan şifre doğrulaması devre dışı bırakılamaz",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
-      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent",
-      "quotaThresholdsInvalid": "Enter comma-separated percentages between 1 and 99, for example \"80,90\""
+      "cleanupValueInvalid": "Değer en az {min} tam sayı olmalıdır",
+      "notifyDaysExceedsGrace": "Uyarı süresi ödeme süresini aşmamalıdır, aksi takdirde uyarı gönderilmez",
+      "quotaThresholdsInvalid": "1 ile 99 arasında virgülle ayrılmış yüzdeler girin, örneğin \"80,90\""
     },
     "messages": {
       "noChanges": "Kaydedilecek değişiklik yok",
@@ -1832,20 +1832,20 @@
       "defaultPlaceholder": "Girin ve Enter'a basın"
     },
     "redirectUri": {
-      "placeholder": "https://sitem.com",
+      "placeholder": "https://mysite.com.tr",
       "previewLabel": "Kaydedilecek tam URL:"
     },
     "emailAdmin": {
-      "queueStatus": "Email Queue Status",
-      "pending": "Pending",
-      "sentLast24h": "Sent (24h)",
-      "failed": "Failed",
+      "queueStatus": "E-posta Kuyruğu Durumu",
+      "pending": "Beklemede",
+      "sentLast24h": "Gönderilen (24s)",
+      "failed": "Başarısız",
       "digestQueue": "Özet Kuyruğu",
-      "sendTest": "Send Test Email",
-      "testPlaceholder": "recipient@example.com",
-      "testSending": "Sending...",
-      "testSuccess": "Test email queued successfully",
-      "testError": "Failed to send test email"
+      "sendTest": "Test E-postası Gönder",
+      "testPlaceholder": "ornek@email.com.tr",
+      "testSending": "Gönderiliyor...",
+      "testSuccess": "Test e-postası başarıyla kuyruğa alındı",
+      "testError": "Test e-postası gönderme başarısız"
     }
   },
   "share": {
@@ -1881,19 +1881,19 @@
       "filesShared": "{count, plural, =1 {1 dosya paylaşıldı} other {# dosya paylaşıldı}}"
     },
     "identification": {
-      "title": "Visitor Identification",
-      "subtitle": "Please provide your information to access this share",
-      "nameLabel": "Name",
-      "emailLabel": "Email",
-      "submit": "Continue",
-      "error": "Failed to submit identification. Please try again.",
-      "optional": "Optional",
-      "nameRequired": "Name is required",
-      "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email address",
+      "title": "Ziyaretçi Kimliği",
+      "subtitle": "Bu paylaşıma erişmek için lütfen bilgilerinizi sağlayın",
+      "nameLabel": "Ad",
+      "emailLabel": "E-posta",
+      "submit": "Devam",
+      "error": "Kimlik gönderimi başarısız oldu. Lütfen tekrar deneyin.",
+      "optional": "İsteğe bağlı",
+      "nameRequired": "Ad gereklidir",
+      "emailRequired": "E-posta gereklidir",
+      "emailInvalid": "Lütfen geçerli bir e-posta adresi girin",
       "metadataError": "Failed to load share information. Please try again.",
       "rateLimited": "Too many attempts. Please try again later.",
-      "privacyNotice": "Your accesses and downloads may be visible to the sender of this share."
+      "privacyNotice": "Erişimleriniz ve indirmeleriniz bu paylaşımın göndericisine görülebilir."
     }
   },
   "shareActions": {
@@ -1923,8 +1923,8 @@
     "linkTitle": "Bağlantı Oluştur",
     "itemsSelected": "{count} öğe seçildi",
     "manageFilesDescription": "Bu paylaşıma dahil edilecek dosya ve klasörleri seçin",
-    "keepCurrentPasswordHint": "Leave empty to keep current password",
-    "passwordRequired": "Password is required for new password protection"
+    "keepCurrentPasswordHint": "Mevcut şifreyi tutmak için boş bırakın",
+    "passwordRequired": "Yeni şifre koruması için şifre gereklidir"
   },
   "shareDetails": {
     "title": "Paylaşım Detayları",
@@ -1960,27 +1960,27 @@
     "downloadQrCode": "QR Kodu İndir",
     "qrCode": "QR Kodu",
     "activity": {
-      "title": "Activity",
-      "noActivity": "No activity recorded yet.",
-      "access": "Viewed",
-      "download": "Downloaded",
-      "anonymous": "Anonymous",
-      "loadMore": "Load more",
-      "showingCount": "Showing {shown} of {total}",
-      "loadError": "Failed to load activity data.",
-      "filterAll": "All actions",
-      "filterAccess": "Views only",
-      "filterDownload": "Downloads only",
-      "filterAllVisitors": "All visitors",
-      "filterIdentified": "Identified",
-      "filterAnonymous": "Anonymous",
+      "title": "Etkinlik",
+      "noActivity": "Henüz etkinlik kaydı yok.",
+      "access": "Görüntülendi",
+      "download": "İndirildi",
+      "anonymous": "Anonim",
+      "loadMore": "Daha fazla yükle",
+      "showingCount": "{total} den {shown} gösteriliyor",
+      "loadError": "Etkinlik verisi yükleme başarısız oldu.",
+      "filterAll": "Tüm eylemler",
+      "filterAccess": "Yalnızca görüntülemeler",
+      "filterDownload": "Yalnızca indirmeler",
+      "filterAllVisitors": "Tüm ziyaretçiler",
+      "filterIdentified": "Tanımlandı",
+      "filterAnonymous": "Anonim",
       "source": {
-        "tracking_token": "Via recipient link",
-        "cookie": "Self-identified",
-        "selfDeclaredHint": "Self-declared identity, not verified"
+        "tracking_token": "Alıcı bağlantısı aracılığıyla",
+        "cookie": "Kendi tanımlandı",
+        "selfDeclaredHint": "Kendi beyan edilen kimlik, doğrulanmamış"
       }
     },
-    "lastDownloaded": "Last Downloaded",
+    "lastDownloaded": "Son İndirilen",
     "privacySummary": "Gizlilik",
     "privacyNameField": "Ziyaretçi adı:",
     "privacyEmailField": "Ziyaretçi e-postası:",
@@ -1990,9 +1990,9 @@
       "OPTIONAL": "İsteğe bağlı",
       "REQUIRED": "Zorunlu"
     },
-    "recipientNotified": "Notified",
-    "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
-    "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"
+    "recipientNotified": "Bilgilendirildi",
+    "recipientAccess": "{count, plural, one {# erişim} other {# erişim}}",
+    "recipientAccessWithLast": "{count, plural, one {# erişim} other {# erişim}} · son {lastAccess}"
   },
   "shareExpiration": {
     "neverExpires": "Asla Sona Ermez",
@@ -2054,10 +2054,10 @@
     "errors": {
       "multipleDownloadNotSupported": "Çoklu paylaşım indirme henüz desteklenmiyor - lütfen paylaşımları ayrı ayrı indirin"
     },
-    "pauseSuccess": "Share paused",
-    "pauseError": "Failed to pause share",
-    "resumeSuccess": "Share resumed",
-    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
+    "pauseSuccess": "Paylaşım duraklatıldı",
+    "pauseError": "Paylaşımı duraklatma başarısız oldu",
+    "resumeSuccess": "Paylaşım devam ettirildi",
+    "resumeError": "Paylaşımı devam ettirme başarısız oldu. Süresi dolmuş veya görüntüleme sınırına ulaştıysa, bunun yerine genişletin."
   },
   "shareMultipleFiles": {
     "title": "Çoklu Dosya Paylaş",
@@ -2152,8 +2152,8 @@
       "neverExpires": "Asla Sona Ermez",
       "active": "Aktif",
       "expired": "Süresi Dolmuş",
-      "paused": "Paused",
-      "maxViewsReached": "View Limit Reached"
+      "paused": "Duraklatıldı",
+      "maxViewsReached": "Görüntüleme Sınırına Ulaşıldı"
     },
     "security": {
       "protected": "Korumalı",
@@ -2174,9 +2174,9 @@
       "delete": "Sil",
       "downloadShareFiles": "Tüm dosyaları indirin",
       "viewQrCode": "QR Kodu Görüntüle",
-      "pause": "Pause",
-      "resume": "Resume",
-      "renew": "Renew"
+      "pause": "Duraklat",
+      "resume": "Devam Et",
+      "renew": "Yenile"
     },
     "bulkActions": {
       "delete": "Sil",
@@ -2812,41 +2812,41 @@
     }
   },
   "notificationPreferences": {
-    "pageTitle": "Notification Preferences",
-    "description": "Choose which email notifications you receive",
-    "type": "Notification Type",
-    "category": "Category",
-    "frequency": "Frequency",
-    "immediate": "Immediate",
-    "disabled": "Disabled",
-    "alwaysEnabled": "Always enabled",
-    "save": "Save Preferences",
-    "saveSuccess": "Notification preferences saved",
-    "saveError": "Failed to save preferences",
-    "noChanges": "No changes to save",
+    "pageTitle": "Bildirim Tercihleri",
+    "description": "Hangi e-posta bildirimlerini aldığınızı seçin",
+    "type": "Bildirim Türü",
+    "category": "Kategori",
+    "frequency": "Sıklık",
+    "immediate": "Anında",
+    "disabled": "Devre dışı",
+    "alwaysEnabled": "Her zaman etkin",
+    "save": "Tercihleri Kaydet",
+    "saveSuccess": "Bildirim tercihleri kaydedildi",
+    "saveError": "Tercihler kaydedilemedi",
+    "noChanges": "Kaydedilecek değişiklik yok",
     "types": {
-      "password_reset": "Password reset",
-      "welcome": "Welcome email",
-      "account_deactivated": "Account deactivated",
-      "account_reactivated": "Account reactivated",
-      "share_invitation": "Share invitation",
-      "share_accessed": "Share accessed",
-      "share_downloaded": "File downloaded from share",
-      "share_expiring": "Share expiring soon",
-      "share_expired": "Share expired",
-      "share_max_views_reached": "Share max views reached",
-      "share_no_activity": "No activity on share",
-      "reverse_share_invitation": "Reverse share invitation",
-      "reverse_share_uploaded": "Files uploaded to reverse share",
-      "reverse_share_expiring": "Reverse share expiring",
-      "reverse_share_expired": "Reverse share expired",
-      "quota_warning": "Quota warning",
-      "quota_exceeded": "Quota exceeded",
-      "files_auto_deleted": "Files auto-deleted",
-      "share_auto_deleted": "Share auto-deleted",
-      "admin_user_registered": "New user registered (admin)",
-      "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email",
+      "password_reset": "Şifre sıfırlama",
+      "welcome": "Hoş geldiniz e-postası",
+      "account_deactivated": "Hesap devre dışı bırakıldı",
+      "account_reactivated": "Hesap yeniden etkinleştirildi",
+      "share_invitation": "Paylaşım daveti",
+      "share_accessed": "Paylaşım erişildi",
+      "share_downloaded": "Paylaşımdan dosya indirildi",
+      "share_expiring": "Paylaşım yakında sona erecek",
+      "share_expired": "Paylaşım süresi doldu",
+      "share_max_views_reached": "Paylaşım maksimum görüntüleme sayısına ulaştı",
+      "share_no_activity": "Paylaşımda etkinlik yok",
+      "reverse_share_invitation": "Dosya yükleme bağlantısı daveti",
+      "reverse_share_uploaded": "Dosya yükleme bağlantısına dosyalar yüklendi",
+      "reverse_share_expiring": "Dosya yükleme bağlantısı yakında sona erecek",
+      "reverse_share_expired": "Dosya yükleme bağlantısı süresi doldu",
+      "quota_warning": "Kota uyarısı",
+      "quota_exceeded": "Kota aşıldı",
+      "files_auto_deleted": "Dosyalar otomatik olarak silindi",
+      "share_auto_deleted": "Paylaşım otomatik olarak silindi",
+      "admin_user_registered": "Yeni kullanıcı kaydedildi (yalnızca yöneticiler)",
+      "admin_quota_alert": "Kullanıcı kota uyarısı (yalnızca yöneticiler)",
+      "test_email": "Test e-postası",
       "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
       "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
       "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
@@ -2872,16 +2872,16 @@
       "admin_quota_alert": "Bir kullanıcının depolama kullanımı kotasını aştığında (yalnızca yöneticiler)"
     },
     "categories": {
-      "account": "Account",
-      "shares": "Shares",
-      "reverseShares": "Reverse Shares",
+      "account": "Hesap",
+      "shares": "Paylaşımlar",
+      "reverseShares": "Dosya Yükleme Bağlantıları",
       "quota": "Quotas",
       "admin": "Administration",
       "test": "Test"
     },
-    "saving": "Saving...",
-    "loadError": "Failed to load notification preferences",
-    "retry": "Retry",
-    "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}"
+    "saving": "Kaydediliyor...",
+    "loadError": "Bildirim tercihleri yüklenemedi",
+    "retry": "Yeniden dene",
+    "unsavedChanges": "{count, plural, one {# kaydedilmemiş değişiklik} other {# kaydedilmemiş değişiklik}}"
   }
 }

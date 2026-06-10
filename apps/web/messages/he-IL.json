@@ -71,17 +71,17 @@
       "scopesHelpOidc": "Scopes מוצעים אוטומטית על סמך Provider URL. Scopes נפוצים ל-OIDC: openid, profile, email, groups",
       "scopesHelpOauth2": "Scopes מוצעים אוטומטית על סמך Provider URL. Scopes נפוצים ל-OAuth2 תלויים בספק",
       "providerUrl": "Provider URL",
-      "providerUrlPlaceholder": "https://auth.example.com",
+      "providerUrlPlaceholder": "https://auth.example.co.il",
       "providerUrlAutoPlaceholder": "https://your-provider.com (endpoints יגלו אוטומטית)",
       "providerUrlManualPlaceholder": "https://your-provider.com",
       "autoDiscoveryHelp": "המערכת תגלה אוטומטית authorization, token ו-userinfo endpoints",
       "manualConfigurationHelp": "כתובת URL בסיסית של הספק שלך (endpoints יהיו יחסיים לזה)",
       "authorizationEndpoint": "Authorization Endpoint",
-      "authorizationEndpointPlaceholder": "https://auth.example.com/auth",
+      "authorizationEndpointPlaceholder": "https://auth.example.co.il/auth",
       "tokenEndpoint": "Token Endpoint",
-      "tokenEndpointPlaceholder": "https://auth.example.com/token",
+      "tokenEndpointPlaceholder": "https://auth.example.co.il/token",
       "userInfoEndpoint": "User Info Endpoint",
-      "userInfoEndpointPlaceholder": "https://auth.example.com/userinfo",
+      "userInfoEndpointPlaceholder": "https://auth.example.co.il/userinfo",
       "configurationMethod": "שיטת הגדרה",
       "autoDiscovery": "גילוי אוטומטי",
       "autoDiscoveryDescription": "גלה אוטומטית endpoints מה-Provider URL",
@@ -179,7 +179,7 @@
     "copy": "העתק",
     "copied": "הועתק",
     "retry": "Retry",
-    "unavailable": "unavailable",
+    "unavailable": "לא זמין",
     "days": "ימים",
     "aliasValidation": {
       "required": "[TO_TRANSLATE] Alias is required",
@@ -195,7 +195,7 @@
     "descriptionLabel": "תיאור",
     "descriptionPlaceholder": "הזן תיאור (אופציונלי)",
     "expirationLabel": "תאריך תפוגה",
-    "expirationPlaceholder": "MM/DD/YYYY HH:MM",
+    "expirationPlaceholder": "DD/MM/YYYY HH:MM",
     "maxViewsLabel": "מספר צפיות מרבי",
     "maxViewsPlaceholder": "השאר ריק ללא הגבלה",
     "passwordProtection": "מוגן בסיסמה",
@@ -214,17 +214,17 @@
     },
     "nextSelectFiles": "הבא: בחר קבצים",
     "searchLabel": "חיפוש",
-    "privacySection": "Privacy & Notifications",
-    "nameFieldRequired": "Require visitor name",
-    "emailFieldRequired": "Require visitor email",
-    "notifyOnDownload": "Notify me on each download",
-    "notifyOnDownloadHelp": "When enabled, you'll receive email notifications when files are downloaded from this share, regardless of your global notification preferences.",
-    "inactivityAlertDays": "Alert if no downloads after",
-    "inactivityAlertPlaceholder": "Leave empty to disable",
-    "fieldHidden": "Hidden",
-    "fieldOptional": "Optional",
-    "fieldRequired": "Required",
-    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
+    "privacySection": "פרטיות והודעות",
+    "nameFieldRequired": "נדרש שם המבקר",
+    "emailFieldRequired": "דוא״ל של המבקר נדרש",
+    "notifyOnDownload": "הודע לי בכל הורדה",
+    "notifyOnDownloadHelp": "כאשר פעולה זו מופעלת, תקבל הודעות דוא״ל כאשר יש הורדות של קבצים משיתוף זה, ללא קשר להעדפות ההודעות הגלובליות שלך.",
+    "inactivityAlertDays": "הודע אם אין הורדות אחרי",
+    "inactivityAlertPlaceholder": "השאר ריק כדי להשבית",
+    "fieldHidden": "מוסתר",
+    "fieldOptional": "אופציונלי",
+    "fieldRequired": "נדרש",
+    "filesOptionalHint": "הוספת קבצים היא אופציונלית — אתה יכול ליצור שיתוף ריק עכשיו והוסף קבצים מאוחר יותר."
   },
   "customization": {
     "breadcrumb": "התאמה אישית",
@@ -606,7 +606,7 @@
       "link": "קישור",
       "qrcode": "קוד QR"
     },
-    "later": "Later"
+    "later": "מאוחר יותר"
   },
   "home": {
     "pageTitle": "בית",
@@ -749,7 +749,7 @@
       "SHARE_RECIPIENT_ADD": "נמענים בשיתוף נוספו",
       "SHARE_RECIPIENT_REMOVE": "נמענים בשיתוף הוסרו",
       "SHARE_RECIPIENT_NOTIFY": "נמענים בשיתוף הודיעו",
-      "SHARE_RECIPIENT_REMIND": "Share non-downloaders reminded",
+      "SHARE_RECIPIENT_REMIND": "נמענים של שיתוף קיבלו הזכרה",
       "SHARE_ITEMS_ADD": "פריטי שיתוף נוספו",
       "SHARE_ITEMS_REMOVE": "פריטי שיתוף הוסרו",
       "FILE_UPLOAD": "קובץ הועלה",
@@ -793,17 +793,17 @@
       "BACKGROUND_IMAGE_UPLOAD": "תמונת רקע הועלתה",
       "BACKGROUND_IMAGE_DELETE": "תמונת רקע נמחקה",
       "AUDIT_RETENTION_CLEANUP": "ניקוי יומן ביקורת",
-      "SHARE_DEACTIVATED": "Share deactivated",
-      "SHARE_REACTIVATED": "Share reactivated",
-      "REVERSE_SHARE_DEACTIVATED": "Reverse share deactivated",
-      "REVERSE_SHARE_REACTIVATED": "Reverse share reactivated",
-      "SHARE_AUTO_DELETED": "Share auto-deleted",
-      "REVERSE_SHARE_AUTO_DELETED": "Reverse share auto-deleted",
-      "ACCOUNT_FILES_CLEANED": "Account files cleaned",
-      "ORPHAN_S3_DELETED": "Orphan storage object deleted",
-      "ORPHAN_DB_DELETED": "Orphan database record deleted",
-      "ORPHAN_MULTIPART_ABORTED": "Incomplete multipart upload aborted",
-      "QUOTA_FILES_DELETED": "Over-quota files deleted"
+      "SHARE_DEACTIVATED": "שיתוף הושבת",
+      "SHARE_REACTIVATED": "שיתוף הופעל מחדש",
+      "REVERSE_SHARE_DEACTIVATED": "קישור קבלה הושבת",
+      "REVERSE_SHARE_REACTIVATED": "קישור קבלה הופעל מחדש",
+      "SHARE_AUTO_DELETED": "שיתוף נמחק באופן אוטומטי",
+      "REVERSE_SHARE_AUTO_DELETED": "קישור קבלה נמחק באופן אוטומטי",
+      "ACCOUNT_FILES_CLEANED": "קבצי חשבון נוקו",
+      "ORPHAN_S3_DELETED": "אובייקט אחסון יתום נמחק",
+      "ORPHAN_DB_DELETED": "רשומת מסד נתונים יתומה נמחקה",
+      "ORPHAN_MULTIPART_ABORTED": "ההעלאה הרבחלקית הלא שלמה בוטלה",
+      "QUOTA_FILES_DELETED": "קבצים שחרגו ממכסה נמחקו"
     },
     "targetTypes": {
       "user": "משתמש",
@@ -1042,23 +1042,23 @@
     "invalidEmail": "אנא הזן כתובת דוא\"ל חוקית",
     "duplicateEmail": "נמען זה כבר נוסף",
     "noRecipientsDescription": "הוסף נמענים כדי לשתף תוכן זה באמצעות דוא\"ל",
-    "notified": "Notified",
-    "views": "{count, plural, one {# view} other {# views}}",
-    "notifyPartial": "Only {sent} of {total} recipients were notified",
-    "neverAccessed": "Never accessed",
-    "namePlaceholder": "Name (optional)",
-    "downloaded": "Downloaded",
-    "pending": "Pending",
-    "downloadedAt": "Downloaded on {date}",
-    "uploaded": "Uploaded",
-    "uploadedAt": "Uploaded on {date}",
-    "uploadApproximateHint": "Approximate: uploaders can submit files without providing an email when it is not required",
-    "remindNonDownloaders": "Remind ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
-    "sendingReminders": "Sending reminders...",
-    "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
-    "remindNoneSent": "No reminders were sent",
-    "remindError": "Failed to send reminders"
+    "notified": "התראה נשלחה",
+    "views": "{count, plural, one {# הצגה} other {# הצגות}}",
+    "notifyPartial": "רק {sent} מתוך {total} המקבלים קיבלו התראה",
+    "neverAccessed": "לא נגיש מעולם",
+    "namePlaceholder": "שם (אופציונלי)",
+    "downloaded": "הורד",
+    "pending": "ממתין",
+    "downloadedAt": "הורד בתאריך {date}",
+    "uploaded": "הועלה",
+    "uploadedAt": "הועלה בתאריך {date}",
+    "uploadApproximateHint": "בערך: מעלים יכולים להגיש קבצים ללא סיום דוא״ל כאשר זה לא נדרש",
+    "remindNonDownloaders": "הזכר ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {אין מקבלים בהמתנה — כולם הורידו} one {הזכר # מקבל שעדיין לא הוריד} other {הזכר # מקבלים שעדיין לא הורידו}}",
+    "sendingReminders": "שליחת תזכורות...",
+    "remindSuccess": "{count, plural, one {תזכורת נשלחה ל # מקבל} other {תזכורות נשלחו ל # מקבלים}}",
+    "remindNoneSent": "לא נשלחו תזכורות",
+    "remindError": "אחזור בשליחת תזכורות"
   },
   "register": {
     "validation": {
@@ -1258,7 +1258,7 @@
         "editDescription": "עדכן את הכינוי לקישור קבלה זה",
         "createDescription": "צור כינוי מותאם אישית לקישור קבלה זה",
         "aliasLabel": "כינוי קישור",
-        "aliasPlaceholder": "my-custom-link",
+        "aliasPlaceholder": "הקישור-שלי",
         "preview": "תצוגה מקדימה:",
         "currentLink": "קישור נוכחי:",
         "copyCurrentLink": "העתק קישור נוכחי",
@@ -1416,8 +1416,8 @@
         "optionalDescription": "אופציונלי: השדה יוצג אך אינו חובה",
         "requiredDescription": "חובה: יש למלא את השדה לפני ההעלאה"
       },
-      "notifyOnUpload": "Notify me on each upload",
-      "notifyOnUploadHelp": "When enabled, you'll receive email notifications when files are uploaded to this receive link, regardless of your global notification preferences.",
+      "notifyOnUpload": "הודע לי בכל העלאה",
+      "notifyOnUploadHelp": "כשמופעל, תקבל הודעות דוא״ל כאשר קבצים מועלים לקישור זה, ללא קשר להעדפות ההתראות הגלובליות שלך.",
       "submit": "צור קישור קבלה",
       "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
       "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
@@ -1509,12 +1509,12 @@
         "namePlaceholder": "השם שלך",
         "emailLabel": "דוא\"ל",
         "emailLabelOptional": "דוא\"ל (אופציונלי)",
-        "emailPlaceholder": "your@email.com",
+        "emailPlaceholder": "שלך@email.il",
         "descriptionLabel": "תיאור (אופציונלי)",
         "descriptionPlaceholder": "הוסף תיאור לקבצים...",
         "uploadButton": "שלח {count} קבצים",
         "uploading": "שולח...",
-        "privacyNotice": "Your name, email and uploads may be visible to the owner of this receive link."
+        "privacyNotice": "השם, הדוא״ל וההעלאות שלך עלולים להיות גלויים לבעל קישור זה."
       },
       "success": {
         "title": "קבצים נשלחו בהצלחה! 🎉",
@@ -1595,8 +1595,8 @@
         "description": "ניהול תמונות רקע לעמודי העלאה בסגנון WeTransfer"
       },
       "cleanup": {
-        "title": "Automatic Cleanup",
-        "description": "Lifecycle management for expired content, deactivated accounts, and orphaned files. Auto-deletion is off by default."
+        "title": "ניקיון אוטומטי",
+        "description": "ניהול מחזור חיים עבור תוכן שפג תוקפו, חשבונות מושבתים וקבצים יתומים. מחיקה אוטומטית כבויה כברירת מחדל."
       }
     },
     "fields": {
@@ -1610,8 +1610,8 @@
         "description": "שם האפליקציה המוצג למשתמשים"
       },
       "appUrl": {
-        "title": "Application URL",
-        "description": "Public URL of the application, used in email links"
+        "title": "כתובת ה-URL של היישום",
+        "description": "כתובת ה-URL הציבורית של היישום, המשמשת בקישורי דוא\"ל"
       },
       "appDescription": {
         "title": "תיאור אפליקציה",
@@ -1712,32 +1712,32 @@
         "description": "מגבלת אחסון כוללת למשתמש. ניתן לעקוף לכל משתמש או קבוצה."
       },
       "quotaWarningThresholds": {
-        "title": "Quota Warning Thresholds (%)",
-        "description": "Comma-separated percentages, e.g. \"80,90\", at which a user is emailed a quota warning. Each value must be a whole number between 1 and 99. A separate alert is sent when storage reaches 100%."
+        "title": "סף התראה של הקוטה (%)",
+        "description": "אחוזים מופרדים בפסיקים, לדוגמה \"80,90\", שבהם משתמש מקבל אזהרת קוטה. כל ערך חייב להיות מספר שלם בין 1 ל-99. התראה נפרדת נשלחת כאשר האחסון מגיע ל-100%."
       },
       "quotaGracePeriodDays": {
-        "title": "Quota Grace Period (days)",
-        "description": "How many days a user may stay over their quota before smart deletion may act (only when smart deletion is enabled below). Minimum 0."
+        "title": "תקופת חסימה של הקוטה (ימים)",
+        "description": "כמה ימים משתמש יכול להישאר מעל הקוטה שלו לפני שמחיקה חכמה עשויה להפעל (רק כאשר מחיקה חכמה מופעלת למטה). מינימום 0."
       },
       "quotaSmartDeletionEnabled": {
-        "title": "Smart Deletion of Over-Quota Files",
-        "description": "Off by default. When enabled, after the grace period the oldest unsafe files of an over-quota user are deleted in a safe order: first unshared uploads, then files in shares inactive for the period below. Files in active shares are never deleted — if nothing is safe to remove, new uploads are simply blocked instead."
+        "title": "מחיקה חכמה של קבצים העולים על הקוטה",
+        "description": "כבויה כברירת מחדל. כאשר מופעל, לאחר תקופת החסימה, הקבצים הלא-בטוחים העתיקים ביותר של משתמש השופך קוטה נמחקים בסדר בטוח: תחילה קבצים שלא שודרו, אחר כך קבצים בשיתופים לא פעילים לתקופה למטה. קבצים בשיתופים פעילים לעולם לא נמחקים — אם אין קבצים בטוחים להסרה, העלאות חדשות פשוט חסומות במקום."
       },
       "quotaInactiveShareDays": {
-        "title": "Inactive Share Threshold (days)",
-        "description": "A share's files are eligible for smart deletion once the share has had no activity for this many days. Minimum 1."
+        "title": "סף חוסר פעילות בשיתוף (ימים)",
+        "description": "קבצי שיתוף מתאימים למחיקה חכמה ברגע שלשיתוף אין פעילות למספר ימים זה. מינימום 1."
       },
       "reverseShareQuotaSoftEnforcement": {
-        "title": "Reverse Share Soft Enforcement",
-        "description": "On by default. Lets external guests keep uploading to a reverse share even if the owner is slightly over quota, so collections are not interrupted. Uploads are still blocked once the owner exceeds the tolerance set below, and the owner is alerted to free up space."
+        "title": "כיסוי רך של הקוטה של שיתוף הפוך",
+        "description": "מופעל כברירת מחדל. מאפשר לאורחים חיצוניים להמשיך להעלות לשיתוף הפוך גם אם הבעלים חוצה קצת את הקוטה, כדי שאוספים לא יופסקו. העלאות עדיין חסומות ברגע שהבעלים חוצה את הסבולת שנקבעה למטה, והבעלים מתבהר להשחרר מקום."
       },
       "reverseShareMaxOverageFactor": {
-        "title": "Reverse Share Overage Factor",
-        "description": "Soft enforcement allows reverse-share uploads until usage reaches this multiple of the owner's quota (e.g. 3 = up to three times the limit). Minimum 1."
+        "title": "גורם עודף שיתוף הפוך",
+        "description": "כיסוי רך מאפשר העלאות לשיתוף הפוך עד שהשימוש יגיע לכפול זה של הקוטה של הבעלים (לדוגמה 3 = עד שלוש פעמים את הגבול). מינימום 1."
       },
       "reverseShareAbsoluteMaxBytes": {
-        "title": "Reverse Share Absolute Cap",
-        "description": "Hard ceiling for reverse-share soft enforcement regardless of the factor above. Set to 0 for no absolute cap."
+        "title": "כובע מוחלט של שיתוף הפוך",
+        "description": "תקרה קשה לכיסוי רך של שיתוף הפוך ללא קשר לגורם לעיל. הגדר ל-0 ללא כובע מוחלט."
       },
       "firstUserAccess": {
         "title": "גישת משתמש ראשון",
@@ -1752,56 +1752,56 @@
         "description": "הפעל או השבת אימות מבוסס סיסמה"
       },
       "emailDigestHour": {
-        "title": "Digest Email Hour",
-        "description": "Hour of the day (0-23) when digest emails are sent"
+        "title": "שעת דוא\"ל סיכום",
+        "description": "שעה של היום (0-23) כאשר משודרות הודעות דוא\"ל סיכום"
       },
       "emailJobRetentionDays": {
-        "title": "Email Job Retention",
-        "description": "Number of days to keep completed email jobs before cleanup"
+        "title": "שמירה על עבודות דוא\"ל",
+        "description": "מספר הימים לשמירה על עבודות דוא\"ל שהושלמו לפני ניקיון"
       },
       "emailQueueIntervalSeconds": {
-        "title": "Queue Processing Interval",
-        "description": "Seconds between email queue processing cycles"
+        "title": "הקבוצה מרווח עיבוד",
+        "description": "שניות בין מחזורי עיבוד תור דוא\"ל"
       },
       "emailQueueMaxRetries": {
-        "title": "Max Email Retries",
-        "description": "Maximum number of retry attempts for failed emails"
+        "title": "מקסימום ניסיונות דוא\"ל",
+        "description": "מספר מקסימום של ניסיונות חוזרים עבור הודעות דוא\"ל שנכשלו"
       },
       "auditRetentionDays": {
         "title": "שמירת ביקורת",
         "description": "מספר הימים לשמירת יומני ביקורת (0 = לעולם, מינימום 7)"
       },
       "autoCleanupEnabled": {
-        "title": "Enable Automatic Cleanup",
-        "description": "Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on."
+        "title": "הפעל ניקיון אוטומטי",
+        "description": "החזקת המתגים הראשית לניקיון מתוזמן של קישורי שיתוף שפגו, קבצי שיתוף הפוך שפגו ויתומים. כבויה כברירת מחדל — שום דבר לא נמחק באופן אוטומטי עד שתפעיל זאת."
       },
       "autoCleanupIntervalHours": {
-        "title": "Cleanup Interval (hours)",
-        "description": "How often the cleanup task runs. Minimum 1 hour."
+        "title": "רווח ניקיון (שעות)",
+        "description": "כמה פעמים משימת הניקיון פועלת. מינימום שעה אחת."
       },
       "autoCleanupGracePeriodDays": {
-        "title": "Grace Period (days)",
+        "title": "תקופת חסימה (ימים)",
         "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
       },
       "autoCleanupNotifyDaysBefore": {
-        "title": "Warn Before Deletion (days)",
-        "description": "Send the owner a \"pending permanent deletion\" warning email this many days before the content is deleted. 0 disables the warning. Should be at most the grace period."
+        "title": "הזהר לפני מחיקה (ימים)",
+        "description": "שלח לבעלים דוא\"ל התראה \"מחיקה קבועה ממתינה\" זה מספר ימים לפני מחיקת התוכן. 0 משביתה את ההתראה. לא צריך להיות יותר מתקופת החסימה."
       },
       "accountDeactivationCleanupEnabled": {
-        "title": "Delete Deactivated Accounts' Files",
-        "description": "When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files."
+        "title": "מחק קבצים של חשבונות משובתים",
+        "description": "כשמופעל, קבצים השייכים לחשבון משובת נמחקים קבוע לאחר ההשהיה למטה. כבויה כברירת מחדל — השבתה לבדה לעולם לא מוחקת קבצים."
       },
       "accountDeactivationCleanupDays": {
-        "title": "Deactivation Cleanup Delay (days)",
-        "description": "Days after an account is deactivated before its files are deleted (only when the option above is enabled). Minimum 1."
+        "title": "השהיית ניקיון השבתה (ימים)",
+        "description": "ימים לאחר השבתת חשבון לפני מחיקת קבציו (רק כאשר האפשרות לעיל מופעלת). מינימום 1."
       },
       "autoCleanupOrphansEnabled": {
-        "title": "Sweep Orphaned Files",
-        "description": "When on, runs a two-way sweep that removes database records pointing to missing storage objects and storage objects with no database record. Off by default."
+        "title": "לסחוף קבצים יתומים",
+        "description": "כשמופעל, מפעיל טאטא דו-כיווני שמסיר רשומות מסד נתונים המצביעות על אובייקטי אחסון חסרים ואובייקטי אחסון ללא רשומה. כבויה כברירת מחדל."
       },
       "autoCleanupOrphanMinAgeHours": {
-        "title": "Orphan Minimum Age (hours)",
-        "description": "Only files and objects older than this are considered during the orphan sweep, protecting uploads still in progress. Minimum 1."
+        "title": "גיל מינימום יתום (שעות)",
+        "description": "רק קבצים ואובייקטים הישנים יותר מזה נחשבים במהלך הטאטא היתום, המגנה על העלאות שעדיין בתהליך. מינימום 1."
       }
     },
     "buttons": {
@@ -1814,9 +1814,9 @@
       "updateFailed": "נכשל בעדכון הגדרות",
       "passwordAuthRequiresProvider": "לא ניתן להשבית אימות סיסמה ללא ספק אימות פעיל אחד לפחות",
       "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
-      "cleanupValueInvalid": "Value must be a whole number of at least {min}",
-      "notifyDaysExceedsGrace": "The warning lead time should not exceed the grace period, otherwise no warning is sent",
-      "quotaThresholdsInvalid": "Enter comma-separated percentages between 1 and 99, for example \"80,90\""
+      "cleanupValueInvalid": "הערך חייב להיות מספר שלם של לפחות {min}",
+      "notifyDaysExceedsGrace": "זמן ההתראה לא צריך לחרוג מתקופת החסימה, אחרת לא תישלח התראה",
+      "quotaThresholdsInvalid": "הזן אחוזים מופרדים בפסיקים בין 1 ל-99, לדוגמה \"80,90\""
     },
     "messages": {
       "noChanges": "אין שינויים לשמור",
@@ -1836,20 +1836,20 @@
       "defaultPlaceholder": "הזן ולחץ Enter"
     },
     "redirectUri": {
-      "placeholder": "https://mysite.com",
+      "placeholder": "https://mysite.co.il",
       "previewLabel": "כתובת URL מלאה שתישמר:"
     },
     "emailAdmin": {
-      "queueStatus": "Email Queue Status",
-      "pending": "Pending",
-      "sentLast24h": "Sent (24h)",
-      "failed": "Failed",
+      "queueStatus": "מצב תור דוא\"ל",
+      "pending": "ממתין",
+      "sentLast24h": "שלח (24 שעות)",
+      "failed": "נכשל",
       "digestQueue": "תור תקצירים",
-      "sendTest": "Send Test Email",
-      "testPlaceholder": "recipient@example.com",
-      "testSending": "Sending...",
-      "testSuccess": "Test email queued successfully",
-      "testError": "Failed to send test email"
+      "sendTest": "שלח דוא\"ל בדיקה",
+      "testPlaceholder": "נמען@example.co.il",
+      "testSending": "שליחה בתהליך...",
+      "testSuccess": "דוא\"ל הבדיקה הוצע בהצלחה בתור",
+      "testError": "השליחה של דוא\"ל בדיקה נכשלה"
     }
   },
   "share": {
@@ -1885,19 +1885,19 @@
       "filesShared": "{count, plural, =1 {קובץ אחד משותף} other {# קבצים משותפים}}"
     },
     "identification": {
-      "title": "Visitor Identification",
-      "subtitle": "Please provide your information to access this share",
-      "nameLabel": "Name",
-      "emailLabel": "Email",
-      "submit": "Continue",
-      "error": "Failed to submit identification. Please try again.",
-      "optional": "Optional",
-      "nameRequired": "Name is required",
-      "emailRequired": "Email is required",
-      "emailInvalid": "Please enter a valid email address",
+      "title": "זיהוי מבקר",
+      "subtitle": "אנא ספק את המידע שלך כדי לגשת לשיתוף זה",
+      "nameLabel": "שם",
+      "emailLabel": "דוא״ל",
+      "submit": "המשך",
+      "error": "אחזור בהגשת זיהוי. נא נסה שוב.",
+      "optional": "אופציונלי",
+      "nameRequired": "שם הוא חובה",
+      "emailRequired": "דוא״ל הוא חובה",
+      "emailInvalid": "אנא הזן כתובת דוא״ל תקנית",
       "metadataError": "Failed to load share information. Please try again.",
       "rateLimited": "Too many attempts. Please try again later.",
-      "privacyNotice": "Your accesses and downloads may be visible to the sender of this share."
+      "privacyNotice": "הגישה וההורדות שלך עלולות להיות גלויות לשולח של שיתוף זה."
     }
   },
   "shareActions": {
@@ -1927,8 +1927,8 @@
     "editErrorPassword": "עדכון סיסמת השיתוף נכשל",
     "bulkDeleteConfirmation": "האם אתה בטוח שברצונך למחוק {count, plural, =1 {שיתוף אחד} other {# שיתופים}}? פעולה זו אינה ניתנת לביטול.",
     "bulkDeleteTitle": "מחק שיתופים נבחרים",
-    "keepCurrentPasswordHint": "Leave empty to keep current password",
-    "passwordRequired": "Password is required for new password protection"
+    "keepCurrentPasswordHint": "השאר ריק כדי לשמור על הסיסמה הנוכחית",
+    "passwordRequired": "סיסמה נדרשת להגנת סיסמה חדשה"
   },
   "shareDetails": {
     "title": "פרטי שיתוף",
@@ -1964,27 +1964,27 @@
     "clickToEnlargeQrCode": "לחץ להגדלת קוד QR",
     "loadError": "נכשל בטעינת פרטי שיתוף",
     "activity": {
-      "title": "Activity",
-      "noActivity": "No activity recorded yet.",
-      "access": "Viewed",
-      "download": "Downloaded",
-      "anonymous": "Anonymous",
-      "loadMore": "Load more",
-      "showingCount": "Showing {shown} of {total}",
-      "loadError": "Failed to load activity data.",
-      "filterAll": "All actions",
-      "filterAccess": "Views only",
-      "filterDownload": "Downloads only",
-      "filterAllVisitors": "All visitors",
-      "filterIdentified": "Identified",
-      "filterAnonymous": "Anonymous",
+      "title": "פעילות",
+      "noActivity": "לא נרשמה פעילות עדיין.",
+      "access": "צוהל",
+      "download": "הורד",
+      "anonymous": "אנונימי",
+      "loadMore": "טען עוד",
+      "showingCount": "הצגה {shown} מ {total}",
+      "loadError": "אחזור בטעינת נתוני פעילות.",
+      "filterAll": "כל הפעולות",
+      "filterAccess": "הצגות בלבד",
+      "filterDownload": "הורדות בלבד",
+      "filterAllVisitors": "כל המבקרים",
+      "filterIdentified": "מזוהה",
+      "filterAnonymous": "אנונימי",
       "source": {
-        "tracking_token": "Via recipient link",
-        "cookie": "Self-identified",
-        "selfDeclaredHint": "Self-declared identity, not verified"
+        "tracking_token": "דרך קישור המקבל",
+        "cookie": "מזוהה-עצמי",
+        "selfDeclaredHint": "זהות מוצהרת עצמית, לא מאומת"
       }
     },
-    "lastDownloaded": "Last Downloaded",
+    "lastDownloaded": "הורדה אחרונה",
     "privacySummary": "פרטיות",
     "privacyNameField": "שם מבקר:",
     "privacyEmailField": "אימייל מבקר:",
@@ -1994,9 +1994,9 @@
       "OPTIONAL": "אופציונלי",
       "REQUIRED": "חובה"
     },
-    "recipientNotified": "Notified",
-    "recipientAccess": "{count, plural, one {# access} other {# accesses}}",
-    "recipientAccessWithLast": "{count, plural, one {# access} other {# accesses}} · last {lastAccess}"
+    "recipientNotified": "התראה נשלחה",
+    "recipientAccess": "{count, plural, one {# גישה} other {# גישות}}",
+    "recipientAccessWithLast": "{count, plural, one {# גישה} other {# גישות}} · אחרונה {lastAccess}"
   },
   "shareExpiration": {
     "title": "הגדרות תפוגת שיתוף",
@@ -2058,10 +2058,10 @@
     "singleShareZipName": "{shareName}_files.zip",
     "multipleSharesZipName": "{count}_shares_files.zip",
     "defaultShareName": "שיתוף",
-    "pauseSuccess": "Share paused",
-    "pauseError": "Failed to pause share",
-    "resumeSuccess": "Share resumed",
-    "resumeError": "Failed to resume share. If it is expired or has reached its view limit, extend it instead."
+    "pauseSuccess": "השיתוף הושהה",
+    "pauseError": "אחזור בהשהיית השיתוף",
+    "resumeSuccess": "השיתוף חודש",
+    "resumeError": "אחזור בחידוש השיתוף. אם הוא פג תוקף או הגיע לגבול הצפיות, הרחב אותו במקום."
   },
   "shareMultipleFiles": {
     "title": "שתף מספר קבצים",
@@ -2156,8 +2156,8 @@
       "neverExpires": "לא פג תוקף",
       "active": "פעיל",
       "expired": "פג תוקף",
-      "paused": "Paused",
-      "maxViewsReached": "View Limit Reached"
+      "paused": "הושהה",
+      "maxViewsReached": "גבול הצפיות הגיע"
     },
     "security": {
       "protected": "מוגן",
@@ -2179,9 +2179,9 @@
       "notifyRecipients": "הודע לנמענים",
       "downloadShareFiles": "הורד כל הקבצים",
       "delete": "מחק",
-      "pause": "Pause",
-      "resume": "Resume",
-      "renew": "Renew"
+      "pause": "השהיה",
+      "resume": "חידוש",
+      "renew": "חידוש"
     },
     "bulkActions": {
       "actions": "פעולות",
@@ -2812,41 +2812,41 @@
     }
   },
   "notificationPreferences": {
-    "pageTitle": "Notification Preferences",
-    "description": "Choose which email notifications you receive",
-    "type": "Notification Type",
-    "category": "Category",
-    "frequency": "Frequency",
-    "immediate": "Immediate",
-    "disabled": "Disabled",
-    "alwaysEnabled": "Always enabled",
-    "save": "Save Preferences",
-    "saveSuccess": "Notification preferences saved",
-    "saveError": "Failed to save preferences",
-    "noChanges": "No changes to save",
+    "pageTitle": "העדפות הודעות",
+    "description": "בחר אילו הודעות דוא״ל אתה מקבל",
+    "type": "סוג הודעה",
+    "category": "קטגוריה",
+    "frequency": "תדירות",
+    "immediate": "מיידי",
+    "disabled": "מושבת",
+    "alwaysEnabled": "תמיד מופעל",
+    "save": "שמור העדפות",
+    "saveSuccess": "העדפות הודעות נשמרו",
+    "saveError": "כישלון בשמירת העדפות",
+    "noChanges": "אין שינויים לשמירה",
     "types": {
-      "password_reset": "Password reset",
-      "welcome": "Welcome email",
-      "account_deactivated": "Account deactivated",
-      "account_reactivated": "Account reactivated",
-      "share_invitation": "Share invitation",
-      "share_accessed": "Share accessed",
-      "share_downloaded": "File downloaded from share",
-      "share_expiring": "Share expiring soon",
-      "share_expired": "Share expired",
-      "share_max_views_reached": "Share max views reached",
-      "share_no_activity": "No activity on share",
-      "reverse_share_invitation": "Reverse share invitation",
-      "reverse_share_uploaded": "Files uploaded to reverse share",
-      "reverse_share_expiring": "Reverse share expiring",
-      "reverse_share_expired": "Reverse share expired",
-      "quota_warning": "Quota warning",
-      "quota_exceeded": "Quota exceeded",
-      "files_auto_deleted": "Files auto-deleted",
-      "share_auto_deleted": "Share auto-deleted",
-      "admin_user_registered": "New user registered (admin)",
-      "admin_quota_alert": "User quota alert (admin)",
-      "test_email": "Test email",
+      "password_reset": "איפוס סיסמה",
+      "welcome": "הודעת ברוכים הבאים",
+      "account_deactivated": "חשבון הושבת",
+      "account_reactivated": "חשבון הופעל מחדש",
+      "share_invitation": "הזמנת שיתוף",
+      "share_accessed": "הגישה לשיתוף",
+      "share_downloaded": "קובץ הוריד משיתוף",
+      "share_expiring": "שיתוף יפוג בקרוב",
+      "share_expired": "שיתוף פג תוקף",
+      "share_max_views_reached": "הגיע למראות מרביות של שיתוף",
+      "share_no_activity": "אין פעילות בשיתוף",
+      "reverse_share_invitation": "הזמנת קישור קבלה",
+      "reverse_share_uploaded": "קבצים הועלו לקישור קבלה",
+      "reverse_share_expiring": "קישור קבלה יפוג בקרוב",
+      "reverse_share_expired": "קישור קבלה פג תוקף",
+      "quota_warning": "אזהרת מכסה",
+      "quota_exceeded": "מכסה חרגה",
+      "files_auto_deleted": "קבצים נמחקו באופן אוטומטי",
+      "share_auto_deleted": "שיתוף נמחק באופן אוטומטי",
+      "admin_user_registered": "משתמש חדש נרשם (למנהלי מערכת בלבד)",
+      "admin_quota_alert": "התראת מכסה משתמש (למנהלי מערכת בלבד)",
+      "test_email": "הודעת בדיקה",
       "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
       "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
       "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
@@ -2872,16 +2872,16 @@
       "admin_quota_alert": "כאשר השימוש באחסון של משתמש עולה על המכסה שלו (למנהלי מערכת בלבד)"
     },
     "categories": {
-      "account": "Account",
-      "shares": "Shares",
-      "reverseShares": "Reverse Shares",
+      "account": "חשבון",
+      "shares": "שיתופים",
+      "reverseShares": "קישורי קבלה",
       "quota": "Quotas",
       "admin": "Administration",
       "test": "Test"
     },
-    "saving": "Saving...",
-    "loadError": "Failed to load notification preferences",
-    "retry": "Retry",
-    "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}"
+    "saving": "שומר...",
+    "loadError": "כישלון בטעינת העדפות הודעות",
+    "retry": "נסה שוב",
+    "unsavedChanges": "{count, plural, one {# שינוי לא שמור} other {# שינויים לא שמורים}}"
   }
 }
