@@ -1,9 +1,11 @@
+import type { Readable } from "node:stream";
+
 export interface StorageProvider {
   getPresignedPutUrl(objectName: string, expires: number): Promise<string>;
   getPresignedGetUrl(objectName: string, expires: number, fileName?: string): Promise<string>;
   deleteObject(objectName: string): Promise<void>;
   fileExists(objectName: string): Promise<boolean>;
-  getObjectStream(objectName: string): Promise<NodeJS.ReadableStream>;
+  getObjectStream(objectName: string): Promise<Readable>;
   getObjectHead(objectName: string, bytes?: number): Promise<Buffer>;
 
   // Multipart upload methods

@@ -1,3 +1,4 @@
+import { Readable } from "node:stream";
 import {
   AbortMultipartUploadCommand,
   CompleteMultipartUploadCommand,
@@ -172,7 +173,7 @@ export class S3StorageProvider implements StorageProvider {
    * Get a readable stream for downloading an object
    * Used for proxying downloads through the backend
    */
-  async getObjectStream(objectName: string): Promise<NodeJS.ReadableStream> {
+  async getObjectStream(objectName: string): Promise<Readable> {
     const client = this.ensureClient();
 
     const command = new GetObjectCommand({
@@ -186,8 +187,9 @@ export class S3StorageProvider implements StorageProvider {
       throw new Error("No body in S3 response");
     }
 
-    // AWS SDK v3 returns a readable stream
-    return response.Body as NodeJS.ReadableStream;
+    // AWS SDK v3 SdkStream implements Symbol.asyncIterator — wrap with Readable.from
+    // to get a proper Node.js Readable without an unsafe cast.
+    return Readable.from(response.Body as AsyncIterable<Uint8Array>);
   }
 
   /**

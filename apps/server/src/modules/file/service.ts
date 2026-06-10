@@ -1,3 +1,4 @@
+import type { Readable } from "node:stream";
 import { S3StorageProvider } from "../../providers/s3-storage.provider.js";
 import type { StorageProvider } from "../../types/storage.js";
 import { getLogger } from "../../utils/logger.js";
@@ -31,7 +32,7 @@ export class FileService {
     }
   }
 
-  async getObjectStream(objectName: string): Promise<NodeJS.ReadableStream> {
+  async getObjectStream(objectName: string): Promise<Readable> {
     try {
       return await this.storageProvider.getObjectStream(objectName);
     } catch (err) {

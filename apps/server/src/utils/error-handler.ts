@@ -1,6 +1,7 @@
 import {
   hasZodFastifySchemaValidationErrors,
   isResponseSerializationError,
+  type ZodFastifySchemaValidationError,
 } from "@fastify/type-provider-zod";
 import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import type { FastifyError, FastifyReply, FastifyRequest } from "fastify";
@@ -93,19 +94,12 @@ function handlePrismaError(error: PrismaKnownError): ErrorResponse {
 // Zod validation error handling
 // ---------------------------------------------------------------------------
 
-function handleZodValidationError(
-  error: Parameters<typeof hasZodFastifySchemaValidationErrors>[0] & {
-    validation: Array<{
-      keyword: string;
-      instancePath: string;
-      message: string;
-      params: Record<string, unknown>;
-    }>;
-  },
-): ErrorResponse {
+function handleZodValidationError(error: {
+  validation: ZodFastifySchemaValidationError[];
+}): ErrorResponse {
   const issues = error.validation.map((v) => ({
     path: v.instancePath.replace(/^\//, "").replaceAll("/", ".") || "unknown",
-    message: v.message,
+    message: v.message ?? "Unknown validation error",
   }));
 
   return {
@@ -168,9 +162,7 @@ export function globalErrorHandler(
 
   // 1. Zod validation errors (from fastify-type-provider-zod)
   if (hasZodFastifySchemaValidationErrors(error)) {
-    response = handleZodValidationError(
-      error as unknown as Parameters<typeof handleZodValidationError>[0],
-    );
+    response = handleZodValidationError(error);
     reply.status(response.statusCode).send(response);
     return;
   }
