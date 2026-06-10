@@ -21,6 +21,7 @@ import { Switch } from "@/components/ui/switch";
 import {
   addFiles,
   addFolders,
+  listFiles,
   removeFiles,
   removeFolders,
   updateSharePassword,
@@ -87,10 +88,10 @@ export function ShareActionsModals({
       try {
         const [allFoldersResponse, allFilesResponse] = await Promise.all([
           listFolders(),
-          fetch("/api/files?recursive=true").then((res) => res.json()),
+          listFiles({ recursive: true }),
         ]);
         setAllFolders(allFoldersResponse.data.folders || []);
-        setAllFiles(allFilesResponse.files || []);
+        setAllFiles(allFilesResponse.data.files || []);
       } catch (error) {
         logger.error("Error loading all files and folders:", {
           err: error instanceof Error ? error.message : String(error),
