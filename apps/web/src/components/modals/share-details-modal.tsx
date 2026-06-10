@@ -217,7 +217,7 @@ export function ShareDetailsModal({
   return (
     <>
       <Dialog open={!!shareId} onOpenChange={() => onClose()}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{t("shareDetails.title")}</DialogTitle>
             <DialogDescription>{t("shareDetails.subtitle")}</DialogDescription>
