@@ -4,6 +4,7 @@ import { Copy, Dices, Link } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +25,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Loader } from "@/components/ui/loader";
+import { logger } from "@/lib/logger";
 import { customNanoid } from "@/lib/utils";
 import { ALIAS_MAX_LENGTH, ALIAS_MIN_LENGTH, getAliasValidationError } from "@/utils/alias";
 import type { ReverseShare } from "../hooks/use-reverse-shares";
@@ -82,7 +84,11 @@ export function GenerateAliasModal({
     try {
       await onCreateAlias(reverseShare.id, data.alias);
       onClose();
-    } catch {
+    } catch (error) {
+      logger.error("Failed to create/update alias:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
+      toast.error(t("reverseShares.errors.aliasCreateFailed"));
     } finally {
       setIsSubmitting(false);
     }
