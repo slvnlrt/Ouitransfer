@@ -267,7 +267,10 @@ export function NotificationPreferencesTable() {
                                 <div className="font-medium">
                                   {t(`types.${pref.type}` as Parameters<typeof t>[0])}
                                 </div>
-                                <p className="text-muted-foreground text-sm font-normal">
+                                <p
+                                  id={`desc-${pref.type}`}
+                                  className="text-muted-foreground text-sm font-normal"
+                                >
                                   {t(`descriptions.${pref.type}` as Parameters<typeof t>[0])}
                                 </p>
                               </TableCell>
@@ -282,7 +285,11 @@ export function NotificationPreferencesTable() {
                                   }
                                   disabled={saveMutation.isPending}
                                 >
-                                  <SelectTrigger className="w-40">
+                                  <SelectTrigger
+                                    className="w-40"
+                                    aria-label={t(`types.${pref.type}` as Parameters<typeof t>[0])}
+                                    aria-describedby={`desc-${pref.type}`}
+                                  >
                                     <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent>

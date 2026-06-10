@@ -168,6 +168,24 @@ describe("NotificationPreferencesTable", () => {
     expect(saveButton).toBeDisabled();
   });
 
+  it("renders notification type descriptions", async () => {
+    mockGetPreferences.mockResolvedValue({
+      data: { preferences: ALL_PREFS },
+    } as never);
+
+    const { Wrapper } = createWrapper();
+    render(<NotificationPreferencesTable />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText("types.share_accessed")).toBeInTheDocument();
+    });
+
+    // Description text should render below the type label
+    expect(screen.getByText("descriptions.share_accessed")).toBeInTheDocument();
+    expect(screen.getByText("descriptions.share_downloaded")).toBeInTheDocument();
+    expect(screen.getByText("descriptions.quota_warning")).toBeInTheDocument();
+  });
+
   it("only renders configurable types — non-configurable types have no select controls", async () => {
     // This tests the defense-in-depth aspect: if a type is not rendered,
     // the user cannot change it, and even if localChanges somehow contained

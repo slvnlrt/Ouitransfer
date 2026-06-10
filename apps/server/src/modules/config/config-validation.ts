@@ -128,31 +128,23 @@ function quotaWarningThresholds(label: string): z.ZodType {
  *    guidance and prevents accidental aggressive pruning (values 1–6), which
  *    the retention scheduler would otherwise apply verbatim.
  */
-const auditRetentionDaysSchema = z.coerce
-  .number({ message: "Audit retention must be a whole number of days." })
-  .int("Audit retention must be a whole number of days.")
-  .min(0, "Audit retention cannot be negative.")
-  .refine((days) => days === 0 || days >= 7, {
-    message: "Audit retention must be 0 (keep forever) or at least 7 days.",
-  });
+const auditRetentionDaysSchema = z
+  .string()
+  .trim()
+  .min(1, "Audit retention must be a whole number of days.")
+  .transform(Number)
+  .pipe(
+    z
+      .number({ message: "Audit retention must be a whole number of days." })
+      .int("Audit retention must be a whole number of days.")
+      .min(0, "Audit retention cannot be negative.")
+      .refine((days) => days === 0 || days >= 7, {
+        message: "Audit retention must be 0 (keep forever) or at least 7 days.",
+      }),
+  );
 
 const configValueValidators: Record<string, ConfigValueValidator> = {
-  auditRetentionDays: (value) => {
-    // z.coerce.number() turns an empty string into 0, which would silently mean
-    // "keep forever" — reject it explicitly so a cleared field is an error.
-    if (value.trim() === "") {
-      throw new ValidationError("Audit retention must be a whole number of days.", {
-        key: "auditRetentionDays",
-      });
-    }
-
-    const result = auditRetentionDaysSchema.safeParse(value);
-    if (!result.success) {
-      throw new ValidationError(result.error.issues[0]?.message ?? "Invalid configuration value.", {
-        key: "auditRetentionDays",
-      });
-    }
-  },
+  auditRetentionDays: fromSchema("auditRetentionDays", auditRetentionDaysSchema),
 
   // Lifecycle Management & Automatic Cleanup (5.2 Phase A).
   autoCleanupEnabled: fromSchema("autoCleanupEnabled", booleanString("Automatic cleanup")),
