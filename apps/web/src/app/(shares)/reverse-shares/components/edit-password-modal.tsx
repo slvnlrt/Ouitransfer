@@ -24,6 +24,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Loader } from "@/components/ui/loader";
 import { Switch } from "@/components/ui/switch";
 import { logger } from "@/lib/logger";
 import type { ReverseShare } from "../hooks/use-reverse-shares";
@@ -203,10 +204,10 @@ export function EditPasswordModal({
               </Button>
               <Button type="submit" disabled={isUpdating}>
                 {isUpdating ? (
-                  <div className="flex items-center gap-2">
-                    <div className="animate-spin">⠋</div>
+                  <>
+                    <Loader size="sm" />
                     {t("reverseShares.modals.password.saving")}
-                  </div>
+                  </>
                 ) : (
                   t("reverseShares.modals.password.save")
                 )}

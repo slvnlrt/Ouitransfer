@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
+import { Loader } from "@/components/ui/loader";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import type { CreateReverseShareBody } from "@/http/endpoints/reverse-shares/types";
@@ -200,10 +201,10 @@ export function CreateReverseShareModal({
                 </Button>
                 <Button type="submit" disabled={isCreating}>
                   {isCreating ? (
-                    <div className="flex items-center gap-2">
-                      <div className="animate-spin">⠋</div>
+                    <>
+                      <Loader size="sm" />
                       {t("common.creating")}
-                    </div>
+                    </>
                   ) : (
                     t("reverseShares.form.submit")
                   )}

@@ -23,6 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Loader } from "@/components/ui/loader";
 import { customNanoid } from "@/lib/utils";
 import { ALIAS_MAX_LENGTH, ALIAS_MIN_LENGTH, getAliasValidationError } from "@/utils/alias";
 import type { ReverseShare } from "../hooks/use-reverse-shares";
@@ -216,12 +217,12 @@ export function GenerateAliasModal({
                 disabled={isSubmitting || getAliasValidationError(form.watch("alias")) !== null}
               >
                 {isSubmitting ? (
-                  <div className="flex items-center gap-2">
-                    <div className="animate-spin">⠋</div>
+                  <>
+                    <Loader size="sm" />
                     {hasExistingAlias
                       ? t("reverseShares.modals.alias.updating")
                       : t("reverseShares.modals.alias.creating")}
-                  </div>
+                  </>
                 ) : hasExistingAlias ? (
                   t("reverseShares.modals.alias.update")
                 ) : (
