@@ -24,8 +24,8 @@
 - None.
 
 #### Minor (Nice to Have)
-- [ ] **No `/admin` index page** (`apps/web/src/app/admin/` has no `page.tsx`). Navigating directly to `/admin` returns a 404 even for an admin. The navbar only links to sub-routes so this isn't a regression, but a small redirect page (`/admin` → `/admin/settings` or an admin landing/dashboard) would be a nicer UX and avoid a confusing 404 if anyone types the bare path. Optional.
-- [ ] **Stale references remain in historical plan docs** (`features/plans/5.3-ldap-part4-frontend.md:822,1343`, `features/plans/5.4-groups.md:2428`) still show old `/groups-management` / `/users-management` paths and the old `adminPaths` array. These are immutable historical records, not live code, so they don't affect behavior — but if these plans are ever used as copy-paste references, the snippets are now outdated. Consider a one-line note, or leave as-is per the "plans are historical" convention.
+- [x] **No `/admin` index page** (`apps/web/src/app/admin/` has no `page.tsx`). Navigating directly to `/admin` returns a 404 even for an admin. The navbar only links to sub-routes so this isn't a regression, but a small redirect page (`/admin` → `/admin/settings` or an admin landing/dashboard) would be a nicer UX and avoid a confusing 404 if anyone types the bare path. Optional.
+- [x] **Stale references remain in historical plan docs** (`features/plans/5.3-ldap-part4-frontend.md:822,1343`, `features/plans/5.4-groups.md:2428`) still show old `/groups-management` / `/users-management` paths and the old `adminPaths` array. These are immutable historical records, not live code, so they don't affect behavior — but if these plans are ever used as copy-paste references, the snippets are now outdated. Consider a one-line note, or leave as-is per the "plans are historical" convention.
 
 ## TD-43 — Notification Type Descriptions
 
@@ -47,9 +47,9 @@
 - None.
 
 #### Minor (Nice to Have)
-- [ ] **No test asserts the description renders.** The existing `notification-preferences-table.test.tsx` (5 tests) does not verify that `descriptions.*` text appears in the DOM. A single assertion (e.g., one type's description string is present below its label) would lock in the feature and catch accidental removal of the `<p>` or a key rename. Per the project's "test non-trivial changes" standard, worth adding.
-- [ ] **21 locales hold English placeholders.** Expected and explicitly in-scope, but they are not real translations — `de-DE.json` etc. show English text under `descriptions.*`. This is tracked debt (a follow-up translation pass), not a defect in this commit. Flagging only so it isn't forgotten.
-- [ ] **Accessibility: description is a sibling `<p>`, not programmatically associated with the `<Select>`.** The frequency `<Select>` (`notification-preferences-table.tsx:275-292`) has no `aria-describedby` pointing at the description text, and `<SelectValue />` has no accessible label tying it to the type/description. Screen-reader users hear the selected value but not the type name or its description as context. Consider `aria-label`/`aria-describedby` on the trigger referencing the type label + description IDs. Low severity (visual users see the full row), but a genuine a11y gap given the project's a11y emphasis.
+- [x] **No test asserts the description renders.** The existing `notification-preferences-table.test.tsx` (5 tests) does not verify that `descriptions.*` text appears in the DOM. A single assertion (e.g., one type's description string is present below its label) would lock in the feature and catch accidental removal of the `<p>` or a key rename. Per the project's "test non-trivial changes" standard, worth adding.
+- [x] **21 locales hold English placeholders.** Expected and explicitly in-scope, but they are not real translations — `de-DE.json` etc. show English text under `descriptions.*`. This is tracked debt (a follow-up translation pass), not a defect in this commit. Flagging only so it isn't forgotten.
+- [x] **Accessibility: description is a sibling `<p>`, not programmatically associated with the `<Select>`.** The frequency `<Select>` (`notification-preferences-table.tsx:275-292`) has no `aria-describedby` pointing at the description text, and `<SelectValue />` has no accessible label tying it to the type/description. Screen-reader users hear the selected value but not the type name or its description as context. Consider `aria-label`/`aria-describedby` on the trigger referencing the type label + description IDs. Low severity (visual users see the full row), but a genuine a11y gap given the project's a11y emphasis.
 
 ## Recommendations
 
