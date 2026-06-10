@@ -9,11 +9,17 @@
  * sweep; `manual` pauses are never auto-deleted.
  */
 
-/** Values persisted in `Share.deactivationReason` / `ReverseShare.deactivationReason`. */
-export const DEACTIVATION_REASONS = ["expired", "max_views", "manual"] as const;
+import type { DeactivationReason } from "../../generated/prisma/client.js";
 
-/** Reason a share/reverse-share was deactivated. */
-export type DeactivationReason = (typeof DEACTIVATION_REASONS)[number];
+/** Re-export the Prisma-generated enum as the canonical type. */
+export type { DeactivationReason };
+
+/** Values persisted in `Share.deactivationReason` / `ReverseShare.deactivationReason`. */
+export const DEACTIVATION_REASONS = [
+  "expired",
+  "max_views",
+  "manual",
+] as const satisfies readonly DeactivationReason[];
 
 /**
  * Deactivation reasons that make a share/reverse-share eligible for the

@@ -17,7 +17,7 @@ import { emailService } from "../email/service.js";
 import { buildShareLink, buildShareManageUrl } from "../email/url-builder.js";
 import { FolderService } from "../folder/service.js";
 import { type CreateShareInput, ShareResponseSchema, type UpdateShareInput } from "./dto.js";
-import { type DeactivationReason, deactivationFields, reactivationFields } from "./lifecycle.js";
+import { deactivationFields, reactivationFields } from "./lifecycle.js";
 import { type IShareRepository, PrismaShareRepository } from "./repository.js";
 
 export interface ShareAccessContext {
@@ -87,7 +87,7 @@ export class ShareService {
       maxViews: share.maxViews,
       isActive: share.isActive,
       deactivatedAt: share.deactivatedAt?.toISOString() ?? null,
-      deactivationReason: (share.deactivationReason as DeactivationReason | null) ?? null,
+      deactivationReason: share.deactivationReason ?? null,
       security: {
         hasPassword: !!share.security.password,
       },

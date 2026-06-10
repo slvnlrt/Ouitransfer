@@ -122,7 +122,7 @@ model Share {
   notifyOnDownload     Boolean   @default(false)
   isActive             Boolean   @default(true)
   deactivatedAt        DateTime? // Set when the share is deactivated (expired/maxViews/manual); cleared on reactivation. Drives delayed deletion.
-  deactivationReason   String? // DeactivationReason: "expired" | "max_views" | "manual"
+  deactivationReason   DeactivationReason?
   notifiedForExpiring  Boolean   @default(false)
   notifiedForExpired   Boolean   @default(false)
   notifiedForMaxViews  Boolean   @default(false)
@@ -348,7 +348,7 @@ model ReverseShare {
   pageLayout         PageLayout       @default(DEFAULT)
   isActive           Boolean          @default(true)
   deactivatedAt      DateTime? // Set when the reverse share is deactivated (expired/manual); cleared on reactivation. Drives delayed deletion.
-  deactivationReason String? // DeactivationReason (reverse share): "expired" | "manual"
+  deactivationReason DeactivationReason?
   nameFieldRequired  FieldRequirement @default(OPTIONAL)
   emailFieldRequired FieldRequirement @default(OPTIONAL)
   notifyOnUpload       Boolean          @default(false)
@@ -443,6 +443,12 @@ enum FieldRequirement {
 enum PageLayout {
   DEFAULT
   WETRANSFER
+}
+
+enum DeactivationReason {
+  expired
+  max_views
+  manual
 }
 
 model TrustedDevice {
