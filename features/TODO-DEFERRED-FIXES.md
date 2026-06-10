@@ -1,7 +1,40 @@
-# Deferred Fixes — Priority for Next Session
+# Deferred Fixes & Review Findings — Priority for Next Session
 
-Items incorrectly deferred during the 2026-06-10 overnight session.
-The project standard is "zero technical debt" — none of these should have been left behind.
+Items deferred during the 2026-06-10 overnight session, plus all review findings.
+The project standard is "zero technical debt" — **every item below must be fixed**.
+
+## Review Reports
+
+All findings are checkboxes in the review files — check them off as you fix each one.
+
+| Review | File | Verdict | Findings |
+|--------|------|---------|----------|
+| TD-28 Zod v4 | [`features/reviews/td-28-zod-v4-migration.md`](reviews/td-28-zod-v4-migration.md) | With fixes | 2 Important, 2 Minor |
+| TD-5 + TD-40 | [`features/reviews/td-5-td-40-type-safety-error-boundary.md`](reviews/td-5-td-40-type-safety-error-boundary.md) | TD-5: Yes, TD-40: With fixes | 1 Important, 4 Minor |
+| TD-10 + TD-43 | [`features/reviews/td-10-td-43-admin-routes-notifications.md`](reviews/td-10-td-43-admin-routes-notifications.md) | Yes | 5 Minor |
+
+### Review findings summary (ALL must be fixed)
+
+**Important (3):**
+1. **TD-28:** `z.coerce.boolean()` on `?force` param — `"false"` coerces to `true`, destructive delete bypass (`file/routes.ts:943`, `folder/routes.ts:609`). Fix: explicit string→boolean parse + integration test for `?force=false`.
+2. **TD-28:** Test coverage gap — `?force=false` never exercised in delete tests.
+3. **TD-40:** Hydration mismatch — `useMemo` runs during SSR render (no `document` → `"en"`), client detects real locale → React warning + RTL layout flip. Fix: `useState("en")` + `useEffect(() => setLang(detectLocale()))`.
+
+**Minor (11):**
+4. **TD-28:** Inconsistent coerce pattern in `config-validation.ts:131` (style only).
+5. **TD-28:** `.describe()` (620 uses) and `.email()`/`.url()` (37 uses) deprecated in v4 — tracked follow-up.
+6. **TD-28:** `z.input<>` (3 uses) confirmed still valid — no action, noted for completeness.
+7. **TD-5:** `getTypeDisplayName` fallback semantics shifted (provably equivalent, optional-chain removed).
+8. **TD-5:** Confirm deferred items tracked in `TECHNICAL-DEBT.md`.
+9. **TD-40:** Hardcoded `"en"` fallback ignores `NEXT_PUBLIC_DEFAULT_LANGUAGE`.
+10. **TD-40:** Cookie value not `decodeURIComponent`-ed (harmless today, defensive fix).
+11. **TD-40:** RTL list duplicated as base codes instead of reusing shared constant.
+12. **TD-40:** Placeholder translation quality for 21 non-EN/FR locales.
+13. **TD-10:** No `/admin` index page (bare `/admin` → 404).
+14. **TD-10:** Stale path references in historical plan docs (immutable records).
+15. **TD-43:** No test asserts description text renders.
+16. **TD-43:** 21 locales hold English placeholder descriptions.
+17. **TD-43:** `<Select>` lacks `aria-describedby` linking to description text.
 
 ---
 
