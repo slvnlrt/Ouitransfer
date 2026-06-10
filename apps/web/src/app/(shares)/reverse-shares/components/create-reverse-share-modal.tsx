@@ -28,7 +28,7 @@ import { PasswordSection } from "./create-reverse-share/password-section";
 import { type CreateReverseShareFormData, DEFAULT_FORM_VALUES } from "./create-reverse-share/types";
 
 const DIALOG_CONFIG = {
-  maxWidth: "sm:max-w-[500px] md:max-w-[650px]",
+  maxWidth: "sm:max-w-lg",
   maxHeight: "max-h-[85vh]",
   contentMaxHeight: "max-h-[calc(85vh-140px)]",
 } as const;

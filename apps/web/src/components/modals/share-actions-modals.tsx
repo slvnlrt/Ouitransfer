@@ -306,7 +306,7 @@ export function ShareActionsModals({
   return (
     <>
       <Dialog open={!!shareToDelete} onOpenChange={() => onCloseDelete()}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{t("shareActions.deleteTitle")}</DialogTitle>
             <DialogDescription>{t("shareActions.deleteConfirmation")}</DialogDescription>
@@ -323,7 +323,7 @@ export function ShareActionsModals({
       </Dialog>
 
       <Dialog open={!!shareToEdit} onOpenChange={() => onCloseEdit()}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{t("shareActions.editTitle")}</DialogTitle>
           </DialogHeader>
@@ -432,7 +432,7 @@ export function ShareActionsModals({
       </Dialog>
 
       <Dialog open={!!shareToManageFiles} onOpenChange={handleManageFilesClose}>
-        <DialogContent className="max-w-2xl max-h-[80vh] w-full">
+        <DialogContent className="sm:max-w-3xl max-h-[80vh] w-full">
           <DialogHeader>
             <DialogTitle>{t("shareActions.manageFilesTitle")}</DialogTitle>
             <DialogDescription>{t("shareActions.manageFilesDescription")}</DialogDescription>
@@ -521,7 +521,7 @@ export function ShareActionsModals({
       </Dialog>
 
       <Dialog open={!!shareToManageRecipients} onOpenChange={() => onCloseManageRecipients()}>
-        <DialogContent className="sm:max-w-[500px] md:max-w-[650px] max-h-[85vh] overflow-hidden">
+        <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-hidden">
           <DialogHeader className="space-y-3">
             <DialogTitle className="text-xl font-semibold">
               {t("shareActions.manageRecipientsTitle")}

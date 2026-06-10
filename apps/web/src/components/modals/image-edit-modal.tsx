@@ -183,7 +183,7 @@ export function ImageEditModal({ isOpen, onClose, onSave, imageFile }: ImageEdit
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-2xl h-fit overflow-hidden flex flex-col">
+      <DialogContent className="sm:max-w-3xl h-fit overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>{t("imageEdit.title")}</DialogTitle>
         </DialogHeader>

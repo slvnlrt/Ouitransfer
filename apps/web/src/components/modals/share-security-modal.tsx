@@ -117,7 +117,7 @@ export function ShareSecurityModal({
 
   return (
     <Dialog open={!!shareId} onOpenChange={() => onClose()}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{t("shareSecurity.title")}</DialogTitle>
           <DialogDescription>{t("shareSecurity.subtitle")}</DialogDescription>

@@ -93,7 +93,7 @@ export function IdentificationForm({
       onOpenChange={() => {}}
       modal
     >
-      <DialogContent>
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader className="flex flex-col gap-1">
           <DialogTitle>{t("share.identification.title")}</DialogTitle>
           <div className="flex items-center gap-2 text-muted-foreground text-sm">

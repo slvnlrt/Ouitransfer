@@ -161,7 +161,7 @@ export function MoveItemsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[80vh] w-full">
+      <DialogContent className="sm:max-w-3xl max-h-[80vh] w-full">
         <DialogHeader>
           <DialogTitle>{title || t("moveItems.title", { count: itemCount })}</DialogTitle>
           <DialogDescription>

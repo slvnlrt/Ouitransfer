@@ -237,7 +237,7 @@ export function UploadFileModal({
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent
-          className="sm:max-w-2xl max-h-[80vh] overflow-hidden flex flex-col"
+          className="sm:max-w-3xl max-h-[80vh] overflow-hidden flex flex-col"
           onPointerDownOutside={(e) => e.preventDefault()}
           onEscapeKeyDown={(e) => e.preventDefault()}
         >

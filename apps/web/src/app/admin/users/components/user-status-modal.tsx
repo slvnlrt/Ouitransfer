@@ -17,7 +17,7 @@ export function UserStatusModal({ isOpen, onClose, user, onConfirm }: UserStatus
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader className="flex flex-col gap-1">
           <DialogTitle className="flex items-center gap-2 font-semibold">
             <User className="size-6 me-1" />

@@ -36,7 +36,7 @@ export function DeleteReverseShareModal({
 
   return (
     <Dialog open={!!reverseShare} onOpenChange={() => !isDeleting && onClose()}>
-      <DialogContent className="sm:max-w-[450px]">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">

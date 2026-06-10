@@ -38,7 +38,7 @@ export function LdapSyncDetailModal({ log, isOpen, onClose }: LdapSyncDetailModa
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="sm:max-w-3xl">
         {log && (
           <>
             <DialogHeader>

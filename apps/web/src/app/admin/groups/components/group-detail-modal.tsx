@@ -69,7 +69,7 @@ export function GroupDetailModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="[--dialog-max-w:52rem]">
+      <DialogContent className="sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 mb-2">
             <Layers className="size-6 me-1" />

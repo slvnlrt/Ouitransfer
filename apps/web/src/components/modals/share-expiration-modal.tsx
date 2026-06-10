@@ -126,7 +126,7 @@ export function ShareExpirationModal({
 
   return (
     <Dialog open={!!shareId} onOpenChange={() => onClose()}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{t("shareExpiration.title")}</DialogTitle>
           <DialogDescription>{t("shareExpiration.subtitle")}</DialogDescription>

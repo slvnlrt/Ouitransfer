@@ -16,7 +16,7 @@ export function GroupDeleteModal({ isOpen, onClose, group, onConfirm }: GroupDel
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader className="flex flex-col gap-1">
           <DialogTitle className="flex items-center gap-2 font-semibold">
             <Trash2 className="size-6 me-1" />
