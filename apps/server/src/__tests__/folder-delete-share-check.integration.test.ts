@@ -154,7 +154,10 @@ describe("DELETE /folders/:id — share-check feature (B-24)", () => {
     const token = signTestToken(userId);
     const { csrfToken, csrfCookie } = await getCsrf();
 
-    const url = options.force ? `/folders/${folderId}?force=true` : `/folders/${folderId}`;
+    let url = `/folders/${folderId}`;
+    if (options.force !== undefined) {
+      url += `?force=${options.force}`;
+    }
 
     return app.inject({
       method: "DELETE",
@@ -220,6 +223,24 @@ describe("DELETE /folders/:id — share-check feature (B-24)", () => {
     const body = res.json();
     expect(body.message).toBe("Folder deleted successfully.");
     expect(prisma.folder.delete).toHaveBeenCalledWith({ where: { id: "folder-1" } });
+  });
+
+  // ── Test 3b: Folder belongs to share + force=false → 409 ────────────────────
+  it("returns 409 when folder belongs to a share and force=false is passed explicitly", async () => {
+    const { prisma } = await import("../shared/prisma.js");
+
+    vi.mocked(prisma.folder.findUnique).mockResolvedValue(makeFolder() as never);
+    vi.mocked(prisma.share.findMany)
+      .mockResolvedValueOnce([{ id: "share-1" }] as never)
+      .mockResolvedValueOnce([] as never);
+
+    const res = await deleteFolderRequest("folder-1", OWNER_ID, { force: false });
+
+    expect(res.statusCode).toBe(409);
+    const body = res.json();
+    expect(body.error).toBe("FOLDER_IN_SHARES");
+    expect(body.shareCount).toBe(1);
+    expect(prisma.folder.delete).not.toHaveBeenCalled();
   });
 
   // ── Test 4: Different user's folder → 403 ───────────────────────────────────

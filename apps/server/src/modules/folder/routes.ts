@@ -1,7 +1,7 @@
 import type { FastifyPluginAsyncZod } from "@fastify/type-provider-zod";
 import { z } from "zod";
-
 import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
+import { booleanQueryParam } from "../../shared/boolean-query-param.js";
 import { prisma } from "../../shared/prisma.js";
 import {
   ForbiddenError,
@@ -606,7 +606,7 @@ export const folderRoutes: FastifyPluginAsyncZod = async (app) => {
         id: z.string().min(1, "The folder id is required").describe("The folder ID"),
       }),
       querystring: z.object({
-        force: z.coerce.boolean().optional().default(false),
+        force: booleanQueryParam,
       }),
       response: {
         200: z.object({

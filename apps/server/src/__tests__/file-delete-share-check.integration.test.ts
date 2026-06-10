@@ -151,7 +151,10 @@ describe("DELETE /files/:id — share-check feature (B-21)", () => {
     const token = signTestToken(userId);
     const { csrfToken, csrfCookie } = await getCsrf();
 
-    const url = options.force ? `/files/${fileId}?force=true` : `/files/${fileId}`;
+    let url = `/files/${fileId}`;
+    if (options.force !== undefined) {
+      url += `?force=${options.force}`;
+    }
 
     return app.inject({
       method: "DELETE",
@@ -211,6 +214,23 @@ describe("DELETE /files/:id — share-check feature (B-21)", () => {
     const body = res.json();
     expect(body.message).toBe("File deleted successfully.");
     expect(prisma.file.delete).toHaveBeenCalledWith({ where: { id: "file-1" } });
+  });
+
+  // ── Test 3b: File belongs to share + force=false → 409 ─────────────────────
+  it("returns 409 when file belongs to a share and force=false is passed explicitly", async () => {
+    const { prisma } = await import("../shared/prisma.js");
+
+    vi.mocked(prisma.file.findUnique).mockResolvedValue(
+      makeFile({ shares: [{ id: "share-1" }] }) as never,
+    );
+
+    const res = await deleteFile("file-1", OWNER_ID, { force: false });
+
+    expect(res.statusCode).toBe(409);
+    const body = res.json();
+    expect(body.error).toBe("FILE_IN_SHARES");
+    expect(body.shareCount).toBe(1);
+    expect(prisma.file.delete).not.toHaveBeenCalled();
   });
 
   // ── Test 4: Different user's file → 403 ──────────────────────────────────────

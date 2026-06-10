@@ -8,6 +8,7 @@ import { z } from "zod";
 import { env } from "../../env.js";
 import type { Prisma } from "../../generated/prisma/client.js";
 import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
+import { booleanQueryParam } from "../../shared/boolean-query-param.js";
 import { prisma } from "../../shared/prisma.js";
 import {
   AppError,
@@ -940,7 +941,7 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         id: z.string().min(1, "The file id is required").describe("The file ID"),
       }),
       querystring: z.object({
-        force: z.coerce.boolean().optional().default(false),
+        force: booleanQueryParam,
       }),
       response: {
         200: z.object({
