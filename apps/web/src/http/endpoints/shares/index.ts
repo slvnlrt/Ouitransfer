@@ -137,7 +137,7 @@ export const updateSharePassword = (
   updateSharePasswordBody: UpdateSharePasswordBody,
   options?: AxiosRequestConfig,
 ): Promise<UpdateSharePasswordResult> => {
-  return apiInstance.put(`/api/shares/${shareId}/password`, updateSharePasswordBody, options);
+  return apiInstance.patch(`/api/shares/${shareId}/password`, updateSharePasswordBody, options);
 };
 
 /**

@@ -9,7 +9,23 @@
 
 ## Open
 
-_None._
+### B-28: Share password update returns 404 — PATCH/PUT method mismatch
+
+- **Severity**: High (feature broken in production)
+- **Files**: `apps/web/src/http/endpoints/shares/index.ts:140`
+- **Description**: The frontend calls `PUT /api/shares/:id/password` but the server route declares `PATCH /shares/:shareId/password`. Fastify treats unknown method+URL combinations as 404. The reverse-share equivalent is consistent (`PUT` on both sides) — only shares is affected.
+- **Fix**: Changed `apiInstance.put(...)` → `apiInstance.patch(...)` in `shares/index.ts`.
+- **Status**: Fixed (2026-06-10)
+
+### B-29 (gap): Authenticated Ouitransfer users not identified in share activity log
+
+- **Severity**: Low — UX/tracking gap, no security impact
+- **Description**: When a user is logged into Ouitransfer and accesses a share via `GET /shares/:shareId`, two things happen:
+  1. If they are the **owner**, they bypass the password check entirely (intentional — owners manage their own shares). But no `ShareVisit` is created for them, so they don't appear in the share's activity log at all.
+  2. If they are a **non-owner authenticated user**, they still need to enter the password (correct), but after access their identity is not linked to the visit — they show as "anonymous" in the activity log even though their `userId` is known from the JWT.
+- **Root cause**: `getShare` returns early for owners before visit tracking runs. For non-owners, the visit tracking uses `ShareVisit.identificationSource` which only supports `"token" | "self_declared" | null` — there is no `"authenticated_user"` source, and `userId` is not stored on `ShareVisit`.
+- **Fix**: Would require storing the `userId` on `ShareVisit` and surfacing it in the activity UI. Non-trivial schema change. Deferred.
+- **Status**: Open — tracked for a future session
 
 ## Resolved (recent)
 
