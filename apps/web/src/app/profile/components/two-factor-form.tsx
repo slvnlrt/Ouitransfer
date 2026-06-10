@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -93,6 +93,21 @@ export function TwoFactorForm() {
   } = useTrustedDevices();
 
   const [showPassword, setShowPassword] = useState(false);
+
+  // Clear verification code when the setup modal is closed
+  useEffect(() => {
+    if (!isSetupModalOpen) {
+      setVerificationCode("");
+    }
+  }, [isSetupModalOpen, setVerificationCode]);
+
+  // Clear disable-modal inputs when the disable modal is closed
+  useEffect(() => {
+    if (!isDisableModalOpen) {
+      setDisablePassword("");
+      setDisableTotpCode("");
+    }
+  }, [isDisableModalOpen, setDisablePassword, setDisableTotpCode]);
 
   const getDeviceIcon = (userAgent: string) => {
     if (!userAgent) return MonitorSmartphone;
