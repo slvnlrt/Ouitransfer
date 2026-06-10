@@ -1,5 +1,56 @@
 # TODO — À vérifier en priorité
 
+---
+
+## Parcours de création de partage — incohérences UX majeures
+
+### Contexte général
+Il existe plusieurs points d'entrée pour créer un partage, et le comportement / les options disponibles **diffèrent selon le chemin emprunté**. L'objectif est d'aligner tous les parcours pour que l'utilisateur ait toujours la même expérience, les mêmes options, et le même comportement — quel que soit le point d'entrée.
+
+---
+
+### Parcours 1 : via Fichier > Actions > Partager
+
+**Ce qui est bien :**
+- Section dépliable Confidentialité & Notifications présente et complète
+
+**Problèmes identifiés :**
+1. **Labels incomplets** : Les dropdowns "Exiger le nom du visiteur" et "Exiger l'email du visiteur" n'ont pas de texte explicatif à droite (contrairement à la même section dans d'autres modales). Ajouter une courte description à droite de chaque dropdown pour expliquer l'impact du choix.
+2. **Modale trop étroite** : Cette modale est plus étroite que les autres modales de création/détails. À aligner avec `sm:max-w-3xl` (standard actuel post-redesign).
+3. **Bug de flux "Créer un partage" → modal lien** :
+   - Le bouton "Créer un partage" **crée immédiatement le partage** en base.
+   - Ensuite, la modale de création du lien de partage s'ouvre, avec seulement les boutons "Créer" et "Retour".
+   - **Il manque le bouton "Plus tard"** (présent dans les autres versions de cette modale).
+   - Si l'utilisateur clique "Retour", il revient à la modale précédente — **mais le partage a déjà été créé**. L'état est incohérent : un partage existe sans lien.
+   - **Options possibles** : (a) ajouter "Plus tard" pour fermer proprement, (b) ne créer le partage qu'au moment de la confirmation finale, (c) supprimer le partage si l'utilisateur abandonne via "Retour".
+
+---
+
+### Parcours 2 : via le bouton "Créer un partage" (bouton principal)
+
+**Problèmes identifiés :**
+1. **Options manquantes** : Pas de section Confidentialité / Mot de passe disponible dans cette modale, alors qu'elle est présente dans le parcours 1.
+2. **Structure en onglets** : La modale a deux onglets ("Détails du partage", "Sélectionner les fichiers") mais **pas d'onglet "Créer le lien de partage"** — cette étape arrive dans une nouvelle modale séparée après la création.
+3. **Flux en deux étapes distinctes** vs une seule modale multi-onglets dans d'autres parcours.
+
+---
+
+### Recommandation d'architecture UX
+
+Refactoriser pour avoir des **composants modaux atomiques et réutilisables** :
+- Un seul composant `ShareCreationModal` (ou workflow unifié) appelé depuis tous les points d'entrée
+- Toutes les options disponibles partout (confidentialité, mot de passe, notifications, destinataires)
+- Un seul flux de création : remplir les détails → sélectionner les fichiers → créer le lien (ou "plus tard") — en une modale multi-étapes ou multi-onglets
+- Le partage ne doit être créé en base **qu'au moment de la confirmation finale** (pas avant)
+
+**Fichiers à auditer en priorité :**
+- `apps/web/src/components/modals/create-share-modal.tsx` — modal "Créer un partage" principal
+- `apps/web/src/components/modals/share-item-modal.tsx` (ou équivalent) — modal via Fichier > Partager
+- `apps/web/src/components/modals/generate-share-link-modal.tsx` — modal création du lien
+- `apps/web/src/components/modals/share-actions-modals.tsx` — autres modales de partage
+
+---
+
 ## CORS / Variables d'environnement en déploiement pré-prod
 
 ### Symptôme observé
