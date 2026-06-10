@@ -29,11 +29,11 @@ but must be addressed. Each item includes context and the fix needed.
 6. Used `isNotificationKey()` in `email/service.ts` (1 site)
 7. Removed redundant body/query casts in `notification/routes.ts` (Zod type provider already types them)
 
-**Remaining items (deferred, documented):**
-- `share.deactivationReason as DeactivationReason` — needs Prisma enum migration (separate TD)
-- `email/catalog.ts` `payloadSchema: z.ZodType` erases generic type → cascade of 3 casts in email service — structural refactor needed
-- `error-handler.ts:172` double-escape `as unknown as` — coupled to FTPZ type boundary
-- `s3-storage.provider.ts:190` `response.Body as NodeJS.ReadableStream` — AWS SDK streaming type gap
+**Remaining items — ALL RESOLVED (2026-06-10 afternoon):**
+- ~~`share.deactivationReason as DeactivationReason`~~ — Done: Prisma enum migration + cast removed
+- ~~`email/catalog.ts` `payloadSchema: z.ZodType` erases generic type~~ — Done: `defineNotification<T>()` builder + `NotificationTypeConfig<T>` generic
+- ~~`error-handler.ts:172` double-escape `as unknown as`~~ — Done: imported `ZodFastifySchemaValidationError` from FTPZ
+- ~~`s3-storage.provider.ts:190` `response.Body as NodeJS.ReadableStream`~~ — Done: `Readable.from()` + `AsyncIterable<Uint8Array>`
 
 **Found during:** 5.3 LDAP post-fix review remediation
 **Severity:** Low-Medium — architectural hygiene, no runtime bugs
@@ -189,7 +189,11 @@ d'un coup d'œil si le SMTP est configuré/fonctionnel et combien de messages so
 
 ---
 
-## TD-36 — Strings non traduites dans 21 locales (scope élargi)
+## TD-36 — Strings non traduites dans 21 locales (scope élargi) ✅ DONE
+
+**Resolved:** 2026-06-10
+
+**Changes:** Translated all 196 untranslated keys across 21 locales (3 batches: EU, MENA/EE, Asia/RU). Plus 18 notification description keys (TD-43 overlap). Total: ~4500 translations. Also migrated 25 `z.string().email()/url()` → `z.email()/z.url()` (Zod v4 modernization).
 
 **Context:** Audit de mai 2026 (TD-25A). Anciennement TD-16 (4 clés settings) et TD-21
 (35 clés quickShare), désormais consolidés ici. L'audit complet révèle que le problème est plus

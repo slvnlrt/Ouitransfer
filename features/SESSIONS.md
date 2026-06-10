@@ -1,5 +1,16 @@
 # Session Log
 
+## 2026-06-10 (afternoon — fix ALL review findings + deferred items + TD-36 translations)
+
+- **Scope:** Fixed all 17 review findings (3 Important + 14 Minor) from 3 review files, all 9 deferred items from `TODO-DEFERRED-FIXES.md`, and completed TD-36 (translations for 21 locales).
+- **Phase 1 (Important):** Fixed `z.coerce.boolean()` destructive bypass on `?force` param with `booleanQueryParam` helper + integration tests; fixed hydration mismatch in `global-error.tsx` (useMemo → useState+useEffect).
+- **Phase 2 (Minor):** Config-validation coerce alignment, NEXT_PUBLIC_DEFAULT_LANGUAGE fallback, decodeURIComponent on cookie, RTL_BASE_LANGUAGES export, /admin index redirect, notification description test, aria-describedby on Select. All review checkboxes checked off.
+- **Phase 3 (Type-safety):** Fixed error-handler double-escape (ZodFastifySchemaValidationError), S3 stream type (Readable.from), email catalog generic erasure (defineNotification builder), Prisma deactivationReason enum migration.
+- **Phase 4 (Zod v4):** Migrated 25 z.string().email()/url() → z.email()/z.url(). Cancelled .describe()→.meta() (not deprecated, zero benefit).
+- **Phase 5 (TD-36):** Translated 196 untranslated keys × 21 locales in 3 batches (EU, MENA/EE, Asia/RU) = ~4500 translations. Plus 18 notification description keys × 21 locales (TD-43 overlap). Global error boundary translations reviewed (adequate).
+- **Verification:** Type-check clean, 1601 server tests + 334 web tests pass.
+- **Docs:** `TODO-DEFERRED-FIXES.md` marked all resolved, `TECHNICAL-DEBT.md` updated (TD-5 remaining items resolved, TD-36 done).
+
 ## 2026-06-10 (morning — code reviews, TODO updates)
 
 - Launched 3 sequential code reviews for all overnight work (violating workflow to skip reviews was caught by user)
