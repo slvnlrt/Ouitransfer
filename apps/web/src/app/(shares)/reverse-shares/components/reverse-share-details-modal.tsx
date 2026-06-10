@@ -159,7 +159,7 @@ export function ReverseShareDetailsModal({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{t("reverseShares.modals.details.title")}</DialogTitle>
             <DialogDescription>{t("reverseShares.modals.details.description")}</DialogDescription>
