@@ -157,7 +157,7 @@ export function EditPasswordModal({
               )}
             />
 
-            {/* Campos de Senha */}
+            {/* Password fields */}
             {hasPassword && (
               <div className="space-y-4">
                 <FormField

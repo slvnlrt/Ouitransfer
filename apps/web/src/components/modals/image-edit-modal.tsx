@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Crop as CropIcon, RotateCw, X, ZoomIn, ZoomOut } from "lucide-react";
+import { Check, Crop as CropIcon, RotateCw, ZoomIn, ZoomOut } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { type Crop, centerCrop, makeAspectCrop, type PixelCrop } from "react-image-crop";
@@ -284,7 +284,6 @@ export function ImageEditModal({ isOpen, onClose, onSave, imageFile }: ImageEdit
 
         <DialogFooter className="flex gap-2">
           <Button variant="outline" onClick={handleClose} disabled={isLoading}>
-            <X className="h-4 w-4" />
             {t("common.cancel")}
           </Button>
           <Button onClick={handleSave} disabled={isLoading || !completedCrop}>

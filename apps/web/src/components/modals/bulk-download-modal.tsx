@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, X } from "lucide-react";
+import { Download } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -81,7 +81,6 @@ export function BulkDownloadModal({
 
         <DialogFooter className="flex gap-2">
           <Button variant="outline" onClick={handleClose}>
-            <X className="h-4 w-4" />
             {t("common.cancel")}
           </Button>
           <Button onClick={handleSubmit} disabled={!zipName.trim()}>

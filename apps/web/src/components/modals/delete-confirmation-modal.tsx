@@ -1,6 +1,6 @@
 "use client";
 
-import { Folder, Trash2, X } from "lucide-react";
+import { Folder, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -104,7 +104,6 @@ export function DeleteConfirmationModal({
 
         <DialogFooter className="flex gap-2">
           <Button variant="outline" onClick={onClose}>
-            <X className="h-4 w-4" />
             {t("common.cancel")}
           </Button>
           <Button variant="destructive" onClick={handleConfirm}>
