@@ -511,9 +511,7 @@ export function ShareActionsModals({
             </Button>
             <Button
               onClick={handleManageFilesSave}
-              disabled={
-                isManageFilesLoading || isManageFilesSaving || manageFilesSelectedItems.length === 0
-              }
+              disabled={isManageFilesLoading || isManageFilesSaving}
             >
               {isManageFilesSaving ? t("common.saving") : t("common.save")}
             </Button>
