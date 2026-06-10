@@ -9,6 +9,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -114,11 +115,11 @@ export function GenerateInviteLinkModal({ isOpen, onClose }: GenerateInviteLinkM
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2">
+              <DialogFooter>
                 <Button variant="outline" onClick={handleClose}>
                   {t("users.invite.close")}
                 </Button>
-              </div>
+              </DialogFooter>
             </div>
           )}
         </div>
