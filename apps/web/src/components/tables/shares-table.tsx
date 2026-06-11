@@ -85,7 +85,7 @@ export function SharesTable({
   // merged files/recipients cell)
   const [hoveredAction, setHoveredAction] = useState<{
     shareId: string;
-    field: "security" | "expiration" | "files";
+    field: "expiration" | "files";
   } | null>(null);
 
   const [selectedShares, setSelectedShares] = useState<Set<string>>(new Set());
@@ -191,8 +191,6 @@ export function SharesTable({
               const isEditingDescription = editing.isEditing(share.id, "description");
               const isHoveringName = editing.isHovering(share.id, "name");
               const isHoveringDescription = editing.isHovering(share.id, "description");
-              const isHoveringSecurity =
-                hoveredAction?.shareId === share.id && hoveredAction?.field === "security";
               const isHoveringExpiration =
                 hoveredAction?.shareId === share.id && hoveredAction?.field === "expiration";
               // Files and recipients share one merged cell; hovering anywhere in it
@@ -410,32 +408,19 @@ export function SharesTable({
                   </TableCell>
                   <TableCell className="h-12 px-4">
                     <div className="flex flex-wrap items-center gap-1">
-                      <ShareStatusBadge share={share} lifecycle={lifecycle} />
-                      <ShareNoLinkBadge share={share} />
+                      <ShareStatusBadge
+                        share={share}
+                        lifecycle={lifecycle}
+                        onPause={onPauseShare}
+                        onResume={onResumeShare}
+                        onRenew={onRenewShare}
+                      />
+                      <ShareNoLinkBadge share={share} onGenerateLink={onGenerateLink} />
                     </div>
                   </TableCell>
-                  <TableCell
-                    className="h-12 px-4"
-                    onMouseEnter={() => setHoveredAction({ shareId: share.id, field: "security" })}
-                    onMouseLeave={() => setHoveredAction(null)}
-                  >
+                  <TableCell className="h-12 px-4">
                     <div className="flex items-center gap-1 min-w-0">
-                      <ShareSecurityBadge share={share} />
-                      <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
-                        {isHoveringSecurity && onUpdateSecurity && (
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-6 w-6 text-muted-foreground hover:text-foreground hidden sm:block"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onUpdateSecurity(share);
-                            }}
-                          >
-                            <Pencil className="h-3 w-3" />
-                          </Button>
-                        )}
-                      </div>
+                      <ShareSecurityBadge share={share} onEditSecurity={onUpdateSecurity} />
                     </div>
                   </TableCell>
                   <TableCell
@@ -572,9 +557,15 @@ export function SharesTable({
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <ShareStatusBadge share={share} lifecycle={lifecycle} />
-                <ShareNoLinkBadge share={share} />
-                <ShareSecurityBadge share={share} />
+                <ShareStatusBadge
+                  share={share}
+                  lifecycle={lifecycle}
+                  onPause={onPauseShare}
+                  onResume={onResumeShare}
+                  onRenew={onRenewShare}
+                />
+                <ShareNoLinkBadge share={share} onGenerateLink={onGenerateLink} />
+                <ShareSecurityBadge share={share} onEditSecurity={onUpdateSecurity} />
               </div>
 
               <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
