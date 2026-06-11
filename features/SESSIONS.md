@@ -1,5 +1,35 @@
 # Session Log
 
+## 2026-06-11 (cross-modal consistency audit — i18n, correctness, design)
+
+- **Scope:** Full audit of all modals in `apps/web/src/components/modals/` (not just those modified in the previous session) for i18n gaps, correctness issues, and visual inconsistencies. All findings fixed across 8 commits.
+- **i18n fixes (commit 5ead68a):**
+  - `delete-reverse-share-modal.tsx` — hardcoded `"Link: /r/…"` string → `t("reverseShares.modals.delete.linkLabel", {alias})`.
+  - `qr-code-modal.tsx`, `generate-share-link-modal.tsx` — removed leftover `defaultValue` fallbacks (keys already existed in all locales).
+  - `share-details-modal.tsx` — hardcoded `"Share"` title fallback → `t("shareDetails.untitled")`.
+  - `image-edit-modal.tsx` — hardcoded `alt="Crop me"` → `t("imageEdit.cropAlt")`.
+  - `two-factor-form.tsx` — hardcoded `alt="2FA QR Code"` and `placeholder="000 000"` → translated keys.
+  - `ldap-sync-detail-modal.tsx` — raw `log.status` / `detail.type` enum values displayed directly → translated via `t("ldap.sync.statusLabel.*")` / `t("ldap.syncDetail.detailType.*")`.
+  - `move-items-modal.tsx` — inline `` `${t("common.move")}...` `` → `t("common.moving")`.
+  - All new keys added to all 23 locale files.
+- **Correctness fixes (commits cc71af1, 06de4c3, d1b2ae1, fix(web): use Loader):**
+  - `create-reverse-share-modal.tsx`, `edit-password-modal.tsx`, `generate-alias-modal.tsx`, `delete-reverse-share-modal.tsx`, `auth-provider-delete-modal.tsx` — spinner `⠋` character / animated Trash2 icon → proper `<Loader size="sm" />` component.
+  - `generate-alias-modal.tsx` — empty `catch {}` block → `toast.error` + `logger.error` on alias-creation failure.
+  - `file-actions-modals.tsx`, `folder-actions-modals.tsx` — `document.querySelector('[placeholder=…]')` anti-pattern → controlled `useState` + `useEffect` reset; hardcoded `.substring(0,50)+"..."` → `truncateFileName(..., 50)`.
+  - `two-factor-form.tsx` — added `useEffect` to clear verification code / disable fields when the 2FA modal closes (stale state across opens).
+  - `user-status-modal.tsx` — `DialogTitle` imported from `@radix-ui/react-dialog` (bypassing shadcn) → `@/components/ui/dialog`.
+  - `share-actions-modals.tsx` — replaced raw `fetch("/api/files?recursive=true")` with typed `listFiles({ recursive: true })` endpoint call.
+- **Design standardization (commits 0269dcd, cfbd947):**
+  - 21 files: modal widths normalized to three-tier scale (`sm:max-w-md` confirm/simple, `sm:max-w-lg` standard form, `sm:max-w-3xl` content-heavy). Largest change: several modals that had no `max-w` at all now get `sm:max-w-lg`.
+  - 16 files: every `DialogTitle` gets a contextually appropriate lucide-react icon for visual identity and scanning.
+- **Cosmetic (commits 90c47d9, de624ff):**
+  - Removed `<X>` icon from Cancel buttons across 3 modals (semantic mismatch — X ≠ cancel).
+  - Translated leftover Spanish comment `{/* Campos de Senha */}` → English.
+  - `generate-invite-link-modal.tsx` — raw `<div className="flex justify-end gap-2">` footer → `<DialogFooter>` for consistency with all other modals.
+- **RTL fix (commit cf128f8):** physical `ml-1` → logical `ms-1` in `identification-form.tsx` (×4) and `group-detail-modal.tsx`.
+- **Verification:** web type-check clean, biome clean, 339 web tests pass.
+- **Still open in `TODO.md`:** CORS/env pre-prod (B-30), recipients not editable in share-details modal.
+
 ## 2026-06-10 (evening — share-creation UX unification + share UX fixes)
 
 - **Scope:** Resolved the "share creation UX" section of `TODO.md` (divergent entry points) plus two user-raised UX issues.
