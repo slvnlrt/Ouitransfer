@@ -122,3 +122,68 @@ describe("API docs registration (docsEnabled)", () => {
     }
   });
 });
+
+// ── CORS rejection (B-30) ───────────────────────────────────────────────────
+
+describe("CORS origin rejection", () => {
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  async function buildCorsApp(corsOrigins: string): Promise<FastifyInstance> {
+    vi.stubEnv("JWT_SECRET", "a".repeat(32));
+    vi.stubEnv("CSRF_SECRET", "b".repeat(32));
+    vi.stubEnv("COOKIE_SECRET", "c".repeat(32));
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("CORS_ORIGINS", corsOrigins);
+
+    const { buildApp } = await import("../app.js");
+    const app: FastifyInstance = await buildApp();
+    await app.ready();
+    return app;
+  }
+
+  it("rejects a disallowed Origin with 403 (not 500)", { timeout: 15_000 }, async () => {
+    const app = await buildCorsApp("https://allowed.example.com");
+    try {
+      // Preflight from a disallowed origin: handled entirely by @fastify/cors,
+      // never reaches a route handler. The ForbiddenError maps to 403.
+      const res = await app.inject({
+        method: "OPTIONS",
+        url: "/auth/login",
+        headers: {
+          origin: "https://evil.example.com",
+          "access-control-request-method": "POST",
+        },
+      });
+      expect(res.statusCode).toBe(403);
+      expect(res.json().code).toBe("FORBIDDEN");
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("allows a listed Origin from a comma-separated CORS_ORIGINS list", {
+    timeout: 15_000,
+  }, async () => {
+    const app = await buildCorsApp("https://ext.example.com,https://int.example.lan");
+    try {
+      const res = await app.inject({
+        method: "OPTIONS",
+        url: "/auth/login",
+        headers: {
+          origin: "https://int.example.lan",
+          "access-control-request-method": "POST",
+        },
+      });
+      expect(res.statusCode).not.toBe(403);
+      expect(res.headers["access-control-allow-origin"]).toBe("https://int.example.lan");
+    } finally {
+      await app.close();
+    }
+  });
+});
