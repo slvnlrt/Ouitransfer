@@ -14,6 +14,7 @@ import { Loader } from "@/components/ui/loader";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { useQrDownload } from "@/hooks/use-qr-download";
 import { createShare, createShareAlias, listFiles, listFolders } from "@/http/endpoints";
@@ -317,7 +318,7 @@ export function ShareCreationModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-3xl max-h-[90vh] w-full flex flex-col">
+      <DialogContent className="sm:max-w-3xl w-full">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {generatedLink ? <LinkIcon className="h-5 w-5" /> : <Share className="h-5 w-5" />}
@@ -325,12 +326,16 @@ export function ShareCreationModal({
           </DialogTitle>
         </DialogHeader>
 
+        {/* Fixed height keeps the dialog from "jumping" between steps; the active
+            step scrolls internally with a reserved gutter so toggling the
+            scrollbar (e.g. on button hover, or when expanding a menu) never
+            shifts the layout. */}
         <Tabs
           value={step}
           onValueChange={(value) => setStep(value as Step)}
-          className="flex flex-col flex-1 min-h-0"
+          className="flex flex-col h-[min(72vh,34rem)]"
         >
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-3 shrink-0">
             <TabsTrigger value="details" disabled={committed}>
               {t("createShare.tabs.shareDetails")}
             </TabsTrigger>
@@ -348,7 +353,10 @@ export function ShareCreationModal({
           </TabsList>
 
           {/* Step 1 — details & options */}
-          <TabsContent value="details" className="space-y-4 mt-4 overflow-auto">
+          <TabsContent
+            value="details"
+            className="flex-1 min-h-0 space-y-4 mt-4 overflow-y-auto [scrollbar-gutter:stable] pe-1"
+          >
             <div className="space-y-2">
               <Label htmlFor="share-name">{t("createShare.nameLabel")} *</Label>
               <Input
@@ -452,7 +460,7 @@ export function ShareCreationModal({
           </TabsContent>
 
           {/* Step 2 — file selection (optional) */}
-          <TabsContent value="files" className="space-y-4 mt-4 flex flex-col flex-1 min-h-0">
+          <TabsContent value="files" className="flex-1 min-h-0 space-y-4 mt-4 flex flex-col">
             <div className="space-y-2">
               <Label htmlFor="file-search">{t("common.search")}</Label>
               <Input
@@ -504,7 +512,8 @@ export function ShareCreationModal({
                   onSelectionChange={setSelectedItems}
                   showFiles={true}
                   showFolders={true}
-                  maxHeight="400px"
+                  className="h-full"
+                  maxHeight="100%"
                   searchQuery={searchQuery}
                 />
               )}
@@ -519,7 +528,10 @@ export function ShareCreationModal({
           </TabsContent>
 
           {/* Step 3 — share link */}
-          <TabsContent value="link" className="space-y-4 mt-4 overflow-auto">
+          <TabsContent
+            value="link"
+            className="flex-1 min-h-0 space-y-4 mt-4 overflow-y-auto [scrollbar-gutter:stable] pe-1"
+          >
             {!generatedLink ? (
               <>
                 <p className="text-sm text-muted-foreground">
@@ -578,14 +590,14 @@ export function ShareCreationModal({
                 <p className="text-sm text-muted-foreground">{t("shareActions.linkReady")}</p>
                 <div className="flex gap-2">
                   <Input readOnly value={generatedLink} className="flex-1" />
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    onClick={handleCopyLink}
-                    title={t("shareActions.copyLink")}
-                  >
-                    <Copy className="h-4 w-4" />
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button size="icon" variant="outline" onClick={handleCopyLink}>
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{t("shareActions.copyLink")}</TooltipContent>
+                  </Tooltip>
                 </div>
 
                 <div className="flex justify-end gap-2 pt-2">

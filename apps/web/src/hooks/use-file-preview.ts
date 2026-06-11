@@ -31,6 +31,13 @@ interface UseFilePreviewProps {
   isOpen: boolean;
   isReverseShare?: boolean;
   sharePassword?: string;
+  /**
+   * Share id, set only from the public share viewer. Forwarded on the explicit
+   * download (not on the preview fetch) so the server records a per-share
+   * ShareVisit "download" event. Previewing a file is a view, not a download,
+   * so the preview fetch deliberately omits it.
+   */
+  shareId?: string;
 }
 
 export function useFilePreview({
@@ -38,6 +45,7 @@ export function useFilePreview({
   isOpen,
   isReverseShare = false,
   sharePassword,
+  shareId,
 }: UseFilePreviewProps) {
   const t = useTranslations();
   const [state, setState] = useState<FilePreviewState>({
@@ -262,7 +270,7 @@ export function useFilePreview({
         const options = sharePassword
           ? { headers: { "x-share-password": sharePassword } }
           : undefined;
-        url = await getCachedDownloadUrl(file.objectName, options);
+        url = await getCachedDownloadUrl(file.objectName, options, shareId);
       }
 
       const link = document.createElement("a");
@@ -280,7 +288,7 @@ export function useFilePreview({
       });
       toast.error(t("filePreview.downloadError"));
     }
-  }, [isReverseShare, file.id, file.objectName, file.name, sharePassword, t]);
+  }, [isReverseShare, file.id, file.objectName, file.name, sharePassword, shareId, t]);
 
   useEffect(() => {
     const fileKey = isReverseShare ? file.id : file.objectName;

@@ -226,9 +226,9 @@
     "fieldHidden": "Dold",
     "fieldOptional": "Valfritt",
     "fieldRequired": "Obligatoriskt",
-    "filesOptionalHint": "Att lägga till filer är valfritt — du kan skapa en tom delning nu och lägga till filer senare.",
+    "filesOptionalHint": "Att lägga till filer är valfritt, du kan skapa en tom delning nu och lägga till filer senare.",
     "nextGenerateLink": "Nästa: länk",
-    "linkStepDescription": "Skapa en anpassad länk så att andra kan komma åt den här delningen – eller hoppa över och lägg till en senare.",
+    "linkStepDescription": "Skapa en anpassad länk så att andra kan komma åt den här delningen, eller hoppa över och lägg till en senare.",
     "nameFieldRequiredHelp": "Anger om besökare ombeds ange sitt namn när de öppnar delningen.",
     "emailFieldRequiredHelp": "Anger om besökare ombeds ange sin e-postadress när de öppnar delningen."
   },
@@ -1061,7 +1061,7 @@
     "uploadedAt": "Uppladdat den {date}",
     "uploadApproximateHint": "Ungefärligt: avsändare kan skicka filer utan att ange e-post när det inte är obligatoriskt",
     "remindNonDownloaders": "Påminn ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {Inga väntande mottagare — alla har laddat ned} one {Påminn # mottagare som inte har laddat ned än} other {Påminn # mottagare som inte har laddat ned än}}",
+    "remindNonDownloadersHint": "{count, plural, =0 {Inga väntande mottagare, alla har laddat ned} one {Påminn # mottagare som inte har laddat ned än} other {Påminn # mottagare som inte har laddat ned än}}",
     "sendingReminders": "Skickar påminnelser...",
     "remindSuccess": "{count, plural, one {Påminnelse skickad till # mottagare} other {Påminnelser skickade till # mottagare}}",
     "remindNoneSent": "Inga påminnelser skickades",
@@ -1731,7 +1731,7 @@
       },
       "quotaSmartDeletionEnabled": {
         "title": "Smart radering av filer över kvot",
-        "description": "Avstängd som standard. När aktiverad raderas de äldsta osäkra filerna hos en användare som överskridit kvoten i säker ordning efter respitperioden: först icke-delade uppladdningar, sedan filer i delningar som varit inaktiva under perioden nedan. Filer i aktiva delningar raderas aldrig — om inget är säkert att ta bort blockeras nya uppladdningar istället."
+        "description": "Avstängd som standard. När aktiverad raderas de äldsta osäkra filerna hos en användare som överskridit kvoten i säker ordning efter respitperioden: först icke-delade uppladdningar, sedan filer i delningar som varit inaktiva under perioden nedan. Filer i aktiva delningar raderas aldrig, om inget är säkert att ta bort blockeras nya uppladdningar istället."
       },
       "quotaInactiveShareDays": {
         "title": "Tröskel för inaktiv delning (dagar)",
@@ -1783,7 +1783,7 @@
       },
       "autoCleanupEnabled": {
         "title": "Aktivera automatisk rensning",
-        "description": "Huvudbrytare för schemalagd rensning av utgångna delningslänkar, utgångna mottagningslänkfiler och föräldralösa filer. Avstängd som standard — inget raderas automatiskt förrän du aktiverar detta."
+        "description": "Huvudbrytare för schemalagd rensning av utgångna delningslänkar, utgångna mottagningslänkfiler och föräldralösa filer. Avstängd som standard, inget raderas automatiskt förrän du aktiverar detta."
       },
       "autoCleanupIntervalHours": {
         "title": "Rensningsintervall (timmar)",
@@ -1799,7 +1799,7 @@
       },
       "accountDeactivationCleanupEnabled": {
         "title": "Radera inaktiverade kontons filer",
-        "description": "När aktiverat raderas filer tillhörande ett inaktiverat konto permanent efter fördröjningen nedan. Avstängd som standard — inaktivering ensam raderar aldrig filer."
+        "description": "När aktiverat raderas filer tillhörande ett inaktiverat konto permanent efter fördröjningen nedan. Avstängd som standard, inaktivering ensam raderar aldrig filer."
       },
       "accountDeactivationCleanupDays": {
         "title": "Rensningsfördröjning efter inaktivering (dagar)",

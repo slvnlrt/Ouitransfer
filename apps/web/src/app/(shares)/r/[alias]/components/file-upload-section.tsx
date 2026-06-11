@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { type FileUploadState, useUppyUpload } from "@/hooks/use-uppy-upload";
 import {
   abortMultipartUploadByAlias,
@@ -334,15 +335,19 @@ export function FileUploadSection({
         )}
         {upload.status === "error" && (
           <div className="flex gap-1">
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => retryUpload(upload.id)}
-              disabled={isUploading}
-              title={t("reverseShares.upload.errors.retry")}
-            >
-              <Upload className="h-4 w-4" />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => retryUpload(upload.id)}
+                  disabled={isUploading}
+                >
+                  <Upload className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t("reverseShares.upload.errors.retry")}</TooltipContent>
+            </Tooltip>
             <Button
               size="sm"
               variant="ghost"

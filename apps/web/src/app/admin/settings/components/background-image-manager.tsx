@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   deleteBackgroundImage,
   listBackgroundImages,
@@ -225,45 +226,57 @@ export function BackgroundImageManager() {
                       autoFocus
                     />
                   ) : (
-                    <button
-                      type="button"
-                      onClick={() => startEditing(image)}
-                      className="flex items-center gap-1 text-xs text-muted-foreground truncate hover:text-foreground transition-colors bg-transparent border-0 p-0 cursor-pointer"
-                      title={t("backgroundImages.rename")}
-                    >
-                      <span className="truncate">
-                        {image.name ?? t("backgroundImages.untitled")}
-                      </span>
-                      <Pencil className="h-2.5 w-2.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          onClick={() => startEditing(image)}
+                          className="flex items-center gap-1 text-xs text-muted-foreground truncate hover:text-foreground transition-colors bg-transparent border-0 p-0 cursor-pointer"
+                        >
+                          <span className="truncate">
+                            {image.name ?? t("backgroundImages.untitled")}
+                          </span>
+                          <Pencil className="h-2.5 w-2.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>{t("backgroundImages.rename")}</TooltipContent>
+                    </Tooltip>
                   )}
 
                   {/* Action buttons: reorder + delete */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-0.5">
                       {images.length > 1 && index > 0 && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-5 w-5"
-                          onClick={() => handleMove(index, "up")}
-                          disabled={reorderMutation.isPending}
-                          title={t("backgroundImages.moveUp")}
-                        >
-                          <ChevronUp className="h-3 w-3" />
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-5 w-5"
+                              onClick={() => handleMove(index, "up")}
+                              disabled={reorderMutation.isPending}
+                            >
+                              <ChevronUp className="h-3 w-3" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>{t("backgroundImages.moveUp")}</TooltipContent>
+                        </Tooltip>
                       )}
                       {images.length > 1 && index < images.length - 1 && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-5 w-5"
-                          onClick={() => handleMove(index, "down")}
-                          disabled={reorderMutation.isPending}
-                          title={t("backgroundImages.moveDown")}
-                        >
-                          <ChevronDown className="h-3 w-3" />
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-5 w-5"
+                              onClick={() => handleMove(index, "down")}
+                              disabled={reorderMutation.isPending}
+                            >
+                              <ChevronDown className="h-3 w-3" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>{t("backgroundImages.moveDown")}</TooltipContent>
+                        </Tooltip>
                       )}
                     </div>
                     <Button

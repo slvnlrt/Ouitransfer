@@ -222,7 +222,7 @@
     "fieldHidden": "Verborgen",
     "fieldOptional": "Optioneel",
     "fieldRequired": "Verplicht",
-    "filesOptionalHint": "Het toevoegen van bestanden is optioneel — u kunt nu een lege deling aanmaken en later bestanden toevoegen.",
+    "filesOptionalHint": "Het toevoegen van bestanden is optioneel, u kunt nu een lege deling aanmaken en later bestanden toevoegen.",
     "nextGenerateLink": "Volgende: link",
     "linkStepDescription": "Genereer een aangepaste link zodat anderen toegang krijgen tot deze share, of sla dit over en voeg er later een toe.",
     "nameFieldRequiredHelp": "Bepaalt of bezoekers om hun naam wordt gevraagd bij het openen van de share.",
@@ -1057,7 +1057,7 @@
     "uploadedAt": "Geüpload op {date}",
     "uploadApproximateHint": "Schatting: uploaders kunnen bestanden indienen zonder een e-mailadres op te geven als dat niet vereist is",
     "remindNonDownloaders": "Herinneren ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {Geen ontvangers in behandeling — iedereen heeft gedownload} one {# ontvanger herinneren die nog niet heeft gedownload} other {# ontvangers herinneren die nog niet hebben gedownload}}",
+    "remindNonDownloadersHint": "{count, plural, =0 {Geen ontvangers in behandeling, iedereen heeft gedownload} one {# ontvanger herinneren die nog niet heeft gedownload} other {# ontvangers herinneren die nog niet hebben gedownload}}",
     "sendingReminders": "Herinneringen verzenden...",
     "remindSuccess": "{count, plural, one {Herinnering verzonden naar # ontvanger} other {Herinneringen verzonden naar # ontvangers}}",
     "remindNoneSent": "Er zijn geen herinneringen verzonden",
@@ -1689,7 +1689,7 @@
       },
       "quotaSmartDeletionEnabled": {
         "title": "Slimme verwijdering van bestanden boven quotum",
-        "description": "Standaard uitgeschakeld. Wanneer ingeschakeld, worden na de coulanceperiode de oudste onveilige bestanden van een gebruiker boven quotum in veilige volgorde verwijderd: eerst niet-gedeelde uploads, dan bestanden in delingen die gedurende de onderstaande periode inactief waren. Bestanden in actieve delingen worden nooit verwijderd — als er niets veilig kan worden verwijderd, worden nieuwe uploads eenvoudigweg geblokkeerd."
+        "description": "Standaard uitgeschakeld. Wanneer ingeschakeld, worden na de coulanceperiode de oudste onveilige bestanden van een gebruiker boven quotum in veilige volgorde verwijderd: eerst niet-gedeelde uploads, dan bestanden in delingen die gedurende de onderstaande periode inactief waren. Bestanden in actieve delingen worden nooit verwijderd, als er niets veilig kan worden verwijderd, worden nieuwe uploads eenvoudigweg geblokkeerd."
       },
       "quotaInactiveShareDays": {
         "title": "Drempelwaarde voor inactieve deling (dagen)",
@@ -1779,7 +1779,7 @@
       },
       "autoCleanupEnabled": {
         "title": "Automatische opschoning inschakelen",
-        "description": "Hoofdschakelaar voor de geplande opschoning van verlopen deellinks, verlopen ontvangstlinkbestanden en zwervende bestanden. Standaard uitgeschakeld — er wordt niets automatisch verwijderd totdat u dit inschakelt."
+        "description": "Hoofdschakelaar voor de geplande opschoning van verlopen deellinks, verlopen ontvangstlinkbestanden en zwervende bestanden. Standaard uitgeschakeld, er wordt niets automatisch verwijderd totdat u dit inschakelt."
       },
       "autoCleanupIntervalHours": {
         "title": "Opschooninterval (uren)",
@@ -1795,7 +1795,7 @@
       },
       "accountDeactivationCleanupEnabled": {
         "title": "Bestanden van gedeactiveerde accounts verwijderen",
-        "description": "Wanneer ingeschakeld, worden bestanden van een gedeactiveerd account definitief verwijderd na de onderstaande vertraging. Standaard uitgeschakeld — deactivering alleen verwijdert nooit bestanden."
+        "description": "Wanneer ingeschakeld, worden bestanden van een gedeactiveerd account definitief verwijderd na de onderstaande vertraging. Standaard uitgeschakeld, deactivering alleen verwijdert nooit bestanden."
       },
       "accountDeactivationCleanupDays": {
         "title": "Opschoonvertraging na deactivering (dagen)",

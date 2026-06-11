@@ -4,6 +4,7 @@ import { Pencil } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { Share, ShareFile } from "@/http/endpoints/shares/types";
 import { getFileIcon } from "@/utils/file-icons";
 
@@ -23,15 +24,19 @@ export function ShareDetailsFilesList({ files, onManageFiles, share }: ShareDeta
       <div className="flex items-center gap-2 border-b pb-2">
         <h3 className="text-base font-medium text-foreground">{t("shareDetails.files")}</h3>
         {onManageFiles && (
-          <Button
-            size="icon"
-            variant="ghost"
-            className="h-5 w-5 text-muted-foreground hover:text-foreground"
-            onClick={() => onManageFiles(share)}
-            title={t("sharesTable.actions.manageFiles")}
-          >
-            <Pencil className="h-3 w-3" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-5 w-5 text-muted-foreground hover:text-foreground"
+                onClick={() => onManageFiles(share)}
+              >
+                <Pencil className="h-3 w-3" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t("sharesTable.actions.manageFiles")}</TooltipContent>
+          </Tooltip>
         )}
       </div>
       <div className="border rounded-lg bg-muted/10 p-2">

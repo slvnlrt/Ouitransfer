@@ -2,7 +2,7 @@
  * Tests for ReverseShareRecipientSelector — upload-status badge (8.3 Batch 4 / lot D).
  *
  * Covers the best-effort per-recipient upload badge:
- *   - uploadedAt != null            → "Uploaded" badge (date in the title tooltip)
+ *   - uploadedAt != null            → "Uploaded" badge (date in the aria-label tooltip)
  *   - notified but not uploaded     → "Pending" badge
  *   - neither notified nor uploaded → no status badge
  *   - R-5 approximate hint: when emailFieldRequired !== "REQUIRED" the badge
@@ -60,6 +60,7 @@ vi.mock("sonner", () => ({
 }));
 
 import { ReverseShareRecipientSelector } from "@/app/(shares)/reverse-shares/components/reverse-share-recipient-selector";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import type { ReverseShareRecipient } from "@/http/endpoints/reverse-shares/types";
 
 function makeRecipient(overrides: Partial<ReverseShareRecipient> = {}): ReverseShareRecipient {
@@ -77,13 +78,15 @@ function makeRecipient(overrides: Partial<ReverseShareRecipient> = {}): ReverseS
 
 function renderSelector(recipients: ReverseShareRecipient[], emailFieldRequired = "OPTIONAL") {
   return render(
-    <ReverseShareRecipientSelector
-      reverseShareId="rs-1"
-      selectedRecipients={recipients}
-      reverseShareAlias="my-alias"
-      emailFieldRequired={emailFieldRequired}
-      onSuccess={vi.fn()}
-    />,
+    <TooltipProvider>
+      <ReverseShareRecipientSelector
+        reverseShareId="rs-1"
+        selectedRecipients={recipients}
+        reverseShareAlias="my-alias"
+        emailFieldRequired={emailFieldRequired}
+        onSuccess={vi.fn()}
+      />
+    </TooltipProvider>,
   );
 }
 
@@ -108,7 +111,7 @@ describe("ReverseShareRecipientSelector upload-status badge", () => {
     const badge = screen.getByText("recipientSelector.uploaded");
     expect(badge).toBeInTheDocument();
     expect(screen.queryByText("recipientSelector.pending")).not.toBeInTheDocument();
-    expect(badge.getAttribute("title")).toContain("2024-06-01");
+    expect(badge.getAttribute("aria-label")).toContain("2024-06-01");
   });
 
   it("shows the Pending badge when notified but not yet uploaded", () => {
@@ -134,7 +137,7 @@ describe("ReverseShareRecipientSelector — R-5 approximate hint", () => {
     );
 
     const badge = screen.getByText("recipientSelector.pending");
-    expect(badge.getAttribute("title")).toBe("recipientSelector.uploadApproximateHint");
+    expect(badge.getAttribute("aria-label")).toBe("recipientSelector.uploadApproximateHint");
   });
 
   it("does NOT attach the approximate hint when email is required", () => {
@@ -144,7 +147,7 @@ describe("ReverseShareRecipientSelector — R-5 approximate hint", () => {
     );
 
     const badge = screen.getByText("recipientSelector.pending");
-    expect(badge.getAttribute("title")).toBeNull();
+    expect(badge.getAttribute("aria-label")).toBeNull();
   });
 
   it("appends the approximate hint to the Uploaded badge tooltip when email is not required", () => {
@@ -154,8 +157,8 @@ describe("ReverseShareRecipientSelector — R-5 approximate hint", () => {
     );
 
     const badge = screen.getByText("recipientSelector.uploaded");
-    expect(badge.getAttribute("title")).toContain("recipientSelector.uploadApproximateHint");
-    expect(badge.getAttribute("title")).toContain("2024-06-01");
+    expect(badge.getAttribute("aria-label")).toContain("recipientSelector.uploadApproximateHint");
+    expect(badge.getAttribute("aria-label")).toContain("2024-06-01");
   });
 
   it("omits the approximate hint from the Uploaded badge tooltip when email is required", () => {
@@ -165,7 +168,9 @@ describe("ReverseShareRecipientSelector — R-5 approximate hint", () => {
     );
 
     const badge = screen.getByText("recipientSelector.uploaded");
-    expect(badge.getAttribute("title")).not.toContain("recipientSelector.uploadApproximateHint");
-    expect(badge.getAttribute("title")).toContain("2024-06-01");
+    expect(badge.getAttribute("aria-label")).not.toContain(
+      "recipientSelector.uploadApproximateHint",
+    );
+    expect(badge.getAttribute("aria-label")).toContain("2024-06-01");
   });
 });

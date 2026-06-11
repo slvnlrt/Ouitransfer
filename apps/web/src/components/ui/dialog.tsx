@@ -44,7 +44,10 @@ function DialogContent({ className, children, ...props }: React.ComponentProps<t
         className={cn(
           // Centering uses physical left-[50%] + translate-x-[-50%] (both physical, RTL-safe).
           // Do NOT mix start-[50%] (logical) with translate-x (physical) — they flip independently in RTL.
-          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-bottom-4 fixed top-[50%] left-[50%] z-50 grid w-full [--dialog-max-w:36rem] max-w-[min(calc(100vw-2rem),var(--dialog-max-w))] max-h-[calc(100dvh-2rem)] overflow-y-auto -translate-x-1/2 -translate-y-1/2 gap-4 rounded-lg border p-6 shadow-lg duration-200",
+          // scrollbar-gutter: stable reserves the scrollbar's space up-front so
+          // a scrollbar appearing (e.g. on button hover, or when content grows)
+          // never shifts the dialog's contents sideways.
+          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-bottom-4 fixed top-[50%] left-[50%] z-50 grid w-full [--dialog-max-w:36rem] max-w-[min(calc(100vw-2rem),var(--dialog-max-w))] max-h-[calc(100dvh-2rem)] overflow-y-auto [scrollbar-gutter:stable] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-lg border p-6 shadow-lg duration-200",
           className
         )}
         {...props}

@@ -16,6 +16,7 @@ import { FileTypeIcon } from "@/components/ui/file-type-icon";
 import { Progress } from "@/components/ui/progress";
 import { Spinner } from "@/components/ui/spinner";
 import { StatusIcon } from "@/components/ui/status-icon";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useStorageCheck } from "@/hooks/use-storage-check";
 import { logger } from "@/lib/logger";
@@ -330,15 +331,19 @@ export function UploadFileModal({
                         </Button>
                       ) : upload.status === "success" ? null : upload.status === "error" ? (
                         <div className="flex gap-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => retryUpload(upload.id)}
-                            className="h-8 w-8 p-0"
-                            title={t("uploadFile.retry")}
-                          >
-                            <RotateCcw className="size-3.5" />
-                          </Button>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => retryUpload(upload.id)}
+                                className="h-8 w-8 p-0"
+                              >
+                                <RotateCcw className="size-3.5" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>{t("uploadFile.retry")}</TooltipContent>
+                          </Tooltip>
                           <Button
                             variant="ghost"
                             size="sm"

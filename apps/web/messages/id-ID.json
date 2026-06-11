@@ -226,9 +226,9 @@
     "fieldHidden": "Tersembunyi",
     "fieldOptional": "Opsional",
     "fieldRequired": "Wajib",
-    "filesOptionalHint": "Menambahkan file bersifat opsional — Anda dapat membuat berbagi kosong sekarang dan menambahkan file nanti.",
+    "filesOptionalHint": "Menambahkan file bersifat opsional, Anda dapat membuat berbagi kosong sekarang dan menambahkan file nanti.",
     "nextGenerateLink": "Berikutnya: tautan",
-    "linkStepDescription": "Buat tautan khusus agar orang lain dapat mengakses berbagi ini — atau lewati dan tambahkan nanti.",
+    "linkStepDescription": "Buat tautan khusus agar orang lain dapat mengakses berbagi ini, atau lewati dan tambahkan nanti.",
     "nameFieldRequiredHelp": "Menentukan apakah pengunjung dimintai nama mereka saat membuka berbagi.",
     "emailFieldRequiredHelp": "Menentukan apakah pengunjung dimintai email mereka saat membuka berbagi."
   },
@@ -1061,7 +1061,7 @@
     "uploadedAt": "Diunggah pada {date}",
     "uploadApproximateHint": "Perkiraan: pengunggah dapat mengirimkan file tanpa memberikan email ketika tidak diperlukan",
     "remindNonDownloaders": "Ingatkan ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {Tidak ada penerima yang menunggu — semua orang sudah mendownload} one {Ingatkan # penerima yang belum mendownload} other {Ingatkan # penerima yang belum mendownload}}",
+    "remindNonDownloadersHint": "{count, plural, =0 {Tidak ada penerima yang menunggu, semua orang sudah mendownload} one {Ingatkan # penerima yang belum mendownload} other {Ingatkan # penerima yang belum mendownload}}",
     "sendingReminders": "Mengirim pengingat...",
     "remindSuccess": "{count, plural, one {Pengingat dikirim ke # penerima} other {Pengingat dikirim ke # penerima}}",
     "remindNoneSent": "Tidak ada pengingat yang dikirim",
@@ -1731,7 +1731,7 @@
       },
       "quotaSmartDeletionEnabled": {
         "title": "Penghapusan Cerdas File Melebihi Kuota",
-        "description": "Dimatikan secara default. Saat diaktifkan, setelah periode tenggang file tertua yang tidak aman dari pengguna melebihi kuota dihapus dalam urutan aman: pertama upload yang tidak dibagikan, kemudian file dalam berbagi yang tidak aktif untuk periode di bawah. File dalam berbagi aktif tidak pernah dihapus — jika tidak ada yang aman untuk dihapus, upload baru cukup diblokir."
+        "description": "Dimatikan secara default. Saat diaktifkan, setelah periode tenggang file tertua yang tidak aman dari pengguna melebihi kuota dihapus dalam urutan aman: pertama upload yang tidak dibagikan, kemudian file dalam berbagi yang tidak aktif untuk periode di bawah. File dalam berbagi aktif tidak pernah dihapus, jika tidak ada yang aman untuk dihapus, upload baru cukup diblokir."
       },
       "quotaInactiveShareDays": {
         "title": "Ambang Batas Berbagi Tidak Aktif (hari)",
@@ -1783,7 +1783,7 @@
       },
       "autoCleanupEnabled": {
         "title": "Aktifkan Pembersihan Otomatis",
-        "description": "Saklar utama untuk pembersihan terjadwal tautan berbagi kadaluarsa, file berbagi terbalik kadaluarsa, dan yatim piatu. Dimatikan secara default — tidak ada yang dihapus secara otomatis hingga Anda menyalakannya."
+        "description": "Saklar utama untuk pembersihan terjadwal tautan berbagi kadaluarsa, file berbagi terbalik kadaluarsa, dan yatim piatu. Dimatikan secara default, tidak ada yang dihapus secara otomatis hingga Anda menyalakannya."
       },
       "autoCleanupIntervalHours": {
         "title": "Interval Pembersihan (jam)",
@@ -1799,7 +1799,7 @@
       },
       "accountDeactivationCleanupEnabled": {
         "title": "Hapus File Akun yang Dinonaktifkan",
-        "description": "Saat aktif, file milik akun yang dinonaktifkan dihapus secara permanen setelah penundaan di bawah. Dimatikan secara default — deaktivasi saja tidak pernah menghapus file."
+        "description": "Saat aktif, file milik akun yang dinonaktifkan dihapus secara permanen setelah penundaan di bawah. Dimatikan secara default, deaktivasi saja tidak pernah menghapus file."
       },
       "accountDeactivationCleanupDays": {
         "title": "Penundaan Pembersihan Deaktivasi (hari)",

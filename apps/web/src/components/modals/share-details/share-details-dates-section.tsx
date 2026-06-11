@@ -4,6 +4,7 @@ import { Pencil } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { Share } from "@/http/endpoints/shares/types";
 import { formatDateTime } from "@/lib/format-date-time";
 
@@ -30,15 +31,19 @@ export function ShareDetailsDatesSection({ share, onEditExpiration }: ShareDetai
       <div className="flex items-center gap-2 border-b pb-2">
         <h3 className="text-base font-medium text-foreground">{t("shareDetails.dates")}</h3>
         {onEditExpiration && (
-          <Button
-            size="icon"
-            variant="ghost"
-            className="h-5 w-5 text-muted-foreground hover:text-foreground"
-            onClick={onEditExpiration}
-            title={t("shareDetails.editExpiration")}
-          >
-            <Pencil className="h-3 w-3" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-5 w-5 text-muted-foreground hover:text-foreground"
+                onClick={onEditExpiration}
+              >
+                <Pencil className="h-3 w-3" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t("shareDetails.editExpiration")}</TooltipContent>
+          </Tooltip>
         )}
       </div>
       <div className="space-y-2">

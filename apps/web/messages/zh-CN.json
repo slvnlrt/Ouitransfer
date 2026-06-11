@@ -222,7 +222,7 @@
     "fieldHidden": "隐藏",
     "fieldOptional": "可选",
     "fieldRequired": "必需",
-    "filesOptionalHint": "添加文件是可选的——您可以立即创建空共享，稍后添加文件。",
+    "filesOptionalHint": "添加文件是可选的，您可以立即创建空共享，稍后添加文件。",
     "nextGenerateLink": "下一步：链接",
     "linkStepDescription": "生成自定义链接，让他人可以访问此共享，或跳过此步骤稍后添加。",
     "nameFieldRequiredHelp": "指定访问者打开共享时是否需要填写姓名。",
@@ -1689,7 +1689,7 @@
       },
       "quotaSmartDeletionEnabled": {
         "title": "超配额文件的智能删除",
-        "description": "默认情况下关闭。启用后，在宽限期之后，超过配额的用户最旧的不安全文件将按安全顺序删除：首先是未共享的上传，然后是下面指定期间内无活动的共享中的文件。活动共享中的文件永远不会被删除——如果没有安全的删除内容，新的上传会被简单地阻止。"
+        "description": "默认情况下关闭。启用后，在宽限期之后，超过配额的用户最旧的不安全文件将按安全顺序删除：首先是未共享的上传，然后是下面指定期间内无活动的共享中的文件。活动共享中的文件永远不会被删除，如果没有安全的删除内容，新的上传会被简单地阻止。"
       },
       "quotaInactiveShareDays": {
         "title": "非活跃共享阈值(天)",
@@ -1779,7 +1779,7 @@
       },
       "autoCleanupEnabled": {
         "title": "启用自动清理",
-        "description": "用于定期清理已过期的共享链接、已过期的接收文件和孤立文件的主开关。默认情况下关闭——在您打开它之前，不会自动删除任何内容。"
+        "description": "用于定期清理已过期的共享链接、已过期的接收文件和孤立文件的主开关。默认情况下关闭，在您打开它之前，不会自动删除任何内容。"
       },
       "autoCleanupIntervalHours": {
         "title": "清理间隔(小时)",
@@ -1795,7 +1795,7 @@
       },
       "accountDeactivationCleanupEnabled": {
         "title": "删除已停用账户的文件",
-        "description": "启用后，已停用账户的文件将在下面的延迟后永久删除。默认情况下关闭——仅停用不会删除文件。"
+        "description": "启用后，已停用账户的文件将在下面的延迟后永久删除。默认情况下关闭，仅停用不会删除文件。"
       },
       "accountDeactivationCleanupDays": {
         "title": "账户停用清理延迟(天)",

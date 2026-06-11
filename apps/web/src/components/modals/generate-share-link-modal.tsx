@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { LazyQRCode } from "@/components/ui/lazy-qr-code";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { useQrDownload } from "@/hooks/use-qr-download";
 import type { Share } from "@/http/endpoints/shares/types";
@@ -136,14 +137,14 @@ export function GenerateShareLinkModal({
             <div className="space-y-2">
               <div className="flex space-x-2">
                 <Input readOnly value={generatedLink} className="flex-1" />
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleCopyLink}
-                  title={t("generateShareLink.copyButton")}
-                >
-                  <Copy className="h-4 w-4" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="icon" onClick={handleCopyLink}>
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{t("generateShareLink.copyButton")}</TooltipContent>
+                </Tooltip>
               </div>
             </div>
 

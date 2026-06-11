@@ -222,9 +222,9 @@
     "fieldHidden": "Verborgen",
     "fieldOptional": "Optional",
     "fieldRequired": "Erforderlich",
-    "filesOptionalHint": "Das Hinzufügen von Dateien ist optional — Sie können jetzt eine leere Freigabe erstellen und Dateien später hinzufügen.",
+    "filesOptionalHint": "Das Hinzufügen von Dateien ist optional, Sie können jetzt eine leere Freigabe erstellen und Dateien später hinzufügen.",
     "nextGenerateLink": "Weiter: Link",
-    "linkStepDescription": "Erstellen Sie einen benutzerdefinierten Link, damit andere auf diese Freigabe zugreifen können – oder überspringen Sie diesen Schritt und fügen Sie ihn später hinzu.",
+    "linkStepDescription": "Erstellen Sie einen benutzerdefinierten Link, damit andere auf diese Freigabe zugreifen können, oder überspringen Sie diesen Schritt und fügen Sie ihn später hinzu.",
     "nameFieldRequiredHelp": "Legt fest, ob Besucher beim Öffnen der Freigabe nach ihrem Namen gefragt werden.",
     "emailFieldRequiredHelp": "Legt fest, ob Besucher beim Öffnen der Freigabe nach ihrer E-Mail-Adresse gefragt werden."
   },
@@ -1057,7 +1057,7 @@
     "uploadedAt": "Hochgeladen am {date}",
     "uploadApproximateHint": "Näherungswert: Absender können Dateien ohne Angabe einer E-Mail-Adresse hochladen, wenn diese nicht erforderlich ist",
     "remindNonDownloaders": "Erinnern ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {Keine ausstehenden Empfänger – alle haben heruntergeladen} one {# Empfänger erinnern, der noch nicht heruntergeladen hat} other {# Empfänger erinnern, die noch nicht heruntergeladen haben}}",
+    "remindNonDownloadersHint": "{count, plural, =0 {Keine ausstehenden Empfänger, alle haben heruntergeladen} one {# Empfänger erinnern, der noch nicht heruntergeladen hat} other {# Empfänger erinnern, die noch nicht heruntergeladen haben}}",
     "sendingReminders": "Erinnerungen werden gesendet...",
     "remindSuccess": "{count, plural, one {Erinnerung an # Empfänger gesendet} other {Erinnerungen an # Empfänger gesendet}}",
     "remindNoneSent": "Es wurden keine Erinnerungen gesendet",
@@ -1689,7 +1689,7 @@
       },
       "quotaSmartDeletionEnabled": {
         "title": "Intelligente Löschung von Dateien bei Kontingentüberschreitung",
-        "description": "Standardmäßig deaktiviert. Wenn aktiviert, werden nach der Kulanzfrist die ältesten unsicheren Dateien eines Benutzers mit Kontingentüberschreitung in sicherer Reihenfolge gelöscht: zuerst nicht freigegebene Uploads, dann Dateien in Freigaben, die für den unten angegebenen Zeitraum inaktiv waren. Dateien in aktiven Freigaben werden nie gelöscht — wenn nichts sicher gelöscht werden kann, werden neue Uploads stattdessen einfach blockiert."
+        "description": "Standardmäßig deaktiviert. Wenn aktiviert, werden nach der Kulanzfrist die ältesten unsicheren Dateien eines Benutzers mit Kontingentüberschreitung in sicherer Reihenfolge gelöscht: zuerst nicht freigegebene Uploads, dann Dateien in Freigaben, die für den unten angegebenen Zeitraum inaktiv waren. Dateien in aktiven Freigaben werden nie gelöscht, wenn nichts sicher gelöscht werden kann, werden neue Uploads stattdessen einfach blockiert."
       },
       "quotaInactiveShareDays": {
         "title": "Schwellenwert für inaktive Freigaben (Tage)",
@@ -1779,7 +1779,7 @@
       },
       "autoCleanupEnabled": {
         "title": "Automatische Bereinigung aktivieren",
-        "description": "Hauptschalter für die geplante Bereinigung abgelaufener Freigabelinks, abgelaufener Empfangslink-Dateien und verwaister Dateien. Standardmäßig deaktiviert — nichts wird automatisch gelöscht, bis Sie dies aktivieren."
+        "description": "Hauptschalter für die geplante Bereinigung abgelaufener Freigabelinks, abgelaufener Empfangslink-Dateien und verwaister Dateien. Standardmäßig deaktiviert, nichts wird automatisch gelöscht, bis Sie dies aktivieren."
       },
       "autoCleanupIntervalHours": {
         "title": "Bereinigungsintervall (Stunden)",
@@ -1795,7 +1795,7 @@
       },
       "accountDeactivationCleanupEnabled": {
         "title": "Dateien deaktivierter Konten löschen",
-        "description": "Wenn aktiviert, werden Dateien eines deaktivierten Kontos nach der unten festgelegten Verzögerung dauerhaft gelöscht. Standardmäßig deaktiviert — die Deaktivierung allein löscht nie Dateien."
+        "description": "Wenn aktiviert, werden Dateien eines deaktivierten Kontos nach der unten festgelegten Verzögerung dauerhaft gelöscht. Standardmäßig deaktiviert, die Deaktivierung allein löscht nie Dateien."
       },
       "accountDeactivationCleanupDays": {
         "title": "Bereinigungsverzögerung nach Deaktivierung (Tage)",
@@ -2165,7 +2165,7 @@
       "paused": "Pausiert",
       "maxViewsReached": "Aufruf-Limit erreicht",
       "noLink": "Kein Link",
-      "noLinkTooltip": "Diese Freigabe hat noch keinen Link – sie ist nicht erreichbar. Erstellen Sie einen Link, um sie zu teilen."
+      "noLinkTooltip": "Diese Freigabe hat noch keinen Link: sie ist nicht erreichbar. Erstellen Sie einen Link, um sie zu teilen."
     },
     "security": {
       "protected": "Geschützt",

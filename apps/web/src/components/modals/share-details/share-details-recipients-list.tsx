@@ -4,6 +4,7 @@ import { Check, Clock, Download, Eye, Mail, Pencil } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { Share, ShareRecipient } from "@/http/endpoints/shares/types";
 
 interface ShareDetailsRecipientsListProps {
@@ -30,15 +31,19 @@ export function ShareDetailsRecipientsList({
       <div className="flex items-center gap-2 border-b pb-2">
         <h3 className="text-base font-medium text-foreground">{t("shareDetails.recipients")}</h3>
         {onManageRecipients && (
-          <Button
-            size="icon"
-            variant="ghost"
-            className="h-5 w-5 text-muted-foreground hover:text-foreground"
-            onClick={() => onManageRecipients(share)}
-            title={t("sharesTable.actions.manageRecipients")}
-          >
-            <Pencil className="h-3 w-3" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-5 w-5 text-muted-foreground hover:text-foreground"
+                onClick={() => onManageRecipients(share)}
+              >
+                <Pencil className="h-3 w-3" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t("sharesTable.actions.manageRecipients")}</TooltipContent>
+          </Tooltip>
         )}
       </div>
       {recipients.length === 0 ? (
@@ -70,18 +75,22 @@ export function ShareDetailsRecipientsList({
                     {/* Download-status badge — consistent with the recipient
                         selector (8.3, R-6): keyed off lastDownloadedAt. */}
                     {hasDownloaded ? (
-                      <span
-                        className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
-                        title={t("recipientSelector.downloadedAt", {
-                          date: format.dateTime(new Date(lastDownloadedAt), {
-                            dateStyle: "medium",
-                            timeStyle: "short",
-                          }),
-                        })}
-                      >
-                        <Download className="h-3 w-3" aria-hidden="true" />
-                        {t("recipientSelector.downloaded")}
-                      </span>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400">
+                            <Download className="h-3 w-3" aria-hidden="true" />
+                            {t("recipientSelector.downloaded")}
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          {t("recipientSelector.downloadedAt", {
+                            date: format.dateTime(new Date(lastDownloadedAt), {
+                              dateStyle: "medium",
+                              timeStyle: "short",
+                            }),
+                          })}
+                        </TooltipContent>
+                      </Tooltip>
                     ) : isPending ? (
                       <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium bg-muted text-muted-foreground">
                         <Clock className="h-3 w-3" aria-hidden="true" />

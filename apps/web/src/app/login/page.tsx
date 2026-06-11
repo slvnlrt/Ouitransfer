@@ -17,7 +17,11 @@ export default function LoginPage() {
   const login = useLogin();
   const { firstAccess } = useAppInfo();
 
-  if (login.isAuthenticated === null || login.isAuthenticated === true) {
+  // Only block while a redirect to the dashboard is imminent (authenticated).
+  // When auth is still resolving (`null`) we render the form rather than a
+  // loading screen: gating on `null` here is what left the page stuck on
+  // "loading" after a session-expiry redirect until a manual reload.
+  if (login.isAuthenticated === true) {
     return <LoadingScreen />;
   }
 

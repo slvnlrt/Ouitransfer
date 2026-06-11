@@ -20,6 +20,7 @@ import { SkipToContent } from "@/components/a11y/skip-to-content";
 import { RedirectHandler } from "@/components/auth/redirect-handler";
 import { Favicon } from "@/components/layout/favicon";
 import { DynamicToaster } from "@/components/ui/dynamic-toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/auth-context";
 import { RTL_LANGUAGES } from "@/lib/rtl-languages";
 import { QueryProvider } from "../providers/query-provider";
@@ -136,11 +137,13 @@ export default async function RootLayout({
             >
               <ThemeColorProvider>
                 <AuthProvider>
-                  <RedirectHandler>
-                    <main id="main-content" tabIndex={-1} className="outline-none">
-                      {children}
-                    </main>
-                  </RedirectHandler>
+                  <TooltipProvider>
+                    <RedirectHandler>
+                      <main id="main-content" tabIndex={-1} className="outline-none">
+                        {children}
+                      </main>
+                    </RedirectHandler>
+                  </TooltipProvider>
                 </AuthProvider>
                 <DynamicToaster />
               </ThemeColorProvider>

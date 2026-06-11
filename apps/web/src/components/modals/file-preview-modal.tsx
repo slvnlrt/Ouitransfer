@@ -28,6 +28,8 @@ interface FilePreviewModalProps {
   };
   isReverseShare?: boolean;
   sharePassword?: string;
+  /** Share id (public share viewer only) — lets explicit downloads be tracked per-share. */
+  shareId?: string;
 }
 
 export function FilePreviewModal({
@@ -36,9 +38,10 @@ export function FilePreviewModal({
   file,
   isReverseShare = false,
   sharePassword,
+  shareId,
 }: FilePreviewModalProps) {
   const t = useTranslations();
-  const previewState = useFilePreview({ file, isOpen, isReverseShare, sharePassword });
+  const previewState = useFilePreview({ file, isOpen, isReverseShare, sharePassword, shareId });
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

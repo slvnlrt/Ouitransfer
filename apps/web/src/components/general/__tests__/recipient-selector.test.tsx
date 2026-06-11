@@ -59,6 +59,7 @@ vi.mock("sonner", () => ({
 }));
 
 import { RecipientSelector } from "@/components/general/recipient-selector";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import type { ShareRecipient } from "@/http/endpoints/shares/types";
 
 function makeRecipient(overrides: Partial<ShareRecipient> = {}): ShareRecipient {
@@ -80,12 +81,14 @@ function makeRecipient(overrides: Partial<ShareRecipient> = {}): ShareRecipient 
 
 function renderSelector(recipients: ShareRecipient[]) {
   return render(
-    <RecipientSelector
-      shareId="share-1"
-      selectedRecipients={recipients}
-      shareAlias="my-alias"
-      onSuccess={vi.fn()}
-    />,
+    <TooltipProvider>
+      <RecipientSelector
+        shareId="share-1"
+        selectedRecipients={recipients}
+        shareAlias="my-alias"
+        onSuccess={vi.fn()}
+      />
+    </TooltipProvider>,
   );
 }
 
@@ -112,9 +115,9 @@ describe("RecipientSelector download-status badge", () => {
     // The Pending badge must NOT appear for a downloader.
     expect(screen.queryByText("recipientSelector.pending")).not.toBeInTheDocument();
 
-    // The formatted date is interpolated into the title-tooltip key.
+    // The formatted date is interpolated into the aria-label of the badge trigger.
     const badge = screen.getByText("recipientSelector.downloaded");
-    expect(badge.getAttribute("title")).toContain("2024-06-01");
+    expect(badge.getAttribute("aria-label")).toContain("2024-06-01");
   });
 
   it("shows the Pending badge when notified but not yet downloaded", () => {

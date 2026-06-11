@@ -222,7 +222,7 @@
     "fieldHidden": "Nascosto",
     "fieldOptional": "Facoltativo",
     "fieldRequired": "Obbligatorio",
-    "filesOptionalHint": "L'aggiunta di file è facoltativa — è possibile creare una condivisione vuota ora e aggiungere file in seguito.",
+    "filesOptionalHint": "L'aggiunta di file è facoltativa, è possibile creare una condivisione vuota ora e aggiungere file in seguito.",
     "nextGenerateLink": "Avanti: link",
     "linkStepDescription": "Genera un link personalizzato per rendere accessibile questa condivisione, oppure salta questo passaggio e aggiungilo in seguito.",
     "nameFieldRequiredHelp": "Indica se al visitatore viene chiesto il nome all'apertura della condivisione.",
@@ -1057,7 +1057,7 @@
     "uploadedAt": "Caricato il {date}",
     "uploadApproximateHint": "Approssimativo: i mittenti possono inviare file senza fornire un'e-mail quando non è obbligatoria",
     "remindNonDownloaders": "Sollecita ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {Nessun destinatario in attesa — tutti hanno scaricato} one {Sollecita # destinatario che non ha ancora scaricato} other {Sollecita # destinatari che non hanno ancora scaricato}}",
+    "remindNonDownloadersHint": "{count, plural, =0 {Nessun destinatario in attesa, tutti hanno scaricato} one {Sollecita # destinatario che non ha ancora scaricato} other {Sollecita # destinatari che non hanno ancora scaricato}}",
     "sendingReminders": "Invio solleciti in corso...",
     "remindSuccess": "{count, plural, one {Sollecito inviato a # destinatario} other {Solleciti inviati a # destinatari}}",
     "remindNoneSent": "Nessun sollecito inviato",
@@ -1689,7 +1689,7 @@
       },
       "quotaSmartDeletionEnabled": {
         "title": "Eliminazione intelligente dei file oltre quota",
-        "description": "Disattivata per impostazione predefinita. Quando abilitata, dopo il periodo di tolleranza i file non sicuri più vecchi di un utente oltre quota vengono eliminati in ordine sicuro: prima i caricamenti non condivisi, poi i file nelle condivisioni inattive per il periodo indicato di seguito. I file nelle condivisioni attive non vengono mai eliminati — se nulla è sicuro da rimuovere, i nuovi caricamenti vengono semplicemente bloccati."
+        "description": "Disattivata per impostazione predefinita. Quando abilitata, dopo il periodo di tolleranza i file non sicuri più vecchi di un utente oltre quota vengono eliminati in ordine sicuro: prima i caricamenti non condivisi, poi i file nelle condivisioni inattive per il periodo indicato di seguito. I file nelle condivisioni attive non vengono mai eliminati, se nulla è sicuro da rimuovere, i nuovi caricamenti vengono semplicemente bloccati."
       },
       "quotaInactiveShareDays": {
         "title": "Soglia di condivisione inattiva (giorni)",
@@ -1779,7 +1779,7 @@
       },
       "autoCleanupEnabled": {
         "title": "Abilita pulizia automatica",
-        "description": "Interruttore principale per la pulizia pianificata dei link di condivisione scaduti, dei file di link di ricezione scaduti e degli orfani. Disattivato per impostazione predefinita — nulla viene eliminato automaticamente finché non lo si attiva."
+        "description": "Interruttore principale per la pulizia pianificata dei link di condivisione scaduti, dei file di link di ricezione scaduti e degli orfani. Disattivato per impostazione predefinita, nulla viene eliminato automaticamente finché non lo si attiva."
       },
       "autoCleanupIntervalHours": {
         "title": "Intervallo di pulizia (ore)",
@@ -1795,7 +1795,7 @@
       },
       "accountDeactivationCleanupEnabled": {
         "title": "Elimina i file degli account disattivati",
-        "description": "Quando attivo, i file appartenenti a un account disattivato vengono eliminati definitivamente dopo il ritardo indicato di seguito. Disattivato per impostazione predefinita — la sola disattivazione non elimina mai i file."
+        "description": "Quando attivo, i file appartenenti a un account disattivato vengono eliminati definitivamente dopo il ritardo indicato di seguito. Disattivato per impostazione predefinita, la sola disattivazione non elimina mai i file."
       },
       "accountDeactivationCleanupDays": {
         "title": "Ritardo di pulizia dopo la disattivazione (giorni)",
