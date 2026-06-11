@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { FileTypeIcon } from "@/components/ui/file-type-icon";
 import { Progress } from "@/components/ui/progress";
 import { StatusIcon } from "@/components/ui/status-icon";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { formatFileSize } from "@/utils/format-file-size";
 
@@ -223,15 +224,19 @@ export function GlobalDropZone({ onSuccess, children, currentFolderId }: GlobalD
               <div className="flex-shrink-0">
                 {upload.status === "error" ? (
                   <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => retryUpload(upload.id)}
-                      className="h-6 w-6 p-0"
-                      title={t("uploadFile.retry")}
-                    >
-                      <RotateCcw className="size-3" />
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => retryUpload(upload.id)}
+                          className="h-6 w-6 p-0"
+                        >
+                          <RotateCcw className="size-3" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>{t("uploadFile.retry")}</TooltipContent>
+                    </Tooltip>
                     <Button
                       variant="ghost"
                       size="sm"

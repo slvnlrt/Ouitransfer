@@ -8,6 +8,7 @@ import type React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { type AuthProvider, EditProviderForm } from "./edit-provider-form";
 import type { ProviderFormDataMap } from "./types";
 
@@ -64,10 +65,16 @@ export function ProviderRow({
           <span className="text-lg">{getIcon(provider)}</span>
           <div>
             <div className="flex items-center gap-2">
-              <div
-                className={`w-2 h-2 rounded-full ${provider.enabled ? "bg-green-500" : "bg-muted-foreground"}`}
-                title={provider.enabled ? t("authProviders.enabled") : t("authProviders.disabled")}
-              />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div
+                    className={`w-2 h-2 rounded-full ${provider.enabled ? "bg-green-500" : "bg-muted-foreground"}`}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  {provider.enabled ? t("authProviders.enabled") : t("authProviders.disabled")}
+                </TooltipContent>
+              </Tooltip>
               <span className="font-medium text-sm">{provider.displayName}</span>
             </div>
             <div className="text-xs text-muted-foreground">
@@ -84,26 +91,29 @@ export function ProviderRow({
             onCheckedChange={(enabled) => onUpdate({ enabled })}
             disabled={saving}
           />
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onEdit}
-            disabled={saving}
-            title={t("authProviders.editProvider")}
-          >
-            <Pencil className="h-3 w-3" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="sm" onClick={onEdit} disabled={saving}>
+                <Pencil className="h-3 w-3" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t("authProviders.editProvider")}</TooltipContent>
+          </Tooltip>
           {!provider.isOfficial && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onDelete}
-              disabled={saving}
-              className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
-              title={t("authProviders.deleteProvider")}
-            >
-              <Trash2 className="h-3 w-3" />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onDelete}
+                  disabled={saving}
+                  className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t("authProviders.deleteProvider")}</TooltipContent>
+            </Tooltip>
           )}
         </div>
       </div>

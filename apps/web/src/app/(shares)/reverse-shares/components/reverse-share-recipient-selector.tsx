@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Loader } from "@/components/ui/loader";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSecureConfigValue } from "@/hooks/use-secure-configs";
 import {
   addReverseShareRecipients,
@@ -301,33 +302,48 @@ export function ReverseShareRecipientSelector({
                         ? ` — ${t("recipientSelector.uploadApproximateHint")}`
                         : "";
                       if (hasUploaded) {
+                        const uploadedTooltip =
+                          t("recipientSelector.uploadedAt", {
+                            date: format.dateTime(new Date(recipient.uploadedAt as string), {
+                              dateStyle: "medium",
+                              timeStyle: "short",
+                            }),
+                          }) + approximateHint;
                         return (
-                          <span
-                            className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
-                            title={
-                              t("recipientSelector.uploadedAt", {
-                                date: format.dateTime(new Date(recipient.uploadedAt as string), {
-                                  dateStyle: "medium",
-                                  timeStyle: "short",
-                                }),
-                              }) + approximateHint
-                            }
-                          >
-                            <Upload className="h-2.5 w-2.5" aria-hidden="true" />
-                            {t("recipientSelector.uploaded")}
-                          </span>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span
+                                role="img"
+                                className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
+                                aria-label={uploadedTooltip}
+                              >
+                                <Upload className="h-2.5 w-2.5" aria-hidden="true" />
+                                {t("recipientSelector.uploaded")}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>{uploadedTooltip}</TooltipContent>
+                          </Tooltip>
                         );
                       }
                       if (isPending) {
-                        return (
-                          <span
-                            className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium bg-muted text-muted-foreground"
-                            title={
-                              isUploadApproximate
-                                ? t("recipientSelector.uploadApproximateHint")
-                                : undefined
-                            }
-                          >
+                        return isUploadApproximate ? (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span
+                                role="img"
+                                className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium bg-muted text-muted-foreground"
+                                aria-label={t("recipientSelector.uploadApproximateHint")}
+                              >
+                                <Clock className="h-2.5 w-2.5" aria-hidden="true" />
+                                {t("recipientSelector.pending")}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              {t("recipientSelector.uploadApproximateHint")}
+                            </TooltipContent>
+                          </Tooltip>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium bg-muted text-muted-foreground">
                             <Clock className="h-2.5 w-2.5" aria-hidden="true" />
                             {t("recipientSelector.pending")}
                           </span>
@@ -345,30 +361,38 @@ export function ReverseShareRecipientSelector({
                 </div>
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   {isSmtp && reverseShareAlias && (
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-6 w-6"
-                      onClick={() => handleNotify([recipient.email])}
-                      disabled={notifyingEmails.has(recipient.email)}
-                      title={t("recipientSelector.notifySingle")}
-                    >
-                      {notifyingEmails.has(recipient.email) ? (
-                        <Spinner className="h-3 w-3" />
-                      ) : (
-                        <Bell className="h-3 w-3" />
-                      )}
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-6 w-6"
+                          onClick={() => handleNotify([recipient.email])}
+                          disabled={notifyingEmails.has(recipient.email)}
+                        >
+                          {notifyingEmails.has(recipient.email) ? (
+                            <Spinner className="h-3 w-3" />
+                          ) : (
+                            <Bell className="h-3 w-3" />
+                          )}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>{t("recipientSelector.notifySingle")}</TooltipContent>
+                    </Tooltip>
                   )}
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-6 w-6 text-destructive hover:text-destructive"
-                    onClick={() => handleRemoveRecipient(recipient.email)}
-                    title={t("recipientSelector.removeSingle")}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-6 w-6 text-destructive hover:text-destructive"
+                        onClick={() => handleRemoveRecipient(recipient.email)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{t("recipientSelector.removeSingle")}</TooltipContent>
+                  </Tooltip>
                 </div>
               </div>
             ))}

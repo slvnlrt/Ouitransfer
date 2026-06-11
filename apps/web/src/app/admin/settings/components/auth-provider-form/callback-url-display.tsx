@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
 interface CallbackUrlDisplayProps {
@@ -37,15 +38,14 @@ export function CallbackUrlDisplay({ providerName }: CallbackUrlDisplayProps) {
           <div className=" rounded-md font-mono text-sm break-all font-semibold px-2">
             {callbackUrl}
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleCopy}
-            className="shrink-0"
-            title={t("authProviders.form.copyCallbackUrl")}
-          >
-            {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" onClick={handleCopy} className="shrink-0">
+                {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t("authProviders.form.copyCallbackUrl")}</TooltipContent>
+          </Tooltip>
         </div>
         <p className="text-xs text-muted-foreground mb-2">
           {t("authProviders.form.callbackUrlDescription")}

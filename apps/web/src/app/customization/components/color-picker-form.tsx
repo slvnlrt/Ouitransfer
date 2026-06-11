@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const PREDEFINED_COLORS = [
   // Row 1: Standard vibrant colors
@@ -112,25 +113,29 @@ export function ColorPickerForm() {
             <div className="grid grid-cols-8 gap-3">
               {PREDEFINED_COLORS.map((color) => (
                 <div key={color.name} className="flex flex-col items-center gap-1">
-                  <button
-                    onClick={() => handlePresetColorSelect(color.value)}
-                    className={`relative w-14 h-14 rounded-xl border-2 transition-all hover:scale-105 shadow-sm ${
-                      selectedColor === color.value
-                        ? "border-primary ring-2 ring-primary ring-offset-2"
-                        : "border-border hover:border-border/70 hover:shadow-md"
-                    }`}
-                    style={{
-                      backgroundColor: color.value,
-                    }}
-                    title={color.name}
-                    type="button"
-                  >
-                    {selectedColor === color.value && (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-4 h-4 bg-background rounded-full shadow-md border border-border" />
-                      </div>
-                    )}
-                  </button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => handlePresetColorSelect(color.value)}
+                        className={`relative w-14 h-14 rounded-xl border-2 transition-all hover:scale-105 shadow-sm ${
+                          selectedColor === color.value
+                            ? "border-primary ring-2 ring-primary ring-offset-2"
+                            : "border-border hover:border-border/70 hover:shadow-md"
+                        }`}
+                        style={{
+                          backgroundColor: color.value,
+                        }}
+                        type="button"
+                      >
+                        {selectedColor === color.value && (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-4 h-4 bg-background rounded-full shadow-md border border-border" />
+                          </div>
+                        )}
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>{color.name}</TooltipContent>
+                  </Tooltip>
                   <span className="text-xs text-muted-foreground text-center leading-tight">
                     {color.name}
                   </span>

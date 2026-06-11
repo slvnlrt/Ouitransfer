@@ -14,6 +14,7 @@ import { Loader } from "@/components/ui/loader";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { useQrDownload } from "@/hooks/use-qr-download";
 import { createShare, createShareAlias, listFiles, listFolders } from "@/http/endpoints";
@@ -589,14 +590,14 @@ export function ShareCreationModal({
                 <p className="text-sm text-muted-foreground">{t("shareActions.linkReady")}</p>
                 <div className="flex gap-2">
                   <Input readOnly value={generatedLink} className="flex-1" />
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    onClick={handleCopyLink}
-                    title={t("shareActions.copyLink")}
-                  >
-                    <Copy className="h-4 w-4" />
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button size="icon" variant="outline" onClick={handleCopyLink}>
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{t("shareActions.copyLink")}</TooltipContent>
+                  </Tooltip>
                 </div>
 
                 <div className="flex justify-end gap-2 pt-2">

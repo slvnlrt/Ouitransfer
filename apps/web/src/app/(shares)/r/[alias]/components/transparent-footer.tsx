@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSecureConfigValue } from "@/hooks/use-secure-configs";
 
 const version = process.env.NEXT_PUBLIC_APP_VERSION ?? "dev";
@@ -29,16 +30,20 @@ export function TransparentFooter() {
   return (
     <footer className="absolute bottom-0 start-0 end-0 z-50 w-full flex items-center justify-center py-3 h-16 pointer-events-none">
       <div className="flex flex-col items-center pointer-events-auto">
-        <Link
-          target="_blank"
-          className="text-white/80 hover:text-primary transition-colors"
-          href={displayUrl}
-          title={t("footer.projectHomepage")}
-        >
-          <p className="text-primary text-xs sm:text-sm font-medium cursor-pointer hover:text-primary/80">
-            {displayText}
-          </p>
-        </Link>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link
+              target="_blank"
+              className="text-white/80 hover:text-primary transition-colors"
+              href={displayUrl}
+            >
+              <p className="text-primary text-xs sm:text-sm font-medium cursor-pointer hover:text-primary/80">
+                {displayText}
+              </p>
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent>{t("footer.projectHomepage")}</TooltipContent>
+        </Tooltip>
         {!shouldHideVersion && <span className="text-white text-[11px] mt-1">v{version}</span>}
       </div>
     </footer>

@@ -3,6 +3,7 @@
 import { memo, useEffect, useState } from "react";
 import type { IconType } from "react-icons";
 
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { getCachedIcon, loadIcon } from "./icon-loader";
 
 interface IconCellProps {
@@ -37,21 +38,25 @@ export const IconCell = memo(function IconCell({ iconName, packSlug, onSelect, t
   }, [iconName, packSlug]);
 
   return (
-    <button
-      type="button"
-      className="h-12 w-12 sm:h-14 sm:w-14 p-0 hover:bg-muted transition-colors flex-shrink-0 rounded-md flex items-center justify-center cursor-pointer"
-      onClick={() => onSelect(iconName)}
-      title={title ?? iconName}
-    >
-      {Icon === undefined ? (
-        // Loading placeholder
-        <span className="h-5 w-5 rounded bg-muted animate-pulse" />
-      ) : Icon === null ? (
-        // Failed to load — show name abbreviation
-        <span className="text-xs text-muted-foreground">{iconName.slice(0, 2)}</span>
-      ) : (
-        <Icon size={24} />
-      )}
-    </button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          className="h-12 w-12 sm:h-14 sm:w-14 p-0 hover:bg-muted transition-colors flex-shrink-0 rounded-md flex items-center justify-center cursor-pointer"
+          onClick={() => onSelect(iconName)}
+        >
+          {Icon === undefined ? (
+            // Loading placeholder
+            <span className="h-5 w-5 rounded bg-muted animate-pulse" />
+          ) : Icon === null ? (
+            // Failed to load — show name abbreviation
+            <span className="text-xs text-muted-foreground">{iconName.slice(0, 2)}</span>
+          ) : (
+            <Icon size={24} />
+          )}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent>{title ?? iconName}</TooltipContent>
+    </Tooltip>
   );
 });

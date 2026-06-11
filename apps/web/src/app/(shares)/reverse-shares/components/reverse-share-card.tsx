@@ -27,6 +27,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { logger } from "@/lib/logger";
 import type { ReverseShare } from "../hooks/use-reverse-shares";
 import { EditPasswordModal } from "./edit-password-modal";
@@ -210,22 +211,26 @@ export function ReverseShareCard({
               ) : (
                 <div className="flex items-center gap-2 group/title">
                   {/* Bolinha de status */}
-                  <div
-                    className={`w-2 h-2 rounded-full shrink-0 shadow-sm ${
-                      isExpired
-                        ? "bg-red-500"
-                        : reverseShare.isActive
-                          ? "bg-green-500"
-                          : "bg-red-500"
-                    }`}
-                    title={
-                      isExpired
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div
+                        className={`w-2 h-2 rounded-full shrink-0 shadow-sm ${
+                          isExpired
+                            ? "bg-red-500"
+                            : reverseShare.isActive
+                              ? "bg-green-500"
+                              : "bg-red-500"
+                        }`}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {isExpired
                         ? t("reverseShares.status.expired")
                         : reverseShare.isActive
                           ? t("reverseShares.status.active")
-                          : t("reverseShares.status.inactive")
-                    }
-                  />
+                          : t("reverseShares.status.inactive")}
+                    </TooltipContent>
+                  </Tooltip>
                   <h3 className="text-lg font-bold text-foreground truncate">
                     {getDisplayValue("name") || t("reverseShares.card.untitled")}
                   </h3>
@@ -245,26 +250,34 @@ export function ReverseShareCard({
 
             <div className="flex items-center gap-1">
               {hasAlias && onViewQrCode && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-6 w-6 p-0 hover:bg-background/80 rounded-sm"
-                  onClick={() => onViewQrCode(reverseShare)}
-                  title={t("reverseShares.card.viewQrCode")}
-                >
-                  <QrCode className="h-3 w-3" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-6 w-6 p-0 hover:bg-background/80 rounded-sm"
+                      onClick={() => onViewQrCode(reverseShare)}
+                    >
+                      <QrCode className="h-3 w-3" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{t("reverseShares.card.viewQrCode")}</TooltipContent>
+                </Tooltip>
               )}
 
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-6 w-6 p-0 hover:bg-background/80 rounded-sm"
-                onClick={() => onViewDetails(reverseShare)}
-                title={t("reverseShares.card.viewDetails")}
-              >
-                <Eye className="h-3 w-3" />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-6 w-6 p-0 hover:bg-background/80 rounded-sm"
+                    onClick={() => onViewDetails(reverseShare)}
+                  >
+                    <Eye className="h-3 w-3" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{t("reverseShares.card.viewDetails")}</TooltipContent>
+              </Tooltip>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -396,19 +409,23 @@ export function ReverseShareCard({
                 >
                   {origin}/r/{reverseShare.alias?.alias}
                 </code>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={`h-5 w-5 p-0 ${
-                    reverseShare.isActive && !isExpired
-                      ? "text-primary hover:text-primary/80"
-                      : "text-red-500 hover:text-red-600"
-                  }`}
-                  onClick={() => onCopyLink(reverseShare)}
-                  title={t("reverseShares.card.copyLinkTitle")}
-                >
-                  <Copy className="h-3 w-3" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={`h-5 w-5 p-0 ${
+                        reverseShare.isActive && !isExpired
+                          ? "text-primary hover:text-primary/80"
+                          : "text-red-500 hover:text-red-600"
+                      }`}
+                      onClick={() => onCopyLink(reverseShare)}
+                    >
+                      <Copy className="h-3 w-3" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{t("reverseShares.card.copyLinkTitle")}</TooltipContent>
+                </Tooltip>
               </div>
             </div>
           )}
@@ -416,18 +433,24 @@ export function ReverseShareCard({
           {/* Compact grid: Statistics + Controls */}
           <div className="grid grid-cols-4 gap-2">
             {/* Files */}
-            <Button
-              variant="ghost"
-              className="bg-muted/20 rounded-md p-2 text-center border border-border/50 hover:bg-muted/40 transition-colors h-auto"
-              onClick={() => onViewFiles(reverseShare)}
-              title={t("reverseShares.actions.viewFiles")}
-            >
-              <div className="flex flex-col items-center gap-1">
-                <File className="h-4 w-4 text-primary" />
-                <p className="text-xs font-medium text-foreground leading-none">{fileCount}</p>
-                <p className="text-xs text-muted-foreground">{t("reverseShares.labels.files")}</p>
-              </div>
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="bg-muted/20 rounded-md p-2 text-center border border-border/50 hover:bg-muted/40 transition-colors h-auto"
+                  onClick={() => onViewFiles(reverseShare)}
+                >
+                  <div className="flex flex-col items-center gap-1">
+                    <File className="h-4 w-4 text-primary" />
+                    <p className="text-xs font-medium text-foreground leading-none">{fileCount}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {t("reverseShares.labels.files")}
+                    </p>
+                  </div>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t("reverseShares.actions.viewFiles")}</TooltipContent>
+            </Tooltip>
 
             {/* Size */}
             <div className="bg-muted/20 rounded-md p-2 text-center border border-border/50">
@@ -443,32 +466,36 @@ export function ReverseShareCard({
             {/* Active status toggle */}
             <div className="bg-muted/20 rounded-md overflow-hidden border border-border/50">
               {onToggleActive ? (
-                <Button
-                  variant="ghost"
-                  className="w-full h-full p-2 hover:bg-muted/40 transition-colors text-center"
-                  onClick={handleToggleActive}
-                  title={
-                    reverseShare.isActive
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="w-full h-full p-2 hover:bg-muted/40 transition-colors text-center"
+                      onClick={handleToggleActive}
+                    >
+                      <div className="flex flex-col items-center gap-1">
+                        {reverseShare.isActive ? (
+                          <ToggleRight className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                        ) : (
+                          <ToggleLeft className="h-4 w-4 text-destructive" />
+                        )}
+                        <p className="text-xs font-medium leading-none">
+                          {reverseShare.isActive
+                            ? t("reverseShares.status.active")
+                            : t("reverseShares.status.inactive")}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {t("reverseShares.labels.status")}
+                        </p>
+                      </div>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {reverseShare.isActive
                       ? t("common.clickToDeactivate")
-                      : t("common.clickToActivate")
-                  }
-                >
-                  <div className="flex flex-col items-center gap-1">
-                    {reverseShare.isActive ? (
-                      <ToggleRight className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                    ) : (
-                      <ToggleLeft className="h-4 w-4 text-destructive" />
-                    )}
-                    <p className="text-xs font-medium leading-none">
-                      {reverseShare.isActive
-                        ? t("reverseShares.status.active")
-                        : t("reverseShares.status.inactive")}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {t("reverseShares.labels.status")}
-                    </p>
-                  </div>
-                </Button>
+                      : t("common.clickToActivate")}
+                  </TooltipContent>
+                </Tooltip>
               ) : (
                 <div className="p-2 text-center">
                   <div className="flex flex-col items-center gap-1">
@@ -493,28 +520,32 @@ export function ReverseShareCard({
             {/* Password protection toggle */}
             <div className="bg-muted/20 rounded-md overflow-hidden border border-border/50">
               {onUpdatePassword ? (
-                <Button
-                  variant="ghost"
-                  className="w-full h-full p-2 hover:bg-muted/40 transition-colors text-center"
-                  onClick={handleTogglePassword}
-                  title={t("reverseShares.labels.configureProtection")}
-                >
-                  <div className="flex flex-col items-center gap-1">
-                    {hasPassword ? (
-                      <Lock className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
-                    ) : (
-                      <LockOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                    )}
-                    <p className="text-xs font-medium leading-none">
-                      {hasPassword
-                        ? t("reverseShares.status.protected")
-                        : t("reverseShares.status.public")}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {t("reverseShares.labels.access")}
-                    </p>
-                  </div>
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="w-full h-full p-2 hover:bg-muted/40 transition-colors text-center"
+                      onClick={handleTogglePassword}
+                    >
+                      <div className="flex flex-col items-center gap-1">
+                        {hasPassword ? (
+                          <Lock className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+                        ) : (
+                          <LockOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                        )}
+                        <p className="text-xs font-medium leading-none">
+                          {hasPassword
+                            ? t("reverseShares.status.protected")
+                            : t("reverseShares.status.public")}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {t("reverseShares.labels.access")}
+                        </p>
+                      </div>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{t("reverseShares.labels.configureProtection")}</TooltipContent>
+                </Tooltip>
               ) : (
                 <div className="p-2 text-center">
                   <div className="flex flex-col items-center gap-1">

@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { TableCell, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { ReverseShareFile } from "@/http/endpoints/reverse-shares/types";
 import { formatDateTime } from "@/lib/format-date-time";
 import { getFileIcon } from "@/utils/file-icons";
@@ -176,30 +177,38 @@ function EditableField({
             onClick={(e) => e.stopPropagation()}
           />
         )}
-        <Button
-          size="icon"
-          variant="ghost"
-          className="h-5 w-5 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex-shrink-0"
-          onClick={(e) => {
-            e.stopPropagation();
-            onSaveEdit();
-          }}
-          title={t("reverseShares.components.editField.saveChanges")}
-        >
-          <Check className="h-3 w-3" />
-        </Button>
-        <Button
-          size="icon"
-          variant="ghost"
-          className="h-5 w-5 text-destructive hover:text-destructive/80 flex-shrink-0"
-          onClick={(e) => {
-            e.stopPropagation();
-            onCancelEdit();
-          }}
-          title={t("reverseShares.components.editField.cancelEdit")}
-        >
-          <X className="h-3 w-3" />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-5 w-5 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex-shrink-0"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSaveEdit();
+              }}
+            >
+              <Check className="h-3 w-3" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t("reverseShares.components.editField.saveChanges")}</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-5 w-5 text-destructive hover:text-destructive/80 flex-shrink-0"
+              onClick={(e) => {
+                e.stopPropagation();
+                onCancelEdit();
+              }}
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t("reverseShares.components.editField.cancelEdit")}</TooltipContent>
+        </Tooltip>
       </div>
     );
   }
@@ -223,20 +232,24 @@ function EditableField({
         )}
       </div>
       <div className="w-6 flex justify-center flex-shrink-0">
-        <Button
-          size="icon"
-          variant="ghost"
-          className={`h-5 w-5 text-muted-foreground hover:text-foreground hidden sm:block transition-opacity ${
-            isHovered ? "opacity-100" : "opacity-0"
-          }`}
-          onClick={(e) => {
-            e.stopPropagation();
-            onStartEdit(file.id, field, currentValue || "");
-          }}
-          title={t("reverseShares.components.fileActions.edit")}
-        >
-          <Pencil className="h-3 w-3" />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              variant="ghost"
+              className={`h-5 w-5 text-muted-foreground hover:text-foreground hidden sm:block transition-opacity ${
+                isHovered ? "opacity-100" : "opacity-0"
+              }`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onStartEdit(file.id, field, currentValue || "");
+              }}
+            >
+              <Pencil className="h-3 w-3" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t("reverseShares.components.fileActions.edit")}</TooltipContent>
+        </Tooltip>
       </div>
     </div>
   );
@@ -368,49 +381,57 @@ export function FileRow({
       </TableCell>
       <TableCell className="text-end">
         <div className="flex items-center justify-end gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onPreview(file)}
-            title={t("reverseShares.components.fileActions.preview")}
-          >
-            <Eye className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onCopy(file)}
-            disabled={copyingFile === file.id}
-            title={
-              copyingFile === file.id
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="sm" onClick={() => onPreview(file)}>
+                <Eye className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t("reverseShares.components.fileActions.preview")}</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onCopy(file)}
+                disabled={copyingFile === file.id}
+                className="text-primary hover:text-primary hover:bg-primary/10 disabled:opacity-50"
+              >
+                {copyingFile === file.id ? (
+                  <Spinner size="sm" />
+                ) : (
+                  <ClipboardCopy className="h-4 w-4" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {copyingFile === file.id
                 ? t("reverseShares.components.fileActions.copying")
-                : t("reverseShares.components.fileActions.copyToMyFiles")
-            }
-            className="text-primary hover:text-primary hover:bg-primary/10 disabled:opacity-50"
-          >
-            {copyingFile === file.id ? (
-              <Spinner size="sm" />
-            ) : (
-              <ClipboardCopy className="h-4 w-4" />
-            )}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onDownload(file)}
-            title={t("reverseShares.components.fileActions.download")}
-          >
-            <Download className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onDelete(file)}
-            title={t("reverseShares.components.fileActions.delete")}
-            className="text-destructive hover:text-destructive/80 hover:bg-destructive/10"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+                : t("reverseShares.components.fileActions.copyToMyFiles")}
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="sm" onClick={() => onDownload(file)}>
+                <Download className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t("reverseShares.components.fileActions.download")}</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onDelete(file)}
+                className="text-destructive hover:text-destructive/80 hover:bg-destructive/10"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t("reverseShares.components.fileActions.delete")}</TooltipContent>
+          </Tooltip>
         </div>
       </TableCell>
     </TableRow>

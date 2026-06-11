@@ -27,6 +27,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LazyQRCode } from "@/components/ui/lazy-qr-code";
 import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useQrDownload } from "@/hooks/use-qr-download";
 import { logger } from "@/lib/logger";
 import { generateQrFilename } from "@/utils/qr-download";
@@ -246,38 +247,46 @@ export function ReverseShareDetailsModal({
                     >
                       {t("qrCodeModal.title")}
                     </button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-5 w-5 text-muted-foreground hover:text-foreground"
-                      onClick={() =>
-                        downloadQr(
-                          qrContainerRef.current,
-                          generateQrFilename(reverseShare?.name, "reverse-share"),
-                        )
-                      }
-                      disabled={isDownloading}
-                      title={t("qrCodeModal.download")}
-                    >
-                      <Download className="h-3 w-3" />
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-5 w-5 text-muted-foreground hover:text-foreground"
+                          onClick={() =>
+                            downloadQr(
+                              qrContainerRef.current,
+                              generateQrFilename(reverseShare?.name, "reverse-share"),
+                            )
+                          }
+                          disabled={isDownloading}
+                        >
+                          <Download className="h-3 w-3" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>{t("qrCodeModal.download")}</TooltipContent>
+                    </Tooltip>
                   </div>
                   <div className="flex flex-col items-start justify-start">
-                    <button
-                      ref={qrContainerRef}
-                      type="button"
-                      className="p-2 bg-card rounded-lg cursor-pointer hover:opacity-80 transition-opacity duration-300 border-0"
-                      onClick={() => onViewQrCode?.(reverseShare)}
-                      title={t("reverseShares.actions.viewQrCode")}
-                    >
-                      <LazyQRCode
-                        value={reverseShareLink}
-                        size={100}
-                        level="H"
-                        fgColor="#000000"
-                        bgColor="#FFFFFF"
-                      />
-                    </button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          ref={qrContainerRef}
+                          type="button"
+                          className="p-2 bg-card rounded-lg cursor-pointer hover:opacity-80 transition-opacity duration-300 border-0"
+                          onClick={() => onViewQrCode?.(reverseShare)}
+                        >
+                          <LazyQRCode
+                            value={reverseShareLink}
+                            size={100}
+                            level="H"
+                            fgColor="#000000"
+                            bgColor="#FFFFFF"
+                          />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>{t("reverseShares.actions.viewQrCode")}</TooltipContent>
+                    </Tooltip>
                   </div>
                 </div>
               )}
@@ -290,19 +299,23 @@ export function ReverseShareDetailsModal({
                   {t("reverseShares.modals.details.linkSection")}
                 </h3>
                 {onCreateAlias && (
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-5 w-5 text-muted-foreground hover:text-foreground"
-                    onClick={() => setShowAliasModal(true)}
-                    title={
-                      reverseShareLink
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-5 w-5 text-muted-foreground hover:text-foreground"
+                        onClick={() => setShowAliasModal(true)}
+                      >
+                        <Pencil className="h-3 w-3" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {reverseShareLink
                         ? t("reverseShares.modals.details.editAlias")
-                        : t("reverseShares.modals.details.createAlias")
-                    }
-                  >
-                    <Pencil className="h-3 w-3" />
-                  </Button>
+                        : t("reverseShares.modals.details.createAlias")}
+                    </TooltipContent>
+                  </Tooltip>
                 )}
               </div>
 
@@ -313,24 +326,32 @@ export function ReverseShareDetailsModal({
                     readOnly
                     className="flex-1 bg-muted/30 text-sm h-8"
                   />
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={handleCopyLink}
-                    title={t("reverseShares.modals.details.copyLink")}
-                  >
-                    <Copy className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={handleOpenLink}
-                    title={t("reverseShares.modals.details.openLink")}
-                  >
-                    <Link className="h-3.5 w-3.5" />
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={handleCopyLink}
+                      >
+                        <Copy className="h-3.5 w-3.5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{t("reverseShares.modals.details.copyLink")}</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={handleOpenLink}
+                      >
+                        <Link className="h-3.5 w-3.5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{t("reverseShares.modals.details.openLink")}</TooltipContent>
+                  </Tooltip>
                 </div>
               ) : (
                 <div className="flex items-center justify-between p-2 bg-muted/20 rounded-lg">
@@ -411,15 +432,21 @@ export function ReverseShareDetailsModal({
                       {t("reverseShares.modals.details.protection")}
                     </div>
                     {onUpdatePassword && (
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-4 w-4 text-muted-foreground hover:text-foreground"
-                        onClick={() => setShowPasswordModal(true)}
-                        title={t("reverseShares.modals.details.editPassword")}
-                      >
-                        <Pencil className="h-2.5 w-2.5" />
-                      </Button>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-4 w-4 text-muted-foreground hover:text-foreground"
+                            onClick={() => setShowPasswordModal(true)}
+                          >
+                            <Pencil className="h-2.5 w-2.5" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          {t("reverseShares.modals.details.editPassword")}
+                        </TooltipContent>
+                      </Tooltip>
                     )}
                   </div>
                   <div className="mt-1">

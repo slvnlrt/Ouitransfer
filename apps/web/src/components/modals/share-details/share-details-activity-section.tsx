@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { getShareVisits } from "@/http/endpoints";
 import type { ShareVisit } from "@/http/endpoints/shares/types";
 import { queryKeys } from "@/lib/query-keys";
@@ -62,21 +63,24 @@ function VisitEntry({ visit }: VisitEntryProps) {
           <p className="text-xs text-muted-foreground">{t("shareDetails.activity.anonymous")}</p>
         )}
         {visit.identificationSource !== "anonymous" &&
-          visit.identificationSource in SOURCE_LABEL_KEY && (
-            <span
-              className="inline-block mt-0.5 px-1.5 py-0.5 text-[10px] rounded bg-muted text-muted-foreground"
-              // Comfort-feature honesty (R-2): a "cookie" (self-declared) attribution is
-              // unverified and spoofable. Surface a subtle hint so the owner doesn't read it
-              // as a verified identity. The verified "tracking_token" source gets no caveat.
-              title={
-                visit.identificationSource === "cookie"
-                  ? t("shareDetails.activity.source.selfDeclaredHint")
-                  : undefined
-              }
-            >
+          visit.identificationSource in SOURCE_LABEL_KEY &&
+          (visit.identificationSource === "cookie" ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="inline-block mt-0.5 px-1.5 py-0.5 text-[10px] rounded bg-muted text-muted-foreground">
+                  {t(SOURCE_LABEL_KEY[visit.identificationSource as keyof typeof SOURCE_LABEL_KEY])}
+                </span>
+              </TooltipTrigger>
+              {/* Comfort-feature honesty (R-2): a "cookie" (self-declared) attribution is
+                  unverified and spoofable. Surface a subtle hint so the owner doesn't read it
+                  as a verified identity. The verified "tracking_token" source gets no caveat. */}
+              <TooltipContent>{t("shareDetails.activity.source.selfDeclaredHint")}</TooltipContent>
+            </Tooltip>
+          ) : (
+            <span className="inline-block mt-0.5 px-1.5 py-0.5 text-[10px] rounded bg-muted text-muted-foreground">
               {t(SOURCE_LABEL_KEY[visit.identificationSource as keyof typeof SOURCE_LABEL_KEY])}
             </span>
-          )}
+          ))}
       </div>
       <span className="text-xs text-muted-foreground flex-shrink-0 mt-0.5">
         {format.relativeTime(new Date(visit.createdAt))}

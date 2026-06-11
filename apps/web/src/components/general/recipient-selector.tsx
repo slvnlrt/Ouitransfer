@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Loader } from "@/components/ui/loader";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSecureConfigValue } from "@/hooks/use-secure-configs";
 import {
   addRecipients,
@@ -315,17 +316,23 @@ export function RecipientSelector({
 
           {recipients.length > 0 && shareAlias && showSmtpControls && (
             <div className="flex flex-col sm:flex-row gap-2 sm:w-auto w-full">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleRemindNonDownloaders}
-                disabled={!smtpReady || isReminding || pendingCount === 0}
-                className="sm:w-auto w-full"
-                title={t("recipientSelector.remindNonDownloadersHint", { count: pendingCount })}
-              >
-                {isReminding ? <Loader size="sm" /> : <BellRing className="h-4 w-4" />}
-                {t("recipientSelector.remindNonDownloaders", { count: pendingCount })}
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleRemindNonDownloaders}
+                    disabled={!smtpReady || isReminding || pendingCount === 0}
+                    className="sm:w-auto w-full"
+                  >
+                    {isReminding ? <Loader size="sm" /> : <BellRing className="h-4 w-4" />}
+                    {t("recipientSelector.remindNonDownloaders", { count: pendingCount })}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {t("recipientSelector.remindNonDownloadersHint", { count: pendingCount })}
+                </TooltipContent>
+              </Tooltip>
               <Button
                 variant="outline"
                 size="sm"
@@ -370,15 +377,19 @@ export function RecipientSelector({
                 <Trash2 className="h-4 w-4" />
                 {t("recipientSelector.removeSelected")}
               </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSelectedForAction(new Set())}
-                className="h-8 w-8 p-0 self-center"
-                title={t("common.cancel")}
-              >
-                <X className="h-4 w-4" />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedForAction(new Set())}
+                    className="h-8 w-8 p-0 self-center"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{t("common.cancel")}</TooltipContent>
+              </Tooltip>
             </div>
           </div>
         )}
@@ -446,18 +457,31 @@ export function RecipientSelector({
                           <div className="flex flex-wrap items-center gap-2 mt-0.5">
                             {/* Primary download-status badge (R-6): keyed off lastDownloadedAt */}
                             {hasDownloaded ? (
-                              <span
-                                className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
-                                title={t("recipientSelector.downloadedAt", {
-                                  date: format.dateTime(new Date(lastDownloadedAt), {
-                                    dateStyle: "medium",
-                                    timeStyle: "short",
-                                  }),
-                                })}
-                              >
-                                <Download className="h-3 w-3" aria-hidden="true" />
-                                {t("recipientSelector.downloaded")}
-                              </span>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span
+                                    role="img"
+                                    className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
+                                    aria-label={t("recipientSelector.downloadedAt", {
+                                      date: format.dateTime(new Date(lastDownloadedAt), {
+                                        dateStyle: "medium",
+                                        timeStyle: "short",
+                                      }),
+                                    })}
+                                  >
+                                    <Download className="h-3 w-3" aria-hidden="true" />
+                                    {t("recipientSelector.downloaded")}
+                                  </span>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  {t("recipientSelector.downloadedAt", {
+                                    date: format.dateTime(new Date(lastDownloadedAt), {
+                                      dateStyle: "medium",
+                                      timeStyle: "short",
+                                    }),
+                                  })}
+                                </TooltipContent>
+                              </Tooltip>
                             ) : isPending ? (
                               <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium bg-muted text-muted-foreground">
                                 <Clock className="h-3 w-3" aria-hidden="true" />
@@ -488,31 +512,39 @@ export function RecipientSelector({
 
                       <div className="flex items-center gap-1">
                         {showSmtpControls && shareAlias && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 text-primary hover:text-primary hover:bg-primary/10"
-                            onClick={() => notify([email])}
-                            disabled={!smtpReady || notifyingEmails.has(email)}
-                            title={t("recipientSelector.notifySingle")}
-                          >
-                            {notifyingEmails.has(email) ? (
-                              <Loader size="sm" />
-                            ) : (
-                              <Bell className="h-4 w-4" />
-                            )}
-                          </Button>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 text-primary hover:text-primary hover:bg-primary/10"
+                                onClick={() => notify([email])}
+                                disabled={!smtpReady || notifyingEmails.has(email)}
+                              >
+                                {notifyingEmails.has(email) ? (
+                                  <Loader size="sm" />
+                                ) : (
+                                  <Bell className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>{t("recipientSelector.notifySingle")}</TooltipContent>
+                          </Tooltip>
                         )}
 
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
-                          onClick={() => handleRemoveRecipient(email)}
-                          title={t("recipientSelector.removeSingle")}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                              onClick={() => handleRemoveRecipient(email)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>{t("recipientSelector.removeSingle")}</TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
                   );

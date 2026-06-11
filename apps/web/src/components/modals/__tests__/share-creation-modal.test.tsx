@@ -41,6 +41,7 @@ vi.mock("@/hooks/use-qr-download", () => ({
 }));
 
 import { ShareCreationModal } from "@/components/modals/share-creation-modal";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { createShare, createShareAlias, listFiles, listFolders } from "@/http/endpoints";
 
 const mockCreateShare = vi.mocked(createShare);
@@ -73,7 +74,11 @@ async function gotoLinkStep() {
 
 describe("ShareCreationModal", () => {
   it("does not persist the share while navigating between steps", async () => {
-    render(<ShareCreationModal isOpen onClose={noop} onSuccess={noop} />);
+    render(
+      <TooltipProvider>
+        <ShareCreationModal isOpen onClose={noop} onSuccess={noop} />
+      </TooltipProvider>,
+    );
     await waitFor(() => expect(mockListFiles).toHaveBeenCalled());
 
     await gotoLinkStep();
@@ -86,7 +91,11 @@ describe("ShareCreationModal", () => {
   it("'Later' creates the share without an alias", async () => {
     const onClose = vi.fn();
     const onSuccess = vi.fn();
-    render(<ShareCreationModal isOpen onClose={onClose} onSuccess={onSuccess} />);
+    render(
+      <TooltipProvider>
+        <ShareCreationModal isOpen onClose={onClose} onSuccess={onSuccess} />
+      </TooltipProvider>,
+    );
     await waitFor(() => expect(mockListFiles).toHaveBeenCalled());
 
     await gotoLinkStep();
@@ -99,7 +108,11 @@ describe("ShareCreationModal", () => {
   });
 
   it("'Create link' creates the share and then its alias", async () => {
-    render(<ShareCreationModal isOpen onClose={noop} onSuccess={noop} />);
+    render(
+      <TooltipProvider>
+        <ShareCreationModal isOpen onClose={noop} onSuccess={noop} />
+      </TooltipProvider>,
+    );
     await waitFor(() => expect(mockListFiles).toHaveBeenCalled());
 
     await gotoLinkStep();
@@ -113,12 +126,14 @@ describe("ShareCreationModal", () => {
 
   it("pre-fills the name from a single preselected file", async () => {
     render(
-      <ShareCreationModal
-        isOpen
-        onClose={noop}
-        onSuccess={noop}
-        preselected={{ files: [{ id: "f1", name: "photo.png" }], folders: [] }}
-      />,
+      <TooltipProvider>
+        <ShareCreationModal
+          isOpen
+          onClose={noop}
+          onSuccess={noop}
+          preselected={{ files: [{ id: "f1", name: "photo.png" }], folders: [] }}
+        />
+      </TooltipProvider>,
     );
     await waitFor(() => expect(mockListFiles).toHaveBeenCalled());
 

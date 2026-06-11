@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Loader } from "@/components/ui/loader";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { logger } from "@/lib/logger";
 import { customNanoid } from "@/lib/utils";
 import { ALIAS_MAX_LENGTH, ALIAS_MIN_LENGTH, getAliasValidationError } from "@/utils/alias";
@@ -140,19 +141,25 @@ export function GenerateAliasModal({
                 <FormItem>
                   <div className="flex items-center justify-between">
                     <FormLabel>{t("reverseShares.modals.alias.aliasLabel")}</FormLabel>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
-                      onClick={() => {
-                        const randomAlias = generateDefaultAlias();
-                        field.onChange(randomAlias);
-                      }}
-                      title={t("reverseShares.modals.alias.randomTooltip")}
-                    >
-                      <Dices className="h-4 w-4" />
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
+                          onClick={() => {
+                            const randomAlias = generateDefaultAlias();
+                            field.onChange(randomAlias);
+                          }}
+                        >
+                          <Dices className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {t("reverseShares.modals.alias.randomTooltip")}
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                   <FormControl>
                     <Input
@@ -200,16 +207,22 @@ export function GenerateAliasModal({
                       {currentLink}
                     </code>
                   </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={handleCopyLink}
-                    className="shrink-0"
-                    title={t("reverseShares.modals.alias.copyCurrentLink")}
-                  >
-                    <Copy className="h-4 w-4" />
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleCopyLink}
+                        className="shrink-0"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {t("reverseShares.modals.alias.copyCurrentLink")}
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
               </div>
             )}
