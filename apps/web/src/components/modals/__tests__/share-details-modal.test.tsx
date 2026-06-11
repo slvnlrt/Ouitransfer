@@ -43,6 +43,9 @@ vi.mock("@/components/modals/qr-code-modal", () => ({
 vi.mock("@/components/modals/share-details/share-details-files-list", () => ({
   ShareDetailsFilesList: () => null,
 }));
+vi.mock("@/components/modals/share-details/share-details-recipients-list", () => ({
+  ShareDetailsRecipientsList: () => null,
+}));
 vi.mock("@/components/modals/share-details/share-details-info-section", () => ({
   ShareDetailsInfoSection: () => <div data-testid="info-section" />,
 }));

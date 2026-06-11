@@ -15,7 +15,16 @@ Détails dans `features/SESSIONS.md`.
 
 ---
 
-## CORS / Variables d'environnement en déploiement pré-prod
+## ✅ CORS / Variables d'environnement en déploiement pré-prod — RÉSOLU (2026-06-11)
+
+**Cause** : `CORS_ORIGINS` (alimenté par `OUITRANSFER_FRONTEND_ORIGIN`) ne listait
+que l'origine externe ; le host interne (`burger.lan`) absent de la liste → le
+login (POST, donc en-tête `Origin` envoyé) tombait en rejet CORS. Le code
+supportant déjà les listes séparées par virgule, le fix déploiement est de mettre
+les deux hosts : `OUITRANSFER_FRONTEND_ORIGIN="https://...grad-system.com,https://...burger.lan"`.
+**B-30 fixé** côté code (`app.ts` : `ForbiddenError` → 403 au lieu de 500, + tests
+preflight) et doc multi-origines clarifiée (`.env.docker.example`, `docker-compose.yaml`).
+Confirmé fonctionnel en prod. Détails ci-dessous (archive).
 
 ### Symptôme observé
 - Accès depuis l'URL interne (`http://ouitransfer.burger.lan`) → login échoue avec HTTP 500
@@ -57,15 +66,13 @@ OUITRANSFER_WEB_TAG=latest
 
 ---
 
-## Destinataires non éditables dans la modal détails d'un share
+## ✅ Destinataires éditables dans la modal détails d'un share — RÉSOLU (2026-06-11)
 
-### Symptôme
-Dans `share-details-modal.tsx`, les destinataires (`recipients`) sont affichés en lecture seule : on voit la liste mais on ne peut ni ajouter ni supprimer de destinataire. Or toutes les autres sections de la modal (nom, description, sécurité, expiration, etc.) sont éditables in-place.
-
-### Contexte
-- Le composant `RecipientSelector` (ou équivalent) existe déjà dans la codebase — il est utilisé dans la modal de création du share (`create-share-modal.tsx`)
-- Les endpoints API existent : `POST /shares/:id/recipients` et `DELETE /shares/:id/recipients`
-- La modal affiche déjà la liste des destinataires avec leur statut (downloaded/pending)
-
-### Action
-Brancher l'ajout/suppression de destinataires dans `share-details-modal.tsx`, en s'inspirant du composant utilisé à la création. Vérifier si le `RecipientSelector` peut être réutilisé tel quel ou s'il faut un sous-composant dédié pour l'édition in-place.
+La section destinataires de `share-details-modal.tsx` (jusque-là en lecture seule)
+expose maintenant un bouton « gérer » (crayon), exactement comme la section
+fichiers. Rendu extrait dans un sous-composant `ShareDetailsRecipientsList`
+(cohérent avec `ShareDetailsFilesList`) ; le bouton ouvre la modal « Gérer les
+destinataires » existante (`RecipientSelector`, déjà câblée via
+`setShareToManageRecipients`) — ajout/suppression/notification. La section
+s'affiche aussi pour les propriétaires sans destinataire (pour pouvoir ajouter le
+premier). Câblé dans les deux hosts (`shares-modals.tsx`, `dashboard-modals.tsx`).

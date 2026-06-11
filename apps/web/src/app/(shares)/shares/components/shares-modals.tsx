@@ -94,6 +94,7 @@ export function SharesModals({
         }
         onGenerateLink={shareManager.handleGenerateLink}
         onManageFiles={shareManager.setShareToManageFiles}
+        onManageRecipients={shareManager.setShareToManageRecipients}
         refreshTrigger={shareDetailsRefresh}
         onSuccess={handleShareSuccess}
       />

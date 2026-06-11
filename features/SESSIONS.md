@@ -1,5 +1,11 @@
 # Session Log
 
+## 2026-06-11 (pre-prod CORS fix + editable share recipients)
+
+- **CORS / pré-prod (B-30) — résolu :** En déploiement dual-host (Traefik externe `grad-system.com` + interne `burger.lan`), le login échouait en interne (HTTP 500 `Not allowed by CORS`). Cause : `CORS_ORIGINS` (via `OUITRANSFER_FRONTEND_ORIGIN`) ne listait que l'origine externe ; le login étant un POST, le navigateur envoie `Origin: https://…burger.lan` qui n'était pas dans l'allow-list. Le code splittait déjà `CORS_ORIGINS` sur les virgules → fix déploiement : lister les deux hosts. **B-30 (code)** : `apps/server/src/app.ts` rejetait via un `new Error(...)` générique → 500 ; remplacé par `ForbiddenError` → le `globalErrorHandler` mappe sur **403** (code `FORBIDDEN`). Ajout de 2 tests `app.inject` (preflight OPTIONS : origine non listée → 403 ; liste virgulée → 204 + en-tête). Doc multi-origines clarifiée (`.env.docker.example`, `docker-compose.yaml` : « lister TOUS les hostnames servis, séparés par virgule »). B-30 marqué résolu dans `BUGS.md`. Confirmé fonctionnel en prod.
+- **Destinataires éditables dans la modal détails — résolu :** `share-details-modal.tsx` affichait les destinataires en lecture seule. Extrait le rendu dans un sous-composant `ShareDetailsRecipientsList` (cohérent avec `ShareDetailsFilesList`) avec un bouton « gérer » (crayon) qui ouvre la modal « Gérer les destinataires » existante (`RecipientSelector` — ajout/suppression/notification, déjà câblée via `setShareToManageRecipients`). La section s'affiche aussi pour les propriétaires sans destinataire (ajout du premier). Câblé dans les deux hosts (`shares-modals.tsx`, `dashboard-modals.tsx`). Nettoyage des imports désormais inutilisés dans la modal.
+- **Vérification :** server type-check + tests OK (CORS) ; web type-check clean, biome clean, knip clean, 339 web tests pass.
+
 ## 2026-06-11 (cross-modal consistency audit — i18n, correctness, design)
 
 - **Scope:** Full audit of all modals in `apps/web/src/components/modals/` (not just those modified in the previous session) for i18n gaps, correctness issues, and visual inconsistencies. All findings fixed across 8 commits.
