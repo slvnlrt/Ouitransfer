@@ -182,7 +182,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "Wird verschoben…"
   },
   "createShare": {
     "title": "Freigabe Erstellen",
@@ -203,7 +204,8 @@
     "searchLabel": "Suchen",
     "tabs": {
       "shareDetails": "Freigabe-Details",
-      "selectFiles": "Dateien auswählen"
+      "selectFiles": "Dateien auswählen",
+      "shareLink": "Freigabelink"
     },
     "errors": {
       "nameRequired": "Freigabename ist erforderlich"
@@ -220,7 +222,11 @@
     "fieldHidden": "Verborgen",
     "fieldOptional": "Optional",
     "fieldRequired": "Erforderlich",
-    "filesOptionalHint": "Das Hinzufügen von Dateien ist optional — Sie können jetzt eine leere Freigabe erstellen und Dateien später hinzufügen."
+    "filesOptionalHint": "Das Hinzufügen von Dateien ist optional — Sie können jetzt eine leere Freigabe erstellen und Dateien später hinzufügen.",
+    "nextGenerateLink": "Weiter: Link",
+    "linkStepDescription": "Erstellen Sie einen benutzerdefinierten Link, damit andere auf diese Freigabe zugreifen können – oder überspringen Sie diesen Schritt und fügen Sie ihn später hinzu.",
+    "nameFieldRequiredHelp": "Legt fest, ob Besucher beim Öffnen der Freigabe nach ihrem Namen gefragt werden.",
+    "emailFieldRequiredHelp": "Legt fest, ob Besucher beim Öffnen der Freigabe nach ihrer E-Mail-Adresse gefragt werden."
   },
   "customization": {
     "breadcrumb": "Anpassung",
@@ -633,7 +639,8 @@
     "title": "Bild bearbeiten",
     "rotate": "Drehen",
     "zoom": "Zoom",
-    "cropInstructions": "Ziehen Sie, um die Position zu ändern, ändern Sie die Größe der Ecken, um die Zuschneidefläche anzupassen"
+    "cropInstructions": "Ziehen Sie, um die Position zu ändern, ändern Sie die Größe der Ecken, um die Zuschneidefläche anzupassen",
+    "cropAlt": "Zu schneidendes Bild"
   },
   "login": {
     "welcome": "Willkommen zu",
@@ -1330,6 +1337,9 @@
           "aborted": "Kopiervorgang wurde wegen Zeitüberschreitung abgebrochen."
         },
         "downloading": "Wird heruntergeladen..."
+      },
+      "delete": {
+        "linkLabel": "Link: /r/{alias}"
       }
     },
     "form": {
@@ -2153,7 +2163,9 @@
       "active": "Aktiv",
       "expired": "Abgelaufen",
       "paused": "Pausiert",
-      "maxViewsReached": "Aufruf-Limit erreicht"
+      "maxViewsReached": "Aufruf-Limit erreicht",
+      "noLink": "Kein Link",
+      "noLinkTooltip": "Diese Freigabe hat noch keinen Link – sie ist nicht erreichbar. Erstellen Sie einen Link, um sie zu teilen."
     },
     "security": {
       "protected": "Geschützt",
@@ -2208,7 +2220,8 @@
       "verificationCodePlaceholder": "6-stelligen Code eingeben",
       "verificationCodeDescription": "Geben Sie den 6-stelligen Code aus Ihrer Authenticator-App ein",
       "verifyAndEnable": "Überprüfen & Aktivieren",
-      "cancel": "Abbrechen"
+      "cancel": "Abbrechen",
+      "qrCodeAlt": "2FA-QR-Code"
     },
     "disable": {
       "title": "Zwei-Faktor-Authentifizierung deaktivieren",
@@ -2218,7 +2231,8 @@
       "totpLabel": "Bestätigungscode",
       "totpHint": "Geben Sie Ihren 6-stelligen Authentifizierungscode oder einen Backup-Code ein",
       "confirm": "Deaktivierung bestätigen",
-      "cancel": "Abbrechen"
+      "cancel": "Abbrechen",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "Backup-Codes",
@@ -2717,7 +2731,13 @@
       "deactivated": "Deaktiviert",
       "reactivated": "Reaktiviert",
       "skipped": "Übersprungen",
-      "status": "Status"
+      "status": "Status",
+      "statusLabel": {
+        "success": "Erfolgreich",
+        "error": "Fehler",
+        "partial": "Teilweise",
+        "running": "Läuft"
+      }
     },
     "syncDetail": {
       "title": "Synchronisierungsdetails",
@@ -2725,7 +2745,11 @@
       "type": "Typ",
       "username": "Benutzername",
       "email": "E-Mail",
-      "message": "Nachricht"
+      "message": "Nachricht",
+      "detailType": {
+        "skip": "Übersprungen",
+        "error": "Fehler"
+      }
     },
     "banner": {
       "active": "LDAP/AD-Synchronisierung aktiv",

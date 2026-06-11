@@ -1,5 +1,6 @@
 "use client";
 
+import { Files, Pencil, Trash2, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -21,6 +22,7 @@ import { Switch } from "@/components/ui/switch";
 import {
   addFiles,
   addFolders,
+  listFiles,
   removeFiles,
   removeFolders,
   updateSharePassword,
@@ -87,10 +89,10 @@ export function ShareActionsModals({
       try {
         const [allFoldersResponse, allFilesResponse] = await Promise.all([
           listFolders(),
-          fetch("/api/files?recursive=true").then((res) => res.json()),
+          listFiles({ recursive: true }),
         ]);
         setAllFolders(allFoldersResponse.data.folders || []);
-        setAllFiles(allFilesResponse.files || []);
+        setAllFiles(allFilesResponse.data.files || []);
       } catch (error) {
         logger.error("Error loading all files and folders:", {
           err: error instanceof Error ? error.message : String(error),
@@ -305,9 +307,12 @@ export function ShareActionsModals({
   return (
     <>
       <Dialog open={!!shareToDelete} onOpenChange={() => onCloseDelete()}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{t("shareActions.deleteTitle")}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Trash2 className="h-5 w-5" />
+              {t("shareActions.deleteTitle")}
+            </DialogTitle>
             <DialogDescription>{t("shareActions.deleteConfirmation")}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -322,9 +327,12 @@ export function ShareActionsModals({
       </Dialog>
 
       <Dialog open={!!shareToEdit} onOpenChange={() => onCloseEdit()}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>{t("shareActions.editTitle")}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Pencil className="h-5 w-5" />
+              {t("shareActions.editTitle")}
+            </DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4">
             <div className="grid w-full items-center gap-1.5">
@@ -431,9 +439,12 @@ export function ShareActionsModals({
       </Dialog>
 
       <Dialog open={!!shareToManageFiles} onOpenChange={handleManageFilesClose}>
-        <DialogContent className="max-w-2xl max-h-[80vh] w-full">
+        <DialogContent className="sm:max-w-3xl max-h-[80vh] w-full">
           <DialogHeader>
-            <DialogTitle>{t("shareActions.manageFilesTitle")}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Files className="h-5 w-5" />
+              {t("shareActions.manageFilesTitle")}
+            </DialogTitle>
             <DialogDescription>{t("shareActions.manageFilesDescription")}</DialogDescription>
           </DialogHeader>
 
@@ -511,9 +522,7 @@ export function ShareActionsModals({
             </Button>
             <Button
               onClick={handleManageFilesSave}
-              disabled={
-                isManageFilesLoading || isManageFilesSaving || manageFilesSelectedItems.length === 0
-              }
+              disabled={isManageFilesLoading || isManageFilesSaving}
             >
               {isManageFilesSaving ? t("common.saving") : t("common.save")}
             </Button>
@@ -522,9 +531,10 @@ export function ShareActionsModals({
       </Dialog>
 
       <Dialog open={!!shareToManageRecipients} onOpenChange={() => onCloseManageRecipients()}>
-        <DialogContent className="sm:max-w-[500px] md:max-w-[650px] max-h-[85vh] overflow-hidden">
+        <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-hidden">
           <DialogHeader className="space-y-3">
-            <DialogTitle className="text-xl font-semibold">
+            <DialogTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
               {t("shareActions.manageRecipientsTitle")}
             </DialogTitle>
             <DialogDescription className="text-muted-foreground">

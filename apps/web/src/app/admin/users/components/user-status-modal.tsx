@@ -1,10 +1,15 @@
-import { DialogTitle } from "@radix-ui/react-dialog";
 import { User } from "lucide-react";
 
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import type { UserStatusModalProps } from "../types";
 
 export function UserStatusModal({ isOpen, onClose, user, onConfirm }: UserStatusModalProps) {
@@ -12,7 +17,7 @@ export function UserStatusModal({ isOpen, onClose, user, onConfirm }: UserStatus
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader className="flex flex-col gap-1">
           <DialogTitle className="flex items-center gap-2 font-semibold">
             <User className="size-6 me-1" />

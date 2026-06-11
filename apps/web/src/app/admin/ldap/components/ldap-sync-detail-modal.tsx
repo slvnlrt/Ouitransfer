@@ -1,5 +1,6 @@
 "use client";
 
+import { RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -38,11 +39,14 @@ export function LdapSyncDetailModal({ log, isOpen, onClose }: LdapSyncDetailModa
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="sm:max-w-3xl">
         {log && (
           <>
             <DialogHeader>
-              <DialogTitle>{t("ldap.syncDetail.title")}</DialogTitle>
+              <DialogTitle className="flex items-center gap-2">
+                <RefreshCw className="h-5 w-5" />
+                {t("ldap.syncDetail.title")}
+              </DialogTitle>
               {/* M-6: Show timestamps and duration */}
               <div className="flex items-center gap-4 text-xs text-muted-foreground">
                 <span>
@@ -89,7 +93,7 @@ export function LdapSyncDetailModal({ log, isOpen, onClose }: LdapSyncDetailModa
                         : "secondary"
                   }
                 >
-                  {log.status}
+                  {t(`ldap.sync.statusLabel.${log.status}` as never)}
                 </Badge>
               </div>
             </div>
@@ -113,7 +117,7 @@ export function LdapSyncDetailModal({ log, isOpen, onClose }: LdapSyncDetailModa
                       <TableRow key={`${detail.type}-${detail.username}-${i}`}>
                         <TableCell>
                           <Badge variant={detail.type === "error" ? "destructive" : "secondary"}>
-                            {detail.type}
+                            {t(`ldap.syncDetail.detailType.${detail.type}` as never)}
                           </Badge>
                         </TableCell>
                         <TableCell className="font-mono text-xs">

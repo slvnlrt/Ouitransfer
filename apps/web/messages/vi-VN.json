@@ -186,7 +186,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "Đang di chuyển…"
   },
   "createShare": {
     "title": "Tạo chia sẻ",
@@ -210,7 +211,8 @@
     "itemsSelected": "{count} mục đã chọn",
     "tabs": {
       "shareDetails": "Chi tiết chia sẻ",
-      "selectFiles": "Chọn tệp"
+      "selectFiles": "Chọn tệp",
+      "shareLink": "Liên kết chia sẻ"
     },
     "nextSelectFiles": "Tiếp theo: Chọn tệp",
     "searchLabel": "Tìm kiếm",
@@ -224,7 +226,11 @@
     "fieldHidden": "Ẩn",
     "fieldOptional": "Tùy chọn",
     "fieldRequired": "Bắt buộc",
-    "filesOptionalHint": "Thêm tập tin là tùy chọn — bạn có thể tạo chia sẻ trống ngay bây giờ và thêm tập tin sau."
+    "filesOptionalHint": "Thêm tập tin là tùy chọn — bạn có thể tạo chia sẻ trống ngay bây giờ và thêm tập tin sau.",
+    "nextGenerateLink": "Tiếp theo: liên kết",
+    "linkStepDescription": "Tạo một liên kết tùy chỉnh để mọi người có thể truy cập mục chia sẻ này — hoặc bỏ qua và thêm sau.",
+    "nameFieldRequiredHelp": "Xác định liệu khách truy cập có được yêu cầu nhập tên khi mở mục chia sẻ hay không.",
+    "emailFieldRequiredHelp": "Xác định liệu khách truy cập có được yêu cầu nhập email khi mở mục chia sẻ hay không."
   },
   "customization": {
     "breadcrumb": "Tùy chỉnh",
@@ -637,7 +643,8 @@
     "title": "Chỉnh sửa hình ảnh",
     "rotate": "Xoay",
     "zoom": "Phóng to",
-    "cropInstructions": "Kéo để định vị lại, thay đổi kích thước các góc để điều chỉnh vùng cắt"
+    "cropInstructions": "Kéo để định vị lại, thay đổi kích thước các góc để điều chỉnh vùng cắt",
+    "cropAlt": "Hình ảnh để cắt"
   },
   "login": {
     "welcome": "Chào mừng đến với",
@@ -1334,6 +1341,9 @@
           "aborted": "Thao tác sao chép đã bị hủy do hết thời gian chờ."
         },
         "downloading": "Đang tải xuống..."
+      },
+      "delete": {
+        "linkLabel": "Liên kết: /r/{alias}"
       }
     },
     "form": {
@@ -2157,7 +2167,9 @@
       "active": "Đang hoạt động",
       "expired": "Đã hết hạn",
       "paused": "Tạm dừng",
-      "maxViewsReached": "Đạt đến giới hạn xem"
+      "maxViewsReached": "Đạt đến giới hạn xem",
+      "noLink": "Không có liên kết",
+      "noLinkTooltip": "Mục chia sẻ này chưa có liên kết và không thể truy cập. Tạo liên kết để chia sẻ."
     },
     "security": {
       "protected": "Được bảo vệ",
@@ -2221,7 +2233,8 @@
       "verificationCodePlaceholder": "Nhập mã 6 chữ số",
       "verificationCodeDescription": "Nhập mã 6 chữ số từ ứng dụng xác thực của bạn",
       "verifyAndEnable": "Xác minh & Bật",
-      "cancel": "Hủy"
+      "cancel": "Hủy",
+      "qrCodeAlt": "Mã QR xác thực 2 yếu tố"
     },
     "disable": {
       "title": "Tắt xác thực hai yếu tố",
@@ -2231,7 +2244,8 @@
       "totpLabel": "Mã xác minh",
       "totpHint": "Nhập mã xác thực 6 chữ số của bạn hoặc mã sao lưu",
       "confirm": "Xác nhận tắt",
-      "cancel": "Hủy"
+      "cancel": "Hủy",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "Mã dự phòng",
@@ -2717,7 +2731,13 @@
       "deactivated": "Đã hủy kích hoạt",
       "reactivated": "Đã kích hoạt lại",
       "skipped": "Bị bỏ qua",
-      "status": "Trạng thái"
+      "status": "Trạng thái",
+      "statusLabel": {
+        "success": "Thành công",
+        "error": "Lỗi",
+        "partial": "Một phần",
+        "running": "Đang chạy"
+      }
     },
     "syncDetail": {
       "title": "Chi tiết đồng bộ",
@@ -2725,7 +2745,11 @@
       "type": "Loại",
       "username": "Tên người dùng",
       "email": "Email",
-      "message": "Tin nhắn"
+      "message": "Tin nhắn",
+      "detailType": {
+        "skip": "Bỏ qua",
+        "error": "Lỗi"
+      }
     },
     "banner": {
       "active": "Đồng bộ LDAP/AD đang hoạt động",

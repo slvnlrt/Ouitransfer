@@ -186,7 +186,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "กำลังย้าย…"
   },
   "createShare": {
     "title": "สร้างแชร์",
@@ -210,7 +211,8 @@
     "itemsSelected": "{count} รายการที่เลือก",
     "tabs": {
       "shareDetails": "รายละเอียดแชร์",
-      "selectFiles": "เลือกไฟล์"
+      "selectFiles": "เลือกไฟล์",
+      "shareLink": "ลิงก์แชร์"
     },
     "nextSelectFiles": "ถัดไป: เลือกไฟล์",
     "searchLabel": "ค้นหา",
@@ -224,7 +226,11 @@
     "fieldHidden": "ซ่อน",
     "fieldOptional": "ไม่บังคับ",
     "fieldRequired": "บังคับ",
-    "filesOptionalHint": "การเพิ่มไฟล์เป็นทางเลือก — คุณสามารถสร้างแชร์ที่ว่างเปล่าตอนนี้และเพิ่มไฟล์ทีหลัง"
+    "filesOptionalHint": "การเพิ่มไฟล์เป็นทางเลือก — คุณสามารถสร้างแชร์ที่ว่างเปล่าตอนนี้และเพิ่มไฟล์ทีหลัง",
+    "nextGenerateLink": "ถัดไป: ลิงก์",
+    "linkStepDescription": "สร้างลิงก์ที่กำหนดเองเพื่อให้ผู้อื่นเข้าถึงการแชร์นี้ได้ — หรือข้ามไปแล้วเพิ่มในภายหลัง",
+    "nameFieldRequiredHelp": "กำหนดว่าจะขอชื่อจากผู้เยี่ยมชมเมื่อเปิดการแชร์หรือไม่",
+    "emailFieldRequiredHelp": "กำหนดว่าจะขออีเมลจากผู้เยี่ยมชมเมื่อเปิดการแชร์หรือไม่"
   },
   "customization": {
     "breadcrumb": "การปรับแต่ง",
@@ -637,7 +643,8 @@
     "title": "แก้ไขรูปภาพ",
     "rotate": "หมุน",
     "zoom": "ซูม",
-    "cropInstructions": "ลากเพื่อเปลี่ยนตำแหน่ง ปรับขนาดมุมเพื่อปรับพื้นที่ครอป"
+    "cropInstructions": "ลากเพื่อเปลี่ยนตำแหน่ง ปรับขนาดมุมเพื่อปรับพื้นที่ครอป",
+    "cropAlt": "รูปภาพที่จะครอบ"
   },
   "login": {
     "welcome": "ยินดีต้อนรับสู่",
@@ -1334,6 +1341,9 @@
           "aborted": "การคัดลอกถูกยกเลิกเนื่องจากหมดเวลา"
         },
         "downloading": "กำลังดาวน์โหลด..."
+      },
+      "delete": {
+        "linkLabel": "ลิงก์: /r/{alias}"
       }
     },
     "form": {
@@ -2157,7 +2167,9 @@
       "active": "ใช้งานอยู่",
       "expired": "หมดอายุแล้ว",
       "paused": "หยุดชั่วคราว",
-      "maxViewsReached": "ถึงขีดจำกัดการดู"
+      "maxViewsReached": "ถึงขีดจำกัดการดู",
+      "noLink": "ไม่มีลิงก์",
+      "noLinkTooltip": "การแชร์นี้ยังไม่มีลิงก์และไม่สามารถเข้าถึงได้ สร้างลิงก์เพื่อแชร์"
     },
     "security": {
       "protected": "ป้องกัน",
@@ -2221,7 +2233,8 @@
       "verificationCodePlaceholder": "ป้อนรหัส 6 หลัก",
       "verificationCodeDescription": "ป้อนรหัส 6 หลักจากแอปผู้ยืนยันตัวตนของคุณ",
       "verifyAndEnable": "ยืนยันตัวตนและเปิดใช้งาน",
-      "cancel": "ยกเลิก"
+      "cancel": "ยกเลิก",
+      "qrCodeAlt": "รหัส QR สำหรับ 2FA"
     },
     "disable": {
       "title": "ปิดใช้งานการยืนยันตัวตนแบบสองปัจจัย",
@@ -2231,7 +2244,8 @@
       "totpLabel": "รหัสการยืนยันตัวตน",
       "totpHint": "ป้อนรหัส TOTP 6 หลักของคุณหรือรหัสสำรอง",
       "confirm": "ยืนยันการปิดใช้งาน",
-      "cancel": "ยกเลิก"
+      "cancel": "ยกเลิก",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "รหัสสำรอง",
@@ -2717,7 +2731,13 @@
       "deactivated": "ปิดใช้งาน",
       "reactivated": "เปิดใช้งานอีกครั้ง",
       "skipped": "ข้าม",
-      "status": "สถานะ"
+      "status": "สถานะ",
+      "statusLabel": {
+        "success": "สำเร็จ",
+        "error": "ข้อผิดพลาด",
+        "partial": "บางส่วน",
+        "running": "กำลังดำเนินการ"
+      }
     },
     "syncDetail": {
       "title": "รายละเอียดการซิงค์",
@@ -2725,7 +2745,11 @@
       "type": "ประเภท",
       "username": "ชื่อผู้ใช้",
       "email": "อีเมล",
-      "message": "ข้อความ"
+      "message": "ข้อความ",
+      "detailType": {
+        "skip": "ข้าม",
+        "error": "ข้อผิดพลาด"
+      }
     },
     "banner": {
       "active": "การซิงค์ LDAP/AD ทำงานอยู่",

@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, RotateCw, X, ZoomIn, ZoomOut } from "lucide-react";
+import { Check, Crop as CropIcon, RotateCw, ZoomIn, ZoomOut } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { type Crop, centerCrop, makeAspectCrop, type PixelCrop } from "react-image-crop";
@@ -183,9 +183,12 @@ export function ImageEditModal({ isOpen, onClose, onSave, imageFile }: ImageEdit
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-2xl h-fit overflow-hidden flex flex-col">
+      <DialogContent className="sm:max-w-3xl h-fit overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle>{t("imageEdit.title")}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <CropIcon className="h-5 w-5" />
+            {t("imageEdit.title")}
+          </DialogTitle>
         </DialogHeader>
 
         <div className="flex-1 overflow-auto">
@@ -264,7 +267,7 @@ export function ImageEditModal({ isOpen, onClose, onSave, imageFile }: ImageEdit
                 >
                   <img
                     ref={imgRef}
-                    alt="Crop me"
+                    alt={t("imageEdit.cropAlt")}
                     src={imageSrc}
                     style={{
                       transform: `scale(${scale}) rotate(${rotate}deg)`,
@@ -281,7 +284,6 @@ export function ImageEditModal({ isOpen, onClose, onSave, imageFile }: ImageEdit
 
         <DialogFooter className="flex gap-2">
           <Button variant="outline" onClick={handleClose} disabled={isLoading}>
-            <X className="h-4 w-4" />
             {t("common.cancel")}
           </Button>
           <Button onClick={handleSave} disabled={isLoading || !completedCrop}>

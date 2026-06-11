@@ -182,7 +182,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "Spostamento…"
   },
   "createShare": {
     "title": "Crea Condivisione",
@@ -203,7 +204,8 @@
     "searchLabel": "Cerca",
     "tabs": {
       "shareDetails": "Dettagli condivisione",
-      "selectFiles": "Seleziona file"
+      "selectFiles": "Seleziona file",
+      "shareLink": "Link di condivisione"
     },
     "errors": {
       "nameRequired": "Il nome della condivisione è obbligatorio"
@@ -220,7 +222,11 @@
     "fieldHidden": "Nascosto",
     "fieldOptional": "Facoltativo",
     "fieldRequired": "Obbligatorio",
-    "filesOptionalHint": "L'aggiunta di file è facoltativa — è possibile creare una condivisione vuota ora e aggiungere file in seguito."
+    "filesOptionalHint": "L'aggiunta di file è facoltativa — è possibile creare una condivisione vuota ora e aggiungere file in seguito.",
+    "nextGenerateLink": "Avanti: link",
+    "linkStepDescription": "Genera un link personalizzato per rendere accessibile questa condivisione, oppure salta questo passaggio e aggiungilo in seguito.",
+    "nameFieldRequiredHelp": "Indica se al visitatore viene chiesto il nome all'apertura della condivisione.",
+    "emailFieldRequiredHelp": "Indica se al visitatore viene chiesta l'email all'apertura della condivisione."
   },
   "customization": {
     "breadcrumb": "Personalizzazione",
@@ -633,7 +639,8 @@
     "title": "Modifica Immagine",
     "rotate": "Ruota",
     "zoom": "Zoom",
-    "cropInstructions": "Trascina per riposizionare, ridimensiona gli angoli per adattare l'area di ritaglio"
+    "cropInstructions": "Trascina per riposizionare, ridimensiona gli angoli per adattare l'area di ritaglio",
+    "cropAlt": "Immagine da ritagliare"
   },
   "login": {
     "welcome": "Benvenuto in",
@@ -1330,6 +1337,9 @@
           "aborted": "L'operazione di copia è stata annullata per timeout."
         },
         "downloading": "Download in corso..."
+      },
+      "delete": {
+        "linkLabel": "Link: /r/{alias}"
       }
     },
     "form": {
@@ -2153,7 +2163,9 @@
       "active": "Attivo",
       "expired": "Scaduto",
       "paused": "Sospeso",
-      "maxViewsReached": "Limite visualizzazioni raggiunto"
+      "maxViewsReached": "Limite visualizzazioni raggiunto",
+      "noLink": "Senza link",
+      "noLinkTooltip": "Questa condivisione non ha ancora un link e non è accessibile. Genera un link per condividerla."
     },
     "security": {
       "protected": "Protetto",
@@ -2208,7 +2220,8 @@
       "verificationCodePlaceholder": "Inserisci il codice a 6 cifre",
       "verificationCodeDescription": "Inserisci il codice a 6 cifre dalla tua app di autenticazione",
       "verifyAndEnable": "Verifica e Abilita",
-      "cancel": "Annulla"
+      "cancel": "Annulla",
+      "qrCodeAlt": "QR Code 2FA"
     },
     "disable": {
       "title": "Disabilita Autenticazione a Due Fattori",
@@ -2218,7 +2231,8 @@
       "totpLabel": "Codice di verifica",
       "totpHint": "Inserisci il tuo codice autenticatore a 6 cifre o un codice di backup",
       "confirm": "Conferma Disabilitazione",
-      "cancel": "Annulla"
+      "cancel": "Annulla",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "Codici di Backup",
@@ -2717,7 +2731,13 @@
       "deactivated": "Disattivato",
       "reactivated": "Riattivato",
       "skipped": "Saltato",
-      "status": "Stato"
+      "status": "Stato",
+      "statusLabel": {
+        "success": "Completato",
+        "error": "Errore",
+        "partial": "Parziale",
+        "running": "In esecuzione"
+      }
     },
     "syncDetail": {
       "title": "Dettagli Sincronizzazione",
@@ -2725,7 +2745,11 @@
       "type": "Tipo",
       "username": "Nome Utente",
       "email": "Email",
-      "message": "Messaggio"
+      "message": "Messaggio",
+      "detailType": {
+        "skip": "Saltato",
+        "error": "Errore"
+      }
     },
     "banner": {
       "active": "Sincronizzazione LDAP/AD attiva",

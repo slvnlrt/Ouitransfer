@@ -3,6 +3,7 @@
 import {
   Copy,
   Download,
+  Info,
   Link,
   Lock,
   LockOpen,
@@ -161,7 +162,10 @@ export function ReverseShareDetailsModal({
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{t("reverseShares.modals.details.title")}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Info className="h-5 w-5" />
+              {t("reverseShares.modals.details.title")}
+            </DialogTitle>
             <DialogDescription>{t("reverseShares.modals.details.description")}</DialogDescription>
           </DialogHeader>
 

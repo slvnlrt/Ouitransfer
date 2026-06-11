@@ -186,7 +186,8 @@
     "copied": "Copied",
     "retry": "Retry",
     "unavailable": "unavailable",
-    "days": "days"
+    "days": "days",
+    "moving": "Moving…"
   },
   "createShare": {
     "title": "Create Share",
@@ -210,7 +211,8 @@
     "itemsSelected": "{count} items selected",
     "tabs": {
       "shareDetails": "Share Details",
-      "selectFiles": "Select Files"
+      "selectFiles": "Select Files",
+      "shareLink": "Share Link"
     },
     "nextSelectFiles": "Next: Select Files",
     "searchLabel": "Search",
@@ -224,7 +226,11 @@
     "fieldHidden": "Hidden",
     "fieldOptional": "Optional",
     "fieldRequired": "Required",
-    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later."
+    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later.",
+    "nextGenerateLink": "Next: Share Link",
+    "linkStepDescription": "Generate a custom link so people can access this share — or skip it and add one later.",
+    "nameFieldRequiredHelp": "Whether visitors are asked for their name when they open the share.",
+    "emailFieldRequiredHelp": "Whether visitors are asked for their email when they open the share."
   },
   "customization": {
     "breadcrumb": "Customization",
@@ -644,7 +650,13 @@
       "deactivated": "Deactivated",
       "reactivated": "Reactivated",
       "skipped": "Skipped",
-      "status": "Status"
+      "status": "Status",
+      "statusLabel": {
+        "success": "Success",
+        "error": "Error",
+        "partial": "Partial",
+        "running": "Running"
+      }
     },
     "syncDetail": {
       "title": "Sync Details",
@@ -652,7 +664,11 @@
       "type": "Type",
       "username": "Username",
       "email": "Email",
-      "message": "Message"
+      "message": "Message",
+      "detailType": {
+        "skip": "Skip",
+        "error": "Error"
+      }
     },
     "banner": {
       "active": "LDAP/AD sync active",
@@ -730,7 +746,8 @@
     "title": "Edit Image",
     "rotate": "Rotate",
     "zoom": "Zoom",
-    "cropInstructions": "Drag to reposition, resize corners to adjust crop area"
+    "cropInstructions": "Drag to reposition, resize corners to adjust crop area",
+    "cropAlt": "Image to crop"
   },
   "login": {
     "welcome": "Welcome to",
@@ -1470,6 +1487,9 @@
           "failed": "Copy operation failed. Please try again.",
           "aborted": "Copy operation was cancelled due to timeout."
         }
+      },
+      "delete": {
+        "linkLabel": "Link: /r/{alias}"
       }
     },
     "form": {
@@ -2293,7 +2313,9 @@
       "active": "Active",
       "expired": "Expired",
       "paused": "Paused",
-      "maxViewsReached": "View Limit Reached"
+      "maxViewsReached": "View Limit Reached",
+      "noLink": "No link",
+      "noLinkTooltip": "This share has no link yet — it isn't accessible. Generate a link to share it."
     },
     "security": {
       "protected": "Protected",
@@ -2409,7 +2431,8 @@
       "verificationCodePlaceholder": "Enter 6-digit code",
       "verificationCodeDescription": "Enter the 6-digit code from your authenticator app",
       "verifyAndEnable": "Verify & Enable",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "qrCodeAlt": "2FA QR Code"
     },
     "disable": {
       "title": "Disable Two-Factor Authentication",
@@ -2419,7 +2442,8 @@
       "totpLabel": "Verification code",
       "totpHint": "Enter your 6-digit authenticator code or a backup code",
       "confirm": "Confirm Disable",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "Backup Codes",

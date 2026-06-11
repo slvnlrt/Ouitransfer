@@ -1,4 +1,4 @@
-import { Trash2, TriangleAlert } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Loader } from "@/components/ui/loader";
 import type { ReverseShare } from "../hooks/use-reverse-shares";
 
 interface DeleteReverseShareModalProps {
@@ -35,19 +36,13 @@ export function DeleteReverseShareModal({
 
   return (
     <Dialog open={!!reverseShare} onOpenChange={() => !isDeleting && onClose()}>
-      <DialogContent className="sm:max-w-[450px]">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
-              <TriangleAlert className="h-5 w-5 text-destructive" />
-            </div>
-            <div>
-              <DialogTitle className="text-start">{t("reverseShares.delete.title")}</DialogTitle>
-            </div>
-          </div>
-          <DialogDescription className="text-start pt-2">
-            {t("reverseShares.delete.description")}
-          </DialogDescription>
+          <DialogTitle className="flex items-center gap-2">
+            <Trash2 className="h-5 w-5" />
+            {t("reverseShares.delete.title")}
+          </DialogTitle>
+          <DialogDescription>{t("reverseShares.delete.description")}</DialogDescription>
         </DialogHeader>
 
         {/* Details of the reverse share to be deleted */}
@@ -61,7 +56,11 @@ export function DeleteReverseShareModal({
               <span>
                 {reverseShare.files?.length || 0} {t("reverseShares.labels.filesReceived")}
               </span>
-              {reverseShare.alias?.alias && <span>Link: /r/{reverseShare.alias.alias}</span>}
+              {reverseShare.alias?.alias && (
+                <span>
+                  {t("reverseShares.modals.delete.linkLabel", { alias: reverseShare.alias.alias })}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -73,7 +72,7 @@ export function DeleteReverseShareModal({
           <Button variant="destructive" onClick={handleConfirm} disabled={isDeleting}>
             {isDeleting ? (
               <>
-                <Trash2 className="h-4 w-4 animate-spin" />
+                <Loader size="sm" />
                 {t("reverseShares.delete.deleting")}
               </>
             ) : (

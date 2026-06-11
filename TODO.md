@@ -2,56 +2,29 @@
 
 ---
 
-## Parcours de création de partage — incohérences UX majeures
+## ✅ Parcours de création de partage — RÉSOLU (2026-06-10)
 
-### Contexte général
-Il existe plusieurs points d'entrée pour créer un partage, et le comportement / les options disponibles **diffèrent selon le chemin emprunté**. L'objectif est d'aligner tous les parcours pour que l'utilisateur ait toujours la même expérience, les mêmes options, et le même comportement — quel que soit le point d'entrée.
-
----
-
-### Parcours 1 : via Fichier > Actions > Partager
-
-**Ce qui est bien :**
-- Section dépliable Confidentialité & Notifications présente et complète
-
-**Problèmes identifiés :**
-1. **Labels incomplets** : Les dropdowns "Exiger le nom du visiteur" et "Exiger l'email du visiteur" n'ont pas de texte explicatif à droite (contrairement à la même section dans d'autres modales). Ajouter une courte description à droite de chaque dropdown pour expliquer l'impact du choix.
-2. **Modale trop étroite** : Cette modale est plus étroite que les autres modales de création/détails. À aligner avec `sm:max-w-3xl` (standard actuel post-redesign).
-3. **Bug de flux "Créer un partage" → modal lien** :
-   - Le bouton "Créer un partage" **crée immédiatement le partage** en base.
-   - Ensuite, la modale de création du lien de partage s'ouvre, avec seulement les boutons "Créer" et "Retour".
-   - **Il manque le bouton "Plus tard"** (présent dans les autres versions de cette modale).
-   - Si l'utilisateur clique "Retour", il revient à la modale précédente — **mais le partage a déjà été créé**. L'état est incohérent : un partage existe sans lien.
-   - **Options possibles** : (a) ajouter "Plus tard" pour fermer proprement, (b) ne créer le partage qu'au moment de la confirmation finale, (c) supprimer le partage si l'utilisateur abandonne via "Retour".
+Unifié dans `apps/web/src/components/modals/share-creation-modal.tsx` (remplace
+`create-share-modal`, `share-item-modal`, `share-multiple-items-modal`). Flux
+unique en 3 étapes (Détails → Fichiers → Lien), toutes les options partout,
+bouton « Plus tard », création différée à l'action terminale (plus d'état
+incohérent via « Retour »), descriptions sous les dropdowns, largeur
+`sm:max-w-3xl`. Bonus livrés : badge « Sans lien » sur la table des partages, et
+fix du bouton « Enregistrer » grisé dans « Gérer les fichiers » sur partage vidé.
+Détails dans `features/SESSIONS.md`.
 
 ---
 
-### Parcours 2 : via le bouton "Créer un partage" (bouton principal)
+## ✅ CORS / Variables d'environnement en déploiement pré-prod — RÉSOLU (2026-06-11)
 
-**Problèmes identifiés :**
-1. **Options manquantes** : Pas de section Confidentialité / Mot de passe disponible dans cette modale, alors qu'elle est présente dans le parcours 1.
-2. **Structure en onglets** : La modale a deux onglets ("Détails du partage", "Sélectionner les fichiers") mais **pas d'onglet "Créer le lien de partage"** — cette étape arrive dans une nouvelle modale séparée après la création.
-3. **Flux en deux étapes distinctes** vs une seule modale multi-onglets dans d'autres parcours.
-
----
-
-### Recommandation d'architecture UX
-
-Refactoriser pour avoir des **composants modaux atomiques et réutilisables** :
-- Un seul composant `ShareCreationModal` (ou workflow unifié) appelé depuis tous les points d'entrée
-- Toutes les options disponibles partout (confidentialité, mot de passe, notifications, destinataires)
-- Un seul flux de création : remplir les détails → sélectionner les fichiers → créer le lien (ou "plus tard") — en une modale multi-étapes ou multi-onglets
-- Le partage ne doit être créé en base **qu'au moment de la confirmation finale** (pas avant)
-
-**Fichiers à auditer en priorité :**
-- `apps/web/src/components/modals/create-share-modal.tsx` — modal "Créer un partage" principal
-- `apps/web/src/components/modals/share-item-modal.tsx` (ou équivalent) — modal via Fichier > Partager
-- `apps/web/src/components/modals/generate-share-link-modal.tsx` — modal création du lien
-- `apps/web/src/components/modals/share-actions-modals.tsx` — autres modales de partage
-
----
-
-## CORS / Variables d'environnement en déploiement pré-prod
+**Cause** : `CORS_ORIGINS` (alimenté par `OUITRANSFER_FRONTEND_ORIGIN`) ne listait
+que l'origine externe ; le host interne (`burger.lan`) absent de la liste → le
+login (POST, donc en-tête `Origin` envoyé) tombait en rejet CORS. Le code
+supportant déjà les listes séparées par virgule, le fix déploiement est de mettre
+les deux hosts : `OUITRANSFER_FRONTEND_ORIGIN="https://...grad-system.com,https://...burger.lan"`.
+**B-30 fixé** côté code (`app.ts` : `ForbiddenError` → 403 au lieu de 500, + tests
+preflight) et doc multi-origines clarifiée (`.env.docker.example`, `docker-compose.yaml`).
+Confirmé fonctionnel en prod. Détails ci-dessous (archive).
 
 ### Symptôme observé
 - Accès depuis l'URL interne (`http://ouitransfer.burger.lan`) → login échoue avec HTTP 500
@@ -93,15 +66,13 @@ OUITRANSFER_WEB_TAG=latest
 
 ---
 
-## Destinataires non éditables dans la modal détails d'un share
+## ✅ Destinataires éditables dans la modal détails d'un share — RÉSOLU (2026-06-11)
 
-### Symptôme
-Dans `share-details-modal.tsx`, les destinataires (`recipients`) sont affichés en lecture seule : on voit la liste mais on ne peut ni ajouter ni supprimer de destinataire. Or toutes les autres sections de la modal (nom, description, sécurité, expiration, etc.) sont éditables in-place.
-
-### Contexte
-- Le composant `RecipientSelector` (ou équivalent) existe déjà dans la codebase — il est utilisé dans la modal de création du share (`create-share-modal.tsx`)
-- Les endpoints API existent : `POST /shares/:id/recipients` et `DELETE /shares/:id/recipients`
-- La modal affiche déjà la liste des destinataires avec leur statut (downloaded/pending)
-
-### Action
-Brancher l'ajout/suppression de destinataires dans `share-details-modal.tsx`, en s'inspirant du composant utilisé à la création. Vérifier si le `RecipientSelector` peut être réutilisé tel quel ou s'il faut un sous-composant dédié pour l'édition in-place.
+La section destinataires de `share-details-modal.tsx` (jusque-là en lecture seule)
+expose maintenant un bouton « gérer » (crayon), exactement comme la section
+fichiers. Rendu extrait dans un sous-composant `ShareDetailsRecipientsList`
+(cohérent avec `ShareDetailsFilesList`) ; le bouton ouvre la modal « Gérer les
+destinataires » existante (`RecipientSelector`, déjà câblée via
+`setShareToManageRecipients`) — ajout/suppression/notification. La section
+s'affiche aussi pour les propriétaires sans destinataire (pour pouvoir ajouter le
+premier). Câblé dans les deux hosts (`shares-modals.tsx`, `dashboard-modals.tsx`).

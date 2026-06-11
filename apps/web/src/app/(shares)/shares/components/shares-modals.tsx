@@ -1,17 +1,14 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-import { CreateShareModal } from "@/components/modals/create-share-modal";
 import { DeleteConfirmationModal } from "@/components/modals/delete-confirmation-modal";
 import { GenerateShareLinkModal } from "@/components/modals/generate-share-link-modal";
 import { QrCodeModal } from "@/components/modals/qr-code-modal";
 import { ShareActionsModals } from "@/components/modals/share-actions-modals";
+import { ShareCreationModal } from "@/components/modals/share-creation-modal";
 import { ShareDetailsModal } from "@/components/modals/share-details-modal";
 import { ShareExpirationModal } from "@/components/modals/share-expiration-modal";
-import { ShareMultipleItemsModal } from "@/components/modals/share-multiple-items-modal";
 import { ShareSecurityModal } from "@/components/modals/share-security-modal";
-import { listFiles } from "@/http/endpoints";
-import { listFolders } from "@/http/endpoints/folders";
 import type { Share } from "@/http/endpoints/shares/types";
 import type { SharesModalsProps } from "../types";
 
@@ -41,18 +38,10 @@ export function SharesModals({
 
   return (
     <>
-      <CreateShareModal
+      <ShareCreationModal
         isOpen={isCreateModalOpen}
         onClose={onCloseCreateModal}
         onSuccess={onSuccess}
-        onShareCreated={(share) => shareManager.setShareToGenerateLink(share)}
-        getAllFilesAndFolders={async () => {
-          const [filesResponse, foldersResponse] = await Promise.all([listFiles(), listFolders()]);
-          return {
-            files: filesResponse.data.files || [],
-            folders: foldersResponse.data.folders || [],
-          };
-        }}
       />
 
       <ShareActionsModals
@@ -105,6 +94,7 @@ export function SharesModals({
         }
         onGenerateLink={shareManager.handleGenerateLink}
         onManageFiles={shareManager.setShareToManageFiles}
+        onManageRecipients={shareManager.setShareToManageRecipients}
         refreshTrigger={shareDetailsRefresh}
         onSuccess={handleShareSuccess}
       />
@@ -131,14 +121,16 @@ export function SharesModals({
         onSuccess={handleShareSuccess}
       />
 
-      <ShareMultipleItemsModal
-        files={fileManager.filesToShare}
-        folders={null}
+      <ShareCreationModal
         isOpen={!!fileManager.filesToShare}
         onClose={() => fileManager.setFilesToShare(null)}
         onSuccess={() => {
           fileManager.handleShareBulkSuccess();
           onSuccess();
+        }}
+        preselected={{
+          files: (fileManager.filesToShare || []).map((f) => ({ id: f.id, name: f.name })),
+          folders: [],
         }}
       />
     </>

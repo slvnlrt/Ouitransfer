@@ -182,7 +182,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "Verplaatsen…"
   },
   "createShare": {
     "title": "Delen Maken",
@@ -203,7 +204,8 @@
     "searchLabel": "Zoeken",
     "tabs": {
       "shareDetails": "Deel details",
-      "selectFiles": "Bestanden selecteren"
+      "selectFiles": "Bestanden selecteren",
+      "shareLink": "Deellink"
     },
     "errors": {
       "nameRequired": "Deelnaam is verplicht"
@@ -220,7 +222,11 @@
     "fieldHidden": "Verborgen",
     "fieldOptional": "Optioneel",
     "fieldRequired": "Verplicht",
-    "filesOptionalHint": "Het toevoegen van bestanden is optioneel — u kunt nu een lege deling aanmaken en later bestanden toevoegen."
+    "filesOptionalHint": "Het toevoegen van bestanden is optioneel — u kunt nu een lege deling aanmaken en later bestanden toevoegen.",
+    "nextGenerateLink": "Volgende: link",
+    "linkStepDescription": "Genereer een aangepaste link zodat anderen toegang krijgen tot deze share, of sla dit over en voeg er later een toe.",
+    "nameFieldRequiredHelp": "Bepaalt of bezoekers om hun naam wordt gevraagd bij het openen van de share.",
+    "emailFieldRequiredHelp": "Bepaalt of bezoekers om hun e-mailadres wordt gevraagd bij het openen van de share."
   },
   "customization": {
     "breadcrumb": "Aanpassing",
@@ -633,7 +639,8 @@
     "title": "Afbeelding bewerken",
     "rotate": "Draai",
     "zoom": "Vergroot",
-    "cropInstructions": "Sleep om te herpositioneren, verander de grootte van de hoeken om de uitsnijdgebied aan te passen"
+    "cropInstructions": "Sleep om te herpositioneren, verander de grootte van de hoeken om de uitsnijdgebied aan te passen",
+    "cropAlt": "Afbeelding bijsnijden"
   },
   "login": {
     "welcome": "Welkom bij",
@@ -1330,6 +1337,9 @@
         },
         "invalidDate": "Ongeldige datum",
         "downloading": "Downloaden..."
+      },
+      "delete": {
+        "linkLabel": "Link: /r/{alias}"
       }
     },
     "form": {
@@ -2153,7 +2163,9 @@
       "active": "Actief",
       "expired": "Verlopen",
       "paused": "Gepauzeerd",
-      "maxViewsReached": "Weergavelimiet bereikt"
+      "maxViewsReached": "Weergavelimiet bereikt",
+      "noLink": "Geen link",
+      "noLinkTooltip": "Deze share heeft nog geen link en is niet toegankelijk. Genereer een link om te delen."
     },
     "security": {
       "protected": "Beveiligd",
@@ -2208,7 +2220,8 @@
       "verificationCodePlaceholder": "Voer 6-cijferige code in",
       "verificationCodeDescription": "Voer de 6-cijferige code van uw authenticator-app in",
       "verifyAndEnable": "Verifiëren & Inschakelen",
-      "cancel": "Annuleren"
+      "cancel": "Annuleren",
+      "qrCodeAlt": "2FA QR-code"
     },
     "disable": {
       "title": "Twee-Factor Authenticatie Uitschakelen",
@@ -2218,7 +2231,8 @@
       "totpLabel": "Verificatiecode",
       "totpHint": "Voer uw 6-cijferige authenticatorcode of een back-upcode in",
       "confirm": "Bevestig Uitschakelen",
-      "cancel": "Annuleren"
+      "cancel": "Annuleren",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "Back-upcodes",
@@ -2717,7 +2731,13 @@
       "deactivated": "Gedeactiveerd",
       "reactivated": "Opnieuw geactiveerd",
       "skipped": "Overgeslagen",
-      "status": "Status"
+      "status": "Status",
+      "statusLabel": {
+        "success": "Geslaagd",
+        "error": "Fout",
+        "partial": "Gedeeltelijk",
+        "running": "Actief"
+      }
     },
     "syncDetail": {
       "title": "Synchronisatiedetails",
@@ -2725,7 +2745,11 @@
       "type": "Type",
       "username": "Gebruikersnaam",
       "email": "E-mail",
-      "message": "Bericht"
+      "message": "Bericht",
+      "detailType": {
+        "skip": "Overgeslagen",
+        "error": "Fout"
+      }
     },
     "banner": {
       "active": "LDAP/AD-synchronisatie actief",

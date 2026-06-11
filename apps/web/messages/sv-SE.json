@@ -186,7 +186,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "Flyttar…"
   },
   "createShare": {
     "title": "Skapa Share",
@@ -210,7 +211,8 @@
     "itemsSelected": "{count} objekt valda",
     "tabs": {
       "shareDetails": "Delningsdetaljer",
-      "selectFiles": "Välj Filer"
+      "selectFiles": "Välj Filer",
+      "shareLink": "Delningslänk"
     },
     "nextSelectFiles": "Nästa: Välj Filer",
     "searchLabel": "Söka",
@@ -224,7 +226,11 @@
     "fieldHidden": "Dold",
     "fieldOptional": "Valfritt",
     "fieldRequired": "Obligatoriskt",
-    "filesOptionalHint": "Att lägga till filer är valfritt — du kan skapa en tom delning nu och lägga till filer senare."
+    "filesOptionalHint": "Att lägga till filer är valfritt — du kan skapa en tom delning nu och lägga till filer senare.",
+    "nextGenerateLink": "Nästa: länk",
+    "linkStepDescription": "Skapa en anpassad länk så att andra kan komma åt den här delningen – eller hoppa över och lägg till en senare.",
+    "nameFieldRequiredHelp": "Anger om besökare ombeds ange sitt namn när de öppnar delningen.",
+    "emailFieldRequiredHelp": "Anger om besökare ombeds ange sin e-postadress när de öppnar delningen."
   },
   "customization": {
     "breadcrumb": "Anpassning",
@@ -637,7 +643,8 @@
     "title": "Redigera bild",
     "rotate": "Rotera",
     "zoom": "Zoom",
-    "cropInstructions": "Dra för att flytta om, ändra storlek på hörn för att justera beskärningsområdet"
+    "cropInstructions": "Dra för att flytta om, ändra storlek på hörn för att justera beskärningsområdet",
+    "cropAlt": "Bild att beskära"
   },
   "login": {
     "welcome": "Välkommen till",
@@ -1334,6 +1341,9 @@
           "aborted": "Kopieringsåtgärden avbröts på grund av timeout."
         },
         "downloading": "Laddar ner..."
+      },
+      "delete": {
+        "linkLabel": "Länk: /r/{alias}"
       }
     },
     "form": {
@@ -2157,7 +2167,9 @@
       "active": "Aktiv",
       "expired": "Utgått",
       "paused": "Pausad",
-      "maxViewsReached": "Visningsgräns nådd"
+      "maxViewsReached": "Visningsgräns nådd",
+      "noLink": "Ingen länk",
+      "noLinkTooltip": "Den här delningen har ingen länk ännu och är inte tillgänglig. Skapa en länk för att dela den."
     },
     "security": {
       "protected": "Skyddad",
@@ -2221,7 +2233,8 @@
       "verificationCodePlaceholder": "Ange 6-siffrig kod",
       "verificationCodeDescription": "Ange den sexsiffriga koden från din autentiseringsapp",
       "verifyAndEnable": "Verifiera och aktivera",
-      "cancel": "Avboka"
+      "cancel": "Avboka",
+      "qrCodeAlt": "2FA QR-kod"
     },
     "disable": {
       "title": "Inaktivera tvåfaktorsautentisering",
@@ -2231,7 +2244,8 @@
       "totpLabel": "Verifieringskod",
       "totpHint": "Ange din 6-siffriga autentiseringskod eller en reservkod",
       "confirm": "Bekräfta inaktivera",
-      "cancel": "Avboka"
+      "cancel": "Avboka",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "Säkerhetskopieringskoder",
@@ -2717,7 +2731,13 @@
       "deactivated": "Avaktiverad",
       "reactivated": "Återaktiverad",
       "skipped": "Hoppades över",
-      "status": "Status"
+      "status": "Status",
+      "statusLabel": {
+        "success": "Lyckades",
+        "error": "Fel",
+        "partial": "Partiell",
+        "running": "Körs"
+      }
     },
     "syncDetail": {
       "title": "Synkroniseringsinformation",
@@ -2725,7 +2745,11 @@
       "type": "Typ",
       "username": "Användarnamn",
       "email": "E-post",
-      "message": "Meddelande"
+      "message": "Meddelande",
+      "detailType": {
+        "skip": "Hoppade över",
+        "error": "Fel"
+      }
     },
     "banner": {
       "active": "LDAP/AD-synkronisering aktiv",

@@ -46,7 +46,10 @@ export function PasswordModal({ isOpen, onSubmit, onClose }: PasswordModalProps)
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/20">
             <Lock className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
           </div>
-          <DialogTitle>{t("reverseShares.upload.password.title")}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2 justify-center">
+            <Lock className="h-5 w-5" />
+            {t("reverseShares.upload.password.title")}
+          </DialogTitle>
           <DialogDescription>{t("reverseShares.upload.password.description")}</DialogDescription>
         </DialogHeader>
 

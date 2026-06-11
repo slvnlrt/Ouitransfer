@@ -237,12 +237,15 @@ export function UploadFileModal({
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent
-          className="sm:max-w-2xl max-h-[80vh] overflow-hidden flex flex-col"
+          className="sm:max-w-3xl max-h-[80vh] overflow-hidden flex flex-col"
           onPointerDownOutside={(e) => e.preventDefault()}
           onEscapeKeyDown={(e) => e.preventDefault()}
         >
           <DialogHeader>
-            <DialogTitle>{t("uploadFile.multipleTitle")}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <CloudUpload className="h-5 w-5" />
+              {t("uploadFile.multipleTitle")}
+            </DialogTitle>
           </DialogHeader>
 
           <div className="flex-1 overflow-hidden flex flex-col gap-4">

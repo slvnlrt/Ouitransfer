@@ -182,7 +182,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "正在移动…"
   },
   "createShare": {
     "title": "创建分享",
@@ -203,7 +204,8 @@
     "searchLabel": "搜索",
     "tabs": {
       "shareDetails": "分享详情",
-      "selectFiles": "选择文件"
+      "selectFiles": "选择文件",
+      "shareLink": "共享链接"
     },
     "errors": {
       "nameRequired": "分享名称为必填项"
@@ -220,7 +222,11 @@
     "fieldHidden": "隐藏",
     "fieldOptional": "可选",
     "fieldRequired": "必需",
-    "filesOptionalHint": "添加文件是可选的——您可以立即创建空共享，稍后添加文件。"
+    "filesOptionalHint": "添加文件是可选的——您可以立即创建空共享，稍后添加文件。",
+    "nextGenerateLink": "下一步：链接",
+    "linkStepDescription": "生成自定义链接，让他人可以访问此共享，或跳过此步骤稍后添加。",
+    "nameFieldRequiredHelp": "指定访问者打开共享时是否需要填写姓名。",
+    "emailFieldRequiredHelp": "指定访问者打开共享时是否需要填写电子邮件。"
   },
   "customization": {
     "breadcrumb": "自定义",
@@ -633,7 +639,8 @@
     "title": "编辑图片",
     "rotate": "旋转",
     "zoom": "缩放",
-    "cropInstructions": "拖动以重新定位，调整角落大小以调整裁剪区域"
+    "cropInstructions": "拖动以重新定位，调整角落大小以调整裁剪区域",
+    "cropAlt": "待裁剪的图像"
   },
   "login": {
     "welcome": "欢迎您",
@@ -1330,6 +1337,9 @@
         },
         "invalidDate": "无效日期",
         "downloading": "下载中..."
+      },
+      "delete": {
+        "linkLabel": "链接：/r/{alias}"
       }
     },
     "form": {
@@ -2153,7 +2163,9 @@
       "active": "活跃",
       "expired": "已过期",
       "paused": "已暂停",
-      "maxViewsReached": "已达到查看限制"
+      "maxViewsReached": "已达到查看限制",
+      "noLink": "无链接",
+      "noLinkTooltip": "此共享尚无链接，无法访问。请生成链接以进行共享。"
     },
     "security": {
       "protected": "受保护",
@@ -2208,7 +2220,8 @@
       "verificationCodePlaceholder": "输入6位数验证码",
       "verificationCodeDescription": "输入认证器应用生成的6位数验证码",
       "verifyAndEnable": "验证并启用",
-      "cancel": "取消"
+      "cancel": "取消",
+      "qrCodeAlt": "双因素认证二维码"
     },
     "disable": {
       "title": "禁用双重认证",
@@ -2218,7 +2231,8 @@
       "totpLabel": "验证码",
       "totpHint": "输入您的6位认证器代码或备用码",
       "confirm": "确认禁用",
-      "cancel": "取消"
+      "cancel": "取消",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "备用码",
@@ -2717,7 +2731,13 @@
       "deactivated": "已停用",
       "reactivated": "已重新激活",
       "skipped": "已跳过",
-      "status": "状态"
+      "status": "状态",
+      "statusLabel": {
+        "success": "成功",
+        "error": "错误",
+        "partial": "部分成功",
+        "running": "运行中"
+      }
     },
     "syncDetail": {
       "title": "同步详情",
@@ -2725,7 +2745,11 @@
       "type": "类型",
       "username": "用户名",
       "email": "电子邮件",
-      "message": "消息"
+      "message": "消息",
+      "detailType": {
+        "skip": "跳过",
+        "error": "错误"
+      }
     },
     "banner": {
       "active": "LDAP/AD同步活跃",

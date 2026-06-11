@@ -1,6 +1,6 @@
 "use client";
 
-import { Folder } from "lucide-react";
+import { Folder, FolderInput } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FileItem } from "@/components/tables/files-table-types";
@@ -161,9 +161,12 @@ export function MoveItemsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[80vh] w-full">
+      <DialogContent className="sm:max-w-3xl max-h-[80vh] w-full">
         <DialogHeader>
-          <DialogTitle>{title || t("moveItems.title", { count: itemCount })}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <FolderInput className="h-5 w-5" />
+            {title || t("moveItems.title", { count: itemCount })}
+          </DialogTitle>
           <DialogDescription>
             {description || t("moveItems.description", { count: itemCount })}
           </DialogDescription>
@@ -254,7 +257,7 @@ export function MoveItemsModal({
             {t("common.cancel")}
           </Button>
           <Button onClick={handleMove} disabled={isLoading || isMoving}>
-            {isMoving ? `${t("common.move")}...` : t("common.move")}
+            {isMoving ? t("common.moving") : t("common.move")}
           </Button>
         </DialogFooter>
       </DialogContent>

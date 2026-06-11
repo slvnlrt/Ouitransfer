@@ -186,7 +186,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "Memindahkan…"
   },
   "createShare": {
     "title": "Buat Berbagi",
@@ -210,7 +211,8 @@
     "itemsSelected": "{count} item dipilih",
     "tabs": {
       "shareDetails": "Detail Berbagi",
-      "selectFiles": "Pilih File"
+      "selectFiles": "Pilih File",
+      "shareLink": "Tautan berbagi"
     },
     "nextSelectFiles": "Berikutnya: Pilih File",
     "searchLabel": "Cari",
@@ -224,7 +226,11 @@
     "fieldHidden": "Tersembunyi",
     "fieldOptional": "Opsional",
     "fieldRequired": "Wajib",
-    "filesOptionalHint": "Menambahkan file bersifat opsional — Anda dapat membuat berbagi kosong sekarang dan menambahkan file nanti."
+    "filesOptionalHint": "Menambahkan file bersifat opsional — Anda dapat membuat berbagi kosong sekarang dan menambahkan file nanti.",
+    "nextGenerateLink": "Berikutnya: tautan",
+    "linkStepDescription": "Buat tautan khusus agar orang lain dapat mengakses berbagi ini — atau lewati dan tambahkan nanti.",
+    "nameFieldRequiredHelp": "Menentukan apakah pengunjung dimintai nama mereka saat membuka berbagi.",
+    "emailFieldRequiredHelp": "Menentukan apakah pengunjung dimintai email mereka saat membuka berbagi."
   },
   "customization": {
     "breadcrumb": "Kustomisasi",
@@ -637,7 +643,8 @@
     "title": "Edit Gambar",
     "rotate": "Putar",
     "zoom": "Perbesar",
-    "cropInstructions": "Seret untuk memposisikan ulang, ubah ukuran sudut untuk menyesuaikan area potong"
+    "cropInstructions": "Seret untuk memposisikan ulang, ubah ukuran sudut untuk menyesuaikan area potong",
+    "cropAlt": "Gambar untuk dipotong"
   },
   "login": {
     "welcome": "Selamat datang di",
@@ -1334,6 +1341,9 @@
           "aborted": "Operasi penyalinan dibatalkan karena habis waktu."
         },
         "downloading": "Mengunduh..."
+      },
+      "delete": {
+        "linkLabel": "Tautan: /r/{alias}"
       }
     },
     "form": {
@@ -2157,7 +2167,9 @@
       "active": "Aktif",
       "expired": "Kedaluwarsa",
       "paused": "Dijeda",
-      "maxViewsReached": "Batas Tampilan Tercapai"
+      "maxViewsReached": "Batas Tampilan Tercapai",
+      "noLink": "Tanpa tautan",
+      "noLinkTooltip": "Berbagi ini belum memiliki tautan dan tidak dapat diakses. Buat tautan untuk membagikannya."
     },
     "security": {
       "protected": "Terlindungi",
@@ -2221,7 +2233,8 @@
       "verificationCodePlaceholder": "Masukkan kode 6 digit",
       "verificationCodeDescription": "Masukkan kode 6 digit dari aplikasi autentikator Anda",
       "verifyAndEnable": "Verifikasi & Aktifkan",
-      "cancel": "Batal"
+      "cancel": "Batal",
+      "qrCodeAlt": "Kode QR 2FA"
     },
     "disable": {
       "title": "Nonaktifkan Otentikasi Dua Faktor",
@@ -2231,7 +2244,8 @@
       "totpLabel": "Kode Verifikasi",
       "totpHint": "Masukkan kode autentikator 6 digit atau kode cadangan Anda",
       "confirm": "Konfirmasi Nonaktifkan",
-      "cancel": "Batal"
+      "cancel": "Batal",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "Kode Cadangan",
@@ -2717,7 +2731,13 @@
       "deactivated": "Dinonaktifkan",
       "reactivated": "Diaktifkan kembali",
       "skipped": "Dilewati",
-      "status": "Status"
+      "status": "Status",
+      "statusLabel": {
+        "success": "Berhasil",
+        "error": "Kesalahan",
+        "partial": "Sebagian",
+        "running": "Sedang berjalan"
+      }
     },
     "syncDetail": {
       "title": "Detail Sinkronisasi",
@@ -2725,7 +2745,11 @@
       "type": "Tipe",
       "username": "Nama Pengguna",
       "email": "Email",
-      "message": "Pesan"
+      "message": "Pesan",
+      "detailType": {
+        "skip": "Dilewati",
+        "error": "Kesalahan"
+      }
     },
     "banner": {
       "active": "Sinkronisasi LDAP/AD aktif",

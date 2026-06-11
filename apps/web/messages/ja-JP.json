@@ -182,7 +182,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "移動中…"
   },
   "createShare": {
     "title": "共有を作成",
@@ -203,7 +204,8 @@
     "searchLabel": "検索",
     "tabs": {
       "shareDetails": "共有の詳細",
-      "selectFiles": "ファイルを選択"
+      "selectFiles": "ファイルを選択",
+      "shareLink": "共有リンク"
     },
     "errors": {
       "nameRequired": "共有名は必須です"
@@ -220,7 +222,11 @@
     "fieldHidden": "非表示",
     "fieldOptional": "オプション",
     "fieldRequired": "必須",
-    "filesOptionalHint": "ファイルの追加は任意です — 今は空の共有を作成して、後からファイルを追加できます。"
+    "filesOptionalHint": "ファイルの追加は任意です — 今は空の共有を作成して、後からファイルを追加できます。",
+    "nextGenerateLink": "次へ: リンク",
+    "linkStepDescription": "他のユーザーがこの共有にアクセスできるようにカスタムリンクを生成します。後で追加することもできます。",
+    "nameFieldRequiredHelp": "共有を開く際に訪問者に名前の入力を求めるかどうかを指定します。",
+    "emailFieldRequiredHelp": "共有を開く際に訪問者にメールアドレスの入力を求めるかどうかを指定します。"
   },
   "customization": {
     "breadcrumb": "カスタマイズ",
@@ -633,7 +639,8 @@
     "title": "画像を編集",
     "rotate": "回転",
     "zoom": "ズーム",
-    "cropInstructions": "位置を変更するにはドラッグし、カット領域を調整するには角をリサイズしてください"
+    "cropInstructions": "位置を変更するにはドラッグし、カット領域を調整するには角をリサイズしてください",
+    "cropAlt": "トリミングする画像"
   },
   "login": {
     "welcome": "ようこそへ",
@@ -1330,6 +1337,9 @@
         },
         "invalidDate": "無効な日付",
         "downloading": "ダウンロード中..."
+      },
+      "delete": {
+        "linkLabel": "リンク: /r/{alias}"
       }
     },
     "form": {
@@ -2153,7 +2163,9 @@
       "active": "アクティブ",
       "expired": "期限切れ",
       "paused": "一時停止中",
-      "maxViewsReached": "表示制限に達しました"
+      "maxViewsReached": "表示制限に達しました",
+      "noLink": "リンクなし",
+      "noLinkTooltip": "この共有にはまだリンクがなく、アクセスできません。共有するにはリンクを生成してください。"
     },
     "security": {
       "protected": "保護済み",
@@ -2208,7 +2220,8 @@
       "verificationCodePlaceholder": "6桁のコードを入力",
       "verificationCodeDescription": "認証アプリから6桁のコードを入力してください",
       "verifyAndEnable": "確認して有効化",
-      "cancel": "キャンセル"
+      "cancel": "キャンセル",
+      "qrCodeAlt": "2FA QRコード"
     },
     "disable": {
       "title": "二要素認証を無効にする",
@@ -2218,7 +2231,8 @@
       "totpLabel": "確認コード",
       "totpHint": "6桁の認証器コードまたはバックアップコードを入力してください",
       "confirm": "無効化を確認",
-      "cancel": "キャンセル"
+      "cancel": "キャンセル",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "バックアップコード",
@@ -2717,7 +2731,13 @@
       "deactivated": "無効化",
       "reactivated": "再有効化",
       "skipped": "スキップ",
-      "status": "ステータス"
+      "status": "ステータス",
+      "statusLabel": {
+        "success": "成功",
+        "error": "エラー",
+        "partial": "部分的",
+        "running": "実行中"
+      }
     },
     "syncDetail": {
       "title": "同期詳細",
@@ -2725,7 +2745,11 @@
       "type": "タイプ",
       "username": "ユーザー名",
       "email": "メール",
-      "message": "メッセージ"
+      "message": "メッセージ",
+      "detailType": {
+        "skip": "スキップ",
+        "error": "エラー"
+      }
     },
     "banner": {
       "active": "LDAP/AD同期は有効",

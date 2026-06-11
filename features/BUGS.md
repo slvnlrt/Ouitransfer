@@ -9,16 +9,6 @@
 
 ## Open
 
-### B-30: CORS rejection returns 500 instead of 403
-
-- **Severity**: Medium — mauvaise UX (message "An unexpected error occurred" au lieu d'une erreur CORS explicite)
-- **File**: `apps/server/src/app.ts:86`
-- **Description**: Quand une requête arrive depuis une origine non autorisée, le callback CORS appelle `cb(new Error("Not allowed by CORS"), false)`. Cette `Error` générique remonte dans le `globalErrorHandler` qui ne la reconnaît pas comme une `AppError` → retourne 500 au lieu de 403. Le frontend affiche alors "An unexpected error occurred" au lieu d'un message CORS.
-- **Reproduced**: Accès depuis un internal host (`OUITRANSFER_INTERNAL_HOST`) non listé dans `CORS_ORIGINS`.
-- **Fix**: Dans `app.ts`, remplacer `cb(new Error("Not allowed by CORS"), false)` par une erreur avec `statusCode: 403` (ex: `new AppError(403, "Forbidden: origin not allowed by CORS policy")`), ou utiliser `cb(null, false)` (comportement CORS standard — pas d'en-têtes, le browser bloque).
-- **Note config**: S'assurer que `CORS_ORIGINS` liste toutes les origines frontend (interne ET externe si besoin).
-- **Status**: Open
-
 ### B-28: Share password update returns 404 — PATCH/PUT method mismatch
 
 - **Severity**: High (feature broken in production)
@@ -38,6 +28,15 @@
 - **Status**: Open — tracked for a future session
 
 ## Resolved (recent)
+
+### B-30: CORS rejection returns 500 instead of 403 — RESOLVED
+
+- **Severity**: Medium — mauvaise UX (message "An unexpected error occurred" au lieu d'une erreur CORS explicite)
+- **File**: `apps/server/src/app.ts`
+- **Description**: Quand une requête arrive depuis une origine non autorisée, le callback CORS appelait `cb(new Error("Not allowed by CORS"), false)`. Cette `Error` générique remontait dans le `globalErrorHandler` qui ne la reconnaît pas comme une `AppError` → retournait 500 au lieu de 403. Le frontend affichait alors "An unexpected error occurred" au lieu d'un message CORS. Symptôme le plus visible : le **login** (un POST → le navigateur envoie un en-tête `Origin`) tombe en 500 depuis un host non listé dans `CORS_ORIGINS`, alors qu'un GET sans `Origin` passe.
+- **Reproduced**: Accès depuis un internal host (`OUITRANSFER_INTERNAL_HOST`) non listé dans `CORS_ORIGINS` (qui ne contenait que l'origine externe).
+- **Fix**: Remplacé `cb(new Error(...), false)` par `cb(new ForbiddenError("Origin not allowed by CORS policy"), false)` → le `globalErrorHandler` mappe l'`AppError` sur un **403** (code `FORBIDDEN`). Ajout de 2 tests d'intégration `app.inject` (preflight OPTIONS : origine non listée → 403 ; allow-list séparée par virgule → 204 + en-tête `access-control-allow-origin`). Clarifié la doc multi-origines (`.env.docker.example`, `docker-compose.yaml`) : `CORS_ORIGINS` accepte une liste séparée par virgule et doit lister **tous** les hostnames servis (interne ET externe).
+- **Status**: Resolved (branch `claude/nice-brown-gr9vp1`)
 
 ### B-26: TOCTOU race condition on invite token single-use enforcement — RESOLVED
 

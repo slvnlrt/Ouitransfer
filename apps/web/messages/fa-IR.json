@@ -186,7 +186,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "در حال انتقال…"
   },
   "createShare": {
     "title": "ایجاد اشتراک",
@@ -210,7 +211,8 @@
     "itemsSelected": "{count} مورد انتخاب شد",
     "tabs": {
       "shareDetails": "جزئیات اشتراک",
-      "selectFiles": "انتخاب فایل‌ها"
+      "selectFiles": "انتخاب فایل‌ها",
+      "shareLink": "پیوند اشتراک‌گذاری"
     },
     "nextSelectFiles": "بعدی: انتخاب فایل‌ها",
     "searchLabel": "جست‌وجو",
@@ -224,7 +226,11 @@
     "fieldHidden": "مخفی",
     "fieldOptional": "اختیاری",
     "fieldRequired": "الزامی",
-    "filesOptionalHint": "افزودن فایل اختیاری است — می‌توانید اکنون یک اشتراک‌گذاری خالی ایجاد کنید و فایل‌ها را بعداً اضافه کنید."
+    "filesOptionalHint": "افزودن فایل اختیاری است — می‌توانید اکنون یک اشتراک‌گذاری خالی ایجاد کنید و فایل‌ها را بعداً اضافه کنید.",
+    "nextGenerateLink": "بعدی: پیوند",
+    "linkStepDescription": "یک پیوند سفارشی ایجاد کنید تا دیگران بتوانند به این اشتراک دسترسی پیدا کنند — یا این مرحله را رد کنید و بعداً آن را اضافه کنید.",
+    "nameFieldRequiredHelp": "تعیین می‌کند که آیا هنگام باز کردن اشتراک، نام از بازدیدکنندگان خواسته شود.",
+    "emailFieldRequiredHelp": "تعیین می‌کند که آیا هنگام باز کردن اشتراک، ایمیل از بازدیدکنندگان خواسته شود."
   },
   "customization": {
     "breadcrumb": "شخصی‌سازی",
@@ -637,7 +643,8 @@
     "title": "ویرایش تصویر",
     "rotate": "چرخش",
     "zoom": "زوم",
-    "cropInstructions": "برای تغییر موقعیت بکشید، گوشه‌ها را برای تنظیم ناحیه برش تغییر اندازه دهید"
+    "cropInstructions": "برای تغییر موقعیت بکشید، گوشه‌ها را برای تنظیم ناحیه برش تغییر اندازه دهید",
+    "cropAlt": "تصویر برای برش"
   },
   "login": {
     "welcome": "خوش آمدید به",
@@ -1334,6 +1341,9 @@
           "aborted": "عملیات کپی به دلیل اتمام مهلت زمانی لغو شد."
         },
         "downloading": "در حال دانلود..."
+      },
+      "delete": {
+        "linkLabel": "لینک: /r/{alias}"
       }
     },
     "form": {
@@ -2157,7 +2167,9 @@
       "active": "فعال",
       "expired": "منقضی شده",
       "paused": "متوقف",
-      "maxViewsReached": "حد نمایش رسیده است"
+      "maxViewsReached": "حد نمایش رسیده است",
+      "noLink": "بدون پیوند",
+      "noLinkTooltip": "این اشتراک هنوز پیوندی ندارد و در دسترس نیست. برای اشتراک‌گذاری یک پیوند ایجاد کنید."
     },
     "security": {
       "protected": "محافظت‌شده",
@@ -2221,7 +2233,8 @@
       "verificationCodePlaceholder": "کد ۶ رقمی را وارد کنید",
       "verificationCodeDescription": "کد ۶ رقمی را از برنامه احراز هویت خود وارد کنید",
       "verifyAndEnable": "تأیید و فعال‌سازی",
-      "cancel": "انصراف"
+      "cancel": "انصراف",
+      "qrCodeAlt": "کد QR احراز هویت دو مرحله‌ای"
     },
     "disable": {
       "title": "غیرفعال‌سازی احراز هویت دو مرحله‌ای",
@@ -2231,7 +2244,8 @@
       "totpLabel": "کد تأیید",
       "totpHint": "کد احراز هویت ۶ رقمی یا کد پشتیبان خود را وارد کنید",
       "confirm": "تأیید غیرفعال‌سازی",
-      "cancel": "انصراف"
+      "cancel": "انصراف",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "کدهای پشتیبان",
@@ -2717,7 +2731,13 @@
       "deactivated": "غیرفعال شده",
       "reactivated": "دوباره فعال شده",
       "skipped": "نادیده گرفته شده",
-      "status": "وضعیت"
+      "status": "وضعیت",
+      "statusLabel": {
+        "success": "موفق",
+        "error": "خطا",
+        "partial": "جزئی",
+        "running": "در حال اجرا"
+      }
     },
     "syncDetail": {
       "title": "جزئیات هماهنگ‌سازی",
@@ -2725,7 +2745,11 @@
       "type": "نوع",
       "username": "نام کاربری",
       "email": "ایمیل",
-      "message": "پیام"
+      "message": "پیام",
+      "detailType": {
+        "skip": "رد شده",
+        "error": "خطا"
+      }
     },
     "banner": {
       "active": "هماهنگ‌سازی LDAP/AD فعال است",

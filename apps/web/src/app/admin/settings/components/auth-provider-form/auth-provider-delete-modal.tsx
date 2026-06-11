@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Loader } from "@/components/ui/loader";
 
 interface AuthProviderDeleteModalProps {
   isOpen: boolean;
@@ -67,7 +68,7 @@ export function AuthProviderDeleteModal({
           <Button variant="destructive" onClick={handleConfirm} disabled={isDeleting}>
             {isDeleting ? (
               <>
-                <Trash2 className="h-4 w-4 animate-spin" />
+                <Loader size="sm" />
                 {t("authProviders.deleteModal.deleting")}
               </>
             ) : (

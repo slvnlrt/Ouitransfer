@@ -182,7 +182,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "جارٍ النقل…"
   },
   "createShare": {
     "title": "إنشاء مشاركة",
@@ -203,7 +204,8 @@
     "searchLabel": "بحث",
     "tabs": {
       "shareDetails": "تفاصيل المشاركة",
-      "selectFiles": "اختيار الملفات"
+      "selectFiles": "اختيار الملفات",
+      "shareLink": "رابط المشاركة"
     },
     "errors": {
       "nameRequired": "اسم المشاركة مطلوب"
@@ -220,7 +222,11 @@
     "fieldHidden": "مخفي",
     "fieldOptional": "اختياري",
     "fieldRequired": "مطلوب",
-    "filesOptionalHint": "إضافة الملفات اختيارية — يمكنك إنشاء مشاركة فارغة الآن وإضافة الملفات لاحقًا."
+    "filesOptionalHint": "إضافة الملفات اختيارية — يمكنك إنشاء مشاركة فارغة الآن وإضافة الملفات لاحقًا.",
+    "nextGenerateLink": "التالي: الرابط",
+    "linkStepDescription": "أنشئ رابطًا مخصصًا حتى يتمكن الآخرون من الوصول إلى هذه المشاركة، أو تخطَّ هذه الخطوة وأضِفه لاحقًا.",
+    "nameFieldRequiredHelp": "يحدد ما إذا كان يُطلب من الزوار اسمهم عند فتح المشاركة.",
+    "emailFieldRequiredHelp": "يحدد ما إذا كان يُطلب من الزوار بريدهم الإلكتروني عند فتح المشاركة."
   },
   "customization": {
     "breadcrumb": "التخصيص",
@@ -633,7 +639,8 @@
     "title": "تعديل الصورة",
     "rotate": "تدوير",
     "zoom": "تكبير/تصغير",
-    "cropInstructions": "اسحب لإعادة تحديد الموضع، غير حجم الزوايا لضبط منطقة القص"
+    "cropInstructions": "اسحب لإعادة تحديد الموضع، غير حجم الزوايا لضبط منطقة القص",
+    "cropAlt": "الصورة المراد اقتصاصها"
   },
   "login": {
     "welcome": "مرحبا بك",
@@ -1330,6 +1337,9 @@
         },
         "invalidDate": "تاريخ غير صحيح",
         "downloading": "جارٍ التنزيل..."
+      },
+      "delete": {
+        "linkLabel": "الرابط: /r/{alias}"
       }
     },
     "form": {
@@ -2153,7 +2163,9 @@
       "active": "نشط",
       "expired": "منتهي الصلاحية",
       "paused": "مُوقفة مؤقتاً",
-      "maxViewsReached": "تم الوصول إلى حد العروض"
+      "maxViewsReached": "تم الوصول إلى حد العروض",
+      "noLink": "بدون رابط",
+      "noLinkTooltip": "لا يحتوي هذا المشاركة على رابط بعد وهو غير قابل للوصول. أنشئ رابطًا لمشاركته."
     },
     "security": {
       "protected": "محمي",
@@ -2208,7 +2220,8 @@
       "verificationCodePlaceholder": "أدخل الرمز المكون من 6 أرقام",
       "verificationCodeDescription": "أدخل الرمز المكون من 6 أرقام من تطبيق المصادقة",
       "verifyAndEnable": "تحقق وتفعيل",
-      "cancel": "إلغاء"
+      "cancel": "إلغاء",
+      "qrCodeAlt": "رمز QR للمصادقة الثنائية"
     },
     "disable": {
       "title": "تعطيل المصادقة الثنائية",
@@ -2218,7 +2231,8 @@
       "totpLabel": "رمز التحقق",
       "totpHint": "أدخل رمز المصادقة المكون من 6 أرقام أو رمز نسخ احتياطي",
       "confirm": "تأكيد التعطيل",
-      "cancel": "إلغاء"
+      "cancel": "إلغاء",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "رموز النسخ الاحتياطي",
@@ -2717,7 +2731,13 @@
       "deactivated": "تم إلغاء التفعيل",
       "reactivated": "تم إعادة التفعيل",
       "skipped": "تم التخطي",
-      "status": "الحالة"
+      "status": "الحالة",
+      "statusLabel": {
+        "success": "نجح",
+        "error": "خطأ",
+        "partial": "جزئي",
+        "running": "قيد التشغيل"
+      }
     },
     "syncDetail": {
       "title": "تفاصيل المزامنة",
@@ -2725,7 +2745,11 @@
       "type": "النوع",
       "username": "اسم المستخدم",
       "email": "البريد الإلكتروني",
-      "message": "الرسالة"
+      "message": "الرسالة",
+      "detailType": {
+        "skip": "تم التخطي",
+        "error": "خطأ"
+      }
     },
     "banner": {
       "active": "مزامنة LDAP/AD نشطة",

@@ -18,6 +18,7 @@ import { registerSwagger } from "./config/swagger.config.js";
 import { envTimeoutOverrides, timeoutConfig } from "./config/timeout.config.js";
 import { env } from "./env.js";
 import { validateTokenVersion } from "./modules/auth/token-version.js";
+import { ForbiddenError } from "./utils/app-error.js";
 import { globalErrorHandler, globalNotFoundHandler } from "./utils/error-handler.js";
 import { setLogger } from "./utils/logger.js";
 import { parseTrustProxy } from "./utils/parse-trust-proxy.js";
@@ -99,7 +100,12 @@ export async function buildApp() {
       if (!origin || allowedOrigins.includes(origin)) {
         cb(null, true);
       } else {
-        cb(new Error("Not allowed by CORS"), false);
+        // Reject with a ForbiddenError so the globalErrorHandler maps it to a
+        // 403 (instead of a generic 500). A bare Error would fall through to the
+        // unknown-error branch. The request's Origin is not in CORS_ORIGINS —
+        // ensure every hostname the app is served on (external AND internal) is
+        // listed there, comma-separated.
+        cb(new ForbiddenError("Origin not allowed by CORS policy"), false);
       }
     },
     credentials: true,

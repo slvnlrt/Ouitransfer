@@ -1,5 +1,6 @@
 import { Pencil, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { truncateFileName } from "@/utils/file-utils";
 
 interface FileActionsModalsProps {
   fileToRename: { id: string; name: string; description?: string } | null;
@@ -48,6 +50,19 @@ export function FileActionsModals({
         };
   };
 
+  const [renameName, setRenameName] = useState("");
+  const [renameDescription, setRenameDescription] = useState("");
+
+  useEffect(() => {
+    if (fileToRename) {
+      setRenameName(splitFileName(fileToRename.name).name);
+      setRenameDescription(fileToRename.description ?? "");
+    } else {
+      setRenameName("");
+      setRenameDescription("");
+    }
+  }, [fileToRename]);
+
   return (
     <>
       <Dialog open={!!fileToRename} onOpenChange={() => onCloseRename()}>
@@ -62,13 +77,13 @@ export function FileActionsModals({
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
                 <Input
-                  defaultValue={splitFileName(fileToRename.name).name}
+                  value={renameName}
                   placeholder={t("fileActions.namePlaceholder")}
+                  onChange={(e) => setRenameName(e.target.value)}
                   onKeyUp={(e) => {
                     if (e.key === "Enter" && fileToRename) {
-                      const newName =
-                        e.currentTarget.value + splitFileName(fileToRename.name).extension;
-                      onRename(fileToRename.id, newName);
+                      const newName = renameName + splitFileName(fileToRename.name).extension;
+                      onRename(fileToRename.id, newName, renameDescription || undefined);
                     }
                   }}
                 />
@@ -77,8 +92,9 @@ export function FileActionsModals({
                 </p>
               </div>
               <Input
-                defaultValue={fileToRename.description || ""}
+                value={renameDescription}
                 placeholder={t("fileActions.descriptionPlaceholder")}
+                onChange={(e) => setRenameDescription(e.target.value)}
               />
             </div>
           )}
@@ -88,16 +104,9 @@ export function FileActionsModals({
             </Button>
             <Button
               onClick={() => {
-                const nameInput = document.querySelector(
-                  `input[placeholder="${t("fileActions.namePlaceholder")}"]`,
-                ) as HTMLInputElement;
-                const descInput = document.querySelector(
-                  `input[placeholder="${t("fileActions.descriptionPlaceholder")}"]`,
-                ) as HTMLInputElement;
-
-                if (fileToRename && nameInput && descInput) {
-                  const newName = nameInput.value + splitFileName(fileToRename.name).extension;
-                  onRename(fileToRename.id, newName, descInput.value);
+                if (fileToRename) {
+                  const newName = renameName + splitFileName(fileToRename.name).extension;
+                  onRename(fileToRename.id, newName, renameDescription || undefined);
                 }
               }}
             >
@@ -119,13 +128,7 @@ export function FileActionsModals({
             <p className="text-base font-semibold mb-2 text-foreground">
               {t("fileActions.deleteConfirmation")}
             </p>
-            <p>
-              {(fileToDelete?.name &&
-                (fileToDelete.name.length > 50
-                  ? `${fileToDelete.name.substring(0, 50)}...`
-                  : fileToDelete.name)) ||
-                ""}
-            </p>
+            <p>{fileToDelete?.name ? truncateFileName(fileToDelete.name, 50) : ""}</p>
             <p className="text-sm  mt-2 text-amber-500">{t("fileActions.deleteWarning")}</p>
           </DialogDescription>
           <DialogFooter>

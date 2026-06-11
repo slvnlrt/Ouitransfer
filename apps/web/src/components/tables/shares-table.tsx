@@ -17,7 +17,7 @@ import { useSecureConfigValue } from "@/hooks/use-secure-configs";
 import type { Share } from "@/http/endpoints/shares/types";
 import { formatDateTime } from "@/lib/format-date-time";
 import { getShareLifecycleState } from "@/lib/share-lifecycle";
-import { ShareSecurityBadge, ShareStatusBadge } from "./shares-table-badges";
+import { ShareNoLinkBadge, ShareSecurityBadge, ShareStatusBadge } from "./shares-table-badges";
 import { SharesTableBulkActions } from "./shares-table-bulk-actions";
 import { ShareRowActions } from "./shares-table-row-actions";
 import { useEditableItem } from "./use-editable-item";
@@ -409,7 +409,10 @@ export function SharesTable({
                     </div>
                   </TableCell>
                   <TableCell className="h-12 px-4">
-                    <ShareStatusBadge share={share} lifecycle={lifecycle} />
+                    <div className="flex flex-wrap items-center gap-1">
+                      <ShareStatusBadge share={share} lifecycle={lifecycle} />
+                      <ShareNoLinkBadge share={share} />
+                    </div>
                   </TableCell>
                   <TableCell
                     className="h-12 px-4"
@@ -570,6 +573,7 @@ export function SharesTable({
 
               <div className="flex flex-wrap items-center gap-2">
                 <ShareStatusBadge share={share} lifecycle={lifecycle} />
+                <ShareNoLinkBadge share={share} />
                 <ShareSecurityBadge share={share} />
               </div>
 

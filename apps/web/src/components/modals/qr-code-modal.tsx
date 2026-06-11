@@ -1,4 +1,4 @@
-import { Download } from "lucide-react";
+import { Download, QrCode } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -30,12 +30,11 @@ export function QrCodeModal({ isOpen, onClose, shareLink, shareName }: QrCodeMod
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{t("qrCodeModal.title", { defaultValue: "Share QR Code" })}</DialogTitle>
-          <DialogDescription>
-            {t("qrCodeModal.description", {
-              defaultValue: "Scan this QR code to access the shared files.",
-            })}
-          </DialogDescription>
+          <DialogTitle className="flex items-center gap-2">
+            <QrCode className="h-5 w-5" />
+            {t("qrCodeModal.title")}
+          </DialogTitle>
+          <DialogDescription>{t("qrCodeModal.description")}</DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col items-center justify-center">
@@ -63,7 +62,7 @@ export function QrCodeModal({ isOpen, onClose, shareLink, shareName }: QrCodeMod
             disabled={isDownloading}
           >
             <Download className="h-4 w-4" />
-            {t("qrCodeModal.download", { defaultValue: "Download QR Code" })}
+            {t("qrCodeModal.download")}
           </Button>
         </DialogFooter>
       </DialogContent>

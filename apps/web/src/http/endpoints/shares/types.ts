@@ -86,7 +86,7 @@ export interface Share {
   files: ShareFile[];
   folders: ShareFolder[];
   recipients: ShareRecipient[];
-  alias: ShareAlias;
+  alias: ShareAlias | null;
   nameFieldRequired: "HIDDEN" | "OPTIONAL" | "REQUIRED";
   emailFieldRequired: "HIDDEN" | "OPTIONAL" | "REQUIRED";
   notifyOnDownload: boolean;

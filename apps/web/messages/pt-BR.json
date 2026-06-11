@@ -186,7 +186,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "Movendo…"
   },
   "createShare": {
     "title": "Criar compartilhamento",
@@ -207,7 +208,8 @@
     "searchLabel": "Pesquisar",
     "tabs": {
       "shareDetails": "Detalhes do compartilhamento",
-      "selectFiles": "Selecionar arquivos"
+      "selectFiles": "Selecionar arquivos",
+      "shareLink": "Link de compartilhamento"
     },
     "errors": {
       "nameRequired": "O nome do compartilhamento é obrigatório"
@@ -224,7 +226,11 @@
     "fieldHidden": "Oculto",
     "fieldOptional": "Opcional",
     "fieldRequired": "Obrigatório",
-    "filesOptionalHint": "Adicionar arquivos é opcional — você pode criar um compartilhamento vazio agora e adicionar arquivos mais tarde."
+    "filesOptionalHint": "Adicionar arquivos é opcional — você pode criar um compartilhamento vazio agora e adicionar arquivos mais tarde.",
+    "nextGenerateLink": "Próximo: link",
+    "linkStepDescription": "Gere um link personalizado para que as pessoas possam acessar este compartilhamento — ou pule e adicione um depois.",
+    "nameFieldRequiredHelp": "Define se o nome é solicitado aos visitantes ao abrir o compartilhamento.",
+    "emailFieldRequiredHelp": "Define se o e-mail é solicitado aos visitantes ao abrir o compartilhamento."
   },
   "customization": {
     "breadcrumb": "Personalização",
@@ -637,7 +643,8 @@
     "title": "Editar imagem",
     "rotate": "Girar",
     "zoom": "Ampliar",
-    "cropInstructions": "Arraste para reposicionar, redimensione os cantos para ajustar a área de recorte"
+    "cropInstructions": "Arraste para reposicionar, redimensione os cantos para ajustar a área de recorte",
+    "cropAlt": "Imagem para recortar"
   },
   "login": {
     "welcome": "Bem-vindo ao",
@@ -1334,6 +1341,9 @@
         },
         "invalidDate": "Data inválida",
         "downloading": "Baixando..."
+      },
+      "delete": {
+        "linkLabel": "Link: /r/{alias}"
       }
     },
     "form": {
@@ -2165,7 +2175,9 @@
       "active": "Ativo",
       "expired": "Expirado",
       "paused": "Pausado",
-      "maxViewsReached": "Limite de visualizações atingido"
+      "maxViewsReached": "Limite de visualizações atingido",
+      "noLink": "Sem link",
+      "noLinkTooltip": "Este compartilhamento ainda não tem link e não está acessível. Gere um link para compartilhá-lo."
     },
     "security": {
       "protected": "Protegido",
@@ -2212,7 +2224,8 @@
       "verificationCodePlaceholder": "Digite o código de 6 dígitos",
       "verificationCodeDescription": "Digite o código de 6 dígitos do seu aplicativo autenticador",
       "verifyAndEnable": "Verificar e ativar",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "qrCodeAlt": "QR Code de 2FA"
     },
     "disable": {
       "title": "Desativar autenticação de dois fatores",
@@ -2222,7 +2235,8 @@
       "totpLabel": "Código de Verificação",
       "totpHint": "Digite seu código de autenticador de 6 dígitos ou um código de backup",
       "confirm": "Confirmar Desativação",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "Códigos de backup",
@@ -2717,7 +2731,13 @@
       "deactivated": "Desativado",
       "reactivated": "Reativado",
       "skipped": "Ignorado",
-      "status": "Status"
+      "status": "Status",
+      "statusLabel": {
+        "success": "Concluído",
+        "error": "Erro",
+        "partial": "Parcial",
+        "running": "Em execução"
+      }
     },
     "syncDetail": {
       "title": "Detalhes de Sincronização",
@@ -2725,7 +2745,11 @@
       "type": "Tipo",
       "username": "Nome de Usuário",
       "email": "Email",
-      "message": "Mensagem"
+      "message": "Mensagem",
+      "detailType": {
+        "skip": "Ignorado",
+        "error": "Erro"
+      }
     },
     "banner": {
       "active": "Sincronização LDAP/AD ativa",

@@ -8,17 +8,20 @@ import {
   Eye,
   EyeClosed,
   Key,
+  KeyRound,
   Monitor,
   MonitorSmartphone,
+  QrCode,
   Shield,
   ShieldCheck,
+  ShieldOff,
   Smartphone,
   Trash2,
   TriangleAlert,
 } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -93,6 +96,21 @@ export function TwoFactorForm() {
   } = useTrustedDevices();
 
   const [showPassword, setShowPassword] = useState(false);
+
+  // Clear verification code when the setup modal is closed
+  useEffect(() => {
+    if (!isSetupModalOpen) {
+      setVerificationCode("");
+    }
+  }, [isSetupModalOpen, setVerificationCode]);
+
+  // Clear disable-modal inputs when the disable modal is closed
+  useEffect(() => {
+    if (!isDisableModalOpen) {
+      setDisablePassword("");
+      setDisableTotpCode("");
+    }
+  }, [isDisableModalOpen, setDisablePassword, setDisableTotpCode]);
 
   const getDeviceIcon = (userAgent: string) => {
     if (!userAgent) return MonitorSmartphone;
@@ -330,9 +348,12 @@ export function TwoFactorForm() {
 
       {/* Setup Modal */}
       <Dialog open={isSetupModalOpen} onOpenChange={setIsSetupModalOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{t("twoFactor.setup.title")}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <QrCode className="h-5 w-5" />
+              {t("twoFactor.setup.title")}
+            </DialogTitle>
             <DialogDescription>{t("twoFactor.setup.description")}</DialogDescription>
           </DialogHeader>
 
@@ -342,7 +363,7 @@ export function TwoFactorForm() {
               <div className="flex justify-center">
                 <Image
                   src={setupData.qrCode}
-                  alt="2FA QR Code"
+                  alt={t("twoFactor.setup.qrCodeAlt")}
                   width={192}
                   height={192}
                   className="border rounded-lg"
@@ -409,9 +430,12 @@ export function TwoFactorForm() {
 
       {/* Disable Modal */}
       <Dialog open={isDisableModalOpen} onOpenChange={setIsDisableModalOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{t("twoFactor.disable.title")}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <ShieldOff className="h-5 w-5" />
+              {t("twoFactor.disable.title")}
+            </DialogTitle>
             <DialogDescription>{t("twoFactor.disable.description")}</DialogDescription>
           </DialogHeader>
 
@@ -450,7 +474,7 @@ export function TwoFactorForm() {
                 type="text"
                 inputMode="numeric"
                 pattern="[0-9 -]*"
-                placeholder="000 000"
+                placeholder={t("twoFactor.disable.totpPlaceholder")}
                 value={disableTotpCode}
                 onChange={(e) => setDisableTotpCode(e.target.value)}
               />
@@ -479,9 +503,12 @@ export function TwoFactorForm() {
 
       {/* Backup Codes Modal */}
       <Dialog open={isBackupCodesModalOpen} onOpenChange={setIsBackupCodesModalOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{t("twoFactor.backupCodes.title")}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <KeyRound className="h-5 w-5" />
+              {t("twoFactor.backupCodes.title")}
+            </DialogTitle>
             <DialogDescription>{t("twoFactor.backupCodes.description")}</DialogDescription>
           </DialogHeader>
 
@@ -526,7 +553,7 @@ export function TwoFactorForm() {
 
       {/* Remove Device Modal */}
       <Dialog open={isRemoveModalOpen} onOpenChange={setIsRemoveModalOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <TriangleAlert className="h-5 w-5 text-destructive" />
@@ -567,7 +594,7 @@ export function TwoFactorForm() {
 
       {/* Remove All Devices Modal */}
       <Dialog open={isRemoveAllModalOpen} onOpenChange={setIsRemoveAllModalOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <TriangleAlert className="h-5 w-5 text-destructive" />

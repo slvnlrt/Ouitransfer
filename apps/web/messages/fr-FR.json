@@ -182,7 +182,8 @@
     "copy": "Copier",
     "retry": "Retry",
     "unavailable": "indisponible",
-    "days": "jours"
+    "days": "jours",
+    "moving": "Déplacement…"
   },
   "createShare": {
     "title": "Créer un Partage",
@@ -203,7 +204,8 @@
     "searchLabel": "Rechercher",
     "tabs": {
       "shareDetails": "Détails du partage",
-      "selectFiles": "Sélectionner les fichiers"
+      "selectFiles": "Sélectionner les fichiers",
+      "shareLink": "Lien de partage"
     },
     "errors": {
       "nameRequired": "Le nom du partage est requis"
@@ -220,7 +222,11 @@
     "fieldHidden": "Masqué",
     "fieldOptional": "Optionnel",
     "fieldRequired": "Requis",
-    "filesOptionalHint": "L’ajout de fichiers est optionnel — vous pouvez créer un partage vide maintenant et ajouter des fichiers plus tard."
+    "filesOptionalHint": "L’ajout de fichiers est optionnel — vous pouvez créer un partage vide maintenant et ajouter des fichiers plus tard.",
+    "nextGenerateLink": "Suivant : Lien",
+    "linkStepDescription": "Générez un lien personnalisé pour rendre ce partage accessible — ou passez cette étape et ajoutez-le plus tard.",
+    "nameFieldRequiredHelp": "Indique si le nom du visiteur lui est demandé à l'ouverture du partage.",
+    "emailFieldRequiredHelp": "Indique si l'e-mail du visiteur lui est demandé à l'ouverture du partage."
   },
   "customization": {
     "breadcrumb": "Personnalisation",
@@ -633,7 +639,8 @@
     "title": "Modifier l'Image",
     "rotate": "Tourner",
     "zoom": "Zoom",
-    "cropInstructions": "Glisser pour répositionner, redimensionner les coins pour ajuster la zone de découpe"
+    "cropInstructions": "Glisser pour répositionner, redimensionner les coins pour ajuster la zone de découpe",
+    "cropAlt": "Image à recadrer"
   },
   "login": {
     "welcome": "Bienvenue sur",
@@ -1330,6 +1337,9 @@
           "aborted": "L'opération de copie a été annulée en raison d'un délai d'attente dépassé."
         },
         "downloading": "Téléchargement..."
+      },
+      "delete": {
+        "linkLabel": "Lien : /r/{alias}"
       }
     },
     "form": {
@@ -2153,7 +2163,9 @@
       "active": "Actif",
       "expired": "Expiré",
       "paused": "En pause",
-      "maxViewsReached": "Limite de vues atteinte"
+      "maxViewsReached": "Limite de vues atteinte",
+      "noLink": "Sans lien",
+      "noLinkTooltip": "Ce partage n'a pas encore de lien — il n'est pas accessible. Générez un lien pour le partager."
     },
     "security": {
       "protected": "Protégé",
@@ -2260,7 +2272,8 @@
       "verificationCodePlaceholder": "Entrez le code à 6 chiffres",
       "verificationCodeDescription": "Saisissez le code à 6 chiffres de votre application d'authentification",
       "verifyAndEnable": "Vérifier et Activer",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "qrCodeAlt": "QR Code 2FA"
     },
     "disable": {
       "title": "Désactiver l'Authentification à Deux Facteurs",
@@ -2270,7 +2283,8 @@
       "totpLabel": "Code de vérification",
       "totpHint": "Entrez votre code d'authentification à 6 chiffres ou un code de secours",
       "confirm": "Confirmer la Désactivation",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "Codes de Secours",
@@ -2769,7 +2783,13 @@
       "deactivated": "Désactivé",
       "reactivated": "Réactivé",
       "skipped": "Ignoré",
-      "status": "Statut"
+      "status": "Statut",
+      "statusLabel": {
+        "success": "Succès",
+        "error": "Erreur",
+        "partial": "Partiel",
+        "running": "En cours"
+      }
     },
     "syncDetail": {
       "title": "Détails de la Synchronisation",
@@ -2777,7 +2797,11 @@
       "type": "Type",
       "username": "Nom d'Utilisateur",
       "email": "Email",
-      "message": "Message"
+      "message": "Message",
+      "detailType": {
+        "skip": "Ignoré",
+        "error": "Erreur"
+      }
     },
     "banner": {
       "active": "Synchronisation LDAP/AD active",

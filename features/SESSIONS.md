@@ -1,5 +1,51 @@
 # Session Log
 
+## 2026-06-11 (pre-prod CORS fix + editable share recipients)
+
+- **CORS / pré-prod (B-30) — résolu :** En déploiement dual-host (Traefik externe `grad-system.com` + interne `burger.lan`), le login échouait en interne (HTTP 500 `Not allowed by CORS`). Cause : `CORS_ORIGINS` (via `OUITRANSFER_FRONTEND_ORIGIN`) ne listait que l'origine externe ; le login étant un POST, le navigateur envoie `Origin: https://…burger.lan` qui n'était pas dans l'allow-list. Le code splittait déjà `CORS_ORIGINS` sur les virgules → fix déploiement : lister les deux hosts. **B-30 (code)** : `apps/server/src/app.ts` rejetait via un `new Error(...)` générique → 500 ; remplacé par `ForbiddenError` → le `globalErrorHandler` mappe sur **403** (code `FORBIDDEN`). Ajout de 2 tests `app.inject` (preflight OPTIONS : origine non listée → 403 ; liste virgulée → 204 + en-tête). Doc multi-origines clarifiée (`.env.docker.example`, `docker-compose.yaml` : « lister TOUS les hostnames servis, séparés par virgule »). B-30 marqué résolu dans `BUGS.md`. Confirmé fonctionnel en prod.
+- **Destinataires éditables dans la modal détails — résolu :** `share-details-modal.tsx` affichait les destinataires en lecture seule. Extrait le rendu dans un sous-composant `ShareDetailsRecipientsList` (cohérent avec `ShareDetailsFilesList`) avec un bouton « gérer » (crayon) qui ouvre la modal « Gérer les destinataires » existante (`RecipientSelector` — ajout/suppression/notification, déjà câblée via `setShareToManageRecipients`). La section s'affiche aussi pour les propriétaires sans destinataire (ajout du premier). Câblé dans les deux hosts (`shares-modals.tsx`, `dashboard-modals.tsx`). Nettoyage des imports désormais inutilisés dans la modal.
+- **Vérification :** server type-check + tests OK (CORS) ; web type-check clean, biome clean, knip clean, 339 web tests pass.
+
+## 2026-06-11 (cross-modal consistency audit — i18n, correctness, design)
+
+- **Scope:** Full audit of all modals in `apps/web/src/components/modals/` (not just those modified in the previous session) for i18n gaps, correctness issues, and visual inconsistencies. All findings fixed across 8 commits.
+- **i18n fixes (commit 5ead68a):**
+  - `delete-reverse-share-modal.tsx` — hardcoded `"Link: /r/…"` string → `t("reverseShares.modals.delete.linkLabel", {alias})`.
+  - `qr-code-modal.tsx`, `generate-share-link-modal.tsx` — removed leftover `defaultValue` fallbacks (keys already existed in all locales).
+  - `share-details-modal.tsx` — hardcoded `"Share"` title fallback → `t("shareDetails.untitled")`.
+  - `image-edit-modal.tsx` — hardcoded `alt="Crop me"` → `t("imageEdit.cropAlt")`.
+  - `two-factor-form.tsx` — hardcoded `alt="2FA QR Code"` and `placeholder="000 000"` → translated keys.
+  - `ldap-sync-detail-modal.tsx` — raw `log.status` / `detail.type` enum values displayed directly → translated via `t("ldap.sync.statusLabel.*")` / `t("ldap.syncDetail.detailType.*")`.
+  - `move-items-modal.tsx` — inline `` `${t("common.move")}...` `` → `t("common.moving")`.
+  - All new keys added to all 23 locale files.
+- **Correctness fixes (commits cc71af1, 06de4c3, d1b2ae1, fix(web): use Loader):**
+  - `create-reverse-share-modal.tsx`, `edit-password-modal.tsx`, `generate-alias-modal.tsx`, `delete-reverse-share-modal.tsx`, `auth-provider-delete-modal.tsx` — spinner `⠋` character / animated Trash2 icon → proper `<Loader size="sm" />` component.
+  - `generate-alias-modal.tsx` — empty `catch {}` block → `toast.error` + `logger.error` on alias-creation failure.
+  - `file-actions-modals.tsx`, `folder-actions-modals.tsx` — `document.querySelector('[placeholder=…]')` anti-pattern → controlled `useState` + `useEffect` reset; hardcoded `.substring(0,50)+"..."` → `truncateFileName(..., 50)`.
+  - `two-factor-form.tsx` — added `useEffect` to clear verification code / disable fields when the 2FA modal closes (stale state across opens).
+  - `user-status-modal.tsx` — `DialogTitle` imported from `@radix-ui/react-dialog` (bypassing shadcn) → `@/components/ui/dialog`.
+  - `share-actions-modals.tsx` — replaced raw `fetch("/api/files?recursive=true")` with typed `listFiles({ recursive: true })` endpoint call.
+- **Design standardization (commits 0269dcd, cfbd947):**
+  - 21 files: modal widths normalized to three-tier scale (`sm:max-w-md` confirm/simple, `sm:max-w-lg` standard form, `sm:max-w-3xl` content-heavy). Largest change: several modals that had no `max-w` at all now get `sm:max-w-lg`.
+  - 16 files: every `DialogTitle` gets a contextually appropriate lucide-react icon for visual identity and scanning.
+- **Cosmetic (commits 90c47d9, de624ff):**
+  - Removed `<X>` icon from Cancel buttons across 3 modals (semantic mismatch — X ≠ cancel).
+  - Translated leftover Spanish comment `{/* Campos de Senha */}` → English.
+  - `generate-invite-link-modal.tsx` — raw `<div className="flex justify-end gap-2">` footer → `<DialogFooter>` for consistency with all other modals.
+- **RTL fix (commit cf128f8):** physical `ml-1` → logical `ms-1` in `identification-form.tsx` (×4) and `group-detail-modal.tsx`.
+- **Verification:** web type-check clean, biome clean, 339 web tests pass.
+- **Still open in `TODO.md`:** CORS/env pre-prod (B-30), recipients not editable in share-details modal.
+
+## 2026-06-10 (evening — share-creation UX unification + share UX fixes)
+
+- **Scope:** Resolved the "share creation UX" section of `TODO.md` (divergent entry points) plus two user-raised UX issues.
+- **Lot 1 (quick fixes):**
+  - Manage-files modal: dropped the `selectedItems.length === 0` guard so an emptied share can still be saved (empty shares are server-supported).
+  - New `ShareNoLinkBadge` (dashed outline + tooltip) on the shares table & mobile cards, surfacing shares with no alias as "not accessible" — distinct from paused/expired. Corrected `Share.alias` type to `ShareAlias | null` (server returns it nullable). New i18n keys `sharesTable.status.noLink(+Tooltip)` × 23 locales.
+- **Lot 2 (unification):** New `ShareCreationModal` replaces `CreateShareModal`, `ShareItemModal`, `ShareMultipleItemsModal`. One three-step flow (Details → Files → Link), all options everywhere (privacy/notifications, password, expiration, max-views). **Deferred creation:** the share is persisted only on a terminal Link-step action ("Create link" / "Later"), so step navigation never leaves a half-created share. Calling contexts pass `preselected` items (folders expanded to descendants); name pre-filled. Width standardized to `sm:max-w-3xl`. Added helper text under the visitor name/email dropdowns. New i18n keys `createShare.{tabs.shareLink,nextGenerateLink,linkStepDescription,nameFieldRequiredHelp,emailFieldRequiredHelp}` × 23 locales. Rewired dashboard/files/shares modal hosts.
+- **Verification:** web type-check clean, biome clean, 339 web tests pass (incl. 4 new `ShareCreationModal` deferred-creation tests).
+- **Still open in `TODO.md`:** CORS/env pre-prod (B-30), recipients not editable in share-details modal.
+
 ## 2026-06-10 (afternoon — fix ALL review findings + deferred items + TD-36 translations)
 
 - **Scope:** Fixed all 17 review findings (3 Important + 14 Minor) from 3 review files, all 9 deferred items from `TODO-DEFERRED-FIXES.md`, and completed TD-36 (translations for 21 locales).

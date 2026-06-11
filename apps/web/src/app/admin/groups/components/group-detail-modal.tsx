@@ -69,7 +69,7 @@ export function GroupDetailModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="[--dialog-max-w:52rem]">
+      <DialogContent className="sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 mb-2">
             <Layers className="size-6 me-1" />
@@ -94,7 +94,7 @@ export function GroupDetailModal({
               <div className="flex items-center justify-between mb-2">
                 <Label className="text-sm font-medium">
                   {t("groups.detail.members")}{" "}
-                  <Badge variant="secondary" className="ml-1">
+                  <Badge variant="secondary" className="ms-1">
                     {group.members.length}
                   </Badge>
                 </Label>

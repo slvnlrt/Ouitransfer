@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
+import { Loader } from "@/components/ui/loader";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import type { CreateReverseShareBody } from "@/http/endpoints/reverse-shares/types";
@@ -27,7 +28,7 @@ import { PasswordSection } from "./create-reverse-share/password-section";
 import { type CreateReverseShareFormData, DEFAULT_FORM_VALUES } from "./create-reverse-share/types";
 
 const DIALOG_CONFIG = {
-  maxWidth: "sm:max-w-[500px] md:max-w-[650px]",
+  maxWidth: "sm:max-w-lg",
   maxHeight: "max-h-[85vh]",
   contentMaxHeight: "max-h-[calc(85vh-140px)]",
 } as const;
@@ -200,10 +201,10 @@ export function CreateReverseShareModal({
                 </Button>
                 <Button type="submit" disabled={isCreating}>
                   {isCreating ? (
-                    <div className="flex items-center gap-2">
-                      <div className="animate-spin">⠋</div>
+                    <>
+                      <Loader size="sm" />
                       {t("common.creating")}
-                    </div>
+                    </>
                   ) : (
                     t("reverseShares.form.submit")
                   )}

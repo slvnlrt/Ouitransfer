@@ -93,9 +93,12 @@ export function IdentificationForm({
       onOpenChange={() => {}}
       modal
     >
-      <DialogContent>
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader className="flex flex-col gap-1">
-          <DialogTitle>{t("share.identification.title")}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <UserCircle className="h-5 w-5" />
+            {t("share.identification.title")}
+          </DialogTitle>
           <div className="flex items-center gap-2 text-muted-foreground text-sm">
             <UserCircle className="size-4" />
             <p>{t("share.identification.subtitle")}</p>
@@ -127,11 +130,11 @@ export function IdentificationForm({
                   <Label htmlFor="visitor-name">
                     {t("share.identification.nameLabel")}
                     {nameRequired ? (
-                      <span className="text-destructive ml-1" aria-hidden="true">
+                      <span className="text-destructive ms-1" aria-hidden="true">
                         *
                       </span>
                     ) : (
-                      <span className="ml-1 text-muted-foreground text-xs">
+                      <span className="ms-1 text-muted-foreground text-xs">
                         ({t("share.identification.optional")})
                       </span>
                     )}
@@ -158,11 +161,11 @@ export function IdentificationForm({
                   <Label htmlFor="visitor-email">
                     {t("share.identification.emailLabel")}
                     {emailRequired ? (
-                      <span className="text-destructive ml-1" aria-hidden="true">
+                      <span className="text-destructive ms-1" aria-hidden="true">
                         *
                       </span>
                     ) : (
-                      <span className="ml-1 text-muted-foreground text-xs">
+                      <span className="ms-1 text-muted-foreground text-xs">
                         ({t("share.identification.optional")})
                       </span>
                     )}

@@ -182,7 +182,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "स्थानांतरित हो रहा है…"
   },
   "createShare": {
     "title": "साझाकरण बनाएं",
@@ -203,7 +204,8 @@
     "searchLabel": "खोजें",
     "tabs": {
       "shareDetails": "साझाकरण विवरण",
-      "selectFiles": "फ़ाइलें चुनें"
+      "selectFiles": "फ़ाइलें चुनें",
+      "shareLink": "शेयर लिंक"
     },
     "errors": {
       "nameRequired": "शेयर का नाम आवश्यक है"
@@ -220,7 +222,11 @@
     "fieldHidden": "छिपा हुआ",
     "fieldOptional": "वैकल्पिक",
     "fieldRequired": "आवश्यक",
-    "filesOptionalHint": "फ़ाइलें जोड़ना वैकल्पिक है — आप अभी एक खाली शेयर बना सकते हैं और बाद में फ़ाइलें जोड़ सकते हैं।"
+    "filesOptionalHint": "फ़ाइलें जोड़ना वैकल्पिक है — आप अभी एक खाली शेयर बना सकते हैं और बाद में फ़ाइलें जोड़ सकते हैं।",
+    "nextGenerateLink": "आगे: लिंक",
+    "linkStepDescription": "एक कस्टम लिंक बनाएं ताकि लोग इस शेयर तक पहुंच सकें — या इसे छोड़ें और बाद में जोड़ें।",
+    "nameFieldRequiredHelp": "निर्धारित करता है कि शेयर खोलते समय विज़िटर से उनका नाम पूछा जाए या नहीं।",
+    "emailFieldRequiredHelp": "निर्धारित करता है कि शेयर खोलते समय विज़िटर से उनका ईमेल पूछा जाए या नहीं।"
   },
   "customization": {
     "breadcrumb": "अनुकूलन",
@@ -633,7 +639,8 @@
     "title": "छवि संपादित करें",
     "rotate": "घुमाएं",
     "zoom": "ज़ूम",
-    "cropInstructions": "छवि को पुनः स्थानांतरित करने के लिए खींचें, कोणों को समायोजित करने के लिए आकार बदलें"
+    "cropInstructions": "छवि को पुनः स्थानांतरित करने के लिए खींचें, कोणों को समायोजित करने के लिए आकार बदलें",
+    "cropAlt": "छवि काटने के लिए"
   },
   "login": {
     "welcome": "स्वागत है में",
@@ -1330,6 +1337,9 @@
         },
         "invalidDate": "अमान्य दिनांक",
         "downloading": "डाउनलोड हो रहा है..."
+      },
+      "delete": {
+        "linkLabel": "लिंक: /r/{alias}"
       }
     },
     "form": {
@@ -2153,7 +2163,9 @@
       "active": "सक्रिय",
       "expired": "समाप्त",
       "paused": "रोका गया",
-      "maxViewsReached": "दृश्य सीमा तक पहुंचा"
+      "maxViewsReached": "दृश्य सीमा तक पहुंचा",
+      "noLink": "कोई लिंक नहीं",
+      "noLinkTooltip": "इस शेयर का अभी तक कोई लिंक नहीं है और यह सुलभ नहीं है। साझा करने के लिए लिंक बनाएं।"
     },
     "security": {
       "protected": "संरक्षित",
@@ -2208,7 +2220,8 @@
       "verificationCodePlaceholder": "6-अंकों का कोड दर्ज करें",
       "verificationCodeDescription": "अपने प्रमाणीकरण ऐप से 6-अंकों का कोड दर्ज करें",
       "verifyAndEnable": "सत्यापित करें और सक्षम करें",
-      "cancel": "रद्द करें"
+      "cancel": "रद्द करें",
+      "qrCodeAlt": "2FA QR कोड"
     },
     "disable": {
       "title": "दो-कारक प्रमाणीकरण अक्षम करें",
@@ -2218,7 +2231,8 @@
       "totpLabel": "सत्यापन कोड",
       "totpHint": "अपना 6-अंकीय प्रमाणक कोड या बैकअप कोड दर्ज करें",
       "confirm": "अक्षम करने की पुष्टि करें",
-      "cancel": "रद्द करें"
+      "cancel": "रद्द करें",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "बैकअप कोड",
@@ -2717,7 +2731,13 @@
       "deactivated": "निष्क्रिय किया गया",
       "reactivated": "पुनः सक्रिय किया गया",
       "skipped": "छोड़ दिया गया",
-      "status": "स्थिति"
+      "status": "स्थिति",
+      "statusLabel": {
+        "success": "सफल",
+        "error": "त्रुटि",
+        "partial": "आंशिक",
+        "running": "चल रहा है"
+      }
     },
     "syncDetail": {
       "title": "सिंक विवरण",
@@ -2725,7 +2745,11 @@
       "type": "प्रकार",
       "username": "उपयोगकर्ता नाम",
       "email": "ईमेल",
-      "message": "संदेश"
+      "message": "संदेश",
+      "detailType": {
+        "skip": "छोड़ा गया",
+        "error": "त्रुटि"
+      }
     },
     "banner": {
       "active": "LDAP/AD सिंक सक्रिय",

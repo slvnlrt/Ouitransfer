@@ -1,4 +1,4 @@
-import { Lock, LockOpen } from "lucide-react";
+import { Link2Off, Lock, LockOpen } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/badge";
@@ -43,6 +43,29 @@ export function ShareStatusBadge({
         : lifecycle.reason === "max_views"
           ? t("sharesTable.status.maxViewsReached")
           : t("sharesTable.status.expired")}
+    </Badge>
+  );
+}
+
+/**
+ * "No link" badge — shown when a share has no alias yet, so it is not reachable
+ * by anyone. This is orthogonal to the lifecycle state (a share can be active
+ * *and* link-less): it signals the share simply isn't accessible until a link
+ * is generated, which is distinct from being paused or expired.
+ */
+export function ShareNoLinkBadge({ share }: { share: Share }) {
+  const t = useTranslations();
+
+  if (share.alias) return null;
+
+  return (
+    <Badge
+      variant="outline"
+      className="flex items-center gap-1 border-dashed text-muted-foreground"
+      title={t("sharesTable.status.noLinkTooltip")}
+    >
+      <Link2Off className="h-4 w-4" />
+      {t("sharesTable.status.noLink")}
     </Badge>
   );
 }

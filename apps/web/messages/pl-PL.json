@@ -182,7 +182,8 @@
       "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
       "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
       "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
-    }
+    },
+    "moving": "Przenoszenie…"
   },
   "createShare": {
     "title": "Utwórz Udostępnienie",
@@ -203,7 +204,8 @@
     "searchLabel": "Szukaj",
     "tabs": {
       "shareDetails": "Szczegóły udostępniania",
-      "selectFiles": "Wybierz pliki"
+      "selectFiles": "Wybierz pliki",
+      "shareLink": "Link do udostępniania"
     },
     "errors": {
       "nameRequired": "Nazwa udostępnienia jest wymagana"
@@ -220,7 +222,11 @@
     "fieldHidden": "Ukryte",
     "fieldOptional": "Opcjonalne",
     "fieldRequired": "Wymagane",
-    "filesOptionalHint": "Dodawanie plików jest opcjonalne — możesz teraz utworzyć puste udostępnienie i dodać pliki później."
+    "filesOptionalHint": "Dodawanie plików jest opcjonalne — możesz teraz utworzyć puste udostępnienie i dodać pliki później.",
+    "nextGenerateLink": "Dalej: link",
+    "linkStepDescription": "Wygeneruj niestandardowy link, aby inni mogli uzyskać dostęp do tego udostępnienia — albo pomiń ten krok i dodaj go później.",
+    "nameFieldRequiredHelp": "Określa, czy odwiedzający są proszeni o imię przy otwieraniu udostępnienia.",
+    "emailFieldRequiredHelp": "Określa, czy odwiedzający są proszeni o adres e-mail przy otwieraniu udostępnienia."
   },
   "customization": {
     "breadcrumb": "Personalizacja",
@@ -633,7 +639,8 @@
     "title": "Edytuj obraz",
     "rotate": "Obróć",
     "zoom": "Powiększ",
-    "cropInstructions": "Przeciągnij, aby przesunąć, zmień rozmiar rogów, aby dostosować obszar przycięcia"
+    "cropInstructions": "Przeciągnij, aby przesunąć, zmień rozmiar rogów, aby dostosować obszar przycięcia",
+    "cropAlt": "Obraz do przycięcia"
   },
   "login": {
     "welcome": "Witaj w",
@@ -1330,6 +1337,9 @@
         },
         "invalidDate": "Nieprawidłowa data",
         "downloading": "Pobieranie..."
+      },
+      "delete": {
+        "linkLabel": "Link: /r/{alias}"
       }
     },
     "form": {
@@ -2153,7 +2163,9 @@
       "active": "Aktywne",
       "expired": "Wygasłe",
       "paused": "Wstrzymane",
-      "maxViewsReached": "Osiągnięto limit wyświetleń"
+      "maxViewsReached": "Osiągnięto limit wyświetleń",
+      "noLink": "Brak linku",
+      "noLinkTooltip": "To udostępnienie nie ma jeszcze linku i jest niedostępne. Wygeneruj link, aby je udostępnić."
     },
     "security": {
       "protected": "Chronione",
@@ -2208,7 +2220,8 @@
       "verificationCodePlaceholder": "Wprowadź 6-cyfrowy kod",
       "verificationCodeDescription": "Wprowadź 6-cyfrowy kod z aplikacji uwierzytelniającej",
       "verifyAndEnable": "Zweryfikuj i włącz",
-      "cancel": "Anuluj"
+      "cancel": "Anuluj",
+      "qrCodeAlt": "Kod QR 2FA"
     },
     "disable": {
       "title": "Wyłącz uwierzytelnianie dwuskładnikowe",
@@ -2218,7 +2231,8 @@
       "totpLabel": "Kod weryfikacyjny",
       "totpHint": "Wprowadź 6-cyfrowy kod uwierzytelniającego lub kod zapasowy",
       "confirm": "Potwierdź wyłączenie",
-      "cancel": "Anuluj"
+      "cancel": "Anuluj",
+      "totpPlaceholder": "000 000"
     },
     "backupCodes": {
       "title": "Kody zapasowe",
@@ -2717,7 +2731,13 @@
       "deactivated": "Zdezaktywowano",
       "reactivated": "Ponownie aktywowano",
       "skipped": "Pominięto",
-      "status": "Status"
+      "status": "Status",
+      "statusLabel": {
+        "success": "Sukces",
+        "error": "Błąd",
+        "partial": "Częściowy",
+        "running": "W toku"
+      }
     },
     "syncDetail": {
       "title": "Szczegóły synchronizacji",
@@ -2725,7 +2745,11 @@
       "type": "Typ",
       "username": "Nazwa użytkownika",
       "email": "E-mail",
-      "message": "Wiadomość"
+      "message": "Wiadomość",
+      "detailType": {
+        "skip": "Pominięto",
+        "error": "Błąd"
+      }
     },
     "banner": {
       "active": "Synchronizacja LDAP/AD aktywna",
