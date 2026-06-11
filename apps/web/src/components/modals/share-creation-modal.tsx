@@ -317,7 +317,7 @@ export function ShareCreationModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-3xl w-full [scrollbar-gutter:stable]">
+      <DialogContent className="sm:max-w-3xl w-full">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {generatedLink ? <LinkIcon className="h-5 w-5" /> : <Share className="h-5 w-5" />}
