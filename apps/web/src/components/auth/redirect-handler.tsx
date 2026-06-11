@@ -34,7 +34,14 @@ export function RedirectHandler({ children }: RedirectHandlerProps) {
     }
   }, [isAuthenticated, pathname, router]);
 
+  // While auth is still resolving, only block protected pages. Public pages
+  // (login, password reset, share links) must render immediately — otherwise a
+  // slow or stalled auth resolution after a session-expiry redirect leaves them
+  // stuck on the loading screen until a manual reload.
   if (isAuthenticated === null) {
+    if (matchesPath(pathname, publicPaths)) {
+      return <>{children}</>;
+    }
     return <LoadingScreen />;
   }
 
