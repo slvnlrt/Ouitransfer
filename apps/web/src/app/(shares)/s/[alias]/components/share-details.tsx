@@ -178,6 +178,7 @@ export function ShareDetails({
           }}
           file={selectedFile}
           sharePassword={password}
+          shareId={share.id}
         />
       )}
     </>
