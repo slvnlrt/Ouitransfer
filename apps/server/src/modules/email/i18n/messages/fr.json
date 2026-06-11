@@ -45,11 +45,11 @@
   "shareDownloadReminder": {
     "subject": "{appName} - Rappel : des fichiers de {senderName} vous attendent",
     "subtitle": "Des fichiers vous attendent",
-    "body": "Petit rappel — {senderName} a partagé <strong>{shareName}</strong> avec vous, mais il semble que vous ne l'ayez pas encore téléchargé.",
+    "body": "Petit rappel : {senderName} a partagé <strong>{shareName}</strong> avec vous, mais il semble que vous ne l'ayez pas encore téléchargé.",
     "cta": "Télécharger les fichiers",
     "info": "Ce partage est accessible à toute personne disposant du lien.",
     "infoPassword": "Ce partage est protégé par un mot de passe. Vous serez invité à le saisir.",
-    "infoExpires": "Ne tardez pas — ce lien de partage expirera le {expiresAt}.",
+    "infoExpires": "Ne tardez pas : ce lien de partage expirera le {expiresAt}.",
     "infoPasswordExpires": "Ce partage est protégé par un mot de passe et expirera le {expiresAt}, pensez à le télécharger avant."
   },
   "shareAccessed": {

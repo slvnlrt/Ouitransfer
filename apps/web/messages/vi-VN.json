@@ -226,9 +226,9 @@
     "fieldHidden": "Ẩn",
     "fieldOptional": "Tùy chọn",
     "fieldRequired": "Bắt buộc",
-    "filesOptionalHint": "Thêm tập tin là tùy chọn — bạn có thể tạo chia sẻ trống ngay bây giờ và thêm tập tin sau.",
+    "filesOptionalHint": "Thêm tập tin là tùy chọn, bạn có thể tạo chia sẻ trống ngay bây giờ và thêm tập tin sau.",
     "nextGenerateLink": "Tiếp theo: liên kết",
-    "linkStepDescription": "Tạo một liên kết tùy chỉnh để mọi người có thể truy cập mục chia sẻ này — hoặc bỏ qua và thêm sau.",
+    "linkStepDescription": "Tạo một liên kết tùy chỉnh để mọi người có thể truy cập mục chia sẻ này, hoặc bỏ qua và thêm sau.",
     "nameFieldRequiredHelp": "Xác định liệu khách truy cập có được yêu cầu nhập tên khi mở mục chia sẻ hay không.",
     "emailFieldRequiredHelp": "Xác định liệu khách truy cập có được yêu cầu nhập email khi mở mục chia sẻ hay không."
   },

@@ -226,9 +226,9 @@
     "fieldHidden": "Oculto",
     "fieldOptional": "Opcional",
     "fieldRequired": "Obrigatório",
-    "filesOptionalHint": "Adicionar arquivos é opcional — você pode criar um compartilhamento vazio agora e adicionar arquivos mais tarde.",
+    "filesOptionalHint": "Adicionar arquivos é opcional, você pode criar um compartilhamento vazio agora e adicionar arquivos mais tarde.",
     "nextGenerateLink": "Próximo: link",
-    "linkStepDescription": "Gere um link personalizado para que as pessoas possam acessar este compartilhamento — ou pule e adicione um depois.",
+    "linkStepDescription": "Gere um link personalizado para que as pessoas possam acessar este compartilhamento, ou pule e adicione um depois.",
     "nameFieldRequiredHelp": "Define se o nome é solicitado aos visitantes ao abrir o compartilhamento.",
     "emailFieldRequiredHelp": "Define se o e-mail é solicitado aos visitantes ao abrir o compartilhamento."
   },
@@ -1061,7 +1061,7 @@
     "uploadedAt": "Enviado em {date}",
     "uploadApproximateHint": "Aproximado: os remetentes podem enviar arquivos sem fornecer um e-mail quando não é obrigatório",
     "remindNonDownloaders": "Lembrar ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {Nenhum destinatário pendente — todos já baixaram} one {Lembrar # destinatário que ainda não baixou} other {Lembrar # destinatários que ainda não baixaram}}",
+    "remindNonDownloadersHint": "{count, plural, =0 {Nenhum destinatário pendente, todos já baixaram} one {Lembrar # destinatário que ainda não baixou} other {Lembrar # destinatários que ainda não baixaram}}",
     "sendingReminders": "Enviando lembretes...",
     "remindSuccess": "{count, plural, one {Lembrete enviado para # destinatário} other {Lembretes enviados para # destinatários}}",
     "remindNoneSent": "Nenhum lembrete foi enviado",
@@ -1705,7 +1705,7 @@
       },
       "quotaSmartDeletionEnabled": {
         "title": "Exclusão inteligente de arquivos acima da cota",
-        "description": "Desativada por padrão. Quando habilitada, após o período de carência, os arquivos mais antigos não seguros de um usuário acima da cota são excluídos em ordem segura: primeiro os uploads não compartilhados, depois os arquivos em compartilhamentos inativos pelo período abaixo. Arquivos em compartilhamentos ativos nunca são excluídos — se nada for seguro para remover, novos uploads são simplesmente bloqueados."
+        "description": "Desativada por padrão. Quando habilitada, após o período de carência, os arquivos mais antigos não seguros de um usuário acima da cota são excluídos em ordem segura: primeiro os uploads não compartilhados, depois os arquivos em compartilhamentos inativos pelo período abaixo. Arquivos em compartilhamentos ativos nunca são excluídos, se nada for seguro para remover, novos uploads são simplesmente bloqueados."
       },
       "quotaInactiveShareDays": {
         "title": "Limite de compartilhamento inativo (dias)",
@@ -1791,7 +1791,7 @@
       },
       "autoCleanupEnabled": {
         "title": "Ativar limpeza automática",
-        "description": "Chave mestra para a limpeza programada de links de compartilhamento expirados, arquivos de link de recebimento expirados e órfãos. Desativado por padrão — nada é excluído automaticamente até que você ative."
+        "description": "Chave mestra para a limpeza programada de links de compartilhamento expirados, arquivos de link de recebimento expirados e órfãos. Desativado por padrão, nada é excluído automaticamente até que você ative."
       },
       "autoCleanupIntervalHours": {
         "title": "Intervalo de limpeza (horas)",
@@ -1807,7 +1807,7 @@
       },
       "accountDeactivationCleanupEnabled": {
         "title": "Excluir arquivos de contas desativadas",
-        "description": "Quando ativo, os arquivos pertencentes a uma conta desativada são excluídos permanentemente após o atraso abaixo. Desativado por padrão — a desativação por si só nunca exclui arquivos."
+        "description": "Quando ativo, os arquivos pertencentes a uma conta desativada são excluídos permanentemente após o atraso abaixo. Desativado por padrão, a desativação por si só nunca exclui arquivos."
       },
       "accountDeactivationCleanupDays": {
         "title": "Atraso de limpeza após desativação (dias)",

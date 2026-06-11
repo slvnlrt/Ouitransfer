@@ -45,11 +45,11 @@
   "shareDownloadReminder": {
     "subject": "{appName} - Reminder: files from {senderName} are waiting for you",
     "subtitle": "Files Are Waiting For You",
-    "body": "Just a reminder — {senderName} shared <strong>{shareName}</strong> with you, but it looks like you haven't downloaded it yet.",
+    "body": "Just a reminder: {senderName} shared <strong>{shareName}</strong> with you, but it looks like you haven't downloaded it yet.",
     "cta": "Download Files",
     "info": "This share is available to anyone with the link.",
     "infoPassword": "This share is password-protected. You will be prompted to enter a password.",
-    "infoExpires": "Don't miss out — this share link will expire on {expiresAt}.",
+    "infoExpires": "Don't miss out: this share link will expire on {expiresAt}.",
     "infoPasswordExpires": "This share is password-protected and will expire on {expiresAt}, so download it before then."
   },
   "shareAccessed": {

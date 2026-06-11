@@ -226,7 +226,7 @@
     "fieldHidden": "Oculto",
     "fieldOptional": "Opcional",
     "fieldRequired": "Obligatorio",
-    "filesOptionalHint": "Agregar archivos es opcional — puede crear un compartido vacío ahora y agregar archivos más adelante.",
+    "filesOptionalHint": "Agregar archivos es opcional, puede crear un compartido vacío ahora y agregar archivos más adelante.",
     "nextGenerateLink": "Siguiente: enlace",
     "linkStepDescription": "Genera un enlace personalizado para que otras personas puedan acceder a este recurso compartido, o omítelo y añádelo más tarde.",
     "nameFieldRequiredHelp": "Indica si se pide el nombre a los visitantes al abrir el recurso compartido.",
@@ -1061,7 +1061,7 @@
     "uploadedAt": "Subido el {date}",
     "uploadApproximateHint": "Aproximado: los remitentes pueden enviar archivos sin proporcionar un correo electrónico cuando no es obligatorio",
     "remindNonDownloaders": "Recordar ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {No hay destinatarios pendientes — todos han descargado} one {Recordar a # destinatario que aún no ha descargado} other {Recordar a # destinatarios que aún no han descargado}}",
+    "remindNonDownloadersHint": "{count, plural, =0 {No hay destinatarios pendientes, todos han descargado} one {Recordar a # destinatario que aún no ha descargado} other {Recordar a # destinatarios que aún no han descargado}}",
     "sendingReminders": "Enviando recordatorios...",
     "remindSuccess": "{count, plural, one {Recordatorio enviado a # destinatario} other {Recordatorios enviados a # destinatarios}}",
     "remindNoneSent": "No se enviaron recordatorios",
@@ -1783,7 +1783,7 @@
       },
       "autoCleanupEnabled": {
         "title": "Activar limpieza automática",
-        "description": "Interruptor principal para la limpieza programada de enlaces de compartido caducados, archivos de enlace de recepción caducados y huérfanos. Desactivado de forma predeterminada — nada se elimina automáticamente hasta que lo active."
+        "description": "Interruptor principal para la limpieza programada de enlaces de compartido caducados, archivos de enlace de recepción caducados y huérfanos. Desactivado de forma predeterminada, nada se elimina automáticamente hasta que lo active."
       },
       "autoCleanupIntervalHours": {
         "title": "Intervalo de limpieza (horas)",
@@ -1799,7 +1799,7 @@
       },
       "accountDeactivationCleanupEnabled": {
         "title": "Eliminar archivos de cuentas desactivadas",
-        "description": "Cuando está activo, los archivos pertenecientes a una cuenta desactivada se eliminan permanentemente tras el retraso indicado abajo. Desactivado de forma predeterminada — la desactivación por sí sola nunca elimina archivos."
+        "description": "Cuando está activo, los archivos pertenecientes a una cuenta desactivada se eliminan permanentemente tras el retraso indicado abajo. Desactivado de forma predeterminada, la desactivación por sí sola nunca elimina archivos."
       },
       "accountDeactivationCleanupDays": {
         "title": "Retraso de limpieza tras desactivación (días)",

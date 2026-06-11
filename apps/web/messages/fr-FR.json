@@ -222,9 +222,9 @@
     "fieldHidden": "Masqué",
     "fieldOptional": "Optionnel",
     "fieldRequired": "Requis",
-    "filesOptionalHint": "L’ajout de fichiers est optionnel — vous pouvez créer un partage vide maintenant et ajouter des fichiers plus tard.",
+    "filesOptionalHint": "L’ajout de fichiers est optionnel, vous pouvez créer un partage vide maintenant et ajouter des fichiers plus tard.",
     "nextGenerateLink": "Suivant : Lien",
-    "linkStepDescription": "Générez un lien personnalisé pour rendre ce partage accessible — ou passez cette étape et ajoutez-le plus tard.",
+    "linkStepDescription": "Générez un lien personnalisé pour rendre ce partage accessible, ou passez cette étape et ajoutez-le plus tard.",
     "nameFieldRequiredHelp": "Indique si le nom du visiteur lui est demandé à l'ouverture du partage.",
     "emailFieldRequiredHelp": "Indique si l'e-mail du visiteur lui est demandé à l'ouverture du partage."
   },
@@ -1057,7 +1057,7 @@
     "uploadedAt": "Uploadé le {date}",
     "uploadApproximateHint": "Approximatif : les expéditeurs peuvent envoyer des fichiers sans fournir d''email lorsqu''il n''est pas requis",
     "remindNonDownloaders": "Relancer ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {Aucun destinataire en attente — tout le monde a téléchargé} one {Relancer # destinataire n''ayant pas encore téléchargé} other {Relancer # destinataires n''ayant pas encore téléchargé}}",
+    "remindNonDownloadersHint": "{count, plural, =0 {Aucun destinataire en attente, tout le monde a téléchargé} one {Relancer # destinataire n''ayant pas encore téléchargé} other {Relancer # destinataires n''ayant pas encore téléchargé}}",
     "sendingReminders": "Envoi des relances...",
     "remindSuccess": "{count, plural, one {Relance envoyée à # destinataire} other {Relances envoyées à # destinataires}}",
     "remindNoneSent": "Aucune relance envoyée",
@@ -1692,7 +1692,7 @@
       },
       "quotaSmartDeletionEnabled": {
         "title": "Suppression intelligente des fichiers hors quota",
-        "description": "Désactivée par défaut. Une fois activée, après la période de grâce, les fichiers non sécurisés les plus anciens d'un utilisateur hors quota sont supprimés dans un ordre sûr : d'abord les fichiers téléversés mais non partagés, puis les fichiers des partages inactifs depuis la durée définie ci-dessous. Les fichiers des partages actifs ne sont jamais supprimés — si rien ne peut être supprimé en toute sécurité, les nouveaux téléversements sont simplement bloqués."
+        "description": "Désactivée par défaut. Une fois activée, après la période de grâce, les fichiers non sécurisés les plus anciens d'un utilisateur hors quota sont supprimés dans un ordre sûr : d'abord les fichiers téléversés mais non partagés, puis les fichiers des partages inactifs depuis la durée définie ci-dessous. Les fichiers des partages actifs ne sont jamais supprimés, si rien ne peut être supprimé en toute sécurité, les nouveaux téléversements sont simplement bloqués."
       },
       "quotaInactiveShareDays": {
         "title": "Seuil d'inactivité des partages (jours)",
@@ -1782,7 +1782,7 @@
       },
       "autoCleanupEnabled": {
         "title": "Activer le nettoyage automatique",
-        "description": "Interrupteur principal du nettoyage planifié des liens de partage expirés, des fichiers de partage inversé expirés et des orphelins. Désactivé par défaut — rien n'est supprimé automatiquement tant que vous ne l'activez pas."
+        "description": "Interrupteur principal du nettoyage planifié des liens de partage expirés, des fichiers de partage inversé expirés et des orphelins. Désactivé par défaut, rien n'est supprimé automatiquement tant que vous ne l'activez pas."
       },
       "autoCleanupIntervalHours": {
         "title": "Intervalle de nettoyage (heures)",
@@ -1798,7 +1798,7 @@
       },
       "accountDeactivationCleanupEnabled": {
         "title": "Supprimer les fichiers des comptes désactivés",
-        "description": "Lorsqu'activé, les fichiers d'un compte désactivé sont supprimés définitivement après le délai ci-dessous. Désactivé par défaut — la désactivation seule ne supprime jamais de fichiers."
+        "description": "Lorsqu'activé, les fichiers d'un compte désactivé sont supprimés définitivement après le délai ci-dessous. Désactivé par défaut, la désactivation seule ne supprime jamais de fichiers."
       },
       "accountDeactivationCleanupDays": {
         "title": "Délai de nettoyage après désactivation (jours)",
@@ -2165,7 +2165,7 @@
       "paused": "En pause",
       "maxViewsReached": "Limite de vues atteinte",
       "noLink": "Sans lien",
-      "noLinkTooltip": "Ce partage n'a pas encore de lien — il n'est pas accessible. Générez un lien pour le partager."
+      "noLinkTooltip": "Ce partage n'a pas encore de lien : il n'est pas accessible. Générez un lien pour le partager."
     },
     "security": {
       "protected": "Protégé",

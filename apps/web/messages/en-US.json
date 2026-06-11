@@ -226,9 +226,9 @@
     "fieldHidden": "Hidden",
     "fieldOptional": "Optional",
     "fieldRequired": "Required",
-    "filesOptionalHint": "Adding files is optional — you can create an empty share now and add files later.",
+    "filesOptionalHint": "Adding files is optional, you can create an empty share now and add files later.",
     "nextGenerateLink": "Next: Share Link",
-    "linkStepDescription": "Generate a custom link so people can access this share — or skip it and add one later.",
+    "linkStepDescription": "Generate a custom link so people can access this share, or skip it and add one later.",
     "nameFieldRequiredHelp": "Whether visitors are asked for their name when they open the share.",
     "emailFieldRequiredHelp": "Whether visitors are asked for their email when they open the share."
   },
@@ -1164,7 +1164,7 @@
     "uploadedAt": "Uploaded on {date}",
     "uploadApproximateHint": "Approximate: uploaders can submit files without providing an email when it is not required",
     "remindNonDownloaders": "Remind ({count})",
-    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending — everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
+    "remindNonDownloadersHint": "{count, plural, =0 {No recipients are pending, everyone has downloaded} one {Remind # recipient who has not downloaded yet} other {Remind # recipients who have not downloaded yet}}",
     "sendingReminders": "Sending reminders...",
     "remindSuccess": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
     "remindNoneSent": "No reminders were sent",
@@ -1877,7 +1877,7 @@
       },
       "quotaSmartDeletionEnabled": {
         "title": "Smart Deletion of Over-Quota Files",
-        "description": "Off by default. When enabled, after the grace period the oldest unsafe files of an over-quota user are deleted in a safe order: first unshared uploads, then files in shares inactive for the period below. Files in active shares are never deleted — if nothing is safe to remove, new uploads are simply blocked instead."
+        "description": "Off by default. When enabled, after the grace period the oldest unsafe files of an over-quota user are deleted in a safe order: first unshared uploads, then files in shares inactive for the period below. Files in active shares are never deleted, if nothing is safe to remove, new uploads are simply blocked instead."
       },
       "quotaInactiveShareDays": {
         "title": "Inactive Share Threshold (days)",
@@ -1929,7 +1929,7 @@
       },
       "autoCleanupEnabled": {
         "title": "Enable Automatic Cleanup",
-        "description": "Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default — nothing is deleted automatically until you turn this on."
+        "description": "Master switch for the scheduled cleanup of expired share links, expired reverse-share files, and orphans. Off by default, nothing is deleted automatically until you turn this on."
       },
       "autoCleanupIntervalHours": {
         "title": "Cleanup Interval (hours)",
@@ -1945,7 +1945,7 @@
       },
       "accountDeactivationCleanupEnabled": {
         "title": "Delete Deactivated Accounts' Files",
-        "description": "When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default — deactivation alone never deletes files."
+        "description": "When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default, deactivation alone never deletes files."
       },
       "accountDeactivationCleanupDays": {
         "title": "Deactivation Cleanup Delay (days)",
@@ -2315,7 +2315,7 @@
       "paused": "Paused",
       "maxViewsReached": "View Limit Reached",
       "noLink": "No link",
-      "noLinkTooltip": "This share has no link yet — it isn't accessible. Generate a link to share it."
+      "noLinkTooltip": "This share has no link yet: it isn't accessible. Generate a link to share it."
     },
     "security": {
       "protected": "Protected",
