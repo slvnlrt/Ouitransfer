@@ -78,6 +78,11 @@ export function ProviderList({
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
+                        // @hello-pangea/dnd's DraggableStyle is a strict object
+                        // type and lacks the `--radix-*` custom-property index
+                        // signature that @radix-ui widens React.CSSProperties
+                        // with; it is structurally a CSSProperties at runtime.
+                        style={provided.draggableProps.style as React.CSSProperties}
                         className={`transition-all ${snapshot.isDragging ? "shadow-lg scale-105" : ""}`}
                       >
                         <ProviderRow
