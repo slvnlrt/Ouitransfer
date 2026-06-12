@@ -79,6 +79,7 @@ export function LanguageSwitcher() {
             >
               <ReactCountryFlag
                 svg
+                cdnUrl="/flags/4x3/"
                 countryCode={code.split("-")[1]}
                 style={{
                   marginInlineEnd: "8px",
