@@ -2940,7 +2940,8 @@
     "tabs": {
       "users": "[TO_TRANSLATE] Users",
       "groups": "[TO_TRANSLATE] Groups",
-      "ldap": "[TO_TRANSLATE] LDAP"
+      "ldap": "[TO_TRANSLATE] LDAP",
+      "label": "[TO_TRANSLATE] User management"
     }
   }
 }

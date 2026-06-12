@@ -2940,7 +2940,8 @@
     "tabs": {
       "users": "Users",
       "groups": "Groups",
-      "ldap": "LDAP"
+      "ldap": "LDAP",
+      "label": "User management"
     }
   }
 }
