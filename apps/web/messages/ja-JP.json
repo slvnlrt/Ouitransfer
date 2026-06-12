@@ -2613,9 +2613,18 @@
       "linkCopied": "招待リンクがクリップボードにコピーされました！",
       "expiresIn": "15分で期限切れ",
       "close": "閉じる",
+      "emailLabel": "[TO_TRANSLATE] Email address (optional)",
+      "emailPlaceholder": "[TO_TRANSLATE] name@example.com",
+      "emailHelp": "[TO_TRANSLATE] Send the invite link directly by email, or leave it empty to copy the link manually.",
+      "send": "[TO_TRANSLATE] Send Invitation",
+      "sending": "[TO_TRANSLATE] Sending...",
+      "emailSentToast": "[TO_TRANSLATE] Invitation email sent!",
+      "emailSentNotice": "[TO_TRANSLATE] Invitation sent to {email}",
       "errors": {
         "generateFailed": "招待リンクの生成に失敗しました",
-        "copyFailed": "リンクのコピーに失敗しました"
+        "copyFailed": "リンクのコピーに失敗しました",
+        "invalidEmail": "[TO_TRANSLATE] Please enter a valid email address",
+        "sendFailed": "[TO_TRANSLATE] The invite link was generated, but the email could not be sent. Copy the link and share it manually."
       }
     }
   },

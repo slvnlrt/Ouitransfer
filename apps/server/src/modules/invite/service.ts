@@ -6,8 +6,12 @@ import { prisma } from "../../shared/prisma.js";
 import { AppError, NotFoundError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { emailService } from "../email/service.js";
+import { buildInviteRegistrationUrl } from "../email/url-builder.js";
 
 type InviteTokenVerdict = { valid: boolean; used?: boolean; expired?: boolean };
+
+/** Lifetime of an invite token, in minutes. Also surfaced to the invitee's email. */
+const INVITE_TOKEN_TTL_MINUTES = 15;
 
 /**
  * Pure single-use/expiry evaluation for an invite token row. Shared between the
@@ -46,10 +50,11 @@ function invalidInviteTokenError(verdict: InviteTokenVerdict): AppError {
 export class InviteService {
   async generateInviteToken(
     adminUserId: string,
-  ): Promise<{ id: string; token: string; expiresAt: Date }> {
+    email?: string,
+  ): Promise<{ id: string; token: string; expiresAt: Date; emailSent: boolean }> {
     const token = randomBytes(32).toString("hex");
     const expiresAt = new Date();
-    expiresAt.setMinutes(expiresAt.getMinutes() + 15);
+    expiresAt.setMinutes(expiresAt.getMinutes() + INVITE_TOKEN_TTL_MINUTES);
 
     const inviteToken = await prisma.inviteToken.create({
       data: {
@@ -59,7 +64,53 @@ export class InviteService {
       },
     });
 
-    return { id: inviteToken.id, token, expiresAt };
+    const emailSent = email ? await this.sendInvitationEmail({ email, token, adminUserId }) : false;
+
+    return { id: inviteToken.id, token, expiresAt, emailSent };
+  }
+
+  /**
+   * Emails the self-registration link to a prospective user.
+   *
+   * The invitee has no account, so the inviting admin's locale is used as the
+   * best available language signal (same approach as share invitations). The
+   * link is built from the configured appUrl — `emailService.send` gates on SMTP
+   * being enabled and returns `{ enqueued: false }` when it is off, which we
+   * surface as `emailSent: false`.
+   *
+   * Never throws: a queueing failure must not fail token generation, since the
+   * admin can still copy the link manually.
+   */
+  private async sendInvitationEmail(params: {
+    email: string;
+    token: string;
+    adminUserId: string;
+  }): Promise<boolean> {
+    const { email, token, adminUserId } = params;
+    try {
+      const inviter = await prisma.user.findUnique({
+        where: { id: adminUserId },
+        select: { firstName: true, lastName: true, locale: true },
+      });
+
+      const inviterName = `${inviter?.firstName ?? ""} ${inviter?.lastName ?? ""}`.trim();
+      const inviteLink = await buildInviteRegistrationUrl(token);
+
+      const result = await emailService.send("user_invitation", {
+        to: email,
+        locale: inviter?.locale ?? "en",
+        data: {
+          inviterName,
+          inviteLink,
+          expiresInMinutes: INVITE_TOKEN_TTL_MINUTES,
+        },
+      });
+
+      return result.enqueued;
+    } catch (err) {
+      getLogger().error({ err, email }, "Failed to queue user invitation email");
+      return false;
+    }
   }
 
   async validateInviteToken(token: string): Promise<InviteTokenVerdict> {

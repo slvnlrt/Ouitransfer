@@ -2,6 +2,7 @@ import type { AxiosRequestConfig } from "axios";
 
 import apiInstance from "@/config/api";
 import type {
+  GenerateInviteTokenRequest,
   GenerateInviteTokenResponse,
   RegisterWithInviteRequest,
   RegisterWithInviteResponse,
@@ -14,9 +15,10 @@ import type {
  */
 
 export const generateInviteToken = async (
+  data?: GenerateInviteTokenRequest,
   options?: AxiosRequestConfig,
 ): Promise<GenerateInviteTokenResponse> => {
-  const response = await apiInstance.post(`/api/invite-tokens`, undefined, options);
+  const response = await apiInstance.post(`/api/invite-tokens`, data, options);
   return response.data;
 };
 

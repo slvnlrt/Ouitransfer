@@ -2815,9 +2815,18 @@
       "linkCopied": "Invite link copied to clipboard!",
       "expiresIn": "Expires in 15 minutes",
       "close": "Close",
+      "emailLabel": "Email address (optional)",
+      "emailPlaceholder": "name@example.com",
+      "emailHelp": "Send the invite link directly by email, or leave it empty to copy the link manually.",
+      "send": "Send Invitation",
+      "sending": "Sending...",
+      "emailSentToast": "Invitation email sent!",
+      "emailSentNotice": "Invitation sent to {email}",
       "errors": {
         "generateFailed": "Failed to generate invite link",
-        "copyFailed": "Failed to copy link"
+        "copyFailed": "Failed to copy link",
+        "invalidEmail": "Please enter a valid email address",
+        "sendFailed": "The invite link was generated, but the email could not be sent. Copy the link and share it manually."
       }
     }
   },

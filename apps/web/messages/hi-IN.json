@@ -2613,9 +2613,18 @@
       "linkCopied": "आमंत्रण लिंक क्लिपबोर्ड पर कॉपी किया गया!",
       "expiresIn": "15 मिनट में समाप्त होता है",
       "close": "बंद करें",
+      "emailLabel": "[TO_TRANSLATE] Email address (optional)",
+      "emailPlaceholder": "[TO_TRANSLATE] name@example.com",
+      "emailHelp": "[TO_TRANSLATE] Send the invite link directly by email, or leave it empty to copy the link manually.",
+      "send": "[TO_TRANSLATE] Send Invitation",
+      "sending": "[TO_TRANSLATE] Sending...",
+      "emailSentToast": "[TO_TRANSLATE] Invitation email sent!",
+      "emailSentNotice": "[TO_TRANSLATE] Invitation sent to {email}",
       "errors": {
         "generateFailed": "आमंत्रण लिंक जनरेट करने में विफल",
-        "copyFailed": "लिंक कॉपी करने में विफल"
+        "copyFailed": "लिंक कॉपी करने में विफल",
+        "invalidEmail": "[TO_TRANSLATE] Please enter a valid email address",
+        "sendFailed": "[TO_TRANSLATE] The invite link was generated, but the email could not be sent. Copy the link and share it manually."
       }
     }
   },

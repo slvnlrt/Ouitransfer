@@ -1,6 +1,12 @@
+export interface GenerateInviteTokenRequest {
+  /** If provided, the invite link is also emailed to this address. */
+  email?: string;
+}
+
 export interface GenerateInviteTokenResponse {
   token: string;
   expiresAt: string;
+  emailSent: boolean;
 }
 
 export interface ValidateInviteTokenResponse {

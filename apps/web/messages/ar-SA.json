@@ -2613,9 +2613,18 @@
       "linkCopied": "تم نسخ رابط الدعوة إلى الحافظة!",
       "expiresIn": "ينتهي بعد 15 دقيقة",
       "close": "إغلاق",
+      "emailLabel": "[TO_TRANSLATE] Email address (optional)",
+      "emailPlaceholder": "[TO_TRANSLATE] name@example.com",
+      "emailHelp": "[TO_TRANSLATE] Send the invite link directly by email, or leave it empty to copy the link manually.",
+      "send": "[TO_TRANSLATE] Send Invitation",
+      "sending": "[TO_TRANSLATE] Sending...",
+      "emailSentToast": "[TO_TRANSLATE] Invitation email sent!",
+      "emailSentNotice": "[TO_TRANSLATE] Invitation sent to {email}",
       "errors": {
         "generateFailed": "فشل في إنشاء رابط الدعوة",
-        "copyFailed": "فشل نسخ الرابط"
+        "copyFailed": "فشل نسخ الرابط",
+        "invalidEmail": "[TO_TRANSLATE] Please enter a valid email address",
+        "sendFailed": "[TO_TRANSLATE] The invite link was generated, but the email could not be sent. Copy the link and share it manually."
       }
     }
   },

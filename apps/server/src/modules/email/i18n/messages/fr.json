@@ -32,6 +32,13 @@
     "body": "Bonjour {firstName},\n\nBonne nouvelle ! Votre compte a été réactivé. Vous pouvez désormais vous connecter et accéder à tous vos fichiers.",
     "cta": "Se connecter"
   },
+  "userInvitation": {
+    "subject": "{appName} - Vous avez été invité à nous rejoindre",
+    "subtitle": "Vous êtes invité",
+    "body": "{inviterName} vous a invité à créer un compte sur {appName}. Cliquez sur le bouton ci-dessous pour configurer votre compte.",
+    "cta": "Créer votre compte",
+    "info": "Ce lien dinvitation expire dans {expiresInMinutes} minutes. Sil expire, demandez-en un nouveau à votre administrateur."
+  },
   "shareInvitation": {
     "subject": "{appName} - {senderName} a partagé des fichiers avec vous",
     "subtitle": "Fichiers partagés avec vous",

@@ -2617,9 +2617,18 @@
       "linkCopied": "Ο σύνδεσμος πρόσκλησης αντιγράφηκε στο πρόχειρο!",
       "expiresIn": "Λήγει σε 15 λεπτά",
       "close": "Κλείσιμο",
+      "emailLabel": "[TO_TRANSLATE] Email address (optional)",
+      "emailPlaceholder": "[TO_TRANSLATE] name@example.com",
+      "emailHelp": "[TO_TRANSLATE] Send the invite link directly by email, or leave it empty to copy the link manually.",
+      "send": "[TO_TRANSLATE] Send Invitation",
+      "sending": "[TO_TRANSLATE] Sending...",
+      "emailSentToast": "[TO_TRANSLATE] Invitation email sent!",
+      "emailSentNotice": "[TO_TRANSLATE] Invitation sent to {email}",
       "errors": {
         "generateFailed": "Αποτυχία δημιουργίας συνδέσμου πρόσκλησης",
-        "copyFailed": "Αποτυχία αντιγραφής του συνδέσμου"
+        "copyFailed": "Αποτυχία αντιγραφής του συνδέσμου",
+        "invalidEmail": "[TO_TRANSLATE] Please enter a valid email address",
+        "sendFailed": "[TO_TRANSLATE] The invite link was generated, but the email could not be sent. Copy the link and share it manually."
       }
     }
   },
