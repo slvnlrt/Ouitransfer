@@ -934,7 +934,8 @@
     "activityLog": "Journal d'activité",
     "logout": "Déconnexion",
     "customization": "Personnalisation",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "Administration"
   },
   "navigation": {
     "dashboard": "Tableau de bord"
@@ -2933,6 +2934,13 @@
       "quota": "Quotas",
       "admin": "Administration",
       "test": "Test"
+    }
+  },
+  "admin": {
+    "tabs": {
+      "users": "Utilisateurs",
+      "groups": "Groupes",
+      "ldap": "LDAP"
     }
   }
 }

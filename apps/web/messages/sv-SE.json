@@ -938,7 +938,8 @@
     "ldap": "LDAP",
     "activityLog": "Aktivitetslogg",
     "logout": "Logga ut",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
   },
   "navigation": {
     "dashboard": "Instrumentbräda"
@@ -2934,5 +2935,12 @@
     "loadError": "Det gick inte att läsa in aviseringsinställningarna",
     "retry": "Försök igen",
     "unsavedChanges": "{count, plural, one {# osparad ändring} other {# osparade ändringar}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP"
+    }
   }
 }

@@ -934,7 +934,8 @@
     "activityLog": "活动日志",
     "logout": "退出登录",
     "customization": "自定义",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
   },
   "navigation": {
     "dashboard": "仪表盘"
@@ -2934,5 +2935,12 @@
     "loadError": "无法加载通知偏好设置",
     "retry": "重试",
     "unsavedChanges": "{count, plural, one {# 个未保存的更改} other {# 个未保存的更改}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP"
+    }
   }
 }

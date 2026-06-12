@@ -934,7 +934,8 @@
     "activityLog": "سجل النشاط",
     "logout": "تسجيل الخروج",
     "customization": "التخصيص",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
   },
   "navigation": {
     "dashboard": "لوحة التحكم"
@@ -2934,5 +2935,12 @@
     "loadError": "فشل تحميل تفضيلات الإشعارات",
     "retry": "إعادة المحاولة",
     "unsavedChanges": "{count, plural, one {# تغيير غير محفوظ} other {# تغييرات غير محفوظة}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP"
+    }
   }
 }

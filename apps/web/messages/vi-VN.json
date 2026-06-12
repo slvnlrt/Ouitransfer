@@ -938,7 +938,8 @@
     "ldap": "LDAP",
     "activityLog": "Nhật ký hoạt động",
     "logout": "Đăng xuất",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
   },
   "navigation": {
     "dashboard": "Bảng điều khiển"
@@ -2934,5 +2935,12 @@
     "loadError": "Không thể tải cài đặt thông báo",
     "retry": "Thử lại",
     "unsavedChanges": "{count, plural, one {# thay đổi chưa được lưu} other {# thay đổi chưa được lưu}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP"
+    }
   }
 }

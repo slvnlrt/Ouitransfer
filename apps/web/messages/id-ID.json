@@ -938,7 +938,8 @@
     "ldap": "LDAP",
     "activityLog": "Activity Log",
     "logout": "Keluar",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
   },
   "navigation": {
     "dashboard": "Dasbor"
@@ -2934,5 +2935,12 @@
     "loadError": "Gagal memuat preferensi notifikasi",
     "retry": "Coba Lagi",
     "unsavedChanges": "{count, plural, one {# perubahan belum disimpan} other {# perubahan belum disimpan}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP"
+    }
   }
 }

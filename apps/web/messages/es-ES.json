@@ -938,7 +938,8 @@
     "activityLog": "Registro de Actividad",
     "logout": "Cerrar sesión",
     "customization": "Personalización",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
   },
   "navigation": {
     "dashboard": "Panel de control"
@@ -2934,5 +2935,12 @@
     "loadError": "Error al cargar las preferencias de notificaciones",
     "retry": "Reintentar",
     "unsavedChanges": "{count, plural, one {# cambio sin guardar} other {# cambios sin guardar}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP"
+    }
   }
 }

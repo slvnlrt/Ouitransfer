@@ -1041,7 +1041,8 @@
     "ldap": "LDAP",
     "activityLog": "Activity Log",
     "logout": "Log Out",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "Administration"
   },
   "navigation": {
     "dashboard": "Dashboard"
@@ -2933,6 +2934,13 @@
       "quota": "Quotas",
       "admin": "Administration",
       "test": "Test"
+    }
+  },
+  "admin": {
+    "tabs": {
+      "users": "Users",
+      "groups": "Groups",
+      "ldap": "LDAP"
     }
   }
 }

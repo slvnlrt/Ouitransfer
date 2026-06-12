@@ -938,7 +938,8 @@
     "ldap": "LDAP",
     "activityLog": "יומן פעילות",
     "logout": "התנתק",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
   },
   "navigation": {
     "dashboard": "לוח בקרה"
@@ -2934,5 +2935,12 @@
     "loadError": "כישלון בטעינת העדפות הודעות",
     "retry": "נסה שוב",
     "unsavedChanges": "{count, plural, one {# שינוי לא שמור} other {# שינויים לא שמורים}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP"
+    }
   }
 }

@@ -934,7 +934,8 @@
     "activityLog": "गतिविधि लॉग",
     "logout": "लॉग आउट",
     "customization": "अनुकूलन",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
   },
   "navigation": {
     "dashboard": "डैशबोर्ड"
@@ -2934,5 +2935,12 @@
     "loadError": "सूचना वरीयताएँ लोड करने में विफल",
     "retry": "पुनः प्रयास करें",
     "unsavedChanges": "{count, plural, one {# असहेजा परिवर्तन} other {# असहेजे परिवर्तन}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP"
+    }
   }
 }

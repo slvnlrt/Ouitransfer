@@ -938,7 +938,8 @@
     "ldap": "LDAP",
     "activityLog": "سجل فعالیت",
     "logout": "خروج",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
   },
   "navigation": {
     "dashboard": "داشبورد"
@@ -2934,5 +2935,12 @@
     "loadError": "عدم موفقیت در بارگذاری تفضیلات اطلاع‌رسانی",
     "retry": "تلاش دوباره",
     "unsavedChanges": "{count, plural, one {# تغییر ذخیره نشده} other {# تغییر ذخیره نشده}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP"
+    }
   }
 }

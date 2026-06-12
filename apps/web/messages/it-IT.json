@@ -934,7 +934,8 @@
     "activityLog": "Activity Log",
     "logout": "Logout",
     "customization": "Personalizzazione",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
   },
   "navigation": {
     "dashboard": "Pannello di controllo"
@@ -2934,5 +2935,12 @@
     "loadError": "Impossibile caricare le preferenze di notifica",
     "retry": "Riprova",
     "unsavedChanges": "{count, plural, one {# modifica non salvata} other {# modifiche non salvate}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP"
+    }
   }
 }

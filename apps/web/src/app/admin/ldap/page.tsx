@@ -2,6 +2,7 @@
 
 import { AlertTriangle } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { UserManagementTabs } from "@/app/admin/components/user-management-tabs";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { LoadingScreen } from "@/components/layout/loading-screen";
 import { PageLayout } from "@/components/layout/page-layout";
@@ -50,6 +51,7 @@ export default function LdapPage() {
     <ProtectedRoute requireAdmin>
       <PageLayout>
         <div className="flex flex-col gap-8">
+          <UserManagementTabs />
           <LdapHeader />
           {/* Server-side warnings (e.g., missing ENCRYPTION_SECRET for bind password encryption) */}
           {status?.warnings && status.warnings.length > 0 && (

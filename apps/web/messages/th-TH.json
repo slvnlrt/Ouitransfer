@@ -938,7 +938,8 @@
     "ldap": "LDAP",
     "activityLog": "บันทึกกิจกรรม",
     "logout": "ออกจากระบบ",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
   },
   "navigation": {
     "dashboard": "แดชบอร์ด"
@@ -2934,5 +2935,12 @@
     "loadError": "ไม่สามารถโหลดการตั้งค่าการแจ้งเตือน",
     "retry": "ลองอีกครั้ง",
     "unsavedChanges": "{count, plural, one {มีการเปลี่ยนแปลง # รายการที่ยังไม่ได้บันทึก} other {มีการเปลี่ยนแปลง # รายการที่ยังไม่ได้บันทึก}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP"
+    }
   }
 }

@@ -934,7 +934,8 @@
     "activityLog": "Журнал активности",
     "logout": "Выйти",
     "customization": "Настройки",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
   },
   "navigation": {
     "dashboard": "Панель управления"
@@ -2934,5 +2935,12 @@
     "loadError": "Ошибка загрузки параметров уведомлений",
     "retry": "Повторить",
     "unsavedChanges": "{count, plural, one {# несохраненное изменение} few {# несохраненных изменения} many {# несохраненных изменений} other {# несохраненных изменений}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP"
+    }
   }
 }

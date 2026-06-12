@@ -72,14 +72,7 @@ function CleanupGroupHarness({ onSubmit }: { onSubmit: (data: GroupFormData) => 
   });
 
   return (
-    <SettingsGroup
-      group="cleanup"
-      configs={CLEANUP_CONFIGS}
-      form={form}
-      isCollapsed={false}
-      onToggleCollapse={() => {}}
-      onSubmit={onSubmit}
-    />
+    <SettingsGroup group="cleanup" configs={CLEANUP_CONFIGS} form={form} onSubmit={onSubmit} />
   );
 }
 

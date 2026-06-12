@@ -83,14 +83,7 @@ function StorageGroupHarness({ onSubmit }: { onSubmit: (data: GroupFormData) => 
   });
 
   return (
-    <SettingsGroup
-      group="storage"
-      configs={STORAGE_CONFIGS}
-      form={form}
-      isCollapsed={false}
-      onToggleCollapse={() => {}}
-      onSubmit={onSubmit}
-    />
+    <SettingsGroup group="storage" configs={STORAGE_CONFIGS} form={form} onSubmit={onSubmit} />
   );
 }
 

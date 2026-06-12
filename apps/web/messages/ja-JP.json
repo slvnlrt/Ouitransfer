@@ -934,7 +934,8 @@
     "activityLog": "アクティビティログ",
     "logout": "ログアウト",
     "customization": "カスタマイズ",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
   },
   "navigation": {
     "dashboard": "ダッシュボード"
@@ -2934,5 +2935,12 @@
     "loadError": "通知設定の読み込みに失敗しました",
     "retry": "再試行",
     "unsavedChanges": "{count, plural, one {保存されていない変更が # 件あります} other {保存されていない変更が # 件あります}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP"
+    }
   }
 }

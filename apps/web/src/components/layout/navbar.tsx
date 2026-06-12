@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  Bell,
-  Layers,
-  LogOut,
-  Palette,
-  ScrollText,
-  Server,
-  Settings,
-  User,
-  Users,
-} from "lucide-react";
+import { Bell, LogOut, Palette, ScrollText, Settings, User, Users } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -22,6 +12,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAppInfo } from "@/contexts/app-info-context";
@@ -128,6 +120,10 @@ export function Navbar() {
                 </DropdownMenuItem>
                 {isAdmin && (
                   <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel className="text-xs text-muted-foreground uppercase tracking-wider px-2 py-1">
+                      {t("navbar.administration")}
+                    </DropdownMenuLabel>
                     <DropdownMenuItem asChild>
                       <Link
                         href="/admin/settings"
@@ -141,18 +137,6 @@ export function Navbar() {
                       <Link href="/admin/users" className="flex items-center gap-2 cursor-pointer">
                         <Users className="h-4 w-4" />
                         {t("navbar.usersManagement")}
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/admin/groups" className="flex items-center gap-2 cursor-pointer">
-                        <Layers className="h-4 w-4" />
-                        {t("navbar.groupsManagement")}
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/admin/ldap" className="flex items-center gap-2 cursor-pointer">
-                        <Server className="h-4 w-4" />
-                        {t("navbar.ldap")}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>

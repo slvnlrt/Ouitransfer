@@ -934,7 +934,8 @@
     "activityLog": "Activiteitenlogboek",
     "logout": "Uitloggen",
     "customization": "Aanpassen",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
   },
   "navigation": {
     "dashboard": "Controlepaneel"
@@ -2934,5 +2935,12 @@
     "loadError": "Meldingsvoorkeuren laden mislukt",
     "retry": "Opnieuw proberen",
     "unsavedChanges": "{count, plural, one {# niet-opgeslagen wijziging} other {# niet-opgeslagen wijzigingen}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP"
+    }
   }
 }

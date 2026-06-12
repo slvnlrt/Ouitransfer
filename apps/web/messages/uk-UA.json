@@ -938,7 +938,8 @@
     "ldap": "LDAP",
     "activityLog": "Журнал активності",
     "logout": "Вийти",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
   },
   "navigation": {
     "dashboard": "Панель управління"
@@ -2934,5 +2935,12 @@
     "loadError": "Помилка завантаження параметрів сповіщення",
     "retry": "Повторити",
     "unsavedChanges": "{count, plural, one {# незбережена зміна} other {# незбережені зміни}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP"
+    }
   }
 }

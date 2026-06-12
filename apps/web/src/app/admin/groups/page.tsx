@@ -1,5 +1,6 @@
 "use client";
 
+import { UserManagementTabs } from "@/app/admin/components/user-management-tabs";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { LoadingScreen } from "@/components/layout/loading-screen";
 import { PageLayout } from "@/components/layout/page-layout";
@@ -35,6 +36,7 @@ export default function GroupsManagementPage() {
     <ProtectedRoute requireAdmin>
       <PageLayout>
         <div className="flex flex-col gap-8">
+          <UserManagementTabs />
           <GroupsHeader onCreateGroup={handleCreateGroup} />
           <GroupsTable
             groups={groups}

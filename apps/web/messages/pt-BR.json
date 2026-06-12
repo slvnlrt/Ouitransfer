@@ -938,7 +938,8 @@
     "activityLog": "Registro de Atividades",
     "logout": "Sair",
     "customization": "Personalização",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
   },
   "navigation": {
     "dashboard": "Painel"
@@ -2934,5 +2935,12 @@
     "loadError": "Falha ao carregar preferências de notificações",
     "retry": "Tentar novamente",
     "unsavedChanges": "{count, plural, one {# alteração não salva} other {# alterações não salvas}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP"
+    }
   }
 }

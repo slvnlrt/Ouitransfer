@@ -938,7 +938,8 @@
     "ldap": "LDAP",
     "activityLog": "Αρχείο δραστηριοτήτων",
     "logout": "Αποσύνδεση",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
   },
   "navigation": {
     "dashboard": "Πίνακας ελέγχου"
@@ -2934,5 +2935,12 @@
     "loadError": "Αποτυχία φόρτωσης προτιμήσεων ειδοποιήσεων",
     "retry": "Επανάληψη",
     "unsavedChanges": "{count, plural, one {# αποθήκευτη αλλαγή} other {# αποθήκευτες αλλαγές}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP"
+    }
   }
 }
