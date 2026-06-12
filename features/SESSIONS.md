@@ -1,5 +1,18 @@
 # Session Log
 
+## 2026-06-12 (code review findings — 8 fixes, PR #36 merged)
+
+- **Scope:** All 8 findings from the `/code-review --effort high` run covering changes since the previous PR merge.
+- **Fix 1 — `settings-form.tsx` stale SMTP state:** `EmailAdminSection` visibility was driven by the initial `configs` snapshot instead of live form state. Switched to `form.watch("configs.smtpEnabled")` so the section appears/disappears immediately when the admin toggles the checkbox.
+- **Fix 2 — axios interceptor network error swallowed:** On transient network failures during token refresh, the interceptor was re-rejecting with the original 401 `AxiosError`. React Query's retry-suppress guard saw `response.status === 401` and suppressed retries. Changed `RefreshOutcome` string union to a `RefreshResult` discriminated union carrying the actual network error; interceptor now calls `Promise.reject(result.error)` for the `network_error` branch.
+- **Fix 3 — `UserManagementTabs` WCAG 4.1.2 violation:** Radix `Tabs` with `asChild` triggers injects `aria-controls` pointing at non-existent panel IDs (panels live on separate routes). Replaced entirely with a semantic `<nav>` + `<Link>` using `aria-current="page"` and a slash-boundary active-route check (`pathname === href || pathname.startsWith(\`${href}/\`)`).
+- **Fix 4 & 5 — Invite URL from server (`appUrl`-based):** Client was building the invite link from `window.location.origin` (breaks split-hostname deployments where admin browses internal host but `appUrl` is the public host). Server now builds and returns `registrationUrl` in the invite endpoint response; client prefers it with a fallback. Added `registrationUrl: z.string().nullable()` to the Zod response schema and a new service unit test for the null path.
+- **Fix 6 — Shared `isValidEmail` utility:** 5 inline email-regex copies across `recipient-selector.tsx`, `reverse-share-recipient-selector.tsx`, `identification-form.tsx`, `use-quick-share.ts`, `generate-invite-link-modal.tsx` → extracted to `apps/web/src/utils/email.ts`.
+- **Fix 7 — `useMemo` for settings group metadata:** `createGroupMetadata(t)` and `createFieldDescriptions(t)` called on every render in `SettingsGroup`; wrapped in `useMemo([t])`.
+- **Fix 8 — Self-hosted flag asset guard:** Added `apps/web/src/components/general/__tests__/language-switcher-flags.test.ts` (Vitest node env) asserting every locale in the `languages` map has a matching SVG in `public/flags/4x3/`. Exported `languages` from `language-switcher.tsx` for the test.
+- **Verification:** web 344/344 tests pass, server 1624/1624 pass, type-check + Biome clean on both packages.
+- **PR #36** merged, CI green.
+
 ## 2026-06-11 (pre-prod CORS fix + editable share recipients)
 
 - **CORS / pré-prod (B-30) — résolu :** En déploiement dual-host (Traefik externe `grad-system.com` + interne `burger.lan`), le login échouait en interne (HTTP 500 `Not allowed by CORS`). Cause : `CORS_ORIGINS` (via `OUITRANSFER_FRONTEND_ORIGIN`) ne listait que l'origine externe ; le login étant un POST, le navigateur envoie `Origin: https://…burger.lan` qui n'était pas dans l'allow-list. Le code splittait déjà `CORS_ORIGINS` sur les virgules → fix déploiement : lister les deux hosts. **B-30 (code)** : `apps/server/src/app.ts` rejetait via un `new Error(...)` générique → 500 ; remplacé par `ForbiddenError` → le `globalErrorHandler` mappe sur **403** (code `FORBIDDEN`). Ajout de 2 tests `app.inject` (preflight OPTIONS : origine non listée → 403 ; liste virgulée → 204 + en-tête). Doc multi-origines clarifiée (`.env.docker.example`, `docker-compose.yaml` : « lister TOUS les hostnames servis, séparés par virgule »). B-30 marqué résolu dans `BUGS.md`. Confirmé fonctionnel en prod.
