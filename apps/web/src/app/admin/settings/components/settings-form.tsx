@@ -89,8 +89,10 @@ export function SettingsForm({ groupedConfigs, groupForms, onGroupSubmit }: Sett
         const form = groupForms[group as ValidGroup];
         if (!form) return null;
 
-        const smtpEnabled =
-          group === "email" && configs.some((c) => c.key === "smtpEnabled" && c.value === "true");
+        // Read live form state (not the initial `configs` snapshot) so the
+        // EmailAdminSection appears/disappears immediately when the admin toggles
+        // SMTP, mirroring the SMTP fields inside the card which also use watch().
+        const smtpEnabled = group === "email" && form.watch("configs.smtpEnabled") === "true";
 
         return (
           <TabsContent key={group} value={group} className="mt-6 flex flex-col gap-6">
