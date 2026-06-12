@@ -906,7 +906,25 @@
       "keys": "Chaves de configuração",
       "type": "Tipo",
       "yes": "Sim",
-      "no": "Não"
+      "no": "Não",
+      "key": "[TO_TRANSLATE] Setting",
+      "usingCustomConfig": "[TO_TRANSLATE] Custom config",
+      "smtpHost": "[TO_TRANSLATE] SMTP host",
+      "files": "[TO_TRANSLATE] Files",
+      "shares": "[TO_TRANSLATE] Shares",
+      "reverseShares": "[TO_TRANSLATE] Reverse shares",
+      "folders": "[TO_TRANSLATE] Folders",
+      "s3Errors": "[TO_TRANSLATE] Storage errors",
+      "recipientId": "[TO_TRANSLATE] Recipient",
+      "identificationSource": "[TO_TRANSLATE] Identification",
+      "expiresAt": "[TO_TRANSLATE] Expires at",
+      "userId": "[TO_TRANSLATE] User",
+      "shareName": "[TO_TRANSLATE] Share",
+      "reverseShareName": "[TO_TRANSLATE] Reverse share",
+      "filesDeleted": "[TO_TRANSLATE] Files deleted",
+      "bytesFreed": "[TO_TRANSLATE] Storage freed",
+      "objectName": "[TO_TRANSLATE] Object",
+      "fileId": "[TO_TRANSLATE] File"
     }
   },
   "navbar": {

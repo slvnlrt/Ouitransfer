@@ -1009,7 +1009,25 @@
       "keys": "Config keys",
       "type": "Type",
       "yes": "Yes",
-      "no": "No"
+      "no": "No",
+      "key": "Setting",
+      "usingCustomConfig": "Custom config",
+      "smtpHost": "SMTP host",
+      "files": "Files",
+      "shares": "Shares",
+      "reverseShares": "Reverse shares",
+      "folders": "Folders",
+      "s3Errors": "Storage errors",
+      "recipientId": "Recipient",
+      "identificationSource": "Identification",
+      "expiresAt": "Expires at",
+      "userId": "User",
+      "shareName": "Share",
+      "reverseShareName": "Reverse share",
+      "filesDeleted": "Files deleted",
+      "bytesFreed": "Storage freed",
+      "objectName": "Object",
+      "fileId": "File"
     }
   },
   "navbar": {

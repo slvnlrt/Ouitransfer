@@ -902,7 +902,25 @@
       "keys": "Clés de configuration",
       "type": "Type",
       "yes": "Oui",
-      "no": "Non"
+      "no": "Non",
+      "key": "Paramètre",
+      "usingCustomConfig": "Configuration personnalisée",
+      "smtpHost": "Serveur SMTP",
+      "files": "Fichiers",
+      "shares": "Partages",
+      "reverseShares": "Partages inverses",
+      "folders": "Dossiers",
+      "s3Errors": "Erreurs de stockage",
+      "recipientId": "Destinataire",
+      "identificationSource": "Identification",
+      "expiresAt": "Expiration",
+      "userId": "Utilisateur",
+      "shareName": "Partage",
+      "reverseShareName": "Partage inverse",
+      "filesDeleted": "Fichiers supprimés",
+      "bytesFreed": "Espace libéré",
+      "objectName": "Objet",
+      "fileId": "Fichier"
     }
   },
   "navbar": {
