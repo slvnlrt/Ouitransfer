@@ -11,6 +11,19 @@ const apiInstance = axios.create({
   timeout: 120000, // 2 minutes timeout for API calls
 });
 
+/**
+ * Timeout for the raw-axios auth helpers (CSRF fetch, token refresh).
+ *
+ * These calls bypass `apiInstance` (to avoid interceptor loops) and therefore
+ * do NOT inherit its 120s timeout — raw axios defaults to no timeout at all.
+ * Without a bound, a request made on a dead keep-alive socket (e.g. after the
+ * tab was backgrounded across a network change or laptop sleep) never settles,
+ * leaving `csrfFetchPromise` / `refreshPromise` pending forever. Every request
+ * awaiting them then hangs, wedging the whole UI on the loading screen until a
+ * manual reload resets module state. A finite timeout guarantees they settle.
+ */
+const AUTH_REQUEST_TIMEOUT_MS = 30000;
+
 // ── CSRF Token Management ─────────────────────────────────────
 // The server uses double-submit cookie CSRF protection:
 // 1. GET /api/csrf-token → sets httpOnly _csrf cookie + returns { token }
@@ -26,8 +39,12 @@ async function fetchCsrfToken(): Promise<string | null> {
   if (typeof window === "undefined") return null;
 
   try {
-    // Use the raw axios instance to avoid infinite interceptor loops
-    const res = await axios.get("/api/csrf-token", { withCredentials: true });
+    // Use the raw axios instance to avoid infinite interceptor loops.
+    // Bound with an explicit timeout — raw axios has none by default.
+    const res = await axios.get("/api/csrf-token", {
+      withCredentials: true,
+      timeout: AUTH_REQUEST_TIMEOUT_MS,
+    });
     csrfToken = res.data.token;
     return csrfToken;
   } catch {
@@ -79,25 +96,45 @@ let isRedirecting = false;
 const REDIRECT_SAFETY_TIMEOUT_MS = 5000;
 
 /**
+ * Outcome of a token-refresh attempt:
+ * - `success`: the server issued a new access token.
+ * - `auth_failed`: the server rejected the refresh (expired/invalid refresh
+ *   token) — the session is genuinely over, so we redirect to login.
+ * - `network_error`: no response (network failure or timeout) — a *transient*
+ *   condition. We must NOT log the user out; we settle the original request so
+ *   it can fail/retry normally instead of hanging forever.
+ */
+type RefreshOutcome = "success" | "auth_failed" | "network_error";
+
+/**
  * Attempt to refresh the access token using the httpOnly refresh_token cookie.
- * Returns true if refresh succeeded, false otherwise.
  *
  * Both password login and OIDC login set the refresh token as an httpOnly cookie,
  * which is sent automatically by the browser via withCredentials.
  */
-async function attemptTokenRefresh(): Promise<boolean> {
+async function attemptTokenRefresh(): Promise<RefreshOutcome> {
   try {
     // Use raw axios to avoid interceptor loops.
     // The httpOnly refresh_token cookie is sent automatically.
-    await axios.post("/api/auth/refresh", {}, { withCredentials: true });
-    return true;
-  } catch {
-    return false;
+    // Bound with an explicit timeout — raw axios has none by default.
+    await axios.post(
+      "/api/auth/refresh",
+      {},
+      { withCredentials: true, timeout: AUTH_REQUEST_TIMEOUT_MS },
+    );
+    return "success";
+  } catch (err) {
+    // A response means the server actively rejected the refresh (real auth
+    // failure). No response means a network/timeout error (transient).
+    if (axios.isAxiosError(err) && !err.response) {
+      return "network_error";
+    }
+    return "auth_failed";
   }
 }
 
 /** Mutex to prevent concurrent refresh attempts */
-let refreshPromise: Promise<boolean> | null = null;
+let refreshPromise: Promise<RefreshOutcome> | null = null;
 
 apiInstance.interceptors.response.use(
   (response) => response,
@@ -144,13 +181,21 @@ apiInstance.interceptors.response.use(
             });
           }
 
-          const success = await refreshPromise;
-          if (success) {
+          const outcome = await refreshPromise;
+          if (outcome === "success") {
             // Retry the original request — the new cookie is set by the refresh endpoint
             return apiInstance(originalRequest);
           }
 
-          // Refresh failed — redirect to login (re-check isRedirecting after async gap)
+          if (outcome === "network_error") {
+            // Transient failure — do NOT log the user out. Settling the original
+            // error lets React Query keep any cached data (so a focus-triggered
+            // 401 storm doesn't wipe the UI) and retry on the next interaction,
+            // instead of leaving the request hanging on the loading screen.
+            return Promise.reject(error);
+          }
+
+          // Refresh genuinely failed — redirect to login (re-check isRedirecting after async gap)
           if (!isRedirecting) {
             isRedirecting = true;
             setTimeout(() => {
