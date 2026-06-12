@@ -1,6 +1,6 @@
 import { Save } from "lucide-react";
 import { useTranslations } from "next-intl";
-import React from "react";
+import React, { useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -12,8 +12,11 @@ import { SmtpTestButton } from "./smtp-test-button";
 
 export function SettingsGroup({ group, configs, form, onSubmit }: SettingsGroupProps) {
   const t = useTranslations();
-  const GROUP_METADATA = createGroupMetadata(t);
-  const FIELD_DESCRIPTIONS = createFieldDescriptions(t);
+  // Built once per locale (t is stable across renders); this component re-renders
+  // on every watched-field change, so recomputing the full metadata/description
+  // maps each time would be ~46 wasted translation lookups per render.
+  const GROUP_METADATA = useMemo(() => createGroupMetadata(t), [t]);
+  const FIELD_DESCRIPTIONS = useMemo(() => createFieldDescriptions(t), [t]);
 
   const metadata = GROUP_METADATA[group as keyof typeof GROUP_METADATA] || {
     title: group,
