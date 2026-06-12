@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader } from "@/components/ui/loader";
 import type { ShareMetadata } from "@/http/endpoints/shares/types";
+import { isValidEmail } from "@/utils/email";
 
 interface IdentificationFormProps {
   isOpen: boolean;
@@ -25,8 +26,6 @@ interface IdentificationFormProps {
   isSubmitting: boolean;
   onSubmit: (name: string | undefined, email: string | undefined) => void;
 }
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function IdentificationForm({
   isOpen,
@@ -62,18 +61,18 @@ export function IdentificationForm({
   const emailError =
     attempted &&
     ((emailRequired && !email.trim()) ||
-      (showEmailField && email.trim() && !EMAIL_REGEX.test(email.trim())));
+      (showEmailField && email.trim() && !isValidEmail(email.trim())));
   const emailErrorMessage =
     emailRequired && !email.trim()
       ? t("share.identification.emailRequired")
-      : showEmailField && email.trim() && !EMAIL_REGEX.test(email.trim())
+      : showEmailField && email.trim() && !isValidEmail(email.trim())
         ? t("share.identification.emailInvalid")
         : null;
 
   const canSubmit = (() => {
     if (nameRequired && !name.trim()) return false;
     if (emailRequired && !email.trim()) return false;
-    if (showEmailField && email.trim() && !EMAIL_REGEX.test(email.trim())) return false;
+    if (showEmailField && email.trim() && !isValidEmail(email.trim())) return false;
     return true;
   })();
 

@@ -32,6 +32,7 @@ import {
   removeRecipients,
 } from "@/http/endpoints";
 import type { ShareRecipient } from "@/http/endpoints/shares/types";
+import { isValidEmail } from "@/utils/email";
 
 interface RecipientSelectorProps {
   shareId: string;
@@ -61,11 +62,6 @@ export function RecipientSelector({
     setRecipients(selectedRecipients ?? []);
     setSelectedForAction(new Set());
   }, [selectedRecipients]);
-
-  const isValidEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
 
   const handleAddRecipient = async () => {
     const trimmed = newRecipient.trim();

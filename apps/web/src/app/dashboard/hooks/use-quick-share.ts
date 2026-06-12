@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { createShare, createShareAlias, notifyRecipients } from "@/http/endpoints";
 import { customNanoid } from "@/lib/utils";
+import { isValidEmail } from "@/utils/email";
 
 export type QuickShareState = "dropzone" | "uploading" | "confirmation";
 
@@ -29,8 +30,6 @@ const EXPIRATION_DAYS: Record<ExpirationOption, number | null> = {
 
 const generateAlias = () =>
   customNanoid(10, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
-
-const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 export interface UseQuickShareOptions {
   onShareCreated?: () => void;
