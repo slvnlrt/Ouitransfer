@@ -298,12 +298,18 @@ describe("401 interceptor — refresh token flow (I-1)", () => {
     expect(locationHrefSetter).toHaveBeenCalledWith("/login?reason=session_expired");
   });
 
-  it("401 → refresh NETWORK error → does NOT redirect (transient), rejects original", async () => {
+  it("401 → refresh NETWORK error → rejects with the network error (not the 401), no redirect", async () => {
     mock.onGet("/api/files").reply(401);
     // No response from the refresh endpoint (dead socket / offline) — transient.
     rawAxiosMock.onPost("/api/auth/refresh").networkError();
 
-    await expect(apiInstance.get("/api/files")).rejects.toThrow();
+    // The original request must reject with the refresh's NETWORK error
+    // (no response, status 0), NOT the original 401 — otherwise React Query's
+    // retry guard would suppress retries for a transient failure.
+    const err = await apiInstance.get("/api/files").catch((e) => e);
+    expect(err.isAxiosError).toBe(true);
+    expect(err.message).toBe("Network Error");
+    expect(err.response).toBeUndefined();
 
     // A transient network failure must NOT log the user out.
     expect(locationHrefSetter).not.toHaveBeenCalled();

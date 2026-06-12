@@ -104,15 +104,22 @@ const REDIRECT_SAFETY_TIMEOUT_MS = 5000;
  *   condition. We must NOT log the user out; we settle the original request so
  *   it can fail/retry normally instead of hanging forever.
  */
-type RefreshOutcome = "success" | "auth_failed" | "network_error";
+type RefreshResult =
+  | { outcome: "success" | "auth_failed" }
+  | { outcome: "network_error"; error: unknown };
 
 /**
  * Attempt to refresh the access token using the httpOnly refresh_token cookie.
  *
  * Both password login and OIDC login set the refresh token as an httpOnly cookie,
  * which is sent automatically by the browser via withCredentials.
+ *
+ * On a transient network/timeout failure, the underlying error is returned so
+ * the interceptor can reject the original request with it — preserving its
+ * "no response" shape (status 0) rather than the misleading 401, which React
+ * Query's retry guard would otherwise suppress.
  */
-async function attemptTokenRefresh(): Promise<RefreshOutcome> {
+async function attemptTokenRefresh(): Promise<RefreshResult> {
   try {
     // Use raw axios to avoid interceptor loops.
     // The httpOnly refresh_token cookie is sent automatically.
@@ -122,19 +129,19 @@ async function attemptTokenRefresh(): Promise<RefreshOutcome> {
       {},
       { withCredentials: true, timeout: AUTH_REQUEST_TIMEOUT_MS },
     );
-    return "success";
+    return { outcome: "success" };
   } catch (err) {
     // A response means the server actively rejected the refresh (real auth
     // failure). No response means a network/timeout error (transient).
     if (axios.isAxiosError(err) && !err.response) {
-      return "network_error";
+      return { outcome: "network_error", error: err };
     }
-    return "auth_failed";
+    return { outcome: "auth_failed" };
   }
 }
 
 /** Mutex to prevent concurrent refresh attempts */
-let refreshPromise: Promise<RefreshOutcome> | null = null;
+let refreshPromise: Promise<RefreshResult> | null = null;
 
 apiInstance.interceptors.response.use(
   (response) => response,
@@ -181,18 +188,20 @@ apiInstance.interceptors.response.use(
             });
           }
 
-          const outcome = await refreshPromise;
-          if (outcome === "success") {
+          const result = await refreshPromise;
+          if (result.outcome === "success") {
             // Retry the original request — the new cookie is set by the refresh endpoint
             return apiInstance(originalRequest);
           }
 
-          if (outcome === "network_error") {
-            // Transient failure — do NOT log the user out. Settling the original
-            // error lets React Query keep any cached data (so a focus-triggered
-            // 401 storm doesn't wipe the UI) and retry on the next interaction,
-            // instead of leaving the request hanging on the loading screen.
-            return Promise.reject(error);
+          if (result.outcome === "network_error") {
+            // Transient failure — do NOT log the user out. Reject with the
+            // network error (no response, status 0) rather than the original
+            // 401: React Query's retry guard suppresses 401s, so propagating the
+            // 401 would defeat the transient retry. The network-shaped error lets
+            // React Query retry while keeping cached data, instead of leaving the
+            // request hanging on the loading screen.
+            return Promise.reject(result.error);
           }
 
           // Refresh genuinely failed — redirect to login (re-check isRedirecting after async gap)
