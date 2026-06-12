@@ -1,8 +1,22 @@
 import { z } from "zod";
 
+export const CreateInviteTokenSchema = z.object({
+  email: z
+    .email("Invalid email")
+    .optional()
+    .describe("If provided, the invite link is also emailed to this address"),
+});
+
 export const CreateInviteTokenResponseSchema = z.object({
   token: z.string().describe("Invite token"),
   expiresAt: z.coerce.date().describe("Token expiration date"),
+  emailSent: z.boolean().describe("Whether an invitation email was queued to the recipient"),
+  registrationUrl: z
+    .string()
+    .nullable()
+    .describe(
+      "Absolute self-registration URL built from the configured appUrl, or null when appUrl is unset",
+    ),
 });
 
 export const ValidateInviteTokenResponseSchema = z.object({

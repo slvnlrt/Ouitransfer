@@ -83,6 +83,18 @@ export async function buildResetPasswordUrl(token: string): Promise<string> {
 }
 
 /**
+ * Build the invite self-registration URL.
+ * Format: `{appUrl}/register-with-invite/{token}`.
+ *
+ * Pass a pre-fetched `appUrl` to avoid a redundant DB round-trip when the
+ * caller has already resolved it.
+ */
+export async function buildInviteRegistrationUrl(token: string, appUrl?: string): Promise<string> {
+  const base = appUrl ?? (await getAppUrl());
+  return `${base}/register-with-invite/${encodeURIComponent(token)}`;
+}
+
+/**
  * Build the one-click unsubscribe URL.
  * Format: `{appUrl}/api/notifications/unsubscribe?token={token}`.
  *

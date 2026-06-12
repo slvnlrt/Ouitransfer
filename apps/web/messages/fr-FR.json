@@ -902,7 +902,25 @@
       "keys": "Clés de configuration",
       "type": "Type",
       "yes": "Oui",
-      "no": "Non"
+      "no": "Non",
+      "key": "Paramètre",
+      "usingCustomConfig": "Configuration personnalisée",
+      "smtpHost": "Serveur SMTP",
+      "files": "Fichiers",
+      "shares": "Partages",
+      "reverseShares": "Partages inverses",
+      "folders": "Dossiers",
+      "s3Errors": "Erreurs de stockage",
+      "recipientId": "Destinataire",
+      "identificationSource": "Identification",
+      "expiresAt": "Expiration",
+      "userId": "Utilisateur",
+      "shareName": "Partage",
+      "reverseShareName": "Partage inverse",
+      "filesDeleted": "Fichiers supprimés",
+      "bytesFreed": "Espace libéré",
+      "objectName": "Objet",
+      "fileId": "Fichier"
     }
   },
   "navbar": {
@@ -916,7 +934,8 @@
     "activityLog": "Journal d'activité",
     "logout": "Déconnexion",
     "customization": "Personnalisation",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "Administration"
   },
   "navigation": {
     "dashboard": "Tableau de bord"
@@ -2647,9 +2666,18 @@
       "linkCopied": "Lien d'invitation copié dans le presse-papiers !",
       "expiresIn": "Expire dans 15 minutes",
       "close": "Fermer",
+      "emailLabel": "Adresse e-mail (facultatif)",
+      "emailPlaceholder": "nom@exemple.com",
+      "emailHelp": "Envoyez le lien d'invitation directement par e-mail, ou laissez vide pour le copier manuellement.",
+      "send": "Envoyer l'invitation",
+      "sending": "Envoi...",
+      "emailSentToast": "E-mail d'invitation envoyé !",
+      "emailSentNotice": "Invitation envoyée à {email}",
       "errors": {
         "generateFailed": "Échec de la génération du lien d'invitation",
-        "copyFailed": "Échec de la copie du lien"
+        "copyFailed": "Échec de la copie du lien",
+        "invalidEmail": "Veuillez saisir une adresse e-mail valide",
+        "sendFailed": "Le lien d'invitation a été généré, mais l'e-mail n'a pas pu être envoyé. Copiez le lien et partagez-le manuellement."
       }
     }
   },
@@ -2906,6 +2934,14 @@
       "quota": "Quotas",
       "admin": "Administration",
       "test": "Test"
+    }
+  },
+  "admin": {
+    "tabs": {
+      "users": "Utilisateurs",
+      "groups": "Groupes",
+      "ldap": "LDAP",
+      "label": "Gestion des utilisateurs"
     }
   }
 }

@@ -1009,7 +1009,25 @@
       "keys": "Config keys",
       "type": "Type",
       "yes": "Yes",
-      "no": "No"
+      "no": "No",
+      "key": "Setting",
+      "usingCustomConfig": "Custom config",
+      "smtpHost": "SMTP host",
+      "files": "Files",
+      "shares": "Shares",
+      "reverseShares": "Reverse shares",
+      "folders": "Folders",
+      "s3Errors": "Storage errors",
+      "recipientId": "Recipient",
+      "identificationSource": "Identification",
+      "expiresAt": "Expires at",
+      "userId": "User",
+      "shareName": "Share",
+      "reverseShareName": "Reverse share",
+      "filesDeleted": "Files deleted",
+      "bytesFreed": "Storage freed",
+      "objectName": "Object",
+      "fileId": "File"
     }
   },
   "navbar": {
@@ -1023,7 +1041,8 @@
     "ldap": "LDAP",
     "activityLog": "Activity Log",
     "logout": "Log Out",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "Administration"
   },
   "navigation": {
     "dashboard": "Dashboard"
@@ -2797,9 +2816,18 @@
       "linkCopied": "Invite link copied to clipboard!",
       "expiresIn": "Expires in 15 minutes",
       "close": "Close",
+      "emailLabel": "Email address (optional)",
+      "emailPlaceholder": "name@example.com",
+      "emailHelp": "Send the invite link directly by email, or leave it empty to copy the link manually.",
+      "send": "Send Invitation",
+      "sending": "Sending...",
+      "emailSentToast": "Invitation email sent!",
+      "emailSentNotice": "Invitation sent to {email}",
       "errors": {
         "generateFailed": "Failed to generate invite link",
-        "copyFailed": "Failed to copy link"
+        "copyFailed": "Failed to copy link",
+        "invalidEmail": "Please enter a valid email address",
+        "sendFailed": "The invite link was generated, but the email could not be sent. Copy the link and share it manually."
       }
     }
   },
@@ -2906,6 +2934,14 @@
       "quota": "Quotas",
       "admin": "Administration",
       "test": "Test"
+    }
+  },
+  "admin": {
+    "tabs": {
+      "users": "Users",
+      "groups": "Groups",
+      "ldap": "LDAP",
+      "label": "User management"
     }
   }
 }

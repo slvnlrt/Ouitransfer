@@ -4,8 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { Server } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getLdapStatus } from "@/http/endpoints/ldap";
 import { queryKeys } from "@/lib/query-keys";
+import { createGroupMetadata } from "../constants";
 import type { SettingsFormProps, ValidGroup } from "../types";
 import { AuthProvidersSettings } from "./auth-provider-form/auth-providers-settings";
 import { BackgroundImageManager } from "./background-image-manager";
@@ -21,14 +24,9 @@ const GROUP_ORDER: string[] = [
   "cleanup",
 ];
 
-export function SettingsForm({
-  groupedConfigs,
-  collapsedGroups,
-  groupForms,
-  onGroupSubmit,
-  onToggleCollapse,
-}: SettingsFormProps) {
+export function SettingsForm({ groupedConfigs, groupForms, onGroupSubmit }: SettingsFormProps) {
   const t = useTranslations();
+  const GROUP_METADATA = createGroupMetadata(t);
 
   const hasAuthProviders = Object.keys(groupedConfigs).includes("auth-providers");
 
@@ -45,19 +43,30 @@ export function SettingsForm({
   const sortedGroups = Object.entries(groupedConfigs).sort(([a], [b]) => {
     const indexA = GROUP_ORDER.indexOf(a);
     const indexB = GROUP_ORDER.indexOf(b);
-
     if (indexA === -1) return 1;
     if (indexB === -1) return -1;
-
     return indexA - indexB;
   });
 
+  const defaultTab = sortedGroups[0]?.[0] ?? "general";
+
   return (
-    <div className="flex flex-col gap-6">
+    <Tabs defaultValue={defaultTab}>
+      <TabsList className="w-full justify-start overflow-x-auto">
+        {sortedGroups.map(([group]) => {
+          const meta = GROUP_METADATA[group as keyof typeof GROUP_METADATA];
+          return (
+            <TabsTrigger key={group} value={group}>
+              {meta?.title ?? group}
+            </TabsTrigger>
+          );
+        })}
+      </TabsList>
+
       {sortedGroups.map(([group, configs]) => {
         if (group === "auth-providers") {
           return (
-            <div key={group}>
+            <TabsContent key={group} value={group} className="mt-6">
               {ldapStatus?.configured && (
                 <div className="mb-4 flex items-center gap-3 rounded-lg border bg-muted/50 p-3">
                   <Server className="h-4 w-4 text-muted-foreground" />
@@ -73,35 +82,31 @@ export function SettingsForm({
                 </div>
               )}
               <AuthProvidersSettings />
-            </div>
+            </TabsContent>
           );
         }
 
         const form = groupForms[group as ValidGroup];
-        if (!form) {
-          return null;
-        }
+        if (!form) return null;
 
-        const isEmailGroup = group === "email";
-        const smtpEnabled = isEmailGroup
-          ? configs.some((c) => c.key === "smtpEnabled" && c.value === "true")
-          : false;
+        // Read live form state (not the initial `configs` snapshot) so the
+        // EmailAdminSection appears/disappears immediately when the admin toggles
+        // SMTP, mirroring the SMTP fields inside the card which also use watch().
+        const smtpEnabled = group === "email" && form.watch("configs.smtpEnabled") === "true";
 
         return (
-          <div key={group}>
+          <TabsContent key={group} value={group} className="mt-6 flex flex-col gap-6">
             <SettingsGroup
               configs={configs}
               form={form}
               group={group}
-              isCollapsed={collapsedGroups[group]}
               onSubmit={(data) => onGroupSubmit(group as ValidGroup, data)}
-              onToggleCollapse={() => onToggleCollapse(group as ValidGroup)}
             />
-            {isEmailGroup && smtpEnabled && !collapsedGroups[group] && <EmailAdminSection />}
-          </div>
+            {group === "email" && smtpEnabled && <EmailAdminSection />}
+            {group === "general" && <BackgroundImageManager />}
+          </TabsContent>
         );
       })}
-      <BackgroundImageManager />
-    </div>
+    </Tabs>
   );
 }

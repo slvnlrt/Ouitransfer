@@ -70,11 +70,9 @@ export default function SettingsPage() {
         <div className="flex flex-col gap-8">
           <SettingsHeader />
           <SettingsForm
-            collapsedGroups={settings.collapsedGroups}
             groupForms={settings.groupForms}
             groupedConfigs={settings.groupedConfigs}
             onGroupSubmit={settings.onGroupSubmit}
-            onToggleCollapse={settings.toggleCollapse}
           />
         </div>
       </PageLayout>

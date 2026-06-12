@@ -69,8 +69,8 @@ const adminKeys: NotificationKey[] = ["admin_user_registered", "admin_quota_aler
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 describe("notificationCatalog", () => {
-  it("has exactly 26 entries", () => {
-    expect(allKeys).toHaveLength(26);
+  it("has exactly 27 entries", () => {
+    expect(allKeys).toHaveLength(27);
   });
 
   it("all entries have required fields", () => {
@@ -180,6 +180,11 @@ describe("notificationCatalog", () => {
       password_reset: { resetUrl: "https://example.com/reset", expiresInMinutes: 30 },
       account_deactivated: { firstName: "Bob" },
       account_reactivated: { firstName: "Carol", loginUrl: "https://example.com/login" },
+      user_invitation: {
+        inviterName: "Alice",
+        inviteLink: "https://example.com/register-with-invite/abc",
+        expiresInMinutes: 15,
+      },
       share_invitation: {
         senderName: "Alice",
         shareName: "Files",
@@ -373,6 +378,11 @@ describe("i18n key smoke tests — real en.json", () => {
       password_reset: { resetUrl: "https://example.com/reset", expiresInMinutes: 30 },
       account_deactivated: { firstName: "Bob" },
       account_reactivated: { firstName: "Carol", loginUrl: "https://example.com/login" },
+      user_invitation: {
+        inviterName: "Alice",
+        inviteLink: "https://example.com/register-with-invite/abc",
+        expiresInMinutes: 15,
+      },
       share_invitation: {
         senderName: "Alice",
         shareName: "Files",

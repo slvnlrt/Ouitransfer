@@ -14,7 +14,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { RTL_LANGUAGES } from "@/lib/rtl-languages";
 
-const languages = {
+/**
+ * Supported UI locales, keyed by BCP-47 tag. The region subtag (after the dash)
+ * doubles as the ISO-3166 country code used to resolve the self-hosted flag SVG
+ * in `public/flags/4x3/`. Exported so a test can assert every entry has a flag
+ * file (see `__tests__/language-switcher-flags.test.ts`).
+ */
+export const languages = {
   "en-US": "English",
   "pt-BR": "Português",
   "fr-FR": "Français",
@@ -79,6 +85,7 @@ export function LanguageSwitcher() {
             >
               <ReactCountryFlag
                 svg
+                cdnUrl="/flags/4x3/"
                 countryCode={code.split("-")[1]}
                 style={{
                   marginInlineEnd: "8px",

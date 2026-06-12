@@ -1,6 +1,6 @@
-import { ChevronDown, ChevronUp, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import { useTranslations } from "next-intl";
-import React from "react";
+import React, { useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -10,17 +10,13 @@ import type { SettingsGroupProps } from "../types";
 import { isFieldHidden, SettingsInput } from "./settings-input";
 import { SmtpTestButton } from "./smtp-test-button";
 
-export function SettingsGroup({
-  group,
-  configs,
-  form,
-  isCollapsed,
-  onToggleCollapse,
-  onSubmit,
-}: SettingsGroupProps) {
+export function SettingsGroup({ group, configs, form, onSubmit }: SettingsGroupProps) {
   const t = useTranslations();
-  const GROUP_METADATA = createGroupMetadata(t);
-  const FIELD_DESCRIPTIONS = createFieldDescriptions(t);
+  // Built once per locale (t is stable across renders); this component re-renders
+  // on every watched-field change, so recomputing the full metadata/description
+  // maps each time would be ~46 wasted translation lookups per render.
+  const GROUP_METADATA = useMemo(() => createGroupMetadata(t), [t]);
+  const FIELD_DESCRIPTIONS = useMemo(() => createFieldDescriptions(t), [t]);
 
   const metadata = GROUP_METADATA[group as keyof typeof GROUP_METADATA] || {
     title: group,
@@ -32,30 +28,15 @@ export function SettingsGroup({
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <Card>
-        <CardHeader
-          className="flex flex-row items-center justify-between cursor-pointer py-0"
-          onClick={onToggleCollapse}
-        >
-          <div className="flex flex-row items-center gap-8">
-            {metadata.icon &&
-              React.createElement(metadata.icon, { className: "text-xl text-muted-foreground" })}
-            <div className="flex flex-col gap-1">
-              <h2 className="text-xl font-semibold">
-                {t(`settings.groups.${group}.title`, { defaultValue: metadata.title })}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {t(`settings.groups.${group}.description`, { defaultValue: metadata.description })}
-              </p>
-            </div>
-          </div>
-          {isCollapsed ? (
-            <ChevronDown className="text-muted-foreground" />
-          ) : (
-            <ChevronUp className="text-muted-foreground" />
-          )}
+        <CardHeader className="flex flex-row items-center gap-8 py-4">
+          {metadata.icon &&
+            React.createElement(metadata.icon, { className: "text-xl text-muted-foreground" })}
+          <p className="text-sm text-muted-foreground">
+            {t(`settings.groups.${group}.description`, { defaultValue: metadata.description })}
+          </p>
         </CardHeader>
-        <CardContent className={isCollapsed ? "hidden" : "block"}>
-          <Separator className="my-6" />
+        <CardContent>
+          <Separator className="mb-6" />
           <div className="flex flex-col gap-4">
             {configs
               .filter((config) => !isFieldHidden(config.key))
@@ -125,19 +106,17 @@ export function SettingsGroup({
                 />
               )}
             </div>
-            <div className="flex">
-              <Button
-                variant="default"
-                disabled={form.formState.isSubmitting}
-                className="flex items-center gap-2"
-                type="submit"
-              >
-                {!form.formState.isSubmitting && <Save className="h-4 w-4" />}
-                {t("settings.buttons.save", {
-                  group: t(`settings.groups.${group}.title`, { defaultValue: metadata.title }),
-                })}
-              </Button>
-            </div>
+            <Button
+              variant="default"
+              disabled={form.formState.isSubmitting}
+              className="flex items-center gap-2"
+              type="submit"
+            >
+              {!form.formState.isSubmitting && <Save className="h-4 w-4" />}
+              {t("settings.buttons.save", {
+                group: t(`settings.groups.${group}.title`, { defaultValue: metadata.title }),
+              })}
+            </Button>
           </div>
         </CardContent>
       </Card>

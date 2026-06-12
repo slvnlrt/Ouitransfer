@@ -200,13 +200,6 @@ export function useSettings() {
   const [isLoading, setIsLoading] = useState(true);
   const [configs, setConfigs] = useState<Record<string, string>>({});
   const [groupedConfigs, setGroupedConfigs] = useState<Record<string, Config[]>>({});
-  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({
-    general: true,
-    email: true,
-    security: true,
-    storage: true,
-    cleanup: true,
-  });
   const { refreshAppInfo } = useAppInfo();
   const queryClient = useQueryClient();
 
@@ -460,19 +453,10 @@ export function useSettings() {
     }
   };
 
-  const toggleCollapse = (group: string) => {
-    setCollapsedGroups((prev) => ({
-      ...prev,
-      [group]: !prev[group],
-    }));
-  };
-
   return {
     isLoading,
     groupedConfigs,
-    collapsedGroups,
     groupForms,
-    toggleCollapse,
     onGroupSubmit,
     error: configsError,
     isUnauthorized,

@@ -906,7 +906,25 @@
       "keys": "Konfigurationsnycklar",
       "type": "Typ",
       "yes": "Ja",
-      "no": "Nej"
+      "no": "Nej",
+      "key": "[TO_TRANSLATE] Setting",
+      "usingCustomConfig": "[TO_TRANSLATE] Custom config",
+      "smtpHost": "[TO_TRANSLATE] SMTP host",
+      "files": "[TO_TRANSLATE] Files",
+      "shares": "[TO_TRANSLATE] Shares",
+      "reverseShares": "[TO_TRANSLATE] Reverse shares",
+      "folders": "[TO_TRANSLATE] Folders",
+      "s3Errors": "[TO_TRANSLATE] Storage errors",
+      "recipientId": "[TO_TRANSLATE] Recipient",
+      "identificationSource": "[TO_TRANSLATE] Identification",
+      "expiresAt": "[TO_TRANSLATE] Expires at",
+      "userId": "[TO_TRANSLATE] User",
+      "shareName": "[TO_TRANSLATE] Share",
+      "reverseShareName": "[TO_TRANSLATE] Reverse share",
+      "filesDeleted": "[TO_TRANSLATE] Files deleted",
+      "bytesFreed": "[TO_TRANSLATE] Storage freed",
+      "objectName": "[TO_TRANSLATE] Object",
+      "fileId": "[TO_TRANSLATE] File"
     }
   },
   "navbar": {
@@ -920,7 +938,8 @@
     "ldap": "LDAP",
     "activityLog": "Aktivitetslogg",
     "logout": "Logga ut",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
   },
   "navigation": {
     "dashboard": "Instrumentbräda"
@@ -2599,9 +2618,18 @@
       "linkCopied": "Inbjudningslänken kopierades till urklipp!",
       "expiresIn": "Upphör om 15 minuter",
       "close": "Stäng",
+      "emailLabel": "[TO_TRANSLATE] Email address (optional)",
+      "emailPlaceholder": "[TO_TRANSLATE] name@example.com",
+      "emailHelp": "[TO_TRANSLATE] Send the invite link directly by email, or leave it empty to copy the link manually.",
+      "send": "[TO_TRANSLATE] Send Invitation",
+      "sending": "[TO_TRANSLATE] Sending...",
+      "emailSentToast": "[TO_TRANSLATE] Invitation email sent!",
+      "emailSentNotice": "[TO_TRANSLATE] Invitation sent to {email}",
       "errors": {
         "generateFailed": "Det gick inte att generera inbjudningslänk",
-        "copyFailed": "Det gick inte att kopiera länken"
+        "copyFailed": "Det gick inte att kopiera länken",
+        "invalidEmail": "[TO_TRANSLATE] Please enter a valid email address",
+        "sendFailed": "[TO_TRANSLATE] The invite link was generated, but the email could not be sent. Copy the link and share it manually."
       }
     }
   },
@@ -2907,5 +2935,13 @@
     "loadError": "Det gick inte att läsa in aviseringsinställningarna",
     "retry": "Försök igen",
     "unsavedChanges": "{count, plural, one {# osparad ändring} other {# osparade ändringar}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP",
+      "label": "[TO_TRANSLATE] User management"
+    }
   }
 }

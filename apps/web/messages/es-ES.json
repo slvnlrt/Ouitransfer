@@ -906,7 +906,25 @@
       "keys": "Claves de configuración",
       "type": "Tipo",
       "yes": "Sí",
-      "no": "No"
+      "no": "No",
+      "key": "[TO_TRANSLATE] Setting",
+      "usingCustomConfig": "[TO_TRANSLATE] Custom config",
+      "smtpHost": "[TO_TRANSLATE] SMTP host",
+      "files": "[TO_TRANSLATE] Files",
+      "shares": "[TO_TRANSLATE] Shares",
+      "reverseShares": "[TO_TRANSLATE] Reverse shares",
+      "folders": "[TO_TRANSLATE] Folders",
+      "s3Errors": "[TO_TRANSLATE] Storage errors",
+      "recipientId": "[TO_TRANSLATE] Recipient",
+      "identificationSource": "[TO_TRANSLATE] Identification",
+      "expiresAt": "[TO_TRANSLATE] Expires at",
+      "userId": "[TO_TRANSLATE] User",
+      "shareName": "[TO_TRANSLATE] Share",
+      "reverseShareName": "[TO_TRANSLATE] Reverse share",
+      "filesDeleted": "[TO_TRANSLATE] Files deleted",
+      "bytesFreed": "[TO_TRANSLATE] Storage freed",
+      "objectName": "[TO_TRANSLATE] Object",
+      "fileId": "[TO_TRANSLATE] File"
     }
   },
   "navbar": {
@@ -920,7 +938,8 @@
     "activityLog": "Registro de Actividad",
     "logout": "Cerrar sesión",
     "customization": "Personalización",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
   },
   "navigation": {
     "dashboard": "Panel de control"
@@ -2599,9 +2618,18 @@
       "linkCopied": "¡Enlace de invitación copiado al portapapeles!",
       "expiresIn": "Expira en 15 minutos",
       "close": "Cerrar",
+      "emailLabel": "[TO_TRANSLATE] Email address (optional)",
+      "emailPlaceholder": "[TO_TRANSLATE] name@example.com",
+      "emailHelp": "[TO_TRANSLATE] Send the invite link directly by email, or leave it empty to copy the link manually.",
+      "send": "[TO_TRANSLATE] Send Invitation",
+      "sending": "[TO_TRANSLATE] Sending...",
+      "emailSentToast": "[TO_TRANSLATE] Invitation email sent!",
+      "emailSentNotice": "[TO_TRANSLATE] Invitation sent to {email}",
       "errors": {
         "generateFailed": "Error al generar el enlace de invitación",
-        "copyFailed": "Error al copiar el enlace"
+        "copyFailed": "Error al copiar el enlace",
+        "invalidEmail": "[TO_TRANSLATE] Please enter a valid email address",
+        "sendFailed": "[TO_TRANSLATE] The invite link was generated, but the email could not be sent. Copy the link and share it manually."
       }
     }
   },
@@ -2907,5 +2935,13 @@
     "loadError": "Error al cargar las preferencias de notificaciones",
     "retry": "Reintentar",
     "unsavedChanges": "{count, plural, one {# cambio sin guardar} other {# cambios sin guardar}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP",
+      "label": "[TO_TRANSLATE] User management"
+    }
   }
 }

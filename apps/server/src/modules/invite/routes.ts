@@ -7,6 +7,7 @@ import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
 import {
   CreateInviteTokenResponseSchema,
+  CreateInviteTokenSchema,
   RegisterWithInviteResponseSchema,
   RegisterWithInviteSchema,
   ValidateInviteTokenResponseSchema,
@@ -23,7 +24,10 @@ export const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
       tags: ["Invite"],
       operationId: "generateInviteToken",
       summary: "Generate Invite Token",
-      description: "Generate a one-time use invite token for user registration (admin only)",
+      description:
+        "Generate a one-time use invite token for user registration (admin only). " +
+        "When an email is provided, the invite link is also sent to that address.",
+      body: CreateInviteTokenSchema,
       response: {
         200: CreateInviteTokenResponseSchema,
         401: ErrorResponseSchema,
@@ -33,7 +37,9 @@ export const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     preValidation: createAdminPreValidation({ allowSetupBypass: false }),
     handler: async (request, reply) => {
-      const { id, token, expiresAt } = await inviteService.generateInviteToken(request.user.userId);
+      const email = request.body?.email;
+      const { id, token, expiresAt, emailSent, registrationUrl } =
+        await inviteService.generateInviteToken(request.user.userId, email);
 
       // Audit invite token creation (fire-and-forget)
       logAuditEvent({
@@ -43,10 +49,12 @@ export const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
         userId: request.user.userId,
         targetType: "invite_token",
         targetId: id,
-        metadata: { expiresAt: expiresAt.toISOString() },
+        metadata: email
+          ? { expiresAt: expiresAt.toISOString(), recipientEmail: email }
+          : { expiresAt: expiresAt.toISOString() },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
 
-      return reply.send({ token, expiresAt });
+      return reply.send({ token, expiresAt, emailSent, registrationUrl });
     },
   });
 

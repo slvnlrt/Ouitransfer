@@ -37,6 +37,7 @@ import { renderShareMaxViewsReached } from "./templates/share-max-views-reached.
 import { renderShareNoActivity } from "./templates/share-no-activity.js";
 import { renderSharePendingDeletion } from "./templates/share-pending-deletion.js";
 import { renderTestEmail } from "./templates/test-email.js";
+import { renderUserInvitation } from "./templates/user-invitation.js";
 import { renderWelcome } from "./templates/welcome.js";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -96,6 +97,12 @@ const accountDeactivatedSchema = z.object({
 const accountReactivatedSchema = z.object({
   firstName: z.string(),
   loginUrl: z.string(),
+});
+
+const userInvitationSchema = z.object({
+  inviterName: z.string(),
+  inviteLink: z.string(),
+  expiresInMinutes: z.number(),
 });
 
 const shareInvitationSchema = z.object({
@@ -306,6 +313,27 @@ export const notificationCatalog = {
       "accountReactivated.cta",
     ],
     displayName: "Account Reactivated",
+  }),
+
+  // User invitation — sends the self-registration link to a prospective user.
+  // External recipient with no account/preference, one-shot. Priority 1 because
+  // the token expires in 15 minutes, so it must go out immediately.
+  user_invitation: defineNotification({
+    render: renderUserInvitation,
+    payloadSchema: userInvitationSchema,
+    priority: 1,
+    isCritical: false,
+    defaultFrequency: "immediate",
+    configurable: false,
+    hasUnsubscribe: false,
+    requiredI18nKeys: [
+      "userInvitation.subject",
+      "userInvitation.subtitle",
+      "userInvitation.body",
+      "userInvitation.cta",
+      "userInvitation.info",
+    ],
+    displayName: "User Invitation",
   }),
 
   // ── Share invitations (non-configurable, one-shot) ─────────────────────────

@@ -9,12 +9,20 @@ import apiInstance, {
 
 describe("401 response interceptor", () => {
   let mock: MockAdapter;
+  let rawAxiosMock: MockAdapter;
 
   // Capture location.href assignments
   const locationHrefSetter = vi.fn();
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mock = new MockAdapter(apiInstance);
+    // The 401 → refresh flow calls /api/auth/refresh via raw axios. These tests
+    // exercise the SESSION-EXPIRED path, so the refresh must fail with an auth
+    // rejection (a 401 *response*), not a network error — the latter is treated
+    // as transient and (correctly) does not redirect.
+    const axiosModule = await import("axios");
+    rawAxiosMock = new MockAdapter(axiosModule.default);
+    rawAxiosMock.onPost("/api/auth/refresh").reply(401, { error: "Session expired" });
     __resetRedirectingForTest();
     vi.useFakeTimers();
 
@@ -35,6 +43,7 @@ describe("401 response interceptor", () => {
 
   afterEach(() => {
     mock.restore();
+    rawAxiosMock.restore();
     vi.useRealTimers();
     locationHrefSetter.mockClear();
   });
@@ -287,5 +296,48 @@ describe("401 interceptor — refresh token flow (I-1)", () => {
 
     // Attempted refresh (via cookie) failed → redirect
     expect(locationHrefSetter).toHaveBeenCalledWith("/login?reason=session_expired");
+  });
+
+  it("401 → refresh NETWORK error → rejects with the network error (not the 401), no redirect", async () => {
+    mock.onGet("/api/files").reply(401);
+    // No response from the refresh endpoint (dead socket / offline) — transient.
+    rawAxiosMock.onPost("/api/auth/refresh").networkError();
+
+    // The original request must reject with the refresh's NETWORK error
+    // (no response, status 0), NOT the original 401 — otherwise React Query's
+    // retry guard would suppress retries for a transient failure.
+    const err = await apiInstance.get("/api/files").catch((e) => e);
+    expect(err.isAxiosError).toBe(true);
+    expect(err.message).toBe("Network Error");
+    expect(err.response).toBeUndefined();
+
+    // A transient network failure must NOT log the user out.
+    expect(locationHrefSetter).not.toHaveBeenCalled();
+  });
+
+  it("401 → refresh TIMEOUT → does NOT redirect (transient), settles instead of hanging", async () => {
+    mock.onGet("/api/files").reply(401);
+    // The refresh request times out (no response) — transient, must settle.
+    rawAxiosMock.onPost("/api/auth/refresh").timeout();
+
+    await expect(apiInstance.get("/api/files")).rejects.toThrow();
+
+    expect(locationHrefSetter).not.toHaveBeenCalled();
+  });
+
+  it("concurrent 401s → refresh network error → all settle, none redirect", async () => {
+    mock.onGet("/api/files").reply(401);
+    mock.onGet("/api/folders").reply(401);
+    rawAxiosMock.onPost("/api/auth/refresh").networkError();
+
+    const results = await Promise.allSettled([
+      apiInstance.get("/api/files"),
+      apiInstance.get("/api/folders"),
+    ]);
+
+    // Both settle (reject) — neither hangs forever — and no forced logout.
+    expect(results[0].status).toBe("rejected");
+    expect(results[1].status).toBe("rejected");
+    expect(locationHrefSetter).not.toHaveBeenCalled();
   });
 });

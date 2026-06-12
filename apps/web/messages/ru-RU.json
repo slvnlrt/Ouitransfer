@@ -902,7 +902,25 @@
       "keys": "Ключи конфигурации",
       "type": "Тип",
       "yes": "Да",
-      "no": "Нет"
+      "no": "Нет",
+      "key": "[TO_TRANSLATE] Setting",
+      "usingCustomConfig": "[TO_TRANSLATE] Custom config",
+      "smtpHost": "[TO_TRANSLATE] SMTP host",
+      "files": "[TO_TRANSLATE] Files",
+      "shares": "[TO_TRANSLATE] Shares",
+      "reverseShares": "[TO_TRANSLATE] Reverse shares",
+      "folders": "[TO_TRANSLATE] Folders",
+      "s3Errors": "[TO_TRANSLATE] Storage errors",
+      "recipientId": "[TO_TRANSLATE] Recipient",
+      "identificationSource": "[TO_TRANSLATE] Identification",
+      "expiresAt": "[TO_TRANSLATE] Expires at",
+      "userId": "[TO_TRANSLATE] User",
+      "shareName": "[TO_TRANSLATE] Share",
+      "reverseShareName": "[TO_TRANSLATE] Reverse share",
+      "filesDeleted": "[TO_TRANSLATE] Files deleted",
+      "bytesFreed": "[TO_TRANSLATE] Storage freed",
+      "objectName": "[TO_TRANSLATE] Object",
+      "fileId": "[TO_TRANSLATE] File"
     }
   },
   "navbar": {
@@ -916,7 +934,8 @@
     "activityLog": "Журнал активности",
     "logout": "Выйти",
     "customization": "Настройки",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
   },
   "navigation": {
     "dashboard": "Панель управления"
@@ -2595,9 +2614,18 @@
       "linkCopied": "Ссылка приглашения скопирована в буфер обмена!",
       "expiresIn": "Истекает через 15 минут",
       "close": "Закрыть",
+      "emailLabel": "[TO_TRANSLATE] Email address (optional)",
+      "emailPlaceholder": "[TO_TRANSLATE] name@example.com",
+      "emailHelp": "[TO_TRANSLATE] Send the invite link directly by email, or leave it empty to copy the link manually.",
+      "send": "[TO_TRANSLATE] Send Invitation",
+      "sending": "[TO_TRANSLATE] Sending...",
+      "emailSentToast": "[TO_TRANSLATE] Invitation email sent!",
+      "emailSentNotice": "[TO_TRANSLATE] Invitation sent to {email}",
       "errors": {
         "generateFailed": "Не удалось создать ссылку приглашения",
-        "copyFailed": "Не удалось скопировать ссылку"
+        "copyFailed": "Не удалось скопировать ссылку",
+        "invalidEmail": "[TO_TRANSLATE] Please enter a valid email address",
+        "sendFailed": "[TO_TRANSLATE] The invite link was generated, but the email could not be sent. Copy the link and share it manually."
       }
     }
   },
@@ -2907,5 +2935,13 @@
     "loadError": "Ошибка загрузки параметров уведомлений",
     "retry": "Повторить",
     "unsavedChanges": "{count, plural, one {# несохраненное изменение} few {# несохраненных изменения} many {# несохраненных изменений} other {# несохраненных изменений}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP",
+      "label": "[TO_TRANSLATE] User management"
+    }
   }
 }

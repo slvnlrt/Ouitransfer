@@ -166,7 +166,7 @@ export function UserFormModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-2xl">
         <Form {...formMethods}>
           <form onSubmit={formMethods.handleSubmit(handleFormSubmit)}>
             <DialogHeader>

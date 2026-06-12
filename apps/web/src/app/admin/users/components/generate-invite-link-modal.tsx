@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Copy, Link } from "lucide-react";
+import { Check, Copy, Link, MailCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { generateInviteToken } from "@/http/endpoints/invite";
 import { logger } from "@/lib/logger";
+import { isValidEmail } from "@/utils/email";
 
 interface GenerateInviteLinkModalProps {
   isOpen: boolean;
@@ -26,26 +27,53 @@ interface GenerateInviteLinkModalProps {
 
 export function GenerateInviteLinkModal({ isOpen, onClose }: GenerateInviteLinkModalProps) {
   const t = useTranslations();
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [email, setEmail] = useState("");
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
+  const [sentTo, setSentTo] = useState<string | null>(null);
   const { copied, copy } = useCopyToClipboard();
 
-  const handleGenerate = async () => {
-    setIsGenerating(true);
+  const trimmedEmail = email.trim();
+  const wantsEmail = trimmedEmail.length > 0;
+
+  const handleSubmit = async () => {
+    if (wantsEmail && !isValidEmail(trimmedEmail)) {
+      toast.error(t("users.invite.errors.invalidEmail"));
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
-      const response = await generateInviteToken();
+      const response = await generateInviteToken(wantsEmail ? { email: trimmedEmail } : undefined);
 
-      const inviteUrl = `${window.location.origin}/register-with-invite/${response.token}`;
+      // Prefer the server-built URL (from the admin-configured appUrl) so the
+      // copied link matches the emailed one and stays correct in split-hostname
+      // deployments. Fall back to the current origin only when appUrl is unset.
+      setInviteUrl(
+        response.registrationUrl ??
+          `${window.location.origin}/register-with-invite/${response.token}`,
+      );
 
-      setInviteUrl(inviteUrl);
-      toast.success(t("users.invite.generated"));
+      if (wantsEmail) {
+        if (response.emailSent) {
+          setSentTo(trimmedEmail);
+          toast.success(t("users.invite.emailSentToast"));
+        } else {
+          // Token was created but the email could not be queued (e.g. SMTP disabled).
+          setSentTo(null);
+          toast.warning(t("users.invite.errors.sendFailed"));
+        }
+      } else {
+        setSentTo(null);
+        toast.success(t("users.invite.generated"));
+      }
     } catch (error) {
       logger.error("Failed to generate invite token:", {
         err: error instanceof Error ? error.message : String(error),
       });
       toast.error(t("users.invite.errors.generateFailed"));
     } finally {
-      setIsGenerating(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -62,8 +90,18 @@ export function GenerateInviteLinkModal({ isOpen, onClose }: GenerateInviteLinkM
 
   const handleClose = () => {
     setInviteUrl(null);
+    setSentTo(null);
+    setEmail("");
     onClose();
   };
+
+  const submitLabel = isSubmitting
+    ? wantsEmail
+      ? t("users.invite.sending")
+      : t("users.invite.generating")
+    : wantsEmail
+      ? t("users.invite.send")
+      : t("users.invite.generate");
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -78,11 +116,39 @@ export function GenerateInviteLinkModal({ isOpen, onClose }: GenerateInviteLinkM
 
         <div className="space-y-4 py-4">
           {!inviteUrl ? (
-            <Button onClick={handleGenerate} disabled={isGenerating} className="w-full">
-              {isGenerating ? t("users.invite.generating") : t("users.invite.generate")}
-            </Button>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="invite-email">{t("users.invite.emailLabel")}</Label>
+                <Input
+                  id="invite-email"
+                  type="email"
+                  autoComplete="off"
+                  placeholder={t("users.invite.emailPlaceholder")}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !isSubmitting) {
+                      e.preventDefault();
+                      handleSubmit();
+                    }
+                  }}
+                  disabled={isSubmitting}
+                />
+                <p className="text-muted-foreground text-xs">{t("users.invite.emailHelp")}</p>
+              </div>
+              <Button onClick={handleSubmit} disabled={isSubmitting} className="w-full">
+                {submitLabel}
+              </Button>
+            </div>
           ) : (
             <div className="space-y-4">
+              {sentTo && (
+                <div className="flex items-start gap-2 rounded-lg border border-primary/30 bg-primary/5 p-3 text-sm">
+                  <MailCheck className="mt-0.5 size-[18px] shrink-0 text-primary" />
+                  <span>{t("users.invite.emailSentNotice", { email: sentTo })}</span>
+                </div>
+              )}
+
               <div className="rounded-lg border bg-muted/50 p-4">
                 <h4 className="mb-2 font-semibold text-sm">{t("users.invite.linkReady")}</h4>
                 <p className="mb-4 text-muted-foreground text-sm">

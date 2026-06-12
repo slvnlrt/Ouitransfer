@@ -5,6 +5,7 @@ import { Loader2, RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { UserManagementTabs } from "@/app/admin/components/user-management-tabs";
 import { useSyncPolling } from "@/app/admin/ldap/hooks/use-sync-polling";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { LoadingScreen } from "@/components/layout/loading-screen";
@@ -89,6 +90,7 @@ export default function AdminAreaPage() {
     <ProtectedRoute requireAdmin>
       <PageLayout>
         <div className="flex flex-col gap-8">
+          <UserManagementTabs />
           <UsersHeader
             onCreateUser={handleCreateUser}
             onGenerateInvite={() => setIsInviteModalOpen(true)}

@@ -20,6 +20,7 @@ import {
 } from "@/http/endpoints/reverse-shares";
 import type { ReverseShareRecipient } from "@/http/endpoints/reverse-shares/types";
 import { logger } from "@/lib/logger";
+import { isValidEmail } from "@/utils/email";
 
 interface ReverseShareRecipientSelectorProps {
   reverseShareId: string;
@@ -57,11 +58,6 @@ export function ReverseShareRecipientSelector({
     setRecipients(selectedRecipients ?? []);
     setSelectedForAction(new Set());
   }, [selectedRecipients]);
-
-  const isValidEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
 
   const handleAddRecipient = async () => {
     const trimmed = newRecipient.trim();
