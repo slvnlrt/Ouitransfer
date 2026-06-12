@@ -38,10 +38,8 @@ export const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
     preValidation: createAdminPreValidation({ allowSetupBypass: false }),
     handler: async (request, reply) => {
       const email = request.body?.email;
-      const { id, token, expiresAt, emailSent } = await inviteService.generateInviteToken(
-        request.user.userId,
-        email,
-      );
+      const { id, token, expiresAt, emailSent, registrationUrl } =
+        await inviteService.generateInviteToken(request.user.userId, email);
 
       // Audit invite token creation (fire-and-forget)
       logAuditEvent({
@@ -56,7 +54,7 @@ export const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
           : { expiresAt: expiresAt.toISOString() },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
 
-      return reply.send({ token, expiresAt, emailSent });
+      return reply.send({ token, expiresAt, emailSent, registrationUrl });
     },
   });
 

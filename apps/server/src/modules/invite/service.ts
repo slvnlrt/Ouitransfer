@@ -51,7 +51,13 @@ export class InviteService {
   async generateInviteToken(
     adminUserId: string,
     email?: string,
-  ): Promise<{ id: string; token: string; expiresAt: Date; emailSent: boolean }> {
+  ): Promise<{
+    id: string;
+    token: string;
+    expiresAt: Date;
+    emailSent: boolean;
+    registrationUrl: string | null;
+  }> {
     const token = randomBytes(32).toString("hex");
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + INVITE_TOKEN_TTL_MINUTES);
@@ -66,7 +72,18 @@ export class InviteService {
 
     const emailSent = email ? await this.sendInvitationEmail({ email, token, adminUserId }) : false;
 
-    return { id: inviteToken.id, token, expiresAt, emailSent };
+    // Build the absolute link from the admin-configured appUrl so the link the
+    // admin copies matches the one emailed to the invitee (the emailed link is
+    // also appUrl-based). When appUrl is not configured, the builder throws; we
+    // return null and let the client fall back to its own origin.
+    let registrationUrl: string | null = null;
+    try {
+      registrationUrl = await buildInviteRegistrationUrl(token);
+    } catch {
+      registrationUrl = null;
+    }
+
+    return { id: inviteToken.id, token, expiresAt, emailSent, registrationUrl };
   }
 
   /**

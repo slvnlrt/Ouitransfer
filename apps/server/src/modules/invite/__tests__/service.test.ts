@@ -38,6 +38,7 @@ vi.mock("../../../utils/logger.js", () => ({
 
 import { prisma } from "../../../shared/prisma.js";
 import { emailService } from "../../email/service.js";
+import { buildInviteRegistrationUrl } from "../../email/url-builder.js";
 import { InviteService } from "../service.js";
 
 const service = new InviteService();
@@ -65,6 +66,24 @@ describe("InviteService.generateInviteToken", () => {
     expect(result.token).toMatch(/^[0-9a-f]{64}$/);
     expect(result.emailSent).toBe(false);
     expect(emailService.send).not.toHaveBeenCalled();
+    // The absolute link (from the configured appUrl) is returned for the admin
+    // to copy, even when no invitation email is sent.
+    expect(result.registrationUrl).toBe(
+      `https://transfer.example.com/register-with-invite/${result.token}`,
+    );
+  });
+
+  it("returns registrationUrl: null when appUrl is not configured (builder throws)", async () => {
+    vi.mocked(buildInviteRegistrationUrl).mockRejectedValueOnce(
+      new Error("appUrl is not configured or empty"),
+    );
+
+    const result = await service.generateInviteToken("admin-1");
+
+    // Token generation must not fail just because appUrl is unset; the client
+    // falls back to its own origin.
+    expect(result.token).toMatch(/^[0-9a-f]{64}$/);
+    expect(result.registrationUrl).toBeNull();
   });
 
   it("sends a user_invitation email with the inviter's name, locale and link when an email is given", async () => {
