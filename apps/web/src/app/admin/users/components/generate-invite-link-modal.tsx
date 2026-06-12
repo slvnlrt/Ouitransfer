@@ -18,14 +18,12 @@ import { Label } from "@/components/ui/label";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { generateInviteToken } from "@/http/endpoints/invite";
 import { logger } from "@/lib/logger";
+import { isValidEmail } from "@/utils/email";
 
 interface GenerateInviteLinkModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-/** Lightweight client-side email shape check; the server performs authoritative validation. */
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function GenerateInviteLinkModal({ isOpen, onClose }: GenerateInviteLinkModalProps) {
   const t = useTranslations();
@@ -39,7 +37,7 @@ export function GenerateInviteLinkModal({ isOpen, onClose }: GenerateInviteLinkM
   const wantsEmail = trimmedEmail.length > 0;
 
   const handleSubmit = async () => {
-    if (wantsEmail && !EMAIL_RE.test(trimmedEmail)) {
+    if (wantsEmail && !isValidEmail(trimmedEmail)) {
       toast.error(t("users.invite.errors.invalidEmail"));
       return;
     }
@@ -48,7 +46,13 @@ export function GenerateInviteLinkModal({ isOpen, onClose }: GenerateInviteLinkM
     try {
       const response = await generateInviteToken(wantsEmail ? { email: trimmedEmail } : undefined);
 
-      setInviteUrl(`${window.location.origin}/register-with-invite/${response.token}`);
+      // Prefer the server-built URL (from the admin-configured appUrl) so the
+      // copied link matches the emailed one and stays correct in split-hostname
+      // deployments. Fall back to the current origin only when appUrl is unset.
+      setInviteUrl(
+        response.registrationUrl ??
+          `${window.location.origin}/register-with-invite/${response.token}`,
+      );
 
       if (wantsEmail) {
         if (response.emailSent) {
