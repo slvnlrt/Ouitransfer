@@ -1137,6 +1137,8 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
           .string()
           .optional()
           .describe("Password for accessing password-protected reverse shares"),
+        uploaderEmail: z.email().optional().describe("Optional self-declared uploader email"),
+        uploaderName: z.string().optional().describe("Optional self-declared uploader name"),
       }),
       response: {
         200: z.object({
@@ -1153,13 +1155,14 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (request, reply) => {
       const { alias } = request.params;
-      const { uploadId, objectName, parts, password } = request.body;
+      const { uploadId, objectName, parts, password, uploaderEmail, uploaderName } = request.body;
       const result = await multipartService.completeMultipartUploadByAlias(
         alias,
         uploadId,
         objectName,
         parts,
         password,
+        { uploaderEmail, uploaderName },
       );
       return reply.status(200).send(result);
     },
