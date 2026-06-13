@@ -1,5 +1,37 @@
 # Session Log
 
+## 2026-06-13 (TD-42 — System Status: Email / Notifications subsystem)
+
+- **Scope:** Surface the email/notifications subsystem in the Dashboard System Status, with the
+  two audience tiers used everywhere else — a coarse user signal (disruption / offline) and a
+  detailed admin panel. Full workflow: spec → plan → 3 sequential implementer batches → review →
+  fix-all. Files: `features/{specs,plans,reviews}/td-42-system-status-email.md`.
+- **Health model (decision):** `EmailHealthStatus = ok | disabled | degraded | down`, derived
+  purely from cheap queue counters + the `smtpEnabled` flag — **no live SMTP probe** (the `/health`
+  and `/health/status` endpoints are public/unauthenticated; a per-poll `transporter.verify()`
+  would add latency + an amplification/availability-leak vector). `down` = enabled with failed jobs
+  and zero sent in 24h; `degraded` = failed jobs but mail still flowing; `disabled` = SMTP off.
+- **Decision — email excluded from the server aggregate:** `/health`'s `status`
+  (`healthy|degraded|unhealthy`) stays DB+storage-only so ops monitoring doesn't page on a
+  non-critical subsystem; the **UI** instead bumps the status dot to `degraded` (never `unhealthy`)
+  client-side when email is degraded/down.
+- **Batch 1 (server):** new `email/health.ts` (`evaluateEmailHealth()`); `email` enum added to
+  `/health` (`checks.email`) and `/health/status` (coarse only — no counters leak); enriched
+  `GET /admin/email/stats` with `status` + `smtpConfigured` + `lastError` (admin-gated). 7 unit
+  tests + health/route test updates. Commit `0f14186`.
+- **Batch 2 (frontend):** types (`EmailHealthStatus`, enriched `EmailStats`), `use-system-status`
+  `getEmailStats` query (admin+expanded), `system-status-bar.tsx` — BarUserView line (degraded/down
+  only, renders without quota/metrics), BarAdminView email section, client-side dot bump; en-US +
+  fr-FR i18n; 16 component tests. Commit `1b8512b`.
+- **Batch 3 (i18n):** `dashboard.systemStatus.email.*` translated into the 21 remaining locales,
+  parity test green. Commit `906b693`.
+- **Review (0C / 0I / 3 Minor) — all fixed:** removed dead `email.smtpConfigured`/`smtpDisabled`
+  i18n keys from all 23 locales; added `aria-hidden` to the email + pre-existing DB/storage status
+  icons; dropped `tabular-nums` from the free-form `lastError` text. Plus 2 optional hardening
+  tests (loading suppresses the bump; an unhealthy core is never downgraded).
+- **Verification:** server 1631 (103 files) + web 359 (36 files) + shared 14 = **2004**, all green;
+  web type-check + Biome + knip clean. TD-42 → Done; README + TECHNICAL-DEBT updated.
+
 ## 2026-06-12 (code review findings — 8 fixes, PR #36 merged)
 
 - **Scope:** All 8 findings from the `/code-review --effort high` run covering changes since the previous PR merge.
