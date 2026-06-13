@@ -17,17 +17,29 @@
 - **Fix**: Changed `apiInstance.put(...)` → `apiInstance.patch(...)` in `shares/index.ts`.
 - **Status**: Fixed (2026-06-10)
 
-### B-29 (gap): Authenticated Ouitransfer users not identified in share activity log
+## Resolved (recent)
+
+### B-29 (gap): Authenticated Ouitransfer users not identified in share activity log — RESOLVED
 
 - **Severity**: Low — UX/tracking gap, no security impact
-- **Description**: When a user is logged into Ouitransfer and accesses a share via `GET /shares/:shareId`, two things happen:
-  1. If they are the **owner**, they bypass the password check entirely (intentional — owners manage their own shares). But no `ShareVisit` is created for them, so they don't appear in the share's activity log at all.
-  2. If they are a **non-owner authenticated user**, they still need to enter the password (correct), but after access their identity is not linked to the visit — they show as "anonymous" in the activity log even though their `userId` is known from the JWT.
-- **Root cause**: `getShare` returns early for owners before visit tracking runs. For non-owners, the visit tracking uses `ShareVisit.identificationSource` which only supports `"token" | "self_declared" | null` — there is no `"authenticated_user"` source, and `userId` is not stored on `ShareVisit`.
-- **Fix**: Would require storing the `userId` on `ShareVisit` and surfacing it in the activity UI. Non-trivial schema change. Deferred.
-- **Status**: Open — tracked for a future session
-
-## Resolved (recent)
+- **Description**: A **non-owner authenticated user** accessing a share via `GET /shares/:shareId`
+  showed as "anonymous" in the activity log even though their `userId` was known from the JWT, because
+  `ShareVisit.identificationSource` only supported `"token" | "self_declared" | null` and `userId` was
+  not stored. (The original report also flagged owners not appearing; see the owner decision below.)
+- **Fix**: Added `ShareVisit.userId` (FK → `User`, `onDelete: SetNull`, migration `share_visit_user`)
+  and a new `identificationSource = "authenticated_user"` (verified, JWT-backed). The share-access and
+  file-download paths now identify a logged-in non-owner visitor (snapshotting `username`/`email`),
+  with precedence `token > self_declared (matched cookie) > authenticated_user > anonymous` — a
+  verified account also wins over an **unmatched** cookie. `/shares/:id/visits` exposes
+  `authenticated_user` + an `isOwner` flag (raw `userId` stripped from the payload). The frontend
+  renders a **verified** badge (no spoofable hint) and a "You" indicator. GDPR: `deleteUser` nulls the
+  `visitorEmail`/`visitorName` snapshots on the deleted user's visit rows. i18n in all 23 locales.
+- **Owner decision (post-review)**: owner self-accesses are **intentionally NOT tracked** — the
+  owner's own share-details/management modal is the primary caller of `GET /shares/:shareId` (refetch
+  on open + every `invalidateShare()`), so logging owner views would fill the activity log with
+  self-referential noise. This matches the owner-download path (also untracked).
+- **Status**: Resolved (2026-06-13) — spec/plan/review under `features/{specs,plans,reviews}/b-29-…`.
+  Opus review: 0 Critical / 1 Important / 4 Minor, all fixed.
 
 ### B-30: CORS rejection returns 500 instead of 403 — RESOLVED
 

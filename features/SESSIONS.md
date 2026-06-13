@@ -1,5 +1,39 @@
 # Session Log
 
+## 2026-06-13 (B-29 — authenticated-visit identity + TD-42 Opus re-review)
+
+- **Model discipline (process fix):** subagents default to Haiku when `model` is omitted — too weak
+  for non-trivial work. Adopted explicit models: **exploration → Sonnet, implementation → Sonnet,
+  review → Opus**. (The earlier TD-42 batches + review had run on Haiku by default.)
+- **TD-42 Opus re-review** (requested): independent adversarial second pass over the TD-42 commit
+  range confirmed the first pass (0 Critical / 0 Important; the 3 Minors genuinely fixed; public
+  endpoints proven to leak only the enum). Found 4 Minor refinements of the cheap-counter health
+  model — **fixed the two false-positives**: `evaluateEmailHealth` now windows the failure signals
+  (status + `lastError`) to a **recent 24h** period, so old dead-letter jobs no longer pin
+  `degraded` nor flip a quiet healthy instance to `down`, and a since-succeeded job's stale error no
+  longer surfaces. The `processing`/`pending` blind spot → **TD-53**; public-enum exposure accepted
+  (spec-documented). Server 1639 green.
+- **B-29 (full bug fix, spec → plan → 3 Sonnet batches → Opus review → fix-all):** logged-in
+  Ouitransfer users no longer show as "anonymous" in a share's activity log.
+  - **Schema:** `ShareVisit.userId` (FK → User, `onDelete: SetNull`, migration `share_visit_user`) +
+    `User.shareVisits`; new verified `identificationSource = "authenticated_user"`.
+  - **Server:** access + download paths identify a logged-in **non-owner** visitor (snapshot
+    username/email). Precedence `token > self_declared (matched cookie) > authenticated_user >
+    anonymous`; a verified account also beats an **unmatched** cookie. `/shares/:id/visits` exposes
+    `authenticated_user` + `isOwner` (raw `userId` stripped). GDPR: `deleteUser` nulls the
+    `visitorEmail`/`visitorName` snapshots on the deleted user's visit rows.
+  - **Frontend:** verified badge for `authenticated_user` (no spoofable hint) + a "You" indicator;
+    i18n `shareDetails.activity.{you,source.authenticated_user}` in all 23 locales.
+  - **Opus review (0 Critical / 1 Important / 4 Minor) — all fixed.** The Important was the
+    **owner self-visit noise** I had flagged up front: `GET /shares/:shareId` is the owner's own
+    management modal (refetch on open + every `invalidateShare()`), so tracking owner views spammed
+    the log self-referentially. Resolution: **owners are no longer tracked** (matches the
+    owner-download path). Minors fixed: GDPR redaction, verified-beats-unmatched-cookie precedence,
+    `identified=false` filter symmetry.
+- **Verification:** server 103 files / **1642** tests; web 37 files / **367** tests; shared 14 =
+  **2023**, all green. type-check + Biome + knip clean. B-29 → Resolved; TD-53 logged; README +
+  BUGS + TECHNICAL-DEBT updated.
+
 ## 2026-06-13 (TD-42 — System Status: Email / Notifications subsystem)
 
 - **Scope:** Surface the email/notifications subsystem in the Dashboard System Status, with the

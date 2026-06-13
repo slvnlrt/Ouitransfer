@@ -59,11 +59,11 @@ Back-relation on `User`: `shareVisits ShareVisit[]`. New migration (e.g. `share_
 ## Server
 
 `apps/server/src/modules/share/service.ts` — `getShare`:
-- **Owner branch**: before the early return, fire-and-forget a `ShareVisit` with
-  `userId`, `identificationSource = "authenticated_user"`, `action = "access"`,
-  `visitorName = username`, `visitorEmail = email`, **no notification**. (Load `creator`'s
-  `username`/`email` — already have the `share` with `creatorId`; select the user, or include
-  `creator` in the share query.)
+- **Owner branch** (post-review revision): early-return the formatted response with **no** visit
+  tracking and **no** notification. `GET /shares/:shareId` is the owner's own management modal
+  (refetched on open + every `invalidateShare()`), so tracking owner self-access fills the activity
+  log with self-referential noise. Owners are intentionally not logged (consistent with the
+  owner-download path, which also skips tracking).
 - **Non-owner branch**: after recipient/cookie resolution, if no `recipientId` was attributed **and**
   `userId` is set, fill `userId` + `identificationSource = "authenticated_user"` + snapshot
   `visitorName`/`visitorEmail` from the user. The owner `share_accessed` notification still fires
