@@ -8,6 +8,7 @@
 import { getMimeType } from "@ouitransfer/shared/mime-types";
 import { fileTypeFromBuffer } from "file-type";
 import { ValidationError } from "./app-error.js";
+import { hasDangerousDoubleExtension } from "./sanitize-filename.js";
 
 /**
  * MIME types that are never acceptable regardless of file extension.
@@ -220,6 +221,14 @@ export async function assertUploadedContentValid(
 
   // Layer 0: unconditional dangerous-extension denylist.
   assertExtensionAllowed(extension);
+
+  // A3-11: flag (do not block) a dangerous double-extension on the stored key —
+  // the trailing extension is already covered by the denylist above, but a
+  // benign-looking name like "invoice.pdf.exe" warrants an audit signal.
+  const basename = objectName.substring(objectName.lastIndexOf("/") + 1);
+  if (hasDangerousDoubleExtension(basename, DANGEROUS_EXTENSIONS)) {
+    log?.warn({ objectName }, "Upload has a dangerous double-extension");
+  }
 
   // Always derive an effective MIME type so layers 1 and 2 ALWAYS run.
   const mimeType = resolveEffectiveMimeType(params.mimeType, extension);

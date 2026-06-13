@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { sanitizeFilename } from "../sanitize-filename.js";
+import { hasDangerousDoubleExtension, sanitizeFilename } from "../sanitize-filename.js";
+import { DANGEROUS_EXTENSIONS } from "../validate-file-content.js";
 
 describe("sanitizeFilename (5.10)", () => {
   it("removes path separators", () => {
@@ -54,5 +55,31 @@ describe("sanitizeFilename (5.10)", () => {
     expect(Buffer.byteLength(result, "utf8")).toBeLessThanOrEqual(255);
     // Should not end with a replacement character
     expect(result).not.toContain("\uFFFD");
+  });
+
+  it("strips Unicode bidi-override / zero-width controls (A3-11)", () => {
+    // U+202E RLO classic extension spoof: "photo<RLO>gpj.exe" \u2192 "photogpj.exe".
+    const spoof = `photo\u202Egpj.exe`;
+    const result = sanitizeFilename(spoof);
+    expect(result).toBe("photogpj.exe");
+    expect(result).not.toContain("\u202E");
+
+    // Zero-width space + joiner + BOM + isolates all removed.
+    expect(sanitizeFilename("a\u200Bb\u200Dc\uFEFFd\u2066e.txt")).toBe("abcde.txt");
+    // Leading RLM that would otherwise survive the leading-dot strip.
+    expect(sanitizeFilename("\u200Ffile.pdf")).toBe("file.pdf");
+  });
+});
+
+describe("hasDangerousDoubleExtension (A3-11)", () => {
+  it("flags a trailing dangerous extension behind a benign one", () => {
+    expect(hasDangerousDoubleExtension("invoice.pdf.exe", DANGEROUS_EXTENSIONS)).toBe(true);
+    expect(hasDangerousDoubleExtension("photo.jpg.js", DANGEROUS_EXTENSIONS)).toBe(true);
+  });
+
+  it("does not flag single extensions or benign double extensions", () => {
+    expect(hasDangerousDoubleExtension("invoice.pdf", DANGEROUS_EXTENSIONS)).toBe(false);
+    expect(hasDangerousDoubleExtension("archive.tar.gz", DANGEROUS_EXTENSIONS)).toBe(false);
+    expect(hasDangerousDoubleExtension("photo.exe", DANGEROUS_EXTENSIONS)).toBe(false); // single ext (handled by denylist)
   });
 });
