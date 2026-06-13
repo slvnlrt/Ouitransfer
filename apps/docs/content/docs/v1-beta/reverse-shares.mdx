@@ -106,7 +106,7 @@ Each recipient also shows an upload-status badge:
 - **Uploaded**: at least one upload has been linked to this recipient.
 - **Pending**: no upload has been linked to this recipient yet.
 
-This linkage is **best-effort**. An upload is attributed to a recipient only when the uploader provides an email that matches the recipient's email. Because the email field on the upload page is **optional by default**, many uploads cannot be linked, and a provided email is self-declared (not verified). The badge therefore carries a tooltip noting that the status is **approximate when the email is not required** — a "Pending" badge does not guarantee the recipient hasn't uploaded.
+This linkage is **best-effort**. An upload is attributed to a recipient only when the uploader provides an email that matches the recipient's email. Because the email field on the upload page is **optional by default**, many uploads cannot be linked, and a provided email is self-declared (not verified). The badge therefore carries a tooltip noting that the status is **approximate when the email is not required**: a "Pending" badge does not guarantee the recipient has not uploaded.
 
 <Callout type="warn">
   To make per-recipient upload tracking reliable, set the **Email** identification field to **Required**, so every uploader must provide an email that can be matched to a recipient.

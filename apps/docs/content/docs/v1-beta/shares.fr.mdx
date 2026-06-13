@@ -108,12 +108,12 @@ Chaque destinataire de la liste affiche un badge de statut explicite :
 Ce statut est distinct du compteur de **vues** (le nombre de fois où la page du partage a été ouverte). Un destinataire peut ouvrir le partage plusieurs fois sans télécharger aucun fichier : « vues » et « Téléchargé » mesurent donc des choses différentes.
 
 <Callout type="info">
-  Le statut de téléchargement est une **fonctionnalité de confort, pas un contrôle de sécurité**. Lorsqu'un destinataire arrive via son lien e-mail personnalisé, son identité est **vérifiée** (elle provient d'un jeton de suivi unique). Lorsqu'un visiteur saisit plutôt un nom ou un e-mail dans le formulaire d'identification qui correspond à un destinataire, l'attribution est **auto-déclarée** et non vérifiée — un indice discret est alors affiché dans la vue Activité. Une identité auto-déclarée peut être usurpée : ne considérez pas « Téléchargé » comme une preuve de qui a téléchargé.
+  Le statut de téléchargement est une **fonctionnalité de confort, pas un contrôle de sécurité**. Lorsqu'un destinataire arrive via son lien e-mail personnalisé, son identité est **vérifiée** (elle provient d'un jeton de suivi unique). Lorsqu'un visiteur saisit plutôt un nom ou un e-mail dans le formulaire d'identification qui correspond à un destinataire, l'attribution est **auto-déclarée** et non vérifiée (un indice discret est alors affiché dans la vue Activité). Une identité auto-déclarée peut être usurpée : ne considérez pas « Téléchargé » comme une preuve de qui a téléchargé.
 </Callout>
 
 ### Relancer les non-téléchargeurs
 
-Lorsque certains destinataires n'ont pas encore téléchargé, vous pouvez leur envoyer une relance. Un bouton **Relancer (N)** (où N est le nombre de destinataires en attente) envoie un nouvel e-mail de rappel — utilisant le lien personnalisé de chaque destinataire — uniquement aux destinataires qui ont été notifiés mais n'ont **rien** téléchargé. Les destinataires ayant déjà téléchargé sont ignorés.
+Lorsque certains destinataires n'ont pas encore téléchargé, vous pouvez leur envoyer une relance. Un bouton **Relancer (N)** (où N est le nombre de destinataires en attente) envoie un nouvel e-mail de rappel (utilisant le lien personnalisé de chaque destinataire) uniquement aux destinataires qui ont été notifiés mais n'ont **rien** téléchargé. Les destinataires ayant déjà téléchargé sont ignorés.
 
 Les relances sont **manuelles et déclenchées par le créateur**. Il n'y a aucun planificateur automatique : Ouitransfer n'envoie jamais de relance de lui-même. Le bouton est désactivé lorsqu'aucun destinataire n'est en attente.
 
@@ -180,13 +180,13 @@ Chaque visite enregistre :
 |---|---|
 | **Action** | `Access` (page du partage chargée) ou `Download` (fichier téléchargé) |
 | **Identité du visiteur** | Nom et/ou e-mail du visiteur, ou « Anonyme » |
-| **Source d'identification** | Comment le visiteur a été identifié : `tracking_token` (vérifié, arrivé via un lien personnalisé), `cookie` (auto-déclaré depuis le formulaire d'identification), `authenticated_user` (vérifié — un compte Ouitransfer connecté), ou `anonymous` |
-| **Destinataire** | Si le visiteur a été associé à un destinataire, l'adresse e-mail du destinataire est affichée — accompagnée de la source pour distinguer une attribution vérifiée d'une attribution auto-déclarée |
+| **Source d'identification** | Comment le visiteur a été identifié : `tracking_token` (vérifié, arrivé via un lien personnalisé), `cookie` (auto-déclaré depuis le formulaire d'identification), `authenticated_user` (vérifié : un compte Ouitransfer connecté), ou `anonymous` |
+| **Destinataire** | Si le visiteur a été associé à un destinataire, l'adresse e-mail du destinataire est affichée, accompagnée de la source pour distinguer une attribution vérifiée d'une attribution auto-déclarée |
 | **Horodatage** | Date et heure de l'événement |
 | **isOwner** | Si la visite a été attribuée au créateur du partage lui-même (rarement vrai en pratique, les accès courants du propriétaire n'étant pas suivis) |
 
 <Callout type="info">
-  Les sources `tracking_token` et `authenticated_user` sont toutes deux vérifiées. Une source `cookie` signifie que le visiteur a saisi une identité dans le formulaire (ou correspondait à un destinataire par e-mail auto-déclaré) ; c'est pratique mais non vérifié — une identité auto-déclarée peut être usurpée et ne doit pas être considérée comme une preuve d'identité.
+  Les sources `tracking_token` et `authenticated_user` sont toutes deux vérifiées. Une source `cookie` signifie que le visiteur a saisi une identité dans le formulaire (ou correspondait à un destinataire par e-mail auto-déclaré) ; c'est pratique mais non vérifié : une identité auto-déclarée peut être usurpée et ne doit pas être considérée comme une preuve d'identité.
 </Callout>
 
 ### Filtres

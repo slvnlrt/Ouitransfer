@@ -13,10 +13,10 @@ Configuring SMTP is essential for enabling key email functionalities that enhanc
 
 The main functionalities that depend on SMTP configuration are:
 
-- **Password Reset** – Users who forget their password need this feature to regain access to their accounts.
-- **Share Invitations** – Recipients receive email invitations with personalized links when added to a [share](/docs/v1-beta/shares) or [reverse share](/docs/v1-beta/reverse-shares).
-- **Email Notifications** – The notification system sends emails for share access, downloads, quota warnings, expiration alerts, and more. Users control which notifications they receive via [Notification Preferences](/docs/v1-beta/notification-preferences).
-- **Unsubscribe** – Each non-critical notification email includes an unsubscribe link that requires SMTP to function.
+- **Password Reset**: Users who forget their password need this feature to regain access to their accounts.
+- **Share Invitations**: Recipients receive email invitations with personalized links when added to a [share](/docs/v1-beta/shares) or [reverse share](/docs/v1-beta/reverse-shares).
+- **Email Notifications**: The notification system sends emails for share access, downloads, quota warnings, expiration alerts, and more. Users control which notifications they receive via [Notification Preferences](/docs/v1-beta/notification-preferences).
+- **Unsubscribe**: Each non-critical notification email includes an unsubscribe link that requires SMTP to function.
 
 Without proper SMTP configuration, these features will not work. Password reset, share invitations, and all notification emails are silently skipped when SMTP is disabled.
 
@@ -66,32 +66,32 @@ Once SMTP is enabled, you can configure the following fields:
 
 #### Basic SMTP Configuration
 
-**SMTP Server** – The SMTP server address provided by your email service. For Gmail, use `smtp.gmail.com` (this is the recommended option and set as default).
+**SMTP Server**: The SMTP server address provided by your email service. For Gmail, use `smtp.gmail.com` (this is the recommended option and set as default).
 
-**SMTP Port** – The server port used for connections. For Gmail, the standard port is **587** (TLS encryption).
+**SMTP Port**: The server port used for connections. For Gmail, the standard port is **587** (TLS encryption).
 
-**SMTP Username** – The username for authenticating with your SMTP server. For Gmail, enter your complete email address.
+**SMTP Username**: The username for authenticating with your SMTP server. For Gmail, enter your complete email address.
 
-**SMTP Password** – The password for SMTP authentication. For Gmail, you must use an **App Password** (not your regular email password).
+**SMTP Password**: The password for SMTP authentication. For Gmail, you must use an **App Password** (not your regular email password).
 
 #### Email Sender Configuration
 
-**Sender Name** – This will appear as the sender's name in all outgoing emails. Use a recognizable name like "OUITRANSFER" or your organization name.
+**Sender Name**: This will appear as the sender's name in all outgoing emails. Use a recognizable name like "OUITRANSFER" or your organization name.
 
-**Sender Email** – The email address from which notifications will be sent. Use a professional address like "noreply@yourdomain.com" or "notifications@yourdomain.com".
+**Sender Email**: The email address from which notifications will be sent. Use a professional address like "noreply@yourdomain.com" or "notifications@yourdomain.com".
 
 #### Advanced Configuration Options
 
-**Connection Security** – Choose the appropriate security method for your SMTP server:
+**Connection Security**: Choose the appropriate security method for your SMTP server:
 
-- **Auto (Recommended)** – Automatically selects the best security method based on the port
-- **SSL (Port 465)** – Uses SSL encryption for the entire connection
-- **STARTTLS (Port 587)** – Uses STARTTLS to upgrade a plain connection to TLS
-- **None (Insecure)** – Uses plain SMTP without encryption (only for development/testing)
+- **Auto (Recommended)**: Automatically selects the best security method based on the port
+- **SSL (Port 465)**: Uses SSL encryption for the entire connection
+- **STARTTLS (Port 587)**: Uses STARTTLS to upgrade a plain connection to TLS
+- **None (Insecure)**: Uses plain SMTP without encryption (only for development/testing)
 
-**No Authentication** – Enable this option for internal SMTP servers that don't require username/password authentication. When enabled, the username and password fields will be hidden.
+**No Authentication**: Enable this option for internal SMTP servers that don't require username/password authentication. When enabled, the username and password fields will be hidden.
 
-**Trust Self-Signed Certificates** – Enable this option to trust self-signed SSL/TLS certificates. This is particularly useful for development environments or internal SMTP servers with self-signed certificates.
+**Trust Self-Signed Certificates**: Enable this option to trust self-signed SSL/TLS certificates. This is particularly useful for development environments or internal SMTP servers with self-signed certificates.
 
 #### Field Behavior and Dependencies
 
@@ -109,7 +109,7 @@ Once SMTP is enabled, you can configure the following fields:
 
 #### Testing Configuration
 
-**Test SMTP Connection** – Use this button to test your SMTP configuration before saving. This will verify that all settings are correct and the connection works properly.
+**Test SMTP Connection**: Use this button to test your SMTP configuration before saving. This will verify that all settings are correct and the connection works properly.
 
 **Test Button Features**:
 
@@ -193,10 +193,10 @@ After completing the configuration, it's important to verify that everything wor
 
 OUITRANSFER provides a built-in **Test SMTP Connection** button that allows you to verify your configuration before saving:
 
-1. **Fill in your SMTP settings** – Complete all required fields in the SMTP configuration
-2. **Click "Test Connection"** – This will attempt to connect to your SMTP server with the current settings
-3. **Review the results** – You'll see a success message if the connection works, or an error message with details if it fails
-4. **Save your settings** – Once the test is successful, save your configuration to make it permanent
+1. **Fill in your SMTP settings**: Complete all required fields in the SMTP configuration
+2. **Click "Test Connection"**: This will attempt to connect to your SMTP server with the current settings
+3. **Review the results**: You'll see a success message if the connection works, or an error message with details if it fails
+4. **Save your settings**: Once the test is successful, save your configuration to make it permanent
 
 **Note:** The test connection uses the values currently entered in the form, not the saved settings. Make sure to save your configuration after a successful test.
 
@@ -211,23 +211,23 @@ OUITRANSFER provides a built-in **Test SMTP Connection** button that allows you 
 
 If emails are not being sent:
 
-- **Verify all fields are filled correctly** – Ensure all required fields have valid values
-- **For Gmail, ensure you're using the App Password** – Not your regular email password
-- **Check that your email provider allows SMTP connections** – Some providers require specific settings
-- **Confirm that port 587 is not blocked by your firewall** – Check both local and network firewall settings
-- **Verify the SMTP server address** – Double-check the hostname for typos
-- **Test with different security settings** – Try different Connection Security options if one fails
+- **Verify all fields are filled correctly**: Ensure all required fields have valid values
+- **For Gmail, ensure you're using the App Password**: Not your regular email password
+- **Check that your email provider allows SMTP connections**: Some providers require specific settings
+- **Confirm that port 587 is not blocked by your firewall**: Check both local and network firewall settings
+- **Verify the SMTP server address**: Double-check the hostname for typos
+- **Test with different security settings**: Try different Connection Security options if one fails
 
 ### Troubleshooting self-signed certificate issues
 
 If you're using an SMTP server with self-signed certificates and encountering connection errors:
 
-1. **Enable Trust Self-Signed Certificates** – In the SMTP settings, enable the "Trust Self-Signed Certificates" option
-2. **Use Appropriate Security Method** – Choose the correct security method for your server:
+1. **Enable Trust Self-Signed Certificates**: In the SMTP settings, enable the "Trust Self-Signed Certificates" option
+2. **Use Appropriate Security Method**: Choose the correct security method for your server:
    - For servers requiring TLS: Use "STARTTLS (Port 587)" or "SSL (Port 465)"
    - For development servers without encryption: Use "None (Insecure)"
-3. **Verify Server Configuration** – Ensure your SMTP server is properly configured to accept connections on the specified port
-4. **Test Connection** – Use the "Test Connection" button to verify your configuration before saving
+3. **Verify Server Configuration**: Ensure your SMTP server is properly configured to accept connections on the specified port
+4. **Test Connection**: Use the "Test Connection" button to verify your configuration before saving
 
 **Note:** The "None (Insecure)" option should only be used in development environments or with trusted internal servers, as it transmits data without encryption.
 
@@ -235,10 +235,10 @@ If you're using an SMTP server with self-signed certificates and encountering co
 
 If you're experiencing authentication problems:
 
-- **Check username and password** – Ensure they are correct and match your email provider's requirements
-- **For Gmail users** – Make sure you're using an App Password, not your regular password
-- **Enable "No Authentication" if applicable** – For internal servers that don't require authentication
-- **Verify account settings** – Some providers require enabling "Less secure app access" or similar settings
+- **Check username and password**: Ensure they are correct and match your email provider's requirements
+- **For Gmail users**: Make sure you're using an App Password, not your regular password
+- **Enable "No Authentication" if applicable**: For internal servers that don't require authentication
+- **Verify account settings**: Some providers require enabling "Less secure app access" or similar settings
 
 ### Common error messages and solutions
 
@@ -309,7 +309,7 @@ This provides a quick health check on email delivery. A growing "Pending" count 
 
 ### System Status bar
 
-The Dashboard **System Status** bar also surfaces email/notifications subsystem health. **Administrators** see the SMTP configuration state, queue counters, and the most recent send error at a glance. **Regular users** see only a coarse indicator — a "Notifications disrupted" line when the subsystem is degraded, or "Notifications offline" when it is down — and nothing when the subsystem is healthy or disabled. The possible status values are `ok`, `disabled`, `degraded`, and `down`; the same values are exposed via `/admin/email/stats` for API-level monitoring.
+The Dashboard **System Status** bar also surfaces email/notifications subsystem health. **Administrators** see the SMTP configuration state, queue counters, and the most recent send error at a glance. **Regular users** see only a coarse indicator: a "Notifications disrupted" line when the subsystem is degraded, or "Notifications offline" when it is down. Nothing is shown when the subsystem is healthy or disabled. The possible status values are `ok`, `disabled`, `degraded`, and `down`; the same values are exposed via `/admin/email/stats` for API-level monitoring.
 
 ### Sending a test email
 

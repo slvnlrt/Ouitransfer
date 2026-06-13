@@ -339,6 +339,6 @@ All endpoints require an active admin session. Unauthenticated requests return `
 | `PUT` | `/admin/ldap/config` | Create or update the configuration (upsert). Pass `bindPassword: ""` to keep the existing password. |
 | `POST` | `/admin/ldap/test` | Test the connection with the provided parameters. Requires `bindPassword` (not masked). |
 | `POST` | `/admin/ldap/sync` | Trigger a manual sync. Returns `{ logId }`. Returns `409` if a sync is already in progress. |
-| `GET` | `/admin/ldap/sync/logs` | List sync history. Query params: `limit` (1–100, default 20), `offset` (default 0). |
+| `GET` | `/admin/ldap/sync/logs` | List sync history. Query params: `limit` (1-100, default 20), `offset` (default 0). |
 | `GET` | `/admin/ldap/sync/logs/:id` | Get the full detail of a sync log entry, including skip/error events. |
 | `GET` | `/admin/ldap/status` | Quick status: enabled flag, last sync result, next scheduled sync time, and any configuration warnings. |

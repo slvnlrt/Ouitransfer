@@ -108,12 +108,12 @@ Each recipient in the list shows an explicit status badge:
 This status is distinct from the **views** count (the number of times the share page was opened). A recipient can open the share several times without downloading any file, so "views" and "Downloaded" track different things.
 
 <Callout type="info">
-  The download status is a **comfort feature, not a security control**. When a recipient arrives through their personalized email link, their identity is **verified** (it comes from a unique tracking token). When a visitor instead types a name or email into the identification form that happens to match a recipient, the attribution is **self-declared** and unverified — a subtle hint is shown in the activity view in that case. A self-declared identity could be spoofed, so do not treat "Downloaded" as proof of who downloaded.
+  The download status is a **comfort feature, not a security control**. When a recipient arrives through their personalized email link, their identity is **verified** (it comes from a unique tracking token). When a visitor instead types a name or email into the identification form that happens to match a recipient, the attribution is **self-declared** and unverified (a subtle hint is shown in the activity view in that case). A self-declared identity could be spoofed, so do not treat "Downloaded" as proof of who downloaded.
 </Callout>
 
 ### Reminding non-downloaders
 
-When some recipients have not downloaded yet, you can send them a reminder. A **Remind (N)** button (where N is the number of pending recipients) sends a fresh reminder email — using each recipient's personalized link — only to recipients who were notified but have **not** downloaded anything. Recipients who already downloaded are skipped.
+When some recipients have not downloaded yet, you can send them a reminder. A **Remind (N)** button (where N is the number of pending recipients) sends a fresh reminder email (using each recipient's personalized link) only to recipients who were notified but have **not** downloaded anything. Recipients who already downloaded are skipped.
 
 Reminders are **manual and creator-triggered**. There is no automatic scheduler: Ouitransfer never sends reminders on its own. The button is disabled when there are no pending recipients.
 
@@ -180,13 +180,13 @@ Each visit records:
 |---|---|
 | **Action** | `Access` (share page loaded) or `Download` (file downloaded) |
 | **Visitor identity** | Name and/or email of the visitor, or "Anonymous" |
-| **Identification source** | How the visitor was identified: `tracking_token` (verified, arrived via a personalized link), `cookie` (self-declared from the identification form), `authenticated_user` (verified — a logged-in Ouitransfer account), or `anonymous` |
-| **Recipient** | If the visitor was linked to a recipient, the recipient email is shown — alongside the source so you can tell a verified attribution from a self-declared one |
+| **Identification source** | How the visitor was identified: `tracking_token` (verified, arrived via a personalized link), `cookie` (self-declared from the identification form), `authenticated_user` (verified: a logged-in Ouitransfer account), or `anonymous` |
+| **Recipient** | If the visitor was linked to a recipient, the recipient email is shown alongside the source so you can tell a verified attribution from a self-declared one |
 | **Timestamp** | When the event occurred |
 | **isOwner** | Whether the visit was attributed to the share's own creator (rarely true in practice, as routine owner accesses are not tracked) |
 
 <Callout type="info">
-  Both `tracking_token` and `authenticated_user` sources are verified. A `cookie` source means the visitor typed an identity into the form (or matched a recipient by self-declared email); it is convenient but unverified — a self-declared identity could be spoofed and should not be relied on as proof of identity.
+  Both `tracking_token` and `authenticated_user` sources are verified. A `cookie` source means the visitor typed an identity into the form (or matched a recipient by self-declared email); it is convenient but unverified: a self-declared identity could be spoofed and should not be relied on as proof of identity.
 </Callout>
 
 ### Filters
