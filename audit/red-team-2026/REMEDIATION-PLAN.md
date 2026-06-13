@@ -1,0 +1,126 @@
+# Red Team 2026 — Consolidated Remediation Plan
+
+**Status legend:** `[ ]` todo · `[~]` in progress · `[x]` done
+**Convention:** Perfect implementation, zero technical debt. Every finding is fixed —
+Critical, High, Medium, Low, AND Info. None are optional. Add/extend tests for every
+security-critical change (`app.inject()` integration tests for full request lifecycle).
+
+Total raw findings: 108 (10 Critical · 21 High · 34 Medium · 29 Low · 14 Info).
+After de-duplication of cross-corroborated findings: see batches below.
+
+## Cross-cutting / duplicate findings (fix once)
+
+| Canonical | Duplicates / related | Issue |
+|---|---|---|
+| **X-Real-IP/X-User-Agent header trust** | A1-01 (Crit), A8-02 (Crit) | `getClientInfo()` trusts spoofable headers → lockout/rate-limit bypass + audit poisoning |
+| **Reverse-share multipart objectName injection** | A3-01 (Crit), A4-01 (Crit) | 4 public multipart routes skip `validateObjectName` |
+| **Download bypasses share lifecycle** | A4-02 (Crit), A3-04 (High), A2-04 (Low) | `checkFileAccess` checks only password/ownership; not scoped to a shareId |
+| **Inline-disposition download + proxy CSP** | A3-03 (High), A7-07 (Low) | stored HTML/SVG rendered same-origin |
+| **Client-declared size (no HEAD reconcile)** | A3-08 (Med), A4-05 (High) | quota/size bypass |
+| **Reverse-share multipart no limits / TOCTOU / presign** | A3-05 (High), A4-04 (High), A4-07 (Med) | quota/maxFiles bypass + orphans |
+| **Folder objectName unvalidated** | A2-06 (Low), A3-06 (Med) | cross-tenant delete primitive |
+| **Host-header in OAuth base URL / redirect_uri** | A6-01 (High), A5-04 (High) | SSRF/link poisoning + code interception |
+| **SSRF on server-side fetch/connect (OIDC discovery/token/userinfo, LDAP host)** | A5-05 (High), A3-07 (Med), A5-11 (Med) | no private-IP/metadata guard |
+| **bcrypt cost / bcryptjs** | A1-17 (Info), A8-14 (Low) | raise cost to 12; consider lib |
+
+---
+
+## R1 — Storage & upload integrity (server: file/folder/reverse-share/storage/utils)
+- [ ] A3-01 / A4-01 (Crit) reverse-share multipart: `validateObjectName(objectName, reverse-shares/<id>)` on part-url/complete/abort/list-parts
+- [ ] A3-02 (Crit) magic-byte/MIME fail-open: require mimeType (or derive server-side), run both layers unconditionally, **fail closed** on unexpected S3 error, enforce `DANGEROUS_EXTENSIONS` denylist at register; apply to reverse-share register too
+- [ ] A3-05 / A4-04 / A4-07 (High) reverse-share multipart limits: enforce maxFiles/maxFileSize/allowedFileTypes/owner-quota at create+complete; create `ReverseShareFile` row on complete; atomic maxFiles/quota; presign-time best-effort check
+- [ ] A3-08 / A4-05 (High/Med) HEAD-reconcile real object size for quota/maxFileSize/stored size on register (direct + reverse-share)
+- [ ] A2-06 / A3-06 (Med/Low) folder `objectName`: `validateObjectName` on create/check (or server-generate); namespace-guard before `deleteObject`
+- [ ] A3-09 (Med) use shared `sanitizeFilename` in reverse-share multipart create
+- [ ] A3-11 (Low) strip Unicode bidi/zero-width controls in `sanitizeFilename`; warn on dangerous double-extension
+- [ ] A3-12 (Low) `sharp(..., { limitInputPixels, failOn })` on avatar/logo/background
+- [ ] A3-10 (Low) fix dead GET reverse-share internal-storage download path to use POST authz
+- [ ] A3-07 (Med) validate `S3_ENDPOINT`/`STORAGE_URL` at boot (reject private/loopback/link-local/metadata unless allowlisted; https in prod); document `S3_REJECT_UNAUTHORIZED=false` test-only
+- [ ] A3-13 / A3-14 (Info) document header-only sniffing limits; keep forced attachment (covered by R2 A3-03)
+
+## R2 — Download/share access control (server: file/share routes + service + web proxy)
+- [ ] A4-02 / A3-04 / A2-04 (Crit/High/Low) `checkFileAccess`: require+bind `shareId`, evaluate access against THAT share only, enforce full lifecycle gate (isActive/expiration/maxViews/deactivatedAt/creator.isActive). Extract shared `assertShareAccessible(share)` used by `getShare` + `checkFileAccess`. Decrement/enforce maxViews on download.
+- [ ] A3-03 / A7-07 (High/Low) force `Content-Disposition: attachment` + `application/octet-stream` + `nosniff` on streamed downloads; apply CSP/security headers (incl. `sandbox`) to `/api/*` proxy responses in `apps/web/src/proxy.ts`
+- [ ] A4-03 (High) per-share password brute-force throttle/lockout on `/access`, `/check-password`, and password-bearing download endpoints; audit failed password on download path
+- [ ] A4-06 (Med) metadata endpoints: 404/minimal for owner-inactive/expired/paused/maxed; apply `assertOwnerActive`
+- [ ] A4-08 (Med) non-owner share response: omit `userId`, replace raw `objectName` with opaque per-share file token
+- [ ] A4-09 (Med) never mutate recipient stats from self-declared cookie email; only `token`-verified arrivals write download stats
+- [ ] A2-01 (High) IDOR: scope `findFilesByIds`/`findFoldersByIds` by `userId` in `addItemsToShare`; add inject test
+- [ ] A4-10 (Med) avoid distinct "already exists" recipient oracle; (spam cap handled in R5)
+- [ ] A4-12 (Low) raise alias min length / add per-IP enumeration rate-limit on metadata/upload-info
+- [ ] A4-11 / A4-13 / A4-14 (Low) document anonymous csrfExempt surface; presigned/streamed delivery note; ensure expiry computed from date not just flag
+
+## R3 — Authentication & session + access-control core (server: auth/two-factor/user/middleware)
+- [ ] **X-Real-IP/X-User-Agent (Crit, A1-01/A8-02)** stop reading `x-real-ip`/`x-user-agent`; use Fastify `request.ip`; add per-IP failed-login throttle alongside email lockout
+- [ ] A1-02 (High, TD-3) route `/auth/2fa/verify` + `/2fa/login` through lockout accounting; dedicated 2FA failure counter
+- [ ] A1-03 (High) persist last-used TOTP step; reject replay; consider window 0/1
+- [ ] A1-04 (High) trusted-device: server-issued random device secret in httpOnly cookie; `@@unique([userId, deviceHash])`; stop deriving from UA/IP
+- [ ] A1-05 (High) require re-auth (password/step-up) to enable 2FA + regenerate backup codes
+- [ ] A1-06 (Med) forgot-password: generic 200 for disabled-password non-LDAP users (no enumeration)
+- [ ] A1-07 (Med) backup codes ≥80-bit (`randomBytes(10)`); fix comment
+- [ ] A1-08 (Med) encrypt `twoFactorSecret` at rest (AES-256-GCM/ENCRYPTION_SECRET); hash backup codes
+- [ ] A1-09 (Med) password policy: min 12 default + max-72-byte guard + complexity/HIBP optional; revoke trusted devices on reset + 2FA disable
+- [ ] A1-10 (Med) login: dummy bcrypt on absent user; defer isActive/external checks until after password or genericize
+- [ ] A1-11 (Low) derive challenge secret from JWT_SECRET via HKDF (stable across instances); optionally bind IP/UA
+- [ ] A1-12 (Low) `await` token revocation on logout; consider tokenVersion bump
+- [ ] A1-13 (Low) `sameSite: strict` for refresh cookie
+- [ ] A1-14 (Low) align refresh cookie path with route (`/api` consistency)
+- [ ] A1-17 / A8-14 (Info/Low) bcrypt cost 12; evaluate bcryptjs@3/argon2
+- [ ] A2-02 (Med) last-admin / self-lockout protection on demote/deactivate/delete
+- [ ] A2-03 (Med) restrict `allowSetupBypass` to the minimal first-user setup path only
+- [ ] A2-07 (Low) remove `isAdmin` from register DTO
+- [ ] A1-15 / A1-16 / A2-08 / A2-09 / A2-10 (Info) document/annotate; redact reset-request email in audit where feasible
+
+## R4 — Federated identity: OAuth/OIDC & LDAP (server: auth-providers/ldap)
+- [ ] A5-01 (Crit) verify OIDC `id_token` (JWKS, alg allowlist, iss/aud/exp/iat/nonce); userinfo only for non-OIDC over verified channel
+- [ ] A5-02 (Crit) no auto-link by email; require verified-email claim + explicit authenticated link; add `emailVerified` column
+- [ ] A5-03 (Crit) server-only `state` in httpOnly cookie bound to session; single-use (delete on lookup); `expiresAt<now` reject
+- [ ] A5-04 / A6-01 (High) compute OAuth callback/redirect base from trusted `appUrl`; never accept client `redirect_uri`; relative-only post-login return
+- [ ] A5-05 / A3-07 / A5-11 (High/Med) SSRF guard: allowlist/deny private+link-local+loopback+metadata for discovery/token/userinfo/github-email/ldap host + ldap test; reject http issuer; generic error text
+- [ ] A5-06 (High) always PKCE S256 regardless of provider type
+- [ ] A5-07 (High) require LDAPS/StartTLS for non-loopback; reject remote `ldap://`; `tlsSkipVerify` dev-only + forbidden when enabled for non-private
+- [ ] A5-08 (Med) validate/normalize LDAP attribute strings on ingest (length, strip control chars)
+- [ ] A5-09 (Med) pending-state in signed cookie (also fixes multi-instance) — folded into A5-03
+- [ ] A5-10 (Med) log status+redacted marker only; never raw IdP bodies
+- [ ] A5-12 (Low) bind external identity to immutable subject only
+- [ ] A5-13 (Low) validate `appUrl` canonical origin for LDAP welcome links
+- [ ] A5-14 (Info) HKDF/scrypt+salt for encryption key derivation; enforce min secret length
+
+## R5 — Email, invites, notifications (server: email/invite/notification + config-validation)
+- [ ] A6-02 / A6-08 (Med/Low) per-route IP rate limit on `/register-with-invite`, `GET /invite-tokens/:token`, `/notifications/unsubscribe`
+- [ ] A6-03 / A4-10 (Med) per-user daily external-email quota + max-recipients-per-share ceiling + enqueue-rate cap
+- [ ] A6-04 (Med) bind invite token to invited email (store + compare case-insensitive); document open invites
+- [ ] A6-05 (Low) shorten unsubscribe TTL (30d) + include tokenVersion/nonce for revocation
+- [ ] A6-06 (Low) cap pending email-queue depth; prune old failed rows
+- [ ] A6-07 (Low) validators for `appUrl` (http(s) origin, no path/CRLF), `smtpFromEmail` (email), CRLF-strip `smtpFromName`/`appName`
+
+## R6 — Web frontend (apps/web)
+- [ ] A7-01 (High) validate `footerUrl` `^https?://` (reject javascript:/data:/vbscript://) at config-write API + render; add `rel="noopener noreferrer"` to all `target=_blank`
+- [ ] A7-02 (Med) CSP add `object-src 'none'`, `frame-src 'self' blob:`, `worker-src 'self' blob:`, `manifest-src 'self'`
+- [ ] A7-03 (Med) nonce-based CSP: drop `script-src 'unsafe-inline'` via per-request nonce + strict-dynamic
+- [ ] A7-04 (Med) reject `*` in `CSP_STORAGE_ORIGINS`; document storage-origin-only; split img-src/connect-src minimally
+- [ ] A7-05 (Med) `getBaseUrl()` validate host against canonical `APP_URL`; only honor X-Forwarded-* from trusted proxy
+- [ ] A7-06 (Low) add `noopener,noreferrer` to all `window.open`
+- [ ] A7-08 (Low) drop free-form `message` URL param in login toast; map `error` codes to i18n only
+
+## R7 — Infrastructure, config, dependencies, logging (infra/docker/env/app.ts)
+- [ ] A8-01 (Crit) remove `:-default` for JWT/CSRF/COOKIE/S3 secrets in compose (`${VAR:?required}`); env.ts denylist known `dev-*` placeholders + low-entropy + refuse boot in prod
+- [ ] A8-03 (High) RustFS: required creds (no fallback), `RUSTFS_CONSOLE_ENABLE: false` default, bind `127.0.0.1:9000` for local; document reverse-proxy path
+- [ ] A8-04 (High→Med) genericize non-AppError Fastify 4xx messages (use `http4xxMessage`)
+- [ ] A8-05 (High→Med) Pino `redact` for authorization/cookie/password/secret/token/bindPassword/clientSecret/smtpPass + serializers
+- [ ] A8-06 (Med) CORS: do not auto-allow missing/null origin with credentials
+- [ ] A8-07 (Med) gate `/swagger` + `/docs` behind admin (or disallow in prod); keep strict CSP for API JSON regardless of docs
+- [ ] A8-08 (Med) trustProxy: prefer CIDR; never expose `3333` with permissive trustProxy in default compose; doc
+- [ ] A8-09 (Med) container hardening: `no-new-privileges`, `cap_drop: ALL`, `read_only`+tmpfs where feasible, `USER ouitransfer` in server-runner; eliminate root window
+- [ ] A8-10 (Med) pin image tags to immutable versions/digests (Renovate-managed)
+- [ ] A8-11 (Med→Low) minimal unauth liveness; move per-subsystem health detail behind admin
+- [ ] A8-13 (Low) HSTS `preload`
+- [ ] A8-15 (Low) Renovate: exclude security-critical deps from automerge
+- [ ] A8-12 (Low) moot after X-Real-IP fix; normalize stored IPs
+
+---
+
+## Exec order (sequential — one implementer agent at a time, Opus)
+R1 → R2 → R3 → R4 → R5 → R6 → R7. Critical-bearing batches (R1, R2, R3, R4, R7) first
+where dependencies allow. Each batch: implement ALL its items, extend tests, run
+`pnpm --filter <pkg> type-check` + `test`, commit atomically.
