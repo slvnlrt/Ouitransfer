@@ -7,6 +7,7 @@ import { prisma } from "../../shared/prisma.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { escapeHtml } from "../../utils/escape-html.js";
 import { isNotificationKey, notificationCatalog } from "../email/catalog.js";
+import { evaluateEmailHealth } from "../email/health.js";
 import { createTranslationFn, type TranslationFn } from "../email/i18n/loader.js";
 import { UNSUBSCRIBE_I18N } from "../email/i18n/unsubscribe-keys.js";
 import { emailService } from "../email/service.js";
@@ -335,24 +336,26 @@ export const notificationRoutes: FastifyPluginAsyncZod = async (app) => {
           sentLast24h: z.number(),
           failed: z.number(),
           digestPending: z.number(),
+          status: z.enum(["ok", "disabled", "degraded", "down"]),
+          smtpConfigured: z.boolean(),
+          lastError: z.string().nullable(),
         }),
         401: ErrorResponseSchema,
         403: ErrorResponseSchema,
       },
     },
     handler: async (_request, reply) => {
-      const [pending, sentLast24h, failed, digestPending] = await Promise.all([
-        prisma.emailJob.count({ where: { status: "pending" } }),
-        prisma.emailJob.count({
-          where: {
-            status: "sent",
-            sentAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
-          },
-        }),
-        prisma.emailJob.count({ where: { status: "failed" } }),
-        prisma.emailJob.count({ where: { status: "digest_pending" } }),
-      ]);
-      return reply.send({ pending, sentLast24h, failed, digestPending });
+      // Single source of truth — same evaluation feeds the public /health endpoints.
+      const { status, smtpConfigured, queue, lastError } = await evaluateEmailHealth();
+      return reply.send({
+        pending: queue.pending,
+        sentLast24h: queue.sentLast24h,
+        failed: queue.failed,
+        digestPending: queue.digestPending,
+        status,
+        smtpConfigured,
+        lastError,
+      });
     },
   });
 

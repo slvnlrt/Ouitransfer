@@ -83,6 +83,12 @@ vi.mock("../shared/prisma.js", () => ({
       create: vi.fn(),
       deleteMany: vi.fn().mockResolvedValue({ count: 0 }),
     },
+    // Needed by the /health handler, which now evaluates email subsystem health
+    // (queue-derived counts + last error) via evaluateEmailHealth().
+    emailJob: {
+      count: vi.fn().mockResolvedValue(0),
+      findFirst: vi.fn().mockResolvedValue(null),
+    },
   },
 }));
 
