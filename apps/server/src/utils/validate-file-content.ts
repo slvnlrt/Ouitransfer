@@ -54,6 +54,28 @@ export const DANGEROUS_EXTENSIONS = new Set([
 ]);
 
 /**
+ * Extensions for browser-renderable ACTIVE content. These are not server
+ * executables but, if served same-origin with an inline disposition, become
+ * stored-XSS vectors (A3-02 + A3-03). They are rejected at register independent of
+ * the declared MIME type. Forced-attachment download (R2) is the complementary
+ * defense; blocking them here removes the storage surface entirely.
+ */
+export const ACTIVE_CONTENT_EXTENSIONS = new Set([
+  "html",
+  "htm",
+  "xhtml",
+  "shtml",
+  "svg",
+  "svgz",
+  "xml",
+  "xsl",
+  "xslt",
+  "mhtml",
+  "mht",
+  "htc",
+]);
+
+/**
  * Check if the declared MIME type is consistent with the file extension.
  *
  * Returns `false` (invalid) if any of the following are true:
@@ -108,6 +130,13 @@ export function isMimeTypeConsistent(mimeType: string | undefined, extension: st
  * Verify file content against declared MIME type using magic bytes.
  * Reads the provided buffer (first N bytes of the file) and compares
  * the detected type against the declared MIME.
+ *
+ * LIMITATION (A3-13): this is header-only sniffing — `file-type` inspects only the
+ * leading bytes (we read at most 4 KB, see S3StorageProvider.getObjectHead). A
+ * polyglot whose first bytes match a benign type but whose tail is HTML/JS will
+ * pass. Magic-byte verification is therefore ONE layer only; the authoritative
+ * defenses are the extension denylist (assertExtensionAllowed) and forced
+ * `attachment` download (handled in R2).
  *
  * Returns { valid: true } if consistent, or { valid: false, detected, declared }
  * if a mismatch is found. Returns { valid: true } if the file type cannot
@@ -167,7 +196,7 @@ function normalizeExtension(extension: string): string {
  */
 export function assertExtensionAllowed(extension: string): void {
   const ext = normalizeExtension(extension);
-  if (DANGEROUS_EXTENSIONS.has(ext)) {
+  if (DANGEROUS_EXTENSIONS.has(ext) || ACTIVE_CONTENT_EXTENSIONS.has(ext)) {
     throw new ValidationError("This file type is not allowed");
   }
 }
