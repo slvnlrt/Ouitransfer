@@ -11,6 +11,7 @@ import {
 } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { getLogger } from "../../utils/logger.js";
+import { validateObjectName } from "../../utils/validate-object-name.js";
 import { logAuditEvent } from "../audit/service.js";
 import {
   CheckFolderSchema,
@@ -125,6 +126,11 @@ export const folderRoutes: FastifyPluginAsyncZod = async (app) => {
 
       const input = request.body;
 
+      // A2-06 / A3-06: the client-supplied objectName must live under the user's
+      // own namespace. Without this an attacker could register a folder whose
+      // objectName is any key and later trigger a cross-tenant S3 DeleteObject.
+      validateObjectName(input.objectName, userId);
+
       if (input.parentId) {
         const parentFolder = await prisma.folder.findFirst({
           where: { id: input.parentId, userId },
@@ -216,6 +222,10 @@ export const folderRoutes: FastifyPluginAsyncZod = async (app) => {
       }
 
       const input = request.body;
+
+      // A2-06 / A3-06: validate objectName namespace at the check step too so the
+      // client gets the same rejection before attempting a register.
+      validateObjectName(input.objectName, userId);
 
       if (input.name.length > 100) {
         throw new ValidationError("Folder name exceeds maximum length of 100 characters");
@@ -679,7 +689,18 @@ export const folderRoutes: FastifyPluginAsyncZod = async (app) => {
       }
 
       await prisma.folder.delete({ where: { id } });
-      await folderService.deleteObject(folderRecord.objectName);
+      // Folders rarely have a real backing object; the namespace-guarded delete is
+      // best-effort and must not fail the (already-committed) folder deletion.
+      // A2-06 / A3-06: deleteObject re-validates the objectName belongs to this
+      // user before issuing the S3 DeleteObject.
+      await folderService
+        .deleteObject(folderRecord.objectName, userId as string)
+        .catch((err) =>
+          getLogger().warn(
+            { err, folderId: id, objectName: folderRecord.objectName },
+            "Folder object delete skipped (invalid namespace or storage error)",
+          ),
+        );
 
       logAuditEvent({
         action: "FOLDER_DELETE",

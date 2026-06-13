@@ -2,6 +2,7 @@ import { S3StorageProvider } from "../../providers/s3-storage.provider.js";
 import { prisma } from "../../shared/prisma.js";
 import type { StorageProvider } from "../../types/storage.js";
 import { getLogger } from "../../utils/logger.js";
+import { validateObjectName } from "../../utils/validate-object-name.js";
 
 export class FolderService {
   private storageProvider: StorageProvider;
@@ -33,7 +34,17 @@ export class FolderService {
     }
   }
 
-  async deleteObject(objectName: string): Promise<void> {
+  /**
+   * Delete a folder's backing storage object.
+   *
+   * A2-06 / A3-06 defense-in-depth: the caller must pass the owning `userId` and
+   * the objectName MUST live under that user's namespace. Even though register
+   * now validates the namespace, this guard ensures a stored value that somehow
+   * escaped validation (or a future caller) can never drive a cross-tenant
+   * DeleteObject. Throws before any S3 call when the namespace does not match.
+   */
+  async deleteObject(objectName: string, userId: string): Promise<void> {
+    validateObjectName(objectName, userId);
     try {
       await this.storageProvider.deleteObject(objectName);
     } catch (err) {
