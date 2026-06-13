@@ -45,6 +45,10 @@ export class FileService {
     return await this.storageProvider.getObjectHead(objectName, bytes);
   }
 
+  async getObjectSize(objectName: string): Promise<bigint> {
+    return await this.storageProvider.getObjectSize(objectName);
+  }
+
   // Multipart upload methods
   async createMultipartUpload(objectName: string): Promise<string> {
     return await this.storageProvider.createMultipartUpload(objectName);

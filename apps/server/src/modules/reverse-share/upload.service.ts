@@ -6,7 +6,7 @@ import { prisma } from "../../shared/prisma.js";
 import { AppError, ForbiddenError, NotFoundError, ValidationError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { sanitizeFilename } from "../../utils/sanitize-filename.js";
-import { isMimeTypeConsistent } from "../../utils/validate-file-content.js";
+import { assertUploadedContentValid } from "../../utils/validate-file-content.js";
 import { validateObjectName } from "../../utils/validate-object-name.js";
 import { logAuditEvent } from "../audit/service.js";
 import { getConfigValue } from "../config/service.js";
@@ -202,13 +202,29 @@ export class ReverseShareUploadService {
       }
     }
 
-    // Layer 1: MIME/extension consistency check
-    if (!isMimeTypeConsistent(fileData.mimeType, fileData.extension)) {
-      throw new ValidationError("File type does not match the declared extension");
-    }
-
-    // Validate objectName belongs to this reverse share's namespace
+    // Validate objectName belongs to this reverse share's namespace (do this
+    // first so content validation only ever reads an in-namespace key).
     validateObjectName(fileData.objectName, `reverse-shares/${reverseShareId}`);
+
+    // Full two-layer content validation (A3-02), matching the direct-upload path:
+    // dangerous-extension denylist + MIME/extension consistency + magic-byte
+    // verification, failing closed on an unverifiable/missing object.
+    await assertUploadedContentValid(
+      {
+        objectName: fileData.objectName,
+        extension: fileData.extension,
+        mimeType: fileData.mimeType,
+      },
+      (key) => this.fileService.getObjectHead(key),
+      getLogger(),
+    );
+
+    // Reconcile the client-declared size against the real stored object size
+    // (A3-08) so quota/maxFileSize cannot be defeated with an understated size.
+    const uploadSize = await this.fileService.getObjectSize(fileData.objectName);
+    if (BigInt(fileData.size) !== uploadSize) {
+      throw new ValidationError("Declared file size does not match the uploaded object");
+    }
 
     if (reverseShare.maxFiles) {
       const currentFileCount =
@@ -218,7 +234,7 @@ export class ReverseShareUploadService {
       }
     }
 
-    if (reverseShare.maxFileSize && BigInt(fileData.size) > reverseShare.maxFileSize) {
+    if (reverseShare.maxFileSize && uploadSize > reverseShare.maxFileSize) {
       throw new ValidationError("File size exceeds limit");
     }
 
@@ -232,7 +248,6 @@ export class ReverseShareUploadService {
     }
 
     // B3 owner-quota enforcement (soft by default; hard when disabled).
-    const uploadSize = BigInt(fileData.size);
     const usedBefore = await this.enforceReverseShareQuota(reverseShare.creatorId, uploadSize);
 
     const file = await this.reverseShareRepository.createFile(reverseShareId, {
@@ -318,13 +333,26 @@ export class ReverseShareUploadService {
       }
     }
 
-    // Layer 1: MIME/extension consistency check
-    if (!isMimeTypeConsistent(fileData.mimeType, fileData.extension)) {
-      throw new ValidationError("File type does not match the declared extension");
-    }
-
-    // Validate objectName belongs to this reverse share's namespace (use reverseShare.id, not alias)
+    // Validate objectName belongs to this reverse share's namespace (use
+    // reverseShare.id, not alias) before reading its content.
     validateObjectName(fileData.objectName, `reverse-shares/${reverseShare.id}`);
+
+    // Full two-layer content validation (A3-02), matching the direct-upload path.
+    await assertUploadedContentValid(
+      {
+        objectName: fileData.objectName,
+        extension: fileData.extension,
+        mimeType: fileData.mimeType,
+      },
+      (key) => this.fileService.getObjectHead(key),
+      getLogger(),
+    );
+
+    // Reconcile the client-declared size against the real stored object size (A3-08).
+    const uploadSize = await this.fileService.getObjectSize(fileData.objectName);
+    if (BigInt(fileData.size) !== uploadSize) {
+      throw new ValidationError("Declared file size does not match the uploaded object");
+    }
 
     if (reverseShare.maxFiles) {
       const currentFileCount = await this.reverseShareRepository.countFilesByReverseShareId(
@@ -335,7 +363,7 @@ export class ReverseShareUploadService {
       }
     }
 
-    if (reverseShare.maxFileSize && BigInt(fileData.size) > reverseShare.maxFileSize) {
+    if (reverseShare.maxFileSize && uploadSize > reverseShare.maxFileSize) {
       throw new ValidationError("File size exceeds limit");
     }
 
@@ -349,7 +377,6 @@ export class ReverseShareUploadService {
     }
 
     // B3 owner-quota enforcement (soft by default; hard when disabled).
-    const uploadSize = BigInt(fileData.size);
     const usedBefore = await this.enforceReverseShareQuota(reverseShare.creatorId, uploadSize);
 
     const file = await this.reverseShareRepository.createFile(reverseShare.id, {

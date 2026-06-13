@@ -35,6 +35,7 @@ const {
   mockGetConfigValue,
   mockEmailSend,
   mockEmailSendToAdmins,
+  mockGetObjectSize,
 } = vi.hoisted(() => ({
   mockFileAggregate: vi.fn(),
   mockReverseShareFileAggregate: vi.fn(),
@@ -44,6 +45,7 @@ const {
   mockGetConfigValue: vi.fn(),
   mockEmailSend: vi.fn(),
   mockEmailSendToAdmins: vi.fn(),
+  mockGetObjectSize: vi.fn(),
 }));
 
 vi.mock("../../../shared/prisma.js", () => ({
@@ -108,7 +110,8 @@ vi.mock("../../audit/service.js", () => ({
 
 vi.mock("../service.js", () => ({
   FileService: class {
-    getObjectHead = vi.fn();
+    getObjectHead = vi.fn().mockResolvedValue(Buffer.from("plain text content"));
+    getObjectSize = mockGetObjectSize;
     getPresignedGetUrl = vi.fn();
     getPresignedPutUrl = vi.fn();
   },
@@ -247,6 +250,8 @@ describe("Direct upload B1 threshold warnings — integration (real quota logic)
 
   /** Register an upload of `size` bytes given the current usage, then advance usage. */
   async function register(size: number) {
+    // A3-08: echo the declared size for the HEAD-reconcile check.
+    mockGetObjectSize.mockResolvedValue(BigInt(size));
     const { csrfToken, csrfCookie } = await getCsrf();
     const res = await app.inject({
       method: "POST",

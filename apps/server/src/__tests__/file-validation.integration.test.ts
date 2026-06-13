@@ -95,6 +95,9 @@ vi.mock("../modules/file/service.js", () => ({
   FileService: class MockFileService {
     getPresignedPutUrl = vi.fn().mockResolvedValue("https://s3.example.com/presigned");
     getObjectHead = vi.fn().mockResolvedValue(Buffer.from("plain text content"));
+    // A3-08: register HEAD-reconciles the declared size against the real object
+    // size. Echo back the declared size so the happy-path test is not blocked.
+    getObjectSize = vi.fn().mockResolvedValue(BigInt(1024));
     deleteObject = vi.fn().mockResolvedValue(undefined);
   },
 }));

@@ -36,6 +36,7 @@ const {
   mockIsReverseUploadAllowed,
   mockEvaluateAndNotifyQuota,
   mockGetConfigValue,
+  mockGetObjectSize,
 } = vi.hoisted(() => ({
   mockReverseShareFindUnique: vi.fn(),
   mockReverseShareFileCount: vi.fn(),
@@ -45,6 +46,7 @@ const {
   mockIsReverseUploadAllowed: vi.fn(),
   mockEvaluateAndNotifyQuota: vi.fn(),
   mockGetConfigValue: vi.fn(),
+  mockGetObjectSize: vi.fn(),
 }));
 
 vi.mock("../../../shared/prisma.js", () => ({
@@ -120,7 +122,10 @@ vi.mock("../../file/service.js", () => ({
     getPresignedGetUrl = vi.fn().mockResolvedValue("https://presigned.url/get");
     getPresignedPutUrl = vi.fn().mockResolvedValue("https://presigned.url/upload");
     getObjectStream = vi.fn();
-    getObjectHead = vi.fn();
+    // Return an unidentifiable buffer so magic-byte verification passes for the
+    // text/plain test fixture; getObjectSize echoes the per-call declared size.
+    getObjectHead = vi.fn().mockResolvedValue(Buffer.from("plain text content"));
+    getObjectSize = mockGetObjectSize;
     deleteObject = vi.fn();
     createMultipartUpload = vi.fn();
     getPresignedPartUrl = vi.fn();
@@ -253,6 +258,9 @@ describe("Reverse-share B3 soft enforcement — integration", () => {
   });
 
   async function register(size: number) {
+    // A3-08: echo the declared size for the HEAD-reconcile check so these quota
+    // tests exercise quota math, not the size-mismatch guard.
+    mockGetObjectSize.mockResolvedValue(BigInt(size));
     return app.inject({
       method: "POST",
       url: `/reverse-shares/${RS_ID}/register-file`,

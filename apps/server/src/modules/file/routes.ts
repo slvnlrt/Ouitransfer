@@ -25,7 +25,7 @@ import {
 } from "../../utils/file-name-generator.js";
 import { getLogger } from "../../utils/logger.js";
 import { sanitizeFilename } from "../../utils/sanitize-filename.js";
-import { isMimeTypeConsistent, verifyMagicBytes } from "../../utils/validate-file-content.js";
+import { assertUploadedContentValid } from "../../utils/validate-file-content.js";
 import { validateObjectName } from "../../utils/validate-object-name.js";
 import { logAuditEvent } from "../audit/service.js";
 import { emailService } from "../email/service.js";
@@ -420,57 +420,32 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
       // Validate objectName ownership: must be under the user's namespace
       validateObjectName(input.objectName, userId);
 
-      // Layer 1: MIME/extension consistency check
-      if (input.mimeType && !isMimeTypeConsistent(input.mimeType, input.extension)) {
-        throw new ValidationError("File type does not match the declared extension");
-      }
+      // Full two-layer content validation (A3-02): dangerous-extension denylist +
+      // MIME/extension consistency + magic-byte verification, all run against a
+      // server-derived effective MIME type and FAILING CLOSED on an unverifiable
+      // or missing object. NOTE: magic-byte sniffing only inspects the object
+      // head (first 4 KB), so a polyglot whose leading bytes match a benign type
+      // can still slip past detection — the authoritative defenses are this
+      // extension denylist plus forced-attachment download (handled in R2).
+      await assertUploadedContentValid(
+        { objectName: input.objectName, extension: input.extension, mimeType: input.mimeType },
+        (key) => fileService.getObjectHead(key),
+        request.log,
+      );
 
-      // Layer 2: Magic-byte verification (read first 4 KB from S3)
-      if (input.mimeType) {
-        try {
-          const headBuffer = await fileService.getObjectHead(input.objectName);
-          const magicResult = await verifyMagicBytes(headBuffer, input.mimeType);
-          if (!magicResult.valid) {
-            request.log.warn(
-              {
-                declared: magicResult.declared,
-                detected: magicResult.detected,
-                objectName: input.objectName,
-              },
-              "Magic-byte mismatch detected",
-            );
-            throw new ValidationError("File content does not match the declared file type");
-          }
-        } catch (err) {
-          if (err instanceof AppError) throw err;
-
-          const message =
-            err instanceof Error ? err.message.toLowerCase() : String(err).toLowerCase();
-          const isExpectedFailure =
-            message.includes("range") ||
-            message.includes("not supported") ||
-            message.includes("empty response") ||
-            message.includes("nosuchkey") ||
-            message.includes("not found");
-
-          if (isExpectedFailure) {
-            request.log.debug(
-              { objectName: input.objectName, reason: message },
-              "Magic-byte verification skipped (expected S3 limitation)",
-            );
-          } else {
-            request.log.warn(
-              { err, objectName: input.objectName },
-              "Magic-byte verification skipped (unexpected S3 error)",
-            );
-          }
-        }
+      // Reconcile the client-declared size against the actual stored object size
+      // (A3-08): a client could PUT a large object then register it with size:1
+      // to defeat quota/maxFileSize. Use the REAL ContentLength for all checks and
+      // for the stored row.
+      const actualSize = await fileService.getObjectSize(input.objectName);
+      if (BigInt(input.size) !== actualSize) {
+        throw new ValidationError("Declared file size does not match the uploaded object");
       }
 
       const limits = await quotaService.resolveEffectiveLimits(userId);
 
       // Per-file size check (skip if unlimited)
-      if (limits.maxFileSize > 0n && BigInt(input.size) > limits.maxFileSize) {
+      if (limits.maxFileSize > 0n && actualSize > limits.maxFileSize) {
         const maxSizeMB = Number(limits.maxFileSize) / (1024 * 1024);
         throw new AppError(
           400,
@@ -489,7 +464,7 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
       if (limits.maxTotalStorage > 0n) {
         const currentStorage = await quotaService.calculateStorageUsed(userId);
         usedBefore = currentStorage;
-        if (currentStorage + BigInt(input.size) > limits.maxTotalStorage) {
+        if (currentStorage + actualSize > limits.maxTotalStorage) {
           const availableSpace = Number(limits.maxTotalStorage - currentStorage) / (1024 * 1024);
           throw new AppError(
             400,
@@ -518,7 +493,7 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
           name: uniqueName,
           description: input.description,
           extension: input.extension,
-          size: BigInt(input.size),
+          size: actualSize,
           objectName: input.objectName,
           userId,
           folderId: input.folderId,

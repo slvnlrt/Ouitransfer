@@ -170,6 +170,27 @@ export class S3StorageProvider implements StorageProvider {
   }
 
   /**
+   * Return the actual stored byte size of an object via HeadObject (A3-08).
+   * Used to reconcile the client-declared size on register against the real
+   * uploaded object size, closing the quota/maxFileSize bypass.
+   *
+   * @throws when the object does not exist or the head request fails — callers
+   *   treat any failure as "size unverifiable" and reject the registration.
+   */
+  async getObjectSize(objectName: string): Promise<bigint> {
+    const client = this.ensureClient();
+    const command = new HeadObjectCommand({
+      Bucket: bucketName,
+      Key: objectName,
+    });
+    const response = await client.send(command);
+    if (response.ContentLength == null) {
+      throw new Error("HeadObject returned no ContentLength");
+    }
+    return BigInt(response.ContentLength);
+  }
+
+  /**
    * Get a readable stream for downloading an object
    * Used for proxying downloads through the backend
    */
