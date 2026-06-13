@@ -723,6 +723,30 @@ describe("SystemStatusBar", () => {
       fireEvent.click(screen.getByRole("button", { name: "expand" }));
       expect(screen.getByText("status.healthy")).toBeInTheDocument();
     });
+
+    it("does not bump (or render a status badge) while still loading", () => {
+      currentMockStatus = {
+        ...mockStatus,
+        healthStatusLoading: true,
+        healthStatus: { status: "healthy" as const, email: "down" as const },
+      };
+      render(<SystemStatusBar />);
+      fireEvent.click(screen.getByRole("button", { name: "expand" }));
+      // Loading suppresses the dot bump — no status badge is rendered at all.
+      expect(screen.queryByText("status.degraded")).not.toBeInTheDocument();
+      expect(screen.queryByText("status.healthy")).not.toBeInTheDocument();
+    });
+
+    it("does not downgrade an unhealthy core when email is down (bump only lifts healthy)", () => {
+      currentMockStatus = {
+        ...mockStatus,
+        healthStatus: { status: "unhealthy" as const, email: "down" as const },
+      };
+      render(<SystemStatusBar />);
+      fireEvent.click(screen.getByRole("button", { name: "expand" }));
+      expect(screen.getByText("status.unhealthy")).toBeInTheDocument();
+      expect(screen.queryByText("status.degraded")).not.toBeInTheDocument();
+    });
   });
 
   // ── Loading state ────────────────────────────────────────────────────────

@@ -48,7 +48,7 @@ None.
 
 ### Minor
 
-- [ ] **Dead/unused i18n keys `email.smtpConfigured` / `email.smtpDisabled`** —
+- [x] **Dead/unused i18n keys `email.smtpConfigured` / `email.smtpDisabled`** —
   `apps/web/messages/*.json` (`dashboard.systemStatus.email.smtpConfigured`,
   `…smtpDisabled`) were added to all 23 locales but are **never referenced** in any component.
   `BarAdminView` renders the SMTP state via the status-enum map (`email.status.disabled` →
@@ -62,7 +62,7 @@ None.
   admin view, instead wire one of them into `BarAdminView` next to the status label — but do not
   leave both keys unreferenced.
 
-- [ ] **Decorative status icons in the email section lack `aria-hidden`** —
+- [x] **Decorative status icons in the email section lack `aria-hidden`** —
   `system-status-bar.tsx:291-302` (`emailStatusIcon` helper: `CheckCircle2`/`AlertTriangle`/
   `XCircle`) renders icons with no `aria-hidden="true"`. The adjacent text label already conveys
   the status, so the icon is decorative. Note this exactly mirrors the **pre-existing**
@@ -72,7 +72,7 @@ None.
   **Fix:** add `aria-hidden="true"` to the three icons returned by `emailStatusIcon`, and ideally
   to the storage/DB `storageDisplay`/DB icons too for full consistency.
 
-- [ ] **`tabular-nums` on the last-error string** — `system-status-bar.tsx:471` applies
+- [x] **`tabular-nums` on the last-error string** — `system-status-bar.tsx:471` applies
   `tabular-nums` to the `lastError` value span. `lastError` is free-form error text (e.g. "SMTP
   535 auth failed"), not numeric data, so monospaced-digit alignment is meaningless here and can
   look slightly off. Harmless but inconsistent with intent.
@@ -81,7 +81,7 @@ None.
 
 ### Coverage notes (not defects — optional hardening)
 
-- [ ] **No explicit test that the dot-bump is suppressed during loading/error** — the bump is
+- [x] **No explicit test that the dot-bump is suppressed during loading/error** — the bump is
   correctly gated by `if (!isLoading && !hasError)` (`system-status-bar.tsx:606`) and only fires
   when `overallStatus === "healthy"` (line 618), and there is a test asserting it never reaches
   `unhealthy`. There is no test exercising the loading/error suppression path, nor the
@@ -126,3 +126,12 @@ None.
 Approve after the three Minor findings are addressed (the unused-i18n-key removal being the most
 worthwhile, as it is genuine debt that the parity test will otherwise lock in). No Critical or
 Important issues. The one failing server test is pre-existing and unrelated to this feature.
+
+## Resolution
+
+All three Minor findings fixed in `fix(web): address TD-42 review findings` plus the optional
+coverage-hardening tests:
+- Removed `email.smtpConfigured` / `email.smtpDisabled` from all 23 locale files (parity test green).
+- Added `aria-hidden="true"` to the `emailStatusIcon` icons and the pre-existing DB/storage status icons.
+- Dropped `tabular-nums` from the free-form `lastError` span.
+- Added two dot-bump tests (loading suppression; unhealthy core not downgraded) — 62/62 in the suite.
