@@ -323,11 +323,29 @@
         "myFiles": "File saya",
         "activeShares": "Berbagi aktif"
       },
+      "email": {
+        "label": "Email / Notifikasi",
+        "status": {
+          "ok": "Beroperasi",
+          "disabled": "Tidak dikonfigurasi",
+          "degraded": "Menurun",
+          "down": "Luring"
+        },
+        "queue": {
+          "pending": "Tertunda",
+          "failed": "Gagal",
+          "sent24h": "Terkirim 24j"
+        },
+        "lastError": "Kesalahan terakhir",
+        "userDisrupted": "Notifikasi terganggu",
+        "userOffline": "Notifikasi luring"
+      },
       "errors": {
         "title": "Status tidak tersedia",
         "fetchFailed": "Tidak dapat mengambil status sistem. Silakan coba lagi nanti.",
         "diskSpaceError": "Tidak dapat mengambil informasi ruang disk.",
-        "statsError": "Tidak dapat memuat statistik platform."
+        "statsError": "Tidak dapat memuat statistik platform.",
+        "emailStatsError": "Tidak dapat memuat statistik notifikasi email."
       },
       "collapse": "Tutup status sistem",
       "expand": "Perluas status sistem"
@@ -2007,10 +2025,12 @@
       "filterAllVisitors": "Semua pengunjung",
       "filterIdentified": "Teridentifikasi",
       "filterAnonymous": "Anonim",
+      "you": "Anda",
       "source": {
         "tracking_token": "Melalui tautan penerima",
         "cookie": "Mengidentifikasi diri sendiri",
-        "selfDeclaredHint": "Identitas yang dinyatakan sendiri, tidak diverifikasi"
+        "selfDeclaredHint": "Identitas yang dinyatakan sendiri, tidak diverifikasi",
+        "authenticated_user": "Pengguna terdaftar"
       }
     },
     "lastDownloaded": "Terakhir Diunduh",

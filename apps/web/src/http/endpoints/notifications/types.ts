@@ -1,6 +1,8 @@
 import type { NotificationType } from "@ouitransfer/shared/notification-types";
 import type { AxiosResponse } from "axios";
 
+import type { EmailHealthStatus } from "@/http/endpoints/app/types";
+
 export interface NotificationPreference {
   type: NotificationType;
   frequency: string;
@@ -31,6 +33,9 @@ export interface EmailStats {
   sentLast24h: number;
   failed: number;
   digestPending: number;
+  status: EmailHealthStatus;
+  smtpConfigured: boolean;
+  lastError: string | null;
 }
 
 export interface SendTestEmail200 {

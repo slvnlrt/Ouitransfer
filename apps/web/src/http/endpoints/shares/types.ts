@@ -267,7 +267,8 @@ export interface ShareVisit {
   shareId: string;
   fileId: string | null;
   recipient: { email: string; name: string | null } | null;
-  identificationSource: "tracking_token" | "cookie" | "anonymous";
+  identificationSource: "tracking_token" | "cookie" | "anonymous" | "authenticated_user";
+  isOwner: boolean;
 }
 
 export interface GetShareVisits200 {

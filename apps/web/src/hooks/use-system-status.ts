@@ -8,6 +8,8 @@ import { getAdminStats } from "@/http/endpoints/admin";
 import type { AdminStats200 } from "@/http/endpoints/admin/types";
 import { getHealthStatus } from "@/http/endpoints/app";
 import type { CheckHealth200, DiskSpaceInfo, HealthStatus200 } from "@/http/endpoints/app/types";
+import { getEmailStats } from "@/http/endpoints/notifications";
+import type { EmailStats } from "@/http/endpoints/notifications/types";
 import { queryKeys } from "@/lib/query-keys";
 import { parseApiError } from "@/utils/api-error";
 
@@ -31,6 +33,10 @@ export interface UseSystemStatusResult {
   adminStats: AdminStats200 | null;
   adminStatsLoading: boolean;
   adminStatsError: DashboardError;
+
+  emailStats: EmailStats | null;
+  emailStatsLoading: boolean;
+  emailStatsError: DashboardError;
 
   // Common
   isAdmin: boolean;
@@ -90,6 +96,17 @@ export function useSystemStatus(options?: { isExpanded?: boolean }): UseSystemSt
     enabled: !!isAdmin && isExpanded,
   });
 
+  // Email / notifications stats (admin only — only useful in expanded admin view)
+  const emailStatsQuery = useQuery({
+    queryKey: queryKeys.admin.emailStats(),
+    queryFn: async () => {
+      const res = await getEmailStats();
+      return res.data;
+    },
+    refetchInterval: POLL_ACTIVE,
+    enabled: !!isAdmin && isExpanded,
+  });
+
   // Error parsing
   let diskSpaceError: DashboardError = null;
   if (diskSpaceQuery.isError) {
@@ -109,18 +126,28 @@ export function useSystemStatus(options?: { isExpanded?: boolean }): UseSystemSt
     adminStatsError = apiError.isNetworkError ? "network_error" : "server_error";
   }
 
+  let emailStatsError: DashboardError = null;
+  if (emailStatsQuery.isError) {
+    const apiError = parseApiError(emailStatsQuery.error);
+    emailStatsError = apiError.isNetworkError ? "network_error" : "server_error";
+  }
+
   const refresh = () => {
     diskSpaceQuery.refetch();
     if (isAdmin) {
       healthQuery.refetch();
       adminStatsQuery.refetch();
+      emailStatsQuery.refetch();
     } else {
       healthStatusQuery.refetch();
     }
   };
 
   const isRefreshing = isAdmin
-    ? healthQuery.isFetching || diskSpaceQuery.isFetching || adminStatsQuery.isFetching
+    ? healthQuery.isFetching ||
+      diskSpaceQuery.isFetching ||
+      adminStatsQuery.isFetching ||
+      emailStatsQuery.isFetching
     : healthStatusQuery.isFetching || diskSpaceQuery.isFetching;
 
   return {
@@ -136,6 +163,9 @@ export function useSystemStatus(options?: { isExpanded?: boolean }): UseSystemSt
     adminStats: adminStatsQuery.data ?? null,
     adminStatsLoading: adminStatsQuery.isLoading,
     adminStatsError,
+    emailStats: emailStatsQuery.data ?? null,
+    emailStatsLoading: emailStatsQuery.isLoading,
+    emailStatsError,
     isAdmin: !!isAdmin,
     isRefreshing,
     refresh,

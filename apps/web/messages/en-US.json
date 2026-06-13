@@ -323,11 +323,29 @@
         "myFiles": "My files",
         "activeShares": "Active shares"
       },
+      "email": {
+        "label": "Email / Notifications",
+        "status": {
+          "ok": "Operational",
+          "disabled": "Not configured",
+          "degraded": "Degraded",
+          "down": "Offline"
+        },
+        "queue": {
+          "pending": "Pending",
+          "failed": "Failed",
+          "sent24h": "Sent 24h"
+        },
+        "lastError": "Last error",
+        "userDisrupted": "Notifications disrupted",
+        "userOffline": "Notifications offline"
+      },
       "errors": {
         "title": "Status unavailable",
         "fetchFailed": "Unable to retrieve system status. Please try again later.",
         "diskSpaceError": "Unable to retrieve disk space information.",
-        "statsError": "Unable to load platform statistics."
+        "statsError": "Unable to load platform statistics.",
+        "emailStatsError": "Unable to load email notification statistics."
       },
       "collapse": "Collapse system status",
       "expand": "Expand system status"
@@ -2166,10 +2184,12 @@
       "filterAllVisitors": "All visitors",
       "filterIdentified": "Identified",
       "filterAnonymous": "Anonymous",
+      "you": "You",
       "source": {
         "tracking_token": "Via recipient link",
         "cookie": "Self-identified",
-        "selfDeclaredHint": "Self-declared identity, not verified"
+        "selfDeclaredHint": "Self-declared identity, not verified",
+        "authenticated_user": "Registered user"
       }
     }
   },

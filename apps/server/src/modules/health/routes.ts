@@ -4,6 +4,9 @@ import { z } from "zod";
 
 import { bucketName, s3Client } from "../../config/storage.config.js";
 import { prisma } from "../../shared/prisma.js";
+import { evaluateEmailHealth } from "../email/health.js";
+
+const emailStatusEnum = z.enum(["ok", "disabled", "degraded", "down"]);
 
 const healthResponseSchema = z.object({
   status: z.enum(["healthy", "degraded"]),
@@ -12,6 +15,8 @@ const healthResponseSchema = z.object({
   checks: z.object({
     database: z.enum(["ok", "error"]),
     storage: z.enum(["ok", "error", "not_configured"]),
+    // Coarse email subsystem status (enum only — no counters, this endpoint is public).
+    email: emailStatusEnum,
   }),
 });
 
@@ -64,13 +69,24 @@ export const healthRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (_request, reply) => {
       const { dbOk, storageOk, storageConfigured } = await runHealthChecks();
+      const { status: emailStatus } = await evaluateEmailHealth();
 
-      const checks: { database: "ok" | "error"; storage: "ok" | "error" | "not_configured" } = {
-        database: dbOk ? "ok" : "error",
-        storage: !storageConfigured ? "not_configured" : storageOk ? "ok" : "error",
+      const checks = {
+        database: dbOk ? ("ok" as const) : ("error" as const),
+        storage: !storageConfigured
+          ? ("not_configured" as const)
+          : storageOk
+            ? ("ok" as const)
+            : ("error" as const),
+        email: emailStatus,
       };
 
-      const allHealthy = Object.values(checks).every((v) => v === "ok" || v === "not_configured");
+      // Aggregate status is deliberately based on DB + storage ONLY. Email is a
+      // non-critical subsystem (upload/download works without it), so it must not
+      // flip ops monitoring to degraded — the UI bumps the dot client-side instead.
+      const allHealthy =
+        checks.database === "ok" &&
+        (checks.storage === "ok" || checks.storage === "not_configured");
 
       return reply.code(200).send({
         status: allHealthy ? "healthy" : "degraded",
@@ -92,13 +108,18 @@ export const healthRoutes: FastifyPluginAsyncZod = async (app) => {
       response: {
         200: z.object({
           status: z.enum(["healthy", "degraded", "unhealthy"]),
+          // Coarse email subsystem status (enum only — no counters, this endpoint is public).
+          email: emailStatusEnum,
         }),
       },
     },
     handler: async (_request, reply) => {
       const { dbOk, storageOk, storageConfigured } = await runHealthChecks();
+      const { status: emailStatus } = await evaluateEmailHealth();
 
-      // Storage not configured is treated as ok for the simplified status
+      // Storage not configured is treated as ok for the simplified status.
+      // The aggregate `status` is deliberately based on DB + storage ONLY — email is
+      // a non-critical subsystem and is surfaced separately via the `email` field.
       const effectiveStorageOk = !storageConfigured || storageOk;
       const status =
         dbOk && effectiveStorageOk
@@ -107,7 +128,7 @@ export const healthRoutes: FastifyPluginAsyncZod = async (app) => {
             ? "degraded"
             : "unhealthy";
 
-      return reply.status(200).send({ status });
+      return reply.status(200).send({ status, email: emailStatus });
     },
   });
 };

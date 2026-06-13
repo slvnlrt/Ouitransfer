@@ -33,6 +33,7 @@ const mockPrisma = {
   emailJob: {
     count: vi.fn().mockResolvedValue(0),
     create: vi.fn().mockResolvedValue({ id: "test-job-id" }),
+    findFirst: vi.fn().mockResolvedValue(null),
   },
 };
 
@@ -651,11 +652,26 @@ describe("Notification routes — integration", () => {
     // ── GET /admin/email/stats ─────────────────────────────────────────────
 
     it("GET /admin/email/stats returns counters", async () => {
-      vi.mocked(mockPrisma.emailJob.count)
-        .mockResolvedValueOnce(5) // pending
-        .mockResolvedValueOnce(42) // sentLast24h
-        .mockResolvedValueOnce(3) // failed
-        .mockResolvedValueOnce(7); // digestPending
+      // evaluateEmailHealth counts by status; the windowed "failed" query adds a
+      // `createdAt` bound. Mock by where-clause so ordering is irrelevant.
+      vi.mocked(mockPrisma.emailJob.count).mockImplementation(
+        (args: { where: Record<string, unknown> }) => {
+          switch (args.where.status) {
+            case "pending":
+              return Promise.resolve(5);
+            case "sent":
+              return Promise.resolve(42);
+            case "failed":
+              return Promise.resolve(3); // both lifetime total and recent
+            case "digest_pending":
+              return Promise.resolve(7);
+            default:
+              return Promise.resolve(0);
+          }
+        },
+      );
+      // No job carries a lastError in this scenario.
+      vi.mocked(mockPrisma.emailJob.findFirst).mockResolvedValueOnce(null);
 
       const token = signAdminToken();
 
@@ -667,7 +683,17 @@ describe("Notification routes — integration", () => {
 
       expect(res.statusCode).toBe(200);
       const body = res.json();
-      expect(body).toEqual({ pending: 5, sentLast24h: 42, failed: 3, digestPending: 7 });
+      // smtpEnabled resolves "true" (mock default) ⇒ smtpConfigured. failed=3 with
+      // sentLast24h>0 ⇒ degraded. No lastError job ⇒ null.
+      expect(body).toEqual({
+        pending: 5,
+        sentLast24h: 42,
+        failed: 3,
+        digestPending: 7,
+        status: "degraded",
+        smtpConfigured: true,
+        lastError: null,
+      });
     });
 
     it("GET /admin/email/stats rejected for non-admin", async () => {

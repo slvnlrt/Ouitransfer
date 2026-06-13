@@ -323,11 +323,29 @@
         "myFiles": "Meus arquivos",
         "activeShares": "Compartilhamentos ativos"
       },
+      "email": {
+        "label": "E-mail / Notificações",
+        "status": {
+          "ok": "Operacional",
+          "disabled": "Não configurado",
+          "degraded": "Degradado",
+          "down": "Offline"
+        },
+        "queue": {
+          "pending": "Pendentes",
+          "failed": "Falhas",
+          "sent24h": "Enviados 24h"
+        },
+        "lastError": "Último erro",
+        "userDisrupted": "Notificações interrompidas",
+        "userOffline": "Notificações offline"
+      },
       "errors": {
         "title": "Status indisponível",
         "fetchFailed": "Não foi possível recuperar o status do sistema. Tente novamente mais tarde.",
         "diskSpaceError": "Não foi possível recuperar as informações de espaço em disco.",
-        "statsError": "Não foi possível carregar as estatísticas da plataforma."
+        "statsError": "Não foi possível carregar as estatísticas da plataforma.",
+        "emailStatsError": "Não foi possível carregar as estatísticas de notificações por e-mail."
       },
       "collapse": "Recolher status do sistema",
       "expand": "Expandir status do sistema"
@@ -2007,10 +2025,12 @@
       "filterAllVisitors": "Todos os visitantes",
       "filterIdentified": "Identificados",
       "filterAnonymous": "Anônimos",
+      "you": "Você",
       "source": {
         "tracking_token": "Via link do destinatário",
         "cookie": "Auto-identificado",
-        "selfDeclaredHint": "Identidade auto-declarada, não verificada"
+        "selfDeclaredHint": "Identidade auto-declarada, não verificada",
+        "authenticated_user": "Usuário cadastrado"
       }
     },
     "lastDownloaded": "Último download",

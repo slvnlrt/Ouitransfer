@@ -15,7 +15,8 @@ import { Progress } from "@/components/ui/progress";
 import { useDashboardMetrics } from "@/contexts/dashboard-metrics-context";
 import { useSystemStatus } from "@/hooks/use-system-status";
 import type { AdminStats200 } from "@/http/endpoints/admin/types";
-import type { CheckHealth200, DiskSpaceInfo } from "@/http/endpoints/app/types";
+import type { CheckHealth200, DiskSpaceInfo, EmailHealthStatus } from "@/http/endpoints/app/types";
+import type { EmailStats } from "@/http/endpoints/notifications/types";
 import { formatStorageSize } from "@/utils/format-storage-size";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -199,14 +200,21 @@ function MetricCell({ value, label }: { value: string; label: string }) {
 
 // ── Bar User View ────────────────────────────────────────────────────────────
 
-function BarUserView({ diskSpace }: { diskSpace: DiskSpaceInfo | null }) {
+function BarUserView({
+  diskSpace,
+  emailStatus,
+}: {
+  diskSpace: DiskSpaceInfo | null;
+  emailStatus?: EmailHealthStatus;
+}) {
   const t = useTranslations("dashboard.systemStatus");
   const { fileCount, activeShareCount } = useDashboardMetrics();
 
   const hasQuota = diskSpace && diskSpace.diskAvailableGB !== -1 && diskSpace.diskSizeGB > 0;
   const hasMetrics = fileCount !== undefined || activeShareCount !== undefined;
+  const showNotifications = emailStatus === "degraded" || emailStatus === "down";
 
-  if (!hasQuota && !hasMetrics) return null;
+  if (!hasQuota && !hasMetrics && !showNotifications) return null;
 
   return (
     <div className="flex flex-col sm:flex-row items-stretch gap-4">
@@ -246,8 +254,55 @@ function BarUserView({ diskSpace }: { diskSpace: DiskSpaceInfo | null }) {
           )}
         </div>
       )}
+
+      {/* Divider before notifications line (when other content precedes it) */}
+      {showNotifications && (hasQuota || hasMetrics || (diskSpace && !hasQuota)) && (
+        <>
+          <div className="hidden sm:block w-px bg-border/60 self-stretch" />
+          <div className="sm:hidden h-px bg-border/60 w-full" />
+        </>
+      )}
+
+      {/* Notifications disruption indicator */}
+      {showNotifications && (
+        <div className="flex items-center gap-1.5 text-xs">
+          {emailStatus === "down" ? (
+            <>
+              <XCircle className="size-3.5 text-red-600 dark:text-red-400" aria-hidden="true" />
+              <span className="text-red-600 dark:text-red-400">{t("email.userOffline")}</span>
+            </>
+          ) : (
+            <>
+              <AlertTriangle
+                className="size-3.5 text-amber-600 dark:text-amber-400"
+                aria-hidden="true"
+              />
+              <span className="text-amber-600 dark:text-amber-400">{t("email.userDisrupted")}</span>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
+}
+
+// ── Email status display helper ──────────────────────────────────────────────
+
+function emailStatusIcon(status: EmailHealthStatus): ReactNode {
+  switch (status) {
+    case "ok":
+      return (
+        <CheckCircle2 className="size-3 text-green-600 dark:text-green-400" aria-hidden="true" />
+      );
+    case "disabled":
+      return <AlertTriangle className="size-3 text-muted-foreground" aria-hidden="true" />;
+    case "degraded":
+      return (
+        <AlertTriangle className="size-3 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+      );
+    case "down":
+      return <XCircle className="size-3 text-red-600 dark:text-red-400" aria-hidden="true" />;
+  }
 }
 
 // ── Bar Admin View ───────────────────────────────────────────────────────────
@@ -258,14 +313,26 @@ function BarAdminView({
   adminStats,
   adminStatsError,
   diskSpaceError,
+  emailStats,
+  emailStatsError,
 }: {
   healthData: CheckHealth200 | null;
   diskSpace: DiskSpaceInfo | null;
   adminStats: AdminStats200 | null;
   adminStatsError: string | null;
   diskSpaceError: string | null;
+  emailStats: EmailStats | null;
+  emailStatsError: string | null;
 }) {
   const t = useTranslations("dashboard.systemStatus");
+
+  const emailStatusLabelMap: Record<EmailHealthStatus, string> = {
+    ok: t("email.status.ok"),
+    disabled: t("email.status.disabled"),
+    degraded: t("email.status.degraded"),
+    down: t("email.status.down"),
+  };
+  const emailIcon = emailStats ? emailStatusIcon(emailStats.status) : null;
 
   const dbOk = healthData?.checks.database === "ok";
   const storageStatus = healthData?.checks.storage;
@@ -275,17 +342,29 @@ function BarAdminView({
         switch (storageStatus) {
           case "ok":
             return {
-              icon: <CheckCircle2 className="size-3 text-green-600 dark:text-green-400" />,
+              icon: (
+                <CheckCircle2
+                  className="size-3 text-green-600 dark:text-green-400"
+                  aria-hidden="true"
+                />
+              ),
               label: t("checks.ok"),
             };
           case "not_configured":
             return {
-              icon: <AlertTriangle className="size-3 text-amber-600 dark:text-amber-400" />,
+              icon: (
+                <AlertTriangle
+                  className="size-3 text-amber-600 dark:text-amber-400"
+                  aria-hidden="true"
+                />
+              ),
               label: t("checks.notConfigured"),
             };
           case "error":
             return {
-              icon: <XCircle className="size-3 text-red-600 dark:text-red-400" />,
+              icon: (
+                <XCircle className="size-3 text-red-600 dark:text-red-400" aria-hidden="true" />
+              ),
               label: t("checks.error"),
             };
         }
@@ -305,9 +384,12 @@ function BarAdminView({
           {/* Database */}
           <div className="flex items-center gap-1">
             {dbOk ? (
-              <CheckCircle2 className="size-3 text-green-600 dark:text-green-400" />
+              <CheckCircle2
+                className="size-3 text-green-600 dark:text-green-400"
+                aria-hidden="true"
+              />
             ) : (
-              <XCircle className="size-3 text-red-600 dark:text-red-400" />
+              <XCircle className="size-3 text-red-600 dark:text-red-400" aria-hidden="true" />
             )}
             <span className="text-muted-foreground">{t("checks.database")}</span>
           </div>
@@ -364,6 +446,52 @@ function BarAdminView({
           />
           <MetricCell value={String(adminStats.files.total)} label={t("metrics.files")} />
           <MetricCell value={String(adminStats.shares.active)} label={t("metrics.shares")} />
+        </div>
+      ) : null}
+
+      {/* Vertical divider before email section */}
+      {adminStats && (emailStats || emailStatsError) && (
+        <div className="hidden sm:block w-px bg-border/60 self-stretch" />
+      )}
+      {adminStats && (emailStats || emailStatsError) && (
+        <div className="sm:hidden h-px bg-border/60 w-full" />
+      )}
+
+      {/* Email / Notifications */}
+      {emailStatsError ? (
+        <p className="text-xs text-destructive">{t("errors.emailStatsError")}</p>
+      ) : emailStats && emailIcon ? (
+        <div className="flex flex-col gap-1">
+          {/* Status indicator */}
+          <div className="flex items-center gap-1.5 text-xs">
+            {emailIcon}
+            <span className="text-muted-foreground">{t("email.label")}</span>
+            <span className="text-muted-foreground">·</span>
+            <span className="text-muted-foreground">{emailStatusLabelMap[emailStats.status]}</span>
+          </div>
+
+          {/* Counters (hidden when SMTP disabled — no queue to report) */}
+          {emailStats.status !== "disabled" && (
+            <div className="flex items-center gap-4">
+              <MetricCell value={String(emailStats.pending)} label={t("email.queue.pending")} />
+              <MetricCell value={String(emailStats.failed)} label={t("email.queue.failed")} />
+              <MetricCell value={String(emailStats.sentLast24h)} label={t("email.queue.sent24h")} />
+            </div>
+          )}
+
+          {/* Last error (compact, tooltip carries the full text) */}
+          {emailStats.lastError && (
+            <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+              <AlertTriangle
+                className="size-3 text-amber-600 dark:text-amber-400 shrink-0"
+                aria-hidden="true"
+              />
+              <span className="me-1">{t("email.lastError")}:</span>
+              <span className="truncate max-w-[200px]" title={emailStats.lastError}>
+                {emailStats.lastError}
+              </span>
+            </div>
+          )}
         </div>
       ) : null}
     </div>
@@ -500,6 +628,15 @@ export function SystemStatusBar() {
     } else if (!status.isAdmin && status.healthStatus) {
       overallStatus = status.healthStatus.status;
     }
+
+    // Email subsystem is excluded from the server aggregate on purpose; surface it
+    // client-side by bumping a healthy dot to degraded (never to unhealthy).
+    const emailStatus = status.isAdmin
+      ? status.healthData?.checks.email
+      : status.healthStatus?.email;
+    if ((emailStatus === "degraded" || emailStatus === "down") && overallStatus === "healthy") {
+      overallStatus = "degraded";
+    }
   }
 
   return (
@@ -527,9 +664,11 @@ export function SystemStatusBar() {
                 adminStats={status.adminStats}
                 adminStatsError={status.adminStatsError}
                 diskSpaceError={status.diskSpaceError}
+                emailStats={status.emailStats}
+                emailStatsError={status.emailStatsError}
               />
             ) : (
-              <BarUserView diskSpace={status.diskSpace} />
+              <BarUserView diskSpace={status.diskSpace} emailStatus={status.healthStatus?.email} />
             )}
           </ExpandedPanel>
         </div>

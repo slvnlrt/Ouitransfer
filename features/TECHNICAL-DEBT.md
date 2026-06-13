@@ -8,6 +8,27 @@ but must be addressed. Each item includes context and the fix needed.
 
 ---
 
+## TD-53 — Email health: stalled-queue blind spot (processing/pending false-negative)
+
+**Context:** The cheap, queue-counter-based `evaluateEmailHealth` (TD-42) derives its status from
+recent failures + recent sends only. A genuine stall where SMTP hangs and jobs pile up in
+`processing` (until `recoverStuckJobs` times them out), or a large `pending` backlog with zero
+outright failures, both still report **`ok`**. The `pending`/`digestPending` counts are surfaced to
+admins but never influence the derived status.
+
+**Fix:** Factor a `pending`/`processing` backlog threshold (and/or an oldest-pending age) into the
+`degraded` derivation, so a stuck/clogged queue is reflected. Keep it a cheap DB query — still no
+live SMTP probe (the `/health` endpoints are public/unauthenticated).
+
+**Found during:** TD-42 Opus second-pass review (juin 2026, finding #3). Findings #1 (stale
+`lastError`) and #2 (retention-window `failed` false-positive) were fixed in the same session by
+windowing the failure signals to a recent 24h period; #4 (public enum exposure) accepted per spec.
+
+**Severity:** Low — a bounded false-negative (stuck jobs self-recover via the timeout); less harmful
+than the false-positives already fixed.
+
+---
+
 ## TD-5 — Audit needed: other "infrastructure set up but not used" patterns ✅ DONE
 
 **Resolved:** 2026-06-10
@@ -156,17 +177,34 @@ No runtime i18n provider dependency — the translations are fully inlined.
 
 ---
 
-## TD-42 — Dashboard System Status: afficher l'état SMTP/notifications
+## TD-42 — Dashboard System Status: afficher l'état SMTP/notifications ✅ DONE
 
-**Context:** Le System Status du dashboard admin affiche l'état des services (DB, S3, etc.)
-mais pas l'état du sous-système email/notifications. Or on a déjà des stats de queue
-disponibles côté serveur (email queue metrics). Un administrateur devrait pouvoir voir
-d'un coup d'œil si le SMTP est configuré/fonctionnel et combien de messages sont en queue.
+**Resolved:** 2026-06-13
 
-**Fix:** Ajouter une section "Email / Notifications" au System Status avec :
-- État SMTP (configuré / non configuré / erreur de connexion)
-- Taille de la queue (pending, failed, total envoyés)
-- Dernière erreur d'envoi (si applicable)
+**Implemented** the Email / Notifications subsystem in the System Status bar, with the two
+audience tiers used elsewhere (spec + plan + review: `features/{specs,plans,reviews}/td-42-system-status-email.md`):
+
+- **Health model** — `EmailHealthStatus = "ok" | "disabled" | "degraded" | "down"`, derived purely
+  from cheap queue counters + the `smtpEnabled` config flag (no live SMTP probe, since `/health`
+  and `/health/status` are public/unauthenticated). `disabled` = SMTP off; `down` = enabled with
+  failed jobs and nothing sent in 24h; `degraded` = enabled with failed jobs but mail still going
+  out; `ok` otherwise.
+- **Server** — new `apps/server/src/modules/email/health.ts` (`evaluateEmailHealth()`); `/health`
+  (`checks.email`) and `/health/status` expose ONLY the coarse enum (no counters leak); the
+  aggregate `status` stays DB+storage-only (the core product works even when email is down).
+  `GET /admin/email/stats` enriched with `status` + `smtpConfigured` + `lastError` (admin-gated).
+- **User view** — a single line, shown only on a problem: "Notifications disrupted" (degraded) /
+  "Notifications offline" (down); nothing when ok/disabled. The status dot is bumped to `degraded`
+  (never `unhealthy`) client-side so the user notices even when collapsed.
+- **Admin view** — full "Email / Notifications" section: SMTP/status indicator, queue counters
+  (pending / failed / sent 24h), and the last send error (tooltip).
+- **i18n** — `dashboard.systemStatus.email.*` across all 23 locales, fully translated (TD-36 not
+  reopened).
+- **Tests** — `evaluateEmailHealth` (4 states + lastError), health endpoints `email` field,
+  enriched `/admin/email/stats`, and the two views + dot-bump (incl. loading-suppression and
+  no-downgrade-of-unhealthy cases). Server 1631 / web 359, all green.
+- **Review** — 0 Critical / 0 Important / 3 Minor, all fixed (dead i18n keys removed, `aria-hidden`
+  on decorative status icons, `tabular-nums` dropped from the free-form error text).
 
 **Found during:** Revue utilisateur (mai 2026)
 **Severity:** Low — informatif, pas de bug fonctionnel

@@ -319,11 +319,29 @@
         "myFiles": "マイファイル",
         "activeShares": "有効な共有"
       },
+      "email": {
+        "label": "メール / 通知",
+        "status": {
+          "ok": "稼働中",
+          "disabled": "未設定",
+          "degraded": "低下",
+          "down": "オフライン"
+        },
+        "queue": {
+          "pending": "保留中",
+          "failed": "失敗",
+          "sent24h": "24時間の送信数"
+        },
+        "lastError": "最新のエラー",
+        "userDisrupted": "通知が中断されています",
+        "userOffline": "通知がオフラインです"
+      },
       "errors": {
         "title": "ステータスを取得できません",
         "fetchFailed": "システムステータスを取得できませんでした。後でもう一度お試しください。",
         "diskSpaceError": "ディスク容量の情報を取得できませんでした。",
-        "statsError": "プラットフォームの統計情報を読み込めませんでした。"
+        "statsError": "プラットフォームの統計情報を読み込めませんでした。",
+        "emailStatsError": "メール通知の統計情報を読み込めませんでした。"
       },
       "collapse": "システムステータスを折りたたむ",
       "expand": "システムステータスを展開"
@@ -2003,10 +2021,12 @@
       "filterAllVisitors": "すべての訪問者",
       "filterIdentified": "識別済み",
       "filterAnonymous": "匿名",
+      "you": "あなた",
       "source": {
         "tracking_token": "受信リンク経由",
         "cookie": "自己識別",
-        "selfDeclaredHint": "自己申告身分、未検証"
+        "selfDeclaredHint": "自己申告身分、未検証",
+        "authenticated_user": "登録済みユーザー"
       }
     },
     "lastDownloaded": "最後にダウンロード",

@@ -175,6 +175,29 @@ export class UserService {
     // behind. This is an explicit admin action, so it is ungated.
     const purge = await purgeUserContent(id);
 
+    // GDPR erasure: redact the deleted user's identity snapshots from ShareVisit rows that
+    // belong to OTHER owners' shares (authenticated visits capture name + email from the user
+    // record at visit time). This MUST run before user.delete() so the userId FK is still
+    // intact for the WHERE clause (the FK goes SetNull on delete, making targeting impossible
+    // after deletion). Best-effort — a failure must not surface as a delete error.
+    try {
+      const redactedVisits = await prisma.shareVisit.updateMany({
+        where: { userId: id },
+        data: { visitorEmail: null, visitorName: null },
+      });
+      if (redactedVisits.count > 0) {
+        getLogger().info(
+          { userId: id, redacted: redactedVisits.count },
+          "Redacted deleted user identity from ShareVisit rows",
+        );
+      }
+    } catch (err) {
+      getLogger().error(
+        { err, userId: id },
+        "Failed to redact deleted user identity from ShareVisit rows",
+      );
+    }
+
     const deleted = await this.userRepository.deleteUser(id);
     // DB cascade deletes refresh tokens, but we must clear the in-memory
     // tokenVersion cache so validateTokenVersion rejects stale JWTs immediately.

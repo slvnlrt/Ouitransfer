@@ -10,11 +10,23 @@ import { serializerCompiler, validatorCompiler } from "@fastify/type-provider-zo
 import { fastify } from "fastify";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
-// Mock prisma to avoid a real DB connection
+// Mock prisma to avoid a real DB connection.
+// emailJob mocks are needed because the health routes now evaluate email health
+// (queue-derived) via evaluateEmailHealth().
 vi.mock("../shared/prisma.js", () => ({
   prisma: {
     $queryRaw: vi.fn().mockResolvedValue([{ "1": 1 }]),
+    emailJob: {
+      count: vi.fn().mockResolvedValue(0),
+      findFirst: vi.fn().mockResolvedValue(null),
+    },
   },
+}));
+
+// Mock the config service so smtpEnabled resolution does not hit the DB.
+// Missing key (NotFoundError) ⇒ email status "disabled".
+vi.mock("../modules/config/service.js", () => ({
+  getConfigValue: vi.fn().mockRejectedValue(new Error("Configuration smtpEnabled not found")),
 }));
 
 /**
@@ -85,9 +97,11 @@ describe("GET /health/status", () => {
     });
 
     expect(response.statusCode).toBe(200);
-    const body = response.json<{ status: string }>();
+    const body = response.json<{ status: string; email: string }>();
     expect(body.status).toMatch(/^(healthy|degraded|unhealthy)$/);
-    expect(Object.keys(body)).toEqual(["status"]);
+    expect(Object.keys(body).sort()).toEqual(["email", "status"]);
+    // smtpEnabled config key is missing in tests ⇒ email subsystem is "disabled".
+    expect(body.email).toBe("disabled");
   });
 
   it("does not require authentication", async () => {
@@ -108,8 +122,11 @@ describe("GET /health/status", () => {
 
     expect(response.statusCode).toBe(200);
     const body = response.json<Record<string, unknown>>();
-    expect(Object.keys(body)).toHaveLength(1);
+    // The simplified endpoint exposes only the aggregate `status` plus the coarse
+    // `email` subsystem enum — no counters, timestamps, or full check breakdown.
+    expect(Object.keys(body).sort()).toEqual(["email", "status"]);
     expect(body).toHaveProperty("status");
+    expect(body).toHaveProperty("email");
     expect(body).not.toHaveProperty("timestamp");
     expect(body).not.toHaveProperty("uptime");
     expect(body).not.toHaveProperty("checks");

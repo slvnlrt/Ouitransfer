@@ -250,6 +250,11 @@ export class ShareService {
     // via cookies or fingerprints.
 
     if (isOwner) {
+      // Owner self-access via the management UI (share-details modal) — do NOT record a visit.
+      // The modal calls GET /shares/:shareId on every open and on every invalidateShare()
+      // (edit name/description, refresh trigger), so tracking it fills the activity log with
+      // self-referential noise that drowns real visitor activity. The owner-download path also
+      // does not track owners, so skipping here restores access/download consistency.
       return ShareResponseSchema.parse(await this.formatShareResponse(share));
     }
 
@@ -400,10 +405,12 @@ export class ShareService {
     let recipientId: string | undefined;
     let visitorName: string | undefined;
     let visitorEmail: string | undefined;
+    let visitUserId: string | undefined;
     // How the recipient was attributed on this access visit (mirrored on the download path):
     // "token" = verified via personalized ?t= link; "self_declared" = matched the identification
-    // cookie email; null = anonymous / unmatched.
-    let identificationSource: "token" | "self_declared" | undefined;
+    // cookie email; "authenticated_user" = logged-in Ouitransfer user (JWT-backed, no token/cookie
+    // match); null = anonymous / unmatched.
+    let identificationSource: "token" | "self_declared" | "authenticated_user" | undefined;
 
     if (resolvedRecipient) {
       recipientId = resolvedRecipient.id;
@@ -447,6 +454,26 @@ export class ShareService {
       }
     }
 
+    // Authenticated fallback: if no recipientId was attributed but the visitor is a logged-in
+    // Ouitransfer user, record their verified identity. Precedence:
+    //   token → self_declared/cookie (matched recipient) → authenticated_user → anonymous (null)
+    // A matched cookie (recipientId set via self_declared) still takes precedence — the
+    // !recipientId guard above ensures that. An UNMATCHED cookie (no recipientId) no longer
+    // blocks this path: a verified JWT identity must win over a stale/unmatched sv_ cookie.
+    // The early-return above ensures we never reach here for the owner.
+    if (!recipientId && userId) {
+      const authenticatedUser = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { username: true, email: true },
+      });
+      if (authenticatedUser) {
+        visitUserId = userId;
+        identificationSource = "authenticated_user";
+        visitorName = authenticatedUser.username;
+        visitorEmail = authenticatedUser.email;
+      }
+    }
+
     // Fire and forget — don't block the response.
     // Await visit insert before notification: if the visit record fails,
     // don't notify the owner about a visit that was never recorded.
@@ -455,6 +482,7 @@ export class ShareService {
         await prisma.shareVisit.create({
           data: {
             shareId: share.id,
+            userId: visitUserId,
             recipientId,
             visitorName,
             visitorEmail,

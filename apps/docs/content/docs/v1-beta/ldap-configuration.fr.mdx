@@ -339,6 +339,6 @@ Tous les points de terminaison nécessitent une session administrateur active. L
 | `PUT` | `/admin/ldap/config` | Créer ou mettre à jour la configuration (upsert). Passez `bindPassword: ""` pour conserver le mot de passe existant. |
 | `POST` | `/admin/ldap/test` | Tester la connexion avec les paramètres fournis. Nécessite `bindPassword` (non masqué). |
 | `POST` | `/admin/ldap/sync` | Déclencher une synchronisation manuelle. Retourne `{ logId }`. Retourne `409` si une synchronisation est déjà en cours. |
-| `GET` | `/admin/ldap/sync/logs` | Lister l'historique des synchronisations. Paramètres de requête : `limit` (1–100, par défaut 20), `offset` (par défaut 0). |
+| `GET` | `/admin/ldap/sync/logs` | Lister l'historique des synchronisations. Paramètres de requête : `limit` (1-100, par défaut 20), `offset` (par défaut 0). |
 | `GET` | `/admin/ldap/sync/logs/:id` | Obtenir le détail complet d'une entrée du journal de synchronisation, y compris les événements de saut et d'erreur. |
 | `GET` | `/admin/ldap/status` | Statut rapide : indicateur d'activation, dernier résultat de synchronisation, heure de la prochaine synchronisation planifiée et éventuels avertissements de configuration. |

@@ -319,11 +319,29 @@
         "myFiles": "ملفاتي",
         "activeShares": "المشاركات النشطة"
       },
+      "email": {
+        "label": "البريد الإلكتروني / الإشعارات",
+        "status": {
+          "ok": "يعمل",
+          "disabled": "غير مُهيّأ",
+          "degraded": "متدهور",
+          "down": "غير متصل"
+        },
+        "queue": {
+          "pending": "قيد الانتظار",
+          "failed": "فشل",
+          "sent24h": "أُرسلت خلال 24 ساعة"
+        },
+        "lastError": "آخر خطأ",
+        "userDisrupted": "الإشعارات متعطلة",
+        "userOffline": "الإشعارات غير متصلة"
+      },
       "errors": {
         "title": "الحالة غير متاحة",
         "fetchFailed": "تعذّر استرجاع حالة النظام. يرجى المحاولة مرة أخرى لاحقاً.",
         "diskSpaceError": "تعذّر استرجاع معلومات مساحة القرص.",
-        "statsError": "تعذّر تحميل إحصائيات المنصة."
+        "statsError": "تعذّر تحميل إحصائيات المنصة.",
+        "emailStatsError": "تعذّر تحميل إحصائيات إشعارات البريد الإلكتروني."
       },
       "collapse": "طي حالة النظام",
       "expand": "توسيع حالة النظام"
@@ -2003,10 +2021,12 @@
       "filterAllVisitors": "جميع الزائرين",
       "filterIdentified": "محددة الهوية",
       "filterAnonymous": "مجهول",
+      "you": "أنت",
       "source": {
         "tracking_token": "عبر رابط المستقبل",
         "cookie": "محدد ذاتياً",
-        "selfDeclaredHint": "هوية معلنة ذاتياً، غير موثقة"
+        "selfDeclaredHint": "هوية معلنة ذاتياً، غير موثقة",
+        "authenticated_user": "مستخدم مسجّل"
       }
     },
     "lastDownloaded": "آخر تحميل",

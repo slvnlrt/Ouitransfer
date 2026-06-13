@@ -153,7 +153,7 @@ Both provide endpoint exploration, request builders, and response visualization 
 
 **Tracking tokens:** Share access endpoints accept an optional `?t=<token>` query parameter. When present, the visitor is automatically identified as the recipient who owns that tracking token. See [Shares: Visitor identification](/docs/v1-beta/shares#visitor-identification).
 
-**Share visits:** The `GET /shares/:shareId/visits` endpoint returns paginated visit records. Query parameters: `page` (default 1), `limit` (default 10), `action` (`access` or `download`), `identified` (`true` or `false`). Only the share owner can access this endpoint.
+**Share visits:** The `GET /shares/:shareId/visits` endpoint returns paginated visit records. Query parameters: `page` (default 1), `limit` (default 10), `action` (`access` or `download`), `identified` (`true` or `false`). Only the share owner can access this endpoint. Each record includes an `identificationSource` field (`tracking_token`, `cookie`, `authenticated_user`, or `anonymous`) and an `isOwner` boolean indicating whether the visit was attributed to the share creator.
 
 ---
 
@@ -366,7 +366,7 @@ The preferences endpoint returns all 22 notification types with their current fr
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| GET | `/admin/email/stats` | Admin | Get email queue counters (pending, sent, failed) |
+| GET | `/admin/email/stats` | Admin | Get email queue counters (pending, sentLast24h, failed, digestPending) plus subsystem `status` (`ok`/`disabled`/`degraded`/`down`), `smtpConfigured` boolean, and `lastError` (most recent send error, or null) |
 | POST | `/admin/email/test` | Admin | Send a test email to the current admin's email address |
 
 For details on the email delivery system, see [Configuring SMTP: Email delivery system](/docs/v1-beta/configuring-smtp#email-delivery-system).
@@ -415,8 +415,8 @@ For details on the email delivery system, see [Configuring SMTP: Email delivery 
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| GET | `/health` | Public | Full health check (database + storage status) |
-| GET | `/health/status` | Public | Simplified health status (`healthy`, `degraded`, `unhealthy`) |
+| GET | `/health` | Public | Full health check (database, storage, and email/notifications subsystem status); `checks` includes `database`, `storage`, and `email` (`ok`/`disabled`/`degraded`/`down`) |
+| GET | `/health/status` | Public | Simplified health status (`healthy`, `degraded`, `unhealthy`); also returns an `email` field with the same coarse enum. Aggregate status is based on database + storage only. |
 
 ---
 

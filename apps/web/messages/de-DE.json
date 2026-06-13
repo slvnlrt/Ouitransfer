@@ -319,11 +319,29 @@
         "myFiles": "Meine Dateien",
         "activeShares": "Aktive Freigaben"
       },
+      "email": {
+        "label": "E-Mail / Benachrichtigungen",
+        "status": {
+          "ok": "Betriebsbereit",
+          "disabled": "Nicht konfiguriert",
+          "degraded": "Beeinträchtigt",
+          "down": "Offline"
+        },
+        "queue": {
+          "pending": "Ausstehend",
+          "failed": "Fehlgeschlagen",
+          "sent24h": "Gesendet 24h"
+        },
+        "lastError": "Letzter Fehler",
+        "userDisrupted": "Benachrichtigungen gestört",
+        "userOffline": "Benachrichtigungen offline"
+      },
       "errors": {
         "title": "Status nicht verfügbar",
         "fetchFailed": "Der Systemstatus konnte nicht abgerufen werden. Bitte versuchen Sie es später erneut.",
         "diskSpaceError": "Speicherplatzinformationen konnten nicht abgerufen werden.",
-        "statsError": "Plattformstatistiken konnten nicht geladen werden."
+        "statsError": "Plattformstatistiken konnten nicht geladen werden.",
+        "emailStatsError": "E-Mail-Benachrichtigungsstatistiken konnten nicht geladen werden."
       },
       "collapse": "Systemstatus ausblenden",
       "expand": "Systemstatus anzeigen"
@@ -2003,10 +2021,12 @@
       "filterAllVisitors": "Alle Besucher",
       "filterIdentified": "Identifiziert",
       "filterAnonymous": "Anonym",
+      "you": "Sie",
       "source": {
         "tracking_token": "Über Empfänger-Link",
         "cookie": "Selbst identifiziert",
-        "selfDeclaredHint": "Selbst angegebene Identität, nicht verifiziert"
+        "selfDeclaredHint": "Selbst angegebene Identität, nicht verifiziert",
+        "authenticated_user": "Registrierter Benutzer"
       }
     },
     "lastDownloaded": "Zuletzt heruntergeladen",

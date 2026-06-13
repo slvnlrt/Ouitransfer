@@ -1136,10 +1136,11 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
                 })
                 .nullable(),
               identificationSource: z
-                .enum(["tracking_token", "cookie", "anonymous"])
+                .enum(["tracking_token", "cookie", "anonymous", "authenticated_user"])
                 .describe(
-                  "How the visitor was identified: tracking_token (recipient link), cookie (identification form), anonymous",
+                  "How the visitor was identified: tracking_token (recipient link), cookie (identification form), authenticated_user (verified registered user), anonymous",
                 ),
+              isOwner: z.boolean().describe("Whether this visit was made by the share creator"),
             }),
           ),
           total: z.number(),
@@ -1177,17 +1178,20 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       };
 
       if (identified === "true") {
-        // At least one identification field is set
+        // At least one identification field is set (including authenticated user link)
         where.OR = [
           { recipientId: { not: null } },
           { visitorEmail: { not: null } },
           { visitorName: { not: null } },
+          { userId: { not: null } },
         ];
       } else if (identified === "false") {
-        // No identification at all
+        // No identification at all — null all identity fields for symmetry with the
+        // identified=true OR clause (which tests userId: { not: null }).
         where.recipientId = null;
         where.visitorEmail = null;
         where.visitorName = null;
+        where.userId = null;
       }
 
       const [visits, total] = await Promise.all([
@@ -1205,25 +1209,32 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       // at write time (8.3): since lot C now sets `recipientId` for self-declared email matches
       // too, `recipientId != null` alone no longer implies a token-verified arrival. The stored
       // column keeps the distinction honest:
-      // - stored "token"        → "tracking_token" (verified personalized link)
-      // - stored "self_declared"→ "cookie"         (self-identified via the form, unverified)
+      // - stored "token"             → "tracking_token" (verified personalized link)
+      // - stored "self_declared"     → "cookie"         (self-identified via the form, unverified)
+      // - stored "authenticated_user"→ "authenticated_user" (verified registered user, JWT-backed)
       // - stored null (pre-8.3 rows) → derive from the available identity for backward compat.
-      // Strip ipAddress and userAgent from response — these are stored for
+      // Strip ipAddress, userAgent, and userId from response — these are stored for
       // admin audit purposes only and must not be exposed to regular users.
-      const enrichedVisits = visits.map(({ ipAddress: _ip, userAgent: _ua, ...visit }) => ({
-        ...visit,
-        createdAt: visit.createdAt.toISOString(),
-        identificationSource:
-          visit.identificationSource === "token"
-            ? ("tracking_token" as const)
-            : visit.identificationSource === "self_declared"
-              ? ("cookie" as const)
-              : visit.recipientId
-                ? ("tracking_token" as const)
-                : visit.visitorEmail || visit.visitorName
-                  ? ("cookie" as const)
-                  : ("anonymous" as const),
-      }));
+      // isOwner is derived from userId === share.creatorId before stripping userId.
+      const enrichedVisits = visits.map(
+        ({ ipAddress: _ip, userAgent: _ua, userId: visitUserId, ...visit }) => ({
+          ...visit,
+          createdAt: visit.createdAt.toISOString(),
+          isOwner: visitUserId != null && visitUserId === share.creatorId,
+          identificationSource:
+            visit.identificationSource === "token"
+              ? ("tracking_token" as const)
+              : visit.identificationSource === "self_declared"
+                ? ("cookie" as const)
+                : visit.identificationSource === "authenticated_user"
+                  ? ("authenticated_user" as const)
+                  : visit.recipientId
+                    ? ("tracking_token" as const)
+                    : visit.visitorEmail || visit.visitorName
+                      ? ("cookie" as const)
+                      : ("anonymous" as const),
+        }),
+      );
 
       return reply.send({ visits: enrichedVisits, total, page, limit });
     },

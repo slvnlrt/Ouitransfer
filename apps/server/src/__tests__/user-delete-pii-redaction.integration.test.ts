@@ -21,6 +21,7 @@ const mockFileDeleteMany = vi.fn();
 const mockFolderFindMany = vi.fn();
 const mockFolderDeleteMany = vi.fn();
 const mockShareFindMany = vi.fn();
+const mockShareVisitUpdateMany = vi.fn();
 const mockReverseShareFindMany = vi.fn();
 const mockReverseShareFileFindMany = vi.fn();
 const mockReverseShareDelete = vi.fn();
@@ -42,6 +43,7 @@ vi.mock("../shared/prisma.js", () => ({
     file: { findMany: mockFileFindMany, deleteMany: mockFileDeleteMany },
     folder: { findMany: mockFolderFindMany, deleteMany: mockFolderDeleteMany },
     share: { findMany: mockShareFindMany },
+    shareVisit: { updateMany: mockShareVisitUpdateMany },
     reverseShare: { findMany: mockReverseShareFindMany, delete: mockReverseShareDelete },
     reverseShareFile: { findMany: mockReverseShareFileFindMany },
     $transaction: mockTransaction,
@@ -127,6 +129,7 @@ describe("DELETE /users/:id — audit PII redaction (integration)", () => {
     mockFolderFindMany.mockResolvedValue([]);
     mockFolderDeleteMany.mockResolvedValue({ count: 0 });
     mockShareFindMany.mockResolvedValue([]);
+    mockShareVisitUpdateMany.mockResolvedValue({ count: 0 });
     mockReverseShareFindMany.mockResolvedValue([]);
     mockReverseShareFileFindMany.mockResolvedValue([]);
     mockReverseShareDelete.mockResolvedValue({});
@@ -195,6 +198,41 @@ describe("DELETE /users/:id — audit PII redaction (integration)", () => {
     });
 
     // The user row is already gone; a redaction failure must not surface as an error.
+    expect(res.statusCode).toBe(200);
+  });
+
+  it("redacts the deleted user's visitorEmail/visitorName from ShareVisit rows (GDPR — B-29 review finding #3)", async () => {
+    // Authenticated visits snapshot name + email from the user record. On deletion the
+    // shareVisit.userId FK goes SetNull, but the snapshots persist in other owners' shares.
+    // deleteUser must null them BEFORE the FK is lost (i.e. while userId still points to the user).
+    mockShareVisitUpdateMany.mockResolvedValue({ count: 3 });
+
+    const res = await app.inject({
+      method: "DELETE",
+      url: "/users/victim-1",
+      headers: await adminHeaders(),
+    });
+
+    expect(res.statusCode).toBe(200);
+
+    // Redaction must target the user's visits by userId BEFORE the user row is deleted.
+    expect(mockShareVisitUpdateMany).toHaveBeenCalledWith({
+      where: { userId: "victim-1" },
+      data: { visitorEmail: null, visitorName: null },
+    });
+  });
+
+  it("still deletes the user (200) when ShareVisit redaction throws (best-effort)", async () => {
+    // A failure to redact ShareVisit rows must not surface as a deletion error —
+    // same best-effort pattern as the audit-log redaction.
+    mockShareVisitUpdateMany.mockRejectedValue(new Error("db timeout"));
+
+    const res = await app.inject({
+      method: "DELETE",
+      url: "/users/victim-1",
+      headers: await adminHeaders(),
+    });
+
     expect(res.statusCode).toBe(200);
   });
 

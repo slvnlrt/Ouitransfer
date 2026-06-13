@@ -45,13 +45,15 @@ vi.mock("@/utils/format-storage-size", () => ({
 
 // Mock useDashboardMetrics
 vi.mock("@/contexts/dashboard-metrics-context", () => ({
-  useDashboardMetrics: () => ({ fileCount: 42, activeShareCount: 5 }),
+  useDashboardMetrics: vi.fn(() => ({ fileCount: 42, activeShareCount: 5 })),
   DashboardMetricsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
+import { useDashboardMetrics } from "@/contexts/dashboard-metrics-context";
+
 // Mutable mock for useSystemStatus
 const mockStatus: UseSystemStatusResult = {
-  healthStatus: { status: "healthy" as const },
+  healthStatus: { status: "healthy" as const, email: "ok" as const },
   healthStatusLoading: false,
   healthStatusError: null,
   healthData: null,
@@ -70,6 +72,9 @@ const mockStatus: UseSystemStatusResult = {
   adminStats: null,
   adminStatsLoading: false,
   adminStatsError: null,
+  emailStats: null,
+  emailStatsLoading: false,
+  emailStatsError: null,
   isAdmin: false,
   isRefreshing: false,
   refresh: vi.fn(),
@@ -350,6 +355,7 @@ describe("SystemStatusBar", () => {
       checks: {
         database: "ok" as const,
         storage: "ok" as const,
+        email: "ok" as const,
       },
     };
 
@@ -358,6 +364,16 @@ describe("SystemStatusBar", () => {
       files: { total: 100 },
       shares: { active: 15, expired: 3 },
       reverseShares: { active: 2 },
+    };
+
+    const adminEmailStats = {
+      pending: 3,
+      sentLast24h: 120,
+      failed: 0,
+      digestPending: 1,
+      status: "ok" as const,
+      smtpConfigured: true,
+      lastError: null,
     };
 
     beforeEach(() => {
@@ -378,6 +394,9 @@ describe("SystemStatusBar", () => {
         adminStats,
         adminStatsLoading: false,
         adminStatsError: null,
+        emailStats: adminEmailStats,
+        emailStatsLoading: false,
+        emailStatsError: null,
       };
     });
 
@@ -469,12 +488,264 @@ describe("SystemStatusBar", () => {
           status: "degraded" as const,
           timestamp: "2026-05-23T00:00:00.000Z",
           uptime: 3600,
-          checks: { database: "ok" as const, storage: "error" as const },
+          checks: { database: "ok" as const, storage: "error" as const, email: "ok" as const },
         },
       };
       render(<SystemStatusBar />);
       fireEvent.click(screen.getByRole("button", { name: "expand" }));
       expect(screen.getByText("status.degraded")).toBeInTheDocument();
+    });
+  });
+
+  // ── Email / Notifications subsystem (TD-42) ──────────────────────────────
+
+  describe("email subsystem — user view", () => {
+    it("does NOT show a notifications line when email is ok", () => {
+      currentMockStatus = {
+        ...mockStatus,
+        healthStatus: { status: "healthy" as const, email: "ok" as const },
+      };
+      render(<SystemStatusBar />);
+      fireEvent.click(screen.getByRole("button", { name: "expand" }));
+      expect(screen.queryByText("email.userDisrupted")).not.toBeInTheDocument();
+      expect(screen.queryByText("email.userOffline")).not.toBeInTheDocument();
+    });
+
+    it("does NOT show a notifications line when email is disabled", () => {
+      currentMockStatus = {
+        ...mockStatus,
+        healthStatus: { status: "healthy" as const, email: "disabled" as const },
+      };
+      render(<SystemStatusBar />);
+      fireEvent.click(screen.getByRole("button", { name: "expand" }));
+      expect(screen.queryByText("email.userDisrupted")).not.toBeInTheDocument();
+      expect(screen.queryByText("email.userOffline")).not.toBeInTheDocument();
+    });
+
+    it("shows 'disrupted' line when email is degraded", () => {
+      currentMockStatus = {
+        ...mockStatus,
+        healthStatus: { status: "healthy" as const, email: "degraded" as const },
+      };
+      render(<SystemStatusBar />);
+      fireEvent.click(screen.getByRole("button", { name: "expand" }));
+      expect(screen.getByText("email.userDisrupted")).toBeInTheDocument();
+      expect(screen.queryByText("email.userOffline")).not.toBeInTheDocument();
+    });
+
+    it("shows 'offline' line when email is down", () => {
+      currentMockStatus = {
+        ...mockStatus,
+        healthStatus: { status: "healthy" as const, email: "down" as const },
+      };
+      render(<SystemStatusBar />);
+      fireEvent.click(screen.getByRole("button", { name: "expand" }));
+      expect(screen.getByText("email.userOffline")).toBeInTheDocument();
+      expect(screen.queryByText("email.userDisrupted")).not.toBeInTheDocument();
+    });
+
+    it("renders the notifications line even when the user has no quota or metrics", () => {
+      vi.mocked(useDashboardMetrics).mockReturnValue({
+        fileCount: undefined,
+        activeShareCount: undefined,
+      });
+      currentMockStatus = {
+        ...mockStatus,
+        diskSpace: null,
+        healthStatus: { status: "healthy" as const, email: "down" as const },
+      };
+      render(<SystemStatusBar />);
+      fireEvent.click(screen.getByRole("button", { name: "expand" }));
+      expect(screen.getByText("email.userOffline")).toBeInTheDocument();
+      // Restore the default so later tests still see metrics
+      vi.mocked(useDashboardMetrics).mockReturnValue({ fileCount: 42, activeShareCount: 5 });
+    });
+  });
+
+  describe("email subsystem — admin view", () => {
+    const baseAdmin: UseSystemStatusResult = {
+      ...mockStatus,
+      isAdmin: true,
+      healthData: {
+        status: "healthy" as const,
+        timestamp: "2026-05-23T00:00:00.000Z",
+        uptime: 7200,
+        checks: { database: "ok" as const, storage: "ok" as const, email: "ok" as const },
+      },
+      diskSpace: {
+        diskSizeGB: 500,
+        diskUsedGB: 200,
+        diskAvailableGB: 300,
+        uploadAllowed: true,
+        warningLevel: "none",
+        percentage: 40,
+      },
+      adminStats: {
+        users: { active: 10, total: 20 },
+        files: { total: 100 },
+        shares: { active: 15, expired: 3 },
+        reverseShares: { active: 2 },
+      },
+    };
+
+    it("renders the email section label, status and counters", () => {
+      currentMockStatus = {
+        ...baseAdmin,
+        emailStats: {
+          pending: 7,
+          sentLast24h: 120,
+          failed: 2,
+          digestPending: 1,
+          status: "degraded" as const,
+          smtpConfigured: true,
+          lastError: null,
+        },
+      };
+      render(<SystemStatusBar />);
+      fireEvent.click(screen.getByRole("button", { name: "expand" }));
+      expect(screen.getByText("email.label")).toBeInTheDocument();
+      expect(screen.getByText("email.status.degraded")).toBeInTheDocument();
+      expect(screen.getByText("email.queue.pending")).toBeInTheDocument();
+      expect(screen.getByText("email.queue.failed")).toBeInTheDocument();
+      expect(screen.getByText("email.queue.sent24h")).toBeInTheDocument();
+      expect(screen.getByText("7")).toBeInTheDocument();
+      expect(screen.getByText("2")).toBeInTheDocument();
+      expect(screen.getByText("120")).toBeInTheDocument();
+    });
+
+    it("hides the queue counters when SMTP is disabled", () => {
+      currentMockStatus = {
+        ...baseAdmin,
+        emailStats: {
+          pending: 0,
+          sentLast24h: 0,
+          failed: 0,
+          digestPending: 0,
+          status: "disabled" as const,
+          smtpConfigured: false,
+          lastError: null,
+        },
+      };
+      render(<SystemStatusBar />);
+      fireEvent.click(screen.getByRole("button", { name: "expand" }));
+      expect(screen.getByText("email.status.disabled")).toBeInTheDocument();
+      expect(screen.queryByText("email.queue.pending")).not.toBeInTheDocument();
+    });
+
+    it("shows the last error line when emailStats.lastError is set", () => {
+      currentMockStatus = {
+        ...baseAdmin,
+        emailStats: {
+          pending: 1,
+          sentLast24h: 0,
+          failed: 5,
+          digestPending: 0,
+          status: "down" as const,
+          smtpConfigured: true,
+          lastError: "SMTP connection refused",
+        },
+      };
+      render(<SystemStatusBar />);
+      fireEvent.click(screen.getByRole("button", { name: "expand" }));
+      expect(screen.getByText("email.lastError:")).toBeInTheDocument();
+      expect(screen.getByText("SMTP connection refused")).toBeInTheDocument();
+    });
+
+    it("shows the email stats error text when emailStatsError is set", () => {
+      currentMockStatus = {
+        ...baseAdmin,
+        emailStats: null,
+        emailStatsError: "server_error",
+      };
+      render(<SystemStatusBar />);
+      fireEvent.click(screen.getByRole("button", { name: "expand" }));
+      expect(screen.getByText("errors.emailStatsError")).toBeInTheDocument();
+    });
+  });
+
+  describe("email subsystem — overall dot bump", () => {
+    it("bumps a healthy admin dot to degraded when email is degraded", () => {
+      currentMockStatus = {
+        ...mockStatus,
+        isAdmin: true,
+        healthData: {
+          status: "healthy" as const,
+          timestamp: "2026-05-23T00:00:00.000Z",
+          uptime: 7200,
+          checks: {
+            database: "ok" as const,
+            storage: "ok" as const,
+            email: "degraded" as const,
+          },
+        },
+        emailStats: {
+          pending: 1,
+          sentLast24h: 10,
+          failed: 1,
+          digestPending: 0,
+          status: "degraded" as const,
+          smtpConfigured: true,
+          lastError: null,
+        },
+      };
+      render(<SystemStatusBar />);
+      fireEvent.click(screen.getByRole("button", { name: "expand" }));
+      expect(screen.getByText("status.degraded")).toBeInTheDocument();
+      expect(screen.queryByText("status.healthy")).not.toBeInTheDocument();
+    });
+
+    it("bumps a healthy user dot to degraded when email is down", () => {
+      currentMockStatus = {
+        ...mockStatus,
+        healthStatus: { status: "healthy" as const, email: "down" as const },
+      };
+      render(<SystemStatusBar />);
+      fireEvent.click(screen.getByRole("button", { name: "expand" }));
+      expect(screen.getByText("status.degraded")).toBeInTheDocument();
+    });
+
+    it("never bumps beyond degraded (email down with healthy core stays degraded)", () => {
+      currentMockStatus = {
+        ...mockStatus,
+        healthStatus: { status: "healthy" as const, email: "down" as const },
+      };
+      render(<SystemStatusBar />);
+      fireEvent.click(screen.getByRole("button", { name: "expand" }));
+      expect(screen.queryByText("status.unhealthy")).not.toBeInTheDocument();
+    });
+
+    it("does not bump when email is ok", () => {
+      currentMockStatus = {
+        ...mockStatus,
+        healthStatus: { status: "healthy" as const, email: "ok" as const },
+      };
+      render(<SystemStatusBar />);
+      fireEvent.click(screen.getByRole("button", { name: "expand" }));
+      expect(screen.getByText("status.healthy")).toBeInTheDocument();
+    });
+
+    it("does not bump (or render a status badge) while still loading", () => {
+      currentMockStatus = {
+        ...mockStatus,
+        healthStatusLoading: true,
+        healthStatus: { status: "healthy" as const, email: "down" as const },
+      };
+      render(<SystemStatusBar />);
+      fireEvent.click(screen.getByRole("button", { name: "expand" }));
+      // Loading suppresses the dot bump — no status badge is rendered at all.
+      expect(screen.queryByText("status.degraded")).not.toBeInTheDocument();
+      expect(screen.queryByText("status.healthy")).not.toBeInTheDocument();
+    });
+
+    it("does not downgrade an unhealthy core when email is down (bump only lifts healthy)", () => {
+      currentMockStatus = {
+        ...mockStatus,
+        healthStatus: { status: "unhealthy" as const, email: "down" as const },
+      };
+      render(<SystemStatusBar />);
+      fireEvent.click(screen.getByRole("button", { name: "expand" }));
+      expect(screen.getByText("status.unhealthy")).toBeInTheDocument();
+      expect(screen.queryByText("status.degraded")).not.toBeInTheDocument();
     });
   });
 
@@ -583,7 +854,7 @@ describe("SystemStatusBar", () => {
           status: "healthy" as const,
           timestamp: "2026-05-23T00:00:00.000Z",
           uptime: 1800, // 30 minutes
-          checks: { database: "ok" as const, storage: "ok" as const },
+          checks: { database: "ok" as const, storage: "ok" as const, email: "ok" as const },
         },
       };
       render(<SystemStatusBar />);
@@ -599,7 +870,7 @@ describe("SystemStatusBar", () => {
           status: "healthy" as const,
           timestamp: "2026-05-23T00:00:00.000Z",
           uptime: 90060, // 1d 1h 1m
-          checks: { database: "ok" as const, storage: "ok" as const },
+          checks: { database: "ok" as const, storage: "ok" as const, email: "ok" as const },
         },
       };
       render(<SystemStatusBar />);
@@ -615,7 +886,7 @@ describe("SystemStatusBar", () => {
           status: "healthy" as const,
           timestamp: "2026-05-23T00:00:00.000Z",
           uptime: 0,
-          checks: { database: "ok" as const, storage: "ok" as const },
+          checks: { database: "ok" as const, storage: "ok" as const, email: "ok" as const },
         },
       };
       render(<SystemStatusBar />);
@@ -631,7 +902,7 @@ describe("SystemStatusBar", () => {
           status: "healthy" as const,
           timestamp: "2026-05-23T00:00:00.000Z",
           uptime: 59,
-          checks: { database: "ok" as const, storage: "ok" as const },
+          checks: { database: "ok" as const, storage: "ok" as const, email: "ok" as const },
         },
       };
       render(<SystemStatusBar />);
@@ -647,7 +918,7 @@ describe("SystemStatusBar", () => {
           status: "healthy" as const,
           timestamp: "2026-05-23T00:00:00.000Z",
           uptime: 60,
-          checks: { database: "ok" as const, storage: "ok" as const },
+          checks: { database: "ok" as const, storage: "ok" as const, email: "ok" as const },
         },
       };
       render(<SystemStatusBar />);
