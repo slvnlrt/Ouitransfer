@@ -51,6 +51,7 @@ model User {
   trustedDevices         TrustedDevice[]
   refreshTokens          RefreshToken[]
   notificationPreferences NotificationPreference[]
+  shareVisits            ShareVisit[]
 
   @@map("users")
 }
@@ -231,6 +232,8 @@ model ShareVisit {
   share        Share           @relation(fields: [shareId], references: [id], onDelete: Cascade)
   recipientId  String?
   recipient    ShareRecipient? @relation(fields: [recipientId], references: [id], onDelete: SetNull)
+  userId       String?
+  user         User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
   visitorName  String?
   visitorEmail String?
   ipAddress    String?
@@ -239,7 +242,8 @@ model ShareVisit {
   fileId       String?
   // How the recipient on this visit was attributed: "token" (verified — arrived via a
   // personalized ?t= link) | "self_declared" (matched the identification-form email,
-  // spoofable comfort signal) | null (anonymous / no recipient linked).
+  // spoofable comfort signal) | "authenticated_user" (logged-in Ouitransfer user, JWT-verified)
+  // | null (anonymous / no recipient linked).
   identificationSource String?
   createdAt    DateTime        @default(now())
 
