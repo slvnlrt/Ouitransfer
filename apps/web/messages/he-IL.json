@@ -2025,10 +2025,12 @@
       "filterAllVisitors": "כל המבקרים",
       "filterIdentified": "מזוהה",
       "filterAnonymous": "אנונימי",
+      "you": "You",
       "source": {
         "tracking_token": "דרך קישור המקבל",
         "cookie": "מזוהה-עצמי",
-        "selfDeclaredHint": "זהות מוצהרת עצמית, לא מאומת"
+        "selfDeclaredHint": "זהות מוצהרת עצמית, לא מאומת",
+        "authenticated_user": "Registered user"
       }
     },
     "lastDownloaded": "הורדה אחרונה",

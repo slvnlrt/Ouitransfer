@@ -2021,10 +2021,12 @@
       "filterAllVisitors": "Wszyscy odwiedzający",
       "filterIdentified": "Zidentyfikowani",
       "filterAnonymous": "Anonimowi",
+      "you": "You",
       "source": {
         "tracking_token": "Przez link odbiorcy",
         "cookie": "Samo-zidentyfikowany",
-        "selfDeclaredHint": "Tożsamość samodzielnie podana, niezweryfikowana"
+        "selfDeclaredHint": "Tożsamość samodzielnie podana, niezweryfikowana",
+        "authenticated_user": "Registered user"
       }
     },
     "lastDownloaded": "Ostatnie pobranie",

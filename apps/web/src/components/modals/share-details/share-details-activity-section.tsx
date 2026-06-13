@@ -32,6 +32,7 @@ interface VisitEntryProps {
 const SOURCE_LABEL_KEY = {
   tracking_token: "shareDetails.activity.source.tracking_token",
   cookie: "shareDetails.activity.source.cookie",
+  authenticated_user: "shareDetails.activity.source.authenticated_user",
 } as const;
 
 function VisitEntry({ visit }: VisitEntryProps) {
@@ -53,15 +54,22 @@ function VisitEntry({ visit }: VisitEntryProps) {
         <p className="text-sm font-medium text-foreground">
           {isDownload ? t("shareDetails.activity.download") : t("shareDetails.activity.access")}
         </p>
-        {hasIdentity ? (
-          <p className="text-xs text-muted-foreground truncate">
-            {visit.visitorName}
-            {visit.visitorName && visit.visitorEmail && " · "}
-            {visit.visitorEmail}
-          </p>
-        ) : (
-          <p className="text-xs text-muted-foreground">{t("shareDetails.activity.anonymous")}</p>
-        )}
+        <div className="flex items-center gap-1.5">
+          {hasIdentity ? (
+            <p className="text-xs text-muted-foreground truncate">
+              {visit.visitorName}
+              {visit.visitorName && visit.visitorEmail && " · "}
+              {visit.visitorEmail}
+            </p>
+          ) : (
+            <p className="text-xs text-muted-foreground">{t("shareDetails.activity.anonymous")}</p>
+          )}
+          {visit.isOwner && (
+            <span className="inline-block px-1.5 py-0.5 text-[10px] rounded bg-muted/60 text-muted-foreground font-medium">
+              {t("shareDetails.activity.you")}
+            </span>
+          )}
+        </div>
         {visit.identificationSource !== "anonymous" &&
           visit.identificationSource in SOURCE_LABEL_KEY &&
           (visit.identificationSource === "cookie" ? (
@@ -73,7 +81,8 @@ function VisitEntry({ visit }: VisitEntryProps) {
               </TooltipTrigger>
               {/* Comfort-feature honesty (R-2): a "cookie" (self-declared) attribution is
                   unverified and spoofable. Surface a subtle hint so the owner doesn't read it
-                  as a verified identity. The verified "tracking_token" source gets no caveat. */}
+                  as a verified identity. The verified "tracking_token" and "authenticated_user"
+                  sources get no caveat — they are verified identities. */}
               <TooltipContent>{t("shareDetails.activity.source.selfDeclaredHint")}</TooltipContent>
             </Tooltip>
           ) : (

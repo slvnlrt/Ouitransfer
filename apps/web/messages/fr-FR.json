@@ -2034,10 +2034,12 @@
       "filterAllVisitors": "Tous les visiteurs",
       "filterIdentified": "Identifiés",
       "filterAnonymous": "Anonymes",
+      "you": "Vous",
       "source": {
         "tracking_token": "Via lien destinataire",
         "cookie": "Auto-identifié",
-        "selfDeclaredHint": "Identité auto-déclarée, non vérifiée"
+        "selfDeclaredHint": "Identité auto-déclarée, non vérifiée",
+        "authenticated_user": "Utilisateur enregistré"
       }
     }
   },

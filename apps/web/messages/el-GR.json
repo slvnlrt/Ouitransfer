@@ -2025,10 +2025,12 @@
       "filterAllVisitors": "Όλοι οι επισκέπτες",
       "filterIdentified": "Ταυτοποιημένος",
       "filterAnonymous": "Ανώνυμος",
+      "you": "You",
       "source": {
         "tracking_token": "Μέσω συνδέσμου παραλήπτη",
         "cookie": "Αυτοταυτοποίηση",
-        "selfDeclaredHint": "Αυτοδήλωτη ταυτότητα, μη επαληθευμένη"
+        "selfDeclaredHint": "Αυτοδήλωτη ταυτότητα, μη επαληθευμένη",
+        "authenticated_user": "Registered user"
       }
     },
     "lastDownloaded": "Τελευταία Λήψη",

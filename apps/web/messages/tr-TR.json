@@ -2021,10 +2021,12 @@
       "filterAllVisitors": "Tüm ziyaretçiler",
       "filterIdentified": "Tanımlandı",
       "filterAnonymous": "Anonim",
+      "you": "You",
       "source": {
         "tracking_token": "Alıcı bağlantısı aracılığıyla",
         "cookie": "Kendi tanımlandı",
-        "selfDeclaredHint": "Kendi beyan edilen kimlik, doğrulanmamış"
+        "selfDeclaredHint": "Kendi beyan edilen kimlik, doğrulanmamış",
+        "authenticated_user": "Registered user"
       }
     },
     "lastDownloaded": "Son İndirilen",

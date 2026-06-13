@@ -2184,10 +2184,12 @@
       "filterAllVisitors": "All visitors",
       "filterIdentified": "Identified",
       "filterAnonymous": "Anonymous",
+      "you": "You",
       "source": {
         "tracking_token": "Via recipient link",
         "cookie": "Self-identified",
-        "selfDeclaredHint": "Self-declared identity, not verified"
+        "selfDeclaredHint": "Self-declared identity, not verified",
+        "authenticated_user": "Registered user"
       }
     }
   },

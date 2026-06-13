@@ -2021,10 +2021,12 @@
       "filterAllVisitors": "所有访客",
       "filterIdentified": "已识别",
       "filterAnonymous": "匿名",
+      "you": "You",
       "source": {
         "tracking_token": "通过接收链接",
         "cookie": "自我识别",
-        "selfDeclaredHint": "自声明身份，未验证"
+        "selfDeclaredHint": "自声明身份，未验证",
+        "authenticated_user": "Registered user"
       }
     },
     "lastDownloaded": "最后下载",
