@@ -307,6 +307,10 @@ Les administrateurs peuvent surveiller la file d'attente des e-mails depuis **Ad
 
 Cela fournit un contrôle rapide de l'état de la livraison des e-mails. Un nombre croissant d'e-mails « En attente » peut indiquer des problèmes de connectivité SMTP. Un nombre non nul d'e-mails « Échoués » mérite investigation. Consultez les journaux du serveur pour obtenir des messages d'erreur détaillés.
 
+### Barre Statut du système
+
+La barre **Statut du système** du tableau de bord expose également l'état de santé du sous-système e-mail/notifications. **Les administrateurs** voient l'état de configuration SMTP, les compteurs de la file d'attente et la dernière erreur d'envoi en un coup d'œil. **Les utilisateurs ordinaires** ne voient qu'un indicateur sommaire — une ligne « Notifications perturbées » lorsque le sous-système est dégradé, ou « Notifications hors ligne » lorsqu'il est indisponible — et rien quand le sous-système est sain ou désactivé. Les valeurs de statut possibles sont `ok`, `disabled`, `degraded` et `down` ; ces mêmes valeurs sont exposées via `/admin/email/stats` pour la supervision par API.
+
 ### Envoyer un e-mail de test
 
 Le tableau de bord de la file d'attente des e-mails inclut un bouton **Envoyer un e-mail de test**. Celui-ci envoie un e-mail de test via le pipeline de livraison complet (file d'attente → SMTP → livraison) à l'adresse e-mail de l'administrateur. Utilisez-le pour vérifier que :
@@ -323,7 +327,7 @@ Le tableau de bord de la file d'attente des e-mails inclut un bouton **Envoyer u
 
 | Méthode | Chemin | Auth | Description |
 |--------|------|------|-------------|
-| `GET` | `/admin/email/stats` | Admin | Récupère les compteurs de la file d'attente (en attente, envoyés, échoués) |
+| `GET` | `/admin/email/stats` | Admin | Récupère les compteurs de la file d'attente (pending, sentLast24h, failed, digestPending) ainsi que le `status` du sous-système (`ok`/`disabled`/`degraded`/`down`), le booléen `smtpConfigured` et `lastError` (dernière erreur d'envoi, ou null) |
 | `POST` | `/admin/email/test` | Admin | Envoie un e-mail de test à l'adresse de l'administrateur connecté |
 
 Pour la référence complète de l'API, consultez la [documentation API](/docs/v1-beta/api).

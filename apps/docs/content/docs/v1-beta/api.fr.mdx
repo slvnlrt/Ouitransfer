@@ -153,7 +153,7 @@ Les deux offrent l'exploration des points de terminaison, des constructeurs de r
 
 **Jetons de suivi :** Les points de terminaison d'accès aux partages acceptent un paramètre de requête optionnel `?t=<token>`. Lorsqu'il est présent, le visiteur est automatiquement identifié comme le destinataire propriétaire de ce jeton de suivi. Voir [Partages : Identification des visiteurs](/docs/v1-beta/shares#visitor-identification).
 
-**Visites de partage :** Le point de terminaison `GET /shares/:shareId/visits` retourne des enregistrements de visites paginés. Paramètres de requête : `page` (défaut 1), `limit` (défaut 10), `action` (`access` ou `download`), `identified` (`true` ou `false`). Seul le propriétaire du partage peut accéder à ce point de terminaison.
+**Visites de partage :** Le point de terminaison `GET /shares/:shareId/visits` retourne des enregistrements de visites paginés. Paramètres de requête : `page` (défaut 1), `limit` (défaut 10), `action` (`access` ou `download`), `identified` (`true` ou `false`). Seul le propriétaire du partage peut accéder à ce point de terminaison. Chaque enregistrement inclut un champ `identificationSource` (`tracking_token`, `cookie`, `authenticated_user` ou `anonymous`) et un booléen `isOwner` indiquant si la visite a été attribuée au créateur du partage.
 
 ---
 
@@ -366,7 +366,7 @@ Le point de terminaison des préférences retourne les 22 types de notification 
 
 | Méthode | Chemin | Auth | Description |
 |---------|--------|------|-------------|
-| GET | `/admin/email/stats` | Admin | Obtenir les compteurs de la file d'attente email (en attente, envoyés, en échec) |
+| GET | `/admin/email/stats` | Admin | Obtenir les compteurs de la file d'attente email (pending, sentLast24h, failed, digestPending) ainsi que le `status` du sous-système (`ok`/`disabled`/`degraded`/`down`), le booléen `smtpConfigured` et `lastError` (dernière erreur d'envoi, ou null) |
 | POST | `/admin/email/test` | Admin | Envoyer un email de test à l'adresse email de l'admin courant |
 
 Pour les détails sur le système de distribution des emails, consultez [Configuration SMTP : Système de distribution des emails](/docs/v1-beta/configuring-smtp#email-delivery-system).
@@ -415,8 +415,8 @@ Pour les détails sur le système de distribution des emails, consultez [Configu
 
 | Méthode | Chemin | Auth | Description |
 |---------|--------|------|-------------|
-| GET | `/health` | Public | Vérification complète de l'état de santé (statut de la base de données + du stockage) |
-| GET | `/health/status` | Public | Statut de santé simplifié (`healthy`, `degraded`, `unhealthy`) |
+| GET | `/health` | Public | Vérification complète de l'état de santé (base de données, stockage et sous-système email/notifications) ; `checks` inclut `database`, `storage` et `email` (`ok`/`disabled`/`degraded`/`down`) |
+| GET | `/health/status` | Public | Statut de santé simplifié (`healthy`, `degraded`, `unhealthy`) ; retourne également un champ `email` avec le même enum. Le statut agrégé est basé uniquement sur la base de données + le stockage. |
 
 ---
 

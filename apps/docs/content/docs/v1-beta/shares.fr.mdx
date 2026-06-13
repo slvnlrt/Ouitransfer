@@ -125,7 +125,7 @@ Les relances sont **manuelles et déclenchées par le créateur**. Il n'y a aucu
 
 ## Identification des visiteurs
 
-Ouitransfer propose trois mécanismes pour identifier les personnes qui accèdent à un partage, du plus au moins précis :
+Ouitransfer propose quatre mécanismes pour identifier les personnes qui accèdent à un partage, du plus au moins précis :
 
 ### 1. Jetons de suivi (automatique)
 
@@ -148,9 +148,15 @@ La boîte de dialogue affiche également une courte **mention de confidentialit�
   Si un visiteur a déjà été identifié via un jeton de suivi (depuis un lien d'invitation destinataire), le formulaire d'identification n'est pas affiché; le jeton est prioritaire.
 </Callout>
 
-### 3. Accès anonyme
+### 3. Utilisateur Ouitransfer authentifié
 
-Lorsqu'aucun jeton de suivi n'est présent et qu'aucun champ d'identification n'est configuré (ou que tous sont définis sur Masqué), le visiteur est enregistré comme **anonyme**. Seules son adresse IP et son agent utilisateur sont capturés à des fins d'audit.
+Lorsqu'un utilisateur Ouitransfer connecté (non propriétaire du partage) accède à un partage sans jeton de suivi et sans entrée correspondante dans le formulaire d'identification, il est identifié par son compte. Il s'agit d'une attribution **vérifiée** : elle provient de sa session authentifiée et non d'une valeur auto-déclarée. Elle est représentée par la source d'identification `authenticated_user` dans la vue Activité.
+
+L'ordre de priorité (la première correspondance l'emporte) est : jeton de suivi → correspondance auto-déclarée dans le formulaire → compte authentifié → anonyme.
+
+### 4. Accès anonyme
+
+Lorsqu'aucun des mécanismes précédents ne s'applique, le visiteur est enregistré comme **anonyme**. Seules son adresse IP et son agent utilisateur sont capturés à des fins d'audit.
 
 ### Configurer les exigences d'identification
 
@@ -174,12 +180,13 @@ Chaque visite enregistre :
 |---|---|
 | **Action** | `Access` (page du partage chargée) ou `Download` (fichier téléchargé) |
 | **Identité du visiteur** | Nom et/ou e-mail du visiteur, ou « Anonyme » |
-| **Source d'identification** | Comment le visiteur a été identifié : `tracking_token` (vérifié, arrivé via un lien personnalisé), `cookie` (auto-déclaré depuis le formulaire d'identification), ou `anonymous` |
+| **Source d'identification** | Comment le visiteur a été identifié : `tracking_token` (vérifié, arrivé via un lien personnalisé), `cookie` (auto-déclaré depuis le formulaire d'identification), `authenticated_user` (vérifié — un compte Ouitransfer connecté), ou `anonymous` |
 | **Destinataire** | Si le visiteur a été associé à un destinataire, l'adresse e-mail du destinataire est affichée — accompagnée de la source pour distinguer une attribution vérifiée d'une attribution auto-déclarée |
 | **Horodatage** | Date et heure de l'événement |
+| **isOwner** | Si la visite a été attribuée au créateur du partage lui-même (rarement vrai en pratique, les accès courants du propriétaire n'étant pas suivis) |
 
 <Callout type="info">
-  Seule une source `tracking_token` est vérifiée. Une source `cookie` signifie que le visiteur a saisi une identité dans le formulaire (ou correspondait à un destinataire par e-mail auto-déclaré) ; c'est pratique mais non vérifié, et ne doit pas être considéré comme une preuve d'identité.
+  Les sources `tracking_token` et `authenticated_user` sont toutes deux vérifiées. Une source `cookie` signifie que le visiteur a saisi une identité dans le formulaire (ou correspondait à un destinataire par e-mail auto-déclaré) ; c'est pratique mais non vérifié — une identité auto-déclarée peut être usurpée et ne doit pas être considérée comme une preuve d'identité.
 </Callout>
 
 ### Filtres

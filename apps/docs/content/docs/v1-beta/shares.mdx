@@ -125,7 +125,7 @@ Reminders are **manual and creator-triggered**. There is no automatic scheduler:
 
 ## Visitor identification
 
-Ouitransfer offers three mechanisms to identify who accesses a share, from most to least precise:
+Ouitransfer offers four mechanisms to identify who accesses a share, from most to least precise:
 
 ### 1. Tracking tokens (automatic)
 
@@ -148,9 +148,15 @@ The dialog also displays a short **privacy notice** informing visitors that thei
   If a visitor has already been identified via a tracking token (from a recipient invitation link), the identification form is not shown; the token takes priority.
 </Callout>
 
-### 3. Anonymous access
+### 3. Authenticated Ouitransfer user
 
-When no tracking token is present and no identification fields are configured (or all are set to Hidden), the visitor is recorded as **anonymous**. Only their IP address and user agent are captured for audit purposes.
+When a logged-in, non-owner Ouitransfer user accesses a share without a tracking token and without a matched identification-form entry, they are identified by their account. This is a **verified** attribution: it comes from their authenticated session, not a self-declared value. It is represented as the `authenticated_user` identification source in the activity view.
+
+The precedence order (first match wins) is: tracking token → self-declared form match → authenticated account → anonymous.
+
+### 4. Anonymous access
+
+When none of the above apply, the visitor is recorded as **anonymous**. Only their IP address and user agent are captured for audit purposes.
 
 ### Setting identification requirements
 
@@ -174,12 +180,13 @@ Each visit records:
 |---|---|
 | **Action** | `Access` (share page loaded) or `Download` (file downloaded) |
 | **Visitor identity** | Name and/or email of the visitor, or "Anonymous" |
-| **Identification source** | How the visitor was identified: `tracking_token` (verified, arrived via a personalized link), `cookie` (self-declared from the identification form), or `anonymous` |
+| **Identification source** | How the visitor was identified: `tracking_token` (verified, arrived via a personalized link), `cookie` (self-declared from the identification form), `authenticated_user` (verified — a logged-in Ouitransfer account), or `anonymous` |
 | **Recipient** | If the visitor was linked to a recipient, the recipient email is shown — alongside the source so you can tell a verified attribution from a self-declared one |
 | **Timestamp** | When the event occurred |
+| **isOwner** | Whether the visit was attributed to the share's own creator (rarely true in practice, as routine owner accesses are not tracked) |
 
 <Callout type="info">
-  Only a `tracking_token` source is verified. A `cookie` source means the visitor typed an identity into the form (or matched a recipient by self-declared email); it is convenient but unverified and should not be relied on as proof of identity.
+  Both `tracking_token` and `authenticated_user` sources are verified. A `cookie` source means the visitor typed an identity into the form (or matched a recipient by self-declared email); it is convenient but unverified — a self-declared identity could be spoofed and should not be relied on as proof of identity.
 </Callout>
 
 ### Filters

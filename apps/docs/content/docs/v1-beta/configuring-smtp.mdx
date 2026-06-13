@@ -307,6 +307,10 @@ Administrators can monitor the email queue from **Admin > Email Queue**. The das
 
 This provides a quick health check on email delivery. A growing "Pending" count may indicate SMTP connectivity issues. A non-zero "Failed" count warrants investigation. Check the server logs for detailed error messages.
 
+### System Status bar
+
+The Dashboard **System Status** bar also surfaces email/notifications subsystem health. **Administrators** see the SMTP configuration state, queue counters, and the most recent send error at a glance. **Regular users** see only a coarse indicator — a "Notifications disrupted" line when the subsystem is degraded, or "Notifications offline" when it is down — and nothing when the subsystem is healthy or disabled. The possible status values are `ok`, `disabled`, `degraded`, and `down`; the same values are exposed via `/admin/email/stats` for API-level monitoring.
+
 ### Sending a test email
 
 The email queue dashboard includes a **Send Test Email** button. This sends a test email through the full delivery pipeline (queue → SMTP → delivery) to the administrator's own email address. Use this to verify that:
@@ -323,7 +327,7 @@ The email queue dashboard includes a **Send Test Email** button. This sends a te
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| `GET` | `/admin/email/stats` | Admin | Get email queue counters (pending, sent, failed) |
+| `GET` | `/admin/email/stats` | Admin | Get email queue counters (pending, sentLast24h, failed, digestPending) plus subsystem `status` (`ok`/`disabled`/`degraded`/`down`), `smtpConfigured` boolean, and `lastError` (most recent send error, or null) |
 | `POST` | `/admin/email/test` | Admin | Send a test email to the current admin's address |
 
 For the full API reference, see the [API documentation](/docs/v1-beta/api).
