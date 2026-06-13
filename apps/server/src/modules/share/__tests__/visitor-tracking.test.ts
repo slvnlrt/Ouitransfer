@@ -37,6 +37,7 @@ const {
   mockFileFirst,
   mockEmailSend,
   mockUserCount,
+  mockUserFindUnique,
 } = vi.hoisted(() => ({
   mockShareVisitCreate: vi.fn(),
   mockShareVisitFindMany: vi.fn().mockResolvedValue([]),
@@ -53,6 +54,7 @@ const {
   mockFileFirst: vi.fn(),
   mockEmailSend: vi.fn().mockResolvedValue({ enqueued: false }),
   mockUserCount: vi.fn().mockResolvedValue(1),
+  mockUserFindUnique: vi.fn().mockResolvedValue(null),
 }));
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
@@ -61,7 +63,7 @@ vi.mock("../../../shared/prisma.js", () => ({
   prisma: {
     user: {
       count: mockUserCount,
-      findUnique: vi.fn(),
+      findUnique: mockUserFindUnique,
     },
     share: {
       findUnique: mockShareFindUnique,
@@ -253,6 +255,7 @@ describe("Visitor Tracking — integration", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(prisma.user.count).mockResolvedValue(1);
+    mockUserFindUnique.mockResolvedValue(null);
     mockShareVisitCreate.mockResolvedValue({ id: "visit-1" });
     mockShareVisitFindMany.mockResolvedValue([]);
     mockShareVisitCount.mockResolvedValue(0);
@@ -393,13 +396,17 @@ describe("Visitor Tracking — integration", () => {
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // Owner access — no ShareVisit created
+  // Owner access — ShareVisit created with authenticated_user, no notification
   // ═══════════════════════════════════════════════════════════════════════════
 
-  describe("GET /shares/:shareId — owner access skips ShareVisit", () => {
-    it("does NOT create ShareVisit when owner accesses own share", async () => {
+  describe("GET /shares/:shareId — owner access creates authenticated_user visit", () => {
+    it("creates ShareVisit with authenticated_user when owner accesses own share", async () => {
       const share = makeShare();
       mockShareFindUnique.mockResolvedValue(share);
+      mockUserFindUnique.mockResolvedValue({
+        username: "creator_user",
+        email: "creator@example.com",
+      });
 
       const token = signToken(CREATOR_ID);
       const res = await app.inject({
@@ -412,7 +419,40 @@ describe("Visitor Tracking — integration", () => {
 
       await new Promise((r) => setTimeout(r, 10));
 
-      expect(mockShareVisitCreate).not.toHaveBeenCalled();
+      // Owner visit IS recorded (B-29)
+      expect(mockShareVisitCreate).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          shareId: SHARE_ID,
+          userId: CREATOR_ID,
+          visitorName: "creator_user",
+          visitorEmail: "creator@example.com",
+          action: "access",
+          identificationSource: "authenticated_user",
+        }),
+      });
+
+      // No share_accessed notification for owner self-visit
+      expect(mockEmailSend).not.toHaveBeenCalledWith("share_accessed", expect.anything());
+    });
+
+    it("does NOT send share_accessed notification for owner self-access", async () => {
+      const share = makeShare();
+      mockShareFindUnique.mockResolvedValue(share);
+      mockUserFindUnique.mockResolvedValue({
+        username: "creator_user",
+        email: "creator@example.com",
+      });
+
+      const token = signToken(CREATOR_ID);
+      await app.inject({
+        method: "GET",
+        url: `/shares/${SHARE_ID}`,
+        headers: { cookie: `token=${token}` },
+      });
+
+      await new Promise((r) => setTimeout(r, 20));
+
+      expect(mockEmailSend).not.toHaveBeenCalledWith("share_accessed", expect.anything());
     });
   });
 
@@ -913,12 +953,14 @@ describe("Visitor Tracking — integration", () => {
       id: "visit-1",
       shareId: SHARE_ID,
       recipientId: null,
+      userId: null,
       visitorName: null,
       visitorEmail: null,
       ipAddress: "127.0.0.1",
       userAgent: "test-agent",
       action: "access",
       fileId: null,
+      identificationSource: null,
       createdAt: new Date("2024-01-01"),
       recipient: null,
     };
@@ -1040,6 +1082,72 @@ describe("Visitor Tracking — integration", () => {
       expect(byId["v-legacy"]).toBe("tracking_token");
     });
 
+    it("maps authenticated_user visits correctly and computes isOwner (B-29)", async () => {
+      mockShareFindUnique.mockResolvedValue(makeShare()); // creatorId = CREATOR_ID
+      mockShareVisitFindMany.mockResolvedValue([
+        // Owner self-visit: userId === creatorId → isOwner true
+        {
+          ...visitRecord,
+          id: "v-owner",
+          userId: CREATOR_ID,
+          visitorName: "creator_user",
+          visitorEmail: "creator@example.com",
+          identificationSource: "authenticated_user",
+          recipient: null,
+        },
+        // Non-owner authenticated visit: userId set but !== creatorId → isOwner false
+        {
+          ...visitRecord,
+          id: "v-visitor",
+          userId: VISITOR_ID,
+          visitorName: "visitor_user",
+          visitorEmail: "visitor@example.com",
+          identificationSource: "authenticated_user",
+          recipient: null,
+        },
+        // Anonymous visit: no userId → isOwner false
+        {
+          ...visitRecord,
+          id: "v-anon",
+          userId: null,
+          identificationSource: null,
+          recipient: null,
+        },
+      ]);
+      mockShareVisitCount.mockResolvedValue(3);
+
+      const token = signToken(CREATOR_ID);
+      const res = await app.inject({
+        method: "GET",
+        url: `/shares/${SHARE_ID}/visits`,
+        headers: { cookie: `token=${token}` },
+      });
+
+      expect(res.statusCode).toBe(200);
+      const visits = res.json().visits;
+      const byId = Object.fromEntries(
+        visits.map((v: { id: string; identificationSource: string; isOwner: boolean }) => [
+          v.id,
+          { identificationSource: v.identificationSource, isOwner: v.isOwner },
+        ]),
+      );
+
+      expect(byId["v-owner"]).toEqual({
+        identificationSource: "authenticated_user",
+        isOwner: true,
+      });
+      expect(byId["v-visitor"]).toEqual({
+        identificationSource: "authenticated_user",
+        isOwner: false,
+      });
+      expect(byId["v-anon"]).toEqual({ identificationSource: "anonymous", isOwner: false });
+
+      // userId must NOT be exposed in the response (it's stripped server-side)
+      for (const visit of visits) {
+        expect(visit).not.toHaveProperty("userId");
+      }
+    });
+
     it("filters by action when provided", async () => {
       mockShareFindUnique.mockResolvedValue(makeShare());
       mockShareVisitFindMany.mockResolvedValue([
@@ -1111,6 +1219,7 @@ describe("Visitor Tracking — integration", () => {
               { recipientId: { not: null } },
               { visitorEmail: { not: null } },
               { visitorName: { not: null } },
+              { userId: { not: null } },
             ],
           }),
         }),
@@ -1122,6 +1231,7 @@ describe("Visitor Tracking — integration", () => {
               { recipientId: { not: null } },
               { visitorEmail: { not: null } },
               { visitorName: { not: null } },
+              { userId: { not: null } },
             ],
           }),
         }),
@@ -1159,6 +1269,242 @@ describe("Visitor Tracking — integration", () => {
           }),
         }),
       );
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // B-29 — Authenticated user identity in visit tracking
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  describe("B-29 — authenticated user visit identity", () => {
+    it("non-owner authenticated visit (no token/cookie) creates authenticated_user visit + fires owner notification", async () => {
+      const share = makeShare();
+      mockShareAliasFindUnique.mockResolvedValue({ shareId: SHARE_ID });
+      mockShareFindUnique.mockResolvedValue(share);
+      mockShareUpdateMany.mockResolvedValue({ count: 1 });
+      mockShareRecipientFindUnique.mockResolvedValue(null);
+      mockUserFindUnique.mockResolvedValue({
+        username: "visitor_user",
+        email: "visitor@example.com",
+      });
+      mockEmailSend.mockResolvedValue({ enqueued: true });
+
+      const token = signToken(VISITOR_ID);
+      const res = await app.inject({
+        method: "GET",
+        url: `/shares/alias/${ALIAS}`,
+        headers: { cookie: `token=${token}` },
+      });
+
+      expect(res.statusCode).toBe(200);
+
+      await new Promise((r) => setTimeout(r, 20));
+
+      // Visit recorded with authenticated_user and userId
+      expect(mockShareVisitCreate).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          shareId: SHARE_ID,
+          userId: VISITOR_ID,
+          visitorName: "visitor_user",
+          visitorEmail: "visitor@example.com",
+          action: "access",
+          identificationSource: "authenticated_user",
+        }),
+      });
+
+      // Owner notification still fires for non-owner visits
+      expect(mockEmailSend).toHaveBeenCalledWith(
+        "share_accessed",
+        expect.objectContaining({
+          to: "creator@example.com",
+        }),
+      );
+    });
+
+    it("tracking token takes precedence over authenticated_user identity", async () => {
+      const trackingToken = "valid-tracking-token";
+      const recipientId = "recipient-1";
+      const share = makeShare();
+      mockShareAliasFindUnique.mockResolvedValue({ shareId: SHARE_ID });
+      mockShareFindUnique.mockResolvedValue(share);
+      mockShareUpdateMany.mockResolvedValue({ count: 1 });
+      mockShareRecipientFindUnique.mockResolvedValue({
+        id: recipientId,
+        shareId: SHARE_ID,
+        email: "recipient@example.com",
+        name: "Recipient Name",
+        trackingToken,
+        accessCount: 0,
+        lastAccessedAt: null,
+      });
+      mockUserFindUnique.mockResolvedValue({
+        username: "visitor_user",
+        email: "visitor@example.com",
+      });
+
+      const token = signToken(VISITOR_ID);
+      const res = await app.inject({
+        method: "GET",
+        url: `/shares/alias/${ALIAS}?t=${trackingToken}`,
+        headers: { cookie: `token=${token}` },
+      });
+
+      expect(res.statusCode).toBe(200);
+
+      await new Promise((r) => setTimeout(r, 20));
+
+      // Token takes precedence — identificationSource must be "token", not "authenticated_user"
+      expect(mockShareVisitCreate).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          shareId: SHARE_ID,
+          recipientId,
+          action: "access",
+          identificationSource: "token",
+        }),
+      });
+      const visitCall = mockShareVisitCreate.mock.calls[0][0];
+      expect(visitCall.data.identificationSource).toBe("token");
+      expect(visitCall.data.identificationSource).not.toBe("authenticated_user");
+    });
+
+    it("identification cookie takes precedence over authenticated_user identity", async () => {
+      const share = makeShare();
+      mockShareAliasFindUnique.mockResolvedValue({ shareId: SHARE_ID });
+      mockShareFindUnique.mockResolvedValue(share);
+      mockShareUpdateMany.mockResolvedValue({ count: 1 });
+      mockShareRecipientFindUnique.mockResolvedValue(null);
+      mockUserFindUnique.mockResolvedValue({
+        username: "visitor_user",
+        email: "visitor@example.com",
+      });
+
+      // Build a properly signed sv_ cookie (must be signed — parseVisitorCookie uses unsignCookie)
+      const signedCookie = app.signCookie(
+        JSON.stringify({ alias: ALIAS, name: "Alice", email: "alice@example.com" }),
+      );
+
+      const token = signToken(VISITOR_ID);
+      const res = await app.inject({
+        method: "GET",
+        url: `/shares/alias/${ALIAS}`,
+        headers: { cookie: `token=${token}; sv_${ALIAS}=${signedCookie}` },
+      });
+
+      expect(res.statusCode).toBe(200);
+
+      await new Promise((r) => setTimeout(r, 20));
+
+      // Cookie provides identity — authenticated_user fallback must NOT be used
+      const visitCall = mockShareVisitCreate.mock.calls.find(
+        (c) => c[0]?.data?.action === "access",
+      );
+      expect(visitCall?.[0].data.identificationSource).not.toBe("authenticated_user");
+      // visitorName/visitorEmail come from the cookie, not from the authenticated user lookup
+      expect(visitCall?.[0].data.visitorName).toBe("Alice");
+      expect(visitCall?.[0].data.visitorEmail).toBe("alice@example.com");
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // B-29 — Authenticated user download tracking
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  describe("B-29 — authenticated user download identity", () => {
+    const fileRecord = {
+      id: FILE_ID,
+      name: "test.txt",
+      description: null,
+      extension: "txt",
+      size: BigInt(100),
+      objectName: OBJECT_NAME,
+      userId: CREATOR_ID,
+      folderId: null,
+      createdAt: new Date("2024-01-01"),
+      updatedAt: new Date("2024-01-01"),
+    };
+
+    const shareWithFile = {
+      id: SHARE_ID,
+      name: "Test Share",
+      creatorId: CREATOR_ID,
+      notifyOnDownload: false,
+      creator: { email: "creator@example.com", locale: "en", isActive: true },
+      alias: { alias: ALIAS },
+    };
+
+    beforeEach(() => {
+      mockFileFirst.mockResolvedValue(fileRecord);
+      vi.mocked(prisma.share.findMany).mockResolvedValue([
+        { id: SHARE_ID, security: { password: null } } as never,
+      ]);
+      mockShareFindFirst.mockResolvedValue(shareWithFile);
+      mockShareAliasFindUnique.mockResolvedValue({ alias: ALIAS });
+      mockShareRecipientFindUnique.mockResolvedValue(null);
+    });
+
+    it("authenticated non-owner downloader (no cookie) creates authenticated_user visit with userId", async () => {
+      mockUserFindUnique.mockResolvedValue({
+        username: "visitor_user",
+        email: "visitor@example.com",
+      });
+
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const token = signToken(VISITOR_ID);
+
+      const res = await app.inject({
+        method: "POST",
+        url: "/files/download-url",
+        headers: {
+          "content-type": "application/json",
+          cookie: `_csrf=${csrfCookie}; token=${token}`,
+          "x-csrf-token": csrfToken,
+        },
+        payload: { objectName: OBJECT_NAME, shareId: SHARE_ID },
+      });
+
+      expect(res.statusCode).toBe(200);
+
+      await new Promise((r) => setTimeout(r, 10));
+
+      expect(mockShareVisitCreate).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          shareId: SHARE_ID,
+          fileId: FILE_ID,
+          userId: VISITOR_ID,
+          visitorName: "visitor_user",
+          visitorEmail: "visitor@example.com",
+          action: "download",
+          identificationSource: "authenticated_user",
+        }),
+      });
+    });
+
+    it("owner download still does NOT create visit (owner-skip path unchanged)", async () => {
+      // checkFileAccess: use password-protected share so owner is authorized via JWT
+      vi.mocked(prisma.share.findMany).mockResolvedValue([
+        { id: SHARE_ID, security: { password: "hashed" } } as never,
+      ]);
+
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const token = signToken(CREATOR_ID);
+
+      const res = await app.inject({
+        method: "POST",
+        url: "/files/download-url",
+        headers: {
+          "content-type": "application/json",
+          cookie: `_csrf=${csrfCookie}; token=${token}`,
+          "x-csrf-token": csrfToken,
+        },
+        payload: { objectName: OBJECT_NAME, shareId: SHARE_ID },
+      });
+
+      expect(res.statusCode).toBe(200);
+
+      await new Promise((r) => setTimeout(r, 10));
+
+      // trackShareDownload returns early for the owner — no visit recorded
+      expect(mockShareVisitCreate).not.toHaveBeenCalled();
     });
   });
 

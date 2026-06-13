@@ -216,6 +216,25 @@ async function trackShareDownload(
   // cookie.recipientId (token-verified) → "token"; else cookie.email match → "self_declared".
   const resolvedRecipient = await resolveDownloadRecipient({ shareId, cookie: visitorCookie });
 
+  // Authenticated fallback: if no token/cookie match was found but the downloader is a
+  // logged-in Ouitransfer user, record their verified identity. Precedence:
+  //   token → self_declared/cookie → authenticated_user → anonymous (null)
+  // Owner is already filtered out above (isOwner returns early).
+  let downloadUserId: string | undefined;
+  let downloadIdentificationSource: string | undefined = resolvedRecipient?.identificationSource;
+  if (!resolvedRecipient?.recipientId && requestUserId) {
+    const authenticatedUser = await prisma.user.findUnique({
+      where: { id: requestUserId },
+      select: { username: true, email: true },
+    });
+    if (authenticatedUser) {
+      downloadUserId = requestUserId;
+      downloadIdentificationSource = "authenticated_user";
+      visitorName = authenticatedUser.username;
+      visitorEmail = authenticatedUser.email;
+    }
+  }
+
   // Fire and forget — don't block the response.
   // Await visit insert before notification: if the visit record fails,
   // don't notify the owner about a download that was never recorded.
@@ -225,13 +244,14 @@ async function trackShareDownload(
         data: {
           shareId,
           fileId: fileRecord.id,
+          userId: downloadUserId,
           recipientId: resolvedRecipient?.recipientId,
           visitorName,
           visitorEmail,
           ipAddress: request.ip,
           userAgent: request.headers["user-agent"],
           action: "download",
-          identificationSource: resolvedRecipient?.identificationSource,
+          identificationSource: downloadIdentificationSource,
         },
       });
     } catch (err) {
@@ -1071,6 +1091,17 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         throw new UnauthorizedError("Unauthorized access to file.");
       }
 
+      // Optional JWT extraction: checkFileAccess may grant access via the share path without
+      // ever calling jwtVerify(). Attempt it now so request.user is populated for download
+      // tracking (authenticated_user identity) and the FILE_DOWNLOAD audit userId field.
+      if (!request.user) {
+        try {
+          await request.jwtVerify();
+        } catch (_err) {
+          // Expected for anonymous downloaders — access was already granted via share.
+        }
+      }
+
       const fileName = fileRecord.name;
       const expires = env.PRESIGNED_GET_URL_EXPIRATION;
 
@@ -1199,6 +1230,17 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
 
       if (!hasAccess) {
         throw new UnauthorizedError("Unauthorized access to file.");
+      }
+
+      // Optional JWT extraction: checkFileAccess may grant access via the share path without
+      // ever calling jwtVerify(). Attempt it now so request.user is populated for download
+      // tracking (authenticated_user identity) and the FILE_DOWNLOAD audit userId field.
+      if (!request.user) {
+        try {
+          await request.jwtVerify();
+        } catch (_err) {
+          // Expected for anonymous downloaders — access was already granted via share.
+        }
       }
 
       // Enrich the (already-emitted) FILE_DOWNLOAD audit with the resolved recipient + source
