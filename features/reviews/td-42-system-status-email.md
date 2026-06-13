@@ -135,3 +135,102 @@ coverage-hardening tests:
 - Added `aria-hidden="true"` to the `emailStatusIcon` icons and the pre-existing DB/storage status icons.
 - Dropped `tabular-nums` from the free-form `lastError` span.
 - Added two dot-bump tests (loading suppression; unhealthy core not downgraded) — 62/62 in the suite.
+
+## Opus re-review (second pass)
+
+**Reviewer:** Opus 4.8 (independent adversarial second pass)
+**Scope:** TD-42 commit range `8e42c3c..7e6be30` only. B-29 changes (post-`7e6be30`) explicitly
+excluded; the TD-42 source files are untouched by B-29, so reading them at HEAD reflects TD-42 state.
+
+### Verdict
+
+**I confirm the first pass.** The implementation is faithful to the spec and structurally sound.
+The three original Minors were correctly identified and are genuinely fixed:
+
+- **`smtpConfigured`/`smtpDisabled` dead i18n keys** — confirmed removed from all 23 locales. The
+  only remaining `smtpConfigured` references are (a) `notifications/types.ts:37` (a real API field,
+  correct to keep) and (b) test mock fixtures — **not** orphan translation keys. Leaf-key parity is
+  exact: 11 identical leaves in every one of the 23 locale files.
+- **`aria-hidden` on email status icons** — present on all three `emailStatusIcon` branches
+  (`system-status-bar.tsx:295,298,301,304`) and the storage/DB icons.
+- **`tabular-nums` on `lastError`** — dropped; the span at `system-status-bar.tsx:490` now carries
+  only `truncate max-w-[200px]` + `title`.
+
+The optional hardening tests were added (loading suppression `…test.tsx:727`, unhealthy-core
+non-downgrade `…:740`). Coverage is genuinely thorough across both tiers, the disabled-hides-counters
+path, lastError, and all error states.
+
+### Verification results (re-run on current tree)
+
+| Check | Result |
+|-------|--------|
+| `pnpm --filter @ouitransfer/shared build` | PASS (exit 0) |
+| `pnpm --filter ouitransfer-api type-check` | PASS (exit 0) |
+| TD-42 server tests (health unit + `/health` + `/health/status` integration + notification routes) | **48/48 passed** |
+| `pnpm --filter ouitransfer-web type-check` | PASS (exit 0) |
+| `pnpm --filter ouitransfer-web lint` (biome) | PASS — 456 files, 0 issues |
+| `pnpm --filter ouitransfer-web test` | **359/359 passed** (36 files) |
+| Locale leaf-key parity (23 × email block) | PASS — identical 11-leaf set; spot-checked ar-SA, he-IL, zh-CN, ja-JP, ru-RU, fr-FR — all genuinely translated |
+| Public-endpoint data-exposure | PROVEN — integration test asserts `/health/status` body keys are **exactly** `["email","status"]` and `not.toHaveProperty` for `checks`/`timestamp`/`uptime`; `/health` `checks` exposes only `database`/`storage`/`email` enums (no counters/lastError). `/admin/email/stats` admin-gated (403 non-admin test). |
+
+### New findings
+
+All are **design trade-offs the spec accepted**; none is a correctness bug, none blocks merge. The
+first pass did not document them. I rate them all **Minor** and recommend tracking, not fixing now.
+
+- [ ] **Minor — Stale `lastError` can surface from a since-succeeded job.**
+  `apps/server/src/modules/email/health.ts:57-62` selects `findFirst where lastError not null
+  orderBy createdAt desc` with **no status filter**. In `queue.ts`, a job that fails attempt 1 sets
+  `lastError`, then succeeds on a retry → marked `status:"sent"` at `queue.ts:271` **without
+  clearing `lastError`**. So the admin "Last error" line can display the error text of an email that
+  was ultimately *delivered successfully*, with no failed job present. This is spec-conformant
+  (spec line 70 says "most recent non-null `EmailJob.lastError`") but undermines the spec's intent
+  (surface real current problems). **Concrete fix (optional):** scope the query to
+  `where: { status: "failed", lastError: { not: null } }`, or have the `sent` update at
+  `queue.ts:271` clear `lastError`. Either makes the displayed error correspond to an actual failure.
+
+- [ ] **Minor — `failed` counted over the whole retention window (≈30 days) over-reports
+  `degraded`/`down`.** `health.ts:53` counts *all* `status:"failed"` jobs, which persist until
+  `cleanupSentJobs` (which only deletes `sent` jobs — failed jobs are **never** auto-pruned, see
+  `queue.ts:165-191`). Consequences: (a) a single permanently-failed job to one bad recipient
+  address pins the subsystem to `degraded` indefinitely even while every other email flows; (b) on a
+  low-traffic instance, that same one stale failure + a quiet 24h (`sentLast24h===0`) flips the
+  status to **`down`** ("Notifications offline") despite SMTP being perfectly healthy — a real
+  false-positive. **Concrete fix (optional):** window the `failed` count to a recent period (e.g.
+  `createdAt >= now-24h`, mirroring `sentLast24h`) so a single old bad-address bounce doesn't define
+  current health; or require `failed >= N` before `degraded`.
+
+- [ ] **Minor — `processing`/`pending` states are invisible to the health model (false-negative).**
+  `health.ts` derives status from `failed` + `sentLast24h` only. A genuine stall where SMTP hangs and
+  jobs accumulate in `processing` (until `recoverStuckJobs` times them out, `queue.ts:116-159`), or a
+  large `pending` backlog with zero failures, both report **`ok`**. The `pending`/`digestPending`
+  counts are gathered and shown to admins but never influence the derived status. Bounded by the
+  stuck-job timeout, but worth noting. **Concrete fix (optional):** factor a `pending`/`processing`
+  backlog threshold into `degraded`.
+
+- [ ] **Minor (note, not a defect) — public unauthenticated endpoints expose the email enum.**
+  `/health` and `/health/status` return `email: degraded|down|disabled|ok` with no auth. This is a
+  low-sensitivity operational signal (consistent with the already-public `db`/`storage` ok/error and
+  explicitly accepted by spec §"Data exposure"), but it does let an anonymous caller learn that the
+  instance's notification subsystem is impaired/disabled. No counters or error text leak. Acceptable;
+  documented here for completeness since the first pass asserted "no info-leak" without flagging the
+  enum visibility itself.
+
+### Things the first pass got right (re-verified, no change)
+
+- Aggregate `status` correctly excludes email server-side; the client dot-bump can only lift
+  `healthy→degraded`, never to `unhealthy`, is gated by `!isLoading && !hasError`, and reads the
+  correct source per tier (`healthData.checks.email` for admin, `healthStatus.email` for user) —
+  `system-status-bar.tsx:625-639`. Verified by tests.
+- `getEmailStats` query is gated to `isAdmin && isExpanded`, included in both `refresh()` and
+  `isRefreshing`, and its error is parsed into the `DashboardError` union — `use-system-status.ts:100-151`.
+- Type soundness: no `any`; `EmailHealthStatus` is the single shared enum across `app/types` and
+  `notifications/types`. `emailStatusIcon` is exhaustive over all 4 enum cases (no nullable-icon gap).
+- RTL: logical `me-1` used (not `mr-1`); RTL locales (ar-SA, he-IL) carry real translations.
+
+### Conclusion
+
+No new Critical or Important findings. The four Minors above are all **accepted design trade-offs**
+of the cheap-counter health model, not implementation defects — the code does exactly what the spec
+describes. I recommend logging the stale-`lastError` and retention-window-`failed` items in
+`TECHNICAL-DEBT.md` as low-priority follow-ups, but TD-42 itself remains **Done / approved**.
