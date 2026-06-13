@@ -14,6 +14,13 @@ const FULL_QUALITY = 80;
 const THUMB_QUALITY = 70;
 export const MAX_RAW_SIZE = 10 * 1024 * 1024; // 10 MB
 const PRESIGNED_EXPIRY = 3600; // 1 hour
+/**
+ * A3-12: cap decoded pixels to defend against decompression-bomb images (a small,
+ * highly-compressed file that decodes to hundreds of MB of RAM). 50 Mpx (~8K) is
+ * generous for backgrounds while well under libvips' ~268 Mpx default. `failOn:
+ * "error"` rejects truncated/corrupt inputs rather than processing them.
+ */
+const SHARP_OPTIONS = { limitInputPixels: 50_000_000, failOn: "error" } as const;
 
 export class BackgroundImageService {
   private repository = new BackgroundImageRepository();
@@ -53,7 +60,7 @@ export class BackgroundImageService {
     }
 
     // Validate that sharp can read this image
-    const metadata = await sharp(buffer).metadata();
+    const metadata = await sharp(buffer, SHARP_OPTIONS).metadata();
     if (!metadata.width || !metadata.height) {
       throw new ValidationError("Invalid image file");
     }
@@ -62,12 +69,12 @@ export class BackgroundImageService {
     const id = crypto.randomUUID();
 
     // Process images
-    const fullBuffer = await sharp(buffer)
+    const fullBuffer = await sharp(buffer, SHARP_OPTIONS)
       .resize({ width: FULL_WIDTH, withoutEnlargement: true })
       .webp({ quality: FULL_QUALITY })
       .toBuffer();
 
-    const thumbBuffer = await sharp(buffer)
+    const thumbBuffer = await sharp(buffer, SHARP_OPTIONS)
       .resize({ width: THUMB_WIDTH, withoutEnlargement: true })
       .webp({ quality: THUMB_QUALITY })
       .toBuffer();
