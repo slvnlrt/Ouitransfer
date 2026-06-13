@@ -1186,10 +1186,12 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
           { userId: { not: null } },
         ];
       } else if (identified === "false") {
-        // No identification at all
+        // No identification at all — null all identity fields for symmetry with the
+        // identified=true OR clause (which tests userId: { not: null }).
         where.recipientId = null;
         where.visitorEmail = null;
         where.visitorName = null;
+        where.userId = null;
       }
 
       const [visits, total] = await Promise.all([

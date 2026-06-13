@@ -396,17 +396,16 @@ describe("Visitor Tracking — integration", () => {
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // Owner access — ShareVisit created with authenticated_user, no notification
+  // Owner access — NO ShareVisit, no notification (B-29 post-review: dropped)
   // ═══════════════════════════════════════════════════════════════════════════
 
-  describe("GET /shares/:shareId — owner access creates authenticated_user visit", () => {
-    it("creates ShareVisit with authenticated_user when owner accesses own share", async () => {
+  describe("GET /shares/:shareId — owner access does NOT create a visit", () => {
+    it("does NOT create a ShareVisit when the owner accesses their own share (B-29 review)", async () => {
+      // The management UI (share-details modal) calls GET /shares/:shareId on every open and on
+      // every invalidateShare(), so tracking owner views fills the log with self-referential noise.
+      // Fix: owner branch returns the response immediately, no ShareVisit created.
       const share = makeShare();
       mockShareFindUnique.mockResolvedValue(share);
-      mockUserFindUnique.mockResolvedValue({
-        username: "creator_user",
-        email: "creator@example.com",
-      });
 
       const token = signToken(CREATOR_ID);
       const res = await app.inject({
@@ -419,29 +418,16 @@ describe("Visitor Tracking — integration", () => {
 
       await new Promise((r) => setTimeout(r, 10));
 
-      // Owner visit IS recorded (B-29)
-      expect(mockShareVisitCreate).toHaveBeenCalledWith({
-        data: expect.objectContaining({
-          shareId: SHARE_ID,
-          userId: CREATOR_ID,
-          visitorName: "creator_user",
-          visitorEmail: "creator@example.com",
-          action: "access",
-          identificationSource: "authenticated_user",
-        }),
-      });
+      // No visit must be created for owner self-access
+      expect(mockShareVisitCreate).not.toHaveBeenCalled();
 
-      // No share_accessed notification for owner self-visit
+      // No share_accessed notification for owner self-access (still holds)
       expect(mockEmailSend).not.toHaveBeenCalledWith("share_accessed", expect.anything());
     });
 
     it("does NOT send share_accessed notification for owner self-access", async () => {
       const share = makeShare();
       mockShareFindUnique.mockResolvedValue(share);
-      mockUserFindUnique.mockResolvedValue({
-        username: "creator_user",
-        email: "creator@example.com",
-      });
 
       const token = signToken(CREATOR_ID);
       await app.inject({
@@ -1238,7 +1224,11 @@ describe("Visitor Tracking — integration", () => {
       );
     });
 
-    it("filters by identified=false (anonymous)", async () => {
+    it("filters by identified=false (anonymous) — nulls all identity fields including userId (B-29 review finding #4)", async () => {
+      // The false branch must null userId too, for symmetry with the identified=true OR clause
+      // which includes { userId: { not: null } }. Without userId: null, an authenticated_user
+      // visit with no name/email snapshot would slip into the anonymous bucket via a future
+      // code path even though the user was known.
       mockShareFindUnique.mockResolvedValue(makeShare());
       mockShareVisitFindMany.mockResolvedValue([visitRecord]);
       mockShareVisitCount.mockResolvedValue(1);
@@ -1257,6 +1247,7 @@ describe("Visitor Tracking — integration", () => {
             recipientId: null,
             visitorEmail: null,
             visitorName: null,
+            userId: null,
           }),
         }),
       );
@@ -1266,6 +1257,7 @@ describe("Visitor Tracking — integration", () => {
             recipientId: null,
             visitorEmail: null,
             visitorName: null,
+            userId: null,
           }),
         }),
       );
@@ -1367,18 +1359,22 @@ describe("Visitor Tracking — integration", () => {
       expect(visitCall.data.identificationSource).not.toBe("authenticated_user");
     });
 
-    it("identification cookie takes precedence over authenticated_user identity", async () => {
+    it("unmatched cookie: authenticated_user wins over stale/unmatched sv_ cookie (B-29 review finding #2)", async () => {
+      // An unmatched cookie (no recipient resolved) must not downgrade a verified JWT identity to
+      // a spoofable "cookie" attribution. The authenticated_user fallback must override the cookie
+      // display name/email when no recipient was linked.
       const share = makeShare();
       mockShareAliasFindUnique.mockResolvedValue({ shareId: SHARE_ID });
       mockShareFindUnique.mockResolvedValue(share);
       mockShareUpdateMany.mockResolvedValue({ count: 1 });
+      // Cookie present but no matching recipient → unmatched
       mockShareRecipientFindUnique.mockResolvedValue(null);
       mockUserFindUnique.mockResolvedValue({
         username: "visitor_user",
         email: "visitor@example.com",
       });
 
-      // Build a properly signed sv_ cookie (must be signed — parseVisitorCookie uses unsignCookie)
+      // Build a properly signed sv_ cookie — stale/unmatched (no recipientId in it)
       const signedCookie = app.signCookie(
         JSON.stringify({ alias: ALIAS, name: "Alice", email: "alice@example.com" }),
       );
@@ -1394,14 +1390,64 @@ describe("Visitor Tracking — integration", () => {
 
       await new Promise((r) => setTimeout(r, 20));
 
-      // Cookie provides identity — authenticated_user fallback must NOT be used
+      // Verified JWT identity must win: source is authenticated_user, userId is set,
+      // and name/email come from the user record (not the stale cookie).
+      expect(mockShareVisitCreate).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          shareId: SHARE_ID,
+          userId: VISITOR_ID,
+          identificationSource: "authenticated_user",
+          visitorName: "visitor_user",
+          visitorEmail: "visitor@example.com",
+          action: "access",
+        }),
+      });
+    });
+
+    it("matched cookie (self_declared) still takes precedence over authenticated_user identity", async () => {
+      // A cookie that matches a recipient (self_declared) must still win — the !recipientId
+      // guard in the authenticated fallback preserves this ordering.
+      const share = makeShare();
+      mockShareAliasFindUnique.mockResolvedValue({ shareId: SHARE_ID });
+      mockShareFindUnique.mockResolvedValue(share);
+      mockShareUpdateMany.mockResolvedValue({ count: 1 });
+      // Cookie email matches a known recipient → self_declared with recipientId set
+      mockShareRecipientFindUnique.mockImplementation(async ({ where }) => {
+        if (where?.shareId_email) {
+          return { id: "recipient-matched", shareId: SHARE_ID };
+        }
+        return null;
+      });
+      mockShareRecipientUpdate.mockResolvedValue({});
+      mockUserFindUnique.mockResolvedValue({
+        username: "visitor_user",
+        email: "visitor@example.com",
+      });
+
+      // Cookie contains alice's email which matches a recipient
+      const signedCookie = app.signCookie(
+        JSON.stringify({ alias: ALIAS, name: "Alice", email: "alice@example.com" }),
+      );
+
+      const token = signToken(VISITOR_ID);
+      const res = await app.inject({
+        method: "GET",
+        url: `/shares/alias/${ALIAS}`,
+        headers: { cookie: `token=${token}; sv_${ALIAS}=${signedCookie}` },
+      });
+
+      expect(res.statusCode).toBe(200);
+
+      await new Promise((r) => setTimeout(r, 20));
+
+      // A matched cookie sets recipientId (self_declared) which blocks the authenticated fallback.
       const visitCall = mockShareVisitCreate.mock.calls.find(
         (c) => c[0]?.data?.action === "access",
       );
+      expect(visitCall?.[0].data.identificationSource).toBe("self_declared");
+      expect(visitCall?.[0].data.recipientId).toBe("recipient-matched");
+      // Must not be overridden by authenticated_user
       expect(visitCall?.[0].data.identificationSource).not.toBe("authenticated_user");
-      // visitorName/visitorEmail come from the cookie, not from the authenticated user lookup
-      expect(visitCall?.[0].data.visitorName).toBe("Alice");
-      expect(visitCall?.[0].data.visitorEmail).toBe("alice@example.com");
     });
   });
 

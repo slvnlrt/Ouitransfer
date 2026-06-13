@@ -26,18 +26,24 @@ same way — for consistency the fix covers both.
   unlike the spoofable `self_declared`/`cookie` source.
 - **Snapshot `visitorName`/`visitorEmail`** from the user record (username + email) at visit time —
   consistent with how `self_declared` visits already persist `visitorEmail`, keeps the existing
-  activity rendering and the owner "share accessed" notification working without an extra join, and
-  on user deletion the FK goes `SetNull` (visit degrades gracefully, same PII profile as today's
-  external visits).
-- **Track owner self-accesses too**, but **without** firing the `share_accessed` owner
-  notification (you don't notify someone of their own visit) and without the password path. The
-  `/visits` response exposes `isOwner` (`visit.userId === share.creatorId`) so the UI can label it
-  "You" / owner rather than as an external visitor.
+  activity rendering and the owner "share accessed" notification working without an extra join. On
+  user deletion the FK goes `SetNull` and `deleteUser` nulls the `visitorEmail`/`visitorName`
+  snapshots in other owners' ShareVisit rows (GDPR erasure — runs before the user row is deleted
+  so the `userId` FK is still valid for the WHERE clause).
+- **Owner self-accesses are NOT tracked** (post-review revision). `GET /shares/:shareId` is the
+  owner's share-details/management modal, which refetches on every open and on every
+  `invalidateShare()` (edit, refresh trigger). Tracking it fills the activity log with
+  self-referential noise that drowns real visitor activity. The owner-download path also does not
+  track owners, so skipping here restores access/download consistency. `isOwner` is kept in the
+  `/visits` response shape (derived from `visit.userId === share.creatorId`) for any future or
+  edge owner-attributed rows, but routine owner management views are no longer logged.
 - **Resolution precedence** for `identificationSource` on a visit (first match wins): tracking
-  `token` → identification `cookie`/`self_declared` → **`authenticated_user`** (logged-in, no
-  token/cookie match) → `anonymous`. I.e. a personalized link / self-declared email still takes
-  precedence (richer recipient linkage); the authenticated fallback only fills the previously-
-  anonymous case.
+  `token` → identification `self_declared` (matched cookie recipient) → **`authenticated_user`**
+  (logged-in, no token/matched-recipient) → `anonymous`. An **unmatched** cookie (no `recipientId`
+  resolved) is overridden by a verified JWT identity: the authenticated user wins and their
+  confirmed name/email replaces the spoofable cookie display. A **matched** cookie
+  (`self_declared` with `recipientId` set) still takes precedence — the `!recipientId` guard
+  in the authenticated fallback preserves that.
 
 ## Schema
 
@@ -104,6 +110,5 @@ New keys in all 23 locales:
 
 ## Out of scope
 
-- Default-filtering owner self-visits out of the log (they're labeled, not hidden) — revisit only if
-  it proves noisy.
+- Owner self-visits are now not generated at all (see Decisions above), so filtering them is moot.
 - Per-visit `userId` index (queries are by `shareId`).

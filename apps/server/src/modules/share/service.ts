@@ -250,33 +250,11 @@ export class ShareService {
     // via cookies or fingerprints.
 
     if (isOwner) {
-      // Fire-and-forget: record the owner's own access as a visit without notifying them.
-      // We need the owner's username + email — look them up by userId (userId is guaranteed
-      // non-null here because isOwner requires it).
-      (async () => {
-        try {
-          const owner = await prisma.user.findUnique({
-            where: { id: userId as string },
-            select: { username: true, email: true },
-          });
-          await prisma.shareVisit.create({
-            data: {
-              shareId: share.id,
-              userId: userId as string,
-              visitorName: owner?.username,
-              visitorEmail: owner?.email,
-              ipAddress: context?.ipAddress,
-              userAgent: context?.userAgent,
-              action: "access",
-              identificationSource: "authenticated_user",
-            },
-          });
-        } catch (err) {
-          getLogger().error({ err }, "Failed to create owner ShareVisit");
-        }
-        // No share_accessed notification for owner self-visits.
-      })().catch(() => {});
-
+      // Owner self-access via the management UI (share-details modal) — do NOT record a visit.
+      // The modal calls GET /shares/:shareId on every open and on every invalidateShare()
+      // (edit name/description, refresh trigger), so tracking it fills the activity log with
+      // self-referential noise that drowns real visitor activity. The owner-download path also
+      // does not track owners, so skipping here restores access/download consistency.
       return ShareResponseSchema.parse(await this.formatShareResponse(share));
     }
 
@@ -476,13 +454,14 @@ export class ShareService {
       }
     }
 
-    // Authenticated fallback: if no token/cookie was provided AND no recipientId was attributed,
-    // but the visitor is a logged-in Ouitransfer user, record their verified identity. Precedence:
-    //   token → self_declared/cookie → authenticated_user → anonymous (null)
-    // A visitor cookie (even without a recipient match) still takes precedence over the
-    // authenticated_user fallback — the cookie represents a voluntary self-identification.
+    // Authenticated fallback: if no recipientId was attributed but the visitor is a logged-in
+    // Ouitransfer user, record their verified identity. Precedence:
+    //   token → self_declared/cookie (matched recipient) → authenticated_user → anonymous (null)
+    // A matched cookie (recipientId set via self_declared) still takes precedence — the
+    // !recipientId guard above ensures that. An UNMATCHED cookie (no recipientId) no longer
+    // blocks this path: a verified JWT identity must win over a stale/unmatched sv_ cookie.
     // The early-return above ensures we never reach here for the owner.
-    if (!recipientId && !context?.visitorCookie && userId) {
+    if (!recipientId && userId) {
       const authenticatedUser = await prisma.user.findUnique({
         where: { id: userId },
         select: { username: true, email: true },
