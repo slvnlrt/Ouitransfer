@@ -2025,12 +2025,12 @@
       "filterAllVisitors": "Semua pengunjung",
       "filterIdentified": "Teridentifikasi",
       "filterAnonymous": "Anonim",
-      "you": "You",
+      "you": "Anda",
       "source": {
         "tracking_token": "Melalui tautan penerima",
         "cookie": "Mengidentifikasi diri sendiri",
         "selfDeclaredHint": "Identitas yang dinyatakan sendiri, tidak diverifikasi",
-        "authenticated_user": "Registered user"
+        "authenticated_user": "Pengguna terdaftar"
       }
     },
     "lastDownloaded": "Terakhir Diunduh",

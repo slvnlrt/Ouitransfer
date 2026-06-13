@@ -2025,12 +2025,12 @@
       "filterAllVisitors": "ผู้เยี่ยมชมทั้งหมด",
       "filterIdentified": "ระบุตัวตนแล้ว",
       "filterAnonymous": "ไม่ระบุชื่อ",
-      "you": "You",
+      "you": "คุณ",
       "source": {
         "tracking_token": "ผ่านลิงก์รับไฟล์",
         "cookie": "ระบุตัวตนด้วยตนเอง",
         "selfDeclaredHint": "ตัวตนที่ประกาศเอง ยังไม่ได้ตรวจสอบ",
-        "authenticated_user": "Registered user"
+        "authenticated_user": "ผู้ใช้ที่ลงทะเบียนแล้ว"
       }
     },
     "lastDownloaded": "ดาวน์โหลดครั้งสุดท้าย",

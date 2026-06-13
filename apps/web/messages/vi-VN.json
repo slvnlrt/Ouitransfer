@@ -2025,12 +2025,12 @@
       "filterAllVisitors": "Tất cả khách",
       "filterIdentified": "Được xác định",
       "filterAnonymous": "Ẩn danh",
-      "you": "You",
+      "you": "Bạn",
       "source": {
         "tracking_token": "Thông qua liên kết nhận file",
         "cookie": "Tự xác định",
         "selfDeclaredHint": "Danh tính tự khai báo, chưa được xác minh",
-        "authenticated_user": "Registered user"
+        "authenticated_user": "Người dùng đã đăng ký"
       }
     },
     "lastDownloaded": "Tải xuống lần cuối",

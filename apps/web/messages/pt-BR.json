@@ -2025,12 +2025,12 @@
       "filterAllVisitors": "Todos os visitantes",
       "filterIdentified": "Identificados",
       "filterAnonymous": "Anônimos",
-      "you": "You",
+      "you": "Você",
       "source": {
         "tracking_token": "Via link do destinatário",
         "cookie": "Auto-identificado",
         "selfDeclaredHint": "Identidade auto-declarada, não verificada",
-        "authenticated_user": "Registered user"
+        "authenticated_user": "Usuário cadastrado"
       }
     },
     "lastDownloaded": "Último download",

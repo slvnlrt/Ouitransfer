@@ -2025,12 +2025,12 @@
       "filterAllVisitors": "Усі відвідувачі",
       "filterIdentified": "Ідентифіковано",
       "filterAnonymous": "Анонімно",
-      "you": "You",
+      "you": "Ви",
       "source": {
         "tracking_token": "Через посилання одержувача",
         "cookie": "Самоідентифіковано",
         "selfDeclaredHint": "Самозаявлена ідентичність, не перевірена",
-        "authenticated_user": "Registered user"
+        "authenticated_user": "Зареєстрований користувач"
       }
     },
     "lastDownloaded": "Останнє завантаження",

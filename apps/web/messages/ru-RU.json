@@ -2021,12 +2021,12 @@
       "filterAllVisitors": "Все посетители",
       "filterIdentified": "Идентифицировано",
       "filterAnonymous": "Анонимно",
-      "you": "You",
+      "you": "Вы",
       "source": {
         "tracking_token": "Через ссылку получения",
         "cookie": "Самоопределяемый",
         "selfDeclaredHint": "Самозаявленная идентичность, не проверена",
-        "authenticated_user": "Registered user"
+        "authenticated_user": "Зарегистрированный пользователь"
       }
     },
     "lastDownloaded": "Последняя загрузка",

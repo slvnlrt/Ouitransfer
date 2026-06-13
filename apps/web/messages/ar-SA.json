@@ -2021,12 +2021,12 @@
       "filterAllVisitors": "جميع الزائرين",
       "filterIdentified": "محددة الهوية",
       "filterAnonymous": "مجهول",
-      "you": "You",
+      "you": "أنت",
       "source": {
         "tracking_token": "عبر رابط المستقبل",
         "cookie": "محدد ذاتياً",
         "selfDeclaredHint": "هوية معلنة ذاتياً، غير موثقة",
-        "authenticated_user": "Registered user"
+        "authenticated_user": "مستخدم مسجّل"
       }
     },
     "lastDownloaded": "آخر تحميل",

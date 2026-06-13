@@ -2021,12 +2021,12 @@
       "filterAllVisitors": "Alle bezoekers",
       "filterIdentified": "Geïdentificeerd",
       "filterAnonymous": "Anoniem",
-      "you": "You",
+      "you": "Jij",
       "source": {
         "tracking_token": "Via ontvangerslink",
         "cookie": "Zelf geïdentificeerd",
         "selfDeclaredHint": "Zelf opgegeven identiteit, niet geverifieerd",
-        "authenticated_user": "Registered user"
+        "authenticated_user": "Geregistreerde gebruiker"
       }
     },
     "lastDownloaded": "Laatst gedownload",

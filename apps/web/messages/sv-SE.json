@@ -2025,12 +2025,12 @@
       "filterAllVisitors": "Alla besökare",
       "filterIdentified": "Identifierade",
       "filterAnonymous": "Anonyma",
-      "you": "You",
+      "you": "Du",
       "source": {
         "tracking_token": "Via mottagarlänk",
         "cookie": "Självidentifierad",
         "selfDeclaredHint": "Självdeklarerad identitet, ej verifierad",
-        "authenticated_user": "Registered user"
+        "authenticated_user": "Registrerad användare"
       }
     },
     "lastDownloaded": "Senast nedladdat",

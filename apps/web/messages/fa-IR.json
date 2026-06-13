@@ -2025,12 +2025,12 @@
       "filterAllVisitors": "تمام بازدیدکنندگان",
       "filterIdentified": "شناسایی‌شده",
       "filterAnonymous": "ناشناس",
-      "you": "You",
+      "you": "شما",
       "source": {
         "tracking_token": "از طریق پیوند گیرنده",
         "cookie": "خود-شناسایی‌شده",
         "selfDeclaredHint": "هویت خود‌اعلام‌شده، تایید‌نشده",
-        "authenticated_user": "Registered user"
+        "authenticated_user": "کاربر ثبت‌نام‌شده"
       }
     },
     "lastDownloaded": "آخرین دانلود",

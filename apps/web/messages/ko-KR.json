@@ -2021,12 +2021,12 @@
       "filterAllVisitors": "모든 방문자",
       "filterIdentified": "식별됨",
       "filterAnonymous": "익명",
-      "you": "You",
+      "you": "나",
       "source": {
         "tracking_token": "수신 링크를 통해",
         "cookie": "자체 식별",
         "selfDeclaredHint": "자체 신고 신원, 미확인",
-        "authenticated_user": "Registered user"
+        "authenticated_user": "등록된 사용자"
       }
     },
     "lastDownloaded": "마지막 다운로드",

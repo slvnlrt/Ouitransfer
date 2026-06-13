@@ -2021,12 +2021,12 @@
       "filterAllVisitors": "すべての訪問者",
       "filterIdentified": "識別済み",
       "filterAnonymous": "匿名",
-      "you": "You",
+      "you": "あなた",
       "source": {
         "tracking_token": "受信リンク経由",
         "cookie": "自己識別",
         "selfDeclaredHint": "自己申告身分、未検証",
-        "authenticated_user": "Registered user"
+        "authenticated_user": "登録済みユーザー"
       }
     },
     "lastDownloaded": "最後にダウンロード",

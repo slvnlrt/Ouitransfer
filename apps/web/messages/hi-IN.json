@@ -2021,12 +2021,12 @@
       "filterAllVisitors": "सभी आगंतुक",
       "filterIdentified": "पहचानी गई",
       "filterAnonymous": "अनाम",
-      "you": "You",
+      "you": "आप",
       "source": {
         "tracking_token": "प्राप्तकर्ता लिंक के माध्यम से",
         "cookie": "स्व-पहचानी गई",
         "selfDeclaredHint": "स्व-घोषित पहचान, सत्यापित नहीं",
-        "authenticated_user": "Registered user"
+        "authenticated_user": "पंजीकृत उपयोगकर्ता"
       }
     },
     "lastDownloaded": "अंतिम डाउनलोड",

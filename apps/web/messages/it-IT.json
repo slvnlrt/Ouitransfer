@@ -2021,12 +2021,12 @@
       "filterAllVisitors": "Tutti i visitatori",
       "filterIdentified": "Identificati",
       "filterAnonymous": "Anonimi",
-      "you": "You",
+      "you": "Tu",
       "source": {
         "tracking_token": "Tramite link destinatario",
         "cookie": "Auto-identificato",
         "selfDeclaredHint": "Identità auto-dichiarata, non verificata",
-        "authenticated_user": "Registered user"
+        "authenticated_user": "Utente registrato"
       }
     },
     "lastDownloaded": "Ultimo download",
