@@ -319,11 +319,31 @@
         "myFiles": "我的文件",
         "activeShares": "活跃共享"
       },
+      "email": {
+        "label": "电子邮件 / 通知",
+        "status": {
+          "ok": "正常运行",
+          "disabled": "未配置",
+          "degraded": "性能下降",
+          "down": "离线"
+        },
+        "smtpConfigured": "已配置 SMTP",
+        "smtpDisabled": "未配置 SMTP",
+        "queue": {
+          "pending": "待处理",
+          "failed": "失败",
+          "sent24h": "24小时已发送"
+        },
+        "lastError": "最近错误",
+        "userDisrupted": "通知中断",
+        "userOffline": "通知离线"
+      },
       "errors": {
         "title": "状态不可用",
         "fetchFailed": "无法获取系统状态。请稍后再试。",
         "diskSpaceError": "无法获取磁盘空间信息。",
-        "statsError": "无法加载平台统计数据。"
+        "statsError": "无法加载平台统计数据。",
+        "emailStatsError": "无法加载电子邮件通知统计数据。"
       },
       "collapse": "折叠系统状态",
       "expand": "展开系统状态"

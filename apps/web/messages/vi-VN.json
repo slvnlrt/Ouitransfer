@@ -323,11 +323,31 @@
         "myFiles": "Tệp của tôi",
         "activeShares": "Chia sẻ đang hoạt động"
       },
+      "email": {
+        "label": "Email / Thông báo",
+        "status": {
+          "ok": "Hoạt động",
+          "disabled": "Chưa cấu hình",
+          "degraded": "Suy giảm",
+          "down": "Ngoại tuyến"
+        },
+        "smtpConfigured": "Đã cấu hình SMTP",
+        "smtpDisabled": "Chưa cấu hình SMTP",
+        "queue": {
+          "pending": "Đang chờ",
+          "failed": "Thất bại",
+          "sent24h": "Đã gửi 24h"
+        },
+        "lastError": "Lỗi gần nhất",
+        "userDisrupted": "Thông báo bị gián đoạn",
+        "userOffline": "Thông báo ngoại tuyến"
+      },
       "errors": {
         "title": "Không thể hiển thị trạng thái",
         "fetchFailed": "Không thể lấy trạng thái hệ thống. Vui lòng thử lại sau.",
         "diskSpaceError": "Không thể lấy thông tin dung lượng đĩa.",
-        "statsError": "Không thể tải thống kê nền tảng."
+        "statsError": "Không thể tải thống kê nền tảng.",
+        "emailStatsError": "Không thể tải thống kê thông báo qua email."
       },
       "collapse": "Thu gọn trạng thái hệ thống",
       "expand": "Mở rộng trạng thái hệ thống"

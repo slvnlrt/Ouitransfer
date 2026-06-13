@@ -323,11 +323,31 @@
         "myFiles": "הקבצים שלי",
         "activeShares": "שיתופים פעילים"
       },
+      "email": {
+        "label": "דוא\"ל / התראות",
+        "status": {
+          "ok": "פעיל",
+          "disabled": "לא מוגדר",
+          "degraded": "מושפל",
+          "down": "לא מקוון"
+        },
+        "smtpConfigured": "SMTP מוגדר",
+        "smtpDisabled": "SMTP אינו מוגדר",
+        "queue": {
+          "pending": "ממתינות",
+          "failed": "נכשלו",
+          "sent24h": "נשלחו ב-24 שעות"
+        },
+        "lastError": "שגיאה אחרונה",
+        "userDisrupted": "ההתראות מופרעות",
+        "userOffline": "ההתראות לא מקוונות"
+      },
       "errors": {
         "title": "המצב אינו זמין",
         "fetchFailed": "לא ניתן לאחזר את מצב המערכת. נסה שוב מאוחר יותר.",
         "diskSpaceError": "לא ניתן לאחזר מידע על שטח הדיסק.",
-        "statsError": "לא ניתן לטעון סטטיסטיקות הפלטפורמה."
+        "statsError": "לא ניתן לטעון סטטיסטיקות הפלטפורמה.",
+        "emailStatsError": "לא ניתן לטעון סטטיסטיקות של התראות דוא\"ל."
       },
       "collapse": "כווץ סטטוס מערכת",
       "expand": "הרחב סטטוס מערכת"

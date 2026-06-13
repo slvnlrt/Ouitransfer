@@ -323,11 +323,31 @@
         "myFiles": "Mina filer",
         "activeShares": "Aktiva delningar"
       },
+      "email": {
+        "label": "E-post / Aviseringar",
+        "status": {
+          "ok": "Fungerar",
+          "disabled": "Inte konfigurerat",
+          "degraded": "Försämrat",
+          "down": "Offline"
+        },
+        "smtpConfigured": "SMTP konfigurerat",
+        "smtpDisabled": "SMTP inte konfigurerat",
+        "queue": {
+          "pending": "Väntande",
+          "failed": "Misslyckade",
+          "sent24h": "Skickade 24h"
+        },
+        "lastError": "Senaste fel",
+        "userDisrupted": "Aviseringar störda",
+        "userOffline": "Aviseringar offline"
+      },
       "errors": {
         "title": "Status ej tillgänglig",
         "fetchFailed": "Det gick inte att hämta systemstatus. Försök igen senare.",
         "diskSpaceError": "Det gick inte att hämta information om diskutrymme.",
-        "statsError": "Det gick inte att ladda plattformsstatistik."
+        "statsError": "Det gick inte att ladda plattformsstatistik.",
+        "emailStatsError": "Det gick inte att ladda statistik för e-postaviseringar."
       },
       "collapse": "Dölj systemstatus",
       "expand": "Visa systemstatus"

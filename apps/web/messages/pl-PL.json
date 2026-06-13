@@ -319,11 +319,31 @@
         "myFiles": "Moje pliki",
         "activeShares": "Aktywne udostępnienia"
       },
+      "email": {
+        "label": "E-mail / Powiadomienia",
+        "status": {
+          "ok": "Działa",
+          "disabled": "Nieskonfigurowane",
+          "degraded": "Pogorszone",
+          "down": "Offline"
+        },
+        "smtpConfigured": "SMTP skonfigurowane",
+        "smtpDisabled": "SMTP nieskonfigurowane",
+        "queue": {
+          "pending": "Oczekujące",
+          "failed": "Nieudane",
+          "sent24h": "Wysłane 24h"
+        },
+        "lastError": "Ostatni błąd",
+        "userDisrupted": "Powiadomienia zakłócone",
+        "userOffline": "Powiadomienia offline"
+      },
       "errors": {
         "title": "Status niedostępny",
         "fetchFailed": "Nie udało się pobrać stanu systemu. Spróbuj ponownie później.",
         "diskSpaceError": "Nie udało się pobrać informacji o przestrzeni dyskowej.",
-        "statsError": "Nie udało się załadować statystyk platformy."
+        "statsError": "Nie udało się załadować statystyk platformy.",
+        "emailStatsError": "Nie udało się załadować statystyk powiadomień e-mail."
       },
       "collapse": "Zwiń status systemu",
       "expand": "Rozwiń status systemu"

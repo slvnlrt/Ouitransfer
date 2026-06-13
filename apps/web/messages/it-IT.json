@@ -319,11 +319,31 @@
         "myFiles": "I miei file",
         "activeShares": "Condivisioni attive"
       },
+      "email": {
+        "label": "Email / Notifiche",
+        "status": {
+          "ok": "Operativo",
+          "disabled": "Non configurato",
+          "degraded": "Degradato",
+          "down": "Offline"
+        },
+        "smtpConfigured": "SMTP configurato",
+        "smtpDisabled": "SMTP non configurato",
+        "queue": {
+          "pending": "In attesa",
+          "failed": "Falliti",
+          "sent24h": "Inviati 24h"
+        },
+        "lastError": "Ultimo errore",
+        "userDisrupted": "Notifiche interrotte",
+        "userOffline": "Notifiche offline"
+      },
       "errors": {
         "title": "Stato non disponibile",
         "fetchFailed": "Impossibile recuperare lo stato del sistema. Riprova più tardi.",
         "diskSpaceError": "Impossibile recuperare le informazioni sullo spazio su disco.",
-        "statsError": "Impossibile caricare le statistiche della piattaforma."
+        "statsError": "Impossibile caricare le statistiche della piattaforma.",
+        "emailStatsError": "Impossibile caricare le statistiche delle notifiche email."
       },
       "collapse": "Comprimi stato del sistema",
       "expand": "Espandi stato del sistema"

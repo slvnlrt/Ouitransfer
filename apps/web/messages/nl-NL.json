@@ -319,11 +319,31 @@
         "myFiles": "Mijn bestanden",
         "activeShares": "Actieve delingen"
       },
+      "email": {
+        "label": "E-mail / Meldingen",
+        "status": {
+          "ok": "Operationeel",
+          "disabled": "Niet geconfigureerd",
+          "degraded": "Verminderd",
+          "down": "Offline"
+        },
+        "smtpConfigured": "SMTP geconfigureerd",
+        "smtpDisabled": "SMTP niet geconfigureerd",
+        "queue": {
+          "pending": "In behandeling",
+          "failed": "Mislukt",
+          "sent24h": "Verzonden 24u"
+        },
+        "lastError": "Laatste fout",
+        "userDisrupted": "Meldingen verstoord",
+        "userOffline": "Meldingen offline"
+      },
       "errors": {
         "title": "Status niet beschikbaar",
         "fetchFailed": "Kan de systeemstatus niet ophalen. Probeer het later opnieuw.",
         "diskSpaceError": "Kan schijfruimte-informatie niet ophalen.",
-        "statsError": "Kan platformstatistieken niet laden."
+        "statsError": "Kan platformstatistieken niet laden.",
+        "emailStatsError": "Kan statistieken van e-mailmeldingen niet laden."
       },
       "collapse": "Systeemstatus samenvouwen",
       "expand": "Systeemstatus uitvouwen"

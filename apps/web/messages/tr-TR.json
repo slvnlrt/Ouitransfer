@@ -319,11 +319,31 @@
         "myFiles": "Dosyalarım",
         "activeShares": "Aktif paylaşımlar"
       },
+      "email": {
+        "label": "E-posta / Bildirimler",
+        "status": {
+          "ok": "Çalışıyor",
+          "disabled": "Yapılandırılmadı",
+          "degraded": "Düşük performans",
+          "down": "Çevrimdışı"
+        },
+        "smtpConfigured": "SMTP yapılandırıldı",
+        "smtpDisabled": "SMTP yapılandırılmadı",
+        "queue": {
+          "pending": "Bekliyor",
+          "failed": "Başarısız",
+          "sent24h": "Gönderildi 24s"
+        },
+        "lastError": "Son hata",
+        "userDisrupted": "Bildirimler kesintiye uğradı",
+        "userOffline": "Bildirimler çevrimdışı"
+      },
       "errors": {
         "title": "Durum kullanılamıyor",
         "fetchFailed": "Sistem durumu alınamadı. Lütfen daha sonra tekrar deneyin.",
         "diskSpaceError": "Disk alanı bilgisi alınamadı.",
-        "statsError": "Platform istatistikleri yüklenemedi."
+        "statsError": "Platform istatistikleri yüklenemedi.",
+        "emailStatsError": "E-posta bildirim istatistikleri yüklenemedi."
       },
       "collapse": "Sistem durumunu daralt",
       "expand": "Sistem durumunu genişlet"
