@@ -652,13 +652,24 @@ describe("Notification routes — integration", () => {
     // ── GET /admin/email/stats ─────────────────────────────────────────────
 
     it("GET /admin/email/stats returns counters", async () => {
-      // evaluateEmailHealth issues the four counts via Promise.all in this exact
-      // order: pending, sentLast24h, failed, digestPending.
-      vi.mocked(mockPrisma.emailJob.count)
-        .mockResolvedValueOnce(5) // pending
-        .mockResolvedValueOnce(42) // sentLast24h
-        .mockResolvedValueOnce(3) // failed
-        .mockResolvedValueOnce(7); // digestPending
+      // evaluateEmailHealth counts by status; the windowed "failed" query adds a
+      // `createdAt` bound. Mock by where-clause so ordering is irrelevant.
+      vi.mocked(mockPrisma.emailJob.count).mockImplementation(
+        (args: { where: Record<string, unknown> }) => {
+          switch (args.where.status) {
+            case "pending":
+              return Promise.resolve(5);
+            case "sent":
+              return Promise.resolve(42);
+            case "failed":
+              return Promise.resolve(3); // both lifetime total and recent
+            case "digest_pending":
+              return Promise.resolve(7);
+            default:
+              return Promise.resolve(0);
+          }
+        },
+      );
       // No job carries a lastError in this scenario.
       vi.mocked(mockPrisma.emailJob.findFirst).mockResolvedValueOnce(null);
 

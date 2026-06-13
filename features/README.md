@@ -121,5 +121,5 @@ All resolved: B-1 through B-25, TD-1 through TD-5, TD-6 through TD-19, TD-21, TD
 **Test counts:** 103 server test files (1631 tests) + 36 web test files (359 tests) + 2 shared (14 tests) = **2004 total**.
 
 **Open bugs:** _none_ (B-26 resolved)
-**Open tech debt:** TD-20, TD-27 — see `TECHNICAL-DEBT.md` (TD-5, TD-10, TD-28, TD-30, TD-32, TD-33, TD-36, TD-38, TD-40, TD-42, TD-43, TD-50, TD-51, TD-52 resolved/closed)
+**Open tech debt:** TD-20, TD-27, TD-53 — see `TECHNICAL-DEBT.md` (TD-5, TD-10, TD-28, TD-30, TD-32, TD-33, TD-36, TD-38, TD-40, TD-42, TD-43, TD-50, TD-51, TD-52 resolved/closed)
 **Next features:** _none queued_ — TD-42 (System Status Email/Notifications subsystem) shipped: review clean (0 Critical / 0 Important / 3 Minor, all fixed) — `features/reviews/td-42-system-status-email.md`.

@@ -15,6 +15,9 @@ export interface EmailHealth {
   lastError: string | null;
 }
 
+/** Recency window for failure-based signals (status + lastError). */
+const RECENT_WINDOW_MS = 24 * 60 * 60 * 1000;
+
 /**
  * Evaluate the health of the email / notifications subsystem.
  *
@@ -26,11 +29,24 @@ export interface EmailHealth {
  * amplification/availability-leak vector. Queue counters are the signal we
  * actually care about (jobs piling up / failing), so they are sufficient.
  *
+ * Failure-based signals use a **recent (24h) window** so that old dead-letter
+ * jobs — failed jobs are retained for `emailJobRetentionDays` (~30d) and never
+ * auto-pruned — do not pin the subsystem to `degraded` forever, nor flip a quiet
+ * but healthy instance to `down`. A genuinely broken SMTP keeps producing fresh
+ * failures, so it stays degraded/down; once failures age out (and no new ones
+ * appear) the status self-heals to `ok`. The `failed` counter exposed to admins
+ * stays the lifetime total (informative); only the status/lastError derivation
+ * is windowed.
+ *
  * Status derivation:
  * - `disabled`  — SMTP not enabled (admin choice, not a fault).
- * - `down`      — enabled, there are failed jobs and nothing sent in the last 24h.
- * - `degraded`  — enabled, there are failed jobs but some mail is still going out.
- * - `ok`        — enabled, no failed jobs.
+ * - `down`      — enabled, recent failed jobs and nothing sent in the last 24h.
+ * - `degraded`  — enabled, recent failed jobs but some mail is still going out.
+ * - `ok`        — enabled, no recent failures.
+ *
+ * Known bounded blind spot (tracked as tech debt): a stalled transport that
+ * leaves jobs stuck in `processing`/`pending` with zero outright failures still
+ * reports `ok`. Detecting that cheaply (without a live probe) is a follow-up.
  */
 export async function evaluateEmailHealth(): Promise<EmailHealth> {
   let smtpConfigured = false;
@@ -42,20 +58,21 @@ export async function evaluateEmailHealth(): Promise<EmailHealth> {
     smtpConfigured = false;
   }
 
-  const [pending, sentLast24h, failed, digestPending] = await Promise.all([
+  const since = new Date(Date.now() - RECENT_WINDOW_MS);
+
+  const [pending, sentLast24h, failed, failedRecent, digestPending] = await Promise.all([
     prisma.emailJob.count({ where: { status: "pending" } }),
-    prisma.emailJob.count({
-      where: {
-        status: "sent",
-        sentAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
-      },
-    }),
+    prisma.emailJob.count({ where: { status: "sent", sentAt: { gte: since } } }),
     prisma.emailJob.count({ where: { status: "failed" } }),
+    prisma.emailJob.count({ where: { status: "failed", createdAt: { gte: since } } }),
     prisma.emailJob.count({ where: { status: "digest_pending" } }),
   ]);
 
+  // Only surface an error for a recently-failed job — a job that ultimately sent
+  // keeps its (now-stale) `lastError`, and an old dead-letter job is not a
+  // current problem.
   const lastErrorJob = await prisma.emailJob.findFirst({
-    where: { lastError: { not: null } },
+    where: { status: "failed", lastError: { not: null }, createdAt: { gte: since } },
     orderBy: { createdAt: "desc" },
     select: { lastError: true },
   });
@@ -64,9 +81,9 @@ export async function evaluateEmailHealth(): Promise<EmailHealth> {
   let status: EmailHealthStatus;
   if (!smtpConfigured) {
     status = "disabled";
-  } else if (failed > 0 && sentLast24h === 0) {
+  } else if (failedRecent > 0 && sentLast24h === 0) {
     status = "down";
-  } else if (failed > 0) {
+  } else if (failedRecent > 0) {
     status = "degraded";
   } else {
     status = "ok";

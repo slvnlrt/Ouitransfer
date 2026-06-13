@@ -8,6 +8,27 @@ but must be addressed. Each item includes context and the fix needed.
 
 ---
 
+## TD-53 — Email health: stalled-queue blind spot (processing/pending false-negative)
+
+**Context:** The cheap, queue-counter-based `evaluateEmailHealth` (TD-42) derives its status from
+recent failures + recent sends only. A genuine stall where SMTP hangs and jobs pile up in
+`processing` (until `recoverStuckJobs` times them out), or a large `pending` backlog with zero
+outright failures, both still report **`ok`**. The `pending`/`digestPending` counts are surfaced to
+admins but never influence the derived status.
+
+**Fix:** Factor a `pending`/`processing` backlog threshold (and/or an oldest-pending age) into the
+`degraded` derivation, so a stuck/clogged queue is reflected. Keep it a cheap DB query — still no
+live SMTP probe (the `/health` endpoints are public/unauthenticated).
+
+**Found during:** TD-42 Opus second-pass review (juin 2026, finding #3). Findings #1 (stale
+`lastError`) and #2 (retention-window `failed` false-positive) were fixed in the same session by
+windowing the failure signals to a recent 24h period; #4 (public enum exposure) accepted per spec.
+
+**Severity:** Low — a bounded false-negative (stuck jobs self-recover via the timeout); less harmful
+than the false-positives already fixed.
+
+---
+
 ## TD-5 — Audit needed: other "infrastructure set up but not used" patterns ✅ DONE
 
 **Resolved:** 2026-06-10

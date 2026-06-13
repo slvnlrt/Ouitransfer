@@ -178,7 +178,7 @@ path, lastError, and all error states.
 All are **design trade-offs the spec accepted**; none is a correctness bug, none blocks merge. The
 first pass did not document them. I rate them all **Minor** and recommend tracking, not fixing now.
 
-- [ ] **Minor — Stale `lastError` can surface from a since-succeeded job.**
+- [x] **Minor — Stale `lastError` can surface from a since-succeeded job.** — **FIXED.**
   `apps/server/src/modules/email/health.ts:57-62` selects `findFirst where lastError not null
   orderBy createdAt desc` with **no status filter**. In `queue.ts`, a job that fails attempt 1 sets
   `lastError`, then succeeds on a retry → marked `status:"sent"` at `queue.ts:271` **without
@@ -189,8 +189,8 @@ first pass did not document them. I rate them all **Minor** and recommend tracki
   `where: { status: "failed", lastError: { not: null } }`, or have the `sent` update at
   `queue.ts:271` clear `lastError`. Either makes the displayed error correspond to an actual failure.
 
-- [ ] **Minor — `failed` counted over the whole retention window (≈30 days) over-reports
-  `degraded`/`down`.** `health.ts:53` counts *all* `status:"failed"` jobs, which persist until
+- [x] **Minor — `failed` counted over the whole retention window (≈30 days) over-reports
+  `degraded`/`down`.** — **FIXED.** `health.ts:53` counts *all* `status:"failed"` jobs, which persist until
   `cleanupSentJobs` (which only deletes `sent` jobs — failed jobs are **never** auto-pruned, see
   `queue.ts:165-191`). Consequences: (a) a single permanently-failed job to one bad recipient
   address pins the subsystem to `degraded` indefinitely even while every other email flows; (b) on a
@@ -200,7 +200,9 @@ first pass did not document them. I rate them all **Minor** and recommend tracki
   `createdAt >= now-24h`, mirroring `sentLast24h`) so a single old bad-address bounce doesn't define
   current health; or require `failed >= N` before `degraded`.
 
-- [ ] **Minor — `processing`/`pending` states are invisible to the health model (false-negative).**
+- [x] **Minor — `processing`/`pending` states are invisible to the health model (false-negative).**
+  — **LOGGED as TD-53** (low priority; bounded by the stuck-job timeout, and a false-negative is less
+  harmful than the false-positives above). Documented in the `health.ts` doc comment as a known blind spot.
   `health.ts` derives status from `failed` + `sentLast24h` only. A genuine stall where SMTP hangs and
   jobs accumulate in `processing` (until `recoverStuckJobs` times them out, `queue.ts:116-159`), or a
   large `pending` backlog with zero failures, both report **`ok`**. The `pending`/`digestPending`
@@ -208,7 +210,9 @@ first pass did not document them. I rate them all **Minor** and recommend tracki
   stuck-job timeout, but worth noting. **Concrete fix (optional):** factor a `pending`/`processing`
   backlog threshold into `degraded`.
 
-- [ ] **Minor (note, not a defect) — public unauthenticated endpoints expose the email enum.**
+- [x] **Minor (note, not a defect) — public unauthenticated endpoints expose the email enum.**
+  — **ACCEPTED** (no change): low-sensitivity, consistent with the already-public `db`/`storage`
+  signals, and explicitly covered by the spec's "Data exposure" section. No counters/error text leak.
   `/health` and `/health/status` return `email: degraded|down|disabled|ok` with no auth. This is a
   low-sensitivity operational signal (consistent with the already-public `db`/`storage` ok/error and
   explicitly accepted by spec §"Data exposure"), but it does let an anonymous caller learn that the
@@ -234,3 +238,18 @@ No new Critical or Important findings. The four Minors above are all **accepted 
 of the cheap-counter health model, not implementation defects — the code does exactly what the spec
 describes. I recommend logging the stale-`lastError` and retention-window-`failed` items in
 `TECHNICAL-DEBT.md` as low-priority follow-ups, but TD-42 itself remains **Done / approved**.
+
+### Resolution of the second-pass findings
+
+Rather than only logging them, the two false-positive findings were **fixed** (the user-visible
+"Notifications offline" false alarm justified more than a backlog note):
+
+- **#1 stale `lastError`** + **#2 retention-window `failed`** — `evaluateEmailHealth` now derives
+  both the status and `lastError` from a **recent 24h window** of failures
+  (`status:"failed", createdAt >= now-24h`). Old dead-letter jobs no longer pin `degraded` nor flip a
+  quiet healthy instance to `down`; a since-succeeded job's stale error no longer surfaces. The
+  lifetime `failed` counter is preserved for admin context. New unit test: "returns ok when failures
+  exist but none are recent". Server suite 1639 green; web unchanged.
+- **#3 processing/pending blind spot** — logged as **TD-53** (low priority) and documented as a known
+  blind spot in the `health.ts` doc comment.
+- **#4 public enum exposure** — accepted; already covered by the spec's Data-exposure section.

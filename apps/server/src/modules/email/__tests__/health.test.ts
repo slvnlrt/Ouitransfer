@@ -35,25 +35,41 @@ import { getConfigValue } from "../../config/service.js";
 import { evaluateEmailHealth } from "../health.js";
 
 /**
- * Stub the four queue counts in the exact order evaluateEmailHealth issues
- * them inside Promise.all: pending, sentLast24h, failed, digestPending.
+ * Stub the queue counts by inspecting each count() call's `where` clause, so the
+ * test is robust to call ordering. `failedRecent` defaults to `failed` (i.e. all
+ * failures are recent) unless overridden — that distinction is what drives the
+ * windowed status derivation.
  */
 function mockCounts({
   pending,
   sentLast24h,
   failed,
+  failedRecent,
   digestPending,
 }: {
   pending: number;
   sentLast24h: number;
   failed: number;
+  failedRecent?: number;
   digestPending: number;
 }): void {
-  mockPrisma.emailJob.count
-    .mockResolvedValueOnce(pending)
-    .mockResolvedValueOnce(sentLast24h)
-    .mockResolvedValueOnce(failed)
-    .mockResolvedValueOnce(digestPending);
+  const recentFailed = failedRecent ?? failed;
+  mockPrisma.emailJob.count.mockImplementation((args: { where: Record<string, unknown> }) => {
+    const where = args.where;
+    switch (where.status) {
+      case "pending":
+        return Promise.resolve(pending);
+      case "sent":
+        return Promise.resolve(sentLast24h);
+      case "failed":
+        // The windowed query adds a `createdAt` bound; the lifetime total omits it.
+        return Promise.resolve(where.createdAt ? recentFailed : failed);
+      case "digest_pending":
+        return Promise.resolve(digestPending);
+      default:
+        return Promise.resolve(0);
+    }
+  });
 }
 
 describe("evaluateEmailHealth", () => {
@@ -97,6 +113,19 @@ describe("evaluateEmailHealth", () => {
     expect(result.queue).toEqual({ pending: 3, sentLast24h: 10, failed: 0, digestPending: 2 });
   });
 
+  it("returns ok when failures exist but none are recent (old dead-letter jobs)", async () => {
+    // Lifetime total has 5 failures, but none within the 24h window and nothing
+    // sent recently — a quiet but healthy instance must NOT report down/degraded.
+    vi.mocked(getConfigValue).mockResolvedValue("true");
+    mockCounts({ pending: 0, sentLast24h: 0, failed: 5, failedRecent: 0, digestPending: 0 });
+
+    const result = await evaluateEmailHealth();
+
+    expect(result.status).toBe("ok");
+    // The lifetime `failed` counter is still surfaced for admin context.
+    expect(result.queue.failed).toBe(5);
+  });
+
   it("returns degraded when enabled with failed jobs but mail still going out", async () => {
     vi.mocked(getConfigValue).mockResolvedValue("true");
     mockCounts({ pending: 1, sentLast24h: 8, failed: 3, digestPending: 0 });
@@ -127,8 +156,10 @@ describe("evaluateEmailHealth", () => {
     const result = await evaluateEmailHealth();
 
     expect(result.lastError).toBe("SMTP 535 auth failed");
+    // Scoped to recently-failed jobs only: a job that ultimately sent keeps a
+    // stale lastError, and an old dead-letter job is not a current problem.
     expect(mockPrisma.emailJob.findFirst).toHaveBeenCalledWith({
-      where: { lastError: { not: null } },
+      where: { status: "failed", lastError: { not: null }, createdAt: { gte: expect.any(Date) } },
       orderBy: { createdAt: "desc" },
       select: { lastError: true },
     });
