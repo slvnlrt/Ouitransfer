@@ -64,9 +64,13 @@ async function startServer() {
   const app = await buildApp();
 
   await ensureDirectories(app.log);
-  const { isInternalStorage, isExternalS3, ensureBucket } = await import(
+  const { isInternalStorage, isExternalS3, ensureBucket, validateStorageEndpoints } = await import(
     "./config/storage.config.js"
   );
+  // A3-07: fail fast on an unsafe storage endpoint (private/loopback/link-local/
+  // metadata host without opt-in, or http in production). A misconfigured storage
+  // endpoint is a security failure — abort boot rather than proceed.
+  validateStorageEndpoints();
   try {
     await ensureBucket();
   } catch (error) {

@@ -11,7 +11,22 @@ const envSchema = z.object({
   S3_REGION: z.string().optional(),
   S3_BUCKET_NAME: z.string().optional(),
   S3_FORCE_PATH_STYLE: z.union([z.literal("true"), z.literal("false")]).default("false"),
+  // S3_REJECT_UNAUTHORIZED=false disables TLS certificate verification for S3
+  // connections. TEST-ONLY: use exclusively with self-signed certs in dev/CI;
+  // never set this in production (it enables MITM on the storage channel).
   S3_REJECT_UNAUTHORIZED: z.union([z.literal("true"), z.literal("false")]).default("true"),
+  // SSRF escape hatch: when "true", allow S3_ENDPOINT/STORAGE_URL to point at a
+  // private/loopback/link-local host (self-hosted storage on a private network).
+  // Cloud metadata endpoints (169.254.169.254 etc.) remain blocked regardless.
+  // The internal-storage default (RustFS over a private/loopback address) implies
+  // this automatically — see validateStorageEndpoints().
+  S3_ALLOW_PRIVATE_ENDPOINT: z
+    .union([z.literal("true"), z.literal("false")])
+    .optional()
+    .default("false"),
+  // Optional comma-separated exact-host allowlist that opts specific hosts back in
+  // even when private ranges are otherwise rejected.
+  STORAGE_ALLOWED_HOSTS: z.string().optional(),
 
   // Application configuration
   PORT: z.coerce.number().int().min(1).max(65535).optional().default(3333),
