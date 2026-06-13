@@ -93,10 +93,15 @@ vi.mock("../modules/auth/token-version.js", () => ({
 // ── Mock FileService (avoid S3 dependency) ────────────────────────────────────
 // getObjectHead returns a small buffer file-type cannot identify (plain text),
 // so magic-byte check passes for tests focused on quota, not MIME validation.
+const { mockGetObjectSize } = vi.hoisted(() => ({ mockGetObjectSize: vi.fn() }));
+
 vi.mock("../modules/file/service.js", () => ({
   FileService: class MockFileService {
     getPresignedPutUrl = vi.fn().mockResolvedValue("https://s3.example.com/presigned");
     getObjectHead = vi.fn().mockResolvedValue(Buffer.from("plain text content"));
+    // A3-08: register HEAD-reconciles the declared size. postFile sets this to the
+    // declared size so these quota tests exercise quota math, not the mismatch guard.
+    getObjectSize = mockGetObjectSize;
     deleteObject = vi.fn().mockResolvedValue(undefined);
   },
 }));
@@ -131,6 +136,9 @@ describe("Quota enforcement integration tests", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // Default real object size matches the inline 1024-byte register payloads;
+    // postFile overrides it per-call to the declared size.
+    mockGetObjectSize.mockResolvedValue(BigInt(1024));
   });
 
   // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -160,6 +168,9 @@ describe("Quota enforcement integration tests", () => {
   ): Promise<ReturnType<typeof app.inject>> {
     const token = signTestToken(userId);
     const { csrfToken, csrfCookie } = await getCsrf();
+
+    // Echo the declared size for the A3-08 HEAD-reconcile.
+    mockGetObjectSize.mockResolvedValue(BigInt(filePayload.size));
 
     const payload = {
       name: filePayload.name ?? "photo.jpg",
