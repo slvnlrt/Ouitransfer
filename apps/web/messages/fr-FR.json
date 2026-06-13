@@ -319,11 +319,31 @@
         "myFiles": "Mes fichiers",
         "activeShares": "Partages actifs"
       },
+      "email": {
+        "label": "E-mail / Notifications",
+        "status": {
+          "ok": "Opérationnel",
+          "disabled": "Non configuré",
+          "degraded": "Dégradé",
+          "down": "Hors service"
+        },
+        "smtpConfigured": "SMTP configuré",
+        "smtpDisabled": "SMTP non configuré",
+        "queue": {
+          "pending": "En attente",
+          "failed": "Échecs",
+          "sent24h": "Envoyés 24h"
+        },
+        "lastError": "Dernière erreur",
+        "userDisrupted": "Notifications perturbées",
+        "userOffline": "Notifications hors service"
+      },
       "errors": {
         "title": "Statut indisponible",
         "fetchFailed": "Impossible de récupérer l'état du système. Veuillez réessayer plus tard.",
         "diskSpaceError": "Impossible de récupérer les informations d'espace disque.",
-        "statsError": "Impossible de charger les statistiques de la plateforme."
+        "statsError": "Impossible de charger les statistiques de la plateforme.",
+        "emailStatsError": "Impossible de charger les statistiques de notifications e-mail."
       },
       "collapse": "Replier l'état du système",
       "expand": "Déplier l'état du système"

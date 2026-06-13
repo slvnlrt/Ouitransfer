@@ -17,6 +17,8 @@ export interface DiskSpaceInfo {
   percentage?: number;
 }
 
+export type EmailHealthStatus = "ok" | "disabled" | "degraded" | "down";
+
 export interface CheckHealth200 {
   status: "healthy" | "degraded";
   timestamp: string;
@@ -24,6 +26,7 @@ export interface CheckHealth200 {
   checks: {
     database: "ok" | "error";
     storage: "ok" | "error" | "not_configured";
+    email: EmailHealthStatus;
   };
 }
 
@@ -58,6 +61,7 @@ export interface UploadLogoBody {
 
 export interface HealthStatus200 {
   status: "healthy" | "degraded" | "unhealthy";
+  email: EmailHealthStatus;
 }
 
 export type HealthStatusResult = AxiosResponse<HealthStatus200>;
