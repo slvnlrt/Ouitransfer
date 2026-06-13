@@ -26,17 +26,17 @@ After de-duplication of cross-corroborated findings: see batches below.
 ---
 
 ## R1 — Storage & upload integrity (server: file/folder/reverse-share/storage/utils)
-- [ ] A3-01 / A4-01 (Crit) reverse-share multipart: `validateObjectName(objectName, reverse-shares/<id>)` on part-url/complete/abort/list-parts
-- [ ] A3-02 (Crit) magic-byte/MIME fail-open: require mimeType (or derive server-side), run both layers unconditionally, **fail closed** on unexpected S3 error, enforce `DANGEROUS_EXTENSIONS` denylist at register; apply to reverse-share register too
-- [ ] A3-05 / A4-04 / A4-07 (High) reverse-share multipart limits: enforce maxFiles/maxFileSize/allowedFileTypes/owner-quota at create+complete; create `ReverseShareFile` row on complete; atomic maxFiles/quota; presign-time best-effort check
-- [ ] A3-08 / A4-05 (High/Med) HEAD-reconcile real object size for quota/maxFileSize/stored size on register (direct + reverse-share)
-- [ ] A2-06 / A3-06 (Med/Low) folder `objectName`: `validateObjectName` on create/check (or server-generate); namespace-guard before `deleteObject`
-- [ ] A3-09 (Med) use shared `sanitizeFilename` in reverse-share multipart create
-- [ ] A3-11 (Low) strip Unicode bidi/zero-width controls in `sanitizeFilename`; warn on dangerous double-extension
-- [ ] A3-12 (Low) `sharp(..., { limitInputPixels, failOn })` on avatar/logo/background
-- [ ] A3-10 (Low) fix dead GET reverse-share internal-storage download path to use POST authz
-- [ ] A3-07 (Med) validate `S3_ENDPOINT`/`STORAGE_URL` at boot (reject private/loopback/link-local/metadata unless allowlisted; https in prod); document `S3_REJECT_UNAUTHORIZED=false` test-only
-- [ ] A3-13 / A3-14 (Info) document header-only sniffing limits; keep forced attachment (covered by R2 A3-03)
+- [x] A3-01 / A4-01 (Crit) reverse-share multipart: `validateObjectName(objectName, reverse-shares/<id>)` on part-url/complete/abort/list-parts
+- [x] A3-02 (Crit) magic-byte/MIME fail-open: require mimeType (or derive server-side), run both layers unconditionally, **fail closed** on unexpected S3 error, enforce `DANGEROUS_EXTENSIONS` denylist at register; apply to reverse-share register too
+- [x] A3-05 / A4-04 / A4-07 (High) reverse-share multipart limits: enforce maxFiles/maxFileSize/allowedFileTypes/owner-quota at create+complete; create `ReverseShareFile` row on complete; atomic maxFiles/quota; presign-time best-effort check
+- [x] A3-08 / A4-05 (High/Med) HEAD-reconcile real object size for quota/maxFileSize/stored size on register (direct + reverse-share)
+- [x] A2-06 / A3-06 (Med/Low) folder `objectName`: `validateObjectName` on create/check (or server-generate); namespace-guard before `deleteObject`
+- [x] A3-09 (Med) use shared `sanitizeFilename` in reverse-share multipart create
+- [x] A3-11 (Low) strip Unicode bidi/zero-width controls in `sanitizeFilename`; warn on dangerous double-extension
+- [x] A3-12 (Low) `sharp(..., { limitInputPixels, failOn })` on avatar/logo/background
+- [x] A3-10 (Low) fix dead GET reverse-share internal-storage download path to use POST authz
+- [x] A3-07 (Med) validate `S3_ENDPOINT`/`STORAGE_URL` at boot (reject private/loopback/link-local/metadata unless allowlisted; https in prod); document `S3_REJECT_UNAUTHORIZED=false` test-only
+- [x] A3-13 / A3-14 (Info) document header-only sniffing limits; keep forced attachment (covered by R2 A3-03)
 
 ## R2 — Download/share access control (server: file/share routes + service + web proxy)
 - [ ] A4-02 / A3-04 / A2-04 (Crit/High/Low) `checkFileAccess`: require+bind `shareId`, evaluate access against THAT share only, enforce full lifecycle gate (isActive/expiration/maxViews/deactivatedAt/creator.isActive). Extract shared `assertShareAccessible(share)` used by `getShare` + `checkFileAccess`. Decrement/enforce maxViews on download.
