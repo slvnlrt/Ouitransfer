@@ -331,8 +331,6 @@
           "degraded": "מושפל",
           "down": "לא מקוון"
         },
-        "smtpConfigured": "SMTP מוגדר",
-        "smtpDisabled": "SMTP אינו מוגדר",
         "queue": {
           "pending": "ממתינות",
           "failed": "נכשלו",

@@ -327,8 +327,6 @@
           "degraded": "Dégradé",
           "down": "Hors service"
         },
-        "smtpConfigured": "SMTP configuré",
-        "smtpDisabled": "SMTP non configuré",
         "queue": {
           "pending": "En attente",
           "failed": "Échecs",

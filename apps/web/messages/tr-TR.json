@@ -327,8 +327,6 @@
           "degraded": "Düşük performans",
           "down": "Çevrimdışı"
         },
-        "smtpConfigured": "SMTP yapılandırıldı",
-        "smtpDisabled": "SMTP yapılandırılmadı",
         "queue": {
           "pending": "Bekliyor",
           "failed": "Başarısız",

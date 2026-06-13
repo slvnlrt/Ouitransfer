@@ -331,8 +331,6 @@
           "degraded": "Försämrat",
           "down": "Offline"
         },
-        "smtpConfigured": "SMTP konfigurerat",
-        "smtpDisabled": "SMTP inte konfigurerat",
         "queue": {
           "pending": "Väntande",
           "failed": "Misslyckade",

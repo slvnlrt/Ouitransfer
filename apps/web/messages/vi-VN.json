@@ -331,8 +331,6 @@
           "degraded": "Suy giảm",
           "down": "Ngoại tuyến"
         },
-        "smtpConfigured": "Đã cấu hình SMTP",
-        "smtpDisabled": "Chưa cấu hình SMTP",
         "queue": {
           "pending": "Đang chờ",
           "failed": "Thất bại",

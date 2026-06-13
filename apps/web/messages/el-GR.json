@@ -331,8 +331,6 @@
           "degraded": "Υποβαθμισμένο",
           "down": "Εκτός σύνδεσης"
         },
-        "smtpConfigured": "Το SMTP διαμορφώθηκε",
-        "smtpDisabled": "Το SMTP δεν διαμορφώθηκε",
         "queue": {
           "pending": "Σε εκκρεμότητα",
           "failed": "Απέτυχαν",

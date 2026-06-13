@@ -327,8 +327,6 @@
           "degraded": "متدهور",
           "down": "غير متصل"
         },
-        "smtpConfigured": "تم تكوين SMTP",
-        "smtpDisabled": "لم يتم تكوين SMTP",
         "queue": {
           "pending": "قيد الانتظار",
           "failed": "فشل",

@@ -331,8 +331,6 @@
           "degraded": "Знижено",
           "down": "Не в мережі"
         },
-        "smtpConfigured": "SMTP налаштовано",
-        "smtpDisabled": "SMTP не налаштовано",
         "queue": {
           "pending": "Очікують",
           "failed": "Помилки",

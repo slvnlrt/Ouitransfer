@@ -331,8 +331,6 @@
           "degraded": "ประสิทธิภาพลดลง",
           "down": "ออฟไลน์"
         },
-        "smtpConfigured": "กำหนดค่า SMTP แล้ว",
-        "smtpDisabled": "ยังไม่ได้กำหนดค่า SMTP",
         "queue": {
           "pending": "รอดำเนินการ",
           "failed": "ล้มเหลว",

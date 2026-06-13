@@ -327,8 +327,6 @@
           "degraded": "성능 저하",
           "down": "오프라인"
         },
-        "smtpConfigured": "SMTP 구성됨",
-        "smtpDisabled": "SMTP 구성되지 않음",
         "queue": {
           "pending": "대기 중",
           "failed": "실패",

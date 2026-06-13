@@ -327,8 +327,6 @@
           "degraded": "Verminderd",
           "down": "Offline"
         },
-        "smtpConfigured": "SMTP geconfigureerd",
-        "smtpDisabled": "SMTP niet geconfigureerd",
         "queue": {
           "pending": "In behandeling",
           "failed": "Mislukt",

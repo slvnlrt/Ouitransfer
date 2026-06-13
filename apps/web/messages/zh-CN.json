@@ -327,8 +327,6 @@
           "degraded": "性能下降",
           "down": "离线"
         },
-        "smtpConfigured": "已配置 SMTP",
-        "smtpDisabled": "未配置 SMTP",
         "queue": {
           "pending": "待处理",
           "failed": "失败",

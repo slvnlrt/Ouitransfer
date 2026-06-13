@@ -331,8 +331,6 @@
           "degraded": "افت‌کرده",
           "down": "آفلاین"
         },
-        "smtpConfigured": "SMTP پیکربندی شد",
-        "smtpDisabled": "SMTP پیکربندی نشده است",
         "queue": {
           "pending": "در انتظار",
           "failed": "ناموفق",

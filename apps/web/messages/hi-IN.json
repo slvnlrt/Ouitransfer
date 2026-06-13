@@ -327,8 +327,6 @@
           "degraded": "अवनत",
           "down": "ऑफ़लाइन"
         },
-        "smtpConfigured": "SMTP कॉन्फ़िगर किया गया",
-        "smtpDisabled": "SMTP कॉन्फ़िगर नहीं किया गया",
         "queue": {
           "pending": "लंबित",
           "failed": "विफल",

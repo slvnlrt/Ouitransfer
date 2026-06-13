@@ -327,8 +327,6 @@
           "degraded": "低下",
           "down": "オフライン"
         },
-        "smtpConfigured": "SMTP 設定済み",
-        "smtpDisabled": "SMTP 未設定",
         "queue": {
           "pending": "保留中",
           "failed": "失敗",

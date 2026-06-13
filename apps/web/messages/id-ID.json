@@ -331,8 +331,6 @@
           "degraded": "Menurun",
           "down": "Luring"
         },
-        "smtpConfigured": "SMTP dikonfigurasi",
-        "smtpDisabled": "SMTP tidak dikonfigurasi",
         "queue": {
           "pending": "Tertunda",
           "failed": "Gagal",

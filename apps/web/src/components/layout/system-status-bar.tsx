@@ -291,13 +291,17 @@ function BarUserView({
 function emailStatusIcon(status: EmailHealthStatus): ReactNode {
   switch (status) {
     case "ok":
-      return <CheckCircle2 className="size-3 text-green-600 dark:text-green-400" />;
+      return (
+        <CheckCircle2 className="size-3 text-green-600 dark:text-green-400" aria-hidden="true" />
+      );
     case "disabled":
-      return <AlertTriangle className="size-3 text-muted-foreground" />;
+      return <AlertTriangle className="size-3 text-muted-foreground" aria-hidden="true" />;
     case "degraded":
-      return <AlertTriangle className="size-3 text-amber-600 dark:text-amber-400" />;
+      return (
+        <AlertTriangle className="size-3 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+      );
     case "down":
-      return <XCircle className="size-3 text-red-600 dark:text-red-400" />;
+      return <XCircle className="size-3 text-red-600 dark:text-red-400" aria-hidden="true" />;
   }
 }
 
@@ -338,17 +342,29 @@ function BarAdminView({
         switch (storageStatus) {
           case "ok":
             return {
-              icon: <CheckCircle2 className="size-3 text-green-600 dark:text-green-400" />,
+              icon: (
+                <CheckCircle2
+                  className="size-3 text-green-600 dark:text-green-400"
+                  aria-hidden="true"
+                />
+              ),
               label: t("checks.ok"),
             };
           case "not_configured":
             return {
-              icon: <AlertTriangle className="size-3 text-amber-600 dark:text-amber-400" />,
+              icon: (
+                <AlertTriangle
+                  className="size-3 text-amber-600 dark:text-amber-400"
+                  aria-hidden="true"
+                />
+              ),
               label: t("checks.notConfigured"),
             };
           case "error":
             return {
-              icon: <XCircle className="size-3 text-red-600 dark:text-red-400" />,
+              icon: (
+                <XCircle className="size-3 text-red-600 dark:text-red-400" aria-hidden="true" />
+              ),
               label: t("checks.error"),
             };
         }
@@ -368,9 +384,12 @@ function BarAdminView({
           {/* Database */}
           <div className="flex items-center gap-1">
             {dbOk ? (
-              <CheckCircle2 className="size-3 text-green-600 dark:text-green-400" />
+              <CheckCircle2
+                className="size-3 text-green-600 dark:text-green-400"
+                aria-hidden="true"
+              />
             ) : (
-              <XCircle className="size-3 text-red-600 dark:text-red-400" />
+              <XCircle className="size-3 text-red-600 dark:text-red-400" aria-hidden="true" />
             )}
             <span className="text-muted-foreground">{t("checks.database")}</span>
           </div>
@@ -468,7 +487,7 @@ function BarAdminView({
                 aria-hidden="true"
               />
               <span className="me-1">{t("email.lastError")}:</span>
-              <span className="truncate max-w-[200px] tabular-nums" title={emailStats.lastError}>
+              <span className="truncate max-w-[200px]" title={emailStats.lastError}>
                 {emailStats.lastError}
               </span>
             </div>
