@@ -320,11 +320,7 @@ export class ReverseShareService {
     };
   }
 
-  async downloadReverseShareFile(
-    fileId: string,
-    creatorId: string,
-    _requestContext?: { protocol: string; host: string },
-  ) {
+  async downloadReverseShareFile(fileId: string, creatorId: string) {
     const file = await this.reverseShareRepository.findFileById(fileId);
     if (!file) {
       throw new NotFoundError("File not found");
@@ -337,18 +333,15 @@ export class ReverseShareService {
     const fileName = file.name;
     const expires = env.PRESIGNED_GET_URL_EXPIRATION;
 
-    // Import storage config to check if using internal or external S3
-    const { isInternalStorage } = await import("../../config/storage.config.js");
-
-    if (isInternalStorage) {
-      // Internal storage: Use frontend proxy (much simpler!)
-      const url = `/api/files/download?objectName=${encodeURIComponent(file.objectName)}`;
-      return { url, expiresIn: expires };
-    } else {
-      // External S3: Use presigned URLs directly (more efficient, no backend proxy)
-      const url = await this.fileService.getPresignedGetUrl(file.objectName, expires, fileName);
-      return { url, expiresIn: expires };
-    }
+    // A3-10: always issue a presigned GET URL (works for both internal and
+    // external storage — the public client uses STORAGE_URL which is
+    // browser-reachable). This replaces the previously dead internal-storage
+    // branch that returned a GET `/api/files/download?objectName=...` URL: that
+    // endpoint is POST-only (so it 404'd), and an objectName-in-querystring GET
+    // would leak the key in logs/referrers. The presigned GET additionally forces
+    // `Content-Disposition: attachment`, neutralizing inline rendering.
+    const url = await this.fileService.getPresignedGetUrl(file.objectName, expires, fileName);
+    return { url, expiresIn: expires };
   }
 
   async deleteReverseShareFile(fileId: string, creatorId: string) {

@@ -717,12 +717,9 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
           "Unauthorized: a valid token is required to access this resource.",
         );
       }
-      // Pass request context for internal storage proxy URLs
-      const requestContext = { protocol: "https", host: "localhost" }; // Simplified - frontend will handle the real URL
       const result = await reverseShareService.downloadReverseShareFile(
         request.params.fileId,
         userId,
-        requestContext,
       );
       logAuditEvent({
         action: "REVERSE_SHARE_FILE_DOWNLOAD",
