@@ -49,7 +49,12 @@ const envSchema = z.object({
     .describe(
       "Secret used to sign httpOnly cookies — must be distinct from JWT_SECRET and CSRF_SECRET",
     ),
-  ENCRYPTION_SECRET: z.string().min(32).optional(),
+  ENCRYPTION_SECRET: z
+    .string()
+    .min(32, "ENCRYPTION_SECRET must be at least 32 characters")
+    .describe(
+      "Master key for encrypting secrets at rest (2FA TOTP secret, LDAP bind password) via AES-256-GCM + HKDF",
+    ),
   TRUST_PROXY: z
     .string()
     .optional()

@@ -5,6 +5,9 @@ export default defineConfig({
     globals: true,
     environment: "node",
     include: ["src/**/*.test.ts", "src/**/*.spec.ts"],
+    // Establishes required env secrets (incl. ENCRYPTION_SECRET) before any
+    // module — and therefore env.ts — is imported. See vitest.setup.ts.
+    setupFiles: ["./vitest.setup.ts"],
     // Run test files sequentially to avoid buildApp() timeout failures.
     // Multiple integration tests bootstrap full Fastify instances in beforeAll,
     // which is slow under CPU contention when Turbo also runs web/shared tests
