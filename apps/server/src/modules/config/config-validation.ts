@@ -54,6 +54,36 @@ export function isCanonicalHttpOrigin(value: string): boolean {
   return true;
 }
 
+/**
+ * Whether `value` is a safe `http(s)://` URL for a user-facing, `target="_blank"`
+ * link (A7-01). Unlike {@link isCanonicalHttpOrigin}, this permits a path, query,
+ * and fragment (a footer link may point at a deep page), but still enforces the
+ * scheme allow-list and rejects the dangerous-scheme / link-poisoning classes:
+ *
+ *   - parseable as an absolute URL (rejects protocol-relative `//evil.com`,
+ *     which `new URL()` cannot parse without a base),
+ *   - `http:` / `https:` scheme only — rejects `javascript:`, `data:`,
+ *     `vbscript:`, `file:`, `ftp:`, etc. (DOM-XSS via a rendered href),
+ *   - has a hostname, and
+ *   - contains no CR/LF or other ASCII control characters.
+ */
+export function isSafeHttpLinkUrl(value: string): boolean {
+  for (let i = 0; i < value.length; i++) {
+    const code = value.charCodeAt(i);
+    if (code <= 0x1f || code === 0x7f) return false;
+  }
+
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    return false;
+  }
+  if (url.protocol !== "http:" && url.protocol !== "https:") return false;
+  if (!url.hostname) return false;
+  return true;
+}
+
 /** Max length for free-text branding strings persisted to config (appName, smtpFromName). */
 const MAX_BRANDING_LENGTH = 200;
 
@@ -219,12 +249,33 @@ const appUrlValidator: ConfigValueValidator = (value: string) => {
   }
 };
 
+/**
+ * `footerUrl` is rendered as the `href` of an admin-configurable, public-facing
+ * `target="_blank"` footer link (A7-01). It must be an `http(s)://` URL so a
+ * stored `javascript:`/`data:`/`vbscript:` value can never become a DOM-XSS sink
+ * when clicked, and a protocol-relative `//evil` value can never silently
+ * redirect users off-origin. The frontend validates again at render time
+ * (defense-in-depth), but the value is rejected at the write boundary here.
+ */
+const footerUrlValidator: ConfigValueValidator = (value: string) => {
+  // An empty value is allowed — it disables the footer link (renders no href).
+  if (value === "") return;
+  if (!isSafeHttpLinkUrl(value)) {
+    throw new ValidationError(
+      "Footer URL must be a valid http(s):// URL (e.g. https://example.com). javascript:, data:, and protocol-relative URLs are not allowed.",
+      { key: "footerUrl" },
+    );
+  }
+};
+
 const configValueValidators: Record<string, ConfigValueValidator> = {
   auditRetentionDays: fromSchema("auditRetentionDays", auditRetentionDaysSchema),
 
   // Branding & email identity (A6-07). appUrl backs every link builder; the SMTP
   // From identity feeds outbound headers.
   appUrl: appUrlValidator,
+  // Public footer link rendered with target="_blank" (A7-01).
+  footerUrl: footerUrlValidator,
   appName: brandingString("appName"),
   smtpFromName: brandingString("smtpFromName"),
   smtpFromEmail: fromSchema("smtpFromEmail", z.email("From email must be a valid email address.")),

@@ -371,6 +371,38 @@ describe("validateConfigValue", () => {
     });
   });
 
+  describe("footerUrl (A7-01)", () => {
+    const validate = (value: string) => () => validateConfigValue("footerUrl", value);
+
+    it("accepts http(s) URLs (incl. path/query/fragment — footer may deep-link)", () => {
+      expect(validate("https://example.com")).not.toThrow();
+      expect(validate("http://example.com/about?ref=footer#team")).not.toThrow();
+      expect(validate("https://sub.example.com:8443/path")).not.toThrow();
+    });
+
+    it("accepts an empty value (disables the footer link)", () => {
+      expect(validate("")).not.toThrow();
+    });
+
+    it("rejects javascript: / data: / vbscript: schemes (DOM-XSS)", () => {
+      expect(validate("javascript:alert(1)")).toThrow(/valid http/i);
+      expect(validate("JavaScript:alert(1)")).toThrow(/valid http/i);
+      expect(validate("data:text/html,<script>alert(1)</script>")).toThrow(/valid http/i);
+      expect(validate("vbscript:msgbox(1)")).toThrow(/valid http/i);
+    });
+
+    it("rejects non-http(s) schemes and protocol-relative URLs", () => {
+      expect(validate("ftp://example.com")).toThrow(/valid http/i);
+      expect(validate("file:///etc/passwd")).toThrow(/valid http/i);
+      expect(validate("//evil.com")).toThrow(/valid http/i);
+    });
+
+    it("rejects CR/LF and malformed input", () => {
+      expect(validate("https://example.com\r\nSet-Cookie: x=1")).toThrow(/valid http/i);
+      expect(validate("not a url")).toThrow(/valid http/i);
+    });
+  });
+
   describe("smtpFromEmail (A6-07)", () => {
     const validate = (value: string) => () => validateConfigValue("smtpFromEmail", value);
 

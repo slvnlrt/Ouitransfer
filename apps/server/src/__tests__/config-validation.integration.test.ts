@@ -142,6 +142,39 @@ describe("PATCH /app/configs — auditRetentionDays validation (integration)", (
       expect(res.json().config.value).toBe("30");
     });
 
+    it("rejects a javascript: footerUrl with 400 (A7-01) before any DB write", async () => {
+      const res = await app.inject({
+        method: "PATCH",
+        url: "/app/configs/footerUrl",
+        headers: await adminHeaders(),
+        payload: { value: "javascript:alert(document.cookie)" },
+      });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.json().error).toMatch(/valid http/i);
+      expect(mockConfigUpdate).not.toHaveBeenCalled();
+    });
+
+    it("accepts a valid https footerUrl with 200 (A7-01)", async () => {
+      mockConfigFindUnique.mockResolvedValue({
+        key: "footerUrl",
+        value: "old",
+        type: "string",
+        group: "general",
+        updatedAt: new Date(),
+      });
+
+      const res = await app.inject({
+        method: "PATCH",
+        url: "/app/configs/footerUrl",
+        headers: await adminHeaders(),
+        payload: { value: "https://example.com" },
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.json().config.value).toBe("https://example.com");
+    });
+
     it("does not constrain unrelated config keys", async () => {
       mockConfigFindUnique.mockResolvedValue({
         key: "appName",
