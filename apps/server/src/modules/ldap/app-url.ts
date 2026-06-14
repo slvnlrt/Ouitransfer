@@ -7,32 +7,17 @@
  * therefore require `appUrl` to be a canonical `http(s)://` origin before it is
  * used to build any credential-bearing link.
  *
- * NOTE (cross-batch): R5 owns the central `appUrl` config validator. This is the
- * minimal LDAP-local guard; when R5 lands its validator the two should be
- * consolidated (this module can delegate to it).
+ * R5 (A6-07) landed the central `appUrl` config validator in
+ * `config/config-validation.ts`, which is now the single source of truth for what
+ * a canonical origin is. This module delegates to it (re-exporting
+ * `isCanonicalHttpOrigin`) and keeps only the LDAP-specific welcome-link policy
+ * (the divergence warning vs the configured `appUrl`).
  */
 
 import { getLogger } from "../../utils/logger.js";
+import { isCanonicalHttpOrigin } from "../config/config-validation.js";
 
-/**
- * Whether `value` is a canonical, credential-safe `http(s)://` origin:
- *   - parseable as a URL,
- *   - http or https scheme only (rejects `javascript:`, `ftp:`, `data:`, …),
- *   - has a hostname,
- *   - carries no userinfo (`user:pass@`), which could mask the real host.
- */
-export function isCanonicalHttpOrigin(value: string): boolean {
-  let url: URL;
-  try {
-    url = new URL(value);
-  } catch {
-    return false;
-  }
-  if (url.protocol !== "http:" && url.protocol !== "https:") return false;
-  if (!url.hostname) return false;
-  if (url.username || url.password) return false;
-  return true;
-}
+export { isCanonicalHttpOrigin };
 
 /**
  * Assert that `appUrl` is a canonical http(s):// origin before it is used to

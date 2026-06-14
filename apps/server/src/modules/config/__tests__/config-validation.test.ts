@@ -331,9 +331,74 @@ describe("validateConfigValue", () => {
 
   describe("keys without a registered validator", () => {
     it("accepts any value", () => {
-      expect(() => validateConfigValue("appName", "anything")).not.toThrow();
       expect(() => validateConfigValue("smtpPort", "not-a-number")).not.toThrow();
       expect(() => validateConfigValue("unknownKey", "")).not.toThrow();
+    });
+  });
+
+  // ── A6-07: email/branding config validators ──────────────────────────────────
+
+  describe("appUrl (A6-07)", () => {
+    const validate = (value: string) => () => validateConfigValue("appUrl", value);
+
+    it("accepts a canonical https origin", () => {
+      expect(validate("https://transfer.example.com")).not.toThrow();
+      expect(validate("http://localhost:3000")).not.toThrow();
+      // A single trailing slash is the parser-normalized origin form.
+      expect(validate("https://transfer.example.com/")).not.toThrow();
+    });
+
+    it("rejects non-http(s) schemes", () => {
+      expect(validate("javascript:alert(1)")).toThrow(/valid http/i);
+      expect(validate("ftp://example.com")).toThrow(/valid http/i);
+      expect(validate("data:text/html,x")).toThrow(/valid http/i);
+    });
+
+    it("rejects a URL with a path, query, or fragment", () => {
+      expect(validate("https://example.com/sub/path")).toThrow(/valid http/i);
+      expect(validate("https://example.com/?x=1")).toThrow(/valid http/i);
+      expect(validate("https://example.com/#frag")).toThrow(/valid http/i);
+    });
+
+    it("rejects embedded userinfo (host-masking)", () => {
+      expect(validate("https://evil.example@transfer.example.com")).toThrow(/valid http/i);
+    });
+
+    it("rejects CR/LF (link/header poisoning) and malformed input", () => {
+      expect(validate("https://example.com\r\nSet-Cookie: x=1")).toThrow(/valid http/i);
+      expect(validate("not a url")).toThrow(/valid http/i);
+      expect(validate("")).toThrow(/valid http/i);
+    });
+  });
+
+  describe("smtpFromEmail (A6-07)", () => {
+    const validate = (value: string) => () => validateConfigValue("smtpFromEmail", value);
+
+    it("accepts a valid email", () => {
+      expect(validate("noreply@example.com")).not.toThrow();
+    });
+
+    it("rejects an invalid email", () => {
+      expect(validate("not-an-email")).toThrow(/valid email/i);
+      expect(validate("")).toThrow(/valid email/i);
+    });
+  });
+
+  describe("branding strings — appName / smtpFromName (A6-07)", () => {
+    it("accepts ordinary single-line values", () => {
+      expect(() => validateConfigValue("appName", "Acme Transfer")).not.toThrow();
+      expect(() => validateConfigValue("smtpFromName", "Acme Transfer Bot")).not.toThrow();
+    });
+
+    it("rejects CR/LF (SMTP header injection)", () => {
+      expect(() => validateConfigValue("appName", "Acme\r\nBcc: evil@x")).toThrow(/line breaks/i);
+      expect(() => validateConfigValue("smtpFromName", "Acme\nX-Spam: yes")).toThrow(
+        /line breaks/i,
+      );
+    });
+
+    it("rejects an over-length value", () => {
+      expect(() => validateConfigValue("appName", "x".repeat(201))).toThrow(/at most/i);
     });
   });
 });

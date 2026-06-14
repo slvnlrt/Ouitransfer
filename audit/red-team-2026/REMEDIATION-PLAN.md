@@ -84,16 +84,16 @@ After de-duplication of cross-corroborated findings: see batches below.
 - [x] A5-09 (Med) pending-state in signed cookie (also fixes multi-instance) — folded into A5-03 — R4a
 - [x] A5-10 (Med) log status+redacted marker only; never raw IdP bodies — R4a
 - [x] A5-12 (Low) bind external identity to immutable subject only — R4a
-- [x] A5-13 (Low) validate `appUrl` canonical origin for LDAP welcome links — R4b (`ldap/app-url.ts` `assertSafeAppUrl`; canonical-origin DTO refinement; divergence warning vs configured `appUrl`. NOTE: R5 owns the central appUrl validator — consolidate when it lands)
+- [x] A5-13 (Low) validate `appUrl` canonical origin for LDAP welcome links — R4b (`ldap/app-url.ts` `assertSafeAppUrl`; canonical-origin DTO refinement; divergence warning vs configured `appUrl`). **Consolidated in R5:** `ldap/app-url.ts` now re-exports `isCanonicalHttpOrigin` from the central `config/config-validation.ts` validator (single source of truth, now also rejects path/query/fragment).
 - [x] A5-14 (Info) HKDF/scrypt+salt for encryption key derivation; enforce min secret length — **done in R3a, confirmed in R4b**: `ldap/encryption.ts` delegates to `utils/encryption.ts` (HKDF-SHA256, per-record 16-byte salt, per-purpose `info="ldap-bind-password"`, AES-256-GCM); `env.ts:52-54` enforces `ENCRYPTION_SECRET` min 32 chars. No unsalted SHA-256 path remains.
 
 ## R5 — Email, invites, notifications (server: email/invite/notification + config-validation)
-- [ ] A6-02 / A6-08 (Med/Low) per-route IP rate limit on `/register-with-invite`, `GET /invite-tokens/:token`, `/notifications/unsubscribe`
-- [ ] A6-03 / A4-10 (Med) per-user daily external-email quota + max-recipients-per-share ceiling + enqueue-rate cap
-- [ ] A6-04 (Med) bind invite token to invited email (store + compare case-insensitive); document open invites
-- [ ] A6-05 (Low) shorten unsubscribe TTL (30d) + include tokenVersion/nonce for revocation
-- [ ] A6-06 (Low) cap pending email-queue depth; prune old failed rows
-- [ ] A6-07 (Low) validators for `appUrl` (http(s) origin, no path/CRLF), `smtpFromEmail` (email), CRLF-strip `smtpFromName`/`appName`
+- [x] A6-02 / A6-08 (Med/Low) per-route IP rate limit (5/min, keyed by `request.ip`) on `POST /register-with-invite` + `GET /invite-tokens/:token`; `/notifications/unsubscribe` already capped 30/h (R2). Global rate-limit `errorResponseBuilder` now emits `statusCode:429`/`code:"RATE_LIMITED"` so the error handler maps throttles to 429 (was falling through to 500). Cheap pre-flight token check stays ahead of bcrypt (bcrypt-DoS bound).
+- [x] A6-03 / A4-10 (Med) central `email/spam-guard.ts`: per-user rolling-24h external-email quota (500) + burst cap (100/min) counted via new `EmailJob.senderUserId` column, independent of HTTP request count; `MAX_RECIPIENTS_PER_SHARE=100` ceiling enforced on share + reverse-share recipient-add/replace; `senderUserId` threaded through `emailService.send` for invitation/reminder types. New `RATE_LIMITED` error code; 429 added to notify/remind route schemas.
+- [x] A6-04 (Med) `InviteToken.email` column (Prisma migration); `generateInviteToken` stores the lowercased invited email; `registerWithInvite` rejects a mismatched email (case-insensitive) with `INVITE_EMAIL_MISMATCH` (403) **before** bcrypt; null email = open/bearer invite (documented in schema).
+- [x] A6-05 (Low) unsubscribe TTL 90d→30d; token embeds the user's `tokenVersion` as `tv`; verify returns it; `unsubscribeUser` + the GET confirm page reject a token whose `tv` ≠ live `tokenVersion` (silent no-op / error page); legacy tokens with no `tv` are rejected.
+- [x] A6-06 (Low) `MAX_PENDING_QUEUE_DEPTH=10000` cap (drop non-critical w/ logged warn; priority-1 critical exempt); cleanup now prunes terminal `failed` rows (fixed 7-day window) alongside `sent` (`cleanupTerminalJobs`).
+- [x] A6-07 (Low) central `isCanonicalHttpOrigin` + validators in `config/config-validation.ts`: `appUrl` (http(s) origin, no path/query/fragment/userinfo/CRLF), `smtpFromEmail` (email), CRLF-strip + length-cap `smtpFromName`/`appName`. `ldap/app-url.ts` now delegates to the shared helper (A5-13 consolidation). Plain-text email renderer routes `cta.url`/`unsubscribeUrl` through a scheme allowlist (`safeTextUrl`).
 
 ## R6 — Web frontend (apps/web)
 - [ ] A7-01 (High) validate `footerUrl` `^https?://` (reject javascript:/data:/vbscript://) at config-write API + render; add `rel="noopener noreferrer"` to all `target=_blank`
