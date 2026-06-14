@@ -19,6 +19,23 @@ export type EmailJobStatus = "pending" | "processing" | "sent" | "failed" | "dig
 const BATCH_SIZE = 10;
 
 /**
+ * Maximum number of pending (+ digest_pending) jobs allowed in the queue (A6-06).
+ * Non-critical enqueues beyond this depth are dropped with a logged warning so a
+ * burst cannot grow the EmailJob table / disk without bound while the worker
+ * drains at ~BATCH_SIZE per interval. Critical (priority 1) mail bypasses this.
+ */
+export const MAX_PENDING_QUEUE_DEPTH = 10_000;
+
+/**
+ * Failed jobs older than this are pruned on the periodic cleanup schedule (A6-06).
+ * Failed rows are terminal (no further retry) and otherwise accumulate forever —
+ * `cleanupSentJobs` historically only pruned `status:"sent"`. Independent of the
+ * configurable `emailJobRetentionDays` (which governs successfully-sent mail);
+ * failed rows are diagnostic noise and are kept for a fixed, shorter window.
+ */
+const FAILED_JOB_RETENTION_DAYS = 7;
+
+/**
  * Maximum backoff delay in seconds (1 hour).
  * The actual delay is computed as `min(MAX_BACKOFF_SECONDS, 60 × 2^(attempt-1))`:
  *   attempt 1 → 60s, attempt 2 → 120s, attempt 3 → 240s, …, capped at 3600s.
@@ -159,10 +176,15 @@ async function recoverStuckJobs(): Promise<void> {
 }
 
 /**
- * Deletes "sent" jobs older than `emailJobRetentionDays` days.
- * Called periodically (every CLEANUP_EVERY_N_TICKS ticks).
+ * Prunes terminal email jobs (A6-06):
+ *  - "sent" jobs older than the configurable `emailJobRetentionDays`, and
+ *  - "failed" jobs older than the fixed {@link FAILED_JOB_RETENTION_DAYS}.
+ *
+ * Both are terminal states that otherwise accumulate forever. Failed rows are
+ * keyed on `createdAt` (they may never have a `sentAt`). Called periodically
+ * (every CLEANUP_EVERY_N_TICKS ticks).
  */
-async function cleanupSentJobs(): Promise<void> {
+async function cleanupTerminalJobs(): Promise<void> {
   let retentionDays = 30;
   try {
     const value = await getConfigValue("emailJobRetentionDays");
@@ -174,18 +196,27 @@ async function cleanupSentJobs(): Promise<void> {
     // Use default
   }
 
-  const olderThan = new Date(Date.now() - retentionDays * 24 * 60 * 60 * 1000);
-  const result = await prisma.emailJob.deleteMany({
-    where: {
-      status: "sent",
-      sentAt: { lte: olderThan },
-    },
-  });
+  const sentOlderThan = new Date(Date.now() - retentionDays * 24 * 60 * 60 * 1000);
+  const failedOlderThan = new Date(Date.now() - FAILED_JOB_RETENTION_DAYS * 24 * 60 * 60 * 1000);
 
-  if (result.count > 0) {
+  const [sentResult, failedResult] = await Promise.all([
+    prisma.emailJob.deleteMany({
+      where: { status: "sent", sentAt: { lte: sentOlderThan } },
+    }),
+    prisma.emailJob.deleteMany({
+      where: { status: "failed", createdAt: { lte: failedOlderThan } },
+    }),
+  ]);
+
+  if (sentResult.count > 0 || failedResult.count > 0) {
     getLogger().info(
-      { deletedCount: result.count, olderThan: olderThan.toISOString() },
-      "Cleaned up sent email jobs",
+      {
+        sentDeleted: sentResult.count,
+        failedDeleted: failedResult.count,
+        sentOlderThan: sentOlderThan.toISOString(),
+        failedOlderThan: failedOlderThan.toISOString(),
+      },
+      "Cleaned up terminal email jobs",
     );
   }
 }
@@ -357,9 +388,9 @@ async function processTick(): Promise<void> {
   // Run cleanup approximately once per hour (every CLEANUP_EVERY_N_TICKS ticks)
   if (tickCount % CLEANUP_EVERY_N_TICKS === 0) {
     try {
-      await cleanupSentJobs();
+      await cleanupTerminalJobs();
     } catch (error) {
-      getLogger().error({ err: error }, "Email queue cleanupSentJobs failed");
+      getLogger().error({ err: error }, "Email queue cleanupTerminalJobs failed");
     }
   }
 }
