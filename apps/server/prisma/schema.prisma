@@ -210,10 +210,12 @@ model EmailJob {
   payload       String?   /// Reserved for future digest aggregation. Digest jobs will store raw payload JSON here for deferred rendering.
   relatedId     String?
   listUnsubscribe String?
+  senderUserId  String?   /// The authenticated user who triggered this email (when applicable). Drives the per-user anti-spam daily quota (A6-03); null for system/critical mail (resets, admin alerts) that does not count toward a user's quota.
   createdAt     DateTime  @default(now())
 
   @@index([status, nextAttemptAt])
   @@index([status, priority, nextAttemptAt])
+  @@index([senderUserId, createdAt])
   @@map("email_jobs")
 }
 
@@ -505,6 +507,7 @@ model Folder {
 model InviteToken {
   id        String    @id @default(cuid())
   token     String    @unique
+  email     String?   /// The invited email (lowercased) when the admin targeted a specific address. When set, the token is email-bound: registration must use this exact address (A6-04). When null the token is an open/bearer invite by design.
   expiresAt DateTime
   usedAt    DateTime?
   createdBy String

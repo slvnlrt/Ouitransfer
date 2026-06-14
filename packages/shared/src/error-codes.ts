@@ -19,6 +19,11 @@ export const ErrorCodes = {
   // Validation
   VALIDATION_ERROR: "VALIDATION_ERROR",
 
+  // Abuse / throttling. Raised by application-level anti-spam guards (e.g. the
+  // per-user outbound-email quota / burst cap, A6-03) — distinct from the global
+  // HTTP rate-limit plugin, which does not carry an ErrorCode.
+  RATE_LIMITED: "RATE_LIMITED",
+
   // Resources
   NOT_FOUND: "NOT_FOUND",
   RECORD_NOT_FOUND: "RECORD_NOT_FOUND",
@@ -70,6 +75,9 @@ export const ErrorCodes = {
   // Invites
   INVITE_TOKEN_USED: "INVITE_TOKEN_USED",
   INVITE_TOKEN_EXPIRED: "INVITE_TOKEN_EXPIRED",
+  // The registrant's email does not match the address the email-bound invite was
+  // issued to (A6-04). Open/bearer invites (no bound email) never raise this.
+  INVITE_EMAIL_MISMATCH: "INVITE_EMAIL_MISMATCH",
   USERNAME_EXISTS: "USERNAME_EXISTS",
   EMAIL_EXISTS: "EMAIL_EXISTS",
 } as const;
