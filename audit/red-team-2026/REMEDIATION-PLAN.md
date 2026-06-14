@@ -12,7 +12,7 @@ After de-duplication of cross-corroborated findings: see batches below.
 
 | Canonical | Duplicates / related | Issue |
 |---|---|---|
-| **X-Real-IP/X-User-Agent header trust** | A1-01 (Crit), A8-02 (Crit) | `getClientInfo()` trusts spoofable headers → lockout/rate-limit bypass + audit poisoning |
+| ~~**X-Real-IP/X-User-Agent header trust**~~ ✅ R3a | A1-01 (Crit), A8-02 (Crit) | `getClientInfo()` trusts spoofable headers → lockout/rate-limit bypass + audit poisoning |
 | **Reverse-share multipart objectName injection** | A3-01 (Crit), A4-01 (Crit) | 4 public multipart routes skip `validateObjectName` |
 | **Download bypasses share lifecycle** | A4-02 (Crit), A3-04 (High), A2-04 (Low) | `checkFileAccess` checks only password/ownership; not scoped to a shareId |
 | **Inline-disposition download + proxy CSP** | A3-03 (High), A7-07 (Low) | stored HTML/SVG rendered same-origin |
@@ -51,17 +51,18 @@ After de-duplication of cross-corroborated findings: see batches below.
 - [x] A4-11 / A4-13 / A4-14 (Low) documented anonymous csrfExempt surface + presigned/streamed delivery; expiry computed from date (not just the persisted flag) in lifecycle gate + metadata
 
 ## R3 — Authentication & session + access-control core (server: auth/two-factor/user/middleware)
-- [ ] **X-Real-IP/X-User-Agent (Crit, A1-01/A8-02)** stop reading `x-real-ip`/`x-user-agent`; use Fastify `request.ip`; add per-IP failed-login throttle alongside email lockout
-- [ ] A1-02 (High, TD-3) route `/auth/2fa/verify` + `/2fa/login` through lockout accounting; dedicated 2FA failure counter
-- [ ] A1-03 (High) persist last-used TOTP step; reject replay; consider window 0/1
-- [ ] A1-04 (High) trusted-device: server-issued random device secret in httpOnly cookie; `@@unique([userId, deviceHash])`; stop deriving from UA/IP
-- [ ] A1-05 (High) require re-auth (password/step-up) to enable 2FA + regenerate backup codes
+### R3a (2FA / trusted-device / credentials-at-rest) — DONE
+- [x] **X-Real-IP/X-User-Agent (Crit, A1-01/A8-02)** stop reading `x-real-ip`/`x-user-agent`; use Fastify `request.ip`; add per-IP failed-login throttle alongside email lockout
+- [x] A1-02 (High, TD-3) route `/auth/2fa/verify` + `/2fa/login` through lockout accounting; dedicated 2FA failure counter
+- [x] A1-03 (High) persist last-used TOTP step; reject replay; consider window 0/1
+- [x] A1-04 (High) trusted-device: server-issued random device secret in httpOnly cookie; `@@unique([userId, deviceHash])`; stop deriving from UA/IP
+- [x] A1-05 (High) require re-auth (password/step-up) to enable 2FA + regenerate backup codes
 - [ ] A1-06 (Med) forgot-password: generic 200 for disabled-password non-LDAP users (no enumeration)
-- [ ] A1-07 (Med) backup codes ≥80-bit (`randomBytes(10)`); fix comment
-- [ ] A1-08 (Med) encrypt `twoFactorSecret` at rest (AES-256-GCM/ENCRYPTION_SECRET); hash backup codes
+- [x] A1-07 (Med) backup codes ≥80-bit (`randomBytes(10)`); fix comment
+- [x] A1-08 (Med) encrypt `twoFactorSecret` at rest (AES-256-GCM/ENCRYPTION_SECRET); hash backup codes
 - [ ] A1-09 (Med) password policy: min 12 default + max-72-byte guard + complexity/HIBP optional; revoke trusted devices on reset + 2FA disable
 - [ ] A1-10 (Med) login: dummy bcrypt on absent user; defer isActive/external checks until after password or genericize
-- [ ] A1-11 (Low) derive challenge secret from JWT_SECRET via HKDF (stable across instances); optionally bind IP/UA
+- [x] A1-11 (Low) derive challenge secret from JWT_SECRET via HKDF (stable across instances); optionally bind IP/UA
 - [ ] A1-12 (Low) `await` token revocation on logout; consider tokenVersion bump
 - [ ] A1-13 (Low) `sameSite: strict` for refresh cookie
 - [ ] A1-14 (Low) align refresh cookie path with route (`/api` consistency)
@@ -104,7 +105,7 @@ After de-duplication of cross-corroborated findings: see batches below.
 - [ ] A7-08 (Low) drop free-form `message` URL param in login toast; map `error` codes to i18n only
 
 ## R7 — Infrastructure, config, dependencies, logging (infra/docker/env/app.ts)
-- [ ] A8-01 (Crit) remove `:-default` for JWT/CSRF/COOKIE/S3 secrets in compose (`${VAR:?required}`); env.ts denylist known `dev-*` placeholders + low-entropy + refuse boot in prod
+- [ ] A8-01 (Crit) remove `:-default` for JWT/CSRF/COOKIE/S3 secrets in compose (`${VAR:?required}`); env.ts denylist known `dev-*` placeholders + low-entropy + refuse boot in prod. **R3a dependency:** `ENCRYPTION_SECRET` is now a REQUIRED env var (min 32) — add it to docker-compose with `${ENCRYPTION_SECRET:?required}` (no fallback), distinct from the other secrets.
 - [ ] A8-03 (High) RustFS: required creds (no fallback), `RUSTFS_CONSOLE_ENABLE: false` default, bind `127.0.0.1:9000` for local; document reverse-proxy path
 - [ ] A8-04 (High→Med) genericize non-AppError Fastify 4xx messages (use `http4xxMessage`)
 - [ ] A8-05 (High→Med) Pino `redact` for authorization/cookie/password/secret/token/bindPassword/clientSecret/smtpPass + serializers

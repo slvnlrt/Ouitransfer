@@ -50,6 +50,14 @@ to `POST /auth/2fa/login` route. Integration test added at
 
 Commits: `fix(server): close 2FA brute-force gap`, `fix: address review findings I-1/I-2/...`
 
+**Fully closed in the red-team R3a batch (juin 2026).** The original fix covered the
+login path (`/auth/2fa/login`); the red-team audit (A1-02) found the standalone
+step-up endpoint `POST /2fa/verify` still had no lockout. R3a routes that endpoint
+through a dedicated low-threshold 2FA lockout (`is2faVerifyLocked`,
+`MAX_2FA_VERIFY_ATTEMPTS = 5`) with `recordLoginAttempt` accounting and
+`TWO_FACTOR_VERIFY_FAILURE`/`TWO_FACTOR_VERIFY_LOCKED` audit events. Integration
+coverage: `src/__tests__/auth-r3a.integration.test.ts`.
+
 ---
 
 ## ~~TD-4 — Zod type provider configured but not leveraged — 104 type assertions across all controllers~~ ✅ RESOLVED
