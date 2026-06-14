@@ -455,12 +455,12 @@ export class ShareService {
           where: { shareId_email: { shareId: share.id, email: declaredEmail } },
         });
         if (selfDeclared) {
+          // Link the visit for the comfort label, but do NOT mutate authoritative per-recipient
+          // stats from a spoofable self-declared email (R2 — A4-09). Any visitor can type a known
+          // recipient's address; only token-verified (?t=) arrivals write recipient stats (handled
+          // in the token branch above, which updates accessCount/lastAccessedAt).
           recipientId = selfDeclared.id;
           identificationSource = "self_declared";
-          await prisma.shareRecipient.update({
-            where: { id: selfDeclared.id },
-            data: { lastAccessedAt: new Date(), accessCount: { increment: 1 } },
-          });
         }
       }
     }

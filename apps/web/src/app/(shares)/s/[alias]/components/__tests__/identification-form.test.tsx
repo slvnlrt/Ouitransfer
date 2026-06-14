@@ -31,6 +31,7 @@ const BASE_METADATA: ShareMetadata = {
   totalFiles: 3,
   totalFolders: 1,
   hasPassword: false,
+  isActive: true,
   isExpired: false,
   isMaxViewsReached: false,
   nameFieldRequired: "REQUIRED",

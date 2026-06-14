@@ -298,11 +298,15 @@ export interface IdentifyVisitor200 {
 
 // ── Share metadata (extended) ──────────────────────────────────────────
 export interface ShareMetadata {
+  /** Null for closed (expired/maxed/paused/inactive) shares — the name is withheld (R2 A4-06). */
   name: string | null;
+  /** Null for closed shares (R2 A4-06). */
   description: string | null;
   totalFiles: number;
   totalFolders: number;
   hasPassword: boolean;
+  /** False when the share is paused/deactivated (R2 A4-06). */
+  isActive: boolean;
   isExpired: boolean;
   isMaxViewsReached: boolean;
   nameFieldRequired: "HIDDEN" | "OPTIONAL" | "REQUIRED";

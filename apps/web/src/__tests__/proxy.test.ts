@@ -24,9 +24,10 @@ const { TEST_SECRET, WRONG_SECRET, TEST_SECRET_KEY, WRONG_SECRET_KEY, BASE_URL }
 // ---------------------------------------------------------------------------
 // Mock fns — also hoisted so they can be used in vi.mock factories
 // ---------------------------------------------------------------------------
-const { mockRedirect, mockNext, mockCookiesDelete } = vi.hoisted(() => ({
+const { mockRedirect, mockNext, mockRewrite, mockCookiesDelete } = vi.hoisted(() => ({
   mockRedirect: vi.fn(),
   mockNext: vi.fn(),
+  mockRewrite: vi.fn(),
   mockCookiesDelete: vi.fn(),
 }));
 
@@ -50,6 +51,10 @@ function nextServerMockFactory() {
         mockNext(...args);
         return new MockNextResponse();
       },
+      rewrite: (...args: unknown[]) => {
+        mockRewrite(...args);
+        return new MockNextResponse();
+      },
     },
   };
 }
@@ -59,7 +64,7 @@ function nextServerMockFactory() {
 // ---------------------------------------------------------------------------
 vi.mock("next/server", nextServerMockFactory);
 vi.mock("@/env", () => ({
-  env: { JWT_SECRET: TEST_SECRET },
+  env: { JWT_SECRET: TEST_SECRET, API_BASE_URL: "http://api.internal:3333" },
 }));
 
 // ---------------------------------------------------------------------------
@@ -335,6 +340,28 @@ describe("proxy", () => {
     // Non-admin user on a non-admin path → should be allowed
     expect(mockNext).toHaveBeenCalledTimes(1);
     expect(mockRedirect).not.toHaveBeenCalled();
+  });
+
+  // -----------------------------------------------------------------------
+  // R2 (A3-03 / A7-07): /api/* rewrites carry restrictive security headers
+  // -----------------------------------------------------------------------
+  it("rewrites /api/* to the API and applies sandbox CSP + nosniff (no auth needed)", async () => {
+    const req = {
+      nextUrl: { pathname: "/api/files/download-url", search: "" },
+      url: `${BASE_URL}/api/files/download-url`,
+      cookies: { get: vi.fn(() => undefined) },
+    };
+    const res = (await proxy(req)) as { headers: Map<string, string> };
+
+    expect(mockRewrite).toHaveBeenCalledTimes(1);
+    expect(mockNext).not.toHaveBeenCalled();
+    expect(mockRedirect).not.toHaveBeenCalled();
+
+    const csp = res.headers.get("Content-Security-Policy");
+    expect(csp).toContain("sandbox");
+    expect(csp).toContain("default-src 'none'");
+    expect(res.headers.get("X-Content-Type-Options")).toBe("nosniff");
+    expect(res.headers.get("X-Frame-Options")).toBe("DENY");
   });
 });
 

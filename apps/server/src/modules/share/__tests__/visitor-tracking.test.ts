@@ -408,6 +408,40 @@ describe("Visitor Tracking — integration", () => {
       const visitCall = mockShareVisitCreate.mock.calls[0][0];
       expect(visitCall.data.recipientId).toBeUndefined();
     });
+
+    it("A4-09: self-declared cookie email links the visit but does NOT mutate recipient stats", async () => {
+      // A visitor whose sv_ cookie email matches a recipient (but no token-verified recipientId)
+      // is linked for the comfort label only; spoofable, so it must not bump access stats.
+      const share = makeShare();
+      mockShareAliasFindUnique.mockResolvedValue({ shareId: SHARE_ID });
+      mockShareFindUnique.mockResolvedValue(share);
+      mockShareUpdateMany.mockResolvedValue({ count: 1 });
+      // The shareId_email lookup matches a recipient; the recipientId-by-id lookup is never hit.
+      mockShareRecipientFindUnique.mockImplementation(async ({ where }) =>
+        where?.shareId_email ? { id: "rcpt-self" } : null,
+      );
+
+      const svCookie = app.signCookie(JSON.stringify({ alias: ALIAS, email: "match@example.com" }));
+      const res = await app.inject({
+        method: "GET",
+        url: `/shares/alias/${ALIAS}`,
+        headers: { cookie: `sv_${ALIAS}=${svCookie}` },
+      });
+
+      expect(res.statusCode).toBe(200);
+      await new Promise((r) => setTimeout(r, 10));
+
+      // The visit is linked + labeled self_declared …
+      expect(mockShareVisitCreate).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          recipientId: "rcpt-self",
+          identificationSource: "self_declared",
+          action: "access",
+        }),
+      });
+      // … but authoritative recipient stats are NOT mutated from a spoofable self-declared match.
+      expect(mockShareRecipientUpdate).not.toHaveBeenCalled();
+    });
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
