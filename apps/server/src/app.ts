@@ -17,7 +17,6 @@ import { CSRF_EXEMPT_ROUTES } from "./config/csrf.config.js";
 import { registerSwagger } from "./config/swagger.config.js";
 import { envTimeoutOverrides, timeoutConfig } from "./config/timeout.config.js";
 import { env } from "./env.js";
-import { createAdminPreValidation } from "./middleware/admin-prevalidation.js";
 import { validateTokenVersion } from "./modules/auth/token-version.js";
 import { ForbiddenError } from "./utils/app-error.js";
 import { globalErrorHandler, globalNotFoundHandler } from "./utils/error-handler.js";
@@ -326,44 +325,25 @@ export async function buildApp() {
   if (docsEnabled) {
     registerSwagger(app);
 
-    // A8-07 — Gate the API-doc UIs behind admin auth. In production these expose
-    // the FULL OpenAPI spec (every route/schema/param incl. admin endpoints), so
-    // they must never be reachable unauthenticated. In dev we skip the gate for
-    // developer convenience. `ENABLE_API_DOCS=true` is documented as NOT for
-    // internet-facing deployments — the admin gate is the safety net if it is.
-    const docsAdminGuard = createAdminPreValidation({ allowSetupBypass: false });
-    const guardDocsRoutes = (instance: typeof app) => {
-      if (isDevMode) return;
-      // Re-throw any UnauthorizedError/ForbiddenError so the globalErrorHandler
-      // maps it to a 401/403 (instead of leaking via reply.send inside a hook).
-      instance.addHook("onRequest", async (request) => {
-        await docsAdminGuard(request);
-      });
-    };
-
-    await app.register(
-      async (swaggerScope) => {
-        guardDocsRoutes(swaggerScope as typeof app);
-        await swaggerScope.register(fastifySwaggerUi, {
-          routePrefix: "/swagger",
-        });
-      },
-      { encapsulate: true },
-    );
+    // A8-07 — The API-doc UIs (/swagger, /docs) are OFF by default and only
+    // registered here when the operator opts in via `ENABLE_API_DOCS=true` (or
+    // dev mode). That opt-in IS the deliberate choice, so when enabled the docs
+    // are reachable directly. They expose the full OpenAPI spec, so this is
+    // documented as NOT recommended for internet-facing deployments. The relaxed
+    // docs CSP (unsafe-inline) is scoped to these route prefixes only — see the
+    // DOC_ROUTE_PREFIXES onSend hook above; the API JSON surface keeps the strict
+    // `default-src 'none'` policy.
+    await app.register(fastifySwaggerUi, {
+      routePrefix: "/swagger",
+    });
 
     const { default: scalarFastify } = await import("@scalar/fastify-api-reference");
-    await app.register(
-      async (scalarScope) => {
-        guardDocsRoutes(scalarScope as typeof app);
-        await scalarScope.register(scalarFastify, {
-          routePrefix: "/docs",
-          configuration: {
-            theme: "deepSpace",
-          },
-        });
+    await app.register(scalarFastify, {
+      routePrefix: "/docs",
+      configuration: {
+        theme: "deepSpace",
       },
-      { encapsulate: true },
-    );
+    });
   }
   // No else branch — globalNotFoundHandler already returns 404 for unregistered routes.
 

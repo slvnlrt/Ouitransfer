@@ -337,12 +337,11 @@ volumes:
 | `OUITRANSFER_UID` | `1001` | ID utilisateur pour les processus du conteneur serveur. Utile pour les NAS ou les montages bind. |
 | `OUITRANSFER_GID` | `1001` | ID de groupe pour les processus du conteneur serveur. |
 | `DEFAULT_LANGUAGE` | `en-US` | Langue d'interface par défaut. Voir [langues disponibles](/docs/v1-beta/available-languages). |
-| `ENABLE_API_DOCS` | `false` | Expose les interfaces `/swagger` et `/docs` en production (protégées par authentification admin). Pas pour les déploiements exposés sur Internet. |
+| `ENABLE_API_DOCS` | `false` | Lorsque `true`, expose les interfaces `/swagger` et `/docs` (accessibles publiquement — sans authentification). L'activer publie l'intégralité de la spécification OpenAPI, ce qui n'est **pas recommandé pour les déploiements exposés sur Internet**. |
 | `PRESIGNED_URL_EXPIRATION` | `3600` | Durée d'expiration des URLs présignées de téléversement en secondes (défaut : 1 heure). |
 | `PRESIGNED_GET_URL_EXPIRATION` | `900` | Durée d'expiration des URLs présignées de téléchargement en secondes (défaut : 15 min). |
 | `TRUST_PROXY` | `loopback` | Paramètre de proxy de confiance Fastify. Utilisez `loopback` pour les déploiements directs ; définissez l'IP de votre proxy derrière un proxy inverse. |
 | `OAUTH_ALLOWED_REDIRECT_HOSTS` | Aucun | Hôtes de redirection supplémentaires séparés par des virgules pour les fournisseurs OIDC personnalisés. |
-| `ENABLE_API_DOCS` | `false` | Expose la documentation API sur `/docs` et `/swagger` en production. |
 
 ### Variables fixes (définies dans docker-compose.yml)
 

@@ -100,7 +100,7 @@ describe("API docs registration (docsEnabled)", () => {
     }
   });
 
-  it("registers /swagger when NODE_ENV=production and ENABLE_API_DOCS=true", {
+  it("registers /swagger reachably when NODE_ENV=production and ENABLE_API_DOCS=true (A8-07: opt-in, no admin gate)", {
     timeout: 15_000,
   }, async () => {
     vi.stubEnv("JWT_SECRET", "Jw7-k2Pf9qXc3mLv6Bn1Rt8Hs4Zd0YaQ9");
@@ -115,8 +115,12 @@ describe("API docs registration (docsEnabled)", () => {
     await app.ready();
 
     try {
+      // Enabling docs is the operator's deliberate opt-in: the UI is reachable
+      // without authentication (not 404, and NOT 401/403 — there is no admin gate).
       const res = await app.inject({ method: "GET", url: "/swagger" });
       expect(res.statusCode).not.toBe(404);
+      expect(res.statusCode).not.toBe(401);
+      expect(res.statusCode).not.toBe(403);
     } finally {
       await app.close();
     }

@@ -334,12 +334,11 @@ volumes:
 | `OUITRANSFER_UID` | `1001` | User ID for server container processes. Useful for NAS or bind-mount setups. |
 | `OUITRANSFER_GID` | `1001` | Group ID for server container processes. |
 | `DEFAULT_LANGUAGE` | `en-US` | Default UI language. See [available languages](/docs/v1-beta/available-languages). |
-| `ENABLE_API_DOCS` | `false` | Expose the `/swagger` and `/docs` UIs in production (admin-gated). Not for internet-facing deployments. |
+| `ENABLE_API_DOCS` | `false` | When `true`, exposes the `/swagger` and `/docs` UIs (publicly reachable — no auth gate). Enabling it serves the full OpenAPI spec, so it is **not recommended for internet-facing deployments**. |
 | `PRESIGNED_URL_EXPIRATION` | `3600` | Upload presigned URL expiry in seconds (default: 1 hour). |
 | `PRESIGNED_GET_URL_EXPIRATION` | `900` | Download presigned URL expiry in seconds (default: 15 min). |
 | `TRUST_PROXY` | `loopback` | Fastify trusted proxy setting. Use `loopback` for direct deployments; set your proxy IP when behind a reverse proxy. |
 | `OAUTH_ALLOWED_REDIRECT_HOSTS` | None | Comma-separated additional redirect hosts for custom OIDC providers. |
-| `ENABLE_API_DOCS` | `false` | Expose API documentation at `/docs` and `/swagger` in production. |
 
 ### Fixed Variables (set in docker-compose.yml)
 
