@@ -134,8 +134,7 @@ services:
       # STORAGE_ALLOWED_HOSTS: ""            # comma-separated exact-host allowlist for storage
       # OAUTH_ALLOW_PRIVATE_ENDPOINT: "false"  # allow OIDC discovery/token/userinfo on a private host
       # OAUTH_ALLOWED_ENDPOINT_HOSTS: ""     # comma-separated exact-host allowlist for the IdP
-      # LDAP_ALLOW_PRIVATE_HOST: "false"     # allow the LDAP client to reach a private/loopback host
-      # LDAP_ALLOWED_HOSTS: ""               # comma-separated exact-host allowlist for LDAP
+      # LDAP_ALLOWED_HOSTS: ""               # optional comma-separated exact-host lockdown for LDAP (unset = any host except cloud metadata)
       #
       # ── External S3 (instead of bundled storage) ──
       # To use AWS S3, Backblaze B2, etc. instead of the storage service:

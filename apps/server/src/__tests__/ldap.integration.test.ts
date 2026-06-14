@@ -649,7 +649,7 @@ describe("LDAP integration tests", () => {
       expect(body.message).toMatch(/not permitted|metadata/i);
     });
 
-    it("rejects a private/loopback LDAP target by default (SSRF)", async () => {
+    it("allows a private/loopback LDAP target by default (admin's internal DC is their choice)", async () => {
       const { csrfToken, csrfCookie } = await getCsrf();
       const res = await app.inject({
         method: "POST",
@@ -658,13 +658,13 @@ describe("LDAP integration tests", () => {
         payload: JSON.stringify({ ...validTestPayload, serverUrl: "ldaps://127.0.0.1:636" }),
       });
 
+      // The guard no longer blocks private hosts — the (mocked) bind succeeds.
       expect(res.statusCode).toBe(200);
       const body = res.json();
-      expect(body.success).toBe(false);
-      expect(body.message).toMatch(/not permitted|LDAP_HOST_NOT_ALLOWED/i);
+      expect(body.success).toBe(true);
     });
 
-    it("rejects cleartext ldap:// to a remote host (A5-07)", async () => {
+    it("allows cleartext ldap:// to a remote host but only warns (A5-07: warn, never block)", async () => {
       const { csrfToken, csrfCookie } = await getCsrf();
       const res = await app.inject({
         method: "POST",
@@ -677,10 +677,10 @@ describe("LDAP integration tests", () => {
         }),
       });
 
+      // Transport confidentiality is a warning, not a block: the (mocked) bind succeeds.
       expect(res.statusCode).toBe(200);
       const body = res.json();
-      expect(body.success).toBe(false);
-      expect(body.message).toMatch(/cleartext/i);
+      expect(body.success).toBe(true);
     });
 
     it("rejects a non-ldap scheme in serverUrl", async () => {

@@ -73,18 +73,11 @@ const envSchema = z.object({
   // Optional comma-separated exact-host allowlist that opts specific IdP hosts back
   // in even when private ranges are otherwise rejected (A5-05 OAuth).
   OAUTH_ALLOWED_ENDPOINT_HOSTS: z.string().optional(),
-  // SSRF escape hatch for self-hosted LDAP/AD (A5-05/A5-11 LDAP): when "true",
-  // allow the LDAP client and the /admin/ldap/test endpoint to connect to a
-  // private/loopback/link-local host (e.g. an internal Active Directory domain
-  // controller on a trusted network — the common case for self-hosted deploys).
-  // Cloud metadata endpoints (169.254.169.254 etc.) remain blocked regardless.
-  // Defaults to "false": private targets must be explicitly opted in.
-  LDAP_ALLOW_PRIVATE_HOST: z
-    .union([z.literal("true"), z.literal("false")])
-    .optional()
-    .default("false"),
-  // Optional comma-separated exact-host allowlist that opts specific LDAP hosts
-  // back in even when private ranges are otherwise rejected (A5-05/A5-11 LDAP).
+  // Optional comma-separated exact-host lockdown for the LDAP client and the
+  // /admin/ldap/test endpoint (A5-05/A5-11 LDAP). Unset (default): any host is
+  // allowed except cloud-metadata addresses — an internal domain controller on a
+  // private LAN is the normal case and is the admin's choice. When set: the LDAP
+  // target must be an exact match in this list. Metadata hosts are NEVER allowed.
   LDAP_ALLOWED_HOSTS: z.string().optional(),
 });
 

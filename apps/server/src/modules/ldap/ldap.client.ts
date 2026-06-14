@@ -60,8 +60,9 @@ export class LdapClient {
 
   async connect(config: LdapConnectionConfig): Promise<void> {
     // Egress (SSRF) + transport-confidentiality guard (A5-05, A5-07, A5-11).
-    // Validates the scheme, blocks private/metadata hosts unless opted in, and
-    // requires an encrypted channel for remote targets — before any socket opens.
+    // Validates the scheme, blocks cloud-metadata hosts (and enforces
+    // LDAP_ALLOWED_HOSTS when set), and warns on weak transport — before any
+    // socket opens. The admin's useTls/tlsSkipVerify/scheme are honored as-is.
     assertLdapTargetAllowed({
       serverUrl: config.serverUrl,
       useTls: config.useTls,
