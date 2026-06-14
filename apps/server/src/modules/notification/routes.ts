@@ -76,6 +76,23 @@ async function getUserLocale(userId: string): Promise<string> {
 }
 
 /**
+ * Whether an unsubscribe token's embedded `tokenVersion` still matches the user's
+ * live value (A6-05). A mismatch (or missing user) means the token was revoked —
+ * the confirm page should then render the error page instead of a working form.
+ */
+async function isUnsubscribeTokenCurrent(userId: string, tokenVersion: number): Promise<boolean> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { tokenVersion: true },
+    });
+    return !!user && user.tokenVersion === tokenVersion;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Renders the error page. Used whenever the token is missing, invalid, or
  * expired — at which point no user (and therefore no locale) is known, so it
  * always renders in English, matching the email i18n fallback.
@@ -248,7 +265,14 @@ export const notificationRoutes: FastifyPluginAsyncZod = async (app) => {
       const { token } = request.query;
 
       try {
-        const { userId, type } = verifyUnsubscribeToken(token);
+        const { userId, type, tokenVersion } = verifyUnsubscribeToken(token);
+        // A6-05: reject a revoked token (tokenVersion bumped) before rendering the
+        // confirm page so a leaked link surfaces the error page, not a working form.
+        if (!(await isUnsubscribeTokenCurrent(userId, tokenVersion))) {
+          return reply
+            .header("Content-Type", "text/html; charset=utf-8")
+            .send(await renderErrorPage());
+        }
         const locale = await getUserLocale(userId);
         const tr = await createTranslationFn(locale);
         // Use human-readable displayName from catalog instead of raw snake_case type key
@@ -302,8 +326,9 @@ export const notificationRoutes: FastifyPluginAsyncZod = async (app) => {
       }
 
       try {
-        const { userId, type } = verifyUnsubscribeToken(token);
-        await unsubscribeUser(userId, type);
+        const { userId, type, tokenVersion } = verifyUnsubscribeToken(token);
+        // A6-05: unsubscribeUser re-checks tokenVersion and no-ops on a revoked token.
+        await unsubscribeUser(userId, type, tokenVersion);
         const locale = await getUserLocale(userId);
         const tr = await createTranslationFn(locale);
         // Use human-readable displayName from catalog instead of raw snake_case type key

@@ -59,6 +59,10 @@ vi.mock("../../../shared/prisma.js", () => ({
     notificationPreference: {
       findUnique: vi.fn().mockResolvedValue(null),
     },
+    // A6-03 spam-guard reads the user's recent enqueue count; 0 = within quota.
+    emailJob: {
+      count: vi.fn().mockResolvedValue(0),
+    },
   },
 }));
 

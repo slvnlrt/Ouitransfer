@@ -11,6 +11,7 @@ import {
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
 import { emailService } from "../email/service.js";
+import { assertEmailQuotaAvailable, assertRecipientCountWithinLimit } from "../email/spam-guard.js";
 import { buildReverseShareUploadLink } from "../email/url-builder.js";
 import { FileService } from "../file/service.js";
 import {
@@ -582,6 +583,9 @@ export class ReverseShareService {
       throw new ForbiddenError("Unauthorized to update this reverse share");
     }
 
+    // Anti-spam (A6-03): cap the total recipients attached to a single reverse share.
+    assertRecipientCountWithinLimit((reverseShare.recipients?.length ?? 0) + recipients.length);
+
     try {
       await this.reverseShareRepository.addRecipients(reverseShareId, recipients);
     } catch (error: unknown) {
@@ -661,6 +665,10 @@ export class ReverseShareService {
     }
     const reverseShareLink = await buildReverseShareUploadLink(reverseShareAlias);
 
+    // Anti-spam (A6-03): bound external invitation emails against the per-user
+    // rolling-24h quota + burst cap, independent of HTTP request count.
+    await assertEmailQuotaAvailable(userId, recipientsToNotify.length);
+
     // Get sender info
     const user = await prisma.user.findUnique({ where: { id: userId } });
     const senderName = user?.firstName
@@ -675,6 +683,7 @@ export class ReverseShareService {
           to: recipient.email,
           locale: user?.locale ?? "en",
           relatedId: reverseShare.id,
+          senderUserId: userId,
           data: {
             senderName,
             reverseShareName: reverseShare.name ?? "File upload request",

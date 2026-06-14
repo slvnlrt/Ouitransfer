@@ -15,6 +15,7 @@ import { logAuditEvent } from "../audit/service.js";
 import { BCRYPT_COST } from "../auth/password-policy.js";
 import type { EmailPayloads } from "../email/catalog.js";
 import { emailService } from "../email/service.js";
+import { assertEmailQuotaAvailable, assertRecipientCountWithinLimit } from "../email/spam-guard.js";
 import { buildShareLink, buildShareManageUrl } from "../email/url-builder.js";
 import { FolderService } from "../folder/service.js";
 import { type CreateShareInput, ShareResponseSchema, type UpdateShareInput } from "./dto.js";
@@ -572,6 +573,10 @@ export class ShareService {
     }
 
     if (recipients !== undefined) {
+      // Anti-spam (A6-03): cap the recipients attached to a single share. This path
+      // is a full replace, so the new list size is the resulting total.
+      assertRecipientCountWithinLimit(recipients.length);
+
       // Normalize mixed-format recipients (string | {email, name?}) to {email, name?}
       const normalizedRecipients = recipients.map((r) => {
         if (typeof r === "string") {
@@ -909,6 +914,9 @@ export class ShareService {
       throw new ForbiddenError("Unauthorized to update this share");
     }
 
+    // Anti-spam (A6-03): cap the total recipients attached to a single share.
+    assertRecipientCountWithinLimit((share.recipients?.length ?? 0) + recipients.length);
+
     await this.shareRepository.addRecipients(shareId, recipients);
     const updated = await this.shareRepository.findShareById(shareId);
     return ShareResponseSchema.parse(await this.formatShareResponse(updated));
@@ -1022,6 +1030,11 @@ export class ShareService {
     }
     const baseShareLink = await buildShareLink(shareAlias);
 
+    // Anti-spam (A6-03): bound how many external invitation emails this user can
+    // enqueue against the per-user rolling-24h quota + short-window burst cap,
+    // independent of HTTP request count (one request fans out to N recipients).
+    await assertEmailQuotaAvailable(userId, recipientsToNotify.length);
+
     // Get sender info
     const user = await prisma.user.findUnique({ where: { id: userId } });
     const senderName = user?.firstName
@@ -1057,6 +1070,7 @@ export class ShareService {
           // Per-recipient locale requires adding a locale field to ShareRecipient model.
           locale: user?.locale ?? "en",
           relatedId: share.id,
+          senderUserId: userId,
           data: {
             senderName,
             shareName: share.name ?? "Shared files",
@@ -1154,6 +1168,10 @@ export class ShareService {
     }
     const baseShareLink = await buildShareLink(shareAlias);
 
+    // Anti-spam (A6-03): reminders are user-triggered external mail too — count
+    // them against the same per-user quota as initial invitations.
+    await assertEmailQuotaAvailable(userId, pendingRecipients.length);
+
     const user = await prisma.user.findUnique({ where: { id: userId } });
     const senderName = user?.firstName
       ? `${user.firstName} ${user.lastName ?? ""}`.trim()
@@ -1174,6 +1192,7 @@ export class ShareService {
           to: recipient.email,
           locale: user?.locale ?? "en",
           relatedId: share.id,
+          senderUserId: userId,
           data: {
             senderName,
             shareName: share.name ?? "Shared files",

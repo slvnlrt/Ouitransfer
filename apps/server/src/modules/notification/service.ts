@@ -108,11 +108,30 @@ export { verifyUnsubscribeToken } from "../email/unsubscribe-token.js";
  * are not configurable, or are critical (isCritical). This prevents
  * unsubscribe tokens from disabling critical system notifications
  * (e.g. password_reset, welcome) even if a token is crafted or reused.
+ *
+ * A6-05: when `tokenVersion` is provided it is compared against the user's live
+ * value; a stale token (the version was bumped, e.g. on logout-all / password
+ * reset) is a silent no-op so a leaked link can be revoked.
  */
-export async function unsubscribeUser(userId: string, type: string): Promise<void> {
+export async function unsubscribeUser(
+  userId: string,
+  type: string,
+  tokenVersion?: number,
+): Promise<void> {
   // Validate the type exists in the catalog
   if (!isNotificationKey(type)) {
     return; // Silent no-op — don't leak catalog info
+  }
+
+  // A6-05: reject tokens minted under an older tokenVersion (revoked).
+  if (tokenVersion !== undefined) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { tokenVersion: true },
+    });
+    if (!user || user.tokenVersion !== tokenVersion) {
+      return; // Silent no-op — token has been revoked or user no longer exists
+    }
   }
 
   const entry = notificationCatalog[type];

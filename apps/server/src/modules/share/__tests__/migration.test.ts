@@ -35,6 +35,10 @@ const { mockEmailServiceSend, mockPrisma, mockLogger, mockGetAppUrl, mockBuildSh
       share: {
         update: vi.fn(),
       },
+      // A6-03 spam-guard reads the user's recent enqueue count; 0 = within quota.
+      emailJob: {
+        count: vi.fn().mockResolvedValue(0),
+      },
       $transaction: vi.fn(),
     },
     mockLogger: {

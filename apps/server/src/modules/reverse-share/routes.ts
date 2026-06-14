@@ -1391,6 +1391,8 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         400: ErrorResponseSchema,
         401: ErrorResponseSchema,
         404: ErrorResponseSchema,
+        // Per-user anti-spam quota / burst cap (A6-03).
+        429: ErrorResponseSchema,
       },
     },
     handler: async (request, reply) => {
