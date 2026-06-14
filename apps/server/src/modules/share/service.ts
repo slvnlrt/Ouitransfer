@@ -17,8 +17,13 @@ import { emailService } from "../email/service.js";
 import { buildShareLink, buildShareManageUrl } from "../email/url-builder.js";
 import { FolderService } from "../folder/service.js";
 import { type CreateShareInput, ShareResponseSchema, type UpdateShareInput } from "./dto.js";
-import { deactivationFields, reactivationFields } from "./lifecycle.js";
+import { assertShareAccessible, deactivationFields, reactivationFields } from "./lifecycle.js";
 import { type IShareRepository, PrismaShareRepository } from "./repository.js";
+import { mintShareFileToken } from "./share-file-token.js";
+import {
+  isSharePasswordLocked,
+  recordSharePasswordAttempt,
+} from "./share-password-attempts.service.js";
 
 export interface ShareAccessContext {
   trackingToken?: string;
@@ -91,9 +96,15 @@ export class ShareService {
       security: {
         hasPassword: !!share.security.password,
       },
+      // Non-owner responses (R2 — A4-08) never expose the raw S3 `objectName` (it embeds the
+      // owner's userId and was the key the old download bypass abused) nor the owner's `userId`.
+      // Each file instead carries an opaque, share-scoped download token resolved server-side by
+      // the download endpoints; the owner UI still receives the real objectName for its own flows.
       files:
         share.files?.map((file) => ({
           ...file,
+          objectName: isOwner ? file.objectName : mintShareFileToken(share.id, file.id),
+          userId: isOwner ? file.userId : "",
           size: file.size.toString(),
           createdAt: file.createdAt.toISOString(),
           updatedAt: file.updatedAt.toISOString(),
@@ -108,6 +119,11 @@ export class ShareService {
                 );
                 return {
                   ...folder,
+                  // Non-owner responses (R2 — A4-08) omit the raw folder objectName and the
+                  // owner's userId; folders are not directly downloadable by key (the client
+                  // expands them client-side and downloads each file via its token).
+                  objectName: isOwner ? folder.objectName : "",
+                  userId: isOwner ? folder.userId : "",
                   totalSize: totalSize.toString(),
                   createdAt: folder.createdAt.toISOString(),
                   updatedAt: folder.updatedAt.toISOString(),
@@ -258,36 +274,28 @@ export class ShareService {
       return ShareResponseSchema.parse(await this.formatShareResponse(share));
     }
 
-    // Block public access when the share's owner is deactivated. This is a
-    // read-time gate derived from `creator.isActive`, so it auto-reverses when
-    // the account is reactivated (no stored flag). The owner's own access is
-    // already returned above, so they are never blocked from their own share.
-    if (share.creator && share.creator.isActive === false) {
-      throw new AppError(403, "Share owner is inactive", ErrorCodes.OWNER_INACTIVE);
-    }
+    // Share-lifecycle access gate (owner-inactive, persisted deactivation, defensive
+    // date-based expiry, max-views reached). Single source of truth shared with the file
+    // download path (R2 — A4-02) so the read gate and the byte-retrieval gate can never
+    // diverge. The owner's own access is already returned above, so they are never blocked
+    // from managing their own paused/expired/maxed share. The atomic maxViews increment
+    // below still runs to advance/persist the counter for the read path.
+    assertShareAccessible(share);
 
-    // Persisted deactivation gate (Phase A.1). A deactivated share is blocked from
-    // public access; the response is chosen by *why* it was deactivated so the
-    // visitor sees a meaningful error. Owner-self access is already returned above,
-    // so the owner is never blocked from managing their own paused/expired share.
-    if (!share.isActive) {
-      switch (share.deactivationReason) {
-        case "max_views":
-          throw new AppError(410, "Share has reached maximum views", ErrorCodes.MAX_VIEWS_REACHED);
-        case "manual":
-          throw new AppError(403, "Share is inactive", ErrorCodes.SHARE_INACTIVE);
-        // `expired` and any unexpected/null reason fall through to SHARE_EXPIRED:
-        // a deactivated share is, by default, no longer available.
-        default:
-          throw new AppError(410, "Share has expired", ErrorCodes.SHARE_EXPIRED);
+    // Per-share password brute-force protection (R2 — A4-03). Before evaluating the password
+    // gate, reject if this share's password attempts are currently locked out. Keyed by share,
+    // so IP rotation cannot bypass it (mirrors the email-only login lockout).
+    if (share.security?.password) {
+      const lockIp = context?.ipAddress ?? "unknown";
+      const lock = await isSharePasswordLocked("share", share.id, lockIp);
+      if (lock.locked) {
+        throw new AppError(
+          429,
+          `Too many password attempts. Try again in ${lock.remainingMinutes} minutes.`,
+          ErrorCodes.SHARE_LOCKED,
+          { remainingMinutes: lock.remainingMinutes },
+        );
       }
-    }
-
-    // Defensive expiry check: a share that expires between scheduler sweeps is
-    // still `isActive=true` here, so block immediately by date even though the
-    // persisted deactivation hasn't been written yet (the sweep backfills it).
-    if (share.expiration && new Date() > new Date(share.expiration)) {
-      throw new AppError(410, "Share has expired", ErrorCodes.SHARE_EXPIRED);
     }
 
     if (share.security?.password && !password) {
@@ -307,6 +315,7 @@ export class ShareService {
     if (share.security?.password && password) {
       const isPasswordValid = await bcrypt.compare(password, share.security.password);
       if (!isPasswordValid) {
+        await recordSharePasswordAttempt("share", share.id, context?.ipAddress ?? "unknown", false);
         if (context?.ipAddress) {
           logAuditEvent({
             action: "SHARE_PASSWORD_FAILED",
@@ -318,6 +327,8 @@ export class ShareService {
         }
         throw new AppError(401, "Invalid password", ErrorCodes.INVALID_PASSWORD);
       }
+      // Successful password — reset the per-share failure counter.
+      await recordSharePasswordAttempt("share", share.id, context?.ipAddress ?? "unknown", true);
       if (context?.ipAddress) {
         logAuditEvent({
           action: "SHARE_PASSWORD_VERIFIED",
@@ -819,7 +830,9 @@ export class ShareService {
     }
 
     if (fileIds.length > 0) {
-      const existingFiles = await this.shareRepository.findFilesByIds(fileIds);
+      // Scope to the caller (R2 — A2-01): only the caller's own files may be added. A file
+      // owned by another user is "not found", so it can never be IDOR-connected to this share.
+      const existingFiles = await this.shareRepository.findFilesByIds(fileIds, userId);
       const notFoundFiles = fileIds.filter((id) => !existingFiles.some((file) => file.id === id));
 
       if (notFoundFiles.length > 0) {
@@ -830,7 +843,7 @@ export class ShareService {
     }
 
     if (folderIds.length > 0) {
-      const existingFolders = await this.shareRepository.findFoldersByIds(folderIds);
+      const existingFolders = await this.shareRepository.findFoldersByIds(folderIds, userId);
       const notFoundFolders = folderIds.filter(
         (id) => !existingFolders.some((folder) => folder.id === id),
       );
@@ -1194,22 +1207,38 @@ export class ShareService {
       throw new NotFoundError("Share not found");
     }
 
-    // Check if share is expired
-    const isExpired = share.expiration ? new Date(share.expiration) < new Date() : false;
+    // Owner-inactive shares are treated as non-existent (R2 — A4-06): mirror the read path's
+    // OWNER_INACTIVE gate, but for this lightweight/OG endpoint we return a flat 404 rather than
+    // leaking that the alias exists at all.
+    if (share.creator && share.creator.isActive === false) {
+      throw new NotFoundError("Share not found");
+    }
 
-    // Check if max views reached
-    const isMaxViewsReached = share.maxViews !== null ? share.views >= share.maxViews : false;
+    // Compute lifecycle state from the DATE (A4-14), not only the persisted `isActive` flag, so a
+    // not-yet-swept expired share still reports closed. `manual` pauses are reflected via isActive.
+    const isExpired =
+      (share.expiration ? new Date(share.expiration) < new Date() : false) ||
+      (!share.isActive && share.deactivationReason === "expired");
+    const isMaxViewsReached =
+      (share.maxViews !== null ? share.views >= share.maxViews : false) ||
+      (!share.isActive && share.deactivationReason === "max_views");
+    const isPaused = !share.isActive && share.deactivationReason === "manual";
+    const isClosed = isExpired || isMaxViewsReached || isPaused || !share.isActive;
 
     const totalFiles = share.files?.length || 0;
     const totalFolders = share.folders?.length || 0;
     const hasPassword = !!share.security.password;
 
+    // Withhold name/description for closed shares (R2 — A4-06): the frontend only needs the
+    // closed-state flags (isExpired / isMaxViewsReached / isActive) to render the right message;
+    // it must not be able to read the share's title/description after it has been closed.
     return {
-      name: share.name,
-      description: share.description,
+      name: isClosed ? null : share.name,
+      description: isClosed ? null : share.description,
       totalFiles,
       totalFolders,
       hasPassword,
+      isActive: share.isActive,
       isExpired,
       isMaxViewsReached,
       nameFieldRequired: share.nameFieldRequired,

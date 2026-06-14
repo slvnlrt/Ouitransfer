@@ -44,6 +44,9 @@ export const ErrorCodes = {
   // Shares
   PASSWORD_REQUIRED: "PASSWORD_REQUIRED",
   INVALID_PASSWORD: "INVALID_PASSWORD",
+  // Too many failed password attempts against a (reverse-)share; the password gate is
+  // temporarily locked (per-share brute-force protection — R2 A4-03).
+  SHARE_LOCKED: "SHARE_LOCKED",
   SHARE_EXPIRED: "SHARE_EXPIRED",
   MAX_VIEWS_REACHED: "MAX_VIEWS_REACHED",
   SHARE_INACTIVE: "SHARE_INACTIVE",

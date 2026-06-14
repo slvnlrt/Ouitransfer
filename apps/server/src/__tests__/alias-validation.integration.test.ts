@@ -2,7 +2,7 @@
  * Integration tests for server-side alias validation.
  *
  * Both POST /shares/:shareId/alias and POST /reverse-shares/:reverseShareId/alias
- * validate the alias against the shared aliasSchema (min 5, max 30, alphanumeric
+ * validate the alias against the shared aliasSchema (min 8, max 30, alphanumeric
  * with single internal hyphens). Invalid aliases are rejected at the route schema
  * with 400 before the handler runs; valid aliases pass validation and reach the
  * handler (which here returns 404 because the mocked share does not exist).
@@ -28,7 +28,8 @@ vi.mock("../shared/prisma.js", () => ({
 }));
 
 const INVALID_ALIASES = [
-  "abcd", // too short (< 5)
+  "abcd", // too short (< 8)
+  "abcdefg", // too short (7, just under the 8-char minimum)
   "a".repeat(31), // too long (> 30)
   "-abcde", // leading hyphen
   "abcde-", // trailing hyphen
@@ -96,7 +97,7 @@ describe("alias validation (integration)", () => {
     });
 
     it.each([
-      "abcde",
+      "abcdefgh",
       "my-share",
       "Xy7Kp2Qr9Z",
     ])("accepts %j (passes validation, 404 from handler)", async (alias) => {
@@ -124,8 +125,8 @@ describe("alias validation (integration)", () => {
     });
 
     it.each([
-      "abcde",
-      "my-drop",
+      "abcdefgh",
+      "my-drops",
       "Xy7Kp2Qr9Z",
     ])("accepts %j (passes validation, 404 from handler)", async (alias) => {
       const res = await app.inject({

@@ -13,6 +13,10 @@ import { logAuditEvent } from "../audit/service.js";
 import { emailService } from "../email/service.js";
 import { buildReverseShareUploadLink } from "../email/url-builder.js";
 import { FileService } from "../file/service.js";
+import {
+  isSharePasswordLocked,
+  recordSharePasswordAttempt,
+} from "../share/share-password-attempts.service.js";
 import { assertOwnerActive } from "./assert-owner-active.js";
 import {
   type CreateReverseShareInput,
@@ -366,7 +370,7 @@ export class ReverseShareService {
     return reverseShare?.id ?? null;
   }
 
-  async checkPassword(id: string, password: string) {
+  async checkPassword(id: string, password: string, ipAddress = "unknown") {
     const reverseShare = await this.reverseShareRepository.findById(id);
     if (!reverseShare) {
       throw new NotFoundError("Reverse share not found");
@@ -376,10 +380,33 @@ export class ReverseShareService {
       return { valid: true };
     }
 
+    // Per-share password brute-force protection (R2 — A4-03): this endpoint is an explicit
+    // boolean password oracle, so it is the easiest brute-force target. Lock it out per-share
+    // (keyed by id, so IP rotation cannot bypass) and audit failures.
+    const lock = await isSharePasswordLocked("reverse-share", id, ipAddress);
+    if (lock.locked) {
+      throw new AppError(
+        429,
+        `Too many password attempts. Try again in ${lock.remainingMinutes} minutes.`,
+        ErrorCodes.SHARE_LOCKED,
+        { remainingMinutes: lock.remainingMinutes },
+      );
+    }
+
     const isValid = await this.reverseShareRepository.comparePassword(
       password,
       reverseShare.password,
     );
+    await recordSharePasswordAttempt("reverse-share", id, ipAddress, isValid);
+    if (!isValid) {
+      logAuditEvent({
+        action: "REVERSE_SHARE_PASSWORD_FAILED",
+        ipAddress,
+        targetType: "reverse_share",
+        targetId: id,
+        metadata: { path: "check-password" },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+    }
     return { valid: isValid };
   }
 
@@ -508,20 +535,30 @@ export class ReverseShareService {
       throw new NotFoundError("Reverse share not found");
     }
 
-    // Check if reverse share is expired
-    const isExpired = reverseShare.expiration
-      ? new Date(reverseShare.expiration) < new Date()
-      : false;
+    // Owner-inactive reverse shares are treated as non-existent (R2 — A4-06): mirror the public
+    // upload gate's assertOwnerActive but return a flat 404 from this lightweight endpoint.
+    if (reverseShare.creator && reverseShare.creator.isActive === false) {
+      throw new NotFoundError("Reverse share not found");
+    }
+
+    // Compute expiry from the DATE (A4-14), not only the persisted flag, so a not-yet-swept
+    // expired reverse share still reports closed.
+    const isExpired =
+      (reverseShare.expiration ? new Date(reverseShare.expiration) < new Date() : false) ||
+      (!reverseShare.isActive && reverseShare.deactivationReason === "expired");
 
     // Check if inactive
     const isInactive = !reverseShare.isActive;
+    const isClosed = isExpired || isInactive;
 
     const totalFiles = reverseShare.files?.length || 0;
     const hasPassword = !!reverseShare.password;
 
+    // Withhold name/description for closed reverse shares (R2 — A4-06); the frontend only needs
+    // the closed-state flags to render the right message.
     return {
-      name: reverseShare.name,
-      description: reverseShare.description,
+      name: isClosed ? null : reverseShare.name,
+      description: isClosed ? null : reverseShare.description,
       totalFiles,
       hasPassword,
       isExpired,
@@ -554,7 +591,10 @@ export class ReverseShareService {
         "code" in error &&
         (error as { code: string }).code === "P2002"
       ) {
-        throw new ConflictError("One or more recipients already exist on this reverse share");
+        // Generic conflict (R2 — A4-10): do NOT distinguish "already exists" — that turns the
+        // endpoint into a recipient-existence oracle. A generic message reveals nothing about
+        // which/whether a given email is already attached.
+        throw new ConflictError("Unable to add one or more recipients");
       }
       throw error;
     }

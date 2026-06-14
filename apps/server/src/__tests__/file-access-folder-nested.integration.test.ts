@@ -50,6 +50,10 @@ vi.mock("../shared/prisma.js", () => ({
     shareVisit: {
       create: vi.fn().mockResolvedValue({}),
     },
+    loginAttempt: {
+      findMany: vi.fn().mockResolvedValue([]),
+      create: vi.fn().mockResolvedValue({}),
+    },
     reverseShareFile: {
       findFirst: vi.fn().mockResolvedValue(null),
       aggregate: vi.fn().mockResolvedValue({
@@ -138,13 +142,25 @@ describe("POST /files/download-url — folder-nested file access", () => {
     ...overrides,
   });
 
+  // Share returned by `prisma.share.findFirst` in resolveDownloadTarget — includes the
+  // lifecycle fields assertShareAccessible reads (isActive/expiration/maxViews/views) plus
+  // security + creator.isActive.
   const makeShare = (overrides: Partial<Record<string, unknown>> = {}) => ({
     id: SHARE_ID,
     name: "Test Share",
     creatorId: FILE_OWNER_ID,
+    isActive: true,
+    deactivationReason: null,
+    expiration: null,
+    maxViews: null,
+    views: 0,
     security: { password: null },
+    creator: { isActive: true },
     ...overrides,
   });
+
+  // The opaque per-share file token is the download handle for share visitors.
+  let shareFileToken: string;
 
   beforeAll(async () => {
     vi.stubEnv("JWT_SECRET", "a]test-jwt-secret-32-chars-long!");
@@ -158,6 +174,9 @@ describe("POST /files/download-url — folder-nested file access", () => {
     const { fileRoutes } = await import("../modules/file/routes.js");
     app.register(fileRoutes);
     await app.ready();
+
+    const { mintShareFileToken } = await import("../modules/share/share-file-token.js");
+    shareFileToken = mintShareFileToken(SHARE_ID, FILE_ID);
   });
 
   afterAll(async () => {
@@ -180,8 +199,8 @@ describe("POST /files/download-url — folder-nested file access", () => {
   }
 
   async function downloadUrl(
-    objectName: string,
-    options: { password?: string; shareId?: string } = {},
+    key: string,
+    options: { password?: string } = {},
   ): Promise<ReturnType<typeof app.inject>> {
     const { csrfToken, csrfCookie } = await getCsrf();
 
@@ -194,9 +213,8 @@ describe("POST /files/download-url — folder-nested file access", () => {
         "content-type": "application/json",
       },
       payload: {
-        objectName,
+        objectName: key,
         ...(options.password && { password: options.password }),
-        ...(options.shareId && { shareId: options.shareId }),
       },
     });
   }
@@ -205,18 +223,15 @@ describe("POST /files/download-url — folder-nested file access", () => {
   it("returns 200 for a file directly linked to a share (no folder)", async () => {
     const { prisma } = await import("../shared/prisma.js");
 
-    // File has no folder → folderId is null
+    // File has no folder → folderId is null. The token resolver loads it by id.
     const fileRecord = makeFileRecord({ folderId: null });
-    vi.mocked(prisma.file.findFirst).mockResolvedValue(fileRecord as never);
-    vi.mocked(prisma.file.findUnique).mockResolvedValue({ folderId: null } as never);
+    vi.mocked(prisma.file.findUnique).mockResolvedValue(fileRecord as never);
 
-    // No ancestor folders (folderId is null → getAncestorFolderIds returns [])
-    // $queryRaw won't be called since folderId is null
+    // The token's share binding matches: share.findFirst returns the (active) share directly
+    // linking this file.
+    vi.mocked(prisma.share.findFirst).mockResolvedValue(makeShare() as never);
 
-    // Share directly links to this file
-    vi.mocked(prisma.share.findMany).mockResolvedValue([makeShare()] as never);
-
-    const res = await downloadUrl(OBJECT_NAME);
+    const res = await downloadUrl(shareFileToken);
 
     expect(res.statusCode).toBe(200);
     const body = res.json();
@@ -230,16 +245,15 @@ describe("POST /files/download-url — folder-nested file access", () => {
 
     // File is in ROOT_FOLDER_ID
     const fileRecord = makeFileRecord({ folderId: ROOT_FOLDER_ID });
-    vi.mocked(prisma.file.findFirst).mockResolvedValue(fileRecord as never);
-    vi.mocked(prisma.file.findUnique).mockResolvedValue({ folderId: ROOT_FOLDER_ID } as never);
+    vi.mocked(prisma.file.findUnique).mockResolvedValue(fileRecord as never);
 
     // Ancestor CTE: ROOT_FOLDER_ID is its own ancestor (it has no parent)
     vi.mocked(prisma.$queryRaw).mockResolvedValue([{ id: ROOT_FOLDER_ID }] as never);
 
-    // Share links to ROOT_FOLDER_ID via folders relation
-    vi.mocked(prisma.share.findMany).mockResolvedValue([makeShare()] as never);
+    // Share links to ROOT_FOLDER_ID via folders relation — share.findFirst matches the OR branch.
+    vi.mocked(prisma.share.findFirst).mockResolvedValue(makeShare() as never);
 
-    const res = await downloadUrl(OBJECT_NAME);
+    const res = await downloadUrl(shareFileToken);
 
     expect(res.statusCode).toBe(200);
     const body = res.json();
@@ -252,8 +266,7 @@ describe("POST /files/download-url — folder-nested file access", () => {
 
     // File is in DEEP_FOLDER_ID (deepest level)
     const fileRecord = makeFileRecord({ folderId: DEEP_FOLDER_ID });
-    vi.mocked(prisma.file.findFirst).mockResolvedValue(fileRecord as never);
-    vi.mocked(prisma.file.findUnique).mockResolvedValue({ folderId: DEEP_FOLDER_ID } as never);
+    vi.mocked(prisma.file.findUnique).mockResolvedValue(fileRecord as never);
 
     // Ancestor CTE: DEEP_FOLDER_ID → SUB_FOLDER_ID → ROOT_FOLDER_ID
     vi.mocked(prisma.$queryRaw).mockResolvedValue([
@@ -263,18 +276,19 @@ describe("POST /files/download-url — folder-nested file access", () => {
     ] as never);
 
     // Share links to ROOT_FOLDER_ID — ancestors include ROOT_FOLDER_ID
-    vi.mocked(prisma.share.findMany).mockResolvedValue([makeShare()] as never);
+    vi.mocked(prisma.share.findFirst).mockResolvedValue(makeShare() as never);
 
-    const res = await downloadUrl(OBJECT_NAME);
+    const res = await downloadUrl(shareFileToken);
 
     expect(res.statusCode).toBe(200);
     const body = res.json();
     expect(body.url).toBeDefined();
 
-    // Verify the share query used OR with ancestor folder IDs
-    expect(prisma.share.findMany).toHaveBeenCalledWith(
+    // Verify the share query bound the token's shareId AND used OR with ancestor folder IDs.
+    expect(prisma.share.findFirst).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
+          id: SHARE_ID,
           OR: expect.arrayContaining([
             { files: { some: { id: FILE_ID } } },
             {
@@ -289,27 +303,25 @@ describe("POST /files/download-url — folder-nested file access", () => {
   });
 
   // ── Test 4: Unrelated file denied ───────────────────────────────────────────
-  it("returns 401 for a file in a folder NOT linked to any share", async () => {
+  it("returns 404 when the token's file no longer belongs to the bound share", async () => {
     const { prisma } = await import("../shared/prisma.js");
 
     const UNRELATED_FOLDER_ID = "folder-unrelated";
 
     // File is in an unrelated folder
     const fileRecord = makeFileRecord({ folderId: UNRELATED_FOLDER_ID });
-    vi.mocked(prisma.file.findFirst).mockResolvedValue(fileRecord as never);
-    vi.mocked(prisma.file.findUnique).mockResolvedValue({
-      folderId: UNRELATED_FOLDER_ID,
-    } as never);
+    vi.mocked(prisma.file.findUnique).mockResolvedValue(fileRecord as never);
 
     // Ancestor CTE: just itself (no ancestors linked to any share)
     vi.mocked(prisma.$queryRaw).mockResolvedValue([{ id: UNRELATED_FOLDER_ID }] as never);
 
-    // No shares match — neither direct file link nor folder ancestor link
-    vi.mocked(prisma.share.findMany).mockResolvedValue([] as never);
+    // The bound share no longer contains this file (item removed / share deleted) → null →
+    // resolver treats it as not found.
+    vi.mocked(prisma.share.findFirst).mockResolvedValue(null as never);
 
-    const res = await downloadUrl(OBJECT_NAME);
+    const res = await downloadUrl(shareFileToken);
 
-    expect(res.statusCode).toBe(401);
+    expect(res.statusCode).toBe(404);
     const body = res.json();
     expect(body.error).toBeDefined();
   });
@@ -323,18 +335,19 @@ describe("POST /files/download-url — folder-nested file access", () => {
 
     // File is in ROOT_FOLDER_ID
     const fileRecord = makeFileRecord({ folderId: ROOT_FOLDER_ID });
-    vi.mocked(prisma.file.findFirst).mockResolvedValue(fileRecord as never);
-    vi.mocked(prisma.file.findUnique).mockResolvedValue({ folderId: ROOT_FOLDER_ID } as never);
+    vi.mocked(prisma.file.findUnique).mockResolvedValue(fileRecord as never);
 
     // Ancestor CTE: ROOT_FOLDER_ID only
     vi.mocked(prisma.$queryRaw).mockResolvedValue([{ id: ROOT_FOLDER_ID }] as never);
 
     // Share with password protection, linked via folder
-    vi.mocked(prisma.share.findMany).mockResolvedValue([
-      makeShare({ security: { password: hashedPassword } }),
-    ] as never);
+    vi.mocked(prisma.share.findFirst).mockResolvedValue(
+      makeShare({ security: { password: hashedPassword } }) as never,
+    );
+    // No prior failed attempts → not locked out.
+    vi.mocked(prisma.loginAttempt.findMany).mockResolvedValue([] as never);
 
-    const res = await downloadUrl(OBJECT_NAME, { password: "secret123" });
+    const res = await downloadUrl(shareFileToken, { password: "secret123" });
 
     expect(res.statusCode).toBe(200);
     const body = res.json();
@@ -350,18 +363,18 @@ describe("POST /files/download-url — folder-nested file access", () => {
 
     // File is in ROOT_FOLDER_ID
     const fileRecord = makeFileRecord({ folderId: ROOT_FOLDER_ID });
-    vi.mocked(prisma.file.findFirst).mockResolvedValue(fileRecord as never);
-    vi.mocked(prisma.file.findUnique).mockResolvedValue({ folderId: ROOT_FOLDER_ID } as never);
+    vi.mocked(prisma.file.findUnique).mockResolvedValue(fileRecord as never);
 
     // Ancestor CTE: ROOT_FOLDER_ID only
     vi.mocked(prisma.$queryRaw).mockResolvedValue([{ id: ROOT_FOLDER_ID }] as never);
 
     // Share with password protection, linked via folder
-    vi.mocked(prisma.share.findMany).mockResolvedValue([
-      makeShare({ security: { password: hashedPassword } }),
-    ] as never);
+    vi.mocked(prisma.share.findFirst).mockResolvedValue(
+      makeShare({ security: { password: hashedPassword } }) as never,
+    );
+    vi.mocked(prisma.loginAttempt.findMany).mockResolvedValue([] as never);
 
-    const res = await downloadUrl(OBJECT_NAME, { password: "wrong-password" });
+    const res = await downloadUrl(shareFileToken, { password: "wrong-password" });
 
     expect(res.statusCode).toBe(401);
     const body = res.json();
@@ -374,8 +387,7 @@ describe("POST /files/download-url — folder-nested file access", () => {
 
     // File is in DEEP_FOLDER_ID (deeply nested)
     const fileRecord = makeFileRecord({ folderId: DEEP_FOLDER_ID });
-    vi.mocked(prisma.file.findFirst).mockResolvedValue(fileRecord as never);
-    vi.mocked(prisma.file.findUnique).mockResolvedValue({ folderId: DEEP_FOLDER_ID } as never);
+    vi.mocked(prisma.file.findUnique).mockResolvedValue(fileRecord as never);
 
     // Ancestor CTE: DEEP → SUB → ROOT
     vi.mocked(prisma.$queryRaw).mockResolvedValue([
@@ -384,22 +396,24 @@ describe("POST /files/download-url — folder-nested file access", () => {
       { id: ROOT_FOLDER_ID },
     ] as never);
 
-    // checkFileAccess: share links to ROOT_FOLDER_ID via ancestor match
-    vi.mocked(prisma.share.findMany).mockResolvedValue([makeShare()] as never);
+    // resolveDownloadTarget: the access share.findFirst (with security/creator) matches the
+    // folder branch and is owned by a DIFFERENT user (so the download is tracked, not skipped
+    // as an owner self-download); trackShareDownload's own share.findFirst returns the
+    // tracking-shaped record.
+    vi.mocked(prisma.share.findFirst)
+      .mockResolvedValueOnce(makeShare({ creatorId: "different-user" }) as never)
+      .mockResolvedValueOnce({
+        id: SHARE_ID,
+        creatorId: "different-user",
+        alias: null,
+        creator: { email: "owner@test.com", locale: "en-US", isActive: true },
+      } as never);
 
-    // trackShareDownload: share.findFirst should match via folder branch
-    vi.mocked(prisma.share.findFirst).mockResolvedValue({
-      id: SHARE_ID,
-      creatorId: "different-user",
-      alias: null,
-      creator: { email: "owner@test.com", locale: "en-US", isActive: true },
-    } as never);
-
-    const res = await downloadUrl(OBJECT_NAME, { shareId: SHARE_ID });
+    const res = await downloadUrl(shareFileToken);
 
     expect(res.statusCode).toBe(200);
 
-    // Verify trackShareDownload queried using the folder OR branch
+    // Verify the access query bound the token's shareId AND used the folder OR branch.
     expect(prisma.share.findFirst).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
@@ -429,23 +443,61 @@ describe("POST /files/download-url — folder-nested file access", () => {
     );
   });
 
-  // ── Test 8: File with no folderId and no share → 401 ───────────────────────
-  it("returns 401 for a file with no folder and no share link", async () => {
+  // ── Test 8: token's file no longer in the bound share → 404 ─────────────────
+  it("returns 404 for a no-folder file whose bound share no longer links it", async () => {
     const { prisma } = await import("../shared/prisma.js");
 
     // File has no folder
     const fileRecord = makeFileRecord({ folderId: null });
-    vi.mocked(prisma.file.findFirst).mockResolvedValue(fileRecord as never);
-    vi.mocked(prisma.file.findUnique).mockResolvedValue({ folderId: null } as never);
+    vi.mocked(prisma.file.findUnique).mockResolvedValue(fileRecord as never);
 
-    // No shares match (no direct file link)
-    vi.mocked(prisma.share.findMany).mockResolvedValue([] as never);
+    // Bound share does not link this file → null
+    vi.mocked(prisma.share.findFirst).mockResolvedValue(null as never);
 
-    const res = await downloadUrl(OBJECT_NAME);
+    const res = await downloadUrl(shareFileToken);
 
-    expect(res.statusCode).toBe(401);
+    expect(res.statusCode).toBe(404);
 
     // Verify $queryRaw was NOT called (no folder → no ancestor lookup needed)
     expect(prisma.$queryRaw).not.toHaveBeenCalled();
+  });
+
+  // ── Test 9: raw objectName from an anonymous caller is rejected (A4-02 root fix) ───
+  it("returns 401 for a raw objectName supplied by an anonymous (non-owner) caller", async () => {
+    const { prisma } = await import("../shared/prisma.js");
+
+    // The raw key path loads via file.findFirst({ objectName }).
+    vi.mocked(prisma.file.findFirst).mockResolvedValue(makeFileRecord({ folderId: null }) as never);
+
+    // No JWT → not the owner → denied. A password-less share existing is now irrelevant:
+    // a bare objectName never grants anonymous access.
+    const res = await downloadUrl(OBJECT_NAME);
+
+    expect(res.statusCode).toBe(401);
+  });
+
+  // ── Test 10: wrong-share token cannot reach a file in a different share ──────
+  it("returns 404 when a token for share A is used but the file is not in share A", async () => {
+    const { prisma } = await import("../shared/prisma.js");
+    const { mintShareFileToken } = await import("../modules/share/share-file-token.js");
+
+    // Token binds FILE_ID to a DIFFERENT share id than the one that actually contains it.
+    const wrongShareToken = mintShareFileToken("share-OTHER", FILE_ID);
+
+    vi.mocked(prisma.file.findUnique).mockResolvedValue(
+      makeFileRecord({ folderId: null }) as never,
+    );
+    // share.findFirst is scoped to id="share-OTHER" which does not contain the file → null.
+    vi.mocked(prisma.share.findFirst).mockResolvedValue(null as never);
+
+    const res = await downloadUrl(wrongShareToken);
+
+    expect(res.statusCode).toBe(404);
+    // The query was scoped to the token's (wrong) share id.
+    expect(prisma.share.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: "share-OTHER" }),
+      }),
+    );
   });
 });

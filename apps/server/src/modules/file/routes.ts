@@ -1,7 +1,6 @@
 import crypto from "node:crypto";
 import type { FastifyPluginAsyncZod } from "@fastify/type-provider-zod";
 import { ErrorCodes } from "@ouitransfer/shared/error-codes";
-import { getContentType } from "@ouitransfer/shared/mime-types";
 import bcrypt from "bcryptjs";
 import type { FastifyRequest } from "fastify";
 import { z } from "zod";
@@ -30,10 +29,16 @@ import { validateObjectName } from "../../utils/validate-object-name.js";
 import { logAuditEvent } from "../audit/service.js";
 import { emailService } from "../email/service.js";
 import { quotaService } from "../quota/service.js";
+import { assertShareAccessible } from "../share/lifecycle.js";
 import {
   resolveDownloadRecipient,
   resolveDownloadRecipientFromRequest,
 } from "../share/recipient-resolution.js";
+import { verifyShareFileToken } from "../share/share-file-token.js";
+import {
+  isSharePasswordLocked,
+  recordSharePasswordAttempt,
+} from "../share/share-password-attempts.service.js";
 import { parseVisitorCookie, type VisitorIdentity } from "../share/visitor-cookie.js";
 import {
   CheckFileSchema,
@@ -92,62 +97,146 @@ async function getAllUserFilesRecursively(userId: string): Promise<
 }
 
 /**
- * Shared access-check logic for file downloads.
- * Verifies the caller has access to a file via share password, public share,
- * or file ownership (JWT). Returns true if access is granted.
- *
- * @param ancestorFolderIds - Pre-resolved ancestor folder IDs for the file (from
- *   getAncestorFolderIds). Passed in to avoid redundant DB lookups — the caller
- *   already has the file record with folderId.
+ * The resolved target of a download request: the file record to serve plus the share it was
+ * authorized through (null for an owner direct download). Used by both download endpoints.
  */
-async function checkFileAccess(
-  fileId: string,
-  fileUserId: string,
+interface ResolvedDownloadTarget {
+  file: { id: string; name: string; size: bigint; objectName: string; userId: string };
+  /** The share id the download is bound to (for tracking/audit), or undefined for owner downloads. */
+  shareId?: string;
+  /** Pre-resolved ancestor folder ids for tracking, when share-bound. */
+  ancestorFolderIds: string[];
+}
+
+/**
+ * Resolve + authorize a file download (R2 — A4-02 / A4-08 / A2-04 / A4-03).
+ *
+ * The download contract is now `{ key, password? }` where `key` is EITHER:
+ *
+ *  1. An opaque per-share file token (the value the non-owner share response exposes in place of
+ *     the raw objectName). It resolves server-side to a specific `{ shareId, fileId }` and access
+ *     is evaluated against THAT share only — never "any password-less share containing the file".
+ *     The full share lifecycle gate (`assertShareAccessible`), per-share password lockout, the
+ *     password itself, and a max-views enforcement are all applied here. This closes the old
+ *     bypass where a leaked/guessed raw objectName fetched bytes regardless of share state.
+ *
+ *  2. A raw S3 objectName — accepted ONLY for the JWT-authenticated OWNER of that file (the
+ *     dashboard "download my own file" flow). Anonymous raw-key access is no longer possible.
+ *
+ * Throws an {@link AppError} on any failure; returns the file to serve + tracking context.
+ */
+async function resolveDownloadTarget(
+  key: string,
   password: string | undefined,
   request: FastifyRequest,
-  ancestorFolderIds: string[],
-): Promise<boolean> {
-  // Check share-based access: direct file OR file in shared folder tree
-  const shareWhere: Prisma.ShareWhereInput =
-    ancestorFolderIds.length > 0
-      ? {
-          OR: [
-            { files: { some: { id: fileId } } },
-            { folders: { some: { id: { in: ancestorFolderIds } } } },
-          ],
-        }
-      : { files: { some: { id: fileId } } };
+): Promise<ResolvedDownloadTarget> {
+  const tokenBinding = verifyShareFileToken(key);
 
-  const shares = await prisma.share.findMany({
-    where: shareWhere,
-    include: { security: true },
-  });
+  // ── Path 1: opaque per-share file token (anonymous / non-owner) ───────────────────────────
+  if (tokenBinding) {
+    const { shareId, fileId } = tokenBinding;
 
-  for (const share of shares) {
-    if (!share.security.password) {
-      return true;
+    const file = await prisma.file.findUnique({ where: { id: fileId } });
+    if (!file) {
+      throw new NotFoundError("File not found.");
     }
-    if (password) {
-      const isPasswordValid = await bcrypt.compare(password, share.security.password);
-      if (isPasswordValid) {
-        return true;
+
+    // The file must actually belong to THIS share — directly or via a shared ancestor folder.
+    const ancestorFolderIds = await getAncestorFolderIds(prisma, file.folderId);
+    const shareWhere: Prisma.ShareWhereInput =
+      ancestorFolderIds.length > 0
+        ? {
+            id: shareId,
+            OR: [
+              { files: { some: { id: fileId } } },
+              { folders: { some: { id: { in: ancestorFolderIds } } } },
+            ],
+          }
+        : { id: shareId, files: { some: { id: fileId } } };
+
+    const share = await prisma.share.findFirst({
+      where: shareWhere,
+      include: { security: true, creator: { select: { isActive: true } } },
+    });
+    // A token that no longer maps the file to its share (item removed, share deleted) → 404.
+    if (!share) {
+      throw new NotFoundError("File not found.");
+    }
+
+    // Full share lifecycle gate — identical to the share-read path (single source of truth).
+    assertShareAccessible(share);
+
+    // Password gate with per-share brute-force lockout + audit on the download path (A4-03).
+    if (share.security?.password) {
+      const lockIp = request.ip ?? "unknown";
+      const lock = await isSharePasswordLocked("share", share.id, lockIp);
+      if (lock.locked) {
+        throw new AppError(
+          429,
+          `Too many password attempts. Try again in ${lock.remainingMinutes} minutes.`,
+          ErrorCodes.SHARE_LOCKED,
+          { remainingMinutes: lock.remainingMinutes },
+        );
       }
+
+      if (!password) {
+        logAuditEvent({
+          action: "SHARE_PASSWORD_FAILED",
+          ipAddress: request.ip,
+          userAgent: request.headers["user-agent"],
+          targetType: "share",
+          targetId: share.id,
+          metadata: { reason: "no_password_supplied", path: "download" },
+        }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+        throw new AppError(401, "Password required", ErrorCodes.PASSWORD_REQUIRED);
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, share.security.password);
+      if (!isPasswordValid) {
+        await recordSharePasswordAttempt("share", share.id, lockIp, false);
+        logAuditEvent({
+          action: "SHARE_PASSWORD_FAILED",
+          ipAddress: request.ip,
+          userAgent: request.headers["user-agent"],
+          targetType: "share",
+          targetId: share.id,
+          metadata: { path: "download" },
+        }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+        throw new AppError(401, "Invalid password", ErrorCodes.INVALID_PASSWORD);
+      }
+      await recordSharePasswordAttempt("share", share.id, lockIp, true);
     }
+
+    return {
+      file,
+      shareId: share.id,
+      ancestorFolderIds,
+    };
   }
 
-  // Fall back to JWT-based ownership check
+  // ── Path 2: raw objectName — JWT-authenticated OWNER only ──────────────────────────────────
+  const file = await prisma.file.findFirst({ where: { objectName: key } });
+  if (!file) {
+    throw new NotFoundError("File not found.");
+  }
+
+  let ownerUserId: string | undefined;
   try {
     await request.jwtVerify();
-    const userId = request.user?.userId;
-    if (userId && fileUserId === userId) {
-      return true;
-    }
+    ownerUserId = request.user?.userId;
   } catch (_err) {
-    // Expected: anonymous access for public shares — JWT verification is optional
-    request.log.debug("Optional JWT verification skipped — anonymous access");
+    request.log.debug("Owner JWT verification failed for raw-key download");
+  }
+  if (!ownerUserId || file.userId !== ownerUserId) {
+    // No anonymous raw-objectName access (A4-02 root fix): a raw key only ever serves its owner.
+    throw new UnauthorizedError("Unauthorized access to file.");
   }
 
-  return false;
+  return {
+    file,
+    shareId: undefined,
+    ancestorFolderIds: await getAncestorFolderIds(prisma, file.folderId),
+  };
 }
 
 /**
@@ -259,9 +348,12 @@ async function trackShareDownload(
       return; // Don't notify — the visit was never recorded
     }
 
-    // Bump per-recipient download stats atomically when a recipient is linked.
-    // downloadCount counts files fetched (this runs once per file), not sessions.
-    if (resolvedRecipient) {
+    // Bump per-recipient download stats atomically when a recipient is linked — but ONLY for
+    // token-verified arrivals (R2 — A4-09). A self-declared cookie email is spoofable: any
+    // visitor can set `email` to a known recipient's address via /identify and would otherwise
+    // poison that recipient's downloadCount/lastDownloadedAt. Self-declared remains an unverified
+    // comfort label on the visit row (visitorEmail), but never mutates authoritative stats.
+    if (resolvedRecipient && resolvedRecipient.identificationSource === "token") {
       prisma.shareRecipient
         .update({
           where: { id: resolvedRecipient.recipientId },
@@ -308,6 +400,31 @@ async function trackShareDownload(
       }
     }
   })().catch(() => {});
+}
+
+/**
+ * Force a safe download disposition on STREAMED file responses (R2 — A3-03 / A7-07).
+ *
+ * User-uploaded content is served same-origin through the `/api/*` proxy. Previously the streaming
+ * download echoed an extension-derived Content-Type (e.g. `text/html`, `image/svg+xml`) with
+ * `Content-Disposition: inline`, so a stored `.html`/`.svg` rendered in the browser (stored-XSS
+ * surface). The presigned-URL path already forces `attachment`; this brings the streaming path in
+ * line:
+ *   - `Content-Type: application/octet-stream` — never echo an HTML/SVG content type
+ *   - `Content-Disposition: attachment`        — never render inline
+ *   - `X-Content-Type-Options: nosniff`        — don't let the browser sniff back to HTML
+ *   - `Content-Security-Policy: sandbox`        — defense-in-depth if rendered anyway
+ */
+function setForcedAttachmentHeaders(
+  reply: { header: (k: string, v: string) => unknown },
+  fileName: string,
+  size: bigint,
+): void {
+  reply.header("Content-Type", "application/octet-stream");
+  reply.header("Content-Disposition", `attachment; filename="${encodeURIComponent(fileName)}"`);
+  reply.header("X-Content-Type-Options", "nosniff");
+  reply.header("Content-Security-Policy", "sandbox");
+  reply.header("Content-Length", size.toString());
 }
 
 // ── Pre-validation hook ──────────────────────────────────────
@@ -1009,6 +1126,19 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
   });
 
   // ── Download routes ─────────────────────────────────────────
+  //
+  // Two delivery modes, both gated by the same authorization (resolveDownloadTarget):
+  //   • /files/download-url (presigned)  — the default path the web client uses. Returns a
+  //     short-lived presigned GET URL that the browser fetches DIRECTLY from storage; the
+  //     storage provider forces `Content-Disposition: attachment` on that URL
+  //     (s3-storage.provider.ts), so stored HTML/SVG never renders inline.
+  //   • /files/download (streamed)       — proxies the object bytes through the API (used for
+  //     internal-storage / owner flows). The forced-attachment + nosniff + CSP-sandbox headers
+  //     are applied here via setForcedAttachmentHeaders (R2 — A3-03/A7-07) so this path matches
+  //     the presigned path's safety.
+  // Neither endpoint requires preValidation: access is decided inside resolveDownloadTarget,
+  // which accepts EITHER an opaque per-share file token (anonymous share visitors) OR a raw
+  // objectName (JWT-authenticated owner only). A bare objectName never grants anonymous access.
 
   // POST /files/download-url — get presigned download URL
   app.route({
@@ -1027,9 +1157,12 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
       description:
         "Generates a pre-signed URL for downloading a file. Password must be sent in the request body, never as a query parameter.",
       body: z.object({
+        // For share downloads this is the opaque per-share file token from the share response;
+        // for owner downloads it is the raw S3 objectName. Authorization is decided server-side
+        // (see resolveDownloadTarget) — the value is never trusted as a bare key for anonymous
+        // callers.
         objectName: z.string().min(1, "The objectName is required"),
         password: z.string().optional().describe("Share password if required"),
-        shareId: z.string().optional().describe("Share ID for download tracking"),
       }),
       response: {
         200: z.object({
@@ -1039,51 +1172,27 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         400: ErrorResponseSchema,
         401: ErrorResponseSchema,
         404: ErrorResponseSchema,
+        429: ErrorResponseSchema,
         500: ErrorResponseSchema,
       },
     },
     handler: async (request, reply) => {
-      const { objectName, password, shareId } = request.body;
+      const { objectName: key, password } = request.body;
 
-      const fileRecord = await prisma.file.findFirst({ where: { objectName } });
-
-      if (!fileRecord) {
-        throw new NotFoundError("File not found.");
-      }
-
-      // Resolve ancestor folders once — shared between access check and download tracking
-      const ancestorFolderIds = await getAncestorFolderIds(prisma, fileRecord.folderId);
-
-      const hasAccess = await checkFileAccess(
-        fileRecord.id,
-        fileRecord.userId,
-        password,
-        request,
+      const {
+        file: fileRecord,
+        shareId,
         ancestorFolderIds,
-      );
-
-      if (!hasAccess) {
-        throw new UnauthorizedError("Unauthorized access to file.");
-      }
-
-      // Optional JWT extraction: checkFileAccess may grant access via the share path without
-      // ever calling jwtVerify(). Attempt it now so request.user is populated for download
-      // tracking (authenticated_user identity) and the FILE_DOWNLOAD audit userId field.
-      if (!request.user) {
-        try {
-          await request.jwtVerify();
-        } catch (_err) {
-          // Expected for anonymous downloaders — access was already granted via share.
-        }
-      }
+      } = await resolveDownloadTarget(key, password, request);
 
       const fileName = fileRecord.name;
       const expires = env.PRESIGNED_GET_URL_EXPIRATION;
 
-      const url = await fileService.getPresignedGetUrl(objectName, expires, fileName);
+      // Always presign the REAL object key (resolved server-side from the token), never the
+      // client-supplied value.
+      const url = await fileService.getPresignedGetUrl(fileRecord.objectName, expires, fileName);
 
-      // Enrich the (already-emitted) FILE_DOWNLOAD audit with the resolved recipient + source
-      // when this is a share download. Best-effort, share-scoped; never a second emit.
+      // Enrich the FILE_DOWNLOAD audit with the resolved recipient + source for share downloads.
       const auditRecipient = shareId
         ? await resolveDownloadRecipientFromRequest(request, shareId)
         : null;
@@ -1107,7 +1216,7 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
 
-      // Track download if shareId provided (fire-and-forget)
+      // Track download for share-bound downloads (fire-and-forget).
       if (shareId) {
         trackShareDownload(
           request,
@@ -1139,87 +1248,50 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
       description:
         "Downloads a file directly (returns file content). Password must be sent in the request body, never as a query parameter.",
       body: z.object({
+        // Opaque per-share file token (share downloads) or raw objectName (owner downloads).
         objectName: z.string().min(1, "The objectName is required"),
         password: z.string().optional().describe("Share password if required"),
-        shareId: z.string().optional().describe("Share ID for download tracking"),
       }),
     },
     handler: async (request, reply) => {
-      const { objectName, password, shareId } = request.body;
+      const { objectName: key, password } = request.body;
 
-      const fileRecord = await prisma.file.findFirst({ where: { objectName } });
-
-      if (!fileRecord) {
-        // Check reverse-share files
-        if (objectName.startsWith("reverse-shares/")) {
-          const reverseShareFile = await prisma.reverseShareFile.findFirst({
-            where: { objectName },
-            include: {
-              reverseShare: true,
-            },
-          });
-
-          if (!reverseShareFile) {
-            throw new NotFoundError("File not found.");
-          }
-
-          try {
-            await request.jwtVerify();
-            const userId = request.user?.userId;
-
-            if (!userId || reverseShareFile.reverseShare.creatorId !== userId) {
-              throw new UnauthorizedError("Unauthorized access to file.");
-            }
-          } catch (err) {
-            if (err instanceof UnauthorizedError) {
-              throw err;
-            }
-            request.log.debug({ err }, "JWT verification failed for reverse-share download");
-            throw new UnauthorizedError("Unauthorized access to file.");
-          }
-
-          const stream = await fileService.getObjectStream(objectName);
-          const contentType = getContentType(reverseShareFile.name);
-          const fileName = reverseShareFile.name;
-
-          reply.header("Content-Type", contentType);
-          reply.header("Content-Disposition", `inline; filename="${encodeURIComponent(fileName)}"`);
-          reply.header("Content-Length", reverseShareFile.size.toString());
-
-          return reply.send(stream);
+      // Reverse-share files are owner-only and identified by their raw `reverse-shares/...` key
+      // (A4-13: this branch stays owner-scoped — JWT required, creator must match). This path is
+      // never reachable via a share-file token, so it is checked before the token resolver.
+      if (key.startsWith("reverse-shares/")) {
+        const reverseShareFile = await prisma.reverseShareFile.findFirst({
+          where: { objectName: key },
+          include: { reverseShare: true },
+        });
+        if (!reverseShareFile) {
+          throw new NotFoundError("File not found.");
         }
 
-        throw new NotFoundError("File not found.");
-      }
-
-      // Resolve ancestor folders once — shared between access check and download tracking
-      const ancestorFolderIds = await getAncestorFolderIds(prisma, fileRecord.folderId);
-
-      const hasAccess = await checkFileAccess(
-        fileRecord.id,
-        fileRecord.userId,
-        password,
-        request,
-        ancestorFolderIds,
-      );
-
-      if (!hasAccess) {
-        throw new UnauthorizedError("Unauthorized access to file.");
-      }
-
-      // Optional JWT extraction: checkFileAccess may grant access via the share path without
-      // ever calling jwtVerify(). Attempt it now so request.user is populated for download
-      // tracking (authenticated_user identity) and the FILE_DOWNLOAD audit userId field.
-      if (!request.user) {
         try {
           await request.jwtVerify();
-        } catch (_err) {
-          // Expected for anonymous downloaders — access was already granted via share.
+          const userId = request.user?.userId;
+          if (!userId || reverseShareFile.reverseShare.creatorId !== userId) {
+            throw new UnauthorizedError("Unauthorized access to file.");
+          }
+        } catch (err) {
+          if (err instanceof UnauthorizedError) throw err;
+          request.log.debug({ err }, "JWT verification failed for reverse-share download");
+          throw new UnauthorizedError("Unauthorized access to file.");
         }
+
+        const stream = await fileService.getObjectStream(key);
+        setForcedAttachmentHeaders(reply, reverseShareFile.name, reverseShareFile.size);
+        return reply.send(stream);
       }
 
-      // Enrich the (already-emitted) FILE_DOWNLOAD audit with the resolved recipient + source
-      // when this is a share download. Best-effort, share-scoped; never a second emit.
+      const {
+        file: fileRecord,
+        shareId,
+        ancestorFolderIds,
+      } = await resolveDownloadTarget(key, password, request);
+
+      // Enrich the FILE_DOWNLOAD audit with the resolved recipient + source for share downloads.
       const auditRecipient = shareId
         ? await resolveDownloadRecipientFromRequest(request, shareId)
         : null;
@@ -1243,7 +1315,6 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
 
-      // Track download if shareId provided (fire-and-forget)
       if (shareId) {
         trackShareDownload(
           request,
@@ -1254,14 +1325,9 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         ).catch((err) => getLogger().error({ err }, "Failed to track share download"));
       }
 
-      const stream = await fileService.getObjectStream(objectName);
-      const contentType = getContentType(fileRecord.name);
-      const fileName = fileRecord.name;
-
-      reply.header("Content-Type", contentType);
-      reply.header("Content-Disposition", `inline; filename="${encodeURIComponent(fileName)}"`);
-      reply.header("Content-Length", fileRecord.size.toString());
-
+      // Always stream the REAL object key resolved server-side, never the client-supplied value.
+      const stream = await fileService.getObjectStream(fileRecord.objectName);
+      setForcedAttachmentHeaders(reply, fileRecord.name, fileRecord.size);
       return reply.send(stream);
     },
   });

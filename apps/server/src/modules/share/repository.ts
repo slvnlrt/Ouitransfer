@@ -65,8 +65,8 @@ export interface IShareRepository {
   removeFilesFromShare(shareId: string, fileIds: string[]): Promise<void>;
   addFoldersToShare(shareId: string, folderIds: string[]): Promise<void>;
   removeFoldersFromShare(shareId: string, folderIds: string[]): Promise<void>;
-  findFilesByIds(fileIds: string[]): Promise<File[]>;
-  findFoldersByIds(folderIds: string[]): Promise<Folder[]>;
+  findFilesByIds(fileIds: string[], userId: string): Promise<File[]>;
+  findFoldersByIds(folderIds: string[], userId: string): Promise<Folder[]>;
   addRecipients(
     shareId: string,
     recipients: Array<{ email: string; name?: string | null }>,
@@ -357,22 +357,27 @@ export class PrismaShareRepository implements IShareRepository {
     });
   }
 
-  async findFilesByIds(fileIds: string[]): Promise<File[]> {
+  // Scoped to the owner (R2 — A2-01 IDOR fix): a file/folder the caller does not own is treated
+  // as "not found" so it can never be connected to the caller's share. Mirrors createShare's
+  // `where: { id: { in }, userId }`.
+  async findFilesByIds(fileIds: string[], userId: string): Promise<File[]> {
     return prisma.file.findMany({
       where: {
         id: {
           in: fileIds,
         },
+        userId,
       },
     });
   }
 
-  async findFoldersByIds(folderIds: string[]): Promise<Folder[]> {
+  async findFoldersByIds(folderIds: string[], userId: string): Promise<Folder[]> {
     return prisma.folder.findMany({
       where: {
         id: {
           in: folderIds,
         },
+        userId,
       },
     });
   }

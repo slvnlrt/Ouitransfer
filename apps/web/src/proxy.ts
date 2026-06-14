@@ -109,6 +109,30 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
   return response;
 }
 
+/**
+ * Restrictive security headers for proxied `/api/*` responses (A3-03 / A7-07).
+ *
+ * The API can stream raw user-uploaded content (file downloads) same-origin with the app. The
+ * server already forces `Content-Disposition: attachment` + `application/octet-stream` + nosniff
+ * on those responses, but the web tier must also contribute a backstop here (previously the
+ * rewrite was returned with NO security headers, so a server misconfig had no proxy fallback):
+ *   - `Content-Security-Policy: sandbox` + `default-src 'none'` — neutralize any content that
+ *     does get rendered (sandboxed, scriptless, no plugins/forms/navigation).
+ *   - `X-Content-Type-Options: nosniff` — block MIME sniffing back to HTML.
+ *   - `X-Frame-Options: DENY` / `frame-ancestors 'none'` — no framing of API responses.
+ * The upstream target is `env.API_BASE_URL` (server-controlled, not client-influenced) — no SSRF.
+ */
+function addApiSecurityHeaders(response: NextResponse): NextResponse {
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("Referrer-Policy", "no-referrer");
+  response.headers.set(
+    "Content-Security-Policy",
+    ["sandbox", "default-src 'none'", "frame-ancestors 'none'", "base-uri 'none'"].join("; "),
+  );
+  return response;
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -119,7 +143,7 @@ export async function proxy(request: NextRequest) {
   if (pathname === "/api" || pathname.startsWith("/api/")) {
     const targetPath = pathname.replace(/^\/api/, "");
     const rewriteUrl = new URL((targetPath || "/") + request.nextUrl.search, env.API_BASE_URL);
-    return NextResponse.rewrite(rewriteUrl);
+    return addApiSecurityHeaders(NextResponse.rewrite(rewriteUrl));
   }
 
   const token = request.cookies.get("token")?.value;

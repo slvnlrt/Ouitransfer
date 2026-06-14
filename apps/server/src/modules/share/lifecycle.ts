@@ -9,7 +9,9 @@
  * sweep; `manual` pauses are never auto-deleted.
  */
 
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import type { DeactivationReason } from "../../generated/prisma/client.js";
+import { AppError } from "../../utils/app-error.js";
 
 /** Re-export the Prisma-generated enum as the canonical type. */
 export type { DeactivationReason };
@@ -74,4 +76,62 @@ export function reactivationFields(): ReactivationFields {
     deactivationReason: null,
     notifiedForPendingDeletion: false,
   };
+}
+
+/** Minimal share shape the lifecycle gate needs (works for both `getShare` and the download path). */
+export interface AccessibleShareState {
+  isActive: boolean;
+  deactivationReason: DeactivationReason | null;
+  expiration: Date | string | null;
+  maxViews: number | null;
+  views: number;
+  creator?: { isActive: boolean } | null;
+}
+
+/**
+ * Enforce the share-lifecycle access gate for a public (non-owner) consumer (R2 — A4-02).
+ *
+ * This is the SINGLE source of truth for "is this share currently servable to a visitor",
+ * shared by {@link ShareService.getShare} (the read path) and the file-download path so the two
+ * can never diverge. It throws the same {@link AppError}s `getShare` historically threw inline.
+ *
+ * Order mirrors `getShare`:
+ *   1. owner-inactive  → 403 OWNER_INACTIVE   (read-time gate, auto-reverses on reactivation)
+ *   2. persisted deactivation (isActive=false) → 410/403 keyed by `deactivationReason`
+ *   3. defensive date-based expiry (A4-14: compute from the DATE, not only the persisted flag,
+ *      so a not-yet-swept expired share still gates)
+ *   4. max-views reached (defensive; the read path also increments atomically)
+ *
+ * Password and identification are NOT handled here — they are consumer-specific and stay at the
+ * call sites. This helper is purely the lifecycle/owner gate.
+ */
+export function assertShareAccessible(share: AccessibleShareState): void {
+  // 1. Owner deactivated — derived from creator.isActive (no stored flag; auto-reverses).
+  if (share.creator && share.creator.isActive === false) {
+    throw new AppError(403, "Share owner is inactive", ErrorCodes.OWNER_INACTIVE);
+  }
+
+  // 2. Persisted deactivation — the response depends on *why* it was deactivated.
+  if (!share.isActive) {
+    switch (share.deactivationReason) {
+      case "max_views":
+        throw new AppError(410, "Share has reached maximum views", ErrorCodes.MAX_VIEWS_REACHED);
+      case "manual":
+        throw new AppError(403, "Share is inactive", ErrorCodes.SHARE_INACTIVE);
+      default:
+        throw new AppError(410, "Share has expired", ErrorCodes.SHARE_EXPIRED);
+    }
+  }
+
+  // 3. Defensive expiry by date — a share that expires between scheduler sweeps is still
+  //    isActive=true here; block immediately by date even before the flag is backfilled.
+  if (share.expiration && new Date() > new Date(share.expiration)) {
+    throw new AppError(410, "Share has expired", ErrorCodes.SHARE_EXPIRED);
+  }
+
+  // 4. Max-views reached — defensive (the read path increments atomically; the download path
+  //    never increments, so without this an exhausted share would still serve bytes).
+  if (share.maxViews !== null && share.views >= share.maxViews) {
+    throw new AppError(410, "Share has reached maximum views", ErrorCodes.MAX_VIEWS_REACHED);
+  }
 }

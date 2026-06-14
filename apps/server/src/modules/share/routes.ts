@@ -89,6 +89,19 @@ function refreshVisitorCookieWithRecipient(
   );
 }
 
+/**
+ * Anonymous CSRF-exempt surface (R2 — A4-11, documentation).
+ *
+ * Several public share endpoints are `config: { csrfExempt: true }`:
+ *   - POST /shares/:shareId/access, POST /shares/alias/:alias/access  (password gate)
+ *   - POST /shares/alias/:alias/identify                              (visitor identification)
+ * They MUST be exempt because anonymous visitors hold no CSRF token. This is acceptable because
+ * they are unauthenticated (there is no ambient credential for a cross-site request to abuse) and
+ * carry no side effect that a forged cross-origin request could weaponize against a logged-in
+ * user. The relevant controls on this surface are therefore input validation, per-route IP rate
+ * limits, and the per-share password lockout (A4-03) — not CSRF. The per-route flags and the
+ * global CSRF_EXEMPT_ROUTES fallback set are kept in sync (app.ts) and test-covered.
+ */
 export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
     method: "POST",
@@ -226,7 +239,8 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
     method: "POST",
     url: "/shares/:shareId/access",
-    config: { csrfExempt: true },
+    // Per-route IP rate limit (R2 — A4-03) layered on the per-share lockout in getShare.
+    config: { csrfExempt: true, rateLimit: { max: 10, timeWindow: "1 minute" } },
     schema: {
       tags: ["Share"],
       operationId: "accessShareWithPassword",
@@ -791,7 +805,8 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
     method: "POST",
     url: "/shares/alias/:alias/access",
-    config: { csrfExempt: true },
+    // Per-route IP rate limit (R2 — A4-03) layered on the per-share lockout in getShare.
+    config: { csrfExempt: true, rateLimit: { max: 10, timeWindow: "1 minute" } },
     schema: {
       tags: ["Share"],
       operationId: "accessShareByAliasWithPassword",
@@ -995,8 +1010,10 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
     method: "GET",
     url: "/shares/alias/:alias/metadata",
+    // Per-IP enumeration rate limit (R2 — A4-12): tightened from 60 to 30/min since aliases are
+    // user-chosen and the endpoint confirms existence + leaks closed-state flags.
     config: {
-      rateLimit: { max: 60, timeWindow: "1 minute" },
+      rateLimit: { max: 30, timeWindow: "1 minute" },
     },
     schema: {
       tags: ["Share"],
@@ -1008,11 +1025,13 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
       }),
       response: {
         200: z.object({
+          // name/description are null for closed (expired/maxed/paused/inactive) shares (A4-06).
           name: z.string().nullable(),
           description: z.string().nullable(),
           totalFiles: z.number(),
           totalFolders: z.number(),
           hasPassword: z.boolean(),
+          isActive: z.boolean(),
           isExpired: z.boolean(),
           isMaxViewsReached: z.boolean(),
           nameFieldRequired: z.nativeEnum(FieldRequirement),
