@@ -458,6 +458,37 @@ describe("OAuth/OIDC callback — integration", () => {
     expect(mockUserCreate.mock.calls[0][0].data.emailVerified).toBe(true);
   });
 
+  it("verifies the id_token for a manually-configured OIDC provider via discovered JWKS", async () => {
+    // Provider has explicit endpoints but still an issuerUrl — the jwks_uri must
+    // be discovered so id_token verification can run.
+    mockAuthProviderFindFirst.mockResolvedValue({
+      ...oidcProvider(),
+      authorizationEndpoint: `${ISSUER}/authorize`,
+      tokenEndpoint: `${ISSUER}/token`,
+      userInfoEndpoint: `${ISSUER}/userinfo`,
+    });
+
+    const flow = await startFlowWithNonce();
+    stubFetch({
+      discovery: discoveryDoc(),
+      idToken: await signId({
+        sub: "manual-sub",
+        email: "manual@corp.com",
+        email_verified: true,
+        nonce: flow.nonce,
+      }),
+    });
+
+    const res = await app.inject({
+      method: "GET",
+      url: `/auth/providers/customidp/callback?code=abc&state=${flow.state}`,
+      headers: { cookie: flow.cookie },
+    });
+
+    expect(res.statusCode).toBe(302);
+    expect(res.headers.location).toBe(`${APP_URL}/dashboard`);
+  });
+
   // ── A5-05: SSRF guard on token/jwks host ──────────────────────────────────
   it("rejects when the OIDC token endpoint resolves to an internal host", async () => {
     const flow = await startFlowWithNonce();

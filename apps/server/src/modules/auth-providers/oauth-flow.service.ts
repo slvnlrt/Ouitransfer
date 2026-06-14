@@ -65,7 +65,7 @@ export class OAuthFlowService {
     config: ProviderConfig,
   ): Promise<ProviderEndpoints> {
     if (provider.authorizationEndpoint && provider.tokenEndpoint && provider.userInfoEndpoint) {
-      return {
+      const manual: ProviderEndpoints = {
         authorizationEndpoint: this.resolveEndpointUrl(
           provider.authorizationEndpoint,
           provider.issuerUrl ?? undefined,
@@ -79,6 +79,20 @@ export class OAuthFlowService {
           provider.issuerUrl ?? undefined,
         ),
       };
+
+      // Even with manually-configured endpoints, an OIDC provider needs the
+      // discovery `jwks_uri` + `issuer` so the id_token can be verified (A5-01).
+      // Best-effort: if discovery fails the OIDC path will refuse the login
+      // rather than trust an unverified token.
+      if (this.isOidc(provider) && config.supportsDiscovery && provider.issuerUrl) {
+        const discovered = await this.attemptDiscovery(provider.issuerUrl);
+        if (discovered?.jwksUri) {
+          manual.jwksUri = discovered.jwksUri;
+          manual.issuer = discovered.issuer;
+        }
+      }
+
+      return manual;
     }
 
     if (config.supportsDiscovery && provider.issuerUrl) {
