@@ -17,7 +17,7 @@ import { TwoFactorService } from "../two-factor/service.js";
 import { UserResponseSchema } from "../user/dto.js";
 import { PrismaUserRepository } from "../user/repository.js";
 import type { LoginInput } from "./dto.js";
-import { isAccountLocked, recordLoginAttempt } from "./login-attempts.service.js";
+import { isAccountLocked, isIpThrottled, recordLoginAttempt } from "./login-attempts.service.js";
 import { revokeAllUserTokens } from "./refresh-token.service.js";
 import { invalidateTokenVersionCache } from "./token-version.js";
 import { TrustedDeviceService } from "./trusted-device.service.js";
@@ -27,7 +27,7 @@ export class AuthService {
   private twoFactorService = new TwoFactorService();
   private trustedDeviceService = new TrustedDeviceService();
 
-  async login(data: LoginInput, userAgent?: string, ipAddress?: string) {
+  async login(data: LoginInput, _userAgent?: string, ipAddress?: string, deviceSecret?: string) {
     const passwordAuthEnabled = await getConfigValue("passwordAuthEnabled");
     if (passwordAuthEnabled === "false") {
       throw new ForbiddenError(
@@ -36,6 +36,18 @@ export class AuthService {
     }
 
     const clientIp = ipAddress || "unknown";
+
+    // Per-IP throttle BEFORE the per-email lockout: brakes credential-stuffing
+    // that spreads one guess across many emails from a single source IP (A1-01).
+    const ipThrottle = await isIpThrottled(clientIp);
+    if (ipThrottle.throttled) {
+      throw new AppError(
+        403,
+        `Too many failed login attempts from your network. Try again in ${ipThrottle.remainingMinutes} minutes.`,
+        ErrorCodes.ACCOUNT_LOCKED,
+        { remainingMinutes: ipThrottle.remainingMinutes },
+      );
+    }
 
     // Check account lockout BEFORE any credential validation.
     // Uses the email/username from the request (works for non-existent accounts too).
@@ -75,18 +87,17 @@ export class AuthService {
     const has2FA = await this.twoFactorService.isEnabled(user.id);
 
     if (has2FA) {
-      if (userAgent && ipAddress) {
-        const isDeviceTrusted = await this.trustedDeviceService.isDeviceTrusted(
-          user.id,
-          userAgent,
-          ipAddress,
-        );
-        if (isDeviceTrusted) {
-          // Trusted device bypass — full login complete, record success
-          await this.trustedDeviceService.updateLastUsed(user.id, userAgent, ipAddress);
-          await recordLoginAttempt(data.emailOrUsername, clientIp, true);
-          return UserResponseSchema.parse(user);
-        }
+      // Trusted-device bypass keyed on the server-issued device secret (cookie),
+      // never on spoofable UA/IP (A1-04).
+      const isDeviceTrusted = await this.trustedDeviceService.isDeviceTrusted(
+        user.id,
+        deviceSecret,
+      );
+      if (isDeviceTrusted && deviceSecret) {
+        // Trusted device bypass — full login complete, record success
+        await this.trustedDeviceService.updateLastUsed(user.id, deviceSecret);
+        await recordLoginAttempt(data.emailOrUsername, clientIp, true);
+        return UserResponseSchema.parse(user);
       }
 
       // 2FA required — defer success recording to completeTwoFactorLogin
@@ -108,6 +119,7 @@ export class AuthService {
     rememberDevice: boolean = false,
     userAgent?: string,
     ipAddress?: string,
+    deviceSecret?: string,
   ) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -122,6 +134,17 @@ export class AuthService {
     }
 
     const clientIp = ipAddress || "unknown";
+
+    // Per-IP throttle before 2FA verification (A1-01).
+    const ipThrottle = await isIpThrottled(clientIp);
+    if (ipThrottle.throttled) {
+      throw new AppError(
+        403,
+        `Too many failed login attempts from your network. Try again in ${ipThrottle.remainingMinutes} minutes.`,
+        ErrorCodes.ACCOUNT_LOCKED,
+        { remainingMinutes: ipThrottle.remainingMinutes },
+      );
+    }
 
     // Check account lockout before attempting 2FA verification
     const lockStatus = await isAccountLocked(user.email, clientIp);
@@ -144,21 +167,28 @@ export class AuthService {
     // 2FA verified — full login complete
     await recordLoginAttempt(user.email, clientIp, true);
 
-    if (rememberDevice && userAgent && ipAddress) {
-      await this.trustedDeviceService.addTrustedDevice(userId, userAgent, ipAddress);
-    } else if (userAgent && ipAddress) {
-      // Update last used timestamp if this is already a trusted device
-      const isDeviceTrusted = await this.trustedDeviceService.isDeviceTrusted(
-        userId,
-        userAgent,
-        ipAddress,
-      );
+    // Trusted-device handling keyed on the server-issued device secret (A1-04).
+    // `trustedDeviceSecret` is non-null only when a NEW secret must be set as a
+    // cookie by the caller (i.e. the user opted to remember a not-yet-trusted device).
+    let trustedDeviceSecret: string | undefined;
+
+    if (rememberDevice) {
+      // Reuse the existing cookie secret if present, otherwise mint a new one.
+      const secret = deviceSecret || this.trustedDeviceService.generateDeviceSecret();
+      await this.trustedDeviceService.addTrustedDevice(userId, secret, { userAgent, ipAddress });
+      // Only return the secret to be set as a cookie when it is freshly minted.
+      if (!deviceSecret) {
+        trustedDeviceSecret = secret;
+      }
+    } else if (deviceSecret) {
+      // Update last-used timestamp if this device is already trusted.
+      const isDeviceTrusted = await this.trustedDeviceService.isDeviceTrusted(userId, deviceSecret);
       if (isDeviceTrusted) {
-        await this.trustedDeviceService.updateLastUsed(userId, userAgent, ipAddress);
+        await this.trustedDeviceService.updateLastUsed(userId, deviceSecret);
       }
     }
 
-    return UserResponseSchema.parse(user);
+    return { user: UserResponseSchema.parse(user), trustedDeviceSecret };
   }
 
   async requestPasswordReset(email: string) {

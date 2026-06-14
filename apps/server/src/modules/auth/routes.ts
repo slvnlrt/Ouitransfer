@@ -8,7 +8,9 @@ import { AppError, UnauthorizedError } from "../../utils/app-error.js";
 import {
   clearAuthCookies,
   getClientInfo,
+  getTrustedDeviceSecret,
   setAuthCookies,
+  setTrustedDeviceCookie,
   signAndSetCookies,
 } from "../../utils/auth-cookies.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
@@ -97,10 +99,11 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
     handler: async (request, reply) => {
       const input = request.body;
       const { userAgent, ipAddress } = getClientInfo(request);
+      const deviceSecret = getTrustedDeviceSecret(request);
 
       let result: Awaited<ReturnType<AuthService["login"]>>;
       try {
-        result = await authService.login(input, userAgent, ipAddress);
+        result = await authService.login(input, userAgent, ipAddress, deviceSecret);
       } catch (err) {
         // Audit failed login (fire-and-forget)
         // Use LOGIN_LOCKED for rate-limit lockouts to distinguish from credential failures
@@ -116,7 +119,7 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
       }
 
       if ("requiresTwoFactor" in result) {
-        const challengeToken = await createChallengeToken(result.userId);
+        const challengeToken = await createChallengeToken(result.userId, { ipAddress, userAgent });
         return reply.send({
           requiresTwoFactor: true,
           challengeToken,
@@ -181,20 +184,24 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (request, reply) => {
       const input = request.body;
-
-      // Verify the challenge token instead of trusting a raw userId
-      const userId = await verifyChallengeToken(input.challengeToken);
-
       const { userAgent, ipAddress } = getClientInfo(request);
 
-      let user: Awaited<ReturnType<AuthService["completeTwoFactorLogin"]>>;
+      // Verify the challenge token instead of trusting a raw userId. The challenge
+      // is bound to the IP/UA of the password step (A1-11), so a leaked challenge
+      // token cannot be redeemed from a different client.
+      const userId = await verifyChallengeToken(input.challengeToken, { ipAddress, userAgent });
+
+      const deviceSecret = getTrustedDeviceSecret(request);
+
+      let result: Awaited<ReturnType<AuthService["completeTwoFactorLogin"]>>;
       try {
-        user = await authService.completeTwoFactorLogin(
+        result = await authService.completeTwoFactorLogin(
           userId,
           input.token,
           input.rememberDevice,
           userAgent,
           ipAddress,
+          deviceSecret,
         );
       } catch (err) {
         // Audit failed 2FA attempt (fire-and-forget)
@@ -211,7 +218,13 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
         throw err;
       }
 
+      const { user } = result;
       await signAndSetCookies(reply, user, userAgent, ipAddress);
+
+      // A freshly-minted trusted-device secret must be set as the client cookie.
+      if (result.trustedDeviceSecret) {
+        setTrustedDeviceCookie(reply, result.trustedDeviceSecret);
+      }
 
       // Audit successful 2FA login (fire-and-forget)
       logAuditEvent({

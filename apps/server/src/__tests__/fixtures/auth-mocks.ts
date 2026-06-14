@@ -50,6 +50,7 @@ export const mockFindUserByEmailOrUsername = vi.fn();
  */
 export function makeTrustedDeviceServiceClass() {
   return class {
+    generateDeviceSecret = vi.fn().mockReturnValue("test-device-secret");
     isDeviceTrusted = vi.fn().mockResolvedValue(false);
     addTrustedDevice = vi.fn();
     updateLastUsed = vi.fn();

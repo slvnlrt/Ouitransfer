@@ -18,3 +18,21 @@ export const REFRESH_TOKEN_COOKIE_PATH = "/api/auth/refresh";
 
 /** TTL for the refresh-token cookie (7 days, in seconds). */
 export const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60;
+
+/**
+ * Trusted-device cookie.
+ *
+ * Holds a random, server-issued device secret. Trust is keyed on a hash of this
+ * secret (per user), NOT on any spoofable client field (UA/IP). The cookie is
+ * httpOnly + scoped to the auth path, so it is only sent to the auth endpoints.
+ */
+export const TRUSTED_DEVICE_COOKIE_NAME = "td_secret";
+
+/** Path scope for the trusted-device cookie — sent only to auth routes. */
+export const TRUSTED_DEVICE_COOKIE_PATH = "/api/auth";
+
+/** TTL for the trusted-device cookie (30 days, in seconds) — matches the DB record. */
+export const TRUSTED_DEVICE_MAX_AGE = 30 * 24 * 60 * 60;
+
+/** Trusted-device record/cookie lifetime in days. */
+export const TRUSTED_DEVICE_TTL_DAYS = 30;
