@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isCanonicalHttpOrigin } from "./app-url.js";
 
 // RFC 4512 §2.5: attributeType = ALPHA *( ALPHA / DIGIT / "-" ); max 64 chars (practical cap).
 const ldapAttributeName = z
@@ -34,9 +35,14 @@ export const LdapConfigSchema = z.object({
   syncIntervalMinutes: z.number().int().min(15).max(10080), // 15 min to 7 days
   useTls: z.boolean().default(true),
   tlsSkipVerify: z.boolean().default(false),
+  // Credential-bearing welcome/password-set links are built from this origin
+  // (A5-13), so it must be a canonical http(s):// origin — not just any parseable
+  // URL (z.url() would accept javascript:/ftp: schemes). Empty string → null.
   appUrl: z
     .string()
-    .url("Must be a valid URL")
+    .refine((v) => v === "" || isCanonicalHttpOrigin(v), {
+      message: "Must be a valid http(s):// URL (e.g. https://transfer.example.com)",
+    })
     .nullable()
     .optional()
     .transform((v) => v || null),
