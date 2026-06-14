@@ -48,6 +48,12 @@ This directory tracks all feature development for Ouitransfer (post-refactor pha
 | 8.2 | [Email Notifications](specs/8.2-email-notifications.md) | Done | — |
 | 8.3 | [Download Tracking](specs/8.3-download-tracking.md) | Done — lots A (download badge), B (manual reminders), C (cookie→recipient linkage), D (reverse upload tracking), F (audit enrich + RGPD notice) shipped; E dropped | 8.1, 8.2 |
 
+### 11.x — Security
+
+| # | Feature | Status | Depends on |
+|---|---------|--------|------------|
+| 11.1 | [Red Team 2026 — full offensive audit + remediation](../audit/red-team-2026/CLOSURE.md) | Done — 108 findings (8 unique Critical) across 8 domains, all remediated in 7 batches (R1–R7); server 1839 + web 397 tests green | — |
+
 ### Status Legend
 
 | Status | Meaning |
