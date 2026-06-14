@@ -3,7 +3,7 @@ import type { FastifyPluginAsyncZod } from "@fastify/type-provider-zod";
 import { z } from "zod";
 
 import { bucketName, s3Client } from "../../config/storage.config.js";
-import { createAdminPreValidation } from "../../middleware/admin-prevalidation.js";
+import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
 import { prisma } from "../../shared/prisma.js";
 import { evaluateEmailHealth } from "../email/health.js";
 
@@ -12,14 +12,14 @@ const emailStatusEnum = z.enum(["ok", "disabled", "degraded", "down"]);
 // A8-11 — Public liveness response: a single coarse field plus uptime/timestamp.
 // NO per-subsystem breakdown is exposed unauthenticated (that would let an
 // attacker probe which backend is degraded and time follow-on attacks). The
-// detailed breakdown lives at the admin-gated /health/status endpoint below.
+// detailed breakdown lives at the authenticated /health/status endpoint below.
 const livenessResponseSchema = z.object({
   status: z.enum(["healthy", "degraded"]),
   timestamp: z.string(),
   uptime: z.number(),
 });
 
-// Admin-only detailed health: full per-subsystem breakdown.
+// Authenticated detailed health: full per-subsystem breakdown.
 const detailedHealthResponseSchema = z.object({
   status: z.enum(["healthy", "degraded", "unhealthy"]),
   timestamp: z.string(),
@@ -80,7 +80,7 @@ export const healthRoutes: FastifyPluginAsyncZod = async (app) => {
       description:
         "Public liveness probe for orchestrators. Returns 200 when the API is alive, " +
         "503 when the database is unreachable. No per-subsystem detail is exposed " +
-        "unauthenticated — use the admin-gated /health/status for the breakdown.",
+        "unauthenticated — use the authenticated /health/status for the breakdown.",
       response: {
         200: livenessResponseSchema,
         503: livenessResponseSchema,
@@ -103,20 +103,24 @@ export const healthRoutes: FastifyPluginAsyncZod = async (app) => {
     },
   });
 
-  // ── Admin-only detailed status (per-subsystem breakdown) ────────────────────
-  // A8-11: the DB/storage/email subsystem breakdown is admin-gated so an
-  // unauthenticated attacker cannot probe which backend is degraded.
+  // ── Authenticated detailed status (per-subsystem breakdown) ─────────────────
+  // A8-11: the DB/storage/email subsystem breakdown requires an authenticated
+  // session so an UNAUTHENTICATED attacker cannot probe which backend is degraded.
+  // Any logged-in user (not just admins) may read it — this powers the user-facing
+  // "notifications/email disrupted" indicator (feature 10.2 / TD-42); an already
+  // authenticated user learning that email is degraded is not a meaningful leak.
   app.route({
     method: "GET",
     url: "/health/status",
-    preValidation: createAdminPreValidation({ allowSetupBypass: false }),
+    preValidation: createJwtPreValidation(),
     schema: {
       tags: ["Health"],
       operationId: "getHealthStatus",
-      summary: "Detailed system health (admin only)",
+      summary: "Detailed system health (authenticated)",
       description:
         "Returns the full per-subsystem health breakdown (database, storage, email). " +
-        "Requires an authenticated admin — exposes which backends are degraded.",
+        "Requires an authenticated session (any logged-in user) — never exposed " +
+        "unauthenticated.",
       response: {
         200: detailedHealthResponseSchema,
       },

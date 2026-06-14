@@ -60,9 +60,10 @@ export interface UploadLogoBody {
 }
 
 /**
- * Detailed health response (GET /health/status). A8-11: ADMIN-ONLY — exposes the
- * per-subsystem breakdown (which backend is degraded), so it requires an
- * authenticated admin.
+ * Detailed health response (GET /health/status). A8-11: requires an authenticated
+ * session (any logged-in user) — exposes the per-subsystem breakdown (which
+ * backend is degraded) so it must never be reachable unauthenticated, but it is
+ * not admin-restricted (it powers the user-facing email/notifications indicator).
  */
 export interface HealthStatus200 {
   status: "healthy" | "degraded" | "unhealthy";

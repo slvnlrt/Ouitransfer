@@ -3,10 +3,11 @@
  *
  * Integration tests for the health endpoints (A8-11):
  *   - GET /health         — public liveness, 200/503, NO per-subsystem breakdown
- *   - GET /health/status  — ADMIN-gated detailed per-subsystem breakdown
+ *   - GET /health/status  — AUTHENTICATED detailed per-subsystem breakdown
+ *                           (any logged-in user — NOT admin-restricted)
  *
- * The admin guard is stubbed below: a request carrying `x-test-admin: true` is
- * treated as an authenticated admin; everything else is rejected with a 403, so
+ * The auth guard is stubbed below: a request carrying `x-test-auth: true` is
+ * treated as an authenticated session; everything else is rejected with a 401, so
  * we can exercise both the gate and the detailed payload without wiring a full
  * JWT/DB stack.
  */
@@ -16,7 +17,7 @@ import type { FastifyRequest } from "fastify";
 import { fastify } from "fastify";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { ForbiddenError } from "../utils/app-error.js";
+import { UnauthorizedError } from "../utils/app-error.js";
 
 // Mock prisma to avoid a real DB connection.
 // emailJob mocks are needed because the health routes now evaluate email health
@@ -37,12 +38,14 @@ vi.mock("../modules/config/service.js", () => ({
   getConfigValue: vi.fn().mockRejectedValue(new Error("Configuration smtpEnabled not found")),
 }));
 
-// A8-11: stub the admin pre-validation so /health/status can be tested as both
-// an unauthenticated (rejected) and an admin (allowed) caller.
-vi.mock("../middleware/admin-prevalidation.js", () => ({
-  createAdminPreValidation: () => async (request: FastifyRequest) => {
-    if (request.headers["x-test-admin"] !== "true") {
-      throw new ForbiddenError("Access restricted to administrators");
+// A8-11: stub the JWT pre-validation so /health/status can be tested as both
+// an unauthenticated (rejected) and an authenticated (allowed) caller. The
+// endpoint is auth-gated, NOT admin-gated, so a plain authenticated session
+// (`x-test-auth: true`) is sufficient.
+vi.mock("../middleware/jwt-prevalidation.js", () => ({
+  createJwtPreValidation: () => async (request: FastifyRequest) => {
+    if (request.headers["x-test-auth"] !== "true") {
+      throw new UnauthorizedError("Unauthorized: a valid token is required.");
     }
   },
 }));
@@ -86,7 +89,7 @@ vi.mock("../utils/logger.js", () => ({
 
 import { healthRoutes } from "../modules/health/routes.js";
 
-describe("GET /health/status (admin-gated detailed breakdown)", () => {
+describe("GET /health/status (authenticated detailed breakdown)", () => {
   const app = fastify({ logger: false });
 
   beforeAll(async () => {
@@ -100,17 +103,17 @@ describe("GET /health/status (admin-gated detailed breakdown)", () => {
     await app.close();
   });
 
-  it("requires admin authentication (rejects an unauthenticated caller)", async () => {
+  it("requires authentication (rejects an unauthenticated caller)", async () => {
     const response = await app.inject({ method: "GET", url: "/health/status" });
-    // The stubbed admin guard throws ForbiddenError → 403 via the error handler.
-    expect(response.statusCode).toBe(403);
+    // The stubbed JWT guard throws UnauthorizedError → 401 via the error handler.
+    expect(response.statusCode).toBe(401);
   });
 
-  it("returns the detailed per-subsystem breakdown for an admin", async () => {
+  it("returns the detailed per-subsystem breakdown for any authenticated user", async () => {
     const response = await app.inject({
       method: "GET",
       url: "/health/status",
-      headers: { "x-test-admin": "true" },
+      headers: { "x-test-auth": "true" },
     });
 
     expect(response.statusCode).toBe(200);
@@ -152,7 +155,7 @@ describe("GET /health/status — degraded (DB failure)", () => {
     const response = await app.inject({
       method: "GET",
       url: "/health/status",
-      headers: { "x-test-admin": "true" },
+      headers: { "x-test-auth": "true" },
     });
 
     expect(response.statusCode).toBe(200);
@@ -186,7 +189,7 @@ describe("GET /health/status — degraded (storage unreachable)", () => {
     const response = await app.inject({
       method: "GET",
       url: "/health/status",
-      headers: { "x-test-admin": "true" },
+      headers: { "x-test-auth": "true" },
     });
 
     expect(response.statusCode).toBe(200);

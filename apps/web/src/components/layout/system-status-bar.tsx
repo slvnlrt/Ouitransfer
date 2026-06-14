@@ -200,16 +200,25 @@ function MetricCell({ value, label }: { value: string; label: string }) {
 
 // ── Bar User View ────────────────────────────────────────────────────────────
 
-function BarUserView({ diskSpace }: { diskSpace: DiskSpaceInfo | null }) {
+function BarUserView({
+  diskSpace,
+  emailStatus,
+}: {
+  diskSpace: DiskSpaceInfo | null;
+  emailStatus?: EmailHealthStatus;
+}) {
   const t = useTranslations("dashboard.systemStatus");
   const { fileCount, activeShareCount } = useDashboardMetrics();
 
   const hasQuota = diskSpace && diskSpace.diskAvailableGB !== -1 && diskSpace.diskSizeGB > 0;
   const hasMetrics = fileCount !== undefined || activeShareCount !== undefined;
-  // A8-11: regular users no longer receive the email subsystem status (it is part
-  // of the admin-only per-subsystem breakdown), so there is no notification line.
+  // A8-11: the per-subsystem breakdown (/health/status) now requires an
+  // authenticated session (any logged-in user) — not admin. So regular users can
+  // again be informed when email/notification delivery is disrupted. The endpoint
+  // is no longer reachable unauthenticated, which is what the finding required.
+  const showNotifications = emailStatus === "degraded" || emailStatus === "down";
 
-  if (!hasQuota && !hasMetrics) return null;
+  if (!hasQuota && !hasMetrics && !showNotifications) return null;
 
   return (
     <div className="flex flex-col sm:flex-row items-stretch gap-4">
@@ -246,6 +255,34 @@ function BarUserView({ diskSpace }: { diskSpace: DiskSpaceInfo | null }) {
           )}
           {activeShareCount !== undefined && (
             <MetricCell value={String(activeShareCount)} label={t("metrics.activeShares")} />
+          )}
+        </div>
+      )}
+
+      {/* Divider before notifications line (when other content precedes it) */}
+      {showNotifications && (hasQuota || hasMetrics || (diskSpace && !hasQuota)) && (
+        <>
+          <div className="hidden sm:block w-px bg-border/60 self-stretch" />
+          <div className="sm:hidden h-px bg-border/60 w-full" />
+        </>
+      )}
+
+      {/* Notifications disruption indicator */}
+      {showNotifications && (
+        <div className="flex items-center gap-1.5 text-xs">
+          {emailStatus === "down" ? (
+            <>
+              <XCircle className="size-3.5 text-red-600 dark:text-red-400" aria-hidden="true" />
+              <span className="text-red-600 dark:text-red-400">{t("email.userOffline")}</span>
+            </>
+          ) : (
+            <>
+              <AlertTriangle
+                className="size-3.5 text-amber-600 dark:text-amber-400"
+                aria-hidden="true"
+              />
+              <span className="text-amber-600 dark:text-amber-400">{t("email.userDisrupted")}</span>
+            </>
           )}
         </div>
       )}
@@ -598,9 +635,11 @@ export function SystemStatusBar() {
 
     // Email subsystem is excluded from the server aggregate on purpose; surface it
     // client-side by bumping a healthy dot to degraded (never to unhealthy).
-    // A8-11: email status is part of the admin-only per-subsystem breakdown, so
-    // only admins can reflect it in the dot. Regular users see the coarse liveness.
-    const emailStatus = status.isAdmin ? status.healthData?.checks.email : undefined;
+    // A8-11: /health/status is authenticated (not admin-only), so every logged-in
+    // user — admin or not — can reflect the email subsystem in the dot.
+    const emailStatus = status.isAdmin
+      ? status.healthData?.checks.email
+      : status.healthStatus?.checks.email;
     if ((emailStatus === "degraded" || emailStatus === "down") && overallStatus === "healthy") {
       overallStatus = "degraded";
     }
@@ -635,7 +674,10 @@ export function SystemStatusBar() {
                 emailStatsError={status.emailStatsError}
               />
             ) : (
-              <BarUserView diskSpace={status.diskSpace} />
+              <BarUserView
+                diskSpace={status.diskSpace}
+                emailStatus={status.healthStatus?.checks.email}
+              />
             )}
           </ExpandedPanel>
         </div>
